@@ -299,7 +299,7 @@ public class EsQueryProvider extends QueryProvider {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "bigint");
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "double");
                     } else {
                         originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                     }
@@ -419,7 +419,7 @@ public class EsQueryProvider extends QueryProvider {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "bigint");
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "double");
                     } else {
                         originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                     }
@@ -502,7 +502,7 @@ public class EsQueryProvider extends QueryProvider {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "bigint");
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "double");
                     } else {
                         originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                     }
@@ -621,7 +621,7 @@ public class EsQueryProvider extends QueryProvider {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "bigint");
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "double");
                     } else {
                         originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                     }
