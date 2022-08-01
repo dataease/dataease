@@ -37,6 +37,7 @@ export default {
     return {
       // isShow: true,
       heightKey: '',
+      timer: null,
       watherData: {
         wendu: '',
         city: '',
@@ -114,7 +115,14 @@ export default {
   },
   mounted() {
     // this.changeSlidesPerView()
+    // console.log('getLocation', this.getLocation())
     this.getSunType()
+    this.timer = setInterval(() => {
+      this.getSunType()
+    }, 360000)
+  },
+  destroyed() {
+    clearInterval(this.timer)
   },
   methods: {
     newIcon(key) {
@@ -163,6 +171,23 @@ export default {
     baseMoseDownEven(e) {
       e.stopPropagation()
     },
+    getLocation() {
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const coords = pos.coords || {}
+          const { latitude, longitude } = coords
+          console.log('latitude, longitude', latitude, longitude)
+          // const position = wgs84ToGCJ02(longitude, latitude)
+          resolve(latitude)
+        }, (e) => {
+          reject(e)
+        }, {
+          timeout: 10000,
+          maximumAge: 10000
+        })
+      })
+    },
+
     toggleNav(key) {
       // 切换导航
       console.log('previewCanvasScale', this.previewCanvasScale)
