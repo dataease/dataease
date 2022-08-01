@@ -41,13 +41,19 @@
         left join panel_group g on g.id = s.panel_group_id
         left join sys_user u on u.username = IFNULL(s.granter,g.create_by)
         where
-        ( s.target_id = #{userId} and s.type = 0 ) or
-        ( s.target_id = #{deptId} and s.type = 2 ) or
-        ( s.target_id in
-        <foreach collection="roleIds" item="roleId" open='(' separator=',' close=')'>
-            #{roleId}
-        </foreach>
-        and s.type = 1 )
+        ( s.target_id = #{userId} and s.type = 0 )
+        <if test="deptId != null">
+            or ( s.target_id = #{deptId} and s.type = 2 )
+        </if>
+        <if test="roleIds != null">
+            or
+            ( s.target_id in
+            <foreach collection="roleIds" item="roleId" open='(' separator=',' close=')'>
+                #{roleId}
+            </foreach>
+            and s.type = 1 )
+        </if>
+
         <if test="orderByClause == null">
             order by s.create_time desc
         </if>
