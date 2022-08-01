@@ -49,7 +49,7 @@
 
       </el-table-column>
 
-      <el-empty slot="empty" :description="!!currentAreaCode ? $t('map_mapping.empty'): $t('map_mapping.please_select_map')"></el-empty>
+      <el-empty slot="empty" :description="!!currentAreaCode ? $t('map_mapping.empty'): $t('map_mapping.please_select_map')" />
     </el-table>
     <div class="mapping-pagination">
       <el-pagination
@@ -95,6 +95,26 @@ export default {
       usePage: true
     }
   },
+  computed: {
+    chartId() {
+      return this.chart.id
+    },
+    currentAreaCode() {
+      if (this.dynamicAreaCode) {
+        return this.dynamicAreaCode
+      }
+      const customAttr = this.chart.customAttr
+      if (!customAttr) return ''
+      let attr = null
+      if ((typeof customAttr) === 'string') {
+        attr = JSON.parse(customAttr)
+      } else {
+        attr = JSON.parse(JSON.stringify(customAttr))
+      }
+      return attr.areaCode
+    }
+
+  },
   watch: {
     'chart': {
       handler: function() {
@@ -108,35 +128,13 @@ export default {
     },
     'dynamicAreaCode': {
       handler: function(val, old) {
-        if(val !== old) {
+        if (val !== old) {
           this.$nextTick(() => {
             this.initData()
           })
-          
         }
       }
     }
-  },
-  computed: {
-    chartId() {
-      return this.chart.id
-    },
-    currentAreaCode() {
-      
-      if(this.dynamicAreaCode) {
-        return this.dynamicAreaCode
-      }
-      const customAttr = this.chart.customAttr
-      if(!customAttr) return ''
-      let attr = null
-      if((typeof customAttr) === 'string' ) {
-        attr = JSON.parse(customAttr)
-      } else {
-        attr = JSON.parse(JSON.stringify(customAttr))
-      }
-      return attr.areaCode
-    }
-    
   },
   mounted() {
     this.initData()
@@ -182,7 +180,7 @@ export default {
     },
     buildGridList() {
       this.currentDatas = []
-      if(!this.currentAreaCode || !this.mappingForm[this.currentAreaCode])return
+      if (!this.currentAreaCode || !this.mappingForm[this.currentAreaCode]) return
       this.gridList = Object.keys(this.mappingForm[this.currentAreaCode]).map(key => {
         return {
           mapArea: key,
@@ -204,13 +202,13 @@ export default {
     initMapping() {
       const innerCallBack = (json, cCode) => {
         const features = json.features
-        if(!this.mappingForm) {
+        if (!this.mappingForm) {
           this.mappingForm = {}
         }
-        if(!this.mappingForm[cCode]) {
+        if (!this.mappingForm[cCode]) {
           this.mappingForm[cCode] = {}
         }
-        
+
         features.forEach(feature => {
           this.mappingForm[cCode][feature.properties.name || feature.properties.NAME] = null
         })
