@@ -2,7 +2,7 @@
 import { componentStyle, reverseColor } from '../common/common'
 import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
-export function baseMapOption(chart_option, chart, themeStyle) {
+export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -91,7 +91,7 @@ export function baseMapOption(chart_option, chart, themeStyle) {
       if (chart.senior) {
         const senior = JSON.parse(chart.senior)
 
-        senior && senior.mapMapping && (chart_option.series[0].nameMap = senior.mapMapping)
+        senior && senior.mapMapping && senior.mapMapping[curAreaCode] && (chart_option.series[0].nameMap = senior.mapMapping[curAreaCode])
       }
     }
   }

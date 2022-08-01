@@ -8,13 +8,13 @@
       :row-style="{height:0+'px'}"
     >
       <el-table-column
-        label="图形"
+        :label="$t('map_mapping.map')"
         prop="mapArea"
         width="160"
         show-overflow-tooltip
       />
       <el-table-column
-        label="属性"
+        :label="$t('map_mapping.attr')"
         width="50"
       >
         <template slot-scope="scope">
@@ -39,7 +39,7 @@
       </el-table-column>
       <el-table-column align="right">
 
-        <template slot="header">
+        <template slot="header" slot-scope="scope">
           <el-input
             v-model="keyWord"
             size="mini"
@@ -48,6 +48,8 @@
         </template>
 
       </el-table-column>
+
+      <el-empty slot="empty" :description="!!currentAreaCode ? $t('map_mapping.empty'): $t('map_mapping.please_select_map')" />
     </el-table>
     <div class="mapping-pagination">
       <el-pagination
@@ -65,13 +67,19 @@
 </template>
 
 <script>
-
+import {
+  geoJson
+} from '@/api/map/map'
 export default {
   name: 'FunctionCfg',
   props: {
     chart: {
       type: Object,
       required: true
+    },
+    dynamicAreaCode: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -79,7 +87,6 @@ export default {
       mappingForm: {},
 
       keyWord: '',
-      dynamicAreaCode: '',
       gridList: [],
       currentPage: 1,
       pageSize: 10,
@@ -87,6 +94,26 @@ export default {
       currentDatas: [],
       usePage: true
     }
+  },
+  computed: {
+    chartId() {
+      return this.chart.id
+    },
+    currentAreaCode() {
+      if (this.dynamicAreaCode) {
+        return this.dynamicAreaCode
+      }
+      const customAttr = this.chart.customAttr
+      if (!customAttr) return ''
+      let attr = null
+      if ((typeof customAttr) === 'string') {
+        attr = JSON.parse(customAttr)
+      } else {
+        attr = JSON.parse(JSON.stringify(customAttr))
+      }
+      return attr.areaCode
+    }
+
   },
   watch: {
     'chart': {
@@ -97,6 +124,15 @@ export default {
     'keyWord': {
       handler: function() {
         this.buildGridList()
+      }
+    },
+    'dynamicAreaCode': {
+      handler: function(val, old) {
+        if (val !== old) {
+          this.$nextTick(() => {
+            this.initData()
+          })
+        }
       }
     }
   },
@@ -112,7 +148,7 @@ export default {
     },
     finishEdit(row) {
       row.isEdit = false
-      this.mappingForm[row.mapArea] = row.attrArea
+      this.mappingForm[this.currentAreaCode][row.mapArea] = row.attrArea
       this.changeMapping()
     },
 
@@ -134,7 +170,7 @@ export default {
         } else {
           senior = JSON.parse(chart.senior)
         }
-        if (senior.mapMapping) {
+        if (senior.mapMapping && senior.mapMapping[this.currentAreaCode]) {
           this.mappingForm = senior.mapMapping
         } else {
           this.initMapping()
@@ -143,10 +179,12 @@ export default {
       }
     },
     buildGridList() {
-      this.gridList = Object.keys(this.mappingForm).map(key => {
+      this.currentDatas = []
+      if (!this.currentAreaCode || !this.mappingForm[this.currentAreaCode]) return
+      this.gridList = Object.keys(this.mappingForm[this.currentAreaCode]).map(key => {
         return {
           mapArea: key,
-          attrArea: this.mappingForm[key] || key
+          attrArea: this.mappingForm[this.currentAreaCode][key] || key
         }
       })
       const baseDatas = JSON.parse(JSON.stringify(this.gridList))
@@ -162,18 +200,32 @@ export default {
       this.total = tempDatas.length
     },
     initMapping() {
-      const chart = JSON.parse(JSON.stringify(this.chart))
-      const customAttr = JSON.parse(chart.customAttr)
-      const cCode = this.chart.DetailAreaCode || this.dynamicAreaCode || customAttr.areaCode
+      const innerCallBack = (json, cCode) => {
+        const features = json.features
+        if (!this.mappingForm) {
+          this.mappingForm = {}
+        }
+        if (!this.mappingForm[cCode]) {
+          this.mappingForm[cCode] = {}
+        }
+
+        features.forEach(feature => {
+          this.mappingForm[cCode][feature.properties.name || feature.properties.NAME] = null
+        })
+      }
+      const cCode = this.currentAreaCode
       if (this.$store.getters.geoMap[cCode]) {
         const json = this.$store.getters.geoMap[cCode]
-        const features = json.features
-        this.mappingForm = {}
-        features.forEach(feature => {
-          this.mappingForm[feature.properties.name] = null
-        })
+        innerCallBack(json, cCode)
       } else {
-        this.$warning('请先选择地图范围')
+        geoJson(cCode).then(res => {
+          this.$store.dispatch('map/setGeo', {
+            key: cCode,
+            value: res
+          }).then(() => {
+            innerCallBack(res, cCode)
+          })
+        })
       }
     },
     changeMapping() {

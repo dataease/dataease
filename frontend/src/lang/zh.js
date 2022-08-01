@@ -2303,5 +2303,11 @@ export default {
     fileplaceholder: '请上传json格式坐标文件',
     delete_confirm: '及子节点都会被删除，确认执行？',
     cur_node: '当前节点'
+  },
+  map_mapping: {
+    map: '图形',
+    attr: '属性',
+    empty: '无数据',
+    please_select_map: '请先选择地图范围'
   }
 }
