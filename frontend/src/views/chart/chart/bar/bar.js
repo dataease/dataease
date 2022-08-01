@@ -103,7 +103,22 @@ export function horizontalBarOption(chart_option, chart,cstyle = {}) {
       const y = chart.data.series[i]
       // color
       y.itemStyle = {
-        color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        // color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 1,
+          y2: 0,
+          colorStops: [{
+            offset: 0,  // 0% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+          }, {
+            offset: 1, // 100% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[(i+1) % customAttr.color.colors.length], customAttr.color.alpha)
+          }],
+          global: false // 缺省为 false
+        }
       }
       // size
       if (customAttr.size) {
@@ -163,12 +178,28 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
   // 处理data
   if (chart.data) {
     chart_option.title.text = chart.title
-    chart_option.yAxis.data = chart.data.x
+    chart_option.xAxis.data = chart.data.x
+    console.log('chart.data',chart.data)
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
       // color
       y.itemStyle = {
-        color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        // color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 1,
+          x2: 0,
+          y2: 0,
+          colorStops: [{
+            offset: 0,  // 0% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+          },{
+            offset: 1, // 100% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[(i+1) % customAttr.color.colors.length], customAttr.color.alpha)
+          }],
+          global: false // 缺省为 false
+        }
       }
       // size
       if (customAttr.size) {
@@ -181,28 +212,80 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
         }
       }
       // label
-      y.label = {
-        show: true,
-        position: 'right',
-        offset: [10, 0],
-        fontSize: 16
+      if (customAttr.label) {
+        // y.label = customAttr.label
+        y.label  = {
+          show: false,
+          position: [customAttr.size.barWidth / 2, -(customAttr.size.barWidth + 20)],
+          color: '#ffffff',
+          fontSize: 14,
+          fontStyle: 'bold',
+          align: 'center',
+        }
       }
-      y.type = 'pictorialBar'
+      y.type = 'bar'
+      y.z = (i+1)
 
-      y.symbolRepeat = 'fixed'
-      y.symbolMargin = '5%'
-      y.symbolClip = true
-      y.symbolSize = 20
-      y.symbolBoundingData = 100
-      
+      let arr = []
+      if(y.data.length) {
+        y.data.map(item => {
+          arr.push(item.value)
+        })
+      }
+      let t = {
+        z: (i+2),
+        name: y.name,
+        type: 'pictorialBar',
+        symbolPosition: 'end',
+        data: arr,
+        symbol: "diamond",
+        symbolOffset: [0, "-50%"],
+        symbolSize: [customAttr.size.barDefault?'36.5%': customAttr.size.barWidth, '20'],
+        itemStyle: {
+          color: hexColorToRGBA(customAttr.color.colors[(i+1) % customAttr.color.colors.length], customAttr.color.alpha),
+          borderWidth: 4,
+          borderColor: '#ffffff'
+        },
+      }
+      let b = {
+        z: (i+3),
+        name: y.name,
+        type: 'pictorialBar',
+        data: arr,
+        symbol: 'diamond',
+        symbolOffset: [0, '50%'],
+        symbolSize: [customAttr.size.barDefault?'36.5%': customAttr.size.barWidth, '20'],
+        itemStyle: {
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          borderWidth: 0,
+        }
+      }
+      let l = {
+        z: (i+4),
+        type: 'pictorialBar',
+        symbol: 'rect',
+        symbolSize: [1, '100%'],
+        symbolOffset: [0, 10],
+        barCategoryGap: '-100%',
+        itemStyle: {
+            normal: {
+              color: '#ededed',
+              borderWidth: 0
+            }
+        },
+        data: arr,
+      }
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
+      chart_option.series.push(t) // 顶部
+      chart_option.series.push(b) // 底部
+      chart_option.series.push(l) // 线
     }
   }
 
-  // console.log(chart_option);
   componentStyle(chart_option, chart,cstyle)
   seniorCfg(chart_option, chart)
+  console.log('echarts,3d.....',chart_option)
   return chart_option
 
 }
