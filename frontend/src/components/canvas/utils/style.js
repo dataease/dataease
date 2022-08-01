@@ -336,7 +336,7 @@ export function adaptCurTheme(customStyle, customAttr) {
     recursionThemTransObj(THEME_ATTR_TRANS_SLAVE1_BACKGROUND, customAttr, DARK_THEME_COMPONENT_BACKGROUND_BACK)
   }
   customAttr['color'] = { ...canvasStyle.chartInfo.chartColor }
-  customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'] }
+  customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'], show: customStyle['text']['show'] }
   if (customStyle.background) {
     delete customStyle.background
   }
