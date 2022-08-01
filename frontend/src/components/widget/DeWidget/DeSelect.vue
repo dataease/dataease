@@ -16,7 +16,7 @@
     :key-word="keyWord"
     popper-class="coustom-de-select"
     :list="datas"
-    :customStyle="customStyle"
+    :custom-style="customStyle"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
@@ -108,7 +108,7 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     customStyle() {
-      const { brColor, wordColor, innerBgColor } = this.element.style;
+      const { brColor, wordColor, innerBgColor } = this.element.style
       return { brColor, wordColor, innerBgColor }
     }
   },
@@ -257,7 +257,7 @@ export default {
       }
     },
     visualChange(value) {
-      this.value = value;
+      this.value = value
       this.$nextTick(() => {
         if (!this.element.options.attrs.multiple) {
           return
