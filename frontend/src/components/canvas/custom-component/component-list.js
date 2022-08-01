@@ -482,7 +482,8 @@ const list = [
       defaultBg: '',
       highlight: '#333',
       highlightBg: '',
-      heightBgImg: ''
+      heightBgImg: '',
+      spacing: 0
     },
     x: 1,
     y: 1,
@@ -558,10 +559,15 @@ const list = [
     defaultClass: 'text-filter',
     mobileStyle: BASE_MOBILE_STYLE,
     style: {
-      width: 200,
-      height: 100
+      width: 240,
+      height: 50
     },
     frameLinks: FRAMELINKS,
+    weatherStyle: {
+      iocnSize: 40,
+      fontSize: 16,
+      color: '#333'
+    },
     x: 1,
     y: 1,
     sizex: 10,

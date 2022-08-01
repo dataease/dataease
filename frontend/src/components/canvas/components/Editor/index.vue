@@ -67,6 +67,7 @@
       @setNavInfo="setNavInfo(item)"
       @setFontIcon="setFontIcon(item)"
       @setPicture="setPicture(item)"
+      @setWeather="setWeather(item)"
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
       @amAddItem="addItemBox(item)"
@@ -280,6 +281,18 @@
     >
       <pictureSet v-if="pictureVisible" :element="pictureElement" @backgroundSetClose="pictureSetClose" />
     </el-dialog>
+    <!-- 天气 -->
+    <el-dialog
+      :visible.sync="weatherVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <weatherSet v-if="weatherVisible" :element="weatherElement" @backgroundSetClose="weatherSetClose" />
+    </el-dialog>
   </div>
 </template>
 
@@ -315,6 +328,7 @@ import navgationSet from '@/views/background/navgationSet'
 import tabSet from '@/views/background/tabSet'
 import iconSet from '@/views/background/iconSet'
 import pictureSet from '@/views/background/pictureSet'
+import weatherSet from '@/views/background/weatherSet'
 
 import { events } from '../../../DeDrag/option.js'
 import { addEvent, removeEvent } from '../../../../utils/dom.js'
@@ -885,7 +899,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, tabSet, pictureSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, tabSet, pictureSet, weatherSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -961,12 +975,14 @@ export default {
       tabElement: {},
       iconElement: {},
       pictureElement: {},
+      weatherElement: {},
       boardSetVisible: false,
       bannerSetVisible: false,
       navVisible: false,
       tabVisible: false,
       iconVisible: false,
       pictureVisible: false,
+      weatherVisible: false,
       psDebug: false, // 定位调试模式
       editorX: 0,
       editorY: 0,
@@ -1254,6 +1270,9 @@ export default {
     pictureSetClose() {
       this.pictureVisible = false
     },
+    weatherSetClose() {
+      this.weatherVisible = false
+    },
     boardSet(item) {
       // console.log('itsm00001', item)
       this.$emit('boardSet', item)
@@ -1286,6 +1305,11 @@ export default {
       this.pictureVisible = true
       this.pictureElement = item
       console.log('触发图片库')
+    },
+    setWeather(item) {
+      this.weatherVisible = true
+      this.weatherElement = item
+      console.log('天气组件样式设置')
     },
     changeStyleWithScale,
     setLine(e) {

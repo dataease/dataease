@@ -23,6 +23,12 @@
       </el-row>
       <el-row style="height: 50px;overflow: hidden;margin-top:0px;">
         <el-col :span="4">
+          <span class="params-title">{{ '间距' }}</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input-number v-model="curComponent.options.spacing" :min="0" />
+        </el-col>
+        <el-col :span="4">
           <span class="params-title">{{ '水平对齐方式' }}</span>
         </el-col>
         <el-col :span="8" style="height:40px;line-height:40px;">
