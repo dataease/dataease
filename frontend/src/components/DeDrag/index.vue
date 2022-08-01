@@ -46,6 +46,7 @@
         @setNavInfo="setNavInfo"
         @setFontIcon="setFontIcon"
         @setPicture="setPicture"
+        @setWeather="setWeather"
         @boardSet="boardSet"
         @tabRelation="tabRelation"
       />
@@ -401,7 +402,7 @@ export default {
   },
   computed: {
     boxWidth() {
-      console.log('修改触发=====0001boxWidth2222222222222222',this.element)
+      console.log('修改触发=====0001boxWidth2222222222222222', this.element)
       return this.element.commonBackground && this.element.commonBackground.boxWidth || 0
     },
     boxHeight() {
@@ -855,7 +856,7 @@ export default {
       } else {
         // console.log('22222222222222222222====')
         var info = document.getElementById('eleId' + this.element.id)
-        console.log('设置参数003',info, info.offsetWidth, info.offsetHeight)
+        console.log('设置参数003', info, info.offsetWidth, info.offsetHeight)
         this.element.commonBackground.boxWidth = Math.floor(info.offsetWidth)
         this.element.commonBackground.boxHeight = Math.floor(info.offsetHeight)
       }
@@ -1973,6 +1974,10 @@ export default {
     // 图片库
     setPicture() {
       this.$emit('setPicture')
+    },
+    // 天气
+    setWeather() {
+      this.$emit('setWeather')
     }
   }
 

@@ -1,9 +1,12 @@
 <template>
   <div>
     <div class="nav_calss" :style="navStyleSet">
-      <div v-for="(item,index) in navList" :key="index" class="nav_info" :style="setStyle(item)">
-        <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
+      <div v-for="(item,index) in navList" :key="index" class="nav_info" :style="boxStyle">
+        <div :style="setStyle(item)">
+          <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
+        </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -59,6 +62,12 @@ export default {
           }
         }
       }
+    },
+    boxStyle() {
+      const style = {}
+      style.paddingLeft = this.element.options.spacing + 'px'
+      style.paddingRight = this.element.options.spacing + 'px'
+      return style
     },
     setStyle() {
       return function(value) {

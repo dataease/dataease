@@ -244,6 +244,14 @@ export const otherList = [
     label: '网页',
     icon: 'iconfont icon-iframe',
     defaultClass: 'text-filter'
+  },
+  {
+    id: '30003',
+    component: 'de-weather',
+    type: 'de-weather',
+    label: '天气',
+    icon: 'iconfont icon-shijian',
+    defaultClass: 'text-filter'
   }
 ]
 
@@ -474,7 +482,8 @@ const list = [
       defaultBg: '',
       highlight: '#333',
       highlightBg: '',
-      heightBgImg: ''
+      heightBgImg: '',
+      spacing: 0
     },
     x: 1,
     y: 1,
@@ -534,6 +543,31 @@ const list = [
       height: 200
     },
     frameLinks: FRAMELINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '30003',
+    component: 'de-weather',
+    type: 'de-weather',
+    label: '天气',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 240,
+      height: 50
+    },
+    frameLinks: FRAMELINKS,
+    weatherStyle: {
+      iocnSize: 40,
+      fontSize: 16,
+      color: '#333'
+    },
     x: 1,
     y: 1,
     sizex: 10,
