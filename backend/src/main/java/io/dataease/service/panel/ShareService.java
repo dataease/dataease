@@ -349,7 +349,7 @@ public class ShareService {
         Map<String, Object> param = new HashMap<>();
         param.put("userId", userId);
         param.put("deptId", deptId);
-        param.put("roleIds", roleIds);
+        param.put("roleIds", CollectionUtils.isNotEmpty(roleIds)? roleIds: null);
 
         List<PanelSharePo> datas = extPanelShareMapper.query(param);
         List<PanelShareDto> dtoLists = datas.stream().map(po -> BeanUtils.copyBean(new PanelShareDto(), po))
