@@ -17,7 +17,7 @@ export const FILTER_COMMON_STYLE_DARK = {
   vertical: 'top',
   color: '#FFFFFF',
   brColor: '#4E4B4B',
-  wordColor: '#4E4B4B',
+  wordColor: '#FFFFFF',
   innerBgColor: '#131E42'
 }
 
