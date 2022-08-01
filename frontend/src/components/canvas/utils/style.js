@@ -256,6 +256,10 @@ export const THEME_ATTR_TRANS_MAIN = {
   }
 }
 
+export const THEME_ATTR_TRANS_MAIN_SYMBOL = {
+  'label': ['color']
+}
+
 export const THEME_ATTR_TRANS_SLAVE1_BACKGROUND = {
   'tooltip': ['backgroundColor']
 }
@@ -321,7 +325,7 @@ export function componentScalePublic(chartInfo, heightScale, widthScale) {
   return chartInfo
 }
 
-export function adaptCurTheme(customStyle, customAttr) {
+export function adaptCurTheme(customStyle, customAttr, chartType) {
   const canvasStyle = store.state.canvasStyleData
   const themeColor = canvasStyle.panel.themeColor
   if (themeColor === 'light') {
@@ -329,14 +333,24 @@ export function adaptCurTheme(customStyle, customAttr) {
     recursionThemTransObj(THEME_STYLE_TRANS_SLAVE1, customStyle, LIGHT_THEME_COLOR_SLAVE1)
     recursionThemTransObj(THEME_ATTR_TRANS_MAIN, customAttr, LIGHT_THEME_COLOR_MAIN)
     recursionThemTransObj(THEME_ATTR_TRANS_SLAVE1_BACKGROUND, customAttr, LIGHT_THEME_COMPONENT_BACKGROUND)
+    if (chartType === 'symbol-map') {
+      // 符号地图特殊处理
+      Vue.set(customStyle['baseMapStyle'], 'baseMapTheme', 'light')
+    }
   } else {
     recursionThemTransObj(THEME_STYLE_TRANS_MAIN, customStyle, DARK_THEME_COLOR_MAIN)
     recursionThemTransObj(THEME_STYLE_TRANS_SLAVE1, customStyle, DARK_THEME_COLOR_SLAVE1)
-    recursionThemTransObj(THEME_ATTR_TRANS_MAIN, customAttr, DARK_THEME_COLOR_MAIN)
-    recursionThemTransObj(THEME_ATTR_TRANS_SLAVE1_BACKGROUND, customAttr, DARK_THEME_COMPONENT_BACKGROUND_BACK)
+    if (chartType === 'symbol-map') {
+      // 符号地图特殊处理
+      Vue.set(customStyle['baseMapStyle'], 'baseMapTheme', 'dark')
+      recursionThemTransObj(THEME_ATTR_TRANS_MAIN_SYMBOL, customAttr, '#000000')
+    } else {
+      recursionThemTransObj(THEME_ATTR_TRANS_MAIN, customAttr, DARK_THEME_COLOR_MAIN)
+      recursionThemTransObj(THEME_ATTR_TRANS_SLAVE1_BACKGROUND, customAttr, DARK_THEME_COMPONENT_BACKGROUND_BACK)
+    }
   }
   customAttr['color'] = { ...canvasStyle.chartInfo.chartColor }
-  customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'] }
+  customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'], show: customStyle['text']['show'] }
   if (customStyle.background) {
     delete customStyle.background
   }
@@ -351,6 +365,11 @@ export function adaptCurThemeCommonStyle(component) {
     const filterStyle = store.state.canvasStyleData.chartInfo.filterStyle
     for (const styleKey in filterStyle) {
       Vue.set(component.style, styleKey, filterStyle[styleKey])
+    }
+  } else if (isTabComponent(component.component)) {
+    const tabStyle = store.state.canvasStyleData.chartInfo.tabStyle
+    for (const styleKey in tabStyle) {
+      Vue.set(component.style, styleKey, tabStyle[styleKey])
     }
   } else {
     if (component.style.color) {
@@ -383,5 +402,9 @@ export function adaptCurThemeFilterStyleAll(styleKey) {
 
 export function isFilterComponent(component) {
   return ['de-select', 'de-select-grid', 'de-date', 'de-input-search', 'de-number-range', 'de-select-tree'].includes(component)
+}
+
+export function isTabComponent(component) {
+  return ['de-tabs'].includes(component)
 }
 

@@ -169,7 +169,7 @@ div:focus {
   }
 
   .el-tabs__content {
-    height: calc(100%) !important;
+    height: calc(100% - 40px) !important;
     margin-top: 5px;
 
     .el-tab-pane {

@@ -93,7 +93,7 @@
               </el-select>
             </el-form-item>
 
-            <span v-show="chart.type && !chart.type.includes('horizontal')">
+            <span v-show="chart.type && !chart.type.includes('horizontal') && chart.type !== 'waterfall'">
               <el-form-item :label="$t('chart.value_formatter_type')" class="form-item">
                 <el-select v-model="axisForm.axisLabelFormatter.type" @change="changeYAxisStyle('axisLabelFormatter')">
                   <el-option v-for="type in typeList" :key="type.value" :label="$t('chart.' + type.name)" :value="type.value" />
