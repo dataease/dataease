@@ -1895,7 +1895,6 @@ export default {
 }
 
 .batchSetting {
-  opacity: 0.9;
 }
 
 .positionChange {
