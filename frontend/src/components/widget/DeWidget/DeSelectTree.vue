@@ -10,7 +10,8 @@
     :tree-params="treeParams"
     :filter-node-method="_filterFun"
     :tree-render-fun="_renderFun"
-    :customStyle="customStyle"
+    :custom-style="customStyle"
+    :popper-append-to-body="inScreen"
     @searchFun="_searchFun"
     @node-click="changeNode"
     @removeTag="changeNodeIds"
@@ -109,7 +110,7 @@ export default {
       return this.element.options.attrs.multiple
     },
     customStyle() {
-      const { brColor, wordColor, innerBgColor } = this.element.style;
+      const { brColor, wordColor, innerBgColor } = this.element.style
       return { brColor, wordColor, innerBgColor }
     }
   },
