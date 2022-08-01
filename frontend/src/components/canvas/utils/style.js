@@ -352,6 +352,11 @@ export function adaptCurThemeCommonStyle(component) {
     for (const styleKey in filterStyle) {
       Vue.set(component.style, styleKey, filterStyle[styleKey])
     }
+  } else if (isTabComponent(component.component)) {
+    const tabStyle = store.state.canvasStyleData.chartInfo.tabStyle
+    for (const styleKey in tabStyle) {
+      Vue.set(component.style, styleKey, tabStyle[styleKey])
+    }
   } else {
     if (component.style.color) {
       if (store.state.canvasStyleData.panel.themeColor === 'light') {
@@ -383,5 +388,9 @@ export function adaptCurThemeFilterStyleAll(styleKey) {
 
 export function isFilterComponent(component) {
   return ['de-select', 'de-select-grid', 'de-date', 'de-input-search', 'de-number-range', 'de-select-tree'].includes(component)
+}
+
+export function isTabComponent(component) {
+  return ['de-tabs'].includes(component)
 }
 

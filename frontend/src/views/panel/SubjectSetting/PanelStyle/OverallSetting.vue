@@ -128,7 +128,7 @@ import {
   DEFAULT_COLOR_CASE_DARK,
   DEFAULT_TITLE_STYLE_DARK,
   DEFAULT_COLOR_CASE,
-  DEFAULT_TITLE_STYLE
+  DEFAULT_TITLE_STYLE, DEFAULT_TAB_COLOR_CASE_LIGHT, DEFAULT_TAB_COLOR_CASE_DARK
 } from '@/views/chart/chart/chart'
 import { FILTER_COMMON_STYLE, FILTER_COMMON_STYLE_DARK } from '@/views/panel/panel'
 import { deepCopy } from '@/components/canvas/utils/utils'
@@ -167,12 +167,14 @@ export default {
           this.canvasStyleData.chartInfo.chartTitle = deepCopy(DEFAULT_TITLE_STYLE)
           this.canvasStyleData.chartInfo.chartColor = deepCopy(DEFAULT_COLOR_CASE)
           this.canvasStyleData.chartInfo.filterStyle = deepCopy(FILTER_COMMON_STYLE)
+          this.canvasStyleData.chartInfo.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_LIGHT)
         } else {
           this.canvasStyleData.panel.color = deepCopy(DARK_THEME_PANEL_BACKGROUND)
           this.canvasStyleData.chartInfo.chartCommonStyle.color = deepCopy(DARK_THEME_COMPONENT_BACKGROUND)
           this.canvasStyleData.chartInfo.chartTitle = deepCopy(DEFAULT_TITLE_STYLE_DARK)
           this.canvasStyleData.chartInfo.chartColor = deepCopy(DEFAULT_COLOR_CASE_DARK)
           this.canvasStyleData.chartInfo.filterStyle = deepCopy(FILTER_COMMON_STYLE_DARK)
+          this.canvasStyleData.chartInfo.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_DARK)
         }
         adaptCurThemeCommonStyleAll()
         bus.$emit('onThemeColorChange')
