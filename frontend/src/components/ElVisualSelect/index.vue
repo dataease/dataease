@@ -12,8 +12,8 @@
     @change="visualChange"
     @visible-change="popChange"
   >
-    <p v-if="startIndex === 0 && $attrs.multiple" class="select-all"><el-checkbox :indeterminate="isIndeterminate" v-customStyle="customStyle" @change="selectAllChane" v-model="selectAll">{{ $t('dataset.check_all') }}</el-checkbox></p>
-    <el-option v-for="item in options" :key="item.id" :label="item.text" :value="item.id"  :class="setSelect(item.id)"/>
+    <p v-if="startIndex === 0 && $attrs.multiple" class="select-all"><el-checkbox v-model="selectAll" v-customStyle="customStyle" :indeterminate="isIndeterminate" @change="selectAllChane">{{ $t('dataset.check_all') }}</el-checkbox></p>
+    <el-option v-for="item in options" :key="item.id" :label="item.text" :value="item.id" :class="setSelect(item.id)" />
   </el-select>
 </template>
 
@@ -98,14 +98,14 @@ export default {
       })
     },
     keyWord(val, old) {
-      if(val === old) return
+      if (val === old) return
       const results = val ? this.list.filter(item => item.text.includes(val)) : null
       this.resetList(results)
       this.reCacularHeight()
       this.$nextTick(() => {
         this.callback()
       })
-    },
+    }
   },
   mounted() {
     this.resetList()
@@ -116,13 +116,16 @@ export default {
   methods: {
     setSelect(id) {
       if (Array.isArray(this.selectValue)) {
-        return  this.selectValue.map( ele => ele.id ).includes(id) && 'selected'
+        return this.selectValue.map(ele => ele.id).includes(id) && 'selected'
       }
-      return this.selectValue === id && 'selected';
+      return this.selectValue === id && 'selected'
     },
     selectAllChane(val) {
-      this.visualChange(val ? [...this.list.map( ele => ele.id )] : [])
-      this.$emit('handleShowNumber');
+      const vals = val ? [...this.list.map(ele => ele.id)] : []
+      this.visualChange(vals)
+      this.selectValue = vals
+      this.$emit('change', vals)
+      this.$emit('handleShowNumber')
     },
     addScrollDiv(selectDom) {
       this.maxHeightDom = document.createElement('div')
@@ -144,9 +147,9 @@ export default {
       this.options = this.newList.slice(0, this.maxLength)
     },
     customInputStyle() {
-      if (!this.$parent.$parent.handlerInputStyle) return;
+      if (!this.$parent.$parent.handlerInputStyle) return
       handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-input__inner'), this.$parent.element.style)
-      handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-select__input'), {wordColor: this.$parent.element.style.wordColor})
+      handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-select__input'), { wordColor: this.$parent.element.style.wordColor })
     },
     init() {
       if (this.defaultFirst && this.list.length > 0) {
@@ -193,8 +196,8 @@ export default {
       this.reCacularHeight()
     },
     visualChange(val) {
-      if(this.$attrs.multiple) {
-        this.selectAll = val.length === this.list.length;
+      if (this.$attrs.multiple) {
+        this.selectAll = val.length === this.list.length
       }
       this.$emit('visual-change', val)
     }
