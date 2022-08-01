@@ -1,9 +1,9 @@
 <template>
   <el-date-picker
-    v-if="element.options!== null && element.options.attrs!==null"
+    v-if="element.options!== null && element.options.attrs!==null && show"
     ref="dateRef"
     v-model="values"
-    popper-class="coustom-date-picker"
+    :popper-class="'coustom-date-picker' + ' ' + extPoperClass"
     :type="componentType"
     :range-separator="$t(element.options.attrs.rangeSeparator)"
     :start-placeholder="$t(element.options.attrs.startPlaceholder)"
@@ -56,10 +56,17 @@ export default {
     return {
       operator: 'between',
       values: null,
-      onFocus: false
+      onFocus: false,
+      show: true
     }
   },
   computed: {
+    extPoperClass() {
+      if(this.labelFormat && this.labelFormat.includes('HH') && !this.labelFormat.includes('HH:mm')) {
+        return 'de-no-minite'
+      }
+      return ''
+    },
     defaultoptions() {
       if (!this.element || !this.element.options || !this.element.options.attrs.default) return ''
       return JSON.stringify(this.element.options.attrs.default)
@@ -118,6 +125,14 @@ export default {
       const widget = ApplicationContext.getService(this.element.serviceName)
       this.values = widget.dynamicDateFormNow(this.element)
       this.dateChange(this.values)
+    },
+    'labelFormat': function(val, old) {
+      if(val !== old) {
+        this.show = false
+        this.$nextTick(() => {
+          this.show = true
+        })
+      }
     }
   },
   created() {
@@ -283,6 +298,15 @@ export default {
   .el-year-table td.current:not(.disabled) .cell,
   .el-year-table td.today:not(.disabled) .cell {
     color: #409EFF;
+  }
+}
+
+.de-no-minite {
+  .el-time-spinner__wrapper {
+    width: 100% !important;
+  }
+  .el-scrollbar:nth-of-type(2) {
+    display: none;
   }
 }
 </style>
