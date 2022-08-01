@@ -460,7 +460,7 @@ export default {
       const updateParams = { 'id': this.chart.id }
       const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
       const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
-      adaptCurTheme(sourceCustomStyle, sourceCustomAttr)
+      adaptCurTheme(sourceCustomStyle, sourceCustomAttr, this.chart.type)
       this.sourceCustomAttrStr = JSON.stringify(sourceCustomAttr)
       this.chart.customAttr = this.sourceCustomAttrStr
       updateParams['customAttr'] = this.sourceCustomAttrStr
