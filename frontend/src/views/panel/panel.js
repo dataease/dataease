@@ -2,6 +2,12 @@
 import { DEFAULT_COLOR_CASE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COMMON_BACKGROUND_BASE } from '@/components/canvas/custom-component/component-list'
+export const TAB_COMMON_STYLE = {
+  headFontColor: '#000000',
+  headFontActiveColor: '#000000',
+  headBorderColor: null,
+  headBorderActiveColor: null
+}
 
 export const FILTER_COMMON_STYLE = {
   horizontal: 'left',
@@ -17,7 +23,7 @@ export const FILTER_COMMON_STYLE_DARK = {
   vertical: 'top',
   color: '#FFFFFF',
   brColor: '#4E4B4B',
-  wordColor: '#4E4B4B',
+  wordColor: '#FFFFFF',
   innerBgColor: '#131E42'
 }
 
@@ -35,7 +41,8 @@ export const PANEL_CHART_INFO = {
   chartTitle: DEFAULT_TITLE_STYLE,
   chartColor: DEFAULT_COLOR_CASE,
   chartCommonStyle: COMMON_BACKGROUND_BASE,
-  filterStyle: FILTER_COMMON_STYLE
+  filterStyle: FILTER_COMMON_STYLE,
+  tabStyle: TAB_COMMON_STYLE
 }
 
 export const CANVAS_STYLE = {
