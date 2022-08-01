@@ -676,13 +676,7 @@ export default {
             required: true,
             message: i18n.t("datasource.input_name"),
             trigger: "blur",
-          },
-          {
-            min: 2,
-            max: 25,
-            message: i18n.t("datasource.input_limit_2_25", [2, 25]),
-            trigger: "blur",
-          },
+          }
         ],
         desc: [
           {
@@ -938,6 +932,7 @@ export default {
           return;
         }
         this.$refs.apiItem.validate((valid) => {
+          console.log(valid)
           if (valid) {
             const data = JSON.parse(JSON.stringify(this.apiItem));
             this.loading = true;
