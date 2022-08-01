@@ -242,7 +242,7 @@ export default {
       } else if (chart.type === 'word-cloud') {
         chart_option = baseWordCloudOption(JSON.parse(JSON.stringify(BASE_WORD_CLOUD)), chart, this.$store.state.canvasStyleData, this.$store.state.previewCanvasScale.scalePointWidth)
       }
-      // else if (chart.type === 'pictorial-bar') {
+      //  else if (chart.type === 'pictorial-bar') {
       //   chart_option = basePictorialBarOption(JSON.parse(JSON.stringify(BASE_PICTORIAL_BAR)), chart, this.$store.state.canvasStyleData)
       // } 
       // console.log(JSON.stringify(chart_option))

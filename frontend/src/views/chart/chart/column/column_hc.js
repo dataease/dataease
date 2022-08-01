@@ -380,6 +380,9 @@ export function componentStyle(chart_option, chart, cstyle) {
       chart_option.legend.verticalAlign = customStyle.legend.vPosition
       chart_option.legend.align = customStyle.legend.hPosition
       chart_option.legend.icon = customStyle.legend.icon
+      chart_option.legend.itemDistance = customStyle.legend.itemGap // 图例的间距
+      chart_option.legend.itemMarginTop = customStyle.legend.marginTop // 图例的marginButtom
+      chart_option.legend.itemMarginBottom = customStyle.legend.marginButtom // 图例的marginButtom
 
       console.log('customStyle.legend----------', customStyle.legend)
 

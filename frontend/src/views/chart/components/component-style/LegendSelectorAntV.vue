@@ -44,6 +44,9 @@
               <el-radio-button label="bottom">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
+          <el-form-item :label="$t('chart.text_margin')" class="form-item">
+            <el-input-number v-model="legendForm.itemGap" :min="1" :max="100" size="mini"  @change="changeLegendStyle"></el-input-number>
+          </el-form-item>
         </div>
       </el-form>
     </el-col>
