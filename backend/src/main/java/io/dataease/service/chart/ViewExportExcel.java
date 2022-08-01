@@ -104,12 +104,20 @@ public class ViewExportExcel {
             Object val = row.get(key);
             if (ObjectUtils.isEmpty(val))
                 return StringUtils.EMPTY;
-            return val.toString();
+            return filterInvalidDecimal(val.toString());
         }).collect(Collectors.toList())).collect(Collectors.toList());
         result.setHeads(heads);
         result.setDatas(details);
 
         result.setSheetName(title);
         return result;
+    }
+
+    private String filterInvalidDecimal(String sourceNumberStr) {
+        if (StringUtils.isNotBlank(sourceNumberStr) && StringUtils.contains(sourceNumberStr, ".")) {
+            sourceNumberStr = sourceNumberStr.replaceAll("0+?$", "");
+            sourceNumberStr = sourceNumberStr.replaceAll("[.]$", "");
+        }
+        return sourceNumberStr;
     }
 }
