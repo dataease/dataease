@@ -100,6 +100,10 @@ export default {
           const newView = deepCopy(data)
           newView.id = uuid.v1()
           newView.propValue.viewId = res.data
+          if (newView.filters && newView.filters.length) {
+            newView.filters = []
+          }
+
           store.commit('addComponent', { component: newView })
         })
       } else if (data.type === 'de-tabs') {
@@ -111,6 +115,9 @@ export default {
             const newViewId = uuid.v1()
             sourceAndTargetIds[item.content.propValue.viewId] = newViewId
             item.content.propValue.viewId = newViewId
+            if (item.content.filters && item.content.filters.length) {
+              item.content.filters = []
+            }
           }
         })
         chartBatchCopy({ 'sourceAndTargetIds': sourceAndTargetIds }, state.panel.panelInfo.id).then((rsp) => {
