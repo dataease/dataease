@@ -244,6 +244,14 @@ export const otherList = [
     label: '网页',
     icon: 'iconfont icon-iframe',
     defaultClass: 'text-filter'
+  },
+  {
+    id: '30003',
+    component: 'de-weather',
+    type: 'de-weather',
+    label: '天气',
+    icon: 'iconfont icon-shijian',
+    defaultClass: 'text-filter'
   }
 ]
 
@@ -532,6 +540,26 @@ const list = [
     style: {
       width: 400,
       height: 200
+    },
+    frameLinks: FRAMELINKS,
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '30003',
+    component: 'de-weather',
+    type: 'de-weather',
+    label: '天气',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 200,
+      height: 100
     },
     frameLinks: FRAMELINKS,
     x: 1,
