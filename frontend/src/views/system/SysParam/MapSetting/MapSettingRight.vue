@@ -131,7 +131,7 @@ export default {
   },
   data() {
     return {
-      formInline: { pCode: '' },
+      formInline: { pCode: '', fileName: '' },
       loading: false,
       rules: {
         pCode: [
@@ -227,7 +227,7 @@ export default {
       return true
     },
     uploadMapFile(file) {
-      this.formInline.fileName = file.file.name
+      this.$set(this.formInline, 'fileName', file.file.name)
       this.formInline.file = file.file
     },
     removeFile() {
