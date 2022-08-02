@@ -1,4 +1,5 @@
 import { Column, Bar } from '@antv/g2plot'
+import { hexColorToRGBA } from '../util.js'
 import {
   getTheme,
   getLabel,
@@ -58,6 +59,7 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   console.log('bar_antv,chart',chart)
   // theme
   const theme = getTheme(chart)
+  console.log('theme',theme)
   // attr
   const label = getLabel(chart)
   const tooltip = getTooltip(chart)
@@ -117,11 +119,6 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
         }
       }
     ],
-    // columnStyle: {
-    //   fill: {
-    //     stroke: 'l(0) 0:#7ec2f3 1:#1890ff'
-    //   }
-    // }
   }
   // size
   let customAttr = {}
@@ -136,26 +133,6 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
       }
     }
   }
-  // if(chart.data.fields && chart.data.fields.length) {
-    //   let fields = chart.data.fields
-    //   let arr = []
-    //   for (let i = 0; i < fields.length; i++) {
-    //       if(fields[i].chartType) {
-    //         arr.push(fields[i])
-    //       }
-    //   }
-    //   console.log('arr',arr)
-    // for (let i = 0; i < fields.length; i++) {
-    //   if(customAttr.color) {
-    //     // 定义柱状图渐变色
-    //     options.color = `l(0) 0:${
-    //       customAttr.color.colors[i % customAttr.color.colors.length]
-    //     } 1:${
-    //       customAttr.color.colors[(i +1) % customAttr.color.colors.length]
-    //     }`
-    //   }
-    // }
-  // }
   console.log('antv,bar,,,',options)
   // group
   if (isGroup) {
