@@ -95,7 +95,6 @@ export function formatXml(text) {
   // 把注释编码
   text = text.replace(/<!--(.+?)-->/g, function($0, text) {
     var ret = '<!--' + escape(text) + '-->'
-    // alert(ret);
     return ret
   })
   // 调整格式
@@ -103,7 +102,6 @@ export function formatXml(text) {
   var nodeStack = []
   var output = text.replace(rgx, function($0, all, name, isBegin, isCloseFull1, isCloseFull2, isFull1, isFull2) {
     var isClosed = (isCloseFull1 == '/') || (isCloseFull2 == '/') || (isFull1 == '/') || (isFull2 == '/')
-    // alert([all,isClosed].join('='));
     var prefix = ''
     if (isBegin == '!') {
       prefix = getPrefix(nodeStack.length)
@@ -128,7 +126,6 @@ export function formatXml(text) {
     if (prefix.charAt(0) == '\r') { prefix = prefix.substring(1) }
     text = unescape(text).replace(/\r/g, '\n')
     var ret = '\n' + prefix + '<!--' + text.replace(/^\s*/mg, prefix) + '-->'
-    // alert(ret);
     return ret
   })
   return outputText.replace(/\s+$/g, '').replace(/\r/g, '\r\n')
