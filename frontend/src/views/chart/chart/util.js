@@ -42,13 +42,13 @@ export const TYPE_CONFIGS = [
     title: '滚动表格',
     icon: 'table-normal'
   },
-  // {
-  //   render: 'antv',
-  //   category: 'chart.chart_type_table',
-  //   value: 'dialog-list',
-  //   title: '详情表格',
-  //   icon: 'table-normal'
-  // },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_table',
+    value: 'dialog-list',
+    title: '详情表格',
+    icon: 'table-normal'
+  },
   {
     render: 'antv',
     category: 'chart.chart_type_table',
@@ -289,13 +289,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_bar_stack_horizontal',
     icon: 'bar-stack-horizontal'
   },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_compare',
-  //   value: 'pictorial-bar',
-  //   title: 'chart.chart_column',
-  //   icon: 'pictorial-bar'
-  // },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'pictorial-bar',
+    title: 'chart.chart_column',
+    icon: 'pictorial-bar'
+  },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',

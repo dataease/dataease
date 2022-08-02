@@ -6,7 +6,7 @@
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
     <div v-if="checkboxShow" style="margin-right: -1px;widht: 18px" :title="element.isLock? '此组件已锁定': ''">
-      <el-checkbox v-model="element.isCheck" @change="checkChange"/>
+      <el-checkbox v-model="element.isCheck" @change="checkChange" />
     </div>
     <div v-if="normalAreaShow">
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @tabRelation="tabRelation" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
@@ -43,6 +43,9 @@
       </span>
       <span :title="$t('panel.switch_picture')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-picture'" class="icon iconfont icon-genghuan" @click.stop="setPicture" />
+      </span>
+      <span :title="$t('panel.switch_picture')">
+        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-weather'" class="icon iconfont icon-genghuan" @click.stop="setWeather" />
       </span>
       <span :title="'锁定'">
         <svg-icon v-if="activeModel==='edit'&&curComponent&&lockValue" :icon-class="'locking'" class="icon" style="color:#fff" @click.stop="setLockout(false)" />
@@ -108,7 +111,7 @@ export default {
         'custom'
       ],
       timer: null,
-      check: false,
+      check: false
     }
   },
   mounted() {
@@ -141,7 +144,7 @@ export default {
       return linkageFiltersCount
     },
     linkageInfo() {
-      console.log('link11111111111',this.targetLinkageInfo,this.element)
+      console.log('link11111111111', this.targetLinkageInfo, this.element)
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
     miniHeight() {
@@ -183,14 +186,14 @@ export default {
   beforeDestroy() {
   },
   methods: {
-    checkChange(boo)  {
-      console.log('isCheck',boo,this.element.id,)
+    checkChange(boo) {
+      console.log('isCheck', boo, this.element.id,)
       const componentData = deepCopy(this.componentData)
       componentData.map(item => {
-        if(this.element.id === item.id) {
+        if (this.element.id === item.id) {
           item.isCheck = boo
         }
-        if(item.commonBackground.boxWidth && item.commonBackground.boxHeight) {
+        if (item.commonBackground.boxWidth && item.commonBackground.boxHeight) {
           item.commonBackground.boxWidth = Math.floor(item.commonBackground.boxWidth)
           item.commonBackground.boxHeight = Math.floor(item.commonBackground.boxHeight)
         } else {
@@ -200,13 +203,13 @@ export default {
         }
         // console.log('eleId',item)
       })
-      this.$store.commit('setComponentData',componentData)
-      console.log('这个 值？',this.componentData)
-      
-      let arr = this.componentData.filter(item => item.isCheck&&!item.isLock)
-      if(arr.length === 2) {
+      this.$store.commit('setComponentData', componentData)
+      console.log('这个 值？', this.componentData)
+
+      const arr = this.componentData.filter(item => item.isCheck && !item.isLock)
+      if (arr.length === 2) {
         this.$store.commit('setUniformityStatus', true)
-      }else {
+      } else {
         this.$store.commit('setUniformityStatus', false)
       }
     },
@@ -335,6 +338,9 @@ export default {
     },
     setPicture() {
       this.$emit('setPicture')
+    },
+    setWeather() {
+      this.$emit('setWeather')
     },
     setLockout(key) {
       // this.$emit('setLockout')
