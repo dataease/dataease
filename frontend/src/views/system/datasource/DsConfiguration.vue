@@ -932,7 +932,6 @@ export default {
           return;
         }
         this.$refs.apiItem.validate((valid) => {
-          console.log(valid)
           if (valid) {
             const data = JSON.parse(JSON.stringify(this.apiItem));
             this.loading = true;
