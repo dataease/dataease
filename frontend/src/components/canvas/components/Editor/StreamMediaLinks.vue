@@ -166,7 +166,7 @@ export default {
     border-radius: 3px;
   }
 
-  > > > .el-popover {
+  >>> .el-popover {
     height: 200px;
     overflow: auto;
   }

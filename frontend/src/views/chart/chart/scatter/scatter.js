@@ -1,6 +1,6 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
-import {BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP} from '@/views/chart/chart/chart'
+import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 let bubbleArray = []
 let terminalType = 'pc'

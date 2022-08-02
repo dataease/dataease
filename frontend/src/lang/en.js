@@ -1896,6 +1896,7 @@ export default {
     themeDark: 'Dark',
     themeCustom: 'Custom',
     openHomePage: 'Show Home Page',
+    openMarketPage: 'Show Market Page',
     mobileBG: 'Mobile Login page BG',
     helpLink: 'Help Document Link',
     homeLink: 'Home Link',
