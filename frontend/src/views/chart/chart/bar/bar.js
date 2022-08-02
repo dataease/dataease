@@ -180,107 +180,104 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
     console.log('chart.data',chart.data)
-    for (let i = 0; i < chart.data.series.length; i++) {
-      const y = chart.data.series[i]
-      // color
-      y.itemStyle = {
-        // color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
-        color: {
-          type: 'linear',
-          x: 0,
-          y: 1,
-          x2: 0,
-          y2: 0,
-          colorStops: [{
-            offset: 0,  // 0% 的颜色
-            color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
-          },{
-            offset: 1, // 100% 的颜色
-            color: hexColorToRGBA(customAttr.color.colors[(i+1) % customAttr.color.colors.length], customAttr.color.alpha)
-          }],
-          global: false // 缺省为 false
-        }
+    let series = chart.data.series[0]
+    const y = series
+    y.itemStyle = {
+      color: {
+        type: 'linear',
+        x: 0,
+        y: 1,
+        x2: 0,
+        y2: 0,
+        colorStops: [{
+        offset: 0,  // 0% 的颜色
+        color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha)
+        },{
+        offset: 1, // 100% 的颜色
+        color: hexColorToRGBA(customAttr.color.colors[1], customAttr.color.alpha)
+        }],
+        global: false // 缺省为 false
       }
-      // size
-      if (customAttr.size) {
-        if (customAttr.size.barDefault) {
-          y.barWidth = null
-          y.barGap = null
-        } else {
-          y.barWidth = customAttr.size.barWidth
-          y.barGap = customAttr.size.barGap
-        }
-      }
-      // label
-      if (customAttr.label) {
-        // y.label = customAttr.label
-        y.label  = {
-          show: false,
-          position: [customAttr.size.barWidth / 2, -(customAttr.size.barWidth + 20)],
-          color: '#ffffff',
-          fontSize: 14,
-          fontStyle: 'bold',
-          align: 'center',
-        }
-      }
-      y.type = 'bar'
-      y.z = (i+1)
-
-      let arr = []
-      if(y.data.length) {
-        y.data.map(item => {
-          arr.push(item.value)
-        })
-      }
-      let t = {
-        z: (i+2),
-        name: y.name,
-        type: 'pictorialBar',
-        symbolPosition: 'end',
-        data: arr,
-        symbol: "diamond",
-        symbolOffset: [0, "-50%"],
-        symbolSize: [customAttr.size.barDefault?'36.5%': customAttr.size.barWidth, '20'],
-        itemStyle: {
-          color: hexColorToRGBA(customAttr.color.colors[(i+1) % customAttr.color.colors.length], customAttr.color.alpha),
-          borderWidth: 4,
-          borderColor: '#ffffff'
-        },
-      }
-      let b = {
-        z: (i+3),
-        name: y.name,
-        type: 'pictorialBar',
-        data: arr,
-        symbol: 'diamond',
-        symbolOffset: [0, '50%'],
-        symbolSize: [customAttr.size.barDefault?'36.5%': customAttr.size.barWidth, '20'],
-        itemStyle: {
-          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
-          borderWidth: 0,
-        }
-      }
-      let l = {
-        z: (i+4),
-        type: 'pictorialBar',
-        symbol: 'rect',
-        symbolSize: [1, '100%'],
-        symbolOffset: [0, 10],
-        barCategoryGap: '-100%',
-        itemStyle: {
-            normal: {
-              color: '#ededed',
-              borderWidth: 0
-            }
-        },
-        data: arr,
-      }
-      chart_option.legend.data.push(y.name)
-      chart_option.series.push(y)
-      chart_option.series.push(t) // 顶部
-      chart_option.series.push(b) // 底部
-      chart_option.series.push(l) // 线
     }
+    // size
+	  if (customAttr.size) {
+      if (customAttr.size.barDefault) {
+        y.barWidth = null
+        y.barGap = null
+      } else {
+        y.barWidth = customAttr.size.barWidth
+        y.barGap = customAttr.size.barGap
+      }
+    }
+    // label
+	  if (customAttr.label) {
+      // y.label = customAttr.label
+      y.label  = {
+        show: false,
+        position: [customAttr.size.barWidth / 2, -(customAttr.size.barWidth + 20)],
+        color: '#ffffff',
+        fontSize: 14,
+        fontStyle: 'bold',
+        align: 'center',
+      }
+    }
+    y.type = 'bar'
+    y.z = 1
+
+    let arr = []
+    y.data.map(item => {
+      arr.push(item.value)
+    })
+
+    let t = {
+      z: 2,
+      name: y.name,
+      type: 'pictorialBar',
+      symbolPosition: 'end',
+      data: arr,
+      symbol: "diamond",
+      symbolOffset: [0, "-50%"],
+      symbolSize: [customAttr.size.barDefault? '36.5%' : customAttr.size.barWidth, '20'],
+      itemStyle: {
+        color: hexColorToRGBA(customAttr.color.colors[1], customAttr.color.alpha),
+        borderWidth: 4,
+        borderColor: '#ffffff'
+      },
+    }
+    let b = {
+      z: 3,
+      name: y.name,
+      type: 'pictorialBar',
+      data: arr,
+      symbol: 'diamond',
+      symbolOffset: [0, '50%'],
+      symbolSize: [customAttr.size.barDefault? '36.5%' : customAttr.size.barWidth, '20'],
+      itemStyle: {
+        color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha),
+        borderWidth: 0,
+      }
+    }
+    let l = {
+      z: 4,
+      type: 'pictorialBar',
+      symbol: 'rect',
+      symbolSize: [1, '100%'],
+      symbolOffset: [0, 10],
+      barCategoryGap: '-100%',
+      itemStyle: {
+        normal: {
+          color: '#ededed',
+          borderWidth: 0
+        }
+      },
+      data: arr,
+    }
+    chart_option.legend.data.push(y.name)
+	  chart_option.series.push(y)
+	  chart_option.series.push(t) // 顶部
+	  chart_option.series.push(b) // 底部
+	  chart_option.series.push(l) // 线
+
   }
 
   componentStyle(chart_option, chart,cstyle)

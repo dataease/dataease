@@ -59,7 +59,6 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   console.log('bar_antv,chart',chart)
   // theme
   const theme = getTheme(chart)
-  console.log('theme',theme)
   // attr
   const label = getLabel(chart)
   const tooltip = getTooltip(chart)
