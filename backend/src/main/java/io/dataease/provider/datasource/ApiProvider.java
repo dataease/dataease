@@ -142,7 +142,7 @@ public class ApiProvider extends Provider {
 
         switch (apiDefinition.getMethod()) {
             case "GET":
-                response = HttpClientUtil.get(apiDefinition.getUrl(), httpClientConfig);
+                response = HttpClientUtil.get(apiDefinition.getUrl().trim(), httpClientConfig);
                 break;
             case "POST":
                 if (apiDefinitionRequest.getBody().get("type") == null) {
