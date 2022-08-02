@@ -64,10 +64,10 @@ export const bottom2TopDrag = {
   }
 }
 
-const closePress = {
-  inserted: function(el) {
-    el.querySelector('.el-drawer__close-btn').onmousedown = function(e) {
-      e.currentTarget.style.background = '#d2d3d4'
+const closePress =  {
+  inserted: function (el) {
+    el.querySelector('.el-drawer__close-btn').onmousedown = function (e) {
+      e.currentTarget.style.setProperty('background', '#d2d3d4', 'important');
     }
     el.querySelector('.el-drawer__close-btn').onmouseup = function(e) {
       e.currentTarget.style.background = 'none'

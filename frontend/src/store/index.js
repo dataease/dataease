@@ -659,7 +659,7 @@ const data = {
     setChangeProperties(state, propertyInfo) {
       state.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
     },
-    initCanvas(state) {
+    initCanvasBase(state) {
       this.commit('setCurComponent', { component: null, index: null })
       this.commit('clearLinkageSettingInfo', false)
       this.commit('resetViewEditInfo')
@@ -676,6 +676,9 @@ const data = {
         customStyle: {},
         customAttr: {}
       }
+    },
+    initCanvas(state) {
+      this.commit('initCanvasBase')
       state.isInEditor = true
     },
     initViewRender(state, pluginViews) {

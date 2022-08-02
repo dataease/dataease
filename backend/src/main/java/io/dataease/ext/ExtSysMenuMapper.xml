@@ -40,6 +40,18 @@
         AND param_value = 'true'
         )
         )
+        AND (
+            sys_menu.menu_id != 202
+        OR EXISTS (
+        SELECT
+        1
+        FROM
+        system_parameter
+        WHERE
+        param_key = 'ui.openMarketPage'
+        AND param_value = 'true'
+        )
+        )
         ORDER BY
         menu_sort
     </select>
