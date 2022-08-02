@@ -58,6 +58,10 @@ export default {
   components: { SettingMenu, LinkageField },
 
   props: {
+    sourceElement: {
+      type: Object,
+      required: true
+    },
     element: {
       type: Object,
       required: true
@@ -180,7 +184,7 @@ export default {
     multiplexingCheck(val) {
       if (val) {
         // push
-        this.$store.commit('addCurMultiplexingComponent', { 'component': this.element, 'componentId': this.element.id })
+        this.$store.commit('addCurMultiplexingComponent', { 'component': this.sourceElement, 'componentId': this.element.id })
       } else {
         // remove
         this.$store.commit('removeCurMultiplexingComponentWithId', this.element.id)

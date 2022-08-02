@@ -26,6 +26,7 @@
           :key="index"
           ref="viewWrapperChild"
           :config="item"
+          :source-config="componentData[index]"
           :search-count="searchCount"
           :in-screen="inScreen"
           :terminal="terminal"
@@ -37,7 +38,6 @@
         />
         <!--视图详情-->
         <el-dialog
-          :title="$t('chart.chart_details')"
           :visible.sync="chartDetailsVisible"
           width="80%"
           class="dialog-css"
