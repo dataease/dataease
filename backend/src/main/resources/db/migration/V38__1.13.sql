@@ -66,7 +66,7 @@ update area_mapping_global set
    county_code = concat('156', county_code);
 COMMIT;
 
-INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (202, 0, 0, 1, '模板市场', 'template-market', 'panel/templateMarket/index', 5, 'dashboard', '/templateMarket', 0, 0, 0, null, NULL, NULL, NULL, 1620444227389);
+INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (202, 0, 0, 1, '模板市场', 'template-market', 'panel/templateMarket/index', 5, 'dashboard', '/templateMarket', 1, 0, 0, null, NULL, NULL, NULL, 1620444227389);
 
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateAccessKey', 'dataease', 'text', NULL);
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('basic.templateMarketUlr', 'https://dataease.io/templates', 'text', 4);
@@ -92,8 +92,6 @@ SET
     `permission` = 'datasource:read'
 WHERE
         `menu_id` = 39;
-UPDATE `sys_menu`
-SET
-    `permission` = 'user:editPwd'
-WHERE
-        `menu_id` = 51;
+
+
+INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.openMarketPage', 'true', 'boolean', 14);

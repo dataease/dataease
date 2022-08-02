@@ -9,13 +9,13 @@ export default {
   state: {
     copyData: null, // 复制粘贴剪切
     isCut: false,
+    baseStyle: {
+      width: 300,
+      height: 200,
+      top: 0,
+      left: 0
+    },
     viewBase: {
-      style: {
-        width: 300,
-        height: 200,
-        top: 0,
-        left: 0
-      },
       x: 1,
       y: 216,
       sizex: 48,
@@ -39,9 +39,14 @@ export default {
         const component =
           {
             ...deepCopy(state.curMultiplexingComponents[componentId]),
-            ...deepCopy(deepCopy(state.viewBase)),
+            ...deepCopy(state.viewBase),
             'auxiliaryMatrix': canvasStyleData.auxiliaryMatrix
           }
+
+        component.style = {
+          ...component.style,
+          ...deepCopy(state.baseStyle)
+        }
 
         const tilePosition = index % 3
         const divisiblePosition = parseInt(index / 3)

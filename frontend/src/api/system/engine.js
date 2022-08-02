@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import {validateDs} from "@/api/system/datasource";
+import { validateDs } from '@/api/system/datasource'
 
 export function engineMode() {
   return request({
