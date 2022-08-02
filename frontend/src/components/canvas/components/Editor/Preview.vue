@@ -26,6 +26,7 @@
           :key="index"
           ref="viewWrapperChild"
           :config="item"
+          :source-config="componentData[index]"
           :search-count="searchCount"
           :in-screen="inScreen"
           :terminal="terminal"

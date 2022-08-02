@@ -58,6 +58,10 @@ export default {
   components: { SettingMenu, LinkageField },
 
   props: {
+    sourceElement: {
+      type: Object,
+      required: true
+    },
     element: {
       type: Object,
       required: true
@@ -101,7 +105,7 @@ export default {
   },
   computed: {
     showEditPosition() {
-      if (this.activeModel === 'edit') {
+      if (this.activeModel === 'edit' && !this.linkageAreaShow && !this.batchOptAreaShow) {
         const toRight = (this.canvasStyleData.width - this.element.style.left - this.element.style.width) * this.curCanvasScale.scalePointWidth
         const toLeft = this.element.style.left * this.curCanvasScale.scalePointWidth
         if (this.barWidth < toRight) {
@@ -180,10 +184,10 @@ export default {
     multiplexingCheck(val) {
       if (val) {
         // push
-        this.$store.commit('addCurMultiplexingComponent', { 'component': this.element, 'componentId': this.element.id })
+        this.$store.commit('addCurMultiplexingComponent', { 'component': this.sourceElement, 'componentId': this.element.id })
       } else {
         // remove
-        this.$store.commit('removeCurMultiplexingComponentWithId', this.element.id )
+        this.$store.commit('removeCurMultiplexingComponentWithId', this.element.id)
       }
     },
     closePreview() {

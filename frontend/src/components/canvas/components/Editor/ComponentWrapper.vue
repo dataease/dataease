@@ -5,7 +5,7 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="componentActiveFlag" :element="config" :show-position="showPosition" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="componentActiveFlag" :source-element="sourceConfig" :element="config" :show-position="showPosition" @showViewDetails="showViewDetails" />
     <div :id="componentCanvasId" :style="commonStyle" class="main_view">
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
@@ -62,6 +62,11 @@ export default {
   components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
   mixins: [mixins],
   props: {
+    sourceConfig: {
+      type: Object,
+      require: true,
+      default: null
+    },
     config: {
       type: Object,
       require: true,
