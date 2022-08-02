@@ -45,8 +45,6 @@ Vue.prototype.$gaodeMap = GaodeMap
 import UmyUi from 'umy-ui'
 Vue.use(UmyUi)
 
-import vcolorpicker from 'vcolorpicker'
-Vue.use(vcolorpicker)
 
 // 全屏插件
 import fullscreen from 'vue-fullscreen'
