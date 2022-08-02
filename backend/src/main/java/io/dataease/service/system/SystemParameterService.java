@@ -51,7 +51,9 @@ public class SystemParameterService {
     public BasicInfo basicInfo() {
         List<SystemParameter> paramList = this.getParamList("basic");
         List<SystemParameter> homePageList = this.getParamList("ui.openHomePage");
+        List<SystemParameter> marketPageList = this.getParamList("ui.openMarketPage");
         paramList.addAll(homePageList);
+        paramList.addAll(marketPageList);
         BasicInfo result = new BasicInfo();
         result.setOpenHomePage("true");
         if (!CollectionUtils.isEmpty(paramList)) {
@@ -69,6 +71,10 @@ public class SystemParameterService {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.OPEN_HOME_PAGE.getValue())) {
                     boolean open = StringUtils.equals("true", param.getParamValue());
                     result.setOpenHomePage(open ? "true" : "false");
+                }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.OPEN_MARKET_PAGE.getValue())) {
+                    boolean open = StringUtils.equals("true", param.getParamValue());
+                    result.setOpenMarketPage(open ? "true" : "false");
                 }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.TEMPLATE_MARKET_ULR.getValue())) {
                     result.setTemplateMarketUlr(param.getParamValue());

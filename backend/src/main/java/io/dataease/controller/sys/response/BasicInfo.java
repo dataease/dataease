@@ -20,5 +20,7 @@ public class BasicInfo implements Serializable {
     private String templateMarketUlr;
     @ApiModelProperty("模板市场AccessKey")
     private String templateAccessKey;
+    @ApiModelProperty("显示模板市场")
+    private String openMarketPage;
 
 }

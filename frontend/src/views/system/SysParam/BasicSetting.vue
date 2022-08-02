@@ -51,6 +51,14 @@
 
       <el-row>
         <el-col>
+          <el-form-item :label="$t('display.openMarketPage')">
+            <el-checkbox v-model="formInline.openMarketPage" true-label="true" false-label="false" />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <el-row>
+        <el-col>
           <el-form-item :label="$t('display.openHomePage')">
             <el-checkbox v-model="formInline.openHomePage" true-label="true" false-label="false" />
           </el-form-item>
@@ -163,8 +171,8 @@ export default {
         { paramKey: 'basic.frontTimeOut', paramValue: this.formInline.frontTimeOut, type: 'text', sort: 1 },
         { paramKey: 'basic.msgTimeOut', paramValue: this.formInline.msgTimeOut, type: 'text', sort: 2 },
         { paramKey: 'basic.loginType', paramValue: this.formInline.loginType, type: 'text', sort: 3 },
-        { paramKey: 'ui.openHomePage', paramValue: this.formInline.openHomePage, type: 'text', sort: 13 }
-
+        { paramKey: 'ui.openHomePage', paramValue: this.formInline.openHomePage, type: 'text', sort: 13 },
+        { paramKey: 'ui.openMarketPage', paramValue: this.formInline.openMarketPage, type: 'text', sort: 14 }
       ]
 
       this.$refs[formInline].validate(valid => {

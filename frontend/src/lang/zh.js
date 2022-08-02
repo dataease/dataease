@@ -568,7 +568,7 @@ export default {
     filter: '筛选',
     list: '列表项',
     list_info: '请选择列表中要展示的信息',
-    sure_delete: '确定删除该用户吗？',
+    sure_delete: '确定删除该用户吗？'
   },
   ldap: {
     url: 'LDAP地址',
@@ -1914,6 +1914,7 @@ export default {
     themeDark: '深色',
     themeCustom: '自定义',
     openHomePage: '显示首页',
+    openMarketPage: '显示模板市场',
     mobileBG: '移动端登录页背景',
     helpLink: '帮助文档链接',
     homeLink: '首页链接',

@@ -1904,7 +1904,7 @@ export default {
     themeDark: '深色',
     themeCustom: '自定義',
     openHomePage: '顯示首頁',
-
+    openMarketPage: '显示模板市场',
     mobileBG: '移動端登錄頁背景',
     helpLink: '幫助文檔鏈接',
     homeLink: '首頁鏈接',
