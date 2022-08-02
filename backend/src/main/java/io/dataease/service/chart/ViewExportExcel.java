@@ -1,5 +1,6 @@
 package io.dataease.service.chart;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,9 @@ public class ViewExportExcel {
 
     @DePermissionProxy(paramIndex = 2)
     public List<File> export(String panelId, List<String> viewIds, PermissionProxy proxy) throws Exception {
+        if (CollectionUtils.isEmpty(viewIds)) {
+            return null;
+        }
         PanelGroupService panelGroupService = SpringContextUtil.getBean(PanelGroupService.class);
 
         PanelGroupDTO panelDto = panelGroupService.findOne(panelId);
