@@ -12,11 +12,6 @@
       <el-checkbox size="medium" @change="batchOptChange" />
     </div>
     <div v-if="normalAreaShow">
-      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
-        <span slot="icon" :title="$t('panel.setting')">
-          <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
-        </span>
-      </setting-menu>
       <span :title="$t('panel.edit')">
         <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
       </span>
@@ -26,12 +21,17 @@
       <span :title="$t('panel.suspension')">
         <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
       </span>
-      <span :title="$t('panel.details')">
-        <i v-if="curComponent.type==='view'" class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
-      </span>
       <span :title="$t('panel.enlarge')">
         <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails('enlarge')" />
       </span>
+      <span :title="$t('panel.details')">
+        <i v-if="curComponent.type==='view'" class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
+      </span>
+      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
+        <span slot="icon" :title="$t('panel.setting')">
+          <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
+        </span>
+      </setting-menu>
       <span :title="$t('panel.cancel_linkage')">
         <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
       </span>
@@ -315,7 +315,7 @@ export default {
     padding-left: 3px;
     padding-right: 0px;
     cursor:pointer!important;
-    background-color: rgba(10,123,224, 1);
+    background-color: #3370ff;
   }
   .bar-main i{
     color: white;
