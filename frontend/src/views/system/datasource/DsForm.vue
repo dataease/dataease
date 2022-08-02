@@ -316,7 +316,11 @@ export default {
       this.form = JSON.parse(JSON.stringify(row))
       this.originConfiguration = this.form.configuration
       if (row.type === 'api') {
-
+        this.originConfiguration = JSON.parse(JSON.stringify(this.form.apiConfiguration))
+        this.originConfiguration.forEach(item => {
+          delete item.status
+        })
+        this.originConfiguration = JSON.stringify(this.originConfiguration)
       } else {
         this.form.configuration = JSON.parse(this.form.configuration)
       }
