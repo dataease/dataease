@@ -1,7 +1,5 @@
 import request from '@/utils/request'
-import {validateDs} from "@/api/system/datasource";
-
-
+import { validateDs } from '@/api/system/datasource'
 
 export function validate(data) {
   return request({
@@ -36,8 +34,6 @@ export function deleteKettle(id) {
     loading: true
   })
 }
-
-
 
 export function pageList(url, data) {
   return request({

@@ -400,7 +400,7 @@ span{
 .field-style{
   display: flex;
   align-items: center;
-  justify-content: start;
+  justify-content: flex-start;
 }
 
 .field-text{
