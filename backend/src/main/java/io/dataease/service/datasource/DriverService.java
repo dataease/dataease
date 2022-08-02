@@ -135,6 +135,13 @@ public class DriverService {
         deDriverDetails.setVersion(version);
         deDriverDetails.setFileName(filename);
         deDriverDetails.setDriverClass(String.join(",", jdbcList));
+
+        DeDriverDetailsExample deDriverDetailsExample = new DeDriverDetailsExample();
+        deDriverDetailsExample.createCriteria().andDeDriverIdEqualTo(driverId).andFileNameEqualTo(filename);
+        if(CollectionUtil.isNotEmpty(deDriverDetailsMapper.selectByExample(deDriverDetailsExample))){
+            throw new Exception("A file with the same name already exists：" + filename);
+        }
+
         deDriverDetailsMapper.insert(deDriverDetails);
         SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.UPLOADFILE, SysLogConstants.SOURCE_TYPE.DRIVER_FILE, deDriverDetails.getId(), driverId, null, null);
         DeLogUtils.save(sysLogDTO);
