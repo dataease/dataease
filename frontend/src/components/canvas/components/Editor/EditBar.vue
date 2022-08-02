@@ -151,14 +151,10 @@ export default {
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
     miniHeight() {
-      let miniHeight = 4
-      if (this.element.component === 'de-number-range') {
-        miniHeight = 4
-      }
-      return miniHeight
+      return this.mobileLayoutStatus ? 1 : 4
     },
     miniWidth() {
-      return 4
+      return this.mobileLayoutStatus ? 1 : 4
     },
     ...mapState([
       'menuTop',
@@ -172,6 +168,7 @@ export default {
       'curLinkageView',
       'curCanvasScale',
       'batchOptStatus',
+      'mobileLayoutStatus',
       'curBatchOptComponents'
     ])
   },
