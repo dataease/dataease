@@ -123,6 +123,7 @@ export default {
     },
     'keyWord': {
       handler: function() {
+        this.currentPage = 1
         this.buildGridList()
       }
     },
