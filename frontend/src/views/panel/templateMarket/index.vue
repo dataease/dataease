@@ -22,12 +22,13 @@
           v-for="(templateItem) in currentMarketTemplateShowList"
           v-show="templateItem.showFlag"
           :key="templateItem.id"
-          style="text-align: center"
+          style="text-align: center;padding: 24px 12px 0 12px"
           :style="{width: templateSpan}"
         >
           <template-market-item
             :template="templateItem"
             :base-url="baseUrl"
+            :width="templateCurWidth"
             @templateApply="templateApply"
             @templatePreview="templatePreview"
           />
@@ -85,7 +86,6 @@ import { groupTree, panelSave } from '@/api/panel/panel'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
 import MarketPreview from '@/views/panel/templateMarket/component/MarketPreview'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import { PHONE_REGEX } from '@/utils/validate'
 
 export default {
   name: 'TemplateMarket',
@@ -94,6 +94,7 @@ export default {
     return {
       hasResult: true,
       templateMiniWidth: 330,
+      templateCurWidth: 310,
       templateSpan: '25%',
       previewModel: false,
       previewVisible: false,
@@ -155,8 +156,9 @@ export default {
     // 监听div变动事件
     erd.listenTo(templateMainDom, element => {
       _this.$nextTick(() => {
+        const curSeparator = Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)
         _this.templateSpan = (100 / Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)) + '%'
-        console.log('templateSpan=' + _this.templateSpan)
+        _this.templateCurWidth = Math.trunc(templateMainDom.offsetWidth / curSeparator) - 32
       })
     })
   },
@@ -260,7 +262,7 @@ export default {
   .template-main{
     text-align: center;
     border-radius: 4px;
-    padding-bottom: 24px;
+    padding: 0 12px 24px 12px;
     height: calc(100vh - 190px)!important;
     overflow-x: hidden;
     overflow-y: auto;
