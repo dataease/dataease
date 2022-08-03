@@ -51,7 +51,9 @@ export default {
       const newValue = { brColor, wordColor, innerBgColor }
       const cssVar = this.typeTransform()
       this.styleAttrs.forEach((ele, index) => {
-        document.documentElement.style.setProperty(cssVar[index], !isPanelDe ? '' : newValue[ele])
+        if (newValue[ele]) {
+          document.documentElement.style.setProperty(cssVar[index], !isPanelDe ? '' : newValue[ele])
+        }
       })
     },
   }
