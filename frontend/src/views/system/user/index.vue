@@ -719,8 +719,8 @@ export default {
   }
 
   .normal {
-    color: #1f2329;
-    border: 1px solid #bbbfc4;
+    color: var(----deTextPrimary, #1F2329);
+    border: 1px solid var(--deBorderBase, #BBBFC4);
     margin-left: 12px;
   }
 
@@ -755,9 +755,6 @@ export default {
 
   .name-email-search {
     width: 240px;
-    ::v-deep input {
-      border-color: #bbbfc4;
-    }
   }
 
   .active-btn {
