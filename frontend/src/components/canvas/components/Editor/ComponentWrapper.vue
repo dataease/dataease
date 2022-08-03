@@ -5,7 +5,7 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="componentActiveFlag" :source-element="sourceConfig" :element="config" :show-position="showPosition" @showViewDetails="showViewDetails" />
+    <edit-bar v-if="componentActiveFlag" :source-element="sourceConfig" :terminal="terminal" :element="config" :show-position="showPosition" @showViewDetails="showViewDetails" />
     <div :id="componentCanvasId" :style="commonStyle" class="main_view">
       <close-bar v-if="previewVisible" @closePreview="closePreview" />
       <de-out-widget
