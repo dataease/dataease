@@ -517,6 +517,7 @@ public class ChartViewService {
             // 仪表板有参数不使用缓存
             if (!cache || CollectionUtils.isNotEmpty(requestList.getFilter())
                     || CollectionUtils.isNotEmpty(requestList.getLinkageFilters())
+                    || CollectionUtils.isNotEmpty(requestList.getOuterParamsFilters())
                     || CollectionUtils.isNotEmpty(requestList.getDrill()) || CollectionUtils.isNotEmpty(rowPermissionsTree) || fields.size() != columnPermissionFields.size()) {
                 data = datasourceProvider.getData(datasourceRequest);
             } else {
@@ -911,6 +912,7 @@ public class ChartViewService {
             // 仪表板有参数不使用缓存
             if (!cache || CollectionUtils.isNotEmpty(requestList.getFilter())
                     || CollectionUtils.isNotEmpty(requestList.getLinkageFilters())
+                    || CollectionUtils.isNotEmpty(requestList.getOuterParamsFilters())
                     || CollectionUtils.isNotEmpty(requestList.getDrill()) || CollectionUtils.isNotEmpty(rowPermissionsTree) || fields.size() != columnPermissionFields.size()) {
                 data = datasourceProvider.getData(datasourceRequest);
             } else {

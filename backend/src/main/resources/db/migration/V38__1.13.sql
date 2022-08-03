@@ -92,11 +92,6 @@ SET
     `permission` = 'datasource:read'
 WHERE
         `menu_id` = 39;
-UPDATE `sys_menu`
-SET
-    `permission` = 'user:editPwd'
-WHERE
-        `menu_id` = 51;
 
 
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.openMarketPage', 'true', 'boolean', 14);

@@ -12,11 +12,12 @@
           <el-input
             v-model="searchText"
             size="small"
+            prefix-icon="el-icon-search"
             class="title-name-search"
             :placeholder="$t('panel.enter_template_name_tips')"
             clearable="true"
           />
-          <span class="icon iconfont icon-icon-filter insert icon20 filter-icon-span" :class="extFilterActive?'filter-icon-active':''" @click="extFilterActiveChange()" />
+          <span class="icon iconfont icon-icon-filter insert-filter filter-icon-span" :class="extFilterActive?'filter-icon-active':''" @click="extFilterActiveChange()" />
         </el-row>
         <el-row v-show="extFilterActive">
           <el-select v-model="marketActiveTab" class="margin-top16" size="small" placeholder="请选择">
@@ -64,8 +65,7 @@
 
 <script>
 import { searchMarket, getCategories } from '@/api/templateMarket'
-import { groupTree, panelSave } from '@/api/panel/panel'
-import bus from '@/utils/bus'
+import { groupTree } from '@/api/panel/panel'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
 import TemplateMarketPreviewItem from '@/views/panel/templateMarket/component/TemplateMarketPreviewItem'
 
@@ -134,6 +134,7 @@ export default {
       searchMarket({}).then(rsp => {
         this.baseUrl = rsp.data.baseUrl
         this.currentMarketTemplateShowList = rsp.data.contents
+        this.hasResult = true
       }).catch(() => {
         this.networkStatus = false
       })
@@ -207,6 +208,7 @@ export default {
     },
     extFilterActiveChange() {
       this.extFilterActive = !this.extFilterActive
+      this.marketActiveTab = this.marketTabs[0]
     },
     closePreview() {
       this.$emit('closePreview')
@@ -337,7 +339,7 @@ export default {
   line-height: 24px;
 }
 
-.insert {
+.insert-filter {
   display: inline-block;
   font-weight: 400 !important;
   font-family: PingFang SC;
@@ -345,6 +347,35 @@ export default {
   white-space: nowrap;
   cursor: pointer;
   color: var(--TextPrimary, #1F2329);
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: 0;
+  margin: 0;
+  transition: .1s;
+  border-radius: 3px;
+
+  &:active {
+    color: #000;
+    border-color: #3a8ee6;
+    background-color: red;
+    outline: 0;
+  }
+
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+    color: #3a8ee6;
+  }
+}
+
+.insert {
+  display: inline-block;
+  font-weight: 400 !important;
+  font-family: PingFang SC;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  color: #646A73;
   -webkit-appearance: none;
   text-align: center;
   box-sizing: border-box;
@@ -406,8 +437,13 @@ export default {
   width: 32px;
   height: 32px;
   border-radius: 4px;
-  padding: 5px;
+  padding: 7px;
   margin-left: 8px;
+}
+
+.filter-icon-active{
+  border: 1px solid #3370FF;
+  color: #3370FF;
 }
 
 .filter-icon-active{

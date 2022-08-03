@@ -567,7 +567,7 @@ export default {
     filter: '篩選',
     list: '列表項',
     list_info: '請選擇列表中要展示的信息',
-    sure_delete: '確定刪除該用戶嗎？',
+    sure_delete: '確定刪除該用戶嗎？'
   },
   ldap: {
     url: 'LDAP地址',
@@ -1567,6 +1567,7 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    template_name_tips: '仪表板名称必填',
     panel_background_item: '自定义仪表板背景',
     panel_background_image_tips: '当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M',
     reUpload: '重新上传',

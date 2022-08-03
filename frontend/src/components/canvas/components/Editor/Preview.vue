@@ -561,23 +561,23 @@ export default {
     color: #9ea6b2;
   }
 
-  .dialog-css > > > .el-dialog__title {
+  .dialog-css ::v-deep .el-dialog__title {
     font-size: 14px;
   }
 
-  .dialog-css > > > .el-dialog__header {
-    padding: 20px 20px 0;
+  .dialog-css ::v-deep .el-dialog__header {
+    padding: 40px 20px 0;
   }
 
-  .dialog-css > > > .el-dialog__body {
+  .dialog-css ::v-deep  .el-dialog__body {
     padding: 10px 20px 20px;
   }
 
-  .mobile-dialog-css > > > .el-dialog__headerbtn {
+  .mobile-dialog-css ::v-deep .el-dialog__headerbtn {
     top: 7px
   }
 
-  .mobile-dialog-css > > > .el-dialog__body {
+  .mobile-dialog-css ::v-deep .el-dialog__body {
     padding: 0px;
   }
   ::-webkit-scrollbar {

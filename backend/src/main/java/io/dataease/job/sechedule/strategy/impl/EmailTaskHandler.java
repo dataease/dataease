@@ -168,12 +168,15 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                 contentStr = new String(content, "UTF-8");
             }
 
+            List<File> files = null;
             String viewIds = emailTemplateDTO.getViewIds();
-            List<String> viewIdList = Arrays.asList(viewIds.split(",")).stream().map(s -> (s.trim())).collect(Collectors.toList());
-
-            PermissionProxy proxy = new PermissionProxy();
-            proxy.setUserId(user.getUserId());
-            List<File> files = viewExportExcel.export(panelId, viewIdList, proxy);
+            if (StringUtils.isNotBlank(viewIds)) {
+                List<String> viewIdList = Arrays.asList(viewIds.split(",")).stream().filter(StringUtils::isNotBlank).map(s -> (s.trim())).collect(Collectors.toList());
+                PermissionProxy proxy = new PermissionProxy();
+                proxy.setUserId(user.getUserId());
+                files = viewExportExcel.export(panelId, viewIdList, proxy);
+            }
+            
             emailService.sendWithImageAndFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
 
             success(taskInstance);

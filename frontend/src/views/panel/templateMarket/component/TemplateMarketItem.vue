@@ -1,6 +1,6 @@
 <template>
   <div class="testcase-template">
-    <el-row class="template-img" :style="classBackground" />
+    <div class="template-img" :style="classBackground" @click.stop="templatePreview" />
     <el-row class="bottom-area">
       <el-row>
         <span class="demonstration">{{ template.title }}</span>
