@@ -158,7 +158,7 @@ export default {
       _this.$nextTick(() => {
         const curSeparator = Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)
         _this.templateSpan = (100 / Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)) + '%'
-        _this.templateCurWidth = Math.trunc(templateMainDom.offsetWidth / curSeparator) - 32
+        _this.templateCurWidth = Math.trunc(templateMainDom.offsetWidth / curSeparator) - 33
       })
     })
   },
@@ -266,7 +266,7 @@ export default {
     height: calc(100vh - 190px)!important;
     overflow-x: hidden;
     overflow-y: auto;
-    background: #fff ;
+    background-color: var(--ContentBG,#ffffff);
   }
   .market-main{
     padding:24px
@@ -276,6 +276,7 @@ export default {
     font-size: 20px;
     font-weight: 500;
     line-height: 28px;
+    color: var(--TextPrimary, #1F2329);
   }
   .title-right{
     float: right;
@@ -322,7 +323,7 @@ export default {
   .outer-body{
     width: 100%;
     height: calc(100vh - 56px);
-    background: #f5f6f7;
+    background-color: var(--MainBG,#f5f6f7);
   }
 
   .market-dialog-css{

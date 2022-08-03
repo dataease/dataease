@@ -67,7 +67,7 @@ export default {
     box-sizing: border-box;
     width: 182px;
     height: 116px;
-    background: #ffffff;
+    background-color: var(--ContentBG,#ffffff);
     border: 1px solid #DEE0E3 ;
     border-radius: 4px;
     flex: none;
