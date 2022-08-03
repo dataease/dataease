@@ -2621,6 +2621,15 @@ public class DataSetTableService {
             }
 
             @Override
+            public void visit(Between between) {
+                if(hasVarible(between.getBetweenExpressionStart().toString()) || hasVarible(between.getBetweenExpressionEnd().toString())){
+                    getBuffer().append(SubstitutedSql);
+                }else {
+                    getBuffer().append(between.getLeftExpression()).append(" BETWEEN ").append(between.getBetweenExpressionStart()).append(" AND ").append(between.getBetweenExpressionEnd());
+                }
+            }
+
+            @Override
             public void visit(LikeExpression likeExpression) {
                 if (hasVarible(likeExpression.toString())) {
                     getBuffer().append(SubstitutedSql);
