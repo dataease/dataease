@@ -14,7 +14,7 @@ export default {
     const { children = [] } = context;
     if (!columns?.length) return children;
         children.forEach(ele => {
-            if (columns.includes(ele.componentOptions.propsData.prop)) {
+            if (columns.includes(ele.componentOptions?.propsData?.prop)) {
                 nodes.push(ele)
             }
         })

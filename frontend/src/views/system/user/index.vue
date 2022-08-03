@@ -378,8 +378,9 @@ export default {
     pluginLoaded()
       .then((res) => {
         this.isPluginLoaded = res.success && res.data;
-        if (this.isPluginLoaded) {
-          // this.searchConfig.components.push(...this.extraFilterComponents);
+        if (!this.isPluginLoaded) {
+          this.checkedColumnNames = this.checkedColumnNames.filter(ele => !['dept', 'roles'].includes(ele))
+          this.columnNames = this.columnNames.filter(ele => !['dept', 'roles'].includes(ele.props))
         }
         this.canLoadDom = true;
       })
@@ -448,6 +449,9 @@ export default {
       this.checkedColumnNames = val
         ? columnOptions.map((ele) => ele.props)
         : [];
+      if (!this.isPluginLoaded) {
+          this.checkedColumnNames = this.checkedColumnNames.filter(ele => !['dept', 'roles'].includes(ele))
+        }
       this.isIndeterminate = false;
     },
     handleCheckedColumnNamesChange(value) {
