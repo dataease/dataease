@@ -497,7 +497,7 @@
             row-key="jsonPath"
             ref="apiItemTable"
           >
-            <el-table-column prop="originName" :label="$t('dataset.parse_filed')" width="255">
+            <el-table-column prop="originName" :label="$t('dataset.parse_filed')"  :show-overflow-tooltip="true" width="255">
               <template slot-scope="scope">
                 <el-checkbox
                   v-model="scope.row.checked"
@@ -1315,6 +1315,13 @@ export default {
     text-align: right;
     background: #FFFFFF;
     box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .el-checkbox__label{
+    width:150px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
 </style>
