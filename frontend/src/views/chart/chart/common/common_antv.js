@@ -10,6 +10,7 @@ export function getPadding(chart) {
 // color,label,tooltip,axis,legend,background
 export function getTheme(chart) {
   const colors = []
+  const gColors = []
   let bgColor, labelFontsize, labelColor, tooltipColor, tooltipFontsize, legendColor, legendFontsize
   let customAttr = {}
   if (chart.customAttr) {
@@ -35,6 +36,29 @@ export function getTheme(chart) {
     }
   }
 
+  if(chart.data.fields && chart.data.fields.length) {
+    let fields = chart.data.fields
+    let arr = []
+    for (let i = 0; i < fields.length; i++) {
+        if(fields[i].chartType) {
+          arr.push(fields[i])
+        }
+    }
+    for (let i = 0; i < arr.length; i++) {
+      if(customAttr.color) {
+        // 定义柱状图渐变色
+        let a = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        let b = hexColorToRGBA(customAttr.color.colors[(i+1) % customAttr.color.colors.length], customAttr.color.alpha)
+        if (chart.type === 'bar') { // 柱状图
+          gColors.push(`l(270) 0:${a} 1:${b}`)
+        } else if (chart.type === 'bar-horizontal') { // 横向柱状图
+          gColors.push(`l(0) 0:${a} 1:${b}`)
+        }
+      }
+    }
+    console.log('gColors...',gColors)
+  }
+
   let customStyle
   if (chart.customStyle) {
     customStyle = JSON.parse(chart.customStyle)
@@ -53,8 +77,8 @@ export function getTheme(chart) {
   return {
     styleSheet: {
       brandColor: colors[0],
-      paletteQualitative10: colors,
-      paletteQualitative20: colors,
+      paletteQualitative10: (chart.type === 'bar' || chart.type === 'bar-horizontal') ? gColors : colors,
+      paletteQualitative20: (chart.type === 'bar' || chart.type === 'bar-horizontal') ? gColors : colors,
       backgroundColor: bgColor
     },
     labels: {

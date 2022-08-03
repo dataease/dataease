@@ -662,82 +662,40 @@ export const BASE_PICTORIAL_BAR = {
     },
   },
   xAxis: {
-    type: "category",
-    boundaryGap: true, // 坐标轴两边留白
-    axisLabel: {
-      fontSize: 16,
-    },
-    axisTick: {
-      show: false,
-    },
-    axisLine: {
-      show: true,
-      lineStyle: {
-        type: "dashed",
-      },
-    },
-    splitLine: {
-      show: true,
-      lineStyle: {
-        type: "dashed",
-      },
-    },
     data: []
   },
   yAxis: {
-    name: "",
-    type: "value",
-    // min: min,
-    axisLine: {
-      show: true,
-      lineStyle: {
-      },
-    },
-    axisTick: {
-      show: false,
-    },
-    axisLabel: {
-      fontSize: 16,
-      margin: 25,
-      formatter: "{value}",
-    },
-    splitLine: {
-      show: true,
-      lineStyle: {
-        type: "dashed",
-      },
-    },
   },
   series: [],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
-    }
-  ]
+  // dataZoom: [
+  //   {
+  //     type: 'slider',
+  //     show: false,
+  //     xAxisIndex: [0],
+  //     start: 0,
+  //     end: 100
+  //   },
+  //   {
+  //     type: 'slider',
+  //     show: false,
+  //     yAxisIndex: [0],
+  //     left: '93%',
+  //     start: 0,
+  //     end: 100
+  //   },
+  //   {
+  //     type: 'inside',
+  //     xAxisIndex: [0],
+  //     start: 0,
+  //     end: 100
+  //   },
+  //   {
+  //     type: 'inside',
+  //     yAxisIndex: [0],
+  //     start: 0,
+  //     end: 100
+  //   }
+  // ]
 }
 
 export const BASE_PIE = {
