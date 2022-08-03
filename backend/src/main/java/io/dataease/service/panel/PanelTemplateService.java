@@ -80,11 +80,14 @@ public class PanelTemplateService {
                 exampleDelete.createCriteria().andPidEqualTo(request.getPid()).andNameEqualTo(request.getName());
                 panelTemplateMapper.deleteByExample(exampleDelete);
             }
-            //Store static resource into the server
-            staticResourceService.saveFilesToServe(request.getStaticResource());
-            String snapshotName = "template-" + request.getId() + ".jpeg";
-            staticResourceService.saveSingleFileToServe(snapshotName,request.getSnapshot().replace("data:image/jpeg;base64,","") );
-            request.setSnapshot("/"+UPLOAD_URL_PREFIX+'/'+snapshotName);
+            if ("template".equals(request.getNodeType())) {
+                //Store static resource into the server
+                staticResourceService.saveFilesToServe(request.getStaticResource());
+                String snapshotName = "template-" + request.getId() + ".jpeg";
+                staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
+                request.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
+            }
+
             panelTemplateMapper.insert(request);
         } else {
             String nameCheckResult = this.nameCheck(CommonConstants.OPT_TYPE.UPDATE, request.getName(), request.getPid(), request.getId());

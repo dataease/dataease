@@ -5,7 +5,7 @@
       <el-checkbox v-model="linkageInfo.linkageActive" size="medium" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
-    <div v-if="positionCheck('multiplexing')" style="margin-right: 1px;width: 18px;z-index: 5">
+    <div v-if="positionCheck('multiplexing') && showMultiplexingCheck" style="margin-right: 1px;width: 18px;z-index: 5">
       <el-checkbox v-model="multiplexingCheckModel" size="medium" @change="multiplexingCheck" />
     </div>
     <div v-if="batchOptAreaShow" style="margin-right: -1px;width: 20px;z-index: 5">
@@ -108,6 +108,16 @@ export default {
   mounted() {
   },
   computed: {
+    curComponentTypes() {
+      const types = []
+      this.componentData.forEach(component => {
+        types.push(component.type)
+      })
+      return types
+    },
+    showMultiplexingCheck() {
+      return this.element.type !== 'custom-button' || (this.element.type === 'custom-button' && !this.curComponentTypes.includes('custom-button'))
+    },
     showEditPosition() {
       if (this.activeModel === 'edit' && !this.linkageAreaShow && !this.batchOptAreaShow) {
         const toRight = (this.canvasStyleData.width - this.element.style.left - this.element.style.width) * this.curCanvasScale.scalePointWidth
