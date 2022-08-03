@@ -38,40 +38,8 @@
             <el-radio label="right">右</el-radio>
           </el-radio-group>
         </el-col>
-        <!-- <el-col :span="4">
-          <span class="params-title">{{ '垂直对齐方式' }}</span>
-        </el-col>
-        <el-col :span="8" style="height:40px;line-height:40px;">
-          <el-radio-group v-model="curComponent.options.vertical">
-            <el-radio label="flex-start">上</el-radio>
-            <el-radio label="center">中</el-radio>
-            <el-radio label="flex-end">下</el-radio>
-          </el-radio-group>
-        </el-col> -->
       </el-row>
-      <el-row v-show="false">
-        <el-col :span="4">
-          <span class="params-title">{{ '导航启用级别' }}</span>
-        </el-col>
-        <el-col :span="8" style="height:40px;line-height:40px;">
-          <el-radio-group v-model="curComponent.options.vertical">
-            <el-radio label="directory">目录级</el-radio>
-            <el-radio label="elementKey">元素级</el-radio>
-          </el-radio-group>
-        </el-col>
-      </el-row>
-      <el-row v-show="false">
-        <el-col :span="4">
-          <span class="params-title">{{ '模式选择' }}</span>
-        </el-col>
-        <el-col :span="8" style="height:40px;line-height:40px;">
-          <el-radio-group v-model="curComponent.options.pattern" :disabled="curComponent.options.vertical!=='elementKey'">
-            <el-radio label="default">默认</el-radio>
-            <el-radio label="scroll">隐藏</el-radio>
-          </el-radio-group>
-        </el-col>
-      </el-row>
-      <el-row v-show="curComponent.options.pattern=='scroll'&&curComponent.options.vertical=='elementKey'" style="height: 50px;overflow: hidden;margin-top:5px;">
+      <el-row style="height: 50px;overflow: hidden;margin-top:5px;">
         <el-col :span="4">
           <span class="params-title">{{ '展示数量' }}</span>
         </el-col>
@@ -253,20 +221,20 @@
           <img width="100%" :src="dialogImageUrl" alt="">
         </el-dialog>
       </el-row> -->
-      <el-row style="height: 50px;overflow: hidden;">
+      <!-- <el-row style="height: 50px;overflow: hidden;">
         <el-col :span="4">
           <span class="params-title">导航设置</span>
         </el-col>
         <el-col :span="4" style="height:40px;line-height:40px;">
           <el-button type="primary" size="mini" @click="addNavInfo()">{{ '添加导航' }}</el-button>
         </el-col>
-      </el-row>
+      </el-row> -->
       <!-- <el-row>
         <el-col :span="24">
           <span class="params-title">图1、</span>
         </el-col>
       </el-row> -->
-      <div v-for="(item,index) in navInfoLis" :key="index">
+      <!-- <div v-for="(item,index) in navInfoLis" :key="index">
         <el-row style="padding:5px;">
           <el-col :span="4">
             <span class="params-title">导航标题</span>
@@ -283,7 +251,6 @@
             <span class="params-title">关联设置</span>
           </el-col>
           <el-col :span="20">
-            <!-- 多项选择框 -->
             <el-select v-model="item.relation" multiple placeholder="请选择" @change="changeAssembly">
               <el-option
                 v-for="items in optionsData"
@@ -296,7 +263,7 @@
             </el-select>
           </el-col>
         </el-row>
-      </div>
+      </div> -->
     </el-row>
     <el-row class="root-class">
       <el-col :span="24">
@@ -411,40 +378,40 @@ export default {
     // })
     console.log('componentData获取数据--', this.componentData, this.curComponent)
     // const seltOps = []
-    this.navInfoLis = this.element.options.navTabList
-    this.navInfoLis.forEach(res => {
-      res.relation = []
-    })
-    this.navInfoLis.forEach(ele => {
-      console.log('ele::::', ele)
-      this.componentData.forEach(res => {
-        if (res.showName === ele.name) {
-          // res.showName = ''
-          ele.relation.push(res.id)
-          delete res.showName
-        }
-      })
-    })
-    console.log(' this.componentData', this.componentData)
-    const newArrr = deepCopy(this.componentData)
-    newArrr.forEach(ele => {
-      ele.disabled = true
-      if (!ele.hasOwnProperty('showName')) {
-        console.log('满足条件的ele', ele)
-        ele.disabled = false
-      }
-      console.log('ele----', ele)
-    })
-    this.navInfoLis.forEach(res => {
-      res.relation.forEach(e => {
-        newArrr.forEach(item => {
-          if (item.id === e) {
-            item.disable = true
-          }
-        })
-      })
-    })
-    this.options = deepCopy(newArrr)
+    // this.navInfoLis = this.element.options.navTabList
+    // this.navInfoLis.forEach(res => {
+    //   res.relation = []
+    // })
+    // this.navInfoLis.forEach(ele => {
+    //   console.log('ele::::', ele)
+    //   this.componentData.forEach(res => {
+    //     if (res.showName === ele.name) {
+    //       // res.showName = ''
+    //       ele.relation.push(res.id)
+    //       delete res.showName
+    //     }
+    //   })
+    // })
+    // console.log(' this.componentData', this.componentData)
+    // const newArrr = deepCopy(this.componentData)
+    // newArrr.forEach(ele => {
+    //   ele.disabled = true
+    //   if (!ele.hasOwnProperty('showName')) {
+    //     console.log('满足条件的ele', ele)
+    //     ele.disabled = false
+    //   }
+    //   console.log('ele----', ele)
+    // })
+    // this.navInfoLis.forEach(res => {
+    //   res.relation.forEach(e => {
+    //     newArrr.forEach(item => {
+    //       if (item.id === e) {
+    //         item.disable = true
+    //       }
+    //     })
+    //   })
+    // })
+    // this.options = deepCopy(newArrr)
     if (this.element.options.heightBgImg && this.element.options.heightBgImg !== '') {
       // this.updataUrl = this.curComponent.options.heightBgImg
       this.changImg = this.curComponent.options.heightBgImg
@@ -570,16 +537,16 @@ export default {
       this.$emit('backgroundSetClose')
     },
     save() {
-      this.curComponent.options.navTabList = this.navInfoLis
-      this.navInfoLis.forEach(ele => {
-        ele.relation.forEach(item => {
-          this.componentData.forEach(res => {
-            if (res.id === item) {
-              res.showName = ele.name
-            }
-          })
-        })
-      })
+      // this.curComponent.options.navTabList = this.navInfoLis
+      // this.navInfoLis.forEach(ele => {
+      //   ele.relation.forEach(item => {
+      //     this.componentData.forEach(res => {
+      //       if (res.id === item) {
+      //         res.showName = ele.name
+      //       }
+      //     })
+      //   })
+      // })
       console.log('this.fileList', this.fileList)
       // 高亮背景
       this.curComponent.options.heightBgImg = this.changImg

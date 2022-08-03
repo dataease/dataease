@@ -20,7 +20,22 @@ const dialogPanel = {
       dragItems: []
     },
     value: '',
-    manualModify: false
+    manualModify: false,
+    navTabList: [],
+    fontSize: 12,
+    color: '#333',
+    vertical: 'directory',
+    horizontal: 'center',
+    heightTabs: '',
+    defaultBg: '',
+    highlight: '#333',
+    highlightBg: '',
+    heightBgImg: '',
+    spacing: 0,
+    pattern: 'default', // 滚动和默认
+    scrollPage: 2,
+    autoplay: true,
+    autoTime: 1
   },
   defaultClass: 'text-filter',
   component: 'de-rotation',

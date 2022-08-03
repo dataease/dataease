@@ -67,6 +67,7 @@
       @setNavInfo="setNavInfo(item)"
       @setFontIcon="setFontIcon(item)"
       @setPicture="setPicture(item)"
+      @setCustom="setCustomBtn(item)"
       @setWeather="setWeather(item)"
       @elementMouseDown="containerMouseDown"
       @amRemoveItem="removeItem(item._dragId)"
@@ -281,6 +282,18 @@
     >
       <pictureSet v-if="pictureVisible" :element="pictureElement" @backgroundSetClose="pictureSetClose" />
     </el-dialog>
+    <!-- 文本轮播 -->
+    <el-dialog
+      :visible.sync="customVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <setCustom v-if="customVisible" :element="customElement" @backgroundSetClose="setCustomClose" />
+    </el-dialog>
     <!-- 天气 -->
     <el-dialog
       :visible.sync="weatherVisible"
@@ -329,6 +342,7 @@ import tabSet from '@/views/background/tabSet'
 import iconSet from '@/views/background/iconSet'
 import pictureSet from '@/views/background/pictureSet'
 import weatherSet from '@/views/background/weatherSet'
+import setCustom from '@/views/background/setCustom'
 
 import { events } from '../../../DeDrag/option.js'
 import { addEvent, removeEvent } from '../../../../utils/dom.js'
@@ -899,7 +913,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, tabSet, pictureSet, weatherSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, tabSet, pictureSet, setCustom, weatherSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -976,12 +990,14 @@ export default {
       iconElement: {},
       pictureElement: {},
       weatherElement: {},
+      customElement: {},
       boardSetVisible: false,
       bannerSetVisible: false,
       navVisible: false,
       tabVisible: false,
       iconVisible: false,
       pictureVisible: false,
+      customVisible: false,
       weatherVisible: false,
       psDebug: false, // 定位调试模式
       editorX: 0,
@@ -1273,6 +1289,9 @@ export default {
     weatherSetClose() {
       this.weatherVisible = false
     },
+    setCustomClose() {
+      this.customVisible = false
+    },
     boardSet(item) {
       // console.log('itsm00001', item)
       this.$emit('boardSet', item)
@@ -1305,6 +1324,11 @@ export default {
       this.pictureVisible = true
       this.pictureElement = item
       console.log('触发图片库')
+    },
+    setCustomBtn(item) {
+      console.log('触发轮播修改图-----')
+      this.customVisible = true
+      this.customElement = item
     },
     setWeather(item) {
       this.weatherVisible = true

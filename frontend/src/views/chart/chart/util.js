@@ -42,13 +42,13 @@ export const TYPE_CONFIGS = [
     title: '滚动表格',
     icon: 'table-normal'
   },
-  {
-    render: 'antv',
-    category: 'chart.chart_type_table',
-    value: 'dialog-list',
-    title: '详情表格',
-    icon: 'table-normal'
-  },
+  // {
+  //   render: 'antv',
+  //   category: 'chart.chart_type_table',
+  //   value: 'dialog-list',
+  //   title: '详情表格',
+  //   icon: 'table-normal'
+  // },
   {
     render: 'antv',
     category: 'chart.chart_type_table',

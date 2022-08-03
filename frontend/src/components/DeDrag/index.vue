@@ -47,6 +47,7 @@
         @setFontIcon="setFontIcon"
         @setPicture="setPicture"
         @setWeather="setWeather"
+        @setCustom="setCustom"
         @boardSet="boardSet"
         @tabRelation="tabRelation"
       />
@@ -1978,6 +1979,10 @@ export default {
     // 天气
     setWeather() {
       this.$emit('setWeather')
+    },
+    // 文本轮播
+    setCustom() {
+      this.$emit('setCustom')
     }
   }
 
