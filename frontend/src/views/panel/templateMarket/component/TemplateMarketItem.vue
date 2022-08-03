@@ -88,6 +88,7 @@ export default {
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+    color: var(--TextPrimary, #1F2329);
   }
 
   .template-img {

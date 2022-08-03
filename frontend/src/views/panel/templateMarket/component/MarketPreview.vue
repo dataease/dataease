@@ -303,7 +303,7 @@ export default {
   height: calc(100vh - 56px);
   overflow-x: hidden;
   overflow-y: auto;
-  background: #fff;
+  background-color: var(--ContentBG,#ffffff);
 }
 
 .aside-inActive{
@@ -337,6 +337,7 @@ export default {
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
+  color: var(--TextPrimary, #1F2329);
 }
 
 .insert-filter {
@@ -403,6 +404,7 @@ export default {
   font-size: 20px;
   line-height: 28px;
   margin-bottom: 24px;
+  color: var(--TextPrimary, #1F2329);
 }
 
 .margin-top16 {

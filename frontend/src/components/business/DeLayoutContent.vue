@@ -49,7 +49,7 @@ export default {
   border-radius: 4px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 14%);
   box-sizing: border-box;
-  background: #f5f6f7;
+  background-color: var(--MainBG,#f5f6f7);
   overflow: hidden;
   padding: 24px 24px 24px 24px;
   height: 100%;
@@ -61,14 +61,14 @@ export default {
     font-weight: 500;
     line-height: 28px;
     text-align: left;
-    color: #1F2329;
+    color: var(--TextPrimary, #1F2329);
     width: 100%;
     margin: 0;
   }
   .container-wrapper {
     width: 100%;
     overflow: auto;
-    background: #fff;
+    background-color: var(--ContentBG, #FFFFFF);
     margin-top: 24px;
     padding: 24px;
     flex: 1;
