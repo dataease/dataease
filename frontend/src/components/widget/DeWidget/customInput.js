@@ -53,6 +53,8 @@ export default {
       this.styleAttrs.forEach((ele, index) => {
         if (newValue[ele]) {
           document.documentElement.style.setProperty(cssVar[index], !isPanelDe ? '' : newValue[ele])
+        } else {
+          document.documentElement.style.removeProperty(cssVar[index])
         }
       })
     },
