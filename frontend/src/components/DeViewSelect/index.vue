@@ -19,16 +19,13 @@
       />
     </el-select>
 
-    
-
-    
     <el-dialog
       :visible="dialogShow"
       :show-close="false"
       class="dialog-css"
       :fullscreen="true"
     >
-      <div ref="contaninerDiv" :style="{'height': panelHeight + 'px'}" v-if="dialogShow && viewLoaded">
+      <div v-if="dialogShow && viewLoaded" ref="contaninerDiv" :style="{'height': panelHeight + 'px'}">
         <Preview
           :component-data="componentData"
           :canvas-style-data="canvasStyleData"
@@ -36,13 +33,13 @@
           :show-position="showPosition"
         />
       </div>
-      
+
       <div slot="title" class="dialog-footer title-text">
         <span style="font-size: 14px;">
           选择视图
         </span>
         <span style="float: right;">
-          <el-button type="primary" size="mini" @click="closeDialog()">{{ $t('commons.confirm') }}</el-button>
+          <el-button type="primary" size="mini" @click="sureDialog()">{{ $t('commons.confirm') }}</el-button>
           <el-button size="mini" @click="cancelDialog()">{{ $t('commons.cancel') }}</el-button>
         </span>
       </div>
@@ -124,11 +121,9 @@ export default {
   },
   mounted() {
     this._updateH()
-    
   },
   beforeDestroy() {
     this._selectClearFun()
-    
   },
   created() {
     this.loadView()
@@ -168,11 +163,10 @@ export default {
     },
     _updateH() {
       this.$nextTick(() => {
-        if(this.$refs.contaninerDiv) {
+        if (this.$refs.contaninerDiv) {
           this.width = this.$refs.contaninerDiv.clientWidth
           this.panelHeight = this.width * 9 / 16
         }
-        
       })
     },
     _popoverShowFun(val) {
@@ -180,10 +174,9 @@ export default {
       this._updateH()
       this.$emit('onFoucs')
     },
-    
-    
+
     _selectRemoveTag(viewId) {
-      this.selectedViews.forEach(item => {
+      this.$store.getters.panelViews[this.panelId].forEach(item => {
         if (item === viewId) {
           this.$store.dispatch('task/delView', { 'panelId': this.panelId, 'viewId': item })
         }
@@ -200,12 +193,16 @@ export default {
     },
     openDialog() {
       if (this.value && this.value.length) {
-        this.idsBeforeOpen =  JSON.parse(JSON.stringify(this.value))
+        this.idsBeforeOpen = JSON.parse(JSON.stringify(this.value))
       }
       this.dialogShow = true
     },
     closeDialog() {
       this.dialogShow = false
+    },
+    sureDialog() {
+      this.innerValues = JSON.parse(JSON.stringify(this.$store.getters.panelViews[this.panelId]))
+      this.closeDialog()
     },
     cancelDialog() {
       this.innerValues = JSON.parse(JSON.stringify(this.idsBeforeOpen))
