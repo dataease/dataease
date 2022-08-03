@@ -421,8 +421,8 @@ export default {
   }
 }
 .user-popper {
-  background: transparent;
   padding: 0;
+  background: #fff;
   .popper__arrow {
     display: none;
   }
