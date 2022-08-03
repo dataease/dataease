@@ -483,7 +483,11 @@ const list = [
       highlight: '#333',
       highlightBg: '',
       heightBgImg: '',
-      spacing: 0
+      spacing: 0,
+      pattern: 'default', // 滚动和默认
+      scrollPage: 2,
+      autoplay: true,
+      autoTime: 1
     },
     x: 1,
     y: 1,
