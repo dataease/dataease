@@ -662,9 +662,18 @@ export const BASE_PICTORIAL_BAR = {
     },
   },
   xAxis: {
-    data: []
+    data: [],
+    type: 'category',
+    axisLabel: {
+      show: true,
+      margin: 8,
+      color: '#333333',
+      fontSize: '12',
+      formatter: '{value}'
+    }
   },
   yAxis: {
+    type: 'value',
   },
   series: [],
   // dataZoom: [

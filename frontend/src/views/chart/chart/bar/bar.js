@@ -37,7 +37,7 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
             color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
           }, {
             offset: 1, // 100% 的颜色
-            color: hexColorToRGBA(customAttr.color.colors[(i+1) % customAttr.color.colors.length], customAttr.color.alpha)
+            color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha - 50)
           }],
           global: false // 缺省为 false
         }
@@ -115,7 +115,7 @@ export function horizontalBarOption(chart_option, chart,cstyle = {}) {
             color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
           }, {
             offset: 1, // 100% 的颜色
-            color: hexColorToRGBA(customAttr.color.colors[(i+1) % customAttr.color.colors.length], customAttr.color.alpha)
+            color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha - 50)
           }],
           global: false // 缺省为 false
         }
@@ -194,7 +194,7 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
         color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha)
         },{
         offset: 1, // 100% 的颜色
-        color: hexColorToRGBA(customAttr.color.colors[1], customAttr.color.alpha)
+        color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha - 50)
         }],
         global: false // 缺省为 false
       }
@@ -222,61 +222,143 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
       }
     }
     y.type = 'bar'
-    y.z = 1
+    y.z = 2
 
     let arr = []
     y.data.map(item => {
       arr.push(item.value)
     })
+    let max = Math.max(...arr)
+    let arr1 = []
+    y.data.map(item => {
+      arr1.push(max)
+    })
 
     let t = {
-      z: 2,
+      z: 3,
       name: y.name,
+      tooltip: {show: false},
       type: 'pictorialBar',
       symbolPosition: 'end',
       data: arr,
       symbol: "diamond",
-      symbolOffset: [0, "-50%"],
-      symbolSize: [customAttr.size.barDefault? '36.5%' : customAttr.size.barWidth, '20'],
+      symbolOffset: [0, "-52%"],
+      symbolSize: [customAttr.size.barDefault? '84%' : customAttr.size.barWidth, '20'],
       itemStyle: {
-        color: hexColorToRGBA(customAttr.color.colors[1], customAttr.color.alpha),
-        borderWidth: 4,
-        borderColor: '#ffffff'
+        color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha - 30),
+        borderWidth: 6,
+        borderColor: '#eeeeee'
       },
     }
     let b = {
       z: 3,
       name: y.name,
+      tooltip: {show: false},
       type: 'pictorialBar',
       data: arr,
       symbol: 'diamond',
       symbolOffset: [0, '50%'],
-      symbolSize: [customAttr.size.barDefault? '36.5%' : customAttr.size.barWidth, '20'],
+      symbolSize: [customAttr.size.barDefault? '84%' : customAttr.size.barWidth, '20'],
       itemStyle: {
         color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha),
         borderWidth: 0,
       }
     }
-    let l = {
-      z: 4,
-      type: 'pictorialBar',
+
+    let x1 = {  // 背景柱
+      name: y.name,
+      tooltip: {show: false},
+      type:'pictorialBar',
       symbol: 'rect',
-      symbolSize: [1, '100%'],
-      symbolOffset: [0, 10],
-      barCategoryGap: '-100%',
+      symbolSize: [customAttr.size.barDefault? '80%' : customAttr.size.barWidth, '100%'],
+      symbolOffset: ['0', '0'],
+      data: arr1,
+      z: 0,
       itemStyle: {
-        normal: {
-          color: '#ededed',
-          borderWidth: 0
-        }
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 1,
+          x2: 0,
+          y2: 0,
+          colorStops: [{
+            offset: 0,  // 0% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha - 70)
+          },{
+            offset: 1, // 100% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha - 90)
+          }],
+          global: false // 缺省为 false
+        },
+        borderWidth: 0,
+        // borderColor: hexColorToRGBA(customAttr.color.colors[1], 30)
       },
-      data: arr,
     }
+    let x2 = {  // 背景顶
+      name: y.name,
+      // stack: 'amount',
+      tooltip: {show: false},
+      type: 'pictorialBar',
+      symbol: 'diamond',
+      symbolOffset: [0, '-52%'],
+      symbolPosition: 'end',
+      symbolSize: [customAttr.size.barDefault? '82%' : customAttr.size.barWidth, '20'],
+      data: arr1,
+      z: 0,
+      itemStyle: {
+        // color: hexColorToRGBA(customAttr.color.colors[1], 30),
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [{
+            offset: 0,  // 0% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha - 60)
+          },{
+            offset: 1, // 100% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha - 80)
+          }],
+          global: false // 缺省为 false
+        },
+        borderWidth: 1,
+        borderColor: "#eeeeee"
+      },
+      // emphasis: {
+      //   itemStyle: {
+      //     color: hexColorToRGBA(customAttr.color.colors[1], 30),
+      //   }
+      // }
+    }
+    let x3 = { // 背景底
+      name: y.name,
+      // stack: 'amount',
+      tooltip: {show: false},
+      type: 'pictorialBar',
+      symbol: 'diamond',
+      symbolOffset: [0, '50%'],
+      symbolSize: [customAttr.size.barDefault? '84%' : customAttr.size.barWidth, '20'],
+      data: arr1,
+      z: 0,
+      itemStyle: {
+        color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha - 60),
+      },
+      emphasis: {
+        itemStyle: {
+          color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha - 60),
+        }
+      }
+    }
+    
     chart_option.legend.data.push(y.name)
-	  chart_option.series.push(y)
+	  chart_option.series.push(y) // 柱体
 	  chart_option.series.push(t) // 顶部
 	  chart_option.series.push(b) // 底部
-	  chart_option.series.push(l) // 线
+
+    chart_option.series.push(x1)
+    chart_option.series.push(x2)
+    chart_option.series.push(x3)
 
   }
 
