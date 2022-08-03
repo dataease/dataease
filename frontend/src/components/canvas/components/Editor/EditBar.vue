@@ -25,7 +25,7 @@
         <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails('enlarge')" />
       </span>
       <span :title="$t('panel.details')">
-        <i v-if="curComponent.type==='view'" class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
+        <i v-if="curComponent.type==='view' && terminal==='pc'" class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
       </span>
       <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
         <span slot="icon" :title="$t('panel.setting')">
@@ -58,6 +58,10 @@ export default {
   components: { SettingMenu, LinkageField },
 
   props: {
+    terminal: {
+      type: String,
+      default: 'pc'
+    },
     sourceElement: {
       type: Object,
       required: true

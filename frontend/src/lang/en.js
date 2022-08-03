@@ -566,7 +566,7 @@ export default {
     filter: 'screen',
     list: 'List item',
     list_info: 'Please select the information to be displayed in the list',
-    sure_delete: 'Are you sure to delete this user?',
+    sure_delete: 'Are you sure to delete this user?'
   },
   ldap: {
     url: 'LDAP url',
@@ -1567,6 +1567,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    template_name_tips: "Panel\'s name should not be null",
     panel_background_item: 'Customize panel background',
     panel_background_image_tips: 'Currently.Jpeg,.Jpg,.Png,.Gif files are supported, and the size should not exceed 15m',
     reUpload: 'reUpload',
