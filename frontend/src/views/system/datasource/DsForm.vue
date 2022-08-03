@@ -314,7 +314,6 @@ export default {
     edit(row) {
       this.formType = 'modify'
       this.form = JSON.parse(JSON.stringify(row))
-      this.originConfiguration = this.form.configuration
       if (row.type === 'api') {
         this.originConfiguration = JSON.parse(JSON.stringify(this.form.apiConfiguration))
         this.originConfiguration.forEach(item => {
@@ -323,7 +322,9 @@ export default {
         this.originConfiguration = JSON.stringify(this.originConfiguration)
       } else {
         this.form.configuration = JSON.parse(this.form.configuration)
+        this.originConfiguration = JSON.stringify(this.form.configuration)
       }
+
       this.disabled = this.params && this.params.id && this.params.showModel && this.params.showModel === 'show' && !this.canEdit
     },
     reset() {
@@ -482,7 +483,7 @@ export default {
       method(form).then(res => {
         this.$success(i18n.t('commons.save_success'))
         this.refreshType(form)
-        // this.backToList()
+        this.backToList()
       })
     },
     getSchema() {
