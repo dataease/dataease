@@ -245,7 +245,7 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
       symbolOffset: [0, "-52%"],
       symbolSize: [customAttr.size.barDefault? '84%' : customAttr.size.barWidth, '20'],
       itemStyle: {
-        color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha - 30),
+        color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha - 10),
         borderWidth: 6,
         borderColor: '#eeeeee'
       },

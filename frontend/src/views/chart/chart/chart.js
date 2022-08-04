@@ -666,11 +666,11 @@ export const BASE_PICTORIAL_BAR = {
     type: 'category',
     axisLabel: {
       show: true,
-      margin: 8,
+      margin: 16,
       color: '#333333',
       fontSize: '12',
       formatter: '{value}'
-    }
+    },
   },
   yAxis: {
     type: 'value',
