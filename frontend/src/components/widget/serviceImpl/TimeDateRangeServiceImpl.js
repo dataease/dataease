@@ -29,7 +29,9 @@ const dialogPanel = {
         eDynamicPrefix: 1,
         eDynamicInfill: 'day',
         eDynamicSuffix: 'after'
-      }
+      },
+      showTime: false,
+      accuracy: 'HH:mm'
     },
     value: '',
     manualModify: false
@@ -279,8 +281,17 @@ class TimeDateRangeServiceImpl extends WidgetService {
       return results
     } else {
       const value = values[0]
-      return timeSection(parseFloat(value), element.options.attrs.type)
+      const componentType = element.options.attrs.showTime ? 'datetimerange' : 'daterange'
+      let labelFormat = 'yyyy-MM-dd'
+      if (element.options.attrs.showTime && element.options.attrs.accuracy) {
+        labelFormat = labelFormat + ' ' + element.options.attrs.accuracy
+      }
+
+      return timeSection(parseFloat(value), componentType || element.options.attrs.type, labelFormat)
     }
+  }
+  isTimeWidget() {
+    return true
   }
 }
 const timeDateRangeServiceImpl = new TimeDateRangeServiceImpl()

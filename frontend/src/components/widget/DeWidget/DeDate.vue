@@ -62,7 +62,7 @@ export default {
   },
   computed: {
     extPoperClass() {
-      if(this.labelFormat && this.labelFormat.includes('HH') && !this.labelFormat.includes('HH:mm')) {
+      if (this.labelFormat && this.labelFormat.includes('HH') && !this.labelFormat.includes('HH:mm')) {
         return 'de-no-minite'
       }
       return ''
@@ -89,7 +89,7 @@ export default {
     componentType() {
       let result = this.element.options.attrs.type || 'date'
       if (this.isTimeWidget && this.element.options.attrs.showTime) {
-        result = 'datetime'
+        result = this.element.serviceName === 'timeDateWidget' ? 'datetime' : 'datetimerange'
       }
       return result
     },
@@ -127,7 +127,7 @@ export default {
       this.dateChange(this.values)
     },
     'labelFormat': function(val, old) {
-      if(val !== old) {
+      if (val !== old) {
         this.show = false
         this.$nextTick(() => {
           this.show = true
