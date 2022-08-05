@@ -193,7 +193,7 @@ export default {
     margin-top: 10px;
   }
 
-  .tree-list::v-deep.el-tree-node__expand-icon.is-leaf{
+  .tree-list ::v-deep .el-tree-node__expand-icon.is-leaf{
     display: none;
   }
 
