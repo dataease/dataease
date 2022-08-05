@@ -452,21 +452,21 @@ export default {
   .field-class{
     font-size: 12px !important;
   }
-  .el-select::v-deepinput{
+  .el-select ::v-deep input{
     padding-right: 10px;
   }
-  .el-select::v-deep.el-input__suffix{
+  .el-select ::v-deep .el-input__suffix{
     right: 0;
   }
   .el-radio{
     margin-right: 10px !important;
   }
-  .style-collapse::v-deep.el-collapse-item__header{
+  .style-collapse ::v-deep .el-collapse-item__header{
     height: 40px;
     line-height: 40px;
     padding: 0 0 0 10px;
   }
-  .style-collapse::v-deep.el-collapse-item__wrap{
+  .style-collapse ::v-deep .el-collapse-item__wrap{
     border-bottom: 0 solid #e6ebf5!important;
   }
   .style-collapse{
@@ -476,7 +476,7 @@ export default {
     margin-bottom: 6px;
   }
 
-  .dialog-css::v-deep.el-dialog__title {
+  .dialog-css ::v-deep .el-dialog__title {
     font-size: 14px;
   }
   .dialog-css ::v-deep .el-dialog__header {
@@ -485,7 +485,7 @@ export default {
   .dialog-css ::v-deep .el-dialog__body {
     padding: 10px 20px 20px;
   }
-  .dialog-css::v-deep.el-dialog{
+  .dialog-css ::v-deep .el-dialog{
     width: 800px!important;
   }
 </style>
