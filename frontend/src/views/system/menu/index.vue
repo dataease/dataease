@@ -459,7 +459,7 @@ export default {
   width: 100%;
 }
 
-.dialog-css >>> .el-dialog__header {
+.dialog-css ::v-deep .el-dialog__header {
   padding: 0;
 }
 ::v-deep .el-input-number .el-input__inner {

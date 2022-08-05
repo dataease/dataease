@@ -331,21 +331,21 @@ export default {
 .form-item{
   margin-bottom: 10px!important;
 }
-.dialog-css >>> .el-dialog__body {
+.dialog-css ::v-deep .el-dialog__body {
   padding: 0 20px;
 }
-.preview-style >>> .el-drawer{
+.preview-style ::v-deep .el-drawer{
   height: 50%!important;
 }
-.preview-style >>> .el-drawer .el-drawer__header{
+.preview-style ::v-deep .el-drawer .el-drawer__header{
   margin-bottom: 10px!important;
   padding: 10px 16px 0!important;
   font-size: 14px;
 }
-.preview-style >>> .el-drawer .el-drawer__body{
+.preview-style ::v-deep .el-drawer .el-drawer__body{
   padding: 0 16px 10px!important;
 }
-.form-item >>> .el-form-item__label{
+.form-item ::v-deep .el-form-item__label{
   font-size: 12px!important;
   font-weight: 400!important;
 }

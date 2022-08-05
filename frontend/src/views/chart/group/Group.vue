@@ -1058,7 +1058,7 @@ export default {
     padding: 0 8px;
   }
 
-  .tree-list >>> .el-tree-node__expand-icon.is-leaf {
+  .tree-list ::v-deep .el-tree-node__expand-icon.is-leaf {
     display: none;
   }
 
@@ -1082,15 +1082,15 @@ export default {
     line-height: 26px;
   }
 
-  .dialog-css >>> .el-dialog__header {
+  .dialog-css ::v-deep .el-dialog__header {
     padding: 20px 20px 0;
   }
 
-  .dialog-css >>> .el-dialog__body {
+  .dialog-css ::v-deep .el-dialog__body {
     padding: 10px 20px 20px;
   }
 
-  .form-item >>> .el-form-item__label {
+  .form-item ::v-deep .el-form-item__label {
     font-size: 12px;
   }
 
@@ -1132,16 +1132,16 @@ export default {
     line-height: 28px !important;
   }
 
-  .render-select >>> .el-input__suffix {
+  .render-select ::v-deep .el-input__suffix {
     width: 20px;
   }
 
-  .render-select >>> .el-input__inner {
+  .render-select ::v-deep .el-input__inner {
     padding-right: 10px;
     padding-left: 6px;
   }
 
-  .dialog-css >>> .el-step__title {
+  .dialog-css ::v-deep .el-step__title {
     font-weight: 400;
     font-size: 12px;
   }

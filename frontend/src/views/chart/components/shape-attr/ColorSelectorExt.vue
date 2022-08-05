@@ -332,12 +332,12 @@ export default {
   align-items: center
 }
 
-.form-item-slider >>> .el-form-item__label {
+.form-item-slider ::v-deep .el-form-item__label {
   font-size: 12px;
   line-height: 38px;
 }
 
-.form-item >>> .el-form-item__label {
+.form-item ::v-deep .el-form-item__label {
   font-size: 12px;
 }
 
@@ -363,7 +363,7 @@ span {
   width: 60px;
 }
 
-.color-type >>> .el-radio__input {
+.color-type ::v-deep .el-radio__input {
   display: none;
 }
 
@@ -372,7 +372,7 @@ span {
   border: 1px solid transparent;
 }
 
-.el-radio >>> .el-radio__label {
+.el-radio ::v-deep .el-radio__label {
   padding-left: 0;
 }
 

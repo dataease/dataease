@@ -488,7 +488,7 @@ export default {
   padding: 0 8px;
 }
 
-.tree-list > > > .el-tree-node__expand-icon.is-leaf {
+.tree-list ::v-deep .el-tree-node__expand-icon.is-leaf {
   display: none;
 }
 
@@ -512,15 +512,15 @@ export default {
   line-height: 26px;
 }
 
-.dialog-css > > > .el-dialog__header {
+.dialog-css ::v-deep .el-dialog__header {
   padding: 20px 20px 0;
 }
 
-.dialog-css > > > .el-dialog__body {
+.dialog-css ::v-deep .el-dialog__body {
   padding: 10px 20px 20px;
 }
 
-.form-item > > > .el-form-item__label {
+.form-item ::v-deep .el-form-item__label {
   font-size: 12px;
 }
 
@@ -556,7 +556,7 @@ export default {
 .msg-node-class {
   color: red;
 
-  > > > i {
+  ::v-deep i {
     color: red;
   }
 }

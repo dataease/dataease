@@ -14,7 +14,7 @@ export default {
 
 <style scoped>
 
-  .ms-container >>> span.title {
+  .ms-container ::v-deep span.title {
     font-size: 16px;
     font-weight: 500;
     margin-top: 0;

@@ -539,16 +539,16 @@ export default {
   overflow-y: auto;
 }
 
-.codemirror >>> .CodeMirror-scroll {
+.codemirror ::v-deep .CodeMirror-scroll {
   height: 160px;
   overflow-y: auto;
 }
 
-.dataPreview >>> .el-card__header {
+.dataPreview ::v-deep .el-card__header {
   padding: 6px 8px;
 }
 
-.dataPreview >>> .el-card__body {
+.dataPreview ::v-deep .el-card__body {
   padding: 10px;
 }
 

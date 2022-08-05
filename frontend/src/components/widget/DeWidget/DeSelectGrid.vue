@@ -339,7 +339,7 @@ export default {
 
 <style lang="scss" scoped>
   .de-select-grid-search {
-    >>>input {
+    ::v-deepinput {
       border-radius: 0px;
 
     }

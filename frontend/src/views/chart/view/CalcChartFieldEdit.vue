@@ -488,15 +488,15 @@ export default {
 </script>
 
 <style scoped>
-.row-style >>> .el-form-item__label {
+.row-style ::v-deep .el-form-item__label {
   font-size: 12px;
 }
 
-.row-style >>> .el-form-item--mini.el-form-item {
+.row-style ::v-deep .el-form-item--mini.el-form-item {
   margin-bottom: 10px;
 }
 
-.row-style >>> .el-form-item__content {
+.row-style ::v-deep .el-form-item__content {
   display: flex;
   flex-direction: row;
   width: 100%;
@@ -508,7 +508,7 @@ export default {
   font-size: 12px;
 }
 
-.codemirror >>> .CodeMirror-scroll {
+.codemirror ::v-deep .CodeMirror-scroll {
   height: 300px;
   overflow-y: auto;
   font-size: 12px;
@@ -644,7 +644,7 @@ span {
   margin-top: 4px;
 }
 
-.function-pop >>> .el-popover {
+.function-pop ::v-deep .el-popover {
   padding: 6px !important;
 }
 

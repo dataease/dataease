@@ -411,10 +411,10 @@ export default {
 </script>
 
 <style scoped>
-  .table-class>>>.body--wrapper{
+  .table-class::v-deep.body--wrapper{
     background: rgba(1,1,1,0);
   }
-  .table-class>>>.elx-cell{
+  .table-class::v-deep.elx-cell{
     max-height: none!important;
     line-height: normal!important;
   }
@@ -436,13 +436,13 @@ export default {
     color: #606266;
     white-space:nowrap;
   }
-  .page-style >>> .el-input__inner{
+  .page-style ::v-deep .el-input__inner{
     height: 24px;
   }
-  .page-style >>> button{
+  .page-style ::v-deep button{
     background: transparent!important;
   }
-  .page-style >>> li{
+  .page-style ::v-deep li{
     background: transparent!important;
   }
 </style>

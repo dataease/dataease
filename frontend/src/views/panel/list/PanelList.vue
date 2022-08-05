@@ -886,10 +886,10 @@ export default {
     padding:0 8px;
   }
 
-  .dialog-css>>>.el-dialog__body {
+  .dialog-css::v-deep.el-dialog__body {
     padding: 15px 20px;
   }
-  .dialog-css >>>.el-dialog__body {
+  .dialog-css ::v-deep.el-dialog__body {
     padding: 10px 20px 20px;
   }
 

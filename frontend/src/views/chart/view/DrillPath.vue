@@ -38,7 +38,7 @@ export default {
 .drill-style {
   font-size: 12px;
 }
-.drill-style >>> .el-breadcrumb__separator{
+.drill-style ::v-deep .el-breadcrumb__separator{
   margin: 0!important;
 }
 .drill-item{

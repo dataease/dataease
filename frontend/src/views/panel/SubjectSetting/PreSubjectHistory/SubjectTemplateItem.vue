@@ -324,7 +324,7 @@ export default {
     z-index: 10;
     display:block;
   }
-  .vertical-layout>>>.el-icon-error {
+  .vertical-layout::v-deep.el-icon-error {
     display:none
   }
   .theme-selected-icon {

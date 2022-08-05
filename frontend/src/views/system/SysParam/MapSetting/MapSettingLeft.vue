@@ -193,7 +193,7 @@ export default {
     margin-top: 10px;
   }
 
-  .tree-list>>>.el-tree-node__expand-icon.is-leaf{
+  .tree-list::v-deep.el-tree-node__expand-icon.is-leaf{
     display: none;
   }
 
@@ -253,7 +253,7 @@ export default {
     visibility: visible;
   }
 
-  .dialog-css >>> .el-dialog__body {
+  .dialog-css ::v-deep .el-dialog__body {
     padding: 10px 20px 20px;
   }
 

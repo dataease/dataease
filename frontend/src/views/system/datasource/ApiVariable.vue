@@ -265,7 +265,7 @@ export default {
   margin-right: 10px;
 }
 
-.advanced-item-value >>> .el-dialog__body {
+.advanced-item-value ::v-deep .el-dialog__body {
   padding: 15px 25px;
 }
 

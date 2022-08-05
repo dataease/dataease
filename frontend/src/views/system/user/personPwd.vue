@@ -108,7 +108,7 @@ export default {
   min-width: 640px;
   height: auto;
   position: relative;
-  >>>div.el-card__header {
+  ::v-deepdiv.el-card__header {
     padding: 0;
   }
 }

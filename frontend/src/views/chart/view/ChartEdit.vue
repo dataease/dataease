@@ -2866,29 +2866,29 @@ span {
   font-size: 12px;
 }
 
-.tab-header > > > .el-tabs__header {
+.tab-header ::v-deep .el-tabs__header {
   border-top: solid 1px #eee;
   border-right: solid 1px #eee;
 }
 
-.tab-header > > > .el-tabs__item {
+.tab-header ::v-deep .el-tabs__item {
   font-size: 12px;
   padding: 0 20px !important;
 }
 
-.blackTheme .tab-header > > > .el-tabs__item {
+.blackTheme .tab-header ::v-deep .el-tabs__item {
   background-color: var(--MainBG);
 }
 
-.tab-header > > > .el-tabs__nav-scroll {
+.tab-header ::v-deep .el-tabs__nav-scroll {
   padding-left: 0 !important;
 }
 
-.tab-header > > > .el-tabs__header {
+.tab-header ::v-deep .el-tabs__header {
   margin: 0 !important;
 }
 
-.tab-header > > > .el-tabs__content {
+.tab-header ::v-deep .el-tabs__content {
   height: calc(100% - 40px);
 }
 
@@ -2907,7 +2907,7 @@ span {
   margin: 5px;
 }
 
-.el-radio > > > .el-radio__label {
+.el-radio ::v-deep .el-radio__label {
   padding-left: 0;
 }
 
@@ -2948,15 +2948,15 @@ span {
   height: calc(100% - 20px);
 }
 
-.dialog-css > > > .el-dialog__title {
+.dialog-css ::v-deep .el-dialog__title {
   font-size: 14px;
 }
 
-.dialog-css > > > .el-dialog__header {
+.dialog-css ::v-deep .el-dialog__header {
   padding: 20px 20px 0;
 }
 
-.dialog-css > > > .el-dialog__body {
+.dialog-css ::v-deep .el-dialog__body {
   padding: 10px 20px 20px;
 }
 
@@ -3000,7 +3000,7 @@ span {
 }
 
 .tree-select-span {
-  > > > div.vue-treeselect__control {
+  ::v-deep div.vue-treeselect__control {
     height: 32px !important;
     font-weight: normal !important;
   }
@@ -3066,11 +3066,11 @@ span {
   width: 50px;
 }
 
-.result-count > > > input {
+.result-count ::v-deep input {
   padding: 0 4px;
 }
 
-.radio-span > > > .el-radio__label {
+.radio-span ::v-deep .el-radio__label {
   margin-left: 4px;
 }
 
@@ -3110,11 +3110,11 @@ span {
   height: 100%;
 }
 
-.form-item-slider>>>.el-form-item__label{
+.form-item-slider::v-deep.el-form-item__label{
   font-size: 12px;
   line-height: 38px;
 }
-.form-item>>>.el-form-item__label{
+.form-item::v-deep.el-form-item__label{
   font-size: 12px;
 }
 
@@ -3146,11 +3146,11 @@ span {
   height: calc(100% - 40px);
 }
 
-.field-split >>> .fu-split-pane__left{
+.field-split ::v-deep .fu-split-pane__left{
   padding-right: 0!important;
 }
 
-.field-split >>> .fu-split-pane__right{
+.field-split ::v-deep .fu-split-pane__right{
   padding-left: 0!important;
 }
 

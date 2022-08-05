@@ -680,7 +680,7 @@ div:focus {
   background-color: rgb(135 131 131 / 70%);
 }
 
-.blackTheme>>> ::-webkit-scrollbar-thumb {
+.blackTheme::v-deep ::-webkit-scrollbar-thumb {
   background: #38393a !important;
 }
 

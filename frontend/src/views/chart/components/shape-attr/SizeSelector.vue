@@ -438,11 +438,11 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-.form-item-slider>>>.el-form-item__label{
+.form-item-slider::v-deep.el-form-item__label{
   font-size: 12px;
   line-height: 38px;
 }
-.form-item>>>.el-form-item__label{
+.form-item::v-deep.el-form-item__label{
   font-size: 12px;
 }
 .el-select-dropdown__item{
@@ -456,7 +456,7 @@ export default {
 .el-divider--horizontal {
   margin: 10px 0
 }
-.divider-style>>>.el-divider__text{
+.divider-style::v-deep.el-divider__text{
   color: #606266;
   font-size: 12px;
   font-weight: 400;

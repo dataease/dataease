@@ -1460,7 +1460,7 @@ export default {
     overflow-x: hidden;
   }
 
-  > > > .el-tabs__item {
+  ::v-deep .el-tabs__item {
     padding: 0 15px;
   }
   .view-selected-message-class {
