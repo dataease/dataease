@@ -339,7 +339,7 @@ export default {
     padding: 4px 10px;
   }
 
-  .dialog-css::v-deep.el-dialog__title {
+  .dialog-css ::v-deep .el-dialog__title {
     font-size: 14px;
   }
   .dialog-css ::v-deep .el-dialog__header {
