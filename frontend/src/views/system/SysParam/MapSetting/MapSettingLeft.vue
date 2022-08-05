@@ -100,7 +100,7 @@ export default {
 
     filterNode(value, data) {
       if (!value) return true
-      return data.label.indexOf(value) !== -1
+      return data.name.indexOf(value) !== -1
     },
 
     nodeClick(data, node) {
@@ -149,8 +149,13 @@ export default {
         type: 'warning'
       }).then(() => {
         removeMap(param).then(res => {
-          this.$emit('refresh-tree')
-          this.$success(this.$t('commons.delete_success'))
+          this.$store.dispatch('map/setGeo', {
+            key: param.code,
+            value: null
+          }).then(() => {
+            this.$emit('refresh-tree')
+            this.$success(this.$t('commons.delete_success'))
+          })
         })
       }).catch(() => {
         this.$info(this.$t('commons.delete_cancel'))

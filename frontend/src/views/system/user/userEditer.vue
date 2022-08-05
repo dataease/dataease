@@ -361,7 +361,7 @@ export default {
         this.create();
         return;
       }
-      const { deptId:id, deptName:label }  = row.dept;
+      const { deptId:id, deptName:label }  = (row.dept || {});
       this.selectDepts = [{id, label}]
       this.formType = "modify";
       this.dialogVisible = true;

@@ -9,7 +9,7 @@
           <span class="title-left">{{ $t('panel.template_market') }}</span>
         </el-col>
         <el-col span="12">
-          <el-input v-model="searchText" size="small" class="title-right" :placeholder="$t('panel.enter_template_name_tips')" clearable="true" />
+          <el-input v-model="searchText" prefix-icon="el-icon-search" size="small" class="title-right" :placeholder="$t('panel.enter_template_name_tips')" clearable="true" />
         </el-col>
       </el-row>
       <el-row>
@@ -22,12 +22,13 @@
           v-for="(templateItem) in currentMarketTemplateShowList"
           v-show="templateItem.showFlag"
           :key="templateItem.id"
-          style="text-align: center"
+          style="text-align: center;padding: 24px 12px 0 12px"
           :style="{width: templateSpan}"
         >
           <template-market-item
             :template="templateItem"
             :base-url="baseUrl"
+            :width="templateCurWidth"
             @templateApply="templateApply"
             @templatePreview="templatePreview"
           />
@@ -48,16 +49,16 @@
       v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
       :title="$t('panel.apply_template')"
       :visible.sync="folderSelectShow"
-      width="500px"
-      class="dialog-css"
+      width="600px"
+      class="market-dialog-css"
       append-to-body="true"
       :destroy-on-close="true"
     >
-      <el-form ref="panelForm" :model="panelForm" label-width="80px">
-        <el-form-item :label="$t('panel.name')">
-          <el-input v-model="panelForm.name" :placeholder="$t('panel.enter_name_tips')" />
+      <el-form ref="panelForm" :model="panelForm" :rules="rule" label-width="80px">
+        <el-form-item :label="$t('panel.name')" prop="name">
+          <el-input v-model="panelForm.name" :clearable="true" :placeholder="$t('panel.enter_name_tips')" />
         </el-form-item>
-        <el-form-item :label="$t('commons.folder')">
+        <el-form-item :label="$t('commons.folder')" prop="pid">
           <treeselect
             v-model="panelForm.pid"
             :clearable="false"
@@ -92,7 +93,8 @@ export default {
   data() {
     return {
       hasResult: true,
-      templateMiniWidth: 350,
+      templateMiniWidth: 330,
+      templateCurWidth: 310,
       templateSpan: '25%',
       previewModel: false,
       previewVisible: false,
@@ -115,7 +117,23 @@ export default {
       folderSelectShow: false,
       baseUrl: 'https://dataease.io/templates',
       currentMarketTemplateShowList: [],
-      networkStatus: true
+      networkStatus: true,
+      rule: {
+        name: [
+          {
+            required: true,
+            message: this.$t('panel.template_name_tips'),
+            trigger: 'blur'
+          }
+        ],
+        pid: [
+          {
+            required: true,
+            message: '',
+            trigger: 'blur'
+          }
+        ]
+      }
     }
   },
   computed: {
@@ -138,8 +156,9 @@ export default {
     // 监听div变动事件
     erd.listenTo(templateMainDom, element => {
       _this.$nextTick(() => {
+        const curSeparator = Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)
         _this.templateSpan = (100 / Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)) + '%'
-        console.log('templateSpan=' + _this.templateSpan)
+        _this.templateCurWidth = Math.trunc(templateMainDom.offsetWidth / curSeparator) - 33
       })
     })
   },
@@ -243,11 +262,11 @@ export default {
   .template-main{
     text-align: center;
     border-radius: 4px;
-    padding-bottom: 24px;
+    padding: 0 12px 24px 12px;
     height: calc(100vh - 190px)!important;
     overflow-x: hidden;
     overflow-y: auto;
-    background: #fff ;
+    background-color: var(--ContentBG,#ffffff);
   }
   .market-main{
     padding:24px
@@ -257,13 +276,14 @@ export default {
     font-size: 20px;
     font-weight: 500;
     line-height: 28px;
+    color: var(--TextPrimary, #1F2329);
   }
   .title-right{
     float: right;
     width: 320px;
   }
   .dialog-footer-self{
-    text-align: center;
+    text-align: right;
   }
   .search-button-self{
     text-align: left;
@@ -303,7 +323,36 @@ export default {
   .outer-body{
     width: 100%;
     height: calc(100vh - 56px);
-    background: #f5f6f7;
+    background-color: var(--MainBG,#f5f6f7);
+  }
+
+  .market-dialog-css{
+    ::v-deep .el-form-item__label {
+      width: 100% !important;
+      text-align: left;
+    }
+
+    ::v-deep
+    .el-form-item.is-required:not(.is-no-asterisk)
+    > .el-form-item__label:before {
+      display: none;
+    }
+
+    ::v-deep
+    .el-form-item.is-required:not(.is-no-asterisk)
+    > .el-form-item__label::after {
+      content: "*";
+      color: #f54a45;
+      margin-left: 2px;
+    }
+
+    ::v-deep .el-form-item__content {
+      margin-left: 0 !important;
+    }
+
+    ::v-deep .vue-treeselect__input{
+      vertical-align:middle;
+    }
   }
 
 </style>

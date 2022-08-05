@@ -1,22 +1,9 @@
 <template>
   <div>
-    <el-empty v-if="status === 'empty'" description="请在左侧选择区域" />
 
-    <el-descriptions v-else-if="status === 'read-only'" title="区域信息" :column="1">
-
-      <el-descriptions-item :label="$t('map_setting.area_code')">{{ nodeInfo.code }}</el-descriptions-item>
-
-      <el-descriptions-item :label="$t('map_setting.area_name')">{{ nodeInfo.name }}</el-descriptions-item>
-
-      <el-descriptions-item :label="$t('map_setting.parent_name')">{{ nodeInfo.pname }}</el-descriptions-item>
-
-      <el-descriptions-item :label="$t('map_setting.geo_json')">
-        <json-view :data="json" />
-      </el-descriptions-item>
-    </el-descriptions>
     <!--基础配置表单-->
     <el-form
-      v-else
+      v-if="status !== 'empty' && status !== 'read-only'"
       ref="formInline"
       v-loading="loading"
       :model="formInline"
@@ -34,7 +21,8 @@
                 v-if="treeShow"
                 ref="deSelectTree"
                 v-model="formInline.pCode"
-                popover-class="test-class-wrap"
+                :popper-append-to-body="true"
+                popover-class="map-class-wrap"
                 :data="treeDatas"
                 :select-params="selectParams"
                 :tree-params="treeParams"
@@ -108,6 +96,20 @@
       </div>
     </el-form>
 
+    <el-descriptions v-else-if="status === 'read-only'" title="区域信息" :column="1">
+
+      <el-descriptions-item :label="$t('map_setting.area_code')">{{ nodeInfo.code }}</el-descriptions-item>
+
+      <el-descriptions-item :label="$t('map_setting.area_name')">{{ nodeInfo.name }}</el-descriptions-item>
+
+      <el-descriptions-item :label="$t('map_setting.parent_name')">{{ nodeInfo.pname }}</el-descriptions-item>
+
+      <el-descriptions-item :label="$t('map_setting.geo_json')">
+        <json-view :data="json" />
+      </el-descriptions-item>
+    </el-descriptions>
+
+    <el-empty v-else-if="status === 'empty'" description="请在左侧选择区域" />
   </div>
 </template>
 
@@ -131,7 +133,7 @@ export default {
   },
   data() {
     return {
-      formInline: { pCode: '' },
+      formInline: { pCode: '', fileName: '' },
       loading: false,
       rules: {
         pCode: [
@@ -227,7 +229,7 @@ export default {
       return true
     },
     uploadMapFile(file) {
-      this.formInline.fileName = file.file.name
+      this.$set(this.formInline, 'fileName', file.file.name)
       this.formInline.file = file.file
     },
     removeFile() {
@@ -345,5 +347,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.map-class-wrap{
+  top: 65px !important;
+  left: 0px !important;
+}
 </style>

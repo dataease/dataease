@@ -142,7 +142,7 @@ public class ApiProvider extends Provider {
 
         switch (apiDefinition.getMethod()) {
             case "GET":
-                response = HttpClientUtil.get(apiDefinition.getUrl(), httpClientConfig);
+                response = HttpClientUtil.get(apiDefinition.getUrl().trim(), httpClientConfig);
                 break;
             case "POST":
                 if (apiDefinitionRequest.getBody().get("type") == null) {
@@ -318,27 +318,31 @@ public class ApiProvider extends Provider {
     }
 
     static void mergeValue(JSONObject field, ApiDefinition apiDefinition, JSONObject item) {
-
         JSONArray array = field.getJSONArray("value");
         if (array != null && item.getString("value") != null && array.size() < apiDefinition.getPreviewNum()) {
             array.add(item.getJSONArray("value").get(0).toString());
             field.put("value", array);
         }
         if(CollectionUtils.isNotEmpty(field.getJSONArray("children"))&&  CollectionUtils.isNotEmpty(item.getJSONArray("children"))){
-            JSONArray objectChildren = field.getJSONArray("children");
-            JSONArray jsonArrayChildren = new JSONArray();
+            JSONArray fieldChildren = field.getJSONArray("children");
             JSONArray itemChildren = item.getJSONArray("children");
-            for (Object objectChild : objectChildren) {
-                JSONObject jsonObject = JSONObject.parseObject(objectChild.toString());
+
+            JSONArray fieldArrayChildren = new JSONArray();
+            for (Object fieldChild : fieldChildren) {
+                JSONObject jsonObject = JSONObject.parseObject(fieldChild.toString());
+                JSONObject find = null;
                 for (Object itemChild : itemChildren) {
                     JSONObject itemObject = JSONObject.parseObject(itemChild.toString());
                     if(jsonObject.getString("jsonPath").equals(itemObject.getString("jsonPath"))){
-                        mergeValue(jsonObject, apiDefinition, itemObject);
-                        jsonArrayChildren.add(jsonObject);
+                        find = itemObject;
                     }
                 }
+                if(find != null){
+                    mergeValue(jsonObject, apiDefinition, find);
+                }
+                fieldArrayChildren.add(jsonObject);
             }
-            field.put("children", jsonArrayChildren);
+            field.put("children", fieldArrayChildren);
         }
     }
 

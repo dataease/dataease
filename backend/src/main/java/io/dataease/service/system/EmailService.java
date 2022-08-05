@@ -132,15 +132,16 @@ public class EmailService {
     }
 
     private MimeMultipart addFiles(MimeMultipart multipart, List<File> files) throws Exception{
+
         for (int i = 0; i < files.size(); i++) {
             File file = files.get(i);
             MimeBodyPart attach = new MimeBodyPart();
             FileDataSource fileDataSource = new FileDataSource(file);
             attach.setDataHandler(new DataHandler(fileDataSource));
-            attach.setFileName(MimeUtility.encodeText(file.getName()));
+            attach.setFileName(MimeUtility.encodeText(file.getName(), "gb2312", null));
             multipart.addBodyPart(attach);
         }
-        System.getProperties().setProperty("mail.mime.splitlongparameters", "false");
+
         multipart.setSubType("related");
         return multipart;
     }
@@ -170,6 +171,7 @@ public class EmailService {
     }
 
     public MailInfo mailInfo() {
+        System.getProperties().setProperty("mail.mime.splitlongparameters", "false");
         String type = ParamConstants.Classify.MAIL.getValue();
         List<SystemParameter> paramList = getParamList(type);
         MailInfo mailInfo = new MailInfo();

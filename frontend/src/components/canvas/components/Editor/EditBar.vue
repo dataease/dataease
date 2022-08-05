@@ -5,18 +5,13 @@
       <el-checkbox v-model="linkageInfo.linkageActive" size="medium" />
       <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
     </div>
-    <div v-if="positionCheck('multiplexing')" style="margin-right: 1px;width: 18px;z-index: 5">
+    <div v-if="positionCheck('multiplexing') && showMultiplexingCheck" style="margin-right: 1px;width: 18px;z-index: 5">
       <el-checkbox v-model="multiplexingCheckModel" size="medium" @change="multiplexingCheck" />
     </div>
     <div v-if="batchOptAreaShow" style="margin-right: -1px;width: 20px;z-index: 5">
       <el-checkbox size="medium" @change="batchOptChange" />
     </div>
     <div v-if="normalAreaShow">
-      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
-        <span slot="icon" :title="$t('panel.setting')">
-          <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
-        </span>
-      </setting-menu>
       <span :title="$t('panel.edit')">
         <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
       </span>
@@ -26,12 +21,17 @@
       <span :title="$t('panel.suspension')">
         <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
       </span>
-      <span :title="$t('panel.details')">
-        <i v-if="curComponent.type==='view'" class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
-      </span>
       <span :title="$t('panel.enlarge')">
         <i v-if="curComponent.type==='view'" class="icon iconfont icon-fangda" @click.stop="showViewDetails('enlarge')" />
       </span>
+      <span :title="$t('panel.details')">
+        <i v-if="curComponent.type==='view' && terminal==='pc'" class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
+      </span>
+      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
+        <span slot="icon" :title="$t('panel.setting')">
+          <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
+        </span>
+      </setting-menu>
       <span :title="$t('panel.cancel_linkage')">
         <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
       </span>
@@ -58,6 +58,10 @@ export default {
   components: { SettingMenu, LinkageField },
 
   props: {
+    terminal: {
+      type: String,
+      default: 'pc'
+    },
     sourceElement: {
       type: Object,
       required: true
@@ -104,6 +108,16 @@ export default {
   mounted() {
   },
   computed: {
+    curComponentTypes() {
+      const types = []
+      this.componentData.forEach(component => {
+        types.push(component.type)
+      })
+      return types
+    },
+    showMultiplexingCheck() {
+      return this.element.type !== 'custom-button' || (this.element.type === 'custom-button' && !this.curComponentTypes.includes('custom-button'))
+    },
     showEditPosition() {
       if (this.activeModel === 'edit' && !this.linkageAreaShow && !this.batchOptAreaShow) {
         const toRight = (this.canvasStyleData.width - this.element.style.left - this.element.style.width) * this.curCanvasScale.scalePointWidth
@@ -151,14 +165,10 @@ export default {
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
     miniHeight() {
-      let miniHeight = 4
-      if (this.element.component === 'de-number-range') {
-        miniHeight = 4
-      }
-      return miniHeight
+      return this.mobileLayoutStatus ? 1 : 4
     },
     miniWidth() {
-      return 4
+      return this.mobileLayoutStatus ? 1 : 4
     },
     ...mapState([
       'menuTop',
@@ -172,6 +182,7 @@ export default {
       'curLinkageView',
       'curCanvasScale',
       'batchOptStatus',
+      'mobileLayoutStatus',
       'curBatchOptComponents'
     ])
   },
@@ -315,7 +326,7 @@ export default {
     padding-left: 3px;
     padding-right: 0px;
     cursor:pointer!important;
-    background-color: rgba(10,123,224, 1);
+    background-color: #3370ff;
   }
   .bar-main i{
     color: white;

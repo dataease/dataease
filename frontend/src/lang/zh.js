@@ -1575,6 +1575,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    template_name_tips: '仪表板名称必填',
     panel_background_item: '自定义仪表板背景',
     panel_background_image_tips: '当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M',
     reUpload: '重新上传',

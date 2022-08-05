@@ -165,7 +165,7 @@
           <el-table-column property="" :label="$t('dataset.operator')">
             <template slot-scope="scope">
               <el-button
-                v-if="scope.row.extField === 2"
+                v-if="scope.row.extField !== 0"
                 type="text"
                 size="mini"
                 @click="editField(scope.row)"
@@ -319,7 +319,7 @@
           <el-table-column property="" :label="$t('dataset.operator')">
             <template slot-scope="scope">
               <el-button
-                v-if="scope.row.extField === 2"
+                v-if="scope.row.extField !== 0"
                 type="text"
                 size="mini"
                 @click="editField(scope.row)"
@@ -350,6 +350,7 @@
       <calc-chart-field-edit
         :param="param"
         :field="currEditField"
+        :mode="currEditField.extField === 1 ? 'copy' : 'normal'"
         @onEditClose="closeCalcField"
       />
     </el-dialog>

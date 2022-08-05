@@ -1,6 +1,6 @@
 <template>
   <div class="testcase-template">
-    <el-row class="template-img" :style="classBackground" />
+    <div class="template-img" :style="classBackground" @click.stop="templatePreview" />
     <el-row class="bottom-area">
       <el-row>
         <span class="demonstration">{{ template.title }}</span>
@@ -25,6 +25,9 @@ export default {
     },
     baseUrl: {
       type: String
+    },
+    width: {
+      type: Number
     }
   },
   data() {
@@ -34,6 +37,8 @@ export default {
   computed: {
     classBackground() {
       return {
+        width: this.width + 'px',
+        height: this.width * 0.58 + 'px',
         background: `url(${this.thumbnailUrl}) no-repeat`,
         'background-size': `100% 100%`
       }
@@ -66,12 +71,12 @@ export default {
   .testcase-template {
     position: relative;
     display: inline-block;
-    margin: 24px 0 0 0;
+    margin: 0;
     box-shadow: 0 0 2px 0 rgba(31,31,31,0.15), 0 1px 2px 0 rgba(31,31,31,0.15);
     border: solid 2px #fff;
     box-sizing: border-box;
     border-radius: 4px;
-    height: 256px;
+    width: 100%;
   }
 
   .demonstration {
@@ -83,12 +88,11 @@ export default {
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+    color: var(--TextPrimary, #1F2329);
   }
 
   .template-img {
     background-size: 100% 100%;
-    height: 180px;
-    width: 318px;
     margin: 0 auto;
     border: solid 2px #fff;
     box-sizing: border-box;
@@ -110,7 +114,10 @@ export default {
     position:absolute;
     bottom: 5px;
     left: 0px;
-    width: 318px;
+    width: 100%;
   }
 
+  .bottom-area{
+    height: 75px;
+  }
 </style>

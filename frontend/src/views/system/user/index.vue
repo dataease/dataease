@@ -378,8 +378,9 @@ export default {
     pluginLoaded()
       .then((res) => {
         this.isPluginLoaded = res.success && res.data;
-        if (this.isPluginLoaded) {
-          // this.searchConfig.components.push(...this.extraFilterComponents);
+        if (!this.isPluginLoaded) {
+          this.checkedColumnNames = this.checkedColumnNames.filter(ele => !['dept', 'roles'].includes(ele))
+          this.columnNames = this.columnNames.filter(ele => !['dept', 'roles'].includes(ele.props))
         }
         this.canLoadDom = true;
       })
@@ -448,6 +449,9 @@ export default {
       this.checkedColumnNames = val
         ? columnOptions.map((ele) => ele.props)
         : [];
+      if (!this.isPluginLoaded) {
+          this.checkedColumnNames = this.checkedColumnNames.filter(ele => !['dept', 'roles'].includes(ele))
+        }
       this.isIndeterminate = false;
     },
     handleCheckedColumnNamesChange(value) {
@@ -719,8 +723,8 @@ export default {
   }
 
   .normal {
-    color: #1f2329;
-    border: 1px solid #bbbfc4;
+    color: var(----deTextPrimary, #1F2329);
+    border: 1px solid var(--deBorderBase, #BBBFC4);
     margin-left: 12px;
   }
 
@@ -755,9 +759,6 @@ export default {
 
   .name-email-search {
     width: 240px;
-    ::v-deep input {
-      border-color: #bbbfc4;
-    }
   }
 
   .active-btn {
