@@ -239,16 +239,16 @@ export default {
     margin: 15px 0px 5px;
     text-align: center;
   }
-  .avatar-uploader::v-deep.el-upload {
+  .avatar-uploader ::v-deep .el-upload {
     width: 120px;
     height: 80px;
     line-height: 90px;
   }
-  .avatar-uploader::v-deep.el-upload-list li{
+  .avatar-uploader ::v-deep .el-upload-list li{
     width: 120px !important;
     height: 80px !important;
   }
-  .disabled::v-deep.el-upload--picture-card {
+  .disabled ::v-deep .el-upload--picture-card {
     display: none;
   }
   .shape-item{
@@ -259,11 +259,11 @@ export default {
     justify-content: space-between;
     align-items: center;
   }
-  .form-item-slider::v-deep.el-form-item__label{
+  .form-item-slider ::v-deep .el-form-item__label{
     font-size: 12px;
     line-height: 38px;
   }
-  .form-item::v-deep.el-form-item__label{
+  .form-item ::v-deep .el-form-item__label{
     font-size: 12px;
   }
   .el-select-dropdown__item{
