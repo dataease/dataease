@@ -411,10 +411,10 @@ export default {
 </script>
 
 <style scoped>
-  .table-class::v-deep.body--wrapper{
+  .table-class ::v-deep .body--wrapper{
     background: rgba(1,1,1,0);
   }
-  .table-class::v-deep.elx-cell{
+  .table-class ::v-deep .elx-cell{
     max-height: none!important;
     line-height: normal!important;
   }
