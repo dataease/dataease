@@ -286,7 +286,7 @@ export default {
   min-width: 640px;
   height: auto;
   position: relative;
-  ::v-deepdiv.el-card__header {
+  ::v-deep div.el-card__header {
     padding: 0;
   }
 }
