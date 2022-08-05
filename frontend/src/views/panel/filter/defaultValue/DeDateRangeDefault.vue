@@ -5,7 +5,7 @@
       <el-form-item :label="$t('dynamic_time.set_default')">
         <el-radio-group v-model="element.options.attrs.default.isDynamic" @change="dynamicChange">
           <el-radio :label="false">{{ $t('dynamic_time.fix') }}</el-radio>
-          <el-radio :label="true">{{ $t('dynamic_time.dynamic') }}</el-radio>
+          <el-radio :label="true" :disabled="isTimeWidget && element.options.attrs.showTime">{{ $t('dynamic_time.dynamic') }}</el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -136,7 +136,8 @@
       <el-form-item v-if="element.options.attrs.default.isDynamic" :label="$t('dynamic_time.preview')">
         <el-date-picker
           v-model="dval"
-          :type="element.options.attrs.type"
+          :type="componentType"
+          :format="labelFormat"
           disabled
           class="relative-time"
           placeholder=""
@@ -175,6 +176,27 @@ export default {
   data() {
     return {
       dval: null
+    }
+  },
+  computed: {
+
+    isTimeWidget() {
+      const widget = ApplicationContext.getService(this.element.serviceName)
+      return widget.isTimeWidget && widget.isTimeWidget()
+    },
+    componentType() {
+      let result = 'daterange'
+      if (this.isTimeWidget && this.element.options.attrs.showTime) {
+        result = 'datetimerange'
+      }
+      return result
+    },
+    labelFormat() {
+      const result = 'yyyy-MM-dd'
+      if (this.isTimeWidget && this.element.options.attrs.showTime && this.element.options.attrs.accuracy) {
+        return result + ' ' + this.element.options.attrs.accuracy
+      }
+      return result
     }
   },
   created() {

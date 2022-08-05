@@ -230,8 +230,9 @@ export default {
         }
         let start = values[0]
         let end = values[1]
-        start = timeSection(start, 'date')[0]
-        end = timeSection(end, 'date')[1]
+        start = timeSection(start, 'datetime', this.labelFormat)[0]
+        end = timeSection(end, 'datetime', this.labelFormat)[1]
+
         const results = [start, end]
         return results
       } else {
@@ -264,9 +265,6 @@ export default {
 .coustom-date-picker {
   border:1px solid var(--BrDateColor, #dfe4ed) !important;
   background: var(--BgDateColor, #FFFFFF) !important;
-  // .popper__arrow::after{
-  //   border-bottom-color: var(--BgDateColor, #FFFFFF) !important;
-  // }
 
   .popper__arrow,
   .popper__arrow::after {
