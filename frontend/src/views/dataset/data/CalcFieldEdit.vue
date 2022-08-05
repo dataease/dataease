@@ -425,13 +425,13 @@ export default {
 </script>
 
 <style scoped>
-  .row-style::v-deep.el-form-item__label{
+  .row-style ::v-deep .el-form-item__label{
     font-size: 12px;
   }
-  .row-style::v-deep.el-form-item--mini.el-form-item{
+  .row-style ::v-deep .el-form-item--mini.el-form-item{
     margin-bottom: 10px;
   }
-  .row-style::v-deep.el-form-item__content{
+  .row-style ::v-deep .el-form-item__content{
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -570,7 +570,7 @@ export default {
     overflow: auto;
     margin-top: 4px;
   }
-  .function-pop::v-deep.el-popover{
+  .function-pop ::v-deep .el-popover{
     padding: 6px!important;
   }
   .pop-title{
