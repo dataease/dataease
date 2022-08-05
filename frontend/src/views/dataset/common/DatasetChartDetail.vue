@@ -169,7 +169,7 @@ export default {
 </script>
 
 <style scoped>
-  .info-tab>>>.el-tabs__item{
+  .info-tab ::v-deep .el-tabs__item{
     font-weight: 400;
     font-size: 12px;
   }

@@ -227,11 +227,11 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-.form-item-slider>>>.el-form-item__label{
+.form-item-slider ::v-deep .el-form-item__label{
   font-size: 12px;
   line-height: 38px;
 }
-.form-item>>>.el-form-item__label{
+.form-item ::v-deep .el-form-item__label{
   font-size: 12px;
 }
 .el-select-dropdown__item{
@@ -254,15 +254,15 @@ span{
   z-index: 1003;
 }
 
-.dialog-css >>> .el-dialog__title {
+.dialog-css ::v-deep .el-dialog__title {
   font-size: 14px;
 }
 
-.dialog-css >>> .el-dialog__header {
+.dialog-css ::v-deep .el-dialog__header {
   padding: 20px 20px 0;
 }
 
-.dialog-css >>> .el-dialog__body {
+.dialog-css ::v-deep .el-dialog__body {
   padding: 10px 20px 20px;
 }
 </style>

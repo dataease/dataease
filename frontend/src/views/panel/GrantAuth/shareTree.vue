@@ -213,7 +213,7 @@ export default {
   .msg-node-class {
     color: red;
 
-    > > > i {
+    ::v-deep i {
       color: red;
     }
   }

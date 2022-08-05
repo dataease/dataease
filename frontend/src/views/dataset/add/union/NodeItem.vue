@@ -249,7 +249,7 @@ export default {
   cursor: pointer;
   border: var(--Main,#2681ff) solid 1px;
 }
-.dialog-css >>> .el-dialog__body {
+.dialog-css ::v-deep .el-dialog__body {
   padding: 0 20px;
 }
 </style>

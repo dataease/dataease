@@ -339,13 +339,13 @@ export default {
     padding: 4px 10px;
   }
 
-  .dialog-css>>>.el-dialog__title {
+  .dialog-css ::v-deep .el-dialog__title {
     font-size: 14px;
   }
-  .dialog-css >>> .el-dialog__header {
+  .dialog-css ::v-deep .el-dialog__header {
     padding: 20px 20px 0;
   }
-  .dialog-css >>> .el-dialog__body {
+  .dialog-css ::v-deep .el-dialog__body {
     padding: 10px 20px 20px;
   }
 </style>

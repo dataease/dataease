@@ -275,23 +275,23 @@ export default {
   margin: 5px 5px 10px 5px;
 }
 
-.el-select >>> input {
+.el-select ::v-deep input {
   padding-right: 10px;
 }
 
-.el-select >>> .el-input__suffix {
+.el-select ::v-deep .el-input__suffix {
   right: 0;
 }
 
-.dialog-css >>> .el-dialog__header {
+.dialog-css ::v-deep .el-dialog__header {
   padding: 10px 20px 0px;
 }
 
-.dialog-css >>> .el-dialog__body {
+.dialog-css ::v-deep .el-dialog__body {
   padding: 10px 20px 10px;
 }
 
-.dialog-footer >>> .el-dialog__footer {
+.dialog-footer ::v-deep .el-dialog__footer {
   padding: 10px 10px 10px;
 }
 

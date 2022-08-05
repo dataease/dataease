@@ -787,7 +787,7 @@ export default {
     padding: 10px;
     height: 100%;
 
-    >>>div.el-tabs__content {
+    ::v-deep div.el-tabs__content {
       height: calc(100% - 55px);
     }
   }

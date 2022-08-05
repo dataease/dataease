@@ -447,13 +447,13 @@ export default {
   color: #606266;
   white-space:nowrap;
 }
-.page-style >>> .el-input__inner{
+.page-style ::v-deep .el-input__inner{
   height: 24px;
 }
-.page-style >>> button{
+.page-style ::v-deep button{
   background: transparent!important;
 }
-.page-style >>> li{
+.page-style ::v-deep li{
   background: transparent!important;
 }
 </style>

@@ -224,15 +224,15 @@ export default {
 .el-radio{
   margin-right: 10px;
 }
-.el-radio>>>.el-radio__label{
+.el-radio ::v-deep .el-radio__label{
   font-size: 12px;
 }
 
-.dialog-css >>> .el-dialog__header {
+.dialog-css ::v-deep .el-dialog__header {
   padding: 20px 20px 0;
 }
 
-.dialog-css >>> .el-dialog__body {
+.dialog-css ::v-deep .el-dialog__body {
   padding: 10px 20px 20px;
 }
 

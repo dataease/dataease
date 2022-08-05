@@ -951,7 +951,7 @@ export default {
 
   }
 
-  .active > > > .icon-fangda {
+  .active ::v-deep .icon-fangda {
     z-index: 2;
     display: block !important;
   }

@@ -113,13 +113,13 @@ export default {
 <style lang="scss" scoped>
 .de-msg-radio-class {
   padding: 0 5px;
-  >>>.el-radio-button__inner {
+  ::v-deep .el-radio-button__inner {
     border-radius: 4px 4px 4px 4px !important;
     border-left: 1px solid #dcdfe6 !important;
     padding: 10px 10px;
   }
 
-  >>>.el-radio-button__orig-radio:checked+.el-radio-button__inner {
+  ::v-deep .el-radio-button__orig-radio:checked+.el-radio-button__inner {
     color: #fff;
     background-color: #0a7be0;
     border-color: #0a7be0;

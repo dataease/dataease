@@ -83,11 +83,11 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-.form-item-slider>>>.el-form-item__label{
+.form-item-slider ::v-deep .el-form-item__label{
   font-size: 12px;
   line-height: 38px;
 }
-.form-item>>>.el-form-item__label{
+.form-item ::v-deep .el-form-item__label{
   font-size: 12px;
 }
 .el-select-dropdown__item{
@@ -110,7 +110,7 @@ span{
   z-index: 1003;
 }
 
-.scroll-style >>> .el-input-number--mini {
+.scroll-style ::v-deep .el-input-number--mini {
   width: 120px !important;
 }
 </style>

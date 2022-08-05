@@ -287,14 +287,14 @@ export default {
     justify-content: left;
     align-items: center;
   }
-  .form-item>>>.el-form-item__label{
+  .form-item ::v-deep .el-form-item__label{
     font-size: 12px;
   }
   span{
     font-size: 12px;
   }
 
-  .value-item>>>.el-input{
+  .value-item ::v-deep .el-input{
     position: relative;
     display: inline-block;
     width: 80px!important;

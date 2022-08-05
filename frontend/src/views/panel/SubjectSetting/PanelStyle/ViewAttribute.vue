@@ -47,7 +47,7 @@ export default {
 
 <style scoped>
 
-.form-item>>>.el-form-item__label{
+.form-item ::v-deep .el-form-item__label{
   font-size: 12px;
 }
 

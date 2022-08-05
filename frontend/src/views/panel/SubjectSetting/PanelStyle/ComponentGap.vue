@@ -50,18 +50,18 @@ export default {
 </script>
 
 <style scoped>
-  .avatar-uploader >>> .el-upload {
+  .avatar-uploader ::v-deep .el-upload {
     width: 100px;
     height: 60px;
     line-height: 70px;
   }
 
-  .avatar-uploader >>> .el-upload-list li {
+  .avatar-uploader ::v-deep .el-upload-list li {
     width: 100px !important;
     height: 60px !important;
   }
 
-  .disabled >>> .el-upload--picture-card {
+  .disabled ::v-deep .el-upload--picture-card {
     display: none;
   }
 
@@ -74,12 +74,12 @@ export default {
     align-items: center;
   }
 
-  .form-item-slider >>> .el-form-item__label {
+  .form-item-slider ::v-deep .el-form-item__label {
     font-size: 12px;
     line-height: 38px;
   }
 
-  .form-item >>> .el-form-item__label {
+  .form-item ::v-deep .el-form-item__label {
     font-size: 12px;
   }
 

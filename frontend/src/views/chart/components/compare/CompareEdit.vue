@@ -108,15 +108,15 @@ export default {
 .el-form-item{
   margin-bottom: 10px!important;
 }
-.compare-form >>> .el-form-item__label{
+.compare-form ::v-deep .el-form-item__label{
   font-size: 12px!important;
   font-weight: 400!important;
 }
-.compare-form >>> .el-radio__label{
+.compare-form ::v-deep .el-radio__label{
   font-size: 12px!important;
   font-weight: 400!important;
 }
-.el-select-dropdown__item >>> span{
+.el-select-dropdown__item ::v-deep span{
   font-size: 12px!important;
 }
 .exp-style{

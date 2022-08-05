@@ -135,28 +135,17 @@ export default {
     height: calc(100vh - 56px);
     padding: 0px;
   }
-
-  /*.tab-panel>>>.is-stretch{*/
-  /*  min-width: 80% !important;*/
-  /*}*/
-  /*.tab-panel>>>.el-tabs__nav-scroll {*/
-  /*  overflow: hidden;*/
-  /*  text-align: center;*/
-  /*  display: flex;*/
-  /*  align-items: center;*/
-  /*  justify-content: center;*/
-  /*}*/
   .tab-panel{
     height: 100%;
     overflow-y: auto;
   }
-  .tab-panel>>>.el-tabs__nav-wrap{
+  .tab-panel ::v-deep .el-tabs__nav-wrap{
     padding: 0 10px;
   }
-  .tab-panel>>>.el-tabs__nav-wrap::after {
+  .tab-panel ::v-deep .el-tabs__nav-wrap::after {
     height: 1px;
   }
-  .tab-panel>>>.el-tabs__item{
+  .tab-panel ::v-deep .el-tabs__item{
     /* width: 10px; */
     padding: 0 10px;
   }

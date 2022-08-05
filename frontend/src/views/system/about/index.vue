@@ -166,7 +166,7 @@ export default {
         min-width: 640px;
         height: 400px;
         position: relative;
-        >>>div.el-card__header {
+        ::v-deep div.el-card__header {
             padding: 0;
         }
     }
@@ -181,14 +181,14 @@ export default {
     .license-content {
         font-size: 16px;
         padding: 50px;
-        >>>table {
+        ::v-deep table {
             width: 100%;
         }
-        >>>th {
+        ::v-deep th {
             text-align: left;
             width: 45%;
         }
-        >>>td {
+        ::v-deep td {
             display: table-cell;
             vertical-align: inherit;
         }
@@ -205,7 +205,7 @@ export default {
         max-width: 100%;
         justify-content: space-between;
 
-        >>>a{
+        ::v-deep a{
             color: rgb(10,123,224);
             cursor: pointer;
         }

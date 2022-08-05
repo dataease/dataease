@@ -282,7 +282,7 @@ export default {
 </script>
 
 <style scoped>
-.table-class>>>.body--wrapper{
+.table-class ::v-deep .body--wrapper{
   background: rgba(1,1,1,0);
 }
 </style>

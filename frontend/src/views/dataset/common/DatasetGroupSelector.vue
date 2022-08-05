@@ -398,7 +398,7 @@ export default {
     padding: 12px 0;
   }
 
-  .tree-list>>>.el-tree-node__expand-icon.is-leaf{
+  .tree-list ::v-deep .el-tree-node__expand-icon.is-leaf{
     display: none;
   }
 

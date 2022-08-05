@@ -251,7 +251,7 @@ export default {
   cursor: pointer;
   color: var(--Main,#2681ff);
 }
-.dialog-css >>> .el-dialog__body {
+.dialog-css ::v-deep .el-dialog__body {
   padding: 0 20px;
 }
 </style>
