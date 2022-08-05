@@ -15,7 +15,6 @@
               <el-popover
                 width="400"
                 trigger="click"
-                style="background-color: rgba(255,255,255,0);"
               > 
                 <p class="pop_title">
                   <span>详情</span>
@@ -536,13 +535,13 @@ export default {
 <style lang="scss" scoped>
 .pop_title {
   text-align: center;
-  background-color: #323f9a;
+  background-color: #082456;
   line-height: 30px;
   color: white;
 }
 
 .pop_content {
-  background-color: rgb(129, 141, 232,0.8);
+  background-color: #1b2642;
   color: white;
   ::v-deep .el-form-item {
     margin-bottom: 10px;
@@ -640,6 +639,10 @@ export default {
   white-space: nowrap;
 	overflow: hidden;
   text-overflow: ellipsis;
+
+  ::v-deep .el-popover .el-popover .el-popover {
+    padding: 0px !important;
+  }
 
   // .child{
 
