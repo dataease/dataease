@@ -353,11 +353,11 @@ export default {
   justify-content: space-between;
   align-items: center
 }
-.form-item-slider::v-deep.el-form-item__label{
+.form-item-slider ::v-deep .el-form-item__label{
   font-size: 12px;
   line-height: 38px;
 }
-.form-item::v-deep.el-form-item__label{
+.form-item ::v-deep .el-form-item__label{
   font-size: 12px;
 }
 .el-select-dropdown__item{
@@ -378,14 +378,14 @@ export default {
     width: 60px;
   }
 
-  .color-type::v-deep.el-radio__input{
+  .color-type ::v-deep .el-radio__input{
     display: none;
   }
   .el-radio{
     margin:0 2px 0 0!important;
     border: 1px solid transparent;
   }
-  .el-radio::v-deep.el-radio__label{
+  .el-radio ::v-deep .el-radio__label{
     padding-left: 0;
   }
 
