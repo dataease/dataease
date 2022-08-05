@@ -607,11 +607,11 @@ export default {
     height: 100%;
   }
 
-  .form-item-slider::v-deep.el-form-item__label{
+  .form-item-slider ::v-deep .el-form-item__label{
     font-size: 12px;
     line-height: 38px;
   }
-  .form-item::v-deep.el-form-item__label{
+  .form-item ::v-deep .el-form-item__label{
     font-size: 12px;
   }
   </style>
