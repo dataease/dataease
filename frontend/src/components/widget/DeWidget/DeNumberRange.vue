@@ -266,7 +266,7 @@ export default {
 .de-number-range-container {
   display: inline;
   max-height: 40px;
-  ::v-deepdiv.el-form-item {
+  ::v-deep div.el-form-item {
     width: calc(50% - 10px) !important;
     display: inline-block;
     padding: 0 5px;
