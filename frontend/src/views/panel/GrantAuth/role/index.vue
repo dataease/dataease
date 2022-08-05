@@ -160,7 +160,7 @@ export default {
   /* 去除下边框 */
   height: 0;
 }
-.my_table::v-deep.el-table-column--selection .cell{
+.my_table ::v-deep .el-table-column--selection .cell{
   text-align: center;
 }
 </style>
