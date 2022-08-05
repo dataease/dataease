@@ -1,9 +1,9 @@
 <template>
 
   <el-select
-    class="deSelect"
     v-if="element.options!== null && element.options.attrs!==null && show"
     ref="deSelect"
+    class="deSelect"
     v-model="value"
     :collapse-tags="showNumber"
     :clearable="!element.options.attrs.multiple"
@@ -198,6 +198,7 @@ export default {
         value: this.formatFilterValue(),
         operator: this.operator
       }
+      console.log('param触发---', param)
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     formatFilterValue() {

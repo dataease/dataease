@@ -337,17 +337,19 @@ export default {
       }
     },
     changeValue(value) {
-      console.log('value', value)
+      console.log('轮播框的值', value, this.inDraw)
       if (!this.inDraw) {
-        if (value === null) {
-          this.element.options.value = ''
-        } else {
-          this.element.options.value = Array.isArray(value) ? value.join() : value
-        }
-        this.element.options.manualModify = false
-      } else {
-        this.element.options.manualModify = true
+        this.element.options.value = value
+      //   if (value === null) {
+      //     this.element.options.value = ''
+      //   } else {
+      //     this.element.options.value = Array.isArray(value) ? value.join() : value
+      //   }
+      //   this.element.options.manualModify = false
+      // } else {
+      //   this.element.options.manualModify = true
       }
+      this.element.options.value = Array.isArray(value) ? value.join() : value
       this.setCondition()
     },
 
@@ -357,6 +359,7 @@ export default {
         value: this.formatFilterValue(),
         operator: this.operator
       }
+      console.log(' this.inDraw ', this.inDraw)
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     formatFilterValue() {

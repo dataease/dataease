@@ -43,7 +43,7 @@ const dialogPanel = {
   miniSizey: 1
 }
 const drawPanel = {
-  type: 'custom',
+  type: 'customBanner',
   style: {
     width: 300,
     height: 90,

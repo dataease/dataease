@@ -48,7 +48,7 @@
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-weather'" class="icon iconfont icon-genghuan" @click.stop="setWeather" />
       </span>
       <span :title="$t('panel.switch_picture')">
-        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='custom'" class="icon iconfont icon-genghuan" @click.stop="setCustom" />
+        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='customBanner'" class="icon iconfont icon-genghuan" @click.stop="setCustom" />
       </span>
       <span :title="'锁定'">
         <svg-icon v-if="activeModel==='edit'&&curComponent&&lockValue" :icon-class="'locking'" class="icon" style="color:#fff" @click.stop="setLockout(false)" />
