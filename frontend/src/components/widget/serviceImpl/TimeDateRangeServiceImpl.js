@@ -269,23 +269,24 @@ class TimeDateRangeServiceImpl extends WidgetService {
     if (!values || values.length === 0) {
       return []
     }
+    const componentType = element.options.attrs.showTime ? 'datetimerange' : 'daterange'
+    let labelFormat = 'yyyy-MM-dd'
+    if (element.options.attrs.showTime && element.options.attrs.accuracy) {
+      labelFormat = labelFormat + ' ' + element.options.attrs.accuracy
+    }
     if (element.options.attrs.type === 'daterange') {
       if (values.length !== 2) {
         return null
       }
       let start = values[0]
       let end = values[1]
-      start = timeSection(start, 'date')[0]
-      end = timeSection(end, 'date')[1]
+
+      start = timeSection(start, 'datetime', labelFormat)[0]
+      end = timeSection(end, 'datetime', labelFormat)[1]
       const results = [start, end]
       return results
     } else {
       const value = values[0]
-      const componentType = element.options.attrs.showTime ? 'datetimerange' : 'daterange'
-      let labelFormat = 'yyyy-MM-dd'
-      if (element.options.attrs.showTime && element.options.attrs.accuracy) {
-        labelFormat = labelFormat + ' ' + element.options.attrs.accuracy
-      }
 
       return timeSection(parseFloat(value), componentType || element.options.attrs.type, labelFormat)
     }
