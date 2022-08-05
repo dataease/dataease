@@ -305,8 +305,8 @@ export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, i
             obj.color = {
               linearGradient: {x1: 0,y1: 1,x2: 0,y2: 0},
               stops: [
-                [0, customAttr.color.colors[i % customAttr.color.colors.length]], // 0% 
-                [1, customAttr.color.colors[(i + 1) % customAttr.color.colors.length]], // 100%
+                [0, hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)], // 0% 
+                [1, hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha - 50)], // 100%
               ]
             }
           }

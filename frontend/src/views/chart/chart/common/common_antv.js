@@ -48,8 +48,8 @@ export function getTheme(chart) {
       if(customAttr.color) {
         // 定义柱状图渐变色
         let a = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
-        let b = hexColorToRGBA(customAttr.color.colors[(i+1) % customAttr.color.colors.length], customAttr.color.alpha)
-        if (chart.type === 'bar') { // 柱状图
+        let b = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha - 50)
+        if (chart.type === 'bar' || chart.type === 'line-stack') { // 柱状图
           gColors.push(`l(270) 0:${a} 1:${b}`)
         } else if (chart.type === 'bar-horizontal') { // 横向柱状图
           gColors.push(`l(0) 0:${a} 1:${b}`)
@@ -77,8 +77,8 @@ export function getTheme(chart) {
   return {
     styleSheet: {
       brandColor: colors[0],
-      paletteQualitative10: (chart.type === 'bar' || chart.type === 'bar-horizontal') ? gColors : colors,
-      paletteQualitative20: (chart.type === 'bar' || chart.type === 'bar-horizontal') ? gColors : colors,
+      paletteQualitative10: (chart.type === 'bar' || chart.type === 'bar-horizontal' || chart.type === 'line-stack') ? gColors : colors,
+      paletteQualitative20: (chart.type === 'bar' || chart.type === 'bar-horizontal' || chart.type === 'line-stack') ? gColors : colors,
       backgroundColor: bgColor
     },
     labels: {
