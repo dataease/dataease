@@ -198,7 +198,7 @@ export default {
     height: 35px;
     border-radius: 3px;
   }
-  ::v-deep.el-popover{
+  ::v-deep .el-popover{
     height: 200px;
     overflow: auto;
   }
