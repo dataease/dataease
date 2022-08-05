@@ -456,15 +456,15 @@ export default {
     font-size: 14px;
   }
 
-  .row-style::v-deep.el-form-item__label{
+  .row-style ::v-deep .el-form-item__label{
     font-size: 12px;
   }
 
-  .dataPreview::v-deep.el-card__header{
+  .dataPreview ::v-deep .el-card__header{
     padding: 6px 8px;
   }
 
-  .dataPreview::v-deep.el-card__body{
+  .dataPreview ::v-deep .el-card__body{
     padding:10px;
   }
 
