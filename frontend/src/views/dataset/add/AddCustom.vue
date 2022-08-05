@@ -270,11 +270,11 @@ export default {
     margin-left: 0;
   }
 
-  .dataPreview::v-deep.el-card__header{
+  .dataPreview ::v-deep .el-card__header{
     padding: 0 8px 12px;
   }
 
-  .dataPreview::v-deep.el-card__body{
+  .dataPreview ::v-deep .el-card__body{
     padding:10px;
   }
 
