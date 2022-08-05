@@ -179,7 +179,18 @@ export default {
     }
   },
   computed: {
-
+    isOneDay() {
+      const isDynamicDay = this.element.options.attrs.default.isDynamic &&
+        this.element.options.attrs.default.dkey === 4 &&
+        this.element.options.attrs.default.eDynamicInfill &&
+        this.element.options.attrs.default.eDynamicInfill === 'day'
+      if (isDynamicDay) {
+        const widget = ApplicationContext.getService(this.element.serviceName)
+        const time = widget.dynamicDateFormNow(this.element)
+        return isDynamicDay && time[1] === time[0]
+      }
+      return false
+    },
     isTimeWidget() {
       const widget = ApplicationContext.getService(this.element.serviceName)
       return widget.isTimeWidget && widget.isTimeWidget()
@@ -234,7 +245,7 @@ export default {
       const widget = ApplicationContext.getService(this.element.serviceName)
       const time = widget.dynamicDateFormNow(this.element)
       this.dval = time
-      bus.$emit('valid-values-change', (!time || time.length === 0 || time[1] > time[0]))
+      bus.$emit('valid-values-change', (!time || time.length === 0 || time[1] > time[0] || this.isOneDay))
       this.element.options.manualModify = false
     }
   }
