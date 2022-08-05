@@ -337,7 +337,7 @@ export default {
       }
     },
     changeValue(value) {
-      console.log('value', value)
+      console.log('轮播框的值', value)
       if (!this.inDraw) {
         if (value === null) {
           this.element.options.value = ''
@@ -357,6 +357,7 @@ export default {
         value: this.formatFilterValue(),
         operator: this.operator
       }
+      console.log(' this.inDraw ', this.inDraw)
       this.inDraw && this.$store.commit('addViewFilter', param)
     },
     formatFilterValue() {

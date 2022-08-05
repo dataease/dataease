@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%;height: 100%;background-color: #f7f8fa">
+  <div style="width: 100%;height: 100%;">
     <Preview v-if="show" :share-key="true" />
   </div>
 </template>
