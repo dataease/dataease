@@ -683,7 +683,7 @@ export default {
 .el-radio{
   margin-right: 10px;
 }
-.el-radio::v-deep.el-radio__label{
+.el-radio ::v-deep .el-radio__label{
   font-size: 12px;
 }
 
