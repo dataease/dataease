@@ -125,7 +125,11 @@
                                 <i class="el-icon-s-tools" />
                               </span>
                               <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item :command="handleChartFieldEdit(item,'copy')">{{ $t('commons.copy') }}...</el-dropdown-item>
+                                <el-dropdown-item :command="handleChartFieldEdit(item,'copy')" icon="el-icon-document-copy">{{ $t('commons.copy') }}</el-dropdown-item>
+                                <span v-if="item.chartId">
+                                  <el-dropdown-item :command="handleChartFieldEdit(item,'edit')" icon="el-icon-edit">{{ $t('commons.edit') }}</el-dropdown-item>
+                                  <el-dropdown-item :command="handleChartFieldEdit(item,'delete')" icon="el-icon-delete">{{ $t('commons.delete') }}</el-dropdown-item>
+                                </span>
                               </el-dropdown-menu>
                             </el-dropdown>
                           </span>
@@ -167,7 +171,11 @@
                                 <i class="el-icon-s-tools" />
                               </span>
                               <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item :command="handleChartFieldEdit(item,'copy')">{{ $t('commons.copy') }}...</el-dropdown-item>
+                                <el-dropdown-item :command="handleChartFieldEdit(item,'copy')" icon="el-icon-document-copy">{{ $t('commons.copy') }}</el-dropdown-item>
+                                <span v-if="item.chartId">
+                                  <el-dropdown-item :command="handleChartFieldEdit(item,'edit')" icon="el-icon-edit">{{ $t('commons.edit') }}</el-dropdown-item>
+                                  <el-dropdown-item :command="handleChartFieldEdit(item,'delete')" icon="el-icon-delete">{{ $t('commons.delete') }}</el-dropdown-item>
+                                </span>
                               </el-dropdown-menu>
                             </el-dropdown>
                           </span>
@@ -345,7 +353,7 @@
                           $t('chart.drag_block_table_data_column')
                         }}</span>
                         <span
-                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall')"
+                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall' || view.type === 'area')"
                         >{{ $t('chart.drag_block_type_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
@@ -413,7 +421,7 @@
                           $t('chart.drag_block_table_data_column')
                         }}</span>
                         <span
-                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'waterfall')"
+                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'waterfall' || view.type === 'area')"
                         >{{ $t('chart.drag_block_value_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
@@ -1044,7 +1052,7 @@
       <calc-chart-field-edit
         :param="chart"
         :field="currEditField"
-        mode="copy"
+        :mode="currEditField.extField === 1 ? 'copy' : 'normal'"
         @onEditClose="closeChartCalcField"
       />
     </el-dialog>
@@ -1418,7 +1426,6 @@ export default {
       bus.$on('plugins-calc-style', this.calcStyle)
       bus.$on('plugin-chart-click', this.chartClick)
       bus.$on('set-dynamic-area-code', this.setDynamicAreaCode)
-      
     },
     initTableData(id, optType) {
       if (id != null) {
@@ -1910,6 +1917,7 @@ export default {
     onSizeChange(val) {
       this.view.customAttr.size = val
       this.calcStyle()
+      this.calcData()
     },
 
     onTextChange(val) {
@@ -2667,6 +2675,12 @@ export default {
           this.currEditField.extField = 1
           this.showChartCalcField()
           break
+        case 'edit':
+          this.showChartCalcField()
+          break
+        case 'delete':
+          this.deleteChartCalcField(param.item)
+          break
       }
     },
     handleChartFieldEdit(item, type) {
@@ -2683,6 +2697,23 @@ export default {
       this.editChartCalcField = false
       this.currEditField = {}
       this.initTableField(this.table.id)
+    },
+    deleteChartCalcField(item) {
+      this.$confirm(this.$t('dataset.confirm_delete'), this.$t('chart.tips'), {
+        confirmButtonText: this.$t('dataset.confirm'),
+        cancelButtonText: this.$t('dataset.cancel'),
+        type: 'warning'
+      }).then(() => {
+        post('/chart/field/delete/' + item.id + '/' + this.panelInfo.id, null).then(response => {
+          this.$message({
+            type: 'success',
+            message: this.$t('chart.delete_success'),
+            showClose: true
+          })
+          this.initTableField(this.table.id)
+        })
+      }).catch(() => {
+      })
     }
   }
 }
