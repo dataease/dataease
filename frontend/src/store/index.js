@@ -134,19 +134,19 @@ const data = {
     },
 
     setCanvasStyle(state, style) {
-      console.log('设置样式：',style)
+      console.log('设置样式：', style)
       if (style) {
         style['selfAdaption'] = true
       }
-      
+
       state.canvasStyleData = style
     },
-    setTemplateStatus(state,status) {
-      console.log('设置temp样式',status)
+    setTemplateStatus(state, status) {
+      console.log('设置temp样式', status)
       state.templateStatus = status
     },
-    setPriorityStatus(state,status) {
-      console.log('设置priority',status)
+    setPriorityStatus(state, status) {
+      console.log('设置priority', status)
       state.isStylePriority = status
     },
 
@@ -219,6 +219,7 @@ const data = {
       })
     },
     addViewFilter(state, data) {
+      console.log('过滤器修改-----------', state, data)
       const condition = formatCondition(data)
       const vValid = valueValid(condition)
       //   1.根据componentId过滤
@@ -423,7 +424,7 @@ const data = {
       state.componentData.splice(index, 1)
     },
     setLinkageInfo(state, targetLinkageInfo) {
-      console.log('联动设置：：',state,targetLinkageInfo)
+      console.log('联动设置：：', state, targetLinkageInfo)
       state.linkageSettingStatus = true
       state.curLinkageView = state.curComponent
       state.targetLinkageInfo = targetLinkageInfo
@@ -466,7 +467,7 @@ const data = {
         height: 0,
         width: 0
       }
-      console.log('setDragComp',dragComponentInfo)
+      console.log('setDragComp', dragComponentInfo)
       state.dragComponentInfo = dragComponentInfo
     },
     clearDragComponentInfo(state) {
