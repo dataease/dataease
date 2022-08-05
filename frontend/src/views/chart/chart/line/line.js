@@ -64,10 +64,33 @@ export function baseLineOption(chart_option, chart,cstyle = {}) {
 export function stackLineOption(chart_option, chart,cstyle = {}) {
   baseLineOption(chart_option, chart,cstyle)
 
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+  }
   // ext
   // chart_option.tooltip.trigger = 'axis'
-  chart_option.series.forEach(function(s) {
+  chart_option.series.forEach(function(s,i) {
+    console.log('stack............',s,i)
     s.stack = 'stack'
+    
+    s.itemStyle = {
+      color: {
+        type: 'linear',
+        x: 0,
+        y: 1,
+        x2: 0,
+        y2: 0,
+        colorStops: [{
+          offset: 0,  // 0% 的颜色
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        }, {
+          offset: 1, // 100% 的颜色
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha - 50)
+        }],
+        global: false // 缺省为 false
+      }
+    }
   })
   return chart_option
 }

@@ -1,19 +1,37 @@
 <template>
   <div>
-    <div class="nav_calss" :style="navStyleSet">
+    <div v-show="element.options.pattern !=='scroll'" class="nav_calss" :style="navStyleSet">
       <div v-for="(item,index) in navList" :key="index" class="nav_info" :style="boxStyle">
         <div :style="setStyle(item)">
           <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
         </div>
       </div>
+    </div>
 
+    <div v-show="element.options.pattern=='scroll'&&element.options.vertical=='elementKey'" class="scroll_box">
+      <span class="left_btn" @click.stop="scrollBtn('lt')">
+        <i class="el-icon-arrow-left" />
+      </span>
+      <span class="right_btn" @click.stop="scrollBtn('rt')">
+        <i class="el-icon-arrow-right" />
+      </span>
+      <div class="scroll_nav_calss" :style="box_width">
+        <div v-for="(item,index) in navList" :key="index" :style="boxStyle">
+          <div :style="setStyle(item)">
+            <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
+// import { swiper, swiperSlide } from 'vue-awesome-swiper'
+import 'swiper/swiper-bundle.css'
 import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 export default {
+  // components: { swiper, swiperSlide },
   props: {
     element: {
       type: Object,
@@ -24,8 +42,28 @@ export default {
 
   data() {
     return {
-      // isShow: true,
-      heightKey: ''
+      isShow: true,
+      move: 0,
+      heightKey: '',
+      swiperOption: {
+        slidesPerView: 2,
+        spaceBetween: 5,
+        loop: true,
+        autoplay: { delay: 3000, disableOnInteraction: false },
+        centeredSlides: true,
+        pagination: {
+          el: '.swiper-pagina',
+          clickable: true
+        },
+        effect: 'coverflow',
+        coverflowEffect: {
+          rotate: 0, // 滑动时旋转角度
+          stretch: 0, // 聚合宽度
+          depth: 10, // 深
+          modifier: 2, // 覆盖叠加层数
+          slideShadows: true // 开启slide阴影。默认 true。
+        }
+      }
     }
   },
   computed: {
@@ -67,6 +105,7 @@ export default {
       const style = {}
       style.paddingLeft = this.element.options.spacing + 'px'
       style.paddingRight = this.element.options.spacing + 'px'
+      style.width = this.boxWidth + 'px'
       return style
     },
     setStyle() {
@@ -105,25 +144,115 @@ export default {
         style.lineHeight = this.element.style.height + 'px'
         style.backgroundRepeat = 'no-repeat'
         style.backgroundSize = '100% 100%'
+        style.textAlign = this.element.options.horizontal
         return style
       }
     },
     navList() {
       return this.element.options.navTabList
+    },
+    rotationTime() {
+      return this.element.options.autoTime
+    },
+    slidesPerView() {
+      return this.element.options.scrollPage
+    },
+    boxWidth() {
+      const b_width = this.element.style.width / this.element.options.scrollPage
+      console.log('b_width', b_width)
+      return Math.floor(b_width)
+    },
+    box_width() {
+      const style = {}
+      style.width = (this.boxWidth * this.navList.length) + 'px'
+      return style
     }
+    // pictureGap() {
+    //   return this.element.options.pictureGap
+    // }
   },
   watch: {
+    slidesPerView: {
+      handler: function(val1, val2) {
+        console.log('监听视图层变化=============slidesPerView', val1, val2)
+        this.changeSlidesPerView()
+      },
+      deep: true
 
+    },
+    rotationTime: {
+      handler: function(val1, val2) {
+        console.log('轮播时间控制----------------------', val1, val2)
+        this.changeSlidesPerView()
+      },
+      deep: true
+    },
+    // pictureGap: {
+    //   handler: function(val1, val2) {
+    //     console.log('设置图片间隔----------------------', val1, val2)
+    //     this.changeSlidesPerView()
+    //   },
+    //   deep: true
+    // },
+    navList: {
+      handler: function(val1, val2) {
+        console.log('设置图片数量----------------------', val1, val2)
+        this.changeSlidesPerView()
+      },
+      deep: true
+    }
   },
   created() {
     // console.log('轮播图片组件', this.element)
   },
   mounted() {
-    // this.changeSlidesPerView()
+    if (this.element.options.pattern === 'scroll' && this.element.options.vertical === 'elementKey') {
+      this.changeSlidesPerView()
+    }
   },
   methods: {
+    scrollBtn(key) {
+      console.log('123123', key)
+      if (key === 'lt') {
+        const datas = this.navList[this.navList.length - 1]
+        this.navList.splice(this.navList.length - 1, 1)
+        this.navList.unshift(datas)
+
+        setTimeout(() => {
+          // this.move = this.move + 200
+        }, 500)
+      } else {
+        // this.move = this.move - 200
+        setTimeout(() => {
+
+        }, 500)
+        const datas = this.navList[0]
+        this.navList.splice(0, 1)
+        this.navList.push(datas)
+      }
+      this.element.options.heightTabs = this.navList[0].name
+      console.log('this.move', this.move)
+    },
     baseMoseDownEven(e) {
       e.stopPropagation()
+    },
+    changeSlidesPerView() {
+      if (this.element.options.navTabList.length <= 1) {
+        this.swiperOption.slidesPerView = 1
+      } else {
+        this.swiperOption.slidesPerView = this.element.options.scrollPage
+      }
+
+      // this.swiperOption.slidesPerView = this.element.options.slidesPerView
+      this.swiperOption.spaceBetween = this.element.options.spacing
+
+      this.swiperOption.autoplay = {
+        delay: this.element.options.autoTime * 1000, disableOnInteraction: false
+      }
+      this.isShow = false
+      this.$nextTick(() => {
+        this.isShow = true
+      })
     },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
@@ -166,6 +295,33 @@ export default {
 .nav_calss{
   display:flex;
   height: 100%;
+}
+.scroll_nav_calss{
+  display:flex;
+
+}
+.left_btn{
+  position:absolute;
+  left:-4px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:999;
+  font-size:24px;
+  cursor:pointer;
+}
+.right_btn{
+  position:absolute;
+  right:-4px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:999;
+  font-size:24px;
+   cursor:pointer;
+}
+.scroll_box{
+  position:relative;
+  /* padding:0 20px; */
+  overflow-x:scroll
 }
 .nav_info{
   flex:1;
