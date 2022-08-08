@@ -1669,7 +1669,8 @@ export default {
         view.type === 'word-cloud' ||
         view.type === 'waterfall' ||
         view.type === 'bar-stack' ||
-        view.type === 'line-stack') {
+        view.type === 'line-stack' ||
+        view.type === 'bar-stack-horizontal') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
