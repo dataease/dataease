@@ -12,26 +12,48 @@
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class">
           <li v-for="(items,inde) in dataInfo" :key="inde" :style="newHeight" class="table_bode_li" @click="showDialogInfo(items)">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
-              {{ items[item.datainsName] }}
+              <el-popover
+                width="400"
+                trigger="click"
+              > 
+                <p class="pop_title">
+                  <span>详情</span>
+                </p>
+                <div class="pop_content">
+                  <el-form ref="form" label-width="120px">
+                    <el-form-item v-for="(obj,num) in infoForm" :label="`${obj.name}：`" :key="num">
+                      {{obj.value}}
+                    </el-form-item>
+                  </el-form>
+                </div>
+                <span slot="reference">{{ items[item.datainsName] }}</span>
+              </el-popover>
             </div>
           </li>
         </ul>
-
       </div>
 
     </el-row>
-    <el-dialog
-      title="提示"
+    <!-- <el-dialog
+      title="详情"
       :visible.sync="dialogVisible"
       width="30%"
       :before-close="handleClose"
+      :modal="false"
+      :append-to-body="true"
     >
-      <span>这是一段信息</span>
+      <div style="max-height: 300px;overflow: auto;border: 1px solid #eeeeee;">
+        <el-form ref="form" label-width="120px">
+          <el-form-item v-for="(item,index) in infoForm" :label="`${item.name}：`" :key="index">
+            {{item.value}}
+          </el-form-item>
+        </el-form>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -137,7 +159,8 @@ export default {
       rollingRate: 30,
       scrolleTime: 1000,
       heightLightLine: 3,
-      titleHeight: 0
+      titleHeight: 0,
+      infoForm: [],
     }
   },
   computed: {
@@ -214,8 +237,23 @@ export default {
       this.dialogVisible = false
     },
     showDialogInfo(info) {
-      console.log('行----信息', info)
-      this.dialogVisible = true
+      console.log('行----信息', info,this.fields)
+      // this.dialogVisible = true
+      let arr = []
+      for(let k in info) {
+        let a = k
+        this.fields.map(item => {
+          if(a === item.datainsName) {
+            arr.push({
+              name: item.name,
+              value: info[a]
+            })
+          }
+        })
+      }
+      console.log('arr...',arr)
+      
+      this.infoForm = arr
     },
     scorllEvent() {
       var isScroll = true // 也可以定义到data里
@@ -495,6 +533,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.pop_title {
+  text-align: center;
+  background-color: #082456;
+  line-height: 30px;
+  color: white;
+}
+
+.pop_content {
+  background-color: #1b2642;
+  color: white;
+  ::v-deep .el-form-item {
+    margin-bottom: 10px;
+    border-bottom: 1px dashed white;
+  }
+
+  ::v-deep .el-form-item__label {
+    color: white;
+  }
+}
+
 .table_new_header{
   display:flex;
   align-items:center;
@@ -581,6 +639,10 @@ export default {
   white-space: nowrap;
 	overflow: hidden;
   text-overflow: ellipsis;
+
+  ::v-deep .el-popover .el-popover .el-popover {
+    padding: 0px !important;
+  }
 
   // .child{
 
