@@ -143,7 +143,7 @@ export function getLabel(chart) {
               yAxis = JSON.parse(JSON.stringify(chart.yaxis))
             }
 
-            if (chart.type === 'bar-stack' || chart.type === 'line-stack') {
+            if (chart.type === 'bar-stack' || chart.type === 'line-stack' || chart.type === 'bar-stack-horizontal') {
               const f = yAxis[0]
               if (f.formatterCfg) {
                 res = valueFormatter(param.value, f.formatterCfg)
@@ -196,7 +196,7 @@ export function getTooltip(chart) {
             }
 
             let obj
-            if (chart.type === 'bar-stack' || chart.type === 'line-stack') {
+            if (chart.type === 'bar-stack' || chart.type === 'line-stack' || chart.type === 'bar-stack-horizontal') {
               obj = { name: param.category, value: param.value }
               const f = yAxis[0]
               if (f.formatterCfg) {
