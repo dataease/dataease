@@ -1667,7 +1667,9 @@ export default {
         view.type === 'treemap' ||
         view.type === 'liquid' ||
         view.type === 'word-cloud' ||
-        view.type === 'waterfall') {
+        view.type === 'waterfall' ||
+        view.type === 'bar-stack' ||
+        view.type === 'line-stack') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }

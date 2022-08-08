@@ -143,15 +143,24 @@ export function getLabel(chart) {
               yAxis = JSON.parse(JSON.stringify(chart.yaxis))
             }
 
-            for (let i = 0; i < yAxis.length; i++) {
-              const f = yAxis[i]
-              if (f.name === param.category) {
-                if (f.formatterCfg) {
-                  res = valueFormatter(param.value, f.formatterCfg)
-                } else {
-                  res = valueFormatter(param.value, formatterItem)
+            if (chart.type === 'bar-stack' || chart.type === 'line-stack') {
+              const f = yAxis[0]
+              if (f.formatterCfg) {
+                res = valueFormatter(param.value, f.formatterCfg)
+              } else {
+                res = valueFormatter(param.value, formatterItem)
+              }
+            } else {
+              for (let i = 0; i < yAxis.length; i++) {
+                const f = yAxis[i]
+                if (f.name === param.category) {
+                  if (f.formatterCfg) {
+                    res = valueFormatter(param.value, f.formatterCfg)
+                  } else {
+                    res = valueFormatter(param.value, formatterItem)
+                  }
+                  break
                 }
-                break
               }
             }
             return res
@@ -187,7 +196,15 @@ export function getTooltip(chart) {
             }
 
             let obj
-            if (chart.type === 'word-cloud') {
+            if (chart.type === 'bar-stack' || chart.type === 'line-stack') {
+              obj = { name: param.category, value: param.value }
+              const f = yAxis[0]
+              if (f.formatterCfg) {
+                res = valueFormatter(param.value, f.formatterCfg)
+              } else {
+                res = valueFormatter(param.value, formatterItem)
+              }
+            } else if (chart.type === 'word-cloud') {
               obj = { name: param.text, value: param.value }
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
@@ -217,7 +234,7 @@ export function getTooltip(chart) {
                   res = valueFormatter(param.value, formatterItem)
                 }
               }
-            } else if (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type.includes('radar')) {
+            } else if (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type.includes('radar') || chart.type.includes('area')) {
               obj = { name: param.category, value: param.value }
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
