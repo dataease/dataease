@@ -14,6 +14,7 @@ import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeOb
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.service.RowPermissionTreeService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -113,12 +114,24 @@ public class PermissionsTreeService {
             // 替换系统变量
             if (StringUtils.equalsIgnoreCase(record.getAuthTargetType(), "sysParams")) {
                 String expressionTree = record.getExpressionTree();
-                expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userId}", userEntity.getUsername());
-                expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userName}", userEntity.getNickName());
-                expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userEmail}", userEntity.getEmail());
-                expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userSource}", userEntity.getFrom() == 0 ? "LOCAL" : "OIDC");
-                expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.dept}", userEntity.getDeptName());
-                expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.roles}", String.join(",", currentRoleDtos.stream().map(CurrentRoleDto::getName).collect(Collectors.toList())));
+                if (StringUtils.isNotEmpty(userEntity.getUsername())) {
+                    expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userId}", userEntity.getUsername());
+                }
+                if (StringUtils.isNotEmpty(userEntity.getNickName())) {
+                    expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userName}", userEntity.getNickName());
+                }
+                if (StringUtils.isNotEmpty(userEntity.getEmail())) {
+                    expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userEmail}", userEntity.getEmail());
+                }
+                if (userEntity.getFrom() != null) {
+                    expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userSource}", userEntity.getFrom() == 0 ? "LOCAL" : "OIDC");
+                }
+                if (StringUtils.isNotEmpty(userEntity.getDeptName())) {
+                    expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.dept}", userEntity.getDeptName());
+                }
+                if (CollectionUtils.isNotEmpty(currentRoleDtos)) {
+                    expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.roles}", String.join(",", currentRoleDtos.stream().map(CurrentRoleDto::getName).collect(Collectors.toList())));
+                }
                 record.setExpressionTree(expressionTree);
 
                 DatasetRowPermissionsTreeObj tree = gson.fromJson(expressionTree, DatasetRowPermissionsTreeObj.class);
