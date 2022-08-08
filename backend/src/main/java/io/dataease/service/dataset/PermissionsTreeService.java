@@ -86,11 +86,9 @@ public class PermissionsTreeService {
             datasetRowPermissions.addAll(rowPermissionTreeService.list(dataSetRowPermissionsDTO));
         }
 
-        if (ObjectUtils.isNotEmpty(deptId)) {
-            dataSetRowPermissionsDTO.setAuthTargetIds(null);
-            dataSetRowPermissionsDTO.setAuthTargetType("sysParams");
-            datasetRowPermissions.addAll(rowPermissionTreeService.list(dataSetRowPermissionsDTO));
-        }
+        dataSetRowPermissionsDTO.setAuthTargetIds(null);
+        dataSetRowPermissionsDTO.setAuthTargetType("sysParams");
+        datasetRowPermissions.addAll(rowPermissionTreeService.list(dataSetRowPermissionsDTO));
 
         // 若当前用户是白名单中的，则忽略permission tree
         // 若当前规则是系统变量，则替换变量
