@@ -49,7 +49,7 @@
           </el-radio-group>
         </el-col> -->
       </el-row>
-      <el-row v-show="false">
+      <el-row v-show="true">
         <el-col :span="4">
           <span class="params-title">{{ '导航启用级别' }}</span>
         </el-col>
@@ -576,10 +576,20 @@ export default {
           this.componentData.forEach(res => {
             if (res.id === item) {
               res.showName = ele.name
+              res.navModel = this.curComponent.options.vertical
             }
           })
         })
       })
+      if (this.curComponent.options.vertical === 'elementKey') {
+        if (this.canvasStyleData.showArr) {
+          this.canvasStyleData.showArr.push(this.navInfoLis[0].name)
+        } else {
+          this.canvasStyleData.showArr = []
+          this.canvasStyleData.showArr.push(this.navInfoLis[0].name)
+        }
+      }
+
       console.log('this.fileList', this.fileList)
       // 高亮背景
       this.curComponent.options.heightBgImg = this.changImg

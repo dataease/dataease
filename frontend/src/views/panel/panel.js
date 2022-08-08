@@ -19,6 +19,8 @@ export const CANVAS_STYLE = {
   scaleHeight: 100,
   selfAdaption: true,
   navShowKey: '',
+  navModel: 'independent',
+  showArr: [],
   auxiliaryMatrix: false,
   ruleBgColor: '',
   openCommonStyle: true,

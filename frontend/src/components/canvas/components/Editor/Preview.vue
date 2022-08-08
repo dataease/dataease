@@ -171,11 +171,19 @@ export default {
     opacityClass() {
       return function(value) {
         // console.log('value-----', value)
-        if (this.canvasStyleData.navShowKey && value.showName) {
-          if (this.canvasStyleData.navShowKey === value.showName) {
-            return 1
+        if (value.showName) {
+          if (this.canvasStyleData.showArr && value.navModel === 'elementKey') {
+            if (this.canvasStyleData.showArr.includes(value.showName)) {
+              return 1
+            } else {
+              return 0
+            }
           } else {
-            return 0
+            if (this.canvasStyleData.navShowKey === value.showName) {
+              return 1
+            } else {
+              return 0
+            }
           }
         } else {
           return 1
@@ -186,11 +194,19 @@ export default {
       return function(value) {
         // console.log('value-----', value)
         // if (value.type === 'de-frame') {
-        if (this.canvasStyleData.navShowKey && value.showName) {
-          if (this.canvasStyleData.navShowKey === value.showName) {
-            return 'visible'
+        if (value.showName) {
+          if (this.canvasStyleData.showArr && value.navModel === 'elementKey') {
+            if (this.canvasStyleData.showArr.includes(value.showName)) {
+              return 'visible'
+            } else {
+              return 'hidden'
+            }
           } else {
-            return 'hidden'
+            if (this.canvasStyleData.navShowKey === value.showName) {
+              return 'visible'
+            } else {
+              return 'hidden'
+            }
           }
         } else {
           return 'visible'
