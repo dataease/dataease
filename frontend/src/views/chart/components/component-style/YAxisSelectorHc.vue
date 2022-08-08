@@ -18,6 +18,13 @@
           <el-form-item :label="$t('chart.axis_name_color')" class="form-item">
             <el-color-picker v-model="axisForm.nameTextStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeYAxisStyle" />
           </el-form-item>
+          <el-form-item :label="$t('chart.axis_name_location')" class="form-item">
+            <el-radio-group v-model="axisForm.align" size="mini" @change="changeYAxisStyle">
+              <el-radio-button label="high">{{ $t('chart.text_pos_top') }}</el-radio-button>
+              <el-radio-button label="middle">{{ $t('chart.text_pos_center') }}</el-radio-button>
+              <el-radio-button label="low">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
           <el-form-item :label="$t('chart.dimension_font_size')" class="form-item">
             <el-select v-model="axisForm.nameTextStyle.fontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeYAxisStyle">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
