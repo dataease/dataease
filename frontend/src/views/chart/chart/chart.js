@@ -168,9 +168,11 @@ export const DEFAULT_XAXIS_STYLE = {
   show: true,
   position: 'bottom',
   name: '',
+  nameLocation: 'end',
   nameTextStyle: {
     color: '#333333',
-    fontSize: 12
+    fontSize: 12,
+    lineHeight: 40,
   },
   axisLabel: {
     show: true,
@@ -198,6 +200,7 @@ export const DEFAULT_XAXIS_STYLE_HC = {
   show: true,
   position: 'bottom',
   name: '',
+  align: 'middle',
   nameTextStyle: {
     color: '#333333',
     fontSize: 12
@@ -229,9 +232,11 @@ export const DEFAULT_YAXIS_STYLE = {
   show: true,
   position: 'left',
   name: '',
+  nameLocation: 'end',
   nameTextStyle: {
     color: '#333333',
     fontSize: 12,
+    lineHeight: 40,
     fontFamily: ''
   },
   axisLabel: {
@@ -293,6 +298,7 @@ export const DEFAULT_YAXIS_STYLE_HC = {
   show: true,
   position: 'left',
   name: '',
+  align: 'middle',
   nameTextStyle: {
     color: '#333333',
     fontSize: 12,

@@ -280,6 +280,8 @@ export function getXAxis(chart, cstyle = {}) {
       if (a && a.show) {
         const title = (a.name && a.name !== '') ? {
           text: a.name,
+          position: a.nameLocation? a.nameLocation : 'center',
+          offset: a.nameTextStyle.lineHeight? a.nameTextStyle.lineHeight : 40,
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
@@ -345,6 +347,8 @@ export function getYAxis(chart, cstyle = {}) {
       if (a.show) {
         const title = (a.name && a.name !== '') ? {
           text: a.name,
+          position: a.nameLocation? a.nameLocation : 'center',
+          offset: a.nameTextStyle.lineHeight? a.nameTextStyle.lineHeight : 40,
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
