@@ -1195,7 +1195,10 @@ export default {
     dimension_letter_space: '名称字间距',
     font_family: '字体',
     letter_space: '字间距',
-    font_shadow: '字体阴影'
+    font_shadow: '字体阴影',
+    chart_area: '面积图',
+    fix: '固定值',
+    dynamic: '动态值'
   },
   dataset: {
     parse_filed: '解析字段',
@@ -1437,7 +1440,8 @@ export default {
     union_repeat: '当前数据集已被关联，请勿重复关联',
     preview_result: '预览结果',
     sql_ds_union_error: '直连模式下SQL数据集，不支持关联',
-    api_data: 'API 数据集'
+    api_data: 'API 数据集',
+    copy: '复制'
   },
   driver: {
     driver: '驱动',

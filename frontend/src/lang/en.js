@@ -1194,7 +1194,10 @@ export default {
     dimension_letter_space: 'Name Letter Space',
     font_family: 'Font Family',
     letter_space: 'Letter Space',
-    font_shadow: 'Font Shadow'
+    font_shadow: 'Font Shadow',
+    chart_area: 'Area',
+    fix: 'Fix',
+    dynamic: 'Dynamic'
   },
   dataset: {
     parse_filed: 'Parse Field',
@@ -1436,7 +1439,8 @@ export default {
     union_repeat: 'This dataset is already union，do not union repeat',
     preview_result: 'Preview',
     sql_ds_union_error: 'Direct connect SQL dataset can not be union',
-    api_data: 'API dataset'
+    api_data: 'API dataset',
+    copy: 'Copy'
   },
   driver: {
     driver: 'Driver',

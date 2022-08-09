@@ -1193,7 +1193,10 @@ export default {
     dimension_letter_space: '名稱字間距',
     font_family: '字體',
     letter_space: '字間距',
-    font_shadow: '字體陰影'
+    font_shadow: '字體陰影',
+    chart_area: '面積圖',
+    fix: '固定值',
+    dynamic: '動態值'
   },
   dataset: {
     parse_filed: '解析字段',
@@ -1435,7 +1438,8 @@ export default {
     union_repeat: '當前數據集已被關聯，請勿重復關聯',
     preview_result: '預覽結果',
     sql_ds_union_error: '直連模式下SQL數據集，不支持關聯',
-    api_data: 'API 數據集'
+    api_data: 'API 數據集',
+    copy: '復製'
   },
   driver: {
     driver: '驅動',

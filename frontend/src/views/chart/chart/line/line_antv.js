@@ -100,7 +100,7 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   return plot
 }
 
-export function baseAreaOptionAntV(plot, container, chart, action) {
+export function baseAreaOptionAntV(plot, container, chart, action, isStack) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -131,6 +131,7 @@ export function baseAreaOptionAntV(plot, container, chart, action) {
     yAxis: yAxis,
     slider: slider,
     annotations: analyse,
+    isStack: isStack,
     interactions: [
       {
         type: 'legend-active', cfg: {

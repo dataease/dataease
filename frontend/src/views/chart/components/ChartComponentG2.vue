@@ -200,8 +200,10 @@ export default {
         this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
       } else if (chart.type === 'line') {
         this.myChart = baseLineOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'area') {
+        this.myChart = baseAreaOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false)
       } else if (chart.type === 'line-stack') {
-        this.myChart = baseAreaOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = baseAreaOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true)
       } else if (chart.type === 'scatter') {
         this.myChart = baseScatterOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'radar') {
