@@ -116,6 +116,10 @@ export default {
     bus.$off('reset-default-value', this.resetDefaultValue)
   },
   methods: {
+    clearHandler() {
+      this.form.min = null
+      this.form.max = null
+    },
     resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
         const values = this.element.options.value

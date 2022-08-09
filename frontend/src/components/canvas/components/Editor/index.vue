@@ -1097,6 +1097,7 @@ export default {
     eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('onRemoveLastItem', this.removeLastItem)
     bus.$on('trigger-search-button', this.triggerSearchButton)
+    bus.$on('trigger-reset-button', this.triggerResetButton)
     bus.$on('refresh-button-info', this.refreshButtonInfo)
 
     // 矩阵定位调试模式
@@ -1113,20 +1114,24 @@ export default {
     bus.$off('onRemoveLastItem', this.removeLastItem)
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('refresh-button-info', this.refreshButtonInfo)
+    bus.$off('trigger-reset-button', this.triggerResetButton)
   },
   created() {
   },
   methods: {
-    refreshButtonInfo() {
-      const result = this.buildButtonFilterMap(this.componentData)
+    triggerResetButton() {
+      this.triggerSearchButton(true)
+    },
+    refreshButtonInfo(isClear = false) {
+      const result = this.buildButtonFilterMap(this.componentData, isClear)
       this.searchButtonInfo.buttonExist = result.buttonExist
       this.searchButtonInfo.relationFilterIds = result.relationFilterIds
       this.searchButtonInfo.filterMap = result.filterMap
       this.searchButtonInfo.autoTrigger = result.autoTrigger
       this.buttonFilterMap = this.searchButtonInfo.filterMap
     },
-    triggerSearchButton() {
-      this.refreshButtonInfo()
+    triggerSearchButton(isClear = false) {
+      this.refreshButtonInfo(isClear)
       this.buttonFilterMap = this.searchButtonInfo.filterMap
 
       this.componentData.forEach(component => {
@@ -1134,10 +1139,8 @@ export default {
           component.filters = this.buttonFilterMap[component.propValue.viewId]
         }
       })
-
-      // this.$store.commit('addViewFilter', param)
     },
-    buildButtonFilterMap(panelItems) {
+    buildButtonFilterMap(panelItems, isClear = false) {
       const result = {
         buttonExist: false,
         relationFilterIds: [],
@@ -1166,11 +1169,11 @@ export default {
       result.relationFilterIds = matchFilters.map(item => item.id)
 
       let viewKeyMap = buildViewKeyMap(panelItems)
-      viewKeyMap = this.buildViewKeyFilters(matchFilters, viewKeyMap)
+      viewKeyMap = this.buildViewKeyFilters(matchFilters, viewKeyMap, isClear)
       result.filterMap = viewKeyMap
       return result
     },
-    buildViewKeyFilters(panelItems, result) {
+    buildViewKeyFilters(panelItems, result, isClear = false) {
       const refs = this.$refs
       if (!this.$refs['wrapperChild'] || !this.$refs['wrapperChild'].length) return result
       const len = this.$refs['wrapperChild'].length
@@ -1186,6 +1189,9 @@ export default {
         }
         const wrapperChild = refs['wrapperChild'][index]
         if (!wrapperChild || !wrapperChild.getCondition) return true
+        if (isClear) {
+          wrapperChild.clearHandler && wrapperChild.clearHandler()
+        }
         param = wrapperChild.getCondition && wrapperChild.getCondition()
         const condition = formatCondition(param)
         const vValid = valueValid(condition)

@@ -246,12 +246,21 @@
       @close="cancelButton"
     >
       <button-dialog
-        v-if="buttonVisible && currentWidget"
+        v-if="buttonVisible && currentWidget && currentWidget.name === 'buttonSureWidget'"
         :ref="'filter-setting-' + currentFilterCom.id"
         :widget-info="currentWidget"
         :element="currentFilterCom"
         @sure-handler="sureHandler"
         @cancel-handler="cancelHandler"
+      />
+
+      <button-reset-dialog
+        v-if="buttonVisible && currentWidget && currentWidget.name === 'buttonResetWidget'"
+        :ref="'filter-setting-' + currentFilterCom.id"
+        :widget-info="currentWidget"
+        :element="currentFilterCom"
+        @reset-button-handler="sureHandler"
+        @cancel-button-handler="cancelHandler"
       />
 
     </el-dialog>
@@ -376,6 +385,7 @@ import '@/components/canvas/styles/animate.css'
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import FilterDialog from '../filter/filterDialog'
 import ButtonDialog from '../filter/ButtonDialog'
+import ButtonResetDialog from '../filter/ButtonResetDialog'
 import toast from '@/components/canvas/utils/toast'
 import { commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
@@ -403,6 +413,7 @@ export default {
     Toolbar,
     FilterDialog,
     ButtonDialog,
+    ButtonResetDialog,
     SubjectSetting,
     Preview,
     AssistComponent,

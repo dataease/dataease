@@ -163,6 +163,11 @@ export default {
         return this.$refs['deOutWidget'].getCondition()
       }
       return null
+    },
+    clearHandler() {
+      if (this.$refs && this.$refs['deOutWidget'] && this.$refs['deOutWidget'].clearHandler) {
+        this.$refs['deOutWidget'].clearHandler()
+      }
     }
   }
 }
