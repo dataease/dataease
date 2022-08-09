@@ -399,6 +399,7 @@ export function componentStyle(chart_option, chart, cstyle) {
     if (customStyle.xAxis) {
       chart_option.xAxis.visible = customStyle.xAxis.show // 展示
       chart_option.xAxis.title.text = customStyle.xAxis.name // 描述
+      chart_option.xAxis.title.align = customStyle.xAxis.align? customStyle.xAxis.align : 'middle' // 对齐
       chart_option.xAxis.title.style = customStyle.xAxis.nameTextStyle // 描述字体颜色
       chart_option.xAxis.title.style.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : '' // 描述字体
       chart_option.xAxis.gridLineColor = customStyle.xAxis.splitLine.lineStyle.color // 轴线颜色
@@ -413,6 +414,7 @@ export function componentStyle(chart_option, chart, cstyle) {
     if (customStyle.yAxis) {
       chart_option.yAxis.visible = customStyle.yAxis.show // 展示
       chart_option.yAxis.title.text = customStyle.yAxis.name // 描述
+      chart_option.yAxis.title.align = customStyle.yAxis.align? customStyle.yAxis.align : 'middle' // 对齐
       chart_option.yAxis.title.style = customStyle.yAxis.nameTextStyle // 字体颜色
       chart_option.yAxis.title.style.fontFamily = cstyle && cstyle.fontFamily ? cstyle.fontFamily : '' // 描述字体
       chart_option.yAxis.gridLineColor = customStyle.yAxis.splitLine.lineStyle.color // 轴线颜色

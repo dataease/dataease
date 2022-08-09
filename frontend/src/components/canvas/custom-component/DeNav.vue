@@ -45,6 +45,7 @@ export default {
       isShow: true,
       move: 0,
       heightKey: '',
+      oldName: '',
       swiperOption: {
         slidesPerView: 2,
         spaceBetween: 5,
@@ -263,14 +264,50 @@ export default {
     },
     toggleNav(key) {
       // 切换导航
+      if (this.canvasStyleData.showArr) {
+        const newArr = this.canvasStyleData.showArr
+        newArr.forEach((key, index) => {
+          if (this.oldName !== '') {
+            if (this.oldName === key) {
+              newArr.splice(index, 1)
+            }
+          }
+        })
+        console.log('newArrnewArrnewArrnewArrnewArrnewArrnewArr', newArr)
+        this.canvasStyleData.showArr.forEach((item, inde) => {
+          console.log('item----this.oldName----', this.oldName, item)
+          if (this.oldName !== '') {
+            if (this.oldName === item) {
+              console.log('panddddddddddddddddddddddddddddd')
+              item = '----'
+              // this.canvasStyleData.showArr.splice(inde, 1)
+            }
+          }
+        })
+      }
+
       console.log('previewCanvasScale', this.previewCanvasScale)
       console.log('切换导航------ ', this.componentData, this.canvasStyleData)
       const iframeArr = []
       if (this.element.options.vertical !== 'elementKey') {
+        this.canvasStyleData.navModel = 'defult'
         this.canvasStyleData.navShowKey = key.name
       } else {
+        this.canvasStyleData.navModel = 'independent'
+        if (this.canvasStyleData.showArr) {
+          if (this.canvasStyleData.showArr.indexOf(key.name) === -1) {
+            this.canvasStyleData.showArr.push(key.name)
+          }
+        } else {
+          this.canvasStyleData.showArr = []
+          if (this.canvasStyleData.showArr.indexOf(key.name) === -1) {
+            this.canvasStyleData.showArr.push(key.name)
+          }
+        }
+        // this.canvasStyleData.showArr.push(key.name)
         this.element.options.heightTabs = key.name
       }
+      this.oldName = key.name
 
       this.commitStyle()
       this.componentData.forEach((ele, index) => {
