@@ -160,6 +160,9 @@ export default {
     bus.$off('reset-default-value', this.resetDefaultValue)
   },
   methods: {
+    clearHandler() {
+      this.values = null
+    },
     onScroll() {
       if (this.onFocus) {
         this.$refs.dateRef.hidePicker()

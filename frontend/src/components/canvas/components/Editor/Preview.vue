@@ -302,22 +302,26 @@ export default {
     this.initListen()
     this.$store.commit('clearLinkageSettingInfo', false)
     this.canvasStyleDataInit()
-    // 如果当前终端设备是移动端，则进行移动端的布局设计
     if (this.terminal === 'mobile') {
       this.initMobileCanvas()
     }
     bus.$on('trigger-search-button', this.triggerSearchButton)
+    bus.$on('trigger-reset-button', this.triggerResetButton)
   },
   beforeDestroy() {
     erd.uninstall(this.$refs.canvasInfoTemp)
     erd.uninstall(this.$refs.canvasInfoMain)
     clearInterval(this.timer)
     eventBus.$off('openChartDetailsDialog', this.openChartDetailsDialog)
-    bus.$on('trigger-search-button', this.triggerSearchButton)
+    bus.$off('trigger-search-button', this.triggerSearchButton)
+    bus.$off('trigger-reset-button', this.triggerResetButton)
   },
   methods: {
-    triggerSearchButton() {
-      const result = this.buildButtonFilterMap(this.componentData)
+    triggerResetButton() {
+      this.triggerSearchButton(true)
+    },
+    triggerSearchButton(isClear = false) {
+      const result = this.buildButtonFilterMap(this.componentData, isClear)
       this.searchButtonInfo.autoTrigger = result.autoTrigger
       this.searchButtonInfo.filterMap = result.filterMap
       this.buttonFilterMap = this.searchButtonInfo.filterMap
@@ -328,7 +332,7 @@ export default {
         }
       })
     },
-    buildButtonFilterMap(panelItems) {
+    buildButtonFilterMap(panelItems, isClear = false) {
       const result = {
         buttonExist: false,
         relationFilterIds: [],
@@ -357,11 +361,11 @@ export default {
       result.relationFilterIds = matchFilters.map(item => item.id)
 
       let viewKeyMap = buildViewKeyMap(panelItems)
-      viewKeyMap = this.buildViewKeyFilters(matchFilters, viewKeyMap)
+      viewKeyMap = this.buildViewKeyFilters(matchFilters, viewKeyMap, isClear)
       result.filterMap = viewKeyMap
       return result
     },
-    buildViewKeyFilters(panelItems, result) {
+    buildViewKeyFilters(panelItems, result, isClear = false) {
       const refs = this.$refs
       if (!this.$refs['viewWrapperChild'] || !this.$refs['viewWrapperChild'].length) return result
       panelItems.forEach((element) => {
@@ -375,6 +379,9 @@ export default {
         }
         let param = null
         const wrapperChild = refs['viewWrapperChild'][index]
+        if (isClear) {
+          wrapperChild.clearHandler && wrapperChild.clearHandler()
+        }
         param = wrapperChild.getCondition && wrapperChild.getCondition()
         const condition = formatCondition(param)
         const vValid = valueValid(condition)

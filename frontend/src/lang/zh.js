@@ -2105,6 +2105,12 @@ export default {
     auto_trigger_tip: '进入预览页面自动触发一次',
     range_tip: '默认关联全部过滤组件'
   },
+
+  desresetbutton: {
+    label: '清空按钮',
+    reset: '重置按钮',
+    text: '名称'
+  },
   denumberselect: {
     label: '数字下拉',
     placeholder: '请选择'

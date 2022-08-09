@@ -582,6 +582,8 @@ export default {
           this.requestStatus = 'error'
           if (err.message && err.message.indexOf('timeout') > -1) {
             this.message = this.$t('panel.timeout_refresh')
+          } else if (!err.response) {
+            this.httpRequest.status = false
           } else {
             this.httpRequest.status = err.response.data.success
             this.httpRequest.msg = err.response.data.message

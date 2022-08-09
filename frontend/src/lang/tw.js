@@ -2094,6 +2094,11 @@ export default {
     auto_trigger_tip: '進入預覽頁面自動觸發一次',
     range_tip: '默認關聯全部過濾組件'
   },
+  desresetbutton: {
+    label: '清空按鈕',
+    reset: '重置按鈕',
+    text: '名稱'
+  },
   denumberselect: {
     label: '數字下拉',
     placeholder: '請選擇'

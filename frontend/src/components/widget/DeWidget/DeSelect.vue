@@ -212,6 +212,9 @@ export default {
     bus.$off('reset-default-value', this.resetDefaultValue)
   },
   methods: {
+    clearHandler() {
+      this.value = null
+    },
     filterMethod(key) {
       this.keyWord = key
     },
@@ -231,7 +234,7 @@ export default {
     },
     handleElTagStyle() {
       setTimeout(() => {
-        textSelectWidget(this.$refs['deSelect'].$el, this.element.style)
+        this.$refs['deSelect'] && this.$refs['deSelect'].$el && textSelectWidget(this.$refs['deSelect'].$el, this.element.style)
       }, 50)
     },
     initLoad() {
@@ -281,9 +284,10 @@ export default {
     },
     handleShowNumber() {
       this.showNumber = false
-      const tags = this.$refs.deSelect.$refs.visualSelect.$refs.tags
 
       this.$nextTick(() => {
+        if (!this.$refs.deSelect || !this.$refs.deSelect.$refs.visualSelect || !this.$refs.deSelect.$refs.visualSelect.$refs.tags) return
+        const tags = this.$refs.deSelect.$refs.visualSelect.$refs.tags
         if (!this.element.options.attrs.multiple || !this.$refs.deSelect || !tags) {
           return
         }

@@ -2084,6 +2084,11 @@ export default {
     auto_trigger_tip: 'Automatically trigger once when entering the preview page',
     range_tip: 'Default association all filter components'
   },
+  desresetbutton: {
+    label: 'Clear',
+    reset: 'Reset',
+    text: 'Text'
+  },
   denumberselect: {
     label: 'Number selector',
     placeholder: 'Please select'

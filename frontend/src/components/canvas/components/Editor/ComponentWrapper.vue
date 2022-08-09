@@ -265,6 +265,11 @@ export default {
       } else {
         return null
       }
+    },
+    clearHandler() {
+      if (this.$refs.deOutWidget && this.$refs.deOutWidget.clearHandler) {
+        this.$refs.deOutWidget.clearHandler()
+      }
     }
   }
 }

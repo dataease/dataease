@@ -100,5 +100,21 @@ export const buildFilterMap = panelItems => {
   let result = buildViewKeyMap(panelItems)
 
   result = buildViewKeyFilters(panelItems, result)
+  fillElementsFilter(panelItems, result)
   return result
+}
+
+export const fillElementsFilter = (panelItems, filterMap) => {
+  panelItems.forEach(element => {
+    if (element.type === 'view') {
+      element.filters = filterMap[element.propValue.viewId] || []
+    }
+    if (element.type === 'de-tabs') {
+      element.options.tabList && element.options.tabList.forEach(tab => {
+        if (tab.content && tab.content.propValue && tab.content.propValue.viewId) {
+          tab.content.filters = filterMap[tab.content.propValue.viewId] || []
+        }
+      })
+    }
+  })
 }
