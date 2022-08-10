@@ -1900,6 +1900,7 @@ export default {
     un_install_error: '卸载失败，请联系管理员'
   },
   display: {
+    favicon: '系统图标',
     logo: '头部系统logo',
     loginLogo: '登录页面头部logo',
     loginImage: '登录页面右侧图片',
