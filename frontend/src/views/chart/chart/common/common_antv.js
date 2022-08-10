@@ -118,7 +118,7 @@ export function getLabel(chart) {
             type: l.position,
             autoRotate: false
           }
-        } else if (chart.type.includes('line')) {
+        } else if (chart.type.includes('line') || chart.type.includes('area')) {
           label = {
             position: l.position,
             offsetY: -8
