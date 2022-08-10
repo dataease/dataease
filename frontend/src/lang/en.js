@@ -1890,6 +1890,7 @@ export default {
     un_install_error: 'Uninstall failed, please contact the administrator'
   },
   display: {
+    favicon: 'Favicon',
     logo: 'Head system logo',
     loginLogo: 'Login page header logo',
     loginImage: 'Picture on the right side of the login page',

@@ -104,6 +104,7 @@ import {
   initTheme
 } from '@/utils/ThemeUtil'
 import TemplateMarket from '@/views/panel/templateMarket'
+import { changeFavicon } from '@/utils/index'
 export default {
   name: 'Topbar',
   components: {
@@ -346,13 +347,11 @@ export default {
           })
         }
 
-        /* if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
-            if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
-              document.body.className = 'blackTheme'
-            } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
-              document.body.className = ''
-            }
-          } */
+        if (this.uiInfo['ui.favicon'] && this.uiInfo['ui.favicon'].paramValue) {
+          const faviconUrl = '/system/ui/image/' + this.uiInfo['ui.favicon'].paramValue
+          changeFavicon(faviconUrl)
+        }
+
         this.axiosFinished = true
       })
     },

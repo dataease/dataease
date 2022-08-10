@@ -1890,6 +1890,7 @@ export default {
     un_install_error: '卸載失敗，請聯系管理員'
   },
   display: {
+    favicon: '系統圖標',
     logo: '頭部繫統logo',
     loginLogo: '登錄頁面頭部logo',
     loginImage: '登錄頁面右側圖片',

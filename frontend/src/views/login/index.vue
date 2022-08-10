@@ -67,6 +67,7 @@
 import { encrypt } from '@/utils/rsaEncrypt'
 import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
+import { changeFavicon } from '@/utils/index'
 import { initTheme } from '@/utils/ThemeUtil'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import Cookies from 'js-cookie'
@@ -195,13 +196,11 @@ export default {
       if (this.uiInfo['ui.loginLogo'] && this.uiInfo['ui.loginLogo'].paramValue) {
         this.loginLogoUrl = '/system/ui/image/' + this.uiInfo['ui.loginLogo'].paramValue
       }
-      /* if (this.uiInfo['ui.themeStr'] && this.uiInfo['ui.themeStr'].paramValue) {
-        if (this.uiInfo['ui.themeStr'].paramValue === 'dark') {
-          document.body.className = 'blackTheme'
-        } else if (this.uiInfo['ui.themeStr'].paramValue === 'light') {
-          document.body.className = ''
-        }
-      } */
+
+      if (this.uiInfo['ui.favicon'] && this.uiInfo['ui.favicon'].paramValue) {
+        const faviconUrl = '/system/ui/image/' + this.uiInfo['ui.favicon'].paramValue
+        changeFavicon(faviconUrl)
+      }
     },
     initCache() {
       this.clearLocalStorage.forEach(item => {
