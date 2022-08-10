@@ -720,6 +720,7 @@ export default {
     cas_reset: 'CAS切換回默認登錄方式訪問API：'
   },
   chart: {
+    rich_text_view: '富文本视图',
     view_reset: '視圖重置',
     view_reset_tips: '放棄對視圖的修改？',
     export_img: '導出圖片',
@@ -1119,6 +1120,7 @@ export default {
     slider: '縮略軸',
     slider_range: '默認範圍',
     chart_no_senior: '當前圖表類型暫無高級配置，敬請期待',
+    chart_no_properties: '當前圖表類型暫無样式配置.',
     assist_line: '輔助線',
     field_fixed: '固定值',
     line_type_dotted: '點',
@@ -1805,6 +1807,7 @@ export default {
     jump: '跳轉',
     cancel_linkage: '取消聯動',
     switch_picture: '更換圖片',
+    select_field: '选择视图字段',
     remove_all_linkage: '清除所有聯動',
     exit_un_march_linkage_field: '存在未匹配聯動關繫的字段',
     details: '詳情',

@@ -719,6 +719,7 @@ export default {
     cas_reset: 'CAS switches back to the default login mode to access API:'
   },
   chart: {
+    rich_text_view: 'Rich Text View',
     view_reset: 'View Reset',
     view_reset_tips: 'Discard Changes To View?',
     export_img: 'Export Img',
@@ -1120,6 +1121,7 @@ export default {
     slider: 'Slider',
     slider_range: 'Range',
     chart_no_senior: 'This chart type not support senior config,please look forward to.',
+    chart_no_properties: 'This chart type not support properties config.',
     assist_line: 'Assist Line',
     field_fixed: 'Fixed',
     line_type_dotted: 'Dotted',
@@ -1805,6 +1807,7 @@ export default {
     jump: 'Jump',
     cancel_linkage: 'Cancel Linkage',
     switch_picture: 'Switch Picture',
+    select_field: 'Select View Field',
     remove_all_linkage: 'Remove All Linkage',
     exit_un_march_linkage_field: 'Exit Un March Linkage Field',
     details: 'Details',

@@ -3,7 +3,7 @@
     <el-tooltip :content="$t('chart.draw_back')">
       <el-button
         class="el-icon-d-arrow-right"
-        style="position:absolute;left: 4px;top: 5px;z-index: 1000"
+        style="position:absolute;left: 4px;top: 5px;z-index: 1"
         size="mini"
         circle
         @click="closePanelEdit"

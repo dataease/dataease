@@ -1,5 +1,8 @@
 <template>
   <el-row class="view-panel">
+    <div v-if="properties.length===0" class="no-properties">
+      {{ $t('chart.chart_no_properties') }}
+    </div>
     <plugin-com
       v-if="pluginShow"
       style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
@@ -8,7 +11,7 @@
       :obj="{view, param, chart, dimensionData, quotaData}"
     />
     <div
-      v-else
+      v-if="!pluginShow&&properties.length>0"
       style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;padding-right: 6px"
       class="attr-style theme-border-class"
     >
@@ -613,5 +616,14 @@ export default {
   }
   .form-item ::v-deep .el-form-item__label{
     font-size: 12px;
+  }
+
+  .no-properties {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    padding-top: 40px;
+    overflow: auto;
+    height: 100%;
   }
   </style>
