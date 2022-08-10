@@ -33,7 +33,7 @@ public class PluginCommonServer {
             List<PluginSysMenu> menus = service.menus();
             if (menus.stream().anyMatch(menu -> {
                 atomicReference.set(menu);
-                return menu.getMenuId() == menuId;
+                return menu.getMenuId().equals(menuId);
             })) {
                 String jsName = atomicReference.get().getComponent();
                 HttpServletResponse response = ServletUtils.response();

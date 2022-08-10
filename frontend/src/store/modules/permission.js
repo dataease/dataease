@@ -29,11 +29,10 @@ const actions = {
     commit('SET_CURRENT_PATH', path)
   }
 }
-
+export const fullScreenRouters = ['XpackThemeForm']
 export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由字符串，转换为组件对象
   return routers.map(router => {
-    // 如果是菜单类型 且 是一级菜单 需要包装一层父级目录
-    if (router.type === 1 && router.pid === 0 && router.component && router.component !== 'Layout') {
+    if (!fullScreenRouters.includes(router.component) && router.type === 1 && router.pid === 0 && router.component && router.component !== 'Layout') {
       router = decorate(router)
     }
     if (router.isPlugin) {
