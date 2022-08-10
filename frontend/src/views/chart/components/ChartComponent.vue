@@ -10,15 +10,15 @@
     <div :id="chartId" style="width: 100%;height: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius}" />
     <div v-if="chart.type === 'map'" class="map-zoom-box">
       <div style="margin-bottom: 0.5em;">
-        <el-button size="mini" icon="el-icon-plus" circle @click="roamMap(true)" />
+        <el-button :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}" size="mini" icon="el-icon-plus" circle @click="roamMap(true)" />
       </div>
 
       <div style="margin-bottom: 0.5em;">
-        <el-button size="mini" icon="el-icon-refresh" circle @click="resetZoom()" />
+        <el-button :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}" size="mini" icon="el-icon-refresh" circle @click="resetZoom()" />
       </div>
 
       <div>
-        <el-button size="mini" icon="el-icon-minus" circle @click="roamMap(false)" />
+        <el-button :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}" size="mini" icon="el-icon-minus" circle @click="roamMap(false)" />
       </div>
 
     </div>
@@ -81,7 +81,7 @@ import {
   geoJson
 } from '@/api/map/map'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
-
+import { reverseColor } from '../chart/common/common'
 export default {
   name: 'ChartComponent',
   components: {
@@ -140,7 +140,8 @@ export default {
       dynamicAreaCode: null,
       borderRadius: '0px',
       mapCenter: null,
-      linkageActiveParam: null
+      linkageActiveParam: null,
+      buttonTextColor: null
     }
   },
 
@@ -291,6 +292,13 @@ export default {
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
+        if (themeStyle && themeStyle.backgroundColorSelect) {
+          const panelColor = themeStyle.color
+          if (panelColor !== '#FFFFFF') {
+            const reverseValue = reverseColor(panelColor)
+            this.buttonTextColor = reverseValue
+          }
+        }
       }
       const chart_option = baseMapOption(base_json, chart, themeStyle, curAreaCode)
       this.myEcharts(chart_option)
