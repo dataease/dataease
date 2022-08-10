@@ -832,7 +832,7 @@ export default {
         this.$store.dispatch('chart/setTableId', null)
         this.$store.dispatch('chart/setTableId', this.table.id)
         if (this.optFrom === 'panel') {
-          this.$emit('newViewInfo', { 'id': response.data.id })
+          this.$emit('newViewInfo', { 'id': response.data.id, 'type': response.data.type })
         } else {
           _this.expandedArray.push(response.data.sceneId)
           _this.currentKey = response.data.id

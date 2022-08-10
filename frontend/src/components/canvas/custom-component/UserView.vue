@@ -41,6 +41,16 @@
       @onJumpClick="jumpClick"
       @trigger-edit-click="pluginEditHandler"
     />
+    <de-rich-text-view
+      v-else-if="richTextViewShowFlag"
+      :ref="element.propValue.id"
+      :element="element"
+      :prop-value="element.propValue.textValue"
+      :active="active"
+      :edit-mode="editMode"
+      :data-row-select="dataRowSelect"
+      :data-row-name-select="dataRowNameSelect"
+    />
     <chart-component
       v-else-if="charViewShowFlag"
       :ref="element.propValue.id"
@@ -129,10 +139,12 @@ import PluginCom from '@/views/system/plugin/PluginCom'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { viewPropsSave } from '@/api/chart/chart'
 import { checkAddHttp } from '@/utils/urlUtils'
+import DeRichTextView from '@/components/canvas/custom-component/DeRichTextView'
+import Vue from 'vue'
 
 export default {
   name: 'UserView',
-  components: { LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
+  components: { DeRichTextView, LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
   props: {
     element: {
       type: Object,
@@ -188,10 +200,18 @@ export default {
       type: String,
       required: false,
       default: 'NotProvided'
+    },
+    editMode: {
+      type: String,
+      require: false,
+      default: 'preview'
     }
   },
   data() {
     return {
+      dataRowNameSelect: {},
+      dataRowSelect: {},
+      curFields: [],
       isFirstLoad: true, // 是否是第一次加载
       refId: null,
       chart: BASE_CHART_STRING,
@@ -239,6 +259,9 @@ export default {
     },
     editBarViewShowFlag() {
       return (this.active && this.inTab && !this.mobileLayoutStatus) && !this.showPosition.includes('multiplexing') || this.showPosition.includes('email-task')
+    },
+    richTextViewShowFlag() {
+      return this.httpRequest.status && this.chart.type && this.chart.type === 'richTextView'
     },
     charViewShowFlag() {
       return this.httpRequest.status && this.chart.type && !this.chart.type.includes('table') && !this.chart.type.includes('text') && this.chart.type !== 'label' && this.renderComponent() === 'echarts'
@@ -570,6 +593,7 @@ export default {
             this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
             this.requestStatus = 'merging'
             this.mergeScale()
+            this.initCurFields(this.chart)
             this.requestStatus = 'success'
             this.httpRequest.status = true
           } else {
@@ -595,6 +619,30 @@ export default {
           return true
         })
       }
+    },
+    initCurFields(chartDetails) {
+      this.curFields = []
+      const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
+      chartDetails.data.sourceFields.forEach(field => {
+        if (checkAllAxisStr.indexOf(field.id) > -1) {
+          this.curFields.push(field)
+        }
+      })
+      // Get the corresponding relationship between id and value
+      const nameIdMap = chartDetails.data.fields.reduce((pre, next) => {
+        pre[next['dataeaseName']] = next['id']
+        return pre
+      }, {})
+      const sourceFieldNameIdMap = chartDetails.data.fields.reduce((pre, next) => {
+        pre[next['dataeaseName']] = next['name']
+        return pre
+      }, {})
+      const rowData = chartDetails.data.tableRow[0]
+      for (const key in rowData) {
+        this.dataRowSelect[nameIdMap[key]] = rowData[key]
+        this.dataRowNameSelect[sourceFieldNameIdMap[key]] = rowData[key]
+      }
+      Vue.set(this.element.propValue, 'innerType', chartDetails.type)
     },
     viewIdMatch(viewIds, viewId) {
       return !viewIds || viewIds.length === 0 || viewIds.includes(viewId)

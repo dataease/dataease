@@ -1091,7 +1091,8 @@ export default {
           component = matrixBaseChange(deepCopy(componentTemp))
           const propValue = {
             id: newComponentId,
-            viewId: newViewInfo.id
+            viewId: newViewInfo.id,
+            textValue: '双击输入文本内容'
           }
           component.propValue = propValue
           component.filters = []

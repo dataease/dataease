@@ -342,6 +342,15 @@ export const TYPE_CONFIGS = [
   },
   {
     render: 'antv',
+    category: 'chart.chart_type_quota',
+    value: 'richTextView',
+    title: 'chart.rich_text_view',
+    icon: 'richTextView',
+    properties: [],
+    propertyInner: {}
+  },
+  {
+    render: 'antv',
     category: 'chart.chart_type_trend',
     value: 'line',
     title: 'chart.chart_line',
