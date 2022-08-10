@@ -230,7 +230,9 @@ const data = {
 
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
+        console.log('1---------------点')
         if (element.type && element.type === 'de-tabs') {
+          console.log('2---------------点')
           for (let idx = 0; idx < element.options.tabList.length; idx++) {
             const ele = element.options.tabList[idx].content
             if (!ele.type || ele.type !== 'view') continue
@@ -252,6 +254,7 @@ const data = {
           state.componentData[index] = element
         }
         if (!element.type || element.type !== 'view') continue
+        console.log('3---------------点', condition)
         const currentFilters = element.filters || []
         const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId)
 
@@ -262,12 +265,18 @@ const data = {
             currentFilters.splice(j, 1)
           }
         }
+        console.log('4---------------点', condition, data)
         // 不存在该条件 且 条件有效 直接保存该条件
         // !filterExist && vValid && currentFilters.push(condition)
         vidMatch && vValid && currentFilters.push(condition)
         element.filters = currentFilters
+        console.log('5---------------点', element, data)
+        state.componentData[index] = {}
         state.componentData[index] = element
+
+        // this.$set(state.componentData[index], 'newKey', data.value)
       }
+      console.log('state.componentData', state.componentData)
     },
 
     // 添加联动 下钻 等过滤组件

@@ -431,8 +431,14 @@ export default {
     },
     cfilters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
+      console.log('2222', this.element.filters)
       if (!this.element.filters) return []
       return JSON.parse(JSON.stringify(this.element.filters))
+    },
+    newKey() {
+      console.log('添加的先后--------')
+      if (this.element.newKey) return []
+      return this.element.newKey
     },
     linkageFilters() {
       // 必要 勿删勿该  watch数组，哪怕发生变化 oldValue等于newValue ，深拷贝解决
@@ -535,6 +541,7 @@ export default {
     cfilters: {
       handler: function(val1, val2) {
         if (isChange(val1, val2) && !this.isFirstLoad) {
+          console.log('触发点-------------------------5')
           this.getData(this.element.propValue.viewId)
         }
       },
@@ -543,6 +550,7 @@ export default {
     linkageFilters: {
       handler(newVal, oldVal) {
         if (isChange(newVal, oldVal)) {
+          console.log('触发点-------------------------6')
           this.getData(this.element.propValue.viewId)
         }
       },
@@ -559,7 +567,7 @@ export default {
           this.preCanvasPanel.resultMode !== newVal.panel.resultMode ||
           this.templateStatus || this.isStylePriority
         ) {
-          // console.log('这地方进了吗？t,p',this.templateStatus,this.isStylePriority)
+          console.log('触发点-------------------------1')
           this.getData(this.element.propValue.viewId, false)
         }
         // 如果gap有变化刷新
@@ -615,7 +623,7 @@ export default {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
       // 如果watch.filters 已经进行数据初始化时候，此处放弃数据初始化
-
+      console.log('触发点-------------------------7')
       this.getData(this.element.propValue.viewId, false)
     }
   },
@@ -1180,6 +1188,7 @@ export default {
         (this.chart.type === 'map' || this.chart.type === 'buddle-map') &&
           this.sendToChildren(param)
         this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
+        console.log('触发点-------------------------2')
         this.getData(this.element.propValue.viewId)
       } else if (this.chart.drillFields.length > 0) {
         this.$message({
@@ -1285,6 +1294,7 @@ export default {
       if (this.chart.type === 'map' || this.chart.type === 'buddle-map') {
         this.backToParent(index, length)
       }
+      console.log('触发点-------------------------3')
       this.getData(this.element.propValue.viewId)
     },
     // 回到父级地图
@@ -1446,6 +1456,7 @@ export default {
       console.log('getDataEdit::::', param)
       this.$store.state.styleChangeTimes++
       if (param.type === 'propChange') {
+        console.log('触发点-------------------------4')
         this.getData(param.viewId, false)
       } else if (param.type === 'styleChange') {
         this.chart.customAttr = param.viewInfo.customAttr

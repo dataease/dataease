@@ -1,18 +1,6 @@
 <template>
   <div>
     <div class="block">
-      <!-- <el-carousel v-model="value" :height="element.style.height+'px'" trigger="click" :interval="5000" @change="changeCarousel">
-        <el-carousel-item v-for="(item,index) in datas" :key="index" class="banner_class" :style="bannerStyle">
-          <span
-            :style="{
-              'font-size': `${element.commonBackground.fontSize}px`,
-              'color': element.commonBackground.fontColor
-            }"
-          >
-            {{ item.text }}
-          </span>
-        </el-carousel-item>
-      </el-carousel> -->
       <div class="scroll_box" :style="big_box">
         <span class="left_btn" @click.stop="scrollBtn('lt')">
           <i class="el-icon-arrow-left" />
@@ -35,6 +23,7 @@
 <script>
 import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
 import { getLinkToken, getToken } from '@/utils/auth'
+import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 export default {
 
@@ -73,11 +62,18 @@ export default {
       show: true,
       datas: [],
       isIndeterminate: false,
-      checkAll: false
+      checkAll: false,
+      timer: null
 
     }
   },
   computed: {
+    ...mapState([
+      'curComponent',
+      'componentData',
+      'canvasStyleData',
+      'previewCanvasScale'
+    ]),
     operator() {
       console.log('修改组件问题=====', this.element)
       return this.element.options.attrs.multiple ? 'in' : 'eq'
@@ -152,6 +148,7 @@ export default {
     },
     boxStyle() {
       const style = {}
+      style.fontSize = (this.element.options.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'
       style.paddingLeft = this.element.options.spacing + 'px'
       style.paddingRight = this.element.options.spacing + 'px'
       style.width = this.boxWidth + 'px'
@@ -185,6 +182,9 @@ export default {
       style.fontWeight = this.element.style.fontWeight
       style.fontSize = this.element.style.fontSize + 'px'
       return style
+    },
+    scrollTimes() {
+      return this.element.options.autoTime * 1000
     }
   },
   watch: {
@@ -222,6 +222,14 @@ export default {
         console.log('this.datas22222222', this.datas)
       }) || (this.element.options.value = '')
     },
+    'element.options.autoplay': function(value, old) {
+      console.log('判断是否启用轮播模式-------')
+      if (this.element.options.autoplay) {
+        this.scrollEven()
+      } else {
+        clearInterval(this.timer)
+      }
+    },
     'element.options.attrs.multiple': function(value, old) {
       if (typeof old === 'undefined' || value === old) return
       if (!this.inDraw) {
@@ -257,14 +265,28 @@ export default {
         }
       }
     })
+    setTimeout(() => {
+      console.log('数据来源------=========>>>>', this.datas)
+    })
+  },
+  destroyed() {
+    clearInterval(this.timer)
   },
 
   methods: {
+    scrollEven() {
+      // console.log('123123', key)
+
+      this.timer = setInterval(() => {
+        this.scrollBtn('rt')
+      }, this.scrollTimes)
+    },
     baseMoseDownEven(e) {
       e.stopPropagation()
     },
     scrollBtn(key) {
       console.log('key', key)
+      // clearInterval(this.timer)
       if (key === 'lt') {
         const datasll = this.datas[this.datas.length - 1]
         this.datas.splice(this.datas.length - 1, 1)
@@ -281,7 +303,8 @@ export default {
         this.datas.push(datasll)
       }
       this.element.options.heightTabs = this.datas[0].text
-      this.changeValue(this.datas[0].id)
+      this.changeValue(this.element.options.heightTabs)
+      // this.scrollEven()
     },
     toggleNav(key) {
       console.log('keysss', key)
@@ -324,7 +347,14 @@ export default {
         }
         method({ fieldIds: this.element.options.attrs.fieldId.split(',') }).then(res => {
           this.datas = this.optionDatas(res.data)
-          console.log('this.datas1111111111', this.datas)
+          console.log('this.datas1111111111------------->', this.datas)
+          if (this.element.options.autoplay) {
+            this.scrollEven()
+          }
+
+          // setTimeout(() => {
+          //   this.changeValue(res.data[0].id)
+          // }, 1000)
           if (this.element.options.attrs.multiple) {
             this.checkAll = this.value.length === this.datas.length
             this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
@@ -332,6 +362,7 @@ export default {
         })
       }
       if (this.element.options.value) {
+        console.log('---------------------------------------首次触发--->')
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
       }
@@ -340,14 +371,6 @@ export default {
       console.log('轮播框的值', value, this.inDraw)
       if (!this.inDraw) {
         this.element.options.value = value
-      //   if (value === null) {
-      //     this.element.options.value = ''
-      //   } else {
-      //     this.element.options.value = Array.isArray(value) ? value.join() : value
-      //   }
-      //   this.element.options.manualModify = false
-      // } else {
-      //   this.element.options.manualModify = true
       }
       this.element.options.value = Array.isArray(value) ? value.join() : value
       this.setCondition()
@@ -369,13 +392,8 @@ export default {
     },
     fillValueDerfault() {
       const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
-      if (this.element.options.attrs.multiple) {
-        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') { return [] }
-        return defaultV.split(',')
-      } else {
-        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') { return null }
-        return defaultV.split(',')[0]
-      }
+      if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
+      return defaultV.split(',')[0]
     },
     optionDatas(datas) {
       if (!datas) return null

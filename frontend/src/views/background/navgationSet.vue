@@ -284,10 +284,11 @@
           </el-col>
           <el-col :span="20">
             <!-- 多项选择框 -->
+            <!-- v-show="items.label!=='导航组件'" -->
             <el-select v-model="item.relation" multiple placeholder="请选择" @change="changeAssembly">
               <el-option
                 v-for="items in optionsData"
-                v-show="items.label!=='导航组件'"
+                v-show="showOpins(items)"
                 :key="items.id"
                 :label="items.label"
                 :value="items.id"
@@ -388,6 +389,7 @@ export default {
         data = data.concat(res.relation)
       })
       const opSetInfo = this.options
+      console.log('this.options', this.options)
       opSetInfo.forEach(item => {
         data.forEach(e => {
           if (e === item.id) {
@@ -395,7 +397,7 @@ export default {
           }
         })
       })
-      console.log(data)
+      console.log('---------', data)
       return opSetInfo
     }
   },
@@ -445,6 +447,7 @@ export default {
       })
     })
     this.options = deepCopy(newArrr)
+    console.log('0-0-0-0-0-0-0-0-0--0', this.options)
     if (this.element.options.heightBgImg && this.element.options.heightBgImg !== '') {
       // this.updataUrl = this.curComponent.options.heightBgImg
       this.changImg = this.curComponent.options.heightBgImg
@@ -457,6 +460,25 @@ export default {
   },
 
   methods: {
+    showOpins(item) {
+      if (this.curComponent.options.vertical === 'directory') {
+        if (item.id === this.element.id) {
+          return false
+        } else {
+          return true
+        }
+      } else {
+        if (item.label === '导航组件') {
+          return false
+        } else {
+          return true
+        }
+        // return
+      }
+
+      // console.log('每一行的数据内容', item, this.element)
+      // return true
+    },
     handleClick() {
 
     },
@@ -572,6 +594,7 @@ export default {
     save() {
       this.curComponent.options.navTabList = this.navInfoLis
       this.navInfoLis.forEach(ele => {
+        ele.navModel = this.curComponent.options.vertical // 给tab数据栏添加类型判断
         ele.relation.forEach(item => {
           this.componentData.forEach(res => {
             if (res.id === item) {
@@ -581,6 +604,10 @@ export default {
           })
         })
       })
+      if (this.curComponent.options.heightTabs === '') {
+        this.curComponent.options.heightTabs = this.navInfoLis[0].name
+      }
+
       if (this.curComponent.options.vertical === 'elementKey') {
         if (this.canvasStyleData.showArr) {
           this.canvasStyleData.showArr.push(this.navInfoLis[0].name)
