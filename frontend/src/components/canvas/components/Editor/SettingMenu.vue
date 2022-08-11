@@ -56,6 +56,24 @@ export default {
   components: { HyperlinksDialog },
   data() {
     return {
+      jumpExcludeViewType: [
+        'richTextView',
+        'liquid',
+        'gauge',
+        'text',
+        'label',
+        'word-cloud',
+        'table-pivot'
+      ],
+      linkageExcludeViewType: [
+        'richTextView',
+        'liquid',
+        'gauge',
+        'text',
+        'label',
+        'word-cloud',
+        'table-pivot'
+      ],
       copyData: null,
       hyperlinksSetVisible: false,
       editFilter: [
@@ -67,10 +85,10 @@ export default {
   },
   computed: {
     linkJumpSetShow() {
-      return this.curComponent.type === 'view' &&  this.curComponent.propValue.innerType !== 'richTextView'
+      return this.curComponent.type === 'view' && !this.jumpExcludeViewType.includes(this.curComponent.propValue.innerType)
     },
     linkageSettingShow() {
-      return this.curComponent.type === 'view' &&  this.curComponent.propValue.innerType !== 'richTextView'
+      return this.curComponent.type === 'view' && !this.linkageExcludeViewType.includes(this.curComponent.propValue.innerType)
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
