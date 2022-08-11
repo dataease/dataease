@@ -34,6 +34,9 @@
       <el-collapse-item name="d" :title="$t('chart.dimension')">
         <el-table :data="tableFields.dimensionListData" size="mini">
           <el-table-column property="checked" :label="$t('dataset.field_check')" width="60">
+            <template slot="header" slot-scope="scope">
+              <el-checkbox v-model="dimensionChecked" :indeterminate="dimensionIndeterminate" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveDimension" />
+            </template>
             <template slot-scope="scope">
               <el-checkbox v-model="scope.row.checked" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit(scope.row)" />
             </template>
@@ -133,6 +136,7 @@
           </el-table-column>
           <el-table-column property="" :label="$t('dataset.operator')">
             <template slot-scope="scope">
+              <el-button v-if="false && scope.row.extField === 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="copyField(scope.row)">{{ $t('dataset.copy') }}</el-button>
               <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="editField(scope.row)">{{ $t('dataset.edit') }}</el-button>
               <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="deleteField(scope.row)">{{ $t('dataset.delete') }}</el-button>
             </template>
@@ -143,6 +147,9 @@
       <el-collapse-item name="q" :title="$t('chart.quota')">
         <el-table :data="tableFields.quotaListData" size="mini">
           <el-table-column property="checked" :label="$t('dataset.field_check')" width="60">
+            <template slot="header" slot-scope="scope">
+              <el-checkbox v-model="quotaChecked" :indeterminate="quotaIndeterminate" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveQuota" />
+            </template>
             <template slot-scope="scope">
               <el-checkbox v-model="scope.row.checked" :disabled="!hasDataPermission('manage',param.privileges)" @change="saveEdit(scope.row)" />
             </template>
@@ -242,6 +249,7 @@
           </el-table-column>
           <el-table-column property="" :label="$t('dataset.operator')">
             <template slot-scope="scope">
+              <el-button v-if="false && scope.row.extField === 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="copyField(scope.row)">{{ $t('dataset.copy') }}</el-button>
               <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="editField(scope.row)">{{ $t('dataset.edit') }}</el-button>
               <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="deleteField(scope.row)">{{ $t('dataset.delete') }}</el-button>
             </template>
@@ -264,8 +272,9 @@
 </template>
 
 <script>
-import { post, fieldListDQ } from '@/api/dataset/dataset'
+import { post, fieldListDQ, batchEdit } from '@/api/dataset/dataset'
 import CalcFieldEdit from './CalcFieldEdit'
+import { getFieldName } from '@/views/dataset/data/utils'
 export default {
   name: 'FieldEdit',
   components: { CalcFieldEdit },
@@ -299,7 +308,11 @@ export default {
       searchField: '',
       editCalcField: false,
       currEditField: {},
-      isSyncField: false
+      isSyncField: false,
+      dimensionChecked: false,
+      dimensionIndeterminate: false,
+      quotaChecked: false,
+      quotaIndeterminate: false
     }
   },
   watch: {
@@ -331,6 +344,8 @@ export default {
         this.tableFields.dimensionListData = JSON.parse(JSON.stringify(this.tableFields.dimensionList))
         this.tableFields.quotaListData = JSON.parse(JSON.stringify(this.tableFields.quotaList))
         this.filterField(this.searchField)
+        this.dimensionChange()
+        this.quotaChange()
       })
     },
     saveEdit(item) {
@@ -436,6 +451,79 @@ export default {
           }, 500)
         })
       }).catch(() => {
+      })
+    },
+
+    saveDimension() {
+      const list = JSON.parse(JSON.stringify(this.tableFields.dimensionListData))
+      if (this.dimensionChecked) {
+        list.forEach(ele => {
+          ele.checked = true
+        })
+      } else {
+        list.forEach(ele => {
+          ele.checked = false
+        })
+      }
+      batchEdit(list).then(response => {
+        this.initField()
+        localStorage.setItem('reloadDsData', 'true')
+      })
+    },
+    saveQuota() {
+      const list = JSON.parse(JSON.stringify(this.tableFields.quotaListData))
+      if (this.quotaChecked) {
+        list.forEach(ele => {
+          ele.checked = true
+        })
+      } else {
+        list.forEach(ele => {
+          ele.checked = false
+        })
+      }
+      batchEdit(list).then(response => {
+        this.initField()
+        localStorage.setItem('reloadDsData', 'true')
+      })
+    },
+
+    dimensionChange() {
+      let checkedCount = 0
+      this.tableFields.dimensionListData.forEach(ele => {
+        if (ele.checked) {
+          checkedCount++
+        }
+      })
+      this.dimensionChecked = checkedCount === this.tableFields.dimensionListData.length
+      this.dimensionIndeterminate = checkedCount > 0 && checkedCount < this.tableFields.dimensionListData.length
+    },
+    quotaChange() {
+      let checkedCount = 0
+      this.tableFields.quotaListData.forEach(ele => {
+        if (ele.checked) {
+          checkedCount++
+        }
+      })
+      this.quotaChecked = checkedCount === this.tableFields.quotaListData.length
+      this.quotaIndeterminate = checkedCount > 0 && checkedCount < this.tableFields.quotaListData.length
+    },
+
+    copyField(item) {
+      const param = { ...item }
+      param.id = null
+      param.extField = 2
+      param.originName = '[' + item.id + ']'
+      param.name = getFieldName(this.tableFields.dimensionListData.concat(this.tableFields.quotaListData), item.name)
+      param.dataeaseName = null
+      param.lastSyncTime = null
+      param.columnIndex = this.tableFields.dimensionListData.length + this.tableFields.quotaListData.length
+
+      post('/dataset/field/save', param).then(response => {
+        this.initField()
+        localStorage.setItem('reloadDsData', 'true')
+      }).catch(res => {
+        this.initField()
+        localStorage.setItem('reloadDsData', 'true')
       })
     }
   }
