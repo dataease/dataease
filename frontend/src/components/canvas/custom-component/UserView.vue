@@ -609,12 +609,14 @@ export default {
           } else if (!err.response) {
             this.httpRequest.status = false
           } else {
-            this.httpRequest.status = err.response.data.success
-            this.httpRequest.msg = err.response.data.message
-            if (err && err.response && err.response.data) {
-              this.message = err.response.data.message
-            } else {
-              this.message = err
+            if (err.response) {
+              this.httpRequest.status = err.response.data.success
+              this.httpRequest.msg = err.response.data.message
+              if (err && err.response && err.response.data) {
+                this.message = err.response.data.message
+              } else {
+                this.message = err
+              }
             }
           }
           this.isFirstLoad = false
@@ -624,27 +626,36 @@ export default {
     },
     initCurFields(chartDetails) {
       this.curFields = []
-      const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
-      chartDetails.data.sourceFields.forEach(field => {
-        if (checkAllAxisStr.indexOf(field.id) > -1) {
-          this.curFields.push(field)
+      this.dataRowSelect = []
+      this.dataRowNameSelect = []
+      if (chartDetails.data && chartDetails.data.sourceFields) {
+        const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
+        chartDetails.data.sourceFields.forEach(field => {
+          if (checkAllAxisStr.indexOf(field.id) > -1) {
+            this.curFields.push(field)
+          }
+        })
+        // Get the corresponding relationship between id and value
+        const nameIdMap = chartDetails.data.fields.reduce((pre, next) => {
+          pre[next['dataeaseName']] = next['id']
+          return pre
+        }, {})
+        const sourceFieldNameIdMap = chartDetails.data.fields.reduce((pre, next) => {
+          pre[next['dataeaseName']] = next['name']
+          return pre
+        }, {})
+        const rowData = chartDetails.data.tableRow[0]
+        for (const key in rowData) {
+          this.dataRowSelect[nameIdMap[key]] = rowData[key]
+          this.dataRowNameSelect[sourceFieldNameIdMap[key]] = rowData[key]
         }
-      })
-      // Get the corresponding relationship between id and value
-      const nameIdMap = chartDetails.data.fields.reduce((pre, next) => {
-        pre[next['dataeaseName']] = next['id']
-        return pre
-      }, {})
-      const sourceFieldNameIdMap = chartDetails.data.fields.reduce((pre, next) => {
-        pre[next['dataeaseName']] = next['name']
-        return pre
-      }, {})
-      const rowData = chartDetails.data.tableRow[0]
-      for (const key in rowData) {
-        this.dataRowSelect[nameIdMap[key]] = rowData[key]
-        this.dataRowNameSelect[sourceFieldNameIdMap[key]] = rowData[key]
       }
       Vue.set(this.element.propValue, 'innerType', chartDetails.type)
+      if (chartDetails.type === 'richTextView') {
+        this.$nextTick(() => {
+          bus.$emit('initCurFields-' + this.element.id)
+        })
+      }
     },
     viewIdMatch(viewIds, viewId) {
       return !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
