@@ -10,9 +10,26 @@
       </div>
       <div class="content">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class">
-          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2?scrollId:newHeight" class="table_bode_li">
+          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2?scrollId:newHeight" class="table_bode_li" style="cursor: pointer;" @click="showDialogInfo(items)">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
-              {{ items[item.datainsName] }}
+              <el-popover
+                width="400"
+                trigger="click"
+                @show="popShow"
+                @hide="popHide"
+                :disabled="!isPopShow"
+              > 
+                <p :style="pop_title">
+                  <span>详情</span>
+                </p>
+                <el-row>
+                  <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
+                    <el-col :span="8" style="text-align: right;">{{obj.name}}：</el-col>
+                    <el-col :span="16">{{obj.value}}</el-col>
+                  </el-col>
+                </el-row>
+                <span slot="reference">{{ items[item.datainsName] }}</span>
+              </el-popover>
             </div>
           </li>
         </ul>
@@ -53,6 +70,9 @@ import { hexColorToRGBA } from '../../chart/util'
 import { mapState } from 'vuex'
 import vueSeamlessScroll from 'vue-seamless-scroll'
 import eventBus from '@/components/canvas/utils/eventBus'
+
+import { save2Cache } from '@/api/chart/chart'
+import { viewData } from '@/api/panel/panel'
 
 export default {
   name: 'TableNormal',
@@ -144,7 +164,25 @@ export default {
       bodyHeight: 30,
       rollingRate: 30,
       scrolleTime: 1000,
-      heightLightLine: 3
+      heightLightLine: 3,
+      oldData: null,
+      newData: null,
+      infoForm: [],
+      isPopShow: false,
+      pop_title: {
+        textAlign: 'center',
+        backgroundColor: '#082456',
+        lineHeight: '30px',
+        color: '#ffffff'
+      },
+      pop_content: {
+        backgroundColor: '#1b2642',
+        color: '#ffffff',
+        lineHeight: '25px',
+        borderBottomStyle: 'dashed',
+        borderBottomWidth: '1px',
+        borderBottomColor: '#ffffff',
+      }
     }
   },
   computed: {
@@ -198,6 +236,7 @@ export default {
     console.log('this.fields', this.fields)
     console.log('获取边框数据', this.element)
     console.log('this.chart---', this.chart)
+    this.oldData = JSON.parse(JSON.stringify(this.chart))
     if (this.chart.data) {
       this.prossData()
       // this.tableScroll()
@@ -207,6 +246,111 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    popShow() {
+      console.log('show')
+      clearInterval(this.timer)
+    },
+    popHide() {
+      console.log('hide')
+      this.tableScroll()
+      let datas = JSON.parse(JSON.stringify(this.oldData))
+      datas.drillFields = JSON.stringify(datas.drillFields)
+      datas.drillFilters = JSON.stringify(datas.drillFilters)
+      delete datas.data
+      save2Cache(this.newData.sceneId,datas)
+    },
+    showDialogInfo(info) {
+      if(!this.isPopShow) {
+        return
+      }
+      this.newData = JSON.parse(JSON.stringify(this.chart))
+      let drillList = []
+      if(typeof this.newData.drillFields === 'object') {
+        drillList = JSON.parse(JSON.stringify(this.newData.drillFields))
+      } else if(typeof this.newData.drillFields === 'string'){
+        drillList = JSON.parse(this.newData.drillFields)
+      }
+      let xaxisList = []
+      if(typeof this.newData.xaxis === 'object') {
+        xaxisList = JSON.parse(JSON.stringify(this.newData.xaxis))
+      } else if(typeof this.newData.xaxis === 'string') {
+        xaxisList = JSON.parse(this.newData.xaxis)
+      }
+      drillList.map(item => {
+        xaxisList.push(item)
+      })
+      console.log(xaxisList)
+      this.newData.xaxis = JSON.stringify(xaxisList)
+      this.newData.drillFields = "[]"
+      this.newData.drillFilters = "[]"
+      delete this.newData.data
+      console.log(this.newData)
+      let obj = {
+        cache: false,
+        drill: [],
+        filter: [],
+        linkageFilter: [],
+        outerParamsFilters: undefined,
+        queryFrom: 'panel_edit',
+        resultCount: 1000,
+        resultMode: "all",
+      }
+      // 缓存对组件的数据维度进行处理的操作为了之后查询的数据
+      save2Cache(this.newData.sceneId,this.newData).then(() => {
+        viewData(this.newData.id,this.newData.sceneId,obj).then(res => {
+          // console.log('response',res)
+          let data = res.data.data
+          let fields = data.fields
+          let tableRow = []
+          data.tableRow.map((item,index) => {
+            tableRow.push({
+              ...item,
+              isClick: index
+            })
+          })
+          // console.log(info,fields,tableRow)
+          let obj = {}
+          tableRow.map(item => {
+            if(item.isClick === info.isClick) {
+              obj = item
+            }
+          })
+          // console.log(obj)
+          let arr = []
+          for(let k in obj) {
+            let a = k
+            fields.map(item => {
+              if(a === item.datainsName) {
+                arr.push({
+                  name: item.name,
+                  value: obj[a]
+                })
+              }
+            })
+          }
+          console.log(arr)
+          this.infoForm = arr
+        })
+      })
+      
+      // console.log('行----信息', info, this.fields)
+      // // this.dialogVisible = true
+      // let arr = []
+      // for(let k in info) {
+      //   let a = k
+      //   this.fields.map(item => {
+      //     if(a === item.datainsName) {
+      //       arr.push({
+      //         name: item.name,
+      //         value: info[a]
+      //       })
+      //     }
+      //   })
+      // }
+      // console.log('arr...',arr)
+      
+      // this.infoForm = arr
+    },
     scorllEvent() {
       var isScroll = true // 也可以定义到data里
       this.$nextTick(() => {
@@ -250,7 +394,16 @@ export default {
     },
     prossData() {
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
-      this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+
+      let arr = []
+      this.chart.data.tableRow.map((item,index) => {
+        arr.push({
+          ...item,
+          isClick: index
+        })
+      })
+      // this.dataInfo = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+      this.dataInfo = arr
       console.log('有数据才会去执行操作---------', this.dataInfo)
       // this.initStyle()
 
@@ -370,6 +523,20 @@ export default {
           this.table_item_class.textAlign = customAttr.size.tableItemAlign
           this.scrolleTime = customAttr.size.automaticTime
         }
+        if (customAttr.label) {
+          this.isPopShow = customAttr.label.popShow
+          this.pop_title.color = customAttr.label.popTitleColor
+          this.pop_title.backgroundColor = customAttr.label.popTitleBackground
+          this.pop_title.textAlign = customAttr.label.popPosition
+          this.pop_title.lineHeight = customAttr.label.popHeight + 'px'
+          this.pop_content.color = customAttr.label.popContentColor
+          this.pop_content.backgroundColor = customAttr.label.popContentBackground
+          this.pop_content.lineHeight = customAttr.label.popContentHeight + 'px'
+          // this.pop_content.borderBottomStyle = customAttr.label.popContentBorderBottomStyle
+          // this.pop_content.borderBottomWidth = customAttr.label.popContentBorderBottomWidth + 'px'
+          this.pop_content.borderBottomColor = customAttr.label.popContentBorderBottomColor
+
+        }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
         this.tableScroll()
       }
@@ -478,6 +645,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 .table_new_header{
   display:flex;
   align-items:center;
