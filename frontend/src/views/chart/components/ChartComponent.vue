@@ -297,6 +297,8 @@ export default {
           if (panelColor !== '#FFFFFF') {
             const reverseValue = reverseColor(panelColor)
             this.buttonTextColor = reverseValue
+          } else {
+            this.buttonTextColor = null
           }
         }
       }
