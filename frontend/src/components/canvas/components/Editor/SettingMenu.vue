@@ -62,8 +62,7 @@ export default {
         'gauge',
         'text',
         'label',
-        'word-cloud',
-        'table-pivot'
+        'word-cloud'
       ],
       linkageExcludeViewType: [
         'richTextView',
@@ -71,8 +70,7 @@ export default {
         'gauge',
         'text',
         'label',
-        'word-cloud',
-        'table-pivot'
+        'word-cloud'
       ],
       copyData: null,
       hyperlinksSetVisible: false,

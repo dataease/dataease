@@ -359,8 +359,12 @@ export default {
     init() {
       const chartDetails = JSON.parse(this.panelViewDetailsInfo[this.viewId])
       const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
-      const checkJumpStr = chartDetails.type.includes('table') ? checkAllAxisStr : chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.drillFields
-
+      let checkJumpStr
+      if (chartDetails.type === 'table-pivot') {
+        checkJumpStr = chartDetails.yaxis + chartDetails.yaxisExt
+      } else {
+        checkJumpStr = checkAllAxisStr
+      }
       // 获取可关联的仪表板
       groupTree({}).then(rsp => {
         this.panelList = rsp.data
