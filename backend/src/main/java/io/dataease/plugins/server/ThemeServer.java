@@ -2,6 +2,8 @@ package io.dataease.plugins.server;
 
 import java.util.List;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,11 +23,12 @@ import io.dataease.plugins.xpack.theme.dto.ThemeRequest;
 import io.dataease.plugins.xpack.theme.service.ThemeXpackService;
 import springfox.documentation.annotations.ApiIgnore;
 
-@ApiIgnore
+@Api(tags = "xpack：系统主题")
 @RequestMapping("/plugin/theme")
 @RestController
 public class ThemeServer {
 
+    @ApiOperation("查询所有")
     @PostMapping("/themes")
     public List<ThemeDto> themes() {
 
@@ -33,12 +36,14 @@ public class ThemeServer {
         return themeXpackService.themes();
     }
 
+    @ApiOperation("查询配置项")
     @PostMapping("/items/{themeId}")
     public List<ThemeItem> themeItems(@PathVariable("themeId") int themeId) {
         ThemeXpackService themeXpackService = SpringContextUtil.getBean(ThemeXpackService.class);
         return themeXpackService.queryItems(themeId);
     }
 
+    @ApiOperation("保存")
     @RequiresPermissions("sysparam:read")
     @PostMapping("/save")
     public void save(@RequestBody ThemeCreateRequest request) {
@@ -55,9 +60,10 @@ public class ThemeServer {
                 DEException.throwException(e);
             }
         }
-        
+
     }
-    
+
+    @ApiOperation("重命名")
     @PostMapping("/rename")
     public void renameTheme(@RequestBody ThemeRenameRequest request) {
         if (request.getId() < 3) {
@@ -76,21 +82,24 @@ public class ThemeServer {
                 DEException.throwException(e);
             }
         }
-        
+
     }
 
+    @ApiOperation("切换高级开关")
     @PostMapping("/enableSenior/{themeId}")
     public void enableSenior(@PathVariable("themeId") Integer themeId) {
         ThemeXpackService themeXpackService = SpringContextUtil.getBean(ThemeXpackService.class);
         themeXpackService.switchSenior(themeId);
     }
 
+    @ApiOperation("应用")
     @PostMapping("/activeTheme/{themeId}")
     public void activeTheme(@PathVariable("themeId") Integer themeId) {
         ThemeXpackService themeXpackService = SpringContextUtil.getBean(ThemeXpackService.class);
         themeXpackService.switchStatus(themeId);
     }
 
+    @ApiOperation("删除")
     @RequiresPermissions("sysparam:read")
     @PostMapping("/delete/{themeId}")
     public void delete(@PathVariable("themeId") int themeId) {
@@ -98,6 +107,7 @@ public class ThemeServer {
         themeXpackService.deleteTheme(themeId);
     }
 
+    @ApiOperation("保存配置项")
     @PostMapping("/saveThemeItems")
     public void saveThemeItems(@RequestBody ThemeRequest request) {
         ThemeXpackService themeXpackService = SpringContextUtil.getBean(ThemeXpackService.class);
