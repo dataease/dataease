@@ -158,6 +158,8 @@
           @mouseup="deselectCurComponent"
           @scroll="canvasScroll"
         >
+          <!-- 仪表板联动清除按钮-->
+          <canvas-opt-bar />
           <Editor ref="canvasEditor" :matrix-count="pcMatrixCountBase" :out-style="outStyle" :scroll-top="scrollTop" />
         </div>
         <!--移动端画布区域 保持宽高比2.5-->
@@ -379,6 +381,8 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
 import ChartGroup from '@/views/chart/group/Group'
 import { chartCopy } from '@/api/chart/chart'
+import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
+
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
 import '@/components/canvas/styles/animate.css'
@@ -419,7 +423,8 @@ export default {
     AssistComponent,
     TextAttr,
     ChartGroup,
-    ChartEdit
+    ChartEdit,
+    CanvasOptBar
   },
   data() {
     return {
