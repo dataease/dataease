@@ -105,61 +105,58 @@ export default {
   watch: {
     // 监听内容变化
     active(val) {
-      const _this = this
       if (!val) {
         this.canEdit = false
         this.reShow()
-        this.$nextTick(() => {
-          _this.element.propValue.textValue = _this.myValue
-          _this.myValue = _this.assignment(_this.myValue)
-        })
+        this.myValue = this.assignment(this.element.propValue.textValue)
       }
     },
     myValue(newValue) {
-      console.log('myValue===' + newValue)
-      // this.element.propValue.textValue = newValue
-      // this.$store.state.styleChangeTimes++
+      if (this.canEdit) {
+        this.element.propValue.textValue = newValue
+      }
+      this.$store.state.styleChangeTimes++
     }
   },
   mounted() {
     bus.$on('fieldSelect-' + this.element.propValue.viewId, this.fieldSelect)
     tinymce.init({})
     this.myValue = this.assignment(this.element.propValue.textValue)
+    bus.$on('initCurFields-' + this.element.id, this.initCurFieldsChange)
   },
   beforeDestroy() {
     bus.$off('fieldSelect-' + this.element.propValue.viewId)
   },
   methods: {
+    initCurFieldsChange() {
+      if (!this.canEdit) {
+        this.myValue = this.assignment(this.element.propValue.textValue)
+      }
+    },
     assignment(content) {
+      const _this = this
       const on = content.match(/\[(.+?)\]/g)
       if (on) {
         on.forEach(itm => {
           const ele = itm.slice(1, -1)
-          content = content.replace(itm, this.dataRowNameSelect[ele])
+          content = content.replace(itm, _this.dataRowNameSelect[ele] ? _this.dataRowNameSelect[ele] : '[字段已经删除]')
         })
       }
       return content
     },
     fieldSelect(field) {
       const value = '[' + field.name + ']'
-      const ed = tinymce.get('tinymce-view-' + this.element.id)
-      const range = ed.selection.getRng()
-      const divNode = ed.getDoc().createElement('span')
-      divNode.innerHTML = value
-      range.insertNode(divNode)
+      tinymce.editors['tinymce-view-' + this.element.id].insertContent(value)
     },
     onClick(e) {
       this.$emit('onClick', e, tinymce)
     },
     setEdit() {
       if (this.editStatus) {
-        const _this = this
         this.canEdit = true
         this.element['editing'] = true
         this.reShow()
-        this.$nextTick(() => {
-          _this.myValue = _this.element.propValue.textValue
-        })
+        this.myValue = this.element.propValue.textValue
       }
     },
     reShow() {

@@ -119,6 +119,9 @@ export default {
   },
   mounted() {
     this.initCurFields()
+    if (this.element.type === 'view') {
+      bus.$on('initCurFields-' + this.element.id, this.initCurFields)
+    }
   },
   computed: {
     detailsShow() {
@@ -218,14 +221,18 @@ export default {
     },
     initCurFields() {
       if (this.element.type === 'view') {
-        const chartDetails = JSON.parse(this.panelViewDetailsInfo[this.element.propValue.viewId])
-        if (chartDetails.type === 'richTextView') {
-          const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
-          chartDetails.data.sourceFields.forEach(field => {
-            if (checkAllAxisStr.indexOf(field.id) > -1) {
-              this.curFields.push(field)
-            }
-          })
+        const chartInfo = this.panelViewDetailsInfo[this.element.propValue.viewId]
+        if (chartInfo) {
+          this.curFields = []
+          const chartDetails = JSON.parse(chartInfo)
+          if (chartDetails.type === 'richTextView' && chartDetails.data && chartDetails.data.sourceFields) {
+            const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
+            chartDetails.data.sourceFields.forEach(field => {
+              if (checkAllAxisStr.indexOf(field.id) > -1) {
+                this.curFields.push(field)
+              }
+            })
+          }
         }
       }
     },
