@@ -3,3 +3,10 @@ INSERT INTO `sys_menu` VALUES (710, 700, 0, 1, '外观配置', 'sys-appearance',
 INSERT INTO `sys_menu` VALUES (730, 1, 0, 1, '数据同步表单', 'sys-task-ds-form', 'system/task/form', 11, NULL, '/task-ds-form', b'1', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 
 UPDATE `sys_menu` set pid = 700, menu_sort = 1 where menu_id = 6 and `name` = 'system-param';
+
+
+
+ALTER TABLE `sys_theme` 
+DROP COLUMN `img`,
+DROP COLUMN `img_id`,
+ADD COLUMN `senior` TINYINT(1) NULL DEFAULT NULL AFTER `status`;
