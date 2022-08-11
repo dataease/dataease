@@ -1,5 +1,6 @@
 <template>
   <div class="bg" :style="customStyle" @scroll="canvasScroll">
+    <canvas-opt-bar />
     <div id="canvasInfoMain" ref="canvasInfoMain" :style="canvasInfoMainStyle">
       <el-row v-if="showUnpublishedArea" class="custom-position">
         <div style="text-align: center">
@@ -20,7 +21,6 @@
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
       >
-        <canvas-opt-bar />
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
           :key="index"

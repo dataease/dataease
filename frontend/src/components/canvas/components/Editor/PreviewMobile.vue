@@ -1,5 +1,6 @@
 <template>
   <div class="bg" :style="customStyle">
+    <canvas-opt-bar />
     <div id="canvasInfoMain" ref="canvasInfoMain" style="width: 100%;height: 100%">
       <div
         id="canvasInfoTemp"
@@ -12,7 +13,6 @@
         <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
           {{ $t('panel.panelNull') }}
         </el-row>
-        <canvas-opt-bar />
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
           :key="index"

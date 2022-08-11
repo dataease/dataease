@@ -16,9 +16,6 @@
     <!-- 网格线 -->
     <Grid v-if="showGrid" :matrix-style="matrixStyle" />
     <PGrid v-if="psDebug" :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />
-
-    <!-- 仪表板联动清除按钮-->
-    <canvas-opt-bar />
     <!--页面组件列表展示-->
     <de-drag
       v-for="(item, index) in componentData"
@@ -203,7 +200,6 @@ import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
-import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 import DragShadow from '@/components/DeDrag/shadow'
 import bus from '@/utils/bus'
 import LinkJumpSet from '@/views/panel/LinkJumpSet'
@@ -793,7 +789,6 @@ export default {
     DeDrag,
     UserViewDialog,
     DeOutWidget,
-    CanvasOptBar,
     DragShadow,
     LinkJumpSet
   },
