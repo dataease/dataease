@@ -8,7 +8,7 @@
       </div>
     </div>
 
-    <div v-show="element.options.pattern=='scroll'&&element.options.vertical=='elementKey'" class="scroll_box">
+    <!-- <div v-show="element.options.pattern=='scroll'&&element.options.vertical=='elementKey'" class="scroll_box">
       <span class="left_btn" @click.stop="scrollBtn('lt')">
         <i class="el-icon-arrow-left" />
       </span>
@@ -22,7 +22,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -45,6 +45,7 @@ export default {
       isShow: true,
       move: 0,
       heightKey: '',
+      oldName: '',
       swiperOption: {
         slidesPerView: 2,
         spaceBetween: 5,
@@ -206,6 +207,7 @@ export default {
     // console.log('轮播图片组件', this.element)
   },
   mounted() {
+    this.oldName = this.element.options.heightTabs
     if (this.element.options.pattern === 'scroll' && this.element.options.vertical === 'elementKey') {
       this.changeSlidesPerView()
     }
@@ -263,14 +265,60 @@ export default {
     },
     toggleNav(key) {
       // 切换导航
-      console.log('previewCanvasScale', this.previewCanvasScale)
-      console.log('切换导航------ ', this.componentData, this.canvasStyleData)
+      if (this.canvasStyleData.showArr) {
+        const newArr = this.canvasStyleData.showArr
+        newArr.forEach((keys, index) => {
+          console.log()
+          if (this.oldName === keys) {
+            newArr.splice(index, 1)
+            // delete keys
+          }
+        })
+        console.log('newArrnewArrnewArrnewArrnewArrnewArrnewArr', this.oldName, 'this.oldName', newArr)
+        this.canvasStyleData.showArr = newArr
+      }
+
+      // console.log('previewCanvasScale', this.previewCanvasScale)
+      // console.log('切换导航------ ', this.componentData, this.canvasStyleData)
       const iframeArr = []
       if (this.element.options.vertical !== 'elementKey') {
+        this.canvasStyleData.navModel = 'defult'
         this.canvasStyleData.navShowKey = key.name
       } else {
+        this.canvasStyleData.navModel = 'independent'
+        console.warn('chi-------111111111-------chu', this.canvasStyleData.showArr)
+        if (this.canvasStyleData.showArr) {
+          console.warn('chi-------22222222-------chu', this.canvasStyleData.showArr)
+          if (this.canvasStyleData.showArr.indexOf(key.name) === -1) {
+            this.canvasStyleData.showArr.push(key.name)
+          }
+        } else {
+          this.canvasStyleData.showArr = []
+          if (this.canvasStyleData.showArr.indexOf(key.name) === -1) {
+            this.canvasStyleData.showArr.push(key.name)
+          }
+        }
+        // this.canvasStyleData.showArr.push(key.name)
         this.element.options.heightTabs = key.name
       }
+      this.oldName = key.name
+
+      // 处理主tab切换后，子tab对应的元素组件也隐藏
+      console.warn('---处理主tab切换后，子tab对应的元素组件也隐藏---')
+      console.warn('数据源', this.componentData, this.canvasStyleData)
+      if (this.element.options.vertical !== 'elementKey') {
+        this.componentData.forEach(res => {
+          if (res.showName === key.name) {
+            console.warn(res)
+            // res.options.heightTabs = res.options.navTabList[0].name
+            this.canvasStyleData.showArr = []
+            this.canvasStyleData.showArr.push(res.options.heightTabs)
+          }
+        })
+      }
+
+      console.warn('--end---')
+      // --end
 
       this.commitStyle()
       this.componentData.forEach((ele, index) => {

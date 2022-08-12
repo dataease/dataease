@@ -171,11 +171,19 @@ export default {
     opacityClass() {
       return function(value) {
         // console.log('value-----', value)
-        if (this.canvasStyleData.navShowKey && value.showName) {
-          if (this.canvasStyleData.navShowKey === value.showName) {
-            return 1
+        if (value.showName) {
+          if (this.canvasStyleData.showArr && value.navModel === 'elementKey') {
+            if (this.canvasStyleData.showArr.includes(value.showName)) {
+              return 1
+            } else {
+              return 0
+            }
           } else {
-            return 0
+            if (this.canvasStyleData.navShowKey === value.showName) {
+              return 1
+            } else {
+              return 0
+            }
           }
         } else {
           return 1
@@ -186,11 +194,19 @@ export default {
       return function(value) {
         // console.log('value-----', value)
         // if (value.type === 'de-frame') {
-        if (this.canvasStyleData.navShowKey && value.showName) {
-          if (this.canvasStyleData.navShowKey === value.showName) {
-            return 'visible'
+        if (value.showName) {
+          if (this.canvasStyleData.showArr && value.navModel === 'elementKey') {
+            if (this.canvasStyleData.showArr.includes(value.showName)) {
+              return 'visible'
+            } else {
+              return 'hidden'
+            }
           } else {
-            return 'hidden'
+            if (this.canvasStyleData.navShowKey === value.showName) {
+              return 'visible'
+            } else {
+              return 'hidden'
+            }
           }
         } else {
           return 'visible'
@@ -309,7 +325,9 @@ export default {
   watch: {
     componentData: {
       handler(newVal, oldVla) {
+        console.log('触发值的变化------')
         // this.restore()
+        this.changeData()
       },
       deep: true
     },
@@ -338,29 +356,8 @@ export default {
       _this.restore()
     })
 
-    window.onresize = () => {
-      this.$nextTick(() => {
-        // console.log('视图是否发生变化？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？', document.getElementById('canvasInfoMain').offsetWidth)
-        // _this.restore()
-      })
-    }
     // console.log('放大会不会修改这个值---------------------------------')
     // 监听主div变动事件
-    erd.listenTo(document.getElementById('vaeryBigBox'), element => {
-      _this.$nextTick(() => {
-        // console.log('获取到的元素宽度---------', document.getElementById('canvasInfoMain').offsetWidth)
-        // console.log('div变动变化==', document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
-        // _this.detectZoom()
-        // console.log('画布高度缩放 === ', this.canvasStyleData.height * (document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width))
-        // this.offsetWidth = document.getElementById('canvasInfoMain').offsetWidth
-        // if (this.onsizeKey) {
-        //   _this.restore()
-        // }
-        // _this.restore()
-        // console.log('***********************************************************************', this.inScreen)
-        // this.canvasStyleData.height = this.canvasStyleData.height * (document.getElementById('canvasInfoMain').offsetWidth / this.canvasStyleData.width)
-      })
-    })
 
     // 监听画布div变动事件
     const tempCanvas = document.getElementById('canvasInfoTemp')
@@ -385,6 +382,15 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
+    changeData() {
+      this.componentDataShow.forEach((ele, index) => {
+        this.componentData.forEach((item, inx) => {
+          if (index === inx) {
+            ele.filters = item.filters
+          }
+        })
+      })
+    },
 
     detectZoom() {
       var ratio = 0; var // 浏览器当前缩放比

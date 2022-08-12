@@ -221,6 +221,7 @@ export default {
   },
   methods: {
     initOptions() {
+      console.log('this.item', this.item)
       if (this.item) {
         if (this.item.deType === 0 || this.item.deType === 5) {
           this.options = JSON.parse(JSON.stringify(this.textOptions))
@@ -239,7 +240,7 @@ export default {
     initEnumOptions() {
       // 查找枚举值
       if (this.item.deType === 0 || this.item.deType === 5) {
-        multFieldValues({fieldIds: [this.item.id]}).then(res => {
+        multFieldValues({ fieldIds: [this.item.id] }).then(res => {
           this.fieldOptions = this.optionDatas(res.data)
         })
       }
@@ -254,6 +255,7 @@ export default {
       })
     },
     addFilter() {
+      console.log(' this.item.filter', this.item.filter)
       this.item.filter.push({
         fieldId: this.item.id,
         term: 'eq',

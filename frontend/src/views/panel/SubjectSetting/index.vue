@@ -122,7 +122,7 @@ export default {
       chart: null,
       tableChart: null,
       collapseShow: true,
-      stylePriority: 'view',
+      stylePriority: 'view'
     }
   },
   computed: mapState([
@@ -162,6 +162,7 @@ export default {
       }
       chart.customAttr = JSON.parse(chart.customAttr)
       chart.customStyle = JSON.parse(chart.customStyle)
+      console.log('对过滤值进行处理-------------------------------------------------------------------------------', chart.customFilter)
       chart.customFilter = JSON.parse(chart.customFilter)
       this.chart = chart
       console.log('subject-setting,,init:::::', this.chart)
@@ -178,12 +179,12 @@ export default {
     onChangePanelStyle(parma) {
     },
     onColorChange(val) {
-      console.log('colors',val)
+      console.log('colors', val)
       this.chart.customAttr.color = val
       this.save()
     },
     onTableColorChange(val) {
-      console.log('table',val)
+      console.log('table', val)
       this.chart.customAttr.tableColor = val
       this.save()
     },
@@ -214,15 +215,15 @@ export default {
       chart.customStyle = JSON.stringify(this.chart.customStyle)
       chart.customFilter = JSON.stringify(this.chart.customFilter)
       canvasStyleData.chart = chart
-      console.log('改变的',canvasStyleData)
+      console.log('改变的', canvasStyleData)
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'save')
       //  判断是否使用 仪表板的样式
-      if(chart.stylePriority === 'panel') {
-        this.$store.commit('setTemplateStatus',true)
+      if (chart.stylePriority === 'panel') {
+        this.$store.commit('setTemplateStatus', true)
         this.$store.commit('setPriorityStatus', false)
       } else {
-        this.$store.commit('setTemplateStatus',false)
+        this.$store.commit('setTemplateStatus', false)
         this.$store.commit('setPriorityStatus', true)
       }
 

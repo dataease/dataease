@@ -19,6 +19,8 @@ export const CANVAS_STYLE = {
   scaleHeight: 100,
   selfAdaption: true,
   navShowKey: '',
+  navModel: 'independent',
+  showArr: [],
   auxiliaryMatrix: false,
   ruleBgColor: '',
   openCommonStyle: true,
@@ -50,6 +52,7 @@ export function chartTransStr2Object(targetIn, copy) {
       target.chart.customStyle = JSON.parse(target.chart.customStyle)
     }
     if (target.chart.customFilter && typeof target.chart.customFilter === 'string') {
+      console.log('==========================================!!!!!!!!!!1')
       target.chart.customFilter = JSON.parse(target.chart.customFilter)
     }
   }
@@ -73,6 +76,7 @@ export function chartTransObject2Str(targetIn, deepCopy) {
       target.chart.customStyle = JSON.stringify(target.chart.customStyle)
     }
     if (target.chart.customFilter && typeof target.chart.customFilter !== 'string') {
+      console.log('==========================================!!!!!!!!!!2')
       target.chart.customFilter = JSON.stringify(target.chart.customFilter)
     }
   }

@@ -1976,6 +1976,7 @@ export default {
       console.log('calcData：', this.panelInfo, view)
       if (!view) return
       // 缓存 拖动的数据并调用 UserView组件的view-in-cache 方法传值
+      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^保存还是--走这里')
       save2Cache(this.panelInfo.id, view).then(() => {
         bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
       })
@@ -2006,6 +2007,7 @@ export default {
       console.log('calcStyle,,,,', this.panelInfo, view)
       // 保存到缓存表
       const viewSave = this.buildParam(true, 'chart', false, false)
+      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^保存走这里')
       if (!viewSave) return
       save2Cache(this.panelInfo.id, viewSave)
 
@@ -2336,6 +2338,7 @@ export default {
       this.calcData(true)
     },
     showEditFilter(item) {
+      console.log('item-------', item)
       this.filterItem = JSON.parse(JSON.stringify(item))
       this.chartForFilter = JSON.parse(JSON.stringify(this.view))
       if (!this.filterItem.logic) {
@@ -2353,6 +2356,7 @@ export default {
       this.resultFilterEdit = false
     },
     saveResultFilter() {
+      console.log('this.view======', this.view, this.view.customFilter)
       if (((this.filterItem.deType === 0 || this.filterItem.deType === 5) && this.filterItem.filterType !== 'enum') ||
         this.filterItem.deType === 1 ||
         this.filterItem.deType === 2 ||
