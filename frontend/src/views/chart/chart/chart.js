@@ -96,7 +96,19 @@ export const DEFAULT_LABEL = {
   repulsion: 100,
   edgeLength: 10,
   gravity: 0.1,
-  reductionRate: 50
+  reductionRate: 50,
+
+  popShow: false,
+  popTitleBackground: '#082456',
+  popTitleColor: '#FFFFFF',
+  popHeight: 30,
+  popPosition: 'center',
+  popContentBackground: '#1b2642',
+  popContentColor: '#FFFFFF',
+  popContentHeight: 25,
+  // popContentBorderBottomStyle: 'dashed',
+  popContentBorderBottomColor: '#ffffff',
+  // popContentBorderBottomWidth: 1,
 }
 export const DEFAULT_TOOLTIP = {
   show: true,

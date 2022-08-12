@@ -752,7 +752,7 @@ export default {
           // method = viewInfo
           requestInfo.proxy = { userId: this.panelInfo.proxy }
         }
-        console.log('data--------', requestInfo)
+        console.log('data--------',id,this.panelInfo, requestInfo)
         method(id, this.panelInfo.id, requestInfo)
           .then((response) => {
             // 将视图传入echart组件

@@ -137,6 +137,7 @@ export default {
   },
   mounted() {
     runAnimation(this.$el, this.config.animations)
+    console.log('全屏展示。。。。。。')
   },
   methods: {
     getStyle,
