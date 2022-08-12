@@ -12,12 +12,13 @@
           <span class="params-title">{{ '当前组件关联导航' }}</span>
         </el-col>
         <el-col :span="10">
-          <el-select v-model="curComponent.showName" clearable placeholder="请选择">
+          <el-select v-model="showName" clearable placeholder="请选择" @change="changeIndo">
             <el-option
               v-for="(item,index) in options"
               :key="index"
               :label="item.name"
               :value="item.name"
+              @click.native="getOpsData(item)"
             />
           </el-select>
         </el-col>
@@ -148,7 +149,8 @@ export default {
       panel: null,
       predefineColors: COLOR_PANEL,
       textData: [],
-      options: []
+      options: [],
+      showName: ''
     }
   },
   computed: {
@@ -188,9 +190,26 @@ export default {
       }
     })
     console.log('this.options', this.options)
+    this.showName = this.curComponent.showName
   },
 
   methods: {
+    changeIndo(key) {
+      console.log('key', key)
+      this.curComponent.showName = key
+      // this.componentData.forEach(res => {
+      //   if (res.showName === key) {
+      //     console.log('res', res)
+      //   // this.options.push.apply(this.options, res.options.navTabList)
+      //   }
+      // })
+    },
+    getOpsData(item) {
+      if (item.navModel) {
+        this.curComponent.navModel = item.navModel
+      }
+      console.log('item', item)
+    },
     addNavInfo() {
       console.log('this.navInfoLis', this.navInfoLis)
       this.navInfoLis.push({
@@ -264,11 +283,12 @@ export default {
       // console.log('this.imgUrlList', this.imgUrlList)
       // this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
+      // this.commitStyle()
     },
     commitStyle() {
       const canvasStyleData = deepCopy(this.canvasStyleData)
       console.log('const canvasStyleData', canvasStyleData)
-      canvasStyleData.panel = this.panel
+      // canvasStyleData.panel = this.panel
       this.$store.commit('setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
     },

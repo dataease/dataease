@@ -47,7 +47,7 @@
           <el-input-number v-model="curComponent.options.scrollPage" :min="1" />
         </el-col>
       </el-row>
-      <!-- <el-row v-show="curComponent.options.pattern=='scroll'&&curComponent.options.vertical=='elementKey'" style="height: 50px;overflow: hidden;margin-top:5px;">
+      <el-row style="height: 50px;overflow: hidden;margin-top:5px;">
         <el-col :span="4">
           <span class="params-title">{{ '滚动间隔时间' }}</span>
         </el-col>
@@ -57,7 +57,18 @@
         <el-col :span="2">
           <span class="params-title">{{ $t('panel.second') }}</span>
         </el-col>
-      </el-row> -->
+      </el-row>
+      <el-row style="height: 50px;overflow: hidden;margin-top:5px;">
+        <el-col :span="4">
+          <span class="params-title">{{ '是否启用滚动' }}</span>
+        </el-col>
+        <el-col :span="7">
+          <el-radio-group v-model="curComponent.options.autoplay">
+            <el-radio :label="true">是</el-radio>
+            <el-radio :label="false">否</el-radio>
+          </el-radio-group>
+        </el-col>
+      </el-row>
       <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '高亮字体颜色' }}</span>
@@ -78,12 +89,6 @@
         <el-col :span="4">
           <span class="params-title">{{ '高亮背景图片' }}</span>
         </el-col>
-        <!-- <el-col :span="6">
-          <el-radio-group v-model="updataType">
-            <el-radio :label="true">上传</el-radio>
-            <el-radio :label="false">图库</el-radio>
-          </el-radio-group>
-        </el-col> -->
         <el-col :span="3">
           <el-button size="mini" type="primary" @click="openNewImg()">选择</el-button>
         </el-col>
@@ -92,25 +97,6 @@
             <img :src="changImg" class="img_class">
           </div>
         </el-col>
-        <!-- <el-col v-show="updataType" style="width: 130px!important;">
-          <el-upload
-            action=""
-            accept=".jpeg,.jpg,.png,.gif,.svg"
-            class="avatar-uploader"
-            list-type="picture-card"
-            :class="{disabled:uploadDisabled}"
-            :on-preview="handlePictureCardPreview"
-            :on-remove="handleRemove"
-            :http-request="upload"
-            :file-list="fileList"
-            :on-change="onChange"
-          >
-            <i class="el-icon-plus" />
-          </el-upload>
-        </el-col> -->
-        <!-- <el-col v-show="updataType" :span="7">
-          <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
-        </el-col> -->
       </el-row>
       <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
         <el-col :span="4">
@@ -196,74 +182,6 @@
         </el-row>
 
       </el-dialog>
-      <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;" /> -->
-      <!-- 轮播的图片 -->
-      <!-- <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
-        <el-col :span="4">
-          <span class="params-title">{{ $t('panel.Upload_pictures') }}</span>
-        </el-col>
-      </el-row>
-      <el-row style="padding:10px">
-        <el-upload
-          action=""
-          accept=".jpeg,.jpg,.png,.gif,.svg"
-          class="avatar-uploader"
-          list-type="picture-card"
-          :on-preview="handlePictureCardPreview"
-          :on-remove="handleRemove"
-          :http-request="upload"
-          :file-list="fileList"
-          :on-change="onChange"
-        >
-          <i class="el-icon-plus" />
-        </el-upload>
-        <el-dialog :visible.sync="dialogVisible">
-          <img width="100%" :src="dialogImageUrl" alt="">
-        </el-dialog>
-      </el-row> -->
-      <!-- <el-row style="height: 50px;overflow: hidden;">
-        <el-col :span="4">
-          <span class="params-title">导航设置</span>
-        </el-col>
-        <el-col :span="4" style="height:40px;line-height:40px;">
-          <el-button type="primary" size="mini" @click="addNavInfo()">{{ '添加导航' }}</el-button>
-        </el-col>
-      </el-row> -->
-      <!-- <el-row>
-        <el-col :span="24">
-          <span class="params-title">图1、</span>
-        </el-col>
-      </el-row> -->
-      <!-- <div v-for="(item,index) in navInfoLis" :key="index">
-        <el-row style="padding:5px;">
-          <el-col :span="4">
-            <span class="params-title">导航标题</span>
-          </el-col>
-          <el-col :span="8">
-            <el-input v-model="item.name" placeholder="请输入内容" />
-          </el-col>
-          <el-col v-show="navInfoLis.length>1" :span="4" :offset="2" style="height:40px;line-height:40px;">
-            <el-button type="danger" size="mini" @click="deleteNav(item,index)">{{ '删除导航' }}</el-button>
-          </el-col>
-        </el-row>
-        <el-row style="padding:5px;">
-          <el-col :span="4">
-            <span class="params-title">关联设置</span>
-          </el-col>
-          <el-col :span="20">
-            <el-select v-model="item.relation" multiple placeholder="请选择" @change="changeAssembly">
-              <el-option
-                v-for="items in optionsData"
-                v-show="items.label!=='导航组件'"
-                :key="items.id"
-                :label="items.label"
-                :value="items.id"
-                :disabled="items.disabled"
-              />
-            </el-select>
-          </el-col>
-        </el-row>
-      </div> -->
     </el-row>
     <el-row class="root-class">
       <el-col :span="24">

@@ -112,6 +112,7 @@ const actions = {
         commit('SET_PERMISSIONS', permissions)
 
         commit('SET_LANGUAGE', language)
+        localStorage.setItem('filterKey', data.username)
 
         // axios.defaults.headers.common['Accept-Language'] = language || 'zh_CN'
         // document.querySelector('html').setAttribute('lang', language || 'zh_CN')
