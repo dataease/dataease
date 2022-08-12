@@ -6,7 +6,11 @@ UPDATE `sys_menu` set pid = 700, menu_sort = 1 where menu_id = 6 and `name` = 's
 
 
 
-ALTER TABLE `sys_theme` 
+ALTER TABLE `sys_theme`
 DROP COLUMN `img`,
 DROP COLUMN `img_id`,
 ADD COLUMN `senior` TINYINT(1) NULL DEFAULT NULL AFTER `status`;
+
+
+update sys_background_image set classification ='商务';
+update sys_background_image set name ='边框10' where id ='dark_1';
