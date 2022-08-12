@@ -19,7 +19,7 @@
                 @hide="popHide"
                 :disabled="!isPopShow"
               > 
-                <p :style="pop_title">
+                <p :style="pop_title" style="margin: 0px;">
                   <span>详情</span>
                 </p>
                 <el-row>
@@ -30,6 +30,7 @@
                 </el-row>
                 <span slot="reference">{{ items[item.datainsName] }}</span>
               </el-popover>
+              <!-- {{ items[item.datainsName] }} -->
             </div>
           </li>
         </ul>
@@ -59,6 +60,26 @@
             </li>
           </ul>
         </vue-seamless-scroll> -->
+
+        <!-- <el-dialog
+          :visible.sync="dialogVisible"
+          width="30%"
+          :before-close="handleClose"
+          :modal="false"
+          :append-to-body="true"
+        > 
+          <div>
+            <p :style="pop_title">
+              <span>详情</span>
+            </p>
+            <el-row>
+              <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
+                <el-col :span="8" style="text-align: right;">{{obj.name}}：</el-col>
+                <el-col :span="16">{{obj.value}}</el-col>
+              </el-col>
+            </el-row>
+          </div>
+        </el-dialog> -->
       </div>
 
     </el-row>
@@ -73,6 +94,9 @@ import eventBus from '@/components/canvas/utils/eventBus'
 
 import { save2Cache } from '@/api/chart/chart'
 import { viewData } from '@/api/panel/panel'
+
+// import PopupManager from "element-ui/lib/utils/popup/popup-manager";
+// PopupManager.zIndex = 30000;
 
 export default {
   name: 'TableNormal',
@@ -167,6 +191,7 @@ export default {
       heightLightLine: 3,
       oldData: null,
       newData: null,
+      dialogVisible: false,
       infoForm: [],
       isPopShow: false,
       pop_title: {
@@ -259,6 +284,10 @@ export default {
       delete datas.data
       save2Cache(this.newData.sceneId,datas)
     },
+    handleClose() {
+      this.dialogVisible = false
+      this.popHide()
+    },
     showDialogInfo(info) {
       if(!this.isPopShow) {
         return
@@ -330,6 +359,9 @@ export default {
           }
           console.log(arr)
           this.infoForm = arr
+
+          // this.dialogVisible = true
+          // this.popShow()
         })
       })
       
