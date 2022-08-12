@@ -61,6 +61,7 @@
         <slot :name="handlei" />
       </div>
       <div :id="componentCanvasId" :style="mainSlotStyleInner" class="main-background">
+        <svg-icon v-if="svgInnerEnable" :style="{'color':this.element.commonBackground.innerImageColor}" class="svg-background" :icon-class="mainSlotSvgInner" />
         <slot />
       </div>
     </div>
@@ -402,6 +403,12 @@ export default {
     }
   },
   computed: {
+    svgBg() {
+      return {
+        width: this.width + 'px!important',
+        height: this.height + 'px!important'
+      }
+    },
     componentCanvasId() {
       if (this.element.type === 'view') {
         return 'user-view-' + this.element.propValue.viewId
@@ -566,6 +573,16 @@ export default {
       }
       return style
     },
+    svgInnerEnable() {
+      return this.element.commonBackground.enable && this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string'
+    },
+    mainSlotSvgInner() {
+      if (this.svgInnerEnable) {
+        return this.element.commonBackground.innerImage.replace('board/', '').replace('.svg', '')
+      } else {
+        return null
+      }
+    },
     mainSlotStyleInner() {
       const style = {}
       if (this.element.commonBackground) {
@@ -576,9 +593,7 @@ export default {
         style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
         style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
         if (this.element.commonBackground.enable) {
-          if (this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string') {
-            style['background'] = `url(${this.element.commonBackground.innerImage}) no-repeat ${colorRGBA}`
-          } else if (this.element.commonBackground.backgroundType === 'outerImage' && typeof this.element.commonBackground.outerImage === 'string') {
+          if (this.element.commonBackground.backgroundType === 'outerImage' && typeof this.element.commonBackground.outerImage === 'string') {
             style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat ${colorRGBA}`
           } else {
             style['background-color'] = colorRGBA
@@ -1911,9 +1926,18 @@ export default {
 }
 
 .main-background {
+  position: relative;
   overflow: hidden;
   width: 100%;
   height: 100%;
   background-size: 100% 100% !important;
+}
+
+.svg-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 </style>

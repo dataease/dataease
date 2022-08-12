@@ -49,9 +49,9 @@
           </span>
         </el-col>
       </el-row>
-      <el-row v-if="curComponent.commonBackground.enable" style="padding-left: 20px">
+      <el-row v-if="curComponent.commonBackground.enable" style="padding-left: 10px">
         <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
-          <el-col :span="3" style="padding-left: 10px">
+          <el-col :span="4" style="padding-left: 10px">
             <el-radio v-model="curComponent.commonBackground.backgroundType" label="outerImage" @change="onChangeType">{{ $t('panel.photo') }}</el-radio>
           </el-col>
           <el-col style="width: 130px!important;">
@@ -74,12 +74,13 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="3" style="padding-left: 10px">
+          <el-col :span="4" style="padding-left: 10px;position: relative">
             <el-radio v-model="curComponent.commonBackground.backgroundType" label="innerImage" @change="onChangeType">边框</el-radio>
+            <el-color-picker v-model="curComponent.commonBackground.innerImageColor" :title="'边框配色'" style="position: absolute;right:15px;top: -3px" size="mini" class="color-picker-style" :predefine="predefineColors" />
           </el-col>
-          <el-col :span="21" class="main-row">
+          <el-col :span="20" class="main-row">
             <el-row v-for="(value, key) in BackgroundShowMap" :key="key">
-              <el-col :span="24"><span>{{ key }}</span> </el-col>
+<!--              <el-col :span="24"><span>{{ key }}</span> </el-col>-->
               <el-col
                 v-for="item in value"
                 :key="item.id"
@@ -164,7 +165,7 @@ export default {
       'componentData'
     ]),
     isFilterComponent() {
-      return ['de-select', 'de-select-grid', 'de-date',  "de-input-search", "de-number-range", "de-select-tree"].includes(this.curComponent.component)
+      return ['de-select', 'de-select-grid', 'de-date', 'de-input-search', 'de-number-range', 'de-select-tree'].includes(this.curComponent.component)
     }
   },
   methods: {

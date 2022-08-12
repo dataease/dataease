@@ -31,6 +31,7 @@ export const COMMON_BACKGROUND = {
   enable: false,
   backgroundType: 'innerImage',
   innerImage: 'board/blue_1.svg',
+  innerImageColor: '#1094E5',
   outerImage: null
 }
 
@@ -41,6 +42,7 @@ export const COMMON_BACKGROUND_NONE = {
   backgroundType: 'innerImage',
   color: '#FFFFFF',
   innerImage: 'board/blue_1.svg',
+  innerImageColor: '#1094E5',
   outerImage: null,
   alpha: 100,
   borderRadius: 0,
