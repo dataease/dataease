@@ -1,27 +1,33 @@
 package io.dataease.service.chart;
 
 import cn.hutool.core.lang.Assert;
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.service.AuthUserService;
-import io.dataease.commons.model.PluginViewSetImpl;
-import io.dataease.dto.dataset.SqlVariableDetails;
-import io.dataease.ext.*;
 import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.exception.DEException;
+import io.dataease.commons.model.PluginViewSetImpl;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.chart.*;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.controller.response.DataSetDetail;
-import io.dataease.dto.chart.*;
+import io.dataease.dto.chart.ChartDimensionDTO;
+import io.dataease.dto.chart.ChartGroupDTO;
+import io.dataease.dto.chart.ChartViewDTO;
+import io.dataease.dto.chart.ViewOption;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.dto.dataset.SqlVariableDetails;
 import io.dataease.exception.DataEaseException;
+import io.dataease.ext.ExtChartGroupMapper;
+import io.dataease.ext.ExtChartViewMapper;
+import io.dataease.ext.ExtPanelGroupExtendDataMapper;
 import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
@@ -566,6 +572,10 @@ public class ChartViewService {
         if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")) {
             List<ChartViewFieldDTO> yAxisExt = gson.fromJson(view.getYAxisExt(), tokenType);
             yAxis.addAll(yAxisExt);
+        }
+        if (StringUtils.equalsIgnoreCase(view.getRender(), "antv") && StringUtils.equalsIgnoreCase(view.getType(), "gauge")) {
+            List<ChartViewFieldDTO> sizeField = getSizeField(view);
+            yAxis.addAll(sizeField);
         }
         List<ChartViewFieldDTO> extStack = gson.fromJson(view.getExtStack(), tokenType);
         List<ChartViewFieldDTO> extBubble = gson.fromJson(view.getExtBubble(), tokenType);
@@ -1552,5 +1562,54 @@ public class ChartViewService {
 
     public List<ViewOption> viewOptions(String panelId) {
         return extChartViewMapper.chartOptions(panelId);
+    }
+
+    private List<ChartViewFieldDTO> getSizeField(ChartViewDTO view) {
+        List<ChartViewFieldDTO> list = new ArrayList<>();
+        String customAttr = view.getCustomAttr();
+        JSONObject jsonObject = JSONObject.parseObject(customAttr);
+        JSONObject size = jsonObject.getJSONObject("size");
+
+        String gaugeMinType = size.getString("gaugeMinType");
+        if (StringUtils.equalsIgnoreCase("dynamic", gaugeMinType)) {
+            JSONObject gaugeMinField = size.getJSONObject("gaugeMinField");
+            String id = gaugeMinField.getString("id");
+            String summary = gaugeMinField.getString("summary");
+            DatasetTableField datasetTableField = dataSetTableFieldsService.get(id);
+            if (ObjectUtils.isNotEmpty(datasetTableField)) {
+                if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
+                    if (!StringUtils.containsIgnoreCase(summary, "count")) {
+                        DEException.throwException(Translator.get("i18n_gauge_field_change"));
+                    }
+                }
+                ChartViewFieldDTO dto = new ChartViewFieldDTO();
+                BeanUtils.copyBean(dto, datasetTableField);
+                dto.setSummary(summary);
+                list.add(dto);
+            } else {
+                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
+            }
+        }
+        String gaugeMaxType = size.getString("gaugeMaxType");
+        if (StringUtils.equalsIgnoreCase("dynamic", gaugeMaxType)) {
+            JSONObject gaugeMaxField = size.getJSONObject("gaugeMaxField");
+            String id = gaugeMaxField.getString("id");
+            String summary = gaugeMaxField.getString("summary");
+            DatasetTableField datasetTableField = dataSetTableFieldsService.get(id);
+            if (ObjectUtils.isNotEmpty(datasetTableField)) {
+                if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
+                    if (!StringUtils.containsIgnoreCase(summary, "count")) {
+                        DEException.throwException(Translator.get("i18n_gauge_field_change"));
+                    }
+                }
+                ChartViewFieldDTO dto = new ChartViewFieldDTO();
+                BeanUtils.copyBean(dto, datasetTableField);
+                dto.setSummary(summary);
+                list.add(dto);
+            } else {
+                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
+            }
+        }
+        return list;
     }
 }
