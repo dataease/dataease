@@ -1199,7 +1199,8 @@ export default {
     font_shadow: 'Font Shadow',
     chart_area: 'Area',
     fix: 'Fix',
-    dynamic: 'Dynamic'
+    dynamic: 'Dynamic',
+    gauge_size_field_delete: 'Dynamic field changed，please edit again'
   },
   dataset: {
     parse_filed: 'Parse Field',

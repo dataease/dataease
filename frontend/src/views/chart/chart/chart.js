@@ -65,7 +65,17 @@ export const DEFAULT_SIZE = {
   tableColumnWidth: 100,
   tableHeaderAlign: 'left',
   tableItemAlign: 'right',
+  gaugeMinType: 'fix', // fix or dynamic
+  gaugeMinField: {
+    id: '',
+    summary: ''
+  },
   gaugeMin: 0,
+  gaugeMaxType: 'fix', // fix or dynamic
+  gaugeMaxField: {
+    id: '',
+    summary: ''
+  },
   gaugeMax: 100,
   gaugeStartAngle: 225,
   gaugeEndAngle: -45,

@@ -50,6 +50,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['size-selector-ant-v']"
+              :quota-fields="quotaData"
               @onSizeChange="onSizeChange($event,'size-selector-ant-v')"
             />
           </el-collapse-item>

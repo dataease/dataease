@@ -1919,7 +1919,6 @@ export default {
 
     onSizeChange(val) {
       this.view.customAttr.size = val
-      this.calcStyle()
       this.calcData()
     },
 

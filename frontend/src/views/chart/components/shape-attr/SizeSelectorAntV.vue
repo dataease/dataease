@@ -278,12 +278,82 @@
 
       <!--gauge-begin-->
       <el-form ref="sizeFormGauge" :model="sizeForm" label-width="100px" size="mini">
-        <el-form-item v-show="showProperty('gaugeMin')" :label="$t('chart.min')" class="form-item form-item-slider">
-          <el-input-number v-model="sizeForm.gaugeMin" size="mini" @change="changeBarSizeCase" />
+        <el-form-item v-show="showProperty('gaugeMin')" :label="$t('chart.min')" class="form-item">
+          <el-radio-group v-model="sizeForm.gaugeMinType" size="mini" @change="changeQuotaField('min')">
+            <el-radio-button label="fix">{{ $t('chart.fix') }}</el-radio-button>
+            <el-radio-button label="dynamic">{{ $t('chart.dynamic') }}</el-radio-button>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item v-show="showProperty('gaugeMax')" :label="$t('chart.max')" class="form-item form-item-slider">
-          <el-input-number v-model="sizeForm.gaugeMax" size="mini" @change="changeBarSizeCase" />
+        <el-form-item v-if="showProperty('gaugeMin') && sizeForm.gaugeMinType === 'fix'" class="form-item form-item-slider">
+          <el-input-number v-model="sizeForm.gaugeMin" size="mini" @change="changeBarSizeCase('gaugeMin')" />
         </el-form-item>
+        <el-form-item v-if="showProperty('gaugeMin') && sizeForm.gaugeMinType === 'dynamic'" class="form-item form-flex">
+          <el-select v-model="sizeForm.gaugeMinField.id" :placeholder="$t('chart.field')" @change="changeQuotaField('min',true)">
+            <el-option
+              v-for="item in quotaData"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+              <span style="float: left">
+                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+              </span>
+              <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
+            </el-option>
+          </el-select>
+          <el-select v-model="sizeForm.gaugeMinField.summary" :placeholder="$t('chart.summary')" @change="changeQuotaField('min')">
+            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="sum" value="sum" :label="$t('chart.sum')" />
+            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="avg" value="avg" :label="$t('chart.avg')" />
+            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="max" value="max" :label="$t('chart.max')" />
+            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="min" value="min" :label="$t('chart.min')" />
+            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="stddev_pop" value="stddev_pop" :label="$t('chart.stddev_pop')" />
+            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="var_pop" value="var_pop" :label="$t('chart.var_pop')" />
+            <el-option key="count" value="count" :label="$t('chart.count')" />
+            <el-option v-if="minField.id !== 'count'" key="count_distinct" value="count_distinct" :label="$t('chart.count_distinct')" />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item v-show="showProperty('gaugeMax')" :label="$t('chart.max')" class="form-item">
+          <el-radio-group v-model="sizeForm.gaugeMaxType" size="mini" @change="changeQuotaField('max')">
+            <el-radio-button label="fix">{{ $t('chart.fix') }}</el-radio-button>
+            <el-radio-button label="dynamic">{{ $t('chart.dynamic') }}</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item v-if="showProperty('gaugeMax') && sizeForm.gaugeMaxType === 'fix'" class="form-item form-item-slider">
+          <el-input-number v-model="sizeForm.gaugeMax" size="mini" @change="changeBarSizeCase('gaugeMax')" />
+        </el-form-item>
+        <el-form-item v-if="showProperty('gaugeMax') && sizeForm.gaugeMaxType === 'dynamic'" class="form-item form-flex">
+          <el-select v-model="sizeForm.gaugeMaxField.id" :placeholder="$t('chart.field')" @change="changeQuotaField('max',true)">
+            <el-option
+              v-for="item in quotaData"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+              <span style="float: left">
+                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
+                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
+                <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
+                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+              </span>
+              <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
+            </el-option>
+          </el-select>
+          <el-select v-model="sizeForm.gaugeMaxField.summary" :placeholder="$t('chart.summary')" @change="changeQuotaField('max')">
+            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="sum" value="sum" :label="$t('chart.sum')" />
+            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="avg" value="avg" :label="$t('chart.avg')" />
+            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="max" value="max" :label="$t('chart.max')" />
+            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="min" value="min" :label="$t('chart.min')" />
+            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="stddev_pop" value="stddev_pop" :label="$t('chart.stddev_pop')" />
+            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="var_pop" value="var_pop" :label="$t('chart.var_pop')" />
+            <el-option key="count" value="count" :label="$t('chart.count')" />
+            <el-option v-if="maxField.id !== 'count'" key="count_distinct" value="count_distinct" :label="$t('chart.count_distinct')" />
+          </el-select>
+        </el-form-item>
+
         <el-form-item
           v-show="showProperty('gaugeStartAngle')"
           :label="$t('chart.start_angle')"
@@ -489,6 +559,10 @@ export default {
       default: function() {
         return []
       }
+    },
+    quotaFields: {
+      type: Array,
+      required: true
     }
   },
   data() {
@@ -521,21 +595,38 @@ export default {
         { name: this.$t('chart.table_align_right'), value: 'right' }
       ],
       fontFamily: CHART_FONT_FAMILY,
-      fontLetterSpace: CHART_FONT_LETTER_SPACE
+      fontLetterSpace: CHART_FONT_LETTER_SPACE,
+      minField: {},
+      maxField: {},
+      quotaData: []
     }
   },
   watch: {
     'chart': {
       handler: function() {
+        this.initField()
         this.initData()
       }
+    },
+    'quotaFields': function() {
+      this.initField()
     }
   },
   mounted() {
+    this.initField()
     this.init()
     this.initData()
   },
   methods: {
+    initField() {
+      this.quotaData = this.quotaFields.filter(ele => !ele.chartId && ele.id !== 'count')
+      if (this.sizeForm.gaugeMinField.id) {
+        this.minField = this.getQuotaField(this.sizeForm.gaugeMinField.id)
+      }
+      if (this.sizeForm.gaugeMaxField.id) {
+        this.maxField = this.getQuotaField(this.sizeForm.gaugeMaxField.id)
+      }
+    },
     initData() {
       const chart = JSON.parse(JSON.stringify(this.chart))
       if (chart.customAttr) {
@@ -570,6 +661,19 @@ export default {
 
           this.sizeForm.gaugeTickCount = this.sizeForm.gaugeTickCount ? this.sizeForm.gaugeTickCount : DEFAULT_SIZE.gaugeTickCount
 
+          this.sizeForm.gaugeMinType = this.sizeForm.gaugeMinType ? this.sizeForm.gaugeMinType : DEFAULT_SIZE.gaugeMinType
+          if (!this.sizeForm.gaugeMinField) {
+            this.sizeForm.gaugeMinField = DEFAULT_SIZE.gaugeMinField
+            this.sizeForm.gaugeMinField.id = this.quotaData[0]?.id
+            this.sizeForm.gaugeMinField.summary = 'count'
+          }
+          this.sizeForm.gaugeMaxType = this.sizeForm.gaugeMaxType ? this.sizeForm.gaugeMaxType : DEFAULT_SIZE.gaugeMaxType
+          if (!this.sizeForm.gaugeMaxField) {
+            this.sizeForm.gaugeMaxField = DEFAULT_SIZE.gaugeMaxField
+            this.sizeForm.gaugeMaxField.id = this.quotaData[0]?.id
+            this.sizeForm.gaugeMaxField.summary = 'count'
+          }
+
           this.sizeForm.quotaFontFamily = this.sizeForm.quotaFontFamily ? this.sizeForm.quotaFontFamily : DEFAULT_SIZE.quotaFontFamily
           this.sizeForm.quotaFontIsBolder = this.sizeForm.quotaFontIsBolder ? this.sizeForm.quotaFontIsBolder : DEFAULT_SIZE.quotaFontIsBolder
           this.sizeForm.quotaFontIsItalic = this.sizeForm.quotaFontIsItalic ? this.sizeForm.quotaFontIsItalic : DEFAULT_SIZE.quotaFontIsItalic
@@ -603,6 +707,71 @@ export default {
     },
     showProperty(property) {
       return this.propertyInner.includes(property)
+    },
+
+    changeQuotaField(type, resetSummary) {
+      if (type === 'min') {
+        if (this.sizeForm.gaugeMinType === 'dynamic') {
+          if (!this.sizeForm.gaugeMinField.id) {
+            this.sizeForm.gaugeMinField.id = this.quotaData[0]?.id
+          }
+          if (!this.sizeForm.gaugeMinField.summary) {
+            this.sizeForm.gaugeMinField.summary = 'count'
+          }
+          if (resetSummary) {
+            this.sizeForm.gaugeMinField.summary = 'count'
+          }
+          if (this.sizeForm.gaugeMinField.id && this.sizeForm.gaugeMinField.summary) {
+            this.minField = this.getQuotaField(this.sizeForm.gaugeMinField.id)
+            this.changeBarSizeCase('gaugeMinField')
+          }
+        } else {
+          if (this.sizeForm.gaugeMaxType === 'dynamic') {
+            if (this.sizeForm.gaugeMaxField.id && this.sizeForm.gaugeMaxField.summary) {
+              this.changeBarSizeCase('gaugeMinField')
+            }
+          } else {
+            this.changeBarSizeCase('gaugeMinField')
+          }
+        }
+      } else if (type === 'max') {
+        if (this.sizeForm.gaugeMaxType === 'dynamic') {
+          if (!this.sizeForm.gaugeMaxField.id) {
+            this.sizeForm.gaugeMaxField.id = this.quotaData[0]?.id
+          }
+          if (!this.sizeForm.gaugeMaxField.summary) {
+            this.sizeForm.gaugeMaxField.summary = 'count'
+          }
+          if (resetSummary) {
+            this.sizeForm.gaugeMaxField.summary = 'count'
+          }
+          if (this.sizeForm.gaugeMaxField.id && this.sizeForm.gaugeMaxField.summary) {
+            this.maxField = this.getQuotaField(this.sizeForm.gaugeMaxField.id)
+            this.changeBarSizeCase('gaugeMaxField')
+          }
+        } else {
+          if (this.sizeForm.gaugeMinType === 'dynamic') {
+            if (this.sizeForm.gaugeMinField.id && this.sizeForm.gaugeMinField.summary) {
+              this.changeBarSizeCase('gaugeMaxField')
+            }
+          } else {
+            this.changeBarSizeCase('gaugeMaxField')
+          }
+        }
+      }
+    },
+    getQuotaField(id) {
+      if (!id) {
+        return {}
+      }
+      const fields = this.quotaData.filter(ele => {
+        return ele.id === id
+      })
+      if (fields.length === 0) {
+        return {}
+      } else {
+        return fields[0]
+      }
     }
   }
 }
@@ -648,5 +817,8 @@ export default {
     font-size: 12px;
     font-weight: 400;
     padding: 0 10px;
+  }
+  .form-flex >>> .el-form-item__content {
+    display: flex;
   }
 </style>

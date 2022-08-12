@@ -1200,7 +1200,8 @@ export default {
     font_shadow: '字体阴影',
     chart_area: '面积图',
     fix: '固定值',
-    dynamic: '动态值'
+    dynamic: '动态值',
+    gauge_size_field_delete: '动态值中字段发生变更，请重新编辑'
   },
   dataset: {
     parse_filed: '解析字段',

@@ -18,8 +18,19 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.size) {
       const size = JSON.parse(JSON.stringify(customAttr.size))
-      min = size.gaugeMin ? size.gaugeMin : DEFAULT_SIZE.gaugeMin
-      max = size.gaugeMax ? size.gaugeMax : DEFAULT_SIZE.gaugeMax
+      if (size.gaugeMinType === 'dynamic' && size.gaugeMaxType === 'dynamic') {
+        min = chart.data?.series[chart.data?.series.length - 2]?.data[0]
+        max = chart.data?.series[chart.data?.series.length - 1]?.data[0]
+      } else if (size.gaugeMinType !== 'dynamic' && size.gaugeMaxType === 'dynamic') {
+        min = size.gaugeMin ? size.gaugeMin : DEFAULT_SIZE.gaugeMin
+        max = chart.data?.series[chart.data?.series.length - 1]?.data[0]
+      } else if (size.gaugeMinType === 'dynamic' && size.gaugeMaxType !== 'dynamic') {
+        min = chart.data?.series[chart.data?.series.length - 1]?.data[0]
+        max = size.gaugeMax ? size.gaugeMax : DEFAULT_SIZE.gaugeMax
+      } else {
+        min = size.gaugeMin ? size.gaugeMin : DEFAULT_SIZE.gaugeMin
+        max = size.gaugeMax ? size.gaugeMax : DEFAULT_SIZE.gaugeMax
+      }
       tickCount = size.gaugeTickCount ? size.gaugeTickCount : DEFAULT_SIZE.gaugeTickCount
       startAngel = parseInt(size.gaugeStartAngle) * Math.PI / 180
       endAngel = parseInt(size.gaugeEndAngle) * Math.PI / 180

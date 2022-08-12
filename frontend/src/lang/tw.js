@@ -1198,7 +1198,8 @@ export default {
     font_shadow: '字體陰影',
     chart_area: '面積圖',
     fix: '固定值',
-    dynamic: '動態值'
+    dynamic: '動態值',
+    gauge_size_field_delete: '動態值中字段發生變更，請重新編輯'
   },
   dataset: {
     parse_filed: '解析字段',
