@@ -897,6 +897,7 @@ export default {
                 deepCacheInfo.yaxisExt = JSON.parse(this.chart.yaxisExt)
                 deepCacheInfo.customAttr = JSON.parse(this.chart.customAttr)
                 deepCacheInfo.customStyle = JSON.parse(this.chart.customStyle)
+                console.log('----------------------过滤的值--------------22222', this.chart.customFilter)
                 deepCacheInfo.customFilter = JSON.parse(this.chart.customFilter)
                 deepCacheInfo.extStack = JSON.parse(this.chart.extStack)
                 deepCacheInfo.drillFields = JSON.parse(this.chart.drillFields)
@@ -1123,6 +1124,7 @@ export default {
         view.drillFields = []
       }
       view.customFilter.forEach(function(ele) {
+        console.log('==========================================', ele)
         if (ele && !ele.filter) {
           ele.filter = []
         }
@@ -1153,6 +1155,7 @@ export default {
       view.yaxisExt = JSON.stringify(view.yaxisExt)
       view.customAttr = JSON.stringify(view.customAttr)
       view.customStyle = JSON.stringify(view.customStyle)
+      console.log('----------------------过滤的值--------------111111', view.customFilter)
       view.customFilter = JSON.stringify(view.customFilter)
       view.extStack = JSON.stringify(view.extStack)
       view.drillFields = JSON.stringify(view.drillFields)
