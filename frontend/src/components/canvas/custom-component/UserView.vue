@@ -773,6 +773,7 @@ export default {
         //     }
         //   })
         console.log('data--------', requestInfo)
+        console.log('data--------', id, this.panelInfo, requestInfo)
         method(id, this.panelInfo.id, requestInfo)
           .then((response) => {
             console.log('response接口获取参数', response)
