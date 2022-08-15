@@ -109,7 +109,7 @@ export default {
         this.sizeMessage()
       }
       uploadFileResult(file.file, (fileUrl) => {
-        _this.$store.state.styleChangeTimes++
+        _this.$store.commit('canvasChange')
         _this.panel.imageUrl = fileUrl
         _this.fileList = [{ url: this.panel.imageUrl }]
         _this.commitStyle()
@@ -122,7 +122,7 @@ export default {
         this.sizeMessage()
       }
       uploadFileResult(file, (fileUrl) => {
-        _this.$store.state.styleChangeTimes++
+        _this.$store.commit('canvasChange')
         _this.panel.imageUrl = fileUrl
         _this.fileList = [{ url: this.panel.imageUrl }]
         _this.commitStyle()

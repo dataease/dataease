@@ -460,7 +460,7 @@ export default {
       }
     },
     optFromBatchSingleProp(param) {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
       const updateParams = { 'id': this.chart.id }
       if (param.custom === 'customAttr') {
         const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
@@ -929,7 +929,7 @@ export default {
       return this.chart.render
     },
     getDataEdit(param) {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
       if (param.type === 'propChange') {
         this.getData(param.viewId, false, true)
       } else if (param.type === 'styleChange') {

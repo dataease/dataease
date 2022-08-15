@@ -140,7 +140,7 @@ export default {
       this.$refs['botTree'].setCurrentKey(null)
     },
     viewMyShare(data) {
-      initPanelData(data.id, function() {
+      initPanelData(data.id, false, function() {
         bus.$emit('set-panel-show-type', 2)
       })
       this.$refs['topTree'].setCurrentKey(null)

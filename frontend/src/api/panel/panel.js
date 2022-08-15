@@ -144,9 +144,10 @@ export function delGroup(groupId) {
   })
 }
 
-export function initPanelData(panelId, callback) {
+export function initPanelData(panelId, useCache = false, callback) {
+  const queryMethod = useCache ? findUserCacheRequest : findOne
   // 加载视图数据
-  findOne(panelId).then(response => {
+  queryMethod(panelId).then(response => {
     // 初始化视图data和style 数据
     panelInit(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle))
     // 设置当前仪表板全局信息
@@ -229,6 +230,45 @@ export function updatePanelStatus(panelId, param) {
     method: 'post',
     loading: false,
     data: param
+  })
+}
+
+export function saveCache(data) {
+  return request({
+    url: 'panel/group/autoCache',
+    method: 'post',
+    loading: false,
+    data
+  })
+}
+export function findUserCacheRequest(panelId) {
+  return request({
+    url: 'panel/group/findUserCache/' + panelId,
+    method: 'get',
+    loading: false
+  })
+}
+
+export function checkUserCacheRequest(panelId) {
+  return request({
+    url: 'panel/group/checkUserCache/' + panelId,
+    method: 'get',
+    loading: false
+  })
+}
+
+export function checkUserCache(panelId, callback) {
+  // 加载视图数据
+  checkUserCacheRequest(panelId).then(response => {
+    callback(response)
+  })
+}
+
+export function removePanelCache(panelId) {
+  return request({
+    url: 'panel/group/removePanelCache/' + panelId,
+    method: 'delete',
+    loading: false
   })
 }
 

@@ -205,7 +205,7 @@ export default {
       }
     },
     styleChange() {
-      this.$store.commit('recordStyleChange')
+      this.$store.commit('canvasChange')
     }
   }
 }

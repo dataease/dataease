@@ -1574,6 +1574,8 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    panel_no_save_tips: '存在未保存的仪表板',
+    panel_cache_use_tips: '检查到上次有仪表板未能正常保存，是否使用上次未保存的仪表板？',
     template_name_tips: '仪表板名称必填',
     panel_background_item: '自定义仪表板背景',
     panel_background_image_tips: '当前支持.jpeg,.jpg,.png,.gif文件,大小不要超过15M',

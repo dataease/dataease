@@ -101,7 +101,7 @@ export default {
         this.curActiveTabInner.videoLinks = this.linkInfoTemp
       }
       this.curComponent.videoLinks = this.linkInfoTemp
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
       bus.$emit('videoLinksChange-' + this.curComponent.id)
       this.popoverClose()
     },

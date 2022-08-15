@@ -475,7 +475,7 @@ export default {
       return y * this.curCanvasScale.scalePointHeight
     },
     styleChange() {
-      this.$store.commit('recordStyleChange')
+      this.$store.commit('canvasChange')
     },
     goHeadFontColor() {
       this.$refs.headFontColorPicker.handleTrigger()

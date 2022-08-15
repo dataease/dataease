@@ -354,6 +354,27 @@
       </div>
     </el-dialog>
 
+    <!--关闭弹框-->
+    <el-dialog
+      :visible.sync="panelCacheExist"
+      :title="$t('panel.panel_no_save_tips')"
+      :show-close="false"
+      width="30%"
+    >
+      <el-row style="height: 20px">
+        <el-col :span="3">
+          <svg-icon icon-class="warn-tre" style="width: 20px;height: 20px;float: right" />
+        </el-col>
+        <el-col :span="21">
+          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{$t('panel.panel_cache_use_tips')}}</span>
+        </el-col>
+      </el-row>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="useCache(false)">{{$t('panel.no')}}</el-button>
+        <el-button type="primary" size="mini" @click="useCache(true)">{{$t('panel.yes')}}</el-button>
+      </div>
+    </el-dialog>
+
   </el-row>
 </template>
 
@@ -375,7 +396,13 @@ import componentList, {
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
-import { initPanelData, initViewCache, queryPanelMultiplexingViewTree } from '@/api/panel/panel'
+import {
+  checkUserCache,
+  findUserCache,
+  initPanelData,
+  initViewCache,
+  queryPanelMultiplexingViewTree
+} from '@/api/panel/panel'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
@@ -428,6 +455,7 @@ export default {
   },
   data() {
     return {
+      panelCacheExist: false,
       viewData: [],
       multiplexingShow: false,
       asideToolType: 'none',
@@ -727,19 +755,39 @@ export default {
       _this.initHasStar()
       this.$store.commit('initCanvas')
       if (panelId) {
-        initPanelData(panelId, function() {
-          // 清空当前缓存,快照
-          _this.$store.commit('refreshSnapshot')
-          // 初始化视图缓存
-          initViewCache(panelId)
-          // 初始化记录的视图信息
-          _this.$store.commit('setComponentViewsData')
-          // 初始化保存状态
-          setTimeout(() => {
-            _this.$store.commit('refreshSaveStatus')
-          }, 500)
+        checkUserCache(panelId, function(rsp) {
+          // the panel have cache
+          if (rsp.data) {
+            _this.panelCacheExist = true
+          } else {
+            _this.editPanelDataInit(panelId, false)
+          }
         })
       }
+    },
+    useCache(useCache) {
+      this.editPanelDataInit(this.$store.state.panel.panelInfo.id, useCache)
+      this.panelCacheExist = false
+    },
+    editPanelDataInit(panelId, useCache) {
+      const _this = this
+      initPanelData(panelId, useCache, function() {
+        // 清空当前缓存,快照
+        _this.$store.commit('refreshSnapshot')
+        // 初始化视图缓存
+        initViewCache(panelId)
+        // 初始化记录的视图信息
+        _this.$store.commit('setComponentViewsData')
+        // if panel data load from cache the save button should be active
+        // 初始化保存状态
+        setTimeout(() => {
+          if (useCache) {
+            _this.$store.commit('recordSnapshot', 'cache')
+          } else {
+            _this.$store.commit('refreshSaveStatus')
+          }
+        }, 500)
+      })
     },
     star() {
       this.panelInfo && saveEnshrine(this.panelInfo.id, false).then(res => {
@@ -1141,19 +1189,6 @@ export default {
 
       // 打开属性栏
       bus.$emit('change_panel_right_draw', true)
-
-      //
-      // // 编辑时临时保存 当前修改的画布
-      // this.$store.dispatch('panel/setComponentDataTemp', JSON.stringify(this.componentData))
-      // this.$store.dispatch('panel/setCanvasStyleDataTemp', JSON.stringify(this.canvasStyleData))
-      // if (this.curComponent.type === 'view') {
-      //   this.$store.dispatch('chart/setViewId', null)
-      //   this.$store.dispatch('chart/setViewId', this.curComponent.propValue.viewId)
-      //   bus.$emit('PanelSwitchComponent', {
-      //     name: 'ChartEdit',
-      //     param: { 'id': this.curComponent.propValue.viewId, 'optType': 'edit' }
-      //   })
-      // }
     },
     canvasScroll(event) {
       this.scrollLeft = event.target.scrollLeft
@@ -1231,7 +1266,7 @@ export default {
       this.showMultiplexing(false)
       this.$store.commit('copyMultiplexingComponents')
       this.$store.commit('recordSnapshot')
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
     }
   }
 }

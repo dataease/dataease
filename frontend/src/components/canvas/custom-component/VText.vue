@@ -89,9 +89,9 @@ export default {
   },
   methods: {
     handleInput(e) {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
       this.$emit('input', this.element, e.target.innerHTML)
-      this.$store.commit('recordStyleChange')
+      this.$store.commit('canvasChange')
     },
 
     handleKeydown(e) {

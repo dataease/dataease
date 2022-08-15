@@ -277,7 +277,7 @@ export default {
       setTimeout(() => {
         this.recordMatrixCurShadowStyle()
       }, 50)
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
       bus.$emit('auxiliaryMatrixChange')
     },
     // 记录当前样式 跟随阴影位置 矩阵处理

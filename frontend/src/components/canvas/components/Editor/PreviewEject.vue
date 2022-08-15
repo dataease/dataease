@@ -84,7 +84,7 @@ export default {
           this.initCallBack()
         })
       } else {
-        initPanelData(this.panelId, () => {
+        initPanelData(this.panelId, false, () => {
           this.initCallBack()
         })
       }

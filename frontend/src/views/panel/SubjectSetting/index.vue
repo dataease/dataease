@@ -117,7 +117,7 @@ export default {
       this.themeAttrChange('customStyle', 'text', val)
     },
     styleChange() {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
     },
     themeAttrChange(custom, property, value) {
       bus.$emit('onThemeAttrChange', {

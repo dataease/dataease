@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     showPanel(row) {
-      initPanelData(row.panelGroupId, function() {
+      initPanelData(row.panelGroupId, false, function() {
         bus.$emit('set-panel-show-type', 0)
       })
     },
