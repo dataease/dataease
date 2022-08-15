@@ -444,7 +444,7 @@ export default {
       this.styleChange()
     },
     styleChange() {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
     },
     chartResize() {
       // this.$refs[this.activeTabName]

@@ -122,7 +122,7 @@ export default {
   watch: {
     formatInfo: {
       handler(newVal, oldVla) {
-        this.$store.state.styleChangeTimes++
+        this.$store.commit('canvasChange')
       },
       deep: true
     }

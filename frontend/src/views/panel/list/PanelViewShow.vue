@@ -454,7 +454,7 @@ export default {
       if (this.showType === 1 && this.shareUserId !== null) {
         const param = { userId: this.shareUserId }
         proxyInitPanelData(this.panelInfo.id, param, null)
-      } else { initPanelData(this.panelInfo.id) }
+      } else { initPanelData(this.panelInfo.id,false) }
     },
     changePublishState() {
       if (this.panelInfo.status === 'publish') {

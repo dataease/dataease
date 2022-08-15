@@ -1574,6 +1574,8 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    panel_no_save_tips: 'There are unsaved panel',
+    panel_cache_use_tips: 'It was checked that the last dashboard could not be saved normally. Do you want to use the panel that was not saved last time?',
     template_name_tips: "Panel\'s name should not be null",
     panel_background_item: 'Customize panel background',
     panel_background_image_tips: 'Currently.Jpeg,.Jpg,.Png,.Gif files are supported, and the size should not exceed 15m',

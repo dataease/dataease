@@ -114,7 +114,7 @@ export default {
     },
     myValue(newValue) {
       this.element.propValue = newValue
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
     }
   },
   mounted() {

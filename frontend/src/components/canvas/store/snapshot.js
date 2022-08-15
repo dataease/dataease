@@ -9,9 +9,14 @@ export default {
     changeTimes: -1, // 修改次数
     lastSaveSnapshotIndex: 0, // 最后保存是snapshotIndex的索引
     styleChangeTimes: 0, // 组件样式修改次数
+    cacheStyleChangeTimes: 0, // 仪表板未缓存的组件样式修改次数
     doSnapshotIndex: -1 // snapshot undo redo 时的索引记录
   },
   mutations: {
+    canvasChange(state) {
+      state.styleChangeTimes++
+      state.cacheStyleChangeTimes++
+    },
     undo(state) {
       store.commit('setCurComponent', { component: null, index: null })
       if (state.snapshotIndex > 0) {
@@ -34,7 +39,7 @@ export default {
 
     recordSnapshot(state) {
       state.changeTimes++
-      state.styleChangeTimes++
+      store.commit('canvasChange')
       // 添加新的快照
       state.snapshotData[++state.snapshotIndex] = deepCopy(state.componentData)
       state.snapshotStyleData[state.snapshotIndex] = deepCopy(state.canvasStyleData)

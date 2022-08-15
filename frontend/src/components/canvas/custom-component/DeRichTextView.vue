@@ -115,7 +115,7 @@ export default {
       if (this.canEdit) {
         this.element.propValue.textValue = newValue
       }
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
     }
   },
   mounted() {

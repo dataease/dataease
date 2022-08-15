@@ -85,7 +85,7 @@ export default {
       current && (current.showPicker = true)
     },
     styleChange() {
-      this.$store.commit('recordStyleChange')
+      this.$store.commit('canvasChange')
     }
   }
 

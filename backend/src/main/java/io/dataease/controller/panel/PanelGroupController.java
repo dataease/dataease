@@ -145,5 +145,31 @@ public class PanelGroupController {
     public void updatePanelStatus(@PathVariable String panelId, @RequestBody PanelGroupBaseInfoRequest request) {
         panelGroupService.updatePanelStatus(panelId, request);
     }
+    @ApiOperation("自动缓存")
+    @PostMapping("/autoCache")
+    @DePermissions(value = {
+            @DePermission(type = DePermissionType.PANEL, value = "id"),
+            @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
+    }, logical = Logical.AND)
+    public void autoCache(@RequestBody PanelGroupRequest request){
+        panelGroupService.autoCache(request);
 
+    }
+
+    @ApiOperation("查找缓存")
+    @GetMapping("/findUserCache/{panelId}")
+    public PanelGroupDTO findUserCache(@PathVariable String panelId){
+        return panelGroupService.findUserPanelCache(panelId);
+    }
+    @ApiOperation("检查缓存")
+    @GetMapping("/checkUserCache/{panelId}")
+    public Boolean checkUserCache(@PathVariable String panelId){
+        return panelGroupService.checkUserCache(panelId);
+    }
+
+    @ApiOperation("删除缓存")
+    @DeleteMapping("/removePanelCache/{panelId}")
+    public void removePanelCache(@PathVariable String panelId){
+        panelGroupService.removePanelCache(panelId);
+    }
 }

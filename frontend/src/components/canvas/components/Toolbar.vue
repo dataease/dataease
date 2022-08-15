@@ -135,7 +135,7 @@ import { mapState } from 'vuex'
 import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy, mobile2MainCanvas } from '@/components/canvas/utils/utils'
-import { panelUpdate } from '@/api/panel/panel'
+import { panelUpdate, saveCache, removePanelCache } from '@/api/panel/panel'
 import { saveLinkage, getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
 import { queryPanelJumpInfo } from '@/api/panel/linkJump'
@@ -199,6 +199,7 @@ export default {
     this.scale = this.canvasStyleData.scale
     this.mobileLayoutInitStatus = this.mobileLayoutStatus
     this.showGridSwitch = this.canvasStyleData.aidedDesign.showGrid
+    this.autoCache()
   },
   beforeDestroy() {
     eventBus.$off('preview', this.preview)
@@ -211,6 +212,7 @@ export default {
       this.$store.commit('initCanvasBase')
       this.$store.commit('setInEditorStatus', false)
       this.$emit('close-left-panel')
+      removePanelCache(this.panelInfo.id)
       this.$nextTick(() => {
         bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
       })
@@ -235,7 +237,6 @@ export default {
       return result
     },
     handleScaleChange() {
-      clearTimeout(this.timer)
       setTimeout(() => {
         const componentData = deepCopy(this.componentData)
         componentData.forEach(component => {
@@ -329,8 +330,18 @@ export default {
       this.isShowPreview = true
       this.$store.commit('setEditMode', 'preview')
     },
-
-    save(withClose) {
+    autoCache() {
+      // auto save panel cache per 5s
+      const _this = this
+      _this.timer = setInterval(() => {
+        if (_this.$store.state.cacheStyleChangeTimes > 0) {
+          const cacheRequest = _this.savePrepare()
+          saveCache(cacheRequest)
+          _this.$store.state.cacheStyleChangeTimes = 0
+        }
+      }, 5000)
+    },
+    savePrepare() {
       // 保存到数据库
       const requestInfo = {
         id: this.panelInfo.id,
@@ -359,6 +370,11 @@ export default {
       })
       // 无需保存条件
       requestInfo.panelData = JSON.stringify(components)
+      return requestInfo
+    },
+
+    save(withClose) {
+      const requestInfo = this.savePrepare()
       panelUpdate(requestInfo).then(response => {
         this.$store.commit('refreshSaveStatus')
         this.$message({
@@ -447,7 +463,7 @@ export default {
       this.canvasStyleData.auxiliaryMatrix = value
     },
     showGridChange() {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
       this.canvasStyleData.aidedDesign.showGrid = !this.canvasStyleData.aidedDesign.showGrid
     },
     // batch option
@@ -484,7 +500,7 @@ export default {
     },
     // 移动端布局保存
     mobileLayoutSave() {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
       const mobileDataObj = {}
       this.componentData.forEach(item => {
         mobileDataObj[item.id] = item

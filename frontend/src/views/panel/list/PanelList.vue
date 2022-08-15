@@ -674,7 +674,7 @@ export default {
       if (data.nodeType === 'panel') {
         // 清理pc布局缓存
         this.$store.commit('setComponentDataCache', null)
-        initPanelData(data.id, function(response) {
+        initPanelData(data.id, false, function(response) {
           bus.$emit('set-panel-show-type', 0)
           data.mobileLayout = response.data.mobileLayout
         })

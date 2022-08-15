@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     onChangePanelStyle() {
-      this.$store.state.styleChangeTimes++
+      this.$store.commit('canvasChange')
     }
   }
 }

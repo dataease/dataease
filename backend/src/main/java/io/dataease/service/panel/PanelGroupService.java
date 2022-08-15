@@ -130,6 +130,7 @@ public class PanelGroupService {
         clearPermissionCache();
         sysAuthService.copyAuth(panelId, SysAuthConstants.AUTH_SOURCE_TYPE_PANEL);
         DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, sourceType, panelId, request.getPid(), null, null);
+        this.removePanelAllCache(panelId);
         return panelId;
     }
 
@@ -201,6 +202,7 @@ public class PanelGroupService {
             }
             DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, sourceType, request.getId(), request.getPid(), null, sourceType);
         }
+        this.removePanelAllCache(panelId);
         return panelId;
     }
 
@@ -626,5 +628,45 @@ public class PanelGroupService {
         }else{
             return null;
         }
+    }
+
+    /**
+     * @Description: Automatically save panel data to cache when editing
+     * */
+    public void autoCache(PanelGroupRequest request){
+        String cacheName = JdbcConstants.PANEL_CACHE_KEY+request.getId();
+        String cacheId = AuthUtils.getUser().getUserId()+"&"+request.getId();
+        CacheUtils.put(cacheName, cacheId, request, null, null);
+    }
+
+    /**
+     * @Description: Remove panel cache for specific user
+     * */
+    public void removePanelCache(String panelId){
+        String cacheName = JdbcConstants.PANEL_CACHE_KEY+panelId;
+        String cacheId = AuthUtils.getUser().getUserId()+"&"+panelId;
+        CacheUtils.remove(cacheName,cacheId);
+    }
+
+    public void removePanelAllCache(String panelId){
+        String cacheName = JdbcConstants.PANEL_CACHE_KEY+panelId;
+        CacheUtils.removeAll(cacheName);
+    }
+
+    public PanelGroupDTO findUserPanelCache(String panelId){
+        String cacheName = JdbcConstants.PANEL_CACHE_KEY+panelId;
+        String cacheId = AuthUtils.getUser().getUserId()+"&"+panelId;
+        Object cache = CacheUtils.get(cacheName,cacheId);
+        if(cache==null){
+            return null;
+        }else{
+            return (PanelGroupRequest)cache;
+        }
+    }
+    public Boolean checkUserCache(String panelId){
+        String cacheName = JdbcConstants.PANEL_CACHE_KEY+panelId;
+        String cacheId = AuthUtils.getUser().getUserId()+"&"+panelId;
+        Object cache = CacheUtils.get(cacheName,cacheId);
+        return cache!=null;
     }
 }
