@@ -10,7 +10,7 @@
       </div>
       <div class="content">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class">
-          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2?scrollId:newHeight" class="table_bode_li" style="cursor: pointer;" @click="showDialogInfo(items)">
+          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2?scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items)">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
               <el-popover
                 width="400"
@@ -28,7 +28,7 @@
                     <el-col :span="16">{{obj.value}}</el-col>
                   </el-col>
                 </el-row>
-                <span slot="reference">{{ items[item.datainsName] }}</span>
+                <span slot="reference" style="cursor: pointer;">{{ items[item.datainsName] }}</span>
               </el-popover>
               <!-- {{ items[item.datainsName] }} -->
             </div>
@@ -94,9 +94,6 @@ import eventBus from '@/components/canvas/utils/eventBus'
 
 import { save2Cache } from '@/api/chart/chart'
 import { viewData } from '@/api/panel/panel'
-
-// import PopupManager from "element-ui/lib/utils/popup/popup-manager";
-// PopupManager.zIndex = 30000;
 
 export default {
   name: 'TableNormal',
