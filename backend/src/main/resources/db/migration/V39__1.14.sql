@@ -17,3 +17,8 @@ update sys_background_image set name ='边框10' where id ='dark_1';
 
 
 INSERT INTO `sys_menu` VALUES (750, 2, 0, 2, '导入用户', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'user:import', NULL, NULL, 1614930935529, 1614930935529);
+
+
+update system_parameter set sort  = (sort + 1) where sort > 3;
+
+update system_parameter set sort = 4 where param_key = 'ui.favicon'
