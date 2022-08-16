@@ -2,6 +2,7 @@ package io.dataease.plugins.server;
 
 import java.util.List;
 
+import io.dataease.plugins.xpack.theme.dto.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
@@ -15,13 +16,7 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.config.SpringContextUtil;
-import io.dataease.plugins.xpack.theme.dto.ThemeCreateRequest;
-import io.dataease.plugins.xpack.theme.dto.ThemeDto;
-import io.dataease.plugins.xpack.theme.dto.ThemeItem;
-import io.dataease.plugins.xpack.theme.dto.ThemeRenameRequest;
-import io.dataease.plugins.xpack.theme.dto.ThemeRequest;
 import io.dataease.plugins.xpack.theme.service.ThemeXpackService;
-import springfox.documentation.annotations.ApiIgnore;
 
 @Api(tags = "xpack：系统主题")
 @RequestMapping("/plugin/theme")
@@ -30,10 +25,11 @@ public class ThemeServer {
 
     @ApiOperation("查询所有")
     @PostMapping("/themes")
-    public List<ThemeDto> themes() {
+    public List<ThemeBaseDTO> themes(@RequestBody List<String> keys) {
 
         ThemeXpackService themeXpackService = SpringContextUtil.getBean(ThemeXpackService.class);
-        return themeXpackService.themes();
+
+        return themeXpackService.themes(keys);
     }
 
     @ApiOperation("查询配置项")
