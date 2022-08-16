@@ -9,30 +9,50 @@
         <div v-for="(item,index) in fields" :key="index" class="header_title">{{ item.name }}</div>
       </div>
       <div class="content">
-        <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class">
-          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2?scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items)">
-            <div v-for="(item,index) in fields" :key="index" class="body_info">
-              <el-popover
-                width="400"
-                trigger="click"
-                @show="popShow"
-                @hide="popHide"
-                :disabled="!isPopShow"
-              > 
-                <p :style="pop_title" style="margin: 0px;">
-                  <span>详情</span>
-                </p>
-                <el-row>
-                  <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
-                    <el-col :span="8" style="text-align: right;">{{obj.name}}：</el-col>
-                    <el-col :span="16">{{obj.value}}</el-col>
-                  </el-col>
-                </el-row>
-                <span slot="reference" style="cursor: pointer;">{{ items[item.datainsName] }}</span>
-              </el-popover>
-              <!-- {{ items[item.datainsName] }} -->
-            </div>
-          </li>
+        <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
+          <el-popover
+            width="400"
+            trigger="click"
+            @show="popShow"
+            @hide="popHide"
+            v-model="isVisible"
+            :disabled="!isPopShow"
+          > 
+            <p :style="pop_title" style="margin: 0px;position: relative;">
+              <span>详情</span>
+              <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop"></i>
+            </p>
+            <el-row>
+              <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
+                <el-col :span="8" style="text-align: right;">{{obj.name}}：</el-col>
+                <el-col :span="16">{{obj.value}}</el-col>
+              </el-col>
+            </el-row>
+            <div slot="reference" class="pop_position"></div>
+          </el-popover>
+            <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2?scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items)">
+              <div v-for="(item,index) in fields" :key="index" class="body_info">
+                <!-- <el-popover
+                  width="400"
+                  trigger="click"
+                  @show="popShow"
+                  @hide="popHide"
+                  :disabled="!isPopShow"
+                > 
+                  <p :style="pop_title" style="margin: 0px;">
+                    <span>详情</span>
+                  </p>
+                  <el-row>
+                    <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
+                      <el-col :span="8" style="text-align: right;">{{obj.name}}：</el-col>
+                      <el-col :span="16">{{obj.value}}</el-col>
+                    </el-col>
+                  </el-row>
+                  <span slot="reference" style="cursor: pointer;">{{ items[item.datainsName] }}</span>
+                </el-popover> -->
+                {{ items[item.datainsName] }}
+              </div>
+            </li>
         </ul>
         <!-- <el-table
           id="tableInfo"
@@ -191,6 +211,7 @@ export default {
       dialogVisible: false,
       infoForm: [],
       isPopShow: false,
+      isVisible: false,
       pop_title: {
         textAlign: 'center',
         backgroundColor: '#082456',
@@ -356,7 +377,8 @@ export default {
           }
           console.log(arr)
           this.infoForm = arr
-
+          
+          this.isVisible = true
           // this.dialogVisible = true
           // this.popShow()
         })
@@ -379,6 +401,9 @@ export default {
       // console.log('arr...',arr)
       
       // this.infoForm = arr
+    },
+    closePop() {
+      this.isVisible = false
     },
     scorllEvent() {
       var isScroll = true // 也可以定义到data里
@@ -674,6 +699,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.pop_position {
+  width: 100%;
+  height: 2%;
+  left: 0%;
+  top: -2%;
+  position: absolute;
+  z-index: 0;
+}
 
 .table_new_header{
   display:flex;
