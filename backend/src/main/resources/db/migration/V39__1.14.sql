@@ -14,3 +14,6 @@ ADD COLUMN `senior` TINYINT(1) NULL DEFAULT NULL AFTER `status`;
 
 update sys_background_image set classification ='商务';
 update sys_background_image set name ='边框10' where id ='dark_1';
+
+
+INSERT INTO `sys_menu` VALUES (750, 2, 0, 2, '导入用户', NULL, NULL, 999, NULL, NULL, b'0', b'0', b'0', 'user:import', NULL, NULL, 1614930935529, 1614930935529);
