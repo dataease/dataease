@@ -727,6 +727,7 @@ export default {
           ...this.chart,
           customAttr: JSON.stringify(customAttrChart),
           customStyle: JSON.stringify(customStyleChart)
+
         }
       }
     },
