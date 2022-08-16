@@ -10,6 +10,10 @@
           @click="create"
           >{{ $t("user.create") }}</el-button
         >
+
+        <plugin-com v-if="isPluginLoaded" ref="ImportUserCom" component-name="ImportUser" />
+
+        
       </el-col>
       <el-col :span="12" class="right-user">
         <el-input
@@ -290,6 +294,7 @@ const columnOptions = [
 import DeLayoutContent from "@/components/business/DeLayoutContent";
 import { addOrder, formatOrders } from "@/utils/index";
 import { pluginLoaded, defaultPwd } from "@/api/user";
+import bus from '@/utils/bus'
 /* import { ldapStatus, pluginLoaded } from '@/api/user' */
 import {
   userLists,
@@ -301,9 +306,10 @@ import {
 import { mapGetters } from "vuex";
 import filterUser from "./filterUser.vue";
 import GridTable from "@/components/gridTable/index.vue";
+import PluginCom from '@/views/system/plugin/PluginCom';
 import _ from 'lodash';
 export default {
-  components: { DeLayoutContent, GridTable, filterUser, userEditer },
+  components: { DeLayoutContent, GridTable, filterUser, userEditer, PluginCom },
   data() {
     return {
       checkAll: true,
@@ -369,6 +375,7 @@ export default {
     },
   },
   mounted() {
+    bus.$on('reload-user-grid', this.search)
     this.allRoles();
     this.search();
     document.addEventListener("keypress", this.entryKey);
@@ -395,6 +402,7 @@ export default {
   },
   destroyed() {
     document.removeEventListener("keypress", this.entryKey);
+    bus.$off('reload-user-grid', this.search)
   },
   methods: {
     resizeObserver() {
