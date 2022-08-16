@@ -13,11 +13,14 @@ export function execute(options) {
     return null
   }
   options.type = options.type || 'post'
-
-  return request({
+  const param = {
     url: options.url,
     method: options.type,
     loading: true,
     data: options.data
-  })
+  }
+  if (options.responseType) {
+    param.responseType = options.responseType
+  }
+  return request(param)
 }
