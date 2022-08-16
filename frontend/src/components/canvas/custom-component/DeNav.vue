@@ -268,7 +268,7 @@ export default {
       if (this.canvasStyleData.showArr) {
         const newArr = this.canvasStyleData.showArr
         newArr.forEach((keys, index) => {
-          console.log()
+          console.log('keys', keys)
           if (this.oldName === keys) {
             newArr.splice(index, 1)
             // delete keys
@@ -282,10 +282,10 @@ export default {
       // console.log('切换导航------ ', this.componentData, this.canvasStyleData)
       const iframeArr = []
       if (this.element.options.vertical !== 'elementKey') {
-        this.canvasStyleData.navModel = 'defult'
+        // this.canvasStyleData.navModel = 'defult'
         this.canvasStyleData.navShowKey = key.name
       } else {
-        this.canvasStyleData.navModel = 'independent'
+        // this.canvasStyleData.navModel = 'independent'
         console.warn('chi-------111111111-------chu', this.canvasStyleData.showArr)
         if (this.canvasStyleData.showArr) {
           console.warn('chi-------22222222-------chu', this.canvasStyleData.showArr)
@@ -307,14 +307,20 @@ export default {
       console.warn('---处理主tab切换后，子tab对应的元素组件也隐藏---')
       console.warn('数据源', this.componentData, this.canvasStyleData)
       if (this.element.options.vertical !== 'elementKey') {
+        let chengkey = true
         this.componentData.forEach(res => {
+          console.log('res', res)
           if (res.showName === key.name) {
             console.warn(res)
             // res.options.heightTabs = res.options.navTabList[0].name
             this.canvasStyleData.showArr = []
             this.canvasStyleData.showArr.push(res.options.heightTabs)
+            chengkey = false
           }
         })
+        if (chengkey) {
+          this.canvasStyleData.showArr = []
+        }
       }
 
       console.warn('--end---')
