@@ -1,5 +1,5 @@
 <template>
-  <div ref="tableContainer" :style="bg_class" style="width: 100%;height: 100%;overflow: hidden;">
+  <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
     <span v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
       <div>
         <p style="padding:6px 4px 0;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;">{{ chart.title }}</p>
