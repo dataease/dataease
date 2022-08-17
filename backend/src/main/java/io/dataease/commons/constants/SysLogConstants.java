@@ -22,7 +22,13 @@ public class SysLogConstants {
         CREATELINK(8, "OPERATE_TYPE_CREATELINK"),
         DELETELINK(9, "OPERATE_TYPE_DELETELINK"),
         MODIFYLINK(10, "OPERATE_TYPE_MODIFYLINK"),
-        UPLOADFILE(11, "OPERATE_TYPE_UPLOADFILE");
+        UPLOADFILE(11, "OPERATE_TYPE_UPLOADFILE"),
+
+        LOGIN(12, "OPERATE_TYPE_LOGIN"),
+
+        VIEW(13, "OPERATE_TYPE_VIEW"),
+
+        EXPORT(14, "OPERATE_TYPE_EXPORT");
         private Integer value;
         private String name;
         OPERATE_TYPE(Integer value, String name) {
