@@ -14,6 +14,7 @@
     :format="labelFormat"
     :size="size"
     :editable="false"
+    :picker-options="pickerOptions"
     @change="dateChange"
     @focus="toFocus"
     @blur="onBlur"
@@ -97,6 +98,25 @@ export default {
       const result = 'yyyy-MM-dd'
       if (this.isTimeWidget && this.element.options.attrs.showTime && this.element.options.attrs.accuracy) {
         return result + ' ' + this.element.options.attrs.accuracy
+      }
+      return null
+    },
+    pickerOptions() {
+      const widget = ApplicationContext.getService(this.element.serviceName)
+      if (this.element.options.attrs.type === 'daterange' && widget.shortcuts) {
+        const cuts = widget.shortcuts()
+        const result = cuts.map(cut => {
+          return {
+            text: this.$t(cut.text),
+            onClick: picker => {
+              const param = cut.callBack()
+              picker.$emit('pick', param)
+            }
+          }
+        })
+        return {
+          shortcuts: result
+        }
       }
       return null
     }

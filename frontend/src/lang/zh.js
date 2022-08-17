@@ -2310,6 +2310,7 @@ export default {
     today: '今天',
     yesterday: '昨天',
     firstOfMonth: '月初',
+    firstOfYear: '年初',
     custom: '自定义',
     date: '日',
     week: '周',
@@ -2321,8 +2322,10 @@ export default {
     set: '设置',
 
     cweek: '本周',
+    lweek: '上周',
     cmonth: '本月',
     cquarter: '本季',
+    lquarter: '上季',
     cyear: '本年'
   },
   dynamic_year: {
@@ -2336,7 +2339,8 @@ export default {
     dynamic: '动态年月',
     current: '当月',
     last: '上月',
-    firstOfYear: '当年首月'
+    firstOfYear: '当年首月',
+    sameMonthLastYear: '去年同月'
   },
   wizard: {
     welcome_title: '欢迎使用DataEase',

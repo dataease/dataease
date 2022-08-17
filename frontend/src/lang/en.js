@@ -2288,6 +2288,7 @@ export default {
     today: 'Today',
     yesterday: 'Yesterday',
     firstOfMonth: 'Month Beginning',
+    firstOfYear: 'Year Beginning',
     custom: 'Custom',
     date: 'date',
     week: 'week',
@@ -2299,8 +2300,10 @@ export default {
     set: 'Set',
 
     cweek: 'This Week',
+    lweek: 'Last Week',
     cmonth: 'This Month',
     cquarter: 'This Quarter',
+    lquarter: 'Last Quarter',
     cyear: 'This Year',
     openHomePage: 'Show Home Page'
   },

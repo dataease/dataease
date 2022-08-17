@@ -89,64 +89,101 @@ class TimeDateRangeServiceImpl extends WidgetService {
   defaultSetting() {
     return dialogPanel.options.attrs.default
   }
-  getStartDayOfWeek() {
+  getStartDayOfWeek(step) {
     var now = new Date() // 当前日期
     var nowDayOfWeek = now.getDay()
     var nowDay = now.getDate() // 当前日
     var nowMonth = now.getMonth() // 当前月
     var day = nowDayOfWeek || 7
-    return new Date(now.getFullYear(), nowMonth, nowDay + 1 - day)
+    var resultDay = nowDay + 1 - day
+    if (step !== null) {
+      resultDay += (step * 7)
+    }
+    return new Date(now.getFullYear(), nowMonth, resultDay)
   }
-  getEndDayOfWeek() {
+  getEndDayOfWeek(step) {
     var now = new Date() // 当前日期
     var nowDayOfWeek = now.getDay()
     var nowDay = now.getDate() // 当前日
     var nowMonth = now.getMonth() // 当前月
     var day = nowDayOfWeek || 7
-    return new Date(now.getFullYear(), nowMonth, nowDay + 7 - day)
+    var resultDay = nowDay + 7 - day
+    if (step !== null) {
+      resultDay += (step * 7)
+    }
+    return new Date(now.getFullYear(), nowMonth, resultDay)
   }
-  getStartDayOfMonth() {
+  getStartDayOfMonth(step) {
     var now = new Date()
     var nowMonth = now.getMonth() // 当前月
+    if (step !== null) {
+      nowMonth += step
+    }
     var monthStartDate = new Date(now.getFullYear(), nowMonth, 1)
     return monthStartDate
   }
-  getEndDayOfMonth() {
+  getEndDayOfMonth(step) {
     var now = new Date()
     var nowMonth = now.getMonth() // 当前月
-    var monthEndDate = new Date(now.getFullYear(), nowMonth, this.getMonthDays())
+    var days = this.getMonthDays()
+
+    if (step !== null) {
+      nowMonth += step
+      days = this.getMonthDays(step)
+    }
+
+    var monthEndDate = new Date(now.getFullYear(), nowMonth, days)
     return monthEndDate
   }
-  getStartQuarter() {
+  getStartQuarter(step) {
     var now = new Date()
     var nowMonth = now.getMonth()
-    const startMonth = Math.floor((nowMonth / 3)) * 3
+    var startMonth = Math.floor((nowMonth / 3)) * 3
+    if (step !== null) {
+      startMonth += (step * 3)
+    }
     return new Date(now.getFullYear(), startMonth, 1)
   }
-  getEndQuarter() {
+  getEndQuarter(step) {
     var now = new Date()
     var nowMonth = now.getMonth()
     const quar = Math.floor(nowMonth / 3)
-    const endMonth = quar * 3 + 2
+    var endMonth = quar * 3 + 2
+
+    if (step !== null) {
+      endMonth += (step * 3)
+    }
+
     const days = (endMonth === 5 || endMonth === 8) ? 30 : 31
     return new Date(now.getFullYear(), endMonth, days)
   }
-  getStartYear() {
+  getStartYear(step) {
     var now = new Date()
-    return new Date(now.getFullYear(), 0, 1)
+    var year = now.getFullYear()
+    if (step !== null) {
+      year += step
+    }
+    return new Date(year, 0, 1)
   }
-  getEndYear() {
+  getEndYear(step) {
     var now = new Date()
-    return new Date(now.getFullYear(), 11, 31)
+    var year = now.getFullYear()
+    if (step !== null) {
+      year += step
+    }
+    return new Date(year, 11, 31)
   }
   /**
    * 获得本月天数
    *
    * @returns
    */
-  getMonthDays() {
+  getMonthDays(step) {
     var now = new Date()
     var nowMonth = now.getMonth() // 当前月
+    if (step !== null) {
+      nowMonth += step
+    }
     var monthStartDate = new Date(now.getFullYear(), nowMonth, 1)
     var monthEndDate = new Date(now.getFullYear(), nowMonth + 1, 1)
     var days = (monthEndDate - monthStartDate) / (1000 * 60 * 60 * 24)
@@ -188,19 +225,31 @@ class TimeDateRangeServiceImpl extends WidgetService {
     if (element.options.attrs.default === null || typeof element.options.attrs.default === 'undefined' || !element.options.attrs.default.isDynamic) return null
 
     if (element.options.attrs.default.dkey === 0) {
-      // 本周
-      return [this.getStartDayOfWeek().getTime(), this.getEndDayOfWeek().getTime()]
+      return [this.getStartDayOfWeek(0).getTime(), this.getEndDayOfWeek(0).getTime()]
+    }
+    if (element.options.attrs.default.dkey === 5) { // 上周
+      return [this.getStartDayOfWeek(-1).getTime(), this.getEndDayOfWeek(-1).getTime()]
     }
 
     if (element.options.attrs.default.dkey === 1) {
-      return [this.getStartDayOfMonth().getTime(), this.getEndDayOfMonth().getTime()]
+      return [this.getStartDayOfMonth(0).getTime(), this.getEndDayOfMonth(0).getTime()]
+    }
+    if (element.options.attrs.default.dkey === 6) { // 上月
+      return [this.getStartDayOfMonth(-1).getTime(), this.getEndDayOfMonth(-1).getTime()]
     }
 
     if (element.options.attrs.default.dkey === 2) {
-      return [this.getStartQuarter().getTime(), this.getEndQuarter().getTime()]
+      return [this.getStartQuarter(0).getTime(), this.getEndQuarter(0).getTime()]
     }
+    if (element.options.attrs.default.dkey === 7) { // 上季
+      return [this.getStartQuarter(-1).getTime(), this.getEndQuarter(-1).getTime()]
+    }
+
     if (element.options.attrs.default.dkey === 3) {
-      return [this.getStartYear().getTime(), this.getEndYear().getTime()]
+      return [this.getStartYear(0).getTime(), this.getEndYear(0).getTime()]
+    }
+    if (element.options.attrs.default.dkey === 8) { // 上年
+      return [this.getStartYear(-1).getTime(), this.getEndYear(-1).getTime()]
     }
 
     if (element.options.attrs.default.dkey === 4) {
@@ -293,6 +342,31 @@ class TimeDateRangeServiceImpl extends WidgetService {
   }
   isTimeWidget() {
     return true
+  }
+  formatShortValues(values) {
+    if (!values || values.length === 0) {
+      return []
+    }
+    const labelFormat = 'yyyy-MM-dd'
+    let start = values[0]
+    let end = values[values.length - 1]
+    start = timeSection(start, 'datetime', labelFormat)[0]
+    end = timeSection(end, 'datetime', labelFormat)[1]
+    const results = [start, end]
+    return results
+  }
+  shortcuts() {
+    return [
+      { 'text': 'dynamic_time.cweek', 'callBack': () => this.formatShortValues([this.getStartDayOfWeek(0).getTime(), this.getEndDayOfWeek(0).getTime()]) },
+      { 'text': 'dynamic_month.current', 'callBack': () => this.formatShortValues([this.getStartDayOfMonth(0).getTime(), this.getEndDayOfMonth(0).getTime()]) },
+      { 'text': 'dynamic_time.cquarter', 'callBack': () => this.formatShortValues([this.getStartQuarter(0).getTime(), this.getEndQuarter(0).getTime()]) },
+      { 'text': 'dynamic_year.current', 'callBack': () => this.formatShortValues([this.getStartYear(0).getTime(), this.getEndYear(0).getTime()]) },
+
+      { 'text': 'dynamic_time.lweek', 'callBack': () => this.formatShortValues([this.getStartDayOfWeek(-1).getTime(), this.getEndDayOfWeek(-1).getTime()]) },
+      { 'text': 'dynamic_month.last', 'callBack': () => this.formatShortValues([this.getStartDayOfMonth(-1).getTime(), this.getEndDayOfMonth(-1).getTime()]) },
+      { 'text': 'dynamic_time.lquarter', 'callBack': () => this.formatShortValues([this.getStartQuarter(-1).getTime(), this.getEndQuarter(-1).getTime()]) },
+      { 'text': 'dynamic_year.last', 'callBack': () => this.formatShortValues([this.getStartYear(-1).getTime(), this.getEndYear(-1).getTime()]) }
+    ]
   }
 }
 const timeDateRangeServiceImpl = new TimeDateRangeServiceImpl()

@@ -994,6 +994,7 @@ div:focus {
 }
 
 
+
 .de-form-item { 
   .el-form-item__label {
     width: 100% !important;
@@ -1168,3 +1169,6 @@ div:focus {
   color: var(--deTextPrimary, #1F2329) !important;
 }
 
+.date-filter-poper>.el-scrollbar>.el-select-dropdown__wrap {
+  max-height: 230px !important;
+}

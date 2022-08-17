@@ -29,6 +29,7 @@ const dialogPanel = {
           { value: 0, text: 'dynamic_time.today' },
           { value: 1, text: 'dynamic_time.yesterday' },
           { value: 2, text: 'dynamic_time.firstOfMonth' },
+          { value: 4, text: 'dynamic_time.firstOfYear' },
           { value: 3, text: 'dynamic_time.custom' }
         ],
         custom: {
@@ -101,6 +102,9 @@ class TimeDateServiceImpl extends WidgetService {
   defaultSetting() {
     return dialogPanel.options.attrs.default
   }
+  customValue() {
+    return 3
+  }
   dynamicDateFormNow(element) {
     if (element.options.attrs.default === null || typeof element.options.attrs.default === 'undefined' || !element.options.attrs.default.isDynamic) return null
 
@@ -118,6 +122,11 @@ class TimeDateServiceImpl extends WidgetService {
       const nowMonth = now.getMonth()
       var nowYear = now.getFullYear()
       return new Date(nowYear, nowMonth, 1).getTime()
+    }
+    if (element.options.attrs.default.dkey === 4) {
+      const now = new Date()
+      const nowYear = now.getFullYear()
+      return new Date(nowYear, 0, 1).getTime()
     }
 
     if (element.options.attrs.default.dkey === 3) {
