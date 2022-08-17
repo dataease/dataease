@@ -27,6 +27,7 @@ const dialogPanel = {
           { value: 0, text: 'dynamic_month.current' },
           { value: 1, text: 'dynamic_month.last' },
           { value: 2, text: 'dynamic_month.firstOfYear' },
+          { value: 4, text: 'dynamic_month.sameMonthLastYear' },
           { value: 3, text: 'dynamic_time.custom' }
         ],
         custom: {
@@ -91,6 +92,9 @@ class TimeMonthServiceImpl extends WidgetService {
   defaultSetting() {
     return dialogPanel.options.attrs.default
   }
+  customValue() {
+    return 3
+  }
   dynamicDateFormNow(element) {
     const now = new Date()
     const nowMonth = now.getMonth()
@@ -107,6 +111,9 @@ class TimeMonthServiceImpl extends WidgetService {
 
     if (element.options.attrs.default.dkey === 2) {
       return new Date(nowYear, 0, 1).getTime()
+    }
+    if (element.options.attrs.default.dkey === 4) {
+      return new Date(nowYear - 1, nowMonth, 1).getTime()
     }
 
     if (element.options.attrs.default.dkey === 3) {

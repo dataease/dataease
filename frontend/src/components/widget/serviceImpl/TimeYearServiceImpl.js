@@ -77,6 +77,9 @@ class TimeYearServiceImpl extends WidgetService {
     const value = JSON.parse(JSON.stringify(dialogPanel))
     return value
   }
+  customValue() {
+    return 2
+  }
 
   initDrawPanel() {
     const value = JSON.parse(JSON.stringify(drawPanel))

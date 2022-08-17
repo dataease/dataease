@@ -2223,6 +2223,7 @@ export default {
     today: '今天',
     yesterday: '昨天',
     firstOfMonth: '月初',
+    firstOfYear: '年初',
     custom: '自定義',
     date: '日',
     week: '周',
@@ -2234,8 +2235,10 @@ export default {
     set: '設置',
 
     cweek: '本周',
+    lweek: '上周',
     cmonth: '本月',
     cquarter: '本季',
+    lquarter: '上季',
     cyear: '本年'
   },
   dynamic_year: {

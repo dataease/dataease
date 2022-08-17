@@ -1,6 +1,6 @@
 <template>
   <div v-if="element">
-    <el-form ref="form" :model="element.options.attrs.default" label-width="100px">
+    <el-form ref="form" :model="element.options.attrs.default" label-width="100px" size="mini">
 
       <el-form-item :label="$t('dynamic_time.set_default')">
         <el-radio-group v-model="element.options.attrs.default.isDynamic" @change="dynamicChange">
@@ -15,12 +15,18 @@
           v-model="element.options.attrs.default.dkey"
           placeholder=""
           class="relative-time"
+          popper-class="date-filter-poper"
           @change="dkeyChange"
         >
           <el-option :label="$t('dynamic_time.cweek')" :value="0" />
           <el-option :label="$t('dynamic_time.cmonth')" :value="1" />
           <el-option :label="$t('dynamic_time.cquarter')" :value="2" />
           <el-option :label="$t('dynamic_time.cyear')" :value="3" />
+
+          <el-option :label="$t('dynamic_time.lweek')" :value="5" />
+          <el-option :label="$t('dynamic_month.last')" :value="6" />
+          <el-option :label="$t('dynamic_time.lquarter')" :value="7" />
+          <el-option :label="$t('dynamic_year.last')" :value="8" />
 
           <el-option :label="$t('dynamic_time.custom')" :value="4" />
         </el-select>

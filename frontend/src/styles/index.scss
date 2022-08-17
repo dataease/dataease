@@ -978,3 +978,7 @@ div:focus {
 .user-import-class>.el-dialog__body {
   padding-bottom: 1px;
 }
+
+.date-filter-poper>.el-scrollbar>.el-select-dropdown__wrap {
+  max-height: 230px !important;
+}
