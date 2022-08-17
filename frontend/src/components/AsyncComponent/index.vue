@@ -49,7 +49,6 @@ export default {
         } else {
           res = await window.SyncComponentCache[this.url]
         }
-
         if (res) {
           const Fn = Function
           const dynamicCode = res.data || res

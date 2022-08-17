@@ -26,6 +26,7 @@ import DeViewSelect from '@/components/DeViewSelect'
 import RemarkEditor from '@/views/chart/components/component-style/dialog/RemarkEditor'
 import TitleRemark from '@/views/chart/view/TitleRemark'
 import '@/components/canvas/custom-component' // 注册自定义组件
+import deBtn from '@/components/deCustomCm/deBtn.vue'
 
 import '@/utils/DateUtil'
 import draggable from 'vuedraggable'
@@ -92,6 +93,8 @@ Vue.component('DeComplexSelect', DeComplexSelect)
 Vue.component('DeViewSelect', DeViewSelect)
 Vue.component('RemarkEditor', RemarkEditor)
 Vue.component('TitleRemark', TitleRemark)
+Vue.component('deBtn', deBtn)
+
 Vue.config.productionTip = false
 
 import vueToPdf from 'vue-to-pdf'
