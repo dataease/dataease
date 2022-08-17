@@ -34,7 +34,7 @@ export default {
       return backPath || backName || backTo
     },
     needInnerPadding() {
-      return ['system-dept', 'system-dept-form', 'system-auth'].includes(this.$route.name)
+      return ['system-dept', 'system-dept-form', 'system-auth', 'sys-appearance', 'system-param', 'system-template'].includes(this.$route.name)
     }
   }
 }
@@ -77,6 +77,7 @@ export default {
   .layout-inner-padding {
     padding: 0;
     margin-top: 16px;
+    overflow: hidden;
   }
 }
 </style>
