@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.commons.utils.DeLogUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -80,6 +82,7 @@ public class SSOServer {
             String token = JWTUtils.sign(tokenInfo, realPwd);
             ServletUtils.setToken(token);
 
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.LOGIN, SysLogConstants.SOURCE_TYPE.USER, sysUserEntity.getUserId(), null, null, null);
 
             Cookie cookie_token = new Cookie("Authorization", token);
             cookie_token.setPath("/");

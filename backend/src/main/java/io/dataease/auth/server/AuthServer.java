@@ -10,6 +10,7 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.RsaUtil;
+import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.sys.request.LdapAddRequest;
 import io.dataease.exception.DataEaseException;
@@ -130,6 +131,7 @@ public class AuthServer implements AuthApi {
         // 记录token操作时间
         result.put("token", token);
         ServletUtils.setToken(token);
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.LOGIN, SysLogConstants.SOURCE_TYPE.USER, user.getUserId(), null, null, null);
         authUserService.clearCache(user.getUserId());
         return result;
     }

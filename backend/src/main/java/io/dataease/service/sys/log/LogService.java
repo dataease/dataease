@@ -170,6 +170,14 @@ public class LogService {
             results.add(folderItem);
         }
 
+        FolderItem userLogin = new FolderItem();
+        SysLogConstants.OPERATE_TYPE operateTypeLogin = SysLogConstants.OPERATE_TYPE.LOGIN;
+        SysLogConstants.SOURCE_TYPE sourceTypeLogin = SysLogConstants.SOURCE_TYPE.USER;
+        userLogin.setId(operateTypeLogin.getValue() + "-" + sourceTypeLogin.getValue());
+        String operateTypeName = SysLogConstants.operateTypeName(operateTypeLogin.getValue());
+        String sourceTypeName = sourceTypeLogin.getName();
+        userLogin.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
+        results.add(userLogin);
 
         return results;
     }
@@ -195,9 +203,16 @@ public class LogService {
             sysLogWithBLOBs.setRemark(gson.toJson(sysLogDTO.getRemarks()));
         }
         sysLogWithBLOBs.setTime(System.currentTimeMillis());
-        sysLogWithBLOBs.setUserId(user.getUserId());
-        sysLogWithBLOBs.setLoginName(user.getUsername());
-        sysLogWithBLOBs.setNickName(user.getNickName());
+        if (ObjectUtils.isNotEmpty(user)) {
+            sysLogWithBLOBs.setUserId(user.getUserId());
+            sysLogWithBLOBs.setLoginName(user.getUsername());
+            sysLogWithBLOBs.setNickName(user.getNickName());
+        } else if (sysLogDTO.getOperateType() == SysLogConstants.OPERATE_TYPE.LOGIN.getValue()) {
+            sysLogWithBLOBs.setUserId(Long.parseLong(sysLogDTO.getSourceId()));
+            sysLogWithBLOBs.setLoginName(sysLogDTO.getSourceName());
+            sysLogWithBLOBs.setNickName(sysLogDTO.getSourceName());
+        }
+
         // sysLogWithBLOBs.setIp(ip);
         sysLogMapper.insert(sysLogWithBLOBs);
     }
