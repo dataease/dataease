@@ -387,6 +387,9 @@ export function adaptCurThemeCommonStyleAll() {
   const componentData = store.state.componentData
   componentData.forEach((item) => {
     adaptCurThemeCommonStyle(item)
+    if (item.style.backgroundColor) {
+      delete item.style.backgroundColor
+    }
   })
 }
 
