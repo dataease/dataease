@@ -117,10 +117,12 @@
 import jsonView from 'vue-json-views'
 import { geoJson, saveMap } from '@/api/map/map'
 import ElTreeSelect from '@/components/ElTreeSelect'
+import msgCfm from '@/components/msgCfm'
 
 export default {
   name: 'MapSettingRight',
   components: { jsonView, ElTreeSelect },
+  mixins: [msgCfm],
   props: {
     status: {
       type: String,
@@ -271,7 +273,7 @@ export default {
         const flag = response.success
         if (flag) {
           this.$emit('refresh-tree', param)
-          this.$success(this.$t('commons.save_success'))
+          this.openMessageSuccess("commons.save_success");
         } else {
           this.$message.error(this.$t('commons.save_failed'))
         }

@@ -499,6 +499,7 @@ export default {
     },
     onError(e) {},
     handleSizeChange(pageSize) {
+      this.paginationConfig.currentPage = 1;
       this.paginationConfig.pageSize = pageSize;
       this.search();
     },
