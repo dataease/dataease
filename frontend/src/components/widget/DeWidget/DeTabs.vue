@@ -1,8 +1,8 @@
 <template>
   <div class="de-tabs-div">
-    <async-solt-component
+
+    <dataease-tabs
       v-model="activeTabName"
-      :url="url"
       type="card"
       style-type="radioGroup"
       class="de-tabs-height"
@@ -15,8 +15,7 @@
       @tab-add="addTab"
       @tab-click="handleClick"
     >
-      <!--  <plugin-com ref="dataease-tabs" v-model="activeTabName" type="card" class="de-tabs" component-name="dataease-tabs" @tab-click="handleClick"> -->
-      <!-- <el-tabs v-model="activeTabName" type="card" class="de-tabs" @tab-click="handleClick"> -->
+
       <el-tab-pane
         v-for="(item, index) in element.options.tabList"
         :key="item.name+index"
@@ -29,7 +28,6 @@
           <el-dropdown v-if="dropdownShow" slot="label" class="de-tab-drop" trigger="click" @command="handleCommand">
             <span class="el-dropdown-link">
 
-              <!-- <span>{{ item.title }}</span> -->
               <i v-if="isEdit" class="de-tab-i el-icon-arrow-down el-icon--right" />
             </span>
 
@@ -85,8 +83,7 @@
         </div>
 
       </el-tab-pane>
-    </async-solt-component>
-    <!-- </el-tabs> -->
+    </dataease-tabs>
 
     <el-dialog
       :title="$t('detabs.eidttitle')"
@@ -153,7 +150,7 @@
 </template>
 
 <script>
-import AsyncSoltComponent from '@/components/AsyncSoltComponent'
+import DataeaseTabs from '@/components/dataease-tabs'
 import ViewSelect from '@/views/panel/ViewSelect'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
@@ -162,11 +159,10 @@ import { mapState } from 'vuex'
 import { chartCopy } from '@/api/chart/chart'
 import { buildFilterMap } from '@/utils/conditionUtil'
 import TabUseList from '@/views/panel/AssistComponent/tabUseList'
-import { $error } from '@/utils/message'
 
 export default {
   name: 'DeTabls',
-  components: { TabUseList, ViewSelect, AsyncSoltComponent },
+  components: { TabUseList, ViewSelect, DataeaseTabs },
   props: {
     element: {
       type: Object,
@@ -208,18 +204,12 @@ export default {
       activeTabName: null,
 
       tabIndex: 1,
-      // isEdit: true,
       dialogVisible: false,
       textarea: '',
       curItem: null,
       viewDialogVisible: false,
       otherComponentDialogVisible: false,
       url: '/api/pluginCommon/component/dataease-tabs'
-      /* fontColor: '#999999',
-        activeColor: '#f18406',
-
-        borderColor: '#999999',
-        borderActiveColor: '#f18406' */
 
     }
   },
@@ -368,7 +358,6 @@ export default {
       const newComponentId = uuid.v1()
       const componentInfo = {
         type: 'view',
-        /* id: node.id */
         id: node.innerId
       }
 
@@ -396,7 +385,6 @@ export default {
         this.$store.dispatch('chart/setViewId', component.propValue.viewId)
         this.styleChange()
       })
-      // this.setComponentInfo()
     },
 
     setComponentInfo() {
@@ -447,7 +435,6 @@ export default {
       this.$store.commit('canvasChange')
     },
     chartResize() {
-      // this.$refs[this.activeTabName]
     },
     handleClick(tab) {
       const name = tab.name
