@@ -1,0 +1,136 @@
+/* 引入variables例子，是这里需要用到 $--color-primary
+   项目中可根据自己的styles路径 自行更改 */
+   @import "./variables";
+
+   .de-tabs {
+     &.fontColor {
+       .el-tabs__item {
+         color: var(--font-color);
+   
+         &.is-active {
+           color: $--color-primary;
+         }
+   
+         &:hover {
+           color: $--color-primary;
+         }
+       }
+     }
+   
+     &.activeColor {
+       .el-tabs__item {
+         &.is-active {
+           color: var(--active-color);
+         }
+   
+         &:hover {
+           color: var(--active-color);
+         }
+       }
+   
+       .el-tabs__active-bar {
+         background-color: var(--active-color);
+       }
+     }
+   
+     // card样式的边框
+     &.noBorder.el-tabs--card {
+       >.el-tabs__header {
+         border-bottom: none;
+   
+         .el-tabs__nav {
+           border: none;
+         }
+   
+         .el-tabs__item {
+           border-left: none;
+         }
+   
+         .el-tabs__item.is-active {
+           border-bottom: none;
+         }
+       }
+     }
+   
+     &.borderActiveColor.el-tabs--card {
+       >.el-tabs__header .el-tabs__item.is-active {
+         border-bottom-color: var(--border-active-color);
+       }
+     }
+   
+     &.borderColor.el-tabs--card {
+       >.el-tabs__header {
+         border-bottom-color: var(--border-color);
+   
+         .el-tabs__nav {
+           border-color: var(--border-color);
+         }
+   
+         .el-tabs__item {
+           border-left-color: var(--border-color);
+         }
+       }
+   
+       .el-tabs__item {
+         &.is-active {
+           color: var(--active-color);
+         }
+   
+         &:hover {
+           color: var(--active-color);
+         }
+       }
+   
+       .el-tabs__active-bar {
+         background-color: var(--active-color);
+       }
+     }
+   
+     // 简洁样式的边框
+     &.noBorder {
+       .el-tabs__nav-wrap::after {
+         background: none;
+       }
+     }
+   
+     &.borderColor {
+       .el-tabs__nav-wrap::after {
+         background: var(--border-color);
+       }
+     }
+   
+     // radioGroup 类型
+     &.radioGroup.borderColor.el-tabs--card {
+       >.el-tabs__header {
+         border-bottom: none;
+   
+         .el-tabs__nav {
+           border: none;
+         }
+   
+         .el-tabs__item {
+           border: 1px solid var(--border-color);
+           border-right: 0;
+   
+           &:first-child {
+             border-left: 1px solid var(--border-color);
+             border-radius: 4px 0 0 4px;
+           }
+   
+           &:last-child {
+             border-right: 1px solid var(--border-color);
+             border-radius: 0 4px 4px 0;
+           }
+   
+           &.is-active {
+             border: 1px solid var(--border-active-color);
+   
+             &+.el-tabs__item {
+               border-left: 0;
+             }
+           }
+         }
+       }
+     }
+   }
+   
