@@ -93,9 +93,11 @@
 
 import {engineInfo, validate, save} from '@/api/system/engine'
 import i18n from "@/lang";
+import msgCfm from '@/components/msgCfm'
 
 export default {
   name: 'SimpleMode',
+  mixins: [msgCfm],
   data() {
     return {
       form:
@@ -204,7 +206,7 @@ export default {
           this.showSave = false
           this.show = true
           this.originConfiguration = JSON.parse(JSON.stringify(this.form.configuration))
-          this.$success(i18n.t('commons.save_success'))
+          this.openMessageSuccess("commons.save_success");
         })
       })
     },
@@ -238,7 +240,7 @@ export default {
           data.configuration = JSON.stringify(data.configuration)
           validate(data).then(res => {
             if (res.success) {
-              this.$success(i18n.t('datasource.validate_success'))
+              this.openMessageSuccess("datasource.validate_success");
             } else {
               if (res.message.length < 2500) {
                 this.$error(res.message)

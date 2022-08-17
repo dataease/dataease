@@ -1,10 +1,16 @@
 <template>
-  <de-layout-content v-if="!noLayout" v-loading="jsname && !innerLoadingNames.includes(jsname) && $store.getters.loadingMap[$store.getters.currentPath]" :header="header" :back-name="backName">
+  <de-layout-content v-if="!noLayout && menuid !== 740" v-loading="jsname && !innerLoadingNames.includes(jsname) && $store.getters.loadingMap[$store.getters.currentPath]" :header="header" :back-name="backName">
     <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" @plugin-call-back="pluginCallBack" />
     <div v-else>
       <h1>未知组件无法展示</h1>
     </div>
   </de-layout-content>
+  <div v-else-if="menuid === 740">
+    <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" @plugin-call-back="pluginCallBack" />
+    <div v-else>
+      <h1>未知组件无法展示</h1>
+    </div>
+  </div>
   <div v-else>
     <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" @plugin-call-back="pluginCallBack" />
     <div v-else>

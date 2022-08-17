@@ -1,114 +1,127 @@
 <template>
-  <div class="testcase-template">
-    <div class="template-img" :style="classBackground">
-      <i class="el-icon-error" @click.stop="templateDelete" />
-      <i class="el-icon-edit" @click.stop="templateEdit" />
+  <div class="de-card-model">
+    <div class="card-img-model">
+      <img :src="model.snapshot" alt="" />
     </div>
-    <el-tooltip class="item" effect="light" :content="template.name" placement="bottom">
-      <span class="demonstration">{{ template.name }}</span>
-    </el-tooltip>
+    <div class="card-info">
+      <el-tooltip
+        class="item"
+        effect="dark"
+        :content="model.name"
+        placement="top"
+      >
+        <span class="de-model-text">{{ model.name }}</span>
+      </el-tooltip>
+      <el-dropdown size="medium" trigger="click" @command="handleCommand">
+        <i class="el-icon-more"></i>
+        <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+          <slot>
+            <el-dropdown-item command="rename">
+              <i class="el-icon-edit"></i>
+              重命名
+            </el-dropdown-item>
+            <el-dropdown-item command="delete">
+              <i class="el-icon-delete"></i>
+              删除
+            </el-dropdown-item>
+          </slot>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </div>
   </div>
 </template>
 
 <script>
-// eslint-disable-next-line no-unused-vars
-import { get, post } from '@/api/panel/panel'
 export default {
-  name: 'TemplateItem',
   props: {
-    template: {
+    model: {
       type: Object,
-      default() {
-        return {}
-      }
-    }
-  },
-  computed: {
-    classBackground() {
-      if (this.template.snapshot) {
-        return {
-          background: `url(${this.template.snapshot}) no-repeat`,
-          'background-size': `100% 100%`
-        }
-      } else {
-        return {}
-      }
-    }
+      default: () => {},
+    },
   },
   methods: {
-    templateDelete() {
-      this.$alert(this.$t('panel.confirm_delete') + this.$t('panel.template') + ': ' + this.template.name + '？', '', {
-        confirmButtonText: this.$t('panel.confirm'),
-        callback: (action) => {
-          if (action === 'confirm') {
-            this.$emit('templateDelete', this.template.id)
-          }
-        }
-      })
+    handleCommand(key) {
+      this.$emit("command", key);
     },
-    templateEdit() {
-      this.$emit('templateEdit', this.template)
-    },
-    handleDelete() {
-    }
-  }
-}
+  },
+};
 </script>
 
-<style scoped>
+<style lang="scss">
+.de-card-model {
+  width: 258px;
+  height: 184px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid var(--deCardStrokeColor, #dee0e3);
+  border-radius: 4px;
+  margin: 0 25px 25px 0;
+  .card-img-model {
+    border-bottom: 1px solid var(--deCardStrokeColor, #dee0e3);
+    height: 144px;
+    width: 100%;
 
-  .testcase-template {
-    display: inline-block;
-    margin: 10px 30px;
-    width: 150px;
+    img {
+      width: 100%;
+      height: 100%;
+      border-top-left-radius: 4px;
+      border-top-right-radius: 4px;
+    }
   }
 
-  .demonstration {
-    display: block;
-    font-size: 14px;
-    color: gray;
-    text-align: center;
-    margin: 10px auto;
-    width: 150px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  .template-img {
-    height: 112px;
-    width: 200px;
-    margin: 0 auto;
-    box-shadow: 0 0 2px 0 rgba(31,31,31,0.15), 0 1px 2px 0 rgba(31,31,31,0.15);
-    border: solid 2px #fff;
+  .card-info {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px 9px 12px;
     box-sizing: border-box;
-    border-radius: 3px;
+
+    .el-icon-more {
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #646a73;
+      cursor: pointer;
+    }
+
+    .el-icon-more:hover {
+      background: rgba(31, 35, 41, 0.1);
+      border-radius: 4px;
+    }
+
+    .el-icon-more:active {
+      background: rgba(31, 35, 41, 0.2);
+      border-radius: 4px;
+    }
   }
 
-  .template-img:hover {
-    border: solid 1px #4b8fdf;
-    border-radius: 3px;
-    color: deepskyblue;
-    cursor: pointer;
+  .de-model-text {
+    font-family: "PingFang SC";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: #1f2329;
+    display: inline-block;
+    width: 90%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-right: 10px;
   }
+}
 
-  .template-img > i{
-    display:none;
-    float: right;
-    color: gray;
-    margin: 2px;
+.de-card-model:hover {
+  box-shadow: 0px 6px 24px rgba(31, 35, 41, 0.08);
+}
+
+.de-card-dropdown {
+  margin-top: 0 !important;
+  .popper__arrow {
+    display: none !important;
   }
-
-  .template-img > i:hover {
-    color: red;
-  }
-
-  .template-img:hover > .el-icon-error {
-    display: inline;
-  }
-
-  .template-img:hover > .el-icon-edit {
-    display: inline;
-  }
-
+}
 </style>

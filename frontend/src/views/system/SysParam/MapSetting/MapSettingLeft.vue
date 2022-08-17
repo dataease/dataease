@@ -69,6 +69,7 @@
 
 <script>
 import { removeMap } from '@/api/map/map'
+import msgCfm from '@/components/msgCfm'
 export default {
   name: 'MapSettingLeft',
   props: {
@@ -77,6 +78,7 @@ export default {
       default: () => []
     }
   },
+  mixins: [msgCfm],
   data() {
     return {
       filterText: '',
@@ -154,7 +156,7 @@ export default {
             value: null
           }).then(() => {
             this.$emit('refresh-tree')
-            this.$success(this.$t('commons.delete_success'))
+            this.openMessageSuccess("commons.delete_success");
           })
         })
       }).catch(() => {
