@@ -234,11 +234,19 @@ export default {
         pre[next['dataeaseName']] = next['id']
         return pre
       }, {})
-      const rowData = this.chart.data.tableRow[meta.rowIndex]
+
+      let rowData
+      if (this.chart.type === 'table-pivot') {
+        rowData = { ...meta.rowQuery, ...meta.colQuery }
+        rowData[meta.valueField] = meta.fieldValue
+      } else {
+        rowData = this.chart.data.tableRow[meta.rowIndex]
+      }
       const dimensionList = []
       for (const key in rowData) {
         dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
       }
+
       this.pointParam = {
         data: {
           dimensionList: dimensionList,
