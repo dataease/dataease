@@ -132,7 +132,7 @@
               </el-row>
 
               <el-row class="bottom">
-                <el-button size="mini" type="success" icon="el-icon-plus" round @click="addLinkJumpField">{{ $t('panel.add_jump_field') }}</el-button>
+                <el-button :disabled="!linkJumpInfo.targetPanelId" size="mini" type="success" icon="el-icon-plus" round @click="addLinkJumpField">{{ $t('panel.add_jump_field') }}</el-button>
               </el-row>
               <i slot="reference" class="icon iconfont icon-edit slot-class" />
             </el-row>
@@ -456,6 +456,7 @@ export default {
     },
     panelNodeClick(data, node) {
       this.linkJumpInfo.targetViewInfoList = []
+      this.addLinkJumpField()
       this.getPanelViewList(data.id)
     },
     inputVal(value) {
