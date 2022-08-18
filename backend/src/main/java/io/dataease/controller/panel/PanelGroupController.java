@@ -7,7 +7,7 @@ import io.dataease.auth.annotation.DePermissions;
 import io.dataease.auth.service.impl.ExtAuthServiceImpl;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.controller.request.panel.PanelGroupBaseInfoRequest;
-import io.dataease.plugins.common.base.domain.PanelGroup;
+import io.dataease.controller.request.panel.PanelViewLogRequest;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.handler.annotation.I18n;
@@ -171,5 +171,11 @@ public class PanelGroupController {
     @DeleteMapping("/removePanelCache/{panelId}")
     public void removePanelCache(@PathVariable String panelId){
         panelGroupService.removePanelCache(panelId);
+    }
+
+    @ApiIgnore
+    @PostMapping("/viewLog")
+    public void viewLog(@RequestBody PanelViewLogRequest request) {
+        panelGroupService.viewLog(request);
     }
 }

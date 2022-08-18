@@ -179,7 +179,32 @@ public class LogService {
         userLogin.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
         results.add(userLogin);
 
+        List<FolderItem> folderItems = viewPanelTypes();
+        results.addAll(folderItems);
         return results;
+    }
+
+    private List<FolderItem> viewPanelTypes () {
+        List<FolderItem> results = new ArrayList<>();
+        Integer[] opTypes = new Integer[]{13, 14};
+        Integer[] sourceTypes = new Integer[]{3};
+        for (int i = 0; i < sourceTypes.length; i++) {
+            Integer sourceVal = sourceTypes[i];
+            String sourceTypeName = SysLogConstants.sourceTypeName(sourceVal);
+
+            for (int j = 0; j < opTypes.length; j++) {
+
+                Integer operateVal = opTypes[j];
+
+                String operateTypeName = SysLogConstants.operateTypeName(operateVal);
+                FolderItem folderItem = new FolderItem();
+                folderItem.setId(operateVal + "-" + sourceVal);
+                folderItem.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
+                results.add(folderItem);
+            }
+        }
+        return results;
+
     }
 
     public SysLogGridDTO convertDTO(SysLogWithBLOBs vo) {

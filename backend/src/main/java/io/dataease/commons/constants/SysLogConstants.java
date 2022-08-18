@@ -26,9 +26,11 @@ public class SysLogConstants {
 
         LOGIN(12, "OPERATE_TYPE_LOGIN"),
 
-        VIEW(13, "OPERATE_TYPE_VIEW"),
+        PC_VIEW(13, "OPERATE_TYPE_PC_VIEW"),
 
-        EXPORT(14, "OPERATE_TYPE_EXPORT");
+        MB_VIEW(14, "OPERATE_TYPE_MB_VIEW"),
+
+        EXPORT(15, "OPERATE_TYPE_EXPORT");
         private Integer value;
         private String name;
         OPERATE_TYPE(Integer value, String name) {
