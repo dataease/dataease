@@ -976,12 +976,19 @@ export default {
                 const filterData = JSON.parse(response.data.customFilter)
                 // filterData[0].filter = []
                 // permissionId
-
-                filterData[0].filter.push({
-                  fieldId: filterData[0].id,
-                  term: 'eq',
-                  value: keyValeu
+                let pushKey = true
+                filterData[0].filter.forEach(res => {
+                  if (res.value === keyValeu) {
+                    pushKey = false
+                  }
                 })
+                if (pushKey) {
+                  filterData[0].filter.push({
+                    fieldId: filterData[0].id,
+                    term: 'eq',
+                    value: keyValeu
+                  })
+                }
 
                 response.data.customFilter = JSON.stringify(filterData)
                 save2Cache(this.panelInfo.id, response.data).then(res => {
