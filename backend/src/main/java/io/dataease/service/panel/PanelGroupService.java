@@ -6,9 +6,9 @@ import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
-import io.dataease.controller.request.panel.PanelGroupBaseInfoRequest;
-import io.dataease.controller.request.panel.PanelGroupRequest;
-import io.dataease.controller.request.panel.PanelViewDetailsRequest;
+
+import io.dataease.controller.request.panel.*;
+
 import io.dataease.dto.PanelGroupExtendDataDTO;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.authModel.VAuthModelDTO;
@@ -620,6 +620,12 @@ public class PanelGroupService {
         } catch (Exception e) {
             DataEaseException.throwException(e);
         }
+        if (ObjectUtils.isNotEmpty(AuthUtils.getUser())) {
+            String viewId = request.getViewId();
+            ChartViewWithBLOBs chartViewWithBLOBs = chartViewService.get(viewId);
+            String pid = chartViewWithBLOBs.getSceneId();
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.EXPORT, SysLogConstants.SOURCE_TYPE.VIEW, viewId,pid, null, null);
+        }
     }
 
     public void updatePanelStatus(String panelId, PanelGroupBaseInfoRequest request) {
@@ -680,5 +686,16 @@ public class PanelGroupService {
         String cacheId = AuthUtils.getUser().getUserId()+"&"+panelId;
         Object cache = CacheUtils.get(cacheName,cacheId);
         return cache!=null;
+    }
+
+    public void viewLog(PanelViewLogRequest request) {
+        String panelId = request.getPanelId();
+        Boolean mobile = request.getMobile();
+        PanelGroupWithBLOBs panel = panelGroupMapper.selectByPrimaryKey(panelId);
+        SysLogConstants.OPERATE_TYPE operateType = SysLogConstants.OPERATE_TYPE.PC_VIEW;
+        if (mobile) {
+            operateType = SysLogConstants.OPERATE_TYPE.MB_VIEW;
+        }
+        DeLogUtils.save(operateType, sourceType, panelId, panel.getPid(), null, null);
     }
 }
