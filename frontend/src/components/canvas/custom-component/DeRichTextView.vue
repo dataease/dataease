@@ -116,7 +116,7 @@ export default {
       if (this.canEdit) {
         this.element.propValue.textValue = newValue
       }
-      this.initReady||this.$store.commit('canvasChange')
+      this.initReady&&this.$store.commit('canvasChange')
     }
   },
   mounted() {
@@ -131,7 +131,9 @@ export default {
       tinymce.init({})
       this.myValue = this.assignment(this.element.propValue.textValue)
       bus.$on('initCurFields-' + this.element.id, this.initCurFieldsChange)
-      this.initReady=true
+      this.$nextTick(()=>{
+        this.initReady=true
+      })
     },
     initCurFieldsChange() {
       if (!this.canEdit) {
