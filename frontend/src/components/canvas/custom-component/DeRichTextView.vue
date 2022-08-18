@@ -66,6 +66,7 @@ export default {
   },
   data() {
     return {
+      initReady: false,
       editShow: true,
       canEdit: false,
       // 初始化配置
@@ -115,19 +116,23 @@ export default {
       if (this.canEdit) {
         this.element.propValue.textValue = newValue
       }
-      this.$store.commit('canvasChange')
+      this.initReady||this.$store.commit('canvasChange')
     }
   },
   mounted() {
-    bus.$on('fieldSelect-' + this.element.propValue.viewId, this.fieldSelect)
-    tinymce.init({})
-    this.myValue = this.assignment(this.element.propValue.textValue)
-    bus.$on('initCurFields-' + this.element.id, this.initCurFieldsChange)
+   this.viewInit()
   },
   beforeDestroy() {
     bus.$off('fieldSelect-' + this.element.propValue.viewId)
   },
   methods: {
+    viewInit(){
+      bus.$on('fieldSelect-' + this.element.propValue.viewId, this.fieldSelect)
+      tinymce.init({})
+      this.myValue = this.assignment(this.element.propValue.textValue)
+      bus.$on('initCurFields-' + this.element.id, this.initCurFieldsChange)
+      this.initReady=true
+    },
     initCurFieldsChange() {
       if (!this.canEdit) {
         this.myValue = this.assignment(this.element.propValue.textValue)
