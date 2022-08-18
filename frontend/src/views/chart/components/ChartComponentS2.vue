@@ -254,7 +254,7 @@ export default {
         data: {
           dimensionList: dimensionList,
           quotaList: [],
-          name: meta.fieldValue
+          name: meta.fieldValue||'null'
         }
       }
 
