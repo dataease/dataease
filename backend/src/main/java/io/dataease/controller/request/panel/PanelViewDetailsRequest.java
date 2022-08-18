@@ -12,6 +12,8 @@ import java.util.List;
 @Data
 public class PanelViewDetailsRequest {
 
+    private String viewId;
+
     private String viewName;
 
     private String[] header;
