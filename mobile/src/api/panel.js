@@ -70,4 +70,13 @@ export function starStatus(panelId) {
     })
 }
 
+export function viewPanelLog(data) {
+  return request({
+    url: 'panel/group/viewLog',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 
