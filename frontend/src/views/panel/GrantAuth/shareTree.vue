@@ -71,7 +71,7 @@
 <script>
 import { loadTree, loadShareOutTree, removePanelShares } from '@/api/panel/share'
 import { uuid } from 'vue-uuid'
-import { initPanelData } from '@/api/panel/panel'
+import { initPanelData, viewPanelLog } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import bus from '@/utils/bus'
 
@@ -134,14 +134,18 @@ export default {
       }
       const param = { userId: data.userId }
       proxyInitPanelData(data.id, param, function() {
-        bus.$emit('set-panel-show-type', 1)
-        bus.$emit('set-panel-share-user', data.userId)
+        viewPanelLog({ panelId: data.id }).then(res => {
+          bus.$emit('set-panel-show-type', 1)
+          bus.$emit('set-panel-share-user', data.userId)
+        })
       })
       this.$refs['botTree'].setCurrentKey(null)
     },
     viewMyShare(data) {
       initPanelData(data.id, false, function() {
-        bus.$emit('set-panel-show-type', 2)
+        viewPanelLog({ panelId: data.id }).then(res => {
+          bus.$emit('set-panel-show-type', 2)
+        })
       })
       this.$refs['topTree'].setCurrentKey(null)
     },
