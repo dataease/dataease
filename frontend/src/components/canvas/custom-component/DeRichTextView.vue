@@ -116,7 +116,7 @@ export default {
       if (this.canEdit) {
         this.element.propValue.textValue = newValue
       }
-      this.initReady||this.$store.commit('canvasChange')
+      this.initReady&&this.$store.commit('canvasChange')
     }
   },
   mounted() {
