@@ -261,7 +261,8 @@ export default {
         this.$confirm(this.$t('panel.theme_change_tips'), this.$t('panel.theme_change_warn'), {
           confirmButtonText: this.$t('commons.confirm'),
           cancelButtonText: this.$t('commons.cancel'),
-          type: 'warning'
+          type: 'warning',
+          showClose: false
         }).then(() => {
           this.$store.commit('setCanvasStyle', JSON.parse(this.subjectItem.details))
           this.$store.commit('recordSnapshot', 'subjectChange')
