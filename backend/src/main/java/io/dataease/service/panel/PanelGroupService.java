@@ -6,7 +6,9 @@ import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+
 import io.dataease.controller.request.panel.*;
+
 import io.dataease.dto.PanelGroupExtendDataDTO;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.authModel.VAuthModelDTO;
@@ -21,6 +23,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.*;
+import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.staticResource.StaticResourceService;
@@ -546,6 +549,7 @@ public class PanelGroupService {
         try {
             String snapshot = request.getSnapshot();
             List<String[]> details = request.getDetails();
+            Integer[] excelTypes = request.getExcelTypes();
             details.add(0, request.getHeader());
             HSSFWorkbook wb = new HSSFWorkbook();
             //明细sheet
@@ -572,11 +576,22 @@ public class PanelGroupService {
                     if (rowData != null) {
                         for (int j = 0; j < rowData.length; j++) {
                             HSSFCell cell = row.createCell(j);
-                            cell.setCellValue(rowData[j]);
                             if (i == 0) {// 头部
+                                cell.setCellValue(rowData[j]);
                                 cell.setCellStyle(cellStyle);
                                 //设置列的宽度
                                 detailsSheet.setColumnWidth(j, 255 * 20);
+                            }else{
+                                // with DataType
+                                if((excelTypes[j]== DeTypeConstants.DE_INT || excelTypes[j]== DeTypeConstants.DE_FLOAT)&& StringUtils.isNotEmpty(rowData[j])){
+                                    try{
+                                        cell.setCellValue(Double.valueOf(rowData[j]));
+                                    }catch (Exception e){
+                                        LogUtil.warn("export excel data transform error");
+                                    }
+                                }else{
+                                    cell.setCellValue(rowData[j]);
+                                }
                             }
                         }
                     }
