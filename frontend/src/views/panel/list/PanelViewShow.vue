@@ -4,7 +4,7 @@
     style="height: 100%;width: 100%;"
     :element-loading-text="$t('panel.data_loading')"
     element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(220,220,220, 1)"
+    element-loading-background="rgba(220,220,220, 0.1)"
   >
     <el-col v-if="panelInfo.name.length>0" class="panel-design">
 
@@ -200,16 +200,9 @@ export default {
   },
   computed: {
     imageWrapperStyle() {
-      if (this.exporting) {
-        return {
-          width: '2560px',
-          height: '1440px'
-        }
-      } else {
-        return {
-          width: '100%',
-          height: '100%'
-        }
+      return {
+        width: '100%',
+        height: '100%'
       }
     },
     showMainFlag() {
@@ -357,6 +350,13 @@ export default {
     downloadAsImage() {
       this.dataLoading = true
       setTimeout(() => {
+        let svgElements = document.body.querySelectorAll('svg');
+        svgElements.forEach(function(item) {
+          item.setAttribute("width", 100);
+          item.setAttribute("height", 100);
+          item.style.width = null;
+          item.style.height= null;
+        });
         this.exporting = true
         setTimeout(() => {
           const canvasID = document.getElementById('canvasInfoTemp')
