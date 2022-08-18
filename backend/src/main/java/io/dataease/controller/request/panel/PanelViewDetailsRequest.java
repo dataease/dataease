@@ -16,6 +16,8 @@ public class PanelViewDetailsRequest {
 
     private String[] header;
 
+    private Integer[] excelTypes;
+
     private List<String[]> details;
 
     private String snapshot;
@@ -23,6 +25,7 @@ public class PanelViewDetailsRequest {
     private int snapshotWidth;
 
     private int snapshotHeight;
+
 
 
 }

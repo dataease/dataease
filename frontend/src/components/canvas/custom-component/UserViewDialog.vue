@@ -182,6 +182,7 @@ export default {
     },
     exportExcelDownload(snapshot, width, height) {
       const excelHeader = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.name)
+      const excelTypes = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.deType)
       const excelHeaderKeys = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.dataeaseName)
       const excelData = JSON.parse(JSON.stringify(this.chart.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       const excelName = this.chart.name
@@ -189,6 +190,7 @@ export default {
         viewName: excelName,
         header: excelHeader,
         details: excelData,
+        excelTypes: excelTypes,
         snapshot: snapshot,
         snapshotWidth: width,
         snapshotHeight: height
