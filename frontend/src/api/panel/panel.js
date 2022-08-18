@@ -90,6 +90,15 @@ export function findOne(id) {
   })
 }
 
+export function viewPanelLog(data) {
+  return request({
+    url: 'panel/group/viewLog',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function getTable(id) {
   return request({
     url: '/panel/table/get/' + id,
