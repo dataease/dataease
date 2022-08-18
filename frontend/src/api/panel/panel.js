@@ -90,6 +90,15 @@ export function findOne(id) {
   })
 }
 
+export function viewPanelLog(data) {
+  return request({
+    url: 'panel/group/viewLog',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function getTable(id) {
   return request({
     url: '/panel/table/get/' + id,
@@ -217,6 +226,16 @@ export function exportDetails(data) {
   // 初始化仪表板视图缓存
   return request({
     url: 'panel/group/exportDetails',
+    method: 'post',
+    data: data,
+    loading: true,
+    responseType: 'blob'
+  })
+}
+
+export function innerExportDetails(data) {
+  return request({
+    url: 'panel/group/innerExportDetails',
     method: 'post',
     data: data,
     loading: true,
