@@ -131,10 +131,17 @@ public class PanelGroupController {
         return panelGroupService.queryPanelComponents(id);
     }
 
-    @ApiOperation("导出仪表板视图明细")
+    @ApiOperation("公共连接导出仪表板视图明细")
     @PostMapping("/exportDetails")
     @I18n
     public void exportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
+        panelGroupService.exportPanelViewDetails(request, response);
+    }
+
+    @ApiOperation("站内导出仪表板视图明细")
+    @PostMapping("/innerExportDetails")
+    @I18n
+    public void innerExportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
         panelGroupService.exportPanelViewDetails(request, response);
     }
 

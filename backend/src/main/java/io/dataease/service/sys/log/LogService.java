@@ -181,13 +181,18 @@ public class LogService {
 
         List<FolderItem> folderItems = viewPanelTypes();
         results.addAll(folderItems);
+        results.addAll(viewRelativeTypes());
         return results;
     }
 
-    private List<FolderItem> viewPanelTypes () {
+    private List<FolderItem> viewRelativeTypes() {
+        Integer[] opTypes = new Integer[]{15};
+        Integer[] sourceTypes = new Integer[]{4};
+        return typesByArr(opTypes, sourceTypes);
+    }
+
+    private List<FolderItem> typesByArr(Integer[] opTypes, Integer[] sourceTypes) {
         List<FolderItem> results = new ArrayList<>();
-        Integer[] opTypes = new Integer[]{13, 14};
-        Integer[] sourceTypes = new Integer[]{3};
         for (int i = 0; i < sourceTypes.length; i++) {
             Integer sourceVal = sourceTypes[i];
             String sourceTypeName = SysLogConstants.sourceTypeName(sourceVal);
@@ -204,7 +209,11 @@ public class LogService {
             }
         }
         return results;
-
+    }
+    private List<FolderItem> viewPanelTypes () {
+        Integer[] opTypes = new Integer[]{13, 14};
+        Integer[] sourceTypes = new Integer[]{3};
+        return typesByArr(opTypes, sourceTypes);
     }
 
     public SysLogGridDTO convertDTO(SysLogWithBLOBs vo) {
