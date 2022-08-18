@@ -62,9 +62,7 @@ public class PluginRunner implements ApplicationRunner {
         if (CollectionUtils.isEmpty(groupMap.get(false))) return;
 
         plugins.stream().forEach(plugin -> {
-            if (isDiscard(plugin)) {
 
-            }
             String store = plugin.getStore();
             String version = plugin.getVersion();
             String moduleName = plugin.getModuleName();
