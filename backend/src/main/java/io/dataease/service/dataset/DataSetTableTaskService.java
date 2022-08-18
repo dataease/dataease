@@ -149,6 +149,19 @@ public class DataSetTableTaskService {
         dataSetTableTaskLogService.deleteByTaskId(id);
     }
 
+    @Transactional
+    public void batchDelete(List<String> ids) {
+        if (CollectionUtils.isNotEmpty(ids)){
+            for (int i = 0; i < ids.size(); i++) {
+                String id = ids.get(i);
+                DatasetTableTask datasetTableTask = datasetTableTaskMapper.selectByPrimaryKey(id);
+                datasetTableTaskMapper.deleteByPrimaryKey(id);
+                scheduleService.deleteSchedule(datasetTableTask);
+                dataSetTableTaskLogService.deleteByTaskId(id);
+            }
+        }
+    }
+
     public void delete(DatasetTableTask task) {
         datasetTableTaskMapper.deleteByPrimaryKey(task.getId());
         scheduleService.deleteSchedule(task);

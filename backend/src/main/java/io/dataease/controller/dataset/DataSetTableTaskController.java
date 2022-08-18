@@ -49,6 +49,12 @@ public class DataSetTableTaskController {
         dataSetTableTaskService.delete(id);
     }
 
+    @ApiOperation("批量删除")
+    @PostMapping("batchDelete/{id}")
+    public void batchDelete(@RequestBody List<String> ids) {
+        dataSetTableTaskService.batchDelete(ids);
+    }
+
     @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("查询")
     @PostMapping("list")
