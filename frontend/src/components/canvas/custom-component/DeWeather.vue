@@ -117,7 +117,7 @@ export default {
     // this.changeSlidesPerView()
     // console.log('getLocation', this.getLocation())
     this.getSunType()
-    this.getLocation()
+    // this.getLocation()
     this.timer = setInterval(() => {
       this.getSunType()
     }, 360000)
