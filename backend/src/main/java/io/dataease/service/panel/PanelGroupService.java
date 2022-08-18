@@ -620,6 +620,12 @@ public class PanelGroupService {
         } catch (Exception e) {
             DataEaseException.throwException(e);
         }
+        if (ObjectUtils.isNotEmpty(AuthUtils.getUser())) {
+            String viewId = request.getViewId();
+            ChartViewWithBLOBs chartViewWithBLOBs = chartViewService.get(viewId);
+            String pid = chartViewWithBLOBs.getSceneId();
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.EXPORT, SysLogConstants.SOURCE_TYPE.VIEW, viewId,pid, null, null);
+        }
     }
 
     public void updatePanelStatus(String panelId, PanelGroupBaseInfoRequest request) {
