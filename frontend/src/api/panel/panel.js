@@ -233,6 +233,16 @@ export function exportDetails(data) {
   })
 }
 
+export function innerExportDetails(data) {
+  return request({
+    url: 'panel/group/innerExportDetails',
+    method: 'post',
+    data: data,
+    loading: true,
+    responseType: 'blob'
+  })
+}
+
 export function updatePanelStatus(panelId, param) {
   return request({
     url: '/panel/group/updatePanelStatus/' + panelId,
