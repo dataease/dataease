@@ -239,6 +239,9 @@ export default {
       if (this.chart.type === 'table-pivot') {
         rowData = { ...meta.rowQuery, ...meta.colQuery }
         rowData[meta.valueField] = meta.fieldValue
+      } else if (this.showPage) {
+        const rowIndex = (this.currentPage.page - 1) * this.currentPage.pageSize + meta.rowIndex
+        rowData = this.chart.data.tableRow[rowIndex]
       } else {
         rowData = this.chart.data.tableRow[meta.rowIndex]
       }
