@@ -779,7 +779,14 @@ export default {
           .then((response) => {
             console.log('response接口获取参数', response)
             if (response.success) {
-              if (response.data.customFilter === '[]') {
+              const keyValeu = JSON.parse(localStorage.getItem('permissionId'))
+              if (keyValeu === null) {
+                console.log('filterData------------------------->>>>>>>>>>>>>>>>>222222222222', keyValeu)
+              }
+              // const filterData = JSON.parse(response.data.customFilter)
+
+              console.log('filterData------------------------->>>>>>>>>>>>>>>>>', keyValeu)
+              if (response.data.customFilter === '[]' || keyValeu === null) {
                 if (response.success) {
                   console.log('查出的数据', response.data)
                   if (response.data.render === 'antv') {
@@ -969,7 +976,7 @@ export default {
                 const filterData = JSON.parse(response.data.customFilter)
                 // filterData[0].filter = []
                 // permissionId
-                const keyValeu = JSON.parse(localStorage.getItem('permissionId'))
+
                 filterData[0].filter.push({
                   fieldId: filterData[0].id,
                   term: 'eq',
