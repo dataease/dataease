@@ -10,7 +10,7 @@
             :chart="mapChart || chart"
             class="chart-class"
           />
-          <chart-component :theme-style="element.commonBackground" v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" class="chart-class" :chart="mapChart || chart" />
+          <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" :theme-style="element.commonBackground" class="chart-class" :chart="mapChart || chart" />
           <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
           <chart-component-s2 v-else-if="chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
           <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
@@ -38,10 +38,11 @@ import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
-import { exportDetails } from '@/api/panel/panel'
+import { exportDetails, innerExportDetails } from '@/api/panel/panel'
 import html2canvas from 'html2canvasde'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { deepCopy, exportImg } from '@/components/canvas/utils/utils'
+import { getLinkToken, getToken } from '@/utils/auth'
 export default {
   name: 'UserViewDialog',
   components: { LabelNormalText, ChartComponentS2, ChartComponentG2, DeMainContainer, DeContainer, DeAsideContainer, ChartComponent, TableNormal, LabelNormal, PluginCom },
@@ -187,6 +188,7 @@ export default {
       const excelData = JSON.parse(JSON.stringify(this.chart.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       const excelName = this.chart.name
       const request = {
+        viewId: this.chart.id,
         viewName: excelName,
         header: excelHeader,
         details: excelData,
@@ -195,7 +197,13 @@ export default {
         snapshotWidth: width,
         snapshotHeight: height
       }
-      exportDetails(request).then((res) => {
+      let method = innerExportDetails
+      const token = this.$store.getters.token || getToken()
+      const linkToken = this.$store.getters.linkToken || getLinkToken()
+      if (!token && linkToken) {
+        method = exportDetails
+      }
+      method(request).then((res) => {
         const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
         const link = document.createElement('a')
         link.style.display = 'none'
