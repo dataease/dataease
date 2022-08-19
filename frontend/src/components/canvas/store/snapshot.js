@@ -38,8 +38,8 @@ export default {
     },
 
     recordSnapshot(state) {
+      console.log('recordSnapshot')
       state.changeTimes++
-      store.commit('canvasChange')
       // 添加新的快照
       state.snapshotData[++state.snapshotIndex] = deepCopy(state.componentData)
       state.snapshotStyleData[state.snapshotIndex] = deepCopy(state.canvasStyleData)
