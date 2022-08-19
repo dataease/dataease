@@ -131,7 +131,7 @@ export default {
       }
     },
     svgInnerEnable() {
-      return this.config.commonBackground.enable && this.config.commonBackground.backgroundType === 'innerImage' && typeof this.config.commonBackground.innerImage === 'string'
+      return !this.screenShot&&this.config.commonBackground.enable && this.config.commonBackground.backgroundType === 'innerImage' && typeof this.config.commonBackground.innerImage === 'string'
     },
     mainSlotSvgInner() {
       if (this.svgInnerEnable) {
@@ -153,7 +153,10 @@ export default {
           colorRGBA = hexColorToRGBA(this.config.commonBackground.color, this.config.commonBackground.alpha)
         }
         if (this.config.commonBackground.enable) {
-          if (this.config.commonBackground.backgroundType === 'outerImage' && typeof this.config.commonBackground.outerImage === 'string') {
+          if (this.screenShot && this.config.commonBackground.backgroundType === 'innerImage' && typeof this.config.commonBackground.innerImage === 'string') {
+            let innerImage = this.config.commonBackground.innerImage.replace('svg', 'png')
+            style['background'] = `url(${innerImage}) no-repeat ${colorRGBA}`
+          } else if (this.config.commonBackground.backgroundType === 'outerImage' && typeof this.config.commonBackground.outerImage === 'string') {
             style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat ${colorRGBA}`
           } else {
             style['background-color'] = colorRGBA
