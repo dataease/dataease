@@ -330,6 +330,7 @@ export default {
       if (!this.batchOptStatus && this.chart.render && this.chart.render === 'antv' &&
         (this.chart.type.includes('bar') ||
           this.chart.type.includes('line') ||
+          this.chart.type.includes('area') ||
           this.chart.type.includes('pie') ||
           this.chart.type === 'funnel' ||
           this.chart.type === 'radar' ||
