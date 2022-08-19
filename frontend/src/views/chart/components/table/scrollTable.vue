@@ -375,9 +375,14 @@ export default {
               }
             })
           }
-          console.log(arr)
-          this.infoForm = arr
-          
+          let hash = {}
+          const arr1 = arr.reduceRight((item,next) => {
+            hash[next.name] ? "" : hash[next.name] = true && item.push(next)
+            return item
+          },[])
+          console.log(arr,arr1)
+          this.infoForm = arr1
+
           this.isVisible = true
           // this.dialogVisible = true
           // this.popShow()
