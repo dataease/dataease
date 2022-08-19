@@ -171,7 +171,7 @@
     <el-row>
       <div class="dialog-button">
         <el-button size="mini" @click="closeCalcField">{{ $t('dataset.cancel') }}</el-button>
-        <el-button :disabled="!fieldForm.name || !fieldForm.originName" type="primary" size="mini" @click="saveCalcField">{{ $t('dataset.confirm') }}</el-button>
+        <el-button :disabled="!fieldForm.name || !fieldForm.originName" :loading="loading" type="primary" size="mini" @click="saveCalcField">{{ $t('dataset.confirm') }}</el-button>
       </div>
     </el-row>
   </el-row>
@@ -259,7 +259,8 @@ export default {
       dimensionData: [],
       quotaData: [],
       name2Auto: [],
-      functionData: []
+      functionData: [],
+      loading: false
     }
   },
   computed: {
@@ -396,9 +397,11 @@ export default {
         this.fieldForm.tableId = this.param.id
         this.fieldForm.columnIndex = this.tableFields.dimensionList.length + this.tableFields.quotaList.length
       }
+      this.loading = true
       post('/dataset/field/save', { ...this.fieldForm, originName: this.setNameIdTrans('name', 'id', originName) }).then(response => {
         localStorage.setItem('reloadDsData', 'true')
         this.closeCalcField()
+        this.loading = false
       })
     },
 
