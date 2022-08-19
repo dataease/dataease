@@ -24,6 +24,7 @@ import org.quartz.CronExpression;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -332,5 +333,22 @@ public class DataSetTableTaskService {
         if (!datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
             scheduleService.fireNow(datasetTableTask);
         }
+    }
+
+    public DataSetTaskDTO detail(String id) {
+        BaseGridRequest request = new BaseGridRequest();
+        List<ConditionEntity> conditionEntities = request.getConditions() == null ? new ArrayList<>() : new ArrayList(request.getConditions());
+        ConditionEntity entity = new ConditionEntity();
+        entity.setField("dataset_table_task.id");
+        entity.setOperator("eq");
+        entity.setValue(id);
+        conditionEntities.add(entity);
+        request.setConditions(conditionEntities);
+        GridExample gridExample = request.convertExample();
+        List<DataSetTaskDTO> dataSetTaskDTOS = extDataSetTaskMapper.taskList(gridExample);
+        if (CollectionUtils.isNotEmpty(dataSetTaskDTOS)) {
+            return dataSetTaskDTOS.get(0);
+        }
+        return null;
     }
 }

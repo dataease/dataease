@@ -96,4 +96,11 @@ public class DataSetTableTaskController {
         dataSetTableTaskService.execTask(datasetTableTask);
     }
 
+
+    @ApiOperation("详情")
+    @PostMapping("detail/{id}")
+    public DataSetTaskDTO detail(@PathVariable("id") String id) {
+        return dataSetTableTaskService.detail(id);
+    }
+
 }
