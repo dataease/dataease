@@ -50,7 +50,7 @@ public class DataSetTableTaskController {
     }
 
     @ApiOperation("批量删除")
-    @PostMapping("batchDelete/{id}")
+    @PostMapping("/batchDelete")
     public void batchDelete(@RequestBody List<String> ids) {
         dataSetTableTaskService.batchDelete(ids);
     }
