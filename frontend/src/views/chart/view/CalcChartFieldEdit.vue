@@ -350,6 +350,7 @@ export default {
     }
   },
   mounted() {
+    this.loading = false
     this.$refs.myCm.codemirror.on('keypress', () => {
       this.$refs.myCm.codemirror.showHint()
     })
@@ -451,6 +452,8 @@ export default {
       this.loading = true
       post('/chart/field/save/' + this.panelInfo.id, { ...this.fieldForm, originName: this.setNameIdTrans('name', 'id', originName) }).then(response => {
         this.closeCalcField()
+        this.loading = false
+      }).catch(res => {
         this.loading = false
       })
     },

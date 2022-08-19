@@ -300,6 +300,7 @@ export default {
     }
   },
   mounted() {
+    this.loading = false
     this.$refs.myCm.codemirror.on('keypress', () => {
       this.$refs.myCm.codemirror.showHint()
     })
@@ -401,6 +402,8 @@ export default {
       post('/dataset/field/save', { ...this.fieldForm, originName: this.setNameIdTrans('name', 'id', originName) }).then(response => {
         localStorage.setItem('reloadDsData', 'true')
         this.closeCalcField()
+        this.loading = false
+      }).catch(res => {
         this.loading = false
       })
     },
