@@ -17,6 +17,9 @@ export default {
       state.styleChangeTimes++
       state.cacheStyleChangeTimes++
     },
+    canvasCacheChange(state) {
+      state.cacheStyleChangeTimes++
+    },
     undo(state) {
       store.commit('setCurComponent', { component: null, index: null })
       if (state.snapshotIndex > 0) {
@@ -38,7 +41,7 @@ export default {
     },
 
     recordSnapshot(state) {
-      console.log('recordSnapshot')
+      state.cacheStyleChangeTimes++
       state.changeTimes++
       // 添加新的快照
       state.snapshotData[++state.snapshotIndex] = deepCopy(state.componentData)
