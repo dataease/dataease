@@ -205,6 +205,8 @@ export default {
     eventBus.$off('preview', this.preview)
     eventBus.$off('save', this.save)
     eventBus.$off('clearCanvas', this.clearCanvas)
+    clearInterval(this.timer)
+    this.timer = null
   },
   methods: {
     close() {
