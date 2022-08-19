@@ -209,6 +209,7 @@
           :disabled="!fieldForm.name || !fieldForm.originName"
           type="primary"
           size="mini"
+          :loading="loading"
           @click="saveCalcField"
         >{{ $t('dataset.confirm') }}
         </el-button>
@@ -302,7 +303,8 @@ export default {
       quotaData: [],
       functionData: [],
       tableFields: {},
-      name2Auto: []
+      name2Auto: [],
+      loading: false
     }
   },
   computed: {
@@ -348,6 +350,7 @@ export default {
     }
   },
   mounted() {
+    this.loading = false
     this.$refs.myCm.codemirror.on('keypress', () => {
       this.$refs.myCm.codemirror.showHint()
     })
@@ -446,8 +449,12 @@ export default {
         this.fieldForm.columnIndex = 0
         this.fieldForm.chartId = this.param.id
       }
+      this.loading = true
       post('/chart/field/save/' + this.panelInfo.id, { ...this.fieldForm, originName: this.setNameIdTrans('name', 'id', originName) }).then(response => {
         this.closeCalcField()
+        this.loading = false
+      }).catch(res => {
+        this.loading = false
       })
     },
 
