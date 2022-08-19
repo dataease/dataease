@@ -69,6 +69,9 @@ public class DeLogUtils {
                 if(sourcetype == SOURCE_TYPE.DRIVER_FILE){
                     List<FolderItem> parentsAndSelf = logManager.parentsAndSelf(positionId.toString(), SOURCE_TYPE.DRIVER);
                     sysLogDTO.setPositions(parentsAndSelf);
+                }else if(sourcetype == SOURCE_TYPE.VIEW){
+                    List<FolderItem> parentsAndSelf = logManager.parentsAndSelf(positionId.toString(), SOURCE_TYPE.PANEL);
+                    sysLogDTO.setPositions(parentsAndSelf);
                 }else {
                     List<FolderItem> parentsAndSelf = logManager.parentsAndSelf(positionId.toString(), sourcetype);
                     sysLogDTO.setPositions(parentsAndSelf);
