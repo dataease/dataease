@@ -67,7 +67,13 @@ public class DataSetTableTaskController {
     public Pager<List<DataSetTaskDTO>> taskList(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody BaseGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
 
-        return PageUtils.setPageInfo(page, dataSetTableTaskService.taskList4User(request));
+        Pager<List<DataSetTaskDTO>> listPager = PageUtils.setPageInfo(page, dataSetTableTaskService.taskList4User(request));
+        List<DataSetTaskDTO> listObject = listPager.getListObject();
+        for (DataSetTaskDTO dto : listObject) {
+            dataSetTableTaskLogService.lastExecStatus(dto);
+        }
+
+        return listPager;
     }
 
     @ApiIgnore
@@ -79,14 +85,14 @@ public class DataSetTableTaskController {
     @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("更新状态")
     @PostMapping("/updateStatus")
-    public void updateStatus(@RequestBody DatasetTableTask datasetTableTask) throws Exception{
+    public void updateStatus(@RequestBody DatasetTableTask datasetTableTask) throws Exception {
         dataSetTableTaskService.updateDatasetTableTaskStatus(datasetTableTask);
     }
 
     @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("执行任务")
     @PostMapping("/execTask")
-    public void execTask(@RequestBody DatasetTableTask datasetTableTask) throws Exception{
+    public void execTask(@RequestBody DatasetTableTask datasetTableTask) throws Exception {
         dataSetTableTaskService.execTask(datasetTableTask);
     }
 
