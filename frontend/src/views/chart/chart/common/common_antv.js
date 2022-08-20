@@ -135,15 +135,41 @@ export function getLabel(chart) {
         // label value formatter
         if (chart.type && chart.type !== 'waterfall') {
           label.formatter = function(param) {
-            let yAxis
+            let yAxis, extStack
             let res = param.value
             try {
               yAxis = JSON.parse(chart.yaxis)
             } catch (e) {
               yAxis = JSON.parse(JSON.stringify(chart.yaxis))
             }
+            try {
+              extStack = JSON.parse(chart.extStack)
+            } catch (e) {
+              extStack = JSON.parse(JSON.stringify(chart.extStack))
+            }
 
             if (chart.type === 'bar-stack' || chart.type === 'line-stack' || chart.type === 'bar-stack-horizontal') {
+              if (extStack && extStack.length > 0) {
+                const f = yAxis[0]
+                if (f.formatterCfg) {
+                  res = valueFormatter(param.value, f.formatterCfg)
+                } else {
+                  res = valueFormatter(param.value, formatterItem)
+                }
+              } else {
+                for (let i = 0; i < yAxis.length; i++) {
+                  const f = yAxis[i]
+                  if (f.name === param.category) {
+                    if (f.formatterCfg) {
+                      res = valueFormatter(param.value, f.formatterCfg)
+                    } else {
+                      res = valueFormatter(param.value, formatterItem)
+                    }
+                    break
+                  }
+                }
+              }
+            } else if (chart.type === 'bar-group') {
               const f = yAxis[0]
               if (f.formatterCfg) {
                 res = valueFormatter(param.value, f.formatterCfg)
@@ -187,22 +213,42 @@ export function getTooltip(chart) {
         // tooltip value formatter
         if (chart.type && chart.type !== 'waterfall') {
           tooltip.formatter = function(param) {
-            let yAxis
+            let yAxis, extStack
             let res
             try {
               yAxis = JSON.parse(chart.yaxis)
             } catch (e) {
               yAxis = JSON.parse(JSON.stringify(chart.yaxis))
             }
+            try {
+              extStack = JSON.parse(chart.extStack)
+            } catch (e) {
+              extStack = JSON.parse(JSON.stringify(chart.extStack))
+            }
 
             let obj
             if (chart.type === 'bar-stack' || chart.type === 'line-stack' || chart.type === 'bar-stack-horizontal') {
-              obj = { name: param.category, value: param.value }
-              const f = yAxis[0]
-              if (f.formatterCfg) {
-                res = valueFormatter(param.value, f.formatterCfg)
+              if (extStack && extStack.length > 0) {
+                obj = { name: param.category, value: param.value }
+                const f = yAxis[0]
+                if (f.formatterCfg) {
+                  res = valueFormatter(param.value, f.formatterCfg)
+                } else {
+                  res = valueFormatter(param.value, formatterItem)
+                }
               } else {
-                res = valueFormatter(param.value, formatterItem)
+                obj = { name: param.category, value: param.value }
+                for (let i = 0; i < yAxis.length; i++) {
+                  const f = yAxis[i]
+                  if (f.name === param.category) {
+                    if (f.formatterCfg) {
+                      res = valueFormatter(param.value, f.formatterCfg)
+                    } else {
+                      res = valueFormatter(param.value, formatterItem)
+                    }
+                    break
+                  }
+                }
               }
             } else if (chart.type === 'word-cloud') {
               obj = { name: param.text, value: param.value }
@@ -234,7 +280,7 @@ export function getTooltip(chart) {
                   res = valueFormatter(param.value, formatterItem)
                 }
               }
-            } else if (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type.includes('radar') || chart.type.includes('area')) {
+            } else if ((chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type.includes('radar') || chart.type.includes('area')) && !chart.type.includes('group')) {
               obj = { name: param.category, value: param.value }
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
@@ -245,6 +291,16 @@ export function getTooltip(chart) {
                     res = valueFormatter(param.value, formatterItem)
                   }
                   break
+                }
+              }
+            } else if (chart.type.includes('group')) {
+              obj = { name: param.category, value: param.value }
+              for (let i = 0; i < yAxis.length; i++) {
+                const f = yAxis[i]
+                if (f.formatterCfg) {
+                  res = valueFormatter(param.value, f.formatterCfg)
+                } else {
+                  res = valueFormatter(param.value, formatterItem)
                 }
               }
             } else {
