@@ -216,7 +216,6 @@
                     let isExist = this.cacheTab.indexOf(this.tabIndex);
                     if (isExist < 0) {
                         this.cacheTab.push(this.tabIndex);
-                        //console.log("cache index:: " + this.tabIndex);
                     }
                 }
 

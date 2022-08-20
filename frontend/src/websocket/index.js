@@ -25,7 +25,7 @@ class DeWebsocket {
       try {
         _this.client && _this.client.send('heart detection')
       } catch (error) {
-        console.log('Disconnection reconnection...')
+        console.error('Disconnection reconnection...')
         _this.connection()
       }
     }, 5000)

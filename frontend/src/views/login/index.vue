@@ -146,7 +146,6 @@ export default {
       }
     })
     defaultLoginType().then(res => {
-      console.log('default login type is :' + res.data)
       if (res && res.success) {
         this.defaultType = res.data
       }

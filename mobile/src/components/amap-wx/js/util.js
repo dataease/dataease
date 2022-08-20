@@ -169,7 +169,6 @@ const util = {
 		uni.removeStorage({
 			key: 'search:history',
 			success: function(res) {
-				console.log('success');
 			}
 		});
 		return []

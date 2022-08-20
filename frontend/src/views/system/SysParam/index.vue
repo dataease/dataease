@@ -142,7 +142,6 @@ export default {
   },
   methods: {
     handlerBtn(btn) {
-      console.log(1, btn);
     },
   },
 };
