@@ -14,10 +14,11 @@ import {
   filterAsyncRouter
 } from '@/store/modules/permission'
 import {
-  isMobile
+  isMobile,
+  changeFavicon
 } from '@/utils/index'
 import Layout from '@/layout/index'
-// import bus from './utils/bus'
+import { getSysUI } from '@/utils/auth'
 
 import { getSocket } from '@/websocket'
 
@@ -27,7 +28,32 @@ NProgress.configure({
 
 const whiteList = ['/login', '/401', '/404', '/delink', '/nolic'] // no redirect whitelist
 
-router.beforeEach(async(to, from, next) => {
+const routeBefore = (callBack) => {
+  let uiInfo = getSysUI()
+  if (!uiInfo || Object.keys(uiInfo).length === 0) {
+    store.dispatch('user/getUI').then(() => {
+      document.title = getPageTitle()
+      uiInfo = getSysUI()
+      if (uiInfo['ui.favicon'] && uiInfo['ui.favicon'].paramValue) {
+        const faviconUrl = '/system/ui/image/' + this.uiInfo['ui.favicon'].paramValue
+        changeFavicon(faviconUrl)
+      }
+      callBack()
+    }).catch(err => {
+      document.title = getPageTitle()
+      console.error(err)
+      callBack()
+    })
+  } else {
+    document.title = getPageTitle()
+    if (uiInfo['ui.favicon'] && uiInfo['ui.favicon'].paramValue) {
+      const faviconUrl = '/system/ui/image/' + this.uiInfo['ui.favicon'].paramValue
+      changeFavicon(faviconUrl)
+    }
+    callBack()
+  }
+}
+router.beforeEach(async(to, from, next) => routeBefore(() => {
   // start progress bar
   NProgress.start()
   const mobileIgnores = ['/delink']
@@ -97,7 +123,7 @@ router.beforeEach(async(to, from, next) => {
       NProgress.done()
     }
   }
-})
+}))
 export const loadMenus = (next, to) => {
   buildMenus().then(res => {
     const datas = res.data
