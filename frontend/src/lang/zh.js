@@ -693,7 +693,7 @@ export default {
     edite_organization: '编辑组织'
   },
   system_parameter_setting: {
-    mailbox_service_settings: '邮件设置', 
+    mailbox_service_settings: '邮件设置',
     test_connection: '测试连接',
     SMTP_host: 'SMTP主机',
     basic_setting: '基础设置',
@@ -869,6 +869,7 @@ export default {
     color_technology: '科技',
     color_simple: '简洁',
     not_alpha: '不透明度',
+    area_border_color: '地图边线',
     size: '大小',
     bar_width: '柱宽',
     bar_gap: '柱间隔',

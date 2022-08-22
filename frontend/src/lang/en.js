@@ -866,6 +866,7 @@ export default {
     color_technology: 'Technology',
     color_simple: 'Simple',
     not_alpha: 'Opacity',
+    area_border_color: 'Map border',
     size: 'Size',
     bar_width: 'Column Width',
     bar_gap: 'Column septum',

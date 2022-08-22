@@ -9,6 +9,9 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
+      if (customAttr.color.areaBorderColor) {
+        chart_option.series[0].itemStyle.normal.borderColor = customAttr.color.areaBorderColor
+      }
     }
     // tooltip
     if (customAttr.tooltip) {
