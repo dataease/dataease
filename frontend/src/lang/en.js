@@ -1987,7 +1987,9 @@ export default {
     mobileBG: 'Mobile Login page BG',
     helpLink: 'Help Document Link',
     homeLink: 'Home Link',
-    defaultHomeLink: 'Default is the system built-in home page'
+    defaultHomeLink: 'Default is the system built-in home page',
+    showFoot: 'Show login page footer',
+    footContent: 'Foot content'
 
   },
   auth: {
