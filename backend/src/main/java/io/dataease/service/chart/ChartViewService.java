@@ -563,9 +563,10 @@ public class ChartViewService {
         }
 
 
+        List<ChartViewFieldDTO> xAxisBase = gson.fromJson(view.getXAxis(), tokenType);
         List<ChartViewFieldDTO> xAxis = gson.fromJson(view.getXAxis(), tokenType);
-        if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot")) {
-            List<ChartViewFieldDTO> xAxisExt = gson.fromJson(view.getXAxisExt(), tokenType);
+        List<ChartViewFieldDTO> xAxisExt = gson.fromJson(view.getXAxisExt(), tokenType);
+        if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot") || StringUtils.containsIgnoreCase(view.getType(), "group")) {
             xAxis.addAll(xAxisExt);
         }
         List<ChartViewFieldDTO> yAxis = gson.fromJson(view.getYAxis(), tokenType);
@@ -589,8 +590,8 @@ public class ChartViewService {
         DataSetTableDTO table = dataSetTableService.getWithPermission(view.getTableId(), requestList.getUser());
         checkPermission("use", table, requestList.getUser());
 
-        //列权限
         List<String> desensitizationList = new ArrayList<>();
+        //列权限
         List<DatasetTableField> columnPermissionFields = permissionService.filterColumnPermissons(fields, desensitizationList, table.getId(), requestList.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
@@ -1044,7 +1045,9 @@ public class ChartViewService {
                 mapChart = ChartDataBuild.transChartData(xAxis, yAxis, view, data, isDrill);
             }
         } else if (StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
-            if (StringUtils.containsIgnoreCase(view.getType(), "bar-stack")) {
+            if (StringUtils.equalsIgnoreCase(view.getType(), "bar-group")) {
+                mapChart = ChartDataBuild.transBaseGroupDataAntV(xAxisBase, xAxisExt, yAxis, view, data, isDrill);
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "bar-stack")) {
                 mapChart = ChartDataBuild.transStackChartDataAntV(xAxis, yAxis, view, data, extStack, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "line-stack")) {
                 mapChart = ChartDataBuild.transStackChartDataAntV(xAxis, yAxis, view, data, extStack, isDrill);
