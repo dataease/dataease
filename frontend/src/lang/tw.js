@@ -1436,6 +1436,7 @@ export default {
       search_by_name: '根據名稱搜索',
       underway: '等待執行',
       stopped: '執行結束',
+      exec: '執行中',
       pending: '暫停',
       exec: '執行一次',
       confirm_exec: '手動觸發執行？',

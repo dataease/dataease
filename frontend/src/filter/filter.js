@@ -11,8 +11,8 @@ const options = function(value, array) {
 }
 
 const timestampFormatDate = function(timestamp, showMs) {
-  if (!timestamp) {
-    return timestamp
+  if (!timestamp || timestamp === -1) {
+    return '-'
   }
 
   const date = new Date(timestamp)
