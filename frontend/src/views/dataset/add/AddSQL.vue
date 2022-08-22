@@ -351,7 +351,12 @@ export default {
           this.name = table.name
           this.dataSource = table.dataSourceId
           this.mode = table.mode + ''
-          this.sql =  Base64.decode(JSON.parse(table.info).sql)
+
+          if(JSON.parse(table.info).isBase64Encryption){
+            this.sql =  Base64.decode(JSON.parse(table.info).sql)
+          }else {
+            this.sql =  JSON.parse(table.info.replace(/\n/g, '\\n').replace(/\r/g, '\\r')).sql
+          }
           this.variables= JSON.parse(table.sqlVariableDetails)
           this.getSQLPreview()
         })
@@ -372,7 +377,7 @@ export default {
         dataSourceId: this.dataSource,
         type: 'sql',
         sqlVariableDetails: JSON.stringify(this.variables),
-        info: JSON.stringify({sql: Base64.encode(this.sql.trim())})
+        info: JSON.stringify({sql: Base64.encode(this.sql.trim()), isBase64Encryption: true})
       }).then(response => {
         this.fields = response.data.fields
         this.data = response.data.data
@@ -416,7 +421,7 @@ export default {
         syncType: this.syncType,
         mode: parseInt(this.mode),
         sqlVariableDetails: JSON.stringify(this.variables),
-        info: JSON.stringify({sql: Base64.encode(this.sql.trim())})
+        info: JSON.stringify({sql: Base64.encode(this.sql.trim()), isBase64Encryption: true})
       }
       post('/dataset/table/update', table).then(response => {
         this.$emit('saveSuccess', table)

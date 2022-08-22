@@ -145,7 +145,9 @@ public class DirectFieldService implements DataSetFieldService {
                 datasourceRequest.setQuery(qp.createQuerySQL(dataTableInfoDTO.getTable(), permissionFields, !needSort, ds, customFilter, rowPermissionsTree, deSortFields));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.toString())) {
                 String sql = dataTableInfoDTO.getSql();
-                sql = new String(java.util.Base64.getDecoder().decode(sql));
+                if(dataTableInfoDTO.isBase64Encryption()){
+                    sql = new String(java.util.Base64.getDecoder().decode(sql));
+                }
                 sql = dataSetTableService.removeVariables(sql);
                 datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.CUSTOM.toString())) {

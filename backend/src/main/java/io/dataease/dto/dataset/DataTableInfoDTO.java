@@ -15,6 +15,7 @@ import java.util.List;
 public class DataTableInfoDTO {
     private String table;
     private String sql;
+    private boolean isBase64Encryption = false;
     private List<ExcelSheetData> excelSheetDataList;
     private String data;// file path
     private List<DataTableInfoCustomUnion> list;// 自定义数据集

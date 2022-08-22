@@ -660,7 +660,9 @@ public class DataSetTableService {
                 Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
                 datasourceRequest.setDatasource(ds);
-                String sql = handleVariableDefaultValue( new String(java.util.Base64.getDecoder().decode(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql())), null);
+                DataTableInfoDTO dataTableInfo = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+                String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
+                sql = handleVariableDefaultValue(sql, null);
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
                         qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, null, rowPermissionsTree));
@@ -1029,7 +1031,7 @@ public class DataSetTableService {
         if (CollectionUtils.isNotEmpty(select.getWithItemsList())) {
             builder.append("WITH");
             builder.append(" ");
-            for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext();) {
+            for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext(); ) {
                 WithItem withItem = iter.next();
                 builder.append(withItem.toString());
                 if (iter.hasNext()) {
@@ -1038,7 +1040,7 @@ public class DataSetTableService {
             }
         }
 
-        builder.append( " " + plainSelect);
+        builder.append(" " + plainSelect);
         return builder.toString();
     }
 
@@ -1050,7 +1052,9 @@ public class DataSetTableService {
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        String sql = handleVariableDefaultValue(new String(java.util.Base64.getDecoder().decode(new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql())), dataSetTableRequest.getSqlVariableDetails());
+        DataTableInfoDTO dataTableInfo = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
+        String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
+        sql = handleVariableDefaultValue(sql, dataSetTableRequest.getSqlVariableDetails());
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
@@ -2474,7 +2478,7 @@ public class DataSetTableService {
         datasetTables.forEach(datasetTable -> {
             if (StringUtils.isNotEmpty(datasetTable.getQrtzInstance()) && !activeQrtzInstances.contains(datasetTable.getQrtzInstance().substring(0, datasetTable.getQrtzInstance().length() - 13))) {
                 jobStoppeddDatasetTables.add(datasetTable);
-            }else {
+            } else {
                 syncDatasetTables.add(datasetTable);
             }
         });
@@ -2483,7 +2487,7 @@ public class DataSetTableService {
             DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
             DatasetTableTaskExample.Criteria criteria = datasetTableTaskExample.createCriteria();
             criteria.andTableIdEqualTo(datasetTable.getId()).andLastExecStatusEqualTo(JobStatus.Underway.name());
-            if(CollectionUtils.isEmpty(dataSetTableTaskService.list(datasetTableTaskExample))){
+            if (CollectionUtils.isEmpty(dataSetTableTaskService.list(datasetTableTaskExample))) {
                 DatasetTable record = new DatasetTable();
                 record.setSyncStatus(JobStatus.Error.name());
                 example.clear();
@@ -2583,33 +2587,33 @@ public class DataSetTableService {
             public void visit(MinorThan minorThan) {
                 getBuffer().append(minorThan.getLeftExpression());
                 getBuffer().append(" < ");
-                getBuffer().append( minorThan.getRightExpression());
+                getBuffer().append(minorThan.getRightExpression());
             }
 
             @Override
             public void visit(MinorThanEquals minorThan) {
                 getBuffer().append(minorThan.getLeftExpression());
                 getBuffer().append(" <= ");
-                getBuffer().append( minorThan.getRightExpression());
+                getBuffer().append(minorThan.getRightExpression());
             }
 
             @Override
             public void visit(GreaterThanEquals minorThan) {
                 getBuffer().append(minorThan.getLeftExpression());
                 getBuffer().append(" >= ");
-                getBuffer().append( minorThan.getRightExpression());
+                getBuffer().append(minorThan.getRightExpression());
             }
 
             @Override
             public void visit(GreaterThan minorThan) {
                 getBuffer().append(minorThan.getLeftExpression());
                 getBuffer().append(" > ");
-                getBuffer().append( minorThan.getRightExpression());
+                getBuffer().append(minorThan.getRightExpression());
             }
 
             @Override
             public void visit(ExpressionList expressionList) {
-                for (Iterator<Expression> iter = expressionList.getExpressions().iterator(); iter.hasNext();) {
+                for (Iterator<Expression> iter = expressionList.getExpressions().iterator(); iter.hasNext(); ) {
                     Expression expression = iter.next();
                     expression.accept(this);
                     if (iter.hasNext()) {
@@ -2620,9 +2624,9 @@ public class DataSetTableService {
 
             @Override
             public void visit(Between between) {
-                if(hasVarible(between.getBetweenExpressionStart().toString()) || hasVarible(between.getBetweenExpressionEnd().toString())){
+                if (hasVarible(between.getBetweenExpressionStart().toString()) || hasVarible(between.getBetweenExpressionEnd().toString())) {
                     getBuffer().append(SubstitutedSql);
-                }else {
+                } else {
                     getBuffer().append(between.getLeftExpression()).append(" BETWEEN ").append(between.getBetweenExpressionStart()).append(" AND ").append(between.getBetweenExpressionEnd());
                 }
             }
