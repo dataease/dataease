@@ -1275,7 +1275,9 @@ export default {
     chart_area: 'Area',
     fix: 'Fix',
     dynamic: 'Dynamic',
-    gauge_size_field_delete: 'Dynamic field changed，please edit again'
+    gauge_size_field_delete: 'Dynamic field changed，please edit again',
+    chart_group: 'Sub Type',
+    chart_bar_group: 'Bar Group'
   },
   dataset: {
     parse_filed: 'Parse Field',

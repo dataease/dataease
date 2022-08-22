@@ -693,7 +693,7 @@ export default {
     edite_organization: '编辑组织'
   },
   system_parameter_setting: {
-    mailbox_service_settings: '邮件设置', 
+    mailbox_service_settings: '邮件设置',
     test_connection: '测试连接',
     SMTP_host: 'SMTP主机',
     basic_setting: '基础设置',
@@ -1276,7 +1276,9 @@ export default {
     chart_area: '面积图',
     fix: '固定值',
     dynamic: '动态值',
-    gauge_size_field_delete: '动态值中字段发生变更，请重新编辑'
+    gauge_size_field_delete: '动态值中字段发生变更，请重新编辑',
+    chart_group: '子类别',
+    chart_bar_group: '分组柱状图'
   },
   dataset: {
     parse_filed: '解析字段',
