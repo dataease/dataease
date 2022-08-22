@@ -33,6 +33,8 @@ import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
+import { uuid } from 'vue-uuid'
+
 export default {
   name: 'DeRichTextView',
   components: {
@@ -146,17 +148,27 @@ export default {
       if (on) {
         on.forEach(itm => {
           const ele = itm.slice(1, -1)
-          content = content.replace(itm, _this.dataRowNameSelect[ele] ? _this.dataRowNameSelect[ele] : '[字段已经删除]')
+          content = content.replace(itm, _this.dataRowNameSelect[ele] ? _this.dataRowNameSelect[ele] : '[无法获取字段值]')
         })
       }
       return content
     },
     fieldSelect(field) {
-      const value = '[' + field.name + ']'
-      tinymce.editors['tinymce-view-' + this.element.id].insertContent(value)
+      const ed = tinymce.editors[this.tinymceId]
+      const fieldId = 'changeText-'+uuid.v1()
+      const value = '<span id="'+fieldId+'"><span class="mceNonEditable" contenteditable="false" data-mce-content="['+field.name +']">[' + field.name + ']</span></span>'
+      const attachValue = '<span id="attachValue">&nbsp;</span>'
+      ed.insertContent(value)
+      ed.insertContent(attachValue)
     },
     onClick(e) {
-      this.$emit('onClick', e, tinymce)
+      const edInner = tinymce.get(this.tinymceId);
+      const node = tinymce.activeEditor.selection.getNode()
+      const pNode = node.parentElement
+      if(pNode && pNode.id&& pNode.id.indexOf('changeText')>-1){
+        const innerId = '#'+pNode.id
+        edInner.selection.select(edInner.dom.select(innerId)[0])
+      }
     },
     setEdit() {
       if (this.editStatus) {
