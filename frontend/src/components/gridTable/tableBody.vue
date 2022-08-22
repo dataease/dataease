@@ -13,11 +13,12 @@ export default {
     const { columns } = context.props;
     const { children = [] } = context;
     if (!columns?.length) return children;
-        children.forEach(ele => {
-            if (columns.includes(ele.componentOptions?.propsData?.prop)) {
-                nodes.push(ele)
-            }
-        })
+    children.forEach((ele) => {
+      const { prop, type } = ele.componentOptions?.propsData || {};
+      if (columns.includes(prop) || type === "selection") {
+        nodes.push(ele);
+      }
+    });
     return nodes;
   },
 };

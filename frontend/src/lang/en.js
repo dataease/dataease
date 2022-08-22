@@ -1437,6 +1437,7 @@ export default {
       search_by_name: 'Search by name',
       underway: 'Waiting for execution',
       stopped: 'End',
+      exec: 'underway',
       pending: 'Pause',
       exec: 'Execute Once',
       confirm_exec: 'Manual trigger execution？',

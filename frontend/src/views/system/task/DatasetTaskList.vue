@@ -1,704 +1,620 @@
 <template>
-  <el-col>
-    <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="margin-top: 10px;">
-      <complex-table :data="data" :columns="columns" local-key="datasetTask" :trans-condition="transCondition" :search-config="searchConfig" :pagination-config="paginationConfig" @select="select" @search="search" @sort-change="sortChange">
-        <template #toolbar>
-          <el-button icon="el-icon-circle-plus-outline" @click="selectDataset">{{ $t('dataset.task.create') }}</el-button>
-        </template>
-
-        <el-table-column prop="name" :label="$t('dataset.task_name')">
+  <div class="dataset-on-time">
+    <el-row class="top-operate">
+      <el-col :span="10">
+        <deBtn
+          type="primary"
+          icon="el-icon-circle-plus-outline"
+          @click="() => selectDataset()"
+          >{{ $t("dataset.add_task") }}</deBtn
+        >
+        <deBtn
+          :disabled="!multipleSelection.length"
+          secondary
+          @click="confirmDelete"
+          >{{ $t("organization.delete") }}</deBtn
+        >
+      </el-col>
+      <el-col :span="14" class="right-user">
+        <el-input
+          :placeholder="$t('通过任务名称搜索')"
+          prefix-icon="el-icon-search"
+          class="name-email-search"
+          size="small"
+          clearable
+          ref="search"
+          v-model="nikeName"
+          @blur="initSearch"
+          @clear="initSearch"
+        >
+        </el-input>
+        <deBtn
+          :secondary="!filterTexts.length"
+          :plain="!!filterTexts.length"
+          icon="iconfont icon-icon-filter"
+          @click="filterShow"
+          >{{ $t("user.filter")
+          }}<template v-if="filterTexts.length">
+            ({{ filterTexts.length }})
+          </template>
+        </deBtn>
+        <el-dropdown trigger="click" :hide-on-click="false">
+          <deBtn secondary icon="el-icon-setting">{{ $t("user.list") }}</deBtn>
+          <el-dropdown-menu class="list-colums-slect" slot="dropdown">
+            <p class="title">{{ $t("user.list_info") }}</p>
+            <el-checkbox
+              :indeterminate="isIndeterminate"
+              v-model="checkAll"
+              @change="handleCheckAllChange"
+              >{{ $t("dataset.check_all") }}</el-checkbox
+            >
+            <el-checkbox-group
+              v-model="checkedColumnNames"
+              @change="handleCheckedColumnNamesChange"
+            >
+              <el-checkbox
+                v-for="column in columnNames"
+                :label="column.props"
+                :key="column.props"
+                >{{ $t(column.label) }}</el-checkbox
+              >
+            </el-checkbox-group>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </el-col>
+    </el-row>
+    <div class="filter-texts" v-if="filterTexts.length">
+      <span class="sum">{{ paginationConfig.total }}</span>
+      <span class="title">{{ $t("user.result_one") }}</span>
+      <el-divider direction="vertical"></el-divider>
+      <i
+        @click="scrollPre"
+        v-if="showScroll"
+        class="el-icon-arrow-left arrow-filter"
+      ></i>
+      <div class="filter-texts-container">
+        <p class="text" v-for="(ele, index) in filterTexts" :key="ele">
+          {{ ele }} <i @click="clearOneFilter(index)" class="el-icon-close"></i>
+        </p>
+      </div>
+      <i
+        @click="scrollNext"
+        v-if="showScroll"
+        class="el-icon-arrow-right arrow-filter"
+      ></i>
+      <el-button
+        type="text"
+        class="clear-btn"
+        icon="el-icon-delete"
+        @click="clearFilter"
+        >{{ $t("user.clear_filter") }}</el-button
+      >
+    </div>
+    <div class="table-container"
+      id="resize-for-filter"
+      :class="[filterTexts.length ? 'table-container-filter' : '']">
+      <grid-table
+        v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+        :tableData="data"
+        :columns="checkedColumnNames"
+        :multipleSelection="multipleSelection"
+        :pagination="paginationConfig"
+        @selection-change="handleSelectionChange"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      >
+        <el-table-column type="selection" width="55" />
+        <el-table-column
+          width="178"
+          prop="name"
+          :label="$t('dataset.task_name')"
+        >
           <template slot-scope="scope">
             <span>
-              <el-link style="font-size: 12px" @click="jumpTaskRecord(scope.row)">{{ scope.row.name }}</el-link>
+              <el-link
+                style="font-size: 12px"
+                @click="jumpTaskRecord(scope.row)"
+                >{{ scope.row.name }}</el-link
+              >
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="datasetName" :label="$t('dataset.task.dataset')" />
-        <el-table-column prop="rate" :label="$t('dataset.execute_rate')">
+        <el-table-column
+          width="178"
+          prop="datasetName"
+          :label="$t('dataset.task.dataset')"
+        />
+        <el-table-column
+          width="100"
+          prop="rate"
+          :label="$t('dataset.execute_rate')"
+        >
           <template slot-scope="scope">
-            <span v-if="scope.row.rate === 'SIMPLE'">{{ $t('dataset.execute_once') }}</span>
-            <span v-if="scope.row.rate === 'CRON'">{{ $t('dataset.cron_config') }}</span>
-            <span v-if="scope.row.rate === 'SIMPLE_CRON'">{{ $t('dataset.simple_cron') }}</span>
+            <span v-if="scope.row.rate === 'SIMPLE'">{{
+              $t("dataset.execute_once")
+            }}</span>
+            <span v-if="scope.row.rate === 'CRON'">{{
+              $t("dataset.cron_config")
+            }}</span>
+            <span v-if="scope.row.rate === 'SIMPLE_CRON'">{{
+              $t("dataset.simple_cron")
+            }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="lastExecTime" :label="$t('dataset.task.last_exec_time')">
+        <el-table-column
+          prop="lastExecTime"
+          width="178"
+          :label="$t('dataset.task.last_exec_time')"
+        >
           <template slot-scope="scope">
-            <span v-if="scope.row.lastExecTime && scope.row.lastExecTime != -1">
+            <span>
               {{ scope.row.lastExecTime | timestampFormatDate }}
             </span>
-            <span v-if="scope.row.lastExecTime === -1" />
           </template>
         </el-table-column>
 
-        <el-table-column prop="lastExecStatus" :label="$t('dataset.task.last_exec_status')">
+        <el-table-column
+          prop="lastExecStatus"
+          width="140"
+          :label="$t('dataset.task.last_exec_status')"
+        >
           <template slot-scope="scope">
-            <span v-if="scope.row.lastExecStatus === 'Completed'" style="color: green">{{ $t('dataset.completed') }}</span>
-            <span v-if="scope.row.lastExecStatus === 'Underway'" class="blue-color">
-              <i class="el-icon-loading" />
-              {{ $t('dataset.underway') }}
+            <span :class="[`de-${scope.row.lastExecStatus}`, 'de-status']"
+              >{{
+                $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
+              }}
+              <i
+                v-if="scope.row.lastExecStatus === 'Error'"
+                class="el-icon-s-order"
+                @click="showErrorMassage(scope.row.msg)"
+              ></i>
             </span>
-            <span v-if="scope.row.lastExecStatus === 'Error'" style="color: red">
-              <el-link type="danger" style="font-size: 12px" @click="showErrorMassage(scope.row.msg)">{{ $t('dataset.error') }}</el-link>
-            </span>
-
           </template>
         </el-table-column>
 
-        <el-table-column prop="nextExecTime" :label="$t('dataset.task.next_exec_time')">
+        <el-table-column
+          prop="nextExecTime"
+          width="178"
+          :label="$t('dataset.task.next_exec_time')"
+        >
           <template slot-scope="scope">
-            <span v-if="scope.row.nextExecTime && scope.row.nextExecTime !== -1 && scope.row.rate !== 'SIMPLE'&& scope.row.status !== 'Pending'">
+            <span
+              v-if="
+                scope.row.nextExecTime &&
+                scope.row.nextExecTime !== -1 &&
+                scope.row.rate !== 'SIMPLE' &&
+                scope.row.status !== 'Pending'
+              "
+            >
               {{ scope.row.nextExecTime | timestampFormatDate }}
             </span>
-            <span v-if="!scope.row.nextExecTime || scope.row.rate === 'SIMPLE'" />
+            <span v-if="!scope.row.nextExecTime || scope.row.rate === 'SIMPLE'"
+              >-</span
+            >
           </template>
-
         </el-table-column>
 
-        <el-table-column prop="status" :label="$t('dataset.task.task_status')">
+        <el-table-column
+          min-width="120"
+          prop="status"
+          :label="$t('dataset.task.task_status')"
+        >
           <template slot-scope="scope">
-            <span v-if="scope.row.status === 'Underway'" style="color: green">
-              <el-link type="success" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.underway') }}</el-link>
-            </span>
-            <span v-if="scope.row.status === 'Stopped'">
-              <div style="font-size: 12px">{{ $t('dataset.task.stopped') }}</div>
-            </span>
-            <span v-if="scope.row.status === 'Pending'" class="blue-color">
-              <el-link type="primary" style="font-size: 12px" @click="changeTaskStatus(scope.row)">{{ $t('dataset.task.pending') }}</el-link>
-            </span>
-            <span v-if="scope.row.status === 'Exec'" class="blue-color">
-              <i class="el-icon-loading" />
-              {{ $t('dataset.underway') }}
+            <span :class="[`de-${scope.row.status}`, 'de-status']"
+              >{{ $t(`dataset.task.${scope.row.status.toLocaleLowerCase()}`) }}
             </span>
           </template>
         </el-table-column>
+        <el-table-column
+          slot="__operation"
+          :label="$t('commons.operating')"
+          fixed="right"
+          width="84"
+        >
+          <template slot-scope="scope">
+            <el-button
+              @click="selectDataset(scope.row)"
+              class="text-btn mar3 mar6"
+              type="text"
+              >{{
+                $t(disableEdit(scope.row) ? "auth.view" : "commons.edit")
+              }}</el-button
+            >
+            <el-dropdown
+              size="medium"
+              trigger="click"
+              @command="(type) => handleCommand(type, scope.row)"
+            >
+              <i @click.stop class="el-icon-more"></i>
+              <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+                <template
+                  v-if="!['Stopped', 'Exec'].includes(scope.row.status)"
+                >
+                  <el-dropdown-item
+                    :disabled="disableExec(scope.row)"
+                    command="exec"
+                  >
+                    {{ $t("运行一次") }}
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="scope.row.status === 'Pending'"
+                    command="contine"
+                  >
+                    {{ $t("继续") }}
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="scope.row.status === 'Underway'"
+                    command="pause"
+                  >
+                    {{ $t("dataset.task.pending") }}
+                  </el-dropdown-item>
+                </template>
+                <el-dropdown-item
+                  :disabled="disableDelete(scope.row)"
+                  command="delete"
+                >
+                  {{ $t("commons.delete") }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </grid-table>
+    </div>
 
-        <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
-      </complex-table>
-    </el-row>
 
-    <el-dialog v-dialogDrag :title="update_task_dialog_title" :visible="update_task" :show-close="false" width="50%" class="dialog-css" append-to-body>
-      <el-col>
-        <el-form ref="taskForm" :form="taskForm" :model="taskForm" label-width="100px" size="small" :rules="taskFormRules">
-          <el-form-item :label="$t('dataset.task_name')" prop="name">
-            <el-input v-model="taskForm.name" size="small" style="width: 50%" :placeholder="$t('dataset.task_name')" />
-          </el-form-item>
-          <el-form-item :label="$t('dataset.update_type')" prop="type">
-            <el-select v-model="taskForm.type" size="small">
-              <el-option :label="$t('dataset.all_scope')" value="all_scope" />
-              <el-option :label="$t('dataset.add_scope')" value="add_scope" />
-            </el-select>
-          </el-form-item>
-          <el-form-item :label="$t('dataset.execute_rate')" prop="rate">
-            <el-select v-model="taskForm.rate" size="small" @change="onRateChange">
-              <el-option :label="$t('dataset.execute_once')" value="SIMPLE" />
-              <el-option :label="$t('dataset.cron_config')" value="CRON" />
-              <el-option :label="$t('dataset.simple_cron')" value="SIMPLE_CRON" />
-            </el-select>
-          </el-form-item>
-
-          <el-form-item v-if="taskForm.rate === 'CRON'" label="">
-            <el-popover v-model="cronEdit">
-              <cron v-model="taskForm.cron" @close="cronEdit = false" />
-              <el-input slot="reference" v-model="taskForm.cron" size="small" style="width: 50%" @click="cronEdit = true" />
-            </el-popover>
-          </el-form-item>
-
-          <el-form-item v-if="taskForm.rate === 'SIMPLE_CRON'" label="">
-            <el-form :inline="true">
-              <el-form-item :label="$t('cron.every')">
-                <el-input v-model="taskForm.extraData.simple_cron_value" size="small" type="number" min="1" @change="onSimpleCronChange()" />
-              </el-form-item>
-
-              <el-form-item class="form-item">
-                <el-select v-model="taskForm.extraData.simple_cron_type" filterable size="small" @change="onSimpleCronChange()">
-                  <el-option :label="$t('cron.minute_default')" value="minute" />
-                  <el-option :label="$t('cron.hour_default')" value="hour" />
-                  <el-option :label="$t('cron.day_default')" value="day" />
-                </el-select>
-              </el-form-item>
-
-              <el-form-item class="form-item" :label="$t('cron.every_exec')" />
-            </el-form>
-          </el-form-item>
-
-          <el-form-item v-if="taskForm.rate !== 'SIMPLE'" :label="$t('dataset.start_time')" prop="startTime">
-            <el-date-picker v-model="taskForm.startTime" type="datetime" :placeholder="$t('dataset.select_data_time')" size="small" />
-          </el-form-item>
-          <el-form-item v-if="taskForm.rate !== 'SIMPLE'" :label="$t('dataset.end_time')" prop="end">
-            <el-select v-model="taskForm.end" size="small">
-              <el-option :label="$t('dataset.no_limit')" value="0" />
-              <el-option :label="$t('dataset.set_end_time')" value="1" />
-            </el-select>
-          </el-form-item>
-          <el-form-item v-if="taskForm.end === '1'" label="">
-            <el-date-picker v-model="taskForm.endTime" type="datetime" :placeholder="$t('dataset.select_data_time')" size="small" />
-          </el-form-item>
-
-          <el-form-item v-if="taskForm.type === 'add_scope'" :label="$t('dataset.incremental_update_type')">
-            <el-radio-group v-model="incrementalUpdateType" size="small" @change="incrementalUpdateTypeChange">
-              <el-radio label="incrementalAdd">{{ $t('dataset.incremental_add') }}</el-radio>
-              <el-radio label="incrementalDelete">{{ $t('dataset.incremental_delete') }}</el-radio>
-            </el-radio-group>
-
-          </el-form-item>
-
-          <el-form-item v-if="taskForm.type === 'add_scope'" :label="$t('dataset.param')">
-            <el-button type="text" size="small" @click="insertParamToCodeMirror('${__last_update_time__}')">{{ $t('dataset.last_update_time') }}</el-button>
-            <el-button type="text" size="small" @click="insertParamToCodeMirror('${__current_update_time__}')">{{ $t('dataset.current_update_time') }}</el-button>
-          </el-form-item>
-
-          <codemirror
-            v-if="taskForm.type === 'add_scope'"
-            ref="myCm"
-            v-model="sql"
-            class="codemirror"
-            :options="sqlOption"
-            @ready="onCmReady"
-            @focus="onCmFocus"
-            @input="onCmCodeChange"
-          />
-        </el-form>
-      </el-col>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="closeTask">{{ $t('dataset.cancel') }}</el-button>
-        <el-button type="primary" size="small" @click="saveTask(taskForm)">{{ $t('dataset.confirm') }}</el-button>
-      </div>
-    </el-dialog>
-
-    <!--添加任务-选择数据集-->
-    <el-dialog v-dialogDrag :title="$t('dataset.task.create')" :visible="selectDatasetFlag" :show-close="false" width="70%" class="dialog-css" :destroy-on-close="true">
-      <table-selector previewForTask="true" privileges="manage" :mode="1" :clear-empty-dir="true" :custom-type="customType" show-mode="datasetTask" @getTable="getTable" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="closeCreateTask">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="small" :disabled="!table.id" @click="create(undefined)">{{ $t('chart.confirm') }}</el-button>
-      </div>
-    </el-dialog>
+    <keep-alive>
+      <filterUser ref="filterUser" @search="filterDraw"></filterUser>
+    </keep-alive>
 
     <el-dialog
       v-dialogDrag
-      :title="$t('dataset.detail')"
-      :visible="show_error_massage"
-      :show-close="false"
-      width="50%"
-      class="dialog-css"
+      :title="$t('dataset.error') + $t('dataset.detail')"
+      :visible.sync="show_error_massage"
+      width="600px"
+      class="de-dialog-form"
     >
       <span class="err-msg">{{ error_massage }}</span>
       <span slot="footer" class="dialog-footer">
-        <el-button size="small" @click="show_error_massage = false">{{ $t('dataset.close') }}</el-button>
+        <deBtn secondary @click="show_error_massage = false">{{
+          $t("dataset.close")
+        }}</deBtn>
       </span>
     </el-dialog>
-  </el-col>
+  </div>
 </template>
 
 <script>
-import ComplexTable from '@/components/business/complex-table'
-import { formatCondition, formatQuickCondition, addOrder, formatOrders } from '@/utils/index'
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-import { datasetTaskList, post } from '@/api/dataset/dataset'
-import { codemirror } from 'vue-codemirror'
-import 'codemirror/lib/codemirror.css'
-import 'codemirror/theme/solarized.css'
-import 'codemirror/mode/sql/sql.js'
-import 'codemirror/addon/selection/active-line.js'
-import 'codemirror/addon/edit/closebrackets.js'
-import 'codemirror/mode/clike/clike.js'
-import 'codemirror/addon/edit/matchbrackets.js'
-import 'codemirror/addon/comment/comment.js'
-import 'codemirror/addon/dialog/dialog.js'
-import 'codemirror/addon/dialog/dialog.css'
-import 'codemirror/addon/search/searchcursor.js'
-import 'codemirror/addon/search/search.js'
-import 'codemirror/keymap/emacs.js'
-import 'codemirror/addon/hint/show-hint.css'
-import 'codemirror/addon/hint/sql-hint'
-import 'codemirror/addon/hint/show-hint'
-import cron from '@/components/cron/cron'
-import TableSelector from '@/views/chart/view/TableSelector'
-import { hasDataPermission } from '@/utils/permission'
+const columnOptions = [
+  {
+    label: "dataset.task_name",
+    props: "name",
+  },
+  {
+    label: "dataset.task.dataset",
+    props: "datasetName",
+  },
+  {
+    label: "dataset.execute_rate",
+    props: "rate",
+  },
+  {
+    label: "dataset.task.last_exec_time",
+    props: "lastExecTime",
+  },
+  {
+    label: "dataset.task.last_exec_status",
+    props: "lastExecStatus",
+  },
+  {
+    label: "dataset.task.next_exec_time",
+    props: "nextExecTime",
+  },
+  {
+    label: "dataset.task.task_status",
+    props: "status",
+  },
+];
+import {
+  formatOrders,
+} from "@/utils/index";
+import { datasetTaskList, post } from "@/api/dataset/dataset";
+import cron from "@/components/cron/cron";
+import TableSelector from "@/views/chart/view/TableSelector";
+import { hasDataPermission } from "@/utils/permission";
+import GridTable from "@/components/gridTable/index.vue";
+import filterUser from "./filterUser.vue";
+import msgCfm from "@/components/msgCfm/index";
+import _ from 'lodash';
 
 export default {
-  name: 'DatasetTaskList',
-  components: { ComplexTable, cron, codemirror, TableSelector },
-  props: {
-    param: {
-      type: Object,
-      default: null
-    },
-    transCondition: {
-      type: Object,
-      default: null
-    }
-  },
+  name: "DatasetTaskList",
+  components: { GridTable, cron, filterUser, TableSelector },
+  mixins: [msgCfm],
   data() {
     return {
-      taskForm: {
-        name: '',
-        type: 'all_scope',
-        startTime: '',
-        rate: 'SIMPLE',
-        cron: '',
-        endTime: '',
-        end: '0',
-        extraData: {
-          simple_cron_type: 'hour',
-          simple_cron_value: 1
-        }
-      },
-      update_task: false,
-      header: '',
-      columns: [],
-      buttons: [
-        {
-          label: this.$t('commons.edit'), icon: 'el-icon-edit', type: 'primary', click: this.addTask, disabled: this.disableEdit
-        },
-        {
-          label: this.$t('dataset.task.exec'), icon: 'el-icon-video-play', type: 'success', click: this.execTask, disabled: this.disableExec
-        },
-        {
-          label: this.$t('commons.delete'), icon: 'el-icon-delete', type: 'danger', click: this.deleteTask, disabled: this.disableDelete
-        }
-      ],
-      searchConfig: {
-        useQuickSearch: true,
-        useComplexSearch: true,
-        quickPlaceholder: this.$t('dataset.task.search_by_name'),
-        components: [
-          { field: 'dataset_table_task.name', label: this.$t('dataset.task_name'), component: 'DeComplexInput' },
-          { field: 'dataset_table_task.id', label: this.$t('dataset.task_id'), component: 'FuComplexInput' },
-          { field: 'dataset_table.name', label: this.$t('dataset.name'), component: 'DeComplexInput' },
-          { field: 'dataset_table_task.status', label: this.$t('dataset.task.task_status'), component: 'FuComplexSelect',
-            options: [{ label: this.$t('dataset.task.stopped'), value: 'Stopped' }, { label: this.$t('dataset.task.underway'), value: 'Underway' }, { label: this.$t('dataset.task.pending'), value: 'Pending' }, { label: this.$t('dataset.underway'), value: 'Exec' }], multiple: false },
-          { field: 'dataset_table_task.last_exec_status', label: this.$t('dataset.task.last_exec_status'), component: 'FuComplexSelect', options: [{ label: this.$t('dataset.completed'), value: 'Completed' }, { label: this.$t('dataset.underway'), value: 'Underway' }, { label: this.$t('dataset.error'), value: 'Error' }], multiple: false }
-        ]
-      },
+      nikeName: "",
+      showScroll: false,
+      checkAll: true,
+      multipleSelection: [],
+      checkedColumnNames: columnOptions.map((ele) => ele.props),
+      columnNames: columnOptions,
+      isIndeterminate: false,
+      filterTexts: [],
       paginationConfig: {
         currentPage: 1,
         pageSize: 10,
-        total: 0
+        total: 0,
       },
+      cacheCondition: [],
       data: [],
-      dialogVisible: false,
-      editPasswordVisible: false,
-      form: {
-        roles: [{
-          id: ''
-        }]
-      },
-      checkPasswordForm: {},
-      ruleForm: {},
-      defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: 1, deptId: null, phone: null },
-      depts: null,
-      roles: [],
-      roleDatas: [],
-      userRoles: [],
-      formType: 'add',
-      permission: {
-        add: ['user:add'],
-        edit: ['user:edit'],
-        del: ['user:del'],
-        editPwd: ['user:editPwd']
-      },
       orderConditions: [],
-      last_condition: null,
-      update_task_dialog_title: '',
-      sqlOption: {
-        tabSize: 2,
-        styleActiveLine: true,
-        lineNumbers: true,
-        line: true,
-        mode: 'text/x-sql',
-        theme: 'solarized',
-        hintOptions: { // 自定义提示选项
-          completeSingle: false // 当匹配只有一项的时候是否自动补全
-        }
-      },
-      incrementalUpdateType: 'incrementalAdd',
-      sql: '',
-      incrementalConfig: {},
-      cronEdit: false,
-      lang: this.$store.getters.language === 'en_US' ? 'en' : 'cn',
       selectDatasetFlag: false,
       table: {},
       show_error_massage: false,
-      error_massage: '',
-      taskFormRules: {
-        name: [
-          { required: true, message: this.$t('dataset.required'), trigger: 'change' },
-          { min: 2, max: 50, message: this.$t('datasource.input_limit_2_50', [2, 50]), trigger: 'blur' }
-        ],
-        type: [
-          { required: true, message: this.$t('dataset.required'), trigger: 'change' }
-        ],
-        startTime: [
-          { required: true, message: this.$t('dataset.required'), trigger: 'change' }
-        ],
-        rate: [
-          { required: true, message: this.$t('dataset.required'), trigger: 'change' }
-        ],
-        end: [
-          { required: true, message: this.$t('dataset.required'), trigger: 'change' }
-        ]
-      },
-      customType: ['db', 'sql', 'api']
-    }
+      error_massage: "",
+      customType: ["db", "sql", "api"],
+    };
   },
-  computed: {
-    codemirror() {
-      return this.$refs.myCm.codemirror
-    }
+  watch: {
+    filterTexts: {
+      handler() {
+        this.getScrollStatus();
+      },
+      deep: true,
+    },
   },
   created() {
+    this.initSearch();
     this.timer = setInterval(() => {
-      this.search(this.last_condition, false)
-    }, 10000)
+      this.search(false);
+    }, 10000);
   },
   beforeDestroy() {
-    clearInterval(this.timer)
+    clearInterval(this.timer);
+  },
+  mounted() {
+    this.resizeObserver();
   },
   methods: {
-    sortChange({ column, prop, order }) {
-      this.orderConditions = []
-      if (!order) {
-        this.search(this.last_condition)
-        return
-      }
-      if (prop === 'dept') {
-        prop = 'u.deptId'
-      }
-      if (prop === 'status') {
-        prop = 'u.enabled'
-      }
-      this.orderConditions = []
-      addOrder({ field: prop, value: order }, this.orderConditions)
-      this.search(this.last_condition)
+    getScrollStatus() {
+      this.$nextTick(() => {
+        const dom = document.querySelector(".filter-texts-container");
+        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth;
+      });
     },
-    select(selection) {
+    resizeObserver() {
+      this.resizeForFilter = new ResizeObserver(entries => {
+        if (!this.filterTexts.length) return;
+        this.layoutResize();
+      });
+      this.resizeForFilter.observe(document.querySelector('#resize-for-filter'));
     },
-    search(condition, showLoading = true) {
-      this.last_condition = condition
-      condition = formatQuickCondition(condition, 'dataset_table_task.name')
-      const temp = formatCondition(condition)
-      const param = temp || {}
-      param['orders'] = formatOrders(this.orderConditions)
-      const { currentPage, pageSize } = this.paginationConfig
-      datasetTaskList(currentPage, pageSize, param, showLoading).then(response => {
-        this.data = response.data.listObject
-        this.data.forEach(item => {
-          this.taskStatus(item)
-        })
-        this.paginationConfig.total = response.data.itemCount
-      })
+    layoutResize: _.debounce(function () {
+      this.getScrollStatus()
+    }, 200),
+    scrollPre() {
+      const dom = document.querySelector('.filter-texts-container');
+      dom.scrollLeft -= 10
+      if (dom.scrollLeft <= 0) {
+        dom.scrollLeft = 0
+      }
+    },
+    scrollNext() {
+      const dom = document.querySelector('.filter-texts-container');
+      dom.scrollLeft += 10
+      const width = dom.scrollWidth - dom.offsetWidth
+      if (dom.scrollLeft > width) {
+        dom.scrollLeft = width
+      }
+    },
+    clearFilter() {
+      this.$refs.filterUser.clearFilter();
+    },
+    clearOneFilter(index) {
+      this.$refs.filterUser.clearOneFilter(index);
+      this.$refs.filterUser.search();
+    },
+    filterDraw(condition, filterTexts = []) {
+      this.cacheCondition = condition;
+      this.filterTexts = filterTexts;
+      this.initSearch();
+    },
+    filterShow() {
+      this.$refs.filterUser.init();
+    },
+    handleCommand(key, row) {
+      switch (key) {
+        case "exec":
+          this.execTask(row);
+          return;
+          break;
+        case "delete":
+          this.deleteTask(row);
+          return;
+          break;
+        default:
+          break;
+      }
+      this.changeTaskStatus(row);
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    handleCheckAllChange(val) {
+      this.checkedColumnNames = val
+        ? columnOptions.map((ele) => ele.props)
+        : [];
+      this.isIndeterminate = false;
+    },
+    handleCheckedColumnNamesChange(value) {
+      let checkedCount = value.length;
+      this.checkAll = checkedCount === this.columnNames.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.columnNames.length;
+    },
+    handleSizeChange(pageSize) {
+      this.paginationConfig.currentPage = 1;
+      this.paginationConfig.pageSize = pageSize;
+      this.search();
+    },
+    handleCurrentChange(currentPage) {
+      this.paginationConfig.currentPage = currentPage;
+      this.search();
+    },
+    initSearch() {
+      this.handleCurrentChange(1);
+    },
+    search(showLoading = true) {
+      const param = {
+        orders: formatOrders(this.orderConditions),
+        conditions: [...this.cacheCondition],
+      };
+      if (this.nikeName) {
+        param.conditions.push({
+          field: `dataset_table_task.name`,
+          operator: "like",
+          value: this.nikeName,
+        });
+      }
+      const { currentPage, pageSize } = this.paginationConfig;
+      datasetTaskList(currentPage, pageSize, param, showLoading).then(
+        (response) => {
+          this.data = response.data.listObject;
+          // this.data.forEach((item) => {
+          //   this.taskStatus(item);
+          // });
+          this.paginationConfig.total = response.data.itemCount;
+        }
+      );
+    },
+    batchDelete() {
+      post("/dataset/task/batchDelete", this.multipleSelection.map(ele => ele.id), false).then(() => {
+        this.initSearch();
+        this.openMessageSuccess('commons.delete_success');
+      });
+    },
+    confirmDelete() {
+      const options = {
+          title: '确定删除该任务吗？',
+          type: "primary",
+          cb: this.batchDelete,
+        };
+        this.handlerConfirm(options);
     },
     taskStatus(item) {
-      post('/dataset/task/lastExecStatus', item, false).then(response => {
+      post("/dataset/task/lastExecStatus", item, false).then((response) => {
         if (!item.lastExecStatus) {
-          item.lastExecStatus = response.data.lastExecStatus
+          item.lastExecStatus = response.data.lastExecStatus;
         }
         if (!item.lastExecTime) {
-          item.lastExecTime = response.data.lastExecTime
+          item.lastExecTime = response.data.lastExecTime;
         }
-        item.msg = response.data.msg
-      })
-    },
-    create(task) {
-      if (!task) { // add
-        this.selectDatasetFlag = false
-        this.resetTaskForm()
-        this.taskForm.name = this.table.name + ' ' + this.$t('dataset.task_update')
-        this.taskForm.tableId = this.table.id
-        this.taskForm.startTime = new Date()
-        this.update_task_dialog_title = this.$t('dataset.task_add_title')
-      } else { // update
-        this.taskForm = JSON.parse(JSON.stringify(task))
-        this.update_task_dialog_title = this.$t('dataset.task_edit_title')
-      }
-      this.update_task = true
+        item.msg = response.data.msg;
+      });
     },
     changeTaskStatus(task) {
-      const param = JSON.parse(JSON.stringify(task))
-      param.status = task.status === 'Underway' ? 'Pending' : 'Underway'
-      post('/dataset/task/updateStatus', param).then(response => {
-        if (response.success) {
-          task.status = param.status
-          this.$message({
-            message: this.$t('dataset.task.change_success'),
-            type: 'success',
-            showClose: true
-          })
-        } else {
-          this.search(this.last_condition, false)
-        }
-      }).catch(() => {
-        this.search(this.last_condition, false)
-      })
+      const { status } = task;
+      if (!["Pending", "Underway"].includes(status)) {
+        return;
+      }
+      const param = {
+        ...task,
+        status: status === "Underway" ? "Pending" : "Underway",
+      };
+      post("/dataset/task/updateStatus", param)
+        .then((response) => {
+          if (response.success) {
+            task.status = param.status;
+            this.$message({
+              message: this.$t("dataset.task.change_success"),
+              type: "success",
+              showClose: true,
+            });
+          } else {
+            this.initSearch(false);
+          }
+        })
+        .catch(() => {
+          this.initSearch(false);
+        });
     },
     execTask(task) {
-      this.$confirm(this.$t('dataset.task.confirm_exec'), this.$t('dataset.tips'), {
-        confirmButtonText: this.$t('dataset.confirm'),
-        cancelButtonText: this.$t('dataset.cancel'),
-        type: 'warning'
-      }).then(() => {
-        post('/dataset/task/execTask', task).then(response => {
-          this.search(this.last_condition, true)
+      this.$confirm(
+        this.$t("dataset.task.confirm_exec"),
+        this.$t("dataset.tips"),
+        {
+          confirmButtonText: this.$t("dataset.confirm"),
+          cancelButtonText: this.$t("dataset.cancel"),
+          type: "warning",
+        }
+      )
+        .then(() => {
+          post("/dataset/task/execTask", task).then((response) => {
+            this.initSearch( true);
+          });
         })
-      }).catch(() => {
-      })
+        .catch(() => {});
     },
-    selectDataset() {
-      this.selectDatasetFlag = true
-    },
-    getTable(table) {
-      this.table = JSON.parse(JSON.stringify(table))
-    },
-    closeCreateTask() {
-      this.selectDatasetFlag = false
-      this.table = {}
-    },
-    resetTaskForm() {
-      this.taskForm = {
-        name: '',
-        type: 'all_scope',
-        startTime: '',
-        rate: 'SIMPLE',
-        endTime: '',
-        end: '0',
-        extraData: {
-          simple_cron_type: 'hour',
-          simple_cron_value: 1
-        }
+    selectDataset(row) {
+      if (row) {
+        const { datasetName,  id } = row;
+        this.$router.push({
+          path: '/task-ds-form',
+          query: {
+            datasetName,
+            id,
+          }
+        })
+      } else {
+        this.$router.push('/task-ds-form')
       }
-    },
-    onSimpleCronChange() {
-      if (this.taskForm.extraData.simple_cron_type === 'minute') {
-        if (this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 59) {
-          this.$message({ message: this.$t('cron.minute_limit'), type: 'warning', showClose: true })
-          this.taskForm.extraData.simple_cron_value = 59
-        }
-        this.taskForm.cron = '0 0/' + this.taskForm.extraData.simple_cron_value + ' * * * ? *'
-        return
-      }
-      if (this.taskForm.extraData.simple_cron_type === 'hour') {
-        if (this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 23) {
-          this.$message({ message: this.$t('cron.hour_limit'), type: 'warning', showClose: true })
-          this.taskForm.extraData.simple_cron_value = 23
-        }
-        this.taskForm.cron = '0 0 0/' + this.taskForm.extraData.simple_cron_value + ' * * ? *'
-        return
-      }
-      if (this.taskForm.extraData.simple_cron_type === 'day') {
-        if (this.taskForm.extraData.simple_cron_value < 1 || this.taskForm.extraData.simple_cron_value > 31) {
-          this.$message({ message: this.$t('cron.day_limit'), type: 'warning', showClose: true })
-          this.taskForm.extraData.simple_cron_value = 31
-        }
-        this.taskForm.cron = '0 0 0 1/' + this.taskForm.extraData.simple_cron_value + ' * ? *'
-        return
-      }
-    },
-    onRateChange() {
-      if (this.taskForm.rate === 'SIMPLE') {
-        this.taskForm.end = '0'
-        this.taskForm.endTime = ''
-        this.taskForm.cron = ''
-      }
-      if (this.taskForm.rate === 'SIMPLE_CRON') {
-        this.taskForm.cron = '0 0 0/1 *  * ? *'
-      }
-      if (this.taskForm.rate === 'CRON') {
-        this.taskForm.cron = '00 00 * ? * * *'
-      }
-    },
-    incrementalUpdateTypeChange: function() {
-      if (this.incrementalUpdateType === 'incrementalAdd') {
-        if (this.sql) {
-          this.incrementalConfig.incrementalDelete = this.sql
-        } else {
-          this.incrementalConfig.incrementalDelete = ''
-        }
-        if (this.incrementalConfig.incrementalAdd) {
-          this.sql = this.incrementalConfig.incrementalAdd
-        } else {
-          this.sql = ''
-        }
-      }
-
-      if (this.incrementalUpdateType === 'incrementalDelete') {
-        if (this.sql) {
-          this.incrementalConfig.incrementalAdd = this.sql
-        } else {
-          this.incrementalConfig.incrementalAdd = ''
-        }
-        if (this.incrementalConfig.incrementalDelete) {
-          this.sql = this.incrementalConfig.incrementalDelete
-        } else {
-          this.sql = ''
-        }
-      }
-    },
-    showSQL(val) {
-      this.sql = val || ''
-    },
-    onCmReady(cm) {
-      this.codemirror.setSize('-webkit-fill-available', 'auto')
-    },
-    onCmFocus(cm) {
-    },
-    onCmCodeChange(newCode) {
-      this.sql = newCode
-      this.$emit('codeChange', this.sql)
-    },
-    insertParamToCodeMirror(param) {
-      const pos1 = this.$refs.myCm.codemirror.getCursor()
-      const pos2 = {}
-      pos2.line = pos1.line
-      pos2.ch = pos1.ch
-      this.$refs.myCm.codemirror.replaceRange(param, pos2)
-    },
-    cronChange(val) {
-      this.taskForm.cron = val
     },
     disableEdit(task) {
-      return task.rate === 'SIMPLE' || task.status === 'Stopped' || !hasDataPermission('manage', task.privileges)
+      return (
+        task.rate === "SIMPLE" ||
+        task.status === "Stopped" ||
+        !hasDataPermission("manage", task.privileges)
+      );
     },
     disableExec(task) {
-      return task.status === 'Stopped' || task.status === 'Pending' || task.rate === 'SIMPLE' || !hasDataPermission('manage', task.privileges)
+      return (
+        task.status === "Stopped" ||
+        task.status === "Pending" ||
+        task.rate === "SIMPLE" ||
+        !hasDataPermission("manage", task.privileges)
+      );
     },
     disableDelete(task) {
-      return false
+      return false;
       // !hasDataPermission('manage',task.privileges)
     },
     deleteTask(task) {
-      this.$confirm(this.$t('dataset.confirm_delete'), this.$t('dataset.tips'), {
-        confirmButtonText: this.$t('dataset.confirm'),
-        cancelButtonText: this.$t('dataset.cancel'),
-        type: 'warning'
-      }).then(() => {
-        post('/dataset/task/delete/' + task.id, null).then(response => {
-          this.$message({
-            message: this.$t('dataset.delete_success'),
-            type: 'success',
-            showClose: true
-          })
-          this.search(this.last_condition, true)
-        })
-      }).catch(() => {
-      })
-    },
-    addTask(task) {
-      if (!task) { // add
-        this.resetTaskForm()
-        this.taskForm.name = this.table.name + ' ' + this.$t('dataset.task_update')
-        this.taskForm.startTime = new Date()
-        this.update_task_dialog_title = this.$t('dataset.task_add_title')
-      } else { // update
-        this.getIncrementalConfig(task.tableId)
-        this.taskForm = JSON.parse(JSON.stringify(task))
-        this.taskForm.extraData = JSON.parse(this.taskForm.extraData)
-        this.update_task_dialog_title = this.$t('dataset.task_edit_title')
-      }
-      this.update_task = true
-    },
-    getIncrementalConfig(tableId) {
-      post('/dataset/table/incrementalConfig', { tableId: tableId }).then(response => {
-        this.incrementalConfig = response.data
-
-        if (this.incrementalConfig.incrementalAdd.length === 0 && this.incrementalConfig.incrementalDelete.length === 0 ) {
-          this.incrementalUpdateType = 'incrementalAdd'
-          this.sql = ''
-          return
-        }
-        if (this.incrementalConfig.incrementalAdd.length > 0) {
-          this.incrementalUpdateType = 'incrementalAdd'
-          this.sql = this.incrementalConfig.incrementalAdd
-        } else {
-          this.incrementalUpdateType = 'incrementalDelete'
-          this.sql = this.incrementalConfig.incrementalDelete
-        }
-      })
-    },
-    closeTask() {
-      this.update_task = false
-      this.resetTaskForm()
+      const options = {
+          title: '确定删除该任务吗？',
+          type: "primary",
+          cb: () => {
+            post("/dataset/task/delete/" + task.id, null).then((response) => {
+            this.openMessageSuccess('commons.delete_success');
+            this.initSearch();
+          });
+          },
+        };
+        this.handlerConfirm(options);
     },
     showErrorMassage(massage) {
-      this.show_error_massage = true
-      this.error_massage = massage
+      this.show_error_massage = true;
+      this.error_massage = massage;
     },
     jumpTaskRecord(item) {
-      this.$emit('jumpTaskRecord', item)
+      this.$emit("jumpTaskRecord", item);
     },
-    saveTask(task) {
-      this.$refs.taskForm.validate(valid => {
-        if (valid) {
-          if (task.rate !== 'SIMPLE') {
-            if (this.incrementalUpdateType === 'incrementalAdd') {
-              this.incrementalConfig.incrementalAdd = this.sql
-            } else {
-              this.incrementalConfig.incrementalDelete = this.sql
-            }
-            this.incrementalConfig.tableId = task.tableId
-          }
-          task.startTime = new Date(task.startTime).getTime()
-          task.endTime = new Date(task.endTime).getTime()
-          const form = JSON.parse(JSON.stringify(task))
-          form.extraData = JSON.stringify(form.extraData)
-          const dataSetTaskRequest = {
-            datasetTableTask: form,
-            datasetTableIncrementalConfig: task.type === 'add_scope' ? this.incrementalConfig : undefined
-          }
-          post('/dataset/task/save', dataSetTaskRequest).then(response => {
-            this.$message({
-              message: this.$t('dataset.save_success'),
-              type: 'success',
-              showClose: true
-            })
-            this.update_task = false
-            this.resetTaskForm()
-            this.search(this.last_condition, true)
-          })
-        } else {
-          return false
-        }
-      })
-    },
-    handleClose() {
-      this.depts = null
-      this.formType = 'add'
-      this.form = {}
-      this.editPasswordVisible = false
-      this.dialogVisible = false
-    },
-    btnDisabled(row) {
-      return row.userId === 1
-    }
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
-.el-divider--horizontal {
-  margin: 12px 0;
-}
-
-.el-radio{
-  margin-right: 10px;
-}
-.el-radio ::v-deep .el-radio__label{
-  font-size: 12px;
-}
-
-.dialog-css ::v-deep .el-dialog__header {
-  padding: 20px 20px 0;
-}
-
-.dialog-css ::v-deep .el-dialog__body {
-  padding: 10px 20px 20px;
-}
-
-.el-form-item {
-  margin-bottom: 20px;
-}
-
 .codemirror {
   height: 100px;
   overflow-y: auto;
@@ -708,18 +624,264 @@ export default {
   overflow-y: auto;
 }
 
-.err-msg{
+.err-msg {
   font-size: 12px;
-  word-break:normal;
-  width:auto;
-  display:block;
-  white-space:pre-wrap;
-  word-wrap : break-word ;
-  overflow: hidden ;
+  word-break: normal;
+  width: auto;
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow: hidden;
 }
 
-span{
+span {
   font-size: 12px;
 }
+</style>
+<style lang="scss" scoped>
+.dataset-on-time {
+  margin: 0;
+  width: 100%;
+  overflow: auto;
+  background-color: var(--ContentBG, #fff);
+  padding: 24px;
+  height: 100%;
 
+  ::v-deep.el-link--inner {
+    color: var(--primary, #3370ff) !important;
+  }
+
+  .el-icon-more {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--primary, #3370ff);
+  }
+
+  .el-icon-more:hover {
+    background: var(--deWhiteHover, #3370ff);
+    border-radius: 4px;
+  }
+
+  .el-icon-more:active {
+    background: var(--deWhiteActive, #3370ff);
+    border-radius: 4px;
+  }
+}
+.table-container {
+  height: calc(100% - 50px);
+
+  .text-btn {
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0px;
+    text-align: center;
+    margin-left: 2px;
+    border: none;
+    padding: 2px 4px;
+  }
+
+  .text-btn:hover {
+    background: rgba(51, 112, 255, 0.1);
+  }
+
+  .mar6 {
+    margin-right: 6px;
+  }
+
+  .mar3 {
+     margin-left: -3px;
+  }
+}
+
+.table-container-filter {
+  height: calc(100% - 110px);
+}
+.filter-texts {
+  display: flex;
+  align-items: center;
+  margin: 17px 0;
+  font-family: "PingFang SC";
+  font-weight: 400;
+
+  .sum {
+    color: #1f2329;
+  }
+
+  .title {
+    color: #999999;
+    margin-left: 8px;
+  }
+
+  .text {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 1px 22px 1px 6px;
+    display: inline-block;
+    align-items: center;
+    color: #0c296e;
+    font-size: 14px;
+    line-height: 22px;
+    background: rgba(51, 112, 255, 0.1);
+    border-radius: 2px;
+    margin: 0;
+    margin-right: 8px;
+    position: relative;
+    i {
+      position: absolute;
+      right: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+  }
+
+  .clear-btn {
+    color: #646a73;
+  }
+
+  .clear-btn:hover {
+    color: #3370ff;
+  }
+
+  .filter-texts-container::-webkit-scrollbar { display: none; }
+
+  .arrow-filter {
+    font-size: 16px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    color: #646A73;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .arrow-filter:hover {
+    background: rgba(31, 35, 41, 0.1);
+    border-radius: 4px;
+  }
+
+  .el-icon-arrow-right.arrow-filter {
+    margin-left: 5px;
+  }
+
+  .el-icon-arrow-left.arrow-filter {
+    margin-right: 5px;
+  }
+  .filter-texts-container {
+    flex: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+    height: 24px;
+  }
+}
+.top-operate {
+  margin-bottom: 16px;
+  .right-user {
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .de-button {
+      margin-left: 12px;
+    }
+
+    .el-input--medium .el-input__icon {
+      line-height: 32px;
+    }
+  }
+
+  .name-email-search {
+    width: 240px;
+  }
+}
+</style>
+<style lang="scss">
+.list-colums-slect {
+  padding: 8px 11px !important;
+  width: 238px;
+
+  .title,
+  .el-checkbox {
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 5px 0;
+    margin: 0;
+    color: #8f959e;
+  }
+
+  .el-checkbox {
+    color: #1f2329;
+    width: 100%;
+  }
+}
+.de-card-dropdown {
+  margin-top: 0 !important;
+  .popper__arrow {
+    display: none !important;
+  }
+}
+.de-status {
+  position: relative;
+  margin-left: 15px;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -13px;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
+}
+
+.de-Completed {
+  &::before {
+    background: var(--primary, #3370ff);
+  }
+}
+
+.de-Underway {
+  &::before {
+    background: #8f959e;
+  }
+}
+
+.de-Pending {
+  &::before {
+    background: #8f959e;
+  }
+}
+
+.de-Exec {
+  &::before {
+    background: var(--primary, #3370ff);
+  }
+}
+
+.de-Stopped {
+  &::before {
+    background: var(--deSuccess, #3370ff);
+  }
+}
+
+.de-Error {
+  &::before {
+    background: var(--deDanger, #3370ff);
+  }
+
+  .el-icon-s-order {
+    color: var(--primary, #3370ff);
+    cursor: pointer;
+  }
+}
 </style>
