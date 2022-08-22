@@ -61,8 +61,11 @@
 </template>
 
 <script>
+import msgCfm from "@/components/msgCfm/index";
+
 export default {
   name: "TemplateList",
+  mixins: [msgCfm],
   components: {},
   props: {
     templateType: {
@@ -119,22 +122,13 @@ export default {
       this.$emit("showTemplateEditDialog", "new");
     },
     templateDelete(template) {
-      this.$alert(
-        this.$t("panel.confirm_delete") +
-          this.$t("panel.category") +
-          ": " +
-          template.name +
-          "？",
-        "",
-        {
-          confirmButtonText: this.$t("panel.confirm_delete"),
-          callback: (action) => {
-            if (action === "confirm") {
-              this.$emit("templateDelete", template.id);
-            }
-          },
-        }
-      );
+      const options = {
+          title: 'system_parameter_setting.delete_this_category',
+          content: 'system_parameter_setting.also_be_deleted',
+          type: "primary",
+          cb: () => this.$emit("templateDelete", template.id),
+        };
+        this.handlerConfirm(options);
     },
     templateEdit(template) {
       this.$emit("templateEdit", template);

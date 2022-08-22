@@ -876,7 +876,6 @@ div:focus {
     height: 24px !important;
     line-height: 24px !important;
     margin-bottom: 9px !important;
-    padding: 0 12px !important;
     font-size: 16px !important;
   }
 }
@@ -1129,16 +1128,16 @@ div:focus {
 }
 
 .de-confirm-primary-btn {
-  background: var(--deSuccess, #3370ff) !important;
+  background: var(--primary, #3370ff) !important;
   border: none !important;
   color: #ffffff !important;
 
   &:hover {
-    background: var(--deSuccessHover, #3370ff) !important;
+    background: var(--primaryHover, #3370ff) !important;
   }
 
   &:active {
-    background: var(--deSuccessActive, #3370ff) !important;
+    background: var(--primaryActive, #3370ff) !important;
   }
 }
 

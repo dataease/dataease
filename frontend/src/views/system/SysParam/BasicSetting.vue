@@ -258,9 +258,9 @@ export default {
     z-index: 10;
   }
 
-  .el-radio {
-    margin-right: 0;
-    width: 156px;
-  }
+  .el-radio:not(:last-child) {
+      margin-right: 0;
+      width: 156px;
+    }
 }
 </style>

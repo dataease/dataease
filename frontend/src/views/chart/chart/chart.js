@@ -23,7 +23,8 @@ export const DEFAULT_COLOR_CASE = {
   dimensionColor: '#000000',
   quotaColor: '#4E81BB',
   tableBorderColor: '#E6E7E4',
-  seriesColors: [] // 格式：{"name":"s1","color":"","isCustom":false}
+  seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
+  areaBorderColor: '#303133'
 }
 
 export const DEFAULT_COLOR_CASE_DARK = {
@@ -37,7 +38,8 @@ export const DEFAULT_COLOR_CASE_DARK = {
   dimensionColor: '#ffffff',
   quotaColor: '#4E81BB',
   tableBorderColor: '#CCCCCC',
-  seriesColors: [] // 格式：{"name":"s1","color":"","isCustom":false}
+  seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
+  areaBorderColor: '#EBEEF5'
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -835,7 +837,15 @@ export const BASE_MAP = {
       type: 'map',
       map: 'MAP',
       roam: true,
-      data: []
+      data: [],
+      itemStyle: {
+        normal: {
+
+        },
+        emphasis: {
+
+        }
+      }
     }
   ]
 }
