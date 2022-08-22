@@ -689,10 +689,13 @@
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span style="width: 80px;text-align: right;">
+                      <span style="width: 80px;text-align: right;" v-if="view.type && !this.view.type.includes('roll')">
                         <span>{{ $t('chart.drill') }}</span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
+                      </span>
+                      <span style="width: 80px;text-align: right;" v-if="view.type && this.view.type.includes('roll')">
+                        <span>{{$t('chart.detail')}}</span>
                       </span>
                       <draggable
                         v-model="view.drillFields"

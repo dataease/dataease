@@ -674,6 +674,7 @@ export default {
     kettle_setting: 'Kettle 设置'
   },
   chart: {
+    detail: '详情',
     canvasSize: '画布尺寸',
     canvasWith: '画布宽度',
     title_repeat: '当前标题已存在',
