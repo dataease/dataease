@@ -458,7 +458,7 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
-                String sql = dataTableInfoDTO.getSql();
+                String sql = new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql()));
                 sql = handleVariable(sql, requestList, qp);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
@@ -854,7 +854,7 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
-                String sql = dataTableInfoDTO.getSql();
+                String sql = new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql()));
                 sql = handleVariable(sql, requestList, qp);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
@@ -1123,7 +1123,7 @@ public class ChartViewService {
         ChartViewDTO dto = new ChartViewDTO();
         BeanUtils.copyBean(dto, view);
         dto.setData(map);
-        dto.setSql(sql);
+        dto.setSql(java.util.Base64.getEncoder().encodeToString(sql.getBytes()));
         dto.setDrill(isDrill);
         dto.setDrillFilters(drillFilters);
         return dto;

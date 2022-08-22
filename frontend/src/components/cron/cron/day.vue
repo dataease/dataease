@@ -25,7 +25,7 @@
     <div>
       <el-radio v-model="type" label="8" size="mini" border>{{ $t('cron.work_day') }}</el-radio>
       <span style="margin-left: 10px; margin-right: 5px;">{{ $t('cron.this_month') }}</span>
-      <el-input-number v-model="work" :min="1" :max="7" size="mini" style="width: 100px;" @change="type = '8'" />
+      <el-input-number v-model="work" :min="1" :max="31" size="mini" style="width: 100px;" @change="type = '8'" />
       {{ $t('cron.day_near_work_day') }}
     </div>
     <div>

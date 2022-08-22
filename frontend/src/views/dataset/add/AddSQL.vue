@@ -181,6 +181,7 @@
 import {post, listDatasource, isKettleRunning} from '@/api/dataset/dataset'
 import {codemirror} from 'vue-codemirror'
 import {getTable} from '@/api/dataset/dataset'
+import {Base64} from 'js-base64'
 // 核心样式
 import 'codemirror/lib/codemirror.css'
 // 引入主题后还需要在 options 中指定主题才会生效
@@ -350,9 +351,8 @@ export default {
           this.name = table.name
           this.dataSource = table.dataSourceId
           this.mode = table.mode + ''
-          this.sql = JSON.parse(table.info.replace(/\n/g, '\\n').replace(/\r/g, '\\r')).sql
+          this.sql =  Base64.decode(JSON.parse(table.info).sql)
           this.variables= JSON.parse(table.sqlVariableDetails)
-
           this.getSQLPreview()
         })
       }
@@ -372,7 +372,7 @@ export default {
         dataSourceId: this.dataSource,
         type: 'sql',
         sqlVariableDetails: JSON.stringify(this.variables),
-        info: JSON.stringify({sql: this.sql.trim()})
+        info: JSON.stringify({sql: Base64.encode(this.sql.trim())})
       }).then(response => {
         this.fields = response.data.fields
         this.data = response.data.data
@@ -416,7 +416,7 @@ export default {
         syncType: this.syncType,
         mode: parseInt(this.mode),
         sqlVariableDetails: JSON.stringify(this.variables),
-        info: JSON.stringify({sql: this.sql.trim()})
+        info: JSON.stringify({sql: Base64.encode(this.sql.trim())})
       }
       post('/dataset/table/update', table).then(response => {
         this.$emit('saveSuccess', table)

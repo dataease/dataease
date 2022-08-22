@@ -591,7 +591,7 @@ public class DataSetTableService {
                 datasourceRequest.setQuery(
                         qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, null, rowPermissionsTree));
 
-                map.put("sql", datasourceRequest.getQuery());
+                map.put("sql", java.util.Base64.getEncoder().encodeToString(datasourceRequest.getQuery().getBytes()));
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
                 datasourceRequest.setPageSize(pageSize);
@@ -631,7 +631,7 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
                         qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, null, rowPermissionsTree));
-                map.put("sql", datasourceRequest.getQuery());
+                map.put("sql", java.util.Base64.getEncoder().encodeToString(datasourceRequest.getQuery().getBytes()));
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
@@ -660,13 +660,11 @@ public class DataSetTableService {
                 Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
                 datasourceRequest.setDatasource(ds);
-
-                String sql = handleVariableDefaultValue(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql(), null);
-
+                String sql = handleVariableDefaultValue( new String(java.util.Base64.getDecoder().decode(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql())), null);
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
                         qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, null, rowPermissionsTree));
-                map.put("sql", datasourceRequest.getQuery());
+                map.put("sql", java.util.Base64.getEncoder().encodeToString(datasourceRequest.getQuery().getBytes()));
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
                 datasourceRequest.setPageSize(pageSize);
@@ -701,7 +699,7 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
                         qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, null, rowPermissionsTree));
-                map.put("sql", datasourceRequest.getQuery());
+                map.put("sql", java.util.Base64.getEncoder().encodeToString(datasourceRequest.getQuery().getBytes()));
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
@@ -730,7 +728,7 @@ public class DataSetTableService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             datasourceRequest.setQuery(
                     qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, null, rowPermissionsTree));
-            map.put("sql", datasourceRequest.getQuery());
+            map.put("sql", java.util.Base64.getEncoder().encodeToString(datasourceRequest.getQuery().getBytes()));
             try {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
@@ -783,7 +781,7 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
                         qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, null, rowPermissionsTree));
-                map.put("sql", datasourceRequest.getQuery());
+                map.put("sql", java.util.Base64.getEncoder().encodeToString(datasourceRequest.getQuery().getBytes()));
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
                 datasourceRequest.setPageSize(pageSize);
@@ -814,7 +812,7 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
                         qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, null, rowPermissionsTree));
-                map.put("sql", datasourceRequest.getQuery());
+                map.put("sql", java.util.Base64.getEncoder().encodeToString(datasourceRequest.getQuery().getBytes()));
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
@@ -853,7 +851,7 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
                         qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, null, rowPermissionsTree));
-                map.put("sql", datasourceRequest.getQuery());
+                map.put("sql", java.util.Base64.getEncoder().encodeToString(datasourceRequest.getQuery().getBytes()));
                 datasourceRequest.setPage(page);
                 datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
                 datasourceRequest.setPageSize(pageSize);
@@ -884,7 +882,7 @@ public class DataSetTableService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
                         qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, null, rowPermissionsTree));
-                map.put("sql", datasourceRequest.getQuery());
+                map.put("sql", java.util.Base64.getEncoder().encodeToString(datasourceRequest.getQuery().getBytes()));
                 try {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
@@ -1052,7 +1050,7 @@ public class DataSetTableService {
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        String sql = handleVariableDefaultValue(new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql(), dataSetTableRequest.getSqlVariableDetails());
+        String sql = handleVariableDefaultValue(new String(java.util.Base64.getDecoder().decode(new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class).getSql())), dataSetTableRequest.getSqlVariableDetails());
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
@@ -1467,7 +1465,7 @@ public class DataSetTableService {
                     TableUtils.tableName(union.get(0).getCurrentDs().getId()));
         }
         Map<String, Object> map = new HashMap<>();
-        map.put("sql", sql);
+        map.put("sql", java.util.Base64.getEncoder().encodeToString(sql.getBytes()));
         map.put("field", checkedFields);
         map.put("join", unionList);
         return map;
@@ -1709,7 +1707,7 @@ public class DataSetTableService {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            String sql = handleVariableDefaultValue(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql(), null);
+            String sql = handleVariableDefaultValue(new String(java.util.Base64.getDecoder().decode(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql())), null);
             String sqlAsTable = qp.createSQLPreview(sql, null);
             datasourceRequest.setQuery(sqlAsTable);
             fields = datasourceProvider.fetchResultField(datasourceRequest);
