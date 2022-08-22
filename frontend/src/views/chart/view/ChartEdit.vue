@@ -759,16 +759,16 @@
         <el-tab-pane name="senior" :label="$t('chart.senior')" class="padding-tab" style="width: 350px;">
           <el-row class="view-panel">
             <div
-              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge') || view.type === 'text' || view.type.includes('table') || view.type === 'map' || view.type === 'buddle-map')"
+              v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('area') || view.type.includes('mix') || view.type.includes('gauge') || view.type === 'text' || view.type.includes('table') || view.type === 'map' || view.type === 'buddle-map')"
               style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
               class="attr-style theme-border-class"
             >
               <el-row
-                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type === 'table-normal' || view.type === 'table-info')"
+                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('area') || view.type.includes('mix') || view.type === 'table-normal' || view.type === 'table-info')"
               >
                 <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
                 <el-collapse v-model="attrActiveNames" class="style-collapse">
-                  <el-collapse-item v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))" name="function" :title="$t('chart.function_cfg')">
+                  <el-collapse-item v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('area') || view.type.includes('mix'))" name="function" :title="$t('chart.function_cfg')">
                     <function-cfg
                       :param="param"
                       class="attr-selector"
@@ -787,12 +787,12 @@
                 </el-collapse>
               </el-row>
               <el-row
-                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix') || view.type.includes('gauge') || view.type === 'text' || (view.render === 'antv' && view.type.includes('table')))"
+                v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('area') || view.type.includes('mix') || view.type.includes('gauge') || view.type === 'text' || (view.render === 'antv' && view.type.includes('table')))"
               >
                 <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
                 <el-collapse v-model="styleActiveNames" class="style-collapse">
                   <el-collapse-item
-                    v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('mix'))"
+                    v-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('area') || view.type.includes('mix'))"
                     name="analyse"
                     :title="$t('chart.assist_line')"
                   >
@@ -1715,7 +1715,8 @@ export default {
         view.type === 'treemap' ||
         view.type === 'liquid' ||
         view.type === 'word-cloud' ||
-        view.type === 'waterfall') {
+        view.type === 'waterfall' ||
+        view.type.includes('group')) {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
