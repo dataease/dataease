@@ -15,6 +15,7 @@ export function basePieOption(chart_option, chart,cstyle = {}) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      
       chart_option.tooltip = tooltip
     }
   }
