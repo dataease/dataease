@@ -105,6 +105,10 @@
         <el-form-item v-show="showProperty('alpha')" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
           <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase('alpha')" />
         </el-form-item>
+
+        <el-form-item v-show="showProperty('area-border-color') " :label="$t('chart.area_border_color')" class="form-item">
+          <el-color-picker v-model="colorForm.areaBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('areaBorderColor')" />
+        </el-form-item>
       </el-form>
     </el-col>
   </div>

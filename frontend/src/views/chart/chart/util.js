@@ -2600,7 +2600,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'value',
         'custom',
-        'alpha'
+        'alpha',
+        'area-border-color'
       ],
       'label-selector': [
         'show',
