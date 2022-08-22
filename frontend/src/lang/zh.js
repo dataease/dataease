@@ -2005,8 +2005,9 @@ export default {
     mobileBG: '移动端登录页背景',
     helpLink: '帮助文档链接',
     homeLink: '首页链接',
-    defaultHomeLink: '默认为系统内置首页'
-
+    defaultHomeLink: '默认为系统内置首页',
+    showFoot: '显示登录页脚',
+    footContent: '页脚内容'
   },
   auth: {
     no_item_selected: '请在左侧选择组织、角色或用户',
