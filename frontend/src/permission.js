@@ -35,7 +35,7 @@ const routeBefore = (callBack) => {
       document.title = getPageTitle()
       uiInfo = getSysUI()
       if (uiInfo['ui.favicon'] && uiInfo['ui.favicon'].paramValue) {
-        const faviconUrl = '/system/ui/image/' + this.uiInfo['ui.favicon'].paramValue
+        const faviconUrl = '/system/ui/image/' + uiInfo['ui.favicon'].paramValue
         changeFavicon(faviconUrl)
       }
       callBack()
@@ -47,7 +47,7 @@ const routeBefore = (callBack) => {
   } else {
     document.title = getPageTitle()
     if (uiInfo['ui.favicon'] && uiInfo['ui.favicon'].paramValue) {
-      const faviconUrl = '/system/ui/image/' + this.uiInfo['ui.favicon'].paramValue
+      const faviconUrl = '/system/ui/image/' + uiInfo['ui.favicon'].paramValue
       changeFavicon(faviconUrl)
     }
     callBack()
