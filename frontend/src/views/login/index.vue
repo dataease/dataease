@@ -57,12 +57,12 @@
             <div v-if="loginImageUrl && axiosFinished" class="login-image-de" :style="{background:'url(' + loginImageUrl + ') no-repeat', 'backgroundSize':'contain'}" />
           </el-col>
         </el-row>
-        
+
       </div>
       <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
-      
+
     </div>
-    <div v-if="showFoot" class="dynamic-login-foot" v-html="footContent"></div>
+    <div v-if="showFoot" class="dynamic-login-foot" v-html="footContent" />
   </div>
 </template>
 
@@ -165,8 +165,6 @@ export default {
 
   created() {
     this.$store.dispatch('user/getUI').then(() => {
-      // const uiLists = this.$store.state.user.uiInfo
-      // this.uiInfo = format(uiLists)
       this.axiosFinished = true
       this.showLoginImage()
     }).catch(err => {
@@ -206,9 +204,9 @@ export default {
         const faviconUrl = '/system/ui/image/' + this.uiInfo['ui.favicon'].paramValue
         changeFavicon(faviconUrl)
       }
-      if(this.uiInfo['ui.showFoot'] && this.uiInfo['ui.showFoot'].paramValue) {
+      if (this.uiInfo['ui.showFoot'] && this.uiInfo['ui.showFoot'].paramValue) {
         this.showFoot = this.uiInfo['ui.showFoot'].paramValue === true || this.uiInfo['ui.showFoot'].paramValue === 'true'
-        if(this.showFoot) {
+        if (this.showFoot) {
           const content = this.uiInfo['ui.footContent'] && this.uiInfo['ui.footContent'].paramValue
           this.footContent = content
         }
