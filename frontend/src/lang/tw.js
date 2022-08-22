@@ -1995,7 +1995,9 @@ export default {
     mobileBG: '移動端登錄頁背景',
     helpLink: '幫助文檔鏈接',
     homeLink: '首頁鏈接',
-    defaultHomeLink: '默認為系統內置首頁'
+    defaultHomeLink: '默認為系統內置首頁',
+    showFoot: '顯示登錄頁腳',
+    footContent: '頁腳內容'
 
   },
   auth: {

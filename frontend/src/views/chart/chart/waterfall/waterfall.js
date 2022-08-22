@@ -106,7 +106,11 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
 }
 
 function getMeta(chart) {
-  const meta = {}
+  const meta = {
+    field: {
+      type: 'cat'
+    }
+  }
   const yaxis = JSON.parse(chart.yaxis)
   if (yaxis && yaxis.length > 0) {
     const f = yaxis[0]

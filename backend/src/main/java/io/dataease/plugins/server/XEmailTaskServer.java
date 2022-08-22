@@ -176,6 +176,23 @@ public class XEmailTaskServer {
         }
     }
 
+    @RequiresPermissions("task-email:del")
+    @PostMapping("/batchDel")
+    public void delete(@RequestBody List<Long> taskIds) {
+        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
+        try {
+            taskIds.forEach(taskId -> {
+                XpackEmailTaskRequest request = emailXpackService.taskForm(taskId);
+                GlobalTaskEntity globalTaskEntity = BeanUtils.copyBean(new GlobalTaskEntity(), request);
+                scheduleService.deleteSchedule(globalTaskEntity);
+            });
+            emailXpackService.batchDel(taskIds);
+        } catch (Exception e) {
+            LogUtil.error(e);
+            DEException.throwException(e);
+        }
+    }
+
     @PostMapping("/stop/{taskId}")
     public void stop(@PathVariable Long taskId) throws Exception {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);

@@ -8,14 +8,17 @@ import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.plugins.common.base.domain.FileMetadata;
+import io.dataease.plugins.common.base.domain.SysParamAssist;
 import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.dataease.plugins.common.base.domain.SystemParameterExample;
 import io.dataease.plugins.common.base.mapper.SystemParameterMapper;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.cas.dto.CasSaveResult;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
+import io.dataease.plugins.xpack.display.service.DisplayXpackService;
 import io.dataease.service.FileService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -229,6 +233,20 @@ public class SystemParameterService {
                 FileMetadata fileMetadata = fileService.getFileMetadataById(systemParameter.getParamValue());
                 if (fileMetadata != null) {
                     systemParameterDTO.setFileName(fileMetadata.getName());
+                }
+            }
+            if (systemParameter.getType().equalsIgnoreCase("blob")) {
+                Map<String, DisplayXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((DisplayXpackService.class));
+                DisplayXpackService displayXpackService = null;
+                if (beansOfType.keySet().size() > 0 && (displayXpackService = SpringContextUtil.getBean(DisplayXpackService.class)) != null) {
+                    String paramValue = systemParameter.getParamValue();
+                    if (StringUtils.isNotBlank(paramValue)) {
+                        long blobId = Long.parseLong(paramValue);
+                        String content = displayXpackService.readBlob(blobId);
+                        systemParameterDTO.setParamValue(content);
+                    }
+                } else {
+                    systemParameterDTO.setParamValue(null);
                 }
             }
             dtoList.add(systemParameterDTO);

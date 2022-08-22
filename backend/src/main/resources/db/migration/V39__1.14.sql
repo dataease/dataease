@@ -22,3 +22,16 @@ INSERT INTO `sys_menu` VALUES (750, 2, 0, 2, '导入用户', NULL, NULL, 999, NU
 update system_parameter set sort  = (sort + 1) where sort > 3;
 
 update system_parameter set sort = 4 where param_key = 'ui.favicon'
+
+INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.showFoot', NULL, 'text', 18);
+INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.footContent', NULL, 'blob', 19);
+
+CREATE TABLE IF NOT EXISTS `sys_param_assist` (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
+    `content` MEDIUMBLOB COMMENT '内容',
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+ALTER TABLE `sys_task_email`
+MODIFY COLUMN `view_ids` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '关联视图' AFTER `task_id`;
+

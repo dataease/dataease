@@ -1,64 +1,68 @@
 <template>
-  <div v-show="contentShow" class="login-background">
-    <div class="login-container">
-      <el-row v-loading="loading" type="flex">
-        <el-col :span="12">
-          <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
-            <div class="login-logo">
-              <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="DataEase" custom-class="login-logo-icon" />
-              <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="">
-            </div>
-            <div v-if="uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue" class="login-welcome">
-              {{ uiInfo['ui.loginTitle'].paramValue }}
-            </div>
-            <div v-else class="login-welcome">
-              {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || ' DataEase') }}
-            </div>
-            <div class="login-form">
-              <el-form-item v-if="loginTypes.length > 1">
-                <el-radio-group v-if="loginTypes.length > 1" v-model="loginForm.loginType" @change="changeLoginType">
-                  <el-radio :label="0" size="mini">{{ $t('login.default_login') }}</el-radio>
-                  <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
-                  <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item prop="username">
-                <el-input v-model="loginForm.username" placeholder="ID" autofocus :disabled="loginTypes.includes(2) && loginForm.loginType === 2" />
-              </el-form-item>
-              <el-form-item prop="password">
-                <el-input
-                  v-model="loginForm.password"
-                  :placeholder="$t('login.password')"
-                  show-password
-                  maxlength="30"
-                  show-word-limit
-                  autocomplete="new-password"
-                  :disabled="loginTypes.includes(2) && loginForm.loginType === 2"
-                  @keypress.enter.native="handleLogin"
-                />
-              </el-form-item>
-            </div>
-            <div class="login-btn">
-              <el-button type="primary" class="submit" size="default" :disabled="loginTypes.includes(2) && loginForm.loginType === 2" @click.native.prevent="handleLogin">
-                {{ $t('commons.login') }}
-              </el-button>
-              <div v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue" class="demo-tips">
-                {{ uiInfo['ui.demo.tips'].paramValue }}
+  <div>
+    <div v-show="contentShow" class="login-background">
+      <div class="login-container">
+        <el-row v-loading="loading" type="flex">
+          <el-col :span="12">
+            <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
+              <div class="login-logo">
+                <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="DataEase" custom-class="login-logo-icon" />
+                <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="">
               </div>
-            </div>
-            <div class="login-msg">
-              {{ msg }}
-            </div>
-          </el-form>
-        </el-col>
-        <el-col v-loading="!axiosFinished" :span="12">
-          <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
-          <div v-if="loginImageUrl && axiosFinished" class="login-image-de" :style="{background:'url(' + loginImageUrl + ') no-repeat', 'backgroundSize':'contain'}" />
-        </el-col>
-      </el-row>
-    </div>
-    <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
+              <div v-if="uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue" class="login-welcome">
+                {{ uiInfo['ui.loginTitle'].paramValue }}
+              </div>
+              <div v-else class="login-welcome">
+                {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || ' DataEase') }}
+              </div>
+              <div class="login-form">
+                <el-form-item v-if="loginTypes.length > 1">
+                  <el-radio-group v-if="loginTypes.length > 1" v-model="loginForm.loginType" @change="changeLoginType">
+                    <el-radio :label="0" size="mini">{{ $t('login.default_login') }}</el-radio>
+                    <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
+                    <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item prop="username">
+                  <el-input v-model="loginForm.username" placeholder="ID" autofocus :disabled="loginTypes.includes(2) && loginForm.loginType === 2" />
+                </el-form-item>
+                <el-form-item prop="password">
+                  <el-input
+                    v-model="loginForm.password"
+                    :placeholder="$t('login.password')"
+                    show-password
+                    maxlength="30"
+                    show-word-limit
+                    autocomplete="new-password"
+                    :disabled="loginTypes.includes(2) && loginForm.loginType === 2"
+                    @keypress.enter.native="handleLogin"
+                  />
+                </el-form-item>
+              </div>
+              <div class="login-btn">
+                <el-button type="primary" class="submit" size="default" :disabled="loginTypes.includes(2) && loginForm.loginType === 2" @click.native.prevent="handleLogin">
+                  {{ $t('commons.login') }}
+                </el-button>
+                <div v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue" class="demo-tips">
+                  {{ uiInfo['ui.demo.tips'].paramValue }}
+                </div>
+              </div>
+              <div class="login-msg">
+                {{ msg }}
+              </div>
+            </el-form>
+          </el-col>
+          <el-col v-loading="!axiosFinished" :span="12">
+            <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
+            <div v-if="loginImageUrl && axiosFinished" class="login-image-de" :style="{background:'url(' + loginImageUrl + ') no-repeat', 'backgroundSize':'contain'}" />
+          </el-col>
+        </el-row>
 
+      </div>
+      <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
+
+    </div>
+    <div v-if="showFoot" class="dynamic-login-foot" v-html="footContent" />
   </div>
 </template>
 
@@ -101,7 +105,9 @@ export default {
         'chart-tree',
         'dataset-tree'
       ],
-      defaultType: 0
+      defaultType: 0,
+      showFoot: false,
+      footContent: ''
     }
   },
   computed: {
@@ -159,8 +165,6 @@ export default {
 
   created() {
     this.$store.dispatch('user/getUI').then(() => {
-      // const uiLists = this.$store.state.user.uiInfo
-      // this.uiInfo = format(uiLists)
       this.axiosFinished = true
       this.showLoginImage()
     }).catch(err => {
@@ -199,6 +203,13 @@ export default {
       if (this.uiInfo['ui.favicon'] && this.uiInfo['ui.favicon'].paramValue) {
         const faviconUrl = '/system/ui/image/' + this.uiInfo['ui.favicon'].paramValue
         changeFavicon(faviconUrl)
+      }
+      if (this.uiInfo['ui.showFoot'] && this.uiInfo['ui.showFoot'].paramValue) {
+        this.showFoot = this.uiInfo['ui.showFoot'].paramValue === true || this.uiInfo['ui.showFoot'].paramValue === 'true'
+        if (this.showFoot) {
+          const content = this.uiInfo['ui.footContent'] && this.uiInfo['ui.footContent'].paramValue
+          this.footContent = content
+        }
       }
     },
     initCache() {
@@ -385,5 +396,17 @@ export default {
       height: 380px;
     }
   }
+}
+.dynamic-login-foot {
+  visibility: visible;
+  width: 100%;
+  position: fixed;
+  z-index: 302;
+  bottom: 0;
+  left: 0;
+  height: auto;
+  padding-top: 1px;
+  zoom: 1;
+  margin: 0;
 }
 </style>
