@@ -208,29 +208,12 @@ export default {
       }
     },
     templateDeleteConfirm(template) {
-      // const options = {
-      //   title: 'jkjhjjhhkh',
-      //   showCancelButton: false,
-      //   type: 'primary',
-      // }
-      // this.handlerConfirm(options);
-      // return
-      this.$alert(
-        this.$t("panel.confirm_delete") +
-          this.$t("panel.template") +
-          ": " +
-          this.template.name +
-          "？",
-        "",
-        {
-          confirmButtonText: this.$t("panel.confirm"),
-          callback: (action) => {
-            if (action === "confirm") {
-              this.templateDelete(template.id);
-            }
-          },
-        }
-      );
+      const options = {
+          title: 'system_parameter_setting.delete_this_template',
+          type: "primary",
+          cb: () => this.templateDelete(template.id),
+        };
+        this.handlerConfirm(options);
     },
     handleClick(tab, event) {
       this.getTree();
@@ -247,11 +230,7 @@ export default {
     templateDelete(id) {
       if (id) {
         templateDelete(id).then((response) => {
-          this.$message({
-            message: this.$t("commons.delete_success"),
-            type: "success",
-            showClose: true,
-          });
+          this.openMessageSuccess('commons.delete_success');
           this.getTree();
         });
       }

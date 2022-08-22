@@ -867,6 +867,7 @@ export default {
     color_technology: '科技',
     color_simple: '簡潔',
     not_alpha: '不透明度',
+    area_border_color: '地圖邊線',
     size: '大小',
     bar_width: '柱寬',
     bar_gap: '柱間隔',
@@ -1274,7 +1275,9 @@ export default {
     chart_area: '面積圖',
     fix: '固定值',
     dynamic: '動態值',
-    gauge_size_field_delete: '動態值中字段發生變更，請重新編輯'
+    gauge_size_field_delete: '動態值中字段發生變更，請重新編輯',
+    chart_group: '子類別',
+    chart_bar_group: '分組柱狀圖'
   },
   dataset: {
     parse_filed: '解析字段',
@@ -1433,6 +1436,7 @@ export default {
       search_by_name: '根據名稱搜索',
       underway: '等待執行',
       stopped: '執行結束',
+      exec: '執行中',
       pending: '暫停',
       exec: '執行一次',
       confirm_exec: '手動觸發執行？',

@@ -866,6 +866,7 @@ export default {
     color_technology: 'Technology',
     color_simple: 'Simple',
     not_alpha: 'Opacity',
+    area_border_color: 'Map border',
     size: 'Size',
     bar_width: 'Column Width',
     bar_gap: 'Column septum',
@@ -1275,7 +1276,9 @@ export default {
     chart_area: 'Area',
     fix: 'Fix',
     dynamic: 'Dynamic',
-    gauge_size_field_delete: 'Dynamic field changed，please edit again'
+    gauge_size_field_delete: 'Dynamic field changed，please edit again',
+    chart_group: 'Sub Type',
+    chart_bar_group: 'Bar Group'
   },
   dataset: {
     parse_filed: 'Parse Field',
@@ -1434,6 +1437,7 @@ export default {
       search_by_name: 'Search by name',
       underway: 'Waiting for execution',
       stopped: 'End',
+      exec: 'underway',
       pending: 'Pause',
       exec: 'Execute Once',
       confirm_exec: 'Manual trigger execution？',

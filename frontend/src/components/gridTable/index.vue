@@ -159,6 +159,10 @@ export default {
   flex-direction: column;
   justify-content: space-between;
 
+  ::v-deep.el-table-column--selection .cell {
+    padding: 0 14px;
+  }
+
   .el-table::before {
     content: '';
     position: absolute;

@@ -628,7 +628,7 @@ function transAxisPosition(chart, axis) {
 export function getSlider(chart) {
   let senior = {}
   let cfg = false
-  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
+  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix') || chart.type.includes('area'))) {
     senior = JSON.parse(chart.senior)
     if (senior.functionCfg) {
       if (senior.functionCfg.sliderShow) {
@@ -645,7 +645,7 @@ export function getSlider(chart) {
 export function getAnalyse(chart) {
   let senior = {}
   const assistLine = []
-  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
+  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix') || chart.type.includes('area'))) {
     senior = JSON.parse(chart.senior)
     if (senior.assistLine && senior.assistLine.length > 0) {
       const customStyle = JSON.parse(chart.customStyle)

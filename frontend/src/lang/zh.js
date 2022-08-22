@@ -693,7 +693,7 @@ export default {
     edite_organization: '编辑组织'
   },
   system_parameter_setting: {
-    mailbox_service_settings: '邮件设置', 
+    mailbox_service_settings: '邮件设置',
     test_connection: '测试连接',
     SMTP_host: 'SMTP主机',
     basic_setting: '基础设置',
@@ -869,6 +869,7 @@ export default {
     color_technology: '科技',
     color_simple: '简洁',
     not_alpha: '不透明度',
+    area_border_color: '地图边线',
     size: '大小',
     bar_width: '柱宽',
     bar_gap: '柱间隔',
@@ -1276,7 +1277,9 @@ export default {
     chart_area: '面积图',
     fix: '固定值',
     dynamic: '动态值',
-    gauge_size_field_delete: '动态值中字段发生变更，请重新编辑'
+    gauge_size_field_delete: '动态值中字段发生变更，请重新编辑',
+    chart_group: '子类别',
+    chart_bar_group: '分组柱状图'
   },
   dataset: {
     parse_filed: '解析字段',
@@ -1434,8 +1437,8 @@ export default {
       search_by_name: '根据名称搜索',
       underway: '等待执行',
       stopped: '执行结束',
+      exec: '执行中',
       pending: '暂停',
-      exec: '执行一次',
       confirm_exec: '手动触发执行？',
       change_success: '状态切换成功',
       excel_replace_msg: '可能会影响自定义数据集、关联数据集、仪表板等，确认替换？',

@@ -192,6 +192,8 @@ export default {
       }
       if (chart.type === 'bar') {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
+      } else if (chart.type === 'bar-group') {
+        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
       } else if (chart.type === 'bar-stack') {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
       } else if (chart.type === 'bar-horizontal') {

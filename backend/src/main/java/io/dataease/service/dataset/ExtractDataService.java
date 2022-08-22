@@ -1020,7 +1020,11 @@ public class ExtractDataService {
         }
 
         if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase(DatasetType.SQL.name())) {
-            selectSQL = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql();
+            DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+            selectSQL = dataTableInfoDTO.getSql();
+            if(dataTableInfoDTO.isBase64Encryption()){
+                selectSQL = new String(java.util.Base64.getDecoder().decode(selectSQL));
+            }
             QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
             selectSQL = qp.createRawQuerySQLAsTmp(selectSQL, datasetTableFields);
         }
