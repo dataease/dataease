@@ -136,7 +136,7 @@
           </el-table-column>
           <el-table-column property="" :label="$t('dataset.operator')">
             <template slot-scope="scope">
-              <el-button v-if="false && scope.row.extField === 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="copyField(scope.row)">{{ $t('dataset.copy') }}</el-button>
+              <el-button :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="copyField(scope.row)">{{ $t('dataset.copy') }}</el-button>
               <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="editField(scope.row)">{{ $t('dataset.edit') }}</el-button>
               <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="deleteField(scope.row)">{{ $t('dataset.delete') }}</el-button>
             </template>
@@ -249,7 +249,7 @@
           </el-table-column>
           <el-table-column property="" :label="$t('dataset.operator')">
             <template slot-scope="scope">
-              <el-button v-if="false && scope.row.extField === 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="copyField(scope.row)">{{ $t('dataset.copy') }}</el-button>
+              <el-button :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="copyField(scope.row)">{{ $t('dataset.copy') }}</el-button>
               <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="editField(scope.row)">{{ $t('dataset.edit') }}</el-button>
               <el-button v-if="scope.row.extField !== 0" :disabled="!hasDataPermission('manage',param.privileges)" type="text" size="mini" @click="deleteField(scope.row)">{{ $t('dataset.delete') }}</el-button>
             </template>
