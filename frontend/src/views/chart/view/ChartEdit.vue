@@ -1610,7 +1610,7 @@ export default {
           ele.filter = []
         }
       })
-      if (view.type === 'table-pivot') {
+      if (view.type === 'table-pivot' || view.type === 'bar-group') {
         view.xaxisExt.forEach(function(ele) {
           if (!ele.dateStyle || ele.dateStyle === '') {
             ele.dateStyle = 'y_M_d'

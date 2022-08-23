@@ -334,8 +334,11 @@ export default {
       }
     },
     loadUiInfo() {
-      this.$store.dispatch('user/getUI').then(() => {
+      this.$store.dispatch('user/getUI').then((res) => {
         this.uiInfo = getSysUI()
+        if (!this.uiInfo || Object.keys(this.uiInfo).length === 0) {
+          this.uiInfo = res
+        }
         if (this.uiInfo['ui.logo'] && this.uiInfo['ui.logo'].paramValue) {
           this.logoUrl = '/system/ui/image/' + this.uiInfo['ui.logo'].paramValue
         }

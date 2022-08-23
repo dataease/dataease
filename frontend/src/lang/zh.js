@@ -1992,14 +1992,10 @@ export default {
     title: '系统名称',
     advice_size: '建议图片大小',
     theme: '主题颜色',
-    favicon: '网站图标',
     topMenuColor: '头部背景',
     topMenuActiveColor: '头部选中背景',
-
     topMenuTextColor: '头部字体颜色',
-
     topMenuTextActiveColor: '头部字体选中颜色',
-
     themeLight: '浅色',
     themeDark: '深色',
     themeCustom: '自定义',

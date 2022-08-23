@@ -1439,7 +1439,6 @@ export default {
       stopped: 'End',
       exec: 'underway',
       pending: 'Pause',
-      exec: 'Execute Once',
       confirm_exec: 'Manual trigger execution？',
       change_success: 'State switch successful',
       excel_replace_msg: 'Calculation fields, custom datasets, associated datasets, dashboards, etc. may be affected. Confirm the replacement？',
@@ -1975,14 +1974,13 @@ export default {
     un_install_error: 'Uninstall failed, please contact the administrator'
   },
   display: {
-    favicon: 'Favicon',
+    favicon: 'System Icon',
     logo: 'Head system logo',
     loginLogo: 'Login page header logo',
     loginImage: 'Picture on the right side of the login page',
     loginTitle: 'Login page title',
     title: 'System name',
     advice_size: 'Advice picture size',
-
     themeLight: 'Light',
     themeDark: 'Dark',
     themeCustom: 'Custom',
