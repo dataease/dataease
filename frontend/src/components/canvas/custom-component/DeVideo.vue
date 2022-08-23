@@ -84,7 +84,7 @@ export default {
       pOption: {},
       showVideo: true,
       chartId: uuid.v1(),
-      player: {},
+      player1: {},
     }
   },
 
@@ -132,7 +132,7 @@ export default {
       this.pOption.height = this.h - (this.curGap * 2)
       // this.pOption.sources[0].type = 'application/x-mpegURL'
 
-      this.player = videojs(this.chartId,{
+      this.player1 = videojs(this.chartId,{
         autoplay: true,
         // 这行是需要的，暂时注释 应该为true 下面这行
         controls: true,
