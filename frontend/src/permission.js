@@ -46,7 +46,7 @@ const routeBefore = (callBack) => {
     })
   } else {
     document.title = getPageTitle()
-    if (uiInfo['ui.favicon'] && uiInfo['ui.favicon'].paramValue) {
+    if (!!uiInfo && uiInfo['ui.favicon'] && uiInfo['ui.favicon'].paramValue) {
       const faviconUrl = '/system/ui/image/' + uiInfo['ui.favicon'].paramValue
       changeFavicon(faviconUrl)
     }

@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 import Config from '@/settings'
-
+import store from '@/store'
 const TokenKey = Config.TokenKey
 
 const IdTokenKey = Config.IdTokenKey
@@ -48,7 +48,7 @@ export function setSysUI(uiInfo) {
 
 export function getSysUI() {
   const json = Cookies.get('sysUiInfo')
-  return json ? JSON.parse(json) : null
+  return json ? JSON.parse(json) : store.getters.uiInfo
 }
 
 export function getTimeOut() {
