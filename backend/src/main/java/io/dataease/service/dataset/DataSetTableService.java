@@ -44,6 +44,7 @@ import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.sys.SysAuthService;
+import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.BinaryExpression;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Parenthesis;
@@ -52,10 +53,7 @@ import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.*;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.Select;
-import net.sf.jsqlparser.statement.select.SubSelect;
-import net.sf.jsqlparser.statement.select.WithItem;
+import net.sf.jsqlparser.statement.select.*;
 import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -959,6 +957,7 @@ public class DataSetTableService {
 
     public void checkVariable(final String sql) throws Exception {
         String tmpSql = removeVariables(sql);
+        System.out.println(tmpSql);
         if (tmpSql.contains(SubstitutedParams)) {
             throw new Exception(Translator.get("I18N_SQL_variable_limit"));
         }
@@ -1003,16 +1002,27 @@ public class DataSetTableService {
             hasVariables = true;
             sql = sql.replace(matcher.group(), SubstitutedParams);
         }
-        if (!hasVariables) {
+        if (!hasVariables && !sql.contains(SubstitutedParams)) {
             return sql;
         }
         CCJSqlParserUtil.parse(sql, parser -> parser.withSquareBracketQuotation(true));
         Statement statement = CCJSqlParserUtil.parse(sql);
         Select select = (Select) statement;
         PlainSelect plainSelect = ((PlainSelect) select.getSelectBody());
+        // 访问from
+        FromItem fromItem = plainSelect.getFromItem();
+        if (fromItem instanceof SubSelect) {
+            SelectBody selectBody = ((SubSelect) fromItem).getSelectBody();
+            SubSelect subSelect = new SubSelect();
+            Select subSelectTmp =  (Select)CCJSqlParserUtil.parse(removeVariables(selectBody.toString()));
+            PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
+            subSelect.setSelectBody(subPlainSelect);
+            subSelect.setAlias(new Alias(fromItem.getAlias().toString()));
+            plainSelect.setFromItem(subSelect);
+        }
         Expression expr = plainSelect.getWhere();
         if (expr == null) {
-            return sql;
+            return plainSelect.toString();
         }
         StringBuilder stringBuilder = new StringBuilder();
         BinaryExpression binaryExpression = null;
