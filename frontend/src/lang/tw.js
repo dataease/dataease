@@ -1438,7 +1438,6 @@ export default {
       stopped: '執行結束',
       exec: '執行中',
       pending: '暫停',
-      exec: '執行一次',
       confirm_exec: '手動觸發執行？',
       change_success: '狀態切換成功',
       excel_replace_msg: '可能會影響計算欄位、自定義數據集、關聯數據集、儀錶板等，確認替換？',
@@ -1983,14 +1982,10 @@ export default {
     title: '繫統名稱',
     advice_size: '建議圖片大小',
     theme: '主題顔色',
-
     topMenuColor: '頭部背景',
     topMenuActiveColor: '頭部選中背景',
-
     topMenuTextColor: '頭部字體顔色',
-
     topMenuTextActiveColor: '頭部字體選中顔色',
-
     themeLight: '淺色',
     themeDark: '深色',
     themeCustom: '自定義',
