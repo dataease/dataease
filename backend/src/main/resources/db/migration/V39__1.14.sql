@@ -35,3 +35,9 @@ CREATE TABLE IF NOT EXISTS `sys_param_assist` (
 ALTER TABLE `sys_task_email`
 MODIFY COLUMN `view_ids` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '关联视图' AFTER `task_id`;
 
+BEGIN;
+update `sys_menu` set icon = 'plugins-new' where `menu_id` = 101;
+update `sys_menu` set icon = 'sys-setting' where `menu_id` = 700;
+update `sys_menu` set icon = 'sys-param' where `menu_id` = 6;
+update `sys_menu` set icon = 'display-setting' where `menu_id` = 710;
+COMMIT;
