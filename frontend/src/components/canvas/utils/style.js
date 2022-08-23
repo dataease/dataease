@@ -143,6 +143,13 @@ export const customStyleTrans = {
       'lineStyle': ['width']
     }
   },
+  'yAxisExt': {
+    'nameTextStyle': ['fontSize'],
+    'axisLabel': ['fontSize'],
+    'splitLine': {
+      'lineStyle': ['width']
+    }
+  },
   'split': {
     'name': ['fontSize'],
     'axisLine': {
