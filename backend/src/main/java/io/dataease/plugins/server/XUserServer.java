@@ -6,6 +6,7 @@ import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.user.service.UserXpackService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -37,6 +38,16 @@ public class XUserServer {
             DEException.throwException(msg);
         }
         UserXpackService userXpackService = SpringContextUtil.getBean(UserXpackService.class);
-        userXpackService.upload(file, response);
+        try{
+            userXpackService.upload(file, response);
+        }catch (Exception e) {
+            if (StringUtils.contains(e.getMessage(), "template file error")) {
+
+                DEException.throwException(Translator.get("I18N_USER_TEMPLATE_ERROR"));
+            }else {
+                DEException.throwException(e.getMessage());
+            }
+
+        }
     }
 }
