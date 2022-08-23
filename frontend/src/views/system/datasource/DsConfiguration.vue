@@ -78,6 +78,13 @@
                     />
                     <el-button
                       size="mini"
+                      type="success"
+                      icon="el-icon-document-copy"
+                      circle
+                      @click="copyItem(scope.row)"
+                    />
+                    <el-button
+                      size="mini"
                       type="danger"
                       icon="el-icon-delete"
                       circle
@@ -94,7 +101,7 @@
             :label="$t('datasource.host')"
             prop="configuration.host"
           >
-            <el-input v-model="form.configuration.host" autocomplete="off" />
+            <el-input v-model="form.configuration.host" autocomplete="off"/>
           </el-form-item>
 
           <el-form-item
@@ -126,7 +133,7 @@
             prop="configuration.connectionType"
           >
             <el-radio v-model="form.configuration.connectionType" label="sid"
-              >{{ $t("datasource.oracle_sid") }}
+            >{{ $t("datasource.oracle_sid") }}
             </el-radio>
             <el-radio
               v-model="form.configuration.connectionType"
@@ -278,7 +285,7 @@
             "
           >
             <el-button icon="el-icon-plus" size="mini" @click="getSchema()"
-              >{{ $t("datasource.get_schema") }}
+            >{{ $t("datasource.get_schema") }}
             </el-button>
           </el-form-item>
 
@@ -437,7 +444,7 @@
             <span>{{ $t("datasource.base_info") }}</span>
           </div>
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="apiItem.name" autocomplete="off" />
+            <el-input v-model="apiItem.name" autocomplete="off"/>
           </el-form-item>
 
           <el-form-item :label="$t('datasource.request')" prop="url">
@@ -492,50 +499,51 @@
           </div>
           <div class="table-container">
             <el-table
-            :data="apiItem.jsonFields"
-            style="width: 100%"
-            row-key="jsonPath"
-            ref="apiItemTable"
-          >
-            <el-table-column prop="originName" :label="$t('dataset.parse_filed')"  :show-overflow-tooltip="true" width="255">
-              <template slot-scope="scope">
-                <el-checkbox
-                  v-model="scope.row.checked"
-                  :key="scope.row.jsonPath"
-                  @change="handleCheckAllChange(scope.row)"
-                >
-                  {{ scope.row.originName }}
-                </el-checkbox>
-              </template>
-            </el-table-column>
-            <el-table-column prop="name" :label="$t('dataset.field_rename')">
-              <template slot-scope="scope">
-                <el-input
-                  size="mini"
-                  type="text"
-                  v-model="scope.row.name"
-                  @change="fieldNameChange(scope.row)"
-                />
-              </template>
-            </el-table-column>
-
-            <el-table-column
-              prop="deExtractType"
-              :label="$t('dataset.field_type')"
+              :data="apiItem.jsonFields"
+              style="width: 100%"
+              row-key="jsonPath"
+              ref="apiItemTable"
             >
-              <template slot-scope="scope">
-                <el-select
-                  v-model="scope.row.deExtractType"
-                  size="mini"
-                  style="display: inline-block; width: 120px"
-                  @change="fieldTypeChange(scope.row)"
-                >
-                  <el-option
-                    v-for="item in fieldOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+              <el-table-column prop="originName" :label="$t('dataset.parse_filed')" :show-overflow-tooltip="true"
+                               width="255">
+                <template slot-scope="scope">
+                  <el-checkbox
+                    v-model="scope.row.checked"
+                    :key="scope.row.jsonPath"
+                    @change="handleCheckAllChange(scope.row)"
                   >
+                    {{ scope.row.originName }}
+                  </el-checkbox>
+                </template>
+              </el-table-column>
+              <el-table-column prop="name" :label="$t('dataset.field_rename')">
+                <template slot-scope="scope">
+                  <el-input
+                    size="mini"
+                    type="text"
+                    v-model="scope.row.name"
+                    @change="fieldNameChange(scope.row)"
+                  />
+                </template>
+              </el-table-column>
+
+              <el-table-column
+                prop="deExtractType"
+                :label="$t('dataset.field_type')"
+              >
+                <template slot-scope="scope">
+                  <el-select
+                    v-model="scope.row.deExtractType"
+                    size="mini"
+                    style="display: inline-block; width: 120px"
+                    @change="fieldTypeChange(scope.row)"
+                  >
+                    <el-option
+                      v-for="item in fieldOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    >
                     <span style="float: left">
                       <svg-icon
                         v-if="item.value === '0'"
@@ -548,15 +556,15 @@
                         class="field-icon-value"
                       />
                     </span>
-                    <span
-                      style="float: left; color: #8492a6; font-size: 12px"
+                      <span
+                        style="float: left; color: #8492a6; font-size: 12px"
                       >{{ item.label }}</span
-                    >
-                  </el-option>
-                </el-select>
-              </template>
-            </el-table-column>
-          </el-table>
+                      >
+                    </el-option>
+                  </el-select>
+                </template>
+              </el-table-column>
+            </el-table>
           </div>
 
           <div class="row-rules">
@@ -608,14 +616,16 @@
       <div class="foot">
         <el-button class="btn normal" @click="closeEditItem">{{ $t("commons.cancel") }}</el-button>
         <el-button class="btn" type="primary" @click="next" :disabled="disabledNext" v-show="active === 1"
-          >{{ $t("fu.steps.next") }}
+        >{{ $t("fu.steps.next") }}
         </el-button>
         <el-button class="btn" type="primary" @click="before" v-show="active === 2">{{
-          $t("fu.steps.prev")
-        }}</el-button>
+            $t("fu.steps.prev")
+          }}
+        </el-button>
         <el-button class="btn" type="primary" @click="saveItem" v-show="active === 2">{{
-          $t("commons.save")
-        }}</el-button>
+            $t("commons.save")
+          }}
+        </el-button>
       </div>
     </el-drawer>
   </div>
@@ -623,7 +633,7 @@
 
 <script>
 import i18n from "@/lang";
-import { checkApiDatasource, getSchema } from "@/api/system/datasource";
+import {checkApiDatasource, getSchema} from "@/api/system/datasource";
 import ApiHttpRequestForm from "@/views/system/datasource/ApiHttpRequestForm";
 import LayoutContent from "@/components/business/LayoutContent";
 
@@ -859,22 +869,22 @@ export default {
         ],
       },
       reqOptions: [
-        { id: "GET", label: "GET" },
-        { id: "POST", label: "POST" },
+        {id: "GET", label: "GET"},
+        {id: "POST", label: "POST"},
       ],
       loading: false,
-      responseData: { type: "HTTP", responseResult: {}, subRequestResults: [] },
+      responseData: {type: "HTTP", responseResult: {}, subRequestResults: []},
       api_step2_active_name: "first",
       fieldTypes: [
-        { label: this.$t("dataset.text"), value: 0 },
-        { label: this.$t("dataset.time"), value: 1 },
-        { label: this.$t("dataset.value"), value: 2 },
+        {label: this.$t("dataset.text"), value: 0},
+        {label: this.$t("dataset.time"), value: 1},
+        {label: this.$t("dataset.value"), value: 2},
         {
           label:
             this.$t("dataset.value") + "(" + this.$t("dataset.float") + ")",
           value: 3,
         },
-        { label: this.$t("dataset.location"), value: 5 },
+        {label: this.$t("dataset.location"), value: 5},
       ],
       height: 500,
       disabledNext: false,
@@ -889,8 +899,8 @@ export default {
         },
       ],
       fieldOptions: [
-        { label: this.$t("dataset.text"), value: 0 },
-        { label: this.$t("dataset.value"), value: 2 },
+        {label: this.$t("dataset.text"), value: 0},
+        {label: this.$t("dataset.value"), value: 2},
         {
           label:
             this.$t("dataset.value") + "(" + this.$t("dataset.float") + ")",
@@ -899,7 +909,8 @@ export default {
       ],
     };
   },
-  created() {},
+  created() {
+  },
   watch: {},
   methods: {
     getSchema() {
@@ -968,14 +979,14 @@ export default {
       this.edit_api_item = false;
     },
     saveItem() {
-      if(this.apiItem.fields.length === 0){
+      if (this.apiItem.fields.length === 0) {
         this.$message.warning(i18n.t('datasource.api_field_not_empty'))
         return
       }
 
-      for (var i = 0; i < this.apiItem.fields.length -1; i++) {
-        for (var j = i+1; j < this.apiItem.fields.length; j++) {
-          if(this.apiItem.fields[i].name === this.apiItem.fields[j].name){
+      for (var i = 0; i < this.apiItem.fields.length - 1; i++) {
+        for (var j = i + 1; j < this.apiItem.fields.length; j++) {
+          if (this.apiItem.fields[i].name === this.apiItem.fields[j].name) {
             this.$message.error(this.apiItem.fields[i].name + ', ' + i18n.t('datasource.has_repeat_field_name'))
             return
           }
@@ -988,11 +999,19 @@ export default {
       if (!this.add_api_item) {
         for (var i = 0; i < this.form.apiConfiguration.length; i++) {
           if (this.form.apiConfiguration[i].serialNumber === this.apiItem.serialNumber) {
-            this.form.apiConfiguration.splice(this.form.apiConfiguration.indexOf(this.form.apiConfiguration[i]), 1);
+            this.form.apiConfiguration[i] = JSON.parse(JSON.stringify(this.apiItem))
           }
         }
+      } else {
+        this.form.apiConfiguration.push(this.apiItem);
       }
-      this.form.apiConfiguration.push(this.apiItem);
+
+    },
+    copyItem(item){
+      var newItem = JSON.parse(JSON.stringify(item))
+      newItem.serialNumber = this.form.apiConfiguration[this.form.apiConfiguration.length - 1].serialNumber + 1
+      newItem.name = item.name + '_copy'
+      this.form.apiConfiguration.push(newItem)
     },
     addApiItem(item) {
       if (item) {
@@ -1002,6 +1021,7 @@ export default {
       } else {
         this.add_api_item = true;
         this.apiItem = JSON.parse(JSON.stringify(this.defaultApiItem));
+        this.apiItem.serialNumber = this.form.apiConfiguration[this.form.apiConfiguration.length - 1].serialNumber + 1
         this.api_table_title = this.$t("datasource.add_api_table");
       }
       this.active = 1;
@@ -1027,12 +1047,12 @@ export default {
       }
     },
 
-    handleFiledChange2(jsonFields){
+    handleFiledChange2(jsonFields) {
       for (var i = 0; i < jsonFields.length; i++) {
-        if (jsonFields[i].checked  && jsonFields[i].children === undefined) {
+        if (jsonFields[i].checked && jsonFields[i].children === undefined) {
 
           for (var j = 0; j < this.apiItem.fields.length; j++) {
-            if(this.apiItem.fields[j].name === jsonFields[i].name){
+            if (this.apiItem.fields[j].name === jsonFields[i].name) {
               this.$nextTick(() => {
                 jsonFields[i].checked = false;
               })
@@ -1076,7 +1096,8 @@ export default {
     fieldNameChange(row) {
       this.previewData();
     },
-    fieldTypeChange(row) {},
+    fieldTypeChange(row) {
+    },
   },
 };
 </script>
@@ -1142,6 +1163,7 @@ export default {
       background: #e9e9ea;
     }
   }
+
   .el-drawer__body {
     padding: 0 24px 81px 24px;
   }
@@ -1173,6 +1195,7 @@ export default {
     .el-input-group__prepend {
       background-color: #fff;
       border-color: #bbbfc4;
+
       .el-select {
         width: 84px !important;
         color: #1f2329;
@@ -1188,6 +1211,7 @@ export default {
   .el-steps {
     margin-top: 23px !important;
     justify-content: center;
+
     .el-step__line {
       line-height: 1.5;
       text-align: center;
@@ -1208,7 +1232,7 @@ export default {
     .el-step__icon.is-text {
       border: none;
       font-family: PingFang SC;
-        font-weight: 400;
+      font-weight: 400;
       color: #fff;
       width: 28px;
       height: 28px;
@@ -1238,10 +1262,11 @@ export default {
         border: 1px solid #8f959e;
       }
     }
+
     .is-process.el-step__title {
-        font-weight: 400;
-        color: #8f959e;
-      }
+      font-weight: 400;
+      color: #8f959e;
+    }
   }
 
   .el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label:before {
@@ -1292,14 +1317,16 @@ export default {
   .table-container {
     padding: 20px;
     border: 1px solid #DEE0E3;
+
     .el-table__header-wrapper {
-    background-color: #f5f6f7;
-    border-top: 1px solid #DEE0E3;
-    // border-top: 1px solid rgba(31, 35, 41, 0.15);
+      background-color: #f5f6f7;
+      border-top: 1px solid #DEE0E3;
+      // border-top: 1px solid rgba(31, 35, 41, 0.15);
     }
+
     .el-table__fixed-header-wrapper {
       th {
-          background-color: var(--TableBG, #f5f6f7) !important;
+        background-color: var(--TableBG, #f5f6f7) !important;
       }
     }
   }
@@ -1317,8 +1344,8 @@ export default {
     box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.05);
   }
 
-  .el-checkbox__label{
-    width:150px;
+  .el-checkbox__label {
+    width: 150px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
