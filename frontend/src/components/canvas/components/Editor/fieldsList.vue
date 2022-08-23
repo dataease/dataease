@@ -50,6 +50,7 @@ export default {
   width: 174px;
   margin: 4px 0 0 0;
   text-align: left;
+  margin-left: 0px!important;
 }
 
 </style>

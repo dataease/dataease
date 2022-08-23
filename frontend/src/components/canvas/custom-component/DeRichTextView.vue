@@ -151,6 +151,8 @@ export default {
           content = content.replace(itm, _this.dataRowNameSelect[ele] ? _this.dataRowNameSelect[ele] : '[无法获取字段值]')
         })
       }
+      content = content.replace('class="base-selected"','')
+      this.resetSelect()
       return content
     },
     fieldSelect(field) {
