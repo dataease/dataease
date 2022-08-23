@@ -458,7 +458,7 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
-                String sql = dataTableInfoDTO.isBase64Encryption()? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())): dataTableInfoDTO.getSql();
+                String sql = dataTableInfoDTO.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())) : dataTableInfoDTO.getSql();
                 sql = handleVariable(sql, requestList, qp);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
@@ -855,7 +855,7 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
-                String sql = dataTableInfoDTO.isBase64Encryption()? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())): dataTableInfoDTO.getSql();
+                String sql = dataTableInfoDTO.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())) : dataTableInfoDTO.getSql();
                 sql = handleVariable(sql, requestList, qp);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
@@ -1046,7 +1046,7 @@ public class ChartViewService {
             }
         } else if (StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
             if (StringUtils.equalsIgnoreCase(view.getType(), "bar-group")) {
-                mapChart = ChartDataBuild.transBaseGroupDataAntV(xAxisBase, xAxisExt, yAxis, view, data, isDrill);
+                mapChart = ChartDataBuild.transBaseGroupDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "bar-stack")) {
                 mapChart = ChartDataBuild.transStackChartDataAntV(xAxis, yAxis, view, data, extStack, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "line-stack")) {
