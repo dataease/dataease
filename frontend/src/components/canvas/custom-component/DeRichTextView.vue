@@ -164,14 +164,28 @@ export default {
     onClick(e) {
       const edInner = tinymce.get(this.tinymceId);
       const node = tinymce.activeEditor.selection.getNode()
-      const pNode = node.parentElement
-      if(pNode && pNode.id&& pNode.id.indexOf('changeText')>-1){
-        const innerId = '#'+pNode.id
-        edInner.selection.select(edInner.dom.select(innerId)[0])
+      this.resetSelect(node)
+    },
+    resetSelect(node){
+      const edInner = tinymce.get(this.tinymceId);
+      const nodeArray = edInner.dom.select(".base-selected")
+      if(nodeArray){
+        nodeArray.forEach(nodeInner=>{
+          nodeInner.removeAttribute('class')
+        })
+      }
+      if(node){
+        const pNode = node.parentElement
+        if(pNode && pNode.id&& pNode.id.indexOf('changeText')>-1){
+          const innerId = '#'+pNode.id
+          const domTest = edInner.dom.select(innerId)[0]
+          domTest.setAttribute("class",'base-selected')
+          edInner.selection.select(domTest)
+        }
       }
     },
     setEdit() {
-      if (this.editStatus) {
+      if (this.editStatus&&this.canEdit===false) {
         this.canEdit = true
         this.element['editing'] = true
         this.reShow()
@@ -222,6 +236,10 @@ export default {
   ::v-deep li {
     display: list-item!important;
     text-align: -webkit-match-parent!important;
+  }
+
+  ::v-deep .base-selected{
+   background-color: #b4d7ff
   }
 </style>
 
