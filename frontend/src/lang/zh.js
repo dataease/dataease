@@ -2169,7 +2169,7 @@ export default {
     i18n_msg_type_ds_invalid: '数据源失效',
     i18n_msg_type_all: '全部类型',
     channel_inner_msg: '站内消息',
-    channel_email_msg: '邮件'
+    channel_email_msg: '邮件提醒'
   },
   denumberrange: {
     label: '数值区间',
