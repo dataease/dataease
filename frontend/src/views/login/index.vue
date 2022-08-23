@@ -164,9 +164,9 @@ export default {
   },
 
   created() {
-    this.$store.dispatch('user/getUI').then(() => {
+    this.$store.dispatch('user/getUI').then((res) => {
       this.axiosFinished = true
-      this.showLoginImage()
+      this.showLoginImage(res)
     }).catch(err => {
       console.error(err)
     })
@@ -191,8 +191,11 @@ export default {
       Cookies.remove('OidcError')
       Cookies.remove('IdToken')
     },
-    showLoginImage() {
+    showLoginImage(uiInfo) {
       this.uiInfo = getSysUI()
+      if (!this.uiInfo || Object.keys(this.uiInfo).length === 0) {
+        this.uiInfo = uiInfo
+      }
       if (this.uiInfo['ui.loginImage'] && this.uiInfo['ui.loginImage'].paramValue) {
         this.loginImageUrl = '/system/ui/image/' + this.uiInfo['ui.loginImage'].paramValue
       }
