@@ -91,7 +91,9 @@ export const BASE_PIE = {
     }
   },
 
-  tooltip: {},
+  tooltip: {
+    percentageDecimals: 2, // 百分比保留小数
+  },
 
   series: [
     {
@@ -125,7 +127,7 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
       formatter = formatter.replace('{a}', '{series.name}')
       formatter = formatter.replace('{b}', '{point.name}')
       formatter = formatter.replace('{c}', '{point.y}')
-      formatter = formatter.replace('{d', '{point.percentage')
+      formatter = formatter.replace('{d}', '{point.percentage:.2f}%')
       chart_option.tooltip.formatter = formatter
     }
 
@@ -140,7 +142,7 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
       formatter = formatter.replace('{a}', '{series.name}')
       formatter = formatter.replace('{b}', '{point.name}')
       formatter = formatter.replace('{c}', '{point.y}')
-      formatter = formatter.replace('{d', '{point.percentage')
+      formatter = formatter.replace('{d}', '{point.percentage:.2f}%')
       dataLabels.format = formatter
 
       chart_option.plotOptions.pie.dataLabels = dataLabels
