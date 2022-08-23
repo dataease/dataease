@@ -157,6 +157,13 @@ export default {
           alignItems: 'center'
         }
       }
+
+      if (vertical !== 'top' && this.element.component === 'de-number-range') {
+        if (!this.titleStyle) {
+          this.titleStyle = {}
+        }
+        this.titleStyle.marginTop = '-20px'
+      }
     },
     getCondition() {
       if (this.$refs && this.$refs['deOutWidget'] && this.$refs['deOutWidget'].getCondition) {
