@@ -539,7 +539,7 @@ div:focus {
 }
 
 .blackTheme .is-current>.el-tree-node__content {
-  background-color: var(--MenuActiveBG) !important;
+  background-color: var(--MenuActiveBG, #ecf5ff) !important;
 }
 
 .blackTheme .el-collapse-item__header {
@@ -871,7 +871,7 @@ div:focus {
   .el-tabs__header {
     margin: 0 0 12px !important;
   }
-  
+
   .el-tabs__item {
     height: 24px !important;
     line-height: 24px !important;
@@ -994,7 +994,7 @@ div:focus {
 
 
 
-.de-form-item { 
+.de-form-item {
   .el-form-item__label {
     width: 100% !important;
     text-align: left;
