@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { log } from '@antv/g2plot/lib/utils';
 import tableBody from "./tableBody";
 export default {
   components: { tableBody },

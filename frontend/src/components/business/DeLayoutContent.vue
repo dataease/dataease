@@ -34,7 +34,7 @@ export default {
       return backPath || backName || backTo
     },
     needInnerPadding() {
-      return ['sys-task-email', 'system-dept', 'system-dept-form', 'system-auth', 'sys-appearance', 'system-param', 'system-template', "sys-task-dataset"].includes(this.$route.name)
+      return ['sys-task-email', 'system-dept', 'system-dept-form', 'system-auth', 'sys-appearance', 'system-param', 'system-template', "sys-task-dataset", "sys-msg-web-all", "system-plugin"].includes(this.$route.name)
     }
   }
 }
