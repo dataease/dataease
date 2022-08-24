@@ -84,7 +84,7 @@ public class DataSetTableTaskLogService {
                 row[4] = Translator.get("I18N_TASK_LOG_" + item.getStatus().toUpperCase()) ;
                 return row;
             }).collect(Collectors.toList());
-            String[] headArr = {Translator.get("I18N_TASK_NAEME"), Translator.get("I18N_DATASET"), Translator.get("I18N_START_TIME"), Translator.get("I18N_END_TIME"), Translator.get("I18N_STATUS")};
+            String[] headArr = {Translator.get("I18N_TASK_NAME"), Translator.get("I18N_DATASET"), Translator.get("I18N_START_TIME"), Translator.get("I18N_END_TIME"), Translator.get("I18N_STATUS")};
             details.add(0, headArr);
 
             HSSFWorkbook wb = new HSSFWorkbook();
