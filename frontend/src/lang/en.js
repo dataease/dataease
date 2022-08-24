@@ -1521,7 +1521,8 @@ export default {
     preview_result: 'Preview',
     sql_ds_union_error: 'Direct connect SQL dataset can not be union',
     api_data: 'API dataset',
-    copy: 'Copy'
+    copy: 'Copy',
+    sync_log: 'Sync log'
   },
   driver: {
     driver: 'Driver',

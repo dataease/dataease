@@ -223,4 +223,13 @@ export function checkCustomDs() {
     loading: true
   })
 }
+export function exportExcel(data) {
+  return request({
+    url: '/dataset/taskLog/export',
+    method: 'post',
+    loading: true,
+    responseType: 'blob',
+    data
+  })
+}
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs }

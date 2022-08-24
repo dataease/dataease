@@ -1,5 +1,9 @@
 package io.dataease.service.dataset;
 
+import cn.hutool.core.date.DateUtil;
+import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.commons.utils.ServletUtils;
+import io.dataease.exception.DataEaseException;
 import io.dataease.ext.ExtDataSetTaskMapper;
 import io.dataease.ext.query.GridExample;
 import io.dataease.commons.utils.AuthUtils;
@@ -7,18 +11,33 @@ import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DatasetTableTaskLog;
 import io.dataease.plugins.common.base.domain.DatasetTableTaskLogExample;
+import io.dataease.plugins.common.base.domain.SysLogWithBLOBs;
 import io.dataease.plugins.common.base.mapper.DatasetTableTaskLogMapper;
 import io.dataease.plugins.common.base.mapper.DatasetTableTaskMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @Author gin
@@ -50,6 +69,73 @@ public class DataSetTableTaskLogService {
     public void delete(String id) {
         datasetTableTaskLogMapper.deleteByPrimaryKey(id);
     }
+
+    public void exportExcel(BaseGridRequest request) throws Exception {
+        HttpServletResponse response = ServletUtils.response();
+        OutputStream outputStream = response.getOutputStream();
+        try {
+            List<DataSetTaskLogDTO> taskLogDTOS = listTaskLog(request, "notexcel");
+            List<String[]> details = taskLogDTOS.stream().map(item -> {
+                String[] row = new String[5];
+                row[0] = item.getName();
+                row[1] = item.getDatasetName();
+                row[2] = DateUtil.formatDateTime(new Date(item.getStartTime()));
+                row[3] = DateUtil.formatDateTime(new Date(item.getEndTime()));
+                row[4] = Translator.get("I18N_TASK_LOG_" + item.getStatus().toUpperCase()) ;
+                return row;
+            }).collect(Collectors.toList());
+            String[] headArr = {Translator.get("I18N_TASK_NAEME"), Translator.get("I18N_DATASET"), Translator.get("I18N_START_TIME"), Translator.get("I18N_END_TIME"), Translator.get("I18N_STATUS")};
+            details.add(0, headArr);
+
+            HSSFWorkbook wb = new HSSFWorkbook();
+            //明细sheet
+            HSSFSheet detailsSheet = wb.createSheet(Translator.get("I18N_DATA"));
+
+            //给单元格设置样式
+            CellStyle cellStyle = wb.createCellStyle();
+            Font font = wb.createFont();
+            //设置字体大小
+            font.setFontHeightInPoints((short) 12);
+            //设置字体加粗
+            font.setBold(true);
+            //给字体设置样式
+            cellStyle.setFont(font);
+            //设置单元格背景颜色
+            cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            //设置单元格填充样式(使用纯色背景颜色填充)
+            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            if (CollectionUtils.isNotEmpty(details)) {
+                for (int i = 0; i < details.size(); i++) {
+                    HSSFRow row = detailsSheet.createRow(i);
+                    String[] rowData = details.get(i);
+                    if (rowData != null) {
+                        for (int j = 0; j < rowData.length; j++) {
+                            HSSFCell cell = row.createCell(j);
+                            cell.setCellValue(rowData[j]);
+                            if (i == 0) {// 头部
+                                cell.setCellStyle(cellStyle);
+                                //设置列的宽度
+                                detailsSheet.setColumnWidth(j, 255 * 20);
+                            }
+                        }
+                    }
+                }
+            }
+
+            response.setContentType("application/vnd.ms-excel");
+            //文件名称
+            String fileName = "DataEase " + Translator.get("I18N_SYNC_LOG");
+            String encodeFileName = URLEncoder.encode(fileName, "UTF-8");
+            response.setHeader("Content-disposition", "attachment;filename="+encodeFileName+".xls");
+            wb.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            DataEaseException.throwException(e);
+        }
+    }
+
 
     public List<DataSetTaskLogDTO> listTaskLog(BaseGridRequest request, String type) {
         List<ConditionEntity> conditionEntities = request.getConditions();

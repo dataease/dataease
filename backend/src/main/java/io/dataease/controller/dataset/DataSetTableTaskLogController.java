@@ -13,6 +13,7 @@ import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import io.dataease.service.dataset.DataSetTableTaskLogService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,13 @@ public class DataSetTableTaskLogController {
     public Pager<List<DataSetTaskLogDTO>> listForDataset(@RequestBody BaseGridRequest request, @PathVariable String type, @PathVariable int goPage, @PathVariable int pageSize) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, dataSetTableTaskLogService.listTaskLog(request, type));
+    }
+
+
+    @ApiOperation("导出同步日志")
+    @PostMapping("export")
+    public void export(@RequestBody BaseGridRequest request) throws Exception{
+        dataSetTableTaskLogService.exportExcel(request);
     }
 
 }

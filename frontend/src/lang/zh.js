@@ -1522,7 +1522,8 @@ export default {
     preview_result: '预览结果',
     sql_ds_union_error: '直连模式下SQL数据集，不支持关联',
     api_data: 'API 数据集',
-    copy: '复制'
+    copy: '复制',
+    sync_log: '同步日志'
   },
   driver: {
     driver: '驱动',

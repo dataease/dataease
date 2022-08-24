@@ -1520,7 +1520,8 @@ export default {
     preview_result: '預覽結果',
     sql_ds_union_error: '直連模式下SQL數據集，不支持關聯',
     api_data: 'API 數據集',
-    copy: '復製'
+    copy: '復製',
+    sync_log: '同步日誌'
   },
   driver: {
     driver: '驅動',

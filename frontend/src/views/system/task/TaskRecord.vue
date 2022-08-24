@@ -2,10 +2,7 @@
 <div class="dataset-on-time">
     <el-row class="top-operate">
       <el-col :span="10">
-        <deBtn
-          secondary
-          >{{ $t("zip.export") }}</deBtn
-        >
+        <deBtn  secondary @click="exportConfirm" >{{ $t("zip.export") }}</deBtn>
       </el-col>
       <el-col :span="14" class="right-user">
         <el-input
@@ -114,8 +111,8 @@
 </template>
 
 <script>
-import { formatOrders } from '@/utils/index'
-import { post } from '@/api/dataset/dataset'
+import {formatCondition, formatOrders, formatQuickCondition} from '@/utils/index'
+import {exportExcel, post} from '@/api/dataset/dataset'
 import GridTable from "@/components/gridTable/index.vue";
 import filterUser from "./filterUserRecord.vue";
 import _ from 'lodash';
@@ -180,6 +177,40 @@ export default {
     this.destroyTimer()
   },
   methods: {
+    exportConfirm() {
+      this.$confirm(this.$t('log.confirm'), '', {
+        confirmButtonText: this.$t('commons.confirm'),
+        cancelButtonText: this.$t('commons.cancel'),
+        type: 'warning'
+      }).then(() => {
+        this.exportData()
+      }).catch(() => {
+        // this.$info(this.$t('commons.delete_cancel'))
+      })
+    },
+    exportData() {
+      const param = {
+        orders: formatOrders(this.orderConditions),
+        conditions: [...this.cacheCondition],
+      };
+      if (this.nikeName) {
+        param.conditions.push({
+          field: `dataset_table_task.name`,
+          operator: "like",
+          value: this.nikeName,
+        });
+      }
+      exportExcel( param).then(res => {
+        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = 'DataEase' + this.$t('dataset.sync_log') + '.xls'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
+    },
     getScrollStatus() {
       this.$nextTick(() => {
         const dom = document.querySelector(".filter-texts-container");
