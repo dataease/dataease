@@ -1,8 +1,9 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" :class="isAbsoluteContainer ? 'abs-container' : ''">
-    <de-main-container v-show="showChartCanvas">
+    <de-main-container v-show="showChartCanvas" class="">
       <div id="chartCanvas" class="canvas-class" :style="customStyle">
         <div class="canvas-class" :style="commonStyle">
+<!--          <svg-icon v-show="svgInnerEnable" :style="{'color':this.element.commonBackground.innerImageColor}" class="svg-background" :icon-class="mainSlotSvgInner" />-->
           <plugin-com
             v-if="chart.isPlugin"
             :component-name="chart.type + '-view'"
@@ -98,20 +99,40 @@ export default {
       }
       return style
     },
+
+    svgInnerEnable() {
+      return !this.screenShot&&this.element.commonBackground.enable && this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string'
+    },
+    mainSlotSvgInner() {
+      if (this.svgInnerEnable) {
+        return this.element.commonBackground.innerImage.replace('board/', '').replace('.svg', '')
+      } else {
+        return null
+      }
+    },
     commonStyle() {
-      const style = {}
-      if (this.element && this.element.commonBackground) {
+      const style = {
+        width: '100%',
+        height: '100%'
+      }
+      if (this.element.commonBackground) {
         style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
         style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
+        let colorRGBA = ''
+        if (this.element.commonBackground.backgroundColorSelect) {
+          colorRGBA = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)
+        }
         if (this.element.commonBackground.enable) {
-          if (this.element.commonBackground.backgroundType === 'innerImage') {
-            const innerImage = this.element.commonBackground.innerImage.replace('svg', 'png')
-            style['background'] = `url(${innerImage}) no-repeat`
-          } else if (this.element.commonBackground.backgroundType === 'outerImage') {
-            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat`
-          } else if (this.element.commonBackground.backgroundType === 'color') {
-            style['background-color'] = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)
+          if (this.screenShot && this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string') {
+            let innerImage = this.element.commonBackground.innerImage.replace('svg', 'png')
+            style['background'] = `url(${innerImage}) no-repeat ${colorRGBA}`
+          } else if (this.element.commonBackground.backgroundType === 'outerImage' && typeof this.element.commonBackground.outerImage === 'string') {
+            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+          } else {
+            style['background-color'] = colorRGBA
           }
+        } else {
+          style['background-color'] = colorRGBA
         }
         style['overflow'] = 'hidden'
       }
@@ -240,6 +261,7 @@ export default {
     height: 100%;
   }
   .canvas-class{
+    position: relative;
     width: 100%;
     height: 100%;
     background-size: 100% 100% !important;
@@ -249,4 +271,13 @@ export default {
     width: 100%;
     margin-left: -20px;
   }
+
+  .svg-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
 </style>
