@@ -1399,7 +1399,6 @@ export default {
   }
 
   .this_mobile_canvas_cell {
-    text-align: center;
     height: 100%;
     display: flex;
     align-items: center;
