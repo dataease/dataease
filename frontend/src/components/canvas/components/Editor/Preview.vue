@@ -62,7 +62,7 @@
           class="mobile-dialog-css"
           :destroy-on-close="true"
         >
-          <UserViewMobileDialog :chart="showChartInfo" :chart-table="showChartTableInfo" />
+          <UserViewMobileDialog v-if="mobileChartDetailsVisible" :chart="showChartInfo" :chart-table="showChartTableInfo" />
         </el-dialog>
       </div>
     </div>

@@ -1,18 +1,20 @@
 <template>
   <de-container>
     <de-main-container v-if="chart.type !== 'table-normal' && chart.type !== 'table-info'" :style="customStyle" class="full-div">
-      <plugin-com
-        v-if="chart.isPlugin"
-        :component-name="chart.type + '-view'"
-        :obj="{chart: mapChart || chart}"
-        :chart="mapChart || chart"
-        class="chart-class"
-      />
-      <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" :theme-style="element.commonBackground" class="chart-class" :chart="mapChart || chart" />
-      <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-      <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-      <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
-      <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
+      <div class="canvas-class" :style="commonStyle">
+        <plugin-com
+          v-if="chart.isPlugin"
+          :component-name="chart.type + '-view'"
+          :obj="{chart: mapChart || chart}"
+          :chart="mapChart || chart"
+          class="chart-class"
+        />
+        <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" :theme-style="element.commonBackground" class="chart-class" :chart="mapChart || chart" />
+        <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
+        <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
+        <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
+        <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
+      </div>
     </de-main-container>
     <de-main-container v-else>
       <table-normal :chart="chartTable" :show-summary="false" class="table-class" />
@@ -33,6 +35,7 @@ import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import {hexColorToRGBA} from "@/views/chart/chart/util";
 export default {
   name: 'UserViewMobileDialog',
   components: { ChartComponentS2, LabelNormalText, DeContainer, DeMainContainer, ChartComponentG2, ChartComponent, TableNormal, LabelNormal, PluginCom },
@@ -57,7 +60,6 @@ export default {
     this.element = deepCopy(this.curComponent)
   },
   computed: {
-
     customStyle() {
       let style = {
       }
@@ -76,6 +78,45 @@ export default {
       }
       if (!style.background) {
         style.background = '#FFFFFF'
+      }
+      return style
+    },
+
+    svgInnerEnable() {
+      return !this.screenShot&&this.element.commonBackground.enable && this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string'
+    },
+    mainSlotSvgInner() {
+      if (this.svgInnerEnable) {
+        return this.element.commonBackground.innerImage.replace('board/', '').replace('.svg', '')
+      } else {
+        return null
+      }
+    },
+    commonStyle() {
+      const style = {
+        width: '100%',
+        height: '100%'
+      }
+      if (this.element.commonBackground) {
+        style['padding'] = (this.element.commonBackground.innerPadding || 0) + 'px'
+        style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
+        let colorRGBA = ''
+        if (this.element.commonBackground.backgroundColorSelect) {
+          colorRGBA = hexColorToRGBA(this.element.commonBackground.color, this.element.commonBackground.alpha)
+        }
+        if (this.element.commonBackground.enable) {
+          if (this.screenShot && this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string') {
+            let innerImage = this.element.commonBackground.innerImage.replace('svg', 'png')
+            style['background'] = `url(${innerImage}) no-repeat ${colorRGBA}`
+          } else if (this.element.commonBackground.backgroundType === 'outerImage' && typeof this.element.commonBackground.outerImage === 'string') {
+            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+          } else {
+            style['background-color'] = colorRGBA
+          }
+        } else {
+          style['background-color'] = colorRGBA
+        }
+        style['overflow'] = 'hidden'
       }
       return style
     },
@@ -127,5 +168,11 @@ export default {
   .full-div{
     background-size:100% 100% !important;
     padding: 5px 0px 5px 0px !important;
+  }
+  .canvas-class{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-size: 100% 100% !important;
   }
 </style>
