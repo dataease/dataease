@@ -3,7 +3,7 @@
     <el-input
       v-model="templateFilterText"
       :placeholder="$t('panel.filter_keywords')"
-      size="mini"
+      size="small"
       clearable
       prefix-icon="el-icon-search"
     />
@@ -22,7 +22,7 @@
         v-for="ele in templateListComputed"
         :key="ele.name"
       >
-        <i class="el-icon-folder folder" />
+        <svg-icon icon-class="scene" class="ds-icon-scene" />
         <span>{{ ele.name }}</span>
         <span @click.stop class="more">
           <el-dropdown

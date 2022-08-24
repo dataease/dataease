@@ -279,7 +279,7 @@ export default {
         "dataset.task.last_exec_status",
       ].forEach((ele, index) => {
         const { activeType: type, list } =
-          filterDataset[index];
+          this.filterDataset[index];
         if (this.active[type].length) {
           params.push(
             `${this.$t(ele)}:${this.active[type]

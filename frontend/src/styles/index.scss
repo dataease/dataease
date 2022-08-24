@@ -1030,6 +1030,11 @@ div:focus {
 }
 
 .de-dialog-form {
+
+  .el-dialog__close {
+    font-size: 20px;
+  }
+  
   .el-dialog__body {
     padding: 0 24px 24px 24px;
   }

@@ -5,7 +5,7 @@
       <el-row style="margin-bottom: 10px">
         <el-input
           v-model="filterText"
-          size="mini"
+          size="small"
           :placeholder="$t('commons.search')"
           prefix-icon="el-icon-search"
           clearable

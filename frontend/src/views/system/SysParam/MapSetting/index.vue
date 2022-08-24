@@ -1,5 +1,5 @@
 <template>
-  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="height: calc(100vh - 150px);">
+  <de-container class="de-earth" v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="height: calc(100vh - 150px);">
 
     <de-aside-container type="mapset" style="height: 100%;">
       <map-setting-left ref="map_setting_tree" :tree-datas="treeDatas" @emit-add="emitAdd" @refresh-tree="refreshTree" @show-node-info="loadForm" />
@@ -62,5 +62,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.de-earth {
+  padding: 24px;
+  width: 100%;
+  overflow: auto;
+}
 </style>

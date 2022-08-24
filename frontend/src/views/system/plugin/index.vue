@@ -41,10 +41,17 @@
       <div v-for="ele in data" :key="ele.pluginId" class="de-card-plugin">
         <div class="card-info">
           <div class="info-top">
-            <img
-              src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
+            <!-- <img
+              :src="`https://de.fit2cloud.com/api/pluginCommon/staticInfo/${ele.moduleName}/svg`"
               alt=""
-            />
+            /> -->
+            <el-image
+              :src="`https://de.fit2cloud.com/api/pluginCommon/staticInfo/${ele.moduleName}/svg`"
+            >
+              <div slot="error" class="image-slot">
+                <img  :src="imgDefault"/>
+              </div>
+            </el-image>
             <p class="title">{{ ele.descript }}</p>
             <el-tooltip
               class="item"
@@ -74,7 +81,7 @@
         <div class="card-method">
           <el-upload
             v-permission="['plugin:upload']"
-            :action="baseUrl + 'api/plugin/upload'"
+            :action="baseUrl + 'api/plugin/update/' + ele.pluginId"
             :multiple="false"
             :show-file-list="false"
             :file-list="fileList"
@@ -85,14 +92,31 @@
             name="file"
             :headers="headers"
           >
-            <div class="btn-plugin"><i class="el-icon-more"></i>更新</div>
+            <div class="btn-plugin update">
+              <i class="el-icon-more"></i>更新
+            </div>
           </el-upload>
           <el-divider direction="vertical"></el-divider>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="'内置插件，无法卸载'"
+            placement="top"
+          >
+            <div
+              :class="[{ 'is-disable': btnDisabled(ele) }]"
+              v-if="checkPermission(['plugin:uninstall']) && btnDisabled(ele)"
+              @click="del(ele)"
+              class="btn-plugin uninstall"
+            >
+              <i class="el-icon-more"></i>卸载
+            </div>
+          </el-tooltip>
           <div
             :class="[{ 'is-disable': btnDisabled(ele) }]"
-            v-show="checkPermission(['plugin:uninstall'])"
+            v-if="checkPermission(['plugin:uninstall']) && !btnDisabled(ele)"
             @click="del(ele)"
-            class="btn-plugin"
+            class="btn-plugin uninstall"
           >
             <i class="el-icon-more"></i>卸载
           </div>
@@ -119,6 +143,7 @@ export default {
       name: "",
       listValue: ["cost", "creator", "version", "installTime"],
       data: [],
+      imgDefault: require('@/assets/icon_nopicture_filled.png'),
       uploading: false,
       baseUrl: process.env.VUE_APP_BASE_API,
       fileList: [],
@@ -159,14 +184,12 @@ export default {
       pluginLists(0, 0, param).then((response) => {
         this.data = response.data.listObject;
         this.data.forEach((ele) => {
-          if (ele.installTime) {
-            ele.installTime = new Date(ele.installTime).format(
-              "yyyy-MM-dd hh:mm:ss"
-            );
-          }
           if (ele.cost) {
             ele.cost = ele.cost.toLocaleString();
           }
+          ele.installTime = ele.installTime
+            ? new Date(ele.installTime).format("yyyy-MM-dd hh:mm:ss")
+            : "-";
         });
       });
     },
@@ -194,10 +217,11 @@ export default {
     },
 
     del(row) {
+      if (row.pluginId < 4) return;
       const options = {
         title: "确定卸载该插件？",
         content: "卸载并重启服务器之后才能生效",
-        confirmButtonText: this.$t('卸载'),
+        confirmButtonText: this.$t("卸载"),
         type: "primary",
         cb: () => {
           uninstall(row.pluginId)
@@ -266,6 +290,7 @@ export default {
       font-weight: 400;
       font-size: 14px;
       line-height: 22px;
+      cursor: pointer;
       /* identical to box height, or 157% */
 
       display: flex;
@@ -279,6 +304,19 @@ export default {
         font-size: 13px;
         margin-right: 5.33px;
       }
+
+      &.is-disable {
+        cursor: not-allowed;
+        color: #bbbfc4;
+      }
+    }
+
+    .btn-plugin.update:not(.is-disable):hover {
+      color: var(--primaryHover, #26acff);
+    }
+
+    .btn-plugin.uninstall:not(.is-disable):hover {
+      color: var(--deDangerHover, #26acff);
     }
   }
 
@@ -292,7 +330,8 @@ export default {
     .info-top {
       margin-bottom: 12px;
       overflow: hidden;
-      img {
+
+      .el-image {
         float: left;
         box-sizing: border-box;
         width: 40px;
@@ -300,6 +339,15 @@ export default {
         background: #ffffff;
         border: 1px solid #dee0e3;
         border-radius: 4px;
+        display: flex;
+
+        .image-slot {
+          padding: 4px;
+        }
+      }
+      img {
+        width: 100%;
+        height: 100%;
       }
 
       .title {

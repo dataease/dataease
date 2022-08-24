@@ -1,6 +1,6 @@
 <template>
-  <div class="de-card-model">
-    <div class="card-img-model">
+  <div :style="classBackground" class="de-card-model">
+    <div class="card-img-model" :style="classImg">
       <img :src="model.snapshot" alt="" />
     </div>
     <div class="card-info">
@@ -38,6 +38,25 @@ export default {
       type: Object,
       default: () => {},
     },
+    width: {
+      type: Number
+    }
+  },
+  computed: {
+    classBackground() {
+      return {
+        width: this.width + 'px',
+        height: this.width * 0.714 + 'px',
+      }
+    },
+    classImg() {
+      return {
+        width: this.width + 'px',
+        height: this.width * 0.576 + 'px',
+        // background: `url(${this.model.snapshot}) no-repeat`,
+        // 'background-size': `100% 100%`
+      }
+    },
   },
   methods: {
     handleCommand(key) {
@@ -49,8 +68,6 @@ export default {
 
 <style lang="scss">
 .de-card-model {
-  width: 258px;
-  height: 184px;
   box-sizing: border-box;
   background: #ffffff;
   border: 1px solid var(--deCardStrokeColor, #dee0e3);
@@ -60,6 +77,7 @@ export default {
     border-bottom: 1px solid var(--deCardStrokeColor, #dee0e3);
     height: 144px;
     width: 100%;
+    overflow: hidden;
 
     img {
       width: 100%;
