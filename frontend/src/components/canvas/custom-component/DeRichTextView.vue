@@ -131,9 +131,9 @@ export default {
     viewInit(){
       bus.$on('fieldSelect-' + this.element.propValue.viewId, this.fieldSelect)
       tinymce.init({})
-      this.myValue = this.assignment(this.element.propValue.textValue)
-      bus.$on('initCurFields-' + this.element.id, this.initCurFieldsChange)
       this.$nextTick(()=>{
+        this.myValue = this.assignment(this.element.propValue.textValue)
+        bus.$on('initCurFields-' + this.element.id, this.initCurFieldsChange)
         this.initReady=true
       })
     },
@@ -170,19 +170,21 @@ export default {
     },
     resetSelect(node){
       const edInner = tinymce.get(this.tinymceId);
-      const nodeArray = edInner.dom.select(".base-selected")
-      if(nodeArray){
-        nodeArray.forEach(nodeInner=>{
-          nodeInner.removeAttribute('class')
-        })
-      }
-      if(node){
-        const pNode = node.parentElement
-        if(pNode && pNode.id&& pNode.id.indexOf('changeText')>-1){
-          const innerId = '#'+pNode.id
-          const domTest = edInner.dom.select(innerId)[0]
-          domTest.setAttribute("class",'base-selected')
-          edInner.selection.select(domTest)
+      if(edInner.dom){
+        const nodeArray = edInner.dom.select(".base-selected")
+        if(nodeArray){
+          nodeArray.forEach(nodeInner=>{
+            nodeInner.removeAttribute('class')
+          })
+        }
+        if(node){
+          const pNode = node.parentElement
+          if(pNode && pNode.id&& pNode.id.indexOf('changeText')>-1){
+            const innerId = '#'+pNode.id
+            const domTest = edInner.dom.select(innerId)[0]
+            domTest.setAttribute("class",'base-selected')
+            edInner.selection.select(domTest)
+          }
         }
       }
     },
