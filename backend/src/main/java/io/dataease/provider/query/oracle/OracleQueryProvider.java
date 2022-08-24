@@ -1110,7 +1110,7 @@ public class OracleQueryProvider extends QueryProvider {
 
             String whereName = "";
             if (request.getIsTree()) {
-                whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
+                whereName = " (" + StringUtils.join(whereNameList, "||','||") + ") ";
             } else {
                 whereName = whereNameList.get(0);
             }
