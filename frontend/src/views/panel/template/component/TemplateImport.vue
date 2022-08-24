@@ -10,11 +10,8 @@
       :rules="templateInfoRules"
     >
       <el-form-item :label="$t('system_parameter_setting.template_name')" prop="name">
-        <el-row>
-          <el-col :span="19" style="padding-right: 2px;">
-            <el-input v-model="templateInfo.name" clearable size="small" />
-          </el-col>
-          <el-col :span="5" >
+        <div class="flex-template">
+          <el-input v-model="templateInfo.name" clearable size="small" />
             <deBtn
               style="margin-left: 10px"
               class="el-icon-upload2"
@@ -30,8 +27,7 @@
               hidden
               @change="handleFileChange"
             />
-          </el-col>
-        </el-row>
+        </div>
       </el-form-item>
     </el-form>
     <el-row class="preview" :style="classBackground" />
@@ -218,5 +214,18 @@ export default {
   border-left: 1px solid #e6e6e6;
   height: 300px;
   background-size: 100% 100% !important;
+}
+</style>
+
+<style lang="scss">
+.flex-template {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .el-input {
+    margin-right: 2px;
+    flex: 1;
+  }
 }
 </style>
