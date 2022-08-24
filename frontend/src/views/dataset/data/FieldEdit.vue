@@ -512,7 +512,7 @@ export default {
       const param = { ...item }
       param.id = null
       param.extField = 2
-      param.originName = '[' + item.id + ']'
+      param.originName = item.extField === 2 ? item.originName : ('[' + item.id + ']')
       param.name = getFieldName(this.tableFields.dimensionListData.concat(this.tableFields.quotaListData), item.name)
       param.dataeaseName = null
       param.lastSyncTime = null
