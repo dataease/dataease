@@ -1,11 +1,14 @@
 package io.dataease.plugins.server;
 
+import cn.hutool.core.io.FileUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.exception.DEException;
+import io.dataease.commons.model.excel.ExcelSheetModel;
 import io.dataease.commons.pool.PriorityThreadPoolExecutor;
 import io.dataease.commons.utils.*;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
 import io.dataease.plugins.common.entity.XpackConditionEntity;
@@ -27,11 +30,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.io.*;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 @ApiIgnore
 @RequestMapping("/plugin/task")
@@ -214,6 +223,70 @@ public class XEmailTaskServer {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         GlobalTaskInstance instanceForm = emailXpackService.instanceForm(instanceId);
         return instanceForm.getInfo();
+    }
+
+    @RequiresPermissions("task-email:read")
+    @PostMapping("/export")
+    public void export(@RequestBody XpackGridRequest request) throws Exception{
+        Pager<List<XpackTaskInstanceDTO>> listPager = instancesGrid(0, 0, request);
+        List<XpackTaskInstanceDTO> instanceDTOS = listPager.getListObject();
+        ExcelSheetModel excelSheetModel = excelSheetModel(instanceDTOS);
+        List<ExcelSheetModel> sheetModels = new ArrayList<>();
+        sheetModels.add(excelSheetModel);
+        File file = ExcelUtils.exportExcel(sheetModels, null);
+        InputStream inputStream = new FileInputStream(file);
+        HttpServletResponse response = ServletUtils.response();
+        try {
+            String filename = file.getName();
+            response.reset();
+            response.addHeader("Access-Control-Allow-Origin", "*");
+            response.setContentType("application/octet-stream;charset=UTF-8");
+            response.addHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(filename, "UTF-8"));
+            ServletOutputStream outputStream = response.getOutputStream();
+            byte[] buff = new byte[1024];
+            BufferedInputStream bis = null;
+            // 读取文件
+            bis = new BufferedInputStream(inputStream);
+            int i = bis.read(buff);
+            while (i != -1) {
+                outputStream.write(buff, 0, buff.length);
+                outputStream.flush();
+                i = bis.read(buff);
+            }
+            outputStream.close();
+            inputStream.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }finally {
+            if (file.exists())
+                FileUtil.del(file);
+        }
+
+    }
+
+    private ExcelSheetModel excelSheetModel(List<XpackTaskInstanceDTO> instanceDTOS) {
+        ExcelSheetModel excelSheetModel = new ExcelSheetModel();
+        excelSheetModel.setSheetName(Translator.get("I18N_XPACKTASK_FILE_NAME"));
+        String[] headArr = new String[] {Translator.get("I18N_XPACKTASK_NAME"), Translator.get("I18N_XPACKTASK_EXEC_TIME"), Translator.get("I18N_XPACKTASK_STATUS")};
+        List<String> head = Arrays.asList(headArr);
+        excelSheetModel.setHeads(head);
+        List<List<String>> datas = instanceDTOS.stream().map(this::formatExcelData).collect(Collectors.toList());
+        excelSheetModel.setDatas(datas);
+        return excelSheetModel;
+    }
+
+    private List<String> formatExcelData(XpackTaskInstanceDTO instanceDTO) {
+        List<String> results = new ArrayList<>();
+        results.add(instanceDTO.getTaskName());
+        try {
+            results.add(DateUtils.getTimeString(instanceDTO.getExecuteTime()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        Integer status = instanceDTO.getStatus();
+        String i18key = "I18N_XPACKTASK_" + (ObjectUtils.isEmpty(status) || status == -1 ? "ERROR" : status == 0 ? "UNDERWAY" : "SUCCESS");
+        results.add(Translator.get(i18key));
+        return results;
     }
 
     private XpackPixelEntity buildPixel(String pixel) {
