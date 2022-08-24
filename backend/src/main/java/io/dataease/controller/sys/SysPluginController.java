@@ -50,10 +50,10 @@ public class SysPluginController {
     }
 
     @ApiOperation("更新插件")
-    @PostMapping("/update/id")
+    @PostMapping("/update/{pluginId}")
     @RequiresPermissions("plugin:upload")
-    public Map<String, Object> update(@PathVariable("id") Long id, @RequestParam("file") MultipartFile file) throws Exception{
-        if (pluginService.uninstall(id)) {
+    public Map<String, Object> update(@PathVariable("pluginId") Long pluginId, @RequestParam("file") MultipartFile file) throws Exception{
+        if (pluginService.uninstall(pluginId)) {
             return pluginService.localInstall(file);
         }
         return null;
