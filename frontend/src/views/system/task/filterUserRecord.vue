@@ -273,7 +273,6 @@ export default {
       ].forEach((ele, index) => {
         const { activeType: type, list } =
           this.filterDataset[index];
-          console.log('type', type);
         if (this.active[type].length) {
           params.push(
             `${this.$t(ele)}:${this.active[type]

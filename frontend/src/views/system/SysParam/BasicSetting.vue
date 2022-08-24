@@ -235,7 +235,8 @@ export default {
           this.show = true;
           window.location.reload();
         } else {
-        } this.openMessageSuccess("commons.save_failed", 'error');
+          this.openMessageSuccess("commons.save_failed", 'error');
+        } 
       });
     },
     cancel() {

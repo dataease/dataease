@@ -26,3 +26,13 @@ export function exportExcel(data) {
     data
   })
 }
+
+export function exportExcelRecord(data) {
+  return request({
+    url: '/plugin/task/export',
+    method: 'post',
+    loading: true,
+    responseType: 'blob',
+    data
+  })
+}

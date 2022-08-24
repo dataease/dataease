@@ -4,6 +4,7 @@
       <el-col :span="10">
         <deBtn
           secondary
+          @click="exportRecord"
           >{{ $t("zip.export") }}</deBtn
         >
       </el-col>
@@ -114,8 +115,9 @@
 </template>
 
 <script>
-import { formatOrders } from '@/utils/index'
-import { post } from '@/api/dataset/dataset'
+import { formatOrders } from '@/utils/index';
+import { post } from '@/api/dataset/dataset';
+import { exportExcelRecord } from '@/api/system/log.js';
 import GridTable from "@/components/gridTable/index.vue";
 import filterUser from "./filterUserRecord.vue";
 import _ from 'lodash';
@@ -180,6 +182,19 @@ export default {
     this.destroyTimer()
   },
   methods: {
+    exportRecord() { // plugin/task/export
+      exportExcelRecord({}).then(res => {
+        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = '定时报告' + '.xls' // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      }).catch(() => {
+      })
+    },
     getScrollStatus() {
       this.$nextTick(() => {
         const dom = document.querySelector(".filter-texts-container");

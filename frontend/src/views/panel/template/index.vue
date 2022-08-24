@@ -33,7 +33,7 @@
         </div>
         <div class="de-tabs-right">
           <div v-if="currentTemplateLabel" class="active-template">
-            {{ currentTemplateLabel }}({{ currentTemplateShowList.length }})
+            {{ currentTemplateLabel }}&nbsp;&nbsp;({{ currentTemplateShowList.length }})
             <deBtn
               type="primary"
               @click="templateImport(currentTemplateId)"
@@ -46,10 +46,11 @@
             v-if="!currentTemplateShowList.length"
             description="暂无模版"
           ></el-empty>
-          <div v-if="currentTemplateId !== ''" class="template-box">
+          <div  id="template-box" v-show="currentTemplateId !== ''" class="template-box">
             <template-item
               v-for="item in currentTemplateShowList"
               :key="item.id"
+               :width="templateCurWidth"
               :model="item"
               @command="(key) => handleCommand(key, item)"
             />
@@ -108,7 +109,10 @@ import TemplateList from "./component/TemplateList";
 import TemplateItem from "./component/TemplateItem";
 import TemplateImport from "./component/TemplateImport";
 import { save, templateDelete, find } from "@/api/system/template";
+import elementResizeDetectorMaker from 'element-resize-detector'
+
 import msgCfm from "@/components/msgCfm/index";
+import { log } from '@antv/g2plot/lib/utils';
 export default {
   name: "PanelMain",
   mixins: [msgCfm],
@@ -141,6 +145,8 @@ export default {
       currentTemplateLabel: "",
       currentTemplateId: "",
       templateList: [],
+      templateMiniWidth: 262,
+      templateCurWidth: 262,
       formType: "",
       originName: "",
       templateDialog: {
@@ -165,6 +171,17 @@ export default {
   },
   mounted() {
     this.getTree();
+    const _this = this
+    const erd = elementResizeDetectorMaker()
+    const templateMainDom = document.getElementById('template-box')
+    // 监听div变动事件
+    erd.listenTo(templateMainDom, element => {
+      _this.$nextTick(() => {
+        const curSeparator = Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)
+        console.log(1, curSeparator)
+        _this.templateCurWidth = Math.trunc(templateMainDom.offsetWidth / curSeparator) - 50
+      })
+    })
   },
   methods: {
     roleValidator(rule, value, callback) {
@@ -313,7 +330,6 @@ export default {
     },
     closeEditTemplateDialog() {
       this.templateDialog.visible = false;
-      this.showCurrentTemplate(this.templateDialog.pid);
     },
     templateImport(pid) {
       this.templateDialog.visible = true;
