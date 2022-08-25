@@ -100,7 +100,6 @@ export const buildFilterMap = panelItems => {
   let result = buildViewKeyMap(panelItems)
 
   result = buildViewKeyFilters(panelItems, result)
-  fillElementsFilter(panelItems, result)
   return result
 }
 

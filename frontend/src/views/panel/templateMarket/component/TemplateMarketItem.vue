@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import {imgUrlTrans} from "@/components/canvas/utils/utils";
+
 export default {
   name: 'TemplateMarketItem',
   props: {
@@ -39,7 +41,7 @@ export default {
       return {
         width: this.width + 'px',
         height: this.width * 0.58 + 'px',
-        background: `url(${this.thumbnailUrl}) no-repeat`,
+        background: `url(${imgUrlTrans(this.thumbnailUrl)}) no-repeat`,
         'background-size': `100% 100%`
       }
     },

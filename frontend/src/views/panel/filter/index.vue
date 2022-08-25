@@ -9,9 +9,9 @@
           v-for="(widget, index) in item"
           :key="widget.widgetName+index"
           :data-id="widget.widgetName"
-          :draggable="(widget.widgetName !== 'buttonSureWidget' && widget.widgetName !== 'buttonResetWidget') || (widget.widgetName === 'buttonSureWidget' && !searchButtonExist) || (widget.widgetName === 'buttonResetWidget' && searchButtonExist)"
+          :draggable="(widget.widgetName !== 'buttonSureWidget' && widget.widgetName !== 'buttonResetWidget') || (widget.widgetName === 'buttonSureWidget' && !searchButtonExist) || (widget.widgetName === 'buttonResetWidget' && searchButtonExist && !resetButtonExist)"
           :data-index="index"
-          :class="'filter-widget '+ (widget.defaultClass || '')"
+          :class="('filter-widget '+ (widget.widgetName === 'buttonSureWidget' ? sureButtonClass : widget.widgetName === 'buttonResetWidget' ? resetButtonClass : widget.defaultClass))"
         >
           <div class="filter-widget-icon">
             <i :class="(widget.icon || 'el-icon-setting') + ' widget-icon-i'" />
@@ -74,38 +74,15 @@ export default {
     resetButtonExist() {
       return this.componentData && this.componentData.some(component => component.type === 'custom-button' && component.serviceName === 'buttonResetWidget')
     },
-    resetButtonDisable() {
-      return !this.resetButtonExist && this.searchButtonExist
-    }
-  },
-  watch: {
-    searchButtonExist(val, old) {
-      if (val === old) return
-      if (val) {
-        this.widgetSubjects['按钮'][0].defaultClass = 'button-disable-filter'
-        if (this.resetButtonExist) {
-          this.widgetSubjects['按钮'][1].defaultClass = 'button-disable-filter'
-        } else {
-          this.widgetSubjects['按钮'][1].defaultClass = 'time-filter'
-        }
-      } else {
-        this.widgetSubjects['按钮'][0].defaultClass = 'time-filter'
-        this.widgetSubjects['按钮'][1].defaultClass = 'button-disable-filter'
-      }
+    sureButtonClass() {
+      return this.searchButtonExist ? 'button-disable-filter' : 'time-filter'
     },
-    resetButtonExist(val, old) {
-      if (val === old) return
-      if (val) {
-        this.widgetSubjects['按钮'][1].defaultClass = 'button-disable-filter'
-      } else {
-        if (this.searchButtonExist) {
-          this.widgetSubjects['按钮'][1].defaultClass = 'time-filter'
-        } else {
-          this.widgetSubjects['按钮'][1].defaultClass = 'button-disable-filter'
-        }
-      }
+    resetButtonClass() {
+      return (this.searchButtonExist && !this.resetButtonExist) ? 'time-filter' : 'button-disable-filter'
     }
+
   },
+
   created() {
     this.init()
   },

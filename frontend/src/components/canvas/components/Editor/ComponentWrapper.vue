@@ -58,6 +58,7 @@ import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import CloseBar from '@/components/canvas/components/Editor/CloseBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import {imgUrlTrans} from "@/components/canvas/utils/utils";
 
 export default {
   components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
@@ -155,9 +156,9 @@ export default {
         if (this.config.commonBackground.enable) {
           if (this.screenShot && this.config.commonBackground.backgroundType === 'innerImage' && typeof this.config.commonBackground.innerImage === 'string') {
             let innerImage = this.config.commonBackground.innerImage.replace('svg', 'png')
-            style['background'] = `url(${innerImage}) no-repeat ${colorRGBA}`
+            style['background'] = `url(${imgUrlTrans(innerImage)}) no-repeat ${colorRGBA}`
           } else if (this.config.commonBackground.backgroundType === 'outerImage' && typeof this.config.commonBackground.outerImage === 'string') {
-            style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+            style['background'] = `url(${imgUrlTrans(this.config.commonBackground.outerImage)}) no-repeat ${colorRGBA}`
           } else {
             style['background-color'] = colorRGBA
           }

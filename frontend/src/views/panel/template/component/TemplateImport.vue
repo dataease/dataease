@@ -46,6 +46,7 @@
 import { save, nameCheck } from "@/api/system/template";
 import msgCfm from "@/components/msgCfm/index";
 import { find } from "@/api/system/template";
+import {imgUrlTrans} from "@/components/canvas/utils/utils";
 
 export default {
   mixins: [msgCfm],
@@ -86,7 +87,7 @@ export default {
     classBackground() {
       if (this.importTemplateInfo.snapshot) {
         return {
-          background: `url(${this.importTemplateInfo.snapshot}) no-repeat`,
+          background: `url(${imgUrlTrans(this.importTemplateInfo.snapshot)}) no-repeat`,
         };
       } else {
         return {};
@@ -104,7 +105,7 @@ export default {
     // },
     // validator(rule, value, callback) {
     //   if (this.nameRepeat(value)) {
-        
+
     //     callback(new Error(this.$t('commons.already_exists')));
     //   } else {
     //     callback();

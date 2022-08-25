@@ -34,6 +34,7 @@ export default {
     if (this.componentName === 'PanelEdit') {
       next(false)
       if (confirm(this.$t('panel.edit_leave_tips'))) {
+        bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
         next()
       }
     } else {

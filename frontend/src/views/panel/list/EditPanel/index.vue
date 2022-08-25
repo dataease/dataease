@@ -35,7 +35,7 @@
 import { panelSave, panelUpdate } from '@/api/panel/panel'
 import { showTemplateList } from '@/api/system/template'
 import TemplateAllList from './TemplateAllList'
-import { deepCopy } from '@/components/canvas/utils/utils'
+import {deepCopy, imgUrlTrans} from '@/components/canvas/utils/utils'
 
 export default {
   components: { TemplateAllList },
@@ -68,7 +68,7 @@ export default {
     classBackground() {
       if (this.importTemplateInfo.snapshot) {
         return {
-          background: `url(${this.importTemplateInfo.snapshot}) no-repeat`
+          background: `url(${imgUrlTrans(this.importTemplateInfo.snapshot)}) no-repeat`
         }
       } else {
         return {}
