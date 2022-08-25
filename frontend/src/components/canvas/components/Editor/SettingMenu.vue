@@ -135,6 +135,16 @@ export default {
     },
 
     deleteComponent() {
+      if (this.curComponent.type === 'custom-button' && this.curComponent.serviceName === 'buttonSureWidget') {
+        let len = this.componentData.length
+        while (len--) {
+          const item = this.componentData[len]
+
+          if (item.type === 'custom-button' && item.serviceName === 'buttonResetWidget') {
+            this.componentData.splice(len, 1)
+          }
+        }
+      }
       this.$emit('amRemoveItem')
       this.deleteCurCondition()
       this.$store.commit('deleteComponent')
