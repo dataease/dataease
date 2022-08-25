@@ -368,7 +368,7 @@ export default {
     },
     'cfilters': {
       handler: function(val1, val2) {
-        if (isChange(val1, val2) && !this.isFirstLoad) {
+        if ((isChange(val1, val2) || isChange(val1, this.filters)) && !this.isFirstLoad) {
           this.getData(this.element.propValue.viewId)
         }
       },
