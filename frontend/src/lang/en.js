@@ -2341,7 +2341,7 @@ export default {
     teaching_video_bottom_hint: 'More videos',
     enterprise_edition_hint1: 'Provide enterprise application scenario X-Pack enhancement package',
     enterprise_edition_hint2: 'Provide high-level original factory service support',
-    enterprise_edition_hint3: 'Provide DateEase best practice recommendations',
+    enterprise_edition_hint3: 'Provide DataEase best practice recommendations',
     open_source_community: 'Open source community',
     click_show: 'Click To View',
     show_more: 'Show More',

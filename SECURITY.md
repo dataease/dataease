@@ -16,4 +16,4 @@ All security bugs should be reported to the contact as below:
 - support@fit2cloud.com
 - 400-052-0755
 
-Thanks for you support!
+Thanks for your support!
