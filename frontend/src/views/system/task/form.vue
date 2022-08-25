@@ -341,7 +341,10 @@ export default {
   created() {
     const { datasetName, id } = this.$route.query;
     this.taskDetail = { datasetName, id };
-    if (!id) return;
+    if (!id) {
+      this.taskForm.startTime = new Date()
+      return;
+    };
     this.getTaskDetail(id);
   },
   methods: {
