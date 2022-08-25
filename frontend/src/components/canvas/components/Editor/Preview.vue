@@ -75,7 +75,7 @@ import { mapState } from 'vuex'
 import ComponentWrapper from './ComponentWrapper'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import { uuid } from 'vue-uuid'
-import {deepCopy, imgUrlTrans} from '@/components/canvas/utils/utils'
+import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
@@ -329,6 +329,13 @@ export default {
       this.componentData.forEach(component => {
         if (component.type === 'view' && this.buttonFilterMap[component.propValue.viewId]) {
           component.filters = this.buttonFilterMap[component.propValue.viewId]
+        }
+        if (component.type === 'de-tabs') {
+          for (let idx = 0; idx < component.options.tabList.length; idx++) {
+            const ele = component.options.tabList[idx].content
+            if (!ele.type || ele.type !== 'view') continue
+            ele.filters = this.buttonFilterMap[ele.propValue.viewId]
+          }
         }
       })
     },
