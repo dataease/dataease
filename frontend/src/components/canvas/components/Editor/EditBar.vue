@@ -225,13 +225,8 @@ export default {
         if (chartInfo) {
           this.curFields = []
           const chartDetails = JSON.parse(chartInfo)
-          if (chartDetails.type === 'richTextView' && chartDetails.data && chartDetails.data.sourceFields) {
-            const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
-            chartDetails.data.sourceFields.forEach(field => {
-              if (checkAllAxisStr.indexOf(field.id) > -1) {
-                this.curFields.push(field)
-              }
-            })
+          if (chartDetails.type === 'richTextView' && chartDetails.data) {
+            this.curFields = chartDetails.data.fields
           }
         }
       }
