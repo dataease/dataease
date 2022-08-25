@@ -33,7 +33,9 @@
         </div>
         <div class="de-tabs-right">
           <div v-if="currentTemplateLabel" class="active-template">
-            {{ currentTemplateLabel }}&nbsp;&nbsp;({{ currentTemplateShowList.length }})
+            {{ currentTemplateLabel }}&nbsp;&nbsp;({{
+              currentTemplateShowList.length
+            }})
             <deBtn
               type="primary"
               @click="templateImport(currentTemplateId)"
@@ -46,11 +48,15 @@
             v-if="!currentTemplateShowList.length"
             description="暂无模版"
           ></el-empty>
-          <div  id="template-box" v-show="currentTemplateId !== ''" class="template-box">
+          <div
+            id="template-box"
+            v-show="currentTemplateId !== ''"
+            class="template-box"
+          >
             <template-item
               v-for="item in currentTemplateShowList"
               :key="item.id"
-               :width="templateCurWidth"
+              :width="templateCurWidth"
               :model="item"
               @command="(key) => handleCommand(key, item)"
             />
@@ -60,7 +66,7 @@
     </div>
     <el-dialog
       :title="dialogTitle"
-      :visible="editTemplate"
+      :visible.sync="editTemplate"
       append-to-body
       class="de-dialog-form"
       width="600px"
@@ -71,10 +77,7 @@
         :model="templateEditForm"
         :rules="templateEditFormRules"
       >
-        <el-form-item
-          :label="dialogTitleLabel"
-          prop="name"
-        >
+        <el-form-item :label="dialogTitleLabel" prop="name">
           <el-input v-model="templateEditForm.name" />
         </el-form-item>
       </el-form>
@@ -97,6 +100,8 @@
       <template-import
         v-if="templateDialog.visible"
         :pid="templateDialog.pid"
+        @refresh="showCurrentTemplate(currentTemplateId,
+        currentTemplateLabel)"
         @closeEditTemplateDialog="closeEditTemplateDialog"
       />
     </el-dialog>
@@ -109,10 +114,10 @@ import TemplateList from "./component/TemplateList";
 import TemplateItem from "./component/TemplateItem";
 import TemplateImport from "./component/TemplateImport";
 import { save, templateDelete, find } from "@/api/system/template";
-import elementResizeDetectorMaker from 'element-resize-detector'
+import elementResizeDetectorMaker from "element-resize-detector";
 
 import msgCfm from "@/components/msgCfm/index";
-import { log } from '@antv/g2plot/lib/utils';
+import { log } from "@antv/g2plot/lib/utils";
 export default {
   name: "PanelMain",
   mixins: [msgCfm],
@@ -129,7 +134,7 @@ export default {
           {
             required: true,
             message: this.$t("commons.input_content"),
-            trigger: "change",
+            trigger: "blur",
           },
           {
             max: 50,
@@ -171,17 +176,20 @@ export default {
   },
   mounted() {
     this.getTree();
-    const _this = this
-    const erd = elementResizeDetectorMaker()
-    const templateMainDom = document.getElementById('template-box')
+    const _this = this;
+    const erd = elementResizeDetectorMaker();
+    const templateMainDom = document.getElementById("template-box");
     // 监听div变动事件
-    erd.listenTo(templateMainDom, element => {
+    erd.listenTo(templateMainDom, (element) => {
       _this.$nextTick(() => {
-        const curSeparator = Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)
-        console.log(1, curSeparator)
-        _this.templateCurWidth = Math.trunc(templateMainDom.offsetWidth / curSeparator) - 50
-      })
-    })
+        const curSeparator = Math.trunc(
+          templateMainDom.offsetWidth / _this.templateMiniWidth
+        );
+        console.log(1, curSeparator);
+        _this.templateCurWidth =
+          Math.trunc(templateMainDom.offsetWidth / curSeparator) - 50;
+      });
+    });
   },
   methods: {
     roleValidator(rule, value, callback) {
@@ -226,11 +234,11 @@ export default {
     },
     templateDeleteConfirm(template) {
       const options = {
-          title: 'system_parameter_setting.delete_this_template',
-          type: "primary",
-          cb: () => this.templateDelete(template.id),
-        };
-        this.handlerConfirm(options);
+        title: "system_parameter_setting.delete_this_template",
+        type: "primary",
+        cb: () => this.templateDelete(template.id),
+      };
+      this.handlerConfirm(options);
     },
     handleClick(tab, event) {
       this.getTree();
@@ -247,7 +255,7 @@ export default {
     templateDelete(id) {
       if (id) {
         templateDelete(id).then((response) => {
-          this.openMessageSuccess('commons.delete_success');
+          this.openMessageSuccess("commons.delete_success");
           this.getTree();
         });
       }
@@ -257,7 +265,13 @@ export default {
       this.formType = type;
       if (type === "edit") {
         this.templateEditForm = JSON.parse(JSON.stringify(templateInfo));
-        this.dialogTitle =  this.$t(`system_parameter_setting.${"folder" === this.templateEditForm.nodeType ? 'edit_classification' : 'edit_template'}`);
+        this.dialogTitle = this.$t(
+          `system_parameter_setting.${
+            "folder" === this.templateEditForm.nodeType
+              ? "edit_classification"
+              : "edit_template"
+          }`
+        );
         this.originName = this.templateEditForm.label;
       } else {
         this.dialogTitle = this.$t("panel.add_category");
@@ -268,7 +282,13 @@ export default {
           level: 0,
         };
       }
-      this.dialogTitleLabel = this.$t(`system_parameter_setting.${ "folder" === this.templateEditForm.nodeType ? 'classification_name' : 'template_name'}`)
+      this.dialogTitleLabel = this.$t(
+        `system_parameter_setting.${
+          "folder" === this.templateEditForm.nodeType
+            ? "classification_name"
+            : "template_name"
+        }`
+      );
       this.editTemplate = true;
     },
     templateEdit(templateInfo) {
@@ -365,7 +385,7 @@ export default {
   .de-tabs-right {
     flex: 1;
     background: #fff;
-    padding: 24px;
+    padding: 24px 12px 24px 12px;
     overflow: hidden;
 
     .template-box {
@@ -373,6 +393,7 @@ export default {
       flex-wrap: wrap;
       overflow-y: auto;
       box-sizing: border-box;
+      align-content: flex-start;
       height: calc(100% - 10px);
       width: 100%;
       padding-bottom: 24px;

@@ -65,18 +65,12 @@ export default {
       this.task = null;
       this.transCondition = {};
     },
-    jumpTaskRecord(task) {
-      this.transCondition["dataset_table_task.id"] = {
-        operator: "eq",
-        value: task.id,
-      };
+    jumpTaskRecord({ id: taskId, name}) {
+      this.transCondition = { taskId, name };
       this.tabActive = "TaskRecord";
     },
-    jumpTask(taskRecord) {
-      this.transCondition["dataset_table_task.id"] = {
-        operator: "eq",
-        value: taskRecord.taskId,
-      };
+    jumpTask({ taskId, name }) {
+      this.transCondition = { taskId, name };
       this.tabActive = "DatasetTaskList";
     },
     toMsgShare(routerParam) {

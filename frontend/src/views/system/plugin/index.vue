@@ -78,7 +78,7 @@
             </p>
           </div>
         </div>
-        <div class="card-method">
+        <div class="card-method" :class="`btn-${numPlugin}`">
           <el-upload
             v-permission="['plugin:upload']"
             :action="baseUrl + 'api/plugin/update/' + ele.pluginId"
@@ -96,7 +96,7 @@
               <i class="el-icon-more"></i>更新
             </div>
           </el-upload>
-          <el-divider direction="vertical"></el-divider>
+          <el-divider v-if="numPlugin === 2" direction="vertical"></el-divider>
           <el-tooltip
             class="item"
             effect="dark"
@@ -134,6 +134,7 @@ import { formatCondition, formatQuickCondition } from "@/utils/index";
 import { pluginLists, uninstall } from "@/api/system/plugin";
 import { getToken } from "@/utils/auth";
 import msgCfm from "@/components/msgCfm/index";
+import { log } from '@antv/g2plot/lib/utils';
 export default {
   components: { DeLayoutContent },
   mixins: [msgCfm],
@@ -147,17 +148,22 @@ export default {
       uploading: false,
       baseUrl: process.env.VUE_APP_BASE_API,
       fileList: [],
+      numPlugin: 0,
       headers: { Authorization: getToken() },
     };
   },
   mounted() {
     this.search();
     this.bindKey();
+    this.authValidate()
   },
   destroyed() {
     this.unBindKey();
   },
   methods: {
+    authValidate() {
+      this.numPlugin = Number(checkPermission(['plugin:uninstall'])) + Number(checkPermission(['plugin:upload']))
+    },
     entryKey(event) {
       const keyCode = event.keyCode;
       if (keyCode === 13) {
@@ -264,10 +270,11 @@ export default {
   flex-wrap: wrap;
   background-color: var(--MainBG, #f5f6f7);
   overflow-y: auto;
+  align-content: flex-start;
 }
 .de-card-plugin {
   width: 270px;
-  height: 230px;
+  min-height: 188px;
   background: #ffffff;
   border: 1px solid #dee0e3;
   border-radius: 4px;
@@ -318,6 +325,10 @@ export default {
     .btn-plugin.uninstall:not(.is-disable):hover {
       color: var(--deDangerHover, #26acff);
     }
+  }
+
+  .btn-0 {
+    display: none;
   }
 
   .card-info {
