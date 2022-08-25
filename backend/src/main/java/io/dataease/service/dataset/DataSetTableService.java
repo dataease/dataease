@@ -957,7 +957,6 @@ public class DataSetTableService {
 
     public void checkVariable(final String sql) throws Exception {
         String tmpSql = removeVariables(sql);
-        System.out.println(tmpSql);
         if (tmpSql.contains(SubstitutedParams)) {
             throw new Exception(Translator.get("I18N_SQL_variable_limit"));
         }
