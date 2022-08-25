@@ -148,7 +148,7 @@ export default {
       if (on) {
         on.forEach(itm => {
           const ele = itm.slice(1, -1)
-          content = content.replace(itm, _this.dataRowNameSelect[ele] ? _this.dataRowNameSelect[ele] : '[无法获取字段值]')
+          content = content.replace(itm, _this.dataRowNameSelect[ele] !== undefined ? _this.dataRowNameSelect[ele] : '[无法获取字段值]')
         })
       }
       content = content.replace('class="base-selected"','')
