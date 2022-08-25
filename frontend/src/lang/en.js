@@ -1641,6 +1641,7 @@ export default {
     has_repeat_name: 'Duplicate API data table name',
     has_repeat_field_name: 'The field name is duplicate, please modify it before selecting',
     api_field_not_empty: 'Field cannot be empty',
+    success_copy: 'Copy succeeded',
     valid: 'Valid',
     invalid: 'Invalid',
     api_step_1: 'Connection API',

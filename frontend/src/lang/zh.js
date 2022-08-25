@@ -1649,6 +1649,7 @@ export default {
     has_repeat_name: 'API 数据表名称重复',
     has_repeat_field_name: '字段名重复，请修改后再选择',
     api_field_not_empty: '字段不能为空',
+    success_copy: '复制成功',
     valid: '有效',
     invalid: '无效',
     api_step_1: '连接API',

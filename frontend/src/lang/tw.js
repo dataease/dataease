@@ -1641,6 +1641,7 @@ export default {
     has_repeat_name: 'API 數據表名稱重複',
     has_repeat_field_name: '欄位名重複，請修改後再選擇',
     api_field_not_empty: '欄位不能為空',
+    success_copy: '複製成功',
     valid: '有效',
     invalid: '無效',
     api_step_1: '連接API',
