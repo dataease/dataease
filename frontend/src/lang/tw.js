@@ -795,6 +795,7 @@ export default {
     classification_name: '分類名稱'
   },
   chart: {
+    rich_text_view_result_tips: '富文本只选取第一条结果',
     rich_text_view: '富文本视图',
     view_reset: '視圖重置',
     view_reset_tips: '放棄對視圖的修改？',

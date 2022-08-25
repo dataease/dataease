@@ -794,6 +794,7 @@ export default {
     classification_name: 'Classification Name:'
   },
   chart: {
+    rich_text_view_result_tips: 'The rich text view selects only the first result',
     rich_text_view: 'Rich Text View',
     view_reset: 'View Reset',
     view_reset_tips: 'Discard Changes To View?',
