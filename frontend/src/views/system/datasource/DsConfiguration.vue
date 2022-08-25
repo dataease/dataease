@@ -1010,8 +1010,21 @@ export default {
     copyItem(item){
       var newItem = JSON.parse(JSON.stringify(item))
       newItem.serialNumber = this.form.apiConfiguration[this.form.apiConfiguration.length - 1].serialNumber + 1
-      newItem.name = item.name + '_copy'
+      var reg = new RegExp(item.name + '_copy_' + '([0-9]*)', "gim");
+      var number = 0
+      for(var i =1;i<this.form.apiConfiguration.length;i++){
+        var match = this.form.apiConfiguration[i].name.match(reg);
+        if (match !== null) {
+          var num = match[0].substring(this.form.apiConfiguration[i].name.length + 5, match[0].length - 1)
+          if( parseInt(num) != NaN && parseInt(num) > number){
+            number =  parseInt(num)
+          }
+        }
+      }
+      number = number + 1
+      newItem.name = item.name + '_copy_' + number
       this.form.apiConfiguration.push(newItem)
+      this.$message.success(i18n.t('datasource.success_copy'))
     },
     addApiItem(item) {
       if (item) {
@@ -1021,7 +1034,7 @@ export default {
       } else {
         this.add_api_item = true;
         this.apiItem = JSON.parse(JSON.stringify(this.defaultApiItem));
-        this.apiItem.serialNumber = this.form.apiConfiguration[this.form.apiConfiguration.length - 1].serialNumber + 1
+        this.apiItem.serialNumber = this.form.apiConfiguration.length > 0 ? this.form.apiConfiguration[this.form.apiConfiguration.length - 1].serialNumber + 1 : 0
         this.api_table_title = this.$t("datasource.add_api_table");
       }
       this.active = 1;
