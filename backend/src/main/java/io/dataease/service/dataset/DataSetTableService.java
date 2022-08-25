@@ -616,6 +616,9 @@ public class DataSetTableService {
                 // check doris table
                 if (!checkEngineTableIsExists(dataSetTableRequest.getId())) {
                     if (dataSetTableRequest.isPreviewForTask()) {
+                        map.put("fields", fields);
+                        map.put("data", new ArrayList<>());
+                        map.put("page", new DataSetPreviewPage());
                         return map;
                     } else {
                         throw new RuntimeException(Translator.get("i18n_data_not_sync"));

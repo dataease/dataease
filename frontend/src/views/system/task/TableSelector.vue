@@ -138,7 +138,6 @@ export default {
       table: [],
       filterText: "",
       fields: [],
-      tableName: "",
       dataLoading: false,
       treeLoading: false,
     };
@@ -184,6 +183,7 @@ export default {
     initData(table) {
       this.dataLoading = true;
       table.row = 100;
+      table.previewForTask = true
       post("/dataset/table/getPreviewData/1/100", table, false, 30000)
         .then((response) => {
           this.fields = response.data.fields;
