@@ -853,7 +853,9 @@ div:focus {
 .view-select-option {
     display: none !important;
 }
-
+.de-select-option {
+  display: none !important;
+}
 .el-checkbox__input.is-checked:not(.is-disabled) + .el-checkbox__label {
   color: #1F2329 !important;
 }

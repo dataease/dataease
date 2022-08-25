@@ -10,7 +10,7 @@
       :collapse-tags="showNumber"
       class="el-tree-select-input"
       :disabled="disabled"
-      popper-class="select-option"
+      popper-class="de-select-option"
       v-bind="selectParams"
       :popper-append-to-body="popperAppendToBody"
       :filterable="false"
@@ -531,7 +531,7 @@ export default {
 }
 </script>
 <style>
-.el-tree-select .select-option {
+.el-tree-select .de-select-option {
     display: none !important;
 }
 .tree-select-all {
