@@ -2,11 +2,12 @@
   <el-drawer
     :title="$t('user.filter_method')"
     :visible.sync="userDrawer"
-    custom-class="user-drawer"
+    custom-class="user-drawer-task"
     size="680px"
     v-closePress
     direction="rtl"
   >
+  <div class="el-drawer__body-cont">
     <div class="filter">
       <span>{{ $t("dataset.datalist") }}</span>
       <div class="filter-item">
@@ -125,6 +126,7 @@
         </el-date-picker>
       </div>
     </div>
+    </div>
     <div class="foot">
       <el-button class="btn normal" @click="reset">{{
         $t("commons.reset")
@@ -205,6 +207,7 @@ export default {
       this.selectDatasets = [];
       this.datasetCahe = [];
       this.selectDatasetsCahe = [];
+      this.$refs.datasetTreeRef.filter();
       this.$emit("search", [], []);
     },
     clearOneFilter(index) {
@@ -215,6 +218,9 @@ export default {
           this[p][c] = [];
         } else {
           this[ele] = [];
+        }
+        if (ele === 'activeDataset') {
+          this.$refs.datasetTreeRef.filter();
         }
       });
     },
@@ -340,7 +346,15 @@ export default {
 </script>
 
 <style lang="scss">
-.user-drawer {
+.user-drawer-task {
+
+  .el-drawer__body-cont {
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    width: 100%;
+    padding-bottom: 80px;
+  }
   .el-drawer__header {
     padding: 16px 24px;
     margin: 0;
@@ -439,9 +453,14 @@ export default {
 
   .foot {
     position: absolute;
-    right: 24px;
-    bottom: 24px;
+    height: 80px;
+    width: 100%;
+    padding: 24px;
+    right: 0;
+    bottom: 0;
     text-align: right;
+    background: #FFFFFF;
+    box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.05);
   }
 }
 .user-popper {

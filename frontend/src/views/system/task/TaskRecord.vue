@@ -1,8 +1,8 @@
 <template>
-<div class="dataset-on-time">
+  <div class="dataset-on-time">
     <el-row class="top-operate">
       <el-col :span="10">
-        <deBtn  secondary @click="exportConfirm" >{{ $t("zip.export") }}</deBtn>
+        <deBtn secondary @click="exportConfirm">{{ $t("zip.export") }}</deBtn>
       </el-col>
       <el-col :span="14" class="right-user">
         <el-input
@@ -13,8 +13,8 @@
           clearable
           ref="search"
           v-model="nikeName"
-          @blur="initSearch"
-          @clear="initSearch"
+          @blur="clearSearch"
+          @clear="clearSearch"
         >
         </el-input>
         <deBtn
@@ -31,21 +31,29 @@
     </el-row>
     <div class="filter-texts" v-if="filterTexts.length">
       <span class="sum">{{ paginationConfig.total }}</span>
-      <span class="title">{{$t('user.result_one')}}</span>
+      <span class="title">{{ $t("user.result_one") }}</span>
       <el-divider direction="vertical"></el-divider>
-      <i @click="scrollPre" v-if="showScroll" class="el-icon-arrow-left arrow-filter"></i>
+      <i
+        @click="scrollPre"
+        v-if="showScroll"
+        class="el-icon-arrow-left arrow-filter"
+      ></i>
       <div class="filter-texts-container">
         <p class="text" v-for="(ele, index) in filterTexts" :key="ele">
           {{ ele }} <i @click="clearOneFilter(index)" class="el-icon-close"></i>
         </p>
       </div>
-      <i @click="scrollNext" v-if="showScroll" class="el-icon-arrow-right arrow-filter"></i>
+      <i
+        @click="scrollNext"
+        v-if="showScroll"
+        class="el-icon-arrow-right arrow-filter"
+      ></i>
       <el-button
         type="text"
         class="clear-btn"
         icon="el-icon-delete"
         @click="clearFilter"
-        >{{$t('user.clear_filter')}}</el-button
+        >{{ $t("user.clear_filter") }}</el-button
       >
     </div>
     <div id="resize-for-filter" class="table-container">
@@ -57,14 +65,24 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       >
-      <el-table-column prop="name" :label="$t('dataset.task_name')">
+        <el-table-column prop="name" :label="$t('dataset.task_name')">
           <template slot-scope="scope">
             <span>
-              <el-link :type="matchLogId && scope.row.id === matchLogId ? 'danger': ''" style="font-size: 12px" @click="jumpTask(scope.row)">{{ scope.row.name }}</el-link>
+              <el-link
+                :type="
+                  matchLogId && scope.row.id === matchLogId ? 'danger' : ''
+                "
+                style="font-size: 12px"
+                @click="jumpTask(scope.row)"
+                >{{ scope.row.name }}</el-link
+              >
             </span>
           </template>
         </el-table-column>
-        <el-table-column prop="datasetName" :label="$t('dataset.task.dataset')" />
+        <el-table-column
+          prop="datasetName"
+          :label="$t('dataset.task.dataset')"
+        />
         <el-table-column prop="startTime" :label="$t('dataset.start_time')">
           <template slot-scope="scope">
             <span>{{ scope.row.startTime | timestampFormatDate }}</span>
@@ -78,22 +96,23 @@
 
         <el-table-column prop="status" :label="$t('dataset.status')">
           <template slot-scope="scope">
-            <span :class="[`de-${scope.row.status}`, 'de-status']"
-              >{{
-                $t(`dataset.${scope.row.status.toLocaleLowerCase()}`)
-              }}
+            <span
+              v-if="scope.row.status"
+              :class="[`de-${scope.row.status}`, 'de-status']"
+              >{{ $t(`dataset.${scope.row.status.toLocaleLowerCase()}`) }}
               <i
                 v-if="scope.row.status === 'Error'"
                 class="el-icon-question"
                 @click="showErrorMassage(scope.row.msg)"
               ></i>
             </span>
+            <span v-else>-</span>
           </template>
         </el-table-column>
       </grid-table>
       <keep-alive>
-      <filterUser ref="filterUser" @search="filterDraw"></filterUser>
-    </keep-alive>
+        <filterUser ref="filterUser" @search="filterDraw"></filterUser>
+      </keep-alive>
     </div>
     <el-dialog
       v-dialogDrag
@@ -104,63 +123,71 @@
     >
       <span class="err-msg">{{ error_massage }}</span>
       <span slot="footer" class="dialog-footer">
-        <deBtn secondary @click="show_error_massage = false">{{ $t('dataset.close') }}</deBtn>
+        <deBtn secondary @click="show_error_massage = false">{{
+          $t("dataset.close")
+        }}</deBtn>
       </span>
     </el-dialog>
-</div>
+  </div>
 </template>
 
 <script>
-import {formatCondition, formatOrders, formatQuickCondition} from '@/utils/index'
-import {exportExcel, post} from '@/api/dataset/dataset'
+import {
+  formatCondition,
+  formatOrders,
+  formatQuickCondition,
+} from "@/utils/index";
+import { exportExcel, post } from "@/api/dataset/dataset";
 import GridTable from "@/components/gridTable/index.vue";
 import filterUser from "./filterUserRecord.vue";
-import _ from 'lodash';
+import _ from "lodash";
 
 export default {
-  name: 'TaskRecord',
+  name: "TaskRecord",
   components: { GridTable, filterUser },
   props: {
     param: {
       type: Object,
-      default: null
+      default: () => {},
     },
     transCondition: {
       type: Object,
-      default: null
-    }
+      default: () => {},
+    },
   },
   data() {
     return {
       columns: [],
-      nikeName: '',
+      nikeName: "",
       showScroll: false,
       filterTexts: [],
       cacheCondition: [],
       paginationConfig: {
         currentPage: 1,
         pageSize: 10,
-        total: 0
+        total: 0,
       },
       data: [],
       orderConditions: [],
       show_error_massage: false,
-      error_massage: '',
+      error_massage: "",
       matchLogId: null,
-      lastRequestComplete: true
-    }
-  },
-  computed: {
+      lastRequestComplete: true,
+    };
   },
   created() {
-    if (this.param !== null && this.param.taskId) {
-      this.matchLogId = this.param.logId || this.matchLogId
-      this.transCondition['dataset_table_task.id'] = {
-        operator: 'eq',
-        value: this.param.taskId
-      }
+    const { taskId: id, name: label } = this.transCondition;
+    if (id) {
+      this.nikeName = label;
     }
-    this.createTimer()
+    const { taskId, name, logId } = (this.param || {});
+    if (this.param !== null && taskId) {
+      this.matchLogId = logId || this.matchLogId;
+      this.transCondition.taskId = taskId;
+      this.transCondition.name = name;
+      this.nikeName = name;
+    }
+    this.createTimer();
   },
   mounted() {
     this.resizeObserver();
@@ -174,21 +201,29 @@ export default {
     },
   },
   beforeDestroy() {
-    this.destroyTimer()
+    this.destroyTimer();
   },
   methods: {
+    clearSearch() {
+      this.cachId = "";
+      this.$emit("reset");
+      this.initSearch();
+    },
     exportConfirm() {
-      this.$confirm(this.$t('log.confirm'), '', {
-        confirmButtonText: this.$t('commons.confirm'),
-        cancelButtonText: this.$t('commons.cancel'),
-        type: 'warning'
-      }).then(() => {
-        this.exportData()
-      }).catch(() => {
-        // this.$info(this.$t('commons.delete_cancel'))
+      this.$confirm(this.$t("log.confirm"), "", {
+        confirmButtonText: this.$t("commons.confirm"),
+        cancelButtonText: this.$t("commons.cancel"),
+        type: "warning",
       })
+        .then(() => {
+          this.exportData();
+        })
+        .catch(() => {
+          // this.$info(this.$t('commons.delete_cancel'))
+        });
     },
     exportData() {
+      const { taskId, name } = this.transCondition;
       const param = {
         orders: formatOrders(this.orderConditions),
         conditions: [...this.cacheCondition],
@@ -200,16 +235,23 @@ export default {
           value: this.nikeName,
         });
       }
-      exportExcel( param).then(res => {
-        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-        const link = document.createElement('a')
-        link.style.display = 'none'
-        link.href = URL.createObjectURL(blob)
-        link.download = 'DataEase' + this.$t('dataset.sync_log') + '.xls'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-      })
+      if (taskId && this.nikeName === name) {
+        param.conditions.push({
+          operator: "eq",
+          value: taskId,
+          field: "dataset_table_task.id",
+        });
+      }
+      exportExcel(param).then((res) => {
+        const blob = new Blob([res], { type: "application/vnd.ms-excel" });
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = URL.createObjectURL(blob);
+        link.download = "DataEase" + this.$t("dataset.sync_log") + ".xls";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
     },
     getScrollStatus() {
       this.$nextTick(() => {
@@ -218,28 +260,30 @@ export default {
       });
     },
     resizeObserver() {
-      this.resizeForFilter = new ResizeObserver(entries => {
+      this.resizeForFilter = new ResizeObserver((entries) => {
         if (!this.filterTexts.length) return;
         this.layoutResize();
       });
-      this.resizeForFilter.observe(document.querySelector('#resize-for-filter'));
+      this.resizeForFilter.observe(
+        document.querySelector("#resize-for-filter")
+      );
     },
     layoutResize: _.debounce(function () {
-      this.getScrollStatus()
+      this.getScrollStatus();
     }, 200),
     scrollPre() {
-      const dom = document.querySelector('.filter-texts-container');
-      dom.scrollLeft -= 10
+      const dom = document.querySelector(".filter-texts-container");
+      dom.scrollLeft -= 10;
       if (dom.scrollLeft <= 0) {
-        dom.scrollLeft = 0
+        dom.scrollLeft = 0;
       }
     },
     scrollNext() {
-      const dom = document.querySelector('.filter-texts-container');
-      dom.scrollLeft += 10
-      const width = dom.scrollWidth - dom.offsetWidth
+      const dom = document.querySelector(".filter-texts-container");
+      dom.scrollLeft += 10;
+      const width = dom.scrollWidth - dom.offsetWidth;
       if (dom.scrollLeft > width) {
-        dom.scrollLeft = width
+        dom.scrollLeft = width;
       }
     },
     clearFilter() {
@@ -261,14 +305,14 @@ export default {
       this.initSearch();
       if (!this.timer) {
         this.timer = setInterval(() => {
-          this.timerSearch(false)
-        }, 15000)
+          this.timerSearch(false);
+        }, 15000);
       }
     },
     destroyTimer() {
       if (this.timer) {
-        clearInterval(this.timer)
-        this.timer = null
+        clearInterval(this.timer);
+        this.timer = null;
       }
     },
     handleSizeChange(pageSize) {
@@ -285,11 +329,11 @@ export default {
     },
     timerSearch(showLoading = true) {
       if (!this.lastRequestComplete) {
-        return
+        return;
       } else {
-        this.lastRequestComplete = false
+        this.lastRequestComplete = false;
       }
-
+      const { taskId, name } = this.transCondition;
       const param = {
         orders: formatOrders(this.orderConditions),
         conditions: [...this.cacheCondition],
@@ -301,15 +345,32 @@ export default {
           value: this.nikeName,
         });
       }
-      post('/dataset/taskLog/list/notexcel/' + this.paginationConfig.currentPage + '/' + this.paginationConfig.pageSize, param, showLoading).then(response => {
-        this.data = response.data.listObject
-        this.paginationConfig.total = response.data.itemCount
-        this.lastRequestComplete = true
-      }).catch(() => {
-        this.lastRequestComplete = true
-      })
+      if (taskId && this.nikeName === name) {
+        param.conditions.push({
+          operator: "eq",
+          value: taskId,
+          field: "dataset_table_task.id",
+        });
+      }
+      post(
+        "/dataset/taskLog/list/notexcel/" +
+          this.paginationConfig.currentPage +
+          "/" +
+          this.paginationConfig.pageSize,
+        param,
+        showLoading
+      )
+        .then((response) => {
+          this.data = response.data.listObject;
+          this.paginationConfig.total = response.data.itemCount;
+          this.lastRequestComplete = true;
+        })
+        .catch(() => {
+          this.lastRequestComplete = true;
+        });
     },
     search(condition, showLoading = true) {
+      const { taskId, name } = this.transCondition;
       const param = {
         orders: formatOrders(this.orderConditions),
         conditions: [...this.cacheCondition],
@@ -321,26 +382,40 @@ export default {
           value: this.nikeName,
         });
       }
-      post('/dataset/taskLog/list/notexcel/' + this.paginationConfig.currentPage + '/' + this.paginationConfig.pageSize, param, showLoading).then(response => {
-        this.data = response.data.listObject
-        this.paginationConfig.total = response.data.itemCount
-      })
+      if (taskId && this.nikeName === name) {
+        param.conditions.push({
+          operator: "eq",
+          value: taskId,
+          field: "dataset_table_task.id",
+        });
+      }
+      post(
+        "/dataset/taskLog/list/notexcel/" +
+          this.paginationConfig.currentPage +
+          "/" +
+          this.paginationConfig.pageSize,
+        param,
+        showLoading
+      ).then((response) => {
+        this.data = response.data.listObject;
+        this.paginationConfig.total = response.data.itemCount;
+      });
     },
     showErrorMassage(massage) {
-      this.show_error_massage = true
-      this.error_massage = massage
+      this.show_error_massage = true;
+      this.error_massage = massage;
     },
     jumpTask(item) {
-      this.$emit('jumpTask', item)
+      this.$emit("jumpTask", item);
     },
     rowClassMethod({ row, rowIndex }) {
       if (this.matchLogId && this.matchLogId === row.id) {
-        return 'row-match-class'
+        return "row-match-class";
       }
-      return ''
-    }
-  }
-}
+      return "";
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -348,10 +423,10 @@ export default {
   margin: 12px 0;
 }
 
-.el-radio{
+.el-radio {
   margin-right: 10px;
 }
-.el-radio ::v-deep .el-radio__label{
+.el-radio ::v-deep .el-radio__label {
   font-size: 12px;
 }
 
@@ -367,20 +442,19 @@ export default {
   margin-bottom: 10px;
 }
 
-.err-msg{
+.err-msg {
   font-size: 12px;
-  word-break:normal;
-  width:auto;
-  display:block;
-  white-space:pre-wrap;
-  word-wrap : break-word ;
-  overflow: hidden ;
+  word-break: normal;
+  width: auto;
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow: hidden;
 }
 
-span{
+span {
   font-size: 12px;
 }
-
 </style>
 <style lang="scss" scoped>
 .dataset-on-time {
@@ -415,7 +489,7 @@ span{
   }
 
   .mar3 {
-     margin-left: -3px;
+    margin-left: -3px;
   }
 }
 
@@ -471,14 +545,16 @@ span{
     color: #3370ff;
   }
 
-  .filter-texts-container::-webkit-scrollbar { display: none; }
+  .filter-texts-container::-webkit-scrollbar {
+    display: none;
+  }
 
   .arrow-filter {
     font-size: 16px;
     width: 24px;
     height: 24px;
     cursor: pointer;
-    color: #646A73;
+    color: #646a73;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -576,7 +652,7 @@ span{
   }
 
   .el-icon-question {
-    color: #646A73;
+    color: #646a73;
     cursor: pointer;
   }
 }
