@@ -185,4 +185,10 @@ public class PanelGroupController {
     public void viewLog(@RequestBody PanelViewLogRequest request) {
         panelGroupService.viewLog(request);
     }
+    @ApiOperation("获取仪表板中视图Element信息")
+    @GetMapping("/findPanelElementInfo/{viewId}")
+    @I18n
+    public Object findPanelElementInfo(@PathVariable String viewId){
+       return panelGroupService.findPanelElementInfo(viewId);
+    }
 }
