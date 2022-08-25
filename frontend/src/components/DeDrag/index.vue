@@ -81,6 +81,7 @@ import { mapState } from 'vuex'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import {imgUrlTrans} from "@/components/canvas/utils/utils";
 
 export default {
   replace: true,
@@ -594,7 +595,7 @@ export default {
         style['border-radius'] = (this.element.commonBackground.borderRadius || 0) + 'px'
         if (this.element.commonBackground.enable) {
           if (this.element.commonBackground.backgroundType === 'outerImage' && typeof this.element.commonBackground.outerImage === 'string') {
-            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+            style['background'] = `url(${imgUrlTrans(this.element.commonBackground.outerImage)}) no-repeat ${colorRGBA}`
           } else {
             style['background-color'] = colorRGBA
           }

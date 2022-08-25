@@ -34,7 +34,7 @@ import DeContainer from '@/components/dataease/DeContainer'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
-import { deepCopy } from '@/components/canvas/utils/utils'
+import {deepCopy, imgUrlTrans} from '@/components/canvas/utils/utils'
 import {hexColorToRGBA} from "@/views/chart/chart/util";
 export default {
   name: 'UserViewMobileDialog',
@@ -66,7 +66,7 @@ export default {
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
-            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`,
+            background: `url(${imgUrlTrans(this.canvasStyleData.panel.imageUrl)}) no-repeat`,
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {
@@ -107,9 +107,9 @@ export default {
         if (this.element.commonBackground.enable) {
           if (this.screenShot && this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string') {
             let innerImage = this.element.commonBackground.innerImage.replace('svg', 'png')
-            style['background'] = `url(${innerImage}) no-repeat ${colorRGBA}`
+            style['background'] = `url(${imgUrlTrans(innerImage)}) no-repeat ${colorRGBA}`
           } else if (this.element.commonBackground.backgroundType === 'outerImage' && typeof this.element.commonBackground.outerImage === 'string') {
-            style['background'] = `url(${this.element.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+            style['background'] = `url(${imgUrlTrans(this.element.commonBackground.outerImage)}) no-repeat ${colorRGBA}`
           } else {
             style['background-color'] = colorRGBA
           }
