@@ -189,7 +189,7 @@ import DeDrag from '@/components/DeDrag'
 
 // eslint-disable-next-line no-unused-vars
 import { getStyle, getComponentRotatedStyle } from '@/components/canvas/utils/style'
-import {_$, imgUrlTrans} from '@/components/canvas/utils/utils'
+import { _$, imgUrlTrans } from '@/components/canvas/utils/utils'
 import ContextMenu from './ContextMenu'
 import MarkLine from './MarkLine'
 import Area from './Area'
@@ -1132,6 +1132,13 @@ export default {
       this.componentData.forEach(component => {
         if (component.type === 'view' && this.buttonFilterMap[component.propValue.viewId]) {
           component.filters = this.buttonFilterMap[component.propValue.viewId]
+        }
+        if (component.type === 'de-tabs') {
+          for (let idx = 0; idx < component.options.tabList.length; idx++) {
+            const ele = component.options.tabList[idx].content
+            if (!ele.type || ele.type !== 'view') continue
+            ele.filters = this.buttonFilterMap[ele.propValue.viewId]
+          }
         }
       })
     },
