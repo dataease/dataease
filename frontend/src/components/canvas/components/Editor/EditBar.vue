@@ -45,7 +45,7 @@
         @mousedown="fieldsAreaDown"
       >
         <fields-list :fields="curFields" :element="element" />
-        <i slot="reference" :title="$t('panel.select_field')" class="icon iconfont icon-datasource-select" style="margin-left: 4px;cursor: pointer;font-size: 14px;" />
+        <i slot="reference" :disabled="element.editing" :title="$t('panel.select_field')" class="icon iconfont icon-datasource-select" style="margin-left: 4px;cursor: pointer;font-size: 14px;" />
       </el-popover>
       <span :title="$t('panel.jump')">
         <a v-if="showJumpFlag" :title="curComponent.hyperlinks.content " :target="curComponent.hyperlinks.openMode " :href="curComponent.hyperlinks.content ">
@@ -131,7 +131,7 @@ export default {
       return this.curComponent.type === 'view' && this.curComponent.propValue.innerType !== 'richTextView'
     },
     selectFieldShow() {
-      return this.activeModel === 'edit' && this.curComponent.type === 'view' && this.curComponent.propValue.innerType === 'richTextView'
+      return this.activeModel === 'edit' && this.curComponent.type === 'view' && this.curComponent.propValue.innerType === 'richTextView' && this.curComponent.editing
     },
     curComponentTypes() {
       const types = []
