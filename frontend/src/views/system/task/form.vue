@@ -1,5 +1,5 @@
 <template>
-  <de-layout-content>
+  <de-layout-content :header="header" backPath="/system/system-task/dataset">
     <div class="dataset-editer-form">
       <div class="w600">
         <el-form
@@ -41,7 +41,10 @@
             </el-radio-group>
           </el-form-item>
           <div class="add-scope-cont" v-if="taskForm.type === 'add_scope'">
-            <el-form-item :label="$t('dataset.incremental_update_type')">
+            <el-form-item
+              prop=""
+              :label="$t('dataset.incremental_update_type')"
+            >
               <el-radio-group
                 v-model="incrementalUpdateType"
                 size="small"
@@ -118,10 +121,7 @@
                   size="small"
                   @change="onSimpleCronChange()"
                 >
-                  <el-option
-                    :label="$t('分钟')"
-                    value="minute"
-                  />
+                  <el-option :label="$t('分钟')" value="minute" />
                   <el-option :label="$t('小时')" value="hour" />
                   <el-option :label="$t('天')" value="day" />
                 </el-select>
@@ -130,11 +130,15 @@
             </el-form-item>
             <el-form-item
               prop="cron"
-              v-if="taskForm.rate === 'CRON'"
+              v-if="taskForm.rate === 'CRON' && showCron"
               :label="$t('emailtask.cron_exp')"
             >
               <el-popover v-model="cronEdit">
-                <cron v-model="taskForm.cron" @close="cronEdit = false" />
+                <cron
+                  :isRate="taskForm.rate === 'CRON'"
+                  v-model="taskForm.cron"
+                  @close="cronEdit = false"
+                />
                 <el-input
                   slot="reference"
                   v-model="taskForm.cron"
@@ -186,14 +190,14 @@
           show-mode="datasetTask"
         />
       </div>
-      <div class="de-foot-layout">
-      <div class="cont">
-        <deBtn secondary @click="closeTask">{{ $t("dataset.cancel") }}</deBtn>
-      <deBtn v-if="!disableForm" type="primary" @click="saveTask(taskForm)">{{
-        $t("dataset.confirm")
-      }}</deBtn>
+      <div v-if="!disableForm" class="de-foot-layout">
+        <div class="cont">
+          <deBtn secondary @click="closeTask">{{ $t("dataset.cancel") }}</deBtn>
+          <deBtn type="primary" @click="saveTask(taskForm)">{{
+            $t("dataset.confirm")
+          }}</deBtn>
+        </div>
       </div>
-    </div>
     </div>
   </de-layout-content>
 </template>
@@ -223,6 +227,7 @@ import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/hint/sql-hint";
 import "codemirror/addon/hint/show-hint";
 import TableSelector from "./TableSelector";
+import { log } from "@antv/g2plot/lib/utils";
 
 export default {
   components: { cron, codemirror, TableSelector, DeLayoutContent },
@@ -234,6 +239,7 @@ export default {
         name: "",
         id: "",
       },
+      showCron: false,
       taskForm: {
         name: "",
         type: "all_scope",
@@ -300,6 +306,7 @@ export default {
         datasetName: [
           {
             required: true,
+            message: this.$t("数据集必填"),
             trigger: "change",
           },
         ],
@@ -322,6 +329,15 @@ export default {
       incrementalUpdateType: "incrementalAdd",
     };
   },
+  computed: {
+    header() {
+      return this.disableForm
+        ? "查看任务"
+        : this.taskDetail.id
+        ? "编辑任务"
+        : "添加任务";
+    },
+  },
   created() {
     const { datasetName, id } = this.$route.query;
     this.taskDetail = { datasetName, id };
@@ -331,8 +347,8 @@ export default {
   methods: {
     getTaskDetail(id) {
       post(`/dataset/task/detail/${id}`, {}).then((res) => {
-        if(res.data.extraData) {
-          res.data.extraData = JSON.parse(res.data.extraData)
+        if (res.data.extraData) {
+          res.data.extraData = JSON.parse(res.data.extraData);
         }
         this.taskForm = res.data;
         this.disableForm = this.disableEdit();
@@ -344,19 +360,24 @@ export default {
     },
     getTableId(id, name) {
       this.taskForm.tableId = id;
-      this.taskForm.datasetName = name;
+      this.$set(this.taskForm, "datasetName", name);
     },
     onRateChange() {
       if (this.taskForm.rate === "SIMPLE") {
         this.taskForm.end = "0";
         this.taskForm.endTime = "";
         this.taskForm.cron = "";
+        this.showCron = false;
       }
       if (this.taskForm.rate === "SIMPLE_CRON") {
         this.taskForm.cron = "0 0 0/1 *  * ? *";
+        this.showCron = false;
       }
       if (this.taskForm.rate === "CRON") {
         this.taskForm.cron = "00 00 * ? * * *";
+        this.$nextTick(() => {
+          this.showCron = true;
+        });
       }
     },
     disableEdit() {
@@ -540,6 +561,10 @@ export default {
       .el-select {
         width: 140px;
         margin-left: 8px;
+
+        .el-input__inner {
+          text-align: left;
+        }
       }
 
       .el-select {
@@ -568,6 +593,7 @@ export default {
       width: 100%;
       border-radius: 4px;
       padding: 20px;
+      background: #f5f6f7;
 
       .param-title {
         width: 100%;

@@ -75,6 +75,7 @@ import day from './cron/day'
 import month from './cron/month'
 import week from './cron/week'
 import year from './cron/year'
+import { log } from '@antv/g2plot/lib/utils'
 export default {
   components: {
     SecondAndMinute, hour, day, month, week, year
@@ -82,6 +83,9 @@ export default {
   props: {
     value: {
       type: String
+    },
+    isRate: {
+      type: Boolean,
     }
   },
   data() {
@@ -110,6 +114,7 @@ export default {
       }]
     },
     value_() {
+      console.log(9, this.weekVal, this.dVal, this.value)
       if (!this.dVal && !this.weekVal) {
         return ''
       }
@@ -133,12 +138,13 @@ export default {
     }
   },
   watch: {
-    'value'(a, b) {
-      this.updateVal()
-    }
-  },
-  created() {
-    this.updateVal()
+    value: {
+      handler() {
+        if (!this.isRate) return;
+        this.updateVal();
+      },
+      immediate: true,
+    },
   },
   methods: {
     updateVal() {
