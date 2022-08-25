@@ -1034,7 +1034,7 @@ export default {
       } else {
         this.add_api_item = true;
         this.apiItem = JSON.parse(JSON.stringify(this.defaultApiItem));
-        this.apiItem.serialNumber = this.form.apiConfiguration[this.form.apiConfiguration.length - 1].serialNumber + 1
+        this.apiItem.serialNumber = this.form.apiConfiguration.length > 0 ? this.form.apiConfiguration[this.form.apiConfiguration.length - 1].serialNumber + 1 : 0
         this.api_table_title = this.$t("datasource.add_api_table");
       }
       this.active = 1;
