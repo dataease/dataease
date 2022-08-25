@@ -147,6 +147,7 @@ export default {
           type: "primary",
           cb: () => save(this.templateInfo).then((response) => {
                 this.openMessageSuccess("system_parameter_setting.import_succeeded");
+                this.$emit("refresh");
                 this.$emit("closeEditTemplateDialog");
               }),
           confirmButtonText: this.$t('template.override')
@@ -155,6 +156,7 @@ export default {
         } else {
           save(this.templateInfo).then((response) => {
             this.openMessageSuccess("system_parameter_setting.import_succeeded");
+            this.$emit("refresh");
             this.$emit("closeEditTemplateDialog");
           });
         }
