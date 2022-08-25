@@ -189,7 +189,7 @@ import DeDrag from '@/components/DeDrag'
 
 // eslint-disable-next-line no-unused-vars
 import { getStyle, getComponentRotatedStyle } from '@/components/canvas/utils/style'
-import { _$ } from '@/components/canvas/utils/utils'
+import {_$, imgUrlTrans} from '@/components/canvas/utils/utils'
 import ContextMenu from './ContextMenu'
 import MarkLine from './MarkLine'
 import Area from './Area'
@@ -968,7 +968,7 @@ export default {
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
-            background: `url(${this.canvasStyleData.panel.imageUrl}) no-repeat`,
+            background: `url(${imgUrlTrans(this.canvasStyleData.panel.imageUrl)}) no-repeat`,
             ...style
           }
         } else if (this.canvasStyleData.panel.backgroundType === 'color') {

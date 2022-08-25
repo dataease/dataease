@@ -216,3 +216,12 @@ export function colorReverse(OldColorValue) {
   const str = '000000' + (0xFFFFFF - OldColorValue).toString(16)
   return '#' + str.substring(str.length - 6, str.length)
 }
+
+export function imgUrlTrans(url) {
+  if(url && url.indexOf('static-resource') > -1){
+    return process.env.VUE_APP_BASE_API + url.replace('/static-resource','static-resource')
+  }else {
+    return url
+  }
+
+}

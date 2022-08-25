@@ -36,6 +36,7 @@ import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar
 import { getStyle } from '@/components/canvas/utils/style'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import {imgUrlTrans} from "@/components/canvas/utils/utils";
 
 export default {
   name: 'ComponentWaitItem',
@@ -82,7 +83,7 @@ export default {
         }
         if (this.config.commonBackground.enable) {
           if (this.config.commonBackground.backgroundType === 'outerImage' && typeof this.config.commonBackground.outerImage === 'string') {
-            style['background'] = `url(${this.config.commonBackground.outerImage}) no-repeat ${colorRGBA}`
+            style['background'] = `url(${imgUrlTrans(this.config.commonBackground.outerImage)}) no-repeat ${colorRGBA}`
           } else {
             style['background-color'] = colorRGBA
           }

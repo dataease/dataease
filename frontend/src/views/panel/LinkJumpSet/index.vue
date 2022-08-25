@@ -261,6 +261,7 @@ import 'codemirror/keymap/emacs.js'
 import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
+import {imgUrlTrans} from "@/components/canvas/utils/utils";
 
 export default {
   components: { codemirror, draggable },
@@ -327,7 +328,7 @@ export default {
     classBackground() {
       if (this.importTemplateInfo.snapshot) {
         return {
-          background: `url(${this.importTemplateInfo.snapshot}) no-repeat`
+          background: `url(${imgUrlTrans(this.importTemplateInfo.snapshot)}) no-repeat`
         }
       } else {
         return {}

@@ -56,6 +56,7 @@
 
 <script>
 import { chartTransStr2Object } from '@/views/panel/panel'
+import {imgUrlTrans} from "@/components/canvas/utils/utils";
 export default {
   name: 'StyleTemplateItem',
   props: {
@@ -84,7 +85,7 @@ export default {
           style = {
             width: '100%',
             height: '100%',
-            background: `url(${this.subjectItemDetails.panel.imageUrl}) no-repeat`
+            background: `url(${imgUrlTrans(this.subjectItemDetails.panel.imageUrl)}) no-repeat`
           }
         } else {
           style = {

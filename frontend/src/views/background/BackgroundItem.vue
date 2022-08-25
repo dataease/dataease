@@ -17,6 +17,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import {imgUrlTrans} from "@/components/canvas/utils/utils";
 
 export default {
   name: 'BackgroundItem',
@@ -38,7 +39,7 @@ export default {
     classBackground() {
       if (this.template.url) {
         return {
-          background: `url(${this.template.url}) no-repeat`,
+          background: `url(${imgUrlTrans(this.template.url)}) no-repeat`,
           'background-size': `100% 100%`
         }
       } else {
