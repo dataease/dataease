@@ -6,6 +6,7 @@ import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.commons.utils.DeLogUtils;
+import io.dataease.commons.utils.Md5Utils;
 import io.dataease.dto.DriverDTO;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.i18n.Translator;
@@ -99,7 +100,7 @@ public class DriverService {
     public List<DeDriverDetails> listDriverDetails(String driverId) {
         DeDriverDetailsExample example = new DeDriverDetailsExample();
         example.createCriteria().andDeDriverIdEqualTo(driverId);
-        return deDriverDetailsMapper.selectByExampleWithBLOBs(example);
+        return deDriverDetailsMapper.selectByExample(example);
     }
 
     public void deleteDriverFile(String driverFileId) throws Exception{
@@ -108,7 +109,11 @@ public class DriverService {
         if(deDriver == null){
             throw new Exception(Translator.get("I18N_DRIVER_NOT_FOUND"));
         }
-        DeFileUtils.deleteFile(DRIVER_PATH + deDriverDetails.getDeDriverId() + "/" + deDriverDetails.getFileName());
+        if(deDriverDetails.getIsTransName()){
+            DeFileUtils.deleteFile(DRIVER_PATH + deDriverDetails.getDeDriverId() + "/" + deDriverDetails.getFileName());
+        }else {
+            DeFileUtils.deleteFile(DRIVER_PATH + deDriverDetails.getDeDriverId() + "/" + deDriverDetails.getTransName());
+        }
         SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DRIVER_FILE, deDriverDetails.getId(), deDriverDetails.getDeDriverId(), null, null);
         DeLogUtils.save(sysLogDTO);
         deDriverDetailsMapper.deleteByPrimaryKey(driverFileId);
@@ -122,8 +127,11 @@ public class DriverService {
             throw new Exception(Translator.get("I18N_DRIVER_NOT_FOUND"));
         }
         String filename = file.getOriginalFilename();
+        if(!filename.endsWith(".jar")){
+            throw new Exception("File is not jar!");
+        }
         String dirPath = DRIVER_PATH + driverId + "/";
-        String filePath = dirPath + filename;
+        String filePath = dirPath + Md5Utils.md5(filename) + ".jar";
 
         saveFile(file, dirPath, filePath);
         List<String> jdbcList = new ArrayList<>();
@@ -135,6 +143,8 @@ public class DriverService {
         deDriverDetails.setVersion(version);
         deDriverDetails.setFileName(filename);
         deDriverDetails.setDriverClass(String.join(",", jdbcList));
+        deDriverDetails.setIsTransName(true);
+        deDriverDetails.setTransName(Md5Utils.md5(filename) + ".jar");
 
         DeDriverDetailsExample deDriverDetailsExample = new DeDriverDetailsExample();
         deDriverDetailsExample.createCriteria().andDeDriverIdEqualTo(driverId).andFileNameEqualTo(filename);

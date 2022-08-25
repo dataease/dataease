@@ -41,3 +41,6 @@ update `sys_menu` set icon = 'sys-setting' where `menu_id` = 700;
 update `sys_menu` set icon = 'sys-param' where `menu_id` = 6;
 update `sys_menu` set icon = 'display-setting' where `menu_id` = 710;
 COMMIT;
+
+ALTER TABLE `de_driver_details` ADD COLUMN `is_trans_name` TINYINT(1) NULL AFTER `driver_class`;
+ALTER TABLE `de_driver_details` ADD COLUMN `trans_name` VARCHAR(255) NULL AFTER `driver_class`;
