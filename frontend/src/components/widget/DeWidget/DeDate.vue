@@ -15,6 +15,7 @@
     :size="size"
     :editable="false"
     :picker-options="pickerOptions"
+    :default-time="defaultRangeTime"
     @change="dateChange"
     @focus="toFocus"
     @blur="onBlur"
@@ -117,6 +118,12 @@ export default {
         return {
           shortcuts: result
         }
+      }
+      return null
+    },
+    defaultRangeTime() {
+      if (this.element.options.attrs.type === 'daterange' && this.element.options.attrs.showTime) {
+        return ['00:00:00', '23:59:59']
       }
       return null
     }
