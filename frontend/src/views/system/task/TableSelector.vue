@@ -194,8 +194,6 @@ export default {
         });
     },
     init() {
-      this.tableName = "";
-      this.tableId = "";
       this.selectDatasetFlag = true;
     },
     setIdName() {
