@@ -90,9 +90,11 @@
         >{{ $t("user.clear_filter") }}</el-button
       >
     </div>
-    <div class="table-container"
+    <div
+      class="table-container"
       id="resize-for-filter"
-      :class="[filterTexts.length ? 'table-container-filter' : '']">
+      :class="[filterTexts.length ? 'table-container-filter' : '']"
+    >
       <grid-table
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
         :tableData="data"
@@ -160,7 +162,9 @@
           :label="$t('dataset.task.last_exec_status')"
         >
           <template slot-scope="scope">
-            <span :class="[`de-${scope.row.lastExecStatus}`, 'de-status']"
+            <span
+              v-if="scope.row.lastExecStatus"
+              :class="[`de-${scope.row.lastExecStatus}`, 'de-status']"
               >{{
                 $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
               }}
@@ -170,6 +174,7 @@
                 @click="showErrorMassage(scope.row.msg)"
               ></i>
             </span>
+            <span v-else>-</span>
           </template>
         </el-table-column>
 
@@ -263,7 +268,6 @@
       </grid-table>
     </div>
 
-
     <keep-alive>
       <filterUser ref="filterUser" @search="filterDraw"></filterUser>
     </keep-alive>
@@ -316,9 +320,7 @@ const columnOptions = [
     props: "status",
   },
 ];
-import {
-  formatOrders,
-} from "@/utils/index";
+import { formatOrders } from "@/utils/index";
 import { datasetTaskList, post } from "@/api/dataset/dataset";
 import cron from "@/components/cron/cron";
 import TableSelector from "@/views/chart/view/TableSelector";
@@ -326,12 +328,18 @@ import { hasDataPermission } from "@/utils/permission";
 import GridTable from "@/components/gridTable/index.vue";
 import filterUser from "./filterUser.vue";
 import msgCfm from "@/components/msgCfm/index";
-import _ from 'lodash';
+import _ from "lodash";
 
 export default {
   name: "DatasetTaskList",
   components: { GridTable, cron, filterUser, TableSelector },
   mixins: [msgCfm],
+  props: {
+    transCondition: {
+      type: Object,
+      default: () => {},
+    },
+  },
   data() {
     return {
       nikeName: "",
@@ -366,7 +374,11 @@ export default {
     },
   },
   created() {
-    this.initSearch();
+    const { taskId, name } = this.transCondition;
+    if (taskId) {
+      this.nikeName = name;
+    }
+    this.search();
     this.timer = setInterval(() => {
       this.search(false);
     }, 10000);
@@ -385,28 +397,30 @@ export default {
       });
     },
     resizeObserver() {
-      this.resizeForFilter = new ResizeObserver(entries => {
+      this.resizeForFilter = new ResizeObserver((entries) => {
         if (!this.filterTexts.length) return;
         this.layoutResize();
       });
-      this.resizeForFilter.observe(document.querySelector('#resize-for-filter'));
+      this.resizeForFilter.observe(
+        document.querySelector("#resize-for-filter")
+      );
     },
     layoutResize: _.debounce(function () {
-      this.getScrollStatus()
+      this.getScrollStatus();
     }, 200),
     scrollPre() {
-      const dom = document.querySelector('.filter-texts-container');
-      dom.scrollLeft -= 10
+      const dom = document.querySelector(".filter-texts-container");
+      dom.scrollLeft -= 10;
       if (dom.scrollLeft <= 0) {
-        dom.scrollLeft = 0
+        dom.scrollLeft = 0;
       }
     },
     scrollNext() {
-      const dom = document.querySelector('.filter-texts-container');
-      dom.scrollLeft += 10
-      const width = dom.scrollWidth - dom.offsetWidth
+      const dom = document.querySelector(".filter-texts-container");
+      dom.scrollLeft += 10;
+      const width = dom.scrollWidth - dom.offsetWidth;
       if (dom.scrollLeft > width) {
-        dom.scrollLeft = width
+        dom.scrollLeft = width;
       }
     },
     clearFilter() {
@@ -467,6 +481,7 @@ export default {
       this.handleCurrentChange(1);
     },
     search(showLoading = true) {
+      const { taskId, name } = this.transCondition;
       const param = {
         orders: formatOrders(this.orderConditions),
         conditions: [...this.cacheCondition],
@@ -476,6 +491,13 @@ export default {
           field: `dataset_table_task.name`,
           operator: "like",
           value: this.nikeName,
+        });
+      }
+      if (taskId && this.nikeName === name) {
+        param.conditions.push({
+          operator: "eq",
+          value: taskId,
+          field: "dataset_table_task.id",
         });
       }
       const { currentPage, pageSize } = this.paginationConfig;
@@ -490,18 +512,22 @@ export default {
       );
     },
     batchDelete() {
-      post("/dataset/task/batchDelete", this.multipleSelection.map(ele => ele.id), false).then(() => {
+      post(
+        "/dataset/task/batchDelete",
+        this.multipleSelection.map((ele) => ele.id),
+        false
+      ).then(() => {
         this.initSearch();
-        this.openMessageSuccess('commons.delete_success');
+        this.openMessageSuccess("commons.delete_success");
       });
     },
     confirmDelete() {
       const options = {
-          title: '确定删除该任务吗？',
-          type: "primary",
-          cb: this.batchDelete,
-        };
-        this.handlerConfirm(options);
+        title: "确定删除该任务吗？",
+        type: "primary",
+        cb: this.batchDelete,
+      };
+      this.handlerConfirm(options);
     },
     taskStatus(item) {
       post("/dataset/task/lastExecStatus", item, false).then((response) => {
@@ -552,23 +578,23 @@ export default {
       )
         .then(() => {
           post("/dataset/task/execTask", task).then((response) => {
-            this.initSearch( true);
+            this.initSearch(true);
           });
         })
         .catch(() => {});
     },
     selectDataset(row) {
       if (row) {
-        const { datasetName,  id } = row;
+        const { datasetName, id } = row;
         this.$router.push({
-          path: '/task-ds-form',
+          path: "/task-ds-form",
           query: {
             datasetName,
             id,
-          }
-        })
+          },
+        });
       } else {
-        this.$router.push('/task-ds-form')
+        this.$router.push("/task-ds-form");
       }
     },
     disableEdit(task) {
@@ -592,16 +618,16 @@ export default {
     },
     deleteTask(task) {
       const options = {
-          title: '确定删除该任务吗？',
-          type: "primary",
-          cb: () => {
-            post("/dataset/task/delete/" + task.id, null).then((response) => {
-            this.openMessageSuccess('commons.delete_success');
+        title: "确定删除该任务吗？",
+        type: "primary",
+        cb: () => {
+          post("/dataset/task/delete/" + task.id, null).then((response) => {
+            this.openMessageSuccess("commons.delete_success");
             this.initSearch();
           });
-          },
-        };
-        this.handlerConfirm(options);
+        },
+      };
+      this.handlerConfirm(options);
     },
     showErrorMassage(massage) {
       this.show_error_massage = true;
@@ -694,7 +720,7 @@ span {
   }
 
   .mar3 {
-     margin-left: -3px;
+    margin-left: -3px;
   }
 }
 
@@ -750,14 +776,16 @@ span {
     color: #3370ff;
   }
 
-  .filter-texts-container::-webkit-scrollbar { display: none; }
+  .filter-texts-container::-webkit-scrollbar {
+    display: none;
+  }
 
   .arrow-filter {
     font-size: 16px;
     width: 24px;
     height: 24px;
     cursor: pointer;
-    color: #646A73;
+    color: #646a73;
     display: flex;
     justify-content: center;
     align-items: center;
