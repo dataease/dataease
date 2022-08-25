@@ -64,6 +64,9 @@ export default {
       state.changeTimes = 0
       state.lastSaveSnapshotIndex = deepCopy(state.snapshotIndex)
     },
+    recordChangeTimes(state) {
+      state.changeTimes++
+    },
     recordStyleChange(state) {
       state.styleChangeTimes++
     }

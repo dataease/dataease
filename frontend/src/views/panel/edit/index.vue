@@ -783,6 +783,7 @@ export default {
         setTimeout(() => {
           if (useCache) {
             _this.$store.commit('recordSnapshot', 'cache')
+            _this.$store.commit('recordChangeTimes' )
           } else {
             _this.$store.commit('refreshSaveStatus')
           }
