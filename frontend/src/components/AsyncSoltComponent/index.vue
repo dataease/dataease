@@ -41,6 +41,7 @@ export default {
         if (!window.SyncComponentCache) {
           window.SyncComponentCache = {}
         }
+        console.log('1-1-1-1-1-111111111111111111111111-------1-11-', val, oldVal, this.url)
         let res
         if (!window.SyncComponentCache[this.url]) {
           window.SyncComponentCache[this.url] = get(this.url)
