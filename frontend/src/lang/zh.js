@@ -674,6 +674,7 @@ export default {
     kettle_setting: 'Kettle 设置'
   },
   chart: {
+    detail: '详情',
     canvasSize: '画布尺寸',
     canvasWith: '画布宽度',
     title_repeat: '当前标题已存在',
@@ -1090,6 +1091,7 @@ export default {
     enum_value_can_not_null: '字段枚举值不能为空',
     table_config: '表格配置',
     pop_config: '弹窗配置',
+    pop_open: '弹窗位置',
     pop_title_color: '标题字体颜色',
     pop_title_background: '标题背景颜色',
     pop_title_lineHeight: '标题行高',

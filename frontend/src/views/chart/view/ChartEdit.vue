@@ -680,15 +680,22 @@
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                       </div>
                     </el-row>
+                    <!-- drillFields -->
                     <el-row
-                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot' && view.type !=='label'"
+                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') 
+                        && !view.type.includes('text') && !view.type.includes('gauge') 
+                        && view.type !== 'liquid' && view.type !== 'word-cloud' 
+                        && view.type !== 'table-pivot' && view.type !=='label'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span style="width: 80px;text-align: right;">
+                      <span style="width: 80px;text-align: right;" v-if="view.type && !this.view.type.includes('roll')">
                         <span>{{ $t('chart.drill') }}</span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
+                      </span>
+                      <span style="width: 80px;text-align: right;" v-if="view.type && this.view.type.includes('roll')">
+                        <span>{{$t('chart.detail')}}</span>
                       </span>
                       <draggable
                         v-model="view.drillFields"
@@ -2664,7 +2671,10 @@ export default {
       this.calcData(true)
     },
     addDrill(e) {
-      this.dragCheckType(this.view.drillFields, 'd')
+      console.log('drill,,',this.view.drillFields,this.view.type)
+      if(!this.view.type.includes('roll')) {
+        this.dragCheckType(this.view.drillFields, 'd')
+      }
       this.dragMoveDuplicate(this.view.drillFields, e)
       this.calcData(true)
     },

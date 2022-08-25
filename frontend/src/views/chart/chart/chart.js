@@ -99,6 +99,7 @@ export const DEFAULT_LABEL = {
   reductionRate: 50,
 
   popShow: false,
+  popOpen: 'right',
   popTitleBackground: '#082456',
   popTitleColor: '#FFFFFF',
   popHeight: 30,

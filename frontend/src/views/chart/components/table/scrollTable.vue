@@ -28,31 +28,16 @@
                 <el-col :span="16">{{obj.value}}</el-col>
               </el-col>
             </el-row>
-            <div slot="reference" class="pop_position"></div>
+            <div slot="reference" class="pop_position_top" v-if="isPopOpen === 'top'"></div>
+            <div slot="reference" class="pop_position_bottom" v-if="isPopOpen === 'bottom'"></div>
+            <div slot="reference" class="pop_position_left" v-if="isPopOpen === 'left'"></div>
+            <div slot="reference" class="pop_position_right" v-if="isPopOpen === 'right'"></div>
           </el-popover>
-            <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2?scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items)">
-              <div v-for="(item,index) in fields" :key="index" class="body_info">
-                <!-- <el-popover
-                  width="400"
-                  trigger="click"
-                  @show="popShow"
-                  @hide="popHide"
-                  :disabled="!isPopShow"
-                > 
-                  <p :style="pop_title" style="margin: 0px;">
-                    <span>详情</span>
-                  </p>
-                  <el-row>
-                    <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
-                      <el-col :span="8" style="text-align: right;">{{obj.name}}：</el-col>
-                      <el-col :span="16">{{obj.value}}</el-col>
-                    </el-col>
-                  </el-row>
-                  <span slot="reference" style="cursor: pointer;">{{ items[item.datainsName] }}</span>
-                </el-popover> -->
-                {{ items[item.datainsName] }}
-              </div>
-            </li>
+          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2 || numberLine === inde?scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items,inde)">
+            <div v-for="(item,index) in fields" :key="index" class="body_info">
+              {{ items[item.datainsName] }}
+            </div>
+          </li>
         </ul>
         <!-- <el-table
           id="tableInfo"
@@ -211,6 +196,8 @@ export default {
       dialogVisible: false,
       infoForm: [],
       isPopShow: false,
+      numberLine: '',
+      isPopOpen: '',
       isVisible: false,
       pop_title: {
         textAlign: 'center',
@@ -295,6 +282,7 @@ export default {
     },
     popHide() {
       console.log('hide')
+      this.numberLine = ''
       this.tableScroll()
       let datas = JSON.parse(JSON.stringify(this.oldData))
       datas.drillFields = JSON.stringify(datas.drillFields)
@@ -306,10 +294,11 @@ export default {
       this.dialogVisible = false
       this.popHide()
     },
-    showDialogInfo(info) {
+    showDialogInfo(info,num) {
       if(!this.isPopShow) {
         return
       }
+      this.numberLine = num
       this.newData = JSON.parse(JSON.stringify(this.chart))
       let drillList = []
       if(typeof this.newData.drillFields === 'object') {
@@ -375,9 +364,14 @@ export default {
               }
             })
           }
-          console.log(arr)
-          this.infoForm = arr
-          
+          let hash = {}
+          const arr1 = arr.reduceRight((item,next) => {
+            hash[next.name] ? "" : hash[next.name] = true && item.push(next)
+            return item
+          },[])
+          console.log(arr,arr1)
+          this.infoForm = arr1
+
           this.isVisible = true
           // this.dialogVisible = true
           // this.popShow()
@@ -579,6 +573,7 @@ export default {
         }
         if (customAttr.label) {
           this.isPopShow = customAttr.label.popShow
+          this.isPopOpen = customAttr.label.popOpen
           this.pop_title.color = customAttr.label.popTitleColor
           this.pop_title.backgroundColor = customAttr.label.popTitleBackground
           this.pop_title.textAlign = customAttr.label.popPosition
@@ -700,11 +695,35 @@ export default {
 
 <style lang="scss" scoped>
 
-.pop_position {
+.pop_position_top {
   width: 100%;
   height: 2%;
   left: 0%;
   top: -2%;
+  position: absolute;
+  z-index: 0;
+}
+.pop_position_bottom {
+  width: 100%;
+  height: 20%;
+  left: 0px;
+  bottom: -2%;
+  position: absolute;
+  z-index: 0;
+}
+.pop_position_left {
+  width: 1%;
+  height: 3%;
+  left: 0px;
+  top: 0px;
+  position: absolute;
+  z-index: 0;
+}
+.pop_position_right {
+  width: 1%;
+  height: 3%;
+  right: 0px;
+  top: 0px;
   position: absolute;
   z-index: 0;
 }
