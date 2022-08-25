@@ -131,9 +131,9 @@ export default {
     viewInit(){
       bus.$on('fieldSelect-' + this.element.propValue.viewId, this.fieldSelect)
       tinymce.init({})
+      this.myValue = this.assignment(this.element.propValue.textValue)
+      bus.$on('initCurFields-' + this.element.id, this.initCurFieldsChange)
       this.$nextTick(()=>{
-        this.myValue = this.assignment(this.element.propValue.textValue)
-        bus.$on('initCurFields-' + this.element.id, this.initCurFieldsChange)
         this.initReady=true
       })
     },
