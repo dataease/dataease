@@ -254,10 +254,13 @@
               <div style="overflow:auto;border-top: 1px solid #e6e6e6" class="attr-style theme-border-class">
                 <el-row style="height: 100%;">
                   <el-row class="padding-lr">
-                    <span style="width: 80px;text-align: right;">
+                    <span v-show="view.type==='richTextView'" style="color: #909399; font-size: 8px;width: 80px;text-align: right;">
+                      Tips:{{ $t('chart.rich_text_view_result_tips') }}
+                    </span>
+                    <span v-show="view.type!=='richTextView'" style="width: 80px;text-align: right;">
                       {{ $t('chart.result_count') }}
                     </span>
-                    <el-row>
+                    <el-row v-show="view.type!=='richTextView'">
                       <el-radio-group
                         v-model="view.resultMode"
                         class="radio-span"
@@ -683,7 +686,7 @@
                       </div>
                     </el-row>
                     <el-row
-                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot' && view.type !=='label'"
+                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot' && view.type !=='label'&&view.type !=='richTextView'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >

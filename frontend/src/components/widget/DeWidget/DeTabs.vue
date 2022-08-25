@@ -159,6 +159,7 @@ import { mapState } from 'vuex'
 import { chartCopy } from '@/api/chart/chart'
 import { buildFilterMap } from '@/utils/conditionUtil'
 import TabUseList from '@/views/panel/AssistComponent/tabUseList'
+import {findPanelElementInfo} from "@/api/panel/panel";
 
 export default {
   name: 'DeTabls',
@@ -366,7 +367,8 @@ export default {
           component = JSON.parse(JSON.stringify(componentTemp))
           const propValue = {
             id: newComponentId,
-            viewId: componentInfo.id
+            viewId: componentInfo.id,
+            textValue: ''
           }
           component.propValue = propValue
           component.filters = []
@@ -382,9 +384,20 @@ export default {
         this.curItem.name = newComponentId
         this.viewDialogVisible = false
         this.activeTabName = newComponentId
-        this.$store.dispatch('chart/setViewId', component.propValue.viewId)
-        this.styleChange()
+        if(node.modelInnerType==='richTextView'){
+          findPanelElementInfo(node.innerId).then(viewElement =>{
+            if(viewElement.data){
+              this.curItem.content.propValue.textValue = viewElement.data.propValue.textValue
+            }
+            this.$store.dispatch('chart/setViewId', component.propValue.viewId)
+            this.styleChange()
+          })
+        }else{
+          this.$store.dispatch('chart/setViewId', component.propValue.viewId)
+          this.styleChange()
+        }
       })
+
     },
 
     setComponentInfo() {
