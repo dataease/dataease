@@ -1,5 +1,7 @@
 package io.dataease.service.panel;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.commons.constants.*;
@@ -697,5 +699,22 @@ public class PanelGroupService {
             operateType = SysLogConstants.OPERATE_TYPE.MB_VIEW;
         }
         DeLogUtils.save(operateType, sourceType, panelId, panel.getPid(), null, null);
+    }
+
+    public Object findPanelElementInfo(String viewId){
+        PanelView panelView = panelViewService.findByViewId(viewId);
+        if(panelView!=null){
+            PanelGroupWithBLOBs panelGroupWithBLOBs = panelGroupMapper.selectByPrimaryKey(panelView.getPanelId());
+            if(panelGroupWithBLOBs != null){
+                JSONArray panelData =  JSONObject.parseArray(panelGroupWithBLOBs.getPanelData());
+                for(int i = 0;i<panelData.size();i++){
+                    JSONObject element = panelData.getJSONObject(i);
+                    if("user-view".equals(element.getString("component"))){
+                        return element;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

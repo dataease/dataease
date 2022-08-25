@@ -291,3 +291,11 @@ export function removePanelCache(panelId) {
   })
 }
 
+
+export function findPanelElementInfo(viewId) {
+  return request({
+    url: 'panel/group/findPanelElementInfo/'+viewId,
+    method: 'get',
+    loading: false
+  })
+}
