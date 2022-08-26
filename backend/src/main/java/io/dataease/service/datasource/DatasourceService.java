@@ -168,7 +168,10 @@ public class DatasourceService {
                     JsonObject apiItemStatuses = JsonParser.parseString(datasourceDTO.getStatus()).getAsJsonObject();
 
                     for (int i = 0; i < apiDefinitionList.size(); i++) {
-                        String status = apiItemStatuses.get(apiDefinitionList.get(i).getName()).getAsString();
+                        String status = null;
+                        if(apiItemStatuses.get(apiDefinitionList.get(i).getName()) != null){
+                            status = apiItemStatuses.get(apiDefinitionList.get(i).getName()).getAsString();
+                        }
                         apiDefinitionList.get(i).setStatus(status);
                         apiDefinitionList.get(i).setSerialNumber(i);
                         apiDefinitionListWithStatus.add(apiDefinitionList.get(i));

@@ -114,7 +114,6 @@ export default {
       }]
     },
     value_() {
-      console.log(9, this.weekVal, this.dVal, this.value)
       if (!this.dVal && !this.weekVal) {
         return ''
       }

@@ -196,7 +196,7 @@ public class SysUserService {
     }
 
     /**
-     * 修改用户密码清楚缓存
+     * 修改用户密码清除缓存
      *
      * @param request
      * @return
