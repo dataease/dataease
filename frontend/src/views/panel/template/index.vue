@@ -187,7 +187,6 @@ export default {
         const curSeparator = Math.trunc(
           templateMainDom.offsetWidth / _this.templateMiniWidth
         );
-        console.log(1, curSeparator);
         _this.templateCurWidth =
           Math.trunc(templateMainDom.offsetWidth / curSeparator) - 50;
       });
