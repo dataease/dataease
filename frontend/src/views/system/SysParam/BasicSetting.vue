@@ -28,7 +28,7 @@
       </el-form-item>
       <el-form-item :label="$t('system_parameter_setting.message_retention_time')" prop="msgTimeOut">
         <el-input v-model="formInline.msgTimeOut" :placeholder="$t('system_parameter_setting.empty_msg')"><template
-            slot="append">天</template></el-input>
+            slot="append">{{ $t('components.day') }}</template></el-input>
       </el-form-item>
 
       <el-form-item v-if="loginTypes.length > 1" :label="$t('system_parameter_setting.login_type')" prop="loginType">
