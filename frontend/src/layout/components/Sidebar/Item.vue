@@ -18,6 +18,8 @@ export default {
 
     if (icon) {
       vnodes.push(<svg-icon icon-class={icon}/>)
+    } else {
+      vnodes.push(<span>&nbsp;&nbsp;&nbsp;</span>)
     }
 
     if (title) {
