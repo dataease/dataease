@@ -17,7 +17,7 @@
       </el-col>
       <el-col :span="14" class="right-user">
         <el-input
-          :placeholder="$t('通过任务名称搜索')"
+          :placeholder="$t('components.by_task_name')"
           prefix-icon="el-icon-search"
           class="name-email-search"
           size="small"
@@ -168,11 +168,7 @@
               >{{
                 $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
               }}
-              <i
-                v-if="scope.row.lastExecStatus === 'Error'"
-                class="el-icon-s-order"
-                @click="showErrorMassage(scope.row.msg)"
-              ></i>
+            <svg-icon style="cursor: pointer;" v-if="scope.row.lastExecStatus === 'Error'"  @click="showErrorMassage(scope.row.msg)" icon-class="icon-maybe" class="field-icon-location" />
             </span>
             <span v-else>-</span>
           </template>
@@ -240,13 +236,13 @@
                     :disabled="disableExec(scope.row)"
                     command="exec"
                   >
-                    {{ $t("运行一次") }}
+                    {{ $t("components.run_once") }}
                   </el-dropdown-item>
                   <el-dropdown-item
                     v-if="scope.row.status === 'Pending'"
                     command="contine"
                   >
-                    {{ $t("继续") }}
+                    {{ $t("components.continue") }}
                   </el-dropdown-item>
                   <el-dropdown-item
                     v-if="scope.row.status === 'Underway'"

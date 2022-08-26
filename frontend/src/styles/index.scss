@@ -1181,3 +1181,19 @@ div:focus {
 .tox {
   border-radius: 4px !important;
 }
+
+.de-date-picker {
+  .el-input__inner {
+    padding: 12px;
+  }
+
+  .el-input__prefix {
+    display: none;
+  }
+}
+
+.icon-calendar-outlined {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+}
