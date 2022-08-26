@@ -1,13 +1,13 @@
 <template>
   <de-layout-content
-  :header="$t('消息列表')"
+  :header="$t('components.message_list')"
     v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
   >
     <div class="organization">
       <el-tabs v-model="tabActive" @tab-click="changeTab">
-        <el-tab-pane :label="$t('未读消息')" name="unread"> </el-tab-pane>
-        <el-tab-pane :label="$t('已读消息')" name="readed"> </el-tab-pane>
-        <el-tab-pane :label="$t('全部消息')" name="allMsg"> </el-tab-pane>
+        <el-tab-pane :label="$t('components.unread_message')" name="unread"> </el-tab-pane>
+        <el-tab-pane :label="$t('components.read_message')" name="readed"> </el-tab-pane>
+        <el-tab-pane :label="$t('components.all_messages')" name="allMsg"> </el-tab-pane>
       </el-tabs>
       <div class="tabs-container">
         <div class="msg-cont">
@@ -185,7 +185,7 @@ export default {
     },
     allMarkReaded() {
       allRead().then(res => {
-        this.openMessageSuccess('webmsg.mark_success');
+        this.openMessageSuccess('components.all_read_successfully');
         bus.$emit('refresh-top-notification')
         this.initSearch()
       })
