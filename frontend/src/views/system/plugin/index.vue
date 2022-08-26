@@ -4,7 +4,7 @@
   >
     <div class="top-install">
       <el-input
-        placeholder="通过插件名称搜索"
+        :placeholder="$t('components.by_plugin_name')"
         size="small"
         prefix-icon="el-icon-search"
         v-model="name"
@@ -64,13 +64,13 @@
           </div>
           <div class="info-left">
             <p class="list name" v-for="item in listName" :key="item">
-              {{ item }}
+              {{ $t(`components.${item}`) }}
             </p>
           </div>
           <div class="info-right">
             <p class="list value" v-for="item in listValue" :key="item">
               <template v-if="item === 'cost' && !ele.cost">
-                <el-tag size="mini" type="success">免费</el-tag>
+                <el-tag size="mini" type="success">{{ $t('components.free')}}</el-tag>
               </template>
               <template v-else>
                 {{ ele[item] }}
@@ -93,14 +93,14 @@
             :headers="headers"
           >
             <div class="btn-plugin update">
-              <i class="el-icon-more"></i>更新
+              <i class="el-icon-more"></i>{{ $t('dataset.update')}}
             </div>
           </el-upload>
           <el-divider v-if="numPlugin === 2" direction="vertical"></el-divider>
           <el-tooltip
             class="item"
             effect="dark"
-            :content="'内置插件，无法卸载'"
+            :content="$t('components.unable_to_uninstall')"
             placement="top"
           >
             <div
@@ -109,7 +109,7 @@
               @click="del(ele)"
               class="btn-plugin uninstall"
             >
-              <i class="el-icon-more"></i>卸载
+              <i class="el-icon-more"></i> {{$t('components.uninstall')}}
             </div>
           </el-tooltip>
           <div
@@ -118,7 +118,7 @@
             @click="del(ele)"
             class="btn-plugin uninstall"
           >
-            <i class="el-icon-more"></i>卸载
+            <i class="el-icon-more"></i>{{$t('components.uninstall')}}
           </div>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default {
   mixins: [msgCfm],
   data() {
     return {
-      listName: ["费用", "开发者", "版本", "安装时间"],
+      listName: ["cost", "developer", "edition", "installation_time"],
       name: "",
       listValue: ["cost", "creator", "version", "installTime"],
       data: [],

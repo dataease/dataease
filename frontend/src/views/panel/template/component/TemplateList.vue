@@ -8,12 +8,14 @@
       prefix-icon="el-icon-search"
     />
     <el-empty
+      :image="noneImg"
       v-if="!templateListComputed.length && templateFilterText === ''"
-      description="暂无分类"
+      :description="$t('components.no_classification')"
     ></el-empty>
     <el-empty
+      :image="nothingImg"
       v-if="!templateListComputed.length && templateFilterText !== ''"
-      description="没有找到相关内容"
+      :description="$t('components.relevant_content_found')"
     ></el-empty>
     <ul>
       <li
@@ -83,6 +85,8 @@ export default {
     return {
       templateFilterText: "",
       activeTemplate: "",
+      noneImg: require('@/assets/None.png'),
+      nothingImg: require('@/assets/nothing.png'),
     };
   },
   computed: {

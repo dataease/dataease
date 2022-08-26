@@ -45,8 +45,9 @@
             </deBtn>
           </div>
           <el-empty
+            :image="noneImg"
             v-if="!currentTemplateShowList.length"
-            description="暂无模版"
+            :description="$t('components.no_template')"
           ></el-empty>
           <div
             id="template-box"
@@ -126,6 +127,7 @@ export default {
     return {
       showShare: false,
       currentTemplateShowList: [],
+      noneImg: require('@/assets/None.png'),
       currentPid: "",
       currentTemplateType: "self",
       templateEditFormRules: {

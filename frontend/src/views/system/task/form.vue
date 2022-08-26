@@ -42,7 +42,7 @@
           </el-form-item>
           <div class="add-scope-cont" v-if="taskForm.type === 'add_scope'">
             <el-form-item
-              prop=""
+              prop="incrementalUpdateType"
               :label="$t('dataset.incremental_update_type')"
             >
               <el-radio-group
@@ -121,9 +121,9 @@
                   size="small"
                   @change="onSimpleCronChange()"
                 >
-                  <el-option :label="$t('分钟')" value="minute" />
-                  <el-option :label="$t('小时')" value="hour" />
-                  <el-option :label="$t('天')" value="day" />
+                  <el-option :label="$t('components.minute')" value="minute" />
+                  <el-option :label="$t('components.hour')" value="hour" />
+                  <el-option :label="$t('components.day')" value="day" />
                 </el-select>
                 {{ $t("cron.every_exec") }}
               </div>
@@ -155,10 +155,13 @@
             >
               <el-date-picker
                 v-model="taskForm.startTime"
+                class="de-date-picker"
                 type="datetime"
                 :placeholder="$t('dataset.start_time')"
                 size="small"
-              />
+              >
+              </el-date-picker>
+              <svg-icon icon-class="icon_calendar_outlined" class="icon-calendar-outlined" />
             </el-form-item>
             <el-form-item
               v-if="taskForm.rate !== 'SIMPLE'"
@@ -172,10 +175,12 @@
               <el-date-picker
                 v-if="taskForm.end === '1'"
                 v-model="taskForm.endTime"
+                class="de-date-picker"
                 type="datetime"
                 :placeholder="$t('dataset.end_time')"
                 size="small"
               />
+              <svg-icon v-if="taskForm.end === '1'" icon-class="icon_calendar_outlined" class="icon-calendar-outlined" />
             </el-form-item>
           </div>
         </el-form>
@@ -278,7 +283,7 @@ export default {
         startTime: [
           {
             required: true,
-            message: this.$t("dataset.required"),
+            message: this.$t("components.time_is_required"),
             trigger: "change",
           },
         ],
@@ -306,7 +311,13 @@ export default {
         datasetName: [
           {
             required: true,
-            message: this.$t("数据集必填"),
+            message: this.$t("components.data_set_required"),
+            trigger: "change",
+          },
+        ],
+        incrementalUpdateType: [
+          {
+            required: true,
             trigger: "change",
           },
         ],

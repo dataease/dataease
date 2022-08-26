@@ -18,11 +18,11 @@
           <slot>
             <el-dropdown-item command="rename">
               <i class="el-icon-edit"></i>
-              重命名
+              {{ $t('chart.rename')}}
             </el-dropdown-item>
             <el-dropdown-item command="delete">
               <i class="el-icon-delete"></i>
-              删除
+              {{ $t('chart.delete')}}
             </el-dropdown-item>
           </slot>
         </el-dropdown-menu>

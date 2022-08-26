@@ -6,7 +6,7 @@
       </el-col>
       <el-col :span="14" class="right-user">
         <el-input
-          :placeholder="$t('通过任务名称搜索')"
+          :placeholder="$t('components.by_task_name')"
           prefix-icon="el-icon-search"
           class="name-email-search"
           size="small"
@@ -100,11 +100,7 @@
               v-if="scope.row.status"
               :class="[`de-${scope.row.status}`, 'de-status']"
               >{{ $t(`dataset.${scope.row.status.toLocaleLowerCase()}`) }}
-              <i
-                v-if="scope.row.status === 'Error'"
-                class="el-icon-question"
-                @click="showErrorMassage(scope.row.msg)"
-              ></i>
+            <svg-icon style="cursor: pointer;" v-if="scope.row.status === 'Error'"  @click="showErrorMassage(scope.row.msg)" icon-class="icon-maybe" class="field-icon-location" />
             </span>
             <span v-else>-</span>
           </template>
