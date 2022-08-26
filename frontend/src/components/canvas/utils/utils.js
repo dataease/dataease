@@ -218,7 +218,7 @@ export function colorReverse(OldColorValue) {
 }
 
 export function imgUrlTrans(url) {
-  if(url && url.indexOf('static-resource') > -1){
+  if(url && typeof url === 'string' && url.indexOf('static-resource') > -1){
     return process.env.VUE_APP_BASE_API + url.replace('/static-resource','static-resource')
   }else {
     return url
