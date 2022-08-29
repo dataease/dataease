@@ -3,20 +3,83 @@
     v-if="loading"
     v-loading="loading"
     style="position:absolute;top:55px;width: 100%;height: calc(100% - 55px);"
+    class="main_outer"
   />
   <div v-else-if="homeLink">
     <iframe id="mobsf" :src="homeLink" frameborder="0" style="position:absolute;top:55px;width: 100%;height: calc(100% - 55px);" />
   </div>
-  <el-row v-else class="main_container">
-    <el-row class="head">
-      <span class="hint_head">{{ $t('wizard.welcome_title') }}</span> <br>
-      <span class="hint_content">{{ $t('wizard.welcome_hint') }}</span>
+  <el-row v-else class="main_container_outer">
+    <el-row class="main_container">
+      <el-row class="main_content">
+        <el-row class="content_top_banner">
+          <div class="top_banner_content">
+            <div class="hint_head">{{ $t('wizard.welcome_title') }}</div>
+            <div class="hint_content">{{ $t('wizard.welcome_hint') }}</div>
+          </div>
+          <img class="top_banner_img" src="../../assets/wizard_main_bg_inner.png"></img>
+        </el-row>
+        <el-row class="top_banner_card">
+          <wizard-card :details="cardList[0]"></wizard-card>
+          <wizard-card :details="cardList[1]" style="margin:0 24px 0 24px"></wizard-card>
+          <wizard-card-enterprise :details="cardList[2]"></wizard-card-enterprise>
+        </el-row>
+        <el-row class="content_middle">
+          <div class="content_middle_left">
+            <el-row>
+              <span class="content_middle_title">{{ $t('wizard.teaching_video') }}</span>
+              <div class="content_middle_more"><a target="_blank" href="https://space.bilibili.com/510493147/channel/collectiondetail?sid=262774">{{ $t('wizard.more') }}<i class="el-icon-arrow-right" /></a></div>
+            </el-row>
+            <el-row style="margin-top: 12px">
+              <video-card :details="videoList[0]"></video-card>
+              <video-card style="margin:0 12px 0 12px" :details="videoList[1]"></video-card>
+              <video-card :details="videoList[2]"></video-card>
+            </el-row>
+          </div>
+          <div class="content_middle_right">
+            <el-row>
+              <span class="content_middle_title">{{ $t('wizard.latest_developments') }}</span>
+              <div class="content_middle_more"><a target="_blank" href="https://blog.fit2cloud.com/?cat=321">{{ $t('wizard.more') }}<i class="el-icon-arrow-right" /></a></div>
+            </el-row>
+            <el-row >
+              <ul class="ul-custom">
+                <li class="li-custom" v-for="blogItem in blogsInfo"><a target="_blank" :href="blogItem.href" :title="blogItem.title" >{{blogItem.title}}</a></li>
+              </ul>
+            </el-row>
+          </div>
+        </el-row>
+
+        <el-row class="content_bottom">
+          <div class="content_bottom_contact">
+            <el-row class="contact_title">
+              <span>{{$t('wizard.contact_us')}}</span>
+            </el-row>
+            <el-row class="contact_content">
+              <span>{{$t('wizard.email')}}dataease@fit2cloud.com</span>
+            </el-row>
+            <el-row class="contact_content">
+              <span>{{$t('wizard.tel')}}400-052-0755</span>
+            </el-row>
+            <el-row class="contact_content">
+              {{$t('wizard.web')}}<a style="text-decoration:underline;" target="_blank" href="https://www.dataease.io">www.dataease.io</a>
+            </el-row>
+          </div>
+
+          <div class="content_bottom_qr_code">
+            <div class="contact_wechat_official">
+              <div class="contact_title_qr">微信公众号</div>
+              <img class="contact_wechat_official_img" src="@/assets/wizard_wechat-official.png"></img>
+            </div>
+            <div class="contact_wechat_group">
+              <div class="contact_title_qr">技术交流群</div>
+              <img class="contact_wechat_group_img"  src="@/assets/wizard_wechat-group.png"></img>
+            </div>
+          </div>
+        </el-row>
+
+      </el-row>
     </el-row>
-    <el-row class="card_container">
-      <info-card v-for="(cardDetail,index) in cardList" :key="index">
-        <component :is="cardDetail.component" :img-index="index" :details="cardDetail" />
-      </info-card>
-    </el-row>
+
+
   </el-row>
 </template>
 
@@ -32,54 +95,57 @@ import ContactUs from '@/views/wizard/details/ContactUs'
 import InfoCard from '@/views/wizard/infoCard'
 import CardDetail from '@/views/wizard/details/CardDetail'
 import { blogLastActive } from '@/api/wizard/wizard'
+import WizardCard from "@/views/wizard/wizardCard";
+import VideoCard from "@/views/wizard/videoCard";
+import WizardCardEnterprise from "@/views/wizard/wizardCardEnterprise";
 
 export default {
   name: 'Wizard',
-  components: { InfoCard, Card, DemoVideo, OnlineDocument, LatestDevelopments, TeachingVideo, EnterpriseEdition, ContactUs, CardDetail },
+  components: {
+    WizardCardEnterprise,
+    VideoCard,
+    WizardCard, InfoCard, Card, DemoVideo, OnlineDocument, LatestDevelopments, TeachingVideo, EnterpriseEdition, ContactUs, CardDetail },
   data() {
     return {
+      blogsInfo:[],
       cardList: [
         {
           head: this.$t('wizard.quick_start'),
           content: this.$t('wizard.demo_video_hint'),
-          bottom: '',
-          href: 'https://www.bilibili.com/video/BV1i34y1v7hq/',
-          component: 'CardDetail'
+          img: 'wizard_quick_start.png',
+          bgColor: '#E7F2FF',
+          href: 'https://www.bilibili.com/video/BV1i34y1v7hq/'
         },
         {
           head: this.$t('wizard.online_document'),
           content: this.$t('wizard.online_document_hint'),
-          bottom: '',
+          img: 'wizard_help.png',
+          bgColor: '#F3F2FF',
           href: 'https://dataease.io/docs/index.html',
-          component: 'CardDetail'
-        },
-        {
-          head: this.$t('wizard.latest_developments'),
-          content: '',
-          bottom: '',
-          href: 'https://blog.fit2cloud.com/?cat=321',
-          component: 'CardDetail'
-        },
-        {
-          head: this.$t('wizard.teaching_video'),
-          content: '<a href="https://www.bilibili.com/video/BV15P4y1u7Pa?spm_id_from=333.999.0.0" target="_blank">1.1 连接数据库并添加数据集</a><br><a href="https://www.bilibili.com/video/BV1cU4y1d77S?spm_id_from=333.999.0.0" target="_blank">1.2 Excel 数据集和 API 数据集</a><br><a href="https://www.bilibili.com/video/BV1zY411n7Q1?spm_id_from=333.999.0.0" target="_blank">1.3 数据集整合</a>',
-          bottom: '',
-          href: 'https://space.bilibili.com/510493147/channel/collectiondetail?sid=262774',
-          component: 'CardDetail'
         },
         {
           head: this.$t('wizard.enterprise_edition'),
           content: this.$t('wizard.enterprise_edition_hint1') + '<br>' + this.$t('wizard.enterprise_edition_hint2') + '<br>' + this.$t('wizard.enterprise_edition_hint3'),
-          bottom: '',
+          img: 'wizard_enterprise.png',
+          bgColor: '#FFFAF0',
           href: 'https://jinshuju.net/f/TK5TTd',
-          component: 'CardDetail'
+        },
+      ],
+      videoList: [
+        {
+          content: '1.1 连接数据库并添加数据集',
+          img: 'wizard_video1.png',
+          href: 'https://www.bilibili.com/video/BV15P4y1u7Pa?spm_id_from=333.999.0.0'
         },
         {
-          head: this.$t('wizard.contact_us'),
-          content: this.$t('wizard.email') + 'dataease@fit2cloud.com<br>' + this.$t('wizard.tel') + '400-052-0755<br>' + this.$t('wizard.web') + '<a target="_blank" href="https://www.dataease.io">www.dataease.io</a>',
-          bottom: '',
-          href: 'https://www.dataease.io',
-          component: 'CardDetail'
+          content: '1.2 Excel 数据集和 API 数据集',
+          img: 'wizard_video2.png',
+          href: 'https://www.bilibili.com/video/BV1cU4y1d77S?spm_id_from=333.999.0.0'
+        },
+        {
+          content: '1.3 数据集整合',
+          img: 'wizard_video3.png',
+          href: 'https://www.bilibili.com/video/BV1zY411n7Q1?spm_id_from=333.999.0.0'
         }
       ],
       loading: true
@@ -106,9 +172,7 @@ export default {
   methods: {
     init() {
       blogLastActive().then(res => {
-        const blogsInfo = res.data[0]
-        this.cardList[2].content = blogsInfo.title
-        this.cardList[2].bottom = blogsInfo.time
+        this.blogsInfo = res.data
       })
     }
   }
@@ -117,28 +181,225 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+  .main_outer{
+    background-color: var(--MainBG, #f5f6f7)
+  }
   .main_container {
+    min-width: 1250px;
+    padding: 0 24px 0 24px;
+    overflow: auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: 100% 444px !important;
+    background: url('../../assets/wizard_main_bg.png') no-repeat;
   }
-  .head {
-    text-align: center;
-    color: white;
-    padding: 10px;
-    margin-top: 35px;
-    background-size: 100% 100% !important;
-    background-image: url('../../assets/banner.png');
+  .main_content {
+    width: 1200px;
   }
+  .content_top_banner{
+    color: var(--ContentBG, #FFFFFF);
+    position: relative;
+    width: 100%;
+    height: 230px;
+  }
+
+  .top_banner_content{
+    position: absolute;
+    top: 62px;
+    height: 230px;
+  }
+
+  .top_banner_img{
+    position: absolute;
+    width: 520px;
+    height: 230px;
+    top: 0;
+    right: 50px;
+  }
+
+  .top_banner_card{
+    position: relative;
+    width: 100%;
+    height: 224px;
+  }
+
   .hint_head {
-    line-height: 50px;
-    font-weight: bold;
-    font-size: 25px;
+    line-height: 48px;
+    font-weight: 600;
+    font-size: 48px;
   }
   .hint_content {
-    line-height: 50px;
-    font-size: 15px;
+    margin-top: 12px;
+    line-height: 26px;
+    font-weight: 400;
+    font-size: 18px;
   }
 
-  .card_container {
-   vertical-align: middle;
-
+  .content_middle{
+    height: 290px;
+    width: 100%;
+    margin-top: 24px;
   }
+
+  .content_middle_left{
+    float: left;
+    width: 792px;
+    height: 290px;
+    padding: 24px;
+    border-radius: 4px;
+    background-color: var(--ContentBG, #FFFFFF);
+  }
+  .content_middle_title{
+    float: left;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 38px;
+    color: var(--TextPrimary, #1F2329);
+  }
+  .content_middle_more{
+    float: right;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: #646A73;
+    border-radius: 4px;
+    height: 26px;
+    padding: 2px;
+  }
+
+  .content_middle_more :hover{
+    border-radius: 4px;
+    height: 26px;
+    background: rgba(31, 35, 41, 0.1);
+  }
+  .content_middle_more i:hover{
+    background: none;
+  }
+
+  .content_middle_right {
+    float: left;
+    height: 290px;
+    width: 384px;
+    margin-left: 24px;
+    padding: 24px;
+    border-radius: 4px;
+    background-color: var(--ContentBG, #FFFFFF);
+  }
+
+  .content_middle_left{
+    float: left;
+    width: 792px;
+    height: 290px;
+    padding: 24px;
+    border-radius: 4px;
+    background-color: var(--ContentBG, #FFFFFF);
+  }
+
+  .li-custom {
+    margin-top: 16px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--TextPrimary, #1F2329);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    list-style-type : disc;
+    list-style-position: inside;
+  }
+
+  .li-custom :hover {
+    background: rgba(31, 35, 41, 0.1);
+    border-radius: 4px;
+    color: #3370FF;
+  }
+
+  .ul-custom {
+    padding-inline-start:0px;
+  }
+
+  .content_bottom{
+    width: 100%;
+    height: 208px;
+  }
+
+  .content_bottom_contact{
+    float: left;
+    margin-left: 278px;
+    width: 300px;
+    margin-top: 40px;
+  }
+
+  .contact_title{
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 22px;
+    color: var(--TextPrimary, #1F2329);
+  }
+
+  .contact_content{
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    color: #646A73;
+  }
+  .contact_content a:hover{
+    color: #3370FF;
+  }
+
+  .content_bottom_qr_code{
+    width: 300px;
+    float: right;
+    text-align: right;
+    margin-right: 280px;
+    margin-top: 40px;
+  }
+
+  .contact_title_qr{
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    color: #646A73;
+  }
+
+  .contact_wechat_official{
+    width: 100px;
+    float: right;
+  }
+
+  .contact_wechat_official_img{
+    box-sizing: border-box;
+    width: 100px;
+    height: 100px;
+    border: 2px solid #FFFFFF;
+  }
+
+  .contact_wechat_group{
+    width: 100px;
+    float: right;
+    margin-right: 40px;
+  }
+
+  .contact_wechat_group_img{
+    box-sizing: border-box;
+    width: 100px;
+    height: 100px;
+    border: 2px solid #FFFFFF;
+  }
+
+  .main_container_outer{
+    width: 100%;
+    height: calc(100vh - 56px);
+    background-color: var(--MainBG, #f5f6f7);
+    overflow: auto;
+  }
+
 </style>

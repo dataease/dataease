@@ -19,7 +19,7 @@ import java.util.*;
 public class ReptileService {
     String blogUrl = "https://blog.fit2cloud.com/?cat=321";
     //获取最新的前几条数据
-    private static int infoCount=1;
+    private static int infoCount=5;
 
     public List lastActive() {
         List result = new ArrayList();
