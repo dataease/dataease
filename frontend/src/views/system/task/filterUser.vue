@@ -115,15 +115,7 @@
     <div class="filter">
       <span>{{ $t("dedaterange.label") }}</span>
       <div class="filter-item">
-        <el-date-picker
-          v-model="dataRange"
-          size="small"
-          type="daterange"
-          range-separator=""
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        >
-        </el-date-picker>
+        <DeDatePick  v-model="dataRange"></DeDatePick>
       </div>
     </div>
     </div>
@@ -143,8 +135,12 @@ import { filterDataset, dateFormat } from "./options";
 import { allRoles } from "@/api/system/user";
 import { getDatasetTree, treeByDatasetId } from "@/api/system/dept";
 import { queryAuthModel } from "@/api/authModel/authModel";
+import DeDatePick from '@/components/deCustomCm/deDatePick.vue'
 
 export default {
+  components: {
+    DeDatePick
+  },
   data() {
     return {
       treeLoading: false,

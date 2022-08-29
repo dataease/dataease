@@ -93,7 +93,7 @@
             :label="$t('kettle.passwd')"
             prop="configuration.passwd"
           >
-            <el-input :placeholder="$t('components.input_a_password')" v-model="form.configuration.passwd" show-password />
+            <dePwd :placeholder="$t('components.input_a_password')" v-model="form.configuration.passwd"/>
           </el-form-item>
         </el-form>
       </el-col>
@@ -122,11 +122,12 @@ import {
 } from "@/api/system/kettle";
 import i18n from "@/lang";
 import GridTable from "@/components/gridTable/index.vue";
+import dePwd from '@/components/deCustomCm/dePwd.vue'
 import msgCfm from '@/components/msgCfm'
 
 export default {
   name: "KettleSetting",
-  components: { GridTable },
+  components: { GridTable, dePwd },
   mixins: [msgCfm],
   data() {
     return {
@@ -339,7 +340,7 @@ export default {
   justify-content: center;
   align-items: center;
   border-radius: 2px;
-  width: 40px;
+  padding: 1px 6px;
   height: 24px;
 }
 </style>

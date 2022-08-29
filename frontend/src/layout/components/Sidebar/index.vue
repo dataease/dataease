@@ -97,8 +97,8 @@ export default {
   font-family: PingFang SC;
   font-size: 14px;
   font-weight: 400;
-  color: #646a73;
-  background: #fff;
+  color: var(--SiderTextColor, #646a73);
+  background-color: var(--SiderBG, #ffffff);
   cursor: pointer;
 
   i {
