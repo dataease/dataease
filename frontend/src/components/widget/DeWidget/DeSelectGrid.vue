@@ -213,7 +213,7 @@ export default {
   },
   methods: {
     clearHandler() {
-      this.value = null
+      this.value = this.element.options.attrs.multiple ? [] : null
     },
     resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
