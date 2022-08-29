@@ -346,7 +346,8 @@ export default {
     savePrepare() {
       // 保存到数据库
       const requestInfo = {
-        id: this.panelInfo.id,
+        ...
+        this.panelInfo,
         panelStyle: JSON.stringify(this.canvasStyleData),
         panelData: JSON.stringify(this.componentData)
       }
