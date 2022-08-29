@@ -27,6 +27,7 @@
                 class="my_table"
                 max-height="300"
                 height="300"
+                :key="certinKey"
               >
                 <el-table-column
                   prop="name"
@@ -907,6 +908,7 @@ export default {
           value: 3,
         },
       ],
+      certinKey: false
     };
   },
   created() {
@@ -1000,6 +1002,7 @@ export default {
         for (var i = 0; i < this.form.apiConfiguration.length; i++) {
           if (this.form.apiConfiguration[i].serialNumber === this.apiItem.serialNumber) {
             this.form.apiConfiguration[i] = JSON.parse(JSON.stringify(this.apiItem))
+            this.certinKey = ! this.certinKey
           }
         }
       } else {
