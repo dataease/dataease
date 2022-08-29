@@ -7,7 +7,7 @@ import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.BeanUtils;
-import io.dataease.controller.sys.request.UserGridRequest;
+import io.dataease.controller.sys.request.KeyGridRequest;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysRole;
@@ -60,7 +60,7 @@ public class SysUserController {
             @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
     public Pager<List<SysUserGridResponse>> userGrid(@PathVariable int goPage, @PathVariable int pageSize,
-            @RequestBody UserGridRequest request) {
+            @RequestBody KeyGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, sysUserService.query(request));
     }
@@ -68,8 +68,8 @@ public class SysUserController {
     @ApiIgnore
     @PostMapping("/userLists")
     public List<SysUserGridResponse> userLists(@RequestBody BaseGridRequest request) {
-        UserGridRequest userGridRequest = BeanUtils.copyBean(new UserGridRequest(), request);
-        return sysUserService.query(userGridRequest);
+        KeyGridRequest keyGridRequest = BeanUtils.copyBean(new KeyGridRequest(), request);
+        return sysUserService.query(keyGridRequest);
     }
 
     @ApiOperation("创建用户")
