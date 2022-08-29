@@ -337,7 +337,11 @@ export default {
       const _this = this
       _this.timer = setInterval(() => {
         if (_this.$store.state.cacheStyleChangeTimes > 0) {
-          const cacheRequest = _this.savePrepare()
+          const requestInfo = _this.savePrepare()
+          const cacheRequest ={
+            ...this.panelInfo,
+            ...requestInfo
+          }
           saveCache(cacheRequest)
           _this.$store.state.cacheStyleChangeTimes = 0
         }
@@ -346,8 +350,7 @@ export default {
     savePrepare() {
       // 保存到数据库
       const requestInfo = {
-        ...
-        this.panelInfo,
+        id: this.panelInfo.id,
         panelStyle: JSON.stringify(this.canvasStyleData),
         panelData: JSON.stringify(this.componentData)
       }
