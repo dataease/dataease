@@ -2731,7 +2731,7 @@ public class DataSetTableService {
                 boolean hasSubBinaryExpression = false;
                 try {
                     BinaryExpression leftBinaryExpression = (BinaryExpression) expr.getLeftExpression();
-                    hasSubBinaryExpression = leftBinaryExpression.getLeftExpression() instanceof Expression;
+                    hasSubBinaryExpression = leftBinaryExpression.getLeftExpression() instanceof BinaryExpression;
                 } catch (Exception e) {e.printStackTrace();}
 
                 if (expr.getLeftExpression() instanceof BinaryExpression && !hasSubBinaryExpression && hasVarible(expr.getLeftExpression().toString())) {
