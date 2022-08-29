@@ -60,7 +60,7 @@ public class SysUserService {
     private AuthUserService authUserService;
 
 
-    public List<SysUserGridResponse> query(UserGridRequest request) {
+    public List<SysUserGridResponse> query(KeyGridRequest request) {
         String keyWord = request.getKeyWord();
         GridExample gridExample = request.convertExample();
         gridExample.setExtendCondition(keyWord);
