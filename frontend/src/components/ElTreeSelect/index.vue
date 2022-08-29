@@ -229,6 +229,9 @@ export default {
     off(document, 'mouseup', this._popoverHideFun)
   },
   methods: {
+    resetSelectAll() {
+      this.selectAll = false
+    },
     selectAllChane(val) {
       if (val) {
         this.ids = this._checkSum()
