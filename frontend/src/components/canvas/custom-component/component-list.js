@@ -90,7 +90,7 @@ export const VIDEOLINKS = {
       pause: false
     },
     sources: [{
-      // type: 'application/x-mpegURL'
+      type: 'application/x-mpegURL'
     }]
   },
   rtmp: {

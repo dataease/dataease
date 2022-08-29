@@ -57,7 +57,6 @@
         <!--  -->
       </video>
     </div>
-    </div>
   </el-row>
 </template>
 <script>
@@ -301,12 +300,17 @@ export default {
           textTrackDisplay: false,
           posterImage: true,
           errorDisplay: false,
+          controls: true,
+          hls: {
+            withCredentials: true
+          },
           sources: [{
             type: 'application/x-mpegURL',
             src: url
           }]
         },
         function() {
+          // this.play()
           this.on('error', function() {
             console.log('视频播放失败')
           })
