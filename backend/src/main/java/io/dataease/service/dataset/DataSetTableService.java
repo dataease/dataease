@@ -1045,7 +1045,7 @@ public class DataSetTableService {
             builder.append(" ");
             for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext(); ) {
                 WithItem withItem = iter.next();
-                builder.append(withItem.toString());
+                builder.append(withItem.getName() + " AS ( " + removeVariables(withItem.getSubSelect().toString()) + " ) ");
                 if (iter.hasNext()) {
                     builder.append(",");
                 }
