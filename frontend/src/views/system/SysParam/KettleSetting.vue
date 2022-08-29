@@ -77,22 +77,23 @@
           :rules="rule"
         >
           <el-form-item :label="$t('kettle.carte')" prop="configuration.carte">
-            <el-input v-model="form.configuration.carte" />
+            <el-input v-model="form.configuration.carte" :placeholder="$t('components.enter_kettle_address')" />
           </el-form-item>
           <el-form-item :label="$t('kettle.port')" prop="configuration.port">
             <el-input-number
               v-model="form.configuration.port"
               controls-position="right"
+              :placeholder="$t('components.enter_the_port')"
             />
           </el-form-item>
           <el-form-item :label="$t('kettle.user')" prop="configuration.user">
-            <el-input v-model="form.configuration.user" />
+            <el-input :placeholder="$t('components.one_user_name')" v-model="form.configuration.user" />
           </el-form-item>
           <el-form-item
             :label="$t('kettle.passwd')"
             prop="configuration.passwd"
           >
-            <el-input v-model="form.configuration.passwd" show-password />
+            <el-input :placeholder="$t('components.input_a_password')" v-model="form.configuration.passwd" show-password />
           </el-form-item>
         </el-form>
       </el-col>
@@ -149,28 +150,28 @@ export default {
         "configuration.carte": [
           {
             required: true,
-            message: this.$t("commons.required"),
+            message: this.$t("components.address_is_required"),
             trigger: "blur",
           },
         ],
         "configuration.port": [
           {
             required: true,
-            message: this.$t("commons.required"),
+            message: this.$t("components.port_is_required"),
             trigger: "blur",
           },
         ],
         "configuration.user": [
           {
             required: true,
-            message: this.$t("commons.required"),
+            message: this.$t("components.name_is_required"),
             trigger: "blur",
           },
         ],
         "configuration.passwd": [
           {
             required: true,
-            message: this.$t("commons.required"),
+            message: this.$t("components.password_is_required"),
             trigger: "blur",
           },
         ],
