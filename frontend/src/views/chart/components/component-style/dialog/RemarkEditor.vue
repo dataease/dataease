@@ -20,6 +20,14 @@ export default {
     remark: {
       type: String,
       required: true
+    },
+    showTable: {
+      type: Boolean,
+      default: true
+    },
+    showMedia: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -58,6 +66,17 @@ export default {
       handler(newValue) {
         this.$emit('onRemarkChange', newValue)
       }
+    }
+  },
+  
+  created() {
+    if(!this.showTable) {
+      this.init.plugins = this.init.plugins.replace(' table', '')
+      
+    }
+    if(!this.showMedia) {
+      this.init.plugins = this.init.plugins.replace(' media', '')
+      
     }
   },
   mounted() {
