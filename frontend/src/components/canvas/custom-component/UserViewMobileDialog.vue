@@ -7,6 +7,7 @@
           :component-name="chart.type + '-view'"
           :obj="{chart: mapChart || chart}"
           :chart="mapChart || chart"
+          :theme-style="element.commonBackground"
           class="chart-class"
         />
         <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" :theme-style="element.commonBackground" class="chart-class" :chart="mapChart || chart" />
@@ -34,8 +35,8 @@ import DeContainer from '@/components/dataease/DeContainer'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
-import {deepCopy, imgUrlTrans} from '@/components/canvas/utils/utils'
-import {hexColorToRGBA} from "@/views/chart/chart/util";
+import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 export default {
   name: 'UserViewMobileDialog',
   components: { ChartComponentS2, LabelNormalText, DeContainer, DeMainContainer, ChartComponentG2, ChartComponent, TableNormal, LabelNormal, PluginCom },
@@ -83,7 +84,7 @@ export default {
     },
 
     svgInnerEnable() {
-      return !this.screenShot&&this.element.commonBackground.enable && this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string'
+      return !this.screenShot && this.element.commonBackground.enable && this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string'
     },
     mainSlotSvgInner() {
       if (this.svgInnerEnable) {
@@ -106,7 +107,7 @@ export default {
         }
         if (this.element.commonBackground.enable) {
           if (this.screenShot && this.element.commonBackground.backgroundType === 'innerImage' && typeof this.element.commonBackground.innerImage === 'string') {
-            let innerImage = this.element.commonBackground.innerImage.replace('svg', 'png')
+            const innerImage = this.element.commonBackground.innerImage.replace('svg', 'png')
             style['background'] = `url(${imgUrlTrans(innerImage)}) no-repeat ${colorRGBA}`
           } else if (this.element.commonBackground.backgroundType === 'outerImage' && typeof this.element.commonBackground.outerImage === 'string') {
             style['background'] = `url(${imgUrlTrans(this.element.commonBackground.outerImage)}) no-repeat ${colorRGBA}`
