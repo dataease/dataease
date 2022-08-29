@@ -94,6 +94,12 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         return null;
     }
 
+    private String sqlFix(String sql) {
+        if (sql.lastIndexOf(";") == (sql.length() - 1)) {
+            sql = sql.substring(0, sql.length() - 1);
+        }
+        return sql;
+    }
     @Override
     public PluginViewSQL getTableObj(PluginViewSet pluginViewSet) {
         String tableName = null;
@@ -108,7 +114,8 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
                 case SQL:
                     String sql = dataTableInfoDTO.isBase64Encryption()? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())): dataTableInfoDTO.getSql();
                     tableName = dataSetTableService.handleVariableDefaultValue( sql, null);
-                    tableName = "(" + tableName + ")";
+
+                    tableName = "(" + sqlFix(tableName) + ")";
                     break;
                 case CUSTOM:
                     List<DataSetTableUnionDTO> list = dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId());
