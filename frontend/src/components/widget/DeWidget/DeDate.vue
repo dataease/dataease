@@ -296,6 +296,16 @@ export default {
   border:1px solid var(--BrDateColor, #dfe4ed) !important;
   background: var(--BgDateColor, #FFFFFF) !important;
 
+  .el-picker-panel__sidebar {
+    background: var(--BgDateColor, #FFFFFF) !important;
+    border-right: 1px solid var(--BrDateColor, #dfe4ed) !important;
+
+    .el-picker-panel__shortcut {
+      color: var(--DateColor, #606266);
+    }
+  }
+  
+
   .popper__arrow,
   .popper__arrow::after {
     display: none !important;
@@ -308,6 +318,10 @@ export default {
   .el-date-table th,
   .el-date-picker__header--bordered {
     border-bottom:1px solid var(--BrDateColor, #e6ebf5) !important;
+  }
+
+  .el-date-table td.in-range:not(.end-date):not(.start-date) div span {
+    color: #3370ff;
   }
 
   .el-date-range-picker__header,

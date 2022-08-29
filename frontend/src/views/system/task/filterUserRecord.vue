@@ -7,127 +7,120 @@
     v-closePress
     direction="rtl"
   >
-  <div class="el-drawer__body-cont">
-
-    <div class="filter">
-      <span>{{ $t("dataset.datalist") }}</span>
-      <div class="filter-item">
-        <span
-          class="item"
-          @click="activeDatasetChange(ele.id)"
-          :class="[activeDataset.includes(ele.id) ? 'active' : '']"
-          :key="ele.id"
-          v-for="ele in selectDatasetsCahe"
-          >{{ ele.name }}</span
-        >
-        <el-popover
-          placement="bottom"
-          popper-class="user-popper"
-          width="200"
-          trigger="click"
-        >
+    <div class="el-drawer__body-cont">
+      <div class="filter">
+        <span>{{ $t("dataset.datalist") }}</span>
+        <div class="filter-item">
+          <span
+            class="item"
+            @click="activeDatasetChange(ele.id)"
+            :class="[activeDataset.includes(ele.id) ? 'active' : '']"
+            :key="ele.id"
+            v-for="ele in selectDatasetsCahe"
+            >{{ ele.name }}</span
+          >
           <el-popover
             placement="bottom"
-            popper-class="user-popper dept"
+            popper-class="user-popper"
             width="200"
             trigger="click"
-            v-loading="treeLoading"
           >
-            <el-tree
-              ref="datasetTreeRef"
-              current-node-key="id"
-              :data="treeData"
-              node-key="id"
-              highlight-current
-              :filter-node-method="filterNode"
-              :expand-on-click-node="true"
-              @node-click="nodeClick"
+            <el-popover
+              placement="bottom"
+              popper-class="user-popper dept"
+              width="200"
+              trigger="click"
+              v-loading="treeLoading"
             >
-              <span slot-scope="{ data }" class="custom-tree-node">
-                <span v-if="data.modelInnerType === 'group'">
-                  <svg-icon icon-class="scene" class="ds-icon-scene" />
-                  <span
-                    style="
-                      margin-left: 6px;
-                      white-space: nowrap;
-                      overflow: hidden;
-                      text-overflow: ellipsis;
-                    "
-                    :title="data.name"
-                    >{{ data.name }}</span
-                  >
-                </span>
-                <span v-else>
-                  <span>
-                    <svg-icon
-                      :icon-class="`ds-${data.modelInnerType}`"
-                      :class="`ds-icon-${data.modelInnerType}`"
-                    />
+              <el-tree
+                ref="datasetTreeRef"
+                current-node-key="id"
+                :data="treeData"
+                node-key="id"
+                highlight-current
+                :filter-node-method="filterNode"
+                :expand-on-click-node="true"
+                @node-click="nodeClick"
+              >
+                <span slot-scope="{ data }" class="custom-tree-node">
+                  <span v-if="data.modelInnerType === 'group'">
+                    <svg-icon icon-class="scene" class="ds-icon-scene" />
+                    <span
+                      style="
+                        margin-left: 6px;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                      "
+                      :title="data.name"
+                      >{{ data.name }}</span
+                    >
                   </span>
-                  <span
-                    style="
-                      margin-left: 6px;
-                      white-space: nowrap;
-                      overflow: hidden;
-                      text-overflow: ellipsis;
-                    "
-                    :title="data.name"
-                    >{{ data.name }}</span
-                  >
+                  <span v-else>
+                    <span>
+                      <svg-icon
+                        :icon-class="`ds-${data.modelInnerType}`"
+                        :class="`ds-icon-${data.modelInnerType}`"
+                      />
+                    </span>
+                    <span
+                      style="
+                        margin-left: 6px;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                      "
+                      :title="data.name"
+                      >{{ data.name }}</span
+                    >
+                  </span>
                 </span>
-              </span>
-            </el-tree>
+              </el-tree>
 
-            <el-select
-              ref="datasetSelect"
-              v-model="selectDatasets"
-              slot="reference"
-              popper-class="tree-select"
-              multiple
-              :placeholder="$t('commons.please_select')"
-              value-key="id"
-            >
-              <el-option
-                v-for="item in selectDatasets"
-                :key="item.name"
-                :label="item.name"
-                :value="item"
-              />
-            </el-select>
+              <el-select
+                ref="datasetSelect"
+                v-model="selectDatasets"
+                slot="reference"
+                popper-class="tree-select"
+                multiple
+                :placeholder="$t('commons.please_select')"
+                value-key="id"
+              >
+                <el-option
+                  v-for="item in selectDatasets"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item"
+                />
+              </el-select>
+            </el-popover>
+            <span class="more" slot="reference">+ {{ $t("panel.more") }}</span>
           </el-popover>
-          <span class="more" slot="reference">+ {{ $t("panel.more") }}</span>
-        </el-popover>
+        </div>
       </div>
-    </div>
-    <div v-for="ele in filterDataset" :key="ele.name" class="filter">
-      <span>{{ $t(ele.name) }}</span>
-      <div class="filter-item">
-        <span
-          class="item"
-          @click="statusChange(item.value, ele.activeType)"
-          :class="[active[ele.activeType].includes(item.value) ? 'active' : '']"
-          :key="item.name"
-          v-for="item in ele.list"
-          >{{ $t(item.name) }}</span
-        >
+      <div v-for="ele in filterDataset" :key="ele.name" class="filter">
+        <span>{{ $t(ele.name) }}</span>
+        <div class="filter-item">
+          <span
+            class="item"
+            @click="statusChange(item.value, ele.activeType)"
+            :class="[
+              active[ele.activeType].includes(item.value) ? 'active' : '',
+            ]"
+            :key="item.name"
+            v-for="item in ele.list"
+            >{{ $t(item.name) }}</span
+          >
+        </div>
       </div>
-    </div>
 
-    <div class="filter">
-      <span>{{ $t("dedaterange.label") }}</span>
-      <div class="filter-item">
-        <el-date-picker
-          v-model="dataRange"
-          size="small"
-          type="daterange"
-          range-separator=""
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        >
-        </el-date-picker>
+      <div class="filter">
+        <span>{{ $t("dedaterange.label") }}</span>
+        <div class="filter-item">
+          <DeDatePick v-model="dataRange"></DeDatePick>
+        </div>
       </div>
     </div>
-  </div>
     <div class="foot">
       <el-button class="btn normal" @click="reset">{{
         $t("commons.reset")
@@ -142,8 +135,12 @@
 <script>
 import { filterDatasetRecord, dateFormat } from "./options";
 import { queryAuthModel } from "@/api/authModel/authModel";
+import DeDatePick from "@/components/deCustomCm/deDatePick.vue";
 
 export default {
+  components: {
+    DeDatePick,
+  },
   data() {
     return {
       treeLoading: false,
@@ -197,7 +194,7 @@ export default {
     clearFilter() {
       this.active = {
         execStatus: [],
-      }
+      };
       this.dataRange = [];
       this.activeDataset = [];
       this.selectDatasets = [];
@@ -206,15 +203,15 @@ export default {
       this.$emit("search", [], []);
     },
     clearOneFilter(index) {
-      (this.filterTextMap[index] || []).forEach(ele => {
-        const eleKey = ele.split('.');
+      (this.filterTextMap[index] || []).forEach((ele) => {
+        const eleKey = ele.split(".");
         if (eleKey.length === 2) {
-          const [p, c ] = eleKey;
-          this[p][c] = []
+          const [p, c] = eleKey;
+          this[p][c] = [];
         } else {
-          this[ele] = []
+          this[ele] = [];
         }
-      })
+      });
     },
     statusChange(value, type) {
       const statusIndex = this.active[type].findIndex((ele) => ele === value);
@@ -271,15 +268,14 @@ export default {
           "datasetCahe",
         ]);
       }
-      [
-        "dataset.task.last_exec_status",
-      ].forEach((ele, index) => {
-        const { activeType: type, list } =
-          this.filterDataset[index];
+      ["dataset.task.last_exec_status"].forEach((ele, index) => {
+        const { activeType: type, list } = this.filterDataset[index];
         if (this.active[type].length) {
           params.push(
             `${this.$t(ele)}:${this.active[type]
-              .map((item) => this.$t(list.find((itx) => itx.value === item).name))
+              .map((item) =>
+                this.$t(list.find((itx) => itx.value === item).name)
+              )
               .join("、")}`
           );
           this.filterTextMap.push([`active.${type}`]);
@@ -312,14 +308,14 @@ export default {
           });
         }
       });
-      const [ min, max ] = this.dataRange;
+      const [min, max] = this.dataRange;
       if (min && max) {
         console.log(1, +min, +max);
         conditions.push({
-            field: 'dataset_table_task.last_exec_time',
-            operator: "between",
-            value: [ +min, +max ],
-          })
+          field: "dataset_table_task.last_exec_time",
+          operator: "between",
+          value: [+min, +max],
+        });
       }
       return conditions;
     },
@@ -336,7 +332,6 @@ export default {
 
 <style lang="scss">
 .user-drawer-task {
-
   .el-drawer__body-cont {
     height: 100%;
     box-sizing: border-box;
@@ -344,7 +339,7 @@ export default {
     width: 100%;
     padding-bottom: 80px;
   }
-  
+
   .el-drawer__header {
     padding: 16px 24px;
     margin: 0;
@@ -449,7 +444,7 @@ export default {
     right: 0;
     bottom: 0;
     text-align: right;
-    background: #FFFFFF;
+    background: #ffffff;
     box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.05);
   }
 }
