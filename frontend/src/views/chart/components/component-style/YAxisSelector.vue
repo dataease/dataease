@@ -126,10 +126,6 @@
               </el-form-item>
             </span>
           </span>
-          <el-divider v-if="showProperty('axisLabel')" />
-          <el-form-item v-show="showProperty('axisLabel')" :label="$t('chart.content_formatter')" class="form-item">
-            <el-input v-model="axisForm.axisLabel.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeYAxisStyle('axisLabel')" />
-          </el-form-item>
         </div>
       </el-form>
     </el-col>

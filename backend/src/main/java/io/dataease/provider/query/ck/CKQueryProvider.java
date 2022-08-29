@@ -1,5 +1,6 @@
 package io.dataease.provider.query.ck;
 
+import io.dataease.commons.utils.BeanUtils;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
@@ -30,6 +31,7 @@ import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -42,6 +44,8 @@ import static io.dataease.plugins.common.constants.datasource.SQLConstants.TABLE
  */
 @Service("ckQueryProvider")
 public class CKQueryProvider extends QueryProvider {
+
+    private static final String toDateTime64 = "toDateTime64(%s, 3, '')";
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
 
@@ -1060,6 +1064,25 @@ public class CKQueryProvider extends QueryProvider {
         if (CollectionUtils.isEmpty(requestList)) {
             return null;
         }
+
+        AtomicReference<ChartExtFilterRequest> atomicReference = new AtomicReference<>();
+        requestList.forEach(request -> {
+            DatasetTableField datasetTableField = request.getDatasetTableField();
+            List<String> requestValue = request.getValue();
+            if (ObjectUtils.isNotEmpty(datasetTableField) && datasetTableField.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getOperator(), "between")) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                request.setOperator("ge");
+                request.setValue(new ArrayList<String>(){{add(String.format(toDateTime64, "'" + simpleDateFormat.format(new Date(Long.parseLong(requestValue.get(0)))) + "'"));}});
+                ChartExtFilterRequest requestCopy = BeanUtils.copyBean(new ChartExtFilterRequest(), request);
+                requestCopy.setOperator("le");
+                requestCopy.setValue(new ArrayList<String>(){{add(String.format(toDateTime64, "'" + simpleDateFormat.format(new Date(Long.parseLong(requestValue.get(1)))) + "'"));}});
+                atomicReference.set(requestCopy);
+            }
+        });
+
+        if (ObjectUtils.isNotEmpty(atomicReference.get())) {
+            requestList.add(atomicReference.get());
+        }
         List<SQLObj> list = new ArrayList<>();
         for (ChartExtFilterRequest request : requestList) {
             List<String> value = request.getValue();
@@ -1138,7 +1161,7 @@ public class CKQueryProvider extends QueryProvider {
                     whereValue = String.format(CKConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                whereValue = String.format(CKConstants.WHERE_VALUE_VALUE, value.get(0));
+                whereValue = isCompleteField(value.get(0)) ? value.get(0) : String.format(CKConstants.WHERE_VALUE_VALUE, value.get(0));
             }
 
             if (!request.getIsTree() && fieldList.get(0).getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getOperator(), "null")) {
@@ -1161,6 +1184,10 @@ public class CKQueryProvider extends QueryProvider {
         List<String> strList = new ArrayList<>();
         list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" AND ", strList) + ")" : null;
+    }
+
+    private boolean isCompleteField(String field) {
+        return StringUtils.isNotBlank(field) && StringUtils.startsWith(field, "toDateTime64('") && StringUtils.endsWith(field, "')");
     }
 
     private String sqlFix(String sql) {

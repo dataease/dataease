@@ -431,7 +431,7 @@ const list = [
       openMode: '0',
       showWeek: false,
       showDate: true,
-      dateFormat: 'yyyy年-MM月-dd日',
+      dateFormat: 'yyyy-MM-dd',
       timeFormat: 'hh:mm:ss'
     },
     x: 1,

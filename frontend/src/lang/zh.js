@@ -2411,7 +2411,9 @@ export default {
     show_more: '查看更多',
     email: '邮箱：',
     tel: '电话：',
-    web: '网址：'
+    web: '网址：',
+    apply: '免费试用申请',
+    more: '更多'
   },
   kettle: {
     add: '添加 Kettle 服务',

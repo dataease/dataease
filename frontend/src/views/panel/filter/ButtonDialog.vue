@@ -16,7 +16,7 @@
       </el-form-item>
 
       <el-form-item v-if="myAttrs.customRange" :label="$t('desearchbutton.relative')">
-        <el-select v-model="myAttrs.filterIds" style="width: 280px;" multiple clearable>
+        <el-select v-model="myAttrs.filterIds" style="width: 100%;" multiple clearable>
           <el-option v-for="(filter, index) in filters" :key="filter.id + index" :label="filter.showName" :value="filter.id" />
         </el-select>
       </el-form-item>
