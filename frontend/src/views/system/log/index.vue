@@ -116,7 +116,8 @@
 <script>
 import DeLayoutContent from "@/components/business/DeLayoutContent";
 import GridTable from "@/components/gridTable/index.vue";
-import filterUser from './filterUser'
+import filterUser from './filterUser';
+import _ from 'lodash';
 import {
   formatCondition,
   formatQuickCondition,
