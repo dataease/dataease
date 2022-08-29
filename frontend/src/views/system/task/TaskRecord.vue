@@ -13,8 +13,8 @@
           clearable
           ref="search"
           v-model="nikeName"
-          @blur="clearSearch"
-          @clear="clearSearch"
+          @blur="initSearch"
+          @clear="initSearch"
         >
         </el-input>
         <deBtn
@@ -200,11 +200,6 @@ export default {
     this.destroyTimer();
   },
   methods: {
-    clearSearch() {
-      this.cachId = "";
-      this.$emit("reset");
-      this.initSearch();
-    },
     exportConfirm() {
       this.$confirm(this.$t("log.confirm"), "", {
         confirmButtonText: this.$t("commons.confirm"),

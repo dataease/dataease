@@ -68,14 +68,9 @@
         :label="$t('system_parameter_setting.SMTP_password')"
         prop="password"
       >
-        <el-input
-          ref="input"
+        <dePwd
           v-model="formInline.password"
           :placeholder="$t('system_parameter_setting.SMTP_password')"
-          autocomplete="new-password"
-          show-password
-          type="text"
-          @focus="changeType"
         />
       </el-form-item>
       <el-form-item :label="$t('system_parameter_setting.test_recipients')">
@@ -90,13 +85,9 @@
             <i class="el-icon-warning-outline tips-not-absolute"></i>
           </el-tooltip>
         </template>
-        <el-input
-          ref="input"
+        <dePwd
           v-model="formInline.recipient"
           :placeholder="$t('system_parameter_setting.test_recipients')"
-          autocomplete="new-password"
-          show-password
-          type="text"
         />
       </el-form-item>
       <el-form-item label="邮箱服务器配置">
@@ -134,12 +125,13 @@
 import { emailInfo, updateInfo, validate } from "@/api/system/email";
 import operater from "./operater";
 import msgCfm from '@/components/msgCfm'
-
+import dePwd from '@/components/deCustomCm/dePwd.vue'
 export default {
   name: "EmailSetting",
   mixins: [msgCfm],
   components: {
     operater,
+    dePwd
   },
   data() {
     return {
@@ -183,9 +175,6 @@ export default {
     this.query();
   },
   methods: {
-    changeType() {
-      this.$refs.input = "password";
-    },
     query() {
       emailInfo().then((response) => {
         this.formInline = response.data;

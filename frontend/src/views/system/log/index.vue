@@ -1,162 +1,393 @@
 <template>
-  <layout-content :header="$t('log.title')">
-    <complex-table
-      v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
-      :data="data"
-      :columns="columns"
-      :search-config="searchConfig"
-      :pagination-config="paginationConfig"
-      @select="select"
-      @search="search"
-      @sort-change="sortChange"
+  <de-layout-content :header="$t('log.title')">
+    <el-row class="top-operate">
+      <el-col :span="12">
+        <deBtn v-permission="['log:export']" secondary @click="exportConfirm">{{
+          $t("zip.export")
+        }}</deBtn>
+        &nbsp; &nbsp;
+      </el-col>
+      <el-col :span="12" class="right-user">
+        <el-input
+          :placeholder="$t('通过事件详情搜索')"
+          prefix-icon="el-icon-search"
+          class="name-email-search"
+          size="small"
+          clearable
+          ref="search"
+          v-model="nikeName"
+          @blur="initSearch"
+          @clear="initSearch"
+        >
+        </el-input>
+        <deBtn
+          :secondary="!cacheCondition.length"
+          :plain="!!cacheCondition.length"
+          icon="iconfont icon-icon-filter"
+          @click="filterShow"
+          >{{ $t("user.filter")
+          }}<template v-if="filterTexts.length">
+            ({{ cacheCondition.length }})
+          </template>
+        </deBtn>
+      </el-col>
+    </el-row>
+    <div class="filter-texts" v-if="filterTexts.length">
+      <span class="sum">{{ paginationConfig.total }}</span>
+      <span class="title">{{ $t("user.result_one") }}</span>
+      <el-divider direction="vertical"></el-divider>
+      <i
+        @click="scrollPre"
+        v-if="showScroll"
+        class="el-icon-arrow-left arrow-filter"
+      ></i>
+      <div class="filter-texts-container">
+        <p class="text" v-for="(ele, index) in filterTexts" :key="ele">
+          {{ ele }} <i @click="clearOneFilter(index)" class="el-icon-close"></i>
+        </p>
+      </div>
+      <i
+        @click="scrollNext"
+        v-if="showScroll"
+        class="el-icon-arrow-right arrow-filter"
+      ></i>
+      <el-button
+        type="text"
+        class="clear-btn"
+        icon="el-icon-delete"
+        @click="clearFilter"
+        >{{ $t("user.clear_filter") }}</el-button
+      >
+    </div>
+    <div
+      class="table-container"
+      id="resize-for-filter"
+      :class="[filterTexts.length ? 'table-container-filter' : '']"
     >
-      <template #toolbar>
-        <el-button v-permission="['log:export']" icon="el-icon-download" size="mini" @click="exportConfirm">{{ $t('log.export') }}</el-button>
-      </template>
-
-      <el-table-column :show-overflow-tooltip="true" prop="opType" :label="$t('log.optype')" width="140">
-        <template v-slot:default="{row}">
-          <span>{{ row.opType + row.sourceType }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :show-overflow-tooltip="true" prop="detail" :label="$t('log.detail')" />
-      <el-table-column :show-overflow-tooltip="true" prop="user" :label="$t('log.user')" width="100" />
-      <el-table-column :show-overflow-tooltip="true" prop="time" sortable="custom" :label="$t('log.time')" width="180">
-        <template v-slot:default="scope">
-          <span>{{ scope.row.time | timestampFormatDate }}</span>
-        </template>
-      </el-table-column>
-    </complex-table>
-  </layout-content>
+      <grid-table
+        v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+        :tableData="data"
+        :columns="[]"
+        :pagination="paginationConfig"
+        @sort-change="sortChange"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      >
+        <el-table-column
+          show-overflow-tooltip
+          prop="opType"
+          :label="$t('log.optype')"
+          width="140"
+        >
+          <template v-slot:default="{ row }">
+            <span>{{ row.opType + row.sourceType }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          show-overflow-tooltip
+          prop="detail"
+          :label="$t('log.detail')"
+        />
+        <el-table-column
+          show-overflow-tooltip
+          prop="user"
+          :label="$t('log.user')"
+          width="100"
+        />
+        <el-table-column
+          show-overflow-tooltip
+          prop="time"
+          sortable="custom"
+          :label="$t('log.time')"
+          width="180"
+        >
+          <template v-slot:default="scope">
+            <span>{{ scope.row.time | timestampFormatDate }}</span>
+          </template>
+        </el-table-column>
+      </grid-table>
+    </div>
+    <keep-alive>
+        <filterUser ref="filterUser" @search="filterDraw"></filterUser>
+      </keep-alive>
+  </de-layout-content>
 </template>
 
 <script>
-import LayoutContent from '@/components/business/LayoutContent'
-import ComplexTable from '@/components/business/complex-table'
-import { formatCondition, formatQuickCondition, addOrder, formatOrders } from '@/utils/index'
-import { logGrid, opTypes, exportExcel } from '@/api/system/log'
+import DeLayoutContent from "@/components/business/DeLayoutContent";
+import GridTable from "@/components/gridTable/index.vue";
+import filterUser from './filterUser'
+import {
+  formatCondition,
+  formatQuickCondition,
+  addOrder,
+  formatOrders,
+} from "@/utils/index";
+import { logGrid, exportExcel } from "@/api/system/log";
 export default {
-
-  components: { ComplexTable, LayoutContent },
+  components: { GridTable, DeLayoutContent, filterUser },
   data() {
     return {
       columns: [],
-
-      searchConfig: {
-        useQuickSearch: false,
-        useComplexSearch: true,
-        quickPlaceholder: this.$t('log.search_by_key'),
-        components: [
-          {
-            field: 'optype',
-            label: this.$t('log.optype'),
-            component: 'FuComplexMixSelect',
-            options: [],
-            multiple: true,
-            class: 'de-log-filter',
-            defaultOperator: 'in',
-            filterable: true,
-            'reserve-keyword': true
-          },
-          { field: 'nick_name', label: this.$t('log.user'), component: 'DeComplexInput', class: 'de-log-filter' },
-
-          { field: 'time', label: this.$t('log.time'), component: 'FuComplexDateTime', defaultOperator: 'between', class: 'de-log-filter' }
-
-        ]
-      },
-
       paginationConfig: {
         currentPage: 1,
         pageSize: 10,
-        total: 0
+        total: 0,
       },
       data: [],
-      types: [],
-
       orderConditions: [],
-      last_condition: null
-
-    }
+      nikeName: "",
+      showScroll: false,
+      filterTexts: [],
+      cacheCondition: [],
+    };
   },
-
-  created() {
-    this.types = []
-    opTypes().then(res => {
-      const datas = res.data
-      datas.forEach(item => {
-        this.types.push({ 'label': item.name, 'value': item.id })
-      })
-      this.searchConfig.components[0].options = this.types
-    })
+  watch: {
+    filterTexts: {
+      handler() {
+        this.getScrollStatus();
+      },
+      deep: true,
+    },
   },
   mounted() {
-    this.search()
+    this.search();
+    this.resizeObserver();
   },
-
   methods: {
-
     exportConfirm() {
-      this.$confirm(this.$t('log.confirm'), '', {
-        confirmButtonText: this.$t('commons.confirm'),
-        cancelButtonText: this.$t('commons.cancel'),
-        type: 'warning'
-      }).then(() => {
-        this.exportData()
-      }).catch(() => {
-        // this.$info(this.$t('commons.delete_cancel'))
+      this.$confirm(this.$t("log.confirm"), "", {
+        confirmButtonText: this.$t("commons.confirm"),
+        cancelButtonText: this.$t("commons.cancel"),
+        type: "warning",
       })
+        .then(() => {
+          this.exportData();
+        })
+        .catch(() => {
+          // this.$info(this.$t('commons.delete_cancel'))
+        });
     },
     exportData() {
-      let condition = this.last_condition
-      condition = formatQuickCondition(condition, 'key')
-      const temp = formatCondition(condition)
-      const param = temp || {}
-      param['orders'] = formatOrders(this.orderConditions)
+      let condition = this.last_condition;
+      condition = formatQuickCondition(condition, "key");
+      const temp = formatCondition(condition);
+      const param = temp || {};
+      param["orders"] = formatOrders(this.orderConditions);
 
-      exportExcel(param).then(res => {
-        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-        const link = document.createElement('a')
-        link.style.display = 'none'
-        link.href = URL.createObjectURL(blob)
-        link.download = 'DataEase操作日志.xls' // 下载的文件名
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-      })
+      exportExcel(param).then((res) => {
+        const blob = new Blob([res], { type: "application/vnd.ms-excel" });
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = URL.createObjectURL(blob);
+        link.download = "DataEase操作日志.xls"; // 下载的文件名
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
     },
 
     sortChange({ column, prop, order }) {
-      this.orderConditions = []
+      this.orderConditions = [];
       if (!order) {
-        this.search(this.last_condition)
-        return
+        this.initSearch();
+        return;
       }
 
-      this.orderConditions = []
-      addOrder({ field: prop, value: order }, this.orderConditions)
-      this.search(this.last_condition)
+      this.orderConditions = [];
+      addOrder({ field: prop, value: order }, this.orderConditions);
+      this.initSearch();
     },
-    select(selection) {
-
+    getScrollStatus() {
+      this.$nextTick(() => {
+        const dom = document.querySelector(".filter-texts-container");
+        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth;
+      });
     },
+    resizeObserver() {
+      this.resizeForFilter = new ResizeObserver((entries) => {
+        if (!this.filterTexts.length) return;
+        this.layoutResize();
+      });
+      this.resizeForFilter.observe(
+        document.querySelector("#resize-for-filter")
+      );
+    },
+    layoutResize: _.debounce(function () {
+      this.getScrollStatus();
+    }, 200),
+    scrollPre() {
+      const dom = document.querySelector(".filter-texts-container");
+      dom.scrollLeft -= 10;
+      if (dom.scrollLeft <= 0) {
+        dom.scrollLeft = 0;
+      }
+    },
+    scrollNext() {
+      const dom = document.querySelector(".filter-texts-container");
+      dom.scrollLeft += 10;
+      const width = dom.scrollWidth - dom.offsetWidth;
+      if (dom.scrollLeft > width) {
+        dom.scrollLeft = width;
+      }
+    },
+    handleSizeChange(pageSize) {
+      this.paginationConfig.currentPage = 1;
+      this.paginationConfig.pageSize = pageSize;
+      this.search();
+    },
+    handleCurrentChange(currentPage) {
+      this.paginationConfig.currentPage = currentPage;
+      this.search();
+    },
+    initSearch() {
+      this.handleCurrentChange(1);
+    },
+    clearFilter() {
+      this.$refs.filterUser.clearFilter();
+    },
+    clearOneFilter(index) {
+      this.$refs.filterUser.clearOneFilter(index);
+      this.$refs.filterUser.search();
+    },
+    filterDraw(condition, filterTexts = []) {
+      this.cacheCondition = condition;
+      this.filterTexts = filterTexts;
+      this.initSearch();
+    },
+    filterShow() {
+      this.$refs.filterUser.init();
+    },
+    search() {
+      const param = {
+        orders: formatOrders(this.orderConditions),
+        conditions: [...this.cacheCondition],
+      };
+      if (this.nikeName) {
+        param.conditions.push({
+          field: `nick_name`,
+          operator: "like",
+          value: this.nikeName,
+        });
+      }
+      const { currentPage, pageSize } = this.paginationConfig;
+      logGrid(currentPage, pageSize, param).then((response) => {
+        this.data = response.data.listObject;
+        this.paginationConfig.total = response.data.itemCount;
+      });
+    },
+  },
+};
+</script>
+<style lang="scss" scoped>
+.table-container {
+  height: calc(100% - 50px);
+}
 
-    search(condition) {
-      this.last_condition = condition
-      condition = formatQuickCondition(condition, 'key')
-      const temp = formatCondition(condition)
-      const param = temp || {}
-      param['orders'] = formatOrders(this.orderConditions)
-      const { currentPage, pageSize } = this.paginationConfig
-      logGrid(currentPage, pageSize, param).then(response => {
-        this.data = response.data.listObject
-        this.paginationConfig.total = response.data.itemCount
-      })
+.table-container-filter {
+  height: calc(100% - 110px);
+}
+.filter-texts {
+  display: flex;
+  align-items: center;
+  margin: 17px 0;
+  font-family: "PingFang SC";
+  font-weight: 400;
+
+  .sum {
+    color: #1f2329;
+  }
+
+  .title {
+    color: #999999;
+    margin-left: 8px;
+  }
+
+  .text {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 1px 22px 1px 6px;
+    display: inline-block;
+    align-items: center;
+    color: #0c296e;
+    font-size: 14px;
+    line-height: 22px;
+    background: rgba(51, 112, 255, 0.1);
+    border-radius: 2px;
+    margin: 0;
+    margin-right: 8px;
+    position: relative;
+    i {
+      position: absolute;
+      right: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
     }
+  }
 
+  .clear-btn {
+    color: #646a73;
+  }
+
+  .clear-btn:hover {
+    color: #3370ff;
+  }
+
+  .filter-texts-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .arrow-filter {
+    font-size: 16px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    color: #646a73;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .arrow-filter:hover {
+    background: rgba(31, 35, 41, 0.1);
+    border-radius: 4px;
+  }
+
+  .el-icon-arrow-right.arrow-filter {
+    margin-left: 5px;
+  }
+
+  .el-icon-arrow-left.arrow-filter {
+    margin-right: 5px;
+  }
+  .filter-texts-container {
+    flex: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+    height: 24px;
   }
 }
-</script>
+.top-operate {
+  margin-bottom: 16px;
+  .right-user {
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 
-<style scoped>
+    .de-button {
+      margin-left: 12px;
+    }
 
+    .el-input--medium .el-input__icon {
+      line-height: 32px;
+    }
+  }
+
+  .name-email-search {
+    width: 240px;
+  }
+}
 </style>
