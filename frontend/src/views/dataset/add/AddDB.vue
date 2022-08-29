@@ -99,6 +99,7 @@ export default {
   watch: {
     dataSource(val) {
       if (val) {
+        this.checkTableList = []
         post('/datasource/getTables/' + val, {}).then(response => {
           this.tables = response.data
           this.tableData = JSON.parse(JSON.stringify(this.tables))

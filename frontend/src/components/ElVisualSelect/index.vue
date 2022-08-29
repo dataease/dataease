@@ -114,6 +114,9 @@ export default {
     })
   },
   methods: {
+    resetSelectAll() {
+      this.selectAll = false
+    },
     setSelect(id) {
       if (Array.isArray(this.selectValue)) {
         return this.selectValue.map(ele => ele.id).includes(id) && 'selected'

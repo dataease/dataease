@@ -314,7 +314,6 @@ export default {
       });
       const [ min, max ] = this.dataRange;
       if (min && max) {
-        console.log(1, +min, +max);
         conditions.push({
             field: 'dataset_table_task.last_exec_time',
             operator: "between",

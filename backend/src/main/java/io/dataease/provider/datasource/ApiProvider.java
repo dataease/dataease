@@ -1,8 +1,10 @@
 package io.dataease.provider.datasource;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.controller.sys.response.BasicInfo;
@@ -211,12 +213,12 @@ public class ApiProvider extends Provider {
                 if (StringUtils.isNotEmpty(value) && value.startsWith("[")) {
 
                     JSONObject o = new JSONObject();
-                    JSONArray jsonArray = JSONObject.parseArray(jsonObject.getString(s));
+                    JSONArray jsonArray = jsonObject.getJSONArray(s);
                     try {
                         List<JSONObject> childrenField = new ArrayList<>();
                         for (Object object: jsonArray) {
                             JSONObject.parseObject(object.toString());
-                            handleStr(apiDefinition, object.toString(), childrenField, rootPath + "." + s + "[*]");
+                            handleStr(apiDefinition, JSON.toJSONString(object, SerializerFeature.WriteMapNullValue), childrenField, rootPath + "." + s + "[*]");
                         }
                         o.put("children", childrenField);
                         o.put("childrenDataType", "LIST");

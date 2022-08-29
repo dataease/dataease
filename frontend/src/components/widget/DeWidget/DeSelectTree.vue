@@ -223,7 +223,8 @@ export default {
 
   methods: {
     clearHandler() {
-      this.value = null
+      this.value = this.element.options.attrs.multiple ? [] : null
+      this.$refs.deSelectTree && this.$refs.deSelectTree.resetSelectAll && this.$refs.deSelectTree.resetSelectAll()
     },
     resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {

@@ -946,13 +946,20 @@ public class DataSetTableService {
         if (CollectionUtils.isEmpty(datasetTables)) {
             return new ArrayList<>();
         }
+
+
         List<SqlVariableDetails> sqlVariableDetails = new ArrayList<>();
+        List<String> sqlVariableNames = new ArrayList<>();
         datasetTables.forEach(datasetTable -> {
             if (StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())) {
-                sqlVariableDetails.addAll(new Gson().fromJson(datasetTable.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
-                }.getType()));
+                List<SqlVariableDetails> sqlVariables = new Gson().fromJson(datasetTable.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
+                for (SqlVariableDetails sqlVariable : sqlVariables) {
+                    if(!sqlVariableNames.contains(sqlVariable.getVariableName())){
+                        sqlVariableNames.add(sqlVariable.getVariableName());
+                        sqlVariableDetails.add(sqlVariable);
+                    }
+                }
             }
-
         });
         return sqlVariableDetails;
     }
@@ -1045,7 +1052,7 @@ public class DataSetTableService {
             builder.append(" ");
             for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext(); ) {
                 WithItem withItem = iter.next();
-                builder.append(withItem.toString());
+                builder.append(withItem.getName() + " AS ( " + removeVariables(withItem.getSubSelect().toString()) + " ) ");
                 if (iter.hasNext()) {
                     builder.append(",");
                 }

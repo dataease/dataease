@@ -870,7 +870,7 @@ span {
 
 .de-Completed {
   &::before {
-    background: var(--primary, #3370ff);
+    background: var(--deSuccess, #3370ff);
   }
 }
 

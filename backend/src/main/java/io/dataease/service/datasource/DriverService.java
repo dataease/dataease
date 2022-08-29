@@ -109,7 +109,7 @@ public class DriverService {
         if(deDriver == null){
             throw new Exception(Translator.get("I18N_DRIVER_NOT_FOUND"));
         }
-        if(deDriverDetails.getIsTransName()){
+        if(deDriverDetails.getIsTransName() == null || !deDriverDetails.getIsTransName()){
             DeFileUtils.deleteFile(DRIVER_PATH + deDriverDetails.getDeDriverId() + "/" + deDriverDetails.getFileName());
         }else {
             DeFileUtils.deleteFile(DRIVER_PATH + deDriverDetails.getDeDriverId() + "/" + deDriverDetails.getTransName());
