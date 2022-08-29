@@ -69,6 +69,7 @@ export default {
     height: 66px;
     margin-top: 12px;
     color: #646A73;
+    overflow-y: auto;
   }
   .card_bottom{
     font-family: 'PingFang SC';
