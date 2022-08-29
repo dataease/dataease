@@ -7,7 +7,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class UserGridRequest extends BaseGridRequest implements Serializable {
+public class KeyGridRequest extends BaseGridRequest implements Serializable {
     @ApiModelProperty("关键字")
     private String keyWord;
 }
