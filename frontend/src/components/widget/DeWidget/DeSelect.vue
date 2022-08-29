@@ -213,7 +213,8 @@ export default {
   },
   methods: {
     clearHandler() {
-      this.value = null
+      this.value = this.element.options.attrs.multiple ? [] : null
+      this.$refs.deSelect && this.$refs.deSelect.resetSelectAll && this.$refs.deSelect.resetSelectAll()
     },
     filterMethod(key) {
       this.keyWord = key
