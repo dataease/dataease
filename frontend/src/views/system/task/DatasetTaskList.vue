@@ -325,11 +325,12 @@ import GridTable from "@/components/gridTable/index.vue";
 import filterUser from "./filterUser.vue";
 import msgCfm from "@/components/msgCfm/index";
 import _ from "lodash";
+import keyEnter from '@/components/msgCfm/keyEnter.js'
 
 export default {
   name: "DatasetTaskList",
   components: { GridTable, cron, filterUser, TableSelector },
-  mixins: [msgCfm],
+  mixins: [msgCfm, keyEnter],
   props: {
     transCondition: {
       type: Object,
