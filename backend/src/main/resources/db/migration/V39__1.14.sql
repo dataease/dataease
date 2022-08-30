@@ -63,3 +63,12 @@ UPDATE `sys_theme_item` set `val` = '#F5F6F7' where `theme_id` = 1 and `key` = '
 INSERT INTO `sys_theme_item` VALUES (1, 'deInputDisableBackground', '#EFF0F1');
 
 COMMIT;
+
+
+ALTER TABLE `sys_theme` ADD COLUMN `origin_id` bigint(20) NULL COMMENT '源主题Id' AFTER `senior`;
+
+BEGIN;
+UPDATE `sys_theme` set `origin_id` = 1 where `id` = 1;
+UPDATE `sys_theme` set `origin_id` = 2 where `id` = 2;
+UPDATE `sys_theme` set `origin_id` = 1 where origin_id is null;
+COMMIT;
