@@ -20,8 +20,8 @@
       @clear="_selectClearFun"
       @focus="_popoverShowFun"
     />
-    <el-popover ref="popover" v-model="visible" :append-to-body="popperAppendToBody" :placement="placement" :transition="transition" :popper-class="popperClass" :width="width" trigger="click">
-      <el-input v-if="treeParams.filterable" v-model="keywords" size="mini" class="input-with-select mb10">
+    <el-popover ref="popover" v-model="visible" :append-to-body="popperAppendToBody" :placement="placement" :transition="transition" :popper-class="popperClass" :width="width" trigger="click" @show="showPopover">
+      <el-input v-if="treeParams.filterable" ref="input" v-model="keywords" size="mini" class="input-with-select mb10">
         <el-button slot="append" icon="el-icon-search" @click="_searchFun" />
       </el-input>
       <p v-if="selectParams.multiple" class="tree-select-all"><el-checkbox v-model="selectAll" v-customStyle="customStyle" :indeterminate="isIndeterminate" @change="selectAllChane">{{ $t('dataset.check_all') }}</el-checkbox></p>
@@ -229,6 +229,11 @@ export default {
     off(document, 'mouseup', this._popoverHideFun)
   },
   methods: {
+    showPopover() {
+      this.$nextTick(() => {
+        this.$refs.input.focus()
+      })
+    },
     resetSelectAll() {
       this.selectAll = false
     },
