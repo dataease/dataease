@@ -170,11 +170,17 @@ export default {
         });
     },
     exportData() {
-      let condition = this.last_condition;
-      condition = formatQuickCondition(condition, "key");
-      const temp = formatCondition(condition);
-      const param = temp || {};
-      param["orders"] = formatOrders(this.orderConditions);
+      const param = {
+        orders: formatOrders(this.orderConditions),
+        conditions: [...this.cacheCondition],
+      };
+      if (this.nikeName) {
+        param.conditions.push({
+          field: `nick_name`,
+          operator: "like",
+          value: this.nikeName,
+        });
+      }
 
       exportExcel(param).then((res) => {
         const blob = new Blob([res], { type: "application/vnd.ms-excel" });
