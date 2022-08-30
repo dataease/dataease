@@ -30,7 +30,11 @@ public class SysLogConstants {
 
         MB_VIEW(14, "OPERATE_TYPE_MB_VIEW"),
 
-        EXPORT(15, "OPERATE_TYPE_EXPORT");
+        EXPORT(15, "OPERATE_TYPE_EXPORT"),
+
+        BIND(16, "OPERATE_TYPE_BIND"),
+
+        UNBIND(17, "OPERATE_TYPE_UNBIND");
         private Integer value;
         private String name;
         OPERATE_TYPE(Integer value, String name) {

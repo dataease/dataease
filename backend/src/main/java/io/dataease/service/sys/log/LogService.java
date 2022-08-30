@@ -193,6 +193,7 @@ public class LogService {
         List<FolderItem> folderItems = viewPanelTypes();
         results.addAll(folderItems);
         results.addAll(viewRelativeTypes());
+        results.addAll(bindUserTypes());
         return results;
     }
 
@@ -224,6 +225,12 @@ public class LogService {
     private List<FolderItem> viewPanelTypes () {
         Integer[] opTypes = new Integer[]{13, 14};
         Integer[] sourceTypes = new Integer[]{3};
+        return typesByArr(opTypes, sourceTypes);
+    }
+
+    private List<FolderItem> bindUserTypes() {
+        Integer[] opTypes = new Integer[]{16, 17};
+        Integer[] sourceTypes = new Integer[]{6};
         return typesByArr(opTypes, sourceTypes);
     }
 

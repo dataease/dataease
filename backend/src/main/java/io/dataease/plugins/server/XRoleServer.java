@@ -7,8 +7,10 @@ import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.service.ExtAuthService;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
+import io.dataease.dto.SysLogDTO;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
@@ -25,7 +27,8 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
+import static io.dataease.commons.constants.SysLogConstants.OPERATE_TYPE;
+import static io.dataease.commons.constants.SysLogConstants.SOURCE_TYPE;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -124,10 +127,13 @@ public class XRoleServer {
         RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
         if (CollectionUtils.isNotEmpty(request.getUserIds())) {
             request.getUserIds().forEach(userId -> {
+                SysLogDTO sysLogDTO = DeLogUtils.buildBindRoleUserLog(request.getRoleId(), userId, OPERATE_TYPE.BIND, SOURCE_TYPE.ROLE);
+                DeLogUtils.save(sysLogDTO);
                 CacheUtils.remove( AuthConstants.USER_CACHE_NAME, "user" + userId);
             });
         }
         roleXpackService.addUser(request);
+
     }
 
     @RequiresPermissions({"role:edit", "user:edit"})
@@ -137,6 +143,8 @@ public class XRoleServer {
         RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
         if (CollectionUtils.isNotEmpty(request.getUserIds())) {
             request.getUserIds().forEach(userId -> {
+                SysLogDTO sysLogDTO = DeLogUtils.buildBindRoleUserLog(request.getRoleId(), userId, OPERATE_TYPE.UNBIND, SOURCE_TYPE.ROLE);
+                DeLogUtils.save(sysLogDTO);
                 CacheUtils.remove( AuthConstants.USER_CACHE_NAME, "user" + userId);
             });
         }

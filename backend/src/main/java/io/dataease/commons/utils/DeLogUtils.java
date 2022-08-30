@@ -48,6 +48,24 @@ public class DeLogUtils {
         return sysLogDTO;
     }
 
+
+    public static SysLogDTO buildBindRoleUserLog(Long positionId, Long userId, OPERATE_TYPE operatetype, SOURCE_TYPE positionType) {
+        SysLogDTO sysLogDTO = new SysLogDTO();
+        sysLogDTO.setOperateType(operatetype.getValue());
+        sysLogDTO.setSourceType(SOURCE_TYPE.USER.getValue());
+        sysLogDTO.setSourceId(userId.toString());
+        FolderItem sourceInfo = logManager.nameWithId(userId.toString(), SOURCE_TYPE.USER.getValue());
+        if (ObjectUtils.isEmpty(sourceInfo)) {
+            return null;
+        }
+        sysLogDTO.setSourceName(sourceInfo.getName());
+
+        List<FolderItem> parentsAndSelf = logManager.parentsAndSelf(positionId.toString(), positionType);
+        sysLogDTO.setPositions(parentsAndSelf);
+
+        return sysLogDTO;
+    }
+
     public static SysLogDTO buildLog(OPERATE_TYPE operatetype, SOURCE_TYPE sourcetype, Object sourceIdValue, Object positionId, Object targetId, SOURCE_TYPE target_type ) {
         SysLogDTO sysLogDTO = new SysLogDTO();
         sysLogDTO.setOperateType(operatetype.getValue());
