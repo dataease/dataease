@@ -77,7 +77,8 @@ public class LogService {
         List<String> ids = null;
         GridExample gridExample = request.convertExample();
         gridExample.setExtendCondition(keyWord);
-        LogQueryParam logQueryParam = BeanUtils.copyBean(new LogQueryParam(), gridExample);
+
+        LogQueryParam logQueryParam = gson.fromJson(gson.toJson(gridExample), LogQueryParam.class);
         if (StringUtils.isNotBlank(keyWord)) {
             List<FolderItem> types = types();
             ids = types.stream().filter(item -> item.getName().toLowerCase().contains(keyWord.toLowerCase())).map(FolderItem::getId).collect(Collectors.toList());
@@ -279,7 +280,7 @@ public class LogService {
         try {
             GridExample gridExample = request.convertExample();
             gridExample.setExtendCondition(keyWord);
-            LogQueryParam logQueryParam = BeanUtils.copyBean(new LogQueryParam(), gridExample);
+            LogQueryParam logQueryParam = gson.fromJson(gson.toJson(gridExample), LogQueryParam.class);
             if (StringUtils.isNotBlank(keyWord)) {
                 List<FolderItem> types = types();
                 ids = types.stream().filter(item -> item.getName().toLowerCase().contains(keyWord.toLowerCase())).map(FolderItem::getId).collect(Collectors.toList());
