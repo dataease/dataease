@@ -225,9 +225,9 @@ export default {
     del(row) {
       if (row.pluginId < 4) return;
       const options = {
-        title: "确定卸载该插件？",
-        content: "卸载并重启服务器之后才能生效",
-        confirmButtonText: this.$t("卸载"),
+        title: "components.uninstall_the_plugin",
+        content: "components.it_takes_effect",
+        confirmButtonText: this.$t("components.uninstall"),
         type: "primary",
         cb: () => {
           uninstall(row.pluginId)
@@ -260,7 +260,7 @@ export default {
     margin-right: 12px;
   }
   .el-input__inner {
-    background: #ffffff !important;
+    background: var(--ContentBG, #ffffff) !important;
   }
 }
 
@@ -275,8 +275,8 @@ export default {
 .de-card-plugin {
   width: 270px;
   min-height: 188px;
-  background: #ffffff;
-  border: 1px solid #dee0e3;
+  background: var(--ContentBG, #ffffff);
+  border: 1px solid var(--deCardStrokeColor, #dee0e3);
   border-radius: 4px;
   margin: 0 24px 24px 0;
   &:hover {
@@ -412,7 +412,7 @@ export default {
       display: inline-block;
       margin-left: 12px;
       .value {
-        color: #1f2329;
+        color: var(--TextPrimary, #1F2329);
       }
     }
   }

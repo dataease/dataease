@@ -557,12 +557,6 @@ div:focus {
   color: var(--TextPrimary);
 }
 
-.blackTheme .el-button--default {
-  background-color: var(--MainBG) !important;
-  color: var(--Main) !important;
-}
-
-
 
 .blackTheme .title-text {
   color: var(--TextPrimary) !important;
@@ -1174,6 +1168,38 @@ div:focus {
     justify-content: center;
     svg {
       font-size: 16px;
+    }
+  }
+}
+
+.user-drawer-task {
+  .filter {
+    display: flex;
+    min-height: 46px;
+    > :nth-child(1) {
+      color: #1f2329;
+      font-family: "PingFang SC";
+      font-style: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 24px;
+      white-space: nowrap;
+      width: 116px;
+    }
+    .filter-item {
+      .item,
+      .more {
+        background: #f5f6f7;
+      }
+
+      .active,
+      .more:hover {
+        background: rgba(51, 112, 255, 0.1);
+        color: #0c296e;
+      }
+      .more {
+        white-space: nowrap;
+      }
     }
   }
 }
