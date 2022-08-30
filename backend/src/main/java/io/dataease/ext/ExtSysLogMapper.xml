@@ -7,16 +7,25 @@
 
 
 
-    <select id="query" parameterType="io.dataease.ext.query.GridExample" resultMap="io.dataease.plugins.common.base.mapper.SysLogMapper.ResultMapWithBLOBs">
+    <select id="query" parameterType="io.dataease.service.sys.log.LogQueryParam" resultMap="io.dataease.plugins.common.base.mapper.SysLogMapper.ResultMapWithBLOBs">
         select * from
-             (select * from sys_log
+             (select * from sys_log where 1 = 1
                 <if test="extendCondition != null">
-                    where
-                    nick_name like concat('%', #{extendCondition} , '%')
-                    or
-                    source_name like concat('%', #{extendCondition} , '%')
-                    or
-                    position like concat('%', #{extendCondition} , '%')
+                    and
+                    (
+                        nick_name like concat('%', #{extendCondition} , '%')
+                        or
+                        source_name like concat('%', #{extendCondition} , '%')
+                        or
+                        position like concat('%', #{extendCondition} , '%')
+                        <if test="unionIds != null">
+                        or
+                            concat(operate_type, '-', source_type) in
+                            <foreach collection="unionIds" item="id" index="index" open="(" separator="," close=")">
+                                #{id}
+                            </foreach>
+                        </if>
+                    )
                 </if>
             ) t
 
