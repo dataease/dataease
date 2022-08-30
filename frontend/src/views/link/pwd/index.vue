@@ -96,7 +96,7 @@ export default {
         const param = this.user ? { password: this.form.password, resourceId: this.resourceId, user: this.user } : { password: this.form.password, resourceId: this.resourceId }
         validatePwd(param).then(res => {
           if (!res.data) {
-            this.msg = this.$t('pblink.pwd_error')
+            this.msg = this.$t('system_parameter_setting.password_input_error')
           } else {
             this.$emit('fresh-token')
           }

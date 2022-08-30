@@ -7,15 +7,20 @@
         </div>
         <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
           <el-form-item :label="$t('user.origin_passwd')" prop="oldPwd">
-            <el-input v-model="form.oldPwd" type="password" />
+            <dePwd
+              v-model="form.oldPwd"
+            />
           </el-form-item>
           <el-form-item :label="$t('user.new_passwd')" prop="newPwd">
-            <el-input v-model="form.newPwd" type="password" />
+            <dePwd
+              v-model="form.newPwd"
+            />
           </el-form-item>
           <el-form-item :label="$t('user.confirm_passwd')" prop="repeatPwd">
-            <el-input v-model="form.repeatPwd" type="password" />
+            <dePwd
+              v-model="form.repeatPwd"
+            />
           </el-form-item>
-
           <el-form-item>
             <el-button type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
           </el-form-item>
@@ -28,9 +33,10 @@
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
 import { updatePersonPwd } from '@/api/system/user'
+import dePwd from '@/components/deCustomCm/dePwd.vue'
 export default {
 
-  components: { LayoutContent },
+  components: { LayoutContent, dePwd },
   data() {
     return {
       form: {
