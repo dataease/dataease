@@ -16,7 +16,7 @@
             <div class="hint_head">{{ $t('wizard.welcome_title') }}</div>
             <div class="hint_content">{{ $t('wizard.welcome_hint') }}</div>
           </div>
-          <img class="top_banner_img" src="../../assets/wizard_main_bg_inner.png"></img>
+          <svg-icon class="top_banner_img"  icon-class="wizard_main_bg_inner"></svg-icon>
         </el-row>
         <el-row class="top_banner_card">
           <wizard-card :details="cardList[0]"></wizard-card>
@@ -42,7 +42,7 @@
             </el-row>
             <el-row >
               <ul class="ul-custom">
-                <li class="li-custom" v-for="blogItem in blogsInfo"><a target="_blank" :href="blogItem.href" :title="blogItem.title" >{{blogItem.title}}</a></li>
+                <li class="li-custom" v-for="blogItem in blogsInfo"><a target="_blank" class="li-a" :href="blogItem.href" :title="blogItem.title" >{{blogItem.title}}</a></li>
               </ul>
             </el-row>
           </div>
@@ -67,7 +67,7 @@
           <div class="content_bottom_qr_code">
             <div class="contact_wechat_official">
               <div class="contact_title_qr">微信公众号</div>
-              <img class="contact_wechat_official_img" src="@/assets/wizard_wechat-official.png"></img>
+              <img class="contact_wechat_official_img" src="@/assets/wizard_wechat-official.jpeg"></img>
             </div>
             <div class="contact_wechat_group">
               <div class="contact_title_qr">技术交流群</div>
@@ -112,21 +112,21 @@ export default {
         {
           head: this.$t('wizard.quick_start'),
           content: this.$t('wizard.demo_video_hint'),
-          img: 'wizard_quick_start.png',
+          img: 'wizard_quick_start',
           bgColor: '#E7F2FF',
           href: 'https://www.bilibili.com/video/BV1i34y1v7hq/'
         },
         {
           head: this.$t('wizard.online_document'),
           content: this.$t('wizard.online_document_hint'),
-          img: 'wizard_help.png',
+          img: 'wizard_help',
           bgColor: '#F3F2FF',
           href: 'https://dataease.io/docs/index.html',
         },
         {
           head: this.$t('wizard.enterprise_edition'),
           content: this.$t('wizard.enterprise_edition_hint1') + '<br>' + this.$t('wizard.enterprise_edition_hint2') + '<br>' + this.$t('wizard.enterprise_edition_hint3'),
-          img: 'wizard_enterprise.png',
+          img: 'wizard_enterprise',
           bgColor: '#FFFAF0',
           href: 'https://jinshuju.net/f/TK5TTd',
         },
@@ -135,17 +135,17 @@ export default {
         {
           content: '1.1 连接数据库并添加数据集',
           img: 'wizard_video1.png',
-          href: 'https://www.bilibili.com/video/BV15P4y1u7Pa?spm_id_from=333.999.0.0'
+          href: 'https://www.bilibili.com/video/BV1F34y1n7J7?spm_id_from=333.999.0.0'
         },
         {
           content: '1.2 Excel 数据集和 API 数据集',
           img: 'wizard_video2.png',
-          href: 'https://www.bilibili.com/video/BV1cU4y1d77S?spm_id_from=333.999.0.0'
+          href: 'https://www.bilibili.com/video/BV1Fa411D7Di?spm_id_from=333.999.0.0'
         },
         {
           content: '1.3 数据集整合',
           img: 'wizard_video3.png',
-          href: 'https://www.bilibili.com/video/BV1zY411n7Q1?spm_id_from=333.999.0.0'
+          href: 'https://www.bilibili.com/video/BV1EB4y187AL?spm_id_from=333.999.0.0'
         }
       ],
       loading: true
@@ -222,7 +222,7 @@ export default {
   .top_banner_card{
     position: relative;
     width: 100%;
-    height: 224px;
+    height: 214px;
   }
 
   .hint_head {
@@ -269,14 +269,17 @@ export default {
     border-radius: 4px;
     height: 26px;
     padding: 2px;
+    &:hover {
+      background: rgba(31, 35, 41, 0.1);
+      cursor: pointer;
+    }
   }
 
-  .content_middle_more :hover{
-    border-radius: 4px;
-    height: 26px;
-    background: rgba(31, 35, 41, 0.1);
-  }
   .content_middle_more i:hover{
+    background: none;
+  }
+
+  .content_middle_more a:hover{
     background: none;
   }
 
@@ -304,22 +307,35 @@ export default {
     font-weight: 400;
     font-size: 14px;
     line-height: 22px;
-    color: var(--TextPrimary, #1F2329);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     list-style-type : disc;
     list-style-position: inside;
+    border-radius: 4px;
+    padding-left: 12px;
+    margin-left: -12px;
+    &:hover {
+      background: rgba(31, 35, 41, 0.1);
+      cursor: pointer;
+      color: #3370FF!important;
+      .li-a{
+        color: #3370FF!important;
+      }
+    }
   }
 
-  .li-custom :hover {
-    background: rgba(31, 35, 41, 0.1);
-    border-radius: 4px;
-    color: #3370FF;
+  .li-custom a:hover {
+    background: none;
+  }
+
+  .li-a{
+    color: var(--TextPrimary, #1F2329);
   }
 
   .ul-custom {
     padding-inline-start:0px;
+    color: #8F959E;
   }
 
   .content_bottom{
@@ -340,6 +356,7 @@ export default {
     font-size: 14px;
     line-height: 22px;
     color: var(--TextPrimary, #1F2329);
+    margin-bottom: 16px;
   }
 
   .contact_content{
@@ -348,6 +365,7 @@ export default {
     font-size: 14px;
     line-height: 22px;
     color: #646A73;
+    margin-top: 8px;
   }
   .contact_content a:hover{
     color: #3370FF;
@@ -368,6 +386,7 @@ export default {
     line-height: 20px;
     text-align: center;
     color: #646A73;
+    margin-bottom: 8px;
   }
 
   .contact_wechat_official{

@@ -36,6 +36,9 @@ export default {
     border: 1px solid #DEE0E3;
     float: left;
     border-radius: 4px;
+    &:hover{
+      box-shadow: 0px 6px 24px rgba(31, 35, 41, 0.08);
+    }
   }
   .video_top{
     position: relative;
