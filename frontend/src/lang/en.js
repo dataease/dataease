@@ -607,7 +607,7 @@ export default {
     clear_filter: 'Empty condition',
     recover_pwd: 'Restore to the original password?',
     filter_method: 'Filter criteria',
-    filter: 'screen',
+    filter: 'Screen',
     list: 'List item',
     list_info: 'Please select the information to be displayed in the list',
     sure_delete: 'Are you sure to delete this user?'
@@ -716,8 +716,8 @@ export default {
     search_by_name: 'Search by name',
     special_characters_are_not_supported: 'Format error (special characters are not supported and cannot start and end with \'-\')',
     select: 'Select organization',
-    member: 'member',
-    organization: 'organization',
+    member: 'Member',
+    organization: 'Organization',
     add_user: 'Add user',
     sure_move_user: 'Are you sure to remove this user from the organization?',
     move_success: 'Removed successfully',
@@ -735,10 +735,10 @@ export default {
     edite_organization: 'Edit organization'
   },
   system_parameter_setting: {
-    mailbox_service_settings: 'Mail Settings',
+    mailbox_service_settings: 'Mail Setting',
     test_connection: 'Test connection',
     SMTP_host: 'SMTP Host',
-    basic_setting: 'Basic setting',
+    basic_setting: 'Basic Setting',
     front_time_out: 'Request timeOut(unit: second, Attention: Refresh browser takes effect after saving)',
     msg_time_out: 'Message retention time(unit: day)',
     login_type: 'Default login type',
