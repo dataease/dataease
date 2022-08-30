@@ -44,3 +44,22 @@ COMMIT;
 
 ALTER TABLE `de_driver_details` ADD COLUMN `is_trans_name` TINYINT(1) NULL AFTER `driver_class`;
 ALTER TABLE `de_driver_details` ADD COLUMN `trans_name` VARCHAR(255) NULL AFTER `driver_class`;
+
+BEGIN;
+UPDATE `sys_theme_item` set `val` = '#3370FF' where `theme_id` = 1 and `key` = 'primary' and `val` = '#409EFF';
+UPDATE `sys_theme_item` set `val` = '#34C724' where `theme_id` = 1 and `key` = 'deSuccess' and `val` = '#67C23A';
+UPDATE `sys_theme_item` set `val` = '#FF8800' where `theme_id` = 1 and `key` = 'deWarning' and `val` = '#E6A23C';
+UPDATE `sys_theme_item` set `val` = '#F54A45' where `theme_id` = 1 and `key` = 'deDanger' and `val` = '#F56C6C';
+
+UPDATE `sys_theme_item` set `val` = '#1F2329' where `theme_id` = 1 and `key` = 'deTextPrimary' and `val` = '#303133';
+UPDATE `sys_theme_item` set `val` = '#646A73' where `theme_id` = 1 and `key` = 'deTextSecondary' and `val` = '#909399';
+UPDATE `sys_theme_item` set `val` = '#8F959E' where `theme_id` = 1 and `key` = 'deTextPlaceholder' and `val` = '#C0C4CC';
+INSERT INTO `sys_theme_item` VALUES (1, 'deTextDisable', '#BBBFC4');
+
+INSERT INTO `sys_theme_item` VALUES (1, 'deComBorderColor', '#BBBFC4');
+INSERT INTO `sys_theme_item` VALUES (1, 'deCardStrokeColor', '#DEE0E3');
+UPDATE `sys_theme_item` set `val` = '#1F2329' where `theme_id` = 1 and `key` = 'deBlack' and `val` = '#000000';
+UPDATE `sys_theme_item` set `val` = '#F5F6F7' where `theme_id` = 1 and `key` = 'deBackgroundBase' and `val` = '#F5F7FA';
+INSERT INTO `sys_theme_item` VALUES (1, 'deInputDisableBackground', '#EFF0F1');
+
+COMMIT;
