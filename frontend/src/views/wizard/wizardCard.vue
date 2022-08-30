@@ -1,5 +1,5 @@
 <template>
-  <el-col :style='{background:details.bgColor}' class="card_main">
+  <div :style='{background:details.bgColor}' class="card_main"  @click.stop="goToWeb">
     <el-col style="width: 200px">
       <el-row class="card_head">
         {{details.head}}
@@ -14,10 +14,8 @@
         </a>
       </el-row >
     </el-col>
-    <el-col style="width: 136px">
-      <img style="width: 136px"  :src="require('@/assets/'+details.img)"/>
-    </el-col>
-  </el-col>
+    <svg-icon class="img-position" :icon-class="details.img"></svg-icon>
+  </div>
 </template>
 
 <script>
@@ -34,6 +32,11 @@ export default {
     return {}
   },
   computed:{
+  },
+  methods:{
+    goToWeb(){
+      window.open(this.details.href,'_blank')
+    }
   }
 }
 
@@ -41,15 +44,19 @@ export default {
 
 <style lang="scss" scoped>
   .card_main{
+    float: left;
     width: 384px;
     height: 190px;
     padding: 24px;
     opacity: 0.9;
     border-radius: 8px;
+    position: relative;
+    cursor: pointer;
   }
 
   .card_main:hover {
-    box-shadow: 0px 6px 24px rgba(31, 35, 41, 0.5)
+    opacity: 1;
+    box-shadow: 0px 6px 24px rgba(31, 35, 41, 0.25)
   }
   .card_head{
     font-family: 'PingFang SC';
@@ -87,6 +94,13 @@ export default {
     border-right: 30px solid transparent;
     -webkit-transform: rotate(180deg);
     transform: rotate(0deg);
+  }
+  .img-position{
+    width: 160px;
+    height: 190px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
   }
 
 </style>
