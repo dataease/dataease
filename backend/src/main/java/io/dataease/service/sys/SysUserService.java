@@ -3,6 +3,7 @@ package io.dataease.service.sys;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.ExtAuthService;
+import io.dataease.commons.exception.DEException;
 import io.dataease.controller.sys.request.*;
 import io.dataease.ext.ExtSysUserAssistMapper;
 import io.dataease.ext.ExtSysUserMapper;
@@ -277,15 +278,18 @@ public class SysUserService {
         CurrentUserDto user = AuthUtils.getUser();
 
         if (ObjectUtils.isEmpty(user)) {
-            throw new RuntimeException("用户不存在");
+            String msg = "I18N_USER_DONOT_EXIST";
+            DEException.throwException(Translator.get(msg));
         }
         if (!StringUtils.equals(CodingUtil.md5(request.getPassword()), user.getPassword())) {
-            throw new RuntimeException("密码错误");
+            String msg = "I18N_USER_SOURCE_PWD_ERROR";
+            DEException.throwException(Translator.get(msg));
         }
         SysUser sysUser = new SysUser();
         sysUser.setUserId(user.getUserId());
         if (!request.getNewPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,30}$")) {
-            throw new RuntimeException("密码格式错误");
+            String msg = "I18N_USER_PWD_FORMAT_ERROR";
+            DEException.throwException(Translator.get(msg));
         }
         sysUser.setPassword(CodingUtil.md5(request.getNewPassword()));
         return sysUserMapper.updateByPrimaryKeySelective(sysUser);
