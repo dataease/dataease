@@ -592,4 +592,51 @@
     <select id="chartOptions" resultType="io.dataease.dto.chart.ViewOption">
         select id, title as  name  from chart_view where scene_id = #{panelId}
     </select>
+
+    <insert id='chartFiledCopyWithPanel'>
+        INSERT INTO chart_view_field (
+            id,
+            table_id,
+            chart_id,
+            `name`,
+            dataease_name,
+            group_type,
+            `type`,
+            `size`,
+            de_type,
+            de_type_format,
+            de_extract_type,
+            ext_field,
+            `checked`,
+            column_index,
+            last_sync_time
+        ) SELECT
+              uuid() AS id,
+              chart_view_field.table_id,
+              chart_view_field.pv_copy.chart_view_id AS chart_id,
+              chart_view_field.`name`,
+              chart_view_field.dataease_name,
+              chart_view_field.group_type,
+              chart_view_field.`type`,
+              chart_view_field.`size`,
+              chart_view_field.de_type,
+              chart_view_field.de_type_format,
+              chart_view_field.de_extract_type,
+              chart_view_field.ext_field,
+              chart_view_field.`checked`,
+              chart_view_field.column_index,
+              chart_view_field.last_sync_time
+        FROM
+            (
+                SELECT
+                    panel_id,
+                    copy_from_view,
+                    chart_view_id
+                FROM
+                    panel_view
+                WHERE
+                    copy_id = #{copyId}
+            ) pv_copy
+                INNER JOIN chart_view_field ON chart_view_field.chart_id = pv_copy.copy_from_view
+    </insert>
 </mapper>
