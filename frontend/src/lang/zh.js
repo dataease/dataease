@@ -838,7 +838,9 @@ export default {
     delete_this_category: '确定删除该分类吗？',
     edit_template: '编辑模版',
     edit_classification: '编辑分类',
-    classification_name: '分类名称'
+    classification_name: '分类名称',
+    by_event_details: '通过事件详情搜索',
+    password_input_error: '原始密码输入错误'
   },
   chart: {
     rich_text_view_result_tips: '富文本只选取第一条结果',

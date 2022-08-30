@@ -835,7 +835,9 @@ export default {
     delete_this_category: 'Are you sure to delete this category?',
     edit_template: 'Edit template',
     edit_classification: 'Edit classification',
-    classification_name: 'Classification Name:'
+    classification_name: 'Classification Name:',
+    by_event_details: 'Search by event details',
+    password_input_error: 'Original password input error'
   },
   chart: {
     rich_text_view_result_tips: 'The rich text view selects only the first result',

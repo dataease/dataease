@@ -9,7 +9,7 @@
       </el-col>
       <el-col :span="12" class="right-user">
         <el-input
-          :placeholder="$t('通过事件详情搜索')"
+          :placeholder="$t('system_parameter_setting.by_event_details')"
           prefix-icon="el-icon-search"
           class="name-email-search"
           size="small"
@@ -118,15 +118,15 @@ import DeLayoutContent from "@/components/business/DeLayoutContent";
 import GridTable from "@/components/gridTable/index.vue";
 import filterUser from './filterUser';
 import _ from 'lodash';
+import keyEnter from '@/components/msgCfm/keyEnter.js'
 import {
-  formatCondition,
-  formatQuickCondition,
   addOrder,
   formatOrders,
 } from "@/utils/index";
 import { logGrid, exportExcel } from "@/api/system/log";
 export default {
   components: { GridTable, DeLayoutContent, filterUser },
+  mixins: [keyEnter],
   data() {
     return {
       columns: [],
@@ -170,11 +170,13 @@ export default {
         });
     },
     exportData() {
-      let condition = this.last_condition;
-      condition = formatQuickCondition(condition, "key");
-      const temp = formatCondition(condition);
-      const param = temp || {};
-      param["orders"] = formatOrders(this.orderConditions);
+      const param = {
+        orders: formatOrders(this.orderConditions),
+        conditions: [...this.cacheCondition],
+      };
+      if (this.nikeName) {
+        param.keyWord = this.nikeName;
+      }
 
       exportExcel(param).then((res) => {
         const blob = new Blob([res], { type: "application/vnd.ms-excel" });
@@ -265,11 +267,7 @@ export default {
         conditions: [...this.cacheCondition],
       };
       if (this.nikeName) {
-        param.conditions.push({
-          field: `nick_name`,
-          operator: "like",
-          value: this.nikeName,
-        });
+        param.keyWord = this.nikeName;
       }
       const { currentPage, pageSize } = this.paginationConfig;
       logGrid(currentPage, pageSize, param).then((response) => {
