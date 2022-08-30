@@ -1197,3 +1197,19 @@ div:focus {
   right: 12px;
   bottom: 12px;
 }
+
+
+.de-input-search {
+  .el-input__inner {
+    padding-left: 36px;
+  }
+  .el-input__prefix {
+    left: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg {
+      font-size: 16px;
+    }
+  }
+}

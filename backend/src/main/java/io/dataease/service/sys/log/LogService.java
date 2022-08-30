@@ -9,8 +9,8 @@ import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.ServletUtils;
-import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.controller.sys.base.ConditionEntity;
+import io.dataease.controller.sys.request.KeyGridRequest;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.SysLogGridDTO;
 import io.dataease.dto.log.FolderItem;
@@ -69,16 +69,17 @@ public class LogService {
     private LogManager logManager;
 
 
-    public List<SysLogGridDTO> query(BaseGridRequest request) {
+    public List<SysLogGridDTO> query(KeyGridRequest request) {
         request = detailRequest(request);
-
+        String keyWord = request.getKeyWord();
         GridExample gridExample = request.convertExample();
+        gridExample.setExtendCondition(keyWord);
         List<SysLogWithBLOBs> voLogs = extSysLogMapper.query(gridExample);
         List<SysLogGridDTO> dtos = voLogs.stream().map(this::convertDTO).collect(Collectors.toList());
         return dtos;
     }
 
-    private BaseGridRequest detailRequest(BaseGridRequest request) {
+    private KeyGridRequest detailRequest(KeyGridRequest request) {
         List<ConditionEntity> conditions = request.getConditions();
         if (CollectionUtils.isNotEmpty(conditions)) {
 
@@ -252,12 +253,14 @@ public class LogService {
     }
 
 
-    public void exportExcel(BaseGridRequest request) throws Exception {
+    public void exportExcel(KeyGridRequest request) throws Exception {
         request = detailRequest(request);
+        String keyWord = request.getKeyWord();
         HttpServletResponse response = ServletUtils.response();
         OutputStream outputStream = response.getOutputStream();
         try {
             GridExample gridExample = request.convertExample();
+            gridExample.setExtendCondition(keyWord);
             List<SysLogWithBLOBs> lists = extSysLogMapper.query(gridExample);
             List<String[]> details = lists.stream().map(item -> {
                 String operateTypeName = SysLogConstants.operateTypeName(item.getOperateType());
