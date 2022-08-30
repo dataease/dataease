@@ -352,6 +352,8 @@ public class PanelGroupService {
         extPanelViewMapper.copyFromPanel(newPanelId, sourcePanelId, copyId);
         //TODO 复制视图 chart_view
         extChartViewMapper.chartCopyWithPanel(copyId);
+        //TODO 复制视图字段 chart_view_field
+        extChartViewMapper.chartFiledCopyWithPanel(copyId);
         //TODO 替换panel_data viewId 数据
         List<PanelView> panelViewList = panelViewService.findPanelViews(copyId);
         //TODO 复制模板缓存数据
