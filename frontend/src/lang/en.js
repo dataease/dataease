@@ -401,7 +401,6 @@ export default {
     hour: 'hour',
     minute: 'minute',
     by_task_name: 'Search by task name',
-    delete_this_task: 'Are you sure to delete this task?',
     message_receiving_management: 'Message receiving management',
     upload_failed: 'Upload failed',
     is_not_supported: 'The file format is not supported',

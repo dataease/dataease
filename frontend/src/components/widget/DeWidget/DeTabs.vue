@@ -277,6 +277,7 @@ export default {
         })
         if (newVal && activeTabInner) {
           this.$store.commit('setCurActiveTabInner', activeTabInner)
+          this.$store.dispatch('chart/setViewId', activeTabInner.propValue.viewId)
         } else {
           this.$store.commit('setCurActiveTabInner', null)
         }
