@@ -2399,7 +2399,9 @@ export default {
     click_inner: '點擊進入',
     email: '郵箱：',
     tel: '電話：',
-    web: '網址：'
+    web: '網址：',
+    apply: '免费试用申请',
+    more: '更多'
   },
   kettle: {
     add: '添加 Kettle 服務',

@@ -2393,7 +2393,9 @@ export default {
     click_inner: 'Click To Enter',
     email: 'Email:',
     tel: 'Tel:',
-    web: 'Web:'
+    web: 'Web:',
+    apply: 'Free Trial Application',
+    more: 'More'
   },
   kettle: {
     add: 'Add Kettle',

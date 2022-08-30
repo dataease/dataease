@@ -12,6 +12,7 @@
     >
       <sidebar-item
         v-for="route in routes"
+        :isCollapse="isCollapse"
         :key="route.path"
         :item="route"
         :base-path="route.path"
@@ -46,12 +47,6 @@ export default {
       isCollapse: state => state.isCollapse,
     }),
     routes() {
-      // return this.$router.options.routes
-      if (this.isCollapse) {
-        return this.flatterRouter(
-          JSON.parse(JSON.stringify(this.$store.state.permission.currentRoutes.children))
-        );
-      }
       return this.$store.state.permission.currentRoutes.children;
     },
     activeMenu() {
@@ -74,37 +69,6 @@ export default {
     changeSideWidth() {
       this.$store.commit('setIsCollapse', !this.isCollapse);
       this.$emit("changeSideWidth", this.isCollapse ? "70px" : "");
-    },
-    resolvePath(routePath) {
-      if (isExternal(routePath)) {
-        return routePath;
-      }
-      if (isExternal(this.basePath)) {
-        return this.basePath;
-      }
-      const currentRoutes = this.$store.state.permission.currentRoutes;
-      if (currentRoutes && currentRoutes.path) {
-        return path.resolve(currentRoutes.path, this.basePath, routePath);
-      }
-    },
-    flatterRouter(arr = [], route = [], path = "") {
-      arr.forEach((ele) => {
-        this.formaterRoutePath(ele, path, route);
-      });
-      return route;
-    },
-    pathEndwith(path = "") {
-      return path.endsWith("/") || !path ? path : path + "/";
-    },
-    formaterRoutePath(ele, routePath = "", route) {
-      if (!ele.hidden) {
-        if (!ele.children?.length) {
-          ele.path = routePath + ele.path;
-          route.push(ele);
-        } else {
-          this.flatterRouter(ele.children, route, this.pathEndwith(ele.path));
-        }
-      }
     },
   },
 };
@@ -133,8 +97,8 @@ export default {
   font-family: PingFang SC;
   font-size: 14px;
   font-weight: 400;
-  color: #646a73;
-  background: #fff;
+  color: var(--SiderTextColor, #646a73);
+  background-color: var(--SiderBG, #ffffff);
   cursor: pointer;
 
   i {

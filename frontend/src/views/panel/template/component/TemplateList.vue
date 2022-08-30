@@ -2,11 +2,13 @@
   <div class="de-template-list">
     <el-input
       v-model="templateFilterText"
-      :placeholder="$t('panel.filter_keywords')"
+      :placeholder="$t('system_parameter_setting.search_keywords')"
       size="small"
+      class="de-input-search"
       clearable
-      prefix-icon="el-icon-search"
-    />
+    >
+      <svg-icon slot="prefix" icon-class="de-search"></svg-icon>
+    </el-input>
     <el-empty
       :image="noneImg"
       v-if="!templateListComputed.length && templateFilterText === ''"
@@ -85,8 +87,8 @@ export default {
     return {
       templateFilterText: "",
       activeTemplate: "",
-      noneImg: require('@/assets/None.png'),
-      nothingImg: require('@/assets/nothing.png'),
+      noneImg: require("@/assets/None.png"),
+      nothingImg: require("@/assets/nothing.png"),
     };
   },
   computed: {
@@ -127,12 +129,12 @@ export default {
     },
     templateDelete(template) {
       const options = {
-          title: 'system_parameter_setting.delete_this_category',
-          content: 'system_parameter_setting.also_be_deleted',
-          type: "primary",
-          cb: () => this.$emit("templateDelete", template.id),
-        };
-        this.handlerConfirm(options);
+        title: "system_parameter_setting.delete_this_category",
+        content: "system_parameter_setting.also_be_deleted",
+        type: "primary",
+        cb: () => this.$emit("templateDelete", template.id),
+      };
+      this.handlerConfirm(options);
     },
     templateEdit(template) {
       this.$emit("templateEdit", template);
@@ -163,7 +165,7 @@ export default {
     display: flex;
     align-items: center;
     border-radius: 4px;
-    color: var(--deTextPrimary, #1F2329);
+    color: var(--deTextPrimary, #1f2329);
     font-family: "PingFang SC";
     font-style: normal;
     font-weight: 500;

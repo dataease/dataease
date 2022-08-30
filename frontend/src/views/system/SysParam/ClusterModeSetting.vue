@@ -41,7 +41,7 @@
         <el-input v-model="form.configuration.username" />
       </el-form-item>
       <el-form-item :label="$t('datasource.password')">
-        <el-input v-model="form.configuration.password" show-password />
+        <dePwd v-model="form.configuration.password"/>
       </el-form-item>
       <el-form-item
         :label="$t('datasource.query_port')"
@@ -162,11 +162,13 @@ import { engineInfo, validate, save } from "@/api/system/engine";
 import i18n from "@/lang";
 import operater from "./operater";
 import msgCfm from '@/components/msgCfm'
+import dePwd from '@/components/deCustomCm/dePwd.vue'
 export default {
   name: "ClusterMode",
   mixins: [msgCfm],
   components: {
     operater,
+    dePwd
   },
   data() {
     return {

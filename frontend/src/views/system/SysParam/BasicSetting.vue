@@ -15,9 +15,10 @@
     <!--基础配置表单-->
     <el-form ref="formInline" v-loading="loading" :model="formInline" :rules="rules"
       class="demo-form-inline de-form-item" :disabled="show" label-width="80px" label-position="right" size="small">
-      <el-form-item prop="frontTimeOut">
+      <el-form-item prop="frontTimeOut" class="de-i118">
         <template slot="label">
           {{ $t('system_parameter_setting.request_timeout')}}
+          <i class="is-require"></i>
           <el-tooltip class="item" effect="dark" :content="$t('system_parameter_setting.front_time_out')"
             placement="top">
             <i class="el-icon-warning-outline tips"></i>
@@ -253,9 +254,8 @@ export default {
 <style lang="scss" scoped>
 .demo-form-inline {
   .tips {
-    position: absolute;
-    left: 100px;
-    top: 5px;
+    margin-left: 2px;
+    position: relative;
     z-index: 10;
   }
 
@@ -263,5 +263,17 @@ export default {
       margin-right: 0;
       width: 156px;
     }
+}
+</style>
+<style lang="scss">
+.de-i118 {
+  .el-form-item__label::after {
+    display: none;
+  }
+  .is-require::after {
+    content: "*";
+    color: #f54a45;
+    margin-left: 2px;
+  }
 }
 </style>

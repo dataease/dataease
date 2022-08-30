@@ -21,7 +21,7 @@ INSERT INTO `sys_menu` VALUES (750, 2, 0, 2, '导入用户', NULL, NULL, 999, NU
 
 update system_parameter set sort  = (sort + 1) where sort > 3;
 
-update system_parameter set sort = 4 where param_key = 'ui.favicon'
+update system_parameter set sort = 4 where param_key = 'ui.favicon';
 
 INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.showFoot', NULL, 'text', 18);
 INSERT INTO `system_parameter`(`param_key`, `param_value`, `type`, `sort`) VALUES ('ui.footContent', NULL, 'blob', 19);

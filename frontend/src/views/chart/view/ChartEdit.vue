@@ -2264,6 +2264,9 @@ export default {
       this.view.tableId = this.changeTable.id
       // 更换数据集后清空视图字段
       post('/chart/field/deleteByChartId/' + this.param.id + '/' + this.panelInfo.id, null).then(response => {
+        // reset gauge
+        this.view.customAttr.size.gaugeMinType = 'fix'
+        this.view.customAttr.size.gaugeMaxType = 'fix'
         this.calcData(true, 'chart', false)
         this.initTableData(this.view.tableId, optType)
         this.closeChangeChart()

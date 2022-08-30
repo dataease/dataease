@@ -247,7 +247,9 @@ export default {
       }
       const dimensionList = []
       for (const key in rowData) {
-        dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
+        if(meta.fieldValue === rowData[key]){
+          dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
+        }
       }
 
       this.pointParam = {

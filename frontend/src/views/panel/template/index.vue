@@ -152,8 +152,8 @@ export default {
       currentTemplateLabel: "",
       currentTemplateId: "",
       templateList: [],
-      templateMiniWidth: 262,
-      templateCurWidth: 262,
+      templateMiniWidth: 286,
+      templateCurWidth: 286,
       formType: "",
       originName: "",
       templateDialog: {
@@ -187,9 +187,8 @@ export default {
         const curSeparator = Math.trunc(
           templateMainDom.offsetWidth / _this.templateMiniWidth
         );
-        console.log(1, curSeparator);
         _this.templateCurWidth =
-          Math.trunc(templateMainDom.offsetWidth / curSeparator) - 50;
+          Math.trunc(templateMainDom.offsetWidth / curSeparator) - 24 - curSeparator;
       });
     });
   },
@@ -387,7 +386,7 @@ export default {
   .de-tabs-right {
     flex: 1;
     background: #fff;
-    padding: 24px 12px 24px 12px;
+    padding: 24px 0 24px 24px;
     overflow: hidden;
 
     .template-box {
@@ -403,6 +402,7 @@ export default {
 
     .active-template {
       margin: 4px 0 20px 0;
+      padding-right: 24px;
       font-family: "PingFang SC";
       font-style: normal;
       font-weight: 500;

@@ -412,6 +412,9 @@ public class PanelGroupService {
                 mobileLayout = panelViewService.havaMobileLayout(templateData);
             }
             Map<String, String> dynamicDataMap = gson.fromJson(dynamicData, Map.class);
+            if(dynamicDataMap == null){
+                DataEaseException.throwException("Please use the template after v1.9");
+            }
 
             List<PanelViewInsertDTO> panelViews = new ArrayList<>();
             List<PanelGroupExtendDataDTO> viewsData = new ArrayList<>();
