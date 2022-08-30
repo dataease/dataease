@@ -114,7 +114,11 @@ public class MysqlQueryProvider extends QueryProvider {
             if (f.getDeType() == 2 || f.getDeType() == 3) {
                 fieldName = String.format(MySQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
             } else {
-                fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, MySQLConstants.DEFAULT_DATE_FORMAT);
+                if(f.getType().equalsIgnoreCase("YEAR")){
+                    fieldName = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + originField + ",'-01-01')", MySQLConstants.DEFAULT_DATE_FORMAT);
+                }else {
+                    fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, MySQLConstants.DEFAULT_DATE_FORMAT);
+                }
             }
         } else if (f.getDeExtractType() == 0) {
             if (f.getDeType() == 2) {
@@ -167,7 +171,11 @@ public class MysqlQueryProvider extends QueryProvider {
                     if (f.getDeType() == 2 || f.getDeType() == 3) {
                         fieldName = String.format(MySQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
                     } else {
-                        fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, MySQLConstants.DEFAULT_DATE_FORMAT);
+                        if(f.getType().equalsIgnoreCase("YEAR")){
+                            fieldName = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + originField + ",'-01-01')", MySQLConstants.DEFAULT_DATE_FORMAT);
+                        }else {
+                            fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, MySQLConstants.DEFAULT_DATE_FORMAT);
+                        }
                     }
                 } else if (f.getDeExtractType() == 0) {
                     if (f.getDeType() == 2) {
@@ -1125,8 +1133,12 @@ public class MysqlQueryProvider extends QueryProvider {
             if (x.getDeType() == 2 || x.getDeType() == 3) {
                 fieldName = String.format(MySQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
             } else if (x.getDeType() == 1) {
-                String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
-                fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                if(x.getType().equalsIgnoreCase("YEAR")){
+                    fieldName = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + originField + ",'-01-01')", transDateFormat(x.getDateStyle(), x.getDatePattern()));
+                }else {
+                    String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
+                    fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                }
             } else {
                 fieldName = originField;
             }
