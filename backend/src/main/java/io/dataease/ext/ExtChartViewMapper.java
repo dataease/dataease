@@ -28,6 +28,8 @@ public interface ExtChartViewMapper {
 
     void chartCopyWithPanel(@Param("copyId") String copyId);
 
+    void chartFiledCopyWithPanel(@Param("copyId") String copyId);
+
     void deleteCircleView(@Param("pid") String pid);
 
     void deleteCircleGroup(@Param("pid") String pid);
