@@ -2405,7 +2405,7 @@ export default {
     teaching_video_bottom_hint: '更多视频资料',
     enterprise_edition_hint1: '提供企业级应用场景 X-Pack 增强包',
     enterprise_edition_hint2: '提供高等级原厂服务支持',
-    enterprise_edition_hint3: '提供 DataEase 最佳实践建议',
+    enterprise_edition_hint3: '提供DataEase最佳实践建议',
     open_source_community: '开源社区',
     click_show: '点击查看',
     show_more: '查看更多',

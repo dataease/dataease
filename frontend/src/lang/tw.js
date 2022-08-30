@@ -2392,7 +2392,7 @@ export default {
     teaching_video_bottom_hint: '更多視頻資料',
     enterprise_edition_hint1: '提供企業級應用場景 X-Pack 增強包',
     enterprise_edition_hint2: '提供高等級原廠服務支持',
-    enterprise_edition_hint3: '提供 DataEase 最佳實踐建議',
+    enterprise_edition_hint3: '提供DataEase最佳實踐建議',
     open_source_community: '開源社區',
     click_show: '點擊查看',
     show_more: '查看更多',
