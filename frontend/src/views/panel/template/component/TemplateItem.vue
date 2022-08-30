@@ -72,7 +72,7 @@ export default {
   background: #ffffff;
   border: 1px solid var(--deCardStrokeColor, #dee0e3);
   border-radius: 4px;
-  margin: 0 12.5px 25px 12.5px;
+  margin: 0 24px 25px 0;
   .card-img-model {
     border-bottom: 1px solid var(--deCardStrokeColor, #dee0e3);
     height: 144px;

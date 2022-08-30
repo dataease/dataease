@@ -27,6 +27,7 @@
                 class="my_table"
                 max-height="300"
                 height="300"
+                :key="certinKey"
               >
                 <el-table-column
                   prop="name"
@@ -433,7 +434,7 @@
 
       <el-row v-show="active === 1">
         <el-form
-          ref="apiItem"
+          ref="apiItemBasicInfo"
           size="small"
           :model="apiItem"
           label-position="top"
@@ -907,6 +908,7 @@ export default {
           value: 3,
         },
       ],
+      certinKey: false
     };
   },
   created() {
@@ -939,10 +941,8 @@ export default {
           this.$message.error(i18n.t("datasource.has_repeat_name"));
           return;
         }
-        if (!this.apiItem.name || !this.apiItem.url) {
-          return;
-        }
-        this.$refs.apiItem.validate((valid) => {
+
+        this.$refs.apiItemBasicInfo.validate((valid) => {
           if (valid) {
             const data = JSON.parse(JSON.stringify(this.apiItem));
             this.loading = true;
@@ -975,7 +975,7 @@ export default {
     },
     closeEditItem() {
       this.active = 0;
-      this.$refs.apiItem.clearValidate();
+      this.$refs.apiItemBasicInfo.clearValidate();
       this.edit_api_item = false;
     },
     saveItem() {
@@ -1000,6 +1000,7 @@ export default {
         for (var i = 0; i < this.form.apiConfiguration.length; i++) {
           if (this.form.apiConfiguration[i].serialNumber === this.apiItem.serialNumber) {
             this.form.apiConfiguration[i] = JSON.parse(JSON.stringify(this.apiItem))
+            this.certinKey = ! this.certinKey
           }
         }
       } else {

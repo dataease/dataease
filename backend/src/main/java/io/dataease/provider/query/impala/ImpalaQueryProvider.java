@@ -1213,7 +1213,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
                 } else {
-                    if (y.getDeExtractType() == DeTypeConstants.DE_INT || y.getDeExtractType() == DeTypeConstants.DE_FLOAT || y.getDeExtractType() == DeTypeConstants.DE_BOOL) {
+                    if (y.getDeExtractType() == DeTypeConstants.DE_INT || y.getDeExtractType() == DeTypeConstants.DE_FLOAT || y.getDeExtractType() == DeTypeConstants.DE_BOOL || StringUtils.equalsIgnoreCase(y.getId(), "count")) {
                         whereValue = String.format(ImpalaConstants.WHERE_NUMBER_VALUE_VALUE, f.getValue());
                     } else {
                         whereValue = String.format(ImpalaConstants.WHERE_VALUE_VALUE, f.getValue());
