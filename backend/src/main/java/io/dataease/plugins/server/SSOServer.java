@@ -78,7 +78,7 @@ public class SSOServer {
                 sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub());
             }
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
-            String realPwd = CodingUtil.md5(sysUserService.defaultPWD());
+            String realPwd = sysUserEntity.getPassword();
             String token = JWTUtils.sign(tokenInfo, realPwd);
             ServletUtils.setToken(token);
 
