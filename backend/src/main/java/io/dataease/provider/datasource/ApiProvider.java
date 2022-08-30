@@ -216,14 +216,14 @@ public class ApiProvider extends Provider {
                     JSONArray jsonArray = jsonObject.getJSONArray(s);
                     try {
                         List<JSONObject> childrenField = new ArrayList<>();
-                        for (Object object: jsonArray) {
+                        for (Object object : jsonArray) {
                             JSONObject.parseObject(object.toString());
                             handleStr(apiDefinition, JSON.toJSONString(object, SerializerFeature.WriteMapNullValue), childrenField, rootPath + "." + s + "[*]");
                         }
                         o.put("children", childrenField);
                         o.put("childrenDataType", "LIST");
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         JSONArray array = new JSONArray();
                         array.add(StringUtils.isNotEmpty(jsonObject.getString(s)) ? jsonObject.getString(s) : "");
                         o.put("value", array);
@@ -295,11 +295,11 @@ public class ApiProvider extends Provider {
     }
 
 
-    static void mergeField(JSONObject field, JSONObject item){
-        if(item.getJSONArray("children") != null ){
+    static void mergeField(JSONObject field, JSONObject item) {
+        if (item.getJSONArray("children") != null) {
             JSONArray itemChildren = item.getJSONArray("children");
             JSONArray fieldChildren = field.getJSONArray("children");
-            if(fieldChildren == null){
+            if (fieldChildren == null) {
                 fieldChildren = new JSONArray();
             }
             for (Object itemChild : itemChildren) {
@@ -307,12 +307,12 @@ public class ApiProvider extends Provider {
                 JSONObject itemChildObject = JSONObject.parseObject(itemChild.toString());
                 for (Object fieldChild : fieldChildren) {
                     JSONObject fieldChildObject = JSONObject.parseObject(fieldChild.toString());
-                    if(itemChildObject.getString("jsonPath").equals(fieldChildObject.getString("jsonPath"))){
+                    if (itemChildObject.getString("jsonPath").equals(fieldChildObject.getString("jsonPath"))) {
                         mergeField(fieldChildObject, itemChildObject);
                         hasKey = true;
                     }
                 }
-                if(!hasKey){
+                if (!hasKey) {
                     fieldChildren.add(itemChild);
                 }
             }
@@ -325,7 +325,7 @@ public class ApiProvider extends Provider {
             array.add(item.getJSONArray("value").get(0).toString());
             field.put("value", array);
         }
-        if(CollectionUtils.isNotEmpty(field.getJSONArray("children"))&&  CollectionUtils.isNotEmpty(item.getJSONArray("children"))){
+        if (CollectionUtils.isNotEmpty(field.getJSONArray("children")) && CollectionUtils.isNotEmpty(item.getJSONArray("children"))) {
             JSONArray fieldChildren = field.getJSONArray("children");
             JSONArray itemChildren = item.getJSONArray("children");
 
@@ -335,11 +335,11 @@ public class ApiProvider extends Provider {
                 JSONObject find = null;
                 for (Object itemChild : itemChildren) {
                     JSONObject itemObject = JSONObject.parseObject(itemChild.toString());
-                    if(jsonObject.getString("jsonPath").equals(itemObject.getString("jsonPath"))){
+                    if (jsonObject.getString("jsonPath").equals(itemObject.getString("jsonPath"))) {
                         find = itemObject;
                     }
                 }
-                if(find != null){
+                if (find != null) {
                     mergeValue(jsonObject, apiDefinition, find);
                 }
                 fieldArrayChildren.add(jsonObject);
@@ -374,7 +374,7 @@ public class ApiProvider extends Provider {
             for (int i = 0; i < jsonPaths.size(); i++) {
                 List<String> datas = new ArrayList<>();
                 Object object = JsonPath.read(result, jsonPaths.get(i));
-                if (object instanceof List) {
+                if (object instanceof List && jsonPaths.get(i).contains("[*]")) {
                     datas = (List<String>) object;
                 } else {
                     if (object != null) {
