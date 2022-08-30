@@ -64,7 +64,7 @@ public class CasServer {
                 sysUserService.saveCASUser(name, email);
                 sysUserEntity = authUserService.getUserByName(name);
             }
-            String realPwd = CodingUtil.md5(sysUserService.defaultPWD());
+            String realPwd = sysUserEntity.getPassword();
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
             String token = JWTUtils.sign(tokenInfo, realPwd);
             ServletUtils.setToken(token);
