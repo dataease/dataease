@@ -112,6 +112,8 @@ export default {
         this.canEdit = false
         this.reShow()
         this.myValue = this.assignment(this.element.propValue.textValue)
+        const ed = tinymce.editors[this.tinymceId]
+        ed.setContent(this.myValue)
       }
     },
     myValue(newValue) {
