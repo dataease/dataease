@@ -200,6 +200,13 @@ export default {
         datas = []
         this.resetPage()
       }
+      datas.forEach(item =>{
+          Object.keys(item).forEach(key=> {
+            if(typeof item[key] === 'object'){
+              item[key] = ""
+            }
+          })
+      })
       this.$refs.plxTable.reloadData(datas)
       this.$nextTick(() => {
         this.initStyle()
