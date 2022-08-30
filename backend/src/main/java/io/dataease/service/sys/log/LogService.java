@@ -70,11 +70,21 @@ public class LogService {
 
 
     public List<SysLogGridDTO> query(KeyGridRequest request) {
+
+
         request = detailRequest(request);
         String keyWord = request.getKeyWord();
+        List<String> ids = null;
         GridExample gridExample = request.convertExample();
         gridExample.setExtendCondition(keyWord);
-        List<SysLogWithBLOBs> voLogs = extSysLogMapper.query(gridExample);
+        LogQueryParam logQueryParam = BeanUtils.copyBean(new LogQueryParam(), gridExample);
+        if (StringUtils.isNotBlank(keyWord)) {
+            List<FolderItem> types = types();
+            ids = types.stream().filter(item -> item.getName().toLowerCase().contains(keyWord.toLowerCase())).map(FolderItem::getId).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(ids))
+                logQueryParam.setUnionIds(ids);
+        }
+        List<SysLogWithBLOBs> voLogs = extSysLogMapper.query(logQueryParam);
         List<SysLogGridDTO> dtos = voLogs.stream().map(this::convertDTO).collect(Collectors.toList());
         return dtos;
     }
@@ -256,12 +266,20 @@ public class LogService {
     public void exportExcel(KeyGridRequest request) throws Exception {
         request = detailRequest(request);
         String keyWord = request.getKeyWord();
+        List<String> ids = null;
         HttpServletResponse response = ServletUtils.response();
         OutputStream outputStream = response.getOutputStream();
         try {
             GridExample gridExample = request.convertExample();
             gridExample.setExtendCondition(keyWord);
-            List<SysLogWithBLOBs> lists = extSysLogMapper.query(gridExample);
+            LogQueryParam logQueryParam = BeanUtils.copyBean(new LogQueryParam(), gridExample);
+            if (StringUtils.isNotBlank(keyWord)) {
+                List<FolderItem> types = types();
+                ids = types.stream().filter(item -> item.getName().toLowerCase().contains(keyWord.toLowerCase())).map(FolderItem::getId).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(ids))
+                    logQueryParam.setUnionIds(ids);
+            }
+            List<SysLogWithBLOBs> lists = extSysLogMapper.query(logQueryParam);
             List<String[]> details = lists.stream().map(item -> {
                 String operateTypeName = SysLogConstants.operateTypeName(item.getOperateType());
                 String sourceTypeName = SysLogConstants.sourceTypeName(item.getSourceType());
