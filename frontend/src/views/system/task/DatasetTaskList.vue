@@ -107,7 +107,8 @@
       >
         <el-table-column type="selection" width="55" />
         <el-table-column
-          width="178"
+          min-width="178"
+          key="name"
           prop="name"
           :label="$t('dataset.task_name')"
         >
@@ -122,12 +123,14 @@
           </template>
         </el-table-column>
         <el-table-column
-          width="178"
+          min-width="178"
+          key="datasetName"
           prop="datasetName"
           :label="$t('dataset.task.dataset')"
         />
         <el-table-column
-          width="100"
+          min-width="100"
+          key="rate"
           prop="rate"
           :label="$t('dataset.execute_rate')"
         >
@@ -146,7 +149,8 @@
 
         <el-table-column
           prop="lastExecTime"
-          width="178"
+          key="lastExecTime"
+          min-width="178"
           :label="$t('dataset.task.last_exec_time')"
         >
           <template slot-scope="scope">
@@ -158,7 +162,8 @@
 
         <el-table-column
           prop="lastExecStatus"
-          width="140"
+          key="lastExecStatus"
+          min-width="140"
           :label="$t('dataset.task.last_exec_status')"
         >
           <template slot-scope="scope">
@@ -176,7 +181,8 @@
 
         <el-table-column
           prop="nextExecTime"
-          width="178"
+          key="nextExecTime"
+          min-width="178"
           :label="$t('dataset.task.next_exec_time')"
         >
           <template slot-scope="scope">
@@ -198,6 +204,7 @@
 
         <el-table-column
           min-width="120"
+          key="status"
           prop="status"
           :label="$t('dataset.task.task_status')"
         >
@@ -210,6 +217,7 @@
         <el-table-column
           slot="__operation"
           :label="$t('commons.operating')"
+          key="__operation"
           fixed="right"
           width="84"
         >
@@ -325,11 +333,12 @@ import GridTable from "@/components/gridTable/index.vue";
 import filterUser from "./filterUser.vue";
 import msgCfm from "@/components/msgCfm/index";
 import _ from "lodash";
+import keyEnter from '@/components/msgCfm/keyEnter.js'
 
 export default {
   name: "DatasetTaskList",
   components: { GridTable, cron, filterUser, TableSelector },
-  mixins: [msgCfm],
+  mixins: [msgCfm, keyEnter],
   props: {
     transCondition: {
       type: Object,

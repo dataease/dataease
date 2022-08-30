@@ -137,10 +137,12 @@ import { exportExcel, post } from "@/api/dataset/dataset";
 import GridTable from "@/components/gridTable/index.vue";
 import filterUser from "./filterUserRecord.vue";
 import _ from "lodash";
+import keyEnter from '@/components/msgCfm/keyEnter.js'
 
 export default {
   name: "TaskRecord",
   components: { GridTable, filterUser },
+  mixins: [keyEnter],
   props: {
     param: {
       type: Object,

@@ -455,7 +455,7 @@ export default {
     right: 0;
     bottom: 0;
     text-align: right;
-    background: #FFFFFF;
+    background-color: var(--MainBG, #fff);
     box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.05);
   }
 }

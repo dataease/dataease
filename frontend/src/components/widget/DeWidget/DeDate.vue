@@ -304,6 +304,31 @@ export default {
       color: var(--DateColor, #606266);
     }
   }
+
+  .el-date-range-picker__time-header,
+  .el-date-picker__time-header {
+    border-bottom: 1px solid var(--BrDateColor, #dfe4ed) !important;
+  }
+  
+  .el-picker-panel__footer {
+    border-top: 1px solid var(--BrDateColor, #dfe4ed) !important;
+    background: var(--BgDateColor, #FFFFFF) !important;
+  }
+
+  .el-date-range-picker__time-picker-wrap,
+  .el-date-picker__time-header {
+    .el-input__inner {
+      border:1px solid var(--BrDateColor, #dfe4ed) !important;
+      color: var(--DateColor, #606266);
+      background: var(--BgDateColor, #FFFFFF) !important;
+    }
+  }
+
+  .el-picker-panel__link-btn:nth-child(2) {
+    color: #FFFFFF;
+    background: var(--BgDateColor, #FFFFFF) !important;
+    border:1px solid var(--BrDateColor, #dfe4ed) !important;
+  }
   
 
   .popper__arrow,

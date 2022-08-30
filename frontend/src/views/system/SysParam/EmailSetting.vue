@@ -92,7 +92,7 @@
       </el-form-item>
       <el-form-item label="邮箱服务器配置">
         <el-checkbox v-model="formInline.ssl"
-          >开启SSL
+          >{{ $t('chart.open') }}SSL
           <el-tooltip
             class="item"
             effect="dark"
@@ -104,7 +104,7 @@
         </el-checkbox>
 
         <el-checkbox v-model="formInline.tls">
-          开启TSL
+          {{ $t('chart.open') }}TSL
           <el-tooltip
             class="item"
             effect="dark"
