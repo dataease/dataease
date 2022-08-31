@@ -1203,3 +1203,10 @@ div:focus {
     }
   }
 }
+
+.upload-user{
+  margin-bottom: 5px;
+  .el-upload{
+    width: 100%;
+  }
+}

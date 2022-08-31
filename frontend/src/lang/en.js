@@ -2438,6 +2438,8 @@ export default {
     attr: 'Attribute',
     empty: 'Empty',
     please_select_map: 'Please select a range of map'
-  }
+  },
+  'I18N_USER_TEMPLATE_ERROR': 'Template file error',
+  'i18n_max_user_import_size': 'File size exceeds 10M'
 
 }

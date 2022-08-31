@@ -1,7 +1,7 @@
 package io.dataease.plugins.server;
 
-import io.dataease.commons.exception.DEException;
-import io.dataease.i18n.Translator;
+import io.dataease.commons.constants.AuthConstants;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.user.service.UserXpackService;
 import io.swagger.annotations.Api;
@@ -31,23 +31,24 @@ public class XUserServer {
 
     @ApiOperation("导入")
     @PostMapping("/upload")
-    public void upload(@RequestPart(value = "file", required = true) MultipartFile file, HttpServletResponse response) throws Exception{
+    public void upload(@RequestPart(value = "file", required = true) MultipartFile file, HttpServletResponse response) {
         if (file.getSize() > MAXSIZE) {
             String msgKey = "i18n_max_user_import_size";
-            String msg = Translator.get(msgKey);
-            DEException.throwException(msg);
+            response.addHeader("Access-Control-Expose-Headers", AuthConstants.DE_DOWN_ERROR_KEY);
+            response.setHeader(AuthConstants.DE_DOWN_ERROR_KEY, msgKey);
+            return;
         }
         UserXpackService userXpackService = SpringContextUtil.getBean(UserXpackService.class);
         try{
             userXpackService.upload(file, response);
         }catch (Exception e) {
+            response.addHeader("Access-Control-Expose-Headers", AuthConstants.DE_DOWN_ERROR_KEY);
             if (StringUtils.contains(e.getMessage(), "template file error")) {
-
-                DEException.throwException(Translator.get("I18N_USER_TEMPLATE_ERROR"));
+                response.setHeader(AuthConstants.DE_DOWN_ERROR_KEY, "I18N_USER_TEMPLATE_ERROR");
             }else {
-                DEException.throwException(e.getMessage());
+                response.setHeader(AuthConstants.DE_DOWN_ERROR_KEY, e.getMessage());
             }
-
+            LogUtil.error(e.getMessage());
         }
     }
 }
