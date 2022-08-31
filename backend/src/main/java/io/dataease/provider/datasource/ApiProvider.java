@@ -390,7 +390,7 @@ public class ApiProvider extends Provider {
             }
             for (int i = 0; i < columnDataList.size(); i++) {
                 for (int j = 0; j < columnDataList.get(i).size(); j++) {
-                    dataList.get(j)[i] = Optional.ofNullable(columnDataList.get(i).get(j)).orElse("").replaceAll("\n", " ").replaceAll("\r", " ");
+                    dataList.get(j)[i] = Optional.ofNullable(String.valueOf(columnDataList.get(i).get(j))).orElse("").replaceAll("\n", " ").replaceAll("\r", " ");
                 }
             }
         }
