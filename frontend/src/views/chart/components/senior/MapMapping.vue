@@ -215,16 +215,17 @@ export default {
         })
       }
       const cCode = this.currentAreaCode
+      if(!cCode) return
       if (this.$store.getters.geoMap[cCode]) {
         const json = this.$store.getters.geoMap[cCode]
-        innerCallBack(json, cCode)
+        json && innerCallBack(json, cCode)
       } else {
         geoJson(cCode).then(res => {
           this.$store.dispatch('map/setGeo', {
             key: cCode,
             value: res
           }).then(() => {
-            innerCallBack(res, cCode)
+            res && innerCallBack(res, cCode)
           })
         })
       }
