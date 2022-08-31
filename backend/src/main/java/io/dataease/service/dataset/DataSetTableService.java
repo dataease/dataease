@@ -1489,7 +1489,7 @@ public class DataSetTableService {
                     TableUtils.tableName(union.get(0).getCurrentDs().getId()));
         }
         Map<String, Object> map = new HashMap<>();
-        map.put("sql", java.util.Base64.getEncoder().encodeToString(sql.getBytes()));
+        map.put("sql", sql);
         map.put("field", checkedFields);
         map.put("join", unionList);
         return map;
@@ -1806,7 +1806,7 @@ public class DataSetTableService {
                 DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(),
                         DataTableInfoDTO.class);
                 Map<String, Object> sqlMap = getUnionSQLDoris(dataTableInfoDTO);
-                String sql = new String(java.util.Base64.getDecoder().decode((String) sqlMap.get("sql")));
+                String sql = (String) sqlMap.get("sql");
                 List<DatasetTableField> fieldList = (List<DatasetTableField>) sqlMap.get("field");
                 List<UnionParamDTO> join = (List<UnionParamDTO>) sqlMap.get("join");
 
