@@ -240,6 +240,7 @@
             <el-button
               v-permission="['user:del']"
               @click="del(scope.row)"
+              v-if="scope.row.id !== 1"
               class="text-btn"
               type="text"
               >{{ $t("commons.delete") }}</el-button
