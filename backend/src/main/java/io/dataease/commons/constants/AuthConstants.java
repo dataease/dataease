@@ -21,4 +21,8 @@ public class AuthConstants {
     public final static String DEPT_DATASET_NAME = "dept_dataset";
     public final static String DEPT_PANEL_NAME = "dept_panel";
 
+
+
+    public static final String DE_DOWN_ERROR_KEY = "de-down-error-msg";
+
 }

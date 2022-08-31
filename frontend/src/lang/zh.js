@@ -2460,5 +2460,7 @@ export default {
     attr: '属性',
     empty: '无数据',
     please_select_map: '请先选择地图范围'
-  }
+  },
+  'I18N_USER_TEMPLATE_ERROR': '模版错误',
+  'i18n_max_user_import_size': '文件最大不能超过10M'
 }

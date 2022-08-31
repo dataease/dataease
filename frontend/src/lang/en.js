@@ -2219,7 +2219,7 @@ export default {
     i18n_msg_type_all: 'All type',
     i18n_msg_type_ds_invalid: 'Datasource invalid',
     channel_inner_msg: 'On site news',
-    channel_email_msg: 'Email reminder'
+    channel_email_msg: 'Mail notification'
   },
   denumberrange: {
     label: 'Number range',
@@ -2459,5 +2459,8 @@ export default {
     attr: 'Attribute',
     empty: 'Empty',
     please_select_map: 'Please select a range of map'
-  }
+  },
+  'I18N_USER_TEMPLATE_ERROR': 'Template file error',
+  'i18n_max_user_import_size': 'File size exceeds 10M'
+
 }

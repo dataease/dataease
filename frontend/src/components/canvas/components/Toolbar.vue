@@ -74,7 +74,7 @@
             <el-dropdown-item>
               <span class="icon iconfont icon-icon_dialpad_outlined icon16" />
               <span class="text14 margin-left8">{{ $t('panel.aided_grid') }}</span>
-              <el-switch v-model="showGridSwitch" class="margin-left8" size="mini" @change="showGridChange" />
+              <el-switch v-model="showGridSwitch" :class="[{['grid-active']: showGridSwitch},'margin-left8']" size="mini" @change="showGridChange" />
             </el-dropdown-item>
             <el-dropdown-item @click.native="openOuterParamsSet">
               <span class="icon iconfont icon-icon-quicksetting icon16" />
@@ -600,8 +600,12 @@ export default {
 ::v-deep .el-switch__core::after {
   width: 14px;
   height: 14px;
-  margin-top: -1px;
+  margin-top: -1.3px;
   margin-bottom: 2px;
+}
+
+.grid-active ::v-deep .el-switch__core::after {
+  margin-left: -14.5px;
 }
 
 .iconfont-tb {
