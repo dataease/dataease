@@ -325,7 +325,7 @@ export default {
   }
 
   .el-picker-panel__link-btn:nth-child(2) {
-    color: #FFFFFF;
+    color: var(--DateColor, #409eff);
     background: var(--BgDateColor, #FFFFFF) !important;
     border:1px solid var(--BrDateColor, #dfe4ed) !important;
   }
