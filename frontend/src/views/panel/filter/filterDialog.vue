@@ -181,7 +181,7 @@
 
     <de-main-container class="ms-main-container">
       <div v-if="currentElement.options && currentElement.options.attrs">
-        <filter-head :element="currentElement" :table-fields-map="tableFieldsMap" :widget="widget" />
+        <filter-head :element="currentElement" :widget="widget" />
 
         <filter-control :element="currentElement" :widget="widget" :control-attrs="myAttrs" :child-views="childViews" />
 
@@ -297,7 +297,6 @@ export default {
         datasetParams: []
       },
       currentElement: null,
-      tableFieldsMap: {},
       tempTreeDatas: null,
       showTips: false
     }
@@ -632,7 +631,6 @@ export default {
     loadField(tableId) {
       fieldListWithPermission(tableId).then(res => {
         let datas = res.data
-        this.$set(this.tableFieldsMap, tableId, JSON.parse(JSON.stringify(datas)))
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)
         }
@@ -643,7 +641,6 @@ export default {
     comLoadField(tableId) {
       fieldListWithPermission(tableId).then(res => {
         let datas = res.data
-        this.$set(this.tableFieldsMap, tableId, JSON.parse(JSON.stringify(datas)))
         if (this.widget && this.widget.filterFieldMethod) {
           datas = this.widget.filterFieldMethod(datas)
         }
