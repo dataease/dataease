@@ -167,6 +167,9 @@ export default {
   destroyed() {
     this.myChart.dispose()
   },
+  created() {
+    this.loadThemeStyle()
+  },
   methods: {
     reDrawView() {
       this.myChart.dispatchAction({ type: 'unselect', seriesIndex: this.linkageActiveParam.seriesIndex, name: this.linkageActiveParam.name })
@@ -212,6 +215,21 @@ export default {
           }
         })
       })
+    },
+    loadThemeStyle() {
+      let themeStyle = null
+      if (this.themeStyle) {
+        themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
+        if (themeStyle && themeStyle.backgroundColorSelect) {
+          const panelColor = themeStyle.color
+          if (panelColor !== '#FFFFFF') {
+            const reverseValue = reverseColor(panelColor)
+            this.buttonTextColor = reverseValue
+          } else {
+            this.buttonTextColor = null
+          }
+        }
+      }
     },
     drawEcharts(activeParam) {
       const chart = this.chart
