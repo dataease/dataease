@@ -238,7 +238,6 @@ public class LogService {
     }
 
     public void saveLog(SysLogDTO sysLogDTO) {
-        // String ip = "";
         CurrentUserDto user = AuthUtils.getUser();
         SysLogWithBLOBs sysLogWithBLOBs = BeanUtils.copyBean(new SysLogWithBLOBs(), sysLogDTO);
         if (CollectionUtils.isNotEmpty(sysLogDTO.getPositions())) {
@@ -258,7 +257,6 @@ public class LogService {
             sysLogWithBLOBs.setNickName(sysLogDTO.getSourceName());
         }
 
-        // sysLogWithBLOBs.setIp(ip);
         sysLogMapper.insert(sysLogWithBLOBs);
     }
 

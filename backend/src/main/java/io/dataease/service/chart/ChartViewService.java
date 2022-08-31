@@ -830,14 +830,12 @@ public class ChartViewService {
 
         //如果不是插件视图 走原生逻辑
         if (table.getMode() == 0) {// 直连
-            // Datasource ds = datasourceService.get(table.getDataSourceId());
             if (ObjectUtils.isEmpty(ds)) {
                 throw new RuntimeException(Translator.get("i18n_datasource_delete"));
             }
             if (StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")) {
                 throw new Exception(Translator.get("i18n_invalid_ds"));
             }
-            // DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest.setDatasource(ds);
             DataTableInfoDTO dataTableInfoDTO = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
@@ -903,8 +901,6 @@ public class ChartViewService {
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
-            // Datasource ds = engineService.getDeEngine();
-            // DatasourceProvider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             datasourceRequest.setDatasource(ds);
             String tableName = "ds_" + table.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
@@ -1154,7 +1150,6 @@ public class ChartViewService {
         pluginViewParam.setPluginChartFieldCustomFilters(fieldFilters);
         pluginViewParam.setPluginChartExtFilters(panelFilters);
         pluginViewParam.setPluginViewLimit(pluginViewLimit);
-        // pluginViewParam.setUserId(AuthUtils.getUser().getUserId());
         return pluginViewParam;
     }
 
