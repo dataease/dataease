@@ -1262,6 +1262,7 @@ div:focus {
       }
     }
   }
+
   .btn {
     border-radius: 4px;
     padding: 5px 26px 5px 26px;
@@ -1311,4 +1312,11 @@ div:focus {
 .user-popper.dept {
   height: 400px;
   overflow: auto;
+
+}
+.upload-user{
+  margin-bottom: 5px;
+  .el-upload{
+    width: 100%;
+  }
 }
