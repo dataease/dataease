@@ -374,7 +374,7 @@ public class ApiProvider extends Provider {
             for (int i = 0; i < jsonPaths.size(); i++) {
                 List<String> datas = new ArrayList<>();
                 Object object = JsonPath.read(result, jsonPaths.get(i));
-                if (object instanceof List) {
+                if (object instanceof List && jsonPaths.get(i).contains("[*]")) {
                     datas = (List<String>) object;
                 } else {
                     if (object != null) {
@@ -390,7 +390,7 @@ public class ApiProvider extends Provider {
             }
             for (int i = 0; i < columnDataList.size(); i++) {
                 for (int j = 0; j < columnDataList.get(i).size(); j++) {
-                    dataList.get(j)[i] = String.valueOf(columnDataList.get(i).get(j));
+                    dataList.get(j)[i] = Optional.ofNullable(columnDataList.get(i).get(j)).orElse("").replaceAll("\n", " ").replaceAll("\r", " ");
                 }
             }
         }
