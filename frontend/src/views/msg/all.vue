@@ -19,6 +19,7 @@
               }}</deBtn>
               <deBtn
                 secondary
+                key="mark_readed"
                 :disabled="multipleSelection.length === 0"
                 @click="markReaded"
                 >{{ $t("webmsg.mark_readed") }}</deBtn
@@ -28,6 +29,7 @@
               <deBtn
                 v-if="tabActive === 'readed'"
                 secondary
+                key="delete"
                 :disabled="multipleSelection.length === 0"
                 @click="deleteBatch"
                 >{{ $t("commons.delete") }}</deBtn
