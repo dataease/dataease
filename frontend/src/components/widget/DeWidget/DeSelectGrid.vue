@@ -214,6 +214,8 @@ export default {
   methods: {
     clearHandler() {
       this.value = this.element.options.attrs.multiple ? [] : null
+      this.checkAll = false
+      this.isIndeterminate = false
     },
     resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
