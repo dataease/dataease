@@ -225,12 +225,6 @@ export default {
       const datasetIdx = this.selectDatasets.findIndex((ele) => ele.id === id);
       if (datasetIdx !== -1) {
         this.selectDatasets.splice(datasetIdx, 1);
-        this.selectDatasetsCahe = this.selectDatasetsCahe.filter(
-          (ele) => ele.id !== id
-        );
-        this.datasetCahe = this.datasetCahe.filter((ele) => ele.id !== id);
-        this.$refs.datasetTreeRef.filter(id);
-        return;
       }
       this.activeDataset.push(id);
       this.selectDatasetsCahe.push({ id, name });
@@ -241,9 +235,13 @@ export default {
       const dataset = this.datasetCahe.find((ele) => ele.id === id);
       this.selectDatasets.push(dataset);
       this.activeDataset = this.activeDataset.filter((ele) => ele !== id);
+      this.datasetCahe = this.datasetCahe.filter(
+        (ele) => ele.id !== id
+      );
       this.selectDatasetsCahe = this.selectDatasetsCahe.filter(
         (ele) => ele.id !== id
       );
+      this.$refs.datasetTreeRef.filter(true);
     },
     search() {
       this.userDrawer = false;
