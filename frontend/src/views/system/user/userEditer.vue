@@ -580,7 +580,7 @@ export default {
   display: none !important;
 }
 .user-popper {
-  background: transparent;
+  background: #fff;
   padding: 0;
   .popper__arrow {
     display: none;

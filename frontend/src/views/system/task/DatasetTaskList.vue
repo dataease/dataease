@@ -115,7 +115,6 @@
           <template slot-scope="scope">
             <span>
               <el-link
-                style="font-size: 12px"
                 @click="jumpTaskRecord(scope.row)"
                 >{{ scope.row.name }}</el-link
               >
@@ -124,7 +123,6 @@
         </el-table-column>
         <el-table-column
           min-width="178"
-          class-name="f14"
           key="datasetName"
           prop="datasetName"
           :label="$t('dataset.task.dataset')"
@@ -665,10 +663,6 @@ export default {
   word-wrap: break-word;
   overflow: hidden;
 }
-
-span {
-  font-size: 12px;
-}
 </style>
 <style lang="scss" scoped>
 .dataset-on-time {
@@ -916,11 +910,6 @@ span {
   .el-icon-s-order {
     color: var(--primary, #3370ff);
     cursor: pointer;
-  }
-}
-.f14:not(.is-leaf) {
-  .cell {
-    font-size: 12px !important;
   }
 }
 </style>
