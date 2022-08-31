@@ -149,7 +149,7 @@ export default {
     padding-left: 3px!important;
     padding-right: 0px!important;
     cursor:pointer!important;
-    background-color: #3370ff;
+    background-color: var(--primary,#3370ff);
   }
   .bar-main i{
     color: white;

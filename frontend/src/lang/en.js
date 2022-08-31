@@ -133,12 +133,12 @@ export default {
   commons: {
     no_result: 'No Result',
     manage_member: 'Managing members',
-    user_confirm_remove_cancel: 'Are you sure you want to remove the user from the role?',
     confirm_remove_cancel: 'Are you sure to delete the role?',
+    user_confirm_remove_cancel: 'Are you sure you want to remove the user from the role?',
     default_value: 'Default Value',
     params_value: 'Param Value',
-    publish: 'publish',
     input_role_name: 'Enter a role name',
+    publish: 'publish',
     unpublished: 'unpublished',
     default_pwd: 'Default Pwd',
     stop: 'Stop',
@@ -159,9 +159,9 @@ export default {
     yes: 'Yes',
     no: 'No',
     reset: 'Reset',
-    gender: 'Gender',
     catalogue: 'Catalogue',
     button: 'Button',
+    gender: 'Gender',
     man: 'Man',
     woman: 'Woman',
     keep_secret: 'keep secret',
@@ -192,6 +192,7 @@ export default {
     annotation: 'Annotation',
     clear: 'Clean',
     save: 'Save',
+    otherSave: 'Save as',
     update: 'Update',
     save_success: 'Saved successfully',
     delete_success: 'deleted successfully',
@@ -400,6 +401,7 @@ export default {
     continue: 'continue',
     hour: 'hour',
     minute: 'minute',
+    day: 'day',
     by_task_name: 'Search by task name',
     message_receiving_management: 'Message receiving management',
     upload_failed: 'Upload failed',
@@ -423,7 +425,6 @@ export default {
     uninstall: 'uninstall',
     relevant_content_found: 'No relevant content found',
     view_tasks: 'View tasks',
-    day: 'day',
     no_classification: 'No classification',
     no_template: 'No template',
     data_set_required: 'Data set (required)',
@@ -602,6 +603,7 @@ export default {
     confirm_passwd: 'Confirm Password',
     change_password: 'Change Password',
     search_by_name: 'Search by name',
+    import_ldap: 'Import LDAP users',
     result_one: 'Results',
     clear_filter: 'Empty condition',
     recover_pwd: 'Restore to the original password?',
@@ -1541,8 +1543,9 @@ export default {
     column_permission: {
       add: 'Add',
       edit: 'Edit',
+      please_select_field: 'Please select field',
       please_select_auth_type: 'Please select the authorization type',
-      please_select_auth_id: '请选择授权目标',
+      please_select_auth_id: 'Please select authorization obj',
       column_permission_not_empty: 'Please select authorization target',
       auth_type: 'Authorization type',
       auth_obj: 'Authorized object',
@@ -1594,14 +1597,19 @@ export default {
     create: 'Create Data Source',
     type: 'Type',
     please_choose_type: 'Please select data source type',
+    please_choose_data_type: 'Please select the calculation mode',
     data_base: 'Database name',
     user_name: 'User Name',
     password: 'Password',
     host: 'Host name / IP address',
+    doris_host: 'Doris Addr',
+    query_port: 'Query Port',
+    http_port: 'Http Port',
     port: 'Port',
     datasource_url: 'URL address',
     please_input_datasource_url: 'Please enter Elasticsearch 地址，e.g: http://es_host:es_port',
     please_input_data_base: 'Please enter the database name',
+    please_select_oracle_type: 'Select connection type',
     please_input_user_name: 'Please enter user name',
     please_input_password: 'Please enter Password',
     please_input_host: 'Please enter host',
@@ -1633,9 +1641,6 @@ export default {
     min_pool_size: 'Minimum of connections',
     max_pool_size: 'Maximum connection',
     max_idle_time: 'Maximum idle (seconds)',
-    doris_host: 'Doris Address',
-    query_port: 'Query Port',
-    http_port: 'Http Port',
     bucket_num: 'Bucket number',
     replication_num: 'Replication number',
     please_input_bucket_num: 'Please enter  Bucket number',
@@ -1648,10 +1653,15 @@ export default {
     please_input_max_pool_size: 'Please enter the maximum number of connections',
     please_input_max_idle_time: 'Please enter the maximum idle (seconds)',
     please_input_acquire_increment: 'Please enter the growth number',
+    please_input_query_timeout: 'Please enter query timeout',
     please_input_connect_timeout: 'Please enter the connection timeout (seconds)',
     no_less_then_0: 'Parameters in advanced settings cannot be less than zero',
     port_no_less_then_0: 'Port cannot be less than zero',
     priority: 'Advanced setting',
+    data_mode: 'Data mode',
+    direct: 'Direct Mode',
+    extract: 'Extraction mode',
+    all_compute_mode: 'Direct connection and extraction mode',
     extra_params: 'Extra JDBC connection string',
     please_input_dataPath: 'Please enter the JsonPath data path',
     warning: 'Contains invalid table',
@@ -1909,6 +1919,8 @@ export default {
     fontWeight: 'FontWeight',
     lineHeight: 'LineHeight',
     letterSpacing: 'LetterSpacing',
+    padding: 'Internal spacing',
+    margin: 'Outer space',
     textAlign: 'TextAlign',
     opacity: 'Opacity',
     verticalAlign: 'Vertical Align',
@@ -1997,6 +2009,9 @@ export default {
     default_settings: 'Default Settings',
     choose_background: 'Choose Component Background',
     choose_background_tips: 'The component`s own background settings will overwrite the current settings',
+    setting_background: 'Set background',
+    setting_jump: 'Jump settings',
+    select_view: 'Please select a view...',
     visual: 'Visual',
     prohibit_multiple: 'Prohibit multiple fields in the same dataset',
     be_empty_dir: 'is empty dir'
@@ -2015,9 +2030,6 @@ export default {
     un_install: 'Uninstall',
     uninstall_confirm: 'Comfirm to uninstall the plugin?',
     uninstall_cancel: 'Cancel uninstall plugin',
-    setting_background: 'BackGround',
-    setting_jump: 'Jump Setting',
-    select_view: 'Select View',
     un_install_success: 'Uninstall is successful and restart takes effect',
     un_install_error: 'Uninstall failed, please contact the administrator'
   },
@@ -2029,6 +2041,11 @@ export default {
     loginTitle: 'Login page title',
     title: 'System name',
     advice_size: 'Advice picture size',
+    theme: 'Theme color',
+    topMenuColor: 'Head background',
+    topMenuActiveColor: 'Head selection background',
+    topMenuTextColor: 'Head font color',
+    topMenuTextActiveColor: 'Head font selected color',
     themeLight: 'Light',
     themeDark: 'Dark',
     themeCustom: 'Custom',
@@ -2040,7 +2057,6 @@ export default {
     defaultHomeLink: 'Default is the system built-in home page',
     showFoot: 'Show login page footer',
     footContent: 'Foot content'
-
   },
   auth: {
     no_item_selected: 'Please select organization、user or role on the left',
@@ -2056,6 +2072,7 @@ export default {
     role: 'Role',
     user: 'User',
     set_rules: 'Set rules',
+    sysParams: 'System variable',
     sysParams_type: {
       user_id: 'User ID',
       user_name: 'User Name',
@@ -2076,6 +2093,7 @@ export default {
     datasetAuthHead: 'All Dataset',
     chartAuthHead: 'All Chart',
     panelAuthHead: 'All Chart',
+    menuAuthHead: 'All menus and actions',
     view: 'View',
     use: 'Use',
     export: 'Export',
@@ -2083,14 +2101,14 @@ export default {
     row_column: 'Row and column permission settings',
     row_permission: 'Row permission rules',
     enable_row: 'Enable row permissions',
-    add_condition: 'Add condition',
-    add_relationship: 'Add relationship',
     white_list: 'White list',
     white_user_not: 'The above permission rules do not take effect for white list users',
     organization_or_role: 'Please select an organization or role',
     column_permission: 'Column permission rule',
     enable_column: 'Enable column permissions',
     search_by_field: 'Search by field name',
+    add_condition: 'Add condition',
+    add_relationship: 'Add relationship',
     filter_fields: 'Filter fields',
     selct_filter_fields: 'Please select a filter field',
     enter_keywords: 'Please enter keywords',
@@ -2200,7 +2218,8 @@ export default {
     i18n_msg_type_dataset_sync_faild: 'Dataset synchronization failed',
     i18n_msg_type_all: 'All type',
     i18n_msg_type_ds_invalid: 'Datasource invalid',
-    channel_inner_msg: 'On site news'
+    channel_inner_msg: 'On site news',
+    channel_email_msg: 'Email reminder'
   },
   denumberrange: {
     label: 'Number range',
@@ -2356,8 +2375,7 @@ export default {
     cmonth: 'This Month',
     cquarter: 'This Quarter',
     lquarter: 'Last Quarter',
-    cyear: 'This Year',
-    openHomePage: 'Show Home Page'
+    cyear: 'This Year'
   },
   dynamic_year: {
     fix: 'Fixed Year',
@@ -2370,7 +2388,8 @@ export default {
     dynamic: 'Dynamic Month',
     current: 'This Month',
     last: 'Last Month',
-    firstOfYear: 'First month of this year'
+    firstOfYear: 'First month of this year',
+    sameMonthLastYear: 'Same month last year'
   },
   wizard: {
     welcome_title: 'Welcome To Use DataEase',
@@ -2419,7 +2438,9 @@ export default {
   plugin_style: {
     border: 'Border'
   },
-
+  sql_variable: {
+    variable_mgm: 'Parameter setting'
+  },
   map_setting: {
     area_level: 'Area Level',
     area_code: 'Area Code',
@@ -2439,5 +2460,4 @@ export default {
     empty: 'Empty',
     please_select_map: 'Please select a range of map'
   }
-
 }
