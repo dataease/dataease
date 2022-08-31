@@ -31,12 +31,10 @@ public class RowPermissionMergeListener implements ApplicationListener<Applicati
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         Map<String, RowPermissionTreeService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((RowPermissionTreeService.class));
         if (beansOfType.keySet().size() > 0) {
-            System.out.println("====row permissions merge [start]====");
             logger.info("====row permissions merge [start]====");
 
             SysStartupJob sysStartupJob = sysStartupJobMapper.selectByPrimaryKey(JOB_ID);
             if (ObjectUtils.isNotEmpty(sysStartupJob) && StringUtils.equalsIgnoreCase(sysStartupJob.getStatus(), "ready")) {
-                System.out.println("====row permissions merge [doing]====");
                 logger.info("====row permissions merge [doing]====");
 
                 RowPermissionTreeService rowPermissionTreeService = SpringContextUtil.getBean(RowPermissionTreeService.class);
@@ -44,7 +42,6 @@ public class RowPermissionMergeListener implements ApplicationListener<Applicati
                 sysStartupJob.setStatus("done");
                 sysStartupJobMapper.updateByPrimaryKey(sysStartupJob);
             }
-            System.out.println("====row permissions merge [end]====");
             logger.info("====row permissions merge [end]====");
         }
     }

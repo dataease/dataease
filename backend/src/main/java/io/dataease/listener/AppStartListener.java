@@ -1,5 +1,6 @@
 package io.dataease.listener;
 
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.plugins.common.base.domain.DatasetTableTask;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.service.ScheduleService;
@@ -23,7 +24,7 @@ public class AppStartListener implements ApplicationListener<ApplicationReadyEve
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        System.out.println("================= Application start =================");
+        LogUtil.info("================= Application start =================");
         // 项目启动，从数据库读取任务加入到Quartz
         List<DatasetTableTask> list = dataSetTableTaskService.list(new DatasetTableTask());
         for (DatasetTableTask task : list) {

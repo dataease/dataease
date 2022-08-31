@@ -11,6 +11,7 @@ import Vue from 'vue'
 const TokenKey = Config.TokenKey
 const RefreshTokenKey = Config.RefreshTokenKey
 const LinkTokenKey = Config.LinkTokenKey
+const DownErrorKey = Config.DownErrorKey
 import Cookies from 'js-cookie'
 
 const getTimeOut = () => {
@@ -98,6 +99,9 @@ service.interceptors.response.use(response => {
   response.config.loading && tryHideLoading(store.getters.currentPath)
   checkAuth(response)
   Vue.prototype.$currentHttpRequestList.delete(response.config.url)
+  if (checkDownError(response)) {
+    return response
+  }
   return response.data
 }, error => {
   const config = error.response && error.response.config || error.config
@@ -114,7 +118,14 @@ service.interceptors.response.use(response => {
   !config.hideMsg && (!headers['authentication-status']) && $error(msg)
   return Promise.reject(error)
 })
-
+const checkDownError = response => {
+  if (response.request && response.request.responseType && response.request.responseType === 'blob' && response.headers && response.headers['de-down-error-msg']) {
+    const msg = i18n.t(response.headers[DownErrorKey])
+    $error(msg)
+    return true
+  }
+  return false
+}
 const checkAuth = response => {
   if (response.headers['authentication-status'] === 'login_expire') {
     const message = i18n.t('login.expires')

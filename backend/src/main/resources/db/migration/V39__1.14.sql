@@ -79,3 +79,14 @@ SET
     `details` = '{\"width\":1600,\"height\":900,\"scale\":100,\"scaleWidth\":100,\"scaleHeight\":100,\"selfAdaption\":true,\"auxiliaryMatrix\":true,\"openCommonStyle\":true,\"panel\":{\"themeColor\":\"dark\",\"color\":\"#030B2E\",\"imageUrl\":{},\"backgroundType\":\"color\",\"gap\":\"yes\",\"resultMode\":\"all\",\"resultCount\":1000},\"aidedDesign\":{\"showGrid\":false,\"matrixBase\":4},\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"themeId\":\"c9d63e10-2827-11ed-afd9-69d86fea45a0\",\"chartInfo\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"color\":\"#FFFFFF\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"remarkBackgroundColor\":\"#ffffffff\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false},\"chartColor\":{\"value\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"tableHeaderBgColor\":\"#4E81BB\",\"tableItemBgColor\":\"#131E42\",\"tableFontColor\":\"#ffffff\",\"tableStripe\":true,\"dimensionColor\":\"#ffffff\",\"quotaColor\":\"#4E81BB\",\"tableBorderColor\":\"#CCCCCC\",\"seriesColors\":[],\"areaBorderColor\":\"#EBEEF5\"},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"color\":\"#131E42\",\"alpha\":100,\"borderRadius\":5,\"innerPadding\":0},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#FFFFFF\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headFontColor\":\"#FFFFFF\",\"headFontActiveColor\":\"#FFFFFF\",\"headBorderColor\":\"\",\"headBorderActiveColor\":\"\"}}}'
 WHERE
         `id` = 'system_2';
+
+BEGIN;
+DELETE from `sys_menu` where `menu_id` = 55;
+DELETE from `sys_menu` where `menu_id` = 56;
+COMMIT;
+
+BEGIN;
+UPDATE `my_plugin` set cost = '60000', `creator` = 'DATAEASE' WHERE `module_name` = 'deplugin-xpack-backend';
+UPDATE `my_plugin` set cost = '0', `creator` = 'DATAEASE' WHERE `module_name` = 'view-bubblemap-backend';
+UPDATE `my_plugin` set cost = '0', `creator` = 'DATAEASE' WHERE `module_name` = 'view-symbolmap-backend';
+COMMIT;

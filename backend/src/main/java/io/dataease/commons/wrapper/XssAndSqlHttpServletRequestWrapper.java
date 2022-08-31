@@ -168,9 +168,7 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
             // NOTE: It's highly recommended to use the ESAPI library and
             // uncomment the following line to
             // avoid encoded attacks.
-            // value = ESAPI.encoder().canonicalize(value);
             // Avoid null characters
-            /** value = value.replaceAll("", ""); ***/
             // Avoid anything between script tags
             Pattern scriptPattern = Pattern.compile(
                     "<[\r\n| | ]*script[\r\n| | ]*>(.*?)</[\r\n| | ]*script[\r\n| | ]*>", Pattern.CASE_INSENSITIVE);

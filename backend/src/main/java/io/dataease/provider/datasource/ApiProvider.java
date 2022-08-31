@@ -213,8 +213,8 @@ public class ApiProvider extends Provider {
                 if (StringUtils.isNotEmpty(value) && value.startsWith("[")) {
 
                     JSONObject o = new JSONObject();
-                    JSONArray jsonArray = jsonObject.getJSONArray(s);
                     try {
+                        JSONArray jsonArray = jsonObject.getJSONArray(s);
                         List<JSONObject> childrenField = new ArrayList<>();
                         for (Object object : jsonArray) {
                             JSONObject.parseObject(object.toString());
@@ -390,7 +390,7 @@ public class ApiProvider extends Provider {
             }
             for (int i = 0; i < columnDataList.size(); i++) {
                 for (int j = 0; j < columnDataList.get(i).size(); j++) {
-                    dataList.get(j)[i] = String.valueOf(columnDataList.get(i).get(j));
+                    dataList.get(j)[i] = Optional.ofNullable(String.valueOf(columnDataList.get(i).get(j))).orElse("").replaceAll("\n", " ").replaceAll("\r", " ");
                 }
             }
         }

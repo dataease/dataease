@@ -15,10 +15,9 @@
     <!--基础配置表单-->
     <el-form ref="formInline" v-loading="loading" :model="formInline" :rules="rules"
       class="demo-form-inline de-form-item" :disabled="show" label-width="80px" label-position="right" size="small">
-      <el-form-item prop="frontTimeOut" class="de-i118">
+      <el-form-item prop="frontTimeOut">
         <template slot="label">
           {{ $t('system_parameter_setting.request_timeout')}}
-          <i class="is-require"></i>
           <el-tooltip class="item" effect="dark" :content="$t('system_parameter_setting.front_time_out')"
             placement="top">
             <i class="el-icon-warning-outline tips"></i>
@@ -96,7 +95,6 @@ export default {
             pattern: "^([0-9]|\\b[1-9]\\d\\b|\\b[1-2]\\d\\d\\b|\\b300\\b)$", // 修改了正则表达式，让其正确匹配0-300的数值
             message: this.$t("system_parameter_setting.front_error"),
             trigger: "blur",
-            required: true,
           },
         ],
         msgTimeOut: [
@@ -104,7 +102,6 @@ export default {
             pattern: "^([1-9]|[1-9][0-9]|[1-2][0-9][0-9]|3[0-5][0-9]|36[0-5])$",
             message: this.$t("system_parameter_setting.msg_error"),
             trigger: "blur",
-            required: true,
           },
         ],
       },

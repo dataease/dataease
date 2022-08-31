@@ -51,7 +51,6 @@ public class PermissionService {
                 lists.forEach(chartCustomFilterDTO -> {
                     chartCustomFilterDTO.setFieldId(field.getId());
                     if(datasetRowPermissions.getAuthTargetType().equalsIgnoreCase("sysParams")){
-                        System.out.println(values.get(chartCustomFilterDTO.getValue()).toString());
                         chartCustomFilterDTO.setValue(values.get(chartCustomFilterDTO.getValue()).toString());
                     }
                 });

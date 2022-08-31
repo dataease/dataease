@@ -4,10 +4,10 @@
       <span v-if="isEdit" :title="$t('panel.edit')">
         <i class="icon iconfont icon-edit" @click.stop="edit" />
       </span>
-      <span :title="$t('panel.details')">
+      <span v-show="detailsShow" :title="$t('panel.details')">
         <i class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
       </span>
-      <span :title="$t('panel.enlarge')">
+      <span v-show="enlargeShow" :title="$t('panel.enlarge')">
         <i class="icon iconfont icon-fangda" @click.stop="showViewDetails('enlarge')" />
       </span>
     </div>
@@ -63,6 +63,12 @@ export default {
     }
   },
   computed: {
+    detailsShow(){
+      return this.element.propValue.innerType !== 'richTextView'
+    },
+    enlargeShow(){
+      return this.element.propValue.innerType !== 'richTextView'
+    },
     // gapStyle() {
     //   return {
     //     'right': this.curGap + 'px!important'
@@ -149,7 +155,7 @@ export default {
     padding-left: 3px!important;
     padding-right: 0px!important;
     cursor:pointer!important;
-    background-color: #3370ff;
+    background-color: var(--primary,#3370ff);
   }
   .bar-main i{
     color: white;

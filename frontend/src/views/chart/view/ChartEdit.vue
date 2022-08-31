@@ -375,7 +375,7 @@
                           $t('chart.drag_block_word_cloud_label')
                         }}</span>
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
-                        /
+                        <span v-show="view.type !== 'richTextView'"> / </span>
                         <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
                         <span
                           v-else-if="view.type && view.type === 'table-info'"
@@ -502,7 +502,7 @@
                         <span v-else-if="view.type && view.type === 'word-cloud'">{{
                           $t('chart.drag_block_word_cloud_size')
                         }}</span>
-                        /
+                        <span v-show="view.type !== 'richTextView'"> / </span>
                         <span>{{ $t('chart.quota') }}</span>
                       </span>
                       <draggable

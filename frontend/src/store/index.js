@@ -244,6 +244,21 @@ const data = {
       })
     },
 
+    clearAllViewFilter(state) {
+      state.componentData.forEach(item => {
+        if (item.type === 'view' && item.filters && item.filters.length) {
+          item.filters = []
+        }
+        if (item.type === 'de-tabs' && item.options.tabList && item.options.tabList.length) {
+          item.options.tabList.forEach(tab => {
+            if (tab.content && tab.content.type === 'view' && tab.content.filters && tab.content.filters.length) {
+              tab.content.filters = []
+            }
+          })
+        }
+      })
+    },
+
     addViewFilter(state, data) {
       const condition = formatCondition(data)
       const vValid = valueValid(condition)
@@ -505,6 +520,7 @@ const data = {
     },
     // 启用移动端布局
     openMobileLayout(state) {
+      this.commit('clearAllViewFilter')
       state.componentDataCache = null
       state.componentDataCache = JSON.stringify(state.componentData)
       state.pcComponentData = state.componentData

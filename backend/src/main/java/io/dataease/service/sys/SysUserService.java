@@ -140,7 +140,6 @@ public class SysUserService {
         sysUser.setLanguage("zh_CN");
         sysUser.setFrom(3);
         sysUser.setIsAdmin(false);
-        // sysUser.setSub(ssoUserInfo.getSub());
         sysUserMapper.insert(sysUser);
         SysUser dbUser = findOne(sysUser);
         if (null != dbUser && null != dbUser.getUserId()) {

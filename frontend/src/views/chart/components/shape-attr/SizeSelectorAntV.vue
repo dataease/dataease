@@ -384,9 +384,9 @@
             @change="changeBarSizeCase('gaugeEndAngle')"
           />
         </el-form-item>
-        <el-form-item v-show="showProperty('gaugeTickCount')" :label="$t('chart.tick_count')" class="form-item form-item-slider">
-          <el-input-number v-model="sizeForm.gaugeTickCount" :min="1" :step="1" :precision="0" size="mini" @change="changeBarSizeCase('gaugeTickCount')" />
-        </el-form-item>
+<!--        <el-form-item v-show="showProperty('gaugeTickCount')" :label="$t('chart.tick_count')" class="form-item form-item-slider">-->
+<!--          <el-input-number v-model="sizeForm.gaugeTickCount" :min="1" :step="1" :precision="0" size="mini" @change="changeBarSizeCase('gaugeTickCount')" />-->
+<!--        </el-form-item>-->
       </el-form>
       <!--gauge-end-->
 

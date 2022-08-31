@@ -836,7 +836,9 @@ export default {
     delete_this_category: '確定删除該分類嗎？',
     edit_template: '編輯模版',
     edit_classification: '編輯分類',
-    classification_name: '分類名稱'
+    classification_name: '分類名稱',
+    by_event_details: '通過事件詳情蒐索',
+    password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
     rich_text_view_result_tips: '富文本只选取第一条结果',
@@ -2458,5 +2460,7 @@ export default {
     attr: '屬性',
     empty: '無數據',
     please_select_map: '請先選擇地圖範圍'
-  }
+  },
+  'I18N_USER_TEMPLATE_ERROR': '模版錯誤',
+  'i18n_max_user_import_size': '文件最大不能超過10M'
 }

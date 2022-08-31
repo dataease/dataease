@@ -29,7 +29,6 @@ public class SystemInitListener implements ApplicationListener<ApplicationReadyE
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        System.out.println("=====initSystem from code [Start]=====");
         logger.info("=====initSystem from code [Start]=====");
         Integer dataeseVersion = versionMapper.lastSuccessDataEaseVersion();
         Integer dataeseCodeVersion = versionMapper.lastDataEaseCodeVersion();
@@ -51,8 +50,6 @@ public class SystemInitListener implements ApplicationListener<ApplicationReadyE
             codeVersionMapper.insert(codeVersion);
         }
         logger.info("=====initSystem from code [End]=====");
-        System.out.println("=====initSystem from code [End]=====");
-
 
     }
 }

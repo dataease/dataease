@@ -114,6 +114,7 @@
                   controls-position="right"
                   :min="1"
                   size="small"
+                  @change="onSimpleCronChange()"
                 ></el-input-number>
                 <el-select
                   v-model="taskForm.extraData.simple_cron_type"
@@ -232,7 +233,6 @@ import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/hint/sql-hint";
 import "codemirror/addon/hint/show-hint";
 import TableSelector from "./TableSelector";
-import { log } from "@antv/g2plot/lib/utils";
 
 export default {
   components: { cron, codemirror, TableSelector, DeLayoutContent },
@@ -590,11 +590,11 @@ export default {
       box-sizing: border-box;
       padding: 20px;
       width: 100%;
-      background: #f5f6f7;
+      background-color: var(--MainBG, #f5f6f7);
       border-radius: 4px;
 
       .el-input__inner {
-        background: #ffffff !important;
+        background: var(--ContentBG, #ffffff) !important;
       }
 
       .el-date-editor {
@@ -607,7 +607,7 @@ export default {
       width: 100%;
       border-radius: 4px;
       padding: 20px;
-      background: #f5f6f7;
+      background-color: var(--MainBG, #f5f6f7);
 
       .param-title {
         width: 100%;
@@ -641,7 +641,7 @@ export default {
   height: 80px;
   bottom: 0;
   right: 24px;
-  background: #ffffff;
+  background-color: var(--MainBG, #fff);
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.08);
   display: flex;
   justify-content: center;
