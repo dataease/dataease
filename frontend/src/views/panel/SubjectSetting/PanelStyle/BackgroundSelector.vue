@@ -52,6 +52,8 @@ import { mapState } from 'vuex'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
+import {imgUrlTrans} from "@/components/canvas/utils/utils";
+
 
 export default {
   name: 'BackgroundSelector',
@@ -77,7 +79,7 @@ export default {
     // 初始化赋值
     this.panel = this.canvasStyleData.panel
     if (this.panel.imageUrl && typeof (this.panel.imageUrl) === 'string') {
-      this.fileList.push({ url: this.panel.imageUrl })
+      this.fileList.push({ url: imgUrlTrans(this.panel.imageUrl) })
     }
   },
   methods: {
@@ -111,7 +113,7 @@ export default {
       uploadFileResult(file.file, (fileUrl) => {
         _this.$store.commit('canvasChange')
         _this.panel.imageUrl = fileUrl
-        _this.fileList = [{ url: this.panel.imageUrl }]
+        _this.fileList = [{ url: imgUrlTrans(this.panel.imageUrl) }]
         _this.commitStyle()
       })
     },

@@ -505,7 +505,7 @@
               row-key="jsonPath"
               ref="apiItemTable"
             >
-              <el-table-column prop="originName" :label="$t('dataset.parse_filed')" :show-overflow-tooltip="true"
+              <el-table-column class-name="checkbox-table" prop="originName" :label="$t('dataset.parse_filed')" :show-overflow-tooltip="true"
                                width="255">
                 <template slot-scope="scope">
                   <el-checkbox
@@ -1365,4 +1365,15 @@ export default {
     text-overflow: ellipsis;
   }
 }
+.checkbox-table {
+  .el-checkbox {
+    display: flex;
+    align-items: center;
+    .el-checkbox__input {
+      margin-top: 4px;
+    }
+  }
+}
 </style>
+
+
