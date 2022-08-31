@@ -307,7 +307,7 @@ export default {
       if (this.activeStatus.length) {
         let str = `${this.$t("kettle.status")}:${this.activeStatus.reduce(
           (pre, next) =>
-            (this.status.find((ele) => ele.id === next) || {}).label +
+            this.$t((this.status.find((ele) => ele.id === next) || {}).label) +
             "、" +
             pre,
           ""
