@@ -114,7 +114,6 @@
           <template slot-scope="scope">
             <span>
               <el-link
-                style="font-size: 12px"
                 @click="jumpTaskRecord(scope.row)"
                 >{{ scope.row.name }}</el-link
               >
@@ -122,7 +121,8 @@
           </template>
         </el-table-column>
         <el-table-column
-          width="178"
+          min-width="178"
+          key="datasetName"
           prop="datasetName"
           :label="$t('dataset.task.dataset')"
         />
@@ -654,10 +654,6 @@ export default {
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow: hidden;
-}
-
-span {
-  font-size: 12px;
 }
 </style>
 <style lang="scss" scoped>
