@@ -257,7 +257,7 @@ export default {
       if (id) {
         templateDelete(id).then((response) => {
           this.openMessageSuccess("commons.delete_success");
-          this.getTree();
+          this.showCurrentTemplate(this.currentTemplateId, this.currentTemplateLabel);
         });
       }
     },
@@ -343,7 +343,7 @@ export default {
             this.$refs.templateList.nodeClick(obj);
           });
         } else {
-          this.showCurrentTemplate(this.currentTemplateId);
+          this.showCurrentTemplate(this.currentTemplateId, this.currentTemplateLabel);
         }
       } else {
         this.currentTemplateShowList = [];
