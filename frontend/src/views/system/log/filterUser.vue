@@ -211,7 +211,6 @@ export default {
         this.filterTextMap.push([
           "usersValue",
           "activeUser",
-          "users",
           "userCahe",
         ]);
       }

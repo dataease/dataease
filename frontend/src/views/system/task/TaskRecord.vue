@@ -100,7 +100,7 @@
               v-if="scope.row.status"
               :class="[`de-${scope.row.status}`, 'de-status']"
               >{{ $t(`dataset.${scope.row.status.toLocaleLowerCase()}`) }}
-            <svg-icon style="cursor: pointer;" v-if="scope.row.status === 'Error'"  @click="showErrorMassage(scope.row.msg)" icon-class="icon-maybe" class="field-icon-location" />
+            <svg-icon style="cursor: pointer;" v-if="scope.row.status === 'Error'"  @click="showErrorMassage(scope.row.info)" icon-class="icon-maybe" class="field-icon-location" />
             </span>
             <span v-else>-</span>
           </template>
