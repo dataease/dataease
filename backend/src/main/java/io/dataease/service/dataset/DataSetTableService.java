@@ -1032,7 +1032,7 @@ public class DataSetTableService {
         }
         Expression expr = plainSelect.getWhere();
         if (expr == null) {
-            return plainSelect.toString();
+            return handleWith(plainSelect, select);
         }
         StringBuilder stringBuilder = new StringBuilder();
         BinaryExpression binaryExpression = null;
@@ -1046,7 +1046,10 @@ public class DataSetTableService {
             expr.accept(getExpressionDeParser(stringBuilder));
         }
         plainSelect.setWhere(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
+        return handleWith(plainSelect, select);
+    }
 
+    private String handleWith(PlainSelect plainSelect, Select select)throws Exception{
         StringBuilder builder = new StringBuilder();
         if (CollectionUtils.isNotEmpty(select.getWithItemsList())) {
             builder.append("WITH");
@@ -1063,7 +1066,6 @@ public class DataSetTableService {
         builder.append(" " + plainSelect);
         return builder.toString();
     }
-
     public Map<String, Object> getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
         if (ds == null) {
