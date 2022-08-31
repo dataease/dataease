@@ -41,6 +41,9 @@ public class VAuthModelService {
     }
 
     private List<VAuthModelDTO> filterPrivileges(VAuthModelRequest request, List<VAuthModelDTO> result) {
+        if(AuthUtils.getUser().getIsAdmin()){
+            return result;
+        }
         if (request.getPrivileges() != null) {
             result = result.stream().filter(vAuthModelDTO -> {
                 if (vAuthModelDTO.getNodeType().equalsIgnoreCase("spine") || (vAuthModelDTO.getNodeType().equalsIgnoreCase("leaf") && vAuthModelDTO.getPrivileges() != null && vAuthModelDTO.getPrivileges().contains(request.getPrivileges()))) {
