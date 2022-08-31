@@ -41,12 +41,8 @@
       <div v-for="ele in data" :key="ele.pluginId" class="de-card-plugin">
         <div class="card-info">
           <div class="info-top">
-            <!-- <img
-              :src="`https://de.fit2cloud.com/api/pluginCommon/staticInfo/${ele.moduleName}/svg`"
-              alt=""
-            /> -->
             <el-image
-              :src="`https://de.fit2cloud.com/api/pluginCommon/staticInfo/${ele.moduleName}/svg`"
+              :src="`/api/pluginCommon/staticInfo/${ele.moduleName}/svg`"
             >
               <div slot="error" class="image-slot">
                 <img  :src="imgDefault"/>
