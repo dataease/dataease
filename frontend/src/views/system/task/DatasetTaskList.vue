@@ -918,7 +918,7 @@ span {
     cursor: pointer;
   }
 }
-.f14 {
+.f14:not(.is-leaf) {
   .cell {
     font-size: 12px !important;
   }
