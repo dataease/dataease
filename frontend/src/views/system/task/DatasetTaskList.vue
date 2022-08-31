@@ -124,6 +124,7 @@
         </el-table-column>
         <el-table-column
           min-width="178"
+          class-name="f14"
           key="datasetName"
           prop="datasetName"
           :label="$t('dataset.task.dataset')"
@@ -915,6 +916,11 @@ span {
   .el-icon-s-order {
     color: var(--primary, #3370ff);
     cursor: pointer;
+  }
+}
+.f14 {
+  .cell {
+    font-size: 12px !important;
   }
 }
 </style>

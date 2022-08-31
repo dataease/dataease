@@ -2200,7 +2200,8 @@ export default {
     i18n_msg_type_dataset_sync_faild: 'Dataset synchronization failed',
     i18n_msg_type_all: 'All type',
     i18n_msg_type_ds_invalid: 'Datasource invalid',
-    channel_inner_msg: 'On site news'
+    channel_inner_msg: 'On site news',
+    channel_email_msg: 'Mail notification'
   },
   denumberrange: {
     label: 'Number range',
