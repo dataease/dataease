@@ -45,7 +45,8 @@
   }
   if (attachParams) {
     console.log('attachParams-bf:'+attachParams+';-af:'+encodeURIComponent(attachParams))
-    url += '&attachParams=' + encodeURIComponent(attachParams)
+    // url += '&attachParams=' + encodeURIComponent(attachParams)
+    url += '&attachParams=' + attachParams
 
   }
   window.location.href = url

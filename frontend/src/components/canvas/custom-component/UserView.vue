@@ -733,6 +733,7 @@ export default {
     },
     getData(id, cache = true) {
       console.log('getData...,走的获取数据的通道', this.templateStatus, this.isStylePriority, this.canvasStyleData)
+      console.log('getLocal',localStorage.getItem('permissionId'))
       if (id) {
         // this.requestStatus = 'waiting'
         this.message = null
