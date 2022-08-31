@@ -84,3 +84,9 @@ BEGIN;
 DELETE from `sys_menu` where `menu_id` = 55;
 DELETE from `sys_menu` where `menu_id` = 56;
 COMMIT;
+
+BEGIN;
+UPDATE `my_plugin` set cost = '60000', `creator` = 'DATAEASE' WHERE `module_name` = 'deplugin-xpack-backend';
+UPDATE `my_plugin` set cost = '0', `creator` = 'DATAEASE' WHERE `module_name` = 'view-bubblemap-backend';
+UPDATE `my_plugin` set cost = '0', `creator` = 'DATAEASE' WHERE `module_name` = 'view-symbolmap-backend';
+COMMIT;
