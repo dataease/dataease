@@ -325,27 +325,27 @@ public class ExtractDataService {
                     try {
                         deleteFile("all_scope", datasetTableId);
                     } catch (Exception ignore) {
-                        System.out.println(ignore.getMessage());
+                        LogUtil.error(ignore);
                     }
                     try {
                         sendWebMsg(datasetTable, datasetTableTask, datasetTableTaskLog, msg);
                     } catch (Exception ignore) {
-                        System.out.println(ignore.getMessage());
+                        LogUtil.error(ignore);
                     }
                     try {
                         updateTableStatus(datasetTableId, lastExecStatus, execTime);
                     } catch (Exception ignore) {
-                        System.out.println(ignore.getMessage());
+                        LogUtil.error(ignore);
                     }
                     try {
                         dataSetTableTaskService.updateTaskStatus(datasetTableTask, lastExecStatus);
                     } catch (Exception ignore) {
-                        System.out.println(ignore.getMessage());
+                        LogUtil.error(ignore);
                     }
                     try {
                         dropDorisTable(TableUtils.tmpName(TableUtils.tableName(datasetTableId)));
                     } catch (Exception ignore) {
-                        System.out.println(ignore.getMessage());
+                        LogUtil.error(ignore);
                     }
                 }
                 break;
