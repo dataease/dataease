@@ -38,6 +38,9 @@ public class ViewExportExcel {
     private Type tokenType = new TypeToken<List<Map<String, Object>>>() {
     }.getType();
 
+    private Type fieldTokenType = new TypeToken<List<ChartViewFieldDTO>>() {
+    }.getType();
+
     @DePermissionProxy(paramIndex = 2)
     public List<File> export(String panelId, List<String> viewIds, PermissionProxy proxy) throws Exception {
         if (CollectionUtils.isEmpty(viewIds)) {
@@ -91,7 +94,7 @@ public class ViewExportExcel {
         Map<String, Object> chart = chartViewDTO.getData();
 
         Object objectFields = chart.get("fields");
-        List<ChartViewFieldDTO> fields = (List<ChartViewFieldDTO>) objectFields;
+        List<ChartViewFieldDTO> fields = gson.fromJson(gson.toJson(objectFields), fieldTokenType);
         List<String> heads = new ArrayList<>();
         List<String> headKeys = new ArrayList<>();
         fields.forEach(field -> {
