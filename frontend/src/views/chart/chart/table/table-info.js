@@ -581,8 +581,8 @@ function mappingColor(value, defaultColor, field, type) {
       }
     } else {
       // time
-      const tv = new Date(t.value + ' GMT+8').getTime()
-      const v = new Date(value + ' GMT+8').getTime()
+      const tv = new Date(t.value.replace(/-/g, '/') + ' GMT+8').getTime()
+      const v = new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
       if (t.term === 'eq') {
         if (v === tv) {
           color = t[type]

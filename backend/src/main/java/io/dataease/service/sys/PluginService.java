@@ -78,12 +78,10 @@ public class PluginService {
         String folder = pluginDir + "folder/";
         try {
             ZipUtil.unzip(dest.getAbsolutePath(), folder);
-            // ZipUtils.unzip(dest, folder);
         } catch (Exception e) {
             DeFileUtils.deleteFile(pluginDir + "temp/");
             DeFileUtils.deleteFile(folder);
             // 需要删除文件
-            // e.printStackTrace();
             LogUtil.error(e.getMessage(), e);
             DEException.throwException(e);
         }
@@ -261,7 +259,6 @@ public class PluginService {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-        //BeanUtils.copyBean(result, myPlugin);
         if(result.getCategory().equalsIgnoreCase("datasource") && (StringUtils.isEmpty(result.getStore()) || !result.getStore().equalsIgnoreCase("default"))){
             result.setStore("thirdpart");
         }

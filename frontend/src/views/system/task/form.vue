@@ -114,6 +114,7 @@
                   controls-position="right"
                   :min="1"
                   size="small"
+                  @change="onSimpleCronChange()"
                 ></el-input-number>
                 <el-select
                   v-model="taskForm.extraData.simple_cron_type"

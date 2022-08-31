@@ -952,9 +952,10 @@ public class DataSetTableService {
         List<String> sqlVariableNames = new ArrayList<>();
         datasetTables.forEach(datasetTable -> {
             if (StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())) {
-                List<SqlVariableDetails> sqlVariables = new Gson().fromJson(datasetTable.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
+                List<SqlVariableDetails> sqlVariables = new Gson().fromJson(datasetTable.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
+                }.getType());
                 for (SqlVariableDetails sqlVariable : sqlVariables) {
-                    if(!sqlVariableNames.contains(sqlVariable.getVariableName())){
+                    if (!sqlVariableNames.contains(sqlVariable.getVariableName())) {
                         sqlVariableNames.add(sqlVariable.getVariableName());
                         sqlVariableDetails.add(sqlVariable);
                     }
@@ -1023,7 +1024,7 @@ public class DataSetTableService {
         if (fromItem instanceof SubSelect) {
             SelectBody selectBody = ((SubSelect) fromItem).getSelectBody();
             SubSelect subSelect = new SubSelect();
-            Select subSelectTmp =  (Select)CCJSqlParserUtil.parse(removeVariables(selectBody.toString()));
+            Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString()));
             PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
             subSelect.setSelectBody(subPlainSelect);
             subSelect.setAlias(new Alias(fromItem.getAlias().toString()));
@@ -1488,7 +1489,7 @@ public class DataSetTableService {
                     TableUtils.tableName(union.get(0).getCurrentDs().getId()));
         }
         Map<String, Object> map = new HashMap<>();
-        map.put("sql", java.util.Base64.getEncoder().encodeToString(sql.getBytes()));
+        map.put("sql", sql);
         map.put("field", checkedFields);
         map.put("join", unionList);
         return map;
@@ -2603,60 +2604,60 @@ public class DataSetTableService {
 
             @Override
             public void visit(Between between) {
-                if(hasVarible(between.getBetweenExpressionStart().toString()) || hasVarible(between.getBetweenExpressionEnd().toString())){
+                if (hasVarible(between.getBetweenExpressionStart().toString()) || hasVarible(between.getBetweenExpressionEnd().toString())) {
                     getBuffer().append(SubstitutedSql);
-                }else {
+                } else {
                     getBuffer().append(between.getLeftExpression()).append(" BETWEEN ").append(between.getBetweenExpressionStart()).append(" AND ").append(between.getBetweenExpressionEnd());
                 }
             }
 
             @Override
             public void visit(MinorThan minorThan) {
-                if(hasVarible(minorThan.getLeftExpression().toString()) || hasVarible(minorThan.getRightExpression().toString())){
+                if (hasVarible(minorThan.getLeftExpression().toString()) || hasVarible(minorThan.getRightExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                     return;
                 }
                 getBuffer().append(minorThan.getLeftExpression());
                 getBuffer().append(" < ");
-                getBuffer().append( minorThan.getRightExpression());
+                getBuffer().append(minorThan.getRightExpression());
             }
 
             @Override
             public void visit(MinorThanEquals minorThan) {
-                if(hasVarible(minorThan.getLeftExpression().toString()) || hasVarible(minorThan.getRightExpression().toString())){
+                if (hasVarible(minorThan.getLeftExpression().toString()) || hasVarible(minorThan.getRightExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                     return;
                 }
                 getBuffer().append(minorThan.getLeftExpression());
                 getBuffer().append(" <= ");
-                getBuffer().append( minorThan.getRightExpression());
+                getBuffer().append(minorThan.getRightExpression());
             }
 
             @Override
             public void visit(GreaterThanEquals minorThan) {
-                if(hasVarible(minorThan.getLeftExpression().toString()) || hasVarible(minorThan.getRightExpression().toString())){
+                if (hasVarible(minorThan.getLeftExpression().toString()) || hasVarible(minorThan.getRightExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                     return;
                 }
                 getBuffer().append(minorThan.getLeftExpression());
                 getBuffer().append(" >= ");
-                getBuffer().append( minorThan.getRightExpression());
+                getBuffer().append(minorThan.getRightExpression());
             }
 
             @Override
             public void visit(GreaterThan greaterThan) {
-                if(hasVarible(greaterThan.getLeftExpression().toString()) || hasVarible(greaterThan.getRightExpression().toString())){
+                if (hasVarible(greaterThan.getLeftExpression().toString()) || hasVarible(greaterThan.getRightExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                     return;
                 }
                 getBuffer().append(greaterThan.getLeftExpression());
                 getBuffer().append(" > ");
-                getBuffer().append( greaterThan.getRightExpression());
+                getBuffer().append(greaterThan.getRightExpression());
             }
 
             @Override
             public void visit(ExpressionList expressionList) {
-                for (Iterator<Expression> iter = expressionList.getExpressions().iterator(); iter.hasNext();) {
+                for (Iterator<Expression> iter = expressionList.getExpressions().iterator(); iter.hasNext(); ) {
                     Expression expression = iter.next();
                     expression.accept(this);
                     if (iter.hasNext()) {
@@ -2732,7 +2733,9 @@ public class DataSetTableService {
                 try {
                     BinaryExpression leftBinaryExpression = (BinaryExpression) expr.getLeftExpression();
                     hasSubBinaryExpression = leftBinaryExpression.getLeftExpression() instanceof BinaryExpression;
-                } catch (Exception e) {e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 if (expr.getLeftExpression() instanceof BinaryExpression && !hasSubBinaryExpression && hasVarible(expr.getLeftExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
@@ -2750,7 +2753,7 @@ public class DataSetTableService {
                 }
                 if (expr.getRightExpression() instanceof BinaryExpression && !hasSubBinaryExpression && hasVarible(expr.getRightExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
-                }  else {
+                } else {
                     expr.getRightExpression().accept(this);
                 }
             }

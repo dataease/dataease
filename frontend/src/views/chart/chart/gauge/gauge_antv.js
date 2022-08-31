@@ -7,7 +7,7 @@ import { valueFormatter } from '@/views/chart/chart/formatter'
 let labelFormatter = null
 
 export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
-  let min, max, labelContent, startAngel, endAngel, tickCount
+  let min, max, labelContent, startAngel, endAngel
   // theme
   const theme = getTheme(chart)
   // data
@@ -31,7 +31,6 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
         min = size.gaugeMin ? size.gaugeMin : DEFAULT_SIZE.gaugeMin
         max = size.gaugeMax ? size.gaugeMax : DEFAULT_SIZE.gaugeMax
       }
-      tickCount = size.gaugeTickCount ? size.gaugeTickCount : DEFAULT_SIZE.gaugeTickCount
       startAngel = parseInt(size.gaugeStartAngle) * Math.PI / 180
       endAngel = parseInt(size.gaugeEndAngle) * Math.PI / 180
     }
@@ -101,13 +100,13 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
       content: labelContent
     },
     axis: {
-      tickInterval: 1 / tickCount,
+      tickInterval: 0.2,
       label: {
         style: {
           fontSize: getScaleValue(14, scale) // 刻度值字体大小
         },
         formatter: function(v) {
-          return Number(v) * (max - min) + min
+          return v === '0' ? v : (v * 100 + '%')
         }
       },
       tickLine: {

@@ -294,7 +294,6 @@ public class MongoQueryProvider extends QueryProvider {
         }
         if (CollectionUtils.isNotEmpty(yFields)) {
             st_sql.add("aggregators", yFields);
-//            st_sql.add("notUseAs", true);
         }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
@@ -497,7 +496,6 @@ public class MongoQueryProvider extends QueryProvider {
         }
         if (CollectionUtils.isNotEmpty(yFields)) {
             st_sql.add("aggregators", yFields);
-//            st_sql.add("notUseAs", true);
         }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
@@ -616,7 +614,6 @@ public class MongoQueryProvider extends QueryProvider {
         }
         if (CollectionUtils.isNotEmpty(yFields)) {
             st_sql.add("aggregators", yFields);
-//            st_sql.add("notUseAs", true);
         }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
@@ -704,7 +701,6 @@ public class MongoQueryProvider extends QueryProvider {
         ST st_sql = stg.getInstanceOf("querySql");
         if (CollectionUtils.isNotEmpty(yFields)) {
             st_sql.add("aggregators", yFields);
-//            st_sql.add("notUseAs", true);
         }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);

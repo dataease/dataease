@@ -18,7 +18,7 @@
               >
 
                 <v-flex v-for="(item,index) in element.options.attrs.dragItems" :key="item.id">
-                  <drag-item :key="item.id" :is-sort-widget="isSortWidget" :item="item" :index="index" :sort="element.options.attrs.sort" :all-fields="index ? [] : fieldsMap[item.tableId]" @closeItem="closeItem" @sort-change="sortChange" />
+                  <drag-item :key="item.id" :is-sort-widget="isSortWidget" :item="item" :index="index" :sort="element.options.attrs.sort" :all-fields="index ? [] : tableFields" @closeItem="closeItem" @sort-change="sortChange" />
                 </v-flex>
 
                 <span solt="footer">{{ $t('panel.drag_here') }}</span>
@@ -34,6 +34,8 @@
 <script>
 import draggable from 'vuedraggable'
 import DragItem from '@/components/DragItem'
+import { fieldListWithPermission } from '@/api/dataset/dataset'
+
 export default {
   name: 'FilterHead',
   components: {
@@ -45,10 +47,7 @@ export default {
       type: Object,
       default: () => {}
     },
-    tableFieldsMap: {
-      type: Object,
-      default: () => {}
-    },
+
     widget: {
       type: Object,
       default: null
@@ -56,25 +55,42 @@ export default {
   },
   data() {
     return {
-      targets: []
+      targets: [],
+      tableFields: []
     }
   },
   computed: {
     isSortWidget() {
       return this.widget && this.widget.isSortWidget && this.widget.isSortWidget()
     },
-    fieldsMap() {
-      return JSON.parse(JSON.stringify(this.tableFieldsMap))
+
+    firstTableId() {
+      if (!this.isSortWidget) return null
+      if (this.element.options.attrs.dragItems && this.element.options.attrs.dragItems.length) {
+        return this.element.options.attrs.dragItems[0].tableId
+      }
+      return null
     }
   },
 
   watch: {
-
+    firstTableId(val, old) {
+      if (val !== old) {
+        this.loadFields()
+      }
+    }
   },
   created() {
-
+    if (this.isSortWidget && this.element.options.attrs.dragItems && this.element.options.attrs.dragItems.length) {
+      this.loadFields()
+    }
   },
   methods: {
+    loadFields() {
+      fieldListWithPermission(this.firstTableId).then(res => {
+        this.tableFields = JSON.parse(JSON.stringify(res.data))
+      })
+    },
     onMove(e, originalEvent) {
       return true
     },

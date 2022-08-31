@@ -213,8 +213,8 @@ public class ApiProvider extends Provider {
                 if (StringUtils.isNotEmpty(value) && value.startsWith("[")) {
 
                     JSONObject o = new JSONObject();
-                    JSONArray jsonArray = jsonObject.getJSONArray(s);
                     try {
+                        JSONArray jsonArray = jsonObject.getJSONArray(s);
                         List<JSONObject> childrenField = new ArrayList<>();
                         for (Object object: jsonArray) {
                             JSONObject.parseObject(object.toString());
