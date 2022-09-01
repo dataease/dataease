@@ -1373,6 +1373,11 @@ export default {
       margin-top: 4px;
     }
   }
+
+  .cell.el-tooltip {
+    display: flex;
+    align-items: center;
+  }
 }
 </style>
 
