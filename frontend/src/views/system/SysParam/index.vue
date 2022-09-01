@@ -8,66 +8,63 @@
           :lazy="true"
           :label="$t('system_parameter_setting.basic_setting')"
           name="zero"
-        >
-        </el-tab-pane>
+        />
 
         <el-tab-pane
           :lazy="true"
           :label="$t('system_parameter_setting.mailbox_service_settings')"
           name="first"
-        >
-        </el-tab-pane>
+        />
 
-        <el-tab-pane :lazy="true" :label="$t('sysParams.map')" name="ten">
-        </el-tab-pane>
+        <el-tab-pane :lazy="true" :label="$t('sysParams.map')" name="ten" />
 
         <el-tab-pane
           v-if="isPluginLoaded"
           :lazy="true"
           :label="$t('sysParams.ldap')"
           name="fourth"
-        >
-        </el-tab-pane>
+        />
 
         <el-tab-pane
           v-if="isPluginLoaded"
           :lazy="true"
           :label="$t('sysParams.oidc')"
           name="five"
-        >
-        </el-tab-pane>
+        />
 
         <el-tab-pane
           v-if="engineMode === 'simple'"
           :lazy="true"
           :label="$t('system_parameter_setting.engine_mode_setting')"
           name="six"
-        >
-        </el-tab-pane>
+        />
 
         <el-tab-pane
           v-if="engineMode === 'cluster'"
           :lazy="true"
           :label="$t('system_parameter_setting.engine_mode_setting')"
           name="seven"
-        >
-        </el-tab-pane>
+        />
 
         <el-tab-pane
           v-if="engineMode === 'cluster'"
           :lazy="true"
           :label="$t('system_parameter_setting.kettle_setting')"
           name="eight"
-        >
-        </el-tab-pane>
+        />
 
         <el-tab-pane
           v-if="isPluginLoaded"
           :lazy="true"
           :label="$t('sysParams.cas')"
           name="nine"
-        >
-        </el-tab-pane>
+        />
+        <el-tab-pane
+          v-if="isPluginLoaded"
+          :lazy="true"
+          :label="$t('wecom.title')"
+          name="eleven"
+        />
       </el-tabs>
       <div
         class="tabs-container"
@@ -95,22 +92,27 @@
             ref="CasSetting"
             component-name="CasSetting"
           />
+          <plugin-com
+            v-if="activeName === 'eleven'"
+            ref="WecomSetting"
+            component-name="WecomSetting"
+          />
         </div>
       </div>
     </div>
   </de-layout-content>
 </template>
 <script>
-import BasicSetting from "./BasicSetting";
-import MapSetting from "./MapSetting";
-import EmailSetting from "./EmailSetting";
-import SimpleMode from "./SimpleModeSetting";
-import ClusterMode from "./ClusterModeSetting";
-import KettleSetting from "./KettleSetting";
-import DeLayoutContent from "@/components/business/DeLayoutContent";
-import PluginCom from "@/views/system/plugin/PluginCom";
-import { pluginLoaded } from "@/api/user";
-import { engineMode } from "@/api/system/engine";
+import BasicSetting from './BasicSetting'
+import MapSetting from './MapSetting'
+import EmailSetting from './EmailSetting'
+import SimpleMode from './SimpleModeSetting'
+import ClusterMode from './ClusterModeSetting'
+import KettleSetting from './KettleSetting'
+import DeLayoutContent from '@/components/business/DeLayoutContent'
+import PluginCom from '@/views/system/plugin/PluginCom'
+import { pluginLoaded } from '@/api/user'
+import { engineMode } from '@/api/system/engine'
 export default {
   components: {
     BasicSetting,
@@ -120,31 +122,31 @@ export default {
     SimpleMode,
     ClusterMode,
     KettleSetting,
-    MapSetting,
+    MapSetting
   },
   data() {
     return {
-      activeName: "zero",
+      activeName: 'zero',
       isPluginLoaded: false,
-      engineMode: "local",
-    };
+      engineMode: 'local'
+    }
+  },
+  computed: {
+    btnList() {}
   },
   beforeCreate() {
     pluginLoaded().then((res) => {
-      this.isPluginLoaded = res.success && res.data;
-    });
+      this.isPluginLoaded = res.success && res.data
+    })
     engineMode().then((res) => {
-      this.engineMode = res.data;
-    });
-  },
-  computed: {
-    btnList() {},
+      this.engineMode = res.data
+    })
   },
   methods: {
     handlerBtn(btn) {
-    },
-  },
-};
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 .sys-setting {
