@@ -289,13 +289,13 @@ public class DatasourceService {
                     return ResultHolder.success(datasourceDTO);
                 }
                 if (success > 0 && success < apiDefinitionList.size()) {
-                    return ResultHolder.error("Datasource has invalid tables", datasourceDTO);
+                    return ResultHolder.error(Translator.get("I18N_DS_INVALID_TABLE") , datasourceDTO);
                 }
-                return ResultHolder.error("Datasource is invalid.", datasourceDTO);
+                return ResultHolder.error(Translator.get("I18N_DS_INVALID") , datasourceDTO);
             }
             return ResultHolder.success(datasourceDTO);
         } catch (Exception e) {
-            return ResultHolder.error("Datasource is invalid: " + e.getMessage());
+            return ResultHolder.error(Translator.get("I18N_DS_INVALID"), e.getMessage());
         }
     }
 
@@ -327,15 +327,15 @@ public class DatasourceService {
                     return ResultHolder.success(datasource);
                 }
                 if (success > 0 && success < apiDefinitionList.size()) {
-                    return ResultHolder.error("Datasource has invalid tables", datasource);
+                    return ResultHolder.error(Translator.get("I18N_DS_INVALID_TABLE"), datasource);
                 }
-                return ResultHolder.error("Datasource is invalid.", datasource);
+                return ResultHolder.error(Translator.get("I18N_DS_INVALID"), datasource);
             }
 
             return ResultHolder.success("Success");
         } catch (Exception e) {
             datasourceStatus = "Error";
-            return ResultHolder.error("Datasource is invalid: " + e.getMessage());
+            return ResultHolder.error(Translator.get("I18N_DS_INVALID"), e.getMessage());
         } finally {
             Datasource record = new Datasource();
             record.setStatus(datasourceStatus);
