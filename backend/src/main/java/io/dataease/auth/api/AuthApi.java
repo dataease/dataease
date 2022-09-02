@@ -62,6 +62,11 @@ public interface AuthApi {
     @PostMapping("/isOpenCas")
     boolean isOpenCas();
 
+
+    @ApiOperation("是否开启企业微信")
+    @PostMapping("/isOpenWecom")
+    boolean isOpenWecom();
+
     @ApiIgnore
     @PostMapping("/isPluginLoaded")
     boolean isPluginLoaded();

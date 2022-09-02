@@ -71,11 +71,11 @@ public class SSOServer {
             SSOUserInfo ssoUserInfo = oidcXpackService.requestUserInfo(config, ssoToken.getAccessToken());
 
 
-            SysUserEntity sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub());
+            SysUserEntity sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub(), 2);
             if (null == sysUserEntity) {
                 sysUserService.validateExistUser(ssoUserInfo.getUsername(), ssoUserInfo.getNickName(), ssoUserInfo.getEmail());
                 sysUserService.saveOIDCUser(ssoUserInfo);
-                sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub());
+                sysUserEntity = authUserService.getUserBySub(ssoUserInfo.getSub(), 2);
             }
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
             String realPwd = sysUserEntity.getPassword();
