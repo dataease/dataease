@@ -37,7 +37,7 @@ export default {
           return pair[1]
         }
       }
-      return (false)
+      return (null)
     }
   }
 }
