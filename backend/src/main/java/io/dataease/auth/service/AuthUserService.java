@@ -16,7 +16,7 @@ public interface AuthUserService {
 
     SysUserEntity getCasUserByName(String username);
 
-    SysUserEntity getUserBySub(String sub);
+    SysUserEntity getUserBySub(String sub, Integer from);
 
     List<String> roles(Long userId);
 
@@ -31,6 +31,8 @@ public interface AuthUserService {
     Boolean supportOidc();
 
     Boolean supportCas();
+
+    Boolean supportWecom();
 
     Boolean pluginLoaded();
 

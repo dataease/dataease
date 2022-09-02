@@ -282,9 +282,17 @@ public class AuthServer implements AuthApi {
         Boolean licValid = PluginUtils.licValid();
         if (!licValid)
             return false;
-        Boolean supportCas = authUserService.supportCas();
 
         return authUserService.supportCas();
+    }
+
+    @Override
+    public boolean isOpenWecom() {
+        Boolean licValid = PluginUtils.licValid();
+        if (!licValid)
+            return false;
+
+        return authUserService.supportWecom();
     }
 
     @Override
