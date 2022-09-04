@@ -1733,7 +1733,9 @@ public class DataSetTableService {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            String sql = handleVariableDefaultValue(new String(java.util.Base64.getDecoder().decode(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getSql())), null);
+            DataTableInfoDTO dataTableInfo = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+            String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
+            sql = handleVariableDefaultValue(sql, null);
             String sqlAsTable = qp.createSQLPreview(sql, null);
             datasourceRequest.setQuery(sqlAsTable);
             fields = datasourceProvider.fetchResultField(datasourceRequest);
