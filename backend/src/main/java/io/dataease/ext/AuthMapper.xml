@@ -55,7 +55,7 @@
     </select>
 
     <select id="findUserBySub" resultMap="baseMap">
-        select user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from` from sys_user where sub = #{sub}
+        select user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from` from sys_user where sub = #{sub} and `from` = #{userFrom}
     </select>
 
     <select id="roleCodes" resultType="String">

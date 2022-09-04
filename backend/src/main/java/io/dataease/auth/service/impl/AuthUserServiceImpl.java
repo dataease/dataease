@@ -18,6 +18,7 @@ import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 
+import io.dataease.plugins.xpack.wecom.service.WecomXpackService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -76,8 +77,8 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
-    public SysUserEntity getUserBySub(String sub) {
-        return authMapper.findUserBySub(sub);
+    public SysUserEntity getUserBySub(String sub, Integer from) {
+        return authMapper.findUserBySub(sub, from);
     }
 
     @Override
@@ -164,6 +165,15 @@ public class AuthUserServiceImpl implements AuthUserService {
         CasXpackService casXpackService = SpringContextUtil.getBean(CasXpackService.class);
         if (ObjectUtils.isEmpty(casXpackService)) return false;
         return casXpackService.suuportCas();
+    }
+
+    @Override
+    public Boolean supportWecom() {
+        Map<String, WecomXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((WecomXpackService.class));
+        if (beansOfType.keySet().size() == 0) return false;
+        WecomXpackService wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);
+        if (ObjectUtils.isEmpty(wecomXpackService)) return false;
+        return wecomXpackService.isOpen();
     }
 
     @Override

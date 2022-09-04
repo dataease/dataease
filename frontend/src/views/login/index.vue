@@ -1,10 +1,16 @@
 <template>
   <div>
+
     <div v-show="contentShow" class="login-background">
+
       <div class="login-container">
         <el-row v-loading="loading" type="flex">
           <el-col :span="12">
-            <el-form ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
+            <div v-show="qrTypes.length" class="trans" @click="showQr">
+              <div v-show="imgAppShow" class="imgApp" />
+            </div>
+            <el-form v-show="!codeShow" ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
+
               <div class="login-logo">
                 <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="DataEase" custom-class="login-logo-icon" />
                 <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="">
@@ -16,8 +22,8 @@
                 {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || ' DataEase') }}
               </div>
               <div class="login-form">
-                <el-form-item v-if="loginTypes.length > 1">
-                  <el-radio-group v-if="loginTypes.length > 1" v-model="loginForm.loginType" @change="changeLoginType">
+                <el-form-item v-if="radioTypes.length > 1">
+                  <el-radio-group v-if="radioTypes.length > 1" v-model="loginForm.loginType" @change="changeLoginType">
                     <el-radio :label="0" size="mini">{{ $t('login.default_login') }}</el-radio>
                     <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
                     <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
@@ -51,6 +57,20 @@
                 {{ msg }}
               </div>
             </el-form>
+            <div v-show="codeShow" class="code">
+              <el-row>
+                <plugin-com v-if="loginTypes.includes(4) && codeIndex === 4" ref="WecomQr" component-name="WecomQr" />
+                <plugin-com v-if="loginTypes.includes(5) && codeIndex === 5" ref="DingtalkQr" component-name="DingtalkQr" />
+                <plugin-com v-if="loginTypes.includes(6) && codeIndex === 6" ref="FarkQr" component-name="FarkQr" />
+              </el-row>
+
+              <div v-if="qrTypes.length > 1" class="login-third-items">
+                <span v-if="qrTypes.includes(4)" class="login-third-item login-third-wecom" @click="switchCodeIndex(4)" />
+                <span v-if="qrTypes.includes(5)" class="login-third-item login-third-dingtalk" @click="switchCodeIndex(5)" />
+                <span v-if="qrTypes.includes(6)" class="login-third-item login-third-fark" @click="switchCodeIndex(6)" />
+              </div>
+
+            </div>
           </el-col>
           <el-col v-loading="!axiosFinished" :span="12">
             <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
@@ -69,7 +89,7 @@
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType } from '@/api/user'
+import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType, wecomStatus } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 import { changeFavicon } from '@/utils/index'
 import { initTheme } from '@/utils/ThemeUtil'
@@ -107,12 +127,21 @@ export default {
       ],
       defaultType: 0,
       showFoot: false,
-      footContent: ''
+      footContent: '',
+      codeShow: false,
+      imgAppShow: true,
+      codeIndex: 4
     }
   },
   computed: {
     msg() {
       return this.$store.state.user.loginMsg
+    },
+    qrTypes() {
+      return this.loginTypes && this.loginTypes.filter(item => item > 3) || []
+    },
+    radioTypes() {
+      return this.loginTypes && this.loginTypes.filter(item => item < 4) || []
     }
   },
   watch: {
@@ -142,6 +171,13 @@ export default {
     oidcStatus().then(res => {
       if (res.success && res.data) {
         this.loginTypes.push(2)
+      }
+      this.setDefaultType()
+    })
+
+    wecomStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(4)
       }
       this.setDefaultType()
     })
@@ -179,6 +215,12 @@ export default {
   },
 
   methods: {
+    switchCodeIndex(codeIndex) {
+      this.codeIndex = codeIndex
+    },
+    showQr() {
+      this.codeShow = !this.codeShow
+    },
     setDefaultType() {
       if (this.loginTypes.includes(this.defaultType)) {
         this.loginForm.loginType = this.defaultType
@@ -412,4 +454,50 @@ export default {
   zoom: 1;
   margin: 0;
 }
+
+.trans {
+  position: absolute;
+  left: calc(50% - 64px);
+  top: 0;
+  width: 64px;
+  height: 64px;
+  background-image: url(../../assets/qrcode.png) ;
+  // background-color:  var(--primary,#3370ff); //图标优化 -- 换为白色线条图标 背景层添加背景色
+  cursor:pointer;
+}
+.imgApp {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(225deg,transparent 45px, #fff 0);
+}
+.code{
+  width: 100%;
+  height: 100%; //将登录框挤出显示区域
+  text-align: center;
+  padding-top: 70px;
+  img {
+    width: 150px;
+    height: 150px;
+    padding: 10px;
+  }
+}
+.login-third-item {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50% 50%;
+  background: #ccc;
+  cursor: pointer;
+  margin: 0 10px;
+}
+.login-third-wecom {
+  background: url(../../assets/wecom.png) no-repeat 50%/cover;
+}
+.login-third-dingtalk {
+  background: url(../../assets/dingding01.png) no-repeat 50%/cover;
+}
+.login-third-fark {
+  background: url(../../assets/fark.png) no-repeat 50%/cover;
+}
+
 </style>

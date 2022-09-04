@@ -100,6 +100,13 @@ export function casStatus() {
   })
 }
 
+export function wecomStatus() {
+  return request({
+    url: '/api/auth/isOpenWecom',
+    method: 'post'
+  })
+}
+
 export function pluginLoaded() {
   return request({
     url: '/api/auth/isPluginLoaded',

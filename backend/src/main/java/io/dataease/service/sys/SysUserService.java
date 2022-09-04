@@ -33,6 +33,7 @@ import javax.annotation.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -120,6 +121,34 @@ public class SysUserService {
         SysUser dbUser = findOne(sysUser);
         if (null != dbUser && null != dbUser.getUserId()) {
             // oidc默认角色是普通员工
+            List<Long> roleIds = new ArrayList<Long>();
+            roleIds.add(2L);
+            saveUserRoles( dbUser.getUserId(), roleIds);
+        }
+    }
+
+    @Transactional
+    public void saveWecomCUser(Map<String, Object> userMap , String userId, String email) {
+        long now = System.currentTimeMillis();
+        SysUser sysUser = new SysUser();
+
+        sysUser.setUsername(userId);
+        sysUser.setNickName(userMap.get("name").toString());
+        sysUser.setEmail(email);
+        sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        sysUser.setCreateTime(now);
+        sysUser.setUpdateTime(now);
+
+        sysUser.setEnabled((ObjectUtils.isNotEmpty(userMap.get("status")) && 1 == Integer.parseInt(userMap.get("status").toString())) ? 1L : 0L);
+        sysUser.setGender((ObjectUtils.isEmpty(userMap.get("gender")) || "1".equals(userMap.get("gender"))) ? "男" : "女");
+        sysUser.setLanguage("zh_CN");
+        sysUser.setFrom(4);
+        sysUser.setIsAdmin(false);
+        sysUser.setSub(userId);
+        sysUserMapper.insert(sysUser);
+        SysUser dbUser = findOne(sysUser);
+        if (null != dbUser && null != dbUser.getUserId()) {
+            // 默认角色是普通员工
             List<Long> roleIds = new ArrayList<Long>();
             roleIds.add(2L);
             saveUserRoles( dbUser.getUserId(), roleIds);
