@@ -139,7 +139,7 @@ public class SysUserService {
         sysUser.setCreateTime(now);
         sysUser.setUpdateTime(now);
 
-        sysUser.setEnabled((ObjectUtils.isNotEmpty(userMap.get("status")) && 1 == Integer.parseInt(userMap.get("status").toString())) ? 1L : 0L);
+        sysUser.setEnabled((ObjectUtils.isNotEmpty(userMap.get("status")) && 1 == Integer.parseInt(userMap.get("status").toString().split("\\.")[0])) ? 1L : 0L);
         sysUser.setGender((ObjectUtils.isEmpty(userMap.get("gender")) || "1".equals(userMap.get("gender"))) ? "男" : "女");
         sysUser.setLanguage("zh_CN");
         sysUser.setFrom(4);
