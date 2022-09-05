@@ -6,3 +6,5 @@ CREATE TABLE `sys_external_token` (
       `exp_time` bigint(13) NOT NULL COMMENT '过期时间',
       PRIMARY KEY (`type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+UPDATE `sys_menu` set `component` = 'system/datasource/DsForm' where `component` = 'system/datasource/form';
