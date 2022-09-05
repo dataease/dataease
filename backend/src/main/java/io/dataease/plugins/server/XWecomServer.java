@@ -78,7 +78,6 @@ public class XWecomServer {
         ModelAndView modelAndView = new ModelAndView("redirect:/");
         HttpServletResponse response = ServletUtils.response();
         WecomXpackService wecomXpackService = null;
-        String idToken = null;
         try {
             Map<String, WecomXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((WecomXpackService.class));
             if (beansOfType.keySet().size() == 0) {
@@ -123,7 +122,7 @@ public class XWecomServer {
             try {
                 msg = URLEncoder.encode(msg, "UTF-8");
                 LogUtil.error(e);
-                Cookie cookie_error = new Cookie("OidcError", msg);
+                Cookie cookie_error = new Cookie("WecomError", msg);
                 cookie_error.setPath("/");
 
                 return modelAndView;
