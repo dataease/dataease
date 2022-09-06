@@ -88,7 +88,7 @@ public class XDingtalkServer {
                 DEException.throwException("未开启钉钉");
             }
             DingUserEntity dingUserEntity = dingtalkXpackService.userInfo(code);
-            String username = dingUserEntity.getUserId();
+            String username = dingUserEntity.getUserid();
             String unionid = dingUserEntity.getUnionid();
             SysUserEntity sysUserEntity = authUserService.getUserBySub(unionid, 5);
             if (null == sysUserEntity) {
