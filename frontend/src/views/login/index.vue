@@ -58,7 +58,7 @@
               </div>
             </el-form>
             <div v-show="codeShow" class="code">
-              <el-row>
+              <el-row class="code-contaniner">
                 <plugin-com v-if="loginTypes.includes(4) && codeIndex === 4" ref="WecomQr" component-name="WecomQr" />
                 <plugin-com v-if="loginTypes.includes(5) && codeIndex === 5" ref="DingtalkQr" component-name="DingtalkQr" />
                 <plugin-com v-if="loginTypes.includes(6) && codeIndex === 6" ref="FarkQr" component-name="FarkQr" />
@@ -500,6 +500,9 @@ export default {
     width: 150px;
     height: 150px;
     padding: 10px;
+  }
+  .code-contaniner {
+    height: 410px;
   }
 }
 .login-third-item {
