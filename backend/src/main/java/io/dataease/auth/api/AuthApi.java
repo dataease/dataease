@@ -67,6 +67,14 @@ public interface AuthApi {
     @PostMapping("/isOpenWecom")
     boolean isOpenWecom();
 
+    @ApiOperation("是否开启钉钉")
+    @PostMapping("/isOpenDingtalk")
+    boolean isOpenDingtalk();
+
+    @ApiOperation("是否开启飞书")
+    @PostMapping("/isOpenFark")
+    boolean isOpenFark();
+
     @ApiIgnore
     @PostMapping("/isPluginLoaded")
     boolean isPluginLoaded();
