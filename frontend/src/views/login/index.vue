@@ -89,7 +89,7 @@
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType, wecomStatus } from '@/api/user'
+import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType, wecomStatus, dingtalkStatus, farkStatus } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 import { changeFavicon } from '@/utils/index'
 import { initTheme } from '@/utils/ThemeUtil'
@@ -178,9 +178,30 @@ export default {
     wecomStatus().then(res => {
       if (res.success && res.data) {
         this.loginTypes.push(4)
+        const arr = this.loginTypes.filter(item => item > 3)
+        this.codeIndex = arr && arr.length && Math.min(...arr) || this.codeIndex
       }
       this.setDefaultType()
     })
+
+    dingtalkStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(5)
+        const arr = this.loginTypes.filter(item => item > 3)
+        this.codeIndex = arr && arr.length && Math.min(...arr) || this.codeIndex
+      }
+      this.setDefaultType()
+    })
+
+    farkStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(6)
+        const arr = this.loginTypes.filter(item => item > 3)
+        this.codeIndex = arr && arr.length && Math.min(...arr) || this.codeIndex
+      }
+      this.setDefaultType()
+    })
+
     getPublicKey().then(res => {
       if (res.success && res.data) {
         // 保存公钥

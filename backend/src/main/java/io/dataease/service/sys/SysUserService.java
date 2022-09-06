@@ -19,6 +19,7 @@ import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.SysUserMapper;
 import io.dataease.plugins.common.base.mapper.SysUsersRolesMapper;
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
+import io.dataease.plugins.xpack.dingtalk.dto.response.DingUserEntity;
 import io.dataease.plugins.xpack.oidc.dto.SSOUserInfo;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -153,6 +154,33 @@ public class SysUserService {
             roleIds.add(2L);
             saveUserRoles( dbUser.getUserId(), roleIds);
         }
+    }
+
+    @Transactional
+    public void saveDingtalkCUser(DingUserEntity dingUserEntity, String email) {
+        long now = System.currentTimeMillis();
+        SysUser sysUser = new SysUser();
+
+        sysUser.setUsername(dingUserEntity.getUserId());
+        sysUser.setNickName(dingUserEntity.getName());
+        sysUser.setEmail(email);
+        sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        sysUser.setCreateTime(now);
+        sysUser.setUpdateTime(now);
+
+        sysUser.setEnabled(1L);
+        sysUser.setLanguage("zh_CN");
+        sysUser.setFrom(5);
+        sysUser.setIsAdmin(false);
+        sysUser.setSub(dingUserEntity.getUnionid());
+        sysUser.setPhone(dingUserEntity.getMobile());
+        sysUserMapper.insert(sysUser);
+        SysUser dbUser = findOne(sysUser);
+        /*if (null != dbUser && null != dbUser.getUserId()) {
+            List<Long> roleIds = new ArrayList<Long>();
+            roleIds.add(2L);
+            saveUserRoles( dbUser.getUserId(), roleIds);
+        }*/
     }
 
     @Transactional

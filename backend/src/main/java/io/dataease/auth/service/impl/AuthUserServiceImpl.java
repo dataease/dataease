@@ -15,6 +15,7 @@ import io.dataease.plugins.common.service.PluginCommonService;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.util.PluginUtils;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
+import io.dataease.plugins.xpack.dingtalk.service.DingtalkXpackService;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 
@@ -174,6 +175,20 @@ public class AuthUserServiceImpl implements AuthUserService {
         WecomXpackService wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);
         if (ObjectUtils.isEmpty(wecomXpackService)) return false;
         return wecomXpackService.isOpen();
+    }
+
+    @Override
+    public Boolean supportDingtalk() {
+        Map<String, DingtalkXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((DingtalkXpackService.class));
+        if (beansOfType.keySet().size() == 0) return false;
+        DingtalkXpackService dingtalkXpackService = SpringContextUtil.getBean(DingtalkXpackService.class);
+        if (ObjectUtils.isEmpty(dingtalkXpackService)) return false;
+        return dingtalkXpackService.isOpen();
+    }
+
+    @Override
+    public Boolean supportFark() {
+        return false;
     }
 
     @Override

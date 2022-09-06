@@ -34,6 +34,10 @@ public interface AuthUserService {
 
     Boolean supportWecom();
 
+    Boolean supportDingtalk();
+
+    Boolean supportFark();
+
     Boolean pluginLoaded();
 
     void checkAdmin(String uname, String pwd);
