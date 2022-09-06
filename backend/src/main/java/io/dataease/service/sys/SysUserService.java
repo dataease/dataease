@@ -147,13 +147,7 @@ public class SysUserService {
         sysUser.setIsAdmin(false);
         sysUser.setSub(userId);
         sysUserMapper.insert(sysUser);
-        SysUser dbUser = findOne(sysUser);
-        if (null != dbUser && null != dbUser.getUserId()) {
-            // 默认角色是普通员工
-            List<Long> roleIds = new ArrayList<Long>();
-            roleIds.add(2L);
-            saveUserRoles( dbUser.getUserId(), roleIds);
-        }
+
     }
 
     @Transactional
@@ -161,7 +155,7 @@ public class SysUserService {
         long now = System.currentTimeMillis();
         SysUser sysUser = new SysUser();
 
-        sysUser.setUsername(dingUserEntity.getUserId());
+        sysUser.setUsername(dingUserEntity.getUserid());
         sysUser.setNickName(dingUserEntity.getName());
         sysUser.setEmail(email);
         sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
@@ -175,12 +169,7 @@ public class SysUserService {
         sysUser.setSub(dingUserEntity.getUnionid());
         sysUser.setPhone(dingUserEntity.getMobile());
         sysUserMapper.insert(sysUser);
-        SysUser dbUser = findOne(sysUser);
-        /*if (null != dbUser && null != dbUser.getUserId()) {
-            List<Long> roleIds = new ArrayList<Long>();
-            roleIds.add(2L);
-            saveUserRoles( dbUser.getUserId(), roleIds);
-        }*/
+
     }
 
     @Transactional
