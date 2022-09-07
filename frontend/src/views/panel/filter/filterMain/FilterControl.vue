@@ -175,10 +175,7 @@ export default {
   computed: {},
 
   created() {
-    console.log(this.element)
-    console.log(this.widget)
     this.attrs = this.controlAttrs
-    console.log(this.childViews.datasetParams.length)
     if ('timeYearWidget,timeMonthWidget,timeDateWidget,textSelectWidget,numberSelectWidget'.indexOf(this.widget.name) !== -1) {
       this.showParams = true
     }
@@ -212,7 +209,6 @@ methods: {
 ,
   enableParametersChange(value)
   {
-    console.log(this.childViews.datasetParams.length)
     if (!value) {
       this.attrs.parameters = []
     }
