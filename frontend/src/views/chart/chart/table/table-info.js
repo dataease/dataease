@@ -145,7 +145,7 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
 
 export function baseTableNormal(s2, container, chart, action, tableData) {
   const containerDom = document.getElementById(container)
-  if(!containerDom) return
+  if (!containerDom) return
 
   // fields
   const fields = chart.data.fields
