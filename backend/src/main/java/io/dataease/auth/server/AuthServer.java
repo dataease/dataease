@@ -305,12 +305,12 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
-    public boolean isOpenFark() {
+    public boolean isOpenLark() {
         Boolean licValid = PluginUtils.licValid();
         if (!licValid)
             return false;
 
-        return authUserService.supportFark();
+        return authUserService.supportLark();
     }
 
     @Override

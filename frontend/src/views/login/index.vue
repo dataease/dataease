@@ -61,13 +61,13 @@
               <el-row class="code-contaniner">
                 <plugin-com v-if="loginTypes.includes(4) && codeIndex === 4" ref="WecomQr" component-name="WecomQr" />
                 <plugin-com v-if="loginTypes.includes(5) && codeIndex === 5" ref="DingtalkQr" component-name="DingtalkQr" />
-                <plugin-com v-if="loginTypes.includes(6) && codeIndex === 6" ref="FarkQr" component-name="FarkQr" />
+                <plugin-com v-if="loginTypes.includes(6) && codeIndex === 6" ref="LarkQr" component-name="LarkQr" />
               </el-row>
 
               <div v-if="qrTypes.length > 1" class="login-third-items">
                 <span v-if="qrTypes.includes(4)" class="login-third-item login-third-wecom" @click="switchCodeIndex(4)" />
                 <span v-if="qrTypes.includes(5)" class="login-third-item login-third-dingtalk" @click="switchCodeIndex(5)" />
-                <span v-if="qrTypes.includes(6)" class="login-third-item login-third-fark" @click="switchCodeIndex(6)" />
+                <span v-if="qrTypes.includes(6)" class="login-third-item login-third-lark" @click="switchCodeIndex(6)" />
               </div>
 
             </div>
@@ -89,7 +89,7 @@
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType, wecomStatus, dingtalkStatus, farkStatus } from '@/api/user'
+import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType, wecomStatus, dingtalkStatus, larkStatus } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 import { changeFavicon } from '@/utils/index'
 import { initTheme } from '@/utils/ThemeUtil'
@@ -193,7 +193,7 @@ export default {
       this.setDefaultType()
     })
 
-    farkStatus().then(res => {
+    larkStatus().then(res => {
       if (res.success && res.data) {
         this.loginTypes.push(6)
         const arr = this.loginTypes.filter(item => item > 3)
@@ -520,8 +520,8 @@ export default {
 .login-third-dingtalk {
   background: url(../../assets/dingding01.png) no-repeat 50%/cover;
 }
-.login-third-fark {
-  background: url(../../assets/fark.png) no-repeat 50%/cover;
+.login-third-lark {
+  background: url(../../assets/lark.png) no-repeat 50%/cover;
 }
 
 </style>

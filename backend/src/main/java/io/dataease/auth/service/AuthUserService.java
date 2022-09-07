@@ -36,7 +36,7 @@ public interface AuthUserService {
 
     Boolean supportDingtalk();
 
-    Boolean supportFark();
+    Boolean supportLark();
 
     Boolean pluginLoaded();
 

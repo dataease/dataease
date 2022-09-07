@@ -71,6 +71,12 @@
           :label="$t('dingtalk.title')"
           name="twelve"
         />
+        <el-tab-pane
+          v-if="isPluginLoaded"
+          :lazy="true"
+          :label="$t('lark.title')"
+          name="thirteen"
+        />
       </el-tabs>
       <div
         class="tabs-container"
@@ -80,34 +86,15 @@
           <basic-setting v-if="activeName === 'zero'" />
           <email-setting v-if="activeName === 'first'" />
           <map-setting v-if="activeName === 'ten'" ref="mapSetting" />
-          <plugin-com
-            v-if="activeName === 'fourth'"
-            ref="DisplaySetting"
-            component-name="LdapSetting"
-          />
-          <plugin-com
-            v-if="activeName === 'five'"
-            ref="DisplaySetting"
-            component-name="SsoSetting"
-          />
+          <plugin-com v-if="activeName === 'fourth'" ref="DisplaySetting" component-name="LdapSetting" />
+          <plugin-com v-if="activeName === 'five'" ref="DisplaySetting" component-name="SsoSetting" />
           <simple-mode v-if="activeName === 'six'" />
           <cluster-mode v-if="activeName === 'seven'" />
           <kettle-setting v-if="activeName === 'eight'" />
-          <plugin-com
-            v-if="activeName === 'nine'"
-            ref="CasSetting"
-            component-name="CasSetting"
-          />
-          <plugin-com
-            v-if="activeName === 'eleven'"
-            ref="WecomSetting"
-            component-name="WecomSetting"
-          />
-          <plugin-com
-            v-if="activeName === 'twelve'"
-            ref="DingtalkSetting"
-            component-name="DingtalkSetting"
-          />
+          <plugin-com v-if="activeName === 'nine'" ref="CasSetting" component-name="CasSetting" />
+          <plugin-com v-if="activeName === 'eleven'" ref="WecomSetting" component-name="WecomSetting" />
+          <plugin-com v-if="activeName === 'twelve'" ref="DingtalkSetting" component-name="DingtalkSetting" />
+          <plugin-com v-if="activeName === 'thirteen'" ref="LarkSetting" component-name="LarkSetting" />
         </div>
       </div>
     </div>

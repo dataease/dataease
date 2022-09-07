@@ -83,7 +83,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/api/auth/isOpenOidc", ANON);
         filterChainDefinitionMap.put("/api/auth/isOpenWecom", ANON);
         filterChainDefinitionMap.put("/api/auth/isOpenDingtalk", ANON);
-        filterChainDefinitionMap.put("/api/auth/isOpenFark", ANON);
+        filterChainDefinitionMap.put("/api/auth/isOpenLark", ANON);
         filterChainDefinitionMap.put("/api/auth/getPublicKey", ANON);
         filterChainDefinitionMap.put("/api/pluginCommon/component/*", ANON);
         filterChainDefinitionMap.put("/api/pluginCommon/staticInfo/**", ANON);
@@ -94,8 +94,8 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/plugin/wecom/getQrParam", ANON);
         filterChainDefinitionMap.put("/plugin/dingtalk/callBack*", ANON);
         filterChainDefinitionMap.put("/plugin/dingtalk/getQrParam", ANON);
-        filterChainDefinitionMap.put("/plugin/fark/callBack*", ANON);
-        filterChainDefinitionMap.put("/plugin/fark/getQrParam", ANON);
+        filterChainDefinitionMap.put("/plugin/lark/callBack*", ANON);
+        filterChainDefinitionMap.put("/plugin/lark/getQrParam", ANON);
         filterChainDefinitionMap.put("/cas/reset/**", ANON);
 
         filterChainDefinitionMap.put("/unauth", ANON);

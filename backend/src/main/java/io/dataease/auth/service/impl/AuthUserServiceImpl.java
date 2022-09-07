@@ -16,6 +16,7 @@ import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.util.PluginUtils;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.dingtalk.service.DingtalkXpackService;
+import io.dataease.plugins.xpack.lark.service.LarkXpackService;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 
@@ -187,8 +188,12 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
-    public Boolean supportFark() {
-        return false;
+    public Boolean supportLark() {
+        Map<String, LarkXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LarkXpackService.class));
+        if (beansOfType.keySet().size() == 0) return false;
+        LarkXpackService larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
+        if (ObjectUtils.isEmpty(larkXpackService)) return false;
+        return larkXpackService.isOpen();
     }
 
     @Override
