@@ -72,8 +72,8 @@ public interface AuthApi {
     boolean isOpenDingtalk();
 
     @ApiOperation("是否开启飞书")
-    @PostMapping("/isOpenFark")
-    boolean isOpenFark();
+    @PostMapping("/isOpenLark")
+    boolean isOpenLark();
 
     @ApiIgnore
     @PostMapping("/isPluginLoaded")

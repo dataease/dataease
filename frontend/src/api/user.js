@@ -114,9 +114,9 @@ export function dingtalkStatus() {
   })
 }
 
-export function farkStatus() {
+export function larkStatus() {
   return request({
-    url: '/api/auth/isOpenFark',
+    url: '/api/auth/isOpenLark',
     method: 'post'
   })
 }
