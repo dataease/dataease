@@ -65,6 +65,12 @@
           :label="$t('wecom.title')"
           name="eleven"
         />
+        <el-tab-pane
+          v-if="isPluginLoaded"
+          :lazy="true"
+          :label="$t('dingtalk.title')"
+          name="twelve"
+        />
       </el-tabs>
       <div
         class="tabs-container"
@@ -96,6 +102,11 @@
             v-if="activeName === 'eleven'"
             ref="WecomSetting"
             component-name="WecomSetting"
+          />
+          <plugin-com
+            v-if="activeName === 'twelve'"
+            ref="DingtalkSetting"
+            component-name="DingtalkSetting"
           />
         </div>
       </div>
@@ -132,7 +143,6 @@ export default {
     }
   },
   computed: {
-    btnList() {}
   },
   beforeCreate() {
     pluginLoaded().then((res) => {

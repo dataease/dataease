@@ -107,6 +107,20 @@ export function wecomStatus() {
   })
 }
 
+export function dingtalkStatus() {
+  return request({
+    url: '/api/auth/isOpenDingtalk',
+    method: 'post'
+  })
+}
+
+export function farkStatus() {
+  return request({
+    url: '/api/auth/isOpenFark',
+    method: 'post'
+  })
+}
+
 export function pluginLoaded() {
   return request({
     url: '/api/auth/isPluginLoaded',

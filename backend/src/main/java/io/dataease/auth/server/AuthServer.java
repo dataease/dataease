@@ -296,6 +296,24 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    public boolean isOpenDingtalk() {
+        Boolean licValid = PluginUtils.licValid();
+        if (!licValid)
+            return false;
+
+        return authUserService.supportDingtalk();
+    }
+
+    @Override
+    public boolean isOpenFark() {
+        Boolean licValid = PluginUtils.licValid();
+        if (!licValid)
+            return false;
+
+        return authUserService.supportFark();
+    }
+
+    @Override
     public boolean isPluginLoaded() {
         Boolean licValid = PluginUtils.licValid();
         if (!licValid)
