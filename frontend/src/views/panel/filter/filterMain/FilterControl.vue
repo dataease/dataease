@@ -50,7 +50,8 @@
           </el-checkbox>
           <el-popover v-model="titlePopovervisible" placement="bottom-end" :disabled="!attrs.showTitle" width="200">
             <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
-              <el-input v-model="attrs.title" :placeholder="$t('panel.input_title')" type="textarea" maxlength="15" show-word-limit />
+              <el-input v-model="attrs.title" :placeholder="$t('panel.input_title')" type="textarea" maxlength="15"
+                        show-word-limit/>
             </div>
 
             <i
@@ -74,7 +75,7 @@
                   class="de-checkbox"
                 >
                   <div class="span-div">
-                    <svg-icon :icon-class="item.type" class="chart-icon" />
+                    <svg-icon :icon-class="item.type" class="chart-icon"/>
                     <span v-if="item.name && item.name.length <= 7" style="margin-left: 6px">{{ item.name }}</span>
                     <el-tooltip v-else class="item" effect="dark" :content="item.name" placement="left">
                       <span style="margin-left: 6px">{{ item.name }}</span>
@@ -92,7 +93,7 @@
             />
           </el-popover>
         </span>
-        <span v-if="element.component === 'de-select'" style="padding-left: 10px;">
+        <span v-if="showParams" style="padding-left: 10px;">
           <el-checkbox v-model="attrs.enableParameters" @change="enableParametersChange"><span>
             {{ $t('panel.binding_parameters') }} </span> </el-checkbox>
 
@@ -106,9 +107,10 @@
                   class="de-checkbox"
                 >
                   <div class="span-div">
-                    <span v-if="item.variableName && item.variableName.length <= 7" style="margin-left: 6px">{{ item.variableName }}</span>
-                    <el-tooltip v-else class="item" effect="dark" :content="item.variableName" placement="left">
-                      <span style="margin-left: 6px">{{ item.variableName }}</span>
+                    <span v-if="item.alias && item.alias.length <= 7"
+                          style="margin-left: 6px">{{ item.alias }}</span>
+                    <el-tooltip v-else class="item" effect="dark" :content="item.alias" placement="left">
+                      <span style="margin-left: 6px">{{ item.alias }}</span>
                     </el-tooltip>
                   </div>
 
@@ -145,7 +147,8 @@ export default {
 
     childViews: {
       type: Object,
-      default: () => {}
+      default: () => {
+      }
     },
     element: {
       type: Object,
@@ -154,120 +157,143 @@ export default {
   },
   data() {
     return {
+      showParams: false,
       attrs: null,
       titlePopovervisible: false,
       popovervisible: false,
       parametersVisible: false,
       timePopovervisible: false,
       accuracyOptions: [
-        { id: 'HH', name: 'HH' },
-        { id: 'HH:mm', name: 'HH:mm' },
-        { id: 'HH:mm:ss', name: 'HH:mm:ss' }
+        {id: 'HH', name: 'HH'},
+        {id: 'HH:mm', name: 'HH:mm'},
+        {id: 'HH:mm:ss', name: 'HH:mm:ss'}
 
       ]
 
     }
   },
-  computed: {
-
-  },
+  computed: {},
 
   created() {
+    console.log(this.element)
+    console.log(this.widget)
     this.attrs = this.controlAttrs
-  },
-  methods: {
-    multipleChange(value) {
-      this.fillAttrs2Filter()
-    },
-    showTimeChange(value) {
-      this.attrs.accuracy = this.accuracyOptions[1].id
-      this.attrs.default.isDynamic = false
-      this.fillAttrs2Filter()
-    },
-    checkedViewsChange(values) {
-      this.fillAttrs2Filter()
-    },
-    enableRangeChange(value) {
-      if (!value) {
-        this.attrs.viewIds = []
-      }
-      this.fillAttrs2Filter()
-    },
-    enableParametersChange(value) {
-      if (!value) {
-        this.attrs.parameters = []
-      }
-      this.fillAttrs2Filter()
-    },
-    showTitleChange(value) {
-      if (!value) {
-        this.attrs.title = ''
-        this.element.style.backgroundColor = ''
-      }
-      this.fillAttrs2Filter()
-    },
-    showVisualChange(value) {
-      this.fillAttrs2Filter()
-    },
-
-    fillAttrs2Filter() {}
+    console.log(this.childViews.datasetParams.length)
+    if ('timeYearWidget,timeMonthWidget,timeDateWidget,textSelectWidget,numberSelectWidget'.indexOf(this.widget.name) !== -1) {
+      this.showParams = true
+    }
+}
+,
+methods: {
+  multipleChange(value)
+  {
+    this.fillAttrs2Filter()
   }
+,
+  showTimeChange(value)
+  {
+    this.attrs.accuracy = this.accuracyOptions[1].id
+    this.attrs.default.isDynamic = false
+    this.fillAttrs2Filter()
+  }
+,
+  checkedViewsChange(values)
+  {
+    this.fillAttrs2Filter()
+  }
+,
+  enableRangeChange(value)
+  {
+    if (!value) {
+      this.attrs.viewIds = []
+    }
+    this.fillAttrs2Filter()
+  }
+,
+  enableParametersChange(value)
+  {
+    console.log(this.childViews.datasetParams.length)
+    if (!value) {
+      this.attrs.parameters = []
+    }
+    this.fillAttrs2Filter()
+  }
+,
+  showTitleChange(value)
+  {
+    if (!value) {
+      this.attrs.title = ''
+      this.element.style.backgroundColor = ''
+    }
+    this.fillAttrs2Filter()
+  }
+,
+  showVisualChange(value)
+  {
+    this.fillAttrs2Filter()
+  }
+,
+
+  fillAttrs2Filter()
+  {
+  }
+}
 }
 
 </script>
 
 <style lang="scss" scoped>
-  .filter-options-left {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-    height: 50px;
-  }
+.filter-options-left {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  height: 50px;
+}
 
-  .filter-options-right {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    flex-wrap: nowrap;
-    height: 50px;
-  }
+.filter-options-right {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  height: 50px;
+}
 
-  .i-filter {
-    text-align: center;
-    margin-left: 5px;
-    margin-top: 1px;
-  }
+.i-filter {
+  text-align: center;
+  margin-left: 5px;
+  margin-top: 1px;
+}
 
-  .i-filter-inactive {
-    color: #9ea6b2 !important;
-    cursor: not-allowed !important;
-  }
+.i-filter-inactive {
+  color: #9ea6b2 !important;
+  cursor: not-allowed !important;
+}
 
-  .i-filter-active {
-    cursor: pointer !important;
-  }
+.i-filter-active {
+  cursor: pointer !important;
+}
 
-  .view-container-class {
+.view-container-class {
 
-    min-height: 150px;
-    max-height: 200px;
-    width: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    word-break: break-all;
-    position: relative;
+  min-height: 150px;
+  max-height: 200px;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  word-break: break-all;
+  position: relative;
 
-  }
+}
 
-  .span-div {
-    width: 135px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
+.span-div {
+  width: 135px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 
 .de-ul li {
   margin: 5px 2px;

@@ -211,8 +211,8 @@ public class DataSetTableController {
     }
 
     @ApiOperation("根据仪表板视图ID查询数据集变量")
-    @PostMapping("/paramsWithIds")
-    List<SqlVariableDetails> paramsWithIds(@RequestBody List<String> viewIds){
-        return dataSetTableService.paramsWithIds(viewIds);
+    @PostMapping("/paramsWithIds/{type}")
+    List<SqlVariableDetails> paramsWithIds(@PathVariable String type, @RequestBody List<String> viewIds){
+        return dataSetTableService.paramsWithIds(type, viewIds);
     };
 }

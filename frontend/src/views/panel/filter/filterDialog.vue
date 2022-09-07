@@ -480,7 +480,14 @@ export default {
         this.viewInfos = datas
         this.childViews.viewInfos = datas
       })
-      viewIds && viewIds.length > 0 && paramsWithIds(viewIds).then(res => {
+      var type = 'TEXT'
+      if(this.widgetInfo.name.indexOf('time') !== -1){
+        type = 'DATE'
+      }
+      if(this.widgetInfo.name === 'numberSelectWidget'){
+        type = 'NUM'
+      }
+      viewIds && viewIds.length > 0 && paramsWithIds(type, viewIds).then(res => {
         const datas = res.data
 
         this.childViews.datasetParams = datas

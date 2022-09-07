@@ -249,35 +249,35 @@ export default {
         { label: this.$t('dataset.text'), value: 'TEXT' },
         { label: this.$t('dataset.value'), value: 'LONG' },
         { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 'DOUBLE' },
-        // { label: this.$t('dataset.time_year'), value: 'DATETIME-YEAR' },
-        // { label: this.$t('dataset.time_year_month'), value: 'DATETIME-YEAR-MONTH',
-        //   children: [{
-        //     value: 'yyyy-MM',
-        //     label: 'YYYY-MM'
-        //   }, {
-        //     value: 'yyyy/MM',
-        //     label: 'YYYY/MM'
-        //   }]
-        // },
-        // { label: this.$t('dataset.time_year_month_day'), value: 'DATETIME-YEAR-MONTH-DAY',
-        //   children: [{
-        //     value: 'yyyy-MM-dd',
-        //     label: 'YYYY-MM-DD'
-        //   }, {
-        //     value: 'yyyy/MM/dd',
-        //     label: 'YYYY/MM/DD'
-        //   }]
-        // },
-        // { label: this.$t('dataset.time_all'), value: 'DATETIME',
-        //   children: [{
-        //     value: 'yyyy-MM-dd HH:mm:ss',
-        //     label: 'YYYY-MM-DD HH:MI:SS'
-        //   }, {
-        //     value: 'yyyy/MM/dd HH:mm:ss',
-        //     label: 'YYYY/MM/DD HH:MI:SS'
-        //   }
-        //   ]
-        // }
+        { label: this.$t('dataset.time_year'), value: 'DATETIME-YEAR' },
+        { label: this.$t('dataset.time_year_month'), value: 'DATETIME-YEAR-MONTH',
+          children: [{
+            value: 'yyyy-MM',
+            label: 'YYYY-MM'
+          }, {
+            value: 'yyyy/MM',
+            label: 'YYYY/MM'
+          }]
+        },
+        { label: this.$t('dataset.time_year_month_day'), value: 'DATETIME-YEAR-MONTH-DAY',
+          children: [{
+            value: 'yyyy-MM-dd',
+            label: 'YYYY-MM-DD'
+          }, {
+            value: 'yyyy/MM/dd',
+            label: 'YYYY/MM/DD'
+          }]
+        },
+        { label: this.$t('dataset.time_all'), value: 'DATETIME',
+          children: [{
+            value: 'yyyy-MM-dd HH:mm:ss',
+            label: 'YYYY-MM-DD HH:MI:SS'
+          }, {
+            value: 'yyyy/MM/dd HH:mm:ss',
+            label: 'YYYY/MM/DD HH:MI:SS'
+          }
+          ]
+        }
       ],
     }
   },
