@@ -1326,7 +1326,9 @@ export default {
     dynamic: '动态值',
     gauge_size_field_delete: '动态值中字段发生变更，请重新编辑',
     chart_group: '子类别',
-    chart_bar_group: '分组柱状图'
+    chart_bar_group: '分组柱状图',
+    field_dynamic: '动态值',
+    aggregation: '聚合方式'
   },
   dataset: {
     parse_filed: '解析字段',

@@ -13,6 +13,7 @@ const dialogPanel = {
     },
     value: ''
   },
+  parameters: [],
   defaultClass: 'time-filter',
   component: 'de-quarter'
 }

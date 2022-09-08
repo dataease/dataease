@@ -1,6 +1,7 @@
 package io.dataease.service.chart;
 
 import cn.hutool.core.lang.Assert;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -16,14 +17,10 @@ import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.chart.*;
 import io.dataease.controller.response.ChartDetail;
 import io.dataease.controller.response.DataSetDetail;
-import io.dataease.dto.chart.ChartDimensionDTO;
-import io.dataease.dto.chart.ChartGroupDTO;
-import io.dataease.dto.chart.ChartViewDTO;
-import io.dataease.dto.chart.ViewOption;
+import io.dataease.dto.chart.*;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
-import io.dataease.dto.dataset.SqlVariableDetails;
 import io.dataease.exception.DataEaseException;
 import io.dataease.ext.ExtChartGroupMapper;
 import io.dataease.ext.ExtChartViewMapper;
@@ -33,11 +30,13 @@ import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.ChartViewCacheMapper;
 import io.dataease.plugins.common.base.mapper.ChartViewMapper;
+import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.plugins.common.base.mapper.PanelViewMapper;
 import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
+import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
@@ -112,6 +111,8 @@ public class ChartViewService {
     private ChartViewFieldService chartViewFieldService;
     @Resource
     private PermissionsTreeService permissionsTreeService;
+    @Resource
+    private DatasetTableFieldMapper datasetTableFieldMapper;
 
 
     //默认使用非公平
@@ -459,7 +460,7 @@ public class ChartViewService {
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
                 String sql = dataTableInfoDTO.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())) : dataTableInfoDTO.getSql();
-                sql = handleVariable(sql, requestList, qp);
+                sql = handleVariable(sql, requestList, qp, table);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
@@ -658,8 +659,7 @@ public class ChartViewService {
                 }
                 boolean hasParameters = false;
                 if (StringUtils.isNotEmpty(table.getSqlVariableDetails())) {
-                    List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
-                    }.getType());
+                    List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
                     for (String parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>())) {
                         if (sqlVariables.stream().map(SqlVariableDetails::getVariableName).collect(Collectors.toList()).contains(parameter)) {
                             hasParameters = true;
@@ -804,6 +804,20 @@ public class ChartViewService {
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         List<String[]> data = new ArrayList<>();
 
+        // senior dynamic assist
+        DatasourceRequest datasourceAssistRequest = new DatasourceRequest();
+        datasourceAssistRequest.setDatasource(ds);
+        List<String[]> assistData = new ArrayList<>();
+        List<ChartSeniorAssistDTO> dynamicAssistFields = getDynamicAssistFields(view);
+        List<ChartViewFieldDTO> assistFields = null;
+        if (StringUtils.containsIgnoreCase(view.getType(), "bar")
+                || StringUtils.containsIgnoreCase(view.getType(), "line")
+                || StringUtils.containsIgnoreCase(view.getType(), "area")
+                || StringUtils.containsIgnoreCase(view.getType(), "scatter")
+                || StringUtils.containsIgnoreCase(view.getType(), "mix")
+        ) {
+            assistFields = getAssistFields(dynamicAssistFields);
+        }
 
         // 如果是插件视图 走插件内部的逻辑
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
@@ -824,7 +838,7 @@ public class ChartViewService {
             Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
             Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(fieldMap, view, data, desensitizationList);
 
-            return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters);
+            return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData);
             // 如果是插件到此结束
         }
 
@@ -852,9 +866,12 @@ public class ChartViewService {
                 } else {
                     datasourceRequest.setQuery(qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 }
+                if (CollectionUtils.isNotEmpty(assistFields)) {
+                    datasourceAssistRequest.setQuery(qp.getSQLSummary(dataTableInfoDTO.getTable(), assistFields, null, null, null, view, ds));
+                }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
                 String sql = dataTableInfoDTO.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())) : dataTableInfoDTO.getSql();
-                sql = handleVariable(sql, requestList, qp);
+                sql = handleVariable(sql, requestList, qp, table);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
@@ -865,6 +882,9 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
+                }
+                if (CollectionUtils.isNotEmpty(assistFields)) {
+                    datasourceAssistRequest.setQuery(qp.getSQLSummaryAsTmp(sql, assistFields, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.CUSTOM.name())) {
                 DataTableInfoDTO dt = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
@@ -880,6 +900,9 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
+                }
+                if (CollectionUtils.isNotEmpty(assistFields)) {
+                    datasourceAssistRequest.setQuery(qp.getSQLSummaryAsTmp(sql, assistFields, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.UNION.name())) {
                 DataTableInfoDTO dt = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
@@ -897,8 +920,14 @@ public class ChartViewService {
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
                 }
+                if (CollectionUtils.isNotEmpty(assistFields)) {
+                    datasourceAssistRequest.setQuery(qp.getSQLSummaryAsTmp(sql, assistFields, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
+                }
             }
             data = datasourceProvider.getData(datasourceRequest);
+            if (CollectionUtils.isNotEmpty(assistFields)) {
+                assistData = datasourceProvider.getData(datasourceAssistRequest);
+            }
         } else if (table.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
             datasourceRequest.setDatasource(ds);
@@ -915,6 +944,10 @@ public class ChartViewService {
                 datasourceRequest.setQuery(qp.getSQLTableInfo(tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
             } else {
                 datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
+            }
+            if (CollectionUtils.isNotEmpty(assistFields)) {
+                datasourceAssistRequest.setQuery(qp.getSQLSummary(tableName, assistFields, fieldCustomFilter, rowPermissionsTree, extFilterList, view, ds));
+                assistData = datasourceProvider.getData(datasourceAssistRequest);
             }
             // 仪表板有参数不使用缓存
             if (!cache || CollectionUtils.isNotEmpty(requestList.getFilter())
@@ -1065,7 +1098,7 @@ public class ChartViewService {
         }
         // table组件，明细表，也用于导出数据
         Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
-        return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters);
+        return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData);
     }
 
     // 对结果排序
@@ -1110,7 +1143,7 @@ public class ChartViewService {
         return res;
     }
 
-    public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tabelData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterRequest> drillFilters) {
+    public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tabelData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterRequest> drillFilters, List<ChartSeniorAssistDTO> dynamicAssistFields, List<String[]> assistData) {
 
         Map<String, Object> map = new HashMap<>();
         map.putAll(chartData);
@@ -1118,6 +1151,9 @@ public class ChartViewService {
 
         List<DatasetTableField> sourceFields = dataSetTableFieldsService.getFieldsByTableId(view.getTableId());
         map.put("sourceFields", sourceFields);
+        // merge assist result
+        mergeAssistField(dynamicAssistFields, assistData);
+        map.put("dynamicAssistLines", dynamicAssistFields);
 
         ChartViewDTO dto = new ChartViewDTO();
         BeanUtils.copyBean(dto, view);
@@ -1525,7 +1561,10 @@ public class ChartViewService {
         chartViewMapper.updateByPrimaryKeySelective(chartView);
     }
 
-    private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp) throws Exception {
+    private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table) throws Exception {
+
+        List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
+
         if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
                 if (CollectionUtils.isEmpty(chartExtFilterRequest.getValue())) {
@@ -1535,9 +1574,13 @@ public class ChartViewService {
                     continue;
                 }
 
-                String filter = qp.transFilter(chartExtFilterRequest);
                 for (String parameter : chartExtFilterRequest.getParameters()) {
-                    sql = sql.replace("${" + parameter + "}", filter);
+                    List<SqlVariableDetails> parameters = sqlVariables.stream().filter(item -> item.getVariableName().equalsIgnoreCase(parameter)).collect(Collectors.toList());
+                    if (CollectionUtils.isNotEmpty(parameters)) {
+                        String filter = qp.transFilter(chartExtFilterRequest,parameters.get(0));
+                        sql = sql.replace("${" + parameter + "}", filter);
+                    }
+
                 }
             }
         }
@@ -1609,5 +1652,57 @@ public class ChartViewService {
             }
         }
         return list;
+    }
+
+    private List<ChartSeniorAssistDTO> getDynamicAssistFields(ChartViewDTO view) {
+        String senior = view.getSenior();
+        JSONObject jsonObject = JSONObject.parseObject(senior);
+        JSONArray assistLine = jsonObject.getJSONArray("assistLine");
+        List<ChartSeniorAssistDTO> assistLines = gson.fromJson(assistLine.toJSONString(), new TypeToken<List<ChartSeniorAssistDTO>>() {
+        }.getType());
+
+        List<ChartSeniorAssistDTO> list = new ArrayList<>();
+        for (ChartSeniorAssistDTO dto : assistLines) {
+            if (StringUtils.equalsIgnoreCase(dto.getField(), "0")) {
+                continue;
+            }
+            String fieldId = dto.getFieldId();
+            String summary = dto.getSummary();
+            if (StringUtils.isEmpty(fieldId) || StringUtils.isEmpty(summary)) {
+                continue;
+            }
+            DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+            datasetTableFieldExample.createCriteria().andTableIdEqualTo(view.getTableId()).andIdEqualTo(fieldId);
+            List<DatasetTableField> fieldList = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+            if (CollectionUtils.isEmpty(fieldList)) {
+                continue;
+            }
+            dto.setCurField(fieldList.get(0));
+            list.add(dto);
+        }
+        return list;
+    }
+
+    private List<ChartViewFieldDTO> getAssistFields(List<ChartSeniorAssistDTO> list) {
+        List<ChartViewFieldDTO> res = new ArrayList<>();
+        for (ChartSeniorAssistDTO dto : list) {
+            DatasetTableField curField = dto.getCurField();
+            ChartViewFieldDTO chartViewFieldDTO = new ChartViewFieldDTO();
+            BeanUtils.copyBean(chartViewFieldDTO, curField);
+            chartViewFieldDTO.setSummary(dto.getSummary());
+            res.add(chartViewFieldDTO);
+        }
+        return res;
+    }
+
+    private void mergeAssistField(List<ChartSeniorAssistDTO> dynamicAssistFields, List<String[]> assistData) {
+        if (CollectionUtils.isEmpty(assistData)) {
+            return;
+        }
+        String[] strings = assistData.get(0);
+        for (int i = 0; i < dynamicAssistFields.size(); i++) {
+            ChartSeniorAssistDTO chartSeniorAssistDTO = dynamicAssistFields.get(i);
+            chartSeniorAssistDTO.setValue(strings[i]);
+        }
     }
 }

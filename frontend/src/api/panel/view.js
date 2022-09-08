@@ -17,9 +17,9 @@ export function viewsWithIds(data) {
   })
 }
 
-export function paramsWithIds(data) {
+export function paramsWithIds(type, data) {
   return request({
-    url: '/dataset/table/paramsWithIds',
+    url: '/dataset/table/paramsWithIds/' + type,
     method: 'post',
     loading: true,
     data

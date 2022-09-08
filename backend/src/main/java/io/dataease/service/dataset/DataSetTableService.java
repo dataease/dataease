@@ -31,6 +31,7 @@ import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
@@ -930,8 +931,12 @@ public class DataSetTableService {
         return map;
     }
 
-    public List<SqlVariableDetails> paramsWithIds(List<String> viewIds) {
+    public List<SqlVariableDetails> paramsWithIds(String type, List<String> viewIds) {
         if (CollectionUtils.isEmpty(viewIds)) {
+            return new ArrayList<>();
+        }
+
+        if(!Arrays.asList("DATE", "TEXT", "NUM").contains(type)){
             return new ArrayList<>();
         }
         ChartViewExample chartViewExample = new ChartViewExample();
@@ -946,11 +951,9 @@ public class DataSetTableService {
         if (CollectionUtils.isEmpty(datasetTables)) {
             return new ArrayList<>();
         }
-
-
         List<SqlVariableDetails> sqlVariableDetails = new ArrayList<>();
         List<String> sqlVariableNames = new ArrayList<>();
-        datasetTables.forEach(datasetTable -> {
+        for (DatasetTable datasetTable : datasetTables) {
             if (StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())) {
                 List<SqlVariableDetails> sqlVariables = new Gson().fromJson(datasetTable.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
                 }.getType());
@@ -961,7 +964,27 @@ public class DataSetTableService {
                     }
                 }
             }
-        });
+        }
+        switch (type){
+            case "DATE":
+                sqlVariableDetails =  sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("DATETIME")).collect(Collectors.toList());
+                sqlVariableDetails.forEach(item -> {
+                    if(item.getType().size()> 1){
+                        item.setAlias(item.getVariableName() + "[" + item.getType().get(1) + "]");
+                    }else {
+                        item.setAlias(item.getVariableName());
+                    }
+                });
+                break;
+            case "TEXT":
+                sqlVariableDetails =  sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("TEXT")).collect(Collectors.toList());
+                sqlVariableDetails.forEach(item -> {item.setAlias(item.getVariableName());});
+                break;
+            case "NUM":
+                sqlVariableDetails =  sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("LONG") || item.getType().get(0).contains("DOUBLE")).collect(Collectors.toList());
+                sqlVariableDetails.forEach(item -> {item.setAlias(item.getVariableName());});
+                break;
+        }
         return sqlVariableDetails;
     }
 

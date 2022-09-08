@@ -1326,7 +1326,9 @@ export default {
     dynamic: 'Dynamic',
     gauge_size_field_delete: 'Dynamic field changed，please edit again',
     chart_group: 'Sub Type',
-    chart_bar_group: 'Bar Group'
+    chart_bar_group: 'Bar Group',
+    field_dynamic: 'Dynamic',
+    aggregation: 'Aggregation'
   },
   dataset: {
     parse_filed: 'Parse Field',

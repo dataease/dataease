@@ -20,6 +20,7 @@ import io.dataease.plugins.common.base.mapper.SysUserMapper;
 import io.dataease.plugins.common.base.mapper.SysUsersRolesMapper;
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
 import io.dataease.plugins.xpack.dingtalk.dto.response.DingUserEntity;
+import io.dataease.plugins.xpack.lark.dto.entity.LarkUserInfo;
 import io.dataease.plugins.xpack.oidc.dto.SSOUserInfo;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -147,13 +148,7 @@ public class SysUserService {
         sysUser.setIsAdmin(false);
         sysUser.setSub(userId);
         sysUserMapper.insert(sysUser);
-        SysUser dbUser = findOne(sysUser);
-        if (null != dbUser && null != dbUser.getUserId()) {
-            // 默认角色是普通员工
-            List<Long> roleIds = new ArrayList<Long>();
-            roleIds.add(2L);
-            saveUserRoles( dbUser.getUserId(), roleIds);
-        }
+
     }
 
     @Transactional
@@ -161,7 +156,7 @@ public class SysUserService {
         long now = System.currentTimeMillis();
         SysUser sysUser = new SysUser();
 
-        sysUser.setUsername(dingUserEntity.getUserId());
+        sysUser.setUsername(dingUserEntity.getUserid());
         sysUser.setNickName(dingUserEntity.getName());
         sysUser.setEmail(email);
         sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
@@ -175,12 +170,29 @@ public class SysUserService {
         sysUser.setSub(dingUserEntity.getUnionid());
         sysUser.setPhone(dingUserEntity.getMobile());
         sysUserMapper.insert(sysUser);
-        SysUser dbUser = findOne(sysUser);
-        /*if (null != dbUser && null != dbUser.getUserId()) {
-            List<Long> roleIds = new ArrayList<Long>();
-            roleIds.add(2L);
-            saveUserRoles( dbUser.getUserId(), roleIds);
-        }*/
+
+    }
+
+    @Transactional
+    public void saveLarkCUser(LarkUserInfo larkUserInfo, String email) {
+        long now = System.currentTimeMillis();
+        SysUser sysUser = new SysUser();
+
+        sysUser.setUsername(larkUserInfo.getUser_id());
+        sysUser.setNickName(larkUserInfo.getName());
+        sysUser.setEmail(email);
+        sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        sysUser.setCreateTime(now);
+        sysUser.setUpdateTime(now);
+
+        sysUser.setEnabled(1L);
+        sysUser.setLanguage("zh_CN");
+        sysUser.setFrom(6);
+        sysUser.setIsAdmin(false);
+        sysUser.setSub(larkUserInfo.getSub());
+        sysUser.setPhone(larkUserInfo.getMobile());
+        sysUserMapper.insert(sysUser);
+
     }
 
     @Transactional

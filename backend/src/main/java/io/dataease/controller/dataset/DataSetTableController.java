@@ -11,10 +11,10 @@ import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.ExcelFileData;
-import io.dataease.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.base.domain.DatasetTable;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableIncrementalConfig;
+import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.service.dataset.DataSetTableService;
 import io.swagger.annotations.*;
@@ -211,8 +211,8 @@ public class DataSetTableController {
     }
 
     @ApiOperation("根据仪表板视图ID查询数据集变量")
-    @PostMapping("/paramsWithIds")
-    List<SqlVariableDetails> paramsWithIds(@RequestBody List<String> viewIds){
-        return dataSetTableService.paramsWithIds(viewIds);
+    @PostMapping("/paramsWithIds/{type}")
+    List<SqlVariableDetails> paramsWithIds(@PathVariable String type, @RequestBody List<String> viewIds){
+        return dataSetTableService.paramsWithIds(type, viewIds);
     };
 }

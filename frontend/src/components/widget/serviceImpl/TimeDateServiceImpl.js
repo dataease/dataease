@@ -17,6 +17,7 @@ const dialogPanel = {
       placeholder: 'dedate.placeholder',
       viewIds: [],
       fieldId: '',
+      parameters: [],
       dragItems: [],
       default: {
         isDynamic: false,
