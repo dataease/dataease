@@ -519,7 +519,7 @@
               </el-table-column>
               <el-table-column prop="name" :label="$t('dataset.field_rename')">
                 <template slot-scope="scope">
-                  <el-input
+                  <el-input :disabled="scope.row.children"
                     size="mini"
                     type="text"
                     v-model="scope.row.name"
@@ -533,7 +533,7 @@
                 :label="$t('dataset.field_type')"
               >
                 <template slot-scope="scope">
-                  <el-select
+                  <el-select :disabled="scope.row.children"
                     v-model="scope.row.deExtractType"
                     size="mini"
                     style="display: inline-block; width: 120px"
