@@ -8,6 +8,16 @@
         <result column="privileges" property="privileges"/>
     </resultMap>
 
+    <select id ="findByPanelId" resultMap="BaseResultMapDTO">
+        SELECT
+            chart_view.*
+        FROM
+            chart_view
+                LEFT JOIN panel_view ON chart_view.id = panel_view.chart_view_id
+        WHERE
+            panel_view.panel_id = #{panelId}
+    </select>
+
     <select id="searchOneWithPrivileges" resultMap="BaseResultMapDTO">
         select chart_view.*
         from chart_view

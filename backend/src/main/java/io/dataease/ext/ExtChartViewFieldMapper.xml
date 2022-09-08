@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.ext.ExtChartViewFieldMapper">
+
+    <resultMap id="BaseResultMapDTO" type="io.dataease.plugins.common.base.domain.ChartViewField" extends="io.dataease.plugins.common.base.mapper.ChartViewFieldMapper.ResultMapWithBLOBs">
+    </resultMap>
+    <select id ="findByPanelId" resultMap="BaseResultMapDTO">
+        SELECT
+            chart_view_field.*
+        FROM
+            chart_view_field
+                LEFT JOIN panel_view ON chart_view_field.chart_id = panel_view.chart_view_id
+        WHERE
+            panel_view.panel_id = #{panelId}
+    </select>
+</mapper>

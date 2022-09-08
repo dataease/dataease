@@ -118,5 +118,20 @@
         </if>
     </select>
 
+    <select id="findByPanelId"  resultMap="BaseResultMapDTO">
+        SELECT DISTINCT
+            datasource.id,
+            datasource.`name`,
+            datasource.DESC,
+            datasource.type
+        FROM
+            chart_view
+                INNER JOIN panel_view ON chart_view.id = panel_view.chart_view_id
+                INNER JOIN dataset_table ON chart_view.table_id = dataset_table.id
+                INNER JOIN datasource ON dataset_table.data_source_id = datasource.id
+        WHERE
+            panel_view.panel_id = #{panelId}
+    </select>
+
 
 </mapper>

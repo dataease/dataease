@@ -299,3 +299,11 @@ export function findPanelElementInfo(viewId) {
     loading: false
   })
 }
+
+export function export2AppCheck(panelId){
+  return request({
+    url: 'panel/group/export2AppCheck/'+panelId,
+    method: 'get',
+    loading: false
+  })
+}

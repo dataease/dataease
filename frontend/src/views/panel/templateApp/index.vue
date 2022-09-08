@@ -1,20 +1,6 @@
 <template>
   <de-layout-content>
     <div class="de-template">
-      <el-tabs
-        class="de-tabs"
-        v-model="currentTemplateType"
-        @tab-click="handleClick"
-      >
-        <el-tab-pane name="self">
-          <span slot="label">{{ $t("panel.user_template") }}</span>
-        </el-tab-pane>
-        <el-tab-pane v-permission="['sys-template:read']" name="system">
-          <span slot="label" v-permission="['sys-template:read']">
-            {{ $t("panel.sys_template") }}</span
-          >
-        </el-tab-pane>
-      </el-tabs>
       <div
         class="tabs-container flex-tabs"
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
@@ -41,7 +27,7 @@
               @click="templateImport(currentTemplateId)"
               icon="el-icon-upload2"
             >
-              {{ $t("panel.import") }}
+              上传应用
             </deBtn>
           </div>
           <el-empty
@@ -114,13 +100,11 @@ import DeLayoutContent from "@/components/business/DeLayoutContent";
 import TemplateList from "./component/TemplateList";
 import TemplateItem from "./component/TemplateItem";
 import TemplateImport from "./component/TemplateImport";
-import { save, templateDelete, find } from "@/api/system/template";
+import { save, templateDelete, find } from "@/api/system/templateApp";
 import elementResizeDetectorMaker from "element-resize-detector";
-
 import msgCfm from "@/components/msgCfm/index";
-import { log } from "@antv/g2plot/lib/utils";
 export default {
-  name: "PanelMain",
+  name: "TemplateApp",
   mixins: [msgCfm],
   components: { DeLayoutContent, TemplateList, TemplateItem, TemplateImport },
   data() {
@@ -157,7 +141,7 @@ export default {
       formType: "",
       originName: "",
       templateDialog: {
-        title: this.$t("panel.import_template"),
+        title: '导入应用',
         visible: false,
         pid: "",
       },
@@ -167,11 +151,11 @@ export default {
     nameList() {
       const { nodeType } = this.templateEditForm || {};
       if ("template" === nodeType) {
-        return this.currentTemplateShowList.map((ele) => ele.label);
+        return this.currentTemplateShowList.map((ele) => ele.name);
       }
 
       if ("folder" === nodeType) {
-        return this.templateList.map((ele) => ele.label);
+        return this.templateList.map((ele) => ele.name);
       }
       return [];
     },
@@ -244,9 +228,9 @@ export default {
     handleClick(tab, event) {
       this.getTree();
     },
-    showCurrentTemplate(pid, label) {
+    showCurrentTemplate(pid, name) {
       this.currentTemplateId = pid;
-      this.currentTemplateLabel = label;
+      this.currentTemplateLabel = name;
       if (this.currentTemplateId) {
         find({ pid: this.currentTemplateId }).then((response) => {
           this.currentTemplateShowList = response.data;
@@ -275,12 +259,13 @@ export default {
         );
         this.originName = this.templateEditForm.label;
       } else {
-        this.dialogTitle = this.$t("panel.add_category");
+        this.dialogTitle = this.$t("panel.add_app_category");
         this.templateEditForm = {
           name: "",
           nodeType: "folder",
           templateType: this.currentTemplateType,
           level: 0,
+          pid: 0,
         };
       }
       this.dialogTitleLabel = this.$t(
@@ -321,7 +306,7 @@ export default {
     getTree() {
       const request = {
         templateType: this.currentTemplateType,
-        level: "0",
+        pid: "0",
       };
       find(request).then((res) => {
         this.templateList = res.data;
@@ -366,7 +351,7 @@ export default {
   background-color: var(--MainBG, #f5f6f7);
 
   .tabs-container {
-    height: calc(100% - 48px);
+    height: 100%;
     background: var(--ContentBG, #ffffff);
     overflow-x: auto;
   }
@@ -413,5 +398,8 @@ export default {
       color: var(--deTextPrimary, #1f2329);
     }
   }
+}
+::v-deep .container-wrapper{
+  padding: 0px!important;
 }
 </style>
