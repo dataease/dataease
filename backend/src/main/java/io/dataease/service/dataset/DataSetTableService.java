@@ -968,7 +968,13 @@ public class DataSetTableService {
         switch (type){
             case "DATE":
                 sqlVariableDetails =  sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("DATETIME")).collect(Collectors.toList());
-                sqlVariableDetails.forEach(item -> {item.setAlias(item.getVariableName() + "[" + item.getType().get(1) + "]");});
+                sqlVariableDetails.forEach(item -> {
+                    if(item.getType().size()> 1){
+                        item.setAlias(item.getVariableName() + "[" + item.getType().get(1) + "]");
+                    }else {
+                        item.setAlias(item.getVariableName());
+                    }
+                });
                 break;
             case "TEXT":
                 sqlVariableDetails =  sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("TEXT")).collect(Collectors.toList());
