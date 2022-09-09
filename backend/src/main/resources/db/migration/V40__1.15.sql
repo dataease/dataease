@@ -36,3 +36,7 @@ CREATE TABLE `panel_app_template` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `sys_menu` VALUES (800, 0, 0, 1, '数据集表单', 'dataset-form', 'dataset/form', 999, NULL, '/dataset-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
+
+INSERT INTO `sys_msg_channel` VALUES (3, 'webmsg.channel_wecom_msg', 'sendWecom');
+INSERT INTO `sys_msg_channel` VALUES (4, 'webmsg.channel_dingtalk_msg', 'sendDingtalk');
+INSERT INTO `sys_msg_channel` VALUES (5, 'webmsg.channel_lark_msg', 'sendLark');
