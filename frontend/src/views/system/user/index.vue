@@ -3,96 +3,92 @@
     <el-row class="top-operate">
       <el-col :span="12">
         <el-button
+          v-permission="['user:add']"
           class="btn"
           type="primary"
-          v-permission="['user:add']"
           icon="el-icon-plus"
           @click="create"
-          >{{ $t("user.create") }}</el-button
-        >
+        >{{ $t("user.create") }}</el-button>
 
         <plugin-com v-if="isPluginLoaded" ref="ImportUserCom" component-name="ImportUser" />
 
-        
       </el-col>
       <el-col :span="12" class="right-user">
         <el-input
+          ref="search"
+          v-model="nikeName"
           :placeholder="$t('role.search_by_name_email')"
           prefix-icon="el-icon-search"
           class="name-email-search"
           size="small"
           clearable
-          ref="search"
-          v-model="nikeName"
           @blur="initSearch"
           @clear="initSearch"
-        >
-        </el-input>
+        />
         <el-button
-          class="normal btn"
           v-btnPress="filterColor"
+          class="normal btn"
           :class="[filterTexts.length ? 'active-btn filter-not-null' : 'filter-zero']"
           icon="iconfont icon-icon-filter"
           @click="filterShow"
-          >{{ $t('user.filter') }}<template v-if="filterTexts.length">
-            ({{ filterTexts.length }})
-          </template>
+        >{{ $t('user.filter') }}<template v-if="filterTexts.length">
+          ({{ filterTexts.length }})
+        </template>
         </el-button>
         <el-dropdown trigger="click" :hide-on-click="false">
-          <el-button v-btnPress class="normal btn filter-zero" icon="el-icon-setting"
-            >{{ $t('user.list') }}</el-button
-          >
-          <el-dropdown-menu class="list-colums-slect" slot="dropdown">
+          <el-button
+            v-btnPress
+            class="normal btn filter-zero"
+            icon="el-icon-setting"
+          >{{ $t('user.list') }}</el-button>
+          <el-dropdown-menu slot="dropdown" class="list-colums-slect">
             <p class="title">{{ $t('user.list_info') }}</p>
             <el-checkbox
-              :indeterminate="isIndeterminate"
               v-model="checkAll"
+              :indeterminate="isIndeterminate"
               @change="handleCheckAllChange"
-              >{{ $t('dataset.check_all')}}</el-checkbox
-            >
+            >{{ $t('dataset.check_all') }}</el-checkbox>
             <el-checkbox-group
               v-model="checkedColumnNames"
               @change="handleCheckedColumnNamesChange"
             >
               <el-checkbox
                 v-for="column in columnNames"
-                :label="column.props"
                 :key="column.props"
-                >{{ $t(column.label) }}</el-checkbox
-              >
+                :label="column.props"
+              >{{ $t(column.label) }}</el-checkbox>
             </el-checkbox-group>
           </el-dropdown-menu>
         </el-dropdown>
       </el-col>
     </el-row>
-    <div class="filter-texts" v-if="filterTexts.length">
+    <div v-if="filterTexts.length" class="filter-texts">
       <span class="sum">{{ paginationConfig.total }}</span>
-      <span class="title">{{$t('user.result_one')}}</span>
-      <el-divider direction="vertical"></el-divider>
-      <i @click="scrollPre" v-if="showScroll" class="el-icon-arrow-left arrow-filter"></i>
+      <span class="title">{{ $t('user.result_one') }}</span>
+      <el-divider direction="vertical" />
+      <i v-if="showScroll" class="el-icon-arrow-left arrow-filter" @click="scrollPre" />
       <div class="filter-texts-container">
-        <p class="text" v-for="(ele, index) in filterTexts" :key="ele">
-          {{ ele }} <i @click="clearOneFilter(index)" class="el-icon-close"></i>
+        <p v-for="(ele, index) in filterTexts" :key="ele" class="text">
+          {{ ele }} <i class="el-icon-close" @click="clearOneFilter(index)" />
         </p>
       </div>
-      <i @click="scrollNext" v-if="showScroll" class="el-icon-arrow-right arrow-filter"></i>
+      <i v-if="showScroll" class="el-icon-arrow-right arrow-filter" @click="scrollNext" />
       <el-button
         type="text"
         class="clear-btn"
         icon="el-icon-delete"
         @click="clearFilter"
-        >{{$t('user.clear_filter')}}</el-button
-      >
+      >{{ $t('user.clear_filter') }}</el-button>
     </div>
     <div
-      class="table-container"
       id="resize-for-filter"
+      class="table-container"
       :class="[filterTexts.length ? 'table-container-filter' : '']"
     >
       <grid-table
         v-if="canLoadDom"
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
-        :tableData="data"
+        :table-data="data"
         :columns="checkedColumnNames"
         :pagination="paginationConfig"
         @sort-change="sortChange"
@@ -101,8 +97,8 @@
       >
         <el-table-column prop="username" label="ID" />
         <el-table-column
-          show-overflow-tooltip
           key="nickName"
+          show-overflow-tooltip
           prop="nickName"
           sortable="custom"
           :label="$t('commons.nick_name')"
@@ -115,23 +111,32 @@
                 scope.row.from === 0
                   ? "LOCAL"
                   : scope.row.from === 1
-                  ? "LDAP"
-                  : "OIDC"
+                    ? "LDAP"
+                    : scope.row.from === 2
+                      ? "OIDC"
+                      : scope.row.from === 3
+                        ? "CAS"
+                        : scope.row.from === 4
+                          ? "Wecom"
+                          : scope.row.from === 5
+                            ? "Dingtalk"
+                            : scope.row.from === 6
+                              ? "Lark" : '-'
               }}
             </div>
           </template>
         </el-table-column>
 
         <el-table-column
-          show-overflow-tooltip
           key="email"
+          show-overflow-tooltip
           prop="email"
           :label="$t('commons.email')"
         />
         <el-table-column
           v-if="isPluginLoaded"
-          show-overflow-tooltip
           key="dept"
+          show-overflow-tooltip
           prop="dept"
           sortable="custom"
           :label="$t('commons.organization')"
@@ -142,13 +147,12 @@
         </el-table-column>
         <el-table-column
           v-if="isPluginLoaded"
+          key="roles"
           prop="roles"
           :formatter="filterRoles"
-          key="roles"
           show-overflow-tooltip
           :label="$t('commons.role')"
-        >
-        </el-table-column>
+        />
         <el-table-column
           key="status"
           prop="status"
@@ -168,9 +172,9 @@
           </template>
         </el-table-column>
         <el-table-column
+          key="createTime"
           show-overflow-tooltip
           prop="createTime"
-          key="createTime"
           sortable="custom"
           :label="$t('commons.create_time')"
           width="180"
@@ -189,20 +193,19 @@
           <template slot-scope="scope">
             <el-button
               v-permission="['user:edit']"
-              @click="edit(scope.row)"
               class="text-btn mr2"
               type="text"
-              >{{ $t("commons.edit") }}</el-button
-            >
+              @click="edit(scope.row)"
+            >{{ $t("commons.edit") }}</el-button>
             <el-popover
+              :ref="'initPwd' + scope.row.userId"
               placement="left"
               width="321"
-              :ref="'initPwd' + scope.row.userId"
               popper-class="reset-pwd"
               trigger="click"
             >
-              <i class="el-icon-warning"></i>
-              <div class="tips">{{$t('user.recover_pwd')}}</div>
+              <i class="el-icon-warning" />
+              <div class="tips">{{ $t('user.recover_pwd') }}</div>
               <div class="editer-form-title">
                 <span class="pwd" type="text">{{
                   $t("commons.default_pwd") + "：" + defaultPWD
@@ -222,11 +225,10 @@
                   $t("fu.search_bar.cancel")
                 }}</el-button> -->
                 <el-button
-                  @click="resetPwd(scope.row.userId)"
                   type="primary"
                   class="btn"
-                  >{{ $t("fu.search_bar.ok") }}</el-button
-                >
+                  @click="resetPwd(scope.row.userId)"
+                >{{ $t("fu.search_bar.ok") }}</el-button>
               </div>
 
               <el-button
@@ -234,67 +236,65 @@
                 v-permission="['user:editPwd']"
                 class="text-btn mar16"
                 type="text"
-                >{{ $t("member.edit_password") }}</el-button
-              >
+              >{{ $t("member.edit_password") }}</el-button>
             </el-popover>
             <el-button
-              v-permission="['user:del']"
-              @click="del(scope.row)"
               v-if="scope.row.id !== 1"
+              v-permission="['user:del']"
               class="text-btn"
               type="text"
-              >{{ $t("commons.delete") }}</el-button
-            >
+              @click="del(scope.row)"
+            >{{ $t("commons.delete") }}</el-button>
           </template>
         </el-table-column>
       </grid-table>
     </div>
     <keep-alive>
-      <filterUser ref="filterUser" @search="filterDraw"></filterUser>
+      <filterUser ref="filterUser" @search="filterDraw" />
     </keep-alive>
-    <user-editer @saved="search" ref="userEditer"></user-editer>
+    <user-editer ref="userEditer" @saved="search" />
   </de-layout-content>
 </template>
 
 <script>
-import userEditer from "./userEditer.vue";
+import userEditer from './userEditer.vue'
 const columnOptions = [
   {
-    label: "ID",
-    props: "username",
+    label: 'ID',
+    props: 'username'
   },
   {
-    label: "commons.nick_name",
-    props: "nickName",
+    label: 'commons.nick_name',
+    props: 'nickName'
   },
   {
-    label: "user.source",
-    props: "from",
+    label: 'user.source',
+    props: 'from'
   },
   {
-    label: "commons.email",
-    props: "email",
+    label: 'commons.email',
+    props: 'email'
   },
   {
-    label: "commons.organization",
-    props: "dept",
+    label: 'commons.organization',
+    props: 'dept'
   },
   {
-    label: "commons.role",
-    props: "roles",
+    label: 'commons.role',
+    props: 'roles'
   },
   {
-    label: "commons.status",
-    props: "status",
+    label: 'commons.status',
+    props: 'status'
   },
   {
-    label: "commons.create_time",
-    props: "createTime",
-  },
-];
-import DeLayoutContent from "@/components/business/DeLayoutContent";
-import { addOrder, formatOrders } from "@/utils/index";
-import { pluginLoaded, defaultPwd } from "@/api/user";
+    label: 'commons.create_time',
+    props: 'createTime'
+  }
+]
+import DeLayoutContent from '@/components/business/DeLayoutContent'
+import { addOrder, formatOrders } from '@/utils/index'
+import { pluginLoaded, defaultPwd } from '@/api/user'
 import bus from '@/utils/bus'
 /* import { ldapStatus, pluginLoaded } from '@/api/user' */
 import {
@@ -302,13 +302,13 @@ import {
   delUser,
   editPassword,
   editStatus,
-  allRoles,
-} from "@/api/system/user";
-import { mapGetters } from "vuex";
-import filterUser from "./filterUser.vue";
-import GridTable from "@/components/gridTable/index.vue";
-import PluginCom from '@/views/system/plugin/PluginCom';
-import _ from 'lodash';
+  allRoles
+} from '@/api/system/user'
+import { mapGetters } from 'vuex'
+import filterUser from './filterUser.vue'
+import GridTable from '@/components/gridTable/index.vue'
+import PluginCom from '@/views/system/plugin/PluginCom'
+import _ from 'lodash'
 export default {
   components: { DeLayoutContent, GridTable, filterUser, userEditer, PluginCom },
   data() {
@@ -320,7 +320,7 @@ export default {
       paginationConfig: {
         currentPage: 1,
         pageSize: 10,
-        total: 0,
+        total: 0
       },
       data: [],
       filterTexts: [],
@@ -328,41 +328,41 @@ export default {
       form: {
         roles: [
           {
-            id: "",
-          },
-        ],
+            id: ''
+          }
+        ]
       },
       ruleForm: {},
       rule: {
         newPassword: [
           {
             required: true,
-            message: this.$t("user.input_password"),
-            trigger: "blur",
+            message: this.$t('user.input_password'),
+            trigger: 'blur'
           },
           {
             required: true,
             pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,30}$/,
-            message: this.$t("member.password_format_is_incorrect"),
-            trigger: "blur",
-          },
-        ],
+            message: this.$t('member.password_format_is_incorrect'),
+            trigger: 'blur'
+          }
+        ]
       },
       cacheCondition: [],
       depts: null,
       roles: [],
-      nikeName: "",
+      nikeName: '',
       userRoles: [],
       orderConditions: [],
       isPluginLoaded: false,
-      defaultPWD: "DataEase123..",
+      defaultPWD: 'DataEase123..',
       canLoadDom: false,
       showScroll: false,
-      resizeForFilter: null,
-    };
+      resizeForFilter: null
+    }
   },
   computed: {
-    ...mapGetters(["user"]),
+    ...mapGetters(['user']),
     filterColor() {
       return this.filterTexts.length ? 'rgba(51, 112, 255, 0.15)' : '#EFF0F1'
     }
@@ -370,61 +370,61 @@ export default {
   watch: {
     filterTexts: {
       handler() {
-        this.getScrollStatus();
+        this.getScrollStatus()
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   mounted() {
     bus.$on('reload-user-grid', this.search)
-    this.allRoles();
-    this.search();
-    document.addEventListener("keypress", this.entryKey);
-    this.resizeObserver();
+    this.allRoles()
+    this.search()
+    document.addEventListener('keypress', this.entryKey)
+    this.resizeObserver()
   },
   beforeCreate() {
     pluginLoaded()
       .then((res) => {
-        this.isPluginLoaded = res.success && res.data;
+        this.isPluginLoaded = res.success && res.data
         if (!this.isPluginLoaded) {
           this.checkedColumnNames = this.checkedColumnNames.filter(ele => !['dept', 'roles'].includes(ele))
           this.columnNames = this.columnNames.filter(ele => !['dept', 'roles'].includes(ele.props))
         }
-        this.canLoadDom = true;
+        this.canLoadDom = true
       })
       .catch((e) => {
-        this.canLoadDom = true;
-      });
+        this.canLoadDom = true
+      })
     defaultPwd().then((res) => {
       if (res && res.data) {
-        this.defaultPWD = res.data;
+        this.defaultPWD = res.data
       }
-    });
+    })
   },
   destroyed() {
-    document.removeEventListener("keypress", this.entryKey);
+    document.removeEventListener('keypress', this.entryKey)
     bus.$off('reload-user-grid', this.search)
   },
   methods: {
     resizeObserver() {
       this.resizeForFilter = new ResizeObserver(entries => {
-        if (!this.filterTexts.length) return;
-        this.layoutResize();
-      });
-      this.resizeForFilter.observe(document.querySelector('#resize-for-filter'));
+        if (!this.filterTexts.length) return
+        this.layoutResize()
+      })
+      this.resizeForFilter.observe(document.querySelector('#resize-for-filter'))
     },
-    layoutResize: _.debounce(function () {
+    layoutResize: _.debounce(function() {
       this.getScrollStatus()
     }, 200),
     scrollPre() {
-      const dom = document.querySelector('.filter-texts-container');
+      const dom = document.querySelector('.filter-texts-container')
       dom.scrollLeft -= 10
       if (dom.scrollLeft <= 0) {
         dom.scrollLeft = 0
       }
     },
     scrollNext() {
-      const dom = document.querySelector('.filter-texts-container');
+      const dom = document.querySelector('.filter-texts-container')
       dom.scrollLeft += 10
       const width = dom.scrollWidth - dom.offsetWidth
       if (dom.scrollLeft > width) {
@@ -432,168 +432,168 @@ export default {
       }
     },
     clearFilter() {
-      this.$refs.filterUser.clearFilter();
+      this.$refs.filterUser.clearFilter()
     },
     clearOneFilter(index) {
-      this.$refs.filterUser.clearOneFilter(index);
-      this.$refs.filterUser.search();
+      this.$refs.filterUser.clearOneFilter(index)
+      this.$refs.filterUser.search()
     },
     entryKey(event) {
-      const keyCode = event.keyCode;
+      const keyCode = event.keyCode
       if (keyCode === 13) {
-        this.$refs.search.blur();
+        this.$refs.search.blur()
       }
     },
     filterRoles(row, column, cellValue) {
-      const roleNames = cellValue.map((ele) => ele.roleName);
-      return roleNames.length ? roleNames.join() : "-";
+      const roleNames = cellValue.map((ele) => ele.roleName)
+      return roleNames.length ? roleNames.join() : '-'
     },
     initSearch() {
-      this.handleCurrentChange(1);
+      this.handleCurrentChange(1)
     },
     filterShow() {
-      this.$refs.filterUser.init();
+      this.$refs.filterUser.init()
     },
     handleCheckAllChange(val) {
       this.checkedColumnNames = val
         ? columnOptions.map((ele) => ele.props)
-        : [];
+        : []
       if (!this.isPluginLoaded) {
-          this.checkedColumnNames = this.checkedColumnNames.filter(ele => !['dept', 'roles'].includes(ele))
-        }
-      this.isIndeterminate = false;
+        this.checkedColumnNames = this.checkedColumnNames.filter(ele => !['dept', 'roles'].includes(ele))
+      }
+      this.isIndeterminate = false
     },
     handleCheckedColumnNamesChange(value) {
-      let checkedCount = value.length;
-      this.checkAll = checkedCount === this.columnNames.length;
+      const checkedCount = value.length
+      this.checkAll = checkedCount === this.columnNames.length
       this.isIndeterminate =
-        checkedCount > 0 && checkedCount < this.columnNames.length;
+        checkedCount > 0 && checkedCount < this.columnNames.length
     },
     resetPwd(userId) {
       editPassword({ userId, newPassword: this.defaultPWD })
         .then((res) => {
-          this.$success(this.$t("commons.modify_success"));
-          this.initSearch();
+          this.$success(this.$t('commons.modify_success'))
+          this.initSearch()
         })
         .finally(() => {
-          this.$refs["initPwd" + userId].doClose();
-        });
+          this.$refs['initPwd' + userId].doClose()
+        })
     },
     sortChange({ column, prop, order }) {
-      this.orderConditions = [];
+      this.orderConditions = []
       if (!order) {
-        this.initSearch();
-        return;
+        this.initSearch()
+        return
       }
-      if (prop === "dept") {
-        prop = "u.deptId";
+      if (prop === 'dept') {
+        prop = 'u.deptId'
       }
-      if (prop === "status") {
-        prop = "u.enabled";
+      if (prop === 'status') {
+        prop = 'u.enabled'
       }
-      this.orderConditions = [];
-      addOrder({ field: prop, value: order }, this.orderConditions);
-      this.initSearch();
+      this.orderConditions = []
+      addOrder({ field: prop, value: order }, this.orderConditions)
+      this.initSearch()
     },
     onCopy(e) {
-      this.openMessageSuccess("commons.copy_success");
+      this.openMessageSuccess('commons.copy_success')
     },
     onError(e) {},
     handleSizeChange(pageSize) {
-      this.paginationConfig.currentPage = 1;
-      this.paginationConfig.pageSize = pageSize;
-      this.search();
+      this.paginationConfig.currentPage = 1
+      this.paginationConfig.pageSize = pageSize
+      this.search()
     },
     handleCurrentChange(currentPage) {
-      this.paginationConfig.currentPage = currentPage;
-      this.search();
+      this.paginationConfig.currentPage = currentPage
+      this.search()
     },
     filterDraw(condition, filterTexts = []) {
-      this.cacheCondition = condition;
-      this.filterTexts = filterTexts;
-      this.initSearch();
+      this.cacheCondition = condition
+      this.filterTexts = filterTexts
+      this.initSearch()
     },
     getScrollStatus() {
       this.$nextTick(() => {
-        const dom = document.querySelector(".filter-texts-container");
-        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth;
-      });
+        const dom = document.querySelector('.filter-texts-container')
+        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth
+      })
     },
     search() {
       const param = {
         orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition],
-      };
+        conditions: [...this.cacheCondition]
+      }
       if (this.nikeName) {
         param.conditions.push({
           field: `concat(nick_name, ',' , email)`,
-          operator: "like",
-          value: this.nikeName,
-        });
+          operator: 'like',
+          value: this.nikeName
+        })
       }
-      const { currentPage, pageSize } = this.paginationConfig;
+      const { currentPage, pageSize } = this.paginationConfig
       userLists(currentPage, pageSize, param).then((response) => {
-        this.data = response.data.listObject;
-        this.paginationConfig.total = response.data.itemCount;
-      });
+        this.data = response.data.listObject
+        this.paginationConfig.total = response.data.itemCount
+      })
     },
     create() {
-      this.$refs.userEditer.init();
+      this.$refs.userEditer.init()
     },
 
     edit(row) {
-      this.$refs.userEditer.init(row);
+      this.$refs.userEditer.init(row)
     },
     del(row) {
-      this.$confirm(this.$t("user.sure_delete"), "", {
-        confirmButtonText: this.$t("commons.delete"),
-        cancelButtonText: this.$t("commons.cancel"),
-        cancelButtonClass: "de-confirm-fail-btn de-confirm-fail-cancel",
-        confirmButtonClass: "de-confirm-fail-btn de-confirm-fail-confirm",
-        customClass: "de-confirm de-confirm-fail",
-        iconClass: "el-icon-warning",
+      this.$confirm(this.$t('user.sure_delete'), '', {
+        confirmButtonText: this.$t('commons.delete'),
+        cancelButtonText: this.$t('commons.cancel'),
+        cancelButtonClass: 'de-confirm-fail-btn de-confirm-fail-cancel',
+        confirmButtonClass: 'de-confirm-fail-btn de-confirm-fail-confirm',
+        customClass: 'de-confirm de-confirm-fail',
+        iconClass: 'el-icon-warning'
       })
         .then(() => {
           delUser(encodeURIComponent(row.userId)).then((res) => {
-            this.openMessageSuccess("commons.delete_success");
-            this.initSearch();
-          });
+            this.openMessageSuccess('commons.delete_success')
+            this.initSearch()
+          })
         })
         .catch(() => {
-          this.$info(this.$t("commons.delete_cancel"));
-        });
+          this.$info(this.$t('commons.delete_cancel'))
+        })
     },
     openMessageSuccess(text) {
-      const h = this.$createElement;
+      const h = this.$createElement
       this.$message({
-        message: h("p", null, [
-          h("span", null, this.$t(text)),
+        message: h('p', null, [
+          h('span', null, this.$t(text))
         ]),
-        iconClass: "el-icon-success",
-        customClass: "de-message-success de-message",
-      });
+        iconClass: 'el-icon-success',
+        customClass: 'de-message-success de-message'
+      })
     },
     handleClose() {
-      this.depts = null;
-      this.formType = "add";
-      this.form = {};
-      this.editPasswordVisible = false;
-      this.dialogVisible = false;
+      this.depts = null
+      this.formType = 'add'
+      this.form = {}
+      this.editPasswordVisible = false
+      this.dialogVisible = false
     },
     changeSwitch(row) {
-      const { userId, enabled } = row;
-      const param = { userId: userId, enabled: enabled };
+      const { userId, enabled } = row
+      const param = { userId: userId, enabled: enabled }
       editStatus(param).then((res) => {
-        this.$success(this.$t("commons.modify_success"));
-      });
+        this.$success(this.$t('commons.modify_success'))
+      })
     },
     allRoles() {
       allRoles().then((res) => {
-        this.roles = res.data;
-      });
-    },
-  },
-};
+        this.roles = res.data
+      })
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -753,8 +753,6 @@ export default {
   .filter-zero:hover {
     background: #F5F6F7 !important;
   }
-
-
 
   .right-user {
     text-align: right;
