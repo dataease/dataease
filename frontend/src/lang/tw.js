@@ -2224,7 +2224,10 @@ export default {
     i18n_msg_type_ds_invalid: '數據源失效',
     i18n_msg_type_all: '全部類型',
     channel_inner_msg: '站內消息',
-    channel_email_msg: '郵件提醒'
+    channel_email_msg: '郵件提醒',
+    channel_wecom_msg: '企業微信',
+    channel_dingtalk_msg: '釘釘提醒',
+    channel_lark_msg: '飛書提醒'
   },
   denumberrange: {
     label: '數值區間',
