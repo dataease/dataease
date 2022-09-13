@@ -60,7 +60,7 @@
             <el-input v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].url" />
           </el-form-item>
           <el-form-item :label="$t('panel.links_params')" v-if="streamMediaInfoTemp[streamMediaInfoTemp.videoType].link === '2'">
-            <el-input type="textarea" :min="2" :max="4" placeholder="请输入：{ xxx: xx，xxx: xx}" v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].params"></el-input>
+            <el-input placeholder="参数格式：xxx=xx&xxx=xx&xxx=xx" v-model="streamMediaInfoTemp[streamMediaInfoTemp.videoType].params"></el-input>
           </el-form-item>
         </el-row>
         <el-row v-if="streamMediaInfoTemp.videoType === 'rtmp'">

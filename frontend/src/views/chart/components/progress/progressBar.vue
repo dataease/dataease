@@ -11,10 +11,10 @@
       {{ chart.title }}
     </span>
     <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius,'height': title_show? 'calc(100% - 30px);' : '100%;'}">
-      <el-row class="prog_box">
-          <el-col>
-            <p style="text-align: center;" :style="progStyle">{{progressData.name}}</p>
-            <el-progress :text-inside="true" :color="customColor" :stroke-width="20" :percentage="progressData.value"></el-progress>
+      <el-row class="prog_box" :style="{width:progStyle.inside? '100%' : '97%'}">
+          <el-col :style="progStyle">
+            <p style="text-align: center;" >{{progressData.name}}</p>
+            <el-progress :text-inside="progStyle.inside" :color="customColor" :stroke-width="progStyle.strokeWidth" :percentage="progressData.value"></el-progress>
           </el-col>
       </el-row>
     </div>
@@ -97,6 +97,8 @@ export default {
         fontSize: '14px',
         color: '#000000',
         fontFamily: '',
+        inside: true,
+        strokeWidth: 20,
       }
     }
   },
@@ -216,6 +218,8 @@ export default {
         this.progStyle.fontSize = customAttr.label.progressFontSize + 'px'
         this.progStyle.color = customAttr.label.progressFontColor
         this.progStyle.fontFamily =  this.canvasStyleData.fontFamily
+        this.progStyle.inside = customAttr.label.progressInside !== undefined? customAttr.label.progressInside : true
+        this.progStyle.strokeWidth = customAttr.label.strokeWidth !== undefined? customAttr.label.strokeWidth : 20
         this.customColor = customAttr.color.colors[0]
       }
     },
@@ -245,6 +249,6 @@ export default {
   margin: 0px;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  // overflow: hidden;
 }
 </style>

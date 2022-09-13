@@ -49,6 +49,15 @@
         <el-form-item :label="$t('chart.text_color')" class="form-item">
           <el-color-picker v-model="labelForm.progressFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
         </el-form-item>
+        <el-form-item v-if="chart.type && chart.type === 'progress'" :label="$t('chart.internal_display')" class="form-item" >
+          <el-radio-group v-model="labelForm.progressInside" @change="changeLabelAttr">
+            <el-radio :label="true">是</el-radio>
+            <el-radio :label="false">否</el-radio>
+          </el-radio-group>          
+        </el-form-item>
+        <el-form-item v-if="chart.type && chart.type === 'progress'" :label="$t('chart.progress_width')" class="form-item">
+          <el-slider v-model="labelForm.strokeWidth" show-input :show-input-controls="false" input-size="mini" :min="6" :max="100" @change="changeLabelAttr" />
+        </el-form-item>
         <!-- <el-form-item :label="$t('chart.graphic_color')" class="form-item">
           <el-color-picker v-model="labelForm.progressColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
         </el-form-item> -->

@@ -288,8 +288,15 @@ export default {
       if(options.link === '2') {
         let data;
         if(options.params !== '') {
-          data = JSON.parse(JSON.stringify(options.params))
+          let arr = options.params.split('&')
+          let obj = {}
+          arr.map(item => {
+            let arr1 = item.split('=')
+            obj[arr1[0]] = arr1[1]
+          })
+          data = obj
         }
+        console.log(data)
         axios.post(options.url,data).then(res => {
           console.log('11111,,,,',res)
 

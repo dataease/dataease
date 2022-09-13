@@ -92,6 +92,8 @@ export const DEFAULT_LABEL = {
   },
   progressFontSize: '14',
   progressFontColor: '#000000',
+  progressInside: true,
+  strokeWidth:  20,
   progressColor: '#409EFF',
 
   repulsion: 100,
