@@ -71,6 +71,7 @@ import axios from 'axios'
 import flvjs from 'flv.js'
 import '@/custom-theme.css'
 import bus from '@/utils/bus'
+import { methods } from 'vue2-ace-editor'
 export default {
   components: {},
   props: {
@@ -297,17 +298,27 @@ export default {
           data = obj
         }
         console.log(data)
+        // axios({
+        //   url: options.url,
+        //   method: 'post',
+        //   data: JSON.stringify(data),
+        //   timeout: 1000,
+        //   headers: {
+        //     'Content-Type': 'application/json; charset=utf-8'
+        //   }
+        // })
         axios.post(options.url,data,{
-          headers: {contentType: 'application/json'}
-        }).then(res => {
+          headers: {contentType: 'application/json; charset=utf-8'}
+        })
+        .then(res => {
           console.log('11111,,,,',res)
 
-          if(res.code === 0) {
+          if(res.data) {
             if (status) {
               this.myPlayerHls.reset() // 重置 video
               this.myPlayerHls.src([{
                 type: 'application/x-mpegURL',
-                src: res.url
+                src: res.data.url
               }])
               this.myPlayerHls.load()
               this.myPlayerHls.play()
@@ -328,7 +339,7 @@ export default {
                 },
                 sources: [{
                   type: 'application/x-mpegURL',
-                  src: res.url
+                  src: res.data.url
                 }]
               },
               function() {
