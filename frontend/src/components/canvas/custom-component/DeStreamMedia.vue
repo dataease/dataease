@@ -297,7 +297,9 @@ export default {
           data = obj
         }
         console.log(data)
-        axios.post(options.url,data).then(res => {
+        axios.post(options.url,data,{
+          headers: {contentType: 'application/json'}
+        }).then(res => {
           console.log('11111,,,,',res)
 
           if(res.code === 0) {
