@@ -17,6 +17,7 @@ export const DEFAULT_SIZE = {
   automatic: false,
   tableRollingRate: 30,
   heightLightFontSize: 12,
+  highlightNumber: 2,
   tableLightFontSize: 12,
   heightLightLine: 3,
   automaticTime: 2000,

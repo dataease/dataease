@@ -122,8 +122,10 @@ export const STREAMMEDIALINKS = {
   hls: {
     type: 'hls',
     cors: true, // 允许跨域
-    loop: true
+    loop: true,
     // url: null // 网络动画视频
+    params: '', // 参数
+    link: '1', // 链接类型
   },
   rtmp: {
     type: 'rtmp',

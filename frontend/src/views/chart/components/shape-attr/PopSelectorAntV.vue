@@ -8,7 +8,7 @@
         <el-form-item :label="$t('chart.pop_open')" class="form-item">
           <el-radio-group v-model="popForm.popOpen" size="mini" @change="changePopCase">
             <el-radio-button label="top">{{$t('chart.text_pos_top')}}</el-radio-button>
-            <el-radio-button label="bottom">{{$t('chart.text_pos_bottom')}}</el-radio-button>
+            <!-- <el-radio-button label="bottom">{{$t('chart.text_pos_bottom')}}</el-radio-button> -->
             <el-radio-button label="left">{{$t('chart.text_pos_left')}}</el-radio-button>
             <el-radio-button label="right">{{$t('chart.text_pos_right')}}</el-radio-button>
           </el-radio-group>
