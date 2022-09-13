@@ -38,6 +38,9 @@ export default {
       immediate: true,
       async handler(val, oldVal) {
         if (!this.url) return
+
+        console.log('1222222-1-1-1-1-111111111111111111111111-------1-11-', val, oldVal, this.url)
+
         // Cache 缓存 根据 url 参数
         if (!window.SyncComponentCache) {
           window.SyncComponentCache = {}
