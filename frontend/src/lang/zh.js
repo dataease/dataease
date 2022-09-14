@@ -2334,10 +2334,15 @@ export default {
 
   },
   emailtask: {
-    title: '邮件主题',
+    title: '报告主题',
     panel: '仪表板',
-    content: '邮件正文',
+    content: '报告正文',
     recipients: '收件人',
+    recisetting: '接受设置',
+    email: '邮件',
+    wecom: '企业微信',
+    dingtalk: '钉钉',
+    lark: '飞书',
     pixel: '分辨率',
     default: '默认',
     custom: '自定义',
