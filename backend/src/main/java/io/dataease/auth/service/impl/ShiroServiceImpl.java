@@ -68,7 +68,8 @@ public class ShiroServiceImpl implements ShiroService {
 
         filterChainDefinitionMap.put("/**/*.json", ANON);
         filterChainDefinitionMap.put("/system/ui/**", ANON);
-        filterChainDefinitionMap.put("/system/file/**", ANON);
+        filterChainDefinitionMap.put("/system/filedown/**", ANON);
+        filterChainDefinitionMap.put("/system/showpicture/**", ANON);
         filterChainDefinitionMap.put("/**/*.js", ANON);
         filterChainDefinitionMap.put("/**/*.css", ANON);
         filterChainDefinitionMap.put("/**/*.map", ANON);

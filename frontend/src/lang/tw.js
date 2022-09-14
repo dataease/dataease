@@ -2335,10 +2335,15 @@ export default {
 
   },
   emailtask: {
-    title: '郵件主題',
+    title: '報告主題',
     panel: '儀錶闆',
-    content: '郵件正文',
+    content: '報告正文',
     recipients: '收件人',
+    recisetting: '接受設置',
+    email: '郵件',
+    wecom: '企業微信',
+    dingtalk: '釘釘',
+    lark: '飛書',
     pixel: '分辨率',
     default: '默認',
     custom: '自定義',

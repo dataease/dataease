@@ -1,6 +1,6 @@
 package io.dataease.controller.sys;
 
-import io.dataease.plugins.common.base.domain.FileMetadata;
+
 import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.dataease.commons.constants.ParamConstants;
 import io.dataease.controller.sys.response.BasicInfo;
@@ -8,6 +8,7 @@ import io.dataease.controller.sys.response.MailInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.listener.DatasetCheckListener;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.plugins.common.util.GlobalFileUtil;
 import io.dataease.plugins.xpack.cas.dto.CasSaveResult;
 import io.dataease.service.FileService;
 import io.dataease.service.system.EmailService;
@@ -22,7 +23,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.net.URLEncoder;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,21 +109,16 @@ public class SystemParameterController {
         return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
 
-    @GetMapping("/file/down/{fileId}/{fileName}")
-    public ResponseEntity<ByteArrayResource> down(@PathVariable("fileId") String fileId, @PathVariable("fileName") String fileName) throws Exception{
+    @GetMapping("/filedown/{fileId}/{fileName}")
+    public ResponseEntity<ByteArrayResource> down(@PathVariable("fileId") String fileId, @PathVariable("fileName") String fileName) throws Exception {
 
-        FileMetadata fileMetadata = fileService.getFileMetadataById(fileId);
-        String type = fileMetadata.getType();
-        if (!StringUtils.endsWith(fileName.toUpperCase(), type.toUpperCase())) {
-            fileName += ("." + type);
-        }
-        byte[] bytes = fileService.loadFileAsBytes(fileId);
-        ByteArrayResource bar = new ByteArrayResource(bytes);
-        final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        ContentDisposition contentDisposition = ContentDisposition.parse("attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
-        headers.setContentDisposition(contentDisposition);
-        return new ResponseEntity<>(bar, headers, HttpStatus.OK);
+        return GlobalFileUtil.down(fileId, fileName);
+    }
+
+    @GetMapping("/showpicture/{fileId}")
+    public ResponseEntity<byte[]> showPicture(@PathVariable("fileId") String fileId) throws Exception {
+
+        return GlobalFileUtil.showPicture(fileId);
     }
 
     @PostMapping(value = "/save/ui", consumes = {"multipart/form-data"})
