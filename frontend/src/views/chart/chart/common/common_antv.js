@@ -658,7 +658,12 @@ export function getAnalyse(chart) {
         const a = JSON.parse(JSON.stringify(customStyle.yAxis))
         yAxisPosition = transAxisPosition(chart, a)
       }
-      senior.assistLine.forEach(ele => {
+
+      const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
+      const dynamicLines = chart.data.dynamicAssistLines
+      const lines = fixedLines.concat(dynamicLines)
+
+      lines.forEach(ele => {
         const content = ele.name + ' : ' + parseFloat(ele.value)
         assistLine.push({
           type: 'line',
