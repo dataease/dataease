@@ -794,6 +794,7 @@ export default {
     no_more_than: '大小不超过',
     request_timeout: '请求超时时间',
     message_retention_time: '消息保留时间',
+    ds_check_time: '数据源检测时间间隔',
     test_mail_recipient: '仅用来作为测试邮件收件人',
     to_enable_tsl: '如果SMTP端口是587，通常需要启用TSL',
     to_enable_ssl: '如果SMTP端口是465，通常需要启用SSL',

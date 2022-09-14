@@ -8,7 +8,6 @@ import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.dto.SystemParameterDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.plugins.common.base.domain.FileMetadata;
-import io.dataease.plugins.common.base.domain.SysParamAssist;
 import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.dataease.plugins.common.base.domain.SystemParameterExample;
 import io.dataease.plugins.common.base.mapper.SystemParameterMapper;
@@ -17,10 +16,11 @@ import io.dataease.plugins.xpack.cas.dto.CasSaveResult;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.display.service.DisplayXpackService;
 import io.dataease.service.FileService;
+import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +29,6 @@ import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -47,6 +46,9 @@ public class SystemParameterService {
     private ExtSystemParameterMapper extSystemParameterMapper;
     @Resource
     private FileService fileService;
+    @Resource
+    @Lazy
+    private DatasourceService datasourceService;
 
     public String searchEmail() {
         return extSystemParameterMapper.email();
@@ -86,7 +88,12 @@ public class SystemParameterService {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.TEMPLATE_ACCESS_KEY.getValue())) {
                     result.setTemplateAccessKey(param.getParamValue());
                 }
-
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.DS_CHECK_INTERVAL.getValue())) {
+                    result.setDsCheckInterval(param.getParamValue());
+                }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.DS_CHECK_INTERVAL_TYPE.getValue())) {
+                    result.setDsCheckIntervalType(param.getParamValue());
+                }
             }
         }
         return result;
@@ -109,6 +116,7 @@ public class SystemParameterService {
     @Transactional
     public CasSaveResult editBasic(List<SystemParameter> parameters) {
         CasSaveResult casSaveResult = afterSwitchDefaultLogin(parameters);
+        BasicInfo basicInfo = basicInfo();
         for (int i = 0; i < parameters.size(); i++) {
             SystemParameter parameter = parameters.get(i);
             SystemParameterExample example = new SystemParameterExample();
@@ -121,8 +129,10 @@ public class SystemParameterService {
             }
             example.clear();
         }
+        datasourceService.updateDatasourceStatusJob(basicInfo, parameters);
         return casSaveResult;
     }
+
 
     @Transactional
     public void resetCas() {
@@ -186,7 +196,6 @@ public class SystemParameterService {
         example.createCriteria().andParamKeyLike(type + "%");
         return systemParameterMapper.selectByExample(example);
     }
-
 
 
     public String getVersion() {
@@ -302,10 +311,11 @@ public class SystemParameterService {
         }
 
     }
-    public BasicInfo templateMarketInfo(){
+
+    public BasicInfo templateMarketInfo() {
         BasicInfo basicInfo = new BasicInfo();
         List<SystemParameter> result = this.getParamList("basic.template");
-        if(CollectionUtils.isNotEmpty(result)){
+        if (CollectionUtils.isNotEmpty(result)) {
             result.stream().forEach(param -> {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.TEMPLATE_MARKET_ULR.getValue())) {
                     basicInfo.setTemplateMarketUlr(param.getParamValue());
@@ -315,7 +325,7 @@ public class SystemParameterService {
                 }
             });
         }
-        if(StringUtils.isEmpty(basicInfo.getTemplateMarketUlr())|| StringUtils.isEmpty(basicInfo.getTemplateAccessKey())){
+        if (StringUtils.isEmpty(basicInfo.getTemplateMarketUlr()) || StringUtils.isEmpty(basicInfo.getTemplateAccessKey())) {
             DataEaseException.throwException("Please check market setting info");
         }
         return basicInfo;

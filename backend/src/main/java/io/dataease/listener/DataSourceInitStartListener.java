@@ -22,8 +22,10 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         datasourceService.initAllDataSourceConnectionPool();
+        datasourceService.initDsCheckJob();
         dataSetTableService.updateDatasetTableStatus();
         engineService.initSimpleEngine();
+
     }
 
 

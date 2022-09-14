@@ -22,5 +22,9 @@ public class BasicInfo implements Serializable {
     private String templateAccessKey;
     @ApiModelProperty("显示模板市场")
     private String openMarketPage;
+    @ApiModelProperty("数据源检测时间间隔")
+    private String dsCheckInterval;
+    @ApiModelProperty("数据源检测时间间隔类型")
+    private String dsCheckIntervalType;
 
 }
