@@ -11,27 +11,27 @@
       <div class="content">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
           <el-popover
+            v-model="isVisible"
             width="400"
             trigger="click"
+            :disabled="!isPopShow"
             @show="popShow"
             @hide="popHide"
-            v-model="isVisible"
-            :disabled="!isPopShow"
-          > 
+          >
             <p :style="pop_title" style="margin: 0px;position: relative;">
               <span>详情</span>
-              <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop"></i>
+              <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop" />
             </p>
             <el-row>
               <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
-                <el-col :span="8" style="text-align: right;">{{obj.name}}：</el-col>
-                <el-col :span="16">{{obj.value}}</el-col>
+                <el-col :span="8" style="text-align: right;">{{ obj.name }}：</el-col>
+                <el-col :span="16">{{ obj.value }}</el-col>
               </el-col>
             </el-row>
-            <div slot="reference" class="pop_position_top" v-if="isPopOpen === 'top'"></div>
-            <div slot="reference" class="pop_position_bottom" v-if="isPopOpen === 'bottom'"></div>
-            <div slot="reference" class="pop_position_left" v-if="isPopOpen === 'left'"></div>
-            <div slot="reference" class="pop_position_right" v-if="isPopOpen === 'right'"></div>
+            <div v-if="isPopOpen === 'top'" slot="reference" class="pop_position_top" />
+            <div v-if="isPopOpen === 'bottom'" slot="reference" class="pop_position_bottom" />
+            <div v-if="isPopOpen === 'left'" slot="reference" class="pop_position_left" />
+            <div v-if="isPopOpen === 'right'" slot="reference" class="pop_position_right" />
           </el-popover>
           <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2 || numberLine === inde?scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items,inde)">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
@@ -72,7 +72,7 @@
           :before-close="handleClose"
           :modal="false"
           :append-to-body="true"
-        > 
+        >
           <div>
             <p :style="pop_title">
               <span>详情</span>
@@ -211,7 +211,7 @@ export default {
         lineHeight: '25px',
         borderBottomStyle: 'dashed',
         borderBottomWidth: '1px',
-        borderBottomColor: '#ffffff',
+        borderBottomColor: '#ffffff'
       }
     }
   },
@@ -284,32 +284,32 @@ export default {
       console.log('hide')
       this.numberLine = ''
       this.tableScroll()
-      let datas = JSON.parse(JSON.stringify(this.oldData))
+      const datas = JSON.parse(JSON.stringify(this.oldData))
       datas.drillFields = JSON.stringify(datas.drillFields)
       datas.drillFilters = JSON.stringify(datas.drillFilters)
       delete datas.data
-      save2Cache(this.newData.sceneId,datas)
+      save2Cache(this.newData.sceneId, datas)
     },
     handleClose() {
       this.dialogVisible = false
       this.popHide()
     },
-    showDialogInfo(info,num) {
-      if(!this.isPopShow) {
+    showDialogInfo(info, num) {
+      if (!this.isPopShow) {
         return
       }
       this.numberLine = num
       this.newData = JSON.parse(JSON.stringify(this.chart))
       let drillList = []
-      if(typeof this.newData.drillFields === 'object') {
+      if (typeof this.newData.drillFields === 'object') {
         drillList = JSON.parse(JSON.stringify(this.newData.drillFields))
-      } else if(typeof this.newData.drillFields === 'string'){
+      } else if (typeof this.newData.drillFields === 'string') {
         drillList = JSON.parse(this.newData.drillFields)
       }
       let xaxisList = []
-      if(typeof this.newData.xaxis === 'object') {
+      if (typeof this.newData.xaxis === 'object') {
         xaxisList = JSON.parse(JSON.stringify(this.newData.xaxis))
-      } else if(typeof this.newData.xaxis === 'string') {
+      } else if (typeof this.newData.xaxis === 'string') {
         xaxisList = JSON.parse(this.newData.xaxis)
       }
       drillList.map(item => {
@@ -317,11 +317,11 @@ export default {
       })
       console.log(xaxisList)
       this.newData.xaxis = JSON.stringify(xaxisList)
-      this.newData.drillFields = "[]"
-      this.newData.drillFilters = "[]"
+      this.newData.drillFields = '[]'
+      this.newData.drillFilters = '[]'
       delete this.newData.data
       console.log(this.newData)
-      let obj = {
+      const obj = {
         cache: false,
         drill: [],
         filter: [],
@@ -329,16 +329,16 @@ export default {
         outerParamsFilters: undefined,
         queryFrom: 'panel_edit',
         resultCount: 1000,
-        resultMode: "all",
+        resultMode: 'all'
       }
       // 缓存对组件的数据维度进行处理的操作为了之后查询的数据
-      save2Cache(this.newData.sceneId,this.newData).then(() => {
-        viewData(this.newData.id,this.newData.sceneId,obj).then(res => {
+      save2Cache(this.newData.sceneId, this.newData).then(() => {
+        viewData(this.newData.id, this.newData.sceneId, obj).then(res => {
           // console.log('response',res)
-          let data = res.data.data
-          let fields = data.fields
-          let tableRow = []
-          data.tableRow.map((item,index) => {
+          const data = res.data.data
+          const fields = data.fields
+          const tableRow = []
+          data.tableRow.map((item, index) => {
             tableRow.push({
               ...item,
               isClick: index
@@ -347,16 +347,16 @@ export default {
           // console.log(info,fields,tableRow)
           let obj = {}
           tableRow.map(item => {
-            if(item.isClick === info.isClick) {
+            if (item.isClick === info.isClick) {
               obj = item
             }
           })
           // console.log(obj)
-          let arr = []
-          for(let k in obj) {
-            let a = k
+          const arr = []
+          for (const k in obj) {
+            const a = k
             fields.map(item => {
-              if(a === item.datainsName) {
+              if (a === item.datainsName) {
                 arr.push({
                   name: item.name,
                   value: obj[a]
@@ -364,12 +364,12 @@ export default {
               }
             })
           }
-          let hash = {}
-          const arr1 = arr.reduceRight((item,next) => {
-            hash[next.name] ? "" : hash[next.name] = true && item.push(next)
+          const hash = {}
+          const arr1 = arr.reduceRight((item, next) => {
+            hash[next.name] ? '' : hash[next.name] = true && item.push(next)
             return item
-          },[])
-          console.log(arr,arr1)
+          }, [])
+          console.log(arr, arr1)
           this.infoForm = arr1
 
           this.isVisible = true
@@ -377,7 +377,7 @@ export default {
           // this.popShow()
         })
       })
-      
+
       // console.log('行----信息', info, this.fields)
       // // this.dialogVisible = true
       // let arr = []
@@ -393,7 +393,7 @@ export default {
       //   })
       // }
       // console.log('arr...',arr)
-      
+
       // this.infoForm = arr
     },
     closePop() {
@@ -430,7 +430,7 @@ export default {
     },
     tableScroll() {
       this.timer = setInterval(() => {
-        console.log('2222')
+        console.log('轮播表格2222')
         const data = this.dataInfo[0]
         setTimeout(() => {
           this.dataInfo.splice(0, 1)
@@ -438,13 +438,32 @@ export default {
         setTimeout(() => {
           this.dataInfo.push(data)
         }, 500)
+        console.log('存储数据', this.dataInfo[3])
+        const keyObj = this.dataInfo[3]
+        const objArr = []
+        for (const key in keyObj) {
+          console.log('数据', key, keyObj[key])
+          objArr.push(keyObj[key])
+        }
+        console.log('objArr', objArr)
+        const keyValue = []
+        keyValue.push(objArr[0])
+        // this.setCondition(keyValue)
       }, this.scrolleTime) // 滚动速度
+    },
+    setCondition(key) {
+      const param = {
+        component: this.element,
+        value: key,
+        operator: 'eq'
+      }
+      this.$store.commit('addViewFilter', param)
     },
     prossData() {
       this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
 
-      let arr = []
-      this.chart.data.tableRow.map((item,index) => {
+      const arr = []
+      this.chart.data.tableRow.map((item, index) => {
         arr.push({
           ...item,
           isClick: index
@@ -584,7 +603,6 @@ export default {
           // this.pop_content.borderBottomStyle = customAttr.label.popContentBorderBottomStyle
           // this.pop_content.borderBottomWidth = customAttr.label.popContentBorderBottomWidth + 'px'
           this.pop_content.borderBottomColor = customAttr.label.popContentBorderBottomColor
-
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
         this.tableScroll()

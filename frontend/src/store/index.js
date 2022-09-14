@@ -223,6 +223,7 @@ const data = {
       const condition = formatCondition(data)
       const vValid = valueValid(condition)
       //   1.根据componentId过滤
+      console.log('condition', condition, 'vValid', vValid)
       const filterComponentId = condition.componentId
 
       //   2.循环每个Component 得到 三种情况 a增加b删除c无操作
