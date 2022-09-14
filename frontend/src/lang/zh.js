@@ -1840,6 +1840,7 @@ export default {
     sys_template: '系统模板',
     user_template: '用户模板',
     add_category: '添加分类',
+    add_app_category: '添加应用分类',
     filter_keywords: '输入关键字进行过滤',
     dashboard_theme: '仪表板主题',
     table: '表格',
@@ -1859,6 +1860,7 @@ export default {
     export_to_panel: '导出为模板',
     export_to_pdf: '导出为PDF',
     export_to_img: '导出为图片',
+    export_to_app: '导出为应用',
     preview: '预览',
     fullscreen_preview: '全屏预览',
     new_tab_preview: '新Tab页预览',
@@ -2223,7 +2225,10 @@ export default {
     i18n_msg_type_ds_invalid: '数据源失效',
     i18n_msg_type_all: '全部类型',
     channel_inner_msg: '站内消息',
-    channel_email_msg: '邮件提醒'
+    channel_email_msg: '邮件提醒',
+    channel_wecom_msg: '企业微信',
+    channel_dingtalk_msg: '钉钉提醒',
+    channel_lark_msg: '飞书提醒'
   },
   denumberrange: {
     label: '数值区间',

@@ -15,6 +15,7 @@ import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.controller.request.panel.PanelViewDetailsRequest;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.authModel.VAuthModelDTO;
+import io.dataease.dto.panel.PanelExport2App;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.service.panel.PanelGroupService;
 import io.swagger.annotations.Api;
@@ -190,5 +191,9 @@ public class PanelGroupController {
     @I18n
     public Object findPanelElementInfo(@PathVariable String viewId){
        return panelGroupService.findPanelElementInfo(viewId);
+    }
+    @GetMapping("/export2AppCheck/{panelId}")
+    public PanelExport2App export2AppCheck(@PathVariable String panelId){
+       return  panelGroupService.panelExport2AppCheck(panelId);
     }
 }

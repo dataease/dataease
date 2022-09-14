@@ -94,6 +94,27 @@
         </if>
     </select>
 
+    <select id="findByPanelId" resultMap="TaskResult">
+        select
+            dataset_table_task.*
+        from dataset_table_task
+        where id in (
+            SELECT
+                table_id
+            FROM
+                chart_view
+            WHERE
+                    id IN (
+                    SELECT
+                        chart_view_id
+                    FROM
+                        panel_view
+                    WHERE
+                        panel_id = #{panelId}
+                )
+        )
+    </select>
+
 
 
 </mapper>

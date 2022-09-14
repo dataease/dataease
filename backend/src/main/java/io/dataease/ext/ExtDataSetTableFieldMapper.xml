@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.ext.ExtDataSetTableFieldMapper">
+    <resultMap id="BaseResultMapDTO" type="io.dataease.plugins.common.base.domain.DatasetTableField"
+               extends="io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper.BaseResultMap">
+
+    </resultMap>
+
+    <select id="findByPanelId" resultMap="BaseResultMapDTO">
+        select
+            dataset_table_field.*
+        from dataset_table_field
+        where table_id in (
+            SELECT
+                table_id
+            FROM
+                chart_view
+            WHERE
+                    id IN (
+                    SELECT
+                        chart_view_id
+                    FROM
+                        panel_view
+                    WHERE
+                        panel_id = #{panelId}
+                )
+        )
+    </select>
+</mapper>

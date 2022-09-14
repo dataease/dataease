@@ -231,7 +231,12 @@ export function seniorCfg(chart_option, chart) {
         if (customStyle.yAxis) {
           yAxis = JSON.parse(JSON.stringify(customStyle.yAxis))
         }
-        senior.assistLine.forEach(ele => {
+
+        const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
+        const dynamicLines = chart.data.dynamicAssistLines
+        const lines = fixedLines.concat(dynamicLines)
+
+        lines.forEach(ele => {
           if (chart.type.includes('horizontal')) {
             chart_option.series[0].markLine.data.push({
               symbol: 'none',

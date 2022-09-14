@@ -1840,6 +1840,7 @@ export default {
     sys_template: '繫統模闆',
     user_template: '用戶模闆',
     add_category: '添加分類',
+    add_app_category: '添加应用分類',
     filter_keywords: '輸入關鍵字進行過濾',
     dashboard_theme: '儀錶闆主題',
     table: '錶格',
@@ -1859,6 +1860,7 @@ export default {
     export_to_panel: '導出爲模闆',
     export_to_pdf: '導出爲PDF',
     export_to_img: '導出爲圖片',
+    export_to_app: '導出爲应用',
     preview: '預覽',
     fullscreen_preview: '全屏預覽',
     new_tab_preview: '新Tab頁預覽',
@@ -2223,7 +2225,10 @@ export default {
     i18n_msg_type_ds_invalid: '數據源失效',
     i18n_msg_type_all: '全部類型',
     channel_inner_msg: '站內消息',
-    channel_email_msg: '郵件提醒'
+    channel_email_msg: '郵件提醒',
+    channel_wecom_msg: '企業微信',
+    channel_dingtalk_msg: '釘釘提醒',
+    channel_lark_msg: '飛書提醒'
   },
   denumberrange: {
     label: '數值區間',

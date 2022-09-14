@@ -11,6 +11,7 @@ import io.dataease.dto.panel.PanelViewDto;
 import io.dataease.dto.panel.PanelViewTableDTO;
 import io.dataease.dto.panel.po.PanelViewInsertDTO;
 import io.dataease.dto.panel.po.PanelViewPo;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
 import io.dataease.plugins.common.base.domain.PanelView;
 import io.dataease.plugins.common.base.domain.PanelViewExample;
@@ -167,5 +168,9 @@ public class PanelViewService {
         } else {
             return null;
         }
+    }
+
+    public List<ChartViewWithBLOBs> findByPanelId(String panelId) {
+        return extChartViewMapper.findByPanelId(panelId);
     }
 }

@@ -8,10 +8,8 @@
         <span v-html="details.content"></span>
       </el-row>
       <el-row class="card_bottom">
-        <a target="_blank" :href="details.href">
           {{$t('wizard.click_show') }}
           <i class="el-icon-arrow-right" />
-        </a>
       </el-row >
     </el-col>
     <svg-icon class="img-position" :icon-class="details.img"></svg-icon>

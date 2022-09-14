@@ -1840,6 +1840,7 @@ export default {
     sys_template: 'System Template',
     user_template: 'User Template',
     add_category: 'Add Category',
+    add_app_category: 'Add App Category',
     filter_keywords: 'Enter keywords to filter',
     dashboard_theme: 'Dashboard Theme',
     table: 'Table',
@@ -1859,6 +1860,7 @@ export default {
     export_to_panel: 'Export to template',
     export_to_pdf: 'Export to PDF',
     export_to_img: 'Export to Image',
+    export_to_app: 'Export to App',
     preview: 'Preview',
     fullscreen_preview: 'Fullscreen Preview',
     new_tab_preview: 'New Tab Preview',
@@ -2221,8 +2223,11 @@ export default {
     i18n_msg_type_dataset_sync_faild: 'Dataset synchronization failed',
     i18n_msg_type_all: 'All type',
     i18n_msg_type_ds_invalid: 'Datasource invalid',
-    channel_inner_msg: 'On site news',
-    channel_email_msg: 'Mail notification'
+    channel_inner_msg: 'On site',
+    channel_email_msg: 'Email',
+    channel_wecom_msg: 'Wecom',
+    channel_dingtalk_msg: 'Dingtalk',
+    channel_lark_msg: 'Lark'
   },
   denumberrange: {
     label: 'Number range',

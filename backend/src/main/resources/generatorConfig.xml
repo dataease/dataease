@@ -63,8 +63,8 @@
 <!--        <table tableName="de_engine">-->
 <!--            <columnOverride column="configuration" property="configuration" javaType="java.lang.String"/>-->
 <!--        </table>-->
-        <table tableName="panel_link_jump"/>
-        <table tableName="panel_link_jump_info"/>
+        <table tableName="panel_app_template"/>
+<!--        <table tableName="panel_link_jump_info"/>-->
 <!--        <table tableName="panel_outer_params_info"/>-->
 <!--        <table tableName="panel_outer_params_target_view_info"/>-->
     </context>

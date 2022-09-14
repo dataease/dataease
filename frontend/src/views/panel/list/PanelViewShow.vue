@@ -60,6 +60,7 @@
                   <el-dropdown-item icon="el-icon-copy-document" @click.native="downloadToTemplate">{{ $t('panel.export_to_panel') }}</el-dropdown-item>
                   <el-dropdown-item icon="el-icon-notebook-2" @click.native="downloadAsPDF">{{ $t('panel.export_to_pdf') }}</el-dropdown-item>
                   <el-dropdown-item icon="el-icon-picture-outline" @click.native="downloadAsImage">{{ $t('panel.export_to_img') }}</el-dropdown-item>
+                  <el-dropdown-item icon="el-icon-s-data" @click.native="downLoadToApp">{{ $t('panel.export_to_app') }}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
@@ -164,7 +165,7 @@ import { starStatus, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
-import { initPanelData, updatePanelStatus } from '@/api/panel/panel'
+import {export2AppCheck, initPanelData, updatePanelStatus} from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import { dataURLToBlob } from '@/components/canvas/utils/utils'
 import { findResourceAsBase64 } from '@/api/staticResource/staticResource'
@@ -325,6 +326,48 @@ export default {
         console.error(e)
         _this.dataLoading = false
       }
+    },
+    saveAppFile(appAttachInfo) {
+      const _this = this
+      _this.dataLoading = true
+      try {
+        _this.findStaticSource(function(staticResource) {
+          html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+            _this.dataLoading = false
+            const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+            if (snapshot !== '') {
+              const panelInfo = {
+                name: _this.$store.state.panel.panelInfo.name,
+                id: _this.$store.state.panel.panelInfo.id,
+                snapshot: snapshot,
+                panelStyle: JSON.stringify(_this.canvasStyleData),
+                panelData: JSON.stringify(_this.componentData),
+                staticResource: JSON.stringify(staticResource || {})
+              }
+              appAttachInfo['panelInfo'] = JSON.stringify(panelInfo)
+              const blob = new Blob([JSON.stringify(appAttachInfo)], { type: '' })
+              FileSaver.saveAs(blob, _this.$store.state.panel.panelInfo.name + '-APP.DEAPP')
+            }
+          })
+        })
+      } catch (e) {
+        console.error(e)
+        _this.dataLoading = false
+      }
+    },
+    downLoadToApp(){
+      this.dataLoading = true
+      export2AppCheck(this.$store.state.panel.panelInfo.id).then(rsp=>{
+        if(rsp.data.checkStatus){
+          this.saveAppFile(rsp.data)
+        }else{
+          this.dataLoading = false
+          this.$message({
+            message: rsp.data.checkMes,
+            type: 'error'
+          })
+        }
+      })
     },
     // 解析静态文件
     findStaticSource(callBack) {
