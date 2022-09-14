@@ -1016,7 +1016,8 @@ export default {
     table_item_fontsize: '錶格字體大小',
     table_header_bg: '錶頭背景',
     table_item_bg: '錶格背景',
-    table_item_font_color: '字體顔色',
+    table_header_font_color: '表頭字體',
+    table_item_font_color: '表格字體',
     stripe: '斑馬紋',
     start_angle: '起始角度',
     end_angle: '結束角度',
@@ -1329,7 +1330,10 @@ export default {
     chart_group: '子類別',
     chart_bar_group: '分組柱狀圖',
     field_dynamic: '動態值',
-    aggregation: '聚合方式'
+    aggregation: '聚合方式',
+    filter_between: '介於',
+    field_not_empty: '字段不能為空',
+    summary_not_empty: '聚合方式不能為空'
   },
   dataset: {
     parse_filed: '解析字段',

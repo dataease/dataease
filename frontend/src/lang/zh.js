@@ -1016,7 +1016,8 @@ export default {
     table_item_fontsize: '表格字体大小',
     table_header_bg: '表头背景',
     table_item_bg: '表格背景',
-    table_item_font_color: '字体颜色',
+    table_header_font_color: '表头字体',
+    table_item_font_color: '表格字体',
     stripe: '斑马纹',
     start_angle: '起始角度',
     end_angle: '结束角度',
@@ -1329,7 +1330,10 @@ export default {
     chart_group: '子类别',
     chart_bar_group: '分组柱状图',
     field_dynamic: '动态值',
-    aggregation: '聚合方式'
+    aggregation: '聚合方式',
+    filter_between: '介于',
+    field_not_empty: '字段不能为空',
+    summary_not_empty: '聚合方式不能为空'
   },
   dataset: {
     parse_filed: '解析字段',
