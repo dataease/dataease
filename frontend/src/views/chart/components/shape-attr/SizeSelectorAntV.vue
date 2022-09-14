@@ -59,6 +59,10 @@
           <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
 
+        <el-form-item v-if="chart.type && chart.type === 'pie-rose'" :label="$t('chart.pie_rose_label_offset')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.pieRoseOffset" show-input :show-input-controls="false" input-size="mini" :min="-100" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+
         <!--        <span v-show="chart.type && chart.type.includes('pie-rose')">-->
         <!--          <el-form-item :label="$t('chart.rose_type')" class="form-item">-->
         <!--            <el-radio-group v-model="sizeForm.pieRoseType" size="mini" @change="changeBarSizeCase">-->
@@ -111,7 +115,7 @@
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('chart.table_Highlight')" class="form-item">
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="$t('chart.table_Highlight')" class="form-item">
           <el-slider v-model="sizeForm.highlightNumber" show-input :show-input-controls="false" input-size="mini" :min="1" :max="50" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮字体大小'" class="form-item">

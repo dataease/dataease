@@ -1039,6 +1039,7 @@ export default {
     chart_waterfall: '瀑布图',
     pie_inner_radius_percent: '内径占比',
     pie_outer_radius_size: '外径大小',
+    pie_rose_label_offset: '标签偏移量',
     table_page_size: '分页',
     table_page_size_unit: '条/页',
     result_count: '结果展示',

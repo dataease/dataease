@@ -33,6 +33,7 @@ export const DEFAULT_SIZE = {
   lineArea: false,
   pieInnerRadius: 0,
   pieOuterRadius: 80,
+  pieRoseOffset: 10,
   pieRoseType: 'radius',
   pieRoseRadius: 5,
   funnelWidth: 80,
