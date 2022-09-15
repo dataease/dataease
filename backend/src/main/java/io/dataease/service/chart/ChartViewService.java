@@ -56,6 +56,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,6 +116,8 @@ public class ChartViewService {
     private PermissionsTreeService permissionsTreeService;
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
+
+    private static final Logger logger = LoggerFactory.getLogger(ChartViewService.class);
 
 
     //默认使用非公平
@@ -917,6 +921,7 @@ public class ChartViewService {
             data = datasourceProvider.getData(datasourceRequest);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields));
+                logger.info(datasourceAssistRequest.getQuery());
                 assistData = datasourceProvider.getData(datasourceAssistRequest);
             }
         } else if (table.getMode() == 1) {// 抽取
@@ -938,6 +943,7 @@ public class ChartViewService {
             }
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields));
+                logger.info(datasourceAssistRequest.getQuery());
                 assistData = datasourceProvider.getData(datasourceAssistRequest);
             }
             // 仪表板有参数不使用缓存
