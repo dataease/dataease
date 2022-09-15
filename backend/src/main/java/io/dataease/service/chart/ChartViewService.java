@@ -1658,10 +1658,14 @@ public class ChartViewService {
         String senior = view.getSenior();
         JSONObject jsonObject = JSONObject.parseObject(senior);
         JSONArray assistLine = jsonObject.getJSONArray("assistLine");
+        List<ChartSeniorAssistDTO> list = new ArrayList<>();
+        if (ObjectUtils.isEmpty(assistLine) || StringUtils.isBlank(assistLine.toJSONString())) {
+            return list;
+        }
         List<ChartSeniorAssistDTO> assistLines = gson.fromJson(assistLine.toJSONString(), new TypeToken<List<ChartSeniorAssistDTO>>() {
         }.getType());
 
-        List<ChartSeniorAssistDTO> list = new ArrayList<>();
+
         for (ChartSeniorAssistDTO dto : assistLines) {
             if (StringUtils.equalsIgnoreCase(dto.getField(), "0")) {
                 continue;
