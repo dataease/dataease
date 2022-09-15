@@ -36,7 +36,7 @@
               <span style="float: left; color: #8492a6; font-size: 12px">{{ quota.name }}</span>
             </el-option>
           </el-select>
-          <el-select v-model="item.summary" size="mini" class="select-item" :placeholder="$t('chart.summary')" @change="changeAssistLine">
+          <el-select v-model="item.summary" size="mini" class="select-item" :placeholder="$t('chart.aggregation')" @change="changeAssistLine">
             <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="sum" value="sum" :label="$t('chart.sum')" />
             <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="avg" value="avg" :label="$t('chart.avg')" />
             <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="max" value="max" :label="$t('chart.max')" />

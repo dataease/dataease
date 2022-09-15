@@ -1016,7 +1016,8 @@ export default {
     table_item_fontsize: 'Table font size',
     table_header_bg: 'Header Background',
     table_item_bg: 'Table Background',
-    table_item_font_color: 'Font Color',
+    table_header_font_color: 'Header Font',
+    table_item_font_color: 'Table Font',
     stripe: 'Zebra pattern',
     start_angle: 'Start Angle',
     end_angle: 'End Angle',
@@ -1329,7 +1330,10 @@ export default {
     chart_group: 'Sub Type',
     chart_bar_group: 'Bar Group',
     field_dynamic: 'Dynamic',
-    aggregation: 'Aggregation'
+    aggregation: 'Aggregation',
+    filter_between: 'Between',
+    field_not_empty: 'Field can not be empty',
+    summary_not_empty: 'Summary can not be empty'
   },
   dataset: {
     parse_filed: 'Parse Field',
@@ -2338,6 +2342,11 @@ export default {
     panel: 'Panel',
     content: 'Content',
     recipients: 'Recipients',
+    recisetting: 'channel',
+    email: 'Email',
+    wecom: 'Wecom',
+    dingtalk: 'Dingtalk',
+    lark: 'Lark',
     pixel: 'Pixel',
     default: 'Default',
     custom: 'Custom',

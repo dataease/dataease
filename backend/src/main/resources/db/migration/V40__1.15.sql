@@ -58,3 +58,9 @@ INSERT INTO `sys_msg_channel` VALUES (5, 'webmsg.channel_lark_msg', 'sendLark');
 UPDATE `dataset_table_function` SET `func` = 'CONCAT(s1,s2,...)' WHERE `id` = 29;
 UPDATE `dataset_table_function` SET `func` = 'CONCAT(s1,s2,...)' WHERE `id` = 78;
 
+
+
+ALTER TABLE `sys_task_email`
+    ADD COLUMN `recisetting` varchar(255) NULL COMMENT '消息渠道' AFTER `view_ids`,
+    ADD COLUMN `conditions` longtext NULL COMMENT '仪表板条件' AFTER `recisetting`;
+
