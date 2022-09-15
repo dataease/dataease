@@ -4,7 +4,6 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
-import io.dataease.plugins.common.base.domain.DatasetTableTask;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.utils.PageUtils;
@@ -12,6 +11,7 @@ import io.dataease.commons.utils.Pager;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.dataset.DataSetTaskDTO;
+import io.dataease.plugins.common.base.domain.DatasetTableTask;
 import io.dataease.service.dataset.DataSetTableTaskLogService;
 import io.dataease.service.dataset.DataSetTableTaskService;
 import io.swagger.annotations.Api;
@@ -60,6 +60,14 @@ public class DataSetTableTaskController {
     @PostMapping("list")
     public List<DatasetTableTask> list(@RequestBody DatasetTableTask datasetTableTask) {
         return dataSetTableTaskService.list(datasetTableTask);
+    }
+
+    @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @ApiOperation("分页查询")
+    @PostMapping("list/{goPage}/{pageSize}")
+    public Pager<List<DatasetTableTask>> list(@RequestBody DatasetTableTask datasetTableTask, @PathVariable int goPage, @PathVariable int pageSize) {
+        Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
+        return PageUtils.setPageInfo(page, dataSetTableTaskService.list(datasetTableTask));
     }
 
     @ApiOperation("分页查询")

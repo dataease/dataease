@@ -153,6 +153,8 @@ public class DataSetTableService {
 
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
     public void batchInsert(List<DataSetTableRequest> datasetTable) throws Exception {
+        // 保存之前校验table名称
+        checkNames(datasetTable);
         for (DataSetTableRequest table : datasetTable) {
             save(table);
             // 清理权限缓存
@@ -380,6 +382,13 @@ public class DataSetTableService {
             datasourceRequest.setQuery(ddlProvider.dropTable(TableUtils.tmpName(dorisTableName)));
             jdbcProvider.exec(datasourceRequest);
         }
+    }
+
+    public List<String> getDatasetNameFromGroup(String sceneId) {
+        DatasetTableExample example = new DatasetTableExample();
+        example.createCriteria().andSceneIdEqualTo(sceneId);
+        List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(example);
+        return datasetTables.stream().map(DatasetTable::getName).collect(Collectors.toList());
     }
 
     public List<DataSetTableDTO> list(DataSetTableRequest dataSetTableRequest) {
@@ -936,7 +945,7 @@ public class DataSetTableService {
             return new ArrayList<>();
         }
 
-        if(!Arrays.asList("DATE", "TEXT", "NUM").contains(type)){
+        if (!Arrays.asList("DATE", "TEXT", "NUM").contains(type)) {
             return new ArrayList<>();
         }
         ChartViewExample chartViewExample = new ChartViewExample();
@@ -965,24 +974,28 @@ public class DataSetTableService {
                 }
             }
         }
-        switch (type){
+        switch (type) {
             case "DATE":
-                sqlVariableDetails =  sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("DATETIME")).collect(Collectors.toList());
+                sqlVariableDetails = sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("DATETIME")).collect(Collectors.toList());
                 sqlVariableDetails.forEach(item -> {
-                    if(item.getType().size()> 1){
+                    if (item.getType().size() > 1) {
                         item.setAlias(item.getVariableName() + "[" + item.getType().get(1) + "]");
-                    }else {
+                    } else {
                         item.setAlias(item.getVariableName());
                     }
                 });
                 break;
             case "TEXT":
-                sqlVariableDetails =  sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("TEXT")).collect(Collectors.toList());
-                sqlVariableDetails.forEach(item -> {item.setAlias(item.getVariableName());});
+                sqlVariableDetails = sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("TEXT")).collect(Collectors.toList());
+                sqlVariableDetails.forEach(item -> {
+                    item.setAlias(item.getVariableName());
+                });
                 break;
             case "NUM":
-                sqlVariableDetails =  sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("LONG") || item.getType().get(0).contains("DOUBLE")).collect(Collectors.toList());
-                sqlVariableDetails.forEach(item -> {item.setAlias(item.getVariableName());});
+                sqlVariableDetails = sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("LONG") || item.getType().get(0).contains("DOUBLE")).collect(Collectors.toList());
+                sqlVariableDetails.forEach(item -> {
+                    item.setAlias(item.getVariableName());
+                });
                 break;
         }
         return sqlVariableDetails;
@@ -1072,7 +1085,7 @@ public class DataSetTableService {
         return handleWith(plainSelect, select);
     }
 
-    private String handleWith(PlainSelect plainSelect, Select select)throws Exception{
+    private String handleWith(PlainSelect plainSelect, Select select) throws Exception {
         StringBuilder builder = new StringBuilder();
         if (CollectionUtils.isNotEmpty(select.getWithItemsList())) {
             builder.append("WITH");
@@ -1089,6 +1102,45 @@ public class DataSetTableService {
         builder.append(" " + plainSelect);
         return builder.toString();
     }
+
+    public Map<String, Object> getDBPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
+        Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
+        if (ds == null) {
+            throw new Exception(Translator.get("i18n_invalid_ds"));
+        }
+        Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(ds);
+        DataTableInfoDTO dataTableInfo = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
+        String sql = "SELECT * FROM " + dataTableInfo.getTable();
+        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+        String sqlAsTable = qp.createSQLPreview(sql, null);
+        datasourceRequest.setQuery(sqlAsTable);
+        Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
+        List<String[]> data = result.get("dataList");
+        List<TableField> fields = result.get("fieldList");
+        String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
+        if (checkIsRepeat(fieldArray)) {
+            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
+        }
+        List<Map<String, Object>> jsonArray = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(data)) {
+            jsonArray = data.stream().map(ele -> {
+                Map<String, Object> map = new HashMap<>();
+                for (int i = 0; i < ele.length; i++) {
+                    map.put(fieldArray[i], ele[i]);
+                }
+                return map;
+            }).collect(Collectors.toList());
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("fields", fields);
+        map.put("data", jsonArray);
+
+        return map;
+    }
+
     public Map<String, Object> getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
         if (ds == null) {
@@ -2083,6 +2135,31 @@ public class DataSetTableService {
         }
         if (StringUtils.isNotEmpty(datasetTable.getName())) {
             criteria.andNameEqualTo(datasetTable.getName());
+        }
+        List<DatasetTable> list = datasetTableMapper.selectByExample(datasetTableExample);
+        if (list.size() > 0) {
+            throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
+        }
+    }
+
+    private void checkNames(List<DataSetTableRequest> datasetTable) {
+        if (CollectionUtils.isEmpty(datasetTable)) {
+            return;
+        }
+        Set<String> nameSet = new HashSet<>();
+        for (DataSetTableRequest table : datasetTable) {
+            nameSet.add(table.getName());
+        }
+        if (nameSet.size() != datasetTable.size()) {
+            throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
+        }
+        DatasetTableExample datasetTableExample = new DatasetTableExample();
+        DatasetTableExample.Criteria criteria = datasetTableExample.createCriteria();
+        if (StringUtils.isNotEmpty(datasetTable.get(0).getSceneId())) {
+            criteria.andSceneIdEqualTo(datasetTable.get(0).getSceneId());
+        }
+        if (CollectionUtils.isNotEmpty(nameSet)) {
+            criteria.andNameIn(new ArrayList<>(nameSet));
         }
         List<DatasetTable> list = datasetTableMapper.selectByExample(datasetTableExample);
         if (list.size() > 0) {
