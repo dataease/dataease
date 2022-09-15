@@ -6,7 +6,7 @@
       <div class="login-container">
         <el-row v-loading="loading" type="flex">
           <el-col :span="12">
-            <div v-show="qrTypes.length" class="trans" @click="showQr">
+            <div v-show="qrTypes.length" :class="codeShow ? 'trans-pc' : 'trans'" @click="showQr">
               <div v-show="imgAppShow" class="imgApp" />
             </div>
             <el-form v-show="!codeShow" ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
@@ -484,6 +484,16 @@ export default {
   height: 64px;
   background-image: url(../../assets/qrcode.png) ;
   // background-color:  var(--primary,#3370ff); //图标优化 -- 换为白色线条图标 背景层添加背景色
+  cursor:pointer;
+}
+.trans-pc {
+  position: absolute;
+  left: calc(50% - 64px);
+  top: 0;
+  width: 64px;
+  height: 64px;
+  background-image: url(../../assets/xianshiqi.png) ;
+  background-color:  var(--primary,#3370ff);
   cursor:pointer;
 }
 .imgApp {
