@@ -94,6 +94,9 @@
           <el-form-item v-show="showProperty('tableItemBgColor')" :label="$t('chart.table_item_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableItemBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableItemBgColor')" />
           </el-form-item>
+          <el-form-item v-show="showProperty('tableHeaderFontColor')" :label="$t('chart.table_header_font_color')" class="form-item">
+            <el-color-picker v-model="colorForm.tableHeaderFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableHeaderFontColor')" />
+          </el-form-item>
           <el-form-item v-show="showProperty('tableFontColor')" :label="$t('chart.table_item_font_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableFontColor')" />
           </el-form-item>
@@ -300,6 +303,7 @@ export default {
           }
 
           this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
+          this.colorForm.tableHeaderFontColor = this.colorForm.tableHeaderFontColor ? this.colorForm.tableHeaderFontColor : this.colorForm.tableFontColor
 
           this.initCustomColor()
         }

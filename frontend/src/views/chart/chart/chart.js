@@ -18,6 +18,7 @@ export const DEFAULT_COLOR_CASE = {
   alpha: 100,
   tableHeaderBgColor: '#6D9A49',
   tableItemBgColor: '#FFFFFF',
+  tableHeaderFontColor: '#000000',
   tableFontColor: '#000000',
   tableStripe: true,
   dimensionColor: '#000000',

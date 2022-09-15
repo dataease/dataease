@@ -67,6 +67,9 @@
           <el-form-item :label="$t('chart.table_item_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableItemBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableItemBgColor')" />
           </el-form-item>
+          <el-form-item :label="$t('chart.table_header_font_color')" class="form-item">
+            <el-color-picker v-model="colorForm.tableHeaderFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableHeaderFontColor')" />
+          </el-form-item>
           <el-form-item :label="$t('chart.table_item_font_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableFontColor')" />
           </el-form-item>
@@ -82,7 +85,7 @@
 <script>
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { mapState } from 'vuex'
-import bus from "@/utils/bus";
+import bus from '@/utils/bus'
 
 export default {
   name: 'ColorSelector',
@@ -183,16 +186,17 @@ export default {
   ]),
   created() {
     this.initForm()
-    bus.$on('onThemeColorChange',this.initForm)
+    bus.$on('onThemeColorChange', this.initForm)
   },
   beforeDestroy() {
-    bus.$off('onThemeColorChange',this.initForm)
+    bus.$off('onThemeColorChange', this.initForm)
   },
   mounted() {
   },
   methods: {
     initForm() {
       this.colorForm = this.canvasStyleData.chartInfo.chartColor
+      this.colorForm.tableHeaderFontColor = this.colorForm.tableHeaderFontColor ? this.colorForm.tableHeaderFontColor : this.colorForm.tableFontColor
     },
     changeColorOption(modifyName = 'value') {
       const that = this

@@ -200,12 +200,12 @@ export default {
         datas = []
         this.resetPage()
       }
-      datas.forEach(item =>{
-          Object.keys(item).forEach(key=> {
-            if(typeof item[key] === 'object'){
-              item[key] = ""
-            }
-          })
+      datas.forEach(item => {
+        Object.keys(item).forEach(key => {
+          if (typeof item[key] === 'object') {
+            item[key] = ''
+          }
+        })
       })
       this.$refs.plxTable.reloadData(datas)
       this.$nextTick(() => {
@@ -257,7 +257,7 @@ export default {
       if (this.chart.customAttr) {
         const customAttr = JSON.parse(this.chart.customAttr)
         if (customAttr.color) {
-          this.table_header_class.color = customAttr.color.tableFontColor
+          this.table_header_class.color = customAttr.color.tableHeaderFontColor ? customAttr.color.tableHeaderFontColor : customAttr.color.tableFontColor
           this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
           this.table_item_class.color = customAttr.color.tableFontColor
           this.table_item_class.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha)
