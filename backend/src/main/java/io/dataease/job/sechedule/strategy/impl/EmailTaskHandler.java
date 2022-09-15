@@ -5,6 +5,7 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.impl.AuthUserServiceImpl;
 import io.dataease.auth.util.JWTUtils;
+import io.dataease.commons.exception.DEException;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.ext.ExtTaskMapper;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -16,10 +17,16 @@ import io.dataease.job.sechedule.strategy.TaskHandler;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
 import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.xpack.dingtalk.dto.entity.DingtalkMsgResult;
+import io.dataease.plugins.xpack.dingtalk.service.DingtalkXpackService;
 import io.dataease.plugins.xpack.email.dto.request.XpackEmailTaskRequest;
 import io.dataease.plugins.xpack.email.dto.request.XpackPixelEntity;
 import io.dataease.plugins.xpack.email.dto.response.XpackEmailTemplateDTO;
 import io.dataease.plugins.xpack.email.service.EmailXpackService;
+import io.dataease.plugins.xpack.lark.dto.entity.LarkMsgResult;
+import io.dataease.plugins.xpack.lark.service.LarkXpackService;
+import io.dataease.plugins.xpack.wecom.dto.entity.WecomMsgResult;
+import io.dataease.plugins.xpack.wecom.service.WecomXpackService;
 import io.dataease.service.chart.ViewExportExcel;
 import io.dataease.service.system.EmailService;
 import org.apache.commons.lang3.ObjectUtils;
@@ -30,6 +37,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -176,15 +184,61 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                 proxy.setUserId(user.getUserId());
                 files = viewExportExcel.export(panelId, viewIdList, proxy);
             }
-            
-            emailService.sendWithImageAndFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
 
+            List<String> channels = null;
+            String recisetting = emailTemplateDTO.getRecisetting();
+            if (StringUtils.isBlank(recisetting)) {
+                channels = new ArrayList<>();
+                channels.add("email");
+            } else {
+                channels = Arrays.stream(recisetting.split(",")).collect(Collectors.toList());
+            }
+
+            List<String> reciLists = Arrays.stream(recipients.split(",")).collect(Collectors.toList());
+            for (int i = 0; i < channels.size(); i++) {
+                String channel = channels.get(i);
+                switch (channel) {
+                    case "email" :
+                        emailService.sendWithImageAndFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
+                        break;
+                    case "wecom" :
+                        if (SpringContextUtil.getBean(AuthUserService.class).supportWecom()) {
+                            WecomXpackService wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);
+                            WecomMsgResult wecomMsgResult = wecomXpackService.pushOaMsg(reciLists, emailTemplateDTO.getTitle(), contentStr, bytes, files);
+                            if (wecomMsgResult.getErrcode() != 0) {
+                                DEException.throwException(wecomMsgResult.getErrmsg());
+                            }
+                        }
+                        break;
+                    case "dingtalk" :
+                        if (SpringContextUtil.getBean(AuthUserService.class).supportDingtalk()) {
+                            DingtalkXpackService dingtalkXpackService = SpringContextUtil.getBean(DingtalkXpackService.class);
+                            DingtalkMsgResult dingtalkMsgResult = dingtalkXpackService.pushOaMsg(reciLists, emailTemplateDTO.getTitle(), contentStr, bytes, files);
+                            if (dingtalkMsgResult.getErrcode() != 0) {
+                                DEException.throwException(dingtalkMsgResult.getErrmsg());
+                            }
+                        }
+                        break;
+                    case "lark" :
+                        if (SpringContextUtil.getBean(AuthUserService.class).supportLark()) {
+                            LarkXpackService larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
+                            LarkMsgResult larkMsgResult = larkXpackService.pushOaMsg(reciLists, emailTemplateDTO.getTitle(), contentStr, bytes, files);
+                            if (larkMsgResult.getCode() != 0) {
+                                DEException.throwException(larkMsgResult.getMsg());
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
             success(taskInstance);
         } catch (Exception e) {
             error(taskInstance, e);
             LogUtil.error(e.getMessage(), e);
         }
     }
+
 
     private XpackPixelEntity buildPixel(XpackEmailTemplateDTO emailTemplateDTO) {
         XpackPixelEntity pixelEntity = new XpackPixelEntity();

@@ -115,7 +115,7 @@ public class SystemParameterController {
         return GlobalFileUtil.down(fileId, fileName);
     }
 
-    @GetMapping("/showpicture/{fileId}")
+    @GetMapping(value = "/showpicture/{fileId}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<byte[]> showPicture(@PathVariable("fileId") String fileId) throws Exception {
 
         return GlobalFileUtil.showPicture(fileId);
