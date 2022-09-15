@@ -803,7 +803,7 @@
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
-                      :quota-data="quotaData"
+                      :quota-data="view.yaxis"
                       @onAssistLineChange="onAssistLineChange"
                     />
                   </el-collapse-item>
