@@ -37,14 +37,9 @@
             </el-option>
           </el-select>
           <el-select v-model="item.summary" size="mini" class="select-item" :placeholder="$t('chart.aggregation')" @change="changeAssistLine">
-            <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="sum" value="sum" :label="$t('chart.sum')" />
             <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="avg" value="avg" :label="$t('chart.avg')" />
             <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="max" value="max" :label="$t('chart.max')" />
             <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="min" value="min" :label="$t('chart.min')" />
-            <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="stddev_pop" value="stddev_pop" :label="$t('chart.stddev_pop')" />
-            <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="var_pop" value="var_pop" :label="$t('chart.var_pop')" />
-            <el-option key="count" value="count" :label="$t('chart.count')" />
-            <el-option v-if="item.curField && item.curField.id" key="count_distinct" value="count_distinct" :label="$t('chart.count_distinct')" />
           </el-select>
         </el-col>
         <el-col :span="4">
