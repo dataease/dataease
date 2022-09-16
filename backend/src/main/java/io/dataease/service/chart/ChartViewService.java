@@ -1731,8 +1731,10 @@ public class ChartViewService {
         }
         String[] strings = assistData.get(0);
         for (int i = 0; i < dynamicAssistFields.size(); i++) {
-            ChartSeniorAssistDTO chartSeniorAssistDTO = dynamicAssistFields.get(i);
-            chartSeniorAssistDTO.setValue(strings[i]);
+            if (i < strings.length) {
+                ChartSeniorAssistDTO chartSeniorAssistDTO = dynamicAssistFields.get(i);
+                chartSeniorAssistDTO.setValue(strings[i]);
+            }
         }
     }
 }
