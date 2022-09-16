@@ -137,6 +137,17 @@
             <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
         </el-form-item>
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'轮播联动'" class="form-item">
+          <!-- <el-select v-model="sizeForm.bannerLinkage" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
+            <el-option v-for="option in automaticTimeOptions" :key="option.value" :label="option.name" :value="option.value" />
+          </el-select> -->
+          <el-radio-group v-model="sizeForm.bannerLinkage" @change="changeBarSizeCase">
+            <el-radio :label="true"><span>是</span></el-radio>
+            <el-radio :label="false">
+              <span>否</span>
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
         <!-- <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮行'" class="form-item">
           <el-select v-model="sizeForm.heightLightLine" :placeholder="$t('chart.table_item_align')" @change="changeBarSizeCase($event,'open')">
             <el-option v-for="option in heightLightLineOps" :key="option.value" :label="option.name" :value="option.value" />
@@ -331,6 +342,7 @@ export default {
   data() {
     return {
       sizeForm: JSON.parse(JSON.stringify(DEFAULT_SIZE)),
+
       lineSymbolOptions: [
         // { name: this.$t('chart.line_symbol_none'), value: 'none' },
         { name: this.$t('chart.line_symbol_circle'), value: 'circle' },

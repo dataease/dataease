@@ -130,6 +130,7 @@ export default {
   data() {
     return {
       fields: [],
+      bannerLinkageKey: false,
       timer: null,
       info: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       dataInfo: [],
@@ -430,7 +431,11 @@ export default {
     },
     tableScroll() {
       this.timer = setInterval(() => {
-        console.log('轮播表格2222')
+        console.log('轮播表格2222', this.chart.data, this.element)
+        this.element.options = { attrs: {
+          fieldId: this.chart.data.fields[0].id,
+          viewIds: []
+        }, manualModify: true }
         const data = this.dataInfo[0]
         setTimeout(() => {
           this.dataInfo.splice(0, 1)
@@ -440,15 +445,19 @@ export default {
         }, 500)
         console.log('存储数据', this.dataInfo[3])
         const keyObj = this.dataInfo[3]
-        const objArr = []
-        for (const key in keyObj) {
-          console.log('数据', key, keyObj[key])
-          objArr.push(keyObj[key])
-        }
-        console.log('objArr', objArr)
+        // const objArr = []
+        // for (const key in keyObj) {
+        //   console.log('数据', key, keyObj[key])
+        //   objArr.push(keyObj[key])
+        // }
+        // console.log('objArr', objArr)
         const keyValue = []
-        keyValue.push(objArr[0])
-        // this.setCondition(keyValue)
+        // let keys = this.chart.data.fields[0].datainsName
+        keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
+        console.log('keyValue', keyValue)
+        if (this.bannerLinkageKey === true) {
+          this.setCondition(keyValue)
+        }
       }, this.scrolleTime) // 滚动速度
     },
     setCondition(key) {
@@ -575,6 +584,9 @@ export default {
         }
         if (customAttr.size) {
           this.table_header_class.textAlign = customAttr.size.tableHeaderAlign
+          if (customAttr.size.bannerLinkage || customAttr.size.bannerLinkage === false) {
+            this.bannerLinkageKey = customAttr.size.bannerLinkage
+          }
           // this.table_header_class.fontSize = ((customAttr.size.tableTitleFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
           // this.table_item_class.fontSize = ((customAttr.size.tableItemFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
           this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'

@@ -542,7 +542,10 @@ export default {
       handler: function(val1, val2) {
         if (isChange(val1, val2) && !this.isFirstLoad) {
           console.log('触发点-------------------------5')
-          this.getData(this.element.propValue.viewId)
+          console.log('this.element', this.element, this.chart)
+          if (this.chart.type !== 'roll-elemnt') {
+            this.getData(this.element.propValue.viewId)
+          }
         }
       },
       deep: true
@@ -595,8 +598,10 @@ export default {
     // 监听外部计时器变化
     searchCount: function(val1) {
       if (val1 > 0 && this.requestStatus !== 'waiting') {
-        console.log('-----------计时器')
-        this.getData(this.element.propValue.viewId)
+        console.log('-----------计时器', this.chart)
+        if (this.chart.type !== 'roll-elemnt') {
+          this.getData(this.element.propValue.viewId)
+        }
       }
     },
     chartType: function(newVal, oldVal) {
@@ -733,7 +738,7 @@ export default {
     },
     getData(id, cache = true) {
       console.log('getData...,走的获取数据的通道', this.templateStatus, this.isStylePriority, this.canvasStyleData)
-      console.log('getLocal',localStorage.getItem('permissionId'))
+      console.log('getLocal', localStorage.getItem('permissionId'))
       if (id) {
         // this.requestStatus = 'waiting'
         this.message = null
