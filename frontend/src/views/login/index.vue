@@ -483,17 +483,14 @@ export default {
   width: 64px;
   height: 64px;
   background-image: url(../../assets/qrcode.png) ;
-  // background-color:  var(--primary,#3370ff); //图标优化 -- 换为白色线条图标 背景层添加背景色
   cursor:pointer;
 }
 .trans-pc {
-  position: absolute;
-  left: calc(50% - 64px);
+  margin-left: calc(100% - 64px);
   top: 0;
   width: 64px;
   height: 64px;
-  background-image: url(../../assets/xianshiqi.png) ;
-  background-color:  var(--primary,#3370ff);
+  background: var(--primary,#3370ff) url(../../assets/xianshiqi-2.png) no-repeat top right/40px;
   cursor:pointer;
 }
 .imgApp {
