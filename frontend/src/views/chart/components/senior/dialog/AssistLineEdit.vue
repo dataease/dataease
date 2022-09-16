@@ -37,9 +37,9 @@
             </el-option>
           </el-select>
           <el-select v-model="item.summary" size="mini" class="select-item" :placeholder="$t('chart.aggregation')" @change="changeAssistLine">
-            <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="avg" value="avg" :label="$t('chart.avg')" />
-            <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="max" value="max" :label="$t('chart.max')" />
-            <el-option v-if="item.curField && item.curField.id && item.curField.deType !== 0 && item.curField.deType !== 1 && item.curField.deType !== 5" key="min" value="min" :label="$t('chart.min')" />
+            <el-option v-if="item.curField && item.curField.id" key="avg" value="avg" :label="$t('chart.avg')" />
+            <el-option v-if="item.curField && item.curField.id" key="max" value="max" :label="$t('chart.max')" />
+            <el-option v-if="item.curField && item.curField.id" key="min" value="min" :label="$t('chart.min')" />
           </el-select>
         </el-col>
         <el-col :span="4">
@@ -85,7 +85,7 @@ export default {
         name: '辅助线',
         field: '0', // 固定值
         fieldId: '',
-        summary: 'count',
+        summary: 'avg',
         axis: 'y', // 主轴
         value: '0',
         lineType: 'solid',
@@ -122,7 +122,11 @@ export default {
       this.lineArr = JSON.parse(JSON.stringify(this.line))
     },
     addLine() {
-      this.lineArr.push(JSON.parse(JSON.stringify(this.lineObj)))
+      const obj = { ...this.lineObj,
+        curField: this.quotaData ? this.quotaData[0] : null,
+        fieldId: this.quotaData ? this.quotaData[0].id : null
+      }
+      this.lineArr.push(JSON.parse(JSON.stringify(obj)))
       this.changeAssistLine()
     },
     removeLine(index) {
