@@ -1096,6 +1096,8 @@ export default {
     table_config: '表格配置',
     pop_config: '弹窗配置',
     pop_open: '弹窗位置',
+    pop_left: '弹窗左移动',
+    pop_top: '弹窗上移动',
     pop_title_color: '标题字体颜色',
     pop_title_background: '标题背景颜色',
     pop_title_lineHeight: '标题行高',

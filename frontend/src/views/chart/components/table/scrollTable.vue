@@ -11,14 +11,13 @@
       <div class="content">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
           <el-popover
-            v-if="isPopOpen === 'top'"
             width="400"
             trigger="click"
             @show="popShow"
             @hide="popHide"
             v-model="isVisible"
             :disabled="!isPopShow"
-            placement="top"
+            :placement="popOpen.position"
           > 
             <p :style="pop_title" style="margin: 0px;position: relative;">
               <span>详情</span>
@@ -30,105 +29,15 @@
                 <el-col :span="16">{{obj.value}}</el-col>
               </el-col>
             </el-row>
-            <div slot="reference" class="pop_position_top"></div>
+            <div slot="reference" class="pop_position" :style="{left: popOpen.left,top: popOpen.top}"></div>
           </el-popover>
-          <el-popover
-            v-if="isPopOpen === 'left'"
-            width="400"
-            trigger="click"
-            @show="popShow"
-            @hide="popHide"
-            v-model="isVisible"
-            :disabled="!isPopShow"
-            placement="left"
-          > 
-            <p :style="pop_title" style="margin: 0px;position: relative;">
-              <span>详情</span>
-              <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop"></i>
-            </p>
-            <el-row>
-              <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
-                <el-col :span="8" style="text-align: right;">{{obj.name}}：</el-col>
-                <el-col :span="16">{{obj.value}}</el-col>
-              </el-col>
-            </el-row>
-            <div slot="reference" class="pop_position_left"></div>
-          </el-popover>
-          <el-popover
-            v-if="isPopOpen === 'right'"
-            width="400"
-            trigger="click"
-            @show="popShow"
-            @hide="popHide"
-            v-model="isVisible"
-            :disabled="!isPopShow"
-            placement="right"
-          > 
-            <p :style="pop_title" style="margin: 0px;position: relative;">
-              <span>详情</span>
-              <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop"></i>
-            </p>
-            <el-row>
-              <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
-                <el-col :span="8" style="text-align: right;">{{obj.name}}：</el-col>
-                <el-col :span="16">{{obj.value}}</el-col>
-              </el-col>
-            </el-row>
-            <div slot="reference" class="pop_position_right" ></div>
-          </el-popover>
-          <!-- <div slot="reference" class="pop_position_bottom" v-if="isPopOpen === 'bottom'"></div> -->
+          
           <li v-for="(items,inde) in dataInfo" :key="inde" :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items,inde)">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
               {{ items[item.datainsName] }}
             </div>
           </li>
         </ul>
-        <!-- <el-table
-          id="tableInfo"
-          ref="tablesss"
-          :data="dataInfo"
-          height="200"
-          class="custom-table-2 hidden-thead"
-        >
-          <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name">
-            <template slot-scope="scope">
-              {{ scope.row[item.datainsName] }}
-            </template>
-          </el-table-column>
-        </el-table> -->
-        <!-- <vue-seamless-scroll
-          :class-option="classOption"
-          :data="dataInfo"
-          :style="table_item_class"
-        >
-          <ul class="item bgHeightLight infinite-list">
-            <li v-for="(items,inde) in dataInfo" :key="inde" class="table_bode_li" :style="newHeight">
-              <div v-for="(item,index) in fields" :key="index" class="body_info">
-                {{ items[item.datainsName] }}
-              </div>
-            </li>
-          </ul>
-        </vue-seamless-scroll> -->
-
-        <!-- <el-dialog
-          :visible.sync="dialogVisible"
-          width="30%"
-          :before-close="handleClose"
-          :modal="false"
-          :append-to-body="true"
-        > 
-          <div>
-            <p :style="pop_title">
-              <span>详情</span>
-            </p>
-            <el-row>
-              <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
-                <el-col :span="8" style="text-align: right;">{{obj.name}}：</el-col>
-                <el-col :span="16">{{obj.value}}</el-col>
-              </el-col>
-            </el-row>
-          </div>
-        </el-dialog> -->
       </div>
 
     </el-row>
@@ -242,7 +151,11 @@ export default {
       infoForm: [],
       isPopShow: false,
       numberLine: '',
-      isPopOpen: '',
+      popOpen: {
+        position: '',
+        left: '0px',
+        top: '0px',
+      },
       isVisible: false,
       pop_title: {
         textAlign: 'center',
@@ -343,6 +256,7 @@ export default {
       if(!this.isPopShow) {
         return
       }
+      console.log(num)
       this.numberLine = num
       this.newData = JSON.parse(JSON.stringify(this.chart))
       let drillList = []
@@ -619,7 +533,9 @@ export default {
         }
         if (customAttr.label) {
           this.isPopShow = customAttr.label.popShow
-          this.isPopOpen = customAttr.label.popOpen
+          this.popOpen.position = customAttr.label.popOpen
+          this.popOpen.left = customAttr.label.popLeft !== undefined? customAttr.label.popLeft + 'px' : '0px'
+          this.popOpen.top = customAttr.label.popTop !== undefined? customAttr.label.popTop + 'px' : '0px'
           this.pop_title.color = customAttr.label.popTitleColor
           this.pop_title.backgroundColor = customAttr.label.popTitleBackground
           this.pop_title.textAlign = customAttr.label.popPosition
@@ -741,36 +657,11 @@ export default {
 
 <style lang="scss" scoped>
 
-.pop_position_top {
-  width: 100%;
-  height: 2%;
-  left: 0%;
-  top: -2%;
-  position: absolute;
-  z-index: 0;
-}
-.pop_position_bottom {
-  width: 100%;
-  height: 20%;
-  left: 0px;
-  bottom: -2%;
-  position: absolute;
-  z-index: 0;
-}
-.pop_position_left {
-  width: 2%;
-  height: 5%;
-  left: 0px;
-  top: 0px;
-  position: absolute;
-  z-index: 0;
-}
-.pop_position_right {
-  width: 1%;
+.pop_position {
+  width: 3%;
   height: 3%;
-  right: 0px;
-  top: 0px;
   position: absolute;
+  pointer-events: none;
   z-index: 0;
 }
 
