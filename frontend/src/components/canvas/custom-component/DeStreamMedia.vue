@@ -65,10 +65,13 @@ import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 import 'videojs-contrib-hls'
 
+import axios from 'axios'
+
 // FLV
 import flvjs from 'flv.js'
 import '@/custom-theme.css'
 import bus from '@/utils/bus'
+import { methods } from 'vue2-ace-editor'
 export default {
   components: {},
   props: {
@@ -152,12 +155,12 @@ export default {
           if (this.pOption.url === undefined && url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
             this.pOption.url = url
-            this.initOptionHls(url)
+            this.initOptionHls(this.pOption)
           }
           if (this.pOption.url !== undefined && this.pOption.url !== url) {
             this.pOption = this.element.streamMediaLinks[this.element.streamMediaLinks.videoType]
             this.pOption.url = url
-            this.initOptionHls(url, true)
+            this.initOptionHls(this.pOption, true)
           }
         }
         if (this.element.streamMediaLinks.videoType === 'rtmp') {
@@ -228,7 +231,7 @@ export default {
       // })
     }
     if (this.element.streamMediaLinks.videoType === 'hls') {
-      this.initOptionHls(this.pOption.url)
+      this.initOptionHls(this.pOption)
     }
     if (this.element.streamMediaLinks.videoType === 'rtmp') {
       this.initOptionRtmp(this.pOption.url)
@@ -281,41 +284,113 @@ export default {
         }
       })
     },
-    initOptionHls(url, status) {
-      if (status) {
-        this.myPlayerHls.reset() // 重置 video
-        this.myPlayerHls.src([{
-          type: 'application/x-mpegURL',
-          src: url
-        }])
-        this.myPlayerHls.load()
-        this.myPlayerHls.play()
-        return false
-      }
-      this.myPlayerHls = videojs(
-        this.myPlayer[0], {
-          autoplay: this.pOption.autoplay,
-          loop: this.pOption.loop,
-          bigPlayButton: false,
-          textTrackDisplay: false,
-          posterImage: true,
-          errorDisplay: false,
-          controls: true,
-          hls: {
-            withCredentials: true
-          },
-          sources: [{
-            type: 'application/x-mpegURL',
-            src: url
-          }]
-        },
-        function() {
-          // this.play()
-          this.on('error', function() {
-            console.log('视频播放失败')
+    initOptionHls(options, status) {
+      console.log('axios,,,,,,',options)
+      if(options.link === '2') {
+        let data;
+        if(options.params !== '') {
+          let arr = options.params.split('&')
+          let obj = {}
+          arr.map(item => {
+            let arr1 = item.split('=')
+            obj[arr1[0]] = arr1[1]
           })
+          data = obj
         }
-      )
+        console.log(data)
+        // axios({
+        //   url: options.url,
+        //   method: 'post',
+        //   data: JSON.stringify(data),
+        //   timeout: 1000,
+        //   headers: {
+        //     'Content-Type': 'application/json; charset=utf-8'
+        //   }
+        // })
+        axios.post(options.url,data,{
+          headers: {contentType: 'application/json; charset=utf-8'}
+        })
+        .then(res => {
+          console.log('11111,,,,',res)
+
+          if(res.data) {
+            if (status) {
+              this.myPlayerHls.reset() // 重置 video
+              this.myPlayerHls.src([{
+                type: 'application/x-mpegURL',
+                src: res.data.url
+              }])
+              this.myPlayerHls.load()
+              this.myPlayerHls.play()
+              return false
+            }
+
+            this.myPlayerHls = videojs(
+              this.myPlayer[0], {
+                autoplay: this.pOption.autoplay,
+                loop: this.pOption.loop,
+                bigPlayButton: false,
+                textTrackDisplay: false,
+                posterImage: true,
+                errorDisplay: false,
+                controls: true,
+                hls: {
+                  withCredentials: true
+                },
+                sources: [{
+                  type: 'application/x-mpegURL',
+                  src: res.data.url
+                }]
+              },
+              function() {
+                // this.play()
+                this.on('error', function() {
+                  console.log('视频播放失败')
+                })
+              }
+            )
+          }
+        }).catch(error => {
+          console.log('error',error)
+          this.$message.error('视频链接访问失败！')
+        })
+      } else {
+        if (status) {
+          this.myPlayerHls.reset() // 重置 video
+          this.myPlayerHls.src([{
+            type: 'application/x-mpegURL',
+            src: options.url
+          }])
+          this.myPlayerHls.load()
+          this.myPlayerHls.play()
+          return false
+        }
+
+        this.myPlayerHls = videojs(
+          this.myPlayer[0], {
+            autoplay: this.pOption.autoplay,
+            loop: this.pOption.loop,
+            bigPlayButton: false,
+            textTrackDisplay: false,
+            posterImage: true,
+            errorDisplay: false,
+            controls: true,
+            hls: {
+              withCredentials: true
+            },
+            sources: [{
+              type: 'application/x-mpegURL',
+              src: options.url
+            }]
+          },
+          function() {
+            // this.play()
+            this.on('error', function() {
+              console.log('视频播放失败')
+            })
+          }
+        )
+      }
     },
     initOptionRtmp(url, status) {
       if (status) {

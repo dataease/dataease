@@ -9,7 +9,7 @@
         <!--          <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="1" :max="80" @change="changeBarSizeCase" />-->
         <!--        </el-form-item>-->
         <el-form-item :label="$t('chart.bar_gap')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="0" :max="5" :step="0.1" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="-1" :max="5" :step="0.1" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 
@@ -57,6 +57,10 @@
         </el-form-item>
         <el-form-item :label="$t('chart.pie_outer_radius_size')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+
+        <el-form-item v-if="chart.type && chart.type === 'pie-rose'" :label="$t('chart.pie_rose_label_offset')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.pieRoseOffset" show-input :show-input-controls="false" input-size="mini" :min="-100" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
 
         <!--        <span v-show="chart.type && chart.type.includes('pie-rose')">-->
@@ -110,6 +114,9 @@
           <el-select v-model="sizeForm.tableItemFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
             <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
           </el-select>
+        </el-form-item>
+        <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="$t('chart.table_Highlight')" class="form-item">
+          <el-slider v-model="sizeForm.highlightNumber" show-input :show-input-controls="false" input-size="mini" :min="1" :max="50" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item v-show="chart.render && chart.render === 'antv' && chart.type.includes('roll')" :label="'高亮字体大小'" class="form-item">
           <el-select v-model="sizeForm.heightLightFontSize" :placeholder="$t('chart.table_item_fontsize')" @change="changeBarSizeCase">
@@ -256,7 +263,7 @@
           <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="1" :max="80" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.bar_gap')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="0" :max="5" :step="0.1" @change="changeBarSizeCase" />
+          <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="-1" :max="5" :step="0.1" @change="changeBarSizeCase" />
         </el-form-item>
         <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_line') }}</el-divider>
         <el-form-item :label="$t('chart.line_width')" class="form-item form-item-slider">

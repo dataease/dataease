@@ -11,10 +11,12 @@
       <div class="content">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
           <el-popover
+            v-if="isPopOpen === 'top'"
             v-model="isVisible"
             width="400"
             trigger="click"
             :disabled="!isPopShow"
+            placement="top"
             @show="popShow"
             @hide="popHide"
           >
@@ -28,12 +30,54 @@
                 <el-col :span="16">{{ obj.value }}</el-col>
               </el-col>
             </el-row>
-            <div v-if="isPopOpen === 'top'" slot="reference" class="pop_position_top" />
-            <div v-if="isPopOpen === 'bottom'" slot="reference" class="pop_position_bottom" />
-            <div v-if="isPopOpen === 'left'" slot="reference" class="pop_position_left" />
-            <div v-if="isPopOpen === 'right'" slot="reference" class="pop_position_right" />
+            <div slot="reference" class="pop_position_top" />
           </el-popover>
-          <li v-for="(items,inde) in dataInfo" :key="inde" :style="inde == 2 || numberLine === inde?scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items,inde)">
+          <el-popover
+            v-if="isPopOpen === 'left'"
+            v-model="isVisible"
+            width="400"
+            trigger="click"
+            :disabled="!isPopShow"
+            placement="left"
+            @show="popShow"
+            @hide="popHide"
+          >
+            <p :style="pop_title" style="margin: 0px;position: relative;">
+              <span>详情</span>
+              <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop" />
+            </p>
+            <el-row>
+              <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
+                <el-col :span="8" style="text-align: right;">{{ obj.name }}：</el-col>
+                <el-col :span="16">{{ obj.value }}</el-col>
+              </el-col>
+            </el-row>
+            <div slot="reference" class="pop_position_left" />
+          </el-popover>
+          <el-popover
+            v-if="isPopOpen === 'right'"
+            v-model="isVisible"
+            width="400"
+            trigger="click"
+            :disabled="!isPopShow"
+            placement="right"
+            @show="popShow"
+            @hide="popHide"
+          >
+            <p :style="pop_title" style="margin: 0px;position: relative;">
+              <span>详情</span>
+              <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop" />
+            </p>
+            <el-row>
+              <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
+                <el-col :span="8" style="text-align: right;">{{ obj.name }}：</el-col>
+                <el-col :span="16">{{ obj.value }}</el-col>
+              </el-col>
+            </el-row>
+            <div slot="reference" class="pop_position_right" />
+          </el-popover>
+          <!-- <div slot="reference" class="pop_position_bottom" v-if="isPopOpen === 'bottom'"></div> -->
+          <li v-for="(items,inde) in dataInfo" :key="inde" :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items,inde)">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
               {{ items[item.datainsName] }}
             </div>
@@ -188,6 +232,7 @@ export default {
         height: '30px',
         fontSize: 12
       },
+      highlight: 2,
       bodyHeight: 30,
       rollingRate: 30,
       scrolleTime: 1000,
@@ -592,6 +637,7 @@ export default {
           this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
+          this.highlight = customAttr.size.highlightNumber ? customAttr.size.highlightNumber : 2
           this.scrollId.fontSize = (Math.ceil(+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 1) + 'px'
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'
@@ -742,8 +788,8 @@ export default {
   z-index: 0;
 }
 .pop_position_left {
-  width: 1%;
-  height: 3%;
+  width: 2%;
+  height: 5%;
   left: 0px;
   top: 0px;
   position: absolute;

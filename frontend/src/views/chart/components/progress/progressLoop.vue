@@ -14,7 +14,7 @@
     <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius,'height': title_show? 'calc(100% - 30px);' : '100%;'}">
       <el-row class="prog_box"><!-- :style="{'padding-top': mgHeight}" -->
         <el-col :ref="`circle${chartId}`" style="height: 100%;padding-top: 5%;text-align:center;">
-          <el-progress :width="cleWidth" type="circle" :color="customColor" :percentage="progressData.value"></el-progress>
+          <el-progress :width="cleWidth" :stroke-width="progStyle.strokeWidth" type="circle" :color="customColor" :percentage="progressData.value"></el-progress>
           <p style="text-align: center;" :style="progStyle">{{progressData.name}}</p>
         </el-col>
       </el-row>
@@ -98,6 +98,7 @@ export default {
         fontSize: '14px',
         color: '#000000',
         fontFamily: '',
+        strokeWidth: 20,
       }
     }
   },
@@ -229,6 +230,7 @@ export default {
         this.progStyle.fontSize = customAttr.label.progressFontSize + 'px'
         this.progStyle.color = customAttr.label.progressFontColor
         this.progStyle.fontFamily =  this.canvasStyleData.fontFamily
+        this.progStyle.strokeWidth = customAttr.label.strokeWidth !== undefined? customAttr.label.strokeWidth : 20
         this.customColor = customAttr.color.colors[0]
       }
     },
