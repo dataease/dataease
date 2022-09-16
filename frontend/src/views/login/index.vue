@@ -532,7 +532,6 @@ export default {
   width: 100%;
   height: 100%; //将登录框挤出显示区域
   text-align: center;
-  padding-top: 70px;
   img {
     width: 150px;
     height: 150px;
