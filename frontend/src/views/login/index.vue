@@ -233,6 +233,24 @@ export default {
       this.$error(msg)
     }
     this.clearOidcMsg()
+
+    if (Cookies.get('WecomError')) {
+      this.$error(Cookies.get('WecomError'))
+      this.switchCodeIndex(4)
+    }
+    this.clearWecomMsg()
+
+    if (Cookies.get('DingtalkError')) {
+      this.$error(Cookies.get('DingtalkError'))
+      this.switchCodeIndex(5)
+    }
+    this.clearDingtalkMsg()
+
+    if (Cookies.get('LarkError')) {
+      this.$error(Cookies.get('LarkError'))
+      this.switchCodeIndex(6)
+    }
+    this.clearLarkMsg()
   },
 
   methods: {
@@ -253,6 +271,15 @@ export default {
     clearOidcMsg() {
       Cookies.remove('OidcError')
       Cookies.remove('IdToken')
+    },
+    clearWecomMsg() {
+      Cookies.remove('WecomError')
+    },
+    clearDingtalkMsg() {
+      Cookies.remove('DingtalkError')
+    },
+    clearLarkMsg() {
+      Cookies.remove('LarkError')
     },
     showLoginImage(uiInfo) {
       this.uiInfo = getSysUI()
@@ -287,6 +314,9 @@ export default {
     handleLogin() {
       this.initCache()
       this.clearOidcMsg()
+      this.clearWecomMsg()
+      this.clearDingtalkMsg()
+      this.clearLarkMsg()
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true

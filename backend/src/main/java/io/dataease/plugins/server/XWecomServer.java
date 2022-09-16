@@ -124,7 +124,7 @@ public class XWecomServer {
                 LogUtil.error(e);
                 Cookie cookie_error = new Cookie("WecomError", msg);
                 cookie_error.setPath("/");
-
+                response.addCookie(cookie_error);
                 return modelAndView;
             } catch (UnsupportedEncodingException e1) {
                 e.printStackTrace();

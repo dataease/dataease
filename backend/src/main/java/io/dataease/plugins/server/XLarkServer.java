@@ -123,7 +123,7 @@ public class XLarkServer {
                 LogUtil.error(e);
                 Cookie cookie_error = new Cookie("LarkError", msg);
                 cookie_error.setPath("/");
-
+                response.addCookie(cookie_error);
                 return modelAndView;
             } catch (UnsupportedEncodingException e1) {
                 e.printStackTrace();
