@@ -62,7 +62,6 @@ public class DsTaskHandler extends TaskHandler implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
         GlobalTaskEntity taskEntity = (GlobalTaskEntity) jobDataMap.get("taskEntity");
-        System.out.println(new Gson().toJson(taskEntity));
         taskEntity.getJobKey();
 
         if (isRunning(taskEntity.getJobKey())) {
@@ -93,8 +92,6 @@ public class DsTaskHandler extends TaskHandler implements Job {
 
     private Boolean isRunning(String taskId) {
         ExtTaskInstanceMapper  extTaskInstanceMapper = CommonBeanFactory.getBean(ExtTaskInstanceMapper.class);
-        System.out.println(extTaskInstanceMapper.runningCount(taskId));
-
         return extTaskInstanceMapper.runningCount(taskId) > 0;
     }
 
