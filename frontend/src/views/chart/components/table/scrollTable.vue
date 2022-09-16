@@ -11,23 +11,11 @@
       <div class="content">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
           <el-popover
-<<<<<<< HEAD
-=======
-            v-if="isPopOpen === 'top'"
-            v-model="isVisible"
->>>>>>> 990784ba2371701d2e2bd636291fc678d15fe83d
             width="400"
             trigger="click"
             :disabled="!isPopShow"
-<<<<<<< HEAD
             :placement="popOpen.position"
           > 
-=======
-            placement="top"
-            @show="popShow"
-            @hide="popHide"
-          >
->>>>>>> 990784ba2371701d2e2bd636291fc678d15fe83d
             <p :style="pop_title" style="margin: 0px;position: relative;">
               <span>详情</span>
               <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop" />
@@ -38,114 +26,15 @@
                 <el-col :span="16">{{ obj.value }}</el-col>
               </el-col>
             </el-row>
-<<<<<<< HEAD
             <div slot="reference" class="pop_position" :style="{left: popOpen.left,top: popOpen.top}"></div>
           </el-popover>
           
-=======
-            <div slot="reference" class="pop_position_top" />
-          </el-popover>
-          <el-popover
-            v-if="isPopOpen === 'left'"
-            v-model="isVisible"
-            width="400"
-            trigger="click"
-            :disabled="!isPopShow"
-            placement="left"
-            @show="popShow"
-            @hide="popHide"
-          >
-            <p :style="pop_title" style="margin: 0px;position: relative;">
-              <span>详情</span>
-              <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop" />
-            </p>
-            <el-row>
-              <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
-                <el-col :span="8" style="text-align: right;">{{ obj.name }}：</el-col>
-                <el-col :span="16">{{ obj.value }}</el-col>
-              </el-col>
-            </el-row>
-            <div slot="reference" class="pop_position_left" />
-          </el-popover>
-          <el-popover
-            v-if="isPopOpen === 'right'"
-            v-model="isVisible"
-            width="400"
-            trigger="click"
-            :disabled="!isPopShow"
-            placement="right"
-            @show="popShow"
-            @hide="popHide"
-          >
-            <p :style="pop_title" style="margin: 0px;position: relative;">
-              <span>详情</span>
-              <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop" />
-            </p>
-            <el-row>
-              <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
-                <el-col :span="8" style="text-align: right;">{{ obj.name }}：</el-col>
-                <el-col :span="16">{{ obj.value }}</el-col>
-              </el-col>
-            </el-row>
-            <div slot="reference" class="pop_position_right" />
-          </el-popover>
-          <!-- <div slot="reference" class="pop_position_bottom" v-if="isPopOpen === 'bottom'"></div> -->
->>>>>>> 990784ba2371701d2e2bd636291fc678d15fe83d
           <li v-for="(items,inde) in dataInfo" :key="inde" :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items,inde)">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
               {{ items[item.datainsName] }}
             </div>
           </li>
         </ul>
-<<<<<<< HEAD
-=======
-        <!-- <el-table
-          id="tableInfo"
-          ref="tablesss"
-          :data="dataInfo"
-          height="200"
-          class="custom-table-2 hidden-thead"
-        >
-          <el-table-column v-for="(item,index) in fields" :key="index" :prop="item.datainsName" :label="item.name">
-            <template slot-scope="scope">
-              {{ scope.row[item.datainsName] }}
-            </template>
-          </el-table-column>
-        </el-table> -->
-        <!-- <vue-seamless-scroll
-          :class-option="classOption"
-          :data="dataInfo"
-          :style="table_item_class"
-        >
-          <ul class="item bgHeightLight infinite-list">
-            <li v-for="(items,inde) in dataInfo" :key="inde" class="table_bode_li" :style="newHeight">
-              <div v-for="(item,index) in fields" :key="index" class="body_info">
-                {{ items[item.datainsName] }}
-              </div>
-            </li>
-          </ul>
-        </vue-seamless-scroll> -->
-
-        <!-- <el-dialog
-          :visible.sync="dialogVisible"
-          width="30%"
-          :before-close="handleClose"
-          :modal="false"
-          :append-to-body="true"
-        >
-          <div>
-            <p :style="pop_title">
-              <span>详情</span>
-            </p>
-            <el-row>
-              <el-col v-for="(obj,num) in infoForm" :key="num" :style="pop_content">
-                <el-col :span="8" style="text-align: right;">{{obj.name}}：</el-col>
-                <el-col :span="16">{{obj.value}}</el-col>
-              </el-col>
-            </el-row>
-          </div>
-        </el-dialog> -->
->>>>>>> 990784ba2371701d2e2bd636291fc678d15fe83d
       </div>
 
     </el-row>
