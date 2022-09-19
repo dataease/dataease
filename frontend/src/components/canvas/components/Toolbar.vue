@@ -380,8 +380,9 @@ export default {
         }
       })
       // 无需保存条件
+      console.log(components)
       requestInfo.panelData = JSON.stringify(components)
-      // console.log('保存的数据',requestInfo)
+      console.log('保存的数据',requestInfo)
       panelSave(requestInfo).then(response => {
         this.$store.commit('refreshSaveStatus')
         this.$message({
