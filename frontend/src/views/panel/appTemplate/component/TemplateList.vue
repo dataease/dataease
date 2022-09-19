@@ -129,8 +129,8 @@ export default {
     },
     templateDelete(template) {
       const options = {
-        title: "确定删除该应用分类吗？",
-        content: "删除后，该分类中所有的应用模版也将被删除。",
+        title: this.$('app_template.app_group_delete_tips'),
+        content: this.$('app_template.app_group_delete_content'),
         type: "primary",
         cb: () => this.$emit("templateDelete", template.id),
       };

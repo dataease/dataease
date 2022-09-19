@@ -442,10 +442,6 @@ export default {
   z-index: 2;
 }
 
-//.open-button:hover{
-//  transition: 0.5s;
-// width: 50px;
-//}
 .open-button:hover{
   color: #3a8ee6;
 }

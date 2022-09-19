@@ -1,9 +1,9 @@
 package io.dataease.service.panel;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.*;
@@ -33,6 +33,7 @@ import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DeTypeConstants;
+import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.service.chart.ChartGroupService;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.dataset.DataSetGroupService;
@@ -829,21 +830,21 @@ public class PanelGroupService {
         //查询应用信息
         PanelAppTemplateWithBLOBs appInfo = panelAppTemplateMapper.selectByPrimaryKey(request.getAppTemplateId());
         //1.获取所有视图信息
-        List<ChartViewWithBLOBs> chartViewsInfo = JSON.parseArray(appInfo.getChartViewsInfo(),ChartViewWithBLOBs.class);
+        List<ChartViewWithBLOBs> chartViewsInfo = gson.fromJson(appInfo.getChartViewsInfo(), new TypeToken<List<ChartViewWithBLOBs>>(){}.getType());
         //2.获取视图扩展字段信息
-        List<ChartViewField> chartViewFieldsInfo = JSON.parseArray(appInfo.getChartViewFieldsInfo(),ChartViewField.class);
+        List<ChartViewField> chartViewFieldsInfo = gson.fromJson(appInfo.getChartViewFieldsInfo(), new TypeToken<List<ChartViewField>>(){}.getType());
         //3.获取所有数据集信息
-        List<DatasetTable> datasetTablesInfo  = JSON.parseArray(appInfo.getDatasetTablesInfo(),DatasetTable.class);
+        List<DatasetTable> datasetTablesInfo  = gson.fromJson(appInfo.getDatasetTablesInfo(), new TypeToken<List<DatasetTable>>(){}.getType());
         //4.获取所有数据集字段信息
-        List<DatasetTableField> datasetTableFieldsInfo = JSON.parseArray(appInfo.getDatasetTableFieldsInfo(),DatasetTableField.class);
+        List<DatasetTableField> datasetTableFieldsInfo = gson.fromJson(appInfo.getDatasetTableFieldsInfo(), new TypeToken<List<DatasetTableField>>(){}.getType());
         //5.获取所有任务信息
-        List<DataSetTaskDTO> dataSetTasksInfo =  JSON.parseArray(appInfo.getDatasetTasksInfo(),DataSetTaskDTO.class);
+        List<DataSetTaskDTO> dataSetTasksInfo = gson.fromJson(appInfo.getDatasetTasksInfo(), new TypeToken<List<DataSetTaskDTO>>(){}.getType());
         //6.获取所有数据源信息
-        List<Datasource> oldDatasourceInfo =  JSON.parseArray(appInfo.getDatasourceInfo(),Datasource.class);
+        List<Datasource> oldDatasourceInfo = gson.fromJson(appInfo.getDatasourceInfo(), new TypeToken<List<Datasource>>(){}.getType());
         //获取仪表板信息
-        PanelGroupRequest  panelInfo = JSON.parseObject(appInfo.getPanelInfo(),PanelGroupRequest.class);
+        PanelGroupRequest  panelInfo = gson.fromJson(appInfo.getPanelInfo(),PanelGroupRequest.class);
         //获取仪表板视图信息
-        List<PanelView> panelViewsInfo = JSON.parseArray(appInfo.getPanelViewsInfo(),PanelView.class);
+        List<PanelView> panelViewsInfo = gson.fromJson(appInfo.getPanelViewsInfo(), new TypeToken<List<PanelView>>(){}.getType());
 
         Map<String,String> datasourceRelaMap = panelAppTemplateService.applyDatasource(oldDatasourceInfo,request.getDatasourceList());
 

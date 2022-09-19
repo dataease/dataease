@@ -1,7 +1,7 @@
 <template>
   <div :style="classBackground" class="de-card-model">
     <div class="card-img-model" :style="classImg">
-      <img :src="model.snapshot" alt="" />
+      <img :src="model.snapshot" alt=""/>
     </div>
     <div class="card-info">
       <el-tooltip
@@ -36,7 +36,8 @@ export default {
   props: {
     model: {
       type: Object,
-      default: () => {},
+      default: () => {
+      },
     },
     width: {
       type: Number
@@ -51,10 +52,8 @@ export default {
     },
     classImg() {
       return {
-        width: (this.width-2) + 'px',
-        height: this.width * 0.576 + 'px',
-        // background: `url(${this.model.snapshot}) no-repeat`,
-        // 'background-size': `100% 100%`
+        width: (this.width - 2) + 'px',
+        height: this.width * 0.576 + 'px'
       }
     },
   },
@@ -73,6 +72,7 @@ export default {
   border: 1px solid var(--deCardStrokeColor, #dee0e3);
   border-radius: 4px;
   margin: 0 24px 25px 0;
+
   .card-img-model {
     border-bottom: 1px solid var(--deCardStrokeColor, #dee0e3);
     height: 144px;
@@ -138,6 +138,7 @@ export default {
 
 .de-card-dropdown {
   margin-top: 0 !important;
+
   .popper__arrow {
     display: none !important;
   }

@@ -2487,6 +2487,9 @@ export default {
     no_apps: '暫無應用',
     app_group_icon: '封面圖標',
     app_name: '應用名稱',
-    search_by_keyword:'通過關鍵字搜索'
+    search_by_keyword:'通過關鍵字搜索',
+    apply_logs:'應用記錄',
+    app_group_delete_tips: '確定刪除該應用分類嗎?',
+    app_group_delete_content: '刪除後，該分類中所有的應用模闆也將被刪除。'
   }
 }

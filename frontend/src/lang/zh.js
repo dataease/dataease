@@ -2487,6 +2487,9 @@ export default {
     no_apps: '暂无应用',
     app_group_icon: '封面图标',
     app_name: '应用名称',
-    search_by_keyword:'通过关键字搜索'
+    search_by_keyword:'通过关键字搜索',
+    apply_logs:'应用记录',
+    app_group_delete_tips: '确定删除该应用分类吗?',
+    app_group_delete_content: '删除后，该分类中所有的应用模板也将被删除。'
   }
 }

@@ -2487,6 +2487,8 @@ export default {
     app_group_icon: 'Cover icon',
     app_name: 'Application name',
     search_by_keyword:'Search by keyword',
-    apply_logs:'Apply logs'
+    apply_logs:'Apply logs',
+    app_group_delete_tips: 'Are you sure to delete this application category?',
+    app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.'
   }
 }
