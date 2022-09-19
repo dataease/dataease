@@ -64,3 +64,7 @@ ALTER TABLE `sys_task_email`
     ADD COLUMN `recisetting` varchar(255) NULL COMMENT '消息渠道' AFTER `view_ids`,
     ADD COLUMN `conditions` longtext NULL COMMENT '仪表板条件' AFTER `recisetting`;
 
+
+
+ALTER TABLE `sys_task_email`
+    ADD COLUMN `reci_users` varchar(255) NULL COMMENT '接收人账号' AFTER `conditions`;

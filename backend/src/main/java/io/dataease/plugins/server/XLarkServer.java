@@ -96,7 +96,7 @@ public class XLarkServer {
             String sub = larkUserInfo.getSub();
             SysUserEntity sysUserEntity = authUserService.getUserBySub(sub, 6);
             if (null == sysUserEntity) {
-                String email = StringUtils.isNotBlank(larkUserInfo.getEmail()) ? larkUserInfo.getEmail() : "demo@lark.work";
+                String email = StringUtils.isNotBlank(larkUserInfo.getEmail()) ? larkUserInfo.getEmail() : (username + "@lark.work");
                 sysUserService.validateExistUser(username, larkUserInfo.getName(), email);
                 sysUserService.saveLarkCUser(larkUserInfo, email);
                 sysUserEntity = authUserService.getUserBySub(sub, 6);
