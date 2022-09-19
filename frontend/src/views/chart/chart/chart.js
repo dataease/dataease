@@ -33,6 +33,7 @@ export const DEFAULT_SIZE = {
   lineArea: false,
   pieInnerRadius: 0,
   pieOuterRadius: 80,
+  pieRoseOffset: 10,
   pieRoseType: 'radius',
   pieRoseRadius: 5,
   funnelWidth: 80,
@@ -103,6 +104,8 @@ export const DEFAULT_LABEL = {
 
   popShow: false,
   popOpen: 'right',
+  popLeft: 0,
+  popTop: 0,
   popTitleBackground: '#082456',
   popTitleColor: '#FFFFFF',
   popHeight: 30,
