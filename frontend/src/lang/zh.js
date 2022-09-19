@@ -1620,7 +1620,7 @@ export default {
     panelLoading: '仪表盘内容加载中，请稍候...',
     copy: '复制',
     copy_current: '复制到当前页',
-    copy_other: '复制到其它页',
+    copy_other: '复制到其他页',
     paste: '粘贴',
     cut: '剪切',
     lock: '锁定',
