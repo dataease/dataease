@@ -2220,6 +2220,7 @@ export default {
     },
 
     onLabelChange(val) {
+      console.log(val)
       this.view.customAttr.label = val
       this.calcStyle()
     },

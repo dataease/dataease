@@ -12,7 +12,10 @@
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
           <el-popover
             width="400"
-            trigger="click"
+            trigger="manual"
+            v-model="isVisible"
+            @show="popShow"
+            @hide="popHide"
             :disabled="!isPopShow"
             :placement="popOpen.position"
           > 
@@ -387,7 +390,7 @@ export default {
     },
     tableScroll() {
       this.timer = setInterval(() => {
-        console.log('轮播表格2222', this.chart.data, this.element)
+        // console.log('轮播表格2222', this.chart.data, this.element)
         this.element.options = { attrs: {
           fieldId: this.chart.data.fields[0].id,
           viewIds: []
@@ -399,7 +402,7 @@ export default {
         setTimeout(() => {
           this.dataInfo.push(data)
         }, 500)
-        console.log('存储数据', this.dataInfo[3])
+        // console.log('存储数据', this.dataInfo[3])
         const keyObj = this.dataInfo[3]
         // const objArr = []
         // for (const key in keyObj) {
@@ -410,7 +413,7 @@ export default {
         const keyValue = []
         // let keys = this.chart.data.fields[0].datainsName
         keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
-        console.log('keyValue', keyValue)
+        // console.log('keyValue', keyValue)
         if (this.bannerLinkageKey === true) {
           this.setCondition(keyValue)
         }
@@ -560,6 +563,7 @@ export default {
           this.scrolleTime = customAttr.size.automaticTime
         }
         if (customAttr.label) {
+          console.log('label数据，，，，，',customAttr.label)
           this.isPopShow = customAttr.label.popShow
           this.popOpen.position = customAttr.label.popOpen
           this.popOpen.left = customAttr.label.popLeft !== undefined? customAttr.label.popLeft + 'px' : '0px'
