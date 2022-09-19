@@ -166,17 +166,17 @@ public class ChartViewController {
 
     @ApiIgnore
     @ApiOperation("获取字段值")
-    @PostMapping("/getFieldData/{id}/{panelId}/{fieldId}")
-    public List<String> getFieldData(@PathVariable String id, @PathVariable String panelId, @PathVariable String fieldId,
+    @PostMapping("/getFieldData/{id}/{panelId}/{fieldId}/{fieldType}")
+    public List<String> getFieldData(@PathVariable String id, @PathVariable String panelId, @PathVariable String fieldId, @PathVariable String fieldType,
                                      @RequestBody ChartExtRequest requestList) throws Exception {
-        return chartViewService.getFieldData(id, requestList, false, fieldId);
+        return chartViewService.getFieldData(id, requestList, false, fieldId, fieldType);
     }
 
     @ApiIgnore
     @ApiOperation("更新视图属性")
     @PostMapping("/viewPropsSave/{panelId}")
-    public void  viewPropsSave(@PathVariable String panelId, @RequestBody ChartViewWithBLOBs chartViewWithBLOBs) {
-         chartViewService.viewPropsSave(chartViewWithBLOBs);
+    public void viewPropsSave(@PathVariable String panelId, @RequestBody ChartViewWithBLOBs chartViewWithBLOBs) {
+        chartViewService.viewPropsSave(chartViewWithBLOBs);
     }
 
     @ApiOperation("查询仪表板下视图选项")

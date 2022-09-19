@@ -33,6 +33,10 @@ export default {
     field: {
       type: Object,
       required: true
+    },
+    fieldType: {
+      type: String,
+      required: true
     }
   },
   data() {
@@ -55,7 +59,7 @@ export default {
   },
   methods: {
     init() {
-      post('/chart/view/getFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + this.field.id, {}).then(response => {
+      post('/chart/view/getFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + this.field.id + '/' + this.fieldType, {}).then(response => {
         this.sortList = response.data
       })
     },

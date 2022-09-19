@@ -966,7 +966,14 @@ public class ChartViewService {
             }
         }
         // 自定义排序
-        data = resultCustomSort(xAxis, data);
+        if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+            List<ChartViewFieldDTO> list = new ArrayList<>();
+            list.addAll(xAxis);
+            list.addAll(extStack);
+            data = resultCustomSort(list, data);
+        } else {
+            data = resultCustomSort(xAxis, data);
+        }
         // 同比/环比计算，通过对比类型和数据设置，计算出对应指标的结果，然后替换结果data数组中的对应元素
         // 如果因维度变化（如时间字段缺失，时间字段的展示格式变化）导致无法计算结果的，则结果data数组中的对应元素全置为null
         // 根据不同图表类型，获得需要替换的指标index array
@@ -1485,21 +1492,27 @@ public class ChartViewService {
         extChartViewMapper.initPanelChartViewCache(panelId);
     }
 
-    public List<String> getFieldData(String id, ChartExtRequest requestList, boolean cache, String fieldId) throws Exception {
+    public List<String> getFieldData(String id, ChartExtRequest requestList, boolean cache, String fieldId, String fieldType) throws Exception {
         ChartViewDTO view = getOne(id, requestList.getQueryFrom());
         List<String[]> sqlData = sqlData(view, requestList, cache, fieldId);
-        List<ChartViewFieldDTO> xAxis = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
-        }.getType());
+        List<ChartViewFieldDTO> fieldList = new ArrayList<>();
+        if (StringUtils.equalsIgnoreCase(fieldType, "xAxis")) {
+            fieldList = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
+            }.getType());
+        } else if (StringUtils.equalsIgnoreCase(fieldType, "extStack")) {
+            fieldList = gson.fromJson(view.getExtStack(), new TypeToken<List<ChartViewFieldDTO>>() {
+            }.getType());
+        }
         DatasetTableField field = dataSetTableFieldsService.get(fieldId);
 
         List<String> res = new ArrayList<>();
-        if (ObjectUtils.isNotEmpty(field) && xAxis.size() > 0) {
+        if (ObjectUtils.isNotEmpty(field) && fieldList.size() > 0) {
             // 找到对应维度
             ChartViewFieldDTO chartViewFieldDTO = null;
             int index = 0;
             int getIndex = 0;
-            for (int i = 0; i < xAxis.size(); i++) {
-                ChartViewFieldDTO item = xAxis.get(i);
+            for (int i = 0; i < fieldList.size(); i++) {
+                ChartViewFieldDTO item = fieldList.get(i);
                 if (StringUtils.equalsIgnoreCase(item.getSort(), "custom_sort")) {// 此处与已有的自定义字段对比
                     chartViewFieldDTO = item;
                     index = i;
@@ -1508,7 +1521,7 @@ public class ChartViewService {
                     getIndex = i;
                 }
             }
-            List<String[]> sortResult = resultCustomSort(xAxis, sqlData);
+            List<String[]> sortResult = resultCustomSort(fieldList, sqlData);
             if (ObjectUtils.isNotEmpty(chartViewFieldDTO) && (getIndex >= index)) {
                 // 获取自定义值与data对应列的结果
                 List<String[]> strings = customSort(Optional.ofNullable(chartViewFieldDTO.getCustomSort()).orElse(new ArrayList<>()), sortResult, index);
