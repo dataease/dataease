@@ -1,61 +1,82 @@
 <template>
-  <el-row style="height: 100%;overflow-y: hidden;width: 100%;">
-    <el-row style="height: 26px;">
-      <span class="title-text" style="line-height: 26px;">
-        {{ table.name }}
-      </span>
-      <span v-if="sycnStatus === 'Underway'" class="blue-color" style="line-height: 26px;">
-        {{ $t('dataset.dataset_sync') }}
-      </span>
-      <el-popover
-        placement="right-start"
-        width="400"
-        trigger="click"
-        @show="showTab"
-        @hide="hideTab"
+  <div class="view-table">
+    <el-row>
+      <el-col class="de-dataset-name" :span="16">
+        <span class="title-text" style="line-height: 26px">
+          {{ table.name }}
+        </span>
+        <span v-if="table.mode === 0" class="de-tag primary">{{
+          $t("dataset.direct_connect")
+        }}</span>
+        <span v-if="table.mode === 1" class="de-tag warning">{{
+          $t("dataset.sync_data")
+        }}</span>
+        <span
+          v-if="sycnStatus === 'Underway'"
+          class="blue-color"
+          style="line-height: 26px"
+        >
+          {{ $t("dataset.dataset_sync") }}
+        </span>
+        <el-divider direction="vertical"></el-divider>
+        <span class="create-by">{{ $t("dataset.create_by") }}</span>
+        <span class="create-by">:{{ table.createBy }}</span>
+        <el-popover
+          placement="bottom"
+          width="420"
+          trigger="hover"
+          @show="showTab"
+          @hide="hideTab"
+        >
+          <dataset-detail
+            type="dataset"
+            :data="table"
+            :tab-status="tabStatus"
+          />
+          <i slot="reference" class="el-icon-warning-outline detail" />
+        </el-popover>
+      </el-col>
+      <el-col
+        v-if="hasDataPermission('manage', param.privileges)"
+        style="text-align: right"
+        :span="8"
       >
-        <dataset-chart-detail type="dataset" :data="table" :tab-status="tabStatus" />
-        <!--        <svg-icon slot="reference" class="title-text" icon-class="more_v" style="cursor: pointer;" />-->
-        <i
-          slot="reference"
-          class="el-icon-warning icon-class"
-          style="margin-left: 4px;cursor: pointer;font-size: 14px;"
-        />
-      </el-popover>
-      <el-row v-if="hasDataPermission('manage',param.privileges)" style="float: right">
         <el-dropdown
-          v-if="table.type ==='excel'"
-          style="margin-right: 10px;"
+          v-if="table.type === 'excel'"
           size="small"
           trigger="click"
-          @command="clickEditExcel"
+          placement="bottom-end"
+          @command="(type) => clickEditExcel(type)"
         >
-          <el-button size="mini">
-            {{ $t('dataset.edit_excel') }}
-          </el-button>
+          <deBtn type="primary">
+            {{ $t("dataset.edit_excel") }}
+          </deBtn>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item :command="beforeEditExcel('0')">
-              {{ $t('dataset.excel_replace') }}
+            <el-dropdown-item command="0">
+              <svg-icon icon-class="icon_add-entry_outlined"> </svg-icon>
+              {{ $t("dataset.excel_replace") + $t("chart.chart_data") }}
             </el-dropdown-item>
-            <el-dropdown-item :command="beforeEditExcel('1')">
-              {{ $t('dataset.excel_add') }}
+            <el-dropdown-item command="1">
+              <svg-icon icon-class="icon_doc-replace_outlined"> </svg-icon>
+              {{ $t("dataset.excel_add") + $t("chart.chart_data") }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <el-button v-if="table.type ==='custom'" size="mini" @click="editCustom">
-          {{ $t('dataset.edit_custom_table') }}
-        </el-button>
-        <el-button v-if="table.type ==='sql'" size="mini" @click="editSql">
-          {{ $t('dataset.edit_sql') }}
-        </el-button>
-        <el-button v-if="table.type ==='union'" size="mini" @click="editUnion">
-          {{ $t('dataset.edit_union') }}
-        </el-button>
-      </el-row>
+        <deBtn
+          type="primary"
+          v-if="['sql', 'union'].includes(table.type)"
+          @click="editDataset(table.type)"
+        >
+          {{
+            $t(
+              table.type === "union" ? "dataset.edit_union" : "dataset.edit_sql"
+            )
+          }}
+        </deBtn>
+      </el-col>
     </el-row>
-    <el-divider />
 
-    <el-tabs v-model="tabActive" @tab-click="tabClick">
+    <el-tabs class="de-tabs" v-model="tabActive" @tab-click="tabClick">
       <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
         <tab-data-preview
           :param="param"
@@ -67,270 +88,315 @@
           @reSearch="reSearch"
         />
       </el-tab-pane>
-      <el-tab-pane :label="$t('dataset.field_manage')" :lazy="true" name="fieldEdit">
-        <field-edit v-if="tabActive === 'fieldEdit'" :param="param" :table="table" />
-      </el-tab-pane>
       <el-tab-pane
-        v-if="!hideCustomDs && table.type !== 'union' && table.type !== 'custom' && !(table.type === 'sql' && table.mode === 0)"
-        :label="$t('dataset.join_view')"
-        name="joinView"
+        :label="$t('dataset.field_manage')"
+        :lazy="true"
+        name="fieldEdit"
       >
-        <union-view :param="param" :table="table" />
+        <field-edit
+          v-if="tabActive === 'fieldEdit'"
+          :param="param"
+          :table="table"
+        />
       </el-tab-pane>
       <el-tab-pane
-        v-if="table.mode === 1 && (table.type === 'excel' || table.type === 'db' || table.type === 'sql' || table.type === 'api')"
+        v-if="
+          table.mode === 1 &&
+          (table.type === 'excel' ||
+            table.type === 'db' ||
+            table.type === 'sql' ||
+            table.type === 'api')
+        "
         :label="$t('dataset.update_info')"
         name="updateInfo"
       >
-        <update-info v-if="tabActive=='updateInfo'" :param="param" :table="table" />
+        <update-info
+          v-if="tabActive == 'updateInfo'"
+          :param="param"
+          :table="table"
+        />
       </el-tab-pane>
       <el-tab-pane
-        v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)"
+        v-if="isPluginLoaded && hasDataPermission('manage', param.privileges)"
         :lazy="true"
         :label="$t('dataset.row_permissions')"
         name="rowPermissions"
       >
         <plugin-com
-          v-if="isPluginLoaded && tabActive=='rowPermissions'"
+          v-if="isPluginLoaded && tabActive == 'rowPermissions'"
           ref="RowPermissions"
           component-name="RowPermissions"
           :obj="table"
         />
       </el-tab-pane>
       <el-tab-pane
-        v-if="isPluginLoaded && hasDataPermission('manage',param.privileges)"
+        v-if="isPluginLoaded && hasDataPermission('manage', param.privileges)"
         :lazy="true"
         :label="$t('dataset.column_permissions')"
         name="columnPermissions"
       >
         <plugin-com
-          v-if="isPluginLoaded && tabActive=='columnPermissions'"
+          v-if="isPluginLoaded && tabActive == 'columnPermissions'"
           ref="ColumnPermissions"
           component-name="ColumnPermissions"
           :obj="table"
         />
       </el-tab-pane>
     </el-tabs>
-  </el-row>
+  </div>
 </template>
 
 <script>
-import { post } from '@/api/dataset/dataset'
-import TabDataPreview from './TabDataPreview'
-import UpdateInfo from './UpdateInfo'
-import DatasetChartDetail from '../common/DatasetChartDetail'
-import UnionView from './UnionView'
-import FieldEdit from './FieldEdit'
-import { pluginLoaded } from '@/api/user'
-import PluginCom from '@/views/system/plugin/PluginCom'
+import { post } from "@/api/dataset/dataset";
+import TabDataPreview from "./TabDataPreview";
+import UpdateInfo from "./UpdateInfo";
+import DatasetDetail from "../common/DatasetDetail";
+import FieldEdit from "./FieldEdit";
+import { pluginLoaded } from "@/api/user";
+import PluginCom from "@/views/system/plugin/PluginCom";
 
 export default {
-  name: 'ViewTable',
-  components: { FieldEdit, UnionView, DatasetChartDetail, UpdateInfo, TabDataPreview, PluginCom },
+  name: "ViewTable",
+  components: {
+    FieldEdit,
+    DatasetDetail,
+    UpdateInfo,
+    TabDataPreview,
+    PluginCom,
+  },
   props: {
     param: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       table: {
-        name: ''
+        name: "",
       },
       fields: [],
       data: [],
-      sycnStatus: '',
+      sycnStatus: "",
       lastRequestComplete: true,
       page: {
         page: 1,
         pageSize: 1000,
-        show: 1000
+        show: 1000,
       },
-      tabActive: 'dataPreview',
+      tabActive: "dataPreview",
       tableViewRowForm: {
-        row: 1000
+        row: 1000,
       },
       tabStatus: false,
-      isPluginLoaded: false
-    }
+      isPluginLoaded: false,
+    };
   },
   computed: {
-    hideCustomDs: function() {
-      return this.$store.getters.hideCustomDs
-    }
+    hideCustomDs: function () {
+      return this.$store.getters.hideCustomDs;
+    },
   },
   watch: {
-    'param': function() {
-      this.tabActive = 'dataPreview'
-      this.initTable(this.param.id)
-    }
+    param: function () {
+      this.tabActive = "dataPreview";
+      this.initTable(this.param.id);
+    },
   },
   beforeCreate() {
-    pluginLoaded().then(res => {
-      this.isPluginLoaded = res.success && res.data
-    })
+    pluginLoaded().then((res) => {
+      this.isPluginLoaded = res.success && res.data;
+    });
   },
   created() {
     this.taskLogTimer = setInterval(() => {
-      if (this.sycnStatus !== 'Underway') {
+      if (this.sycnStatus !== "Underway") {
         return;
       }
       if (!this.lastRequestComplete) {
-        return
+        return;
       } else {
-        this.lastRequestComplete = false
+        this.lastRequestComplete = false;
       }
-      this.initPreviewData(this.page)
-    }, 5000)
+      this.initPreviewData(this.page);
+    }, 5000);
   },
   beforeDestroy() {
-    clearInterval(this.taskLogTimer)
+    clearInterval(this.taskLogTimer);
   },
   mounted() {
-    this.initTable(this.param.id)
+    this.initTable(this.param.id);
   },
   methods: {
     initTable(id) {
-      this.resetPage()
-      this.tableViewRowForm.row = 1000
+      this.resetPage();
+      this.tableViewRowForm.row = 1000;
       if (id !== null) {
-        this.fields = []
-        this.data = []
-        post('/dataset/table/getWithPermission/' + id, null).then(response => {
-          this.table = response.data
-          this.initPreviewData(this.page)
-        }).catch(res => {
-          this.$emit('switchComponent', { name: '' })
-        })
+        this.fields = [];
+        this.data = [];
+        post("/dataset/table/getWithPermission/" + id, null)
+          .then((response) => {
+            this.table = response.data;
+            this.initPreviewData(this.page);
+          })
+          .catch((res) => {
+            this.$emit("switchComponent", { name: "" });
+          });
       }
     },
 
     initPreviewData(page) {
       if (this.table.id) {
-        this.table.row = this.tableViewRowForm.row
-        post('/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize, this.table, true, 30000).then(response => {
-          this.fields = response.data.fields
-          this.data = response.data.data
-          this.page = response.data.page
-          this.sycnStatus = response.data.sycnStatus
-          if (response.data.status === 'warnning') {
-            this.$warning(response.data.msg, 3000)
-          }
-          if (response.data.status === 'error') {
-            this.$error(response.data.msg, 3000)
-          }
-          this.lastRequestComplete = true
-        }).catch(response => {
-          this.lastRequestComplete = true
-          this.fields = []
-          this.data = []
-          this.page = {
-            page: 1,
-            pageSize: 1000,
-            show: 0
-          }
-        })
+        this.table.row = this.tableViewRowForm.row;
+        post(
+          "/dataset/table/getPreviewData/" + page.page + "/" + page.pageSize,
+          this.table,
+          true,
+          30000
+        )
+          .then((response) => {
+            this.fields = response.data.fields;
+            this.data = response.data.data;
+            this.page = response.data.page;
+            this.sycnStatus = response.data.sycnStatus;
+            if (response.data.status === "warnning") {
+              this.$warning(response.data.msg, 3000);
+            }
+            if (response.data.status === "error") {
+              this.$error(response.data.msg, 3000);
+            }
+            this.lastRequestComplete = true;
+          })
+          .catch((response) => {
+            this.lastRequestComplete = true;
+            this.fields = [];
+            this.data = [];
+            this.page = {
+              page: 1,
+              pageSize: 1000,
+              show: 0,
+            };
+          });
       }
     },
-
-    edit() {
-      this.$emit('switchComponent', { name: 'FieldEdit', param: { table: this.table }})
+    editDataset(datasetType) {
+      this.$router.push({
+        path: "/dataset-form",
+        query: {
+          datasetType,
+          id: this.table.id,
+        },
+      });
     },
-
-    editSql() {
-      this.$emit('switchComponent', {
-        name: 'AddSQL',
-        param: { id: this.table.sceneId, tableId: this.table.id, table: this.table }
-      })
-    },
-    editCustom() {
-      this.$emit('switchComponent', {
-        name: 'AddCustom',
-        param: { id: this.table.sceneId, tableId: this.table.id, table: this.table }
-      })
-    },
-    editUnion() {
-      this.$emit('switchComponent', {
-        name: 'AddUnion',
-        param: { id: this.table.sceneId, tableId: this.table.id, table: this.table }
-      })
-    },
-
     reSearch(val) {
-      this.tableViewRowForm = val.form
-      this.initPreviewData(val.page)
+      this.tableViewRowForm = val.form;
+      this.initPreviewData(val.page);
     },
 
     showTab() {
-      this.tabStatus = true
+      this.tabStatus = true;
     },
     hideTab() {
-      this.tabStatus = false
+      this.tabStatus = false;
     },
-
-    clickEditExcel(param) {
-      switch (param.type) {
-        case '0':
-          this.$emit('switchComponent', {
-            name: 'AddExcel',
-            param: { id: this.table.sceneId, tableId: this.table.id, editType: 0, table: this.table }
-          })
-          break
-        case '1':
-          this.$emit('switchComponent', {
-            name: 'AddExcel',
-            param: { id: this.table.sceneId, tableId: this.table.id, editType: 1, table: this.table }
-          })
-          break
-      }
-    },
-
-    beforeEditExcel(type) {
-      return {
-        'type': type
-      }
+    clickEditExcel(type) {
+      this.$router.push({
+        path: "/dataset-form",
+        query: {
+          datasetType: "excel",
+          id: this.table.id,
+          editType: type,
+        },
+      });
     },
     msg2Current(sourceParam) {
-      this.tabActive = 'updateInfo'
-      this.table.msgTaskId = sourceParam.taskId
+      this.tabActive = "updateInfo";
+      this.table.msgTaskId = sourceParam.taskId;
     },
 
     resetPage() {
       this.page = {
         page: 1,
         pageSize: 1000,
-        show: 1000
-      }
+        show: 1000,
+      };
     },
 
     tabClick() {
-      if (this.tabActive === 'dataPreview') {
-        const reload = localStorage.getItem('reloadDsData')
-        if (reload === 'true') {
-          localStorage.setItem('reloadDsData', 'false')
-          this.initTable(this.param.id)
+      if (this.tabActive === "dataPreview") {
+        const reload = localStorage.getItem("reloadDsData");
+        if (reload === "true") {
+          localStorage.setItem("reloadDsData", "false");
+          this.initTable(this.param.id);
         }
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
-.el-divider--horizontal {
-  margin: 12px 0;
-}
-
-.form-item {
-  margin-bottom: 6px;
-}
-
 .icon-class {
   color: #6c6c6c;
 }
 
 .blackTheme .icon-class {
   color: #cccccc;
+}
+</style>
+<style lang="scss" scoped>
+.view-table {
+  padding: 10px 9px;
+  height: 100%;
+  overflow-y: hidden;
+  width: 100%;
+  box-sizing: border-box;
+  .de-dataset-name {
+    display: flex;
+    font-family: PingFang SC;
+    align-items: center;
+    margin-bottom: 20px;
+
+    .title-text {
+      font-size: 16px;
+      font-weight: 500;
+      margin-right: 8px;
+      color: var(--deTextPrimary, #1f2329);
+    }
+
+    .de-tag {
+      padding: 0 6px;
+      border-radius: 2px;
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .warning {
+      color: var(--deWarning, #ff8800);
+      background: rgba(255, 136, 0, 0.2);
+    }
+
+    .primary {
+      color: var(--primary, #3370ff);
+      background: rgba(51, 112, 255, 0.2);
+    }
+
+    .el-divider {
+      margin: 0 16px;
+      height: 18px;
+    }
+
+    .create-by {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--deTextSecondary, #606266);
+    }
+
+    .detail {
+      cursor: pointer;
+      margin-left: 10px;
+      color: var(--deTextSecondary, #606266);
+    }
+  }
 }
 </style>

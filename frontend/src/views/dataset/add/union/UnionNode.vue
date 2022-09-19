@@ -36,13 +36,21 @@
     </div>
 
     <!--编辑关联关系-->
-    <el-dialog v-if="editUnion" v-dialogDrag top="5vh" :title="unionParam.type === 'add' ? $t('dataset.add_union_relation') : $t('dataset.edit_union_relation')" :visible="editUnion" :show-close="false" width="600px" class="dialog-css" destroy-on-close>
+    <el-drawer
+      v-if="editUnion"
+      :title="unionParam.type === 'add' ? $t('dataset.add_union_relation') : $t('dataset.edit_union_relation')"
+      :visible.sync="editUnion"
+      custom-class="user-drawer union-dataset-drawer"
+      size="840px"
+      v-closePress
+      direction="rtl"
+    >
       <union-edit :union-param="unionParam" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeEditUnion()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="confirmEditUnion()">{{ $t('dataset.confirm') }}</el-button>
+      <div class="de-foot">
+        <deBtn secondary @click="closeEditUnion()">{{ $t('dataset.cancel') }}</deBtn>
+        <deBtn type="primary" @click="confirmEditUnion()">{{ $t('dataset.confirm') }}</deBtn>
       </div>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 
@@ -251,7 +259,11 @@ export default {
   cursor: pointer;
   color: var(--Main,#2681ff);
 }
-.dialog-css ::v-deep .el-dialog__body {
-  padding: 0 20px;
+</style>
+<style lang="scss">
+.union-dataset-drawer {
+  .el-drawer__body {
+    padding: 24px;
+  }
 }
 </style>

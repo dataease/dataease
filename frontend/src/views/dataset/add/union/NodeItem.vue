@@ -29,15 +29,49 @@
     </div>
 
     <!--选择数据集-->
-    <el-dialog v-if="selectDsDialog" v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="400px" class="dialog-css">
-      <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" clear-empty-dir="true" :mode="currentNode.currentDs.mode" @getTable="firstDs" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button :disabled="!tempDs.id" type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
+    <el-drawer
+      v-if="selectDsDialog"
+      :title="$t('chart.select_dataset')"
+      :visible.sync="selectDsDialog"
+      custom-class="user-drawer sql-dataset-drawer"
+      size="600px"
+      v-closePress
+      direction="rtl"
+    >
+      <dataset-tree :fix-height="true" show-mode="union" :custom-type="customType" :clear-empty-dir="true" :mode="currentNode.currentDs.mode" @getTable="firstDs" />
+      <div class="de-foot">
+        <deBtn secondary @click="closeSelectDs()">{{
+          $t("dataset.cancel")
+        }}</deBtn>
+        <deBtn
+          :disabled="!tempDs.id"
+          type="primary"
+          @click="confirmSelectDs()"
+          >{{ $t("dataset.confirm") }}</deBtn
+        >
       </div>
-    </el-dialog>
+    </el-drawer>
 
     <!--编辑单个数据集字段-->
+    <!-- <el-drawer
+      v-if="editField"
+      :title="$t('dataset.field_select')"
+      :visible.sync="editField"
+      custom-class="user-drawer sql-dataset-drawer"
+      size="840px"
+      v-closePress
+      direction="rtl"
+    >
+      <union-field-edit :node="currentNode" />
+      <div class="de-foot">
+        <deBtn size="mini" @click="closeEditField()">{{
+          $t("dataset.cancel")
+        }}</deBtn>
+        <deBtn type="primary" size="mini" @click="confirmEditField()">{{
+          $t("dataset.confirm")
+        }}</deBtn>
+      </div>
+    </el-drawer> -->
     <el-dialog v-if="editField" v-dialogDrag :title="$t('dataset.field_select')" :visible="editField" :show-close="false" width="400px" class="dialog-css">
       <union-field-edit :node="currentNode" />
       <div slot="footer" class="dialog-footer">
@@ -49,11 +83,11 @@
 </template>
 
 <script>
-import DatasetGroupSelectorTree from '@/views/dataset/common/DatasetGroupSelectorTree'
+import datasetTree from '@/views/dataset/common/datasetTree'
 import UnionFieldEdit from '@/views/dataset/add/union/UnionFieldEdit'
 export default {
   name: 'NodeItem',
-  components: { UnionFieldEdit, DatasetGroupSelectorTree },
+  components: { UnionFieldEdit, datasetTree },
   props: {
     currentNode: {
       type: Object,

@@ -1,21 +1,6 @@
 <template>
-  <el-row>
-    <el-row style="height: 26px;" class="title-text">
-      <span style="line-height: 26px;font-size: 14px;">
-        {{ param.tableId?$t('dataset.edit_union'):$t('dataset.add_union_table') }}
-      </span>
-      <el-row style="float: right">
-        <el-button size="mini" @click="cancel">
-          {{ $t('dataset.cancel') }}
-        </el-button>
-        <el-button :disabled="!name || dataset.length === 0" size="mini" type="primary" @click="save">
-          {{ $t('dataset.confirm') }}
-        </el-button>
-      </el-row>
-    </el-row>
-    <el-divider />
-    <div>
-      <el-form :inline="true" style="display: flex;align-items: center;justify-content: space-between;">
+  <div class="dataset-union" @mouseup="mouseupDrag">
+    <!-- <el-form :inline="true" style="display: flex;align-items: center;justify-content: space-between;">
         <el-form-item class="form-item" :label="$t('commons.name')">
           <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" clearable />
         </el-form-item>
@@ -24,11 +9,12 @@
             {{ $t('dataset.preview_result') }}
           </el-button>
         </el-form-item>
-      </el-form>
+      </el-form> -->
+    <div :style="{ height: unionHeight + 'px' }" class="unio-editer-container">
       <!--添加第一个数据集按钮-->
       <div v-if="dataset.length === 0">
         <el-button type="primary" size="mini" @click="selectDs">
-          {{ $t('chart.select_dataset') }}
+          {{ $t("chart.select_dataset") }}
         </el-button>
       </div>
       <!--数据集关联树型结构-->
@@ -44,7 +30,7 @@
         />
         <div v-if="dataset.length > 0">
           <union-node
-            v-for="(item,index) in dataset[0].childrenDs"
+            v-for="(item, index) in dataset[0].childrenDs"
             :key="index"
             :node-index="index"
             :children-node="item"
@@ -57,296 +43,398 @@
         </div>
       </div>
     </div>
-
-    <!--选择数据集-->
-    <el-dialog v-if="selectDsDialog" v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="400px" class="dialog-css">
-      <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" clear-empty-dir="true" @getTable="firstDs" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button :disabled="!tempDs.id" type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
+    <div class="preview-container">
+      <div class="sql-title">
+        {{ $t("deDataset.data_preview") }}
+        <span class="result-num">{{
+          `(${$t("dataset.preview_show")} 1000 ${$t("dataset.preview_item")})`
+        }}</span>
+        <span @mousedown="mousedownDrag" class="drag"></span>
       </div>
-    </el-dialog>
+      <union-preview :table="previewTable" :dataset="dataset" />
+    </div>
+    <!--选择数据集-->
+    <el-drawer
+      v-if="selectDsDialog"
+      :title="$t('chart.select_dataset')"
+      :visible.sync="selectDsDialog"
+      custom-class="user-drawer sql-dataset-drawer"
+      size="600px"
+      v-closePress
+      direction="rtl"
+    >
+      <dataset-tree
+        :fix-height="true"
+        show-mode="union"
+        :custom-type="customType"
+        clear-empty-dir="true"
+        @getTable="firstDs"
+      />
+      <div class="de-foot">
+        <deBtn secondary @click="closeSelectDs()">{{
+          $t("dataset.cancel")
+        }}</deBtn>
+        <deBtn
+          :disabled="!tempDs.id"
+          type="primary"
+          @click="confirmSelectDs()"
+          >{{ $t("dataset.confirm") }}</deBtn
+        >
+      </div>
+    </el-drawer>
 
     <!--编辑关联关系-->
-    <el-dialog v-if="editUnion" v-dialogDrag top="5vh" :title="unionParam.type === 'add' ? $t('dataset.add_union_relation') : $t('dataset.edit_union_relation')" :visible="editUnion" :show-close="false" width="600px" class="dialog-css">
+    <el-dialog
+      v-if="editUnion"
+      v-dialogDrag
+      top="5vh"
+      :title="
+        unionParam.type === 'add'
+          ? $t('dataset.add_union_relation')
+          : $t('dataset.edit_union_relation')
+      "
+      :visible="editUnion"
+      :show-close="false"
+      width="600px"
+      class="dialog-css"
+    >
       <union-edit :union-param="unionParam" />
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeEditUnion()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="confirmEditUnion()">{{ $t('dataset.confirm') }}</el-button>
+        <el-button size="mini" @click="closeEditUnion()">{{
+          $t("dataset.cancel")
+        }}</el-button>
+        <el-button type="primary" size="mini" @click="confirmEditUnion()">{{
+          $t("dataset.confirm")
+        }}</el-button>
       </div>
     </el-dialog>
-
-    <!--数据预览界面-->
-    <el-drawer v-if="showPreview" :title="$t('dataset.preview_result')" :visible.sync="showPreview" direction="btt" class="preview-style">
-      <union-preview :table="previewTable" :dataset="dataset" />
-    </el-drawer>
-  </el-row>
+  </div>
 </template>
 
 <script>
-import UnionNode from '@/views/dataset/add/union/UnionNode'
-import NodeItem from '@/views/dataset/add/union/NodeItem'
-import DatasetGroupSelectorTree from '@/views/dataset/common/DatasetGroupSelectorTree'
-import UnionEdit from '@/views/dataset/add/union/UnionEdit'
-import { post } from '@/api/dataset/dataset'
-import UnionPreview from '@/views/dataset/add/union/UnionPreview'
+import UnionNode from "@/views/dataset/add/union/UnionNode";
+import NodeItem from "@/views/dataset/add/union/NodeItem";
+import datasetTree from "@/views/dataset/common/datasetTree";
+import UnionEdit from "@/views/dataset/add/union/UnionEdit";
+import { post } from "@/api/dataset/dataset";
+import UnionPreview from "@/views/dataset/add/union/UnionPreview";
 export default {
-  name: 'AddUnion',
-  components: { UnionPreview, UnionEdit, DatasetGroupSelectorTree, NodeItem, UnionNode },
+  name: "AddUnion",
+  components: {
+    UnionPreview,
+    UnionEdit,
+    datasetTree,
+    NodeItem,
+    UnionNode,
+  },
   props: {
     param: {
       type: Object,
-      required: true
+      required: true,
     }
   },
   data() {
     return {
       // mock data，结构比较复杂，需要这个结构多看看...
-      datasetMock: [{
-        currentDs: {},
-        currentDsField: [],
-        childrenDs: [
-          {
-            currentDs: {},
-            currentDsField: [],
-            childrenDs: [],
-            unionToParent: {
-              unionType: 'left', // left join,right join,inner join
-              unionFields: [
-                {
-                  parentField: {},
-                  currentField: {}
-                }
-              ]
+      datasetMock: [
+        {
+          currentDs: {},
+          currentDsField: [],
+          childrenDs: [
+            {
+              currentDs: {},
+              currentDsField: [],
+              childrenDs: [],
+              unionToParent: {
+                unionType: "left", // left join,right join,inner join
+                unionFields: [
+                  {
+                    parentField: {},
+                    currentField: {},
+                  },
+                ],
+              },
+              allChildCount: 0,
             },
-            allChildCount: 0
-          }
-        ],
-        unionToParent: {},
-        allChildCount: 0
-      }],
+          ],
+          unionToParent: {},
+          allChildCount: 0,
+        },
+      ],
       // union data
       dataset: [],
+      unionHeight: 298,
       // union item
       unionItem: {
         currentDs: {},
         currentDsField: [],
         childrenDs: [],
         unionToParent: {
-          unionType: 'left',
-          unionFields: []
+          unionType: "left",
+          unionFields: [],
         },
-        allChildCount: 0
+        allChildCount: 0,
       },
-      name: '关联数据集',
-      customType: ['db', 'sql', 'excel', 'api'],
+      customType: ["db", "sql", "excel", "api"],
       selectDsDialog: false,
       // 弹框临时选中的数据集
       tempDs: {},
       editUnion: false,
       unionParam: {},
-      showPreview: false,
-      previewTable: {}
-    }
+      previewTable: {},
+    };
   },
   watch: {
-    'param.tableId': function() {
-      this.resetComponent()
-      this.initTableData()
-    }
+    "param.tableId": function () {
+      this.resetComponent();
+      this.initTableData();
+    },
   },
   mounted() {
-    this.initTableData()
+    this.initTableData();
   },
   methods: {
+    mousedownDrag() {
+      document
+        .querySelector(".dataset-union")
+        .addEventListener("mousemove", this.caculateHeight);
+    },
+    mouseupDrag() {
+      document
+        .querySelector(".dataset-union")
+        .removeEventListener("mousemove", this.caculateHeight);
+    },
+    caculateHeight(e) {
+      this.unionHeight = e.pageY - 56;
+    },
     save() {
-      if (!this.name || this.name === '') {
+      if (!this.param.name || this.param.name === "") {
         this.$message({
           showClose: true,
-          message: this.$t('dataset.pls_input_name'),
-          type: 'error'
-        })
-        return
+          message: this.$t("dataset.pls_input_name"),
+          type: "error",
+        });
+        return;
       }
-      if (this.name.length > 50) {
+      if (this.param.name.length > 50) {
         this.$message({
           showClose: true,
-          message: this.$t('dataset.char_can_not_more_50'),
-          type: 'error'
-        })
-        return
+          message: this.$t("dataset.char_can_not_more_50"),
+          type: "error",
+        });
+        return;
       }
       const table = {
         id: this.param.tableId,
-        name: this.name,
+        name: this.param.name,
         sceneId: this.param.id,
         dataSourceId: this.dataset[0].currentDs.dataSourceId,
-        type: 'union',
+        type: "union",
         mode: this.dataset[0].currentDs.mode,
-        info: '{"union":' + JSON.stringify(this.dataset) + '}'
-      }
-      post('/dataset/table/update', table).then(response => {
-        this.$emit('saveSuccess', table)
-        this.cancel()
-      })
+        info: '{"union":' + JSON.stringify(this.dataset) + "}",
+      };
+      post("/dataset/table/update", table).then((response) => {
+        this.$emit("saveSuccess", table);
+        this.cancel();
+      });
     },
     cancel() {
       if (this.param.tableId) {
-        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table })
+        this.$emit("switchComponent", {
+          name: "ViewTable",
+          param: this.param.table,
+        });
       } else {
-        this.$emit('switchComponent', { name: '' })
+        this.$emit("switchComponent", { name: "" });
       }
     },
     selectDs() {
-      this.selectDsDialog = true
+      this.selectDsDialog = true;
     },
     firstDs(val) {
-      this.tempDs = val
+      this.tempDs = val;
     },
     closeSelectDs() {
-      this.selectDsDialog = false
-      this.tempDs = {}
+      this.selectDsDialog = false;
+      this.tempDs = {};
     },
     confirmSelectDs() {
-      if (this.tempDs.mode === 0 && this.tempDs.modelInnerType === 'sql') {
+      if (this.tempDs.mode === 0 && this.tempDs.modelInnerType === "sql") {
         this.$message({
           showClose: true,
-          message: this.$t('dataset.sql_ds_union_error'),
-          type: 'error'
-        })
-        return
+          message: this.$t("dataset.sql_ds_union_error"),
+          type: "error",
+        });
+        return;
       }
-      const ds = JSON.parse(JSON.stringify(this.unionItem))
-      ds.currentDs = this.tempDs
-      this.dataset.push(ds)
-      this.closeSelectDs()
-      this.calc('union')
+      const ds = JSON.parse(JSON.stringify(this.unionItem));
+      ds.currentDs = this.tempDs;
+      this.dataset.push(ds);
+      this.closeSelectDs();
+      this.calc("union");
     },
     deleteNode(index) {
-      this.dataset.splice(index, 1)
-      this.calc('delete')
+      this.dataset.splice(index, 1);
+      this.calc("delete");
     },
     calc(param) {
-      if (param.type === 'union') {
+      if (param.type === "union") {
         if (param.grandParentAdd) {
-          this.dataset[0] && this.dataset[0].allChildCount++
+          this.dataset[0] && this.dataset[0].allChildCount++;
         }
-      } else if (param.type === 'delete') {
+      } else if (param.type === "delete") {
         if (param.grandParentSub) {
           if (param.subCount > 1) {
-            this.dataset[0] && (this.dataset[0].allChildCount -= param.subCount)
+            this.dataset[0] &&
+              (this.dataset[0].allChildCount -= param.subCount);
           } else {
-            this.dataset[0] && this.dataset[0].allChildCount--
+            this.dataset[0] && this.dataset[0].allChildCount--;
           }
         }
       }
     },
 
     unionConfig(param) {
-      this.unionParam = param
-      this.editUnion = true
+      this.unionParam = param;
+      this.editUnion = true;
     },
     closeEditUnion() {
-      this.editUnion = false
+      this.editUnion = false;
       // 添加关联的时候，如果关闭关联关系设置的界面，则删除子节点，同时向父级传递消息
-      if (this.unionParam.type === 'add') {
-        this.dataset[0].childrenDs.pop()
-        this.calc({ type: 'delete', grandParentAdd: true, grandParentSub: true, subCount: 0 })
+      if (this.unionParam.type === "add") {
+        this.dataset[0].childrenDs.pop();
+        this.calc({
+          type: "delete",
+          grandParentAdd: true,
+          grandParentSub: true,
+          subCount: 0,
+        });
       }
     },
     confirmEditUnion() {
       // 校验关联关系与字段，必填
       if (this.checkUnion()) {
-        this.editUnion = false
+        this.editUnion = false;
       } else {
         this.$message({
-          message: this.$t('dataset.union_error'),
-          type: 'error',
-          showClose: true
-        })
+          message: this.$t("dataset.union_error"),
+          type: "error",
+          showClose: true,
+        });
       }
     },
     cancelUnion(val) {
-      this.dataset = val
+      this.dataset = val;
     },
 
     checkUnion() {
-      const union = this.unionParam.node.unionToParent
+      const union = this.unionParam.node.unionToParent;
       if (!union.unionType) {
-        return false
+        return false;
       }
       if (!union.unionFields || union.unionFields.length < 1) {
-        return false
+        return false;
       }
       for (let i = 0; i < union.unionFields.length; i++) {
-        const ele = union.unionFields[i]
-        if (!ele.parentField || !ele.parentField.id || !ele.currentField || !ele.currentField.id) {
-          return false
+        const ele = union.unionFields[i];
+        if (
+          !ele.parentField ||
+          !ele.parentField.id ||
+          !ele.currentField ||
+          !ele.currentField.id
+        ) {
+          return false;
         }
       }
-      return true
+      return true;
     },
 
     initTableData() {
       if (this.param.tableId) {
-        post('/dataset/table/get/' + this.param.tableId, null).then(response => {
-          const table = JSON.parse(JSON.stringify(response.data))
-          this.name = table.name
-          this.dataset = JSON.parse(table.info).union
-        })
+        post("/dataset/table/get/" + this.param.tableId, null).then(
+          (response) => {
+            const table = JSON.parse(JSON.stringify(response.data));
+            this.dataset = JSON.parse(table.info).union;
+            this.previewData();
+          }
+        );
       }
     },
 
     previewData() {
       this.previewTable = {
         id: this.param.tableId,
-        name: this.name,
+        name: this.param.name,
         sceneId: this.param.id,
         dataSourceId: this.dataset[0].currentDs.dataSourceId,
-        type: 'union',
+        type: "union",
         mode: this.dataset[0].currentDs.mode,
-        info: '{"union":' + JSON.stringify(this.dataset) + '}'
-      }
-      this.showPreview = true
+        info: '{"union":' + JSON.stringify(this.dataset) + "}",
+      };
     },
 
     resetComponent() {
-      this.dataset = []
-      this.name = '关联数据集'
-    }
-  }
-}
+      this.dataset = [];
+      this.param.name = "关联数据集";
+    },
+  },
+};
 </script>
 
-<style scoped>
-.el-divider--horizontal {
-  margin: 12px 0;
-}
-.union-container{
+<style lang="scss" scoped>
+.dataset-union {
+  height: 100%;
   display: flex;
+  flex-direction: column;
   width: 100%;
-  height: calc(100vh - 200px);
-  overflow: auto;
-}
-.form-item{
-  margin-bottom: 10px!important;
-}
-.dialog-css ::v-deep .el-dialog__body {
-  padding: 0 20px;
-}
-.preview-style ::v-deep .el-drawer{
-  height: 50%!important;
-}
-.preview-style ::v-deep .el-drawer .el-drawer__header{
-  margin-bottom: 10px!important;
-  padding: 10px 16px 0!important;
-  font-size: 14px;
-}
-.preview-style ::v-deep .el-drawer .el-drawer__body{
-  padding: 0 16px 10px!important;
-}
-.form-item ::v-deep .el-form-item__label{
-  font-size: 12px!important;
-  font-weight: 400!important;
+
+  .unio-editer-container {
+    min-height: 298px;
+    width: 100%;
+  }
+
+  .preview-container {
+    flex: 1;
+    font-family: PingFang SC;
+    font-size: 14px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    flex: 1;
+    .sql-title {
+      user-select: none;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      padding: 16px 24px;
+      font-weight: 500;
+      position: relative;
+      color: var(--deTextPrimary, #1f2329);
+      border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+
+      .result-num {
+        font-weight: 400;
+        color: var(--deTextSecondary, #646a73);
+        margin-left: 12px;
+      }
+      .drag {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 7px;
+        width: 100px;
+        border-radius: 3.5px;
+        background: rgba(31, 35, 41, 0.1);
+        cursor: row-resize;
+      }
+    }
+  }
+
+  .union-container {
+    display: flex;
+    width: 100%;
+    overflow: auto;
+    height: 100%;
+  }
 }
 </style>

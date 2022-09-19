@@ -1,214 +1,556 @@
 <template>
-  <el-row style="display: flex;flex-direction: column;height: 100%">
-    <el-row style="height: 26px;" class="title-text">
-      <span style="line-height: 26px;">
-        {{ $t('datasource.add_api_table') }}
-      </span>
-      <el-row style="float: right">
-        <el-button size="mini" @click="cancel">
-          {{ $t('dataset.cancel') }}
-        </el-button>
-        <el-button size="mini" type="primary" :disabled="checkTableList.length < 1" @click="save">
-          {{ $t('dataset.confirm') }}
-        </el-button>
-      </el-row>
-    </el-row>
-    <el-divider />
-    <el-row>
-      <el-form :inline="true">
-        <el-form-item class="form-item">
-          <el-select v-model="dataSource" filterable :placeholder="$t('dataset.pls_slc_data_source')" size="mini">
-            <el-option
-              v-for="item in options"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item class="form-item">
-          <el-select v-model="mode" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-            <el-option :label="$t('dataset.sync_data')" value="1" :disabled="!kettleRunning && engineMode!=='simple'" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item v-if="mode === '1'" class="form-item">
-          <el-select v-model="syncType" filterable :placeholder="$t('dataset.connect_mode')" size="mini">
-            <el-option :label="$t('dataset.sync_now')" value="sync_now" />
-            <el-option :label="$t('dataset.sync_latter')" value="sync_latter" />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item class="form-item" style="float: right;">
+  <div class="dataset-api">
+    <p v-if="!showLeft" @click="showLeft = true" class="arrow-right">
+      <i class="el-icon-d-arrow-right"></i>
+    </p>
+    <div class="table-list" v-else>
+      <p class="select-ds">
+        {{ $t("deDataset.select_data_source") }} <i @click="showLeft = false" class="el-icon-d-arrow-left"></i>
+      </p>
+      <el-select
+        class="ds-list"
+        v-model="dataSource"
+        filterable
+        :placeholder="$t('dataset.pls_slc_data_source')"
+        size="small"
+      >
+        <el-option
+          v-for="item in options"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
+        />
+      </el-select>
+      <p class="select-ds">{{ $t("datasource.data_table") }}</p>
+      <el-input
+        v-model="searchTable"
+        size="small"
+        class="search"
+        :placeholder="$t('deDataset.by_table_name')"
+        prefix-icon="el-icon-search"
+        clearable
+      />
+      <div class="table-checkbox-list">
+        <!-- <div class="item" v-for="(ele, index) in tableData"> -->
+        <el-checkbox-group v-model="checkTableList" size="small">
+          <el-tooltip
+            :disabled="t.enableCheck"
+            effect="dark"
+            v-for="t in tableData"
+            :key="t.name"
+            :content="$t('dataset.table_already_add_to') + ': ' + t.datasetPath"
+            placement="right"
+          >
+            <div
+              :class="[
+                { active: activeName === t.name, 'not-allow': !t.enableCheck },
+              ]"
+              class="item"
+              @click="setActiveName(t)"
+            >
+              <el-checkbox :label="t.name" :disabled="!t.enableCheck">
+              </el-checkbox>
+              <span class="label">{{ showTableNameWithComment(t) }}</span>
+              <span class="error-name-exsit" v-if="t.nameExsit">
+                <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
+              </span>
+            </div>
+          </el-tooltip>
+        </el-checkbox-group>
+        <!-- </div> -->
+      </div>
+    </div>
+    <div class="table-detail">
+      <div class="top-table-detail">
+        <el-select
+          v-model="mode"
+          filterable
+          :placeholder="$t('dataset.connect_mode')"
+          size="small"
+        >
+          <el-option
+            :label="$t('dataset.sync_data')"
+            value="1"
+            :disabled="!kettleRunning && engineMode !== 'simple'"
+          />
+        </el-select>
+        <el-select
+          v-model="syncType"
+          filterable
+          :placeholder="$t('dataset.connect_mode')"
+          size="small"
+        >
+          <el-option :label="$t('dataset.sync_now')" value="sync_now" />
+          <el-option :label="$t('dataset.sync_latter')" value="sync_latter" />
+        </el-select>
+      </div>
+      <el-empty
+        style="padding-top: 160px"
+        size="125"
+        v-if="!dataSource"
+        :description="$t('dataset.pls_slc_data_source')"
+        :image="noSelectTable"
+      ></el-empty>
+      <template v-else-if="activeName">
+        <div class="dataset">
+          <span class="name">{{ $t("dataset.name") }}</span>
           <el-input
-            v-model="searchTable"
-            size="mini"
-            :placeholder="$t('dataset.search')"
-            prefix-icon="el-icon-search"
+            @change="validateName"
+            v-if="activeIndex !== -1"
+            v-model="tableData[activeIndex].datasetName"
+            size="small"
             clearable
           />
-        </el-form-item>
-      </el-form>
-    </el-row>
-    <el-col style="overflow-y: auto;">
-      <el-checkbox-group v-model="checkTableList" size="small">
-        <el-tooltip v-for="t in tableData" :key="t.name" :disabled="t.enableCheck" effect="dark" :content="$t('dataset.table_already_add_to')+': '+t.datasetPath" placement="bottom">
-          <el-checkbox
-            border
-            :label="t.name"
-            :disabled="!t.enableCheck"
-          >{{ showTableNameWithComment(t) }}</el-checkbox>
-        </el-tooltip>
-      </el-checkbox-group>
-    </el-col>
-  </el-row>
+          <div
+            v-if="tableData[activeIndex].nameExsit"
+            style="left: 107px; top: 52px"
+            class="el-form-item__error"
+          >
+            {{ $t("deDataset.already_exists") }}
+          </div>
+        </div>
+        <div class="data" v-loading="tableLoading">
+          <span class="result-num">{{
+            `${$t("dataset.preview_show")} 1000 ${$t("dataset.preview_item")}`
+          }}</span>
+          <div class="table-grid">
+            <ux-grid
+              ref="plxTable"
+              size="mini"
+              style="width: 100%"
+              :height="height"
+              :checkbox-config="{ highlight: true }"
+              :width-resize="true"
+            >
+              <ux-table-column
+                v-for="field in fields"
+                :key="field.fieldName"
+                min-width="200px"
+                :field="field.fieldName"
+                :title="field.remarks"
+                :resizable="true"
+              />
+            </ux-grid>
+          </div>
+        </div>
+      </template>
+      <el-empty
+        style="padding-top: 160px"
+        size="125"
+        v-else-if="avilibelTable"
+        :description="$t('deDataset.is_currently_available')"
+        :image="noAvilibelTableImg"
+      ></el-empty>
+      <el-empty
+        style="padding-top: 160px"
+        size="125"
+        v-else-if="!activeName"
+        :description="$t('deDataset.left_to_edit')"
+        :image="noSelectTable"
+      ></el-empty>
+    </div>
+  </div>
 </template>
 
 <script>
-import { listApiDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
-import {engineMode} from "@/api/system/engine";
+import {
+  listApiDatasource,
+  post,
+  isKettleRunning,
+} from "@/api/dataset/dataset";
+import { engineMode } from "@/api/system/engine";
 
 export default {
-  name: 'AddApi',
+  name: "AddApi",
   props: {
     param: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
-      searchTable: '',
+      showLeft: true,
+      tableLoading: false,
+      loading: false,
+      height: 400,
+      fields: [],
+      fieldsData: [],
+      searchTable: "",
       options: [],
-      dataSource: '',
+      dataSource: "",
       tables: [],
       checkTableList: [],
-      mode: '1',
-      syncType: 'sync_now',
+      mode: "1",
+      syncType: "sync_now",
       tableData: [],
       kettleRunning: false,
-      engineMode: 'local',
-      selectedDatasource: {}
-    }
+      engineMode: "local",
+      selectedDatasource: {},
+      disabledSync: true,
+      avilibelTable: false,
+      noAvilibelTableImg: require("@/assets/None.png"),
+      noSelectTable: require("@/assets/None_Select_ds.png"),
+      activeName: "",
+    };
+  },
+  computed: {
+    activeIndex() {
+      return this.tableData.findIndex((ele) => ele.name === this.activeName);
+    },
+    checkDatasetName() {
+      return this.tableData
+        .filter((ele, index) => {
+          return this.checkTableList.includes(ele.name);
+        })
+        .map((ele) => ele.datasetName);
+    },
   },
   watch: {
     dataSource(val) {
       if (val) {
-        post('/datasource/getTables/' + val, {}).then(response => {
-          this.tables = response.data
-          this.tableData = JSON.parse(JSON.stringify(this.tables))
-        })
+        this.checkTableList = [];
+        this.activeName = "";
+        const dsName = this.options.find((ele) => ele.id === val).name;
+        post("/datasource/getTables/" + val, {}).then((response) => {
+          this.tables = response.data;
+          this.tableData = JSON.parse(JSON.stringify(this.tables));
+          this.tableData.forEach((ele) => {
+            this.$set(ele, "datasetName", dsName + "_" + ele.name);
+            this.$set(ele, "nameExsit", false);
+          });
+          this.avilibelTable = !this.tableData.some((ele) => ele.enableCheck);
+        });
         for (let i = 0; i < this.options.length; i++) {
           if (this.options[i].id === val) {
-            this.selectedDatasource = this.options[i]
+            this.selectedDatasource = this.options[i];
           }
         }
       }
     },
     searchTable(val) {
-      if (val && val !== '') {
-        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) })))
+      if (val && val !== "") {
+        this.tableData = JSON.parse(
+          JSON.stringify(
+            this.tables.filter((ele) => {
+              return ele.name
+                .toLocaleLowerCase()
+                .includes(val.toLocaleLowerCase());
+            })
+          )
+        );
       } else {
-        this.tableData = JSON.parse(JSON.stringify(this.tables))
+        this.tableData = JSON.parse(JSON.stringify(this.tables));
       }
-    }
+    },
   },
   mounted() {
-    this.initDataSource()
+    this.initDataSource();
+    window.onresize = () => {
+      this.calHeight();
+    };
+    this.calHeight();
   },
   activated() {
-    this.initDataSource()
+    this.initDataSource();
   },
   created() {
-    this.kettleState()
-    engineMode().then(res => {
-      this.engineMode = res.data
-    })
+    this.kettleState();
+    engineMode().then((res) => {
+      this.engineMode = res.data;
+    });
   },
   methods: {
+    nameExsitValidator(activeIndex) {
+      if (
+        !this.nameList ||
+        this.nameList.length === 0 ||
+        !this.checkDatasetName.includes(this.tableData[activeIndex].datasetName)
+      ) {
+        this.tableData[activeIndex].nameExsit = false;
+        return;
+      }
+      this.tableData[activeIndex].nameExsit =
+        this.nameList
+          .concat(this.checkDatasetName)
+          .filter((name) => name === this.tableData[activeIndex].datasetName)
+          .length > 1;
+    },
+    validateName() {
+      this.tableData.forEach((ele, index) => {
+        if (this.checkDatasetName.includes(ele.datasetName)) {
+          this.nameExsitValidator(index);
+        }
+      });
+    },
+    calHeight() {
+      const that = this;
+      setTimeout(function () {
+        const currentHeight = document.documentElement.clientHeight;
+        that.height = currentHeight - 195 - 54;
+      }, 10);
+    },
+    setActiveName({ name, datasourceId, enableCheck }) {
+      if (!enableCheck) return;
+      this.activeName = name;
+      this.dbPreview({
+        dataSourceId: datasourceId,
+        info: JSON.stringify({ table: name }),
+      });
+    },
+    dbPreview(data) {
+      this.tableLoading = true;
+      dbPreview(data).then((res) => {
+        const { fields, data } = res.data;
+        this.fields = fields;
+        this.fieldsData = data;
+        this.$refs.plxTable.reloadData(data);
+      }).finally(() => {
+        this.tableLoading = false;
+      });
+    },
     initDataSource() {
-      listApiDatasource().then(response => {
-        this.options = response.data
-      })
+      listApiDatasource().then((response) => {
+        this.options = response.data;
+      });
     },
     kettleState() {
-      isKettleRunning().then(res => {
-        this.kettleRunning = res.data
-      })
+      isKettleRunning().then((res) => {
+        this.kettleRunning = res.data;
+      });
     },
     showTableNameWithComment(t) {
       if (t.remark) {
-        return `${t.name}(${t.remark})`
+        return `${t.name}(${t.remark})`;
       } else {
-        return `${t.name}`
+        return `${t.name}`;
       }
     },
     save() {
-      let ds = {}
-      this.options.forEach(ele => {
-        if (ele.id === this.dataSource) {
-          ds = ele
-        }
-      })
-      const sceneId = this.param.id
-      const dataSourceId = this.dataSource
-      const tables = []
-      const mode = this.mode
-      const syncType = this.syncType
-      this.checkTableList.forEach(function(name) {
+      if (this.tableData.some((ele) => ele.nameExsit)) {
+        this.openMessageSuccess("deDataset.cannot_be_duplicate", "error");
+        return;
+      }
+      this.loading = true;
+      const sceneId = this.param.id;
+      const dataSourceId = this.dataSource;
+      const tables = [];
+      const mode = this.mode;
+      const syncType = this.syncType;
+      this.checkTableList.forEach(function (name) {
+        const datasetName = this.tableData.find(
+          (ele) => ele.name === name
+        ).datasetName;
         tables.push({
-          name: ds.name + '_' + name,
+          name: datasetName,
           sceneId: sceneId,
           dataSourceId: dataSourceId,
-          type: 'api',
+          type: "api",
           syncType: syncType,
           mode: parseInt(mode),
-          info: JSON.stringify({ table: name })
-        })
-      })
-      post('/dataset/table/batchAdd', tables).then(response => {
-        this.$emit('saveSuccess', tables[0])
-        this.cancel()
-      })
+          info: JSON.stringify({ table: name }),
+        });
+      });
+      post("/dataset/table/batchAdd", tables).then((response) => {
+        this.openMessageSuccess('deDataset.set_saved_successfully')
+        this.cancel();
+      }).finally(() => {
+        this.loading = false;
+      });
     },
 
     cancel() {
-      this.dataReset()
-      this.$emit('switchComponent', { name: '' })
+      this.$router.back()
     },
 
     dataReset() {
-      this.searchTable = ''
-      this.options = []
-      this.dataSource = ''
-      this.tables = []
-      this.checkTableList = []
+      this.searchTable = "";
+      this.options = [];
+      this.dataSource = "";
+      this.tables = [];
+      this.checkTableList = [];
+    },
+  },
+};
+</script>
+
+<style scoped lang="scss">
+.dataset-api {
+  display: flex;
+  height: 100%;
+  position: relative;
+
+  .arrow-right {
+    position: absolute;
+    top: 15px;
+    cursor: pointer;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    height: 24px;
+    width: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--deCardStrokeColor, #dee0e3);
+    border-top-right-radius: 13px;
+    border-bottom-right-radius: 13px;
+  }
+  .table-list {
+    p {
+      margin: 0;
+    }
+    height: 100%;
+    width: 240px;
+    padding: 16px 12px;
+    font-family: PingFang SC;
+    border-right: 1px solid rgba(31, 35, 41, 0.15);
+
+    .select-ds {
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      color: var(--deTextPrimary, #1f2329);
+      i {
+        cursor: pointer;
+        font-size: 12px;
+        color: var(--deTextPlaceholder, #8f959e);
+      }
+    }
+
+    .search {
+      margin: 12px 0;
+    }
+    .ds-list {
+      margin: 12px 0 24px 0;
+      width: 100%;
+    }
+
+    .table-checkbox-list {
+      height: calc(100% - 190px);
+      overflow-y: auto;
+      .item {
+        height: 40px;
+        width: 215px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        padding: 12px;
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--deTextPrimary, #1f2329);
+        position: relative;
+
+        &:hover {
+          background: rgba(31, 35, 41, 0.1);
+        }
+
+        &.active {
+          background-color: var(--deWhiteHover, #3370ff);
+          color: var(--primary, #3370ff);
+        }
+
+        ::v-deep.el-checkbox__label {
+          display: none;
+        }
+
+        ::v-deep.el-checkbox {
+          margin-right: 8px;
+        }
+
+        .label {
+          width: 85%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .error-name-exsit {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+        }
+      }
+      .not-allow {
+        cursor: not-allowed;
+        color: var(--deTextDisable, #bbbfc4);
+      }
     }
   }
 
+  .table-detail {
+    font-family: PingFang SC;
+    flex: 1;
+    overflow: hidden;
+    .top-table-detail {
+      height: 64px;
+      width: 100%;
+      padding: 16px 24px;
+      background: #f5f6f7;
+      display: flex;
+      align-items: center;
+      .el-select {
+        width: 120px;
+        margin-right: 12px;
+      }
+    }
+
+    .dataset {
+      padding: 21px 24px;
+      width: 100%;
+      border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+      display: flex;
+      align-items: center;
+      position: relative;
+      .name {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--deTextPrimary, #1f2329);
+      }
+
+      .el-input {
+        width: 420px;
+        margin-left: 12px;
+      }
+    }
+
+    .data {
+      padding: 16px 25px;
+      overflow: auto;
+      height: calc(100% - 140px);
+      width: 100%;
+      box-sizing: border-box;
+      .result-num {
+        font-weight: 400;
+        display: inline-block;
+        font-family: PingFang SC;
+        color: var(--deTextSecondary, #646a73);
+        margin-bottom: 16px;
+      }
+
+      .table-grid {
+        width: 100%;
+      }
+    }
+  }
 }
-</script>
-
-<style scoped>
-  .el-divider--horizontal {
-    margin: 12px 0;
+</style>
+<style lang="scss">
+.db-select-pop {
+  .selected::after {
+    content: "";
+    width: 6px;
+    height: 12px;
+    position: absolute;
+    right: 12px;
+    top: 9px;
+    border: 2px solid #3370ff;
+    border-top-color: rgba(0, 0, 0, 0);
+    border-left-color: rgba(0, 0, 0, 0);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
   }
-
-  .form-item {
-    margin-bottom: 6px;
-  }
-
-  .el-checkbox {
-    margin-bottom: 14px;
-    margin-left: 0;
-    margin-right: 14px;
-  }
-
-  .el-checkbox.is-bordered + .el-checkbox.is-bordered {
-    margin-left: 0;
-  }
-
-  span{
-    font-size: 14px;
-  }
+}
 </style>

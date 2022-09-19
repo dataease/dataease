@@ -232,4 +232,11 @@ export function exportExcel(data) {
     data
   })
 }
+
+export function dsTable(page, size, id) {
+  return request({
+    url: '/datasource/getTables/' + id + '/' + page + '/' + size,
+    method: 'post',
+  })
+}
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs }
