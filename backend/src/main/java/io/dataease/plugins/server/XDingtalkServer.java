@@ -48,6 +48,7 @@ public class XDingtalkServer {
         DingtalkXpackService dingtalkXpackService = SpringContextUtil.getBean(DingtalkXpackService.class);
         return dingtalkXpackService.info();
     }
+
     @ResponseBody
     @RequiresPermissions("sysparam:read")
     @PostMapping("/save")
@@ -55,16 +56,18 @@ public class XDingtalkServer {
         DingtalkXpackService dingtalkXpackService = SpringContextUtil.getBean(DingtalkXpackService.class);
         dingtalkXpackService.save(settings);
     }
+
     @ResponseBody
     @PostMapping("/testConn")
     public void testConn(@RequestBody DingtalkInfo dingtalkInfo) {
         DingtalkXpackService dingtalkXpackService = SpringContextUtil.getBean(DingtalkXpackService.class);
         try {
             dingtalkXpackService.testConn(dingtalkInfo);
-        }catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
     @ResponseBody
     @PostMapping("/getQrParam")
     public DingQrResult getQrParam() {
@@ -92,7 +95,7 @@ public class XDingtalkServer {
             String unionid = dingUserEntity.getUnionid();
             SysUserEntity sysUserEntity = authUserService.getUserBySub(unionid, 5);
             if (null == sysUserEntity) {
-                String email = StringUtils.isNotBlank(dingUserEntity.getOrg_email()) ? dingUserEntity.getOrg_email() : StringUtils.isNotBlank(dingUserEntity.getEmail()) ? dingUserEntity.getEmail() : "demo@dingtalk.work";
+                String email = StringUtils.isNotBlank(dingUserEntity.getOrg_email()) ? dingUserEntity.getOrg_email() : StringUtils.isNotBlank(dingUserEntity.getEmail()) ? dingUserEntity.getEmail() : (username + "@dingtalk.work");
                 sysUserService.validateExistUser(username, dingUserEntity.getName(), email);
                 sysUserService.saveDingtalkCUser(dingUserEntity, email);
                 sysUserEntity = authUserService.getUserBySub(unionid, 5);

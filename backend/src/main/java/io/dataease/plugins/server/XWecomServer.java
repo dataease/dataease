@@ -49,6 +49,7 @@ public class XWecomServer {
         WecomXpackService wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);
         return wecomXpackService.info();
     }
+
     @ResponseBody
     @RequiresPermissions("sysparam:read")
     @PostMapping("/save")
@@ -56,16 +57,18 @@ public class XWecomServer {
         WecomXpackService wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);
         wecomXpackService.save(settings);
     }
+
     @ResponseBody
     @PostMapping("/testConn")
     public void testConn(@RequestBody WecomInfo wecomInfo) {
         WecomXpackService wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);
         try {
             wecomXpackService.testConn(wecomInfo);
-        }catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
     @ResponseBody
     @PostMapping("/getQrParam")
     public BaseQrResult getQrParam() {
@@ -96,7 +99,7 @@ public class XWecomServer {
             SysUserEntity sysUserEntity = authUserService.getUserBySub(userId, 4);
             if (null == sysUserEntity) {
                 Object emailObj = ObjectUtils.isEmpty(userMap.get("biz_mail")) ? userMap.get("email") : userMap.get("biz_mail");
-                String email = ObjectUtils.isEmpty(emailObj) ? "demo@wecom.work" : emailObj.toString();
+                String email = ObjectUtils.isEmpty(emailObj) ? (userId + "@wecom.work") : emailObj.toString();
                 sysUserService.validateExistUser(userId, userMap.get("name").toString(), email);
                 sysUserService.saveWecomCUser(userMap, userId, email);
                 sysUserEntity = authUserService.getUserBySub(userId, 4);
