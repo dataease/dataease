@@ -1004,7 +1004,6 @@ public class ExtractDataService {
         outputStep = outputStep(outFile, datasetTableFields, datasource);
 
         for (StepMeta inputStep : inputSteps) {
-            System.out.println(inputStep.getName());
             TransHopMeta hi1 = new TransHopMeta(inputStep, udjcStep);
             transMeta.addTransHop(hi1);
             transMeta.addStep(inputStep);
@@ -1133,7 +1132,6 @@ public class ExtractDataService {
             }
             size++;
         }
-        System.out.println(inputSteps.size());
         return inputSteps;
     }
 
