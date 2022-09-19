@@ -9,20 +9,16 @@ import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
-
 import io.dataease.controller.request.panel.*;
-
 import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.PanelGroupExtendDataDTO;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.authModel.VAuthModelDTO;
-import io.dataease.dto.chart.ChartGroupDTO;
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.dto.panel.PanelExport2App;
-import io.dataease.dto.panel.PanelGroupAppInfo;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.dto.panel.PanelTemplateFileDTO;
 import io.dataease.dto.panel.po.PanelViewInsertDTO;
@@ -33,7 +29,6 @@ import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DeTypeConstants;
-import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.service.chart.ChartGroupService;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.dataset.DataSetGroupService;
