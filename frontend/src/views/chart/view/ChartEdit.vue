@@ -603,6 +603,7 @@
                             :quota-data="quota"
                             @onItemChange="stackItemChange"
                             @onItemRemove="stackItemRemove"
+                            @onItemCustomSort="stackItemCustomSort"
                           />
                         </transition-group>
                       </draggable>
@@ -1074,7 +1075,7 @@
       </div>
     </el-dialog>
 
-    <!--自定义排序-->
+    <!--xAxis自定义排序-->
     <el-dialog
       v-if="showCustomSort"
       v-dialogDrag
@@ -1084,10 +1085,27 @@
       width="500px"
       class="dialog-css"
     >
-      <custom-sort-edit :chart="chart" :field="customSortField" @onSortChange="customSortChange" />
+      <custom-sort-edit :chart="chart" field-type="xAxis" :field="customSortField" @onSortChange="customSortChange" />
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="closeCustomSort">{{ $t('chart.cancel') }}</el-button>
         <el-button type="primary" size="mini" @click="saveCustomSort">{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
+    <!--extStack自定义排序-->
+    <el-dialog
+      v-if="showStackCustomSort"
+      v-dialogDrag
+      :title="$t('chart.custom_sort')"
+      :visible="showStackCustomSort"
+      :show-close="false"
+      width="500px"
+      class="dialog-css"
+    >
+      <custom-sort-edit :chart="chart" field-type="extStack" :field="customSortField" @onSortChange="customSortChange" />
+      <div slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="closeStackCustomSort">{{ $t('chart.cancel') }}</el-button>
+        <el-button type="primary" size="mini" @click="saveStackCustomSort">{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -1332,7 +1350,8 @@ export default {
       editChartCalcField: false,
       fieldShow: false,
       tabActive: 'data',
-      currentAreaCode: ''
+      currentAreaCode: '',
+      showStackCustomSort: false
 
     }
   },
@@ -1573,9 +1592,7 @@ export default {
         this.view.resultCount = '1000'
       }
       if (switchType) {
-        this.view.senior.threshold = {
-          tableThreshold: []
-        }
+        this.view.senior.threshold = {}
       }
       if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
         this.$message({
@@ -2440,6 +2457,11 @@ export default {
       this.view.extStack.splice(item.index, 1)
       this.calcData(true)
     },
+    stackItemCustomSort(item) {
+      this.customSortField = this.view.extStack[item.index]
+      this.stackCustomSort()
+    },
+
     drillItemChange(item) {
       this.calcData(true)
     },
@@ -2692,17 +2714,29 @@ export default {
     },
     saveCustomSort() {
       this.view.xaxis.forEach(ele => {
-        // 先将所有自定义排序的维度设置为none，再对当前维度赋值
-        // if (ele.sort === 'custom_sort') {
-        //   ele.sort = 'none'
-        //   ele.customSort = []
-        // }
         if (ele.id === this.customSortField.id) {
           ele.sort = 'custom_sort'
           ele.customSort = this.customSortList
         }
       })
       this.closeCustomSort()
+      this.calcData(true)
+    },
+
+    stackCustomSort() {
+      this.showStackCustomSort = true
+    },
+    closeStackCustomSort() {
+      this.showStackCustomSort = false
+    },
+    saveStackCustomSort() {
+      this.view.extStack.forEach(ele => {
+        if (ele.id === this.customSortField.id) {
+          ele.sort = 'custom_sort'
+          ele.customSort = this.customSortList
+        }
+      })
+      this.closeStackCustomSort()
       this.calcData(true)
     },
 
