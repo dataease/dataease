@@ -168,6 +168,7 @@ export function initPanelData(panelId, useCache = false, callback) {
       status: response.data.status,
       createBy: response.data.createBy,
       createTime: response.data.createTime,
+      creatorName: response.data.creatorName,
       updateBy: response.data.updateBy,
       updateTime: response.data.updateTime
     })
