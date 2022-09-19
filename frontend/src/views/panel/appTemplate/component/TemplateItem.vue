@@ -16,13 +16,13 @@
         <i class="el-icon-more"></i>
         <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
           <slot>
-<!--            <el-dropdown-item command="rename">-->
-<!--              <i class="el-icon-edit"></i>-->
-<!--              {{ $t('chart.rename')}}-->
-<!--            </el-dropdown-item>-->
+            <el-dropdown-item command="update">
+              <i class="el-icon-edit"></i>
+              {{ $t("commons.update") }}
+            </el-dropdown-item>
             <el-dropdown-item command="delete">
               <i class="el-icon-delete"></i>
-              卸载
+              {{ $t("commons.uninstall") }}
             </el-dropdown-item>
           </slot>
         </el-dropdown-menu>
@@ -51,7 +51,7 @@ export default {
     },
     classImg() {
       return {
-        width: this.width + 'px',
+        width: (this.width-2) + 'px',
         height: this.width * 0.576 + 'px',
         // background: `url(${this.model.snapshot}) no-repeat`,
         // 'background-size': `100% 100%`

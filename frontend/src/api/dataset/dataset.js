@@ -69,6 +69,15 @@ export function groupTree(data) {
   })
 }
 
+export function dsGroupTree(data) {
+  return request({
+    url: '/dataset/group/tree',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function listDatasource() {
   return request({
     url: '/datasource/list',

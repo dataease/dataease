@@ -3,10 +3,7 @@ package io.dataease.dto.panel;
 import com.alibaba.fastjson.JSON;
 import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.dataset.DataSetTaskDTO;
-import io.dataease.plugins.common.base.domain.ChartViewField;
-import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
-import io.dataease.plugins.common.base.domain.DatasetTable;
-import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.*;
 import lombok.Data;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -27,6 +24,7 @@ public class PanelExport2App {
 
     private String panelInfo;
 
+    private String panelViewsInfo;
     private String chartViewsInfo;
 
     private String chartViewFieldsInfo;
@@ -35,9 +33,9 @@ public class PanelExport2App {
 
     private String datasetTableFieldsInfo;
 
-    private String dataSetTasksInfo;
+    private String datasetTasksInfo;
 
-    private String datasourceDTOS;
+    private String datasourceInfo;
 
     public PanelExport2App() {
 
@@ -47,7 +45,7 @@ public class PanelExport2App {
         this.checkMes = checkMes;
     }
 
-    public PanelExport2App(List<ChartViewWithBLOBs> chartViewsInfo, List<ChartViewField> chartViewFieldsInfo, List<DatasetTable> datasetTablesInfo, List<DatasetTableField> datasetTableFieldsInfo, List<DataSetTaskDTO> dataSetTasksInfo, List<DatasourceDTO> datasourceDTOS) {
+    public PanelExport2App(List<ChartViewWithBLOBs> chartViewsInfo, List<ChartViewField> chartViewFieldsInfo, List<DatasetTable> datasetTablesInfo, List<DatasetTableField> datasetTableFieldsInfo, List<DataSetTaskDTO> datasetTasksInfo, List<DatasourceDTO> datasourceInfo, List<PanelView> panelViewsInfo) {
         List empty = new ArrayList();
         this.checkStatus = true;
         this.checkMes = "success";
@@ -55,7 +53,8 @@ public class PanelExport2App {
         this.chartViewFieldsInfo = JSON.toJSONString(chartViewFieldsInfo!=null?chartViewFieldsInfo:empty);
         this.datasetTablesInfo = JSON.toJSONString(datasetTablesInfo!=null?datasetTablesInfo:empty);
         this.datasetTableFieldsInfo = JSON.toJSONString(datasetTableFieldsInfo!=null?datasetTableFieldsInfo:empty);
-        this.dataSetTasksInfo = JSON.toJSONString(dataSetTasksInfo!=null?dataSetTasksInfo:empty);
-        this.datasourceDTOS = JSON.toJSONString(datasourceDTOS!=null?datasourceDTOS:empty);
+        this.datasetTasksInfo = JSON.toJSONString(datasetTasksInfo!=null?datasetTasksInfo:empty);
+        this.datasourceInfo = JSON.toJSONString(datasourceInfo!=null?datasourceInfo:empty);
+        this.panelViewsInfo = JSON.toJSONString(panelViewsInfo!=null?panelViewsInfo:empty);
     }
 }

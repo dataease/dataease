@@ -131,6 +131,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    uninstall:'卸载',
     no_result: '没有找到相关内容',
     manage_member: '管理成员',
     confirm_remove_cancel: '确定删除该角色吗?',
@@ -2479,5 +2480,13 @@ export default {
     please_select_map: '请先选择地图范围'
   },
   'I18N_USER_TEMPLATE_ERROR': '模版错误',
-  'i18n_max_user_import_size': '文件最大不能超过10M'
+  'i18n_max_user_import_size': '文件最大不能超过10M',
+  app_template: {
+    app_manager: '应用管理',
+    app_upload: '上传应用',
+    no_apps: '暂无应用',
+    app_group_icon: '封面图标',
+    app_name: '应用名称',
+    search_by_keyword:'通过关键字搜索'
+  }
 }

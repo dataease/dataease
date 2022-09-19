@@ -38,4 +38,6 @@ public class DataSetTableRequest extends DatasetTable {
     @ApiModelProperty("是否合并sheet")
     private boolean mergeSheet = false;
     private boolean previewForTask = false;
+    @ApiModelProperty("操作来源")
+    private String optFrom;
 }
