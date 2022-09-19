@@ -6,7 +6,7 @@
       <div class="login-container">
         <el-row v-loading="loading" type="flex">
           <el-col :span="12">
-            <div v-show="qrTypes.length" class="trans" @click="showQr">
+            <div v-show="qrTypes.length" :class="codeShow ? 'trans-pc' : 'trans'" @click="showQr">
               <div v-show="imgAppShow" class="imgApp" />
             </div>
             <el-form v-show="!codeShow" ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
@@ -233,6 +233,24 @@ export default {
       this.$error(msg)
     }
     this.clearOidcMsg()
+
+    if (Cookies.get('WecomError')) {
+      this.$error(Cookies.get('WecomError'))
+      this.switchCodeIndex(4)
+    }
+    this.clearWecomMsg()
+
+    if (Cookies.get('DingtalkError')) {
+      this.$error(Cookies.get('DingtalkError'))
+      this.switchCodeIndex(5)
+    }
+    this.clearDingtalkMsg()
+
+    if (Cookies.get('LarkError')) {
+      this.$error(Cookies.get('LarkError'))
+      this.switchCodeIndex(6)
+    }
+    this.clearLarkMsg()
   },
 
   methods: {
@@ -253,6 +271,15 @@ export default {
     clearOidcMsg() {
       Cookies.remove('OidcError')
       Cookies.remove('IdToken')
+    },
+    clearWecomMsg() {
+      Cookies.remove('WecomError')
+    },
+    clearDingtalkMsg() {
+      Cookies.remove('DingtalkError')
+    },
+    clearLarkMsg() {
+      Cookies.remove('LarkError')
     },
     showLoginImage(uiInfo) {
       this.uiInfo = getSysUI()
@@ -287,6 +314,9 @@ export default {
     handleLogin() {
       this.initCache()
       this.clearOidcMsg()
+      this.clearWecomMsg()
+      this.clearDingtalkMsg()
+      this.clearLarkMsg()
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
@@ -483,7 +513,14 @@ export default {
   width: 64px;
   height: 64px;
   background-image: url(../../assets/qrcode.png) ;
-  // background-color:  var(--primary,#3370ff); //图标优化 -- 换为白色线条图标 背景层添加背景色
+  cursor:pointer;
+}
+.trans-pc {
+  margin-left: calc(100% - 64px);
+  top: 0;
+  width: 64px;
+  height: 64px;
+  background: var(--primary,#3370ff) url(../../assets/xianshiqi-2.png) no-repeat top right/40px;
   cursor:pointer;
 }
 .imgApp {
@@ -495,7 +532,6 @@ export default {
   width: 100%;
   height: 100%; //将登录框挤出显示区域
   text-align: center;
-  padding-top: 70px;
   img {
     width: 150px;
     height: 150px;

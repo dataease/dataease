@@ -22,9 +22,9 @@ public class Schedular {
         dataSetTableService.updateDatasetTableStatus();
     }
 
-    @QuartzScheduled(cron = "0 0/30 * * * ?")
+    @QuartzScheduled(cron = "0 0/3 * * * ?")
     public void updateDatasourceStatus() {
-        datasourceService.updateDatasourceStatus();
+        datasourceService.checkDatasourceJob();
     }
 
     @QuartzScheduled(cron = "0 0/30 * * * ?")

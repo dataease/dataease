@@ -803,6 +803,7 @@
                       :param="param"
                       class="attr-selector"
                       :chart="chart"
+                      :quota-data="view.yaxis"
                       @onAssistLineChange="onAssistLineChange"
                     />
                   </el-collapse-item>
@@ -2029,7 +2030,7 @@ export default {
 
     onAssistLineChange(val) {
       this.view.senior.assistLine = val
-      this.calcStyle()
+      this.calcData()
     },
 
     onThresholdChange(val) {
@@ -2294,6 +2295,8 @@ export default {
     closeEditDsField() {
       this.editDsField = false
       this.initTableField(this.table.id)
+      // 因动态计算较多，更新字段后重新计算视图数据
+      this.calcData()
     },
 
     editChartField() {
@@ -2751,6 +2754,8 @@ export default {
       this.editChartCalcField = false
       this.currEditField = {}
       this.initTableField(this.table.id)
+      // 因动态计算较多，更新字段后重新计算视图数据
+      this.calcData()
     },
     deleteChartCalcField(item) {
       this.$confirm(this.$t('dataset.confirm_delete'), this.$t('chart.tips'), {

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.ext.ExtTaskInstanceMapper">
+
+    <select id="runningCount"  resultType="java.lang.Integer">
+        select count(*)  from task_instance where task_id = #{taskId} and status = 'RUNNING'
+    </select>
+
+    <update id="resetRunnings">
+        update task_instance set status = 'ERROR', info = 'System Interrupt Error' where task_id = #{taskId} and 'RUNNING'
+    </update>
+
+    <update id="update" parameterType="io.dataease.dto.TaskInstance">
+        update task_instance
+        set `task_id` = #{taskId,jdbcType=VARCHAR},
+            `execute_time` = #{executeTime,jdbcType=BIGINT},
+            `finish_time` = #{finishTime,jdbcType=BIGINT},
+            status = #{status,jdbcType=VARCHAR},
+            info = #{info,jdbcType=VARCHAR},
+            qrtz_instance = #{qrtzInstance,jdbcType=VARCHAR}
+        where task_id = #{taskId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="select"  resultType="io.dataease.dto.TaskInstance">
+        select *  from task_instance where task_id = 'Datasource_check_status' and status = 'RUNNING'
+    </select>
+
+</mapper>

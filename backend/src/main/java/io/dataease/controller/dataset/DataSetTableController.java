@@ -70,11 +70,11 @@ public class DataSetTableController {
     @ApiOperation("修改")
     @PostMapping("alter")
     @DeLog(
-        operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
-        sourcetype = SysLogConstants.SOURCE_TYPE.DATASET,
-        value = "id",
-        positionIndex = 0,
-        positionKey = "sceneId"
+            operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+            sourcetype = SysLogConstants.SOURCE_TYPE.DATASET,
+            value = "id",
+            positionIndex = 0,
+            positionKey = "sceneId"
     )
     public void alter(@RequestBody DataSetTableRequest request) throws Exception {
         dataSetTableService.alter(request);
@@ -133,6 +133,16 @@ public class DataSetTableController {
     @PostMapping("getPreviewData/{page}/{pageSize}")
     public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest, @PathVariable Integer page, @PathVariable Integer pageSize) throws Exception {
         return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize, null);
+    }
+
+    @ApiOperation("db数据库表预览数据")
+    @PostMapping("dbPreview")
+    @DePermissions(value = {
+            @DePermission(type = DePermissionType.DATASET, value = "id", level = ResourceAuthLevel.DATASET_LEVEL_USE),
+            @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASOURCE_LEVEL_USE)
+    }, logical = Logical.AND)
+    public Map<String, Object> getDBPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
+        return dataSetTableService.getDBPreview(dataSetTableRequest);
     }
 
     @ApiOperation("根据sql查询预览数据")
@@ -212,7 +222,13 @@ public class DataSetTableController {
 
     @ApiOperation("根据仪表板视图ID查询数据集变量")
     @PostMapping("/paramsWithIds/{type}")
-    List<SqlVariableDetails> paramsWithIds(@PathVariable String type, @RequestBody List<String> viewIds){
+    List<SqlVariableDetails> paramsWithIds(@PathVariable String type, @RequestBody List<String> viewIds) {
         return dataSetTableService.paramsWithIds(type, viewIds);
-    };
+    }
+
+    @ApiOperation("根据数据集文件夹ID查询数据集名称")
+    @PostMapping("/getDatasetNameFromGroup/{sceneId}")
+    public List<String> getDatasetNameFromGroup(@PathVariable String sceneId) {
+        return dataSetTableService.getDatasetNameFromGroup(sceneId);
+    }
 }

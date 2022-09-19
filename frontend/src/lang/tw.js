@@ -794,6 +794,7 @@ export default {
     no_more_than: '大小不超過',
     request_timeout: '請求超時時間',
     message_retention_time: '消息保留時間',
+    ds_check_time: '数据源檢測時間間隔',
     test_mail_recipient: '僅用來作為測試郵件收件人',
     to_enable_tsl: '如果SMTP埠是587，通常需要啟用TSL',
     to_enable_ssl: '如果SMTP埠是465，通常需要啟用SSL',
@@ -1015,7 +1016,8 @@ export default {
     table_item_fontsize: '錶格字體大小',
     table_header_bg: '錶頭背景',
     table_item_bg: '錶格背景',
-    table_item_font_color: '字體顔色',
+    table_header_font_color: '表頭字體',
+    table_item_font_color: '表格字體',
     stripe: '斑馬紋',
     start_angle: '起始角度',
     end_angle: '結束角度',
@@ -1328,7 +1330,10 @@ export default {
     chart_group: '子類別',
     chart_bar_group: '分組柱狀圖',
     field_dynamic: '動態值',
-    aggregation: '聚合方式'
+    aggregation: '聚合方式',
+    filter_between: '介於',
+    field_not_empty: '字段不能為空',
+    summary_not_empty: '聚合方式不能為空'
   },
   dataset: {
     parse_filed: '解析字段',
@@ -2359,10 +2364,15 @@ export default {
 
   },
   emailtask: {
-    title: '郵件主題',
+    title: '報告主題',
     panel: '儀錶闆',
-    content: '郵件正文',
+    content: '報告正文',
     recipients: '收件人',
+    recisetting: '接受設置',
+    email: '郵件',
+    wecom: '企業微信',
+    dingtalk: '釘釘',
+    lark: '飛書',
     pixel: '分辨率',
     default: '默認',
     custom: '自定義',

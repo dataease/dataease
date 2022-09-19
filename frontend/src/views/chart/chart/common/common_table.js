@@ -23,17 +23,17 @@ export function getCustomTheme(chart) {
         verticalBorderColor: borderColor
       },
       text: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign
       },
       bolderText: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign
       },
       measureText: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign
       }
@@ -45,17 +45,17 @@ export function getCustomTheme(chart) {
         verticalBorderColor: borderColor
       },
       text: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign
       },
       bolderText: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign
       },
       measureText: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign
       }
@@ -67,17 +67,17 @@ export function getCustomTheme(chart) {
         verticalBorderColor: borderColor
       },
       text: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign
       },
       bolderText: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign
       },
       measureText: {
-        fill: DEFAULT_COLOR_CASE.tableFontColor,
+        fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign
       }
@@ -121,23 +121,23 @@ export function getCustomTheme(chart) {
       theme.cornerCell.cell.backgroundColor = h_c
       theme.cornerCell.cell.horizontalBorderColor = b_c
       theme.cornerCell.cell.verticalBorderColor = b_c
-      theme.cornerCell.bolderText.fill = c.tableFontColor
-      theme.cornerCell.text.fill = c.tableFontColor
-      theme.cornerCell.measureText.fill = c.tableFontColor
+      theme.cornerCell.bolderText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
+      theme.cornerCell.text.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
+      theme.cornerCell.measureText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
 
       theme.rowCell.cell.backgroundColor = h_c
       theme.rowCell.cell.horizontalBorderColor = b_c
       theme.rowCell.cell.verticalBorderColor = b_c
-      theme.rowCell.bolderText.fill = c.tableFontColor
-      theme.rowCell.text.fill = c.tableFontColor
-      theme.rowCell.measureText.fill = c.tableFontColor
+      theme.rowCell.bolderText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
+      theme.rowCell.text.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
+      theme.rowCell.measureText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
 
       theme.colCell.cell.backgroundColor = h_c
       theme.colCell.cell.horizontalBorderColor = b_c
       theme.colCell.cell.verticalBorderColor = b_c
-      theme.colCell.bolderText.fill = c.tableFontColor
-      theme.colCell.text.fill = c.tableFontColor
-      theme.colCell.measureText.fill = c.tableFontColor
+      theme.colCell.bolderText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
+      theme.colCell.text.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
+      theme.colCell.measureText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
 
       theme.dataCell.cell.backgroundColor = i_c
       theme.dataCell.cell.horizontalBorderColor = b_c

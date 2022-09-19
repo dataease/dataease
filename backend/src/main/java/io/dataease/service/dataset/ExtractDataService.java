@@ -790,6 +790,7 @@ public class ExtractDataService {
             Thread.sleep(1000);
         }
         if (jobStatus.getStatusDescription().equals("Finished")) {
+            LogUtil.info(datasetTable.getId()+ ": " + jobStatus.getLoggingString());
             return;
         } else {
             DataEaseException.throwException(jobStatus.getLoggingString());

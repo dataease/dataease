@@ -9,7 +9,10 @@ import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.commons.constants.RedisConstants;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.sys.response.BasicInfo;
+import io.dataease.dto.TaskInstance;
 import io.dataease.ext.ExtDataSourceMapper;
+import io.dataease.ext.ExtTaskInstanceMapper;
+import io.dataease.ext.UtilMapper;
 import io.dataease.ext.query.GridExample;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.SysAuthConstants;
@@ -31,17 +34,20 @@ import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.DatasetTableMapper;
 import io.dataease.plugins.common.base.mapper.DatasourceMapper;
+import io.dataease.plugins.common.base.mapper.QrtzSchedulerStateMapper;
 import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceCalculationMode;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
+import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.datasource.ApiProvider;
+import io.dataease.service.ScheduleService;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.message.DeMsgutil;
 import io.dataease.service.sys.SysAuthService;
@@ -49,6 +55,7 @@ import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -77,6 +84,14 @@ public class DatasourceService {
     private Environment env;
     @Resource
     private SystemParameterService systemParameterService;
+    @Autowired
+    private ScheduleService scheduleService;
+    @Resource
+    private QrtzSchedulerStateMapper qrtzSchedulerStateMapper;
+    @Resource
+    private UtilMapper utilMapper;
+    @Resource
+    private ExtTaskInstanceMapper extTaskInstanceMapper;
 
     public Collection<DataSourceType> types() {
         Collection<DataSourceType> types = new ArrayList<>();
@@ -432,6 +447,24 @@ public class DatasourceService {
         }
     }
 
+    public void checkDatasourceJob() {
+        List<QrtzSchedulerState> qrtzSchedulerStates = qrtzSchedulerStateMapper.selectByExample(null);
+        List<String> activeQrtzInstances = qrtzSchedulerStates.stream()
+                .filter(qrtzSchedulerState -> qrtzSchedulerState.getLastCheckinTime()
+                        + qrtzSchedulerState.getCheckinInterval() + 1000 > utilMapper.currentTimestamp())
+                .map(QrtzSchedulerStateKey::getInstanceName).collect(Collectors.toList());
+
+
+        List<TaskInstance> taskInstances = extTaskInstanceMapper.select();
+        taskInstances.forEach(taskInstance -> {
+            if (StringUtils.isNotEmpty(taskInstance.getQrtzInstance()) && !activeQrtzInstances.contains(taskInstance.getQrtzInstance().substring(0, taskInstance.getQrtzInstance().length() - 13))) {
+                TaskInstance update = new TaskInstance();
+                update.setTaskId("Datasource_check_status");
+                extTaskInstanceMapper.update(update);
+            }
+        });
+    }
+
     public void updateDatasourceStatus() {
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
         datasources.forEach(datasource -> checkAndUpdateDatasourceStatus(datasource, true));
@@ -496,4 +529,57 @@ public class DatasourceService {
             DeMsgutil.sendMsg(userId, typeId, content, gson.toJson(param));
         });
     }
+
+    public void updateDatasourceStatusJob(BasicInfo basicInfo, List<SystemParameter> parameters)  {
+        String type = "";
+        Integer interval = 30;
+
+        boolean changeDsCheckTime = false;
+        basicInfo.getDsCheckInterval();
+        basicInfo.getDsCheckIntervalType();
+        for (SystemParameter parameter : parameters) {
+            if (parameter.getParamKey().equalsIgnoreCase("basic.dsCheckInterval") && !parameter.getParamValue().equalsIgnoreCase(basicInfo.getDsCheckInterval())) {
+                changeDsCheckTime = true;
+                interval = Integer.valueOf(parameter.getParamValue());
+            }
+            if (parameter.getParamKey().equalsIgnoreCase("basic.dsCheckIntervalType") && !parameter.getParamValue().equalsIgnoreCase(basicInfo.getDsCheckInterval())) {
+                changeDsCheckTime = true;
+                type = parameter.getParamValue();
+            }
+        }
+        if(!changeDsCheckTime){
+            return;
+        }
+        addJob(type, interval);
+    }
+
+    private void addJob(String type, Integer interval) {
+        String cron = "";
+        switch (type){
+            case "hour":
+                cron = "0 0 0/hour *  * ? *".replace("hour", interval.toString());
+                break;
+            default:
+                cron = "0 0/minute * *  * ? *".replace("minute", interval.toString());
+        }
+
+        GlobalTaskEntity globalTask = new GlobalTaskEntity();
+        globalTask.setCron(cron);
+        globalTask.setCreateTime(System.currentTimeMillis());
+        globalTask.setJobKey("Datasource_check_status");
+        globalTask.setTaskName("Datasource check status");
+        globalTask.setTaskType("dsTaskHandler");
+        globalTask.setStartTime(System.currentTimeMillis());
+        try {
+            scheduleService.addSchedule(globalTask);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void initDsCheckJob(){
+        BasicInfo basicInfo = systemParameterService.basicInfo();
+        addJob(basicInfo.getDsCheckIntervalType(), Integer.valueOf(basicInfo.getDsCheckInterval()));
+    }
+
 }

@@ -31,6 +31,22 @@
             slot="append">{{ $t('components.day') }}</template></el-input>
       </el-form-item>
 
+      <el-form-item :label="$t('system_parameter_setting.ds_check_time')" >
+        <el-form :inline="true" :disabled="show">
+          <el-form-item >
+            <el-input v-model="formInline.dsCheckInterval" type="number" min="1" @change="onSimpleCronChange()" />
+          </el-form-item>
+
+          <el-form-item class="form-item">
+            <el-select v-model="formInline.dsCheckIntervalType" filterable size="mini" @change="onSimpleCronChange()">
+              <el-option :label="$t('cron.minute_default')" value="minute" />
+              <el-option :label="$t('cron.hour_default')" value="hour" />
+            </el-select>
+          </el-form-item>
+          <el-form-item class="form-item" :label="$t('cron.every_exec')" />
+        </el-form>
+      </el-form-item>
+
       <el-form-item v-if="loginTypes.length > 1" :label="$t('system_parameter_setting.login_type')" prop="loginType">
         <el-radio-group v-model="formInline.loginType">
           <el-radio :label="0" size="mini">{{
@@ -176,6 +192,18 @@ export default {
           sort: 3,
         },
         {
+          paramKey: "basic.dsCheckInterval",
+          paramValue: this.formInline.dsCheckInterval,
+          type: "text",
+          sort: 4,
+        },
+        {
+          paramKey: "basic.dsCheckIntervalType",
+          paramValue: this.formInline.dsCheckIntervalType,
+          type: "text",
+          sort: 5,
+        },
+        {
           paramKey: "ui.openHomePage",
           paramValue: this.formInline.openHomePage,
           type: "text",
@@ -234,7 +262,7 @@ export default {
           window.location.reload();
         } else {
           this.openMessageSuccess("commons.save_failed", 'error');
-        } 
+        }
       });
     },
     cancel() {
@@ -243,6 +271,29 @@ export default {
       this.showSave = false;
       this.show = true;
       this.query();
+    },
+    onSimpleCronChange() {
+      if (this.formInline.dsCheckIntervalType === 'minute') {
+        if (this.formInline.dsCheckInterval < 1 || this.formInline.dsCheckInterval > 59) {
+          this.$message({ message: this.$t('cron.minute_limit'), type: 'warning', showClose: true })
+          this.taskForm.extraData.simple_cron_value = 59
+        }
+        return
+      }
+      if (this.formInline.dsCheckIntervalType === 'hour') {
+        if (this.formInline.dsCheckInterval < 1 || this.formInline.dsCheckInterval > 23) {
+          this.$message({ message: this.$t('cron.hour_limit'), type: 'warning', showClose: true })
+          this.taskForm.extraData.simple_cron_value = 23
+        }
+        return
+      }
+      if (this.formInline.dsCheckIntervalType === 'day') {
+        if (this.formInline.dsCheckInterval < 1 || this.formInline.dsCheckInterval > 31) {
+          this.$message({ message: this.$t('cron.day_limit'), type: 'warning', showClose: true })
+          this.taskForm.extraData.simple_cron_value = 31
+        }
+        return
+      }
     },
   },
 };
