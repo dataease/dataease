@@ -13,6 +13,9 @@
           <el-popover
             width="400"
             trigger="click"
+            v-model="isVisible"
+            @show="popShow"
+            @hide="popHide"
             :disabled="!isPopShow"
             :placement="popOpen.position"
           > 
