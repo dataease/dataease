@@ -11,11 +11,11 @@
 
 <script>
 export default {
-  name: "DataHome",
+  name: 'DataHome',
   data() {
     return {
-      errImg: require("@/assets/None_Select_ds.png"),
-    };
-  },
-};
+      errImg: require('@/assets/None_Select_ds.png')
+    }
+  }
+}
 </script>

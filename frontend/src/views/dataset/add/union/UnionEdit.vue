@@ -34,64 +34,64 @@
 </template>
 
 <script>
-import { post } from "@/api/dataset/dataset";
-import UnionFieldList from "@/views/dataset/add/union/UnionFieldList";
-import UnionItemEdit from "@/views/dataset/add/union/UnionItemEdit";
+import { post } from '@/api/dataset/dataset'
+import UnionFieldList from '@/views/dataset/add/union/UnionFieldList'
+import UnionItemEdit from '@/views/dataset/add/union/UnionItemEdit'
 
 export default {
-  name: "UnionEdit",
+  name: 'UnionEdit',
   components: { UnionItemEdit, UnionFieldList },
   props: {
     unionParam: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
       parentField: [],
-      nodeField: [],
-    };
+      nodeField: []
+    }
   },
   watch: {
-    unionParam: function () {},
+    unionParam: function () {}
   },
   mounted() {
-    this.getParentFieldList();
-    this.getNodeFieldList();
+    this.getParentFieldList()
+    this.getNodeFieldList()
   },
   methods: {
     getParentFieldList() {
       post(
-        "/dataset/field/list/" + this.unionParam.parent.currentDs.id,
+        '/dataset/field/list/' + this.unionParam.parent.currentDs.id,
         null,
         true
       ).then((response) => {
         this.parentField = JSON.parse(JSON.stringify(response.data)).filter(
           (ele) => ele.extField === 0
-        );
-      });
+        )
+      })
     },
     getNodeFieldList() {
       post(
-        "/dataset/field/list/" + this.unionParam.node.currentDs.id,
+        '/dataset/field/list/' + this.unionParam.node.currentDs.id,
         null,
         true
       ).then((response) => {
         this.nodeField = JSON.parse(JSON.stringify(response.data)).filter(
           (ele) => ele.extField === 0
-        );
-      });
+        )
+      })
     },
 
     changeParentFields(val) {
-      this.unionParam.parent.currentDsField = val;
+      this.unionParam.parent.currentDsField = val
     },
     changeNodeFields(val) {
-      this.unionParam.node.currentDsField = val;
-    },
-  },
-};
+      this.unionParam.node.currentDsField = val
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -21,53 +21,53 @@
 </template>
 
 <script>
-import { post } from "@/api/dataset/dataset";
+import { post } from '@/api/dataset/dataset'
 
 export default {
-  name: "UnionPreview",
+  name: 'UnionPreview',
   props: {
     table: {
       type: Object,
-      required: true,
+      required: true
     },
     dataset: {
       type: Array,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
-      height: "auto",
+      height: 'auto',
       fields: [],
-      data: [],
-    };
+      data: []
+    }
   },
   watch: {
     table: function () {
-      this.initPreview();
-    },
+      this.initPreview()
+    }
   },
   mounted() {
-    this.initPreview();
+    this.initPreview()
   },
   methods: {
     initPreview() {
       if (this.dataset && this.dataset.length > 0) {
-        post("/dataset/table/unionPreview", this.table).then((response) => {
-          this.fields = response.data.fields;
-          this.data = response.data.data;
-          const datas = this.data;
-          this.$refs.plxTable.reloadData(datas);
-        });
+        post('/dataset/table/unionPreview', this.table).then((response) => {
+          this.fields = response.data.fields
+          this.data = response.data.data
+          const datas = this.data
+          this.$refs.plxTable.reloadData(datas)
+        })
       } else {
-        this.fields = [];
-        this.data = [];
-        const datas = this.data;
-        this.$refs.plxTable.reloadData(datas);
+        this.fields = []
+        this.data = []
+        const datas = this.data
+        this.$refs.plxTable.reloadData(datas)
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style scoped>

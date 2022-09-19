@@ -6,20 +6,20 @@
           {{ table.name }}
         </span>
         <span v-if="table.mode === 0" class="de-tag primary">{{
-          $t("dataset.direct_connect")
+          $t('dataset.direct_connect')
         }}</span>
         <span v-if="table.mode === 1" class="de-tag warning">{{
-          $t("dataset.sync_data")
+          $t('dataset.sync_data')
         }}</span>
         <span
           v-if="sycnStatus === 'Underway'"
           class="blue-color"
           style="line-height: 26px"
         >
-          {{ $t("dataset.dataset_sync") }}
+          {{ $t('dataset.dataset_sync') }}
         </span>
         <el-divider direction="vertical"></el-divider>
-        <span class="create-by">{{ $t("dataset.create_by") }}</span>
+        <span class="create-by">{{ $t('dataset.create_by') }}</span>
         <span class="create-by">:{{ table.createBy }}</span>
         <el-popover
           placement="bottom"
@@ -49,16 +49,16 @@
           @command="(type) => clickEditExcel(type)"
         >
           <deBtn type="primary">
-            {{ $t("dataset.edit_excel") }}
+            {{ $t('dataset.edit_excel') }}
           </deBtn>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="0">
               <svg-icon icon-class="icon_add-entry_outlined"> </svg-icon>
-              {{ $t("dataset.excel_replace") + $t("chart.chart_data") }}
+              {{ $t('dataset.excel_replace') + $t('chart.chart_data') }}
             </el-dropdown-item>
             <el-dropdown-item command="1">
               <svg-icon icon-class="icon_doc-replace_outlined"> </svg-icon>
-              {{ $t("dataset.excel_add") + $t("chart.chart_data") }}
+              {{ $t('dataset.excel_add') + $t('chart.chart_data') }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -69,7 +69,7 @@
         >
           {{
             $t(
-              table.type === "union" ? "dataset.edit_union" : "dataset.edit_sql"
+              table.type === 'union' ? 'dataset.edit_union' : 'dataset.edit_sql'
             )
           }}
         </deBtn>
@@ -147,192 +147,192 @@
 </template>
 
 <script>
-import { post } from "@/api/dataset/dataset";
-import TabDataPreview from "./TabDataPreview";
-import UpdateInfo from "./UpdateInfo";
-import DatasetDetail from "../common/DatasetDetail";
-import FieldEdit from "./FieldEdit";
-import { pluginLoaded } from "@/api/user";
-import PluginCom from "@/views/system/plugin/PluginCom";
+import { post } from '@/api/dataset/dataset'
+import TabDataPreview from './TabDataPreview'
+import UpdateInfo from './UpdateInfo'
+import DatasetDetail from '../common/DatasetDetail'
+import FieldEdit from './FieldEdit'
+import { pluginLoaded } from '@/api/user'
+import PluginCom from '@/views/system/plugin/PluginCom'
 
 export default {
-  name: "ViewTable",
+  name: 'ViewTable',
   components: {
     FieldEdit,
     DatasetDetail,
     UpdateInfo,
     TabDataPreview,
-    PluginCom,
+    PluginCom
   },
   props: {
     param: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
       table: {
-        name: "",
+        name: ''
       },
       fields: [],
       data: [],
-      sycnStatus: "",
+      sycnStatus: '',
       lastRequestComplete: true,
       page: {
         page: 1,
         pageSize: 1000,
-        show: 1000,
+        show: 1000
       },
-      tabActive: "dataPreview",
+      tabActive: 'dataPreview',
       tableViewRowForm: {
-        row: 1000,
+        row: 1000
       },
       tabStatus: false,
-      isPluginLoaded: false,
-    };
+      isPluginLoaded: false
+    }
   },
   computed: {
     hideCustomDs: function () {
-      return this.$store.getters.hideCustomDs;
-    },
+      return this.$store.getters.hideCustomDs
+    }
   },
   watch: {
     param: function () {
-      this.tabActive = "dataPreview";
-      this.initTable(this.param.id);
-    },
+      this.tabActive = 'dataPreview'
+      this.initTable(this.param.id)
+    }
   },
   beforeCreate() {
     pluginLoaded().then((res) => {
-      this.isPluginLoaded = res.success && res.data;
-    });
+      this.isPluginLoaded = res.success && res.data
+    })
   },
   created() {
     this.taskLogTimer = setInterval(() => {
-      if (this.sycnStatus !== "Underway") {
-        return;
+      if (this.sycnStatus !== 'Underway') {
+        return
       }
       if (!this.lastRequestComplete) {
-        return;
+        return
       } else {
-        this.lastRequestComplete = false;
+        this.lastRequestComplete = false
       }
-      this.initPreviewData(this.page);
-    }, 5000);
+      this.initPreviewData(this.page)
+    }, 5000)
   },
   beforeDestroy() {
-    clearInterval(this.taskLogTimer);
+    clearInterval(this.taskLogTimer)
   },
   mounted() {
-    this.initTable(this.param.id);
+    this.initTable(this.param.id)
   },
   methods: {
     initTable(id) {
-      this.resetPage();
-      this.tableViewRowForm.row = 1000;
+      this.resetPage()
+      this.tableViewRowForm.row = 1000
       if (id !== null) {
-        this.fields = [];
-        this.data = [];
-        post("/dataset/table/getWithPermission/" + id, null)
+        this.fields = []
+        this.data = []
+        post('/dataset/table/getWithPermission/' + id, null)
           .then((response) => {
-            this.table = response.data;
-            this.initPreviewData(this.page);
+            this.table = response.data
+            this.initPreviewData(this.page)
           })
           .catch((res) => {
-            this.$emit("switchComponent", { name: "" });
-          });
+            this.$emit('switchComponent', { name: '' })
+          })
       }
     },
 
     initPreviewData(page) {
       if (this.table.id) {
-        this.table.row = this.tableViewRowForm.row;
+        this.table.row = this.tableViewRowForm.row
         post(
-          "/dataset/table/getPreviewData/" + page.page + "/" + page.pageSize,
+          '/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize,
           this.table,
           true,
           30000
         )
           .then((response) => {
-            this.fields = response.data.fields;
-            this.data = response.data.data;
-            this.page = response.data.page;
-            this.sycnStatus = response.data.sycnStatus;
-            if (response.data.status === "warnning") {
-              this.$warning(response.data.msg, 3000);
+            this.fields = response.data.fields
+            this.data = response.data.data
+            this.page = response.data.page
+            this.sycnStatus = response.data.sycnStatus
+            if (response.data.status === 'warnning') {
+              this.$warning(response.data.msg, 3000)
             }
-            if (response.data.status === "error") {
-              this.$error(response.data.msg, 3000);
+            if (response.data.status === 'error') {
+              this.$error(response.data.msg, 3000)
             }
-            this.lastRequestComplete = true;
+            this.lastRequestComplete = true
           })
           .catch((response) => {
-            this.lastRequestComplete = true;
-            this.fields = [];
-            this.data = [];
+            this.lastRequestComplete = true
+            this.fields = []
+            this.data = []
             this.page = {
               page: 1,
               pageSize: 1000,
-              show: 0,
-            };
-          });
+              show: 0
+            }
+          })
       }
     },
     editDataset(datasetType) {
       this.$router.push({
-        path: "/dataset-form",
+        path: '/dataset-form',
         query: {
           datasetType,
-          id: this.table.id,
-        },
-      });
+          id: this.table.id
+        }
+      })
     },
     reSearch(val) {
-      this.tableViewRowForm = val.form;
-      this.initPreviewData(val.page);
+      this.tableViewRowForm = val.form
+      this.initPreviewData(val.page)
     },
 
     showTab() {
-      this.tabStatus = true;
+      this.tabStatus = true
     },
     hideTab() {
-      this.tabStatus = false;
+      this.tabStatus = false
     },
     clickEditExcel(type) {
       this.$router.push({
-        path: "/dataset-form",
+        path: '/dataset-form',
         query: {
-          datasetType: "excel",
+          datasetType: 'excel',
           id: this.table.id,
-          editType: type,
-        },
-      });
+          editType: type
+        }
+      })
     },
     msg2Current(sourceParam) {
-      this.tabActive = "updateInfo";
-      this.table.msgTaskId = sourceParam.taskId;
+      this.tabActive = 'updateInfo'
+      this.table.msgTaskId = sourceParam.taskId
     },
 
     resetPage() {
       this.page = {
         page: 1,
         pageSize: 1000,
-        show: 1000,
-      };
+        show: 1000
+      }
     },
 
     tabClick() {
-      if (this.tabActive === "dataPreview") {
-        const reload = localStorage.getItem("reloadDsData");
-        if (reload === "true") {
-          localStorage.setItem("reloadDsData", "false");
-          this.initTable(this.param.id);
+      if (this.tabActive === 'dataPreview') {
+        const reload = localStorage.getItem('reloadDsData')
+        if (reload === 'true') {
+          localStorage.setItem('reloadDsData', 'false')
+          this.initTable(this.param.id)
         }
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style scoped>

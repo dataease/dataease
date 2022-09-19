@@ -37,7 +37,7 @@
             @node-collapse="nodeCollapse"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node">
-              <span style="display: flex;flex: 1;width: 0;">
+              <span style="display: flex; flex: 1; width: 0">
                 <span v-if="data.type === 'scene'">
                   <!--                  <el-button-->
                   <!--                    icon="el-icon-folder-opened"-->
@@ -46,7 +46,16 @@
                   <!--                  />-->
                   <svg-icon icon-class="scene" class="ds-icon-scene" />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span
+                  style="
+                    margin-left: 6px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  "
+                  :title="data.name"
+                  >{{ data.name }}</span
+                >
               </span>
             </span>
           </el-tree>
@@ -60,7 +69,13 @@
         <span class="title-text scene-title-name" :title="currGroup.name">
           {{ currGroup.name }}
         </span>
-        <el-button icon="el-icon-back" size="mini" style="float: right" circle @click="back">
+        <el-button
+          icon="el-icon-back"
+          size="mini"
+          style="float: right"
+          circle
+          @click="back"
+        >
           <!--          {{ $t('dataset.back') }}-->
         </el-button>
       </el-row>
@@ -90,20 +105,57 @@
             @node-click="sceneClick"
           >
             <span slot-scope="{ node, data }" class="custom-tree-node-list">
-              <span :id="data.id" style="display: flex;flex: 1;width: 0;">
+              <span :id="data.id" style="display: flex; flex: 1; width: 0">
                 <span>
-                  <svg-icon v-if="data.type === 'db'" icon-class="ds-db" class="ds-icon-db" />
-                  <svg-icon v-if="data.type === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-                  <svg-icon v-if="data.type === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
-                  <svg-icon v-if="data.type === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
-                  <svg-icon v-if="data.type === 'union'" icon-class="ds-union" class="ds-icon-union" />
-                  <svg-icon v-if="data.type === 'api'" icon-class="ds-api" class="ds-icon-api" />
+                  <svg-icon
+                    v-if="data.type === 'db'"
+                    icon-class="ds-db"
+                    class="ds-icon-db"
+                  />
+                  <svg-icon
+                    v-if="data.type === 'sql'"
+                    icon-class="ds-sql"
+                    class="ds-icon-sql"
+                  />
+                  <svg-icon
+                    v-if="data.type === 'excel'"
+                    icon-class="ds-excel"
+                    class="ds-icon-excel"
+                  />
+                  <svg-icon
+                    v-if="data.type === 'custom'"
+                    icon-class="ds-custom"
+                    class="ds-icon-custom"
+                  />
+                  <svg-icon
+                    v-if="data.type === 'union'"
+                    icon-class="ds-union"
+                    class="ds-icon-union"
+                  />
+                  <svg-icon
+                    v-if="data.type === 'api'"
+                    icon-class="ds-api"
+                    class="ds-icon-api"
+                  />
                 </span>
                 <span v-if="data.type === 'db' || data.type === 'sql'">
-                  <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
-                  <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
+                  <span v-if="data.mode === 0" style="margin-left: 6px"
+                    ><i class="el-icon-s-operation"
+                  /></span>
+                  <span v-if="data.mode === 1" style="margin-left: 6px"
+                    ><i class="el-icon-alarm-clock"
+                  /></span>
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span
+                  style="
+                    margin-left: 6px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  "
+                  :title="data.name"
+                  >{{ data.name }}</span
+                >
               </span>
             </span>
           </el-tree>
@@ -115,7 +167,7 @@
 
 <script>
 import { isKettleRunning, post } from '@/api/dataset/dataset'
-import {engineMode} from "@/api/system/engine";
+import { engineMode } from '@/api/system/engine'
 
 export default {
   name: 'DatasetGroupSelector',
@@ -179,33 +231,45 @@ export default {
         sort: 'type asc,create_time desc,name asc'
       },
       dsLoading: false,
-      treeStyle: this.fixHeight ? {
-        height: '200px',
-        overflow: 'auto'
-      } : {},
+      treeStyle: this.fixHeight
+        ? {
+            height: '200px',
+            overflow: 'auto'
+          }
+        : {},
       filterText: ''
     }
   },
   computed: {},
   watch: {
-    'unionData': function() {
+    unionData: function () {
       this.unionDataChange()
     },
-    'table': function() {
+    table: function () {
       if (this.table && this.table.sceneId) {
-        post('dataset/group/getScene/' + this.table.sceneId, {}, false).then(response => {
-          this.currGroup = response.data
+        post('dataset/group/getScene/' + this.table.sceneId, {}, false).then(
+          (response) => {
+            this.currGroup = response.data
 
-          this.$nextTick(function() {
-            this.sceneMode = true
-            this.tableTree()
-          })
-        })
+            this.$nextTick(function () {
+              this.sceneMode = true
+              this.tableTree()
+            })
+          }
+        )
       }
     },
     search(val) {
       if (val && val !== '') {
-        this.tableData = JSON.parse(JSON.stringify(this.tables.filter(ele => { return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) })))
+        this.tableData = JSON.parse(
+          JSON.stringify(
+            this.tables.filter((ele) => {
+              return ele.name
+                .toLocaleLowerCase()
+                .includes(val.toLocaleLowerCase())
+            })
+          )
+        )
       } else {
         this.tableData = JSON.parse(JSON.stringify(this.tables))
       }
@@ -220,7 +284,7 @@ export default {
   },
   created() {
     this.kettleState()
-    engineMode().then(res => {
+    engineMode().then((res) => {
       this.engineMode = res.data
     })
   },
@@ -230,7 +294,7 @@ export default {
       return data.name.indexOf(value) !== -1
     },
     kettleState() {
-      isKettleRunning(false).then(res => {
+      isKettleRunning(false).then((res) => {
         this.kettleRunning = res.data
       })
     },
@@ -255,7 +319,7 @@ export default {
 
     tree(group) {
       this.dsLoading = true
-      post('/dataset/group/tree', group, false).then(response => {
+      post('/dataset/group/tree', group, false).then((response) => {
         this.data = response.data
         this.dsLoading = false
       })
@@ -265,29 +329,39 @@ export default {
       this.tableData = []
       if (this.currGroup) {
         this.dsLoading = true
-        post('/dataset/table/list', {
-          sort: 'type asc,name asc,create_time desc',
-          sceneId: this.currGroup.id,
-          mode: this.mode < 0 ? null : this.mode,
-          typeFilter: this.customType ? this.customType : null
-        }, false).then(response => {
-          this.tables = response.data.filter(ele => {
-            return !(ele.mode === 0 && ele.type === 'sql')
-          })
-          for (let i = 0; i < this.tables.length; i++) {
-            if (this.tables[i].mode === 1 && this.kettleRunning === false && this.engineMode !== 'simple' ) {
-              this.$set(this.tables[i], 'disabled', true)
+        post(
+          '/dataset/table/list',
+          {
+            sort: 'type asc,name asc,create_time desc',
+            sceneId: this.currGroup.id,
+            mode: this.mode < 0 ? null : this.mode,
+            typeFilter: this.customType ? this.customType : null
+          },
+          false
+        )
+          .then((response) => {
+            this.tables = response.data.filter((ele) => {
+              return !(ele.mode === 0 && ele.type === 'sql')
+            })
+            for (let i = 0; i < this.tables.length; i++) {
+              if (
+                this.tables[i].mode === 1 &&
+                this.kettleRunning === false &&
+                this.engineMode !== 'simple'
+              ) {
+                this.$set(this.tables[i], 'disabled', true)
+              }
             }
-          }
-          this.tableData = JSON.parse(JSON.stringify(this.tables))
+            this.tableData = JSON.parse(JSON.stringify(this.tables))
 
-          this.$nextTick(function() {
-            this.unionDataChange()
+            this.$nextTick(function () {
+              this.unionDataChange()
+            })
+            this.dsLoading = false
           })
-          this.dsLoading = false
-        }).catch(res => {
-          this.dsLoading = false
-        })
+          .catch((res) => {
+            this.dsLoading = false
+          })
       }
     },
 
@@ -323,9 +397,13 @@ export default {
       }
       // check mode=1的数据集是否创建doris表
       if (data.mode === 1 && !this.showMode) {
-        post('/dataset/table/checkDorisTableIsExists/' + data.id, {}, false).then(response => {
+        post(
+          '/dataset/table/checkDorisTableIsExists/' + data.id,
+          {},
+          false
+        ).then((response) => {
           if (response.data) {
-            this.$nextTick(function() {
+            this.$nextTick(function () {
               this.$emit('getTable', data)
             })
           } else {
@@ -346,7 +424,7 @@ export default {
         return
       }
       if (!this.checkedList || this.checkedList.length === 0) {
-        this.tableData.forEach(ele => {
+        this.tableData.forEach((ele) => {
           const span = document.getElementById(ele.id).parentNode
           const div1 = span.parentNode
           const div2 = div1.parentNode
@@ -356,16 +434,18 @@ export default {
         })
         return
       }
-      const tableList = this.tableData.map(ele => {
+      const tableList = this.tableData.map((ele) => {
         return ele.id
       })
-      const unionList = this.unionData.map(ele => {
+      const unionList = this.unionData.map((ele) => {
         return ele.targetTableId
       })
       unionList.push(this.checkedList[0].tableId)
-      const notUnionList = tableList.concat(unionList).filter(v => tableList.includes(v) && !unionList.includes(v))
+      const notUnionList = tableList
+        .concat(unionList)
+        .filter((v) => tableList.includes(v) && !unionList.includes(v))
 
-      notUnionList.forEach(ele => {
+      notUnionList.forEach((ele) => {
         const span = document.getElementById(ele).parentNode
         const div1 = span.parentNode
         const div2 = div1.parentNode
@@ -390,65 +470,65 @@ export default {
 </script>
 
 <style scoped>
-  .el-divider--horizontal {
-    margin: 12px 0
-  }
+.el-divider--horizontal {
+  margin: 12px 0;
+}
 
-  .search-input {
-    padding: 12px 0;
-  }
+.search-input {
+  padding: 12px 0;
+}
 
-  .tree-list ::v-deep .el-tree-node__expand-icon.is-leaf{
-    display: none;
-  }
+.tree-list ::v-deep .el-tree-node__expand-icon.is-leaf {
+  display: none;
+}
 
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right: 8px;
-  }
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
 
-  .custom-tree-node-list {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding:0 8px;
-  }
+.custom-tree-node-list {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 0 8px;
+}
 
-  .custom-position {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    flex-flow: row nowrap;
-  }
+.custom-position {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  flex-flow: row nowrap;
+}
 
-  .form-item {
-    margin-bottom: 0;
-  }
+.form-item {
+  margin-bottom: 0;
+}
 
-  .title-css {
-    height: 26px;
-  }
+.title-css {
+  height: 26px;
+}
 
-  .title-text {
-    line-height: 26px;
-  }
+.title-text {
+  line-height: 26px;
+}
 
-  .scene-title{
-    width: 100%;
-    display: flex;
-  }
-  .scene-title-name{
-    width: 100%;
-    overflow: hidden;
-    display: inline-block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
+.scene-title {
+  width: 100%;
+  display: flex;
+}
+.scene-title-name {
+  width: 100%;
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 </style>

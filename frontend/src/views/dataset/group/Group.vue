@@ -4,7 +4,7 @@
     <el-col>
       <div style="margin: 6px 0 16px 0" class="title-css">
         <span class="title-text">
-          {{ $t("dataset.datalist") }}
+          {{ $t('dataset.datalist') }}
         </span>
         <el-dropdown
           size="small"
@@ -20,30 +20,30 @@
           >
             <el-dropdown-item command="db">
               <svg-icon icon-class="ds-db" class="ds-icon-db" />
-              {{ $t("dataset.db_data") }}
+              {{ $t('dataset.db_data') }}
             </el-dropdown-item>
             <el-dropdown-item command="sql">
               <svg-icon icon-class="ds-sql" class="ds-icon-sql" />
-              {{ $t("dataset.sql_data") }}
+              {{ $t('dataset.sql_data') }}
             </el-dropdown-item>
             <el-dropdown-item
               command="excel"
               :disabled="!kettleRunning && engineMode !== 'simple'"
             >
               <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
-              {{ $t("dataset.excel_data") }}
+              {{ $t('dataset.excel_data') }}
             </el-dropdown-item>
             <el-dropdown-item command="union">
               <svg-icon icon-class="ds-union" class="ds-icon-union" />
-              {{ $t("dataset.union_data") }}
+              {{ $t('dataset.union_data') }}
             </el-dropdown-item>
             <el-dropdown-item command="api">
               <svg-icon icon-class="ds-api" class="ds-icon-api" />
-              {{ $t("dataset.api_data") }}
+              {{ $t('dataset.api_data') }}
             </el-dropdown-item>
             <el-dropdown-item class="de-top-border" command="group">
               <svg-icon icon-class="scene" class="ds-icon-db" />
-              {{ $t("deDataset.new_folder") }}
+              {{ $t('deDataset.new_folder') }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -70,7 +70,10 @@
       <el-col class="custom-tree-container de-tree">
         <div class="block">
           <div v-if="!tData.length" class="no-tdata">
-            {{ $t('deDataset.no_dataset_click') }} <span @click="() => clickAdd()" class="no-tdata-new">{{ $t('deDataset.newly_build') }}</span>
+            {{ $t('deDataset.no_dataset_click') }}
+            <span @click="() => clickAdd()" class="no-tdata-new">{{
+              $t('deDataset.newly_build')
+            }}</span>
           </div>
           <el-tree
             v-else
@@ -125,30 +128,30 @@
                     >
                       <el-dropdown-item command="db">
                         <svg-icon icon-class="ds-db" class="ds-icon-db" />
-                        {{ $t("dataset.db_data") }}
+                        {{ $t('dataset.db_data') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="sql">
                         <svg-icon icon-class="ds-sql" class="ds-icon-sql" />
-                        {{ $t("dataset.sql_data") }}
+                        {{ $t('dataset.sql_data') }}
                       </el-dropdown-item>
                       <el-dropdown-item
                         command="excel"
                         :disabled="!kettleRunning && engineMode !== 'simple'"
                       >
                         <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
-                        {{ $t("dataset.excel_data") }}
+                        {{ $t('dataset.excel_data') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="union">
                         <svg-icon icon-class="ds-union" class="ds-icon-union" />
-                        {{ $t("dataset.union_data") }}
+                        {{ $t('dataset.union_data') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="api">
                         <svg-icon icon-class="ds-api" class="ds-icon-api" />
-                        {{ $t("dataset.api_data") }}
+                        {{ $t('dataset.api_data') }}
                       </el-dropdown-item>
                       <el-dropdown-item class="de-top-border" command="group">
                         <svg-icon icon-class="scene" class="ds-icon-db" />
-                        {{ $t("deDataset.new_folder") }}
+                        {{ $t('deDataset.new_folder') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -168,13 +171,13 @@
                         icon="el-icon-edit-outline"
                         command="rename"
                       >
-                        {{ $t("dataset.rename") }}
+                        {{ $t('dataset.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-right" command="move">
-                        {{ $t("dataset.move_to") }}
+                        {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-delete" command="delete">
-                        {{ $t("dataset.delete") }}
+                        {{ $t('dataset.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -262,16 +265,16 @@
                         icon="el-icon-edit-outline"
                         command="editTable"
                       >
-                        {{ $t("dataset.rename") }}
+                        {{ $t('dataset.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item icon="el-icon-right" command="moveDs">
-                        {{ $t("dataset.move_to") }}
+                        {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
                       <el-dropdown-item
                         icon="el-icon-delete"
                         command="deleteTable"
                       >
-                        {{ $t("dataset.delete") }}
+                        {{ $t('dataset.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
@@ -301,9 +304,9 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <deBtn secondary @click="close()">{{ $t("dataset.cancel") }}</deBtn>
+          <deBtn secondary @click="close()">{{ $t('dataset.cancel') }}</deBtn>
           <deBtn type="primary" @click="saveGroup(groupForm)"
-            >{{ $t("dataset.confirm") }}
+            >{{ $t('dataset.confirm') }}
           </deBtn>
         </div>
       </el-dialog>
@@ -329,10 +332,10 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <deBtn secondary @click="closeTable()">{{
-          $t("dataset.cancel")
+          $t('dataset.cancel')
         }}</deBtn>
         <deBtn type="primary" @click="saveTable(tableForm)"
-          >{{ $t("dataset.confirm") }}
+          >{{ $t('dataset.confirm') }}
         </deBtn>
       </div>
     </el-dialog>
@@ -353,13 +356,13 @@
       />
       <div class="de-foot">
         <deBtn secondary @click="closeMoveGroup()">{{
-          $t("dataset.cancel")
+          $t('dataset.cancel')
         }}</deBtn>
         <deBtn
           :disabled="groupMoveConfirmDisabled"
           type="primary"
           @click="saveMoveGroup(tGroup)"
-          >{{ $t("dataset.confirm") }}
+          >{{ $t('dataset.confirm') }}
         </deBtn>
       </div>
     </el-drawer>
@@ -376,13 +379,13 @@
       <group-move-selector :item="groupForm" @targetGroup="targetDs" />
       <div class="de-foot">
         <deBtn secondary @click="closeMoveDs()">{{
-          $t("dataset.cancel")
+          $t('dataset.cancel')
         }}</deBtn>
         <deBtn
           :disabled="dsMoveConfirmDisabled"
           type="primary"
           @click="saveMoveDs(tDs)"
-          >{{ $t("dataset.confirm") }}
+          >{{ $t('dataset.confirm') }}
         </deBtn>
       </div>
     </el-drawer>
@@ -398,30 +401,30 @@ import {
   delTable,
   post,
   isKettleRunning,
-  alter,
-} from "@/api/dataset/dataset";
-import GroupMoveSelector from "./GroupMoveSelector";
-import { queryAuthModel } from "@/api/authModel/authModel";
-import { engineMode } from "@/api/system/engine";
-import _ from "lodash";
-import msgCfm from "@/components/msgCfm/index";
+  alter
+} from '@/api/dataset/dataset'
+import GroupMoveSelector from './GroupMoveSelector'
+import { queryAuthModel } from '@/api/authModel/authModel'
+import { engineMode } from '@/api/system/engine'
+import _ from 'lodash'
+import msgCfm from '@/components/msgCfm/index'
 
 export default {
-  name: "Group",
+  name: 'Group',
   components: { GroupMoveSelector },
   mixins: [msgCfm],
   props: {
     saveStatus: {
       type: Object,
       required: false,
-      default: null,
-    },
+      default: null
+    }
   },
   data() {
     return {
       sceneMode: false,
-      dialogTitle: "",
-      search: "",
+      dialogTitle: '',
+      search: '',
       editGroup: false,
       editTable: false,
       tData: [],
@@ -430,55 +433,55 @@ export default {
       currGroup: {},
       expandedArray: [],
       groupForm: {
-        name: "",
-        pid: "0",
+        name: '',
+        pid: '0',
         level: 0,
-        type: "",
+        type: '',
         children: [],
-        sort: "type desc,name asc",
+        sort: 'type desc,name asc'
       },
       dsForm: {
-        name: "",
-        pid: "0",
+        name: '',
+        pid: '0',
         level: 0,
-        type: "",
+        type: '',
         children: [],
-        sort: "type desc,name asc",
+        sort: 'type desc,name asc'
       },
       tableForm: {
-        name: "",
-        mode: "",
-        sort: "type asc,create_time desc,name asc",
+        name: '',
+        mode: '',
+        sort: 'type asc,create_time desc,name asc'
       },
       groupFormRules: {
         name: [
           {
             required: true,
-            message: this.$t("commons.input_content"),
-            trigger: "change",
+            message: this.$t('commons.input_content'),
+            trigger: 'change'
           },
           {
             max: 50,
-            message: this.$t("commons.char_can_not_more_50"),
-            trigger: "change",
+            message: this.$t('commons.char_can_not_more_50'),
+            trigger: 'change'
           },
-          { required: true, trigger: "blur", validator: this.filedValidator },
-        ],
+          { required: true, trigger: 'blur', validator: this.filedValidator }
+        ]
       },
       tableFormRules: {
         name: [
           {
             required: true,
-            message: this.$t("commons.input_content"),
-            trigger: "change",
+            message: this.$t('commons.input_content'),
+            trigger: 'change'
           },
           {
             max: 50,
-            message: this.$t("commons.char_can_not_more_50"),
-            trigger: "change",
+            message: this.$t('commons.char_can_not_more_50'),
+            trigger: 'change'
           },
-          { required: true, trigger: "blur", validator: this.filedValidator },
-        ],
+          { required: true, trigger: 'blur', validator: this.filedValidator }
+        ]
       },
       moveGroup: false,
       tGroup: {},
@@ -486,475 +489,479 @@ export default {
       tDs: {},
       groupMoveConfirmDisabled: true,
       dsMoveConfirmDisabled: true,
-      moveDialogTitle: "",
+      moveDialogTitle: '',
       treeProps: {
-        label: "name",
-        children: "children",
-        isLeaf: "isLeaf",
-        id: "id",
-        parentId: "pid",
+        label: 'name',
+        children: 'children',
+        isLeaf: 'isLeaf',
+        id: 'id',
+        parentId: 'pid'
       },
       isTreeSearch: false,
       kettleRunning: false,
-      engineMode: "local",
+      engineMode: 'local',
       searchPids: [], // 查询命中的pid
-      filterText: "",
+      filterText: '',
       fileList: [],
-      originName: "",
-      searchType: "all",
+      originName: '',
+      searchType: 'all',
       searchMap: {
-        all: this.$t("commons.all"),
-        folder: this.$t("commons.folder"),
-      },
-    };
+        all: this.$t('commons.all'),
+        folder: this.$t('commons.folder')
+      }
+    }
   },
   computed: {
     hideCustomDs: function () {
-      return this.$store.getters.hideCustomDs;
-    },
+      return this.$store.getters.hideCustomDs
+    }
   },
   watch: {
     saveStatus() {
-      this.treeNode();
+      this.treeNode()
     },
     filterText() {
-      this.loadTree();
+      this.loadTree()
     },
     searchType(val) {
-      this.searchPids = [];
-      this.$refs.datasetTreeRef.filter(this.filterText);
-    },
+      this.searchPids = []
+      this.$refs.datasetTreeRef.filter(this.filterText)
+    }
   },
   created() {
-    this.kettleState();
+    this.kettleState()
     engineMode().then((res) => {
-      this.engineMode = res.data;
-    });
+      this.engineMode = res.data
+    })
   },
   mounted() {
-    this.treeNode(true);
-    this.refresh();
+    this.treeNode(true)
+    this.refresh()
   },
   methods: {
     nameRepeat(value) {
       if (!this.fileList || this.fileList.length === 0) {
-        return false;
+        return false
       }
       // 编辑场景 不能 因为名称重复而报错
       if (
         (this.groupForm.id || this.tableForm.id) &&
         this.originName === value
       ) {
-        return false;
+        return false
       }
-      return this.fileList.some((role) => role === value);
+      return this.fileList.some((role) => role === value)
     },
     filedValidator(rule, value, callback) {
       if (this.nameRepeat(value)) {
         callback(
           new Error(
-            this.$t(this.editGroup ? "deDataset.name_already_exists" : "deDataset.already_exists")
+            this.$t(
+              this.editGroup
+                ? 'deDataset.name_already_exists'
+                : 'deDataset.already_exists'
+            )
           )
-        );
+        )
       } else {
-        callback();
+        callback()
       }
     },
     clickAdd(param) {
-      this.dialogTitle = this.$t("deDataset.new_folder");
+      this.dialogTitle = this.$t('deDataset.new_folder')
       if (!param || !param.id) {
-        this.fileList = (this.tData || []).map((ele) => ele.label);
-        this.add("group");
-        return;
+        this.fileList = (this.tData || []).map((ele) => ele.label)
+        this.add('group')
+        return
       }
-      this.dfsTdata(this.tData, param.id);
-      this.add(param.modelInnerType);
-      this.groupForm.pid = param.id;
-      this.groupForm.level = param.level + 1;
+      this.dfsTdata(this.tData, param.id)
+      this.add(param.modelInnerType)
+      this.groupForm.pid = param.id
+      this.groupForm.level = param.level + 1
     },
     loadTree: _.debounce(function () {
-      this.searchPids = [];
-      this.$refs.datasetTreeRef.filter(this.filterText);
+      this.searchPids = []
+      this.$refs.datasetTreeRef.filter(this.filterText)
     }, 600),
     kettleState() {
       isKettleRunning().then((res) => {
-        this.kettleRunning = res.data;
-      });
+        this.kettleRunning = res.data
+      })
     },
     clickMore(type, data, node) {
       switch (type) {
-        case "rename":
-          this.originName = data.label;
-          this.dialogTitle = this.$t("编辑文件夹");
-          this.dfsTdata(this.tData, data.id);
-          this.add(data.modelInnerType);
-          this.groupForm = JSON.parse(JSON.stringify(data));
-          break;
-        case "move":
-          this.moveTo(data);
-          this.groupForm = JSON.parse(JSON.stringify(data));
-          break;
-        case "moveDs":
-          this.moveToDs(data);
-          this.dsForm = JSON.parse(JSON.stringify(data));
-          break;
-        case "delete":
-          this.delete(data);
-          break;
-        case "editTable":
-          this.editTable = true;
-          this.originName = data.label;
-          this.dfsTdata(this.tData, data.id);
-          this.tableForm = JSON.parse(JSON.stringify(data));
-          this.tableForm.mode = this.tableForm.mode + "";
-          break;
-        case "deleteTable":
-          this.deleteTable(data);
-          break;
+        case 'rename':
+          this.originName = data.label
+          this.dialogTitle = this.$t('编辑文件夹')
+          this.dfsTdata(this.tData, data.id)
+          this.add(data.modelInnerType)
+          this.groupForm = JSON.parse(JSON.stringify(data))
+          break
+        case 'move':
+          this.moveTo(data)
+          this.groupForm = JSON.parse(JSON.stringify(data))
+          break
+        case 'moveDs':
+          this.moveToDs(data)
+          this.dsForm = JSON.parse(JSON.stringify(data))
+          break
+        case 'delete':
+          this.delete(data)
+          break
+        case 'editTable':
+          this.editTable = true
+          this.originName = data.label
+          this.dfsTdata(this.tData, data.id)
+          this.tableForm = JSON.parse(JSON.stringify(data))
+          this.tableForm.mode = this.tableForm.mode + ''
+          break
+        case 'deleteTable':
+          this.deleteTable(data)
+          break
       }
     },
     dfsTdata(arr, id) {
       arr.some((ele) => {
         if (ele.id === id) {
-          this.fileList = arr.map((item) => item.label);
-          return true;
+          this.fileList = arr.map((item) => item.label)
+          return true
         } else if (ele.children?.length) {
-          this.dfsTdata(ele.children, id);
+          this.dfsTdata(ele.children, id)
         }
-        return false;
-      });
+        return false
+      })
     },
     add(type) {
-      this.groupForm.type = type;
-      this.editGroup = true;
+      this.groupForm.type = type
+      this.editGroup = true
     },
     saveGroup(group) {
-      this.$refs["groupForm"].validate((valid) => {
+      this.$refs['groupForm'].validate((valid) => {
         if (valid) {
           addGroup(group).then((res) => {
-            this.close();
-            this.openMessageSuccess('dataset.save_success');
-            this.expandedArray.push(group.pid);
-            this.treeNode();
-          });
+            this.close()
+            this.openMessageSuccess('dataset.save_success')
+            this.expandedArray.push(group.pid)
+            this.treeNode()
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
 
     saveTable(table) {
-      table.mode = parseInt(table.mode);
-      const _this = this;
-      this.$refs["tableForm"].validate((valid) => {
+      table.mode = parseInt(table.mode)
+      const _this = this
+      this.$refs['tableForm'].validate((valid) => {
         if (valid) {
-          table.isRename = true;
-          table.sceneId = table.pid;
+          table.isRename = true
+          table.sceneId = table.pid
           alter(table).then((response) => {
-            this.closeTable();
-            this.openMessageSuccess('dataset.save_success');
-            _this.expandedArray.push(table.sceneId);
-            _this.$refs.datasetTreeRef.setCurrentKey(table.id);
-            _this.treeNode();
-            this.$emit("switchComponent", { name: "" });
-          });
+            this.closeTable()
+            this.openMessageSuccess('dataset.save_success')
+            _this.expandedArray.push(table.sceneId)
+            _this.$refs.datasetTreeRef.setCurrentKey(table.id)
+            _this.treeNode()
+            this.$emit('switchComponent', { name: '' })
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
 
     delete(data) {
       this.$confirm(
-        this.$t("dataset.confirm_delete"),
-        this.$t("dataset.tips"),
+        this.$t('dataset.confirm_delete'),
+        this.$t('dataset.tips'),
         {
-          confirmButtonText: this.$t("dataset.confirm"),
-          cancelButtonText: this.$t("dataset.cancel"),
-          type: "warning",
+          confirmButtonText: this.$t('dataset.confirm'),
+          cancelButtonText: this.$t('dataset.cancel'),
+          type: 'warning'
         }
       )
         .then(() => {
           delGroup(data.id).then((response) => {
-            this.openMessageSuccess('dataset.delete_success');
-            this.treeNode();
-            this.$emit("switchComponent", { name: "" });
-          });
+            this.openMessageSuccess('dataset.delete_success')
+            this.treeNode()
+            this.$emit('switchComponent', { name: '' })
+          })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
 
     deleteTable(data) {
-      let confirm_delete_msg = "";
-      if (data.modelInnerType === "union" || data.modelInnerType === "custom") {
-        confirm_delete_msg = this.$t("dataset.confirm_delete");
+      let confirm_delete_msg = ''
+      if (data.modelInnerType === 'union' || data.modelInnerType === 'custom') {
+        confirm_delete_msg = this.$t('dataset.confirm_delete')
       } else {
-        confirm_delete_msg = this.$t("dataset.confirm_delete_msg");
+        confirm_delete_msg = this.$t('dataset.confirm_delete_msg')
       }
       const options = {
-        title: "确定删除该数据集吗？",
+        title: '确定删除该数据集吗？',
         content: confirm_delete_msg,
-        type: "primary",
-        confirmButtonText: this.$t("commons.confirm"),
+        type: 'primary',
+        confirmButtonText: this.$t('commons.confirm'),
         cb: () => {
           delTable(data.id).then((response) => {
-            this.openMessageSuccess('dataset.delete_success');
-            this.treeNode();
-            this.$emit("switchComponent", { name: "" });
-            this.$store.dispatch("dataset/setTable", new Date().getTime());
-          });
-        },
-      };
-      this.handlerConfirm(options);
+            this.openMessageSuccess('dataset.delete_success')
+            this.treeNode()
+            this.$emit('switchComponent', { name: '' })
+            this.$store.dispatch('dataset/setTable', new Date().getTime())
+          })
+        }
+      }
+      this.handlerConfirm(options)
     },
 
     close() {
-      this.$refs["groupForm"].resetFields();
-      this.editGroup = false;
+      this.$refs['groupForm'].resetFields()
+      this.editGroup = false
       this.groupForm = {
-        name: "",
-        pid: "0",
+        name: '',
+        pid: '0',
         level: 0,
-        type: "",
+        type: '',
         children: [],
-        sort: "type desc,name asc",
-      };
+        sort: 'type desc,name asc'
+      }
     },
 
     closeTable() {
-      this.editTable = false;
+      this.editTable = false
       this.tableForm = {
-        name: "",
-      };
+        name: ''
+      }
     },
 
     treeNode(cache) {
-      const modelInfo = localStorage.getItem("dataset-tree");
-      const userCache = modelInfo && cache;
+      const modelInfo = localStorage.getItem('dataset-tree')
+      const userCache = modelInfo && cache
       if (userCache) {
-        this.tData = JSON.parse(modelInfo);
+        this.tData = JSON.parse(modelInfo)
       }
-      queryAuthModel({ modelType: "dataset" }, !userCache).then((res) => {
-        localStorage.setItem("dataset-tree", JSON.stringify(res.data));
+      queryAuthModel({ modelType: 'dataset' }, !userCache).then((res) => {
+        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
         if (!userCache) {
-          this.tData = res.data;
+          this.tData = res.data
         }
         this.$nextTick(() => {
-          this.$refs.datasetTreeRef.filter(this.filterText);
-        });
-      });
+          this.$refs.datasetTreeRef.filter(this.filterText)
+        })
+      })
     },
 
     tableTree() {
-      this.tables = [];
-      this.tableData = [];
+      this.tables = []
+      this.tableData = []
       if (this.currGroup.id) {
         loadTable({
-          sort: "type asc,create_time desc,name asc",
-          sceneId: this.currGroup.id,
+          sort: 'type asc,create_time desc,name asc',
+          sceneId: this.currGroup.id
         }).then((res) => {
-          this.tables = res.data;
-          this.tableData = JSON.parse(JSON.stringify(this.tables));
-        });
+          this.tables = res.data
+          this.tableData = JSON.parse(JSON.stringify(this.tables))
+        })
       }
     },
 
     nodeClick(data, node) {
-      if (data.modelInnerType !== "group") {
-        this.$emit("switchComponent", { name: "ViewTable", param: data });
+      if (data.modelInnerType !== 'group') {
+        this.$emit('switchComponent', { name: 'ViewTable', param: data })
       }
     },
 
     back() {
-      this.sceneMode = false;
-      this.$emit("switchComponent", { name: "" });
+      this.sceneMode = false
+      this.$emit('switchComponent', { name: '' })
     },
 
     clickAddData(datasetType, param = {}) {
-      this.currGroup = param;
-      if (datasetType === "group") {
-        this.clickAdd(param);
-        return;
+      this.currGroup = param
+      if (datasetType === 'group') {
+        this.clickAdd(param)
+        return
       }
-      this.$store.dispatch("dataset/setSceneData", this.currGroup.id);
+      this.$store.dispatch('dataset/setSceneData', this.currGroup.id)
       if (!this.tData.length) {
-        this.openMessageSuccess("deDataset.new_folder_first", "error");
-        return;
+        this.openMessageSuccess('deDataset.new_folder_first', 'error')
+        return
       }
       switch (datasetType) {
-        case "db":
-          this.addData("AddDB");
-          break;
-        case "sql":
-          this.addData("AddSQL");
-          break;
-        case "excel":
-          this.addData("AddExcel");
-          break;
-        case "custom":
-          this.addData("AddCustom");
-          break;
-        case "union":
-          this.addData("AddUnion");
-          break;
-        case "api":
-          this.addData("AddApi");
-          break;
+        case 'db':
+          this.addData('AddDB')
+          break
+        case 'sql':
+          this.addData('AddSQL')
+          break
+        case 'excel':
+          this.addData('AddExcel')
+          break
+        case 'custom':
+          this.addData('AddCustom')
+          break
+        case 'union':
+          this.addData('AddUnion')
+          break
+        case 'api':
+          this.addData('AddApi')
+          break
       }
 
       this.$router.push({
-        path: "/dataset-form",
+        path: '/dataset-form',
         query: {
           datasetType,
-          sceneId: param.id,
-        },
-      });
+          sceneId: param.id
+        }
+      })
     },
     addData(name) {
-      this.$emit("switchComponent", { name: name, param: this.currGroup });
+      this.$emit('switchComponent', { name: name, param: this.currGroup })
     },
     refresh() {
-      const path = this.$route.path;
-      if (path === "/dataset/table") {
-        this.sceneMode = true;
-        const sceneId = this.$store.state.dataset.sceneData;
+      const path = this.$route.path
+      if (path === '/dataset/table') {
+        this.sceneMode = true
+        const sceneId = this.$store.state.dataset.sceneData
         getScene(sceneId).then((res) => {
-          this.currGroup = res.data;
-        });
+          this.currGroup = res.data
+        })
       }
     },
     nodeExpand(data) {
       if (data.id) {
-        this.expandedArray.push(data.id);
+        this.expandedArray.push(data.id)
       }
     },
     nodeCollapse(data) {
       if (data.id) {
-        this.expandedArray.splice(this.expandedArray.indexOf(data.id), 1);
+        this.expandedArray.splice(this.expandedArray.indexOf(data.id), 1)
       }
     },
 
     moveTo(data) {
-      this.moveGroup = true;
+      this.moveGroup = true
       this.moveDialogTitle =
-        this.$t("dataset.m1") +
-        (data.name.length > 10 ? data.name.substr(0, 10) + "..." : data.name) +
-        this.$t("dataset.m2");
+        this.$t('dataset.m1') +
+        (data.name.length > 10 ? data.name.substr(0, 10) + '...' : data.name) +
+        this.$t('dataset.m2')
     },
     closeMoveGroup() {
-      this.moveGroup = false;
+      this.moveGroup = false
       this.groupForm = {
-        name: "",
-        pid: "0",
+        name: '',
+        pid: '0',
         level: 0,
-        type: "",
+        type: '',
         children: [],
-        sort: "type desc,name asc",
-      };
+        sort: 'type desc,name asc'
+      }
     },
     saveMoveGroup() {
-      this.groupForm.pid = this.tGroup.id;
+      this.groupForm.pid = this.tGroup.id
       addGroup(this.groupForm).then((res) => {
         this.openMessageSuccess('dept.move_success')
-        this.closeMoveGroup();
-        this.treeNode();
-      });
+        this.closeMoveGroup()
+        this.treeNode()
+      })
     },
     targetGroup(val) {
-      this.tGroup = val;
-      this.groupMoveConfirmDisabled = false;
+      this.tGroup = val
+      this.groupMoveConfirmDisabled = false
     },
 
     moveToDs(data) {
-      this.moveDs = true;
+      this.moveDs = true
       this.moveDialogTitle =
-        this.$t("dataset.m1") +
-        (data.name.length > 10 ? data.name.substr(0, 10) + "..." : data.name) +
-        this.$t("dataset.m2");
+        this.$t('dataset.m1') +
+        (data.name.length > 10 ? data.name.substr(0, 10) + '...' : data.name) +
+        this.$t('dataset.m2')
     },
     closeMoveDs() {
-      this.moveDs = false;
+      this.moveDs = false
       this.dsForm = {
-        name: "",
-        pid: "0",
+        name: '',
+        pid: '0',
         level: 0,
-        type: "",
+        type: '',
         children: [],
-        sort: "type desc,name asc",
-      };
+        sort: 'type desc,name asc'
+      }
     },
     saveMoveDs() {
-      const newSceneId = this.tDs.id;
-      this.dsForm.sceneId = newSceneId;
-      this.dsForm.isRename = true;
+      const newSceneId = this.tDs.id
+      this.dsForm.sceneId = newSceneId
+      this.dsForm.isRename = true
       alter(this.dsForm).then((res) => {
-        this.closeMoveDs();
-        this.expandedArray.push(newSceneId);
-        this.treeNode();
-      });
+        this.closeMoveDs()
+        this.expandedArray.push(newSceneId)
+        this.treeNode()
+      })
     },
     targetDs(val) {
-      this.tDs = val;
-      if (this.tDs.type === "group") {
-        this.dsMoveConfirmDisabled = false;
+      this.tDs = val
+      if (this.tDs.type === 'group') {
+        this.dsMoveConfirmDisabled = false
       } else {
-        this.dsMoveConfirmDisabled = false;
+        this.dsMoveConfirmDisabled = false
       }
     },
 
     loadNode(node, resolve) {
       if (!this.isTreeSearch) {
         if (node.level > 0) {
-          this.tables = [];
-          this.tableData = [];
+          this.tables = []
+          this.tableData = []
           if (node.data.id) {
-            post("/dataset/table/listAndGroup", {
-              sort: "type asc,name asc,create_time desc",
-              sceneId: node.data.id,
+            post('/dataset/table/listAndGroup', {
+              sort: 'type asc,name asc,create_time desc',
+              sceneId: node.data.id
             }).then((res) => {
-              this.tables = res.data;
-              this.tableData = JSON.parse(JSON.stringify(this.tables));
-              resolve(this.tableData);
-            });
+              this.tables = res.data
+              this.tableData = JSON.parse(JSON.stringify(this.tables))
+              resolve(this.tableData)
+            })
           }
         }
       } else {
-        node.data.children ? resolve(node.data.children) : resolve([]);
+        node.data.children ? resolve(node.data.children) : resolve([])
       }
     },
 
     getTreeData(val) {
       if (val) {
-        this.isTreeSearch = true;
-        this.searchTree(val);
+        this.isTreeSearch = true
+        this.searchTree(val)
       } else {
-        this.isTreeSearch = false;
-        this.treeNode();
+        this.isTreeSearch = false
+        this.treeNode()
       }
     },
     filterNode(value, data) {
-      if (!value) return true;
-      if (this.searchType === "folder") {
+      if (!value) return true
+      if (this.searchType === 'folder') {
         if (
-          data.modelInnerType === "group" &&
+          data.modelInnerType === 'group' &&
           data.label.indexOf(value) !== -1
         ) {
-          this.searchPids.push(data.id);
-          return true;
+          this.searchPids.push(data.id)
+          return true
         }
         if (this.searchPids.indexOf(data.pid) !== -1) {
-          if (data.modelInnerType === "group") {
-            this.searchPids.push(data.id);
+          if (data.modelInnerType === 'group') {
+            this.searchPids.push(data.id)
           }
-          return true;
+          return true
         }
       } else {
-        return data.label.indexOf(value) !== -1;
+        return data.label.indexOf(value) !== -1
       }
-      return false;
-    },
-  },
-};
+      return false
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">

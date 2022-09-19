@@ -7,7 +7,7 @@
       {{ driverForm.desc }}
     </p>
     <div class="de-row-rules">
-      <span>{{ $t("datasource.driver_file") }}</span>
+      <span>{{ $t('datasource.driver_file') }}</span>
     </div>
 
     <el-form
@@ -46,11 +46,11 @@
         :loading="uploading"
         :disabled="uploading"
       >
-        {{ uploading ? $t("dataset.uploading") : $t("dataset.upload_file") }}
+        {{ uploading ? $t('dataset.uploading') : $t('dataset.upload_file') }}
       </deBtn>
     </el-upload>
     <p class="tips">
-      {{ $t("datasource.can_be_uploaded") }}
+      {{ $t('datasource.can_be_uploaded') }}
     </p>
     <div class="jar-cont">
       <div v-for="jar in driverFiles" :key="jar.id" class="jar-info">
@@ -74,57 +74,55 @@
       </div>
     </div>
     <div class="de-foot">
-      <deBtn type="primary" @click="save">{{
-        $t("commons.save")
-      }}</deBtn>
+      <deBtn type="primary" @click="save">{{ $t('commons.save') }}</deBtn>
     </div>
   </div>
 </template>
 <script>
-import i18n from "@/lang/index";
-import ApiHttpRequestForm from "@/views/system/datasource/ApiHttpRequestForm";
-import DsConfiguration from "@/views/system/datasource/DsConfiguration";
+import i18n from '@/lang/index'
+import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
+import DsConfiguration from '@/views/system/datasource/DsConfiguration'
 import {
   deleteDriverFile,
   listDriverDetails,
-  updateDriver,
-} from "@/api/system/datasource";
-import { $alert } from "@/utils/message";
-import store from "@/store";
-import { getToken } from "@/utils/auth";
+  updateDriver
+} from '@/api/system/datasource'
+import { $alert } from '@/utils/message'
+import store from '@/store'
+import { getToken } from '@/utils/auth'
 
-const token = getToken();
+const token = getToken()
 
 export default {
-  name: "DriverForm",
+  name: 'DriverForm',
   components: {
     DsConfiguration,
-    ApiHttpRequestForm,
+    ApiHttpRequestForm
   },
   props: {
     params: {
       type: Object,
-      default: null,
+      default: null
     },
     tData: {
       type: Array,
-      default: null,
+      default: null
     },
     dsTypes: {
       type: Array,
-      default: null,
-    },
+      default: null
+    }
   },
   data() {
     return {
       disabled: false,
-      imgUrl: require("@/assets/FileType.png"),
+      imgUrl: require('@/assets/FileType.png'),
       driverForm: {
-        id: "",
-        name: "",
-        desc: "",
-        type: "",
-        driverClass: "",
+        id: '',
+        name: '',
+        desc: '',
+        type: '',
+        driverClass: ''
       },
       datasourceType: {},
       driverClassList: [],
@@ -132,43 +130,43 @@ export default {
         name: [
           {
             required: true,
-            message: i18n.t("datasource.input_name"),
-            trigger: "blur",
+            message: i18n.t('datasource.input_name'),
+            trigger: 'blur'
           },
           {
             min: 2,
             max: 50,
-            message: i18n.t("datasource.input_limit_2_25", [2, 25]),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.input_limit_2_25', [2, 25]),
+            trigger: 'blur'
+          }
         ],
         desc: [
           {
             required: true,
-            message: i18n.t("datasource.input_name"),
-            trigger: "blur",
+            message: i18n.t('datasource.input_name'),
+            trigger: 'blur'
           },
           {
             min: 2,
             max: 200,
-            message: i18n.t("datasource.input_limit_2_25", [2, 25]),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.input_limit_2_25', [2, 25]),
+            trigger: 'blur'
+          }
         ],
         type: [
           {
             required: true,
-            message: i18n.t("datasource.please_choose_type"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_choose_type'),
+            trigger: 'blur'
+          }
         ],
         driverClass: [
           {
             required: true,
-            message: i18n.t("driver.please_set_driverClass"),
-            trigger: "blur",
-          },
-        ],
+            message: i18n.t('driver.please_set_driverClass'),
+            trigger: 'blur'
+          }
+        ]
       },
       canEdit: false,
       driverFiles: [],
@@ -176,107 +174,107 @@ export default {
       baseUrl: process.env.VUE_APP_BASE_API,
       headers: {
         Authorization: token,
-        "Accept-Language": i18n.locale.replace("_", "-"),
+        'Accept-Language': i18n.locale.replace('_', '-')
       },
-      fileList: [],
-    };
+      fileList: []
+    }
   },
   created() {
-    const row = this.params;
-    this.driverForm = JSON.parse(JSON.stringify(row));
+    const row = this.params
+    this.driverForm = JSON.parse(JSON.stringify(row))
     this.disabled =
       this.params &&
       this.params.id &&
       this.params.showModel &&
-      this.params.showModel === "show" &&
-      !this.canEdit;
-    this.listDriverDetails();
+      this.params.showModel === 'show' &&
+      !this.canEdit
+    this.listDriverDetails()
   },
   methods: {
     beforeUpload(file) {
-      this.uploading = true;
+      this.uploading = true
     },
     uploadSuccess(response, file, fileList) {
-      this.uploading = false;
-      this.listDriverDetails();
+      this.uploading = false
+      this.listDriverDetails()
     },
     uploadFail(response, file, fileList) {
-      let myError = response.toString();
-      myError = myError.replace("Error: ", "");
-      if (myError.indexOf("AuthenticationException") >= 0) {
-        const message = i18n.t("login.tokenError");
+      let myError = response.toString()
+      myError = myError.replace('Error: ', '')
+      if (myError.indexOf('AuthenticationException') >= 0) {
+        const message = i18n.t('login.tokenError')
         $alert(
           message,
           () => {
-            store.dispatch("user/logout").then(() => {
-              location.reload();
-            });
+            store.dispatch('user/logout').then(() => {
+              location.reload()
+            })
           },
           {
-            confirmButtonText: i18n.t("login.re_login"),
-            showClose: false,
+            confirmButtonText: i18n.t('login.re_login'),
+            showClose: false
           }
-        );
-        return;
+        )
+        return
       }
-      const errorMessage = JSON.parse(myError).message;
-      this.uploading = false;
+      const errorMessage = JSON.parse(myError).message
+      this.uploading = false
       this.$message({
-        type: "error",
+        type: 'error',
         message: errorMessage,
-        showClose: true,
-      });
+        showClose: true
+      })
     },
     deleteDriverFile(row) {
       deleteDriverFile(row).then((res) => {
-        this.$success(this.$t("commons.delete_success"));
-        this.listDriverDetails();
-      });
+        this.$success(this.$t('commons.delete_success'))
+        this.listDriverDetails()
+      })
     },
     listDriverDetails() {
       listDriverDetails(this.driverForm.id).then((res) => {
-        this.driverFiles = res.data;
-        this.driverClassList = [];
+        this.driverFiles = res.data
+        this.driverClassList = []
         this.driverFiles.forEach((driverFile) => {
           this.driverClassList = this.driverClassList.concat(
-            driverFile.driverClass.split(",")
-          );
-        });
-      });
+            driverFile.driverClass.split(',')
+          )
+        })
+      })
     },
     changeEdit() {
-      this.canEdit = true;
-      this.formType = "modify";
+      this.canEdit = true
+      this.formType = 'modify'
       this.disabled =
         this.params &&
         this.params.id &&
         this.params.showModel &&
-        this.params.showModel === "show" &&
-        !this.canEdit;
+        this.params.showModel === 'show' &&
+        !this.canEdit
     },
     save() {
       this.$refs.driverForm.validate((valid) => {
         if (!valid) {
-          return false;
+          return false
         }
         updateDriver(this.driverForm).then((res) => {
-          this.$success(i18n.t("commons.success"));
-          this.canEdit = false;
-        });
-      });
+          this.$success(i18n.t('commons.success'))
+          this.canEdit = false
+        })
+      })
     },
     reset() {
-      this.$refs.dsForm.resetFields();
+      this.$refs.dsForm.resetFields()
     },
     backToList() {
-      this.$emit("switch-component", {});
+      this.$emit('switch-component', {})
     },
     refreshType(form) {
-      this.$emit("refresh-type", DsForm);
+      this.$emit('refresh-type', DsForm)
     },
-    handleClick(tab, event) {},
-  },
-};
+    handleClick(tab, event) {}
+  }
+}
 </script>
 <style lang="scss" scoped>
 .driver-detail {

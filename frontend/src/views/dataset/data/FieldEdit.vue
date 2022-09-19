@@ -18,7 +18,7 @@
           v-if="hasDataPermission('manage', param.privileges)"
           icon="el-icon-plus"
           @click="addCalcField"
-          >{{ $t("dataset.add_calc_field") }}</deBtn
+          >{{ $t('dataset.add_calc_field') }}</deBtn
         >
         <deBtn
           secondary
@@ -31,7 +31,7 @@
           :loading="isSyncField"
           icon="el-icon-refresh-left"
           @click="syncField"
-          >{{ $t("dataset.sync_field") }}</deBtn
+          >{{ $t('dataset.sync_field') }}</deBtn
         >
       </el-col>
       <el-col style="text-align: right" :span="12">
@@ -129,7 +129,7 @@
                 "
               >
                 <span style="font-size: 12px; color: #c0c0c0">{{
-                  $t("dataset.calc_field")
+                  $t('dataset.calc_field')
                 }}</span>
               </span>
             </template>
@@ -242,7 +242,7 @@
                     icon-class="field_text"
                     class="field-icon-text"
                   />
-                  <span class="field-class">{{ $t("dataset.text") }}</span>
+                  <span class="field-class">{{ $t('dataset.text') }}</span>
                 </span>
                 <span v-if="scope.row.deExtractType === 1">
                   <svg-icon
@@ -250,7 +250,7 @@
                     icon-class="field_time"
                     class="field-icon-time"
                   />
-                  <span class="field-class">{{ $t("dataset.time") }}</span>
+                  <span class="field-class">{{ $t('dataset.time') }}</span>
                 </span>
                 <span
                   v-if="
@@ -274,13 +274,13 @@
                       scope.row.deExtractType === 4
                     "
                     class="field-class"
-                    >{{ $t("dataset.value") }}</span
+                    >{{ $t('dataset.value') }}</span
                   >
                   <span
                     v-if="scope.row.deExtractType === 3"
                     class="field-class"
                     >{{
-                      $t("dataset.value") + "(" + $t("dataset.float") + ")"
+                      $t('dataset.value') + '(' + $t('dataset.float') + ')'
                     }}</span
                   >
                 </span>
@@ -290,7 +290,7 @@
                     icon-class="field_location"
                     class="field-icon-location"
                   />
-                  <span class="field-class">{{ $t("dataset.location") }}</span>
+                  <span class="field-class">{{ $t('dataset.location') }}</span>
                 </span>
               </span>
               <span
@@ -305,7 +305,7 @@
                 "
               >
                 <span style="font-size: 12px; color: #c0c0c0">{{
-                  $t("dataset.calc_field")
+                  $t('dataset.calc_field')
                 }}</span>
               </span>
             </template>
@@ -326,7 +326,7 @@
                 style="margin-left: -4px"
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 @click="dqTrans(scope.row, 'd')"
-                >{{ $t("convert_to_indicator") }}</el-button
+                >{{ $t('convert_to_indicator') }}</el-button
               >
               <template v-if="scope.row.extField !== 0">
                 <el-button
@@ -335,7 +335,7 @@
                   class="de-text-btn"
                   style="margin-left: 8px"
                   @click="editField(scope.row)"
-                  >{{ $t("deDataset.dataset.edit") }}</el-button
+                  >{{ $t('deDataset.dataset.edit') }}</el-button
                 >
                 <el-dropdown
                   size="medium"
@@ -356,7 +356,7 @@
                         command="copy"
                       >
                         <i class="el-icon-document-copy"></i>
-                        {{ $t("dataset.copy") }}
+                        {{ $t('dataset.copy') }}
                       </el-dropdown-item>
                       <el-dropdown-item
                         :disabled="
@@ -365,7 +365,7 @@
                         command="delete"
                       >
                         <i class="el-icon-delete"></i>
-                        {{ $t("chart.delete") }}
+                        {{ $t('chart.delete') }}
                       </el-dropdown-item>
                     </slot>
                   </el-dropdown-menu>
@@ -378,7 +378,7 @@
                 style="margin-left: 8px"
                 class="de-text-btn"
                 @click="copyField(scope.row)"
-                >{{ $t("dataset.copy") }}</el-button
+                >{{ $t('dataset.copy') }}</el-button
               >
             </template>
           </el-table-column>
@@ -464,7 +464,7 @@
                 "
               >
                 <span style="font-size: 12px; color: #c0c0c0">{{
-                  $t("dataset.calc_field")
+                  $t('dataset.calc_field')
                 }}</span>
               </span>
             </template>
@@ -569,7 +569,7 @@
                     icon-class="field_text"
                     class="field-icon-text"
                   />
-                  <span class="field-class">{{ $t("dataset.text") }}</span>
+                  <span class="field-class">{{ $t('dataset.text') }}</span>
                 </span>
                 <span v-if="scope.row.deExtractType === 1">
                   <svg-icon
@@ -577,7 +577,7 @@
                     icon-class="field_time"
                     class="field-icon-time"
                   />
-                  <span class="field-class">{{ $t("dataset.time") }}</span>
+                  <span class="field-class">{{ $t('dataset.time') }}</span>
                 </span>
                 <span
                   v-if="
@@ -601,13 +601,13 @@
                       scope.row.deExtractType === 4
                     "
                     class="field-class"
-                    >{{ $t("dataset.value") }}</span
+                    >{{ $t('dataset.value') }}</span
                   >
                   <span
                     v-if="scope.row.deExtractType === 3"
                     class="field-class"
                     >{{
-                      $t("dataset.value") + "(" + $t("dataset.float") + ")"
+                      $t('dataset.value') + '(' + $t('dataset.float') + ')'
                     }}</span
                   >
                 </span>
@@ -617,7 +617,7 @@
                     icon-class="field_location"
                     class="field-icon-location"
                   />
-                  <span class="field-class">{{ $t("dataset.location") }}</span>
+                  <span class="field-class">{{ $t('dataset.location') }}</span>
                 </span>
               </span>
               <span
@@ -632,7 +632,7 @@
                 "
               >
                 <span style="font-size: 12px; color: #c0c0c0">{{
-                  $t("dataset.calc_field")
+                  $t('dataset.calc_field')
                 }}</span>
               </span>
             </template>
@@ -672,7 +672,7 @@
                 style="margin-left: -4px"
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 @click="dqTrans(scope.row, 'q')"
-                >{{ $t("deDataset.convert_to_dimension") }}</el-button
+                >{{ $t('deDataset.convert_to_dimension') }}</el-button
               >
               <template v-if="scope.row.extField !== 0">
                 <el-button
@@ -681,7 +681,7 @@
                   class="de-text-btn"
                   style="margin-left: 8px"
                   @click="editField(scope.row)"
-                  >{{ $t("dataset.edit") }}</el-button
+                  >{{ $t('dataset.edit') }}</el-button
                 >
                 <el-dropdown
                   size="medium"
@@ -702,7 +702,7 @@
                         command="copy"
                       >
                         <i class="el-icon-document-copy"></i>
-                        {{ $t("dataset.copy") }}
+                        {{ $t('dataset.copy') }}
                       </el-dropdown-item>
                       <el-dropdown-item
                         :disabled="
@@ -711,7 +711,7 @@
                         command="delete"
                       >
                         <i class="el-icon-delete"></i>
-                        {{ $t("chart.delete") }}
+                        {{ $t('chart.delete') }}
                       </el-dropdown-item>
                     </slot>
                   </el-dropdown-menu>
@@ -724,7 +724,7 @@
                 style="margin-left: 8px"
                 class="de-text-btn"
                 @click="copyField(scope.row)"
-                >{{ $t("dataset.copy") }}</el-button
+                >{{ $t('dataset.copy') }}</el-button
               >
             </template>
           </el-table-column>
@@ -754,91 +754,91 @@
 </template>
 
 <script>
-import { post, fieldListDQ, batchEdit } from "@/api/dataset/dataset";
-import CalcFieldEdit from "./CalcFieldEdit";
-import { getFieldName } from "@/views/dataset/data/utils";
-import msgCfm from "@/components/msgCfm/index";
+import { post, fieldListDQ, batchEdit } from '@/api/dataset/dataset'
+import CalcFieldEdit from './CalcFieldEdit'
+import { getFieldName } from '@/views/dataset/data/utils'
+import msgCfm from '@/components/msgCfm/index'
 export default {
-  name: "FieldEdit",
+  name: 'FieldEdit',
   components: { CalcFieldEdit },
   mixins: [msgCfm],
   props: {
     param: {
       type: Object,
-      required: true,
+      required: true
     },
     table: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
-      maxHeight: "auto",
+      maxHeight: 'auto',
       tableFields: {
         dimensionList: [],
         quotaList: [],
         dimensionListData: [],
-        quotaListData: [],
+        quotaListData: []
       },
       fields: [
-        { label: this.$t("dataset.text"), value: 0 },
-        { label: this.$t("dataset.time"), value: 1 },
-        { label: this.$t("dataset.value"), value: 2 },
+        { label: this.$t('dataset.text'), value: 0 },
+        { label: this.$t('dataset.time'), value: 1 },
+        { label: this.$t('dataset.value'), value: 2 },
         {
           label:
-            this.$t("dataset.value") + "(" + this.$t("dataset.float") + ")",
-          value: 3,
+            this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')',
+          value: 3
         },
-        { label: this.$t("dataset.location"), value: 5 },
+        { label: this.$t('dataset.location'), value: 5 }
       ],
-      fieldActiveNames: ["d", "q"],
-      searchField: "",
+      fieldActiveNames: ['d', 'q'],
+      searchField: '',
       editCalcField: false,
       currEditField: {},
       isSyncField: false,
       dimensionChecked: false,
       dimensionIndeterminate: false,
       quotaChecked: false,
-      quotaIndeterminate: false,
-    };
+      quotaIndeterminate: false
+    }
   },
   watch: {
     param: function () {
-      this.initField();
+      this.initField()
     },
     searchField(val) {
-      this.filterField(val);
-    },
+      this.filterField(val)
+    }
   },
   mounted() {
     window.onresize = () => {
-      this.calcHeight();
-    };
-    this.calcHeight();
-    this.initField();
+      this.calcHeight()
+    }
+    this.calcHeight()
+    this.initField()
   },
   methods: {
     calcHeight() {
-      const that = this;
+      const that = this
       setTimeout(function () {
-        const currentHeight = document.documentElement.clientHeight;
-        that.maxHeight = currentHeight - 56 - 30 - 35 - 26 - 10 - 10 + "px";
-      }, 10);
+        const currentHeight = document.documentElement.clientHeight
+        that.maxHeight = currentHeight - 56 - 30 - 35 - 26 - 10 - 10 + 'px'
+      }, 10)
     },
     initField() {
       fieldListDQ(this.param.id).then((response) => {
-        this.tableFields = response.data;
+        this.tableFields = response.data
         this.tableFields.dimensionListData = JSON.parse(
           JSON.stringify(this.tableFields.dimensionList)
-        );
+        )
         this.tableFields.quotaListData = JSON.parse(
           JSON.stringify(this.tableFields.quotaList)
-        );
-        this.filterField(this.searchField);
-        this.dimensionChange();
-        this.quotaChange();
-      });
+        )
+        this.filterField(this.searchField)
+        this.dimensionChange()
+        this.quotaChange()
+      })
     },
     saveEdit(item) {
       // const list = this.tableFields.dimensionListData.concat(this.tableFields.quotaListData)
@@ -847,238 +847,236 @@ export default {
       //   this.initField()
       // })
       if (item.name && item.name.length > 50) {
-        this.$message.error(this.$t("dataset.field_name_less_50"));
-        return;
+        this.$message.error(this.$t('dataset.field_name_less_50'))
+        return
       }
 
-      post("/dataset/field/save", item)
+      post('/dataset/field/save', item)
         .then((response) => {
-          this.initField();
-          localStorage.setItem("reloadDsData", "true");
+          this.initField()
+          localStorage.setItem('reloadDsData', 'true')
         })
         .catch((res) => {
-          this.initField();
-          localStorage.setItem("reloadDsData", "true");
-        });
+          this.initField()
+          localStorage.setItem('reloadDsData', 'true')
+        })
     },
 
     dqTrans(item, val) {
-      if (val === "d") {
-        item.groupType = "q";
-      } else if (val === "q") {
-        item.groupType = "d";
+      if (val === 'd') {
+        item.groupType = 'q'
+      } else if (val === 'q') {
+        item.groupType = 'd'
       }
-      this.saveEdit(item);
+      this.saveEdit(item)
     },
 
     addCalcField() {
-      this.currEditField = {};
-      this.editCalcField = true;
+      this.currEditField = {}
+      this.editCalcField = true
     },
 
     closeCalcField() {
-      this.editCalcField = false;
-      this.initField();
+      this.editCalcField = false
+      this.initField()
     },
 
     filterField(val) {
-      if (val && val !== "") {
+      if (val && val !== '') {
         this.tableFields.dimensionListData = JSON.parse(
           JSON.stringify(
             this.tableFields.dimensionListData.filter((ele) => {
               return ele.name
                 .toLocaleLowerCase()
-                .includes(val.toLocaleLowerCase());
+                .includes(val.toLocaleLowerCase())
             })
           )
-        );
+        )
         this.tableFields.quotaListData = JSON.parse(
           JSON.stringify(
             this.tableFields.quotaList.filter((ele) => {
               return ele.name
                 .toLocaleLowerCase()
-                .includes(val.toLocaleLowerCase());
+                .includes(val.toLocaleLowerCase())
             })
           )
-        );
+        )
       } else {
         this.tableFields.dimensionListData = JSON.parse(
           JSON.stringify(this.tableFields.dimensionList)
-        );
+        )
         this.tableFields.quotaListData = JSON.parse(
           JSON.stringify(this.tableFields.quotaList)
-        );
+        )
       }
     },
 
     editField(item) {
-      this.currEditField = item;
-      this.editCalcField = true;
+      this.currEditField = item
+      this.editCalcField = true
     },
     handleCommand(type, row) {
       switch (type) {
-        case "copy":
-          this.copyField(row);
-          break;
-        case "delete":
-          this.deleteField(row);
-          break;
+        case 'copy':
+          this.copyField(row)
+          break
+        case 'delete':
+          this.deleteField(row)
+          break
         default:
-          break;
+          break
       }
     },
     deleteField(item) {
-      this.$confirm(this.$t("dataset.confirm_delete"), this.$t("chart.tips"), {
-        confirmButtonText: this.$t("dataset.confirm"),
-        cancelButtonText: this.$t("dataset.cancel"),
-        type: "warning",
+      this.$confirm(this.$t('dataset.confirm_delete'), this.$t('chart.tips'), {
+        confirmButtonText: this.$t('dataset.confirm'),
+        cancelButtonText: this.$t('dataset.cancel'),
+        type: 'warning'
       })
         .then(() => {
           post(
-            "/dataset/field/delete/" + item.id + "/" + item.tableId,
+            '/dataset/field/delete/' + item.id + '/' + item.tableId,
             null
           ).then((response) => {
             this.$message({
-              type: "success",
-              message: this.$t("chart.delete_success"),
-              showClose: true,
-            });
-            this.initField();
-            localStorage.setItem("reloadDsData", "true");
-          });
+              type: 'success',
+              message: this.$t('chart.delete_success'),
+              showClose: true
+            })
+            this.initField()
+            localStorage.setItem('reloadDsData', 'true')
+          })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
 
     syncField() {
       const options = {
-        title: "commons.prompt",
-        content: this.$t("deDataset.sure_to_synchronize"),
-        type: "primary",
+        title: 'commons.prompt',
+        content: this.$t('deDataset.sure_to_synchronize'),
+        type: 'primary',
         confirmButtonText: this.$t('commons.confirm'),
         cb: () => {
-          this.isSyncField = true;
-          post("/dataset/table/syncField/" + this.param.id, null).then(
+          this.isSyncField = true
+          post('/dataset/table/syncField/' + this.param.id, null).then(
             (response) => {
-              localStorage.setItem("reloadDsData", "true");
+              localStorage.setItem('reloadDsData', 'true')
               setTimeout(() => {
-                this.isSyncField = false;
-                this.initField();
+                this.isSyncField = false
+                this.initField()
                 // tips
-                let msg = "";
-                let type = "";
+                let msg = ''
+                let type = ''
                 if (response.data.mode === 0) {
-                  msg = this.$t("dataset.sync_success");
-                  type = "success";
+                  msg = this.$t('dataset.sync_success')
+                  type = 'success'
                 } else {
-                  msg = this.$t("dataset.sync_success_1");
-                  type = "warning";
+                  msg = this.$t('dataset.sync_success_1')
+                  type = 'warning'
                 }
                 this.$message({
                   type: type,
                   message: msg,
-                  showClose: true,
-                });
-              }, 500);
+                  showClose: true
+                })
+              }, 500)
             }
-          );
-        },
-      };
-      this.handlerConfirm(options);
+          )
+        }
+      }
+      this.handlerConfirm(options)
     },
 
     saveDimension() {
       const list = JSON.parse(
         JSON.stringify(this.tableFields.dimensionListData)
-      );
+      )
       if (this.dimensionChecked) {
         list.forEach((ele) => {
-          ele.checked = true;
-        });
+          ele.checked = true
+        })
       } else {
         list.forEach((ele) => {
-          ele.checked = false;
-        });
+          ele.checked = false
+        })
       }
       batchEdit(list).then((response) => {
-        this.initField();
-        localStorage.setItem("reloadDsData", "true");
-      });
+        this.initField()
+        localStorage.setItem('reloadDsData', 'true')
+      })
     },
     saveQuota() {
-      const list = JSON.parse(JSON.stringify(this.tableFields.quotaListData));
+      const list = JSON.parse(JSON.stringify(this.tableFields.quotaListData))
       if (this.quotaChecked) {
         list.forEach((ele) => {
-          ele.checked = true;
-        });
+          ele.checked = true
+        })
       } else {
         list.forEach((ele) => {
-          ele.checked = false;
-        });
+          ele.checked = false
+        })
       }
       batchEdit(list).then((response) => {
-        this.initField();
-        localStorage.setItem("reloadDsData", "true");
-      });
+        this.initField()
+        localStorage.setItem('reloadDsData', 'true')
+      })
     },
 
     dimensionChange() {
-      let checkedCount = 0;
+      let checkedCount = 0
       this.tableFields.dimensionListData.forEach((ele) => {
         if (ele.checked) {
-          checkedCount++;
+          checkedCount++
         }
-      });
+      })
       this.dimensionChecked =
-        checkedCount === this.tableFields.dimensionListData.length;
+        checkedCount === this.tableFields.dimensionListData.length
       this.dimensionIndeterminate =
         checkedCount > 0 &&
-        checkedCount < this.tableFields.dimensionListData.length;
+        checkedCount < this.tableFields.dimensionListData.length
     },
     quotaChange() {
-      let checkedCount = 0;
+      let checkedCount = 0
       this.tableFields.quotaListData.forEach((ele) => {
         if (ele.checked) {
-          checkedCount++;
+          checkedCount++
         }
-      });
-      this.quotaChecked =
-        checkedCount === this.tableFields.quotaListData.length;
+      })
+      this.quotaChecked = checkedCount === this.tableFields.quotaListData.length
       this.quotaIndeterminate =
-        checkedCount > 0 &&
-        checkedCount < this.tableFields.quotaListData.length;
+        checkedCount > 0 && checkedCount < this.tableFields.quotaListData.length
     },
 
     copyField(item) {
-      const param = { ...item };
-      param.id = null;
-      param.extField = 2;
+      const param = { ...item }
+      param.id = null
+      param.extField = 2
       param.originName =
-        item.extField === 2 ? item.originName : "[" + item.id + "]";
+        item.extField === 2 ? item.originName : '[' + item.id + ']'
       param.name = getFieldName(
         this.tableFields.dimensionListData.concat(
           this.tableFields.quotaListData
         ),
         item.name
-      );
-      param.dataeaseName = null;
-      param.lastSyncTime = null;
+      )
+      param.dataeaseName = null
+      param.lastSyncTime = null
       param.columnIndex =
         this.tableFields.dimensionListData.length +
-        this.tableFields.quotaListData.length;
+        this.tableFields.quotaListData.length
 
-      post("/dataset/field/save", param)
+      post('/dataset/field/save', param)
         .then((response) => {
-          this.initField();
-          localStorage.setItem("reloadDsData", "true");
+          this.initField()
+          localStorage.setItem('reloadDsData', 'true')
         })
         .catch((res) => {
-          this.initField();
-          localStorage.setItem("reloadDsData", "true");
-        });
-    },
-  },
-};
+          this.initField()
+          localStorage.setItem('reloadDsData', 'true')
+        })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -1144,7 +1142,7 @@ span {
   }
 
   ::v-deep.el-collapse-item__arrow::before {
-    content: "\E791";
+    content: '\E791';
   }
 
   ::v-deep.el-collapse-item__arrow.is-active {

@@ -12,12 +12,12 @@
     <div class="table-list" v-else>
       <p class="select-ds">
         <span
-          >{{ $t("deDataset.select_data_table ") }}
+          >{{ $t('deDataset.select_data_table ') }}
           <el-tooltip class="item" effect="dark" placement="right">
             <div slot="content">
-              {{ $t("dataset.excel_info_1") }}<br />
-              {{ $t("dataset.excel_info_2") }}<br />
-              {{ $t("dataset.excel_info_3") }}
+              {{ $t('dataset.excel_info_1') }}<br />
+              {{ $t('dataset.excel_info_2') }}<br />
+              {{ $t('dataset.excel_info_3') }}
             </div>
             <i class="el-icon-warning-outline"></i> </el-tooltip
         ></span>
@@ -42,7 +42,7 @@
           :loading="uploading"
           secondary
           :disabled="uploading"
-          >{{ $t("deDataset.upload_data") }}
+          >{{ $t('deDataset.upload_data') }}
         </deBtn>
       </el-upload>
       <div class="table-checkbox-list">
@@ -71,7 +71,7 @@
       ></el-empty>
       <template v-else>
         <div class="dataset">
-          <span class="name">{{ $t("dataset.name") }}</span>
+          <span class="name">{{ $t('dataset.name') }}</span>
           <el-input
             v-model="sheetObj.datasetName"
             :placeholder="$t('commons.name')"
@@ -81,7 +81,7 @@
         <div class="data">
           <div class="result-num">
             {{
-              `${$t("dataset.preview_show")} 1000 ${$t("dataset.preview_item")}`
+              `${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')}`
             }}
           </div>
 
@@ -177,256 +177,255 @@
 </template>
 
 <script>
-import { post } from "@/api/dataset/dataset";
-import { getToken } from "@/utils/auth";
-import i18n from "@/lang";
-import { $alert, $confirm } from "@/utils/message";
-import store from "@/store";
+import { post } from '@/api/dataset/dataset'
+import { getToken } from '@/utils/auth'
+import i18n from '@/lang'
+import { $alert, $confirm } from '@/utils/message'
+import store from '@/store'
 
-const token = getToken();
+const token = getToken()
 
 export default {
-  name: "AddExcel",
+  name: 'AddExcel',
   props: {
     param: {
       type: Object,
-      default: null,
+      default: null
     },
     tableId: {
       type: String,
-      default: "",
+      default: ''
     },
     editType: {
       type: Number,
-      default: 0,
-    },
+      default: 0
+    }
   },
   data() {
     return {
       showLeft: true,
-      errImg: require("@/assets/None_Select_ds.png"),
-      sheetObj: { datasetName: " ", fields: [] },
+      errImg: require('@/assets/None_Select_ds.png'),
+      sheetObj: { datasetName: ' ', fields: [] },
       sheets: [],
       data: [],
-      mode: "1",
+      mode: '1',
       height: 600,
       fileList: [],
       headers: {
         Authorization: token,
-        "Accept-Language": i18n.locale.replace("_", "-"),
+        'Accept-Language': i18n.locale.replace('_', '-')
       },
       baseUrl: process.env.VUE_APP_BASE_API,
-      path: "",
+      path: '',
       uploading: false,
       fieldOptions: [
-        { label: this.$t("dataset.text"), value: "TEXT" },
-        { label: this.$t("dataset.time"), value: "DATETIME" },
-        { label: this.$t("dataset.value"), value: "LONG" },
+        { label: this.$t('dataset.text'), value: 'TEXT' },
+        { label: this.$t('dataset.time'), value: 'DATETIME' },
+        { label: this.$t('dataset.value'), value: 'LONG' },
         {
           label:
-            this.$t("dataset.value") + "(" + this.$t("dataset.float") + ")",
-          value: "DOUBLE",
-        },
+            this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')',
+          value: 'DOUBLE'
+        }
       ],
       props: {
-        label: "excelLable",
-        children: "sheets",
+        label: 'excelLable',
+        children: 'sheets'
       },
       count: 1,
       excelData: [],
       defaultExpandedKeys: [],
-      defaultCheckedKeys: [],
-    };
+      defaultCheckedKeys: []
+    }
   },
   watch: {
     defaultCheckedKeys(val) {
-      const excelNum = this.excelData.map((ele) => ele.id);
+      const excelNum = this.excelData.map((ele) => ele.id)
       this.$emit(
-        "setTableNum",
+        'setTableNum',
         val.filter((ele) => !excelNum.includes(ele)).length
-      );
-    },
+      )
+    }
   },
   mounted() {
     window.onresize = () => {
-      this.calHeight();
-    };
-    this.calHeight();
+      this.calHeight()
+    }
+    this.calHeight()
   },
   created() {
     if (!this.param.tableId) {
-      this.param.tableId = "";
+      this.param.tableId = ''
     }
     if (!this.param.editType) {
-      this.param.editType = 0;
+      this.param.editType = 0
     }
   },
   methods: {
     handleCheckChange(data, checked, indeterminate) {
       if (checked) {
-        this.defaultCheckedKeys.push(data.id);
-        this.handleNodeClick(data);
+        this.defaultCheckedKeys.push(data.id)
+        this.handleNodeClick(data)
       } else {
         var index = this.defaultCheckedKeys.findIndex((id) => {
           if (id == data.id) {
-            return true;
+            return true
           }
-        });
-        this.defaultCheckedKeys.splice(index, 1);
+        })
+        this.defaultCheckedKeys.splice(index, 1)
       }
-      this.$emit("setTableNum", this.defaultCheckedKeys.length);
+      this.$emit('setTableNum', this.defaultCheckedKeys.length)
     },
     handleNodeClick(data) {
       if (data.sheet) {
-        this.sheetObj = data;
-        this.fields = data.fields;
-        this.jsonArray = data.jsonArray;
-        const datas = this.jsonArray;
-        this.$refs.plxTable.reloadData(datas);
+        this.sheetObj = data
+        this.fields = data.fields
+        this.jsonArray = data.jsonArray
+        const datas = this.jsonArray
+        this.$refs.plxTable.reloadData(datas)
       }
     },
     handleCommand(type, field) {
-      field.fieldType = type;
-      this.changeDatasetName();
+      field.fieldType = type
+      this.changeDatasetName()
     },
     changeDatasetName() {
       for (var i = 0; i < this.excelData.length; i++) {
         if (this.excelData[i].excelId == this.sheetObj.sheetExcelId) {
           for (var j = 0; j < this.excelData[i].sheets.length; j++) {
             if (this.excelData[i].sheets[j].excelId == this.sheetObj.sheetId) {
-              this.excelData[i].sheets[j] = this.sheetObj;
+              this.excelData[i].sheets[j] = this.sheetObj
             }
           }
         }
       }
     },
     calHeight() {
-      const that = this;
+      const that = this
       setTimeout(function () {
-        const currentHeight = document.documentElement.clientHeight;
-        that.height =
-          currentHeight - 56 - 30 - 26 - 25 - 35 - 10 - 37 - 20 - 10;
-      }, 10);
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 30 - 26 - 25 - 35 - 10 - 37 - 20 - 10
+      }, 10)
     },
     beforeUpload(file) {
-      this.uploading = true;
+      this.uploading = true
     },
     uploadFail(response, file, fileList) {
-      let myError = response.toString();
-      myError = myError.replace("Error: ", "");
+      let myError = response.toString()
+      myError = myError.replace('Error: ', '')
 
-      if (myError.indexOf("AuthenticationException") >= 0) {
-        const message = i18n.t("login.tokenError");
+      if (myError.indexOf('AuthenticationException') >= 0) {
+        const message = i18n.t('login.tokenError')
         $alert(
           message,
           () => {
-            store.dispatch("user/logout").then(() => {
-              location.reload();
-            });
+            store.dispatch('user/logout').then(() => {
+              location.reload()
+            })
           },
           {
-            confirmButtonText: i18n.t("login.re_login"),
-            showClose: false,
+            confirmButtonText: i18n.t('login.re_login'),
+            showClose: false
           }
-        );
-        return;
+        )
+        return
       }
 
       const errorMessage =
-        JSON.parse(myError).message + ", " + this.$t("dataset.parse_error");
+        JSON.parse(myError).message + ', ' + this.$t('dataset.parse_error')
 
-      this.path = "";
-      this.fields = [];
-      this.sheets = [];
-      this.data = [];
-      const datas = this.data;
-      this.$refs.plxTable.reloadData(datas);
-      this.fileList = [];
-      this.uploading = false;
+      this.path = ''
+      this.fields = []
+      this.sheets = []
+      this.data = []
+      const datas = this.data
+      this.$refs.plxTable.reloadData(datas)
+      this.fileList = []
+      this.uploading = false
       this.$message({
-        type: "error",
+        type: 'error',
         message: errorMessage,
-        showClose: true,
-      });
+        showClose: true
+      })
     },
     uploadSuccess(response, file, fileList) {
-      this.uploading = false;
-      this.excelData.push(response.data);
-      this.defaultExpandedKeys.push(response.data.id);
-      this.defaultCheckedKeys.push(response.data.sheets[0].id);
+      this.uploading = false
+      this.excelData.push(response.data)
+      this.defaultExpandedKeys.push(response.data.id)
+      this.defaultCheckedKeys.push(response.data.sheets[0].id)
       this.$nextTick(() => {
-        this.$refs.tree.setCheckedKeys(this.defaultCheckedKeys);
-      });
-      this.fileList = fileList;
+        this.$refs.tree.setCheckedKeys(this.defaultCheckedKeys)
+      })
+      this.fileList = fileList
     },
 
     save() {
-      var validate = true;
-      var selectedSheet = [];
-      var sheetFileMd5 = [];
-      var effectExtField = false;
-      var changeFiled = false;
-      var selectNode = this.$refs.tree.getCheckedNodes();
+      var validate = true
+      var selectedSheet = []
+      var sheetFileMd5 = []
+      var effectExtField = false
+      var changeFiled = false
+      var selectNode = this.$refs.tree.getCheckedNodes()
       for (var i = 0; i < selectNode.length; i++) {
         if (selectNode[i].sheet) {
-          if (!selectNode[i].datasetName || selectNode[i].datasetName === "") {
-            validate = false;
+          if (!selectNode[i].datasetName || selectNode[i].datasetName === '') {
+            validate = false
             this.$message({
               showClose: true,
-              message: this.$t("dataset.pls_input_name"),
-              type: "error",
-            });
-            return;
+              message: this.$t('dataset.pls_input_name'),
+              type: 'error'
+            })
+            return
           }
           if (selectNode[i].datasetName.length > 50 && !this.param.tableId) {
-            validate = false;
+            validate = false
             this.$message({
               showClose: true,
-              message: this.$t("dataset.char_can_not_more_50"),
-              type: "error",
-            });
-            return;
+              message: this.$t('dataset.char_can_not_more_50'),
+              type: 'error'
+            })
+            return
           }
           if (selectNode[i].effectExtField) {
-            effectExtField = true;
+            effectExtField = true
           }
           if (selectNode[i].changeFiled) {
-            changeFiled = true;
+            changeFiled = true
           }
-          selectedSheet.push(selectNode[i]);
-          sheetFileMd5.push(selectNode[i].fieldsMd5);
+          selectedSheet.push(selectNode[i])
+          sheetFileMd5.push(selectNode[i].fieldsMd5)
         }
       }
       if (selectedSheet.length == 0) {
-        this.$message.warning(this.$t("dataset.ple_select_excel"));
-        return;
+        this.$message.warning(this.$t('dataset.ple_select_excel'))
+        return
       }
       if (!validate) {
-        return;
+        return
       }
 
-      let table = {};
+      let table = {}
       if (!this.param.tableId) {
         table = {
           id: this.param.tableId,
           sceneId: this.param.id,
           dataSourceId: null,
-          type: "excel",
+          type: 'excel',
           sheets: selectedSheet,
           mode: parseInt(this.mode),
-          editType: 0,
-        };
+          editType: 0
+        }
       } else {
         table = {
           id: this.param.tableId,
           name: this.param.table.name,
           sceneId: this.param.id,
           dataSourceId: null,
-          type: "excel",
+          type: 'excel',
           sheets: selectedSheet,
           mode: parseInt(this.mode),
-          editType: this.param.editType ? this.param.editType : 0,
-        };
+          editType: this.param.editType ? this.param.editType : 0
+        }
       }
 
       if (
@@ -435,15 +434,15 @@ export default {
         (effectExtField || changeFiled)
       ) {
         var msg = effectExtField
-          ? i18n.t("dataset.task.effect_ext_field") +
-            ", " +
-            i18n.t("dataset.task.excel_replace_msg")
-          : i18n.t("dataset.task.excel_replace_msg");
+          ? i18n.t('dataset.task.effect_ext_field') +
+            ', ' +
+            i18n.t('dataset.task.excel_replace_msg')
+          : i18n.t('dataset.task.excel_replace_msg')
         $confirm(msg, () => {
-          this.saveExcelData(sheetFileMd5, table);
-        });
+          this.saveExcelData(sheetFileMd5, table)
+        })
       } else {
-        this.saveExcelData(sheetFileMd5, table);
+        this.saveExcelData(sheetFileMd5, table)
       }
     },
     saveExcelData(sheetFileMd5, table) {
@@ -452,60 +451,60 @@ export default {
         !this.param.tableId
       ) {
         this.$confirm(
-          this.$t("dataset.excel_replace_msg"),
-          this.$t("dataset.merge_title"),
+          this.$t('dataset.excel_replace_msg'),
+          this.$t('dataset.merge_title'),
           {
             distinguishCancelAndClose: true,
-            confirmButtonText: this.$t("dataset.merge"),
-            cancelButtonText: this.$t("dataset.no_merge"),
-            type: "info",
+            confirmButtonText: this.$t('dataset.merge'),
+            cancelButtonText: this.$t('dataset.no_merge'),
+            type: 'info'
           }
         )
           .then(() => {
-            table.mergeSheet = true;
-            post("/dataset/table/update", table).then((response) => {
-              this.$emit("saveSuccess", table);
-              this.cancel();
-            });
+            table.mergeSheet = true
+            post('/dataset/table/update', table).then((response) => {
+              this.$emit('saveSuccess', table)
+              this.cancel()
+            })
           })
           .catch((action) => {
-            if (action === "close") {
-              return;
+            if (action === 'close') {
+              return
             }
-            table.mergeSheet = false;
-            post("/dataset/table/update", table).then((response) => {
-              this.$emit("saveSuccess", table);
-              this.cancel();
-            });
-          });
+            table.mergeSheet = false
+            post('/dataset/table/update', table).then((response) => {
+              this.$emit('saveSuccess', table)
+              this.cancel()
+            })
+          })
       } else {
-        post("/dataset/table/update", table).then((response) => {
-          this.$emit("saveSuccess", table);
-          this.cancel();
-        });
+        post('/dataset/table/update', table).then((response) => {
+          this.$emit('saveSuccess', table)
+          this.cancel()
+        })
       }
     },
     cancel() {
-      this.dataReset();
+      this.dataReset()
       if (this.param.tableId) {
-        this.$emit("switchComponent", {
-          name: "ViewTable",
-          param: this.param.table,
-        });
+        this.$emit('switchComponent', {
+          name: 'ViewTable',
+          param: this.param.table
+        })
       } else {
-        this.$emit("switchComponent", { name: "" });
+        this.$emit('switchComponent', { name: '' })
       }
     },
 
     dataReset() {
-      this.searchTable = "";
-      this.options = [];
-      this.dataSource = "";
-      this.tables = [];
-      this.checkTableList = [];
-    },
-  },
-};
+      this.searchTable = ''
+      this.options = []
+      this.dataSource = ''
+      this.tables = []
+      this.checkTableList = []
+    }
+  }
+}
 </script>
 
 <style scoped>

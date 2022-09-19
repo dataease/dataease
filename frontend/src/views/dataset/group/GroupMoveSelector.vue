@@ -3,7 +3,7 @@
     <el-input
       :placeholder="$t('deDataset.search_by_name')"
       clearable
-      style="margin-bottom: 16px;"
+      style="margin-bottom: 16px"
       size="small"
       v-model="filterText"
     />
@@ -41,46 +41,46 @@
 </template>
 
 <script>
-import { groupTree } from "@/api/dataset/dataset";
+import { groupTree } from '@/api/dataset/dataset'
 
 export default {
-  name: "GroupMoveSelector",
+  name: 'GroupMoveSelector',
   props: {
     item: {
       type: Object,
-      required: true,
+      required: true
     },
     moveDir: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
       tData: [],
-      filterText: "",
-      currGroup: "",
+      filterText: '',
+      currGroup: '',
       groupForm: {
-        name: "",
-        pid: "0",
+        name: '',
+        pid: '0',
         level: 0,
-        type: "group",
+        type: 'group',
         children: [],
-        sort: "type desc,name asc",
+        sort: 'type desc,name asc'
       },
-      targetGroup: {},
-    };
+      targetGroup: {}
+    }
   },
   watch: {
     item: function () {
-      this.tree(this.groupForm);
+      this.tree(this.groupForm)
     },
     filterText(val) {
-      this.$refs.tree.filter(val);
-    },
+      this.$refs.tree.filter(val)
+    }
   },
   mounted() {
-    this.tree(this.groupForm);
+    this.tree(this.groupForm)
   },
   methods: {
     tree(group) {
@@ -88,43 +88,43 @@ export default {
         if (this.moveDir) {
           this.tData = [
             {
-              id: "0",
-              name: this.$t("dataset.dataset_group"),
-              pid: "0",
-              privileges: "grant,manage,use",
-              type: "group",
-              children: res.data,
-            },
-          ];
-          return;
+              id: '0',
+              name: this.$t('dataset.dataset_group'),
+              pid: '0',
+              privileges: 'grant,manage,use',
+              type: 'group',
+              children: res.data
+            }
+          ]
+          return
         }
-        this.tData = res.data;
-      });
+        this.tData = res.data
+      })
     },
     filterNode(value, data) {
-      if (!value) return true;
-      return data.name.indexOf(value) !== -1;
+      if (!value) return true
+      return data.name.indexOf(value) !== -1
     },
     // 高亮显示搜索内容
     highlights(name) {
-      if (!this.filterText) return name;
-      const replaceReg = new RegExp(this.filterText, "g"); // 匹配关键字正则
+      if (!this.filterText) return name
+      const replaceReg = new RegExp(this.filterText, 'g') // 匹配关键字正则
       const replaceString =
-        '<span class="select-tree-keywords">' + this.filterText + "</span>"; // 高亮替换v-html值
-      return name.replace(replaceReg, replaceString);
+        '<span class="select-tree-keywords">' + this.filterText + '</span>' // 高亮替换v-html值
+      return name.replace(replaceReg, replaceString)
     },
     nodeClick(data, node) {
-      this.targetGroup = data;
-      this.$emit("targetGroup", data);
+      this.targetGroup = data
+      this.$emit('targetGroup', data)
     },
     treeClass(data, node) {
       if (data.id === this.item.id) {
-        node.visible = false;
+        node.visible = false
       }
-      return "custom-tree-node";
-    },
-  },
-};
+      return 'custom-tree-node'
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -145,7 +145,7 @@ export default {
     overflow-y: auto;
   }
   .select-tree-keywords {
-    color: var(--primary, #3370FF);
+    color: var(--primary, #3370ff);
   }
 }
 </style>

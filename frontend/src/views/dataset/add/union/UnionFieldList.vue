@@ -2,7 +2,7 @@
   <div class="field-block-style">
     <div class="field-block-option">
       <span class="option-field"
-        >{{ $t("dataset.field_select") }}({{ checkedFields.length }}/{{
+        >{{ $t('dataset.field_select') }}({{ checkedFields.length }}/{{
           fieldList.length
         }})</span
       >
@@ -24,10 +24,8 @@
         >&nbsp;</el-checkbox
       >
       <span class="label-style">
-        <span class="field-origin-style">{{
-          $t("panel.column_name")
-        }}</span>
-        <span class="field-style">{{ $t("deDataset.original_name") }}</span>
+        <span class="field-origin-style">{{ $t('panel.column_name') }}</span>
+        <span class="field-style">{{ $t('deDataset.original_name') }}</span>
       </span>
     </div>
     <div class="field-block-body">
@@ -83,69 +81,69 @@
 
 <script>
 export default {
-  name: "UnionFieldList",
+  name: 'UnionFieldList',
   props: {
     fieldList: {
       type: Array,
-      required: true,
+      required: true
     },
     node: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
       checkAll: false,
       isIndeterminate: false,
       checkedFields: [],
-      search: "",
-      fieldSearchList: [],
-    };
+      search: '',
+      fieldSearchList: []
+    }
   },
   watch: {
     fieldList: function () {
-      this.fieldSearchList = JSON.parse(JSON.stringify(this.fieldList));
-      this.init();
+      this.fieldSearchList = JSON.parse(JSON.stringify(this.fieldList))
+      this.init()
     },
     search: function (val) {
-      if (val && val !== "") {
+      if (val && val !== '') {
         this.fieldSearchList = JSON.parse(
           JSON.stringify(this.fieldList)
         ).filter((ele) =>
           ele.originName.toLocaleLowerCase().includes(val.toLocaleLowerCase())
-        );
+        )
       } else {
-        this.fieldSearchList = JSON.parse(JSON.stringify(this.fieldList));
+        this.fieldSearchList = JSON.parse(JSON.stringify(this.fieldList))
       }
-    },
+    }
   },
   mounted() {
-    this.init();
+    this.init()
   },
   methods: {
     init() {
-      this.checkedFields = this.node.currentDsField;
-      this.handleCheckedCitiesChange(this.checkedFields);
+      this.checkedFields = this.node.currentDsField
+      this.handleCheckedCitiesChange(this.checkedFields)
     },
     handleCheckAllChange(val) {
-      this.checkedFields = val ? this.fieldList.map((ele) => ele.id) : [];
-      this.isIndeterminate = false;
-      this.returnCheckedFields();
+      this.checkedFields = val ? this.fieldList.map((ele) => ele.id) : []
+      this.isIndeterminate = false
+      this.returnCheckedFields()
     },
     handleCheckedCitiesChange(value) {
-      const checkedCount = value.length;
-      this.checkAll = checkedCount === this.fieldList.length;
+      const checkedCount = value.length
+      this.checkAll = checkedCount === this.fieldList.length
       this.isIndeterminate =
-        checkedCount > 0 && checkedCount < this.fieldList.length;
-      this.returnCheckedFields();
+        checkedCount > 0 && checkedCount < this.fieldList.length
+      this.returnCheckedFields()
     },
 
     returnCheckedFields() {
-      this.$emit("checkedFields", this.checkedFields);
-    },
-  },
-};
+      this.$emit('checkedFields', this.checkedFields)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -172,7 +170,7 @@ export default {
     align-items: center;
     font-size: 14px;
     font-weight: 500;
-    color: var(--deTextSecondary, #646A73);
+    color: var(--deTextSecondary, #646a73);
   }
   .field-style {
     width: 140px;
@@ -182,7 +180,7 @@ export default {
     white-space: pre;
     font-size: 14px;
     font-weight: 500;
-    color: var(--deTextSecondary, #646A73);
+    color: var(--deTextSecondary, #646a73);
   }
   .label-style {
     display: flex;
@@ -218,7 +216,7 @@ export default {
   .option-field {
     font-size: 14px;
     font-weight: 400;
-    color: var(--deTextSecondary, #646A73);
+    color: var(--deTextSecondary, #646a73);
   }
   .option-input {
     width: 200px;

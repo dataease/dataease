@@ -5,7 +5,7 @@
     </p>
     <div class="table-list" v-else>
       <p class="select-ds">
-        {{ $t("deDataset.select_data_source") }}
+        {{ $t('deDataset.select_data_source') }}
         <i @click="showLeft = false" class="el-icon-d-arrow-left"></i>
       </p>
       <el-select
@@ -23,7 +23,7 @@
           :value="item.id"
         />
       </el-select>
-      <p class="select-ds">{{ $t("datasource.data_table") }}</p>
+      <p class="select-ds">{{ $t('datasource.data_table') }}</p>
       <el-input
         v-model="searchTable"
         size="small"
@@ -45,7 +45,7 @@
           >
             <div
               :class="[
-                { active: activeName === t.name, 'not-allow': !t.enableCheck },
+                { active: activeName === t.name, 'not-allow': !t.enableCheck }
               ]"
               class="item"
               @click="setActiveName(t)"
@@ -97,7 +97,7 @@
       ></el-empty>
       <template v-else-if="activeName">
         <div class="dataset">
-          <span class="name">{{ $t("dataset.name") }}</span>
+          <span class="name">{{ $t('dataset.name') }}</span>
           <el-input
             @change="validateName"
             v-if="activeIndex !== -1"
@@ -110,12 +110,12 @@
             style="left: 107px; top: 52px"
             class="el-form-item__error"
           >
-            {{ $t("deDataset.already_exists") }}
+            {{ $t('deDataset.already_exists') }}
           </div>
         </div>
         <div class="data" v-loading="tableLoading">
           <span class="result-num">{{
-            `${$t("dataset.preview_show")} 1000 ${$t("dataset.preview_item")}`
+            `${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')}`
           }}</span>
           <div class="table-grid">
             <ux-grid
@@ -157,22 +157,22 @@
 </template>
 
 <script>
-import { listDatasource, post, isKettleRunning } from "@/api/dataset/dataset";
-import { engineMode, dbPreview } from "@/api/system/engine";
-import msgCfm from "@/components/msgCfm/index";
+import { listDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
+import { engineMode, dbPreview } from '@/api/system/engine'
+import msgCfm from '@/components/msgCfm/index'
 
 export default {
-  name: "AddDB",
+  name: 'AddDB',
   mixins: [msgCfm],
   props: {
     param: {
       type: Object,
-      default: null,
+      default: null
     },
     nameList: {
       type: Array,
-      default: () => [],
-    },
+      default: () => []
+    }
   },
   data() {
     return {
@@ -182,103 +182,103 @@ export default {
       height: 400,
       fields: [],
       fieldsData: [],
-      searchTable: "",
+      searchTable: '',
       options: [],
-      dataSource: "",
+      dataSource: '',
       tables: [],
       checkTableList: [],
-      mode: "0",
-      syncType: "sync_now",
+      mode: '0',
+      syncType: 'sync_now',
       tableData: [],
       kettleRunning: false,
       selectedDatasource: {},
-      engineMode: "local",
+      engineMode: 'local',
       disabledSync: true,
       avilibelTable: false,
-      noAvilibelTableImg: require("@/assets/None.png"),
-      noSelectTable: require("@/assets/None_Select_ds.png"),
-      activeName: "",
-    };
+      noAvilibelTableImg: require('@/assets/None.png'),
+      noSelectTable: require('@/assets/None_Select_ds.png'),
+      activeName: ''
+    }
   },
   computed: {
     activeIndex() {
-      return this.tableData.findIndex((ele) => ele.name === this.activeName);
+      return this.tableData.findIndex((ele) => ele.name === this.activeName)
     },
     checkDatasetName() {
       return this.tableData
         .filter((ele, index) => {
-          return this.checkTableList.includes(ele.name);
+          return this.checkTableList.includes(ele.name)
         })
-        .map((ele) => ele.datasetName);
-    },
+        .map((ele) => ele.datasetName)
+    }
   },
   watch: {
     checkTableList(val) {
-      this.validateName();
-      this.$emit("setTableNum", val.length);
+      this.validateName()
+      this.$emit('setTableNum', val.length)
     },
     dataSource(val) {
       if (val) {
-        this.checkTableList = [];
-        this.activeName = "";
-        const dsName = this.options.find((ele) => ele.id === val).name;
-        post("/datasource/getTables/" + val, {}).then((response) => {
-          this.tables = response.data;
-          this.tableData = JSON.parse(JSON.stringify(this.tables));
+        this.checkTableList = []
+        this.activeName = ''
+        const dsName = this.options.find((ele) => ele.id === val).name
+        post('/datasource/getTables/' + val, {}).then((response) => {
+          this.tables = response.data
+          this.tableData = JSON.parse(JSON.stringify(this.tables))
           this.tableData.forEach((ele) => {
-            this.$set(ele, "datasetName", dsName + "_" + ele.name);
-            this.$set(ele, "nameExsit", false);
-          });
-          this.avilibelTable = !this.tableData.some((ele) => ele.enableCheck);
-        });
+            this.$set(ele, 'datasetName', dsName + '_' + ele.name)
+            this.$set(ele, 'nameExsit', false)
+          })
+          this.avilibelTable = !this.tableData.some((ele) => ele.enableCheck)
+        })
         for (let i = 0; i < this.options.length; i++) {
           if (this.options[i].id === val) {
-            this.selectedDatasource = this.options[i];
-            this.mode = "0";
+            this.selectedDatasource = this.options[i]
+            this.mode = '0'
             if (
-              this.engineMode === "simple" ||
+              this.engineMode === 'simple' ||
               !this.kettleRunning ||
-              this.selectedDatasource.calculationMode === "DIRECT"
+              this.selectedDatasource.calculationMode === 'DIRECT'
             ) {
-              this.disabledSync = true;
+              this.disabledSync = true
             } else {
-              this.disabledSync = false;
+              this.disabledSync = false
             }
           }
         }
       }
     },
     searchTable(val) {
-      if (val && val !== "") {
+      if (val && val !== '') {
         this.tableData = JSON.parse(
           JSON.stringify(
             this.tables.filter((ele) => {
               return ele.name
                 .toLocaleLowerCase()
-                .includes(val.toLocaleLowerCase());
+                .includes(val.toLocaleLowerCase())
             })
           )
-        );
+        )
       } else {
-        this.tableData = JSON.parse(JSON.stringify(this.tables));
+        this.tableData = JSON.parse(JSON.stringify(this.tables))
       }
-    },
+    }
   },
   mounted() {
-    this.initDataSource();
+    this.initDataSource()
     window.onresize = () => {
-      this.calHeight();
-    };
-    this.calHeight();
+      this.calHeight()
+    }
+    this.calHeight()
   },
   activated() {
-    this.initDataSource();
+    this.initDataSource()
   },
   created() {
-    this.kettleState();
+    this.kettleState()
     engineMode().then((res) => {
-      this.engineMode = res.data;
-    });
+      this.engineMode = res.data
+    })
   },
   methods: {
     nameExsitValidator(activeIndex) {
@@ -287,110 +287,114 @@ export default {
         this.nameList.length === 0 ||
         !this.checkDatasetName.includes(this.tableData[activeIndex].datasetName)
       ) {
-        this.tableData[activeIndex].nameExsit = false;
-        return;
+        this.tableData[activeIndex].nameExsit = false
+        return
       }
       this.tableData[activeIndex].nameExsit =
         this.nameList
           .concat(this.checkDatasetName)
           .filter((name) => name === this.tableData[activeIndex].datasetName)
-          .length > 1;
+          .length > 1
     },
     validateName() {
       this.tableData.forEach((ele, index) => {
         if (this.checkDatasetName.includes(ele.datasetName)) {
-          this.nameExsitValidator(index);
+          this.nameExsitValidator(index)
         }
-      });
+      })
     },
     dbPreview(data) {
-      this.tableLoading = true;
-      dbPreview(data).then((res) => {
-        const { fields, data } = res.data;
-        this.fields = fields;
-        this.fieldsData = data;
-        this.$refs.plxTable.reloadData(data);
-      }).finally(() => {
-        this.tableLoading = false;
-      });
+      this.tableLoading = true
+      dbPreview(data)
+        .then((res) => {
+          const { fields, data } = res.data
+          this.fields = fields
+          this.fieldsData = data
+          this.$refs.plxTable.reloadData(data)
+        })
+        .finally(() => {
+          this.tableLoading = false
+        })
     },
     calHeight() {
-      const that = this;
+      const that = this
       setTimeout(function () {
-        const currentHeight = document.documentElement.clientHeight;
-        that.height = currentHeight - 195 - 54;
-      }, 10);
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 195 - 54
+      }, 10)
     },
     setActiveName({ name, datasourceId, enableCheck }) {
-      if (!enableCheck) return;
-      this.activeName = name;
+      if (!enableCheck) return
+      this.activeName = name
       this.dbPreview({
         dataSourceId: datasourceId,
-        info: JSON.stringify({ table: name }),
-      });
+        info: JSON.stringify({ table: name })
+      })
     },
     initDataSource() {
       listDatasource().then((response) => {
-        this.options = response.data.filter((item) => item.type !== "api");
-      });
+        this.options = response.data.filter((item) => item.type !== 'api')
+      })
     },
     kettleState() {
       isKettleRunning().then((res) => {
-        this.kettleRunning = res.data;
-      });
+        this.kettleRunning = res.data
+      })
     },
     showTableNameWithComment(t) {
       if (t.remark) {
-        return `${t.name}(${t.remark})`;
+        return `${t.name}(${t.remark})`
       } else {
-        return `${t.name}`;
+        return `${t.name}`
       }
     },
     save() {
       if (this.tableData.some((ele) => ele.nameExsit)) {
-        this.openMessageSuccess("deDataset.cannot_be_duplicate", "error");
-        return;
+        this.openMessageSuccess('deDataset.cannot_be_duplicate', 'error')
+        return
       }
-      this.loading = true;
-      const sceneId = this.param.id;
-      const dataSourceId = this.dataSource;
-      const tables = [];
-      const mode = this.mode;
-      const syncType = this.syncType;
+      this.loading = true
+      const sceneId = this.param.id
+      const dataSourceId = this.dataSource
+      const tables = []
+      const mode = this.mode
+      const syncType = this.syncType
       this.checkTableList.forEach((name) => {
         const datasetName = this.tableData.find(
           (ele) => ele.name === name
-        ).datasetName;
+        ).datasetName
         tables.push({
           name: datasetName,
           sceneId: sceneId,
           dataSourceId: dataSourceId,
-          type: "db",
+          type: 'db',
           syncType: syncType,
           mode: parseInt(mode),
-          info: JSON.stringify({ table: name }),
-        });
-      });
-      post("/dataset/table/batchAdd", tables).then((response) => {
-        this.openMessageSuccess('deDataset.set_saved_successfully')
-        this.cancel();
-      }).finally(() => {
-        this.loading = false;
-      });
+          info: JSON.stringify({ table: name })
+        })
+      })
+      post('/dataset/table/batchAdd', tables)
+        .then((response) => {
+          this.openMessageSuccess('deDataset.set_saved_successfully')
+          this.cancel()
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
 
     cancel() {
       this.$router.back()
     },
     dataReset() {
-      this.searchTable = "";
-      this.options = [];
-      this.dataSource = "";
-      this.tables = [];
-      this.checkTableList = [];
-    },
-  },
-};
+      this.searchTable = ''
+      this.options = []
+      this.dataSource = ''
+      this.tables = []
+      this.checkTableList = []
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -559,7 +563,7 @@ export default {
 <style lang="scss">
 .db-select-pop {
   .selected::after {
-    content: "";
+    content: '';
     width: 6px;
     height: 12px;
     position: absolute;

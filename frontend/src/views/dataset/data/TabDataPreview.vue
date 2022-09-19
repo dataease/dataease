@@ -3,26 +3,27 @@
     <div class="table-count">
       <span v-if="['excel', 'custom', 'union'].includes(table.type)">
         <span v-if="page.total <= currentPage.show">
-          {{ $t("dataset.preview_total") }}
+          {{ $t('dataset.preview_total') }}
           <span class="span-number">{{ page.total }}</span>
-          {{ $t("dataset.preview_item") }}
+          {{ $t('dataset.preview_item') }}
         </span>
         <span v-if="page.total > currentPage.show">
-          {{ $t("dataset.preview_show") }}
+          {{ $t('dataset.preview_show') }}
           <span class="span-number">{{ currentPage.show }}</span>
-          {{ $t("dataset.preview_item") }}
-          ，{{ $t("dataset.preview_total") }}
+          {{ $t('dataset.preview_item') }}
+          ，{{ $t('dataset.preview_total') }}
           <span class="span-number">{{ page.total }}</span>
-          {{ $t("dataset.preview_item") }}
+          {{ $t('dataset.preview_item') }}
         </span>
       </span>
       <span v-if="['db', 'sql'].includes(table.type)">
-        {{ $t("dataset.preview_show") }}
+        {{ $t('dataset.preview_show') }}
         <span class="span-number">{{ page.total }}</span>
-        {{ $t("dataset.preview_item") }}
+        {{ $t('dataset.preview_item') }}
       </span>
       <span class="title-text" style="width: 100px"
-        >{{ $t("deDataset.display") }} {{ form.row }} {{ $t("deDataset.that_s_ok") }}</span
+        >{{ $t('deDataset.display') }} {{ form.row }}
+        {{ $t('deDataset.that_s_ok') }}</span
       >
       <el-popover
         popper-class="de-set-count de-card-dropdown"
@@ -31,12 +32,12 @@
         ref="setCount"
         trigger="click"
       >
-        {{ $t("deDataset.show_rows") }}
+        {{ $t('deDataset.show_rows') }}
         <el-input size="small" v-model="rowNum"> </el-input>
         <div class="foot">
-          <deBtn @click="cancel" secondary>{{ $t("commons.cancel") }} </deBtn>
+          <deBtn @click="cancel" secondary>{{ $t('commons.cancel') }} </deBtn>
           <deBtn type="primary" @click="searchRow">
-            {{ $t("commons.confirm") }}
+            {{ $t('commons.confirm') }}
           </deBtn>
         </div>
         <i slot="reference" class="el-icon-edit"></i>
@@ -87,32 +88,32 @@
 
 <script>
 export default {
-  name: "TabDataPreview",
+  name: 'TabDataPreview',
   props: {
     table: {
       type: Object,
-      required: true,
+      required: true
     },
     param: {
       type: Object,
-      required: true,
+      required: true
     },
     fields: {
       type: Array,
-      required: true,
+      required: true
     },
     data: {
       type: Array,
-      required: true,
+      required: true
     },
     form: {
       type: Object,
-      required: true,
+      required: true
     },
     page: {
       type: Object,
-      required: false,
-    },
+      required: false
+    }
   },
   data() {
     return {
@@ -121,71 +122,71 @@ export default {
       currentPage: {
         page: 1,
         pageSize: parseInt(this.form.row),
-        show: parseInt(this.form.row),
-      },
-    };
+        show: parseInt(this.form.row)
+      }
+    }
   },
   watch: {
     data() {
-      const datas = this.data;
-      this.$refs.plxTable.reloadData(datas);
+      const datas = this.data
+      this.$refs.plxTable.reloadData(datas)
     },
     page() {
       if (this.page.total < parseInt(this.form.row)) {
-        this.currentPage.show = this.page.total;
+        this.currentPage.show = this.page.total
       } else {
-        this.currentPage.show = parseInt(this.form.row);
+        this.currentPage.show = parseInt(this.form.row)
       }
-    },
+    }
   },
   mounted() {
-    this.init();
+    this.init()
   },
   methods: {
     searchRow() {
-      this.form.row = this.rowNum;
+      this.form.row = this.rowNum
       this.reSearch()
     },
     init() {
-      this.calHeight();
+      this.calHeight()
     },
     cancel() {
       this.$refs.setCount.doClose()
     },
     calHeight() {
-      const that = this;
+      const that = this
       setTimeout(function () {
-        const currentHeight = document.documentElement.clientHeight;
-        that.height = currentHeight - 215;
-      }, 10);
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 215
+      }, 10)
     },
     reSearch() {
       if (
         !this.form.row ||
-        this.form.row === "" ||
+        this.form.row === '' ||
         this.form.row.length > 4 ||
         isNaN(Number(this.form.row)) ||
-        String(this.form.row).includes(".") ||
+        String(this.form.row).includes('.') ||
         parseInt(this.form.row) < 1
       ) {
         this.$message({
-          message: this.$t("dataset.pls_input_less_5"),
-          type: "error",
-          showClose: true,
-        });
-        return;
+          message: this.$t('dataset.pls_input_less_5'),
+          type: 'error',
+          showClose: true
+        })
+        return
       }
-      this.currentPage.show = parseInt(this.form.row);
-      this.currentPage.pageSize = parseInt(this.form.row);
-      this.currentPage.page = 1;
-      this.$emit("reSearch", { form: this.form, page: this.currentPage });
+      this.currentPage.show = parseInt(this.form.row)
+      this.currentPage.pageSize = parseInt(this.form.row)
+      this.currentPage.page = 1
+      this.$emit('reSearch', { form: this.form, page: this.currentPage })
     },
     pageChange(val) {
-      this.currentPage.page = val;
-      this.$emit("reSearch", { form: this.form, page: this.currentPage });
-    },
-  },
-};
+      this.currentPage.page = val
+      this.$emit('reSearch', { form: this.form, page: this.currentPage })
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 .table-count {
@@ -206,7 +207,7 @@ export default {
   font-family: PingFang SC;
   font-size: 14px;
   font-weight: 400;
-  color: var(--deTextPrimary, #1F2329);
+  color: var(--deTextPrimary, #1f2329);
   text-align: left;
 
   .el-input {

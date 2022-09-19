@@ -66,7 +66,7 @@
             class="de-text-btn"
             @click="variableMgm"
           >
-            {{ $t("sql_variable.variable_mgm") }}
+            {{ $t('sql_variable.variable_mgm') }}
           </el-button>
           <el-button
             icon="el-icon-video-play"
@@ -75,7 +75,7 @@
             size="small"
             @click="getSQLPreview"
           >
-            {{ $t("deDataset.run_a_query") }}
+            {{ $t('deDataset.run_a_query') }}
           </el-button>
         </el-col>
       </el-row>
@@ -93,9 +93,9 @@
     </div>
     <div class="sql-result">
       <div class="sql-title">
-        {{ $t("deDataset.running_results") }}
+        {{ $t('deDataset.running_results') }}
         <span class="result-num">{{
-          `(${$t("dataset.preview_show")} 1000 ${$t("dataset.preview_item")})`
+          `(${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')})`
         }}</span>
 
         <span @mousedown="mousedownDrag" class="drag"></span>
@@ -135,9 +135,9 @@
         direction="rtl"
       >
         <div class="content">
-          <i class="el-icon-info"></i> {{ $t("dataset.sql_variable_limit_1")
+          <i class="el-icon-info"></i> {{ $t('dataset.sql_variable_limit_1')
           }}<br />
-          {{ $t("dataset.sql_variable_limit_2") }}<br />
+          {{ $t('dataset.sql_variable_limit_2') }}<br />
         </div>
         <el-table :data="variablesTmp">
           <el-table-column prop="variableName" :label="$t('panel.param_name')">
@@ -164,7 +164,7 @@
                       'DATETIME-YEAR',
                       'DATETIME-YEAR-MONTH',
                       'DATETIME',
-                      'DATETIME-YEAR-MONTH-DAY',
+                      'DATETIME-YEAR-MONTH-DAY'
                     ].includes(scope.row.type[0])
                   "
                   icon-class="field_time"
@@ -253,10 +253,10 @@
         </el-table>
         <div class="de-foot">
           <deBtn secondary @click="closeVariableMgm">{{
-            $t("dataset.cancel")
+            $t('dataset.cancel')
           }}</deBtn>
           <deBtn type="primary" @click="saveVariable()">{{
-            $t("dataset.confirm")
+            $t('dataset.confirm')
           }}</deBtn>
         </div>
       </el-drawer>
@@ -265,36 +265,36 @@
 </template>
 
 <script>
-import { post, listDatasource, isKettleRunning } from "@/api/dataset/dataset";
-import { codemirror } from "vue-codemirror";
-import { getTable } from "@/api/dataset/dataset";
-import { Base64 } from "js-base64";
+import { post, listDatasource, isKettleRunning } from '@/api/dataset/dataset'
+import { codemirror } from 'vue-codemirror'
+import { getTable } from '@/api/dataset/dataset'
+import { Base64 } from 'js-base64'
 // 核心样式
-import "codemirror/lib/codemirror.css";
+import 'codemirror/lib/codemirror.css'
 // 引入主题后还需要在 options 中指定主题才会生效
-import "codemirror/theme/solarized.css";
-import "codemirror/mode/sql/sql.js";
+import 'codemirror/theme/solarized.css'
+import 'codemirror/mode/sql/sql.js'
 // require active-line.js
-import "codemirror/addon/selection/active-line.js";
+import 'codemirror/addon/selection/active-line.js'
 // closebrackets
-import "codemirror/addon/edit/closebrackets.js";
+import 'codemirror/addon/edit/closebrackets.js'
 // keyMap
-import "codemirror/mode/clike/clike.js";
-import "codemirror/addon/edit/matchbrackets.js";
-import "codemirror/addon/comment/comment.js";
-import "codemirror/addon/dialog/dialog.js";
-import "codemirror/addon/dialog/dialog.css";
-import "codemirror/addon/search/searchcursor.js";
-import "codemirror/addon/search/search.js";
-import "codemirror/keymap/emacs.js";
+import 'codemirror/mode/clike/clike.js'
+import 'codemirror/addon/edit/matchbrackets.js'
+import 'codemirror/addon/comment/comment.js'
+import 'codemirror/addon/dialog/dialog.js'
+import 'codemirror/addon/dialog/dialog.css'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/search.js'
+import 'codemirror/keymap/emacs.js'
 // 引入代码自动提示插件
-import "codemirror/addon/hint/show-hint.css";
-import "codemirror/addon/hint/sql-hint";
-import "codemirror/addon/hint/show-hint";
-import { engineMode } from "@/api/system/engine";
+import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/addon/hint/sql-hint'
+import 'codemirror/addon/hint/show-hint'
+import { engineMode } from '@/api/system/engine'
 
 export default {
-  name: "AddSQL",
+  name: 'AddSQL',
   components: { codemirror },
   props: {
     param: {
@@ -304,352 +304,352 @@ export default {
   },
   data() {
     return {
-      dataSource: "",
+      dataSource: '',
       errMsg: false,
       options: [],
-      sql: "",
+      sql: '',
       sqlOption: {
         tabSize: 2,
         styleActiveLine: true,
         lineNumbers: true,
         line: true,
-        mode: "text/x-sql",
-        theme: "solarized",
+        mode: 'text/x-sql',
+        theme: 'solarized',
         hintOptions: {
           // 自定义提示选项
-          completeSingle: false, // 当匹配只有一项的时候是否自动补全
-        },
+          completeSingle: false // 当匹配只有一项的时候是否自动补全
+        }
       },
       data: [],
-      errImg: require("@/assets/error.png"),
+      errImg: require('@/assets/error.png'),
       sqlHeight: 330,
       fields: [],
-      mode: "0",
-      syncType: "sync_now",
+      mode: '0',
+      syncType: 'sync_now',
       height: 500,
       kettleRunning: false,
       selectedDatasource: {},
-      engineMode: "local",
+      engineMode: 'local',
       disabledSync: true,
       showVariableMgm: false,
-      dialogTitle: "",
+      dialogTitle: '',
       variables: [],
       variablesTmp: [],
       fieldOptions: [
-        { label: this.$t("dataset.text"), value: "TEXT" },
-        { label: this.$t("dataset.value"), value: "LONG" },
+        { label: this.$t('dataset.text'), value: 'TEXT' },
+        { label: this.$t('dataset.value'), value: 'LONG' },
         {
           label:
-            this.$t("dataset.value") + "(" + this.$t("dataset.float") + ")",
-          value: "DOUBLE",
+            this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')',
+          value: 'DOUBLE'
         },
-        { label: this.$t("dataset.time_year"), value: "DATETIME-YEAR" },
+        { label: this.$t('dataset.time_year'), value: 'DATETIME-YEAR' },
         {
-          label: this.$t("dataset.time_year_month"),
-          value: "DATETIME-YEAR-MONTH",
+          label: this.$t('dataset.time_year_month'),
+          value: 'DATETIME-YEAR-MONTH',
           children: [
             {
-              value: "yyyy-MM",
-              label: "YYYY-MM",
+              value: 'yyyy-MM',
+              label: 'YYYY-MM'
             },
             {
-              value: "yyyy/MM",
-              label: "YYYY/MM",
-            },
-          ],
+              value: 'yyyy/MM',
+              label: 'YYYY/MM'
+            }
+          ]
         },
         {
-          label: this.$t("dataset.time_year_month_day"),
-          value: "DATETIME-YEAR-MONTH-DAY",
+          label: this.$t('dataset.time_year_month_day'),
+          value: 'DATETIME-YEAR-MONTH-DAY',
           children: [
             {
-              value: "yyyy-MM-dd",
-              label: "YYYY-MM-DD",
+              value: 'yyyy-MM-dd',
+              label: 'YYYY-MM-DD'
             },
             {
-              value: "yyyy/MM/dd",
-              label: "YYYY/MM/DD",
-            },
-          ],
+              value: 'yyyy/MM/dd',
+              label: 'YYYY/MM/DD'
+            }
+          ]
         },
         {
-          label: this.$t("dataset.time_all"),
-          value: "DATETIME",
+          label: this.$t('dataset.time_all'),
+          value: 'DATETIME',
           children: [
             {
-              value: "yyyy-MM-dd HH:mm:ss",
-              label: "YYYY-MM-DD HH:MI:SS",
+              value: 'yyyy-MM-dd HH:mm:ss',
+              label: 'YYYY-MM-DD HH:MI:SS'
             },
             {
-              value: "yyyy/MM/dd HH:mm:ss",
-              label: "YYYY/MM/DD HH:MI:SS",
-            },
-          ],
-        },
-      ],
-    };
+              value: 'yyyy/MM/dd HH:mm:ss',
+              label: 'YYYY/MM/DD HH:MI:SS'
+            }
+          ]
+        }
+      ]
+    }
   },
   computed: {
     codemirror() {
-      return this.$refs.myCm.codemirror;
-    },
+      return this.$refs.myCm.codemirror
+    }
   },
   watch: {
-    "param.tableId": {
+    'param.tableId': {
       handler: function () {
-        this.resetComponent();
-        this.initTableInfo();
-      },
-    },
+        this.resetComponent()
+        this.initTableInfo()
+      }
+    }
   },
   mounted() {
     window.onresize = () => {
-      this.calHeight();
-    };
-    this.calHeight();
-    this.initDataSource();
-    this.$refs.myCm.codemirror.on("keypress", () => {
-      this.$refs.myCm.codemirror.showHint();
-    });
+      this.calHeight()
+    }
+    this.calHeight()
+    this.initDataSource()
+    this.$refs.myCm.codemirror.on('keypress', () => {
+      this.$refs.myCm.codemirror.showHint()
+    })
 
-    this.initTableInfo();
+    this.initTableInfo()
   },
   created() {
-    this.kettleState();
+    this.kettleState()
     engineMode().then((res) => {
-      this.engineMode = res.data;
-    });
+      this.engineMode = res.data
+    })
   },
   methods: {
     mousedownDrag() {
       document
-        .querySelector(".dataset-sql")
-        .addEventListener("mousemove", this.caculateHeight);
+        .querySelector('.dataset-sql')
+        .addEventListener('mousemove', this.caculateHeight)
     },
     mouseupDrag() {
       document
-        .querySelector(".dataset-sql")
-        .removeEventListener("mousemove", this.caculateHeight);
+        .querySelector('.dataset-sql')
+        .removeEventListener('mousemove', this.caculateHeight)
     },
     caculateHeight(e) {
-      this.sqlHeight = e.pageY - 56;
+      this.sqlHeight = e.pageY - 56
     },
     kettleState() {
       isKettleRunning().then((res) => {
-        this.kettleRunning = res.data;
-      });
+        this.kettleRunning = res.data
+      })
     },
     changeDatasource() {
       for (let i = 0; i < this.options.length; i++) {
         if (this.options[i].id === this.dataSource) {
-          this.selectedDatasource = this.options[i];
-          this.mode = "0";
+          this.selectedDatasource = this.options[i]
+          this.mode = '0'
           if (
-            this.engineMode === "simple" ||
+            this.engineMode === 'simple' ||
             !this.kettleRunning ||
-            this.selectedDatasource.calculationMode === "DIRECT"
+            this.selectedDatasource.calculationMode === 'DIRECT'
           ) {
-            this.disabledSync = true;
+            this.disabledSync = true
           } else {
-            this.disabledSync = false;
+            this.disabledSync = false
           }
         }
       }
     },
     calHeight() {
-      const that = this;
+      const that = this
       setTimeout(function () {
-        const currentHeight = document.documentElement.clientHeight;
+        const currentHeight = document.documentElement.clientHeight
         that.height =
-          currentHeight - 56 - 30 - 26 - 25 - 43 - 160 - 10 - 37 - 20 - 10 - 16;
-      }, 10);
+          currentHeight - 56 - 30 - 26 - 25 - 43 - 160 - 10 - 37 - 20 - 10 - 16
+      }, 10)
     },
     initDataSource() {
       listDatasource().then((response) => {
-        this.options = response.data.filter((item) => item.type !== "api");
-      });
+        this.options = response.data.filter((item) => item.type !== 'api')
+      })
     },
 
     initTableInfo() {
       if (this.param.tableId) {
         getTable(this.param.tableId).then((response) => {
-          const table = response.data;
-          this.dataSource = table.dataSourceId;
-          this.mode = table.mode + "";
+          const table = response.data
+          this.dataSource = table.dataSourceId
+          this.mode = table.mode + ''
 
           if (JSON.parse(table.info).isBase64Encryption) {
-            this.sql = Base64.decode(JSON.parse(table.info).sql);
+            this.sql = Base64.decode(JSON.parse(table.info).sql)
           } else {
             this.sql = JSON.parse(
-              table.info.replace(/\n/g, "\\n").replace(/\r/g, "\\r")
-            ).sql;
+              table.info.replace(/\n/g, '\\n').replace(/\r/g, '\\r')
+            ).sql
           }
-          this.variables = JSON.parse(table.sqlVariableDetails);
-          this.getSQLPreview();
-        });
+          this.variables = JSON.parse(table.sqlVariableDetails)
+          this.getSQLPreview()
+        })
       }
     },
 
     getSQLPreview() {
-      this.errMsg = false;
-      if (!this.dataSource || this.datasource === "") {
+      this.errMsg = false
+      if (!this.dataSource || this.datasource === '') {
         this.$message({
           showClose: true,
-          message: this.$t("dataset.pls_slc_data_source"),
-          type: "error",
-        });
-        return;
+          message: this.$t('dataset.pls_slc_data_source'),
+          type: 'error'
+        })
+        return
       }
-      this.parseVariable();
-      post("/dataset/table/sqlPreview", {
+      this.parseVariable()
+      post('/dataset/table/sqlPreview', {
         dataSourceId: this.dataSource,
-        type: "sql",
+        type: 'sql',
         sqlVariableDetails: JSON.stringify(this.variables),
         info: JSON.stringify({
           sql: Base64.encode(this.sql.trim()),
-          isBase64Encryption: true,
-        }),
+          isBase64Encryption: true
+        })
       })
         .then((response) => {
-          this.fields = response.data.fields;
-          this.data = response.data.data;
-          const datas = this.data;
-          this.$refs.plxTable.reloadData(datas);
+          this.fields = response.data.fields
+          this.data = response.data.data
+          const datas = this.data
+          this.$refs.plxTable.reloadData(datas)
         })
         .catch((err) => {
-          this.errMsg = true;
-        });
+          this.errMsg = true
+        })
     },
 
     save() {
-      if (!this.dataSource || this.datasource === "") {
+      if (!this.dataSource || this.datasource === '') {
         this.$message({
           showClose: true,
-          message: this.$t("dataset.pls_slc_data_source"),
-          type: "error",
-        });
-        return;
+          message: this.$t('dataset.pls_slc_data_source'),
+          type: 'error'
+        })
+        return
       }
-      if (!this.table.name || this.table.name === "") {
+      if (!this.table.name || this.table.name === '') {
         this.$message({
           showClose: true,
-          message: this.$t("dataset.pls_input_name"),
-          type: "error",
-        });
-        return;
+          message: this.$t('dataset.pls_input_name'),
+          type: 'error'
+        })
+        return
       }
       if (this.table.name.length > 50) {
         this.$message({
           showClose: true,
-          message: this.$t("dataset.char_can_not_more_50"),
-          type: "error",
-        });
-        return;
+          message: this.$t('dataset.char_can_not_more_50'),
+          type: 'error'
+        })
+        return
       }
-      this.parseVariable();
+      this.parseVariable()
       const table = {
         id: this.param.tableId,
         name: this.table.name,
         sceneId: this.param.id,
         dataSourceId: this.dataSource,
-        type: "sql",
+        type: 'sql',
         syncType: this.syncType,
         mode: parseInt(this.mode),
         sqlVariableDetails: JSON.stringify(this.variables),
         info: JSON.stringify({
           sql: Base64.encode(this.sql.trim()),
-          isBase64Encryption: true,
-        }),
-      };
-      post("/dataset/table/update", table).then((response) => {
-        this.$emit("saveSuccess", table);
-        this.cancel();
-      });
+          isBase64Encryption: true
+        })
+      }
+      post('/dataset/table/update', table).then((response) => {
+        this.$emit('saveSuccess', table)
+        this.cancel()
+      })
     },
 
     cancel() {
       if (this.param.tableId) {
-        this.$emit("switchComponent", {
-          name: "ViewTable",
-          param: this.param.table,
-        });
+        this.$emit('switchComponent', {
+          name: 'ViewTable',
+          param: this.param.table
+        })
       } else {
-        this.$emit("switchComponent", { name: "" });
+        this.$emit('switchComponent', { name: '' })
       }
     },
 
     showSQL(val) {
-      this.sql = val || "";
+      this.sql = val || ''
     },
     onCmReady(cm) {
-      this.codemirror.setSize("-webkit-fill-available", "auto");
+      this.codemirror.setSize('-webkit-fill-available', 'auto')
     },
     onCmFocus(cm) {},
     onCmCodeChange(newCode) {
-      this.sql = newCode;
-      this.$emit("codeChange", this.sql);
+      this.sql = newCode
+      this.$emit('codeChange', this.sql)
     },
 
     resetComponent() {
-      this.dataSource = "";
-      this.table.name = "";
-      this.sql = "";
-      this.data = [];
-      this.fields = [];
-      this.mode = "0";
-      this.syncType = "sync_now";
+      this.dataSource = ''
+      this.table.name = ''
+      this.sql = ''
+      this.data = []
+      this.fields = []
+      this.mode = '0'
+      this.syncType = 'sync_now'
     },
 
     variableMgm() {
-      this.parseVariable();
-      this.dialogTitle = this.$t("sql_variable.variable_mgm") + " ";
-      this.showVariableMgm = true;
+      this.parseVariable()
+      this.dialogTitle = this.$t('sql_variable.variable_mgm') + ' '
+      this.showVariableMgm = true
     },
     parseVariable() {
-      this.variablesTmp = [];
-      var reg = new RegExp("\\${(.*?)}", "gim");
-      var match = this.sql.match(reg);
-      const names = [];
+      this.variablesTmp = []
+      var reg = new RegExp('\\${(.*?)}', 'gim')
+      var match = this.sql.match(reg)
+      const names = []
       if (match !== null) {
         for (let index = 0; index < match.length; index++) {
-          var name = match[index].substring(2, match[index].length - 1);
+          var name = match[index].substring(2, match[index].length - 1)
           if (names.indexOf(name) < 0) {
-            names.push(name);
-            var obj = undefined;
+            names.push(name)
+            var obj = undefined
             for (let i = 0; i < this.variables.length; i++) {
               if (this.variables[i].variableName === name) {
-                obj = this.variables[i];
+                obj = this.variables[i]
               }
             }
             if (obj === undefined) {
               obj = {
                 variableName: name,
-                alias: "",
+                alias: '',
                 type: [],
                 required: false,
-                defaultValue: "",
-                details: "",
-              };
-              obj.type.push("TEXT");
+                defaultValue: '',
+                details: ''
+              }
+              obj.type.push('TEXT')
             }
-            this.variablesTmp.push(obj);
+            this.variablesTmp.push(obj)
           }
         }
       }
-      this.variables = JSON.parse(JSON.stringify(this.variablesTmp)).concat();
+      this.variables = JSON.parse(JSON.stringify(this.variablesTmp)).concat()
     },
     closeVariableMgm() {
-      this.showVariableMgm = false;
+      this.showVariableMgm = false
     },
     saveVariable() {
-      this.variables = JSON.parse(JSON.stringify(this.variablesTmp)).concat();
-      this.showVariableMgm = false;
+      this.variables = JSON.parse(JSON.stringify(this.variablesTmp)).concat()
+      this.showVariableMgm = false
     },
     variableTypeChange(row) {
-      row.defaultValue = "";
-    },
-  },
-};
+      row.defaultValue = ''
+    }
+  }
+}
 </script>
 
 <style scoped>

@@ -6,12 +6,12 @@
           type="primary"
           icon="el-icon-circle-plus-outline"
           @click="() => addTask()"
-          >{{ $t("dataset.add_task") }}</deBtn
+          >{{ $t('dataset.add_task') }}</deBtn
         >
       </el-col>
       <el-col style="text-align: right" :span="12">
         <el-button type="text" icon="el-icon-document" @click="showConfig">
-          {{ $t("dataset.task.record") }}
+          {{ $t('dataset.task.record') }}
         </el-button>
       </el-col>
     </el-row>
@@ -38,13 +38,13 @@
         >
           <template slot-scope="scope">
             <span v-if="scope.row.rate === 'SIMPLE'">{{
-              $t("dataset.execute_once")
+              $t('dataset.execute_once')
             }}</span>
             <span v-if="scope.row.rate === 'CRON'">{{
-              $t("dataset.cron_config")
+              $t('dataset.cron_config')
             }}</span>
             <span v-if="scope.row.rate === 'SIMPLE_CRON'">{{
-              $t("dataset.simple_cron")
+              $t('dataset.simple_cron')
             }}</span>
           </template>
         </el-table-column>
@@ -136,7 +136,7 @@
               style="margin-left: -4px"
               type="text"
               >{{
-                $t(disableEdit(scope.row) ? "auth.view" : "commons.edit")
+                $t(disableEdit(scope.row) ? 'auth.view' : 'commons.edit')
               }}</el-button
             >
             <el-dropdown
@@ -157,26 +157,26 @@
                     :disabled="disableExec(scope.row)"
                     command="exec"
                   >
-                    {{ $t("components.run_once") }}
+                    {{ $t('components.run_once') }}
                   </el-dropdown-item>
                   <el-dropdown-item
                     v-if="scope.row.status === 'Pending'"
                     command="contine"
                   >
-                    {{ $t("components.continue") }}
+                    {{ $t('components.continue') }}
                   </el-dropdown-item>
                   <el-dropdown-item
                     v-if="scope.row.status === 'Underway'"
                     command="pause"
                   >
-                    {{ $t("dataset.task.pending") }}
+                    {{ $t('dataset.task.pending') }}
                   </el-dropdown-item>
                 </template>
                 <el-dropdown-item
                   :disabled="disableDelete(scope.row)"
                   command="delete"
                 >
-                  {{ $t("commons.delete") }}
+                  {{ $t('commons.delete') }}
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -205,7 +205,7 @@
       <span class="err-msg">{{ error_massage }} </span>
       <span slot="footer" class="dialog-footer">
         <el-button size="mini" @click="show_error_massage = false">{{
-          $t("dataset.close")
+          $t('dataset.close')
         }}</el-button>
       </span>
     </el-dialog>
@@ -242,18 +242,18 @@
               <span
                 v-if="scope.row.status === 'Completed'"
                 style="color: green"
-                >{{ $t("dataset.completed") }}</span
+                >{{ $t('dataset.completed') }}</span
               >
               <span v-if="scope.row.status === 'Underway'" class="blue-color">
                 <i class="el-icon-loading" />
-                {{ $t("dataset.underway") }}
+                {{ $t('dataset.underway') }}
               </span>
               <span v-if="scope.row.status === 'Error'" style="color: red">
                 <el-link
                   type="danger"
                   style="font-size: 12px"
                   @click="showErrorMassage(scope.row.info)"
-                  >{{ $t("dataset.error") }}</el-link
+                  >{{ $t('dataset.error') }}</el-link
                 >
               </span>
             </template>
@@ -297,9 +297,9 @@
         </el-form-item>
         <el-form-item :label="$t('dataset.update_type')" prop="type">
           <el-radio-group v-model="taskForm.type">
-            <el-radio label="all_scope">{{ $t("dataset.all_scope") }}</el-radio>
+            <el-radio label="all_scope">{{ $t('dataset.all_scope') }}</el-radio>
             <el-radio label="add_scope">
-              {{ $t("dataset.add_scope") }}</el-radio
+              {{ $t('dataset.add_scope') }}</el-radio
             >
           </el-radio-group>
         </el-form-item>
@@ -314,26 +314,26 @@
               @change="incrementalUpdateTypeChange"
             >
               <el-radio label="incrementalAdd">{{
-                $t("dataset.incremental_add")
+                $t('dataset.incremental_add')
               }}</el-radio>
               <el-radio label="incrementalDelete">{{
-                $t("dataset.incremental_delete")
+                $t('dataset.incremental_delete')
               }}</el-radio>
             </el-radio-group>
             <div class="param-title">
-              <span>{{ $t("dataset.param") }}</span>
+              <span>{{ $t('dataset.param') }}</span>
               <div class="param-title-btn">
                 <el-button
                   type="text"
                   size="small"
                   @click="insertParamToCodeMirror('${__last_update_time__}')"
-                  >{{ $t("dataset.last_update_time") }}</el-button
+                  >{{ $t('dataset.last_update_time') }}</el-button
                 >
                 <el-button
                   type="text"
                   size="small"
                   @click="insertParamToCodeMirror('${__current_update_time__}')"
-                  >{{ $t("dataset.current_update_time") }}</el-button
+                  >{{ $t('dataset.current_update_time') }}</el-button
                 >
               </div>
             </div>
@@ -353,10 +353,10 @@
 
         <el-form-item :label="$t('dataset.execute_rate')" prop="rate">
           <el-radio-group v-model="taskForm.rate" @change="onRateChange">
-            <el-radio label="SIMPLE">{{ $t("dataset.execute_once") }}</el-radio>
-            <el-radio label="CRON">{{ $t("dataset.cron_config") }}</el-radio>
+            <el-radio label="SIMPLE">{{ $t('dataset.execute_once') }}</el-radio>
+            <el-radio label="CRON">{{ $t('dataset.cron_config') }}</el-radio>
             <el-radio label="SIMPLE_CRON">{{
-              $t("dataset.simple_cron")
+              $t('dataset.simple_cron')
             }}</el-radio>
           </el-radio-group>
         </el-form-item>
@@ -367,7 +367,7 @@
             prop="rate"
           >
             <div class="simple-cron">
-              {{ $t("cron.every") }}
+              {{ $t('cron.every') }}
               <el-input-number
                 v-model="taskForm.extraData.simple_cron_value"
                 controls-position="right"
@@ -385,7 +385,7 @@
                 <el-option :label="$t('components.hour')" value="hour" />
                 <el-option :label="$t('components.day')" value="day" />
               </el-select>
-              {{ $t("cron.every_exec") }}
+              {{ $t('cron.every_exec') }}
             </div>
           </el-form-item>
           <el-form-item
@@ -432,8 +432,8 @@
             prop="end"
           >
             <el-radio-group v-model="taskForm.end">
-              <el-radio label="0">{{ $t("dataset.no_limit") }}</el-radio>
-              <el-radio label="1"> {{ $t("dataset.set_end_time") }}</el-radio>
+              <el-radio label="0">{{ $t('dataset.no_limit') }}</el-radio>
+              <el-radio label="1"> {{ $t('dataset.set_end_time') }}</el-radio>
             </el-radio-group>
             <el-date-picker
               v-if="taskForm.end === '1'"
@@ -464,47 +464,47 @@
 </template>
 
 <script>
-import { post } from "@/api/dataset/dataset";
-import { codemirror } from "vue-codemirror";
+import { post } from '@/api/dataset/dataset'
+import { codemirror } from 'vue-codemirror'
 // 核心样式
-import "codemirror/lib/codemirror.css";
+import 'codemirror/lib/codemirror.css'
 // 引入主题后还需要在 options 中指定主题才会生效
-import "codemirror/theme/solarized.css";
-import "codemirror/mode/sql/sql.js";
+import 'codemirror/theme/solarized.css'
+import 'codemirror/mode/sql/sql.js'
 // require active-line.js
-import "codemirror/addon/selection/active-line.js";
+import 'codemirror/addon/selection/active-line.js'
 // closebrackets
-import "codemirror/addon/edit/closebrackets.js";
+import 'codemirror/addon/edit/closebrackets.js'
 // keyMap
-import "codemirror/mode/clike/clike.js";
-import "codemirror/addon/edit/matchbrackets.js";
-import "codemirror/addon/comment/comment.js";
-import "codemirror/addon/dialog/dialog.js";
-import "codemirror/addon/dialog/dialog.css";
-import "codemirror/addon/search/searchcursor.js";
-import "codemirror/addon/search/search.js";
-import "codemirror/keymap/emacs.js";
+import 'codemirror/mode/clike/clike.js'
+import 'codemirror/addon/edit/matchbrackets.js'
+import 'codemirror/addon/comment/comment.js'
+import 'codemirror/addon/dialog/dialog.js'
+import 'codemirror/addon/dialog/dialog.css'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/search.js'
+import 'codemirror/keymap/emacs.js'
 // 引入代码自动提示插件
-import "codemirror/addon/hint/show-hint.css";
-import "codemirror/addon/hint/sql-hint";
-import "codemirror/addon/hint/show-hint";
+import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/addon/hint/sql-hint'
+import 'codemirror/addon/hint/show-hint'
 // vue-cron
-import cron from "@/components/cron/cron";
-import { hasDataPermission } from "@/utils/permission";
-import { engineMode } from "@/api/system/engine";
-import GridTable from "@/components/gridTable/index.vue";
+import cron from '@/components/cron/cron'
+import { hasDataPermission } from '@/utils/permission'
+import { engineMode } from '@/api/system/engine'
+import GridTable from '@/components/gridTable/index.vue'
 export default {
-  name: "UpdateInfo",
+  name: 'UpdateInfo',
   components: { codemirror, cron, GridTable },
   props: {
     table: {
       type: Object,
-      default: null,
+      default: null
     },
     param: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
@@ -515,30 +515,30 @@ export default {
       update_setting: false,
       update_task: false,
       show_error_massage: false,
-      update_task_dialog_title: "",
-      error_massage: "",
+      update_task_dialog_title: '',
+      error_massage: '',
       taskForm: {
-        name: "",
-        type: "all_scope",
-        startTime: "",
-        rate: "SIMPLE",
-        cron: "",
-        endTime: "",
-        end: "0",
+        name: '',
+        type: 'all_scope',
+        startTime: '',
+        rate: 'SIMPLE',
+        cron: '',
+        endTime: '',
+        end: '0',
         extraData: {
-          simple_cron_type: "hour",
-          simple_cron_value: 1,
-        },
+          simple_cron_type: 'hour',
+          simple_cron_value: 1
+        }
       },
       page: {
         currentPage: 1,
         pageSize: 10,
-        total: 0,
+        total: 0
       },
       paginationConfig: {
         currentPage: 1,
         pageSize: 10,
-        total: 0,
+        total: 0
       },
       taskLogData: [],
       taskData: [],
@@ -546,312 +546,316 @@ export default {
         name: [
           {
             required: true,
-            message: this.$t("dataset.required"),
-            trigger: "change",
+            message: this.$t('dataset.required'),
+            trigger: 'change'
           },
           {
             min: 2,
             max: 50,
-            message: this.$t("datasource.input_limit_2_50", [2, 50]),
-            trigger: "blur",
-          },
+            message: this.$t('datasource.input_limit_2_50', [2, 50]),
+            trigger: 'blur'
+          }
         ],
         type: [
           {
             required: true,
-            message: this.$t("dataset.required"),
-            trigger: "change",
-          },
+            message: this.$t('dataset.required'),
+            trigger: 'change'
+          }
         ],
         startTime: [
           {
             required: true,
-            message: this.$t("dataset.required"),
-            trigger: "change",
-          },
+            message: this.$t('dataset.required'),
+            trigger: 'change'
+          }
         ],
         rate: [
           {
             required: true,
-            message: this.$t("dataset.required"),
-            trigger: "change",
-          },
+            message: this.$t('dataset.required'),
+            trigger: 'change'
+          }
         ],
         end: [
           {
             required: true,
-            message: this.$t("dataset.required"),
-            trigger: "change",
-          },
-        ],
+            message: this.$t('dataset.required'),
+            trigger: 'change'
+          }
+        ]
       },
       sqlOption: {
         tabSize: 2,
         styleActiveLine: true,
         lineNumbers: true,
         line: true,
-        mode: "text/x-sql",
-        theme: "solarized",
+        mode: 'text/x-sql',
+        theme: 'solarized',
         hintOptions: {
           // 自定义提示选项
-          completeSingle: false, // 当匹配只有一项的时候是否自动补全
-        },
+          completeSingle: false // 当匹配只有一项的时候是否自动补全
+        }
       },
-      incrementalUpdateType: "incrementalAdd",
-      sql: "",
+      incrementalUpdateType: 'incrementalAdd',
+      sql: '',
       incrementalConfig: {},
       cronEdit: false,
-      lang: this.$store.getters.language === "en_US" ? "en" : "cn",
+      lang: this.$store.getters.language === 'en_US' ? 'en' : 'cn',
       taskLastRequestComplete: true,
       taskLogLastRequestComplete: true,
       enableUpdate: true,
-      engineMode: "local",
-    };
+      engineMode: 'local'
+    }
   },
   computed: {
     codemirror() {
-      return this.$refs.myCm.codemirror;
-    },
+      return this.$refs.myCm.codemirror
+    }
   },
   watch: {
     table: {
       handler() {
-        if (hasDataPermission("manage", this.param.privileges)) {
-          this.listTask();
+        if (hasDataPermission('manage', this.param.privileges)) {
+          this.listTask()
         }
-        this.listTaskLog();
+        this.listTaskLog()
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   mounted() {
-    this.calHeight();
+    this.calHeight()
   },
   created() {
     this.taskLogTimer = setInterval(() => {
       if (!this.taskLogLastRequestComplete) {
-        return;
+        return
       } else {
-        this.taskLogLastRequestComplete = false;
+        this.taskLogLastRequestComplete = false
       }
-      this.listTaskLog(false);
-    }, 10000);
+      this.listTaskLog(false)
+    }, 10000)
 
     this.taskTimer = setInterval(() => {
       if (!this.taskLastRequestComplete) {
-        return;
+        return
       } else {
-        this.taskLastRequestComplete = false;
+        this.taskLastRequestComplete = false
       }
-      if (hasDataPermission("manage", this.param.privileges)) {
-        this.listTask(false);
+      if (hasDataPermission('manage', this.param.privileges)) {
+        this.listTask(false)
       }
-    }, 10000);
+    }, 10000)
 
     engineMode().then((res) => {
-      this.engineMode = res.data;
-      if (this.engineMode === "simple") {
-        if (this.table.type === "api") {
-          this.enableUpdate = true;
+      this.engineMode = res.data
+      if (this.engineMode === 'simple') {
+        if (this.table.type === 'api') {
+          this.enableUpdate = true
         } else {
-          this.enableUpdate = false;
+          this.enableUpdate = false
         }
       } else {
-        if (this.table.type === "excel") {
-          this.enableUpdate = false;
+        if (this.table.type === 'excel') {
+          this.enableUpdate = false
         } else {
-          this.enableUpdate = true;
+          this.enableUpdate = true
         }
       }
-    });
+    })
   },
   beforeDestroy() {
-    clearInterval(this.taskTimer);
-    clearInterval(this.taskLogTimer);
+    clearInterval(this.taskTimer)
+    clearInterval(this.taskLogTimer)
   },
   methods: {
     calHeight() {
-      const that = this;
+      const that = this
       setTimeout(function () {
-        const currentHeight = document.documentElement.clientHeight;
-        that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10;
-      }, 10);
+        const currentHeight = document.documentElement.clientHeight
+        that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10
+      }, 10)
     },
     incrementalUpdateTypeChange: function () {
-      if (this.incrementalUpdateType === "incrementalAdd") {
+      if (this.incrementalUpdateType === 'incrementalAdd') {
         if (this.sql) {
-          this.incrementalConfig.incrementalDelete = this.sql;
+          this.incrementalConfig.incrementalDelete = this.sql
         } else {
-          this.incrementalConfig.incrementalDelete = "";
+          this.incrementalConfig.incrementalDelete = ''
         }
         if (this.incrementalConfig.incrementalAdd) {
-          this.sql = this.incrementalConfig.incrementalAdd;
+          this.sql = this.incrementalConfig.incrementalAdd
         } else {
-          this.sql = "";
+          this.sql = ''
         }
       }
 
-      if (this.incrementalUpdateType === "incrementalDelete") {
+      if (this.incrementalUpdateType === 'incrementalDelete') {
         if (this.sql) {
-          this.incrementalConfig.incrementalAdd = this.sql;
+          this.incrementalConfig.incrementalAdd = this.sql
         } else {
-          this.incrementalConfig.incrementalAdd = "";
+          this.incrementalConfig.incrementalAdd = ''
         }
         if (this.incrementalConfig.incrementalDelete) {
-          this.sql = this.incrementalConfig.incrementalDelete;
+          this.sql = this.incrementalConfig.incrementalDelete
         } else {
-          this.sql = "";
+          this.sql = ''
         }
       }
     },
     showConfig() {
-      this.userDrawer = true;
-      this.listTaskLog();
+      this.userDrawer = true
+      this.listTaskLog()
       // this.getIncrementalConfig()
     },
     // refreshLog() {
     //   this.listTaskLog();
     // },
     showErrorMassage(massage) {
-      this.show_error_massage = true;
-      this.error_massage = massage;
+      this.show_error_massage = true
+      this.error_massage = massage
     },
     addTask(task) {
       if (!task) {
         // add
-        this.resetTaskForm();
+        this.resetTaskForm()
         this.taskForm.name =
-          this.table.name + " " + this.$t("dataset.task_update");
-        this.taskForm.startTime = new Date();
-        this.update_task_dialog_title = this.$t("dataset.task_add_title");
+          this.table.name + ' ' + this.$t('dataset.task_update')
+        this.taskForm.startTime = new Date()
+        this.update_task_dialog_title = this.$t('dataset.task_add_title')
       } else {
         // update
-        this.taskForm = JSON.parse(JSON.stringify(task));
-        this.taskForm.extraData = JSON.parse(this.taskForm.extraData);
-        this.update_task_dialog_title = this.$t("dataset.task_edit_title");
+        this.taskForm = JSON.parse(JSON.stringify(task))
+        this.taskForm.extraData = JSON.parse(this.taskForm.extraData)
+        this.update_task_dialog_title = this.$t('dataset.task_edit_title')
       }
-      this.update_task = true;
+      this.update_task = true
     },
     listTask(loading = true) {
-      this.loading = loading;
-      const { currentPage, pageSize } = this.paginationConfig;
-      post(`/dataset/task/list/${currentPage}/${pageSize}`, { tableId: this.table.id }, loading)
+      this.loading = loading
+      const { currentPage, pageSize } = this.paginationConfig
+      post(
+        `/dataset/task/list/${currentPage}/${pageSize}`,
+        { tableId: this.table.id },
+        loading
+      )
         .then((response) => {
-          const { itemCount, listObject } = response.data;
-          this.taskData = listObject;
-          this.paginationConfig.total = itemCount;
-          this.loading = false;
-          this.taskLastRequestComplete = true;
+          const { itemCount, listObject } = response.data
+          this.taskData = listObject
+          this.paginationConfig.total = itemCount
+          this.loading = false
+          this.taskLastRequestComplete = true
         })
         .catch(() => {
-          this.taskLastRequestComplete = true;
-        });
+          this.taskLastRequestComplete = true
+        })
     },
     handleSizeChange(pageSize) {
-      this.paginationConfig.currentPage = 1;
-      this.paginationConfig.pageSize = pageSize;
-      this.search();
+      this.paginationConfig.currentPage = 1
+      this.paginationConfig.pageSize = pageSize
+      this.search()
     },
     handleCurrentChange(currentPage) {
-      this.paginationConfig.currentPage = currentPage;
-      this.search();
+      this.paginationConfig.currentPage = currentPage
+      this.search()
     },
     initSearch() {
-      this.handleCurrentChange(1);
+      this.handleCurrentChange(1)
     },
     search() {},
     handleCommand(key, row) {
       switch (key) {
-        case "exec":
-          this.execTask(row);
-          return;
-          break;
-        case "delete":
-          this.deleteTask(row);
-          return;
-          break;
+        case 'exec':
+          this.execTask(row)
+          return
+          break
+        case 'delete':
+          this.deleteTask(row)
+          return
+          break
         default:
-          break;
+          break
       }
-      this.changeTaskStatus(row);
+      this.changeTaskStatus(row)
     },
     execTask(task) {
       this.$confirm(
-        this.$t("dataset.task.confirm_exec"),
-        this.$t("dataset.tips"),
+        this.$t('dataset.task.confirm_exec'),
+        this.$t('dataset.tips'),
         {
-          confirmButtonText: this.$t("dataset.confirm"),
-          cancelButtonText: this.$t("dataset.cancel"),
-          type: "warning",
+          confirmButtonText: this.$t('dataset.confirm'),
+          cancelButtonText: this.$t('dataset.cancel'),
+          type: 'warning'
         }
       )
         .then(() => {
-          post("/dataset/task/execTask", task).then((response) => {
-            this.initSearch(true);
-          });
+          post('/dataset/task/execTask', task).then((response) => {
+            this.initSearch(true)
+          })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     disableEdit(task) {
       return (
-        task.rate === "SIMPLE" ||
-        task.status === "Stopped" ||
-        !hasDataPermission("manage", task.privileges)
-      );
+        task.rate === 'SIMPLE' ||
+        task.status === 'Stopped' ||
+        !hasDataPermission('manage', task.privileges)
+      )
     },
     disableExec(task) {
       return (
-        task.status === "Stopped" ||
-        task.status === "Pending" ||
-        task.rate === "SIMPLE" ||
-        !hasDataPermission("manage", task.privileges)
-      );
+        task.status === 'Stopped' ||
+        task.status === 'Pending' ||
+        task.rate === 'SIMPLE' ||
+        !hasDataPermission('manage', task.privileges)
+      )
     },
     disableDelete(task) {
-      return false;
+      return false
       // !hasDataPermission('manage',task.privileges)
     },
     deleteTask(task) {
       const options = {
-        title: "确定删除该任务吗？",
-        type: "primary",
+        title: '确定删除该任务吗？',
+        type: 'primary',
         cb: () => {
-          post("/dataset/task/delete/" + task.id, null).then((response) => {
-            this.openMessageSuccess("commons.delete_success");
-            this.initSearch();
-          });
-        },
-      };
-      this.handlerConfirm(options);
+          post('/dataset/task/delete/' + task.id, null).then((response) => {
+            this.openMessageSuccess('commons.delete_success')
+            this.initSearch()
+          })
+        }
+      }
+      this.handlerConfirm(options)
     },
     selectDataset(row) {
-      this.addTask(row);
+      this.addTask(row)
     },
     changeTaskStatus(task) {
-      const { status } = task;
-      if (!["Pending", "Underway"].includes(status)) {
-        return;
+      const { status } = task
+      if (!['Pending', 'Underway'].includes(status)) {
+        return
       }
       const param = {
         ...task,
-        status: status === "Underway" ? "Pending" : "Underway",
-      };
-      post("/dataset/task/updateStatus", param)
+        status: status === 'Underway' ? 'Pending' : 'Underway'
+      }
+      post('/dataset/task/updateStatus', param)
         .then((response) => {
           if (response.success) {
-            task.status = param.status;
+            task.status = param.status
             this.$message({
-              message: this.$t("dataset.task.change_success"),
-              type: "success",
-              showClose: true,
-            });
+              message: this.$t('dataset.task.change_success'),
+              type: 'success',
+              showClose: true
+            })
           } else {
-            this.initSearch(false);
+            this.initSearch(false)
           }
         })
         .catch(() => {
-          this.initSearch(false);
-        });
+          this.initSearch(false)
+        })
     },
     // getIncrementalConfig() {
     //   post("/dataset/table/incrementalConfig", { tableId: this.table.id }).then(
@@ -897,208 +901,208 @@ export default {
     saveTask(task) {
       this.$refs.taskForm.validate((valid) => {
         if (valid) {
-          if (this.incrementalUpdateType === "incrementalAdd") {
-            this.incrementalConfig.incrementalAdd = this.sql;
+          if (this.incrementalUpdateType === 'incrementalAdd') {
+            this.incrementalConfig.incrementalAdd = this.sql
           } else {
-            this.incrementalConfig.incrementalDelete = this.sql;
+            this.incrementalConfig.incrementalDelete = this.sql
           }
-          this.incrementalConfig.tableId = this.table.id;
-          task.startTime = new Date(task.startTime).getTime();
-          task.endTime = new Date(task.endTime).getTime();
-          task.tableId = this.table.id;
-          const form = JSON.parse(JSON.stringify(task));
-          form.extraData = JSON.stringify(form.extraData);
+          this.incrementalConfig.tableId = this.table.id
+          task.startTime = new Date(task.startTime).getTime()
+          task.endTime = new Date(task.endTime).getTime()
+          task.tableId = this.table.id
+          const form = JSON.parse(JSON.stringify(task))
+          form.extraData = JSON.stringify(form.extraData)
           const dataSetTaskRequest = {
             datasetTableTask: form,
-            datasetTableIncrementalConfig: this.incrementalConfig,
-          };
-          post("/dataset/task/save", dataSetTaskRequest).then((response) => {
+            datasetTableIncrementalConfig: this.incrementalConfig
+          }
+          post('/dataset/task/save', dataSetTaskRequest).then((response) => {
             this.$message({
-              message: this.$t("dataset.save_success"),
-              type: "success",
-              showClose: true,
-            });
-            this.update_task = false;
-            this.resetTaskForm();
-            this.listTask();
-            this.listTaskLog();
-          });
+              message: this.$t('dataset.save_success'),
+              type: 'success',
+              showClose: true
+            })
+            this.update_task = false
+            this.resetTaskForm()
+            this.listTask()
+            this.listTaskLog()
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     deleteTask(task) {
       this.$confirm(
-        this.$t("dataset.confirm_delete"),
-        this.$t("dataset.tips"),
+        this.$t('dataset.confirm_delete'),
+        this.$t('dataset.tips'),
         {
-          confirmButtonText: this.$t("dataset.confirm"),
-          cancelButtonText: this.$t("dataset.cancel"),
-          type: "warning",
+          confirmButtonText: this.$t('dataset.confirm'),
+          cancelButtonText: this.$t('dataset.cancel'),
+          type: 'warning'
         }
       )
         .then(() => {
-          post("/dataset/task/delete/" + task.id, null).then((response) => {
+          post('/dataset/task/delete/' + task.id, null).then((response) => {
             this.$message({
-              message: this.$t("dataset.delete_success"),
-              type: "success",
-              showClose: true,
-            });
-            this.resetTaskForm();
-            this.listTask();
-            this.listTaskLog();
-          });
+              message: this.$t('dataset.delete_success'),
+              type: 'success',
+              showClose: true
+            })
+            this.resetTaskForm()
+            this.listTask()
+            this.listTaskLog()
+          })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     closeTask() {
-      this.update_task = false;
-      this.resetTaskForm();
+      this.update_task = false
+      this.resetTaskForm()
     },
     onSimpleCronChange() {
-      if (this.taskForm.extraData.simple_cron_type === "minute") {
+      if (this.taskForm.extraData.simple_cron_type === 'minute') {
         if (
           this.taskForm.extraData.simple_cron_value < 1 ||
           this.taskForm.extraData.simple_cron_value > 59
         ) {
           this.$message({
-            message: this.$t("cron.minute_limit"),
-            type: "warning",
-            showClose: true,
-          });
-          this.taskForm.extraData.simple_cron_value = 59;
+            message: this.$t('cron.minute_limit'),
+            type: 'warning',
+            showClose: true
+          })
+          this.taskForm.extraData.simple_cron_value = 59
         }
         this.taskForm.cron =
-          "0 0/" + this.taskForm.extraData.simple_cron_value + " * * * ? *";
-        return;
+          '0 0/' + this.taskForm.extraData.simple_cron_value + ' * * * ? *'
+        return
       }
-      if (this.taskForm.extraData.simple_cron_type === "hour") {
+      if (this.taskForm.extraData.simple_cron_type === 'hour') {
         if (
           this.taskForm.extraData.simple_cron_value < 1 ||
           this.taskForm.extraData.simple_cron_value > 23
         ) {
           this.$message({
-            message: this.$t("cron.hour_limit"),
-            type: "warning",
-            showClose: true,
-          });
-          this.taskForm.extraData.simple_cron_value = 23;
+            message: this.$t('cron.hour_limit'),
+            type: 'warning',
+            showClose: true
+          })
+          this.taskForm.extraData.simple_cron_value = 23
         }
         this.taskForm.cron =
-          "0 0 0/" + this.taskForm.extraData.simple_cron_value + " * * ? *";
-        return;
+          '0 0 0/' + this.taskForm.extraData.simple_cron_value + ' * * ? *'
+        return
       }
-      if (this.taskForm.extraData.simple_cron_type === "day") {
+      if (this.taskForm.extraData.simple_cron_type === 'day') {
         if (
           this.taskForm.extraData.simple_cron_value < 1 ||
           this.taskForm.extraData.simple_cron_value > 31
         ) {
           this.$message({
-            message: this.$t("cron.day_limit"),
-            type: "warning",
-            showClose: true,
-          });
-          this.taskForm.extraData.simple_cron_value = 31;
+            message: this.$t('cron.day_limit'),
+            type: 'warning',
+            showClose: true
+          })
+          this.taskForm.extraData.simple_cron_value = 31
         }
         this.taskForm.cron =
-          "0 0 0 1/" + this.taskForm.extraData.simple_cron_value + " * ? *";
-        return;
+          '0 0 0 1/' + this.taskForm.extraData.simple_cron_value + ' * ? *'
+        return
       }
     },
     onRateChange() {
-      if (this.taskForm.rate === "SIMPLE") {
-        this.taskForm.end = "0";
-        this.taskForm.endTime = "";
-        this.taskForm.cron = "";
-        this.showCron = false;
+      if (this.taskForm.rate === 'SIMPLE') {
+        this.taskForm.end = '0'
+        this.taskForm.endTime = ''
+        this.taskForm.cron = ''
+        this.showCron = false
       }
-      if (this.taskForm.rate === "SIMPLE_CRON") {
-        this.taskForm.cron = "0 0 0/1 *  * ? *";
-        this.showCron = false;
+      if (this.taskForm.rate === 'SIMPLE_CRON') {
+        this.taskForm.cron = '0 0 0/1 *  * ? *'
+        this.showCron = false
       }
-      if (this.taskForm.rate === "CRON") {
-        this.taskForm.cron = "00 00 * ? * * *";
+      if (this.taskForm.rate === 'CRON') {
+        this.taskForm.cron = '00 00 * ? * * *'
         this.$nextTick(() => {
-          this.showCron = true;
-        });
+          this.showCron = true
+        })
       }
     },
     listTaskLog(loading = true) {
       const params = {
         conditions: [
           {
-            field: "dataset_table_task_log.table_id",
-            operator: "eq",
-            value: this.table.id,
-          },
+            field: 'dataset_table_task_log.table_id',
+            operator: 'eq',
+            value: this.table.id
+          }
         ],
-        orders: [],
-      };
+        orders: []
+      }
       post(
-        "/dataset/taskLog/listForDataset/" +
+        '/dataset/taskLog/listForDataset/' +
           this.table.type +
-          "/" +
+          '/' +
           this.page.currentPage +
-          "/" +
+          '/' +
           this.page.pageSize,
         params,
         loading
       )
         .then((response) => {
-          this.taskLogData = response.data.listObject;
-          this.page.total = response.data.itemCount;
-          this.taskLogLastRequestComplete = true;
+          this.taskLogData = response.data.listObject
+          this.page.total = response.data.itemCount
+          this.taskLogLastRequestComplete = true
         })
         .catch(() => {
-          this.taskLogLastRequestComplete = true;
-        });
+          this.taskLogLastRequestComplete = true
+        })
     },
     handleSizeChangeLog(val) {
-      this.page.pageSize = val;
-      this.listTaskLog();
+      this.page.pageSize = val
+      this.listTaskLog()
     },
     handleCurrentChangeLog(val) {
-      this.page.currentPage = val;
-      this.listTaskLog();
+      this.page.currentPage = val
+      this.listTaskLog()
     },
     resetTaskForm() {
       this.taskForm = {
-        name: "",
-        type: "all_scope",
-        startTime: "",
-        rate: "SIMPLE",
-        endTime: "",
-        end: "0",
+        name: '',
+        type: 'all_scope',
+        startTime: '',
+        rate: 'SIMPLE',
+        endTime: '',
+        end: '0',
         extraData: {
-          simple_cron_type: "hour",
-          simple_cron_value: 1,
-        },
-      };
+          simple_cron_type: 'hour',
+          simple_cron_value: 1
+        }
+      }
     },
     showSQL(val) {
-      this.sql = val || "";
+      this.sql = val || ''
     },
     onCmReady(cm) {
-      this.codemirror.setSize("-webkit-fill-available", "auto");
+      this.codemirror.setSize('-webkit-fill-available', 'auto')
     },
     onCmFocus(cm) {},
     onCmCodeChange(newCode) {
-      this.sql = newCode;
-      this.$emit("codeChange", this.sql);
+      this.sql = newCode
+      this.$emit('codeChange', this.sql)
     },
     insertParamToCodeMirror(param) {
-      const pos1 = this.$refs.myCm.codemirror.getCursor();
-      const pos2 = {};
-      pos2.line = pos1.line;
-      pos2.ch = pos1.ch;
-      this.$refs.myCm.codemirror.replaceRange(param, pos2);
+      const pos1 = this.$refs.myCm.codemirror.getCursor()
+      const pos2 = {}
+      pos2.line = pos1.line
+      pos2.ch = pos1.ch
+      this.$refs.myCm.codemirror.replaceRange(param, pos2)
     },
     cronChange(val) {
-      this.taskForm.cron = val;
-    },
-  },
-};
+      this.taskForm.cron = val
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -1129,7 +1133,7 @@ export default {
 <style lang="scss">
 .user-drawer-task {
   .el-table::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -1214,7 +1218,7 @@ export default {
   position: relative;
   margin-left: 15px;
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 50%;
     left: -13px;

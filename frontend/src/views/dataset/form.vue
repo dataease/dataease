@@ -9,7 +9,9 @@
         />
         <template v-if="showInput">
           <el-input @blur="nameBlur" v-model="table.name"></el-input>
-          <div v-if="nameExsit" style="left: 55px" class="el-form-item__error">{{ $t('deDataset.already_exists') }}</div>
+          <div v-if="nameExsit" style="left: 55px" class="el-form-item__error">
+            {{ $t('deDataset.already_exists') }}
+          </div>
         </template>
         <span
           :class="[{ 'show-point': ['sql', 'union'].includes(datasetType) }]"
@@ -22,9 +24,12 @@
         <span
           class="table-num"
           v-if="['db', 'excel', 'api'].includes(datasetType)"
-          >{{ $t("deDataset.selected") }} {{ tableNum }} {{ $t("deDataset.zhang_biao") }}</span
+          >{{ $t('deDataset.selected') }} {{ tableNum }}
+          {{ $t('deDataset.zhang_biao') }}</span
         >
-        <deBtn @click="datasetSave" type="primary">{{ $t("commons.save") }}</deBtn>
+        <deBtn @click="datasetSave" type="primary">{{
+          $t('commons.save')
+        }}</deBtn>
       </span>
     </div>
     <div class="container">
@@ -112,9 +117,9 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <deBtn secondary @click="close">{{ $t("dataset.cancel") }}</deBtn>
+        <deBtn secondary @click="close">{{ $t('dataset.cancel') }}</deBtn>
         <deBtn type="primary" @click="saveDataset"
-          >{{ $t("dataset.confirm") }}
+          >{{ $t('dataset.confirm') }}
         </deBtn>
       </div>
     </el-dialog>
@@ -122,248 +127,250 @@
 </template>
 
 <script>
-import AddDB from "./add/AddDB";
-import AddApi from "./add/AddApi";
-import AddSQL from "./add/AddSQL";
-import AddExcel from "./add/AddExcel";
-import AddUnion from "@/views/dataset/add/AddUnion";
-import { post } from "@/api/dataset/dataset";
-import { groupTree } from "@/api/dataset/dataset";
+import AddDB from './add/AddDB'
+import AddApi from './add/AddApi'
+import AddSQL from './add/AddSQL'
+import AddExcel from './add/AddExcel'
+import AddUnion from '@/views/dataset/add/AddUnion'
+import { post } from '@/api/dataset/dataset'
+import { groupTree } from '@/api/dataset/dataset'
 export default {
-  name: "DatasetForm",
+  name: 'DatasetForm',
   components: { AddDB, AddSQL, AddExcel, AddApi, AddUnion },
   data() {
     return {
-      sceneId: "",
-      originName: "",
+      sceneId: '',
+      originName: '',
       tableNum: 0,
       showInput: false,
-      editType: "",
+      editType: '',
       loading: false,
       selectDatasets: [],
       tData: [],
-      filterText: "",
-      dialogTitle: "",
+      filterText: '',
+      dialogTitle: '',
       createDataset: false,
-      datasetType: "",
-      component: "",
+      datasetType: '',
+      component: '',
       table: {},
       nameExsit: false,
       nameList: [],
       datasetForm: {
-        id: "",
-        name: "",
-        sceneName: "",
+        id: '',
+        name: '',
+        sceneName: ''
       },
       datasetFormRules: {
         name: [
           {
             required: true,
-            message: this.$t("commons.input_content"),
-            trigger: "change",
+            message: this.$t('commons.input_content'),
+            trigger: 'change'
           },
           {
             max: 50,
-            message: this.$t("commons.char_can_not_more_50"),
-            trigger: "change",
+            message: this.$t('commons.char_can_not_more_50'),
+            trigger: 'change'
           },
-          { required: true, trigger: "blur", validator: this.nameValidator },
-        ],
-      },
-    };
+          { required: true, trigger: 'blur', validator: this.nameValidator }
+        ]
+      }
+    }
   },
   computed: {
     datasetName() {
       if (+this.editType === 0) {
-        return this.$t("dataset.excel_replace") + this.$t("chart.chart_data");
+        return this.$t('dataset.excel_replace') + this.$t('chart.chart_data')
       }
 
       if (+this.editType === 1) {
-        return this.$t("dataset.excel_add") + this.$t("chart.chart_data");
+        return this.$t('dataset.excel_add') + this.$t('chart.chart_data')
       }
-      return this.table.name || this.dialogTitle;
-    },
+      return this.table.name || this.dialogTitle
+    }
   },
   created() {
-    const { datasetType, sceneId, id, editType } = this.$route.query;
-    this.datasetType = datasetType;
-    this.editType = editType;
-    this.sceneId = sceneId;
+    const { datasetType, sceneId, id, editType } = this.$route.query
+    this.datasetType = datasetType
+    this.editType = editType
+    this.sceneId = sceneId
     if (id) {
-      this.initTable(id);
+      this.initTable(id)
     } else {
-      this.tree(sceneId);
-      this.createDataset = true;
+      this.tree(sceneId)
+      this.createDataset = true
     }
-    this.switchComponent(datasetType);
+    this.switchComponent(datasetType)
   },
   methods: {
     back() {
-      this.$router.back();
+      this.$router.back()
     },
     nameBlur() {
-      this.nameExsitValidator();
-      this.showInput = this.nameExsit;
+      this.nameExsitValidator()
+      this.showInput = this.nameExsit
     },
     getDatasetNameFromGroup(sceneId) {
       post(`/dataset/table/getDatasetNameFromGroup/${sceneId}`, null).then(
         (res) => {
-          this.nameList = res.data;
+          this.nameList = res.data
         }
-      );
+      )
     },
     datasetSave() {
-      if (["sql", "union"].includes(this.datasetType)) {
-        this.nameExsitValidator();
+      if (['sql', 'union'].includes(this.datasetType)) {
+        this.nameExsitValidator()
         if (this.nameExsit) {
-          return;
+          return
         }
       }
-      this.$refs.addDataset.save();
+      this.$refs.addDataset.save()
     },
     handleClick() {
-      if (["sql", "union"].includes(this.datasetType)) {
-        this.showInput = true;
+      if (['sql', 'union'].includes(this.datasetType)) {
+        this.showInput = true
       }
     },
     nodeClick({ id, label }) {
       this.selectDatasets = [
         {
           id,
-          label,
-        },
-      ];
+          label
+        }
+      ]
       this.$nextTick(() => {
-        this.datasetForm.id = id;
-      });
-      this.getDatasetNameFromGroup(id);
+        this.datasetForm.id = id
+      })
+      this.getDatasetNameFromGroup(id)
     },
     tree(sceneId) {
-      this.loading = true;
+      this.loading = true
       groupTree({
-        name: "",
-        pid: "0",
+        name: '',
+        pid: '0',
         level: 0,
-        type: "group",
+        type: 'group',
         children: [],
-        sort: "type desc,name asc",
+        sort: 'type desc,name asc'
       }).then((res) => {
-        this.tData = res.data;
+        this.tData = res.data
         if (sceneId) {
-          this.dfsTree(res.data, sceneId);
+          this.dfsTree(res.data, sceneId)
         }
-        this.loading = false;
-      });
+        this.loading = false
+      })
     },
     dfsTree(arr, sceneId) {
       arr.some((ele) => {
         if (sceneId === ele.id) {
-          this.nodeClick(ele);
+          this.nodeClick(ele)
         } else if (ele.children?.length) {
-          this.dfsTree(ele.children, sceneId);
+          this.dfsTree(ele.children, sceneId)
         }
-        return false;
-      });
+        return false
+      })
     },
     filterMethod(val) {
-      if (!val) this.$refs.tree.filter(val);
-      this.$refs.tree.filter(val);
+      if (!val) this.$refs.tree.filter(val)
+      this.$refs.tree.filter(val)
     },
     filterNode(value, data) {
-      if (!value) return true;
-      return data.name.indexOf(value) !== -1;
+      if (!value) return true
+      return data.name.indexOf(value) !== -1
     },
     beforeClose() {
-      this.close();
+      this.close()
     },
     nameRepeat(value) {
       if (!this.nameList || this.nameList.length === 0) {
-        return false;
+        return false
       }
-      return this.nameList.some((name) => name === value);
+      return this.nameList.some((name) => name === value)
     },
     nameValidator(rule, value, callback) {
       if (this.nameRepeat(value)) {
-        callback(new Error(this.$t("deDataset.already_exists")));
+        callback(new Error(this.$t('deDataset.already_exists')))
       } else {
-        callback();
+        callback()
       }
     },
     nameExsitValidator() {
       if (!this.nameList || this.nameList.length === 0) {
-        this.nameExsit = false;
-        return;
+        this.nameExsit = false
+        return
       }
-      this.nameExsit = this.nameList.some((name) => name === this.table.name && name !== this.originName);
+      this.nameExsit = this.nameList.some(
+        (name) => name === this.table.name && name !== this.originName
+      )
     },
     close() {
-      this.$router.back();
+      this.$router.back()
     },
     saveDataset() {
       this.$refs.datasetForm.validate((result) => {
         if (result) {
-          const { name, id } = this.datasetForm;
+          const { name, id } = this.datasetForm
           this.table = {
             id,
-            name,
-          };
-          this.createDataset = false;
-          this.getDatasetNameFromGroup(id);
+            name
+          }
+          this.createDataset = false
+          this.getDatasetNameFromGroup(id)
         }
-      });
+      })
     },
     initTable(id) {
-      post("/dataset/table/getWithPermission/" + id, null)
+      post('/dataset/table/getWithPermission/' + id, null)
         .then((response) => {
-          const { sceneId: id, id: tableId, name } = response.data || {};
+          const { sceneId: id, id: tableId, name } = response.data || {}
           this.table = {
             id,
             tableId,
             table: response.data,
-            name,
-          };
-          this.getDatasetNameFromGroup(id);
-          this.originName = name;
-          if (this.datasetType === "excel") {
-            this.table.editType = +this.editType;
+            name
+          }
+          this.getDatasetNameFromGroup(id)
+          this.originName = name
+          if (this.datasetType === 'excel') {
+            this.table.editType = +this.editType
           }
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     switchComponent(c) {
-      let type = "";
-      if (["db", "excel", "api"].includes(c)) {
-        this.datasetFormRules = {};
+      let type = ''
+      if (['db', 'excel', 'api'].includes(c)) {
+        this.datasetFormRules = {}
       }
       switch (c) {
-        case "db":
-          type = "deDataset.database";
-          this.component = AddDB;
-          break;
-        case "sql":
-          type = "SQL";
-          this.component = AddSQL;
-          break;
-        case "excel":
-          type = "EXCEL";
-          this.component = AddExcel;
-          break;
-        case "union":
-          type = "dataset.union";
-          this.component = AddUnion;
-          break;
-        case "api":
-          type = "API";
-          this.component = AddApi;
-          break;
+        case 'db':
+          type = 'deDataset.database'
+          this.component = AddDB
+          break
+        case 'sql':
+          type = 'SQL'
+          this.component = AddSQL
+          break
+        case 'excel':
+          type = 'EXCEL'
+          this.component = AddExcel
+          break
+        case 'union':
+          type = 'dataset.union'
+          this.component = AddUnion
+          break
+        case 'api':
+          type = 'API'
+          this.component = AddApi
+          break
         default:
-          break;
+          break
       }
       this.dialogTitle =
-        this.$t("commons.create") + this.$t(type) + this.$t("auth.datasetAuth");
-    },
-  },
-};
+        this.$t('commons.create') + this.$t(type) + this.$t('auth.datasetAuth')
+    }
+  }
+}
 </script>
 
 <style lang="scss">

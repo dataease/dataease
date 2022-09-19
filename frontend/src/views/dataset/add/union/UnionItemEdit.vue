@@ -1,7 +1,7 @@
 <template>
   <div class="union-container">
     <div class="union-header">
-      {{ $t("dataset.union_relation") }}
+      {{ $t('dataset.union_relation') }}
       <div class="union-header-operator">
         <span class="select-svg-icon">
           <svg-icon
@@ -38,7 +38,7 @@
           icon="el-icon-plus"
           class="union-add"
           @click="addUnion"
-          >{{ $t("dataset.add_union_field") }}</deBtn
+          >{{ $t('dataset.add_union_field') }}</deBtn
         >
       </div>
     </div>
@@ -50,7 +50,7 @@
         <span class="column" :title="unionParam.node.currentDs.name">{{
           unionParam.node.currentDs.name
         }}</span>
-        <span class="column-last">{{ $t("dataset.operator") }}</span>
+        <span class="column-last">{{ $t('dataset.operator') }}</span>
       </div>
       <div class="union-body-container">
         <div
@@ -110,10 +110,7 @@
               </el-option>
             </el-select>
           </span>
-          <svg-icon
-            icon-class="join-join"
-            class="join-icon"
-          />
+          <svg-icon icon-class="join-join" class="join-icon" />
           <!--右侧孩子field-->
           <span class="column">
             <el-select
@@ -186,56 +183,56 @@
 
 <script>
 export default {
-  name: "UnionItemEdit",
+  name: 'UnionItemEdit',
   props: {
     parentFieldList: {
       type: Array,
-      required: true,
+      required: true
     },
     nodeFieldList: {
       type: Array,
-      required: true,
+      required: true
     },
     unionParam: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
       unionOptions: [
-        { label: this.$t("dataset.left_join"), value: "left" },
-        { label: this.$t("dataset.right_join"), value: "right" },
-        { label: this.$t("dataset.inner_join"), value: "inner" },
-      ],
-    };
+        { label: this.$t('dataset.left_join'), value: 'left' },
+        { label: this.$t('dataset.right_join'), value: 'right' },
+        { label: this.$t('dataset.inner_join'), value: 'inner' }
+      ]
+    }
   },
   watch: {},
   mounted() {
-    this.init();
+    this.init()
   },
   methods: {
     init() {
       if (this.unionParam.node.unionToParent.unionFields.length < 1) {
         const item = {
           parentField: {},
-          currentField: {},
-        };
-        this.unionParam.node.unionToParent.unionFields.push(item);
+          currentField: {}
+        }
+        this.unionParam.node.unionToParent.unionFields.push(item)
       }
     },
     addUnion() {
       const item = {
         parentField: {},
-        currentField: {},
-      };
-      this.unionParam.node.unionToParent.unionFields.push(item);
+        currentField: {}
+      }
+      this.unionParam.node.unionToParent.unionFields.push(item)
     },
     removeUnionItem(index) {
-      this.unionParam.node.unionToParent.unionFields.splice(index, 1);
-    },
-  },
-};
+      this.unionParam.node.unionToParent.unionFields.splice(index, 1)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -287,8 +284,7 @@ export default {
   display: flex;
   font-size: 14px;
   font-weight: 500;
-  color: var(--deTextSecondary, #646A73);
-
+  color: var(--deTextSecondary, #646a73);
 }
 .union-body-header .column {
   width: 336px;
@@ -331,7 +327,7 @@ export default {
   text-align: center;
   ::v-deep i {
     font-size: 16px;
-    color: var(--deTextSecondary, #646A73);
+    color: var(--deTextSecondary, #646a73);
   }
 }
 </style>
