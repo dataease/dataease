@@ -3,7 +3,7 @@
     <el-col>
       <el-row class="title-css" v-show="showView === 'Datasource'">
         <el-col class="title-text" :span="12">
-          {{ $t('commons.datasource') }}
+          {{ $t("commons.datasource") }}
         </el-col>
         <el-col class="title-operate" :span="12">
           <el-tooltip
@@ -111,11 +111,7 @@
                   v-if="data.type === 'folder'"
                   effect="dark"
                   :content="
-                    $t(
-                      showView === 'Driver'
-                        ? 'driver.add'
-                        : 'datasource.add_data_source'
-                    )
+                    $t(showView === 'Driver' ? 'driver.add' : 'datasource.add_data_source')
                   "
                   placement="top"
                 >
@@ -137,11 +133,11 @@
                     <slot>
                       <el-dropdown-item command="edit">
                         <i class="el-icon-edit"></i>
-                        {{ $t('chart.edit') }}
+                        {{ $t("chart.edit") }}
                       </el-dropdown-item>
                       <el-dropdown-item command="delete">
                         <i class="el-icon-delete"></i>
-                        {{ $t('chart.delete') }}
+                        {{ $t("chart.delete") }}
                       </el-dropdown-item>
                     </slot>
                   </el-dropdown-menu>
@@ -170,10 +166,7 @@
           :rules="rule"
         >
           <el-form-item :label="$t('datasource.driver_name')" prop="name">
-            <el-input
-              v-model="driverForm.name"
-              :placeholder="$t('fu.search_bar.please_input')"
-            />
+            <el-input v-model="driverForm.name" :placeholder="$t('fu.search_bar.please_input')" />
           </el-form-item>
           <el-form-item :label="$t('datasource.drive_type')" prop="type">
             <el-select
@@ -196,9 +189,9 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <deBtn secondary @click="close()">{{ $t('commons.cancel') }}</deBtn>
+          <deBtn secondary @click="close()">{{ $t("commons.cancel") }}</deBtn>
           <deBtn type="primary" size="mini" @click="saveDriver(driverForm)"
-            >{{ $t('commons.save') }}
+            >{{ $t("commons.save") }}
           </deBtn>
         </div>
       </el-dialog>
@@ -213,18 +206,10 @@
       >
         <el-tabs v-model="tabActive" @tab-click="changeTab">
           <el-tab-pane :label="$t('datasource.all')" name="all"> </el-tab-pane>
-          <el-tab-pane
-            :label="$t('datasource.relational_database')"
-            name="reDb"
-          >
+          <el-tab-pane :label="$t('datasource.relational_database')" name="reDb"> </el-tab-pane>
+          <el-tab-pane :label="$t('datasource.non_relational_database')" name="noReDb">
           </el-tab-pane>
-          <el-tab-pane
-            :label="$t('datasource.non_relational_database')"
-            name="noReDb"
-          >
-          </el-tab-pane>
-          <el-tab-pane :label="$t('datasource.other')" name="other">
-          </el-tab-pane>
+          <el-tab-pane :label="$t('datasource.other')" name="other"> </el-tab-pane>
           <div class="db-container">
             <div
               @click="addDb(db)"
@@ -245,8 +230,8 @@
   </el-col>
 </template>
 <script>
-import { mapGetters } from 'vuex'
-import i18n from '@/lang'
+import { mapGetters } from "vuex";
+import i18n from "@/lang";
 import {
   listDatasource,
   listDatasourceByType,
@@ -256,370 +241,372 @@ import {
   addDriver,
   delDriver,
   listDriverByType,
-  updateDriver
-} from '@/api/system/datasource'
-import { ApplicationContext } from '@/utils/ApplicationContext'
-import deTextarea from '@/components/deCustomCm/deTextarea.vue'
-import msgCfm from '@/components/msgCfm'
-
+  updateDriver,
+} from "@/api/system/datasource";
+import { ApplicationContext } from "@/utils/ApplicationContext";
+import deTextarea from "@/components/deCustomCm/deTextarea.vue";
+import msgCfm from "@/components/msgCfm";
 export default {
-  name: 'DsTree',
+  name: "DsTree",
   mixins: [msgCfm],
   components: { deTextarea },
   props: {
     datasource: {
       type: Object,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
-      tabActive: 'all',
+      tabActive: "all",
       dsTypeRelate: false,
       expandedArray: [],
       tData: [],
       dsTypes: [],
       dsTypesForDriver: [],
       showSearchInput: false,
-      key: '',
-      showView: 'Datasource',
-      dialogTitle: '',
+      key: "",
+      showView: "Datasource",
+      dialogTitle: "",
       editDriver: false,
       driverForm: {
-        name: '',
-        desc: '',
-        type: ''
+        name: "",
+        desc: "",
+        type: "",
       },
       params: {},
       rule: {
         name: [
           {
             required: true,
-            message: i18n.t('datasource.input_name'),
-            trigger: 'blur'
+            message: i18n.t("datasource.input_name"),
+            trigger: "blur",
           },
           {
             min: 2,
             max: 50,
-            message: i18n.t('datasource.input_limit_2_25', [2, 25]),
-            trigger: 'blur'
-          }
+            message: i18n.t("datasource.input_limit_2_25", [2, 25]),
+            trigger: "blur",
+          },
         ],
         desc: [
           {
             required: true,
-            message: i18n.t('datasource.input_name'),
-            trigger: 'blur'
+            message: i18n.t("datasource.input_name"),
+            trigger: "blur",
           },
           {
             min: 2,
             max: 200,
-            message: i18n.t('datasource.input_limit_2_25', [2, 25]),
-            trigger: 'blur'
-          }
+            message: i18n.t("datasource.input_limit_2_25", [2, 25]),
+            trigger: "blur",
+          },
         ],
         type: [
           {
             required: true,
-            message: i18n.t('datasource.please_choose_type'),
-            trigger: 'blur'
-          }
-        ]
-      }
-    }
+            message: i18n.t("datasource.please_choose_type"),
+            trigger: "blur",
+          },
+        ],
+      },
+    };
   },
   watch: {
     key(val) {
-      this.$refs.myDsTree.filter(val)
-    }
+      this.$refs.myDsTree.filter(val);
+    },
   },
   computed: {
-    ...mapGetters(['user'])
+    ...mapGetters(["user"]),
   },
   created() {
-    this.queryTreeDatas()
-    this.datasourceTypes()
+    this.queryTreeDatas();
+    this.datasourceTypes();
   },
   methods: {
     changeTab() {},
     filterNode(value, data) {
-      if (!value) return true
-      return data.name.indexOf(value) !== -1
+      if (!value) return true;
+      return data.name.indexOf(value) !== -1;
     },
     showSearchWidget() {
-      this.showSearchInput = true
+      this.showSearchInput = true;
     },
     closeSearchWidget() {
-      this.key = ''
-      this.showSearchInput = false
+      this.key = "";
+      this.showSearchInput = false;
     },
     queryTreeDatas() {
-      if (this.showView === 'Datasource') {
+      if (this.showView === "Datasource") {
         listDatasource().then((res) => {
-          this.tData = this.buildTree(res.data)
-        })
+          this.tData = this.buildTree(res.data);
+        });
       }
-      if (this.showView === 'Driver') {
+      if (this.showView === "Driver") {
         listDrivers().then((res) => {
-          this.tData = this.buildTree(res.data)
-        })
+          this.tData = this.buildTree(res.data);
+        });
       }
     },
     datasourceTypes() {
       listDatasourceType().then((res) => {
-        this.dsTypes = res.data
+        this.dsTypes = res.data;
         this.dsTypes.forEach((item) => {
           if (item.isJdbc) {
-            this.dsTypesForDriver.push(item)
+            this.dsTypesForDriver.push(item);
           }
-        })
-      })
+        });
+      });
     },
     refreshType(datasource) {
       const method =
-        this.showView === 'Datasource' ? listDatasourceByType : listDriverByType
-      let typeData = []
+        this.showView === "Datasource"
+          ? listDatasourceByType
+          : listDriverByType;
+      let typeData = [];
       method(datasource.type).then((res) => {
-        typeData = this.buildTree(res.data)
+        typeData = this.buildTree(res.data);
         if (typeData.length === 0) {
           const index = this.tData.findIndex((item) => {
             if (item.id === datasource.type) {
-              return true
+              return true;
             }
-          })
-          this.tData.splice(index, 1)
+          });
+          this.tData.splice(index, 1);
         } else {
-          let find = false
+          let find = false;
           for (let index = 0; index < this.tData.length; index++) {
             if (typeData[0].id === this.tData[index].id) {
-              this.tData[index].children = typeData[0].children
+              this.tData[index].children = typeData[0].children;
               for (let i = 0; i < this.tData[index].children.length; i++) {
                 if (this.tData[index].children[i].id === datasource.id) {
-                  this.showInfo({ data: this.tData[index].children[i] })
+                  this.showInfo({ data: this.tData[index].children[i] });
                 }
               }
-              find = true
+              find = true;
             }
           }
           if (!find) {
-            this.tData.push(typeData[0])
+            this.tData.push(typeData[0]);
           }
         }
-      })
+      });
     },
     buildTree(array) {
-      const types = {}
-      const newArr = []
+      const types = {};
+      const newArr = [];
       for (let index = 0; index < array.length; index++) {
-        const element = array[index]
+        const element = array[index];
         if (this.msgNodeId) {
           if (element.id === this.msgNodeId) {
-            element.msgNode = true
+            element.msgNode = true;
           }
         }
         if (!(element.type in types)) {
-          types[element.type] = []
+          types[element.type] = [];
           // newArr.push(...element, ...{ children: types[element.type] })
           newArr.push({
             id: element.type,
             name: element.typeDesc,
-            type: 'folder',
-            children: types[element.type]
-          })
+            type: "folder",
+            children: types[element.type],
+          });
         }
-        types[element.type].push(element)
+        types[element.type].push(element);
         // newArr.children.push({ id: element.id, label: element.name })
       }
-      return newArr
+      return newArr;
     },
     addFolder() {
-      if (this.showView === 'Driver') {
-        this.dialogTitle = this.$t('datasource.add_driver')
-        this.editDriver = true
-        this.switchMain('DriverForm', {}, this.tData, this.dsTypes)
+      if (this.showView === "Driver") {
+        this.dialogTitle = this.$t("datasource.add_driver");
+        this.editDriver = true;
+        this.switchMain("DriverForm", {}, this.tData, this.dsTypes);
       } else {
-        this.dsTypeRelate = true
+        this.dsTypeRelate = true;
       }
     },
     addDriver() {
-      this.dialogTitle = this.$t('datasource.add_driver')
-      this.editDriver = true
+      this.dialogTitle = this.$t("datasource.add_driver");
+      this.editDriver = true;
     },
     driverMgm() {
-      this.$emit('switch-main', {})
-      this.$emit('switch-mgm', 'driverMgm')
-      this.showView = 'Driver'
-      this.expandedArray = []
-      this.tData = []
-      this.queryTreeDatas()
+      this.$emit("switch-main", {});
+      this.$emit("switch-mgm", "driverMgm");
+      this.showView = "Driver";
+      this.expandedArray = [];
+      this.tData = [];
+      this.queryTreeDatas();
     },
     dsMgm() {
-      this.$emit('switch-main', {})
-      this.showView = 'Datasource'
-      this.expandedArray = []
-      this.tData = []
-      this.queryTreeDatas()
+      this.$emit("switch-main", {});
+      this.showView = "Datasource";
+      this.expandedArray = [];
+      this.tData = [];
+      this.queryTreeDatas();
     },
     addDb({ type }) {
       this.$router.push({
-        name: 'datasource-form',
-        params: { type }
-      })
+        name: "datasource-form",
+        params: { type },
+      });
     },
     addFolderWithType(data) {
-      if (this.showView === 'Driver') {
-        this.driverForm.type = data.id
-        this.dialogTitle = this.$t('datasource.add_driver')
-        this.editDriver = true
+      if (this.showView === "Driver") {
+        this.driverForm.type = data.id;
+        this.dialogTitle = this.$t("datasource.add_driver");
+        this.editDriver = true;
       } else {
         this.$router.push({
-          name: 'datasource-form',
-          params: { type: data.id }
-        })
+          name: "datasource-form",
+          params: { type: data.id },
+        });
       }
     },
     nodeClick(node, data) {
-      if (node.type === 'folder') return
-      this.showInfo(data)
+      if (node.type === "folder") return;
+      this.showInfo(data);
     },
     clickFileMore(param) {
-      const { optType, data } = param
+      const { optType, data } = param;
       switch (optType) {
-        case 'edit':
-          this.edit(data)
-          break
-        case 'delete':
-          this._handleDelete(data)
-          break
+        case "edit":
+          this.edit(data);
+          break;
+        case "delete":
+          this._handleDelete(data);
+          break;
         default:
-          break
+          break;
       }
     },
     showInfo(row) {
-      if (this.showView === 'Driver') {
-        const param = { ...row.data, ...{ showModel: 'show' } }
+      if (this.showView === "Driver") {
+        const param = { ...row.data, ...{ showModel: "show" } };
         this.switchMain(
-          this.showView === 'Datasource' ? 'DsForm' : 'DriverForm',
+          this.showView === "Datasource" ? "DsForm" : "DriverForm",
           param,
           this.tData,
           this.dsTypes
-        )
+        );
       } else {
-        this.switchMain('dsTable', row.data)
+        this.switchMain("dsTable", row.data);
       }
     },
     handleCommand(type, data) {
       switch (type) {
-        case 'edit':
-          this._handleEditer(data)
-          break
-        case 'delete':
-          this._handleDelete(data)
-          break
+        case "edit":
+          this._handleEditer(data);
+          break;
+        case "delete":
+          this._handleDelete(data);
+          break;
         default:
-          break
+          break;
       }
     },
     _handleEditer(row) {
-      if (this.showView === 'Datasource') {
-        const param = { ...row, ...{ showModel: 'show' } }
-        this.switchMain('DsForm', param, this.tData, this.dsTypes)
+      if (this.showView === "Datasource") {
+        const param = { ...row, ...{ showModel: "show" } };
+        this.switchMain(
+          'DsForm',
+          param,
+          this.tData,
+          this.dsTypes
+        );
         return
       }
-      this.editDriver = true
-      this.dialogTitle = this.$t('datasource.edit_driver')
-      this.driverForm = row
+      this.editDriver = true;
+      this.dialogTitle = this.$t('datasource.edit_driver');
+      this.driverForm = row;
     },
     _handleDelete(datasource) {
       const params = {
-        title:
-          this.showView === 'Datasource'
-            ? 'datasource.this_data_source'
-            : 'datasource.delete_this_driver',
+        title: this.showView === "Datasource" ? 'datasource.this_data_source' : 'datasource.delete_this_driver',
         cb: () => {
-          let method = delDriver
-          let parma = { type: datasource.type, id: datasource.id }
-          if (this.showView === 'Datasource') {
-            method = delDs
-            parma = datasource.id
+          let method = delDriver;
+          let parma = { type: datasource.type, id: datasource.id };
+          if (this.showView === "Datasource") {
+            method = delDs;
+            parma = datasource.id;
           }
           method(parma).then((res) => {
             if (res.success) {
-              this.openMessageSuccess('commons.delete_success')
-              this.switchMain('', {}, this.tData, this.dsTypes)
-              this.refreshType(datasource)
+              this.openMessageSuccess("commons.delete_success");
+              this.switchMain("", {}, this.tData, this.dsTypes);
+              this.refreshType(datasource);
             } else {
-              this.openMessageSuccess(res.message, 'error')
+              this.openMessageSuccess(res.message, "error")
             }
-          })
+          });
         }
       }
       this.handlerConfirm(params)
     },
     switchMain(component, componentParam, tData, dsTypes) {
-      if (component === 'DsForm') {
+      if (component === "DsForm") {
         this.$router.push({
-          name: 'datasource-form',
+          name: "datasource-form",
           params: {
             ...componentParam,
-            msgNodeId: this.msgNodeId
-          }
-        })
-        return
+            msgNodeId: this.msgNodeId,
+          },
+        });
+        return;
       }
-      this.$emit('switch-main', {
+      this.$emit("switch-main", {
         component,
         componentParam,
         tData,
-        dsTypes
-      })
+        dsTypes,
+      });
     },
     markInvalid(msgParam) {
-      const param = JSON.parse(msgParam)
-      const msgNodeId = param.id
-      this.msgNodeId = msgNodeId
+      const param = JSON.parse(msgParam);
+      const msgNodeId = param.id;
+      this.msgNodeId = msgNodeId;
       this.$nextTick(() => {
         this.tData.forEach((folder) => {
-          const nodes = folder.children
+          const nodes = folder.children;
           nodes.forEach((node) => {
             if (node.id === msgNodeId) {
-              node.msgNode = true
+              node.msgNode = true;
             }
-          })
-        })
-      })
+          });
+        });
+      });
     },
     close() {
-      this.$refs['driverForm'].resetFields()
-      this.editDriver = false
+      this.$refs["driverForm"].resetFields();
+      this.editDriver = false;
       this.driverForm = {
-        name: '',
-        desc: '',
-        type: ''
-      }
+        name: "",
+        desc: "",
+        type: "",
+      };
     },
     saveDriver(driverForm) {
-      this.$refs['driverForm'].validate((valid) => {
+      this.$refs["driverForm"].validate((valid) => {
         if (valid) {
-          const req = driverForm.id ? updateDriver : addDriver
+          const req = driverForm.id ?  updateDriver : addDriver;
           req(driverForm).then((res) => {
-            this.openMessageSuccess('dataset.save_success')
-            this.refreshType(driverForm)
-            this.close()
-          })
+            this.openMessageSuccess("dataset.save_success")
+            this.refreshType(driverForm);
+            this.close();
+          });
         } else {
-          return false
+          return false;
         }
-      })
-    }
-  }
-}
+      });
+    },
+  },
+};
 </script>
 <style lang="scss" scoped>
 .custom-tree-container {
   margin-top: 16px;
 }
-
 .custom-tree-node {
   flex: 1;
   display: flex;
@@ -629,7 +616,6 @@ export default {
   padding-right: 8px;
   width: 100%;
 }
-
 .custom-tree-node-list {
   flex: 1;
   display: flex;
@@ -638,33 +624,27 @@ export default {
   font-size: 14px;
   padding: 0 8px;
   width: calc(100% - 40px);
-
   .child {
     /*display: none;*/
     visibility: hidden;
   }
-
   &:hover .child {
     /*display: inline;*/
     visibility: visible;
   }
 }
-
 .tree-list ::v-deep .el-tree-node__expand-icon.is-leaf {
   display: none;
 }
-
 .tree-style {
   padding: 16px 24px;
   height: 100%;
   overflow-y: auto;
-
   .title-text {
     line-height: 26px;
     color: #1f2329;
     margin-bottom: 16px;
   }
-
   .title-operate {
     text-align: right;
     i {
@@ -681,7 +661,6 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-
   .db-card {
     height: 193px;
     width: 270px;
@@ -705,7 +684,6 @@ export default {
       padding: 8px 12px;
       border-top: 1px solid rgba(#1f2329, 0.15);
     }
-
     &:hover {
       box-shadow: 0px 6px 24px rgba(31, 35, 41, 0.08);
     }

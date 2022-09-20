@@ -15,6 +15,8 @@ import java.util.Map;
  */
 @Data
 public class PanelGroupDTO extends PanelGroupWithBLOBs implements ITreeBase<PanelGroupDTO> {
+    @ApiModelProperty("创建用户名")
+    private String creatorName;
     @ApiModelProperty("标签")
     private String label;
     @ApiModelProperty("是否叶子节点")
