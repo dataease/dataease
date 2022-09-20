@@ -1521,6 +1521,12 @@ public class ChartViewService {
                     getIndex = i;
                 }
             }
+            if (StringUtils.equalsIgnoreCase(fieldType, "extStack")) {
+                List<ChartViewFieldDTO> stack = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
+                }.getType());
+                index += stack.size();
+                getIndex += stack.size();
+            }
             List<String[]> sortResult = resultCustomSort(fieldList, sqlData);
             if (ObjectUtils.isNotEmpty(chartViewFieldDTO) && (getIndex >= index)) {
                 // 获取自定义值与data对应列的结果
