@@ -39,13 +39,13 @@
             </span>
             <el-dropdown-menu class="de-template-dropdown" slot="dropdown">
               <el-dropdown-item icon="el-icon-upload2" command="import">
-                {{ $t("panel.import") }}
+               {{$t('app_template.app_upload')}}
               </el-dropdown-item>
               <el-dropdown-item icon="el-icon-edit" command="edit">
-                {{ $t("panel.rename") }}
+                {{ $t("commons.edit") }}
               </el-dropdown-item>
               <el-dropdown-item icon="el-icon-delete" command="delete">
-                {{ $t("panel.delete") }}
+                {{ $t("commons.delete") }}
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -129,8 +129,8 @@ export default {
     },
     templateDelete(template) {
       const options = {
-        title: "system_parameter_setting.delete_this_category",
-        content: "system_parameter_setting.also_be_deleted",
+        title: this.$('app_template.app_group_delete_tips'),
+        content: this.$('app_template.app_group_delete_content'),
         type: "primary",
         cb: () => this.$emit("templateDelete", template.id),
       };

@@ -34,6 +34,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -50,10 +51,12 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.excelinput.ExcelInputField;
 import org.pentaho.di.trans.steps.excelinput.ExcelInputMeta;
 import org.pentaho.di.trans.steps.excelinput.SpreadSheetType;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
+import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
@@ -898,10 +901,10 @@ public class ExtractDataService {
         String outFile = null;
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasource.getType());
         DatabaseMeta dataMeta;
-        StepMeta inputStep = null;
+        List<StepMeta> inputSteps = new ArrayList<>();
         StepMeta outputStep;
         StepMeta udjcStep = null;
-        TransHopMeta hi1;
+
         TransHopMeta hi2;
         String transName = null;
 
@@ -921,7 +924,7 @@ public class ExtractDataService {
                 }
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL, mysqlConfiguration);
+                inputSteps = inputStep(transMeta, selectSQL, mysqlConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.mysql, mysqlConfiguration);
                 break;
             case sqlServer:
@@ -929,7 +932,7 @@ public class ExtractDataService {
                 dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfiguration.getHost().trim(), sqlServerConfiguration.getDataBase(), sqlServerConfiguration.getPort().toString(), sqlServerConfiguration.getUsername(), sqlServerConfiguration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL, sqlServerConfiguration);
+                inputSteps = inputStep(transMeta, selectSQL, sqlServerConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.sqlServer, sqlServerConfiguration);
                 break;
             case pg:
@@ -937,7 +940,7 @@ public class ExtractDataService {
                 dataMeta = new DatabaseMeta("db", "POSTGRESQL", "Native", pgConfiguration.getHost().trim(), pgConfiguration.getDataBase(), pgConfiguration.getPort().toString(), pgConfiguration.getUsername(), pgConfiguration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL, pgConfiguration);
+                inputSteps = inputStep(transMeta, selectSQL, pgConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.pg, pgConfiguration);
                 break;
             case oracle:
@@ -950,7 +953,7 @@ public class ExtractDataService {
                 }
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL, oracleConfiguration);
+                inputSteps = inputStep(transMeta, selectSQL, oracleConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle, oracleConfiguration);
                 break;
             case ck:
@@ -959,7 +962,7 @@ public class ExtractDataService {
                 dataMeta.setDatabaseType("Clickhouse");
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL, chConfiguration);
+                inputSteps = inputStep(transMeta, selectSQL, chConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.ck, chConfiguration);
                 break;
             case db2:
@@ -968,11 +971,11 @@ public class ExtractDataService {
                 dataMeta.setDatabaseType("DB2");
                 transMeta.addDatabase(dataMeta);
                 selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
-                inputStep = inputStep(transMeta, selectSQL, db2Configuration);
+                inputSteps = inputStep(transMeta, selectSQL, db2Configuration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.db2, db2Configuration);
                 break;
             case excel:
-                inputStep = excelInputStep(datasetTable.getInfo(), datasetTableFields);
+                inputSteps = excelInputStep(datasetTable.getInfo(), datasetTableFields);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.excel, null);
             default:
                 break;
@@ -1000,11 +1003,14 @@ public class ExtractDataService {
 
         outputStep = outputStep(outFile, datasetTableFields, datasource);
 
-        hi1 = new TransHopMeta(inputStep, udjcStep);
+        for (StepMeta inputStep : inputSteps) {
+            TransHopMeta hi1 = new TransHopMeta(inputStep, udjcStep);
+            transMeta.addTransHop(hi1);
+            transMeta.addStep(inputStep);
+        }
+
         hi2 = new TransHopMeta(udjcStep, outputStep);
-        transMeta.addTransHop(hi1);
         transMeta.addTransHop(hi2);
-        transMeta.addStep(inputStep);
         transMeta.addStep(udjcStep);
         transMeta.addStep(outputStep);
 
@@ -1036,7 +1042,7 @@ public class ExtractDataService {
         return selectSQL;
     }
 
-    private StepMeta inputStep(TransMeta transMeta, String selectSQL, JdbcConfiguration jdbcConfiguration) {
+    private List<StepMeta> inputStep(TransMeta transMeta, String selectSQL, JdbcConfiguration jdbcConfiguration) {
         TableInputMeta tableInput = new TableInputMeta();
         DatabaseMeta database = transMeta.findDatabase(DatasetType.DB.name());
         tableInput.setDatabaseMeta(database);
@@ -1044,58 +1050,89 @@ public class ExtractDataService {
         StepMeta fromStep = new StepMeta("TableInput", "Data Input", tableInput);
         fromStep.setDraw(true);
         fromStep.setLocation(100, 100);
-        return fromStep;
+        List<StepMeta> inputSteps = new ArrayList<>();
+        inputSteps.add(fromStep);
+        return inputSteps;
     }
 
-    private StepMeta excelInputStep(String Info, List<DatasetTableField> datasetTableFields) {
+    private List<StepMeta> excelInputStep(String Info, List<DatasetTableField> datasetTableFields) {
+        List<StepMeta>inputSteps = new ArrayList<>();
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(Info, DataTableInfoDTO.class);
         List<ExcelSheetData> excelSheetDataList = dataTableInfoDTO.getExcelSheetDataList();
-        String suffix = excelSheetDataList.get(0).getPath().substring(excelSheetDataList.get(0).getPath().lastIndexOf(".") + 1);
-        ExcelInputMeta excelInputMeta = new ExcelInputMeta();
 
         List<String> sheetNames = new ArrayList<>();
-        List<String> files = new ArrayList<>();
-        List<String> filesRequired = new ArrayList<>();
-        for (ExcelSheetData excelSheetData : excelSheetDataList) {
-            if (!sheetNames.contains(excelSheetData.getExcelLable())) {
-                sheetNames.add(excelSheetData.getExcelLable());
-            }
-            if (!files.contains(excelSheetData.getPath())) {
-                files.add(excelSheetData.getPath());
-                filesRequired.add("Y");
-            }
-        }
-        if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
-            excelInputMeta.setSpreadSheetType(SpreadSheetType.SAX_POI);
-            excelInputMeta.setSheetName(sheetNames.toArray(new String[sheetNames.size()]));
-        }
-        if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
-            excelInputMeta.setSpreadSheetType(SpreadSheetType.JXL);
-            excelInputMeta.setSheetName(sheetNames.toArray(new String[sheetNames.size()]));
-        }
-        excelInputMeta.setPassword("Encrypted");
-        excelInputMeta.setFileName(files.toArray(new String[files.size()]));
-        excelInputMeta.setFileRequired(filesRequired.toArray(new String[filesRequired.size()]));
-        excelInputMeta.setStartsWithHeader(true);
-        excelInputMeta.setIgnoreEmptyRows(true);
-        ExcelInputField[] fields = new ExcelInputField[datasetTableFields.size()];
-        for (int i = 0; i < datasetTableFields.size(); i++) {
-            ExcelInputField field = new ExcelInputField();
-            field.setName(datasetTableFields.get(i).getDataeaseName());
-            if (datasetTableFields.get(i).getDeExtractType() == 1) {
-                field.setType("String");
-                field.setFormat("yyyy-MM-dd HH:mm:ss");
-            } else {
-                field.setType("String");
-            }
-            fields[i] = field;
-        }
 
-        excelInputMeta.setField(fields);
-        StepMeta fromStep = new StepMeta("ExcelInput", "Data Input", excelInputMeta);
-        fromStep.setDraw(true);
-        fromStep.setLocation(100, 100);
-        return fromStep;
+        int size =1;
+        for (ExcelSheetData excelSheetData : excelSheetDataList) {
+            StepMeta fromStep = null;
+            String suffix = excelSheetData.getPath().substring(excelSheetDataList.get(0).getPath().lastIndexOf(".") + 1);
+
+            if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
+                CsvInputMeta csvInputMeta = new CsvInputMeta();
+                csvInputMeta.setFilename(excelSheetData.getPath());
+                csvInputMeta.setHeaderPresent(true);
+                csvInputMeta.setBufferSize("10000");
+                csvInputMeta.setDelimiter(",");
+                TextFileInputField[] fields = new TextFileInputField[datasetTableFields.size()];
+                for (int i = 0; i < datasetTableFields.size(); i++) {
+                    TextFileInputField field = new TextFileInputField();
+                    field.setName(datasetTableFields.get(i).getDataeaseName());
+                    if (datasetTableFields.get(i).getDeExtractType() == 1) {
+                        field.setType(ValueMeta.getType("String"));
+                        field.setFormat("yyyy-MM-dd HH:mm:ss");
+                    } else {
+                        field.setType(ValueMeta.getType("String"));
+                    }
+                    fields[i] = field;
+                }
+                csvInputMeta.setInputFields(fields);
+                fromStep = new StepMeta("CsvInput", "Data Input " + size, csvInputMeta);
+                fromStep.setDraw(true);
+                fromStep.setLocation(100, 100 * size);
+                inputSteps.add(fromStep);
+            }else {
+                List<String> files = new ArrayList<>();
+                files.add(excelSheetData.getPath());
+
+                List<String> filesRequired = new ArrayList<>();
+                filesRequired.add("Y");
+
+                ExcelInputMeta excelInputMeta = new ExcelInputMeta();
+                sheetNames.add(excelSheetData.getExcelLable());
+                if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
+                    excelInputMeta.setSpreadSheetType(SpreadSheetType.SAX_POI);
+                    excelInputMeta.setSheetName(sheetNames.toArray(new String[sheetNames.size()]));
+                }
+                if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
+                    excelInputMeta.setSpreadSheetType(SpreadSheetType.JXL);
+                    excelInputMeta.setSheetName(sheetNames.toArray(new String[sheetNames.size()]));
+                }
+                excelInputMeta.setPassword("Encrypted");
+                excelInputMeta.setFileName(files.toArray(new String[files.size()]));
+                excelInputMeta.setFileRequired(filesRequired.toArray(new String[filesRequired.size()]));
+                excelInputMeta.setStartsWithHeader(true);
+                excelInputMeta.setIgnoreEmptyRows(true);
+                ExcelInputField[] fields = new ExcelInputField[datasetTableFields.size()];
+                for (int i = 0; i < datasetTableFields.size(); i++) {
+                    ExcelInputField field = new ExcelInputField();
+                    field.setName(datasetTableFields.get(i).getDataeaseName());
+                    if (datasetTableFields.get(i).getDeExtractType() == 1) {
+                        field.setType("String");
+                        field.setFormat("yyyy-MM-dd HH:mm:ss");
+                    } else {
+                        field.setType("String");
+                    }
+                    fields[i] = field;
+                }
+                excelInputMeta.setField(fields);
+                fromStep = new StepMeta("ExcelInput", "Data Input " + size, excelInputMeta);
+                fromStep.setDraw(true);
+                fromStep.setLocation(100, 100 * size);
+                inputSteps.add(fromStep);
+            }
+            size++;
+        }
+        return inputSteps;
     }
 
     private StepMeta outputStep(String dorisOutputTable, List<DatasetTableField> datasetTableFields, Datasource datasource) {

@@ -9,7 +9,7 @@
       :model="templateInfo"
       :rules="templateInfoRules"
     >
-      <el-form-item :label="'应用名称'" prop="name">
+      <el-form-item :label="$t('app_template.app_name')" prop="name">
         <div class="flex-template">
           <el-input v-model="templateInfo.name" clearable size="small" />
             <deBtn
@@ -17,7 +17,9 @@
               class="el-icon-upload2"
               secondary
               @click="goFile"
-              >上传应用</deBtn
+              >
+              {{$t('app_template.app_upload')}}
+            </deBtn
             >
             <input
               id="input"
@@ -43,7 +45,7 @@
 </template>
 
 <script>
-import { save, nameCheck } from "@/api/system/templateApp";
+import { save,update, nameCheck } from "@/api/system/appTemplate";
 import msgCfm from "@/components/msgCfm/index";
 import { find } from "@/api/system/template";
 import {imgUrlTrans} from "@/components/canvas/utils/utils";
@@ -55,10 +57,27 @@ export default {
       type: String,
       required: true,
     },
+    optType: {
+      type: String,
+      required: false
+    },
+    appTemplateInfo: {
+      type: Object,
+      required: false,
+    },
+  },
+  mounted() {
+    if('update'===this.optType){
+      this.templateInfo.id = this.appTemplateInfo.id
+      this.templateInfo.name = this.appTemplateInfo.name
+      this.templateInfo.snapshot = this.appTemplateInfo.snapshot
+      this.templateInfo.pid = this.appTemplateInfo.pid
+      this.templateInfo.level = 1
+    }
   },
   data() {
     return {
-      appResultInfo:null,
+      appResultInfo: {},
       importTemplateInfo: {
         snapshot: "",
       },
@@ -73,6 +92,7 @@ export default {
       },
       recover: false,
       templateInfo: {
+        id:null,
         level: "1",
         pid: this.pid,
         name: "",
@@ -86,9 +106,9 @@ export default {
   },
   computed: {
     classBackground() {
-      if (this.importTemplateInfo.snapshot) {
+      if (this.templateInfo.snapshot) {
         return {
-          background: `url(${imgUrlTrans(this.importTemplateInfo.snapshot)}) no-repeat`,
+          background: `url(${imgUrlTrans(this.templateInfo.snapshot)}) no-repeat`,
         };
       } else {
         return {};
@@ -112,7 +132,7 @@ export default {
         this.$warning(this.$t("chart.name_can_not_empty"));
         return false;
       }
-      if (!this.templateInfo.templateData) {
+      if ('update'!==this.optType && !this.templateInfo.templateData) {
         this.$warning(this.$t("chart.template_can_not_empty"));
         return false;
       }
@@ -121,28 +141,29 @@ export default {
         name: this.templateInfo.name,
         optType: "insert",
       };
-      this.appResultInfo['pid'] =this.templateInfo.pid,
-      this.appResultInfo['name'] =this.templateInfo.name,
+      if('update'===this.optType){
+        nameCheckRequest.optType = 'update'
+        nameCheckRequest['id'] = this.templateInfo.id
+        this.appResultInfo['id'] = this.templateInfo.id
+        this.appResultInfo['optType'] = 'update'
+      }
+      this.appResultInfo['pid'] =this.templateInfo.pid
       this.appResultInfo['level'] =this.templateInfo.level
+      this.appResultInfo['name'] =this.templateInfo.name,
       this.appResultInfo['snapshot'] =this.templateInfo.snapshot
+      const method = 'update'===this.optType?update:save
+      const successMsg = 'update'===this.optType?'更新成功':this.$t('system_parameter_setting.import_succeeded')
       const _this = this
       nameCheck(nameCheckRequest).then((response) => {
         if (response.data.indexOf("exist") > -1) {
-          const options = {
-          title: 'commons.prompt',
-          content: "system_parameter_setting.to_overwrite_them",
-          type: "primary",
-          cb: () => save(_this.appResultInfo).then((response) => {
-                this.openMessageSuccess("system_parameter_setting.import_succeeded");
-                this.$emit("refresh");
-                this.$emit("closeEditTemplateDialog");
-              }),
-          confirmButtonText: this.$t('template.override')
-        };
-        this.handlerConfirm(options);
+          this.$message({
+            message: '当前名称已经存在',
+            type: 'error',
+            showClose: true
+          })
         } else {
-          save(_this.appResultInfo).then((response) => {
-            this.openMessageSuccess("system_parameter_setting.import_succeeded");
+          method(_this.appResultInfo).then((response) => {
+            this.openMessageSuccess(successMsg);
             this.$emit("refresh");
             this.$emit("closeEditTemplateDialog");
           });

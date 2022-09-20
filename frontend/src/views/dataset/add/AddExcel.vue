@@ -176,6 +176,7 @@
   </div>
 </template>
 
+
 <script>
 import { post } from '@/api/dataset/dataset'
 import { getToken } from '@/utils/auth'
@@ -428,16 +429,9 @@ export default {
         }
       }
 
-      if (
-        this.param.editType === 0 &&
-        this.param.tableId &&
-        (effectExtField || changeFiled)
-      ) {
-        var msg = effectExtField
-          ? i18n.t('dataset.task.effect_ext_field') +
-            ', ' +
-            i18n.t('dataset.task.excel_replace_msg')
-          : i18n.t('dataset.task.excel_replace_msg')
+      if (this.param.editType === 0 && this.param.tableId && (effectExtField || changeFiled)) {
+
+        var msg = effectExtField ? i18n.t('dataset.effect_ext_field') + ', ' + i18n.t('dataset.excel_replace_msg') : i18n.t('dataset.excel_replace_msg')
         $confirm(msg, () => {
           this.saveExcelData(sheetFileMd5, table)
         })

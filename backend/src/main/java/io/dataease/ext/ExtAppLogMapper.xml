@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.ext.ExtAppLogMapper">
+    <resultMap id="BaseResultMapDTO" type="io.dataease.dto.appTemplateMarket.AppLogGridDTO"
+               extends="io.dataease.plugins.common.base.mapper.PanelAppTemplateLogMapper.BaseResultMap">
+        <result column="app_name" property="appName"/>
+        <result column="panel_name" property="panelName"/>
+        <result column="dataset_group_name" property="datasetGroupName"/>
+        <result column="datasource_name" property="datasourceName"/>
+    </resultMap>
+    <select id="query" parameterType="io.dataease.service.panel.applog.AppLogQueryParam" resultMap="BaseResultMapDTO">
+        select * from
+        (select * from
+            (SELECT
+            panel_app_template_log.*,
+            IFNULL(panel_app_template.name,CONCAT(panel_app_template_log.app_template_name,'(Deleted)')) as app_name,
+            IFNULL(panel_group.name,CONCAT(panel_app_template_log.source_panel_name,'(Deleted)')) as panel_name,
+            IFNULL(dataset_group.name,CONCAT(panel_app_template_log.source_dataset_group_name,'(Deleted)')) as dataset_group_name,
+            IFNULL(datasource.`name`,CONCAT(panel_app_template_log.source_datasource_name,'(Deleted)')) as datasource_name
+            FROM
+            panel_app_template_log
+            LEFT JOIN panel_group ON panel_app_template_log.panel_id = panel_group.id
+            left join dataset_group on panel_app_template_log.dataset_group_id = dataset_group.id
+            left join datasource on panel_app_template_log.datasource_id = datasource.id
+            left join panel_app_template on panel_app_template_log.app_template_id = panel_app_template.id
+            ) t
+        where 1=1
+        <if test="extendCondition != null">
+            and
+            (
+            t.app_name like concat('%', #{extendCondition} , '%')
+            or
+            t.panel_name like concat('%', #{extendCondition} , '%')
+            or
+            t.dataset_group_name like concat('%', #{extendCondition} , '%')
+            or
+            t.datasource_name like concat('%', #{extendCondition} , '%')
+            )
+        </if>
+        ) logInfo
+        <if test="_parameter != null">
+            <include refid="io.dataease.ext.query.GridSql.gridCondition"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="orderByClause == null">
+            order by apply_time desc
+        </if>
+    </select>
+</mapper>

@@ -3,13 +3,11 @@ package io.dataease.controller.panel;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.controller.handler.annotation.I18n;
 import io.dataease.controller.request.panel.PanelAppTemplateRequest;
-import io.dataease.plugins.common.base.domain.PanelAppTemplate;
 import io.dataease.plugins.common.base.domain.PanelAppTemplateWithBLOBs;
 import io.dataease.service.panel.PanelAppTemplateService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -21,10 +19,8 @@ import java.util.List;
 @Api(tags = "仪表板：应该关系")
 @ApiSupport(order = 170)
 @RestController
-@RequestMapping("templateApp")
+@RequestMapping("appTemplate")
 public class PanelAppTemplateController {
-
-
 
     @Resource
     private PanelAppTemplateService panelAppTemplateService;
@@ -32,7 +28,7 @@ public class PanelAppTemplateController {
     @ApiOperation("查询")
     @PostMapping("/find")
     @I18n
-    public List<PanelAppTemplateWithBLOBs> templateAppList(@RequestBody PanelAppTemplateRequest request) {
+    public List<PanelAppTemplateWithBLOBs> appTemplateList(@RequestBody PanelAppTemplateRequest request) {
         return panelAppTemplateService.list(request);
     }
 
@@ -50,11 +46,11 @@ public class PanelAppTemplateController {
         panelAppTemplateService.update(request);
     }
 
-    @ApiOperation("更新")
-    @DeleteMapping("/delete/{templateAppId}")
+    @ApiOperation("删除")
+    @DeleteMapping("/delete/{appTemplateId}")
     @I18n
-    public void delete(@PathVariable String templateAppId) {
-        panelAppTemplateService.delete(templateAppId);
+    public void delete(@PathVariable String appTemplateId) {
+        panelAppTemplateService.delete(appTemplateId);
     }
 
     @ApiOperation("名称校验")
@@ -63,4 +59,5 @@ public class PanelAppTemplateController {
     public String nameCheck(@RequestBody PanelAppTemplateRequest request) {
             return panelAppTemplateService.nameCheck(request);
     }
+
 }

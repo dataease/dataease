@@ -131,6 +131,7 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    uninstall:'卸载',
     no_result: '没有找到相关内容',
     manage_member: '管理成員',
     user_confirm_remove_cancel: '確定將該用戶從角色中移除嗎?',
@@ -2557,5 +2558,16 @@ export default {
     please_select_map: '請先選擇地圖範圍'
   },
   'I18N_USER_TEMPLATE_ERROR': '模版錯誤',
-  'i18n_max_user_import_size': '文件最大不能超過10M'
+  'i18n_max_user_import_size': '文件最大不能超過10M',
+  app_template: {
+    app_manager: '應用管理',
+    app_upload: '上傳應用',
+    no_apps: '暫無應用',
+    app_group_icon: '封面圖標',
+    app_name: '應用名稱',
+    search_by_keyword:'通過關鍵字搜索',
+    apply_logs:'應用記錄',
+    app_group_delete_tips: '確定刪除該應用分類嗎?',
+    app_group_delete_content: '刪除後，該分類中所有的應用模闆也將被刪除。'
+  }
 }

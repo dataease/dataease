@@ -131,6 +131,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    uninstall:'Uninstall',
     no_result: 'No Result',
     manage_member: 'Managing members',
     confirm_remove_cancel: 'Are you sure to delete the role?',
@@ -2556,6 +2557,16 @@ export default {
     please_select_map: 'Please select a range of map'
   },
   'I18N_USER_TEMPLATE_ERROR': 'Template file error',
-  'i18n_max_user_import_size': 'File size exceeds 10M'
-
+  'i18n_max_user_import_size': 'File size exceeds 10M',
+  app_template: {
+    app_manager: 'Application management',
+    app_upload: 'Upload app',
+    no_apps: 'No apps',
+    app_group_icon: 'Cover icon',
+    app_name: 'Application name',
+    search_by_keyword:'Search by keyword',
+    apply_logs:'Apply logs',
+    app_group_delete_tips: 'Are you sure to delete this application category?',
+    app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.'
+  }
 }

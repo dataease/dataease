@@ -307,3 +307,12 @@ export function export2AppCheck(panelId){
     loading: false
   })
 }
+
+export function appApply(data) {
+  return request({
+    url: 'panel/group/appApply',
+    method: 'post',
+    loading: true,
+    data
+  })
+}

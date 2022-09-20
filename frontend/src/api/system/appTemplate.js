@@ -2,22 +2,32 @@ import request from '@/utils/request'
 
 export function save(data) {
   return request({
-    url: '/templateApp/save',
+    url: '/appTemplate/save',
     data: data,
     method: 'post',
     loading: true
   })
 }
+
+export function update(data) {
+  return request({
+    url: '/appTemplate/update',
+    data: data,
+    method: 'post',
+    loading: true
+  })
+}
+
 export function templateDelete(id) {
   return request({
-    url: '/templateApp/delete/' + id,
+    url: '/appTemplate/delete/' + id,
     method: 'delete'
   })
 }
 
-export function showtemplateAppList(data) {
+export function showappTemplateList(data) {
   return request({
-    url: '/templateApp/templateAppList',
+    url: '/appTemplate/appTemplateList',
     data: data,
     method: 'post'
   })
@@ -25,14 +35,14 @@ export function showtemplateAppList(data) {
 
 export function findOne(id) {
   return request({
-    url: '/templateApp/findOne/' + id,
+    url: '/appTemplate/findOne/' + id,
     method: 'get'
   })
 }
 
 export function find(data) {
   return request({
-    url: '/templateApp/find',
+    url: '/appTemplate/find',
     data: data,
     loading: true,
     method: 'post'
@@ -41,7 +51,7 @@ export function find(data) {
 
 export function nameCheck(data) {
   return request({
-    url: '/templateApp/nameCheck',
+    url: '/appTemplate/nameCheck',
     data: data,
     method: 'post'
   })

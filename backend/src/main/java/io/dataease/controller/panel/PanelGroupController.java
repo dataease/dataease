@@ -6,13 +6,10 @@ import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.auth.annotation.DePermissions;
 import io.dataease.auth.service.impl.ExtAuthServiceImpl;
 import io.dataease.commons.constants.PanelConstants;
-import io.dataease.controller.request.panel.PanelGroupBaseInfoRequest;
-import io.dataease.controller.request.panel.PanelViewLogRequest;
+import io.dataease.controller.request.panel.*;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.handler.annotation.I18n;
-import io.dataease.controller.request.panel.PanelGroupRequest;
-import io.dataease.controller.request.panel.PanelViewDetailsRequest;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.panel.PanelExport2App;
@@ -195,5 +192,15 @@ public class PanelGroupController {
     @GetMapping("/export2AppCheck/{panelId}")
     public PanelExport2App export2AppCheck(@PathVariable String panelId){
        return  panelGroupService.panelExport2AppCheck(panelId);
+    }
+
+    @PostMapping("/appApply")
+    public PanelGroupDTO appApply(@RequestBody PanelAppTemplateApplyRequest request) throws Exception{
+        String panelId = panelGroupService.appApply(request);
+        PanelGroupDTO result = findOne(panelId);
+        result.setParents(authService.parentResource(panelId,"panel"));
+        result.setRequestId(UUIDUtil.getUUIDAsString());
+        result.setResponseSource("appApply");
+        return result;
     }
 }
