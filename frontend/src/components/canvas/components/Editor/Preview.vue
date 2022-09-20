@@ -9,7 +9,7 @@
           <span>{{ $t('panel.panel_off') }}</span>
         </div>
       </el-row>
-      <el-row v-else-if="componentDataShow.length===0" class="custom-position">
+      <el-row v-else-if="componentDataShow && componentDataShow.length===0" class="custom-position">
         {{ $t('panel.panelNull') }}
       </el-row>
       <div
@@ -163,7 +163,7 @@ export default {
       scaleWidth: '100',
       scaleHeight: '100',
       timer: null,
-      componentDataShow: [],
+      componentDataShow: null,
       mainWidth: '100%',
       mainHeight: '100%',
       searchCount: 0,
