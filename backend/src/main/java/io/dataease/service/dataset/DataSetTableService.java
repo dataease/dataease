@@ -60,14 +60,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,10 +71,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -299,7 +292,7 @@ public class DataSetTableService {
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
     public DatasetTable save(DataSetTableRequest datasetTable) throws Exception {
         checkName(datasetTable);
-        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.name())) {
+        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.name()) && !"appApply".equalsIgnoreCase(datasetTable.getOptFrom())) {
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
             BeanUtils.copyBean(dataSetTableRequest, datasetTable);
             getSQLPreview(dataSetTableRequest);
@@ -317,7 +310,9 @@ public class DataSetTableService {
 
             // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
             if (insert == 1) {
-                saveTableField(datasetTable);
+                if (datasetTable.getOptFrom() == null || !"appApply".equalsIgnoreCase(datasetTable.getOptFrom())) {
+                    saveTableField(datasetTable);
+                }
                 extractData(datasetTable);
                 DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
             }
@@ -2182,7 +2177,7 @@ public class DataSetTableService {
     public ExcelFileData excelSaveAndParse(MultipartFile file, String tableId, Integer editType) throws Exception {
         String filename = file.getOriginalFilename();
         // parse file
-        List<ExcelSheetData> excelSheetDataList = parseExcel2(filename, file.getInputStream(), true);
+        List<ExcelSheetData> excelSheetDataList = parseExcel(filename, file.getInputStream(), true);
         List<ExcelSheetData> retrunSheetDataList = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(tableId)) {
@@ -2281,7 +2276,7 @@ public class DataSetTableService {
         return excelFileData;
     }
 
-    private List<ExcelSheetData> parseExcel2(String filename, InputStream inputStream, boolean isPreview)
+    private List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview)
             throws Exception {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
@@ -2297,6 +2292,38 @@ public class DataSetTableService {
             excelXlsxReader.process(inputStream);
             excelSheetDataList = excelXlsxReader.totalSheets;
         }
+
+        if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
+            List<TableField> fields = new ArrayList<>();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            String s = reader.readLine();// first line
+            String[] split = s.split(",");
+            for (String s1 : split) {
+                TableField tableFiled = new TableField();
+                tableFiled.setFieldName(s1);
+                tableFiled.setRemarks(s1);
+                tableFiled.setFieldType("TEXT");
+                fields.add(tableFiled);
+            }
+            List<List<String>> data = new ArrayList<>();
+            int num = 1;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (num > 100) {
+                    break;
+                }
+                data.add(Arrays.asList(line.split(",")));
+                num++;
+            }
+            ExcelSheetData excelSheetData = new ExcelSheetData();
+            String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
+            excelSheetData.setFields(fields);
+            excelSheetData.setData(data);
+            excelSheetData.setExcelLable(filename);
+            excelSheetData.setFieldsMd5(Md5Utils.md5(StringUtils.join(fieldArray, ",")));
+            excelSheetDataList.add(excelSheetData);
+        }
+
         inputStream.close();
         excelSheetDataList.forEach(excelSheetData -> {
             List<List<String>> data = excelSheetData.getData();
@@ -2316,137 +2343,6 @@ public class DataSetTableService {
         });
 
         return excelSheetDataList;
-    }
-
-    private Map<String, Object> parseExcel(String filename, InputStream inputStream, boolean isPreview)
-            throws Exception {
-        String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-        List<TableField> fields = new ArrayList<>();
-        List<String[]> data = new ArrayList<>();
-        List<Map<String, Object>> jsonArray = new ArrayList<>();
-        List<String> sheets = new ArrayList<>();
-
-        if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
-            HSSFWorkbook workbook = new HSSFWorkbook(inputStream);
-            HSSFSheet sheet0 = workbook.getSheetAt(0);
-            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-                sheets.add(workbook.getSheetAt(i).getSheetName());
-            }
-            if (sheet0.getNumMergedRegions() > 0) {
-                throw new RuntimeException(Translator.get("i18n_excel_have_merge_region"));
-            }
-            int rows;
-            if (isPreview) {
-                rows = Math.min(sheet0.getPhysicalNumberOfRows(), 100);
-            } else {
-                rows = sheet0.getPhysicalNumberOfRows();
-            }
-            int columnNum = 0;
-            for (int i = 0; i < rows; i++) {
-                HSSFRow row = sheet0.getRow(i);
-                if (i == 0) {
-                    if (row == null) {
-                        throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
-                    }
-                    columnNum = row.getPhysicalNumberOfCells();
-                }
-                String[] r = new String[columnNum];
-                for (int j = 0; j < columnNum; j++) {
-                    if (i == 0) {
-                        TableField tableField = new TableField();
-                        tableField.setFieldType("TEXT");
-                        tableField.setFieldSize(1024);
-                        String columnName = readCell(row.getCell(j), false, null);
-                        if (StringUtils.isEmpty(columnName)) {
-                            columnName = "NONE_" + String.valueOf(j);
-                        }
-                        tableField.setFieldName(columnName);
-                        tableField.setRemarks(columnName);
-                        fields.add(tableField);
-                    } else {
-                        if (row == null) {
-                            break;
-                        }
-                        r[j] = readCell(row.getCell(j), true, fields.get(j));
-                    }
-                }
-                if (i > 0) {
-                    data.add(r);
-                }
-            }
-        } else if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
-            XSSFWorkbook xssfWorkbook = new XSSFWorkbook(inputStream);
-            XSSFSheet sheet0 = xssfWorkbook.getSheetAt(0);
-            for (int i = 0; i < xssfWorkbook.getNumberOfSheets(); i++) {
-                sheets.add(xssfWorkbook.getSheetAt(i).getSheetName());
-            }
-            if (sheet0.getNumMergedRegions() > 0) {
-                throw new RuntimeException(Translator.get("i18n_excel_have_merge_region"));
-            }
-            int rows;
-            if (isPreview) {
-                rows = Math.min(sheet0.getPhysicalNumberOfRows(), 100);
-            } else {
-                rows = sheet0.getPhysicalNumberOfRows();
-            }
-            int columnNum = 0;
-            for (int i = 0; i < rows; i++) {
-                XSSFRow row = sheet0.getRow(i);
-                if (i == 0) {
-                    if (row == null) {
-                        throw new RuntimeException(Translator.get("i18n_excel_header_empty"));
-                    }
-                    columnNum = row.getLastCellNum();
-                }
-                String[] r = new String[columnNum];
-                for (int j = 0; j < columnNum; j++) {
-                    if (i == 0) {
-                        TableField tableField = new TableField();
-                        tableField.setFieldType("TEXT");
-                        tableField.setFieldSize(1024);
-                        String columnName = readCell(row.getCell(j), false, null);
-                        if (StringUtils.isEmpty(columnName)) {
-                            columnName = "NONE_" + String.valueOf(j);
-                        }
-
-                        tableField.setFieldName(columnName);
-                        tableField.setRemarks(columnName);
-                        fields.add(tableField);
-                    } else {
-                        if (row == null) {
-                            break;
-                        }
-                        r[j] = readCell(row.getCell(j), true, fields.get(j));
-                    }
-                }
-                if (i > 0) {
-                    data.add(r);
-                }
-            }
-        }
-        String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
-
-        // 校验excel字段是否重名
-        if (checkIsRepeat(fieldArray)) {
-            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-        }
-
-        if (CollectionUtils.isNotEmpty(data)) {
-            jsonArray = data.stream().map(ele -> {
-                Map<String, Object> map = new HashMap<>();
-                for (int i = 0; i < ele.length; i++) {
-                    map.put(fieldArray[i], ele[i]);
-                }
-                return map;
-            }).collect(Collectors.toList());
-        }
-        inputStream.close();
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("fields", fields);
-        map.put("data", jsonArray);
-        map.put("sheets", sheets);
-        return map;
     }
 
     private String readCell(Cell cell, boolean cellType, TableField tableField) {
@@ -2867,5 +2763,20 @@ public class DataSetTableService {
 
     static private boolean hasVarible(String sql) {
         return sql.contains(SubstitutedParams);
+    }
+
+    public void createAppCustomDorisView(String datasetInfo, String tableId) throws Exception {
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetInfo, DataTableInfoDTO.class);
+        createDorisView(TableUtils.tableName(tableId), getCustomViewSQL(dataTableInfoDTO,
+                dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId())));
+    }
+
+    public void createAppUnionDorisView(String datasetInfo, String tableId) throws Exception {
+        // save field
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetInfo, DataTableInfoDTO.class);
+        Map<String, Object> sqlMap = getUnionSQLDoris(dataTableInfoDTO);
+        String sql = (String) sqlMap.get("sql");
+        // custom 创建doris视图
+        createDorisView(TableUtils.tableName(tableId), sql);
     }
 }

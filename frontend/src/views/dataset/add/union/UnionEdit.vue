@@ -1,17 +1,35 @@
 <template>
-  <div v-if="unionParam.type" style="height:600px;">
+  <div
+    v-if="unionParam.type"
+    style="height: calc(100% - 55px); overflow-y: auto"
+  >
     <div class="field-style">
       <div class="fields">
-        <p :title="unionParam.parent.currentDs.name">{{ unionParam.parent.currentDs.name }}</p>
-        <union-field-list :field-list="parentField" :node="unionParam.parent" @checkedFields="changeParentFields" />
+        <p :title="unionParam.parent.currentDs.name">
+          {{ unionParam.parent.currentDs.name }}
+        </p>
+        <union-field-list
+          :field-list="parentField"
+          :node="unionParam.parent"
+          @checkedFields="changeParentFields"
+        />
       </div>
       <div class="fields">
-        <p :title="unionParam.parent.currentDs.name">{{ unionParam.node.currentDs.name }}</p>
-        <union-field-list :field-list="nodeField" :node="unionParam.node" @checkedFields="changeNodeFields" />
+        <p :title="unionParam.parent.currentDs.name">
+          {{ unionParam.node.currentDs.name }}
+        </p>
+        <union-field-list
+          :field-list="nodeField"
+          :node="unionParam.node"
+          @checkedFields="changeNodeFields"
+        />
       </div>
     </div>
-    <el-divider />
-    <union-item-edit :parent-field-list="parentField" :node-field-list="nodeField" :union-param="unionParam" />
+    <union-item-edit
+      :parent-field-list="parentField"
+      :node-field-list="nodeField"
+      :union-param="unionParam"
+    />
   </div>
 </template>
 
@@ -36,9 +54,7 @@ export default {
     }
   },
   watch: {
-    'unionParam': function() {
-
-    }
+    unionParam: function () {}
   },
   mounted() {
     this.getParentFieldList()
@@ -46,13 +62,25 @@ export default {
   },
   methods: {
     getParentFieldList() {
-      post('/dataset/field/list/' + this.unionParam.parent.currentDs.id, null, true).then(response => {
-        this.parentField = JSON.parse(JSON.stringify(response.data)).filter(ele => ele.extField === 0)
+      post(
+        '/dataset/field/list/' + this.unionParam.parent.currentDs.id,
+        null,
+        true
+      ).then((response) => {
+        this.parentField = JSON.parse(JSON.stringify(response.data)).filter(
+          (ele) => ele.extField === 0
+        )
       })
     },
     getNodeFieldList() {
-      post('/dataset/field/list/' + this.unionParam.node.currentDs.id, null, true).then(response => {
-        this.nodeField = JSON.parse(JSON.stringify(response.data)).filter(ele => ele.extField === 0)
+      post(
+        '/dataset/field/list/' + this.unionParam.node.currentDs.id,
+        null,
+        true
+      ).then((response) => {
+        this.nodeField = JSON.parse(JSON.stringify(response.data)).filter(
+          (ele) => ele.extField === 0
+        )
       })
     },
 
@@ -66,26 +94,35 @@ export default {
 }
 </script>
 
-<style scoped>
-.field-style{
-  height: 300px;
-}
-.fields{
+<style lang="scss" scoped>
+.field-style {
+  height: 430px;
+  border: 1px solid var(--deCardStrokeColor, #dee0e3);
+  border-radius: 4px;
+  width: 100%;
   box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
+  display: flex;
+  margin-bottom: 36px;
+}
+.fields {
+  box-sizing: border-box;
+  padding: 16px;
   width: 50%;
-  float: left;
-  padding: 0 6px;
-}
-p{
-  font-size: 14px;
-  margin: 6px 0!important;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.el-divider--horizontal {
-  margin: 12px 0;
+
+  & > p {
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+    margin-bottom: 16px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    color: var(--deTextPrimary, #1f2329);
+  }
+  &:nth-child(1) {
+    border-right: 1px solid var(--deCardStrokeColor, #dee0e3);
+  }
 }
 </style>

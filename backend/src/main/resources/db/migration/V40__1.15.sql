@@ -24,8 +24,13 @@ CREATE TABLE `task_instance` (
 
 INSERT INTO `task_instance` (`task_id`) VALUES ('Datasource_check_status');
 
-INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (41, 1, 1, 1, '应用管理', 'system-template-app', 'panel/templateApp/index', 13, 'display-setting', 'panel/templateApp/index', 0, 0, 0, 'template:read', NULL, NULL, NULL, 1620444227389);
 
+update sys_menu set menu_sort=10 where menu_id=1;
+INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (41, 1, 1, 1, '应用管理', 'system-app-template', 'panel/appTemplate/index', 13, 'sys-param', 'panel/appTemplate/index', 0, 0, 0, NULL, NULL, NULL, NULL, 1620444227389);
+INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (203, 0, 0, 1, '应用市场', 'app-template-market', 'panel/appTemplateMarket/index', 6, 'dashboard', '/appTemplateMarket', 0, 0, 0, NULL, NULL, NULL, NULL, 1620444227389);
+-- ----------------------------
+-- Table structure for panel_app_template
+-- ----------------------------
 DROP TABLE IF EXISTS `panel_app_template`;
 CREATE TABLE `panel_app_template` (
                                       `id` varchar(50) NOT NULL,
@@ -34,11 +39,14 @@ CREATE TABLE `panel_app_template` (
                                       `level` int(8) DEFAULT NULL,
                                       `pid` varchar(255) DEFAULT NULL COMMENT '父级ID',
                                       `version` varchar(255) DEFAULT NULL COMMENT '版本',
+                                      `icon` varchar(1000) DEFAULT NULL,
                                       `application_info` longtext COMMENT '应用信息',
                                       `panel_info` longtext COMMENT '仪表板信息',
-                                      `views_info` longtext COMMENT '视图信息',
-                                      `dataset_info` longtext COMMENT '数据集信息',
-                                      `dataset_fields_info` longtext COMMENT '数据集字段信息',
+                                      `panel_views_info` longtext COMMENT '仪表板视图信息',
+                                      `chart_views_info` longtext COMMENT '视图信息',
+                                      `chart_view_fields_info` longtext COMMENT '视图计算字段信息',
+                                      `dataset_tables_info` longtext COMMENT '数据集信息',
+                                      `dataset_table_fields_info` longtext COMMENT '数据集字段信息',
                                       `dataset_tasks_info` longtext COMMENT '数据集任务信息',
                                       `datasource_info` longtext COMMENT '数据源信息',
                                       `snapshot` longtext,
@@ -47,7 +55,28 @@ CREATE TABLE `panel_app_template` (
                                       `create_time` bigint(13) DEFAULT NULL,
                                       `create_user` varchar(255) DEFAULT NULL,
                                       PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+-- ----------------------------
+-- Table structure for panel_app_template_log
+-- ----------------------------
+DROP TABLE IF EXISTS `panel_app_template_log`;
+CREATE TABLE `panel_app_template_log` (
+                                          `id` varchar(50) NOT NULL,
+                                          `app_template_id` varchar(50) DEFAULT NULL COMMENT '应用模板id',
+                                          `app_template_name` varchar(255) DEFAULT NULL COMMENT '原仪表板名称',
+                                          `datasource_id` varchar(50) DEFAULT NULL COMMENT '数据源ID',
+                                          `source_datasource_name` varchar(255) DEFAULT NULL COMMENT '原数据源名称',
+                                          `dataset_group_id` varchar(50) DEFAULT NULL COMMENT '数据集分组ID',
+                                          `source_dataset_group_name` varchar(255) DEFAULT NULL COMMENT '原数据集分组名称',
+                                          `panel_id` varchar(50) DEFAULT NULL COMMENT '仪表板ID',
+                                          `source_panel_name` varchar(255) DEFAULT NULL COMMENT '原仪表板名称',
+                                          `apply_time` bigint(13) DEFAULT NULL COMMENT '应用时间',
+                                          `apply_persion` varchar(255) DEFAULT NULL COMMENT '应用人',
+                                          `is_success` tinyint(1) DEFAULT '1' COMMENT '是否成功',
+                                          `remark` varchar(255) DEFAULT NULL,
+                                          PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 INSERT INTO `sys_menu` VALUES (800, 0, 0, 1, '数据集表单', 'dataset-form', 'dataset/form', 999, NULL, '/dataset-form', b'0', b'0', b'1', NULL, NULL, NULL, NULL, NULL);
 

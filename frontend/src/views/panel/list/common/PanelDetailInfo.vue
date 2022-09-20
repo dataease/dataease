@@ -2,7 +2,7 @@
   <el-row>
     <el-col class="info-item">
       <p class="info-title">{{ $t('panel.create_by') }}</p>
-      <p class="info-content">{{ panelInfo.createBy }}</p>
+      <p class="info-content">{{ panelInfo.creatorName }}</p>
     </el-col>
     <el-col class="info-item">
       <p class="info-title">{{ $t('panel.create_time') }}</p>

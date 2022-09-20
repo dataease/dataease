@@ -168,6 +168,7 @@ export function initPanelData(panelId, useCache = false, callback) {
       status: response.data.status,
       createBy: response.data.createBy,
       createTime: response.data.createTime,
+      creatorName: response.data.creatorName,
       updateBy: response.data.updateBy,
       updateTime: response.data.updateTime
     })
@@ -305,5 +306,14 @@ export function export2AppCheck(panelId){
     url: 'panel/group/export2AppCheck/'+panelId,
     method: 'get',
     loading: false
+  })
+}
+
+export function appApply(data) {
+  return request({
+    url: 'panel/group/appApply',
+    method: 'post',
+    loading: true,
+    data
   })
 }

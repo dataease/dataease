@@ -11,8 +11,8 @@ export default {
         customClass,
       });
     },
-    handlerConfirm(options) {
-      let { title, content, type = 'danger', cb, confirmButtonText = this.$t('commons.delete'), showCancelButton = true, cancelButtonText = this.$t("commons.cancel"), cancelCb = () => {} } = options;
+    handlerConfirm(options,confirmButtonTextInfo) {
+      let { title, content, type = 'danger', cb, confirmButtonText = confirmButtonTextInfo?confirmButtonTextInfo:this.$t('commons.delete'), showCancelButton = true, cancelButtonText = this.$t("commons.cancel"), cancelCb = () => {} } = options;
       let text = content ? `<span>${ this.$t(title) }</span><br><span class="use-html">${ this.$t(content) }</span>` : this.$t(title);
       const dangerouslyUseHTMLString = Boolean(content);
       let customClass = `de-confirm de-confirm-fail ${ dangerouslyUseHTMLString && 'de-use-html'}`

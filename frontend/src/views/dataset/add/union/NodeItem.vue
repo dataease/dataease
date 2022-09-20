@@ -1,12 +1,30 @@
 <template>
   <div>
     <div class="ds-node" @click="nodeClick">
-      <svg-icon v-if="currentNode.currentDs.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
-      <svg-icon v-else-if="currentNode.currentDs.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-      <svg-icon v-else-if="currentNode.currentDs.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
-      <svg-icon v-else-if="currentNode.currentDs.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
+      <svg-icon
+        v-if="currentNode.currentDs.modelInnerType === 'db'"
+        icon-class="ds-db"
+        class="ds-icon-db"
+      />
+      <svg-icon
+        v-else-if="currentNode.currentDs.modelInnerType === 'sql'"
+        icon-class="ds-sql"
+        class="ds-icon-sql"
+      />
+      <svg-icon
+        v-else-if="currentNode.currentDs.modelInnerType === 'excel'"
+        icon-class="ds-excel"
+        class="ds-icon-excel"
+      />
+      <svg-icon
+        v-else-if="currentNode.currentDs.modelInnerType === 'api'"
+        icon-class="ds-api"
+        class="ds-icon-api"
+      />
 
-      <span class="node-name" :title="currentNode.currentDs.name">{{ currentNode.currentDs.name }}</span>
+      <span class="node-name" :title="currentNode.currentDs.name">{{
+        currentNode.currentDs.name
+      }}</span>
 
       <span class="node-menu" @click.stop>
         <el-dropdown trigger="click" size="small" @command="nodeMenuClick">
@@ -14,14 +32,27 @@
             <el-button icon="el-icon-more" type="text" size="small" />
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item :disabled="currentNode.currentDs.mode === 0 && currentNode.currentDs.modelInnerType === 'sql'" icon="el-icon-copy-document" :command="beforeNodeMenuClick('union',currentNode)">
-              <span style="font-size: 12px;">{{ $t('dataset.union') }}</span>
+            <el-dropdown-item
+              :disabled="
+                currentNode.currentDs.mode === 0 &&
+                currentNode.currentDs.modelInnerType === 'sql'
+              "
+              icon="el-icon-copy-document"
+              :command="beforeNodeMenuClick('union', currentNode)"
+            >
+              <span style="font-size: 12px">{{ $t('dataset.union') }}</span>
             </el-dropdown-item>
-            <el-dropdown-item icon="el-icon-edit-outline" :command="beforeNodeMenuClick('edit',currentNode)">
-              <span style="font-size: 12px;">{{ $t('dataset.edit') }}</span>
+            <el-dropdown-item
+              icon="el-icon-edit-outline"
+              :command="beforeNodeMenuClick('edit', currentNode)"
+            >
+              <span style="font-size: 12px">{{ $t('dataset.edit') }}</span>
             </el-dropdown-item>
-            <el-dropdown-item icon="el-icon-delete" :command="beforeNodeMenuClick('delete',currentNode)">
-              <span style="font-size: 12px;">{{ $t('dataset.delete') }}</span>
+            <el-dropdown-item
+              icon="el-icon-delete"
+              :command="beforeNodeMenuClick('delete', currentNode)"
+            >
+              <span style="font-size: 12px">{{ $t('dataset.delete') }}</span>
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -29,31 +60,84 @@
     </div>
 
     <!--选择数据集-->
-    <el-dialog v-if="selectDsDialog" v-dialogDrag :title="$t('chart.select_dataset')" :visible="selectDsDialog" :show-close="false" width="400px" class="dialog-css">
-      <dataset-group-selector-tree :fix-height="true" show-mode="union" :custom-type="customType" clear-empty-dir="true" :mode="currentNode.currentDs.mode" @getTable="firstDs" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeSelectDs()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button :disabled="!tempDs.id" type="primary" size="mini" @click="confirmSelectDs()">{{ $t('dataset.confirm') }}</el-button>
+    <el-drawer
+      v-if="selectDsDialog"
+      :title="$t('chart.select_dataset')"
+      :visible.sync="selectDsDialog"
+      custom-class="user-drawer sql-dataset-drawer"
+      size="600px"
+      v-closePress
+      direction="rtl"
+    >
+      <dataset-tree
+        :fix-height="true"
+        show-mode="union"
+        :custom-type="customType"
+        :clear-empty-dir="true"
+        :mode="currentNode.currentDs.mode"
+        @getTable="firstDs"
+      />
+      <div class="de-foot">
+        <deBtn secondary @click="closeSelectDs()">{{
+          $t('dataset.cancel')
+        }}</deBtn>
+        <deBtn
+          :disabled="!tempDs.id"
+          type="primary"
+          @click="confirmSelectDs()"
+          >{{ $t('dataset.confirm') }}</deBtn
+        >
       </div>
-    </el-dialog>
+    </el-drawer>
 
     <!--编辑单个数据集字段-->
-    <el-dialog v-if="editField" v-dialogDrag :title="$t('dataset.field_select')" :visible="editField" :show-close="false" width="400px" class="dialog-css">
+    <!-- <el-drawer
+      v-if="editField"
+      :title="$t('dataset.field_select')"
+      :visible.sync="editField"
+      custom-class="user-drawer sql-dataset-drawer"
+      size="840px"
+      v-closePress
+      direction="rtl"
+    >
+      <union-field-edit :node="currentNode" />
+      <div class="de-foot">
+        <deBtn size="mini" @click="closeEditField()">{{
+          $t("dataset.cancel")
+        }}</deBtn>
+        <deBtn type="primary" size="mini" @click="confirmEditField()">{{
+          $t("dataset.confirm")
+        }}</deBtn>
+      </div>
+    </el-drawer> -->
+    <el-dialog
+      v-if="editField"
+      v-dialogDrag
+      :title="$t('dataset.field_select')"
+      :visible="editField"
+      :show-close="false"
+      width="400px"
+      class="dialog-css"
+    >
       <union-field-edit :node="currentNode" />
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeEditField()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="confirmEditField()">{{ $t('dataset.confirm') }}</el-button>
+        <el-button size="mini" @click="closeEditField()">{{
+          $t('dataset.cancel')
+        }}</el-button>
+        <el-button type="primary" size="mini" @click="confirmEditField()">{{
+          $t('dataset.confirm')
+        }}</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import DatasetGroupSelectorTree from '@/views/dataset/common/DatasetGroupSelectorTree'
+import datasetTree from '@/views/dataset/common/datasetTree'
 import UnionFieldEdit from '@/views/dataset/add/union/UnionFieldEdit'
 export default {
   name: 'NodeItem',
-  components: { UnionFieldEdit, DatasetGroupSelectorTree },
+  components: { UnionFieldEdit, datasetTree },
   props: {
     currentNode: {
       type: Object,
@@ -110,8 +194,8 @@ export default {
     },
     beforeNodeMenuClick(type, item) {
       return {
-        'type': type,
-        'item': item
+        type: type,
+        item: item
       }
     },
 
@@ -151,7 +235,9 @@ export default {
     confirmSelectDs() {
       // 校验当前数据集是否已被关联，以及直连模式是否属于同一数据源
       if (this.tempDs.mode === 0) {
-        if (this.tempDs.dataSourceId !== this.tempParentDs.currentDs.dataSourceId) {
+        if (
+          this.tempDs.dataSourceId !== this.tempParentDs.currentDs.dataSourceId
+        ) {
           this.$message({
             type: 'error',
             message: this.$t('dataset.can_not_union_diff_datasource'),
@@ -187,7 +273,12 @@ export default {
     },
     // 增加与删除事件向父级传递
     notifyFirstParent(type) {
-      this.$emit('notifyParent', { type: type, grandParentAdd: true, grandParentSub: true, subCount: this.currentNode.allChildCount })
+      this.$emit('notifyParent', {
+        type: type,
+        grandParentAdd: true,
+        grandParentSub: true,
+        subCount: this.currentNode.allChildCount
+      })
     },
     closeEditField() {
       this.editField = false
@@ -201,7 +292,10 @@ export default {
       const arr = []
       for (let i = 0; i < this.originData.length; i++) {
         arr.push(this.originData[0].currentDs.id)
-        if (this.originData[0].childrenDs && this.originData[0].childrenDs.length > 0) {
+        if (
+          this.originData[0].childrenDs &&
+          this.originData[0].childrenDs.length > 0
+        ) {
           this.getDs(this.originData[0].childrenDs, arr)
         }
       }
@@ -220,34 +314,34 @@ export default {
 </script>
 
 <style scoped>
-.ds-node{
-  width:160px;
+.ds-node {
+  width: 160px;
   height: 26px;
   line-height: 26px;
   border: #dcdfe6 solid 1px;
   min-width: 160px;
-  color: var(--TextPrimary,#606266);
+  color: var(--TextPrimary, #606266);
   font-size: 14px;
   display: flex;
   align-items: center;
   padding: 0 6px;
 }
-.node-name{
+.node-name {
   flex: 1;
   text-overflow: ellipsis;
   white-space: pre;
   overflow: hidden;
   padding: 0 2px;
 }
-.ds-node .node-menu{
+.ds-node .node-menu {
   visibility: hidden;
 }
-.ds-node:hover .node-menu{
+.ds-node:hover .node-menu {
   visibility: visible;
 }
-.ds-node:hover{
+.ds-node:hover {
   cursor: pointer;
-  border: var(--Main,#2681ff) solid 1px;
+  border: var(--Main, #2681ff) solid 1px;
 }
 .dialog-css ::v-deep .el-dialog__body {
   padding: 0 20px;

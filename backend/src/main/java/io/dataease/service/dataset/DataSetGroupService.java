@@ -137,7 +137,7 @@ public class DataSetGroupService {
         return ids;
     }
 
-    private void checkName(DatasetGroup datasetGroup) {
+    public void checkName(DatasetGroup datasetGroup) {
         DatasetGroupExample datasetGroupExample = new DatasetGroupExample();
         DatasetGroupExample.Criteria criteria = datasetGroupExample.createCriteria();
         if (StringUtils.isNotEmpty(datasetGroup.getPid())) {
@@ -157,7 +157,7 @@ public class DataSetGroupService {
         }
         List<DatasetGroup> list = datasetGroupMapper.selectByExample(datasetGroupExample);
         if (list.size() > 0) {
-            throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
+            throw new RuntimeException(Translator.get("I18N_DATASET_GROUP_EXIST"));
         }
     }
 

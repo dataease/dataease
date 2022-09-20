@@ -1,0 +1,392 @@
+<template>
+  <el-row style="text-align: left">
+    <el-row class="top-operate">
+      <el-col :span="12">
+        <el-button v-show="position==='templateLog'"
+          class="btn"
+          type="primary"
+          icon="el-icon-plus"
+          @click="applyNew()"
+        >{{$t('commons.create')}}</el-button>
+        <span>&nbsp;</span>
+      </el-col>
+      <el-col :span="12" class="right-user">
+        <el-input
+          :placeholder="$t('app_template.search_by_keyword')"
+          prefix-icon="el-icon-search"
+          class="name-email-search"
+          size="small"
+          clearable
+          ref="search"
+          v-model="nikeName"
+          @blur="initSearch"
+          @clear="initSearch"
+        >
+        </el-input>
+        <deBtn
+          :secondary="!cacheCondition.length"
+          :plain="!!cacheCondition.length"
+          icon="iconfont icon-icon-filter"
+          @click="filterShow"
+          >{{ $t("user.filter")
+          }}<template v-if="filterTexts.length">
+            ({{ cacheCondition.length }})
+          </template>
+        </deBtn>
+      </el-col>
+    </el-row>
+    <div class="filter-texts" v-if="filterTexts.length">
+      <span class="sum">{{ paginationConfig.total }}</span>
+      <span class="title">{{ $t("user.result_one") }}</span>
+      <el-divider direction="vertical"></el-divider>
+      <i
+        @click="scrollPre"
+        v-if="showScroll"
+        class="el-icon-arrow-left arrow-filter"
+      ></i>
+      <div class="filter-texts-container">
+        <p class="text" v-for="(ele, index) in filterTexts" :key="ele">
+          {{ ele }} <i @click="clearOneFilter(index)" class="el-icon-close"></i>
+        </p>
+      </div>
+      <i
+        @click="scrollNext"
+        v-if="showScroll"
+        class="el-icon-arrow-right arrow-filter"
+      ></i>
+      <el-button
+        type="text"
+        class="clear-btn"
+        icon="el-icon-delete"
+        @click="clearFilter"
+        >{{ $t("user.clear_filter") }}</el-button
+      >
+    </div>
+    <div
+      class="table-container"
+      id="resize-for-filter"
+      :class="[filterTexts.length ? 'table-container-filter' : '']"
+    >
+      <grid-table
+        v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+        :tableData="data"
+        :columns="[]"
+        :pagination="paginationConfig"
+        @sort-change="sortChange"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      >
+        <el-table-column
+          show-overflow-tooltip
+          prop="opType"
+          :label="'数据源'"
+        >
+          <template v-slot:default="{ row }">
+            <span>{{ row.datasourceName }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          show-overflow-tooltip
+          prop="datasetGroupName"
+          :label="'数据集分组'"
+        />
+        <el-table-column
+          show-overflow-tooltip
+          prop="panelName"
+          :label="'仪表板'"
+        />
+        <el-table-column
+          show-overflow-tooltip
+          prop="appName"
+          :label="'APPS'"
+        />
+        <el-table-column
+          show-overflow-tooltip
+          prop="applyTime"
+          sortable="custom"
+          :label="'应用时间'"
+        >
+          <template v-slot:default="scope">
+            <span>{{ scope.row.applyTime | timestampFormatDate }}</span>
+          </template>
+        </el-table-column>
+      </grid-table>
+    </div>
+    <keep-alive>
+        <filterUser ref="filterUser" @search="filterDraw"></filterUser>
+      </keep-alive>
+  </el-row>
+</template>
+
+<script>
+import DeLayoutContent from "@/components/business/DeLayoutContent";
+import GridTable from "@/components/gridTable/index.vue";
+import filterUser from './filterUser';
+import _ from 'lodash';
+import keyEnter from '@/components/msgCfm/keyEnter.js'
+import {
+  addOrder,
+  formatOrders,
+} from "@/utils/index";
+import { logGrid } from "@/api/appTemplateMarket/log";
+export default {
+  name: 'AppTemplateLog',
+  components: { GridTable, DeLayoutContent, filterUser },
+  mixins: [keyEnter],
+  props: {
+    appTemplateId: {
+      type: String,
+      required: false
+    },
+    position: {
+      type: String,
+      required: true,
+      default: 'allLog'
+    }
+  },
+  data() {
+    return {
+      columns: [],
+      paginationConfig: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0,
+      },
+      data: [],
+      orderConditions: [],
+      nikeName: "",
+      showScroll: false,
+      filterTexts: [],
+      cacheCondition: [],
+    };
+  },
+  watch: {
+    filterTexts: {
+      handler() {
+        this.getScrollStatus();
+      },
+      deep: true,
+    },
+    appTemplateId:{
+      handler() {
+        this.search()
+      },
+    }
+  },
+  mounted() {
+    this.search();
+    this.resizeObserver();
+  },
+  methods: {
+    applyNew(){
+      this.$emit('applyNew')
+    },
+    sortChange({ column, prop, order }) {
+      this.orderConditions = [];
+      if (!order) {
+        this.initSearch();
+        return;
+      }
+      this.orderConditions = [];
+      addOrder({ field: prop, value: order }, this.orderConditions);
+      this.initSearch();
+    },
+    getScrollStatus() {
+      this.$nextTick(() => {
+        const dom = document.querySelector(".filter-texts-container");
+        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth;
+      });
+    },
+    resizeObserver() {
+      this.resizeForFilter = new ResizeObserver((entries) => {
+        if (!this.filterTexts.length) return;
+        this.layoutResize();
+      });
+      this.resizeForFilter.observe(
+        document.querySelector("#resize-for-filter")
+      );
+    },
+    layoutResize: _.debounce(function () {
+      this.getScrollStatus();
+    }, 200),
+    scrollPre() {
+      const dom = document.querySelector(".filter-texts-container");
+      dom.scrollLeft -= 10;
+      if (dom.scrollLeft <= 0) {
+        dom.scrollLeft = 0;
+      }
+    },
+    scrollNext() {
+      const dom = document.querySelector(".filter-texts-container");
+      dom.scrollLeft += 10;
+      const width = dom.scrollWidth - dom.offsetWidth;
+      if (dom.scrollLeft > width) {
+        dom.scrollLeft = width;
+      }
+    },
+    handleSizeChange(pageSize) {
+      this.paginationConfig.currentPage = 1;
+      this.paginationConfig.pageSize = pageSize;
+      this.search();
+    },
+    handleCurrentChange(currentPage) {
+      this.paginationConfig.currentPage = currentPage;
+      this.search();
+    },
+    initSearch() {
+      this.handleCurrentChange(1);
+    },
+    clearFilter() {
+      this.$refs.filterUser.clearFilter();
+    },
+    clearOneFilter(index) {
+      this.$refs.filterUser.clearOneFilter(index);
+      this.$refs.filterUser.search();
+    },
+    filterDraw(condition, filterTexts = []) {
+      this.cacheCondition = condition;
+      this.filterTexts = filterTexts;
+      this.initSearch();
+    },
+    filterShow() {
+      this.$refs.filterUser.init();
+    },
+    search() {
+      if(this.position==='templateLog'&&!this.appTemplateId){
+        return
+      }
+      const param = {
+        orders: formatOrders(this.orderConditions),
+        conditions: [...this.cacheCondition],
+      };
+      if (this.nikeName) {
+        param.keyWord = this.nikeName;
+      }
+      if(this.appTemplateId){
+        param.conditions.push({
+          field: "app_template_id",
+          operator: "eq",
+          value: this.appTemplateId,
+        })
+      }
+      const { currentPage, pageSize } = this.paginationConfig;
+      logGrid(currentPage, pageSize, param).then((response) => {
+        this.data = response.data.listObject;
+        this.paginationConfig.total = response.data.itemCount;
+      });
+    },
+  },
+};
+</script>
+<style lang="scss" scoped>
+.table-container {
+  height: calc(100% - 50px);
+}
+
+.table-container-filter {
+  height: calc(100% - 110px);
+}
+.filter-texts {
+  display: flex;
+  align-items: center;
+  margin: 17px 0;
+  font-family: "PingFang SC";
+  font-weight: 400;
+
+  .sum {
+    color: #1f2329;
+  }
+
+  .title {
+    color: #999999;
+    margin-left: 8px;
+  }
+
+  .text {
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 1px 22px 1px 6px;
+    display: inline-block;
+    align-items: center;
+    color: #0c296e;
+    font-size: 14px;
+    line-height: 22px;
+    background: rgba(51, 112, 255, 0.1);
+    border-radius: 2px;
+    margin: 0;
+    margin-right: 8px;
+    position: relative;
+    i {
+      position: absolute;
+      right: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+  }
+
+  .clear-btn {
+    color: #646a73;
+  }
+
+  .clear-btn:hover {
+    color: #3370ff;
+  }
+
+  .filter-texts-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .arrow-filter {
+    font-size: 16px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    color: #646a73;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .arrow-filter:hover {
+    background: rgba(31, 35, 41, 0.1);
+    border-radius: 4px;
+  }
+
+  .el-icon-arrow-right.arrow-filter {
+    margin-left: 5px;
+  }
+
+  .el-icon-arrow-left.arrow-filter {
+    margin-right: 5px;
+  }
+  .filter-texts-container {
+    flex: 1;
+    overflow-x: auto;
+    white-space: nowrap;
+    height: 24px;
+  }
+}
+.top-operate {
+  margin-bottom: 16px;
+  .right-user {
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    .de-button {
+      margin-left: 12px;
+    }
+
+    .el-input--medium .el-input__icon {
+      line-height: 32px;
+    }
+  }
+
+  .name-email-search {
+    width: 240px;
+  }
+}
+</style>

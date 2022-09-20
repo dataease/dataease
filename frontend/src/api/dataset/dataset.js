@@ -69,6 +69,15 @@ export function groupTree(data) {
   })
 }
 
+export function dsGroupTree(data) {
+  return request({
+    url: '/dataset/group/tree',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
+
 export function listDatasource() {
   return request({
     url: '/datasource/list',
@@ -230,6 +239,13 @@ export function exportExcel(data) {
     loading: true,
     responseType: 'blob',
     data
+  })
+}
+
+export function dsTable(page, size, id) {
+  return request({
+    url: '/datasource/getTables/' + id + '/' + page + '/' + size,
+    method: 'post',
   })
 }
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs }

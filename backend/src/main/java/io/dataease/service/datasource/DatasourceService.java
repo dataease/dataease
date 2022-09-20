@@ -434,7 +434,7 @@ public class DatasourceService {
         });
     }
 
-    private void checkName(String datasourceName, String type, String id) {
+    public void checkName(String datasourceName, String type, String id) {
         DatasourceExample example = new DatasourceExample();
         DatasourceExample.Criteria criteria = example.createCriteria();
         criteria.andNameEqualTo(datasourceName);

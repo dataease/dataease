@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import { log } from "@antv/g2plot/lib/utils";
 export default {
   name: "DePwd",
   inject: {

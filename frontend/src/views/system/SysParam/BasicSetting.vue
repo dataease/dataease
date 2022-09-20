@@ -48,8 +48,9 @@
 
       <el-form-item :label="$t('system_parameter_setting.ds_check_time')">
         <el-form :inline="true" :disabled="show">
-          <el-form-item>
-            <el-input v-model="formInline.dsCheckInterval" type="number" min="1" @change="onSimpleCronChange()" />
+
+          <el-form-item >
+            <el-input size="mini" v-model="formInline.dsCheckInterval" type="number" min="1" @change="onSimpleCronChange()" />
           </el-form-item>
 
           <el-form-item class="form-item">
@@ -326,21 +327,14 @@ export default {
       if (this.formInline.dsCheckIntervalType === 'minute') {
         if (this.formInline.dsCheckInterval < 1 || this.formInline.dsCheckInterval > 59) {
           this.$message({ message: this.$t('cron.minute_limit'), type: 'warning', showClose: true })
-          this.taskForm.extraData.simple_cron_value = 59
+          this.formInline.dsCheckInterval = 1
         }
         return
       }
       if (this.formInline.dsCheckIntervalType === 'hour') {
         if (this.formInline.dsCheckInterval < 1 || this.formInline.dsCheckInterval > 23) {
           this.$message({ message: this.$t('cron.hour_limit'), type: 'warning', showClose: true })
-          this.taskForm.extraData.simple_cron_value = 23
-        }
-        return
-      }
-      if (this.formInline.dsCheckIntervalType === 'day') {
-        if (this.formInline.dsCheckInterval < 1 || this.formInline.dsCheckInterval > 31) {
-          this.$message({ message: this.$t('cron.day_limit'), type: 'warning', showClose: true })
-          this.taskForm.extraData.simple_cron_value = 31
+          this.formInline.dsCheckInterval = 1
         }
         return
       }
