@@ -58,7 +58,14 @@
           highlight-current
           @node-click="handleNodeClick"
           @check-change="handleCheckChange"
-        />
+        >
+          <span class="custom-tree-node" slot-scope="{ data }">
+            {{ data.excelLable }}
+            <span class="error-name-exsit" v-if="data.nameExsit">
+              <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
+            </span>
+          </span>
+        </el-tree>
       </div>
     </div>
     <div class="table-detail">
@@ -76,7 +83,15 @@
             v-model="sheetObj.datasetName"
             :placeholder="$t('commons.name')"
             @change="changeDatasetName"
+            size="small"
           />
+          <div
+            v-if="sheetObj.nameExsit"
+            style="left: 107px; top: 52px"
+            class="el-form-item__error"
+          >
+            {{ $t('deDataset.already_exists') }}
+          </div>
         </div>
         <div class="data">
           <div class="result-num">
@@ -183,11 +198,13 @@ import { getToken } from '@/utils/auth'
 import i18n from '@/lang'
 import { $alert, $confirm } from '@/utils/message'
 import store from '@/store'
+import msgCfm from '@/components/msgCfm/index'
 
 const token = getToken()
 
 export default {
   name: 'AddExcel',
+  mixins: [msgCfm],
   props: {
     param: {
       type: Object,
@@ -200,6 +217,10 @@ export default {
     editType: {
       type: Number,
       default: 0
+    },
+    nameList: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -275,7 +296,29 @@ export default {
         })
         this.defaultCheckedKeys.splice(index, 1)
       }
+      this.validateName()
       this.$emit('setTableNum', this.defaultCheckedKeys.length)
+    },
+    nameExsitValidator(ele, checkList) {
+      this.$set(
+        ele,
+        'nameExsit',
+        this.nameList
+          .concat(checkList)
+          .filter((name) => name === ele.datasetName).length > 1
+      )
+    },
+    validateName() {
+      const checkList = this.$refs.tree.getCheckedNodes().map(ele => ele.datasetName)
+      this.excelData
+        .reduce((pre, next) => pre.concat(next.sheets), [])
+        .forEach((ele, index) => {
+          if (checkList.includes(ele.datasetName)) {
+            this.nameExsitValidator(ele, checkList)
+          } else {
+            this.$set(ele, 'nameExsit', false)
+          }
+        })
     },
     handleNodeClick(data) {
       if (data.sheet) {
@@ -300,6 +343,7 @@ export default {
           }
         }
       }
+      this.validateName();
     },
     calHeight() {
       const that = this
@@ -367,24 +411,20 @@ export default {
       var effectExtField = false
       var changeFiled = false
       var selectNode = this.$refs.tree.getCheckedNodes()
+      if (selectNode.some((ele) => ele.nameExsit)) {
+        this.openMessageSuccess('deDataset.cannot_be_duplicate', 'error')
+        return
+      }
       for (var i = 0; i < selectNode.length; i++) {
         if (selectNode[i].sheet) {
           if (!selectNode[i].datasetName || selectNode[i].datasetName === '') {
             validate = false
-            this.$message({
-              showClose: true,
-              message: this.$t('dataset.pls_input_name'),
-              type: 'error'
-            })
+            this.openMessageSuccess('dataset.pls_input_name', 'error')
             return
           }
           if (selectNode[i].datasetName.length > 50 && !this.param.tableId) {
             validate = false
-            this.$message({
-              showClose: true,
-              message: this.$t('dataset.char_can_not_more_50'),
-              type: 'error'
-            })
+            this.openMessageSuccess('dataset.char_can_not_more_50', 'error')
             return
           }
           if (selectNode[i].effectExtField) {
@@ -398,7 +438,7 @@ export default {
         }
       }
       if (selectedSheet.length == 0) {
-        this.$message.warning(this.$t('dataset.ple_select_excel'))
+        this.openMessageSuccess('dataset.ple_select_excel', 'error')
         return
       }
       if (!validate) {
@@ -429,9 +469,16 @@ export default {
         }
       }
 
-      if (this.param.editType === 0 && this.param.tableId && (effectExtField || changeFiled)) {
-
-        var msg = effectExtField ? i18n.t('dataset.effect_ext_field') + ', ' + i18n.t('dataset.excel_replace_msg') : i18n.t('dataset.excel_replace_msg')
+      if (
+        this.param.editType === 0 &&
+        this.param.tableId &&
+        (effectExtField || changeFiled)
+      ) {
+        var msg = effectExtField
+          ? i18n.t('dataset.task.effect_ext_field') +
+            ', ' +
+            i18n.t('dataset.task.excel_replace_msg')
+          : i18n.t('dataset.task.excel_replace_msg')
         $confirm(msg, () => {
           this.saveExcelData(sheetFileMd5, table)
         })
@@ -445,7 +492,7 @@ export default {
         !this.param.tableId
       ) {
         this.$confirm(
-          this.$t('dataset.excel_replace_msg'),
+          this.$t('dataset.task.excel_replace_msg'),
           this.$t('dataset.merge_title'),
           {
             distinguishCancelAndClose: true,
@@ -457,7 +504,7 @@ export default {
           .then(() => {
             table.mergeSheet = true
             post('/dataset/table/update', table).then((response) => {
-              this.$emit('saveSuccess', table)
+              this.openMessageSuccess('deDataset.set_saved_successfully')
               this.cancel()
             })
           })
@@ -467,29 +514,20 @@ export default {
             }
             table.mergeSheet = false
             post('/dataset/table/update', table).then((response) => {
-              this.$emit('saveSuccess', table)
+              this.openMessageSuccess('deDataset.set_saved_successfully')
               this.cancel()
             })
           })
       } else {
         post('/dataset/table/update', table).then((response) => {
-          this.$emit('saveSuccess', table)
+          this.openMessageSuccess('deDataset.set_saved_successfully')
           this.cancel()
         })
       }
     },
     cancel() {
-      this.dataReset()
-      if (this.param.tableId) {
-        this.$emit('switchComponent', {
-          name: 'ViewTable',
-          param: this.param.table
-        })
-      } else {
-        this.$emit('switchComponent', { name: '' })
-      }
+      this.$router.back()
     },
-
     dataReset() {
       this.searchTable = ''
       this.options = []
@@ -518,6 +556,8 @@ export default {
   display: flex;
   height: 100%;
   position: relative;
+  width: 100%;
+
   .arrow-right {
     position: absolute;
     top: 15px;
@@ -563,6 +603,18 @@ export default {
     .table-checkbox-list {
       height: calc(100% - 100px);
       overflow-y: auto;
+      .custom-tree-node {
+        position: relative;
+        width: 80%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .error-name-exsit {
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
       .item {
         height: 40px;
         width: 215px;
@@ -598,6 +650,7 @@ export default {
       border-bottom: 1px solid rgba(31, 35, 41, 0.15);
       display: flex;
       align-items: center;
+      position: relative;
       .name {
         font-size: 14px;
         font-weight: 400;

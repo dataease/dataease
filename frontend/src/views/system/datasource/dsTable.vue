@@ -45,13 +45,13 @@
               @click="createtDataset(scope.row)"
               class="text-btn mar3 mar6"
               type="text"
-              >{{ $t("datasource.create_dataset") }}</el-button
+              >{{ $t('datasource.create_dataset') }}</el-button
             >
             <el-button
               @click="selectDataset(scope.row)"
               class="text-btn"
               type="text"
-              >{{ $t("dataset.detail") }}</el-button
+              >{{ $t('dataset.detail') }}</el-button
             >
           </template>
         </el-table-column>
@@ -68,7 +68,7 @@
       <el-row style="margin-top: 12px" :gutter="24">
         <el-col :span="12">
           <p class="table-name">
-            {{ $t("datasource.table_name") }}
+            {{ $t('datasource.table_name') }}
           </p>
           <p class="table-value">
             {{ dsTableDetail.name }}
@@ -76,104 +76,98 @@
         </el-col>
         <el-col :span="12">
           <p class="table-name">
-            {{ $t("datasource.table_description") }}
+            {{ $t('datasource.table_description') }}
           </p>
           <p class="table-value">
-            {{ dsTableDetail.remark || "-" }}
+            {{ dsTableDetail.remark || '-' }}
           </p>
         </el-col>
       </el-row>
-      <el-table
-    :data="dsTableData"
-    stripe
-    style="width: 100%">
-    <el-table-column
-      prop="date"
-      :label="$t('panel.column_name')">
-    </el-table-column>
-    <el-table-column
-      prop="name"
-      :label="$t('dataset.field_type')">
-    </el-table-column>
-    <el-table-column
-      prop="name"
-      :label="$t('datasource.field_description')">
-    </el-table-column>
-  </el-table>
+      <el-table :data="dsTableData" stripe style="width: 100%">
+        <el-table-column prop="date" :label="$t('panel.column_name')">
+        </el-table-column>
+        <el-table-column prop="name" :label="$t('dataset.field_type')">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          :label="$t('datasource.field_description')"
+        >
+        </el-table-column>
+      </el-table>
     </el-drawer>
   </div>
 </template>
 
 <script>
-import keyEnter from "@/components/msgCfm/keyEnter.js";
-import GridTable from "@/components/gridTable/index.vue";
-import { dsTable } from "@/api/dataset/dataset";
+import keyEnter from '@/components/msgCfm/keyEnter.js'
+import GridTable from '@/components/gridTable/index.vue'
+import { dsTable } from '@/api/dataset/dataset'
 export default {
   mixins: [keyEnter],
   components: { GridTable },
   props: {
     params: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {}
+    }
   },
   data() {
     return {
       userDrawer: false,
       dsTableDetail: {},
-      nikeName: "",
+      nikeName: '',
       loading: false,
       paginationConfig: {
         currentPage: 1,
         pageSize: 10,
-        total: 0,
+        total: 0
       },
-      dsTableData: [{date: 1}],
-      tableData: [{ name: 1 }],
-    };
+      dsTableData: [],
+      tableData: []
+    }
   },
   created() {
-    // this.initSearch();
+    this.initSearch()
   },
   methods: {
     createtDataset(row) {},
     selectDataset(row) {
-      this.dsTableDetail = row;
-      this.userDrawer = true;
+      this.dsTableDetail = row
+      this.userDrawer = true
     },
     handleSizeChange(pageSize) {
-      this.paginationConfig.currentPage = 1;
-      this.paginationConfig.pageSize = pageSize;
-      this.search();
+      this.paginationConfig.currentPage = 1
+      this.paginationConfig.pageSize = pageSize
+      this.search()
     },
     handleCurrentChange(currentPage) {
-      this.paginationConfig.currentPage = currentPage;
-      this.search();
+      this.paginationConfig.currentPage = currentPage
+      this.search()
     },
     initSearch() {
-      this.handleCurrentChange(1);
+      this.handleCurrentChange(1)
     },
     search() {
-      this.loading = true;
+      this.loading = true
       const param = {
-        conditions: [],
-      };
+        conditions: []
+      }
       if (this.nikeName) {
         param.conditions.push({
           field: `dataset_table_task.name`,
-          operator: "like",
-          value: this.nikeName,
-        });
+          operator: 'like',
+          value: this.nikeName
+        })
       }
-      const { currentPage, pageSize } = this.paginationConfig;
+      const { currentPage, pageSize } = this.paginationConfig
       dsTable(currentPage, pageSize, this.params.id).then((response) => {
-        this.tableData = response.data.listObject;
-        this.paginationConfig.total = response.data.itemCount;
-        this.loading = false;
-      });
-    },
-  },
-};
+        this.tableData = response.data.listObject
+        this.paginationConfig.total = response.data.itemCount
+        this.loading = false
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss">

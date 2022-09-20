@@ -10,13 +10,10 @@
         <span>{{ $t('driver.mgm') }}</span>
       </div>
       <deBtn type="primary" @click="addDriver" icon="el-icon-plus"
-        >{{ $t("driver.add") }}
+        >{{ $t('driver.add') }}
       </deBtn>
     </div>
-    <de-aside-container
-      style="padding: 0 0"
-      type="datasource"
-    >
+    <de-aside-container style="padding: 0 0" type="datasource">
       <ds-tree
         @switch-mgm="switchMgm"
         ref="dsTree"
@@ -24,8 +21,7 @@
         @switch-main="switchMain"
       />
     </de-aside-container>
-    <de-main-container
-    >
+    <de-main-container>
       <component
         :is="component"
         v-if="!!component"
@@ -35,21 +31,26 @@
         @refresh-type="refreshType"
         @switch-component="switchMain"
       />
-      <el-empty v-else :image-size="125" :description="$t(`datasource.${swTips}`)" :image="image"></el-empty>
+      <el-empty
+        v-else
+        :image-size="125"
+        :description="$t(`datasource.${swTips}`)"
+        :image="image"
+      ></el-empty>
     </de-main-container>
   </div>
 </template>
 
 <script>
-import DeMainContainer from "@/components/dataease/DeMainContainer";
-import DeAsideContainer from "@/components/dataease/DeAsideContainer";
-import DsTree from "./DsTree";
-import DsForm from "./DsForm";
-import dsTable from "./dsTable";
-import DriverForm from "./DriverFormDetail";
+import DeMainContainer from '@/components/dataease/DeMainContainer'
+import DeAsideContainer from '@/components/dataease/DeAsideContainer'
+import DsTree from './DsTree'
+import DsForm from './DsForm'
+import dsTable from './dsTable'
+import DriverForm from './DriverFormDetail'
 
 export default {
-  name: "DsMain",
+  name: 'DsMain',
   components: { DeMainContainer, DeAsideContainer, DsTree },
   data() {
     return {
@@ -58,65 +59,65 @@ export default {
       datasource: {},
       param: null,
       tData: null,
-      currentMgm: "dsMgm",
-      dsTypes: [],
-    };
+      currentMgm: 'dsMgm',
+      dsTypes: []
+    }
   },
   computed: {
     swTips() {
-      return this.currentMgm === 'driverMgm' ? 'on_the_left' : 'on_the_left';
+      return this.currentMgm === 'driverMgm' ? 'on_the_left' : 'on_the_left'
     }
   },
   methods: {
     jump() {
-      this.$refs.dsTree.dsMgm();
-      this.switchMgm('dsMgm');
+      this.$refs.dsTree.dsMgm()
+      this.switchMgm('dsMgm')
     },
     switchMgm(type) {
-      this.currentMgm = type;
+      this.currentMgm = type
     },
     addDriver() {
-      this.$refs.dsTree.addDriver();
+      this.$refs.dsTree.addDriver()
     },
     // 切换main区内容
     switchMain(param) {
-      const { component, componentParam, tData, dsTypes } = param;
-      this.component = '';
-      this.param = null;
+      const { component, componentParam, tData, dsTypes } = param
+      this.component = ''
+      this.param = null
       this.$nextTick(() => {
         switch (component) {
-          case "DsForm":
-            this.component = DsForm;
-            this.param = componentParam;
-            this.tData = tData;
-            this.dsTypes = dsTypes;
-            break;
-          case "DriverForm":
-            this.component = DriverForm;
-            this.param = componentParam;
-            this.tData = tData;
-            this.dsTypes = dsTypes;
-            break;
-          case "dsTable":
-            this.component = dsTable;
-            this.param = componentParam;
-            break;
+          case 'DsForm':
+            this.component = DsForm
+            this.param = componentParam
+            this.tData = tData
+            this.dsTypes = dsTypes
+            break
+          case 'DriverForm':
+            this.component = DriverForm
+            this.param = componentParam
+            this.tData = tData
+            this.dsTypes = dsTypes
+            break
+          case 'dsTable':
+            this.component = dsTable
+            this.param = componentParam
+            break
           default:
-            this.component = '';
-            this.param = null;
-            break;
+            this.component = ''
+            this.param = null
+            break
         }
-      });
+      })
     },
     refreshType(datasource) {
-      this.datasource = datasource;
-      this.$refs.dsTree && this.$refs.dsTree.refreshType(datasource);
+      this.datasource = datasource
+      this.$refs.dsTree && this.$refs.dsTree.refreshType(datasource)
     },
     msg2Current(sourceParam) {
-      this.$refs.dsTree && this.$refs.dsTree.markInvalid(sourceParam);
-    },
-  },
-};
+      this.$refs.dsTree && this.$refs.dsTree.markInvalid(sourceParam)
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">

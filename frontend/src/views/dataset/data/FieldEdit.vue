@@ -326,7 +326,7 @@
                 style="margin-left: -4px"
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 @click="dqTrans(scope.row, 'd')"
-                >{{ $t('convert_to_indicator') }}</el-button
+                >{{ $t('deDataset.convert_to_indicator') }}</el-button
               >
               <template v-if="scope.row.extField !== 0">
                 <el-button

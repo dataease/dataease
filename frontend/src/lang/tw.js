@@ -519,7 +519,10 @@ export default {
     convert_to_dimension: '轉換為維度',
     left_to_edit: '選中左側的資料表可進行編輯',
     cannot_be_duplicate: '數据集名稱不允許重複',
-    set_saved_successfully: '數据集保存成功'
+    set_saved_successfully: '數据集保存成功',
+    to_start_using: '瀏覽您的數据庫，表和列的內容。 選擇一個數据庫即可開始使用。',
+    to_run_query: '點擊運行査詢',
+    the_running_results: '即可查看運行結果'
   },
   detabs: {
     eidttitle: '編輯標題',

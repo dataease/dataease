@@ -11,81 +11,87 @@
     >
       <template v-if="form.type == 'api'">
         <div class="de-row-rules flex-space">
-          <span>{{ $t("datasource.data_table") }}</span>
+          <span>{{ $t('datasource.data_table') }}</span>
           <deBtn
             icon="el-icon-plus"
             type="primary"
             @click="addApiItem(undefined)"
-            >{{ $t("commons.add") }}</deBtn
+            >{{ $t('commons.add') }}</deBtn
           >
         </div>
-        <el-empty :image="noneImg" v-if="!form.apiConfiguration.length" :description="$t('datasource.no_data_table')"></el-empty>
+        <el-empty
+          :image="noneImg"
+          v-if="!form.apiConfiguration.length"
+          :description="$t('datasource.no_data_table')"
+        ></el-empty>
         <template v-else>
           <div
-          v-for="api in form.apiConfiguration"
-          :key="api.id"
-          class="api-card"
-        >
-          <el-row>
-            <el-col :span="12">
-              <span class="name">{{ api.name }}</span>
-              <span
-                v-if="api.status === 'Error'"
-                class="de-tag"
-                style="color: #646a73; background: rgba(31, 35, 41, 0.1)"
-                >{{ $t("datasource.invalid") }}</span
-              >
-              <span
-                v-if="api.status === 'Success'"
-                class="de-tag"
-                style="color: green; background: rgba(52, 199, 36, 0.2)"
-                >{{ $t("datasource.valid") }}</span
-              >
-            </el-col>
-            <el-col style="text-align: right" :span="12">
-              <svg-icon
-                @click="copyItem(api)"
-                icon-class="de-copy"
-                class="de-copy-icon"
-              />
-
-              <el-popover
-                placement="top"
-                width="200"
-                :ref="'apiTable' + api.name"
-                popper-class="api-table-delete"
-                trigger="click"
-              >
-                <i class="el-icon-warning"></i>
-                <div class="tips">{{ $t("datasource.delete_this_item") }}</div>
-                <div class="foot">
-                  <deBtn class="small" @click="cancelItem(api)" secondary>{{
-                    $t("fu.search_bar.cancel")
-                  }}</deBtn>
-                  <deBtn
-                    class="small"
-                    @click="deleteItem(api)"
-                    type="primary"
-                    >{{ $t("fu.search_bar.ok") }}</deBtn
-                  >
-                </div>
+            v-for="api in form.apiConfiguration"
+            :key="api.id"
+            class="api-card"
+          >
+            <el-row>
+              <el-col :span="12">
+                <span class="name">{{ api.name }}</span>
+                <span
+                  v-if="api.status === 'Error'"
+                  class="de-tag"
+                  style="color: #646a73; background: rgba(31, 35, 41, 0.1)"
+                  >{{ $t('datasource.invalid') }}</span
+                >
+                <span
+                  v-if="api.status === 'Success'"
+                  class="de-tag"
+                  style="color: green; background: rgba(52, 199, 36, 0.2)"
+                  >{{ $t('datasource.valid') }}</span
+                >
+              </el-col>
+              <el-col style="text-align: right" :span="12">
                 <svg-icon
-                  slot="reference"
-                  icon-class="de-delete"
-                  class="de-delete-icon"
+                  @click="copyItem(api)"
+                  icon-class="de-copy"
+                  class="de-copy-icon"
                 />
-              </el-popover>
-            </el-col>
-          </el-row>
-          <div class="req-title">
-            <span>{{ $t("datasource.method") }}</span>
-            <span>{{ $t("datasource.url") }}</span>
+
+                <el-popover
+                  placement="top"
+                  width="200"
+                  :ref="'apiTable' + api.name"
+                  popper-class="api-table-delete"
+                  trigger="click"
+                >
+                  <i class="el-icon-warning"></i>
+                  <div class="tips">
+                    {{ $t('datasource.delete_this_item') }}
+                  </div>
+                  <div class="foot">
+                    <deBtn class="small" @click="cancelItem(api)" secondary>{{
+                      $t('fu.search_bar.cancel')
+                    }}</deBtn>
+                    <deBtn
+                      class="small"
+                      @click="deleteItem(api)"
+                      type="primary"
+                      >{{ $t('fu.search_bar.ok') }}</deBtn
+                    >
+                  </div>
+                  <svg-icon
+                    slot="reference"
+                    icon-class="de-delete"
+                    class="de-delete-icon"
+                  />
+                </el-popover>
+              </el-col>
+            </el-row>
+            <div class="req-title">
+              <span>{{ $t('datasource.method') }}</span>
+              <span>{{ $t('datasource.url') }}</span>
+            </div>
+            <div class="req-value">
+              <span>{{ api.method }}</span>
+              <span>{{ api.url }}</span>
+            </div>
           </div>
-          <div class="req-value">
-            <span>{{ api.method }}</span>
-            <span>{{ api.url }}</span>
-          </div>
-        </div>
         </template>
       </template>
 
@@ -94,7 +100,11 @@
         :label="$t('datasource.host')"
         prop="configuration.host"
       >
-        <el-input :placeholder="$t('datasource._ip_address')" v-model="form.configuration.host" autocomplete="off" />
+        <el-input
+          :placeholder="$t('datasource._ip_address')"
+          v-model="form.configuration.host"
+          autocomplete="off"
+        />
       </el-form-item>
 
       <el-form-item
@@ -114,7 +124,11 @@
         :label="$t('datasource.data_base')"
         prop="configuration.dataBase"
       >
-        <el-input :placeholder="$t('datasource.please_input_data_base')" v-model="form.configuration.dataBase" autocomplete="off" />
+        <el-input
+          :placeholder="$t('datasource.please_input_data_base')"
+          v-model="form.configuration.dataBase"
+          autocomplete="off"
+        />
       </el-form-item>
 
       <el-form-item
@@ -123,13 +137,13 @@
         prop="configuration.connectionType"
       >
         <el-radio v-model="form.configuration.connectionType" label="sid"
-          >{{ $t("datasource.oracle_sid") }}
+          >{{ $t('datasource.oracle_sid') }}
         </el-radio>
         <el-radio
           v-model="form.configuration.connectionType"
           label="serviceName"
         >
-          {{ $t("datasource.oracle_service_name") }}
+          {{ $t('datasource.oracle_service_name') }}
         </el-radio>
       </el-form-item>
 
@@ -164,7 +178,7 @@
       >
         <dePwd v-model="form.configuration.password" />
         <p>
-          {{ $t("datasource.kerbers_info") }}
+          {{ $t('datasource.kerbers_info') }}
         </p>
       </el-form-item>
 
@@ -183,7 +197,11 @@
         "
         :label="$t('datasource.user_name')"
       >
-        <el-input :placeholder="$t('components.one_user_name')" v-model="form.configuration.username" autocomplete="off" />
+        <el-input
+          :placeholder="$t('components.one_user_name')"
+          v-model="form.configuration.username"
+          autocomplete="off"
+        />
       </el-form-item>
 
       <el-form-item
@@ -194,21 +212,31 @@
         "
         :label="$t('datasource.password')"
       >
-        <dePwd :placeholder="$t('components.input_a_password')" v-model="form.configuration.password" />
+        <dePwd
+          :placeholder="$t('components.input_a_password')"
+          v-model="form.configuration.password"
+        />
       </el-form-item>
 
       <el-form-item
         v-if="form.type === 'es'"
         :label="$t('datasource.user_name')"
       >
-        <el-input :placeholder="$t('components.one_user_name')" v-model="form.configuration.esUsername" autocomplete="off" />
+        <el-input
+          :placeholder="$t('components.one_user_name')"
+          v-model="form.configuration.esUsername"
+          autocomplete="off"
+        />
       </el-form-item>
 
       <el-form-item
         v-if="form.type === 'es'"
         :label="$t('datasource.password')"
       >
-        <dePwd :placeholder="$t('components.input_a_password')" v-model="form.configuration.esPassword" />
+        <dePwd
+          :placeholder="$t('components.input_a_password')"
+          v-model="form.configuration.esPassword"
+        />
       </el-form-item>
 
       <el-form-item
@@ -235,17 +263,19 @@
       </el-form-item>
 
       <el-form-item
-        v-if="['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(form.type)"
+        v-if="
+          ['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(form.type)
+        "
         class="schema-label"
       >
         <template slot="label">
-          {{ $t("datasource.schema") }}
+          {{ $t('datasource.schema') }}
           <el-button
             type="text"
             icon="el-icon-plus"
             size="small"
             @click="getSchema()"
-            >{{ $t("datasource.get_schema") }}
+            >{{ $t('datasource.get_schema') }}
           </el-button>
         </template>
         <el-select
@@ -305,7 +335,7 @@
         v-if="!['es', 'api', 'mongo'].includes(form.type)"
         @click="showPriority = !showPriority"
         class="de-expand de-mar0"
-        >{{ $t("datasource.priority")
+        >{{ $t('datasource.priority')
         }}<i v-if="showPriority" class="el-icon-arrow-up"></i>
         <i v-else class="el-icon-arrow-down"></i
       ></span>
@@ -369,7 +399,7 @@
                 type="number"
                 :min="0"
               >
-                <template slot="append">{{ $t("panel.second") }}</template>
+                <template slot="append">{{ $t('panel.second') }}</template>
               </el-input>
             </el-form-item>
           </el-col>
@@ -408,7 +438,7 @@
           :rules="rule"
         >
           <div class="row-rules">
-            <span>{{ $t("datasource.base_info") }}</span>
+            <span>{{ $t('datasource.base_info') }}</span>
           </div>
           <el-form-item :label="$t('commons.name')" prop="name">
             <el-input v-model="apiItem.name" autocomplete="off" />
@@ -439,7 +469,7 @@
 
           <div v-loading="loading">
             <div class="row-rules mr40">
-              <span>{{ $t("datasource.req_param") }}</span>
+              <span>{{ $t('datasource.req_param') }}</span>
             </div>
             <!-- HTTP 请求参数 -->
             <el-form-item>
@@ -462,7 +492,7 @@
           :rules="rule"
         >
           <div class="row-rules">
-            <span>{{ $t("datasource.column_info") }}</span>
+            <span>{{ $t('datasource.column_info') }}</span>
           </div>
           <div class="table-container">
             <el-table
@@ -490,7 +520,8 @@
               </el-table-column>
               <el-table-column prop="name" :label="$t('dataset.field_rename')">
                 <template slot-scope="scope">
-                  <el-input :disabled="scope.row.children"
+                  <el-input
+                    :disabled="scope.row.children"
                     size="mini"
                     type="text"
                     v-model="scope.row.name"
@@ -504,7 +535,8 @@
                 :label="$t('dataset.field_type')"
               >
                 <template slot-scope="scope">
-                  <el-select :disabled="scope.row.children"
+                  <el-select
+                    :disabled="scope.row.children"
                     v-model="scope.row.deExtractType"
                     size="mini"
                     style="display: inline-block; width: 120px"
@@ -540,7 +572,7 @@
           </div>
 
           <div class="row-rules">
-            <span>{{ $t("dataset.data_preview") }}</span>
+            <span>{{ $t('dataset.data_preview') }}</span>
           </div>
 
           <ux-grid
@@ -587,7 +619,7 @@
       </el-row>
       <div class="foot">
         <el-button class="btn normal" @click="closeEditItem">{{
-          $t("commons.cancel")
+          $t('commons.cancel')
         }}</el-button>
         <el-button
           class="btn"
@@ -595,21 +627,21 @@
           @click="next"
           :disabled="disabledNext"
           v-show="active === 1"
-          >{{ $t("fu.steps.next") }}
+          >{{ $t('fu.steps.next') }}
         </el-button>
         <el-button
           class="btn"
           type="primary"
           @click="before"
           v-show="active === 2"
-          >{{ $t("fu.steps.prev") }}
+          >{{ $t('fu.steps.prev') }}
         </el-button>
         <el-button
           class="btn"
           type="primary"
           @click="saveItem"
           v-show="active === 2"
-          >{{ $t("commons.save") }}
+          >{{ $t('commons.save') }}
         </el-button>
       </div>
     </el-drawer>
@@ -617,25 +649,25 @@
 </template>
 
 <script>
-import i18n from "@/lang";
-import { checkApiDatasource, getSchema } from "@/api/system/datasource";
-import ApiHttpRequestForm from "@/views/system/datasource/ApiHttpRequestForm";
-import dePwd from "@/components/deCustomCm/dePwd.vue";
-import msgCfm from "@/components/msgCfm";
+import i18n from '@/lang'
+import { checkApiDatasource, getSchema } from '@/api/system/datasource'
+import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
+import dePwd from '@/components/deCustomCm/dePwd.vue'
+import msgCfm from '@/components/msgCfm'
 
 export default {
-  name: "DsConfiguration",
+  name: 'DsConfiguration',
   mixins: [msgCfm],
   components: {
     ApiHttpRequestForm,
-    dePwd,
+    dePwd
   },
   props: {
     disabled: {
       type: Boolean,
       default() {
-        return false;
-      },
+        return false
+      }
     },
     method: String,
     request: {},
@@ -643,7 +675,7 @@ export default {
     datasourceType: {},
     showScript: {
       type: Boolean,
-      default: true,
+      default: true
     },
     form: {
       type: Object,
@@ -651,19 +683,19 @@ export default {
         return {
           configuration: {
             initialPoolSize: 5,
-            extraParams: "",
+            extraParams: '',
             minPoolSize: 5,
             maxPoolSize: 50,
             maxIdleTime: 30,
             acquireIncrement: 5,
             idleConnectionTestPeriod: 5,
             connectTimeout: 5,
-            queryTimeout: 30,
+            queryTimeout: 30
           },
-          apiConfiguration: [],
-        };
-      },
-    },
+          apiConfiguration: []
+        }
+      }
+    }
   },
   data() {
     return {
@@ -673,172 +705,172 @@ export default {
         name: [
           {
             required: true,
-            message: i18n.t("datasource.input_name"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.input_name'),
+            trigger: 'blur'
+          }
         ],
         desc: [
           {
             min: 2,
             max: 50,
-            message: i18n.t("datasource.input_limit_2_50"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.input_limit_2_50'),
+            trigger: 'blur'
+          }
         ],
         type: [
           {
             required: true,
-            message: i18n.t("datasource.please_choose_type"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_choose_type'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.dataBase": [
+        'configuration.dataBase': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_data_base"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_data_base'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.connectionType": [
+        'configuration.connectionType': [
           {
             required: true,
-            message: i18n.t("datasource.please_select_oracle_type"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_select_oracle_type'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.username": [
+        'configuration.username': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_user_name"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_user_name'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.password": [
+        'configuration.password': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_password"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_password'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.host": [
+        'configuration.host': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_host"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_host'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.url": [
+        'configuration.url': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_url"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_url'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.port": [
+        'configuration.port': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_port"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_port'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.initialPoolSize": [
+        'configuration.initialPoolSize': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_initial_pool_size"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_initial_pool_size'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.minPoolSize": [
+        'configuration.minPoolSize': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_min_pool_size"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_min_pool_size'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.maxPoolSize": [
+        'configuration.maxPoolSize': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_max_pool_size"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_max_pool_size'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.maxIdleTime": [
+        'configuration.maxIdleTime': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_max_idle_time"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_max_idle_time'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.acquireIncrement": [
+        'configuration.acquireIncrement': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_acquire_increment"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_acquire_increment'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.queryTimeout": [
+        'configuration.queryTimeout': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_query_timeout"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_query_timeout'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.connectTimeout": [
+        'configuration.connectTimeout': [
           {
             required: true,
-            message: i18n.t("datasource.please_input_connect_timeout"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_connect_timeout'),
+            trigger: 'blur'
+          }
         ],
         url: [
           {
             required: true,
-            message: i18n.t("datasource.please_input_url"),
-            trigger: "blur",
-          },
+            message: i18n.t('datasource.please_input_url'),
+            trigger: 'blur'
+          }
         ],
         dataPath: [
           {
             required: true,
-            message: i18n.t("datasource.please_input_dataPath"),
-            trigger: "blur",
-          },
-        ],
+            message: i18n.t('datasource.please_input_dataPath'),
+            trigger: 'blur'
+          }
+        ]
       },
-      api_table_title: "",
+      api_table_title: '',
       schemas: [],
       canEdit: false,
       edit_api_item: false,
       add_api_item: true,
       active: 0,
       defaultApiItem: {
-        name: "",
-        url: "",
-        method: "GET",
+        name: '',
+        url: '',
+        method: 'GET',
         request: {
           headers: [{}],
           body: {
-            type: "",
-            raw: "",
-            kvs: [],
-          },
+            type: '',
+            raw: '',
+            kvs: []
+          }
         },
-        fields: [],
+        fields: []
       },
       apiItem: {
-        status: "",
-        name: "",
-        url: "",
-        method: "GET",
-        dataPath: "",
+        status: '',
+        name: '',
+        url: '',
+        method: 'GET',
+        dataPath: '',
         request: {
           headers: [],
           body: {
-            type: "",
-            raw: "",
-            kvs: [],
+            type: '',
+            raw: '',
+            kvs: []
           },
-          authManager: {},
+          authManager: {}
         },
         fields: [],
         jsonFields: [
@@ -846,57 +878,57 @@ export default {
             deType: 0,
             size: 65535,
             children: null,
-            name: "comments",
+            name: 'comments',
             checked: false,
             extField: 0,
-            jsonPath: "$[*].comments",
-            type: "STRING",
-            originName: "comments",
-            deExtractType: 0,
-          },
-        ],
+            jsonPath: '$[*].comments',
+            type: 'STRING',
+            originName: 'comments',
+            deExtractType: 0
+          }
+        ]
       },
       reqOptions: [
-        { id: "GET", label: "GET" },
-        { id: "POST", label: "POST" },
+        { id: 'GET', label: 'GET' },
+        { id: 'POST', label: 'POST' }
       ],
       loading: false,
-      responseData: { type: "HTTP", responseResult: {}, subRequestResults: [] },
-      api_step2_active_name: "first",
+      responseData: { type: 'HTTP', responseResult: {}, subRequestResults: [] },
+      api_step2_active_name: 'first',
       fieldTypes: [
-        { label: this.$t("dataset.text"), value: 0 },
-        { label: this.$t("dataset.time"), value: 1 },
-        { label: this.$t("dataset.value"), value: 2 },
+        { label: this.$t('dataset.text'), value: 0 },
+        { label: this.$t('dataset.time'), value: 1 },
+        { label: this.$t('dataset.value'), value: 2 },
         {
           label:
-            this.$t("dataset.value") + "(" + this.$t("dataset.float") + ")",
-          value: 3,
+            this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')',
+          value: 3
         },
-        { label: this.$t("dataset.location"), value: 5 },
+        { label: this.$t('dataset.location'), value: 5 }
       ],
       height: 500,
       disabledNext: false,
       authMethodList: [
         {
-          id: "passwd",
-          label: i18n.t("datasource.passwd"),
+          id: 'passwd',
+          label: i18n.t('datasource.passwd')
         },
         {
-          id: "kerberos",
-          label: "Kerberos",
-        },
+          id: 'kerberos',
+          label: 'Kerberos'
+        }
       ],
       fieldOptions: [
-        { label: this.$t("dataset.text"), value: 0 },
-        { label: this.$t("dataset.value"), value: 2 },
+        { label: this.$t('dataset.text'), value: 0 },
+        { label: this.$t('dataset.value'), value: 2 },
         {
           label:
-            this.$t("dataset.value") + "(" + this.$t("dataset.float") + ")",
-          value: 3,
-        },
+            this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')',
+          value: 3
+        }
       ],
-      certinKey: false,
-    };
+      certinKey: false
+    }
   },
   created() {},
   watch: {},
@@ -904,73 +936,73 @@ export default {
     getSchema() {
       this.$refs.DsConfig.validate((valid) => {
         if (valid) {
-          const data = JSON.parse(JSON.stringify(this.form));
-          data.configuration = JSON.stringify(data.configuration);
+          const data = JSON.parse(JSON.stringify(this.form))
+          data.configuration = JSON.stringify(data.configuration)
           getSchema(data).then((res) => {
-            this.schemas = res.data;
-            this.$success(i18n.t("commons.success"));
-          });
+            this.schemas = res.data
+            this.$success(i18n.t('commons.success'))
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     next() {
       if (this.active === 1) {
-        let hasRepeatName = false;
+        let hasRepeatName = false
         this.form.apiConfiguration.forEach((item) => {
           if (
             item.name === this.apiItem.name &&
             item.serialNumber !== this.apiItem.serialNumber
           ) {
-            hasRepeatName = true;
+            hasRepeatName = true
           }
-        });
+        })
         if (hasRepeatName) {
-          this.$message.error(i18n.t("datasource.has_repeat_name"));
-          return;
+          this.$message.error(i18n.t('datasource.has_repeat_name'))
+          return
         }
 
         this.$refs.apiItemBasicInfo.validate((valid) => {
           if (valid) {
-            const data = JSON.parse(JSON.stringify(this.apiItem));
-            this.loading = true;
-            this.disabledNext = true;
+            const data = JSON.parse(JSON.stringify(this.apiItem))
+            this.loading = true
+            this.disabledNext = true
             checkApiDatasource(data)
               .then((res) => {
-                this.loading = false;
-                this.disabledNext = false;
-                this.apiItem.status = "Success";
-                this.$success(i18n.t("commons.success"));
-                this.active++;
-                this.apiItem.jsonFields = res.data.jsonFields;
-                this.apiItem.fields = [];
-                this.handleFiledChange();
-                this.previewData();
+                this.loading = false
+                this.disabledNext = false
+                this.apiItem.status = 'Success'
+                this.$success(i18n.t('commons.success'))
+                this.active++
+                this.apiItem.jsonFields = res.data.jsonFields
+                this.apiItem.fields = []
+                this.handleFiledChange()
+                this.previewData()
               })
               .catch((res) => {
-                this.loading = false;
-                this.disabledNext = false;
-              });
+                this.loading = false
+                this.disabledNext = false
+              })
           } else {
-            this.apiItem.fields = [];
-            return false;
+            this.apiItem.fields = []
+            return false
           }
-        });
+        })
       }
     },
     before() {
-      this.active--;
+      this.active--
     },
     closeEditItem() {
-      this.active = 0;
-      this.$refs.apiItemBasicInfo.clearValidate();
-      this.edit_api_item = false;
+      this.active = 0
+      this.$refs.apiItemBasicInfo.clearValidate()
+      this.edit_api_item = false
     },
     saveItem() {
       if (this.apiItem.fields.length === 0) {
-        this.$message.warning(i18n.t("datasource.api_field_not_empty"));
-        return;
+        this.$message.warning(i18n.t('datasource.api_field_not_empty'))
+        return
       }
 
       for (var i = 0; i < this.apiItem.fields.length - 1; i++) {
@@ -978,15 +1010,15 @@ export default {
           if (this.apiItem.fields[i].name === this.apiItem.fields[j].name) {
             this.$message.error(
               this.apiItem.fields[i].name +
-                ", " +
-                i18n.t("datasource.has_repeat_field_name")
-            );
-            return;
+                ', ' +
+                i18n.t('datasource.has_repeat_field_name')
+            )
+            return
           }
         }
       }
-      this.active = 0;
-      this.edit_api_item = false;
+      this.active = 0
+      this.edit_api_item = false
 
       if (!this.add_api_item) {
         for (var i = 0; i < this.form.apiConfiguration.length; i++) {
@@ -996,71 +1028,71 @@ export default {
           ) {
             this.form.apiConfiguration[i] = JSON.parse(
               JSON.stringify(this.apiItem)
-            );
-            this.certinKey = !this.certinKey;
+            )
+            this.certinKey = !this.certinKey
           }
         }
       } else {
-        this.form.apiConfiguration.push(this.apiItem);
+        this.form.apiConfiguration.push(this.apiItem)
       }
     },
     copyItem(item) {
-      var newItem = JSON.parse(JSON.stringify(item));
+      var newItem = JSON.parse(JSON.stringify(item))
       newItem.serialNumber =
         this.form.apiConfiguration[this.form.apiConfiguration.length - 1]
-          .serialNumber + 1;
-      var reg = new RegExp(item.name + "_copy_" + "([0-9]*)", "gim");
-      var number = 0;
+          .serialNumber + 1
+      var reg = new RegExp(item.name + '_copy_' + '([0-9]*)', 'gim')
+      var number = 0
       for (var i = 1; i < this.form.apiConfiguration.length; i++) {
-        var match = this.form.apiConfiguration[i].name.match(reg);
+        var match = this.form.apiConfiguration[i].name.match(reg)
         if (match !== null) {
           var num = match[0].substring(
             this.form.apiConfiguration[i].name.length + 5,
             match[0].length - 1
-          );
+          )
           if (parseInt(num) != NaN && parseInt(num) > number) {
-            number = parseInt(num);
+            number = parseInt(num)
           }
         }
       }
-      number = number + 1;
-      newItem.name = item.name + "_copy_" + number;
-      this.form.apiConfiguration.push(newItem);
-      this.openMessageSuccess("datasource.success_copy");
+      number = number + 1
+      newItem.name = item.name + '_copy_' + number
+      this.form.apiConfiguration.push(newItem)
+      this.openMessageSuccess('datasource.success_copy')
     },
     addApiItem(item) {
       if (item) {
-        this.add_api_item = false;
-        this.api_table_title = this.$t("datasource.edit_api_table");
-        this.apiItem = JSON.parse(JSON.stringify(item));
+        this.add_api_item = false
+        this.api_table_title = this.$t('datasource.edit_api_table')
+        this.apiItem = JSON.parse(JSON.stringify(item))
       } else {
-        this.add_api_item = true;
-        this.apiItem = JSON.parse(JSON.stringify(this.defaultApiItem));
+        this.add_api_item = true
+        this.apiItem = JSON.parse(JSON.stringify(this.defaultApiItem))
         this.apiItem.serialNumber =
           this.form.apiConfiguration.length > 0
             ? this.form.apiConfiguration[this.form.apiConfiguration.length - 1]
                 .serialNumber + 1
-            : 0;
-        this.api_table_title = this.$t("datasource.add_api_table");
+            : 0
+        this.api_table_title = this.$t('datasource.add_api_table')
       }
-      this.active = 1;
-      this.edit_api_item = true;
+      this.active = 1
+      this.edit_api_item = true
     },
     deleteItem(item) {
       this.form.apiConfiguration.splice(
         this.form.apiConfiguration.indexOf(item),
         1
-      );
-      this.openMessageSuccess("commons.delete_success");
+      )
+      this.openMessageSuccess('commons.delete_success')
     },
     cancelItem({ name }) {
-      this.$refs["apiTable" + name].doClose();
+      this.$refs['apiTable' + name].doClose()
     },
     handleCheckAllChange(row) {
-      this.handleCheckChange(row);
-      this.apiItem.fields = [];
-      this.handleFiledChange(row);
-      this.previewData();
+      this.handleCheckChange(row)
+      this.apiItem.fields = []
+      this.handleFiledChange(row)
+      this.previewData()
     },
     handleFiledChange() {
       for (var i = 0; i < this.apiItem.jsonFields.length; i++) {
@@ -1068,10 +1100,10 @@ export default {
           this.apiItem.jsonFields[i].checked &&
           this.apiItem.jsonFields[i].children === undefined
         ) {
-          this.apiItem.fields.push(this.apiItem.jsonFields[i]);
+          this.apiItem.fields.push(this.apiItem.jsonFields[i])
         }
         if (this.apiItem.jsonFields[i].children !== undefined) {
-          this.handleFiledChange2(this.apiItem.jsonFields[i].children);
+          this.handleFiledChange2(this.apiItem.jsonFields[i].children)
         }
       }
     },
@@ -1082,36 +1114,36 @@ export default {
           for (var j = 0; j < this.apiItem.fields.length; j++) {
             if (this.apiItem.fields[j].name === jsonFields[i].name) {
               this.$nextTick(() => {
-                jsonFields[i].checked = false;
-              });
+                jsonFields[i].checked = false
+              })
               this.$message.error(
                 jsonFields[i].name +
-                  ", " +
-                  i18n.t("datasource.has_repeat_field_name")
-              );
-              return;
+                  ', ' +
+                  i18n.t('datasource.has_repeat_field_name')
+              )
+              return
             }
           }
-          this.apiItem.fields.push(jsonFields[i]);
+          this.apiItem.fields.push(jsonFields[i])
         }
         if (jsonFields[i].children !== undefined) {
-          this.handleFiledChange2(jsonFields[i].children);
+          this.handleFiledChange2(jsonFields[i].children)
         }
       }
     },
     previewData() {
-      let datas = [];
-      let maxPreviewNum = 0;
+      let datas = []
+      let maxPreviewNum = 0
       for (let j = 0; j < this.apiItem.fields.length; j++) {
         if (
           this.apiItem.fields[j].value &&
           this.apiItem.fields[j].value.length > maxPreviewNum
         ) {
-          maxPreviewNum = this.apiItem.fields[j].value.length;
+          maxPreviewNum = this.apiItem.fields[j].value.length
         }
       }
       for (let i = 0; i < maxPreviewNum; i++) {
-        datas.push({});
+        datas.push({})
       }
       for (let i = 0; i < this.apiItem.fields.length; i++) {
         for (let j = 0; j < this.apiItem.fields[i].value.length; j++) {
@@ -1119,25 +1151,25 @@ export default {
             datas[j],
             this.apiItem.fields[i].name,
             this.apiItem.fields[i].value[j]
-          );
+          )
         }
-        this.$refs.plxTable.reloadData(datas);
+        this.$refs.plxTable.reloadData(datas)
       }
     },
     handleCheckChange(node) {
       if (node.children !== undefined) {
         node.children.forEach((item) => {
-          item.checked = node.checked;
-          this.handleCheckChange(item);
-        });
+          item.checked = node.checked
+          this.handleCheckChange(item)
+        })
       }
     },
     fieldNameChange(row) {
-      this.previewData();
+      this.previewData()
     },
-    fieldTypeChange(row) {},
-  },
-};
+    fieldTypeChange(row) {}
+  }
+}
 </script>
 
 <style lang="scss">
@@ -1230,7 +1262,7 @@ export default {
     margin: 24px 0 16px 0;
 
     &::before {
-      content: "";
+      content: '';
       position: absolute;
       left: 0;
       top: 50%;
@@ -1324,7 +1356,7 @@ export default {
   }
 
   .el-form-item.is-required:not(.is-no-asterisk) > .el-form-item__label::after {
-    content: "*";
+    content: '*';
     color: #f54a45;
     margin-left: 2px;
   }

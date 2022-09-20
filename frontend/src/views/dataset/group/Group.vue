@@ -72,7 +72,7 @@
           <div v-if="!tData.length" class="no-tdata">
             {{ $t('deDataset.no_dataset_click') }}
             <span @click="() => clickAdd()" class="no-tdata-new">{{
-              $t('deDataset.newly_build')
+              $t('deDataset.create')
             }}</span>
           </div>
           <el-tree

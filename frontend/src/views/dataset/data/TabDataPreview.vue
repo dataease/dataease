@@ -23,7 +23,7 @@
       </span>
       <span class="title-text" style="width: 100px"
         >{{ $t('deDataset.display') }} {{ form.row }}
-        {{ $t('deDataset.that_s_ok') }}</span
+        {{ $t('deDataset.row') }}</span
       >
       <el-popover
         popper-class="de-set-count de-card-dropdown"

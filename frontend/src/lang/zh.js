@@ -519,7 +519,10 @@ export default {
     convert_to_dimension: '转换为维度',
     left_to_edit: '选中左侧的数据表可进行编辑',
     cannot_be_duplicate: '数据集名称不允许重复',
-    set_saved_successfully: '数据集保存成功'
+    set_saved_successfully: '数据集保存成功',
+    to_start_using: '浏览您的数据库，表和列的内容。 选择一个数据库即可开始使用。',
+    to_run_query: '点击运行查询',
+    the_running_results: '即可查看运行结果'
   },
   detabs: {
     eidttitle: '编辑标题',

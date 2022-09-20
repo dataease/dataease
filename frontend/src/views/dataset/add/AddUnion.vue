@@ -209,19 +209,11 @@ export default {
     },
     save() {
       if (!this.param.name || this.param.name === '') {
-        this.$message({
-          showClose: true,
-          message: this.$t('dataset.pls_input_name'),
-          type: 'error'
-        })
+        this.openMessageSuccess('dataset.pls_input_name', 'error')
         return
       }
       if (this.param.name.length > 50) {
-        this.$message({
-          showClose: true,
-          message: this.$t('dataset.char_can_not_more_50'),
-          type: 'error'
-        })
+        this.openMessageSuccess('dataset.char_can_not_more_50', 'error')
         return
       }
       const table = {
@@ -239,14 +231,7 @@ export default {
       })
     },
     cancel() {
-      if (this.param.tableId) {
-        this.$emit('switchComponent', {
-          name: 'ViewTable',
-          param: this.param.table
-        })
-      } else {
-        this.$emit('switchComponent', { name: '' })
-      }
+      this.$router.back()
     },
     selectDs() {
       this.selectDsDialog = true
@@ -260,11 +245,7 @@ export default {
     },
     confirmSelectDs() {
       if (this.tempDs.mode === 0 && this.tempDs.modelInnerType === 'sql') {
-        this.$message({
-          showClose: true,
-          message: this.$t('dataset.sql_ds_union_error'),
-          type: 'error'
-        })
+        this.openMessageSuccess('deDataset.sql_ds_union_error')
         return
       }
       const ds = JSON.parse(JSON.stringify(this.unionItem))
@@ -315,11 +296,7 @@ export default {
       if (this.checkUnion()) {
         this.editUnion = false
       } else {
-        this.$message({
-          message: this.$t('dataset.union_error'),
-          type: 'error',
-          showClose: true
-        })
+        this.openMessageSuccess('deDataset.union_error')
       }
     },
     cancelUnion(val) {
