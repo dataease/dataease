@@ -40,7 +40,7 @@
                       :show-file-list="false"
                       :file-list="fileList"
                       :data="param"
-                      accept=".xls,.xlsx,"
+                      accept=".xls,.xlsx,.csv"
                       :before-upload="beforeUpload"
                       :on-success="uploadSuccess"
                       :on-error="uploadFail"
@@ -374,7 +374,7 @@ export default {
 
       if (this.param.editType === 0 && this.param.tableId && (effectExtField || changeFiled)) {
 
-        var msg = effectExtField ? i18n.t('dataset.task.effect_ext_field') + ', ' + i18n.t('dataset.task.excel_replace_msg') : i18n.t('dataset.task.excel_replace_msg')
+        var msg = effectExtField ? i18n.t('dataset.effect_ext_field') + ', ' + i18n.t('dataset.excel_replace_msg') : i18n.t('dataset.excel_replace_msg')
         $confirm(msg, () => {
           this.saveExcelData(sheetFileMd5, table)
         })
