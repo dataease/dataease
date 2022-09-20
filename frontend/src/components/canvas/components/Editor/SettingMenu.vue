@@ -130,7 +130,7 @@ export default {
     },
 
     paste() {
-      this.$store.commit('paste', true)
+      this.$store.commit('paste', false)
       this.$store.commit('recordSnapshot', 'paste')
     },
 

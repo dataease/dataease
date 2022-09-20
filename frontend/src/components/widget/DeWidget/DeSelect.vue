@@ -8,7 +8,7 @@
     :collapse-tags="showNumber"
     :clearable="!element.options.attrs.multiple"
     :multiple="element.options.attrs.multiple"
-    :placeholder="$t(element.options.attrs.placeholder)"
+    :placeholder="$t(element.options.attrs.placeholder) + placeholderSuffix"
     :popper-append-to-body="inScreen"
     :size="size"
     :filterable="true"
@@ -110,6 +110,11 @@ export default {
     customStyle() {
       const { brColor, wordColor, innerBgColor } = this.element.style
       return { brColor, wordColor, innerBgColor }
+    },
+    placeholderSuffix() {
+      const i18nKey = this.element.options.attrs.multiple ? 'panel.multiple_choice' : 'panel.single_choice'
+      const i18nValue = this.$t(i18nKey)
+      return '(' + i18nValue + ')'
     }
   },
 

@@ -109,7 +109,7 @@
       @onJumpClick="jumpClick"
     />
     <div style="position: absolute;left: 8px;bottom:8px;">
-      <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
+      <drill-path :drill-filters="drillFilters" :theme-style="element.commonBackground" @onDrillJump="drillJump" />
     </div>
   </div>
 </template>
@@ -137,7 +137,7 @@ import { adaptCurTheme, customAttrTrans, customStyleTrans, recursionTransObj } f
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
-import { viewPropsSave } from '@/api/chart/chart'
+import { viewEditSave, viewPropsSave } from '@/api/chart/chart'
 import { checkAddHttp } from '@/utils/urlUtils'
 import DeRichTextView from '@/components/canvas/custom-component/DeRichTextView'
 import Vue from 'vue'
@@ -582,6 +582,15 @@ export default {
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
             // 记录当前数据
             this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
+            if (this.element.needAdaptor) {
+              const customStyleObj = JSON.parse(this.chart.customStyle)
+              const customAttrObj = JSON.parse(this.chart.customAttr)
+              adaptCurTheme(customStyleObj, customAttrObj)
+              this.chart.customStyle = JSON.stringify(customStyleObj)
+              this.chart.customAttr = JSON.stringify(customAttrObj)
+              viewEditSave(this.panelInfo.id, { id: this.chart.id, customStyle: this.chart.customStyle, customAttr: this.chart.customAttr })
+              this.$store.commit('adaptorStatusDisable', this.element.id)
+            }
             this.sourceCustomAttrStr = this.chart.customAttr
             this.sourceCustomStyleStr = this.chart.customStyle
             this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []

@@ -80,7 +80,7 @@
           </el-col>
           <el-col :span="20" class="main-row">
             <el-row v-for="(value, key) in BackgroundShowMap" :key="key">
-<!--              <el-col :span="24"><span>{{ key }}</span> </el-col>-->
+
               <el-col
                 v-for="item in value"
                 :key="item.id"
@@ -132,7 +132,7 @@
 import { queryBackground } from '@/api/background/background'
 import BackgroundItem from '@/views/background/BackgroundItem'
 import { mapState } from 'vuex'
-import {deepCopy, imgUrlTrans} from '@/components/canvas/utils/utils'
+import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
 import { COMMON_BACKGROUND_NONE } from '@/components/canvas/custom-component/component-list'

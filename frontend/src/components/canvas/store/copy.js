@@ -4,6 +4,8 @@ import generateID from '@/components/canvas/utils/generateID'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { chartBatchCopy, chartCopy } from '@/api/chart/chart'
 import { uuid } from 'vue-uuid'
+import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
+import Vue from "vue";
 
 export default {
   state: {
@@ -85,7 +87,7 @@ export default {
       state.isCut = false
     },
 
-    paste(state, isMouse) {
+    paste(state, needAdaptor) {
       if (!state.copyData) {
         toast('请选择组件')
         return
@@ -103,12 +105,13 @@ export default {
       if (data.type === 'view') {
         chartCopy(data.propValue.viewId, state.panel.panelInfo.id).then(res => {
           const newView = deepCopy(data)
+          Vue.set(newView, 'needAdaptor', needAdaptor)
           newView.id = uuid.v1()
           newView.propValue.viewId = res.data
           if (newView.filters && newView.filters.length) {
             newView.filters = []
           }
-
+          needAdaptor && adaptCurThemeCommonStyle(newView)
           store.commit('addComponent', { component: newView })
         })
       } else if (data.type === 'de-tabs') {
@@ -120,17 +123,20 @@ export default {
             const newViewId = uuid.v1()
             sourceAndTargetIds[item.content.propValue.viewId] = newViewId
             item.content.propValue.viewId = newViewId
+            Vue.set(item.content, 'needAdaptor', needAdaptor)
             if (item.content.filters && item.content.filters.length) {
               item.content.filters = []
             }
           }
         })
         chartBatchCopy({ 'sourceAndTargetIds': sourceAndTargetIds }, state.panel.panelInfo.id).then((rsp) => {
+          needAdaptor && adaptCurThemeCommonStyle(newCop)
           store.commit('addComponent', { component: newCop })
         })
       } else {
         const newCop = deepCopy(data)
         newCop.id = uuid.v1()
+        needAdaptor && adaptCurThemeCommonStyle(newCop)
         store.commit('addComponent', { component: newCop })
       }
       if (state.isCut) {

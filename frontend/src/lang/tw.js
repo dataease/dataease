@@ -132,6 +132,7 @@ export default {
   },
   commons: {
 
+
     unlock: '解鎖',
     unlock_success: '解鎖成功',
 
@@ -2345,7 +2346,7 @@ export default {
   },
   denumberselect: {
     label: '數字下拉',
-    placeholder: '請選擇'
+    placeholder: '請選擇數字'
   },
   deinputsearch: {
     label: '文本搜索',
@@ -2353,7 +2354,7 @@ export default {
   },
   detextselect: {
     label: '文本下拉',
-    placeholder: '請選擇'
+    placeholder: '請選擇文本'
   },
   detextselectTree: {
     label: '下拉樹',
@@ -2570,8 +2571,8 @@ export default {
     no_apps: '暫無應用',
     app_group_icon: '封面圖標',
     app_name: '應用名稱',
-    search_by_keyword:'通過關鍵字搜索',
-    apply_logs:'應用記錄',
+    search_by_keyword: '通過關鍵字搜索',
+    apply_logs: '應用記錄',
     app_group_delete_tips: '確定刪除該應用分類嗎?',
     app_group_delete_content: '刪除後，該分類中所有的應用模闆也將被刪除。'
   }
