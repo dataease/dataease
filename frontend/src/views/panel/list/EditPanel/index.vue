@@ -17,6 +17,17 @@
         <el-input v-model="editPanel.panelInfo.name" clearable size="mini" />
       </el-col>
     </el-row>
+    <!-- <el-row v-if="inputType === 'new'">
+      <el-row class="selector-div">
+        <SetDrawSize class="attr-selector" />
+        <SetDrawFont class="attr-selector" />
+        <SetRuleColor class="attr-selector" />
+        <background-selector class="attr-selector" />
+        <component-gap class="attr-selector" />
+        <panel-refresh-time class="attr-selector" />
+        <panel-view-result class="attr-selector" />
+      </el-row>
+    </el-row> -->
     <el-row v-if="inputType==='new_inner_template'" class="preview">
       <el-col :span="8" style="height:100%;overflow-y: auto">
         <template-all-list :template-list="templateList" @showCurrentTemplateInfo="showCurrentTemplateInfo" />
@@ -37,8 +48,25 @@ import { showTemplateList } from '@/api/system/template'
 import TemplateAllList from './TemplateAllList'
 import { deepCopy } from '@/components/canvas/utils/utils'
 
+import SetDrawSize from '@/views/panel/SubjectSetting/PanelStyle/setDrawSize'
+import SetDrawFont from '@/views/panel/SubjectSetting/PanelStyle/setDrawFont'
+import SetRuleColor from '@/views/panel/SubjectSetting/PanelStyle/setRuleColor'
+import BackgroundSelector from '@/views/panel/SubjectSetting/PanelStyle/BackgroundSelector'
+import ComponentGap from '@/views/panel/SubjectSetting/PanelStyle/ComponentGap'
+import PanelRefreshTime from '@/views/panel/SubjectSetting/PanelStyle/PanelRefreshTime'
+import PanelViewResult from '@/views/panel/SubjectSetting/PanelStyle/PanelViewResult'
+
 export default {
-  components: { TemplateAllList },
+  components: { 
+    TemplateAllList,
+    SetDrawSize,
+    SetDrawFont,
+    SetRuleColor,
+    BackgroundSelector,
+    ComponentGap,
+    PanelRefreshTime,
+    PanelViewResult
+   },
   props: {
     editPanelOut: {
       type: Object,
@@ -181,6 +209,19 @@ export default {
 </script>
 
 <style scoped>
+  .selector-div {
+    background-color: var(--MainBG, #f7f8fa);
+    margin: 5px
+  }
+ .attr-selector {
+    background-color: white;
+    height: 32px;
+    margin: 5px 5px 5px 5px;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+    z-index: 10001;
+  }
 
 .my_table >>> .el-table__row>td{
   /* 去除表格线 */

@@ -83,7 +83,7 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 
 export default {
-  name: 'BackgroundSelector',
+  name: 'SetDrawSize',
   data() {
     return {
       fileList: [],
