@@ -15,6 +15,7 @@ import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.cas.dto.CasSaveResult;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.display.service.DisplayXpackService;
+import io.dataease.plugins.xpack.loginlimit.service.LoginLimitXpackService;
 import io.dataease.service.FileService;
 import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections.CollectionUtils;
@@ -58,10 +59,14 @@ public class SystemParameterService {
         List<SystemParameter> paramList = this.getParamList("basic");
         List<SystemParameter> homePageList = this.getParamList("ui.openHomePage");
         List<SystemParameter> marketPageList = this.getParamList("ui.openMarketPage");
+        List<SystemParameter> loginLimitList = this.getParamList("loginlimit");
         paramList.addAll(homePageList);
         paramList.addAll(marketPageList);
+        paramList.addAll(loginLimitList);
         BasicInfo result = new BasicInfo();
         result.setOpenHomePage("true");
+        Map<String, LoginLimitXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LoginLimitXpackService.class));
+        Boolean loginLimitPluginLoaded = beansOfType.keySet().size() > 0;
         if (!CollectionUtils.isEmpty(paramList)) {
             for (SystemParameter param : paramList) {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.FRONT_TIME_OUT.getValue())) {
@@ -94,6 +99,27 @@ public class SystemParameterService {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.DS_CHECK_INTERVAL_TYPE.getValue())) {
                     result.setDsCheckIntervalType(param.getParamValue());
                 }
+
+
+                if (loginLimitPluginLoaded) {
+                    if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.LOGIN_LIMIT_LIMITTIMES.getValue())) {
+                        String paramValue = param.getParamValue();
+                        if (StringUtils.isNotBlank(paramValue)) {
+                            result.setLimitTimes(Integer.parseInt(paramValue));
+                        }
+                    }
+                    if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.LOGIN_LIMIT_RELIEVETIMES.getValue())) {
+                        String paramValue = param.getParamValue();
+                        if (StringUtils.isNotBlank(paramValue)) {
+                            result.setRelieveTimes(Integer.parseInt(paramValue));
+                        }
+                    }
+                    if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.LOGIN_LIMIT_OPEN.getValue())) {
+                        boolean open = StringUtils.equals("true", param.getParamValue());
+                        result.setOpen(open ? "true" : "false");
+                    }
+                }
+
             }
         }
         return result;

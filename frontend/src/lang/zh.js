@@ -131,6 +131,8 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    unlock: '解锁',
+    unlock_success: '解锁成功',
     no_result: '没有找到相关内容',
     manage_member: '管理成员',
     confirm_remove_cancel: '确定删除该角色吗?',

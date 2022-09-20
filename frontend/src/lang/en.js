@@ -131,6 +131,8 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    unlock: 'Unlock',
+    unlock_success: 'Unlock success',
     no_result: 'No Result',
     manage_member: 'Managing members',
     confirm_remove_cancel: 'Are you sure to delete the role?',

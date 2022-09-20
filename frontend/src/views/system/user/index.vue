@@ -188,7 +188,7 @@
           slot="__operation"
           :label="$t('commons.operating')"
           fixed="right"
-          width="168"
+          :width="operateWidth"
         >
           <template slot-scope="scope">
             <el-button
@@ -245,6 +245,13 @@
               type="text"
               @click="del(scope.row)"
             >{{ $t("commons.delete") }}</el-button>
+            <el-button
+              v-if="scope.row.locked"
+              v-permission="['user:edit']"
+              class="text-btn"
+              type="text"
+              @click="unlock(scope.row)"
+            >{{ $t("commons.unlock") }}</el-button>
           </template>
         </el-table-column>
       </grid-table>
@@ -302,7 +309,8 @@ import {
   delUser,
   editPassword,
   editStatus,
-  allRoles
+  allRoles,
+  unLock
 } from '@/api/system/user'
 import { mapGetters } from 'vuex'
 import filterUser from './filterUser.vue'
@@ -358,7 +366,8 @@ export default {
       defaultPWD: 'DataEase123..',
       canLoadDom: false,
       showScroll: false,
-      resizeForFilter: null
+      resizeForFilter: null,
+      operateWidth: 168
     }
   },
   computed: {
@@ -534,6 +543,7 @@ export default {
       const { currentPage, pageSize } = this.paginationConfig
       userLists(currentPage, pageSize, param).then((response) => {
         this.data = response.data.listObject
+        this.dynamicOprtateWidth()
         this.paginationConfig.total = response.data.itemCount
       })
     },
@@ -591,6 +601,25 @@ export default {
       allRoles().then((res) => {
         this.roles = res.data
       })
+    },
+    unlock(row) {
+      unLock(row.username).then(res => {
+        row.locked = false
+        this.data.forEach(item => {
+          if (item.username === row.username) {
+            item.locked = false
+          }
+        })
+        this.dynamicOprtateWidth()
+        this.$success(this.$t('commons.unlock_success'))
+      })
+    },
+    dynamicOprtateWidth() {
+      if (this.data && this.data.some(item => item.locked)) {
+        this.operateWidth = 200
+        return
+      }
+      this.operateWidth = 168
     }
   }
 }

@@ -83,7 +83,7 @@
         :class="[activeName !== 'eight' ? 'is-center' : 'pad-center']"
       >
         <div class="min-w600">
-          <basic-setting v-if="activeName === 'zero'" />
+          <basic-setting v-if="activeName === 'zero'" :is-plugin-loaded="isPluginLoaded" />
           <email-setting v-if="activeName === 'first'" />
           <map-setting v-if="activeName === 'ten'" ref="mapSetting" />
           <plugin-com v-if="activeName === 'fourth'" ref="DisplaySetting" component-name="LdapSetting" />

@@ -68,3 +68,11 @@ ALTER TABLE `sys_task_email`
 
 ALTER TABLE `sys_task_email`
     ADD COLUMN `reci_users` varchar(255) NULL COMMENT '接收人账号' AFTER `conditions`;
+
+
+DROP TABLE IF EXISTS `sys_login_limit`;
+CREATE TABLE `sys_login_limit` (
+   `login_type` int(8) NOT NULL,
+   `username` varchar(255) NOT NULL,
+   `record_time` bigint(13) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
