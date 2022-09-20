@@ -1,145 +1,71 @@
 <template>
-  <el-col class="tree-style">
-    <!-- group -->
-    <el-col>
-      <el-row class="title-css">
-        <span class="title-text">
-          {{ $t('dataset.datalist') }}
+  <div class="ds-move-tree">
+    <el-input
+      v-model="filterText"
+      size="small"
+      :placeholder="$t('commons.search')"
+      prefix-icon="el-icon-search"
+      style="margin-bottom: 16px"
+      clearable
+      class="main-area-input"
+    />
+    <div class="tree">
+      <el-tree
+        ref="datasetTreeRef"
+        class="de-tree"
+        :current-node-key="checkedTable ? checkedTable.id : ''"
+        :default-expanded-keys="expandedArray"
+        :data="data"
+        node-key="id"
+        highlight-current
+        :expand-on-click-node="true"
+        :filter-node-method="filterNode"
+        @node-click="nodeClick"
+      >
+        <span
+          v-if="data.modelInnerType === 'group'"
+          slot-scope="{ data }"
+          class="custom-tree-node"
+        >
+          <span style="display: flex; flex: 1; width: 0">
+            <span v-if="data.modelInnerType === 'group'">
+              <svg-icon icon-class="scene" class="ds-icon-scene" />
+            </span>
+            <span
+              style="
+                margin-left: 6px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              "
+              :title="data.name"
+              >{{ data.name }}</span
+            >
+          </span>
         </span>
-      </el-row>
-      <el-divider />
-
-      <el-row style="margin-bottom: 10px">
-        <el-col :span="16">
-          <el-input
-            v-model="filterText"
-            size="mini"
-            :placeholder="$t('commons.search')"
-            prefix-icon="el-icon-search"
-            clearable
-            class="main-area-input"
-          />
-        </el-col>
-        <el-col :span="8">
-          <el-dropdown>
-            <el-button size="mini" type="primary">
-              {{ searchMap[searchType]
-              }}<i class="el-icon-arrow-down el-icon--right" />
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native="searchTypeClick('all')">{{
-                $t('commons.all')
-              }}</el-dropdown-item>
-              <el-dropdown-item @click.native="searchTypeClick('folder')"
-                >{{ this.$t('commons.folder') }}
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </el-col>
-      </el-row>
-
-      <el-col class="custom-tree-container">
-        <div class="block" :style="treeStyle">
-          <el-tree
-            ref="datasetTreeRef"
-            :current-node-key="checkedTable ? checkedTable.id : ''"
-            :default-expanded-keys="expandedArray"
-            :data="data"
-            node-key="id"
-            highlight-current
-            :expand-on-click-node="true"
-            :filter-node-method="filterNode"
-            @node-click="nodeClick"
-          >
-            <span
-              v-if="data.modelInnerType === 'group'"
-              slot-scope="{ node, data }"
-              class="custom-tree-node"
-            >
-              <span style="display: flex; flex: 1; width: 0">
-                <span v-if="data.modelInnerType === 'scene'">
-                  <svg-icon icon-class="scene" class="ds-icon-scene" />
-                </span>
-                <span
-                  style="
-                    margin-left: 6px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                  "
-                  :title="data.name"
-                  >{{ data.name }}</span
-                >
-              </span>
+        <span v-else slot-scope="{ data }" class="custom-tree-node-list">
+          <span :id="data.id" style="display: flex; flex: 1; width: 0">
+            <span>
+              <svg-icon
+                :icon-class="`ds-${data.modelInnerType}`"
+                :class="`ds-icon-${data.modelInnerType}`"
+              />
             </span>
             <span
-              v-else
-              slot-scope="{ node, data }"
-              class="custom-tree-node-list"
+              style="
+                margin-left: 6px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              "
+              :title="data.name"
+              >{{ data.name }}</span
             >
-              <span :id="data.id" style="display: flex; flex: 1; width: 0">
-                <span>
-                  <svg-icon
-                    v-if="data.modelInnerType === 'db'"
-                    icon-class="ds-db"
-                    class="ds-icon-db"
-                  />
-                  <svg-icon
-                    v-if="data.modelInnerType === 'sql'"
-                    icon-class="ds-sql"
-                    class="ds-icon-sql"
-                  />
-                  <svg-icon
-                    v-if="data.modelInnerType === 'excel'"
-                    icon-class="ds-excel"
-                    class="ds-icon-excel"
-                  />
-                  <svg-icon
-                    v-if="data.modelInnerType === 'custom'"
-                    icon-class="ds-custom"
-                    class="ds-icon-custom"
-                  />
-                  <svg-icon
-                    v-if="data.modelInnerType === 'union'"
-                    icon-class="ds-union"
-                    class="ds-icon-union"
-                  />
-                  <svg-icon
-                    v-if="data.modelInnerType === 'api'"
-                    icon-class="ds-api"
-                    class="ds-icon-api"
-                  />
-                </span>
-                <span
-                  v-if="
-                    data.modelInnerType === 'db' ||
-                    data.modelInnerType === 'sql'
-                  "
-                >
-                  <span v-if="data.mode === 0" style="margin-left: 6px"
-                    ><i class="el-icon-s-operation"
-                  /></span>
-                  <span v-if="data.mode === 1" style="margin-left: 6px"
-                    ><i class="el-icon-alarm-clock"
-                  /></span>
-                </span>
-                <span
-                  style="
-                    margin-left: 6px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                  "
-                  :title="data.name"
-                  >{{ data.name }}</span
-                >
-              </span>
-            </span>
-          </el-tree>
-        </div>
-      </el-col>
-    </el-col>
-  </el-col>
+          </span>
+        </span>
+      </el-tree>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -498,5 +424,14 @@ export default {
   padding: 10px;
   height: 100%;
   overflow-y: auto;
+}
+</style>
+<style lang="scss">
+.ds-move-tree {
+  height: 100%;
+  .tree {
+    height: calc(100% - 115px);
+    overflow-y: auto;
+  }
 }
 </style>

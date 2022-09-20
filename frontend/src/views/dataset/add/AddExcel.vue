@@ -1,157 +1,188 @@
 <template>
-  <el-col>
-    <el-row>
-      <el-row style="height: 26px;" class="title-text">
-        <span style="line-height: 26px;">
-          {{ param.tableId?$t('dataset.edit_excel_table'):$t('dataset.add_excel_table') }}
-        </span>
-        <span style="line-height: 26px;">
-          <el-tooltip class="item" effect="dark" content="Right Bottom 提示文字" placement="bottom">
-            <div slot="content">
-              {{ $t('dataset.excel_info_1') }}<br>
-              {{ $t('dataset.excel_info_2') }}<br>
-              {{ $t('dataset.excel_info_3') }}
-            </div>
-            <i class="el-icon-info" style="cursor: pointer;" />
-          </el-tooltip>
-        </span>
-        <el-row style="float: right">
-          <el-button size="mini" @click="cancel">
+  <div class="dataset-excel">
+    <!-- <el-button size="mini" @click="cancel">
             {{ $t('dataset.cancel') }}
           </el-button>
           <el-button size="mini" type="primary" @click="save">
             {{ $t('dataset.confirm') }}
-          </el-button>
-        </el-row>
-      </el-row>
-      <el-divider />
+          </el-button> -->
+    <p v-if="!showLeft" @click="showLeft = true" class="arrow-right">
+      <i class="el-icon-d-arrow-right"></i>
+    </p>
+    <div class="table-list" v-else>
+      <p class="select-ds">
+        <span
+          >{{ $t('deDataset.select_data_table ') }}
+          <el-tooltip class="item" effect="dark" placement="right">
+            <div slot="content">
+              {{ $t('dataset.excel_info_1') }}<br />
+              {{ $t('dataset.excel_info_2') }}<br />
+              {{ $t('dataset.excel_info_3') }}
+            </div>
+            <i class="el-icon-warning-outline"></i> </el-tooltip
+        ></span>
+        <i @click="showLeft = false" class="el-icon-d-arrow-left"></i>
+      </p>
+      <el-upload
+        :action="baseUrl + 'dataset/table/excel/upload'"
+        :multiple="false"
+        :show-file-list="false"
+        :file-list="fileList"
+        :data="param"
+        accept=".xls,.xlsx,"
+        :before-upload="beforeUpload"
+        :on-success="uploadSuccess"
+        :on-error="uploadFail"
+        name="file"
+        :headers="headers"
+      >
+        <deBtn
+          class="search"
+          icon="el-icon-upload2"
+          :loading="uploading"
+          secondary
+          :disabled="uploading"
+          >{{ $t('deDataset.upload_data') }}
+        </deBtn>
+      </el-upload>
+      <div class="table-checkbox-list">
+        <el-tree
+          ref="tree"
+          class="de-tree"
+          :data="excelData"
+          :default-expanded-keys="defaultExpandedKeys"
+          :default-checked-keys="defaultCheckedKeys"
+          node-key="id"
+          :props="props"
+          show-checkbox
+          highlight-current
+          @node-click="handleNodeClick"
+          @check-change="handleCheckChange"
+        />
+      </div>
+    </div>
+    <div class="table-detail">
+      <el-empty
+        style="padding-top: 172px"
+        :image-size="125"
+        v-if="!excelData.length"
+        :image="errImg"
+        :description="$t('deDataset.excel_data_first')"
+      ></el-empty>
+      <template v-else>
+        <div class="dataset">
+          <span class="name">{{ $t('dataset.name') }}</span>
+          <el-input
+            v-model="sheetObj.datasetName"
+            :placeholder="$t('commons.name')"
+            @change="changeDatasetName"
+          />
+        </div>
+        <div class="data">
+          <div class="result-num">
+            {{
+              `${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')}`
+            }}
+          </div>
 
-      <el-row style="margin-top: 10px;">
-
-        <el-container>
-          <el-aside width="200px">
-            <el-row>
-              <el-col style="width: 200px;">
-                <el-form :inline="true" size="mini" class="row-style">
-                  <el-form-item class="form-item">
-                    <el-upload
-                      :action="baseUrl+'dataset/table/excel/upload'"
-                      :multiple="false"
-                      :show-file-list="false"
-                      :file-list="fileList"
-                      :data="param"
-                      accept=".xls,.xlsx,.csv"
-                      :before-upload="beforeUpload"
-                      :on-success="uploadSuccess"
-                      :on-error="uploadFail"
-                      name="file"
-                      :headers="headers"
-                    >
-                      <el-button size="mini" type="primary" :disabled="uploading">
-                        <span v-if="!uploading" style="font-size: 12px;">{{ $t('dataset.upload_file') }}</span>
-                        <span v-if="uploading" style="font-size: 12px;"><i class="el-icon-loading" /> {{ $t('dataset.uploading') }}</span>
-                      </el-button>
-                    </el-upload>
-                  </el-form-item>
-                </el-form>
-              </el-col>
-            </el-row>
-
-            <el-tree
-              ref="tree"
-              :data="excelData"
-              :default-expanded-keys="defaultExpandedKeys"
-              :default-checked-keys="defaultCheckedKeys"
-              node-key="id"
-              :props="props"
-              show-checkbox
-              highlight-current
-              @node-click="handleNodeClick"
-              @check-change="handleCheckChange"
-            />
-
-          </el-aside>
-
-          <el-container>
-            <el-header style="text-align: left;" height="30px">
-              <el-row>
-                <el-col style="width: 500px;">
-                  <el-form :inline="true" size="mini" class="row-style">
-                    <el-form-item v-show="!param.tableId" class="form-item" :label="$t('dataset.name')">
-                      <el-input v-model="sheetObj.datasetName" :placeholder="$t('commons.name')" @change="changeDatasetName" />
-                    </el-form-item>
-                    <el-form-item>
-                      <div>
-                        <span>{{ $t('dataset.data_preview') }}</span>
-                        <span class="limit-length-data">（{{ $t('dataset.preview_100_data') }}）</span>
-                      </div>
-                    </el-form-item>
-                  </el-form>
-                </el-col>
-              </el-row>
-            </el-header>
-            <el-main>
-
-              <div class="text item">
-                <ux-grid
-                  ref="plxTable"
-                  size="mini"
-                  style="width: 100%;"
-                  :height="height"
-                  :checkbox-config="{highlight: true}"
-                  :width-resize="true"
+          <ux-grid
+            ref="plxTable"
+            size="mini"
+            style="width: 100%"
+            :height="height"
+            :checkbox-config="{ highlight: true }"
+            :width-resize="true"
+          >
+            <ux-table-column
+              v-for="field in sheetObj.fields"
+              :key="field.fieldName + field.fieldType"
+              min-width="200px"
+              :field="field.fieldName"
+              :title="field.remarks"
+              :resizable="true"
+            >
+              <template slot="header">
+                <el-dropdown
+                  placement="bottom-start"
+                  trigger="click"
+                  @command="(type) => handleCommand(type, field)"
                 >
-                  <ux-table-column
-                    v-for="field in sheetObj.fields"
-                    :key="field.fieldName"
-                    min-width="200px"
-                    :field="field.fieldName"
-                    :title="field.remarks"
-                    :resizable="true"
+                  <span class="type-switch">
+                    <svg-icon
+                      v-if="field.fieldType === 'TEXT'"
+                      icon-class="field_text"
+                      class="field-icon-text" />
+                    <svg-icon
+                      v-if="field.fieldType === 'DATETIME'"
+                      icon-class="field_time"
+                      class="field-icon-time" />
+                    <svg-icon
+                      v-if="
+                        field.fieldType === 'LONG' ||
+                        field.fieldType === 'DOUBLE'
+                      "
+                      icon-class="field_value"
+                      class="field-icon-value" />
+                    <i class="el-icon-arrow-down el-icon--right"></i
+                  ></span>
+                  <el-dropdown-menu
+                    style="width: 178px"
+                    class="de-card-dropdown"
+                    slot="dropdown"
                   >
-                    <template slot="header" slot-scope="scope">
-                      <span style="display: flex;align-items: center;">
-                        <span style="display: inline-block;font-size: 12px;">
-                          <div style="display: inline-block;">
-                            <el-select v-model="field.fieldType" size="mini" style="display: inline-block;width: 120px;" @change="changeDatasetName">
-                              <el-option
-                                v-for="item in fieldOptions"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value"
-                              >
-                                <span style="float: left">
-                                  <svg-icon v-if="item.value === 'TEXT'" icon-class="field_text" class="field-icon-text" />
-                                  <svg-icon v-if="item.value === 'DATETIME'" icon-class="field_time" class="field-icon-time" />
-                                  <svg-icon v-if="item.value === 'LONG' || item.value === 'DOUBLE'" icon-class="field_value" class="field-icon-value" />
-                                </span>
-                                <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>
-                              </el-option>
-                            </el-select>
-                          </div>
-                        </span>
-                        <span style="font-size: 12px;margin-left: 10px;">
-                          {{ field.remarks }}
-                        </span>
+                    <el-dropdown-item
+                      v-for="item in fieldOptions"
+                      :key="item.value"
+                      :command="item.value"
+                      ><span>
+                        <svg-icon
+                          v-if="item.value === 'TEXT'"
+                          icon-class="field_text"
+                          class="field-icon-text"
+                        />
+                        <svg-icon
+                          v-if="item.value === 'DATETIME'"
+                          icon-class="field_time"
+                          class="field-icon-time"
+                        />
+                        <svg-icon
+                          v-if="
+                            item.value === 'LONG' || item.value === 'DOUBLE'
+                          "
+                          icon-class="field_value"
+                          class="field-icon-value"
+                        />
                       </span>
-                    </template>
-                  </ux-table-column>
-                </ux-grid>
-              </div>
-            </el-main>
-          </el-container>
-        </el-container>
-      </el-row>
-    </el-row>
-  </el-col>
+                      <span
+                        style="
+                          color: #8492a6;
+                          font-size: 14px;
+                          margin-left: 10px;
+                        "
+                        >{{ item.label }}</span
+                      ></el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </el-dropdown>
+                <span style="font-size: 14px; margin-left: 10px">
+                  {{ field.remarks }}
+                </span>
+              </template>
+            </ux-table-column>
+          </ux-grid>
+        </div>
+      </template>
+    </div>
+  </div>
 </template>
+
 
 <script>
 import { post } from '@/api/dataset/dataset'
 import { getToken } from '@/utils/auth'
 import i18n from '@/lang'
-import {$alert, $confirm} from "@/utils/message";
-import store from "@/store";
+import { $alert, $confirm } from '@/utils/message'
+import store from '@/store'
 
 const token = getToken()
 
@@ -173,13 +204,18 @@ export default {
   },
   data() {
     return {
+      showLeft: true,
+      errImg: require('@/assets/None_Select_ds.png'),
       sheetObj: { datasetName: ' ', fields: [] },
       sheets: [],
       data: [],
       mode: '1',
       height: 600,
       fileList: [],
-      headers: { Authorization: token, 'Accept-Language': i18n.locale.replace('_', '-') },
+      headers: {
+        Authorization: token,
+        'Accept-Language': i18n.locale.replace('_', '-')
+      },
       baseUrl: process.env.VUE_APP_BASE_API,
       path: '',
       uploading: false,
@@ -187,7 +223,11 @@ export default {
         { label: this.$t('dataset.text'), value: 'TEXT' },
         { label: this.$t('dataset.time'), value: 'DATETIME' },
         { label: this.$t('dataset.value'), value: 'LONG' },
-        { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 'DOUBLE' }
+        {
+          label:
+            this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')',
+          value: 'DOUBLE'
+        }
       ],
       props: {
         label: 'excelLable',
@@ -200,6 +240,13 @@ export default {
     }
   },
   watch: {
+    defaultCheckedKeys(val) {
+      const excelNum = this.excelData.map((ele) => ele.id)
+      this.$emit(
+        'setTableNum',
+        val.filter((ele) => !excelNum.includes(ele)).length
+      )
+    }
   },
   mounted() {
     window.onresize = () => {
@@ -221,13 +268,14 @@ export default {
         this.defaultCheckedKeys.push(data.id)
         this.handleNodeClick(data)
       } else {
-        var index = this.defaultCheckedKeys.findIndex(id => {
+        var index = this.defaultCheckedKeys.findIndex((id) => {
           if (id == data.id) {
             return true
           }
         })
         this.defaultCheckedKeys.splice(index, 1)
       }
+      this.$emit('setTableNum', this.defaultCheckedKeys.length)
     },
     handleNodeClick(data) {
       if (data.sheet) {
@@ -237,6 +285,10 @@ export default {
         const datas = this.jsonArray
         this.$refs.plxTable.reloadData(datas)
       }
+    },
+    handleCommand(type, field) {
+      field.fieldType = type
+      this.changeDatasetName()
     },
     changeDatasetName() {
       for (var i = 0; i < this.excelData.length; i++) {
@@ -251,7 +303,7 @@ export default {
     },
     calHeight() {
       const that = this
-      setTimeout(function() {
+      setTimeout(function () {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 56 - 30 - 26 - 25 - 35 - 10 - 37 - 20 - 10
       }, 10)
@@ -263,20 +315,25 @@ export default {
       let myError = response.toString()
       myError = myError.replace('Error: ', '')
 
-      if(myError.indexOf('AuthenticationException') >= 0){
+      if (myError.indexOf('AuthenticationException') >= 0) {
         const message = i18n.t('login.tokenError')
-        $alert(message, () => {
-          store.dispatch('user/logout').then(() => {
-            location.reload()
-          })
-        }, {
-          confirmButtonText: i18n.t('login.re_login'),
-          showClose: false
-        })
+        $alert(
+          message,
+          () => {
+            store.dispatch('user/logout').then(() => {
+              location.reload()
+            })
+          },
+          {
+            confirmButtonText: i18n.t('login.re_login'),
+            showClose: false
+          }
+        )
         return
       }
 
-      const errorMessage = JSON.parse(myError).message + ', ' + this.$t('dataset.parse_error')
+      const errorMessage =
+        JSON.parse(myError).message + ', ' + this.$t('dataset.parse_error')
 
       this.path = ''
       this.fields = []
@@ -330,10 +387,10 @@ export default {
             })
             return
           }
-          if(selectNode[i].effectExtField){
+          if (selectNode[i].effectExtField) {
             effectExtField = true
           }
-          if(selectNode[i].changeFiled){
+          if (selectNode[i].changeFiled) {
             changeFiled = true
           }
           selectedSheet.push(selectNode[i])
@@ -378,35 +435,44 @@ export default {
         $confirm(msg, () => {
           this.saveExcelData(sheetFileMd5, table)
         })
-      }else {
+      } else {
         this.saveExcelData(sheetFileMd5, table)
       }
     },
     saveExcelData(sheetFileMd5, table) {
-      if (new Set(sheetFileMd5).size !== sheetFileMd5.length && !this.param.tableId) {
-        this.$confirm(this.$t('dataset.excel_replace_msg'), this.$t('dataset.merge_title'), {
-          distinguishCancelAndClose: true,
-          confirmButtonText: this.$t('dataset.merge'),
-          cancelButtonText: this.$t('dataset.no_merge'),
-          type: 'info'
-        }).then(() => {
-          table.mergeSheet = true
-          post('/dataset/table/update', table).then(response => {
-            this.$emit('saveSuccess', table)
-            this.cancel()
-          })
-        }).catch(action => {
-          if (action === 'close') {
-            return
+      if (
+        new Set(sheetFileMd5).size !== sheetFileMd5.length &&
+        !this.param.tableId
+      ) {
+        this.$confirm(
+          this.$t('dataset.excel_replace_msg'),
+          this.$t('dataset.merge_title'),
+          {
+            distinguishCancelAndClose: true,
+            confirmButtonText: this.$t('dataset.merge'),
+            cancelButtonText: this.$t('dataset.no_merge'),
+            type: 'info'
           }
-          table.mergeSheet = false
-          post('/dataset/table/update', table).then(response => {
-            this.$emit('saveSuccess', table)
-            this.cancel()
+        )
+          .then(() => {
+            table.mergeSheet = true
+            post('/dataset/table/update', table).then((response) => {
+              this.$emit('saveSuccess', table)
+              this.cancel()
+            })
           })
-        })
+          .catch((action) => {
+            if (action === 'close') {
+              return
+            }
+            table.mergeSheet = false
+            post('/dataset/table/update', table).then((response) => {
+              this.$emit('saveSuccess', table)
+              this.cancel()
+            })
+          })
       } else {
-        post('/dataset/table/update', table).then(response => {
+        post('/dataset/table/update', table).then((response) => {
           this.$emit('saveSuccess', table)
           this.cancel()
         })
@@ -415,7 +481,10 @@ export default {
     cancel() {
       this.dataReset()
       if (this.param.tableId) {
-        this.$emit('switchComponent', { name: 'ViewTable', param: this.param.table })
+        this.$emit('switchComponent', {
+          name: 'ViewTable',
+          param: this.param.table
+        })
       } else {
         this.$emit('switchComponent', { name: '' })
       }
@@ -429,57 +498,146 @@ export default {
       this.checkTableList = []
     }
   }
-
 }
 </script>
 
 <style scoped>
-  .el-divider--horizontal {
-    margin: 12px 0;
+.el-header {
+  background-color: var(--ContentBG, rgb(241, 243, 248));
+  color: var(--TextActive, #333);
+  line-height: 30px;
+}
+
+.limit-length-data {
+  font-size: 12px;
+  color: var(--TableColor, #3d4d66);
+}
+</style>
+<style scoped lang="scss">
+.dataset-excel {
+  display: flex;
+  height: 100%;
+  position: relative;
+  .arrow-right {
+    position: absolute;
+    top: 15px;
+    cursor: pointer;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    height: 24px;
+    width: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--deCardStrokeColor, #dee0e3);
+    border-top-right-radius: 13px;
+    border-bottom-right-radius: 13px;
+  }
+  .table-list {
+    p {
+      margin: 0;
+    }
+    height: 100%;
+    width: 240px;
+    padding: 16px 12px;
+    font-family: PingFang SC;
+    border-right: 1px solid rgba(31, 35, 41, 0.15);
+
+    .select-ds {
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      color: var(--deTextPrimary, #1f2329);
+      i {
+        font-size: 14px;
+        color: var(--deTextPlaceholder, #8f959e);
+      }
+    }
+
+    .search {
+      margin: 12px 0;
+    }
+
+    .table-checkbox-list {
+      height: calc(100% - 100px);
+      overflow-y: auto;
+      .item {
+        height: 40px;
+        width: 215px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        padding: 12px;
+
+        &:hover {
+          background: rgba(31, 35, 41, 0.1);
+        }
+
+        &.active {
+          background-color: var(--deWhiteHover, #3370ff);
+          color: var(--primary, #3370ff);
+        }
+
+        .el-checkbox__label {
+          overflow: hidden;
+        }
+      }
+    }
   }
 
-  .form-item {
-    margin-bottom: 6px !important;
-  }
+  .table-detail {
+    font-family: PingFang SC;
+    flex: 1;
 
-  .el-checkbox {
-    margin-bottom: 14px;
-    margin-left: 0;
-    margin-right: 14px;
-  }
+    .dataset {
+      padding: 21px 24px;
+      width: 100%;
+      border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+      display: flex;
+      align-items: center;
+      .name {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--deTextPrimary, #1f2329);
+      }
 
-  .el-checkbox.is-bordered + .el-checkbox.is-bordered {
-    margin-left: 0;
-  }
+      .el-input {
+        width: 420px;
+        margin-left: 12px;
+      }
+    }
 
-  span{
-    font-size: 14px;
-  }
+    .data {
+      padding: 16px 24px;
+      box-sizing: border-box;
+      height: calc(100% - 80px);
+      overflow-y: auto;
 
-  .row-style ::v-deep .el-form-item__label{
-    font-size: 12px;
-  }
+      .result-num {
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--deTextSecondary, #646a73);
+        margin-bottom: 16px;
+      }
 
-  .dataPreview ::v-deep .el-card__header{
-    padding: 6px 8px;
+      .type-switch {
+        padding: 2px 1.5px;
+        display: inline-block;
+        cursor: pointer;
+        i {
+          margin-left: 4px;
+          font-size: 12px;
+        }
+        &:hover {
+          background: rgba(31, 35, 41, 0.1);
+          border-radius: 4px;
+        }
+      }
+    }
   }
-
-  .dataPreview ::v-deep .el-card__body{
-    padding:10px;
-  }
-
-  .el-header {
-    background-color: var(--ContentBG, rgb(241, 243, 248));
-    color: var(--TextActive, #333);
-    line-height: 30px;
-  }
-
-  .el-main {
-    padding: 0px
-  }
-
-  .limit-length-data {
-      font-size: 12px;
-      color: var(--TableColor, #3d4d66);
-  }
+}
 </style>

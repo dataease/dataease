@@ -34,3 +34,13 @@ export function save(data) {
     data
   })
 }
+
+
+export function dbPreview(data) {
+  return request({
+    url: '/dataset/table/dbPreview',
+    method: 'post',
+    loading: true,
+    data
+  })
+}

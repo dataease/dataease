@@ -49,7 +49,7 @@
       :destroy-on-close="true"
     >
       <el-row class="ds-from-main">
-        <DsForm :params="dsParams" v-if="applyNewVisible" :t-data="this.tData" :ds-types="dsTypes" :opt-type="'appApply'" :attach-params="attachParams"></DsForm>
+        <DsAppForm :params="dsParams" v-if="applyNewVisible" :t-data="this.tData" :ds-types="dsTypes" :opt-type="'appApply'" :attach-params="attachParams"></DsAppForm>
       </el-row>
     </el-dialog>
   </el-row>
@@ -62,11 +62,11 @@ import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
 import TemplateMarketPreviewItem from '@/views/panel/appTemplateMarket/component/TemplateMarketPreviewItem'
 import AppTemplateLog from "@/views/panel/appTemplateMarket/log";
 import {listDatasourceType} from "@/api/system/datasource";
-import DsForm from "@/views/system/datasource/DsForm";
+import DsAppForm from "@/views/system/datasource/DsAppForm";
 
 export default {
   name: 'MarketPreview',
-  components: {DsForm, AppTemplateLog, TemplateMarketPreviewItem },
+  components: {DsAppForm, AppTemplateLog, TemplateMarketPreviewItem },
   props: {
     previewId: {
       type: String,

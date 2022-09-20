@@ -1,7 +1,11 @@
 <template>
   <div>
     <p>{{ node.currentDs.name }}</p>
-    <union-field-list :field-list="fieldList" :node="node" @checkedFields="changeFields" />
+    <union-field-list
+      :field-list="fieldList"
+      :node="node"
+      @checkedFields="changeFields"
+    />
   </div>
 </template>
 
@@ -28,9 +32,13 @@ export default {
   },
   methods: {
     getFieldList() {
-      post('/dataset/field/list/' + this.node.currentDs.id, null, true).then(response => {
-        this.fieldList = JSON.parse(JSON.stringify(response.data)).filter(ele => ele.extField === 0)
-      })
+      post('/dataset/field/list/' + this.node.currentDs.id, null, true).then(
+        (response) => {
+          this.fieldList = JSON.parse(JSON.stringify(response.data)).filter(
+            (ele) => ele.extField === 0
+          )
+        }
+      )
     },
     changeFields(val) {
       this.node.currentDsField = val
@@ -40,5 +48,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>
