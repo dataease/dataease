@@ -9,11 +9,17 @@
         <result column="default_panel_id" jdbcType="VARCHAR" property="defaultPanelId"/>
         <result column="default_panel_name" jdbcType="VARCHAR" property="defaultPanelName"/>
         <result column="source_panel_name" jdbcType="VARCHAR" property="sourcePanelName"/>
+        <result column="creator_name" jdbcType="VARCHAR" property="creatorName"/>
         <result column="is_default" property="isDefault"/>
     </resultMap>
 
     <select id="findOneWithPrivileges" resultMap="BaseResultMapDTO">
-        select panel_group.*,panel_group.name as label , get_auths(panel_group.id,'panel',#{userId}) as `privileges` from panel_group where id =#{panelId}
+        select panel_group.*,
+               panel_group.name as label,
+               (select nick_name from sys_user where username = panel_group.create_by) as creator_name,
+               get_auths(panel_group.id, 'panel', #{userId}) as `privileges`
+        from panel_group
+        where id = #{panelId}
     </select>
 
     <select id="panelGroupInit" resultMap="BaseResultMapDTO">
