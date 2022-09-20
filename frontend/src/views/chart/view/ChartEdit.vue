@@ -3247,4 +3247,12 @@ span {
   padding-left: 0!important;
 }
 
+.view-panel-row ::v-deep .el-collapse-item__header{
+  height: 34px !important;
+  line-height: 34px !important;
+  padding: 0 0 0 6px !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+}
+
 </style>

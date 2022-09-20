@@ -131,7 +131,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
-    uninstall:'Uninstall',
+    uninstall: 'Uninstall',
     no_result: 'No Result',
     manage_member: 'Managing members',
     confirm_remove_cancel: 'Are you sure to delete the role?',
@@ -2342,7 +2342,7 @@ export default {
   },
   denumberselect: {
     label: 'Number selector',
-    placeholder: 'Please select'
+    placeholder: 'Please select number'
   },
   deinputsearch: {
     label: 'Text search',
@@ -2350,7 +2350,7 @@ export default {
   },
   detextselect: {
     label: 'Text selector',
-    placeholder: 'Please select'
+    placeholder: 'Please select text'
   },
   detextselectTree: {
     label: 'Tree selector',
@@ -2567,8 +2567,8 @@ export default {
     no_apps: 'No apps',
     app_group_icon: 'Cover icon',
     app_name: 'Application name',
-    search_by_keyword:'Search by keyword',
-    apply_logs:'Apply logs',
+    search_by_keyword: 'Search by keyword',
+    apply_logs: 'Apply logs',
     app_group_delete_tips: 'Are you sure to delete this application category?',
     app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.'
   }

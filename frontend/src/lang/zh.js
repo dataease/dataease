@@ -131,7 +131,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
-    uninstall:'卸载',
+    uninstall: '卸载',
     no_result: '没有找到相关内容',
     manage_member: '管理成员',
     confirm_remove_cancel: '确定删除该角色吗?',
@@ -2344,7 +2344,7 @@ export default {
   },
   denumberselect: {
     label: '数字下拉',
-    placeholder: '请选择'
+    placeholder: '请选择数字'
   },
   deinputsearch: {
     label: '文本搜索',
@@ -2352,7 +2352,7 @@ export default {
   },
   detextselect: {
     label: '文本下拉',
-    placeholder: '请选择'
+    placeholder: '请选择文本'
   },
   detextselectTree: {
     label: '下拉树',
@@ -2569,8 +2569,8 @@ export default {
     no_apps: '暂无应用',
     app_group_icon: '封面图标',
     app_name: '应用名称',
-    search_by_keyword:'通过关键字搜索',
-    apply_logs:'应用记录',
+    search_by_keyword: '通过关键字搜索',
+    apply_logs: '应用记录',
     app_group_delete_tips: '确定删除该应用分类吗?',
     app_group_delete_content: '删除后，该分类中所有的应用模板也将被删除。'
   }
