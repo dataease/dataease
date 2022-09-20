@@ -253,7 +253,7 @@ export default {
     },
     // 此处单独计算componentData的值 不放入全局mapState中
     componentDataInfo() {
-      return this.componentDataShow
+      return this.componentDataShow||[]
     },
     ...mapState([
       'isClickComponent'
