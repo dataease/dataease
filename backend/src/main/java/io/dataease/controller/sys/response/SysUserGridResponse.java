@@ -16,5 +16,7 @@ public class SysUserGridResponse extends SysUser {
     private SysUserDept dept;
     @ApiModelProperty("角色ID集合")
     private List<Long> roleIds;
+    @ApiModelProperty("锁定")
+    private Boolean locked;
 
 }

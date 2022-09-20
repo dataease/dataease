@@ -5,6 +5,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.auth.entity.AccountLockStatus;
+import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.sys.request.KeyGridRequest;
@@ -21,6 +23,7 @@ import io.dataease.controller.sys.request.SysUserPwdRequest;
 import io.dataease.controller.sys.request.SysUserStateRequest;
 import io.dataease.controller.sys.response.RoleUserItem;
 import io.dataease.controller.sys.response.SysUserGridResponse;
+import io.dataease.plugins.common.base.domain.SysUser;
 import io.dataease.service.sys.SysRoleService;
 import io.dataease.service.sys.SysUserService;
 import io.swagger.annotations.Api;
@@ -51,6 +54,9 @@ public class SysUserController {
     @Resource
     private SysRoleService sysRoleService;
 
+    @Resource
+    private AuthUserService authUserService;
+
     @ApiOperation("查询用户")
     @RequiresPermissions("user:read")
     @PostMapping("/userGrid/{goPage}/{pageSize}")
@@ -62,7 +68,12 @@ public class SysUserController {
     public Pager<List<SysUserGridResponse>> userGrid(@PathVariable int goPage, @PathVariable int pageSize,
             @RequestBody KeyGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        return PageUtils.setPageInfo(page, sysUserService.query(request));
+        List<SysUserGridResponse> users = sysUserService.query(request);
+        users.forEach(user -> {
+            AccountLockStatus accountLockStatus = authUserService.lockStatus(user.getUsername(), user.getFrom());
+            user.setLocked(accountLockStatus.getLocked());
+        });
+        return PageUtils.setPageInfo(page, users);
     }
 
     @ApiIgnore
@@ -205,6 +216,14 @@ public class SysUserController {
             ldapUser.setUsername(name);
             return ldapUser;
         }).collect(Collectors.toList());
+    }
+
+    @PostMapping("/unlock/{username}")
+    public void unlock(@PathVariable("username") String username) {
+        SysUser sysUser = new SysUser();
+        sysUser.setUsername(username);
+        SysUser one = sysUserService.findOne(sysUser);
+        authUserService.unlockAccount(username, one.getFrom());
     }
 
 }

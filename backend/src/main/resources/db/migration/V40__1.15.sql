@@ -98,6 +98,15 @@ ALTER TABLE `sys_task_email`
 ALTER TABLE `sys_task_email`
     ADD COLUMN `reci_users` varchar(255) NULL COMMENT '接收人账号' AFTER `conditions`;
 
+
+
+DROP TABLE IF EXISTS `sys_login_limit`;
+CREATE TABLE `sys_login_limit` (
+   `login_type` int(8) NOT NULL,
+   `username` varchar(255) NOT NULL,
+   `record_time` bigint(13) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
 UPDATE `sys_menu` SET `pid` = 0, `sub_count` = 0, `type` = 1, `title` = '模板市场', `name` = 'template-market', `component` = 'panel/templateMarket/index', `menu_sort` = 5, `icon` = 'dashboard', `path` = '/templateMarket', `i_frame` = 0, `cache` = 0, `hidden` = 0, `permission` = 'template-market:read', `create_by` = NULL, `update_by` = NULL, `create_time` = NULL, `update_time` = 1620444227389 WHERE `menu_id` = 202;
 
 INSERT INTO `sys_auth` (`id`, `auth_source`, `auth_source_type`, `auth_target`, `auth_target_type`, `auth_time`, `auth_details`, `auth_user`, `update_time`, `copy_from`, `copy_id`) VALUES ('e6b2cebf-02d8-4d46-833c-56fb07febb0f', '202', 'menu', '2', 'user', 1663661210626, NULL, 'admin', NULL, NULL, NULL);
@@ -106,3 +115,4 @@ INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_typ
 INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`, `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`, `copy_id`) VALUES ('2e9f5ca1-38bb-11ed-8383-0242ac130005', 'e6b2cebf-02d8-4d46-833c-56fb07febb0f', 'i18n_auth_use', 1, 0, 'use', '基础权限-使用', 'admin', 1663661211000, NULL, NULL, NULL);
 INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`, `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`, `copy_id`) VALUES ('98d77463-38bb-11ed-8383-0242ac130005', 'f4e07708-26f1-4f42-9a4a-8e6dae63353c', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'admin', 1663661389000, NULL, NULL, NULL);
 INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`, `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`, `copy_id`) VALUES ('98d77856-38bb-11ed-8383-0242ac130005', 'f4e07708-26f1-4f42-9a4a-8e6dae63353c', 'i18n_auth_use', 1, 1, 'use', '基础权限-使用', 'admin', 1663661389000, NULL, NULL, NULL);
+

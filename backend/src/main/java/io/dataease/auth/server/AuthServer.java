@@ -5,6 +5,7 @@ import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.api.dto.LoginDto;
 import io.dataease.auth.config.RsaProperties;
+import io.dataease.auth.entity.AccountLockStatus;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
@@ -67,10 +68,18 @@ public class AuthServer implements AuthApi {
         Integer loginType = loginDto.getLoginType();
         boolean isSupportLdap = authUserService.supportLdap();
         if (loginType == 1 && isSupportLdap) {
+            AccountLockStatus accountLockStatus = authUserService.lockStatus(username, 1);
+            if (accountLockStatus.getLocked()) {
+                String msg = Translator.get("I18N_ACCOUNT_LOCKED");
+                msg = String.format(msg, username);
+                DataEaseException.throwException(msg);
+            }
             LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
             LdapValidateRequest request = LdapValidateRequest.builder().userName(username).password(pwd).build();
             ValidateResult<XpackLdapUserEntity> validateResult = ldapXpackService.login(request);
+
             if (!validateResult.isSuccess()) {
+                authUserService.recordLoginFail(username, 1);
                 DataEaseException.throwException(validateResult.getMsg());
             }
             XpackLdapUserEntity ldapUserEntity = validateResult.getData();
@@ -96,20 +105,29 @@ public class AuthServer implements AuthApi {
             username = validateResult.getData().getUsername();
         }
         // 增加ldap登录方式
+        AccountLockStatus accountLockStatus = authUserService.lockStatus(username, 0);
+        if (accountLockStatus.getLocked()) {
+            String msg = Translator.get("I18N_ACCOUNT_LOCKED");
+            msg = String.format(msg, username);
+            DataEaseException.throwException(msg);
+        }
 
         SysUserEntity user = authUserService.getUserByName(username);
 
         if (ObjectUtils.isEmpty(user)) {
-            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+            authUserService.recordLoginFail(username, 0);
+            DataEaseException.throwException(Translator.get("i18n_user_do_not_exist"));
         }
 
         // 验证登录类型是否与用户类型相同
         if (!sysUserService.validateLoginType(user.getFrom(), loginType)) {
-            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+            authUserService.recordLoginFail(username, 0);
+            DataEaseException.throwException(Translator.get("i18n_login_type_error"));
         }
 
         if (user.getEnabled() == 0) {
-            DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+            authUserService.recordLoginFail(username, 0);
+            DataEaseException.throwException(Translator.get("i18n_user_is_disable"));
         }
         String realPwd = user.getPassword();
 
@@ -121,6 +139,7 @@ public class AuthServer implements AuthApi {
             pwd = CodingUtil.md5(pwd);
 
             if (!StringUtils.equals(pwd, realPwd)) {
+                authUserService.recordLoginFail(username, 0);
                 DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
             }
         }

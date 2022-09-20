@@ -117,6 +117,12 @@ public interface ParamConstants {
 
         OPEN_MARKET_PAGE("ui.openMarketPage"),
         TEMPLATE_MARKET_ULR("basic.templateMarketUlr"),
+
+        LOGIN_LIMIT_LIMITTIMES("loginlimit.limitTimes"),
+
+        LOGIN_LIMIT_RELIEVETIMES("loginlimit.relieveTimes"),
+
+        LOGIN_LIMIT_OPEN("loginlimit.open"),
         TEMPLATE_ACCESS_KEY("basic.templateAccessKey");
 
         private String value;
