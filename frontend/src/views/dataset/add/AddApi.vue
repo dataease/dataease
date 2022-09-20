@@ -1,16 +1,16 @@
 <template>
   <div class="dataset-api">
-    <p v-if="!showLeft" @click="showLeft = true" class="arrow-right">
-      <i class="el-icon-d-arrow-right"></i>
+    <p v-if="!showLeft" class="arrow-right" @click="showLeft = true">
+      <i class="el-icon-d-arrow-right" />
     </p>
-    <div class="table-list" v-else>
+    <div v-else class="table-list">
       <p class="select-ds">
         {{ $t('deDataset.select_data_source') }}
-        <i @click="showLeft = false" class="el-icon-d-arrow-left"></i>
+        <i class="el-icon-d-arrow-left" @click="showLeft = false" />
       </p>
       <el-select
-        class="ds-list"
         v-model="dataSource"
+        class="ds-list"
         filterable
         :placeholder="$t('dataset.pls_slc_data_source')"
         size="small"
@@ -35,10 +35,10 @@
         <!-- <div class="item" v-for="(ele, index) in tableData"> -->
         <el-checkbox-group v-model="checkTableList" size="small">
           <el-tooltip
-            :disabled="t.enableCheck"
-            effect="dark"
             v-for="t in tableData"
             :key="t.name"
+            :disabled="t.enableCheck"
+            effect="dark"
             :content="$t('dataset.table_already_add_to') + ': ' + t.datasetPath"
             placement="right"
           >
@@ -49,10 +49,9 @@
               class="item"
               @click="setActiveName(t)"
             >
-              <el-checkbox :label="t.name" :disabled="!t.enableCheck">
-              </el-checkbox>
+              <el-checkbox :label="t.name" :disabled="!t.enableCheck" />
               <span class="label">{{ showTableNameWithComment(t) }}</span>
-              <span class="error-name-exsit" v-if="t.nameExsit">
+              <span v-if="t.nameExsit" class="error-name-exsit">
                 <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
               </span>
             </div>
@@ -86,21 +85,21 @@
         </el-select>
       </div>
       <el-empty
+        v-if="!dataSource"
         style="padding-top: 160px"
         size="125"
-        v-if="!dataSource"
         :description="$t('dataset.pls_slc_data_source')"
         :image="noSelectTable"
-      ></el-empty>
+      />
       <template v-else-if="activeName">
         <div class="dataset">
           <span class="name">{{ $t('dataset.name') }}</span>
           <el-input
-            @change="validateName"
             v-if="activeIndex !== -1"
             v-model="tableData[activeIndex].datasetName"
             size="small"
             clearable
+            @change="validateName"
           />
           <div
             v-if="tableData[activeIndex].nameExsit"
@@ -110,7 +109,7 @@
             {{ $t('deDataset.already_exists') }}
           </div>
         </div>
-        <div class="data" v-loading="tableLoading">
+        <div v-loading="tableLoading" class="data">
           <span class="result-num">{{
             `${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')}`
           }}</span>
@@ -136,26 +135,26 @@
         </div>
       </template>
       <el-empty
+        v-else-if="avilibelTable"
         style="padding-top: 160px"
         size="125"
-        v-else-if="avilibelTable"
         :description="$t('deDataset.is_currently_available')"
         :image="noAvilibelTableImg"
-      ></el-empty>
+      />
       <el-empty
+        v-else-if="!activeName"
         style="padding-top: 160px"
         size="125"
-        v-else-if="!activeName"
         :description="$t('deDataset.left_to_edit')"
         :image="noSelectTable"
-      ></el-empty>
+      />
     </div>
   </div>
 </template>
 
 <script>
 import { listApiDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
-import {dbPreview, engineMode} from '@/api/system/engine'
+import { dbPreview, engineMode } from '@/api/system/engine'
 
 export default {
   name: 'AddApi',
@@ -282,7 +281,7 @@ export default {
     },
     calHeight() {
       const that = this
-      setTimeout(function () {
+      setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 195 - 54
       }, 10)
@@ -336,7 +335,7 @@ export default {
       const tables = []
       const mode = this.mode
       const syncType = this.syncType
-      this.checkTableList.forEach(function (name) {
+      this.checkTableList.forEach(function(name) {
         const datasetName = this.tableData.find(
           (ele) => ele.name === name
         ).datasetName
