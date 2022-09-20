@@ -109,7 +109,7 @@
       @onJumpClick="jumpClick"
     />
     <div style="position: absolute;left: 8px;bottom:8px;">
-      <drill-path :drill-filters="drillFilters" @onDrillJump="drillJump" />
+      <drill-path :drill-filters="drillFilters" :theme-style="element.commonBackground" @onDrillJump="drillJump" />
     </div>
   </div>
 </template>
@@ -582,14 +582,14 @@ export default {
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
             // 记录当前数据
             this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
-            if(this.element.needAdaptor){
+            if (this.element.needAdaptor) {
               const customStyleObj = JSON.parse(this.chart.customStyle)
               const customAttrObj = JSON.parse(this.chart.customAttr)
               adaptCurTheme(customStyleObj, customAttrObj)
               this.chart.customStyle = JSON.stringify(customStyleObj)
               this.chart.customAttr = JSON.stringify(customAttrObj)
-              viewEditSave(this.panelInfo.id,{ id: this.chart.id, customStyle: this.chart.customStyle, customAttr: this.chart.customAttr })
-              this.$store.commit('adaptorStatusDisable',this.element.id)
+              viewEditSave(this.panelInfo.id, { id: this.chart.id, customStyle: this.chart.customStyle, customAttr: this.chart.customAttr })
+              this.$store.commit('adaptorStatusDisable', this.element.id)
             }
             this.sourceCustomAttrStr = this.chart.customAttr
             this.sourceCustomStyleStr = this.chart.customStyle

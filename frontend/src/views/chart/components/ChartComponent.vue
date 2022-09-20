@@ -220,6 +220,15 @@ export default {
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
+        if (themeStyle && themeStyle.commonBackground) {
+          const viewBGColor = themeStyle.commonBackground.color
+          if (viewBGColor !== '#FFFFFF') {
+            const reverseValue = reverseColor(viewBGColor)
+            this.buttonTextColor = reverseValue
+          } else {
+            this.buttonTextColor = null
+          }
+        }
         if (themeStyle && themeStyle.backgroundColorSelect) {
           const panelColor = themeStyle.color
           if (panelColor !== '#FFFFFF') {
@@ -310,6 +319,15 @@ export default {
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
+        if (themeStyle && themeStyle.commonBackground) {
+          const viewBGColor = themeStyle.commonBackground.color
+          if (viewBGColor !== '#FFFFFF') {
+            const reverseValue = reverseColor(viewBGColor)
+            this.buttonTextColor = reverseValue
+          } else {
+            this.buttonTextColor = null
+          }
+        }
         if (themeStyle && themeStyle.backgroundColorSelect) {
           const panelColor = themeStyle.color
           if (panelColor !== '#FFFFFF') {
