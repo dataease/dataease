@@ -1,27 +1,19 @@
 <template>
   <div class="dataset-excel">
-    <!-- <el-button size="mini" @click="cancel">
-            {{ $t('dataset.cancel') }}
-          </el-button>
-          <el-button size="mini" type="primary" @click="save">
-            {{ $t('dataset.confirm') }}
-          </el-button> -->
-    <p v-if="!showLeft" @click="showLeft = true" class="arrow-right">
-      <i class="el-icon-d-arrow-right"></i>
+    <p v-if="!showLeft" class="arrow-right" @click="showLeft = true">
+      <i class="el-icon-d-arrow-right" />
     </p>
-    <div class="table-list" v-else>
+    <div v-else class="table-list">
       <p class="select-ds">
-        <span
-          >{{ $t('deDataset.select_data_table ') }}
+        <span>{{ $t('deDataset.select_data_table ') }}
           <el-tooltip class="item" effect="dark" placement="right">
             <div slot="content">
-              {{ $t('dataset.excel_info_1') }}<br />
-              {{ $t('dataset.excel_info_2') }}<br />
+              {{ $t('dataset.excel_info_1') }}<br>
+              {{ $t('dataset.excel_info_2') }}<br>
               {{ $t('dataset.excel_info_3') }}
             </div>
-            <i class="el-icon-warning-outline"></i> </el-tooltip
-        ></span>
-        <i @click="showLeft = false" class="el-icon-d-arrow-left"></i>
+            <i class="el-icon-warning-outline" /> </el-tooltip></span>
+        <i class="el-icon-d-arrow-left" @click="showLeft = false" />
       </p>
       <el-upload
         :action="baseUrl + 'dataset/table/excel/upload'"
@@ -29,7 +21,7 @@
         :show-file-list="false"
         :file-list="fileList"
         :data="param"
-        accept=".xls,.xlsx,"
+        accept=".xls,.xlsx,.csv"
         :before-upload="beforeUpload"
         :on-success="uploadSuccess"
         :on-error="uploadFail"
@@ -42,7 +34,7 @@
           :loading="uploading"
           secondary
           :disabled="uploading"
-          >{{ $t('deDataset.upload_data') }}
+        >{{ $t('deDataset.upload_data') }}
         </deBtn>
       </el-upload>
       <div class="table-checkbox-list">
@@ -63,12 +55,12 @@
     </div>
     <div class="table-detail">
       <el-empty
+        v-if="!excelData.length"
         style="padding-top: 172px"
         :image-size="125"
-        v-if="!excelData.length"
         :image="errImg"
         :description="$t('deDataset.excel_data_first')"
-      ></el-empty>
+      />
       <template v-else>
         <div class="dataset">
           <span class="name">{{ $t('dataset.name') }}</span>
@@ -111,57 +103,57 @@
                     <svg-icon
                       v-if="field.fieldType === 'TEXT'"
                       icon-class="field_text"
-                      class="field-icon-text" />
+                      class="field-icon-text"
+                    />
                     <svg-icon
                       v-if="field.fieldType === 'DATETIME'"
                       icon-class="field_time"
-                      class="field-icon-time" />
+                      class="field-icon-time"
+                    />
                     <svg-icon
                       v-if="
                         field.fieldType === 'LONG' ||
-                        field.fieldType === 'DOUBLE'
+                          field.fieldType === 'DOUBLE'
                       "
                       icon-class="field_value"
-                      class="field-icon-value" />
-                    <i class="el-icon-arrow-down el-icon--right"></i
-                  ></span>
+                      class="field-icon-value"
+                    />
+                    <i class="el-icon-arrow-down el-icon--right" /></span>
                   <el-dropdown-menu
+                    slot="dropdown"
                     style="width: 178px"
                     class="de-card-dropdown"
-                    slot="dropdown"
                   >
                     <el-dropdown-item
                       v-for="item in fieldOptions"
                       :key="item.value"
                       :command="item.value"
-                      ><span>
-                        <svg-icon
-                          v-if="item.value === 'TEXT'"
-                          icon-class="field_text"
-                          class="field-icon-text"
-                        />
-                        <svg-icon
-                          v-if="item.value === 'DATETIME'"
-                          icon-class="field_time"
-                          class="field-icon-time"
-                        />
-                        <svg-icon
-                          v-if="
-                            item.value === 'LONG' || item.value === 'DOUBLE'
-                          "
-                          icon-class="field_value"
-                          class="field-icon-value"
-                        />
-                      </span>
+                    ><span>
+                       <svg-icon
+                         v-if="item.value === 'TEXT'"
+                         icon-class="field_text"
+                         class="field-icon-text"
+                       />
+                       <svg-icon
+                         v-if="item.value === 'DATETIME'"
+                         icon-class="field_time"
+                         class="field-icon-time"
+                       />
+                       <svg-icon
+                         v-if="
+                           item.value === 'LONG' || item.value === 'DOUBLE'
+                         "
+                         icon-class="field_value"
+                         class="field-icon-value"
+                       />
+                     </span>
                       <span
                         style="
                           color: #8492a6;
                           font-size: 14px;
                           margin-left: 10px;
                         "
-                        >{{ item.label }}</span
-                      ></el-dropdown-item
-                    >
+                      >{{ item.label }}</span></el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
                 <span style="font-size: 14px; margin-left: 10px">
@@ -175,7 +167,6 @@
     </div>
   </div>
 </template>
-
 
 <script>
 import { post } from '@/api/dataset/dataset'
@@ -303,7 +294,7 @@ export default {
     },
     calHeight() {
       const that = this
-      setTimeout(function () {
+      setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 56 - 30 - 26 - 25 - 35 - 10 - 37 - 20 - 10
       }, 10)
@@ -430,7 +421,6 @@ export default {
       }
 
       if (this.param.editType === 0 && this.param.tableId && (effectExtField || changeFiled)) {
-
         var msg = effectExtField ? i18n.t('dataset.effect_ext_field') + ', ' + i18n.t('dataset.excel_replace_msg') : i18n.t('dataset.excel_replace_msg')
         $confirm(msg, () => {
           this.saveExcelData(sheetFileMd5, table)
