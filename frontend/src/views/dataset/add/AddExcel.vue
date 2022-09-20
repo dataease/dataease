@@ -1,11 +1,5 @@
 <template>
   <div class="dataset-excel">
-    <!-- <el-button size="mini" @click="cancel">
-            {{ $t('dataset.cancel') }}
-          </el-button>
-          <el-button size="mini" type="primary" @click="save">
-            {{ $t('dataset.confirm') }}
-          </el-button> -->
     <p v-if="!showLeft" @click="showLeft = true" class="arrow-right">
       <i class="el-icon-d-arrow-right"></i>
     </p>
@@ -29,7 +23,7 @@
         :show-file-list="false"
         :file-list="fileList"
         :data="param"
-        accept=".xls,.xlsx,"
+        accept=".xls,.xlsx,csv"
         :before-upload="beforeUpload"
         :on-success="uploadSuccess"
         :on-error="uploadFail"

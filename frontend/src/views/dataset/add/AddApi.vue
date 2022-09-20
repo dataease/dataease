@@ -155,7 +155,7 @@
 
 <script>
 import { listApiDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
-import { engineMode } from '@/api/system/engine'
+import {dbPreview, engineMode} from '@/api/system/engine'
 
 export default {
   name: 'AddApi',

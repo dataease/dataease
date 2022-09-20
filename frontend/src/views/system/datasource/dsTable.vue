@@ -88,15 +88,15 @@
     stripe
     style="width: 100%">
     <el-table-column
-      prop="date"
+      prop="fieldName"
       :label="$t('panel.column_name')">
     </el-table-column>
     <el-table-column
-      prop="name"
+      prop="fieldType"
       :label="$t('dataset.field_type')">
     </el-table-column>
     <el-table-column
-      prop="name"
+      prop="remarks"
       :label="$t('datasource.field_description')">
     </el-table-column>
   </el-table>
@@ -107,7 +107,7 @@
 <script>
 import keyEnter from "@/components/msgCfm/keyEnter.js";
 import GridTable from "@/components/gridTable/index.vue";
-import { dsTable } from "@/api/dataset/dataset";
+import {dsTable, post} from "@/api/dataset/dataset";
 export default {
   mixins: [keyEnter],
   components: { GridTable },
@@ -133,13 +133,20 @@ export default {
     };
   },
   created() {
-    // this.initSearch();
+    post('/datasource/getTables/' + this.params.id, {}).then((response) => {
+      this.tableData = response.data
+    })
   },
   methods: {
     createtDataset(row) {},
     selectDataset(row) {
       this.dsTableDetail = row;
       this.userDrawer = true;
+      var table = {dataSourceId: this.params.id}
+      table.info = JSON.stringify({table: row.name})
+      post('/dataset/table/getFields', table).then((response) => {
+        this.dsTableData = response.data
+      })
     },
     handleSizeChange(pageSize) {
       this.paginationConfig.currentPage = 1;

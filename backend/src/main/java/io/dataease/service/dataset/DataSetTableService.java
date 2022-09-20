@@ -1111,6 +1111,7 @@ public class DataSetTableService {
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
         datasourceRequest.setQuery(sqlAsTable);
+        datasourceRequest.setTable(dataTableInfo.getTable());
         Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
         List<String[]> data = result.get("dataList");
         List<TableField> fields = result.get("fieldList");
