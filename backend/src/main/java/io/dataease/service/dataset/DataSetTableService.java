@@ -299,7 +299,7 @@ public class DataSetTableService {
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
     public DatasetTable save(DataSetTableRequest datasetTable) throws Exception {
         checkName(datasetTable);
-        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.name())) {
+        if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.name()) && !"appApply".equalsIgnoreCase(datasetTable.getOptFrom())) {
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
             BeanUtils.copyBean(dataSetTableRequest, datasetTable);
             getSQLPreview(dataSetTableRequest);
@@ -317,7 +317,9 @@ public class DataSetTableService {
 
             // 添加表成功后，获取当前表字段和类型，抽象到dataease数据库
             if (insert == 1) {
-                saveTableField(datasetTable);
+                if (datasetTable.getOptFrom() == null || !"appApply".equalsIgnoreCase(datasetTable.getOptFrom())) {
+                    saveTableField(datasetTable);
+                }
                 extractData(datasetTable);
                 DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
             }
@@ -2867,5 +2869,20 @@ public class DataSetTableService {
 
     static private boolean hasVarible(String sql) {
         return sql.contains(SubstitutedParams);
+    }
+
+    public void createAppCustomDorisView(String datasetInfo, String tableId) throws Exception {
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetInfo, DataTableInfoDTO.class);
+        createDorisView(TableUtils.tableName(tableId), getCustomViewSQL(dataTableInfoDTO,
+                dataSetTableUnionService.listByTableId(dataTableInfoDTO.getList().get(0).getTableId())));
+    }
+
+    public void createAppUnionDorisView(String datasetInfo, String tableId) throws Exception {
+        // save field
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetInfo, DataTableInfoDTO.class);
+        Map<String, Object> sqlMap = getUnionSQLDoris(dataTableInfoDTO);
+        String sql = (String) sqlMap.get("sql");
+        // custom 创建doris视图
+        createDorisView(TableUtils.tableName(tableId), sql);
     }
 }

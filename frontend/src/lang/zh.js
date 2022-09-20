@@ -131,6 +131,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    uninstall:'卸载',
     no_result: '没有找到相关内容',
     manage_member: '管理成员',
     confirm_remove_cancel: '确定删除该角色吗?',
@@ -831,11 +832,11 @@ export default {
     import_succeeded: '导入成功',
     name_already_exists_type: '分类名称已存在',
     rename_succeeded: '重命名成功',
-    the_same_category: '同一分类下，该模版名称已存在',
-    delete_this_template: '确定删除该模版吗？',
-    also_be_deleted: '删除后，该分类中所有的模版也将被删除。',
+    the_same_category: '同一分类下，该模板名称已存在',
+    delete_this_template: '确定删除该模板吗？',
+    also_be_deleted: '删除后，该分类中所有的模板也将被删除。',
     delete_this_category: '确定删除该分类吗？',
-    edit_template: '编辑模版',
+    edit_template: '编辑模板',
     edit_classification: '编辑分类',
     classification_name: '分类名称',
     by_event_details: '通过事件详情搜索',
@@ -2479,5 +2480,16 @@ export default {
     please_select_map: '请先选择地图范围'
   },
   'I18N_USER_TEMPLATE_ERROR': '模版错误',
-  'i18n_max_user_import_size': '文件最大不能超过10M'
+  'i18n_max_user_import_size': '文件最大不能超过10M',
+  app_template: {
+    app_manager: '应用管理',
+    app_upload: '上传应用',
+    no_apps: '暂无应用',
+    app_group_icon: '封面图标',
+    app_name: '应用名称',
+    search_by_keyword:'通过关键字搜索',
+    apply_logs:'应用记录',
+    app_group_delete_tips: '确定删除该应用分类吗?',
+    app_group_delete_content: '删除后，该分类中所有的应用模板也将被删除。'
+  }
 }

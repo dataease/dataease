@@ -37,4 +37,6 @@ public class PanelGroupDTO extends PanelGroupWithBLOBs implements ITreeBase<Pane
     private List<String> parents;
     @ApiModelProperty("请求ID")
     private String requestId;
+    @ApiModelProperty("数据返回来源")
+    private String responseSource;
 }

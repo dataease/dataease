@@ -241,6 +241,11 @@ export default {
   components: { GrantAuth, LinkGenerate, EditPanel, TreeSelector },
   data() {
     return {
+      responseSource:'panelQuery',
+      clearLocalStorage: [
+        'chart-tree',
+        'dataset-tree'
+      ],
       historyRequestId: null,
       lastActiveNode: null, // 激活的节点 在这个节点下面动态放置子节点
       lastActiveNodeData: null,
@@ -378,7 +383,11 @@ export default {
     this.defaultTree(true)
     this.initCache()
     const routerParam = this.$router.currentRoute.params
-    if (routerParam && routerParam.nodeType === 'panel' && this.historyRequestId !== routerParam.requestId) {
+    if(routerParam && 'appApply'===routerParam.responseSource ){
+      this.responseSource = routerParam.responseSource
+      this.lastActiveNode = routerParam
+      this.tree()
+    }else if (routerParam && routerParam.nodeType === 'panel' && this.historyRequestId !== routerParam.requestId) {
       this.historyRequestId = routerParam.requestId
       this.tree()
       this.edit(routerParam, null)
@@ -387,6 +396,13 @@ export default {
     }
   },
   methods: {
+    fromAppActive(){
+      this.activeNodeAndClickOnly(this.lastActiveNode)
+      this.clearLocalStorage.forEach(item => {
+        localStorage.removeItem(item)
+      })
+      this.responseSource='panelQuery'
+    },
     newPanelFromMarket(panelInfo) {
       if (panelInfo) {
         this.tree()
@@ -636,6 +652,9 @@ export default {
         localStorage.setItem('panel-main-tree', JSON.stringify(res.data))
         if (!userCache) {
           this.tData = res.data
+        }
+        if(this.responseSource==='appApply'){
+          this.fromAppActive()
         }
         if (this.filterText) {
           this.$nextTick(() => {

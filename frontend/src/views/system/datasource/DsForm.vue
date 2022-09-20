@@ -1,13 +1,60 @@
 <template>
-  <layout-content :header="formType=='add' ? $t('datasource.create') : $t('datasource.modify')">
-    <template v-slot:header>
+  <layout-content :header="headName">
+    <template v-if="!optType" v-slot:header>
       <el-icon name="back" class="back-button" @click.native="backToList" />
       {{
         params && params.id && params.showModel && params.showModel === 'show' && !canEdit ? $t('datasource.show_info') : formType == 'add' ? $t('datasource.create') : $t('datasource.modify')
       }}
     </template>
-    <div>
+    <template v-if="optType==='appApply'">
+      <span>模板信息</span>
+    </template>
+    <div v-if="optType==='appApply'">
+      <el-form
+        ref="attachParamsForm"
+        :model="attachForm"
+        :rules="rule"
+        size="small"
+        label-width="180px"
+        label-position="right"
+      >
+        <el-form-item :label="'仪表板位置'" prop="panelId">
+            <treeselect
+              v-model="attachForm.panelId"
+              :clearable="false"
+              :options="panelGroupList"
+              :normalizer="normalizer"
+              :placeholder="$t('chart.select_group')"
+              :no-children-text="$t('commons.treeselect.no_children_text')"
+              :no-options-text="$t('commons.treeselect.no_options_text')"
+              :no-results-text="$t('commons.treeselect.no_results_text')"
+            />
+        </el-form-item>
+        <el-form-item :label="'仪表板名称'" prop="panelName">
+          <el-input v-model="attachForm.panelName" />
+        </el-form-item>
+        <el-form-item :label="'数据集位置'" prop="desc">
+          <treeselect
+            v-model="attachForm.datasetGroupId"
+            :clearable="false"
+            :options="datasetGroupList"
+            :normalizer="normalizer"
+            :placeholder="$t('chart.select_group')"
+            :no-children-text="$t('commons.treeselect.no_children_text')"
+            :no-options-text="$t('commons.treeselect.no_options_text')"
+            :no-results-text="$t('commons.treeselect.no_results_text')"
+          />
+        </el-form-item>
+        <el-form-item :label="'数据集分组名称'" prop="datasetGroupName">
+          <el-input v-model="attachForm.datasetGroupName" />
+        </el-form-item>
+      </el-form>
+    </div>
 
+    <template v-if="optType==='appApply'">
+      <span>数据源信息</span>
+    </template>
+    <div>
       <el-form
         ref="dsForm"
         :model="form"
@@ -111,6 +158,10 @@ import i18n from '@/lang/index'
 import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
 import DsConfiguration from '@/views/system/datasource/DsConfiguration'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import {groupTree,appApply} from "@/api/panel/panel";
+import { dsGroupTree } from '@/api/dataset/dataset'
+import { deepCopy } from '@/components/canvas/utils/utils'
+
 
 export default {
   name: 'DsForm',
@@ -132,11 +183,32 @@ export default {
     dsTypes: {
       type: Array,
       default: null
+    },
+    attachParams: {
+      type: Object,
+      default: null
+    },
+    optType:{
+      type: String,
+      default: null
     }
   },
   data() {
     return {
       disabled: false,
+      attachRule: {
+        datasetGroupId: [{ required: true, message: i18n.t('chart.select_group'), trigger: 'blur' }],
+        panelId: [{ required: true, message: i18n.t('chart.select_group'), trigger: 'blur' }]
+      },
+      panelGroupList: [],
+      datasetGroupList: [],
+      attachForm:{
+        appTemplateId:'',
+        panelId:'',
+        panelName:'',
+        datasetGroupId:'0',
+        datasetGroupName: ''
+      },
       form: {
         configuration: {
           initialPoolSize: 5,
@@ -268,7 +340,18 @@ export default {
       driverList: []
     }
   },
+  computed: {
+    headName() {
+      if(this.optType==='appApply'){
+        return ''
+      }else if(this.formType==='add'){
+        return this.$t('datasource.create')
+      }else{
+        return this.$t('datasource.modify')
+      }
+    }
 
+  },
   created() {
     if (this.params && this.params.id) {
       const row = this.params
@@ -284,8 +367,42 @@ export default {
     this.disabled = this.params && this.params.id && this.params.showModel && this.params.showModel === 'show' && !this.canEdit
   },
   mounted() {
+    if(this.optType==='appApply'){
+      this.getPanelGroupTree()
+      this.getDatasetGroupTree()
+      this.attachForm.appTemplateId = this.attachParams.appTemplateId
+      this.attachForm.panelName = this.attachParams.name
+      this.attachForm.datasetGroupName = this.attachParams.name
+    }
   },
   methods: {
+    normalizer(node) {
+      // 去掉children=null的属性
+      if (node.children === null || node.children === 'null') {
+        delete node.children
+      }
+    },
+    getDatasetGroupTree() {
+      dsGroupTree({nodeType: 'group',}).then(res => {
+        this.datasetGroupList = [{
+          id: '0',
+          name: this.$t('dataset.dataset_group'),
+          label: this.$t('dataset.dataset_group'),
+          pid: '0',
+          privileges: 'grant,manage,use',
+          type: 'group',
+          children: res.data
+        }]
+      })
+    },
+    getPanelGroupTree() {
+      groupTree({ nodeType: 'folder' }).then(res => {
+        this.panelGroupList = res.data
+        if(this.panelGroupList && this.panelGroupList.length>0){
+          this.attachForm.panelId =this.panelGroupList[0].id
+        }
+      })
+    },
     setType() {
       this.form.type = this.params.type
       this.form.configuration = {
@@ -437,6 +554,15 @@ export default {
         return
       }
 
+      if(this.optType==='appApply'){
+        this.$refs.attachParamsForm.validate(valid => {
+            if (!valid) {
+              return false
+            }
+          }
+        )
+      }
+
       this.$refs.dsForm.validate(valid => {
         if (!valid) {
           return false
@@ -454,6 +580,18 @@ export default {
           form.configuration = JSON.stringify(form.apiConfiguration)
         } else {
           form.configuration = JSON.stringify(form.configuration)
+        }
+
+        if(this.optType==='appApply'){
+          const appApplyForm = {
+            ...this.attachForm,
+            datasourceList:[deepCopy(form)]
+          }
+          appApply(appApplyForm).then(res => {
+            this.$success(i18n.t('commons.save_success'))
+            this.$router.push({ name: 'panel', params: res.data })
+          })
+          return
         }
 
         if (this.formType === 'modify' && this.originConfiguration !== form.configuration) {
