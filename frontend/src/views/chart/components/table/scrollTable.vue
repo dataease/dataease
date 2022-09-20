@@ -11,14 +11,14 @@
       <div class="content">
         <ul id="infinite" ref="ulLis" class="bgHeightLight" :style="table_item_class" style="position: relative;">
           <el-popover
+            v-model="isVisible"
             width="400"
             trigger="manual"
-            v-model="isVisible"
-            @show="popShow"
-            @hide="popHide"
             :disabled="!isPopShow"
             :placement="popOpen.position"
-          > 
+            @show="popShow"
+            @hide="popHide"
+          >
             <p :style="pop_title" style="margin: 0px;position: relative;">
               <span>详情</span>
               <i class="el-icon-close" style="position: absolute;right: 0px;font-size: 20px;" @click="closePop" />
@@ -29,9 +29,9 @@
                 <el-col :span="16">{{ obj.value }}</el-col>
               </el-col>
             </el-row>
-            <div slot="reference" class="pop_position" :style="{left: popOpen.left,top: popOpen.top}"></div>
+            <div slot="reference" class="pop_position" :style="{left: popOpen.left,top: popOpen.top}" />
           </el-popover>
-          
+
           <li v-for="(items,inde) in dataInfo" :key="inde" :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items,inde)">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
               {{ items[item.datainsName] }}
@@ -155,7 +155,7 @@ export default {
       popOpen: {
         position: '',
         left: '0px',
-        top: '0px',
+        top: '0px'
       },
       isVisible: false,
       pop_title: {
@@ -240,7 +240,14 @@ export default {
       clearInterval(this.timer)
     },
     popHide() {
-      console.log('hide')
+      console.log('hide', this.highlight)
+
+      const keyObj = this.dataInfo[this.highlight - 1]
+      const keyValue = []
+      keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
+      if (this.bannerLinkageKey === true) {
+        this.setCondition(keyValue)
+      }
       this.numberLine = ''
       this.tableScroll()
       const datas = JSON.parse(JSON.stringify(this.oldData))
@@ -254,6 +261,17 @@ export default {
       this.popHide()
     },
     showDialogInfo(info, num) {
+      console.log('-----', 1111, info, num)
+      //
+      const keyObj = this.dataInfo[num]
+      const keyValue = []
+      keyValue.push(keyObj[this.chart.data.fields[0].datainsName])
+      if (this.bannerLinkageKey === true) {
+        this.setCondition(keyValue)
+      }
+
+      //
+
       if (!this.isPopShow) {
         return
       }
@@ -403,7 +421,7 @@ export default {
           this.dataInfo.push(data)
         }, 500)
         // console.log('存储数据', this.dataInfo[3])
-        const keyObj = this.dataInfo[3]
+        const keyObj = this.dataInfo[this.highlight]
         // const objArr = []
         // for (const key in keyObj) {
         //   console.log('数据', key, keyObj[key])
@@ -563,11 +581,11 @@ export default {
           this.scrolleTime = customAttr.size.automaticTime
         }
         if (customAttr.label) {
-          console.log('label数据，，，，，',customAttr.label)
+          console.log('label数据，，，，，', customAttr.label)
           this.isPopShow = customAttr.label.popShow
           this.popOpen.position = customAttr.label.popOpen
-          this.popOpen.left = customAttr.label.popLeft !== undefined? customAttr.label.popLeft + 'px' : '0px'
-          this.popOpen.top = customAttr.label.popTop !== undefined? customAttr.label.popTop + 'px' : '0px'
+          this.popOpen.left = customAttr.label.popLeft !== undefined ? customAttr.label.popLeft + 'px' : '0px'
+          this.popOpen.top = customAttr.label.popTop !== undefined ? customAttr.label.popTop + 'px' : '0px'
           this.pop_title.color = customAttr.label.popTitleColor
           this.pop_title.backgroundColor = customAttr.label.popTitleBackground
           this.pop_title.textAlign = customAttr.label.popPosition
