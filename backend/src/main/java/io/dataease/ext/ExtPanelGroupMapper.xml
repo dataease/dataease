@@ -14,7 +14,12 @@
     </resultMap>
 
     <select id="findOneWithPrivileges" resultMap="BaseResultMapDTO">
-        select panel_group.*,panel_group.name as label ,(select nick_name from sys_user where username =panel_group.create_by) as creator_name, get_auths(panel_group.id,'panel',#{userId}) as `privileges` from panel_group where id =#{panelId}
+        select panel_group.*,
+               panel_group.name as label,
+               (select nick_name from sys_user where username = panel_group.create_by) as creator_name,
+               get_auths(panel_group.id, 'panel', #{userId}) as `privileges`
+        from panel_group
+        where id = #{panelId}
     </select>
 
     <select id="panelGroupInit" resultMap="BaseResultMapDTO">
