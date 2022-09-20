@@ -123,6 +123,9 @@
       <el-tooltip :content="$t('panel.params_checkbox')">
         <el-button class="el-icon-connection icon-duoxuan" size="mini" circle @click="clickCheckbox" />
       </el-tooltip>
+      <el-tooltip :content="$t('panel.paste')" v-if="isCopyToPaste">
+        <el-button class="el-icon-document-copy" size="mini" circle @click="clickPaste" />
+      </el-tooltip>
       <span style="float: right;margin-left: 10px">
         <el-button size="mini" :disabled="saveButtonDisabled" @click="save(false)">
           {{ $t('commons.save') }}
@@ -204,6 +207,7 @@ export default {
     ...mapState([
       'componentData',
       'canvasStyleData',
+      'isCopyToPaste',
       'areaData',
       'curComponent',
       'changeTimes',
@@ -414,6 +418,13 @@ export default {
     },
     openOuterParamsSet() {
       this.$emit('outerParamsSetVisibleChange', true)
+    },
+    //  粘贴
+    clickPaste() {
+      console.log('粘贴',this.isCopyToPaste)
+      this.$store.commit('setCopyToPaste',false)
+      this.$store.commit('paste', true)
+      this.$store.commit('recordSnapshot', 'paste')
     },
     clickCheckbox() {
       console.log('checkbox')

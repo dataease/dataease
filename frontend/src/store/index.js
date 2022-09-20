@@ -63,6 +63,7 @@ const data = {
       scalePointWidth: 1,
       scalePointHeight: 1
     },
+    isCopyToPaste: false, // 是否复制到其他页，展示粘贴
     // 点击画布时是否点中组件，主要用于取消选中组件用。
     // 如果没点中组件，并且在画布空白处弹起鼠标，则取消当前组件的选中状态
     isClickComponent: false,
@@ -129,6 +130,10 @@ const data = {
       state.isClickComponent = status
     },
 
+    setCopyToPaste(state,status) {
+      state.isCopyToPaste = status
+    },
+    
     setEditMode(state, mode) {
       state.editMode = mode
     },

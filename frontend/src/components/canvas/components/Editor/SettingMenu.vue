@@ -95,6 +95,7 @@ export default {
 
     copyOther() {
       this.$store.commit('copy')
+      this.$store.commit('setCopyToPaste',true)
     },
 
     paste() {
