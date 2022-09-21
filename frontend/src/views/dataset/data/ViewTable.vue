@@ -102,8 +102,7 @@
       <el-tab-pane
         v-if="
           table.mode === 1 &&
-          (table.type === 'excel' ||
-            table.type === 'db' ||
+          (table.type === 'db' ||
             table.type === 'sql' ||
             table.type === 'api')
         "

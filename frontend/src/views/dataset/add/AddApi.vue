@@ -32,7 +32,6 @@
         clearable
       />
       <div class="table-checkbox-list">
-        <!-- <div class="item" v-for="(ele, index) in tableData"> -->
         <el-checkbox-group v-model="checkTableList" size="small">
           <el-tooltip
             v-for="t in tableData"
@@ -57,7 +56,6 @@
             </div>
           </el-tooltip>
         </el-checkbox-group>
-        <!-- </div> -->
       </div>
     </div>
     <div class="table-detail">
@@ -379,6 +377,7 @@ export default {
   display: flex;
   height: 100%;
   position: relative;
+  width: 100%;
 
   .arrow-right {
     position: absolute;

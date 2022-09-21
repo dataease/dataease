@@ -246,7 +246,6 @@ import {
 import { ApplicationContext } from "@/utils/ApplicationContext";
 import deTextarea from "@/components/deCustomCm/deTextarea.vue";
 import msgCfm from "@/components/msgCfm";
-
 export default {
   name: "DsTree",
   mixins: [msgCfm],
@@ -406,7 +405,6 @@ export default {
         }
         if (!(element.type in types)) {
           types[element.type] = [];
-          // newArr.push(...element, ...{ children: types[element.type] })
           newArr.push({
             id: element.type,
             name: element.typeDesc,
@@ -415,7 +413,6 @@ export default {
           });
         }
         types[element.type].push(element);
-        // newArr.children.push({ id: element.id, label: element.name })
       }
       return newArr;
     },
@@ -449,8 +446,8 @@ export default {
     },
     addDb({ type }) {
       this.$router.push({
-        name: "datasource-form",
-        params: { type },
+        path: "/ds-form",
+        query: { type },
       });
     },
     addFolderWithType(data) {
@@ -460,8 +457,8 @@ export default {
         this.editDriver = true;
       } else {
         this.$router.push({
-          name: "datasource-form",
-          params: { type: data.id },
+          path: "/ds-form",
+          query: { type: data.id },
         });
       }
     },
@@ -547,10 +544,13 @@ export default {
     },
     switchMain(component, componentParam, tData, dsTypes) {
       if (component === "DsForm") {
+        const { id, type, showModel } = componentParam;
         this.$router.push({
-          name: "datasource-form",
-          params: {
-            ...componentParam,
+          path: "/ds-form",
+          query: {
+            id,
+            type,
+            showModel,
             msgNodeId: this.msgNodeId,
           },
         });
@@ -608,7 +608,6 @@ export default {
 .custom-tree-container {
   margin-top: 16px;
 }
-
 .custom-tree-node {
   flex: 1;
   display: flex;
@@ -618,7 +617,6 @@ export default {
   padding-right: 8px;
   width: 100%;
 }
-
 .custom-tree-node-list {
   flex: 1;
   display: flex;
@@ -627,33 +625,27 @@ export default {
   font-size: 14px;
   padding: 0 8px;
   width: calc(100% - 40px);
-
   .child {
     /*display: none;*/
     visibility: hidden;
   }
-
   &:hover .child {
     /*display: inline;*/
     visibility: visible;
   }
 }
-
 .tree-list ::v-deep .el-tree-node__expand-icon.is-leaf {
   display: none;
 }
-
 .tree-style {
   padding: 16px 24px;
   height: 100%;
   overflow-y: auto;
-
   .title-text {
     line-height: 26px;
     color: #1f2329;
     margin-bottom: 16px;
   }
-
   .title-operate {
     text-align: right;
     i {
@@ -670,7 +662,6 @@ export default {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-
   .db-card {
     height: 193px;
     width: 270px;
@@ -694,7 +685,6 @@ export default {
       padding: 8px 12px;
       border-top: 1px solid rgba(#1f2329, 0.15);
     }
-
     &:hover {
       box-shadow: 0px 6px 24px rgba(31, 35, 41, 0.08);
     }

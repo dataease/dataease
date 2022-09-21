@@ -132,11 +132,10 @@ export default {
   },
   commons: {
 
-
     unlock: 'Unlock',
     unlock_success: 'Unlock success',
 
-    uninstall:'Uninstall',
+    uninstall: 'Uninstall',
 
     no_result: 'No Result',
     manage_member: 'Managing members',
@@ -525,7 +524,10 @@ export default {
     convert_to_dimension: 'Convert to Dimension',
     left_to_edit: 'Select the data table on the left to edit',
     cannot_be_duplicate: 'The dataset name cannot be duplicate',
-    set_saved_successfully: 'Data set saved successfully'
+    set_saved_successfully: 'Data set saved successfully',
+    to_start_using: 'Browse the contents of your database, tables and columns. Choose a database to get started.',
+    to_run_query: 'Click to run query',
+    the_running_results: 'You can view the running results'
   },
   detabs: {
     eidttitle: 'Edit Title',
@@ -671,7 +673,13 @@ export default {
     filter: 'Screen',
     list: 'List item',
     list_info: 'Please select the information to be displayed in the list',
-    sure_delete: 'Are you sure to delete this user?'
+    sure_delete: 'Are you sure to delete this user?',
+    wecom_id: 'Wecom Account',
+    dingtalk_id: 'Dingtalk Account',
+    lark_id: 'Lark Account',
+    input_wecom_id: 'Please input wecom account',
+    input_dingtalk_id: 'Please input dingtalk account',
+    input_lark_id: 'Please input lark account'
   },
   ldap: {
     url: 'LDAP url',

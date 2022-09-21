@@ -1,16 +1,5 @@
 <template>
   <div :style="{ height: maxHeight, overflow: 'auto' }">
-    <!--    <el-row style="height: 26px;">-->
-    <!--      <span style="line-height: 26px;">-->
-    <!--        {{ $t('dataset.field_edit') }}-->
-    <!--        <span>{{ param.name }}</span>-->
-    <!--      </span>-->
-    <!--      <el-row style="float: right">-->
-    <!--        <el-button size="mini" @click="closeEdit">{{ $t('dataset.cancel') }}</el-button>-->
-    <!--        <el-button type="primary" size="mini" @click="saveEdit">{{ $t('dataset.confirm') }}</el-button>-->
-    <!--      </el-row>-->
-    <!--    </el-row>-->
-    <!--    <el-divider />-->
     <el-row style="margin: 6px 0 16px 0">
       <el-col :span="12">
         <deBtn
@@ -187,7 +176,6 @@
                     icon-class="field_text"
                     class="field-icon-text"
                   />
-                  <!-- <span class="field-class">{{ $t("dataset.text") }}</span> -->
                 </span>
                 <span v-if="scope.row.deType === 1">
                   <svg-icon
@@ -195,7 +183,6 @@
                     icon-class="field_time"
                     class="field-icon-time"
                   />
-                  <!-- <span class="field-class">{{ $t("dataset.time") }}</span> -->
                 </span>
                 <span v-if="scope.row.deType === 2 || scope.row.deType === 3">
                   <svg-icon
@@ -203,12 +190,6 @@
                     icon-class="field_value"
                     class="field-icon-value"
                   />
-                  <!-- <span v-if="scope.row.deType === 2" class="field-class">{{
-                    $t("dataset.value")
-                  }}</span>
-                  <span v-if="scope.row.deType === 3" class="field-class">{{
-                    $t("dataset.value") + "(" + $t("dataset.float") + ")"
-                  }}</span> -->
                 </span>
                 <span v-if="scope.row.deType === 5">
                   <svg-icon
@@ -216,7 +197,6 @@
                     icon-class="field_location"
                     class="field-icon-location"
                   />
-                  <!-- <span class="field-class">{{ $t("dataset.location") }}</span> -->
                 </span>
               </span>
             </template>
@@ -310,14 +290,6 @@
               </span>
             </template>
           </el-table-column>
-          <!--          <el-table-column property="groupType" :label="$t('dataset.field_group_type')" width="180">-->
-          <!--            <template slot-scope="scope">-->
-          <!--              <el-radio-group v-model="scope.row.groupType" size="mini">-->
-          <!--                <el-radio-button label="d">{{ $t('chart.dimension') }}</el-radio-button>-->
-          <!--                <el-radio-button label="q">{{ $t('chart.quota') }}</el-radio-button>-->
-          <!--              </el-radio-group>-->
-          <!--            </template>-->
-          <!--          </el-table-column>-->
           <el-table-column min-width="182" :label="$t('dataset.operator')">
             <template slot-scope="scope">
               <el-button
@@ -326,7 +298,7 @@
                 style="margin-left: -4px"
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 @click="dqTrans(scope.row, 'd')"
-                >{{ $t('convert_to_indicator') }}</el-button
+                >{{ $t('deDataset.convert_to_indicator') }}</el-button
               >
               <template v-if="scope.row.extField !== 0">
                 <el-button
@@ -522,7 +494,6 @@
                     icon-class="field_text"
                     class="field-icon-text"
                   />
-                  <!-- <span class="field-class">{{ $t("dataset.text") }}</span> -->
                 </span>
                 <span v-if="scope.row.deType === 1">
                   <svg-icon
@@ -530,7 +501,6 @@
                     icon-class="field_time"
                     class="field-icon-time"
                   />
-                  <!-- <span class="field-class">{{ $t("dataset.time") }}</span> -->
                 </span>
                 <span v-if="scope.row.deType === 2 || scope.row.deType === 3">
                   <svg-icon
@@ -538,12 +508,6 @@
                     icon-class="field_value"
                     class="field-icon-value"
                   />
-                  <!-- <span v-if="scope.row.deType === 2" class="field-class">{{
-                    $t("dataset.value")
-                  }}</span>
-                  <span v-if="scope.row.deType === 3" class="field-class">{{
-                    $t("dataset.value") + "(" + $t("dataset.float") + ")"
-                  }}</span> -->
                 </span>
                 <span v-if="scope.row.deType === 5">
                   <svg-icon
@@ -551,7 +515,6 @@
                     icon-class="field_location"
                     class="field-icon-location"
                   />
-                  <!-- <span class="field-class">{{ $t("dataset.location") }}</span> -->
                 </span>
               </span>
             </template>
@@ -637,29 +600,6 @@
               </span>
             </template>
           </el-table-column>
-          <!--          <el-table-column property="groupType" :label="$t('dataset.field_group_type')" width="180">-->
-          <!--            <template slot-scope="scope">-->
-          <!--              <el-radio-group v-model="scope.row.groupType" size="mini">-->
-          <!--                <el-radio-button label="d">{{ $t('chart.dimension') }}</el-radio-button>-->
-          <!--                <el-radio-button label="q">{{ $t('chart.quota') }}</el-radio-button>-->
-          <!--              </el-radio-group>-->
-          <!--            </template>-->
-          <!--          </el-table-column>-->
-          <!-- <el-table-column
-            property="groupType"
-            :label="$t('dataset.d_q_trans')"
-            width="120"
-          >
-            <template slot-scope="scope">
-              <el-button
-                icon="el-icon-sort"
-                size="mini"
-                circle
-                :disabled="!hasDataPermission('manage', param.privileges)"
-                @click="dqTrans(scope.row, 'q')"
-              />
-            </template>
-          </el-table-column> -->
           <el-table-column
             min-width="182"
             property=""
@@ -734,7 +674,7 @@
 
     <el-dialog
       :visible.sync="editCalcField"
-      class="de-dialog-form"
+      class="de-dialog-form de-center-dialog"
       width="980px"
       :title="
         currEditField.id
@@ -841,11 +781,6 @@ export default {
       })
     },
     saveEdit(item) {
-      // const list = this.tableFields.dimensionListData.concat(this.tableFields.quotaListData)
-      // batchEdit(list).then(response => {
-      //   // this.closeEdit()
-      //   this.initField()
-      // })
       if (item.name && item.name.length > 50) {
         this.$message.error(this.$t('dataset.field_name_less_50'))
         return
@@ -1151,5 +1086,16 @@ span {
 }
 .style-collapse ::v-deep .el-collapse-item__wrap {
   border-bottom: 0 solid #e6ebf5 !important;
+}
+</style>
+
+<style lang="scss">
+.de-center-dialog {
+  .el-dialog {
+    margin: 0 !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
 </style>

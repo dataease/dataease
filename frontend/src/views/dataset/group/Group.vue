@@ -72,7 +72,7 @@
           <div v-if="!tData.length" class="no-tdata">
             {{ $t('deDataset.no_dataset_click') }}
             <span @click="() => clickAdd()" class="no-tdata-new">{{
-              $t('deDataset.newly_build')
+              $t('deDataset.create')
             }}</span>
           </div>
           <el-tree
@@ -113,7 +113,6 @@
                 class="child"
               >
                 <span v-if="data.modelInnerType === 'group'" @click.stop>
-                  <!-- <el-dropdown trigger="click" size="small" @command="clickAdd"> -->
                   <el-dropdown
                     size="small"
                     placement="bottom-start"
@@ -527,6 +526,9 @@ export default {
       this.searchPids = []
       this.$refs.datasetTreeRef.filter(this.filterText)
     }
+  },
+  activated() {
+    this.nodeClick(this.$refs.datasetTreeRef.getCurrentNode())
   },
   created() {
     this.kettleState()

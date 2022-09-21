@@ -1,15 +1,6 @@
 <template>
   <div class="dataset-sql" @mouseup="mouseupDrag">
-    <!-- <el-input v-model="name" size="mini" :placeholder="$t('commons.name')"/> -->
-
-    <!-- <el-button size="mini" @click="cancel">
-            {{ $t('dataset.cancel') }}
-          </el-button>
-          <el-button size="mini" type="primary" @click="save">
-            {{ $t('dataset.confirm') }}
-          </el-button> -->
-
-    <div class="sql-editer" :style="{ height: sqlHeight + 'px' }">
+    <div class="sql-editer">
       <el-row>
         <el-col :span="12">
           <el-select
@@ -60,206 +51,293 @@
         </el-col>
         <el-col style="text-align: right" :span="12">
           <el-button
-            icon="el-icon-s-operation"
             type="text"
             size="small"
             class="de-text-btn"
-            @click="variableMgm"
+            @click="dataReference = true"
           >
-            {{ $t('sql_variable.variable_mgm') }}
+            <svg-icon icon-class="data-reference" />
+            {{ $t('deDataset.data_reference') }}
           </el-button>
           <el-button
-            icon="el-icon-video-play"
+            type="text"
+            size="small"
+            style="color: #1f2329"
+            class="de-text-btn"
+            @click="variableMgm"
+          >
+            <svg-icon icon-class="reference-setting" />
+            {{ $t('sql_variable.variable_mgm') }}
+          </el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-button
             class="de-text-btn"
             type="text"
             size="small"
             @click="getSQLPreview"
           >
+            <svg-icon icon-class="reference-play" />
             {{ $t('deDataset.run_a_query') }}
           </el-button>
         </el-col>
       </el-row>
-      <div class="code-container">
-        <codemirror
-          ref="myCm"
-          v-model="sql"
-          class="codemirror"
-          :options="sqlOption"
-          @ready="onCmReady"
-          @focus="onCmFocus"
-          @input="onCmCodeChange"
-        />
-      </div>
     </div>
-    <div class="sql-result">
-      <div class="sql-title">
-        {{ $t('deDataset.running_results') }}
-        <span class="result-num">{{
-          `(${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')})`
+    <div class="refrence-sql-table">
+      <div class="data-reference" v-if="dataReference">
+        <div class="table-database-name">
+          <p>
+            <span
+              @click="
+                showTable = false
+                dataTable = ''
+              "
+              style="cursor: pointer"
+              v-if="showTable"
+              ><i class="el-icon-arrow-left"></i> {{ $t('chart.back') }}</span
+            >
+            <span v-else>{{ $t('deDataset.data_reference') }}</span>
+            <i
+              @click="
+                showTable = false
+                dataTable = ''
+                dataReference = false
+              "
+              style="cursor: pointer"
+              class="el-icon-close"
+            ></i>
+          </p>
+          <p v-if="dataSource">
+            <span>
+              <svg-icon icon-class="db-de" />
+              {{ (showTable && dataTable) || selectedDatasource.name }}
+            </span>
+            <span class="grey">
+              <svg-icon
+                :icon-class="showTable ? 'reference-table' : 'reference-field'"
+              />
+              {{ (showTable && fieldData.length) || tableData.length }}
+            </span>
+          </p>
+        </div>
+        <span class="no-select-datasource" v-if="!dataSource">{{
+          $t('deDataset.to_start_using')
         }}</span>
-
-        <span @mousedown="mousedownDrag" class="drag"></span>
-      </div>
-      <div class="table-sql">
-        <el-empty
-          :image-size="60"
-          v-if="errMsg"
-          :image="errImg"
-          :description="$t('deDataset.run_failed')"
-        ></el-empty>
-        <ux-grid
-          v-else
-          ref="plxTable"
-          size="mini"
-          style="width: 100%"
-          :height="height"
-          :checkbox-config="{ highlight: true }"
-          :width-resize="true"
-        >
-          <ux-table-column
-            v-for="field in fields"
-            :key="field.fieldName"
-            min-width="200px"
-            :field="field.fieldName"
-            :title="field.remarks"
-            :resizable="true"
-          />
-        </ux-grid>
-      </div>
-      <el-drawer
-        :title="dialogTitle"
-        :visible.sync="showVariableMgm"
-        custom-class="user-drawer sql-dataset-drawer"
-        size="840px"
-        v-closePress
-        direction="rtl"
-      >
-        <div class="content">
-          <i class="el-icon-info"></i> {{ $t('dataset.sql_variable_limit_1')
-          }}<br />
-          {{ $t('dataset.sql_variable_limit_2') }}<br />
-        </div>
-        <el-table :data="variablesTmp">
-          <el-table-column prop="variableName" :label="$t('panel.param_name')">
-          </el-table-column>
-          <el-table-column width="200" :label="$t('deDataset.parameter_type')">
-            <template slot-scope="scope">
-              <el-cascader
-                v-model="scope.row.type"
-                size="mini"
-                class="select-type"
-                :options="fieldOptions"
-                @change="variableTypeChange(scope.row)"
-              >
-              </el-cascader>
-              <span class="select-svg-icon">
-                <svg-icon
-                  v-if="scope.row.type[0] === 'TEXT'"
-                  icon-class="field_text"
-                  class="field-icon-text"
-                />
-                <svg-icon
-                  v-if="
-                    [
-                      'DATETIME-YEAR',
-                      'DATETIME-YEAR-MONTH',
-                      'DATETIME',
-                      'DATETIME-YEAR-MONTH-DAY'
-                    ].includes(scope.row.type[0])
-                  "
-                  icon-class="field_time"
-                  class="field-icon-time"
-                />
-                <svg-icon
-                  v-if="['LONG', 'DOUBLE'].includes(scope.row.type[0])"
-                  icon-class="field_value"
-                  class="field-icon-value"
-                />
-                <!-- <svg-icon
-                    v-if="scope.row.deType === 5"
-                    icon-class="field_location"
-                    class="field-icon-location"
-                  /> -->
-              </span>
-            </template>
-          </el-table-column>
-          <el-table-column
-            min-width="350"
-            prop="defaultValue"
-            :label="$t('commons.params_value')"
+        <div v-else-if="dataSource && !dataTable" class="item-list">
+          <div
+            @click="typeSwitch(ele)"
+            :key="ele.name"
+            v-for="ele in tableData"
+            class="table-or-field"
           >
-            <template slot-scope="scope">
-              <el-input
-                size="small"
-                v-if="scope.row.type[0] === 'TEXT'"
-                type="text"
-                :placeholder="$t('fu.search_bar.please_input')"
-                v-model="scope.row.defaultValue"
-              />
-              <el-input
-                size="small"
-                v-if="
-                  scope.row.type[0] === 'LONG' || scope.row.type[0] === 'DOUBLE'
-                "
-                :placeholder="$t('fu.search_bar.please_input')"
-                type="number"
-                v-model="scope.row.defaultValue"
-              />
-
-              <el-date-picker
-                v-if="scope.row.type[0] === 'DATETIME-YEAR'"
-                v-model="scope.row.defaultValue"
-                type="year"
-                size="small"
-                value-format="yyyy"
-                :placeholder="$t('dataset.select_year')"
-              >
-              </el-date-picker>
-
-              <el-date-picker
-                v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH'"
-                v-model="scope.row.defaultValue"
-                type="month"
-                size="small"
-                :format="scope.row.type[1]"
-                :value-format="scope.row.type[1]"
-                :placeholder="$t('dataset.select_month')"
-              >
-              </el-date-picker>
-
-              <el-date-picker
-                v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH-DAY'"
-                v-model="scope.row.defaultValue"
-                type="date"
-                size="small"
-                :format="scope.row.type[1]"
-                :value-format="scope.row.type[1]"
-                :placeholder="$t('dataset.select_date')"
-              >
-              </el-date-picker>
-
-              <el-date-picker
-                v-if="scope.row.type[0] === 'DATETIME'"
-                v-model="scope.row.defaultValue"
-                type="datetime"
-                size="small"
-                :format="scope.row.type[1]"
-                :value-format="scope.row.type[1]"
-                :placeholder="$t('dataset.select_time')"
-              >
-              </el-date-picker>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div class="de-foot">
-          <deBtn secondary @click="closeVariableMgm">{{
-            $t('dataset.cancel')
-          }}</deBtn>
-          <deBtn type="primary" @click="saveVariable()">{{
-            $t('dataset.confirm')
-          }}</deBtn>
+            {{ ele.name }}
+          </div>
         </div>
-      </el-drawer>
+        <div v-else-if="dataSource && dataTable" class="item-list">
+          <div
+            :key="ele.fieldName"
+            v-for="ele in fieldData"
+            class="table-or-field"
+          >
+            {{ ele.fieldName }}
+          </div>
+        </div>
+      </div>
+      <div class="sql-table">
+        <div class="code-container" :style="{ height: sqlHeight + 'px' }">
+          <codemirror
+            ref="myCm"
+            v-model="sql"
+            class="codemirror"
+            :options="sqlOption"
+            @ready="onCmReady"
+            @focus="onCmFocus"
+            @input="onCmCodeChange"
+          />
+        </div>
+
+        <div class="sql-result">
+          <div class="sql-title">
+            {{ $t('deDataset.running_results') }}
+            <span class="result-num">{{
+              `(${$t('dataset.preview_show')} 1000 ${$t(
+                'dataset.preview_item'
+              )})`
+            }}</span>
+
+            <span @mousedown="mousedownDrag" class="drag"></span>
+          </div>
+          <div class="table-sql">
+            <el-empty
+              :image-size="125"
+              v-if="initFlag"
+              style="margin-top: 80px"
+              :image="initImg"
+              :description="$t('deDataset.to_run_query')"
+              >{{ $t('deDataset.the_running_results') }}
+            </el-empty>
+            <el-empty
+              :image-size="60"
+              v-else-if="errMsg"
+              :image="errImg"
+              :description="$t('deDataset.run_failed')"
+            ></el-empty>
+            <ux-grid
+              v-else
+              ref="plxTable"
+              size="mini"
+              style="width: 100%"
+              :height="height"
+              :checkbox-config="{ highlight: true }"
+              :width-resize="true"
+            >
+              <ux-table-column
+                v-for="field in fields"
+                :key="field.fieldName"
+                min-width="200px"
+                :field="field.fieldName"
+                :title="field.remarks"
+                :resizable="true"
+              />
+            </ux-grid>
+          </div>
+          <el-drawer
+            :title="dialogTitle"
+            :visible.sync="showVariableMgm"
+            custom-class="user-drawer sql-dataset-drawer"
+            size="840px"
+            v-closePress
+            direction="rtl"
+          >
+            <div class="content">
+              <i class="el-icon-info"></i>
+              {{ $t('dataset.sql_variable_limit_1') }}<br />
+              {{ $t('dataset.sql_variable_limit_2') }}<br />
+            </div>
+            <el-table :data="variablesTmp">
+              <el-table-column
+                prop="variableName"
+                :label="$t('panel.param_name')"
+              >
+              </el-table-column>
+              <el-table-column
+                width="200"
+                :label="$t('deDataset.parameter_type')"
+              >
+                <template slot-scope="scope">
+                  <el-cascader
+                    v-model="scope.row.type"
+                    size="mini"
+                    class="select-type"
+                    :options="fieldOptions"
+                    @change="variableTypeChange(scope.row)"
+                  >
+                  </el-cascader>
+                  <span class="select-svg-icon">
+                    <svg-icon
+                      v-if="scope.row.type[0] === 'TEXT'"
+                      icon-class="field_text"
+                      class="field-icon-text"
+                    />
+                    <svg-icon
+                      v-if="
+                        [
+                          'DATETIME-YEAR',
+                          'DATETIME-YEAR-MONTH',
+                          'DATETIME',
+                          'DATETIME-YEAR-MONTH-DAY'
+                        ].includes(scope.row.type[0])
+                      "
+                      icon-class="field_time"
+                      class="field-icon-time"
+                    />
+                    <svg-icon
+                      v-if="['LONG', 'DOUBLE'].includes(scope.row.type[0])"
+                      icon-class="field_value"
+                      class="field-icon-value"
+                    />
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                min-width="350"
+                prop="defaultValue"
+                :label="$t('commons.params_value')"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    size="small"
+                    v-if="scope.row.type[0] === 'TEXT'"
+                    type="text"
+                    :placeholder="$t('fu.search_bar.please_input')"
+                    v-model="scope.row.defaultValue"
+                  />
+                  <el-input
+                    size="small"
+                    v-if="
+                      scope.row.type[0] === 'LONG' ||
+                      scope.row.type[0] === 'DOUBLE'
+                    "
+                    :placeholder="$t('fu.search_bar.please_input')"
+                    type="number"
+                    v-model="scope.row.defaultValue"
+                  />
+
+                  <el-date-picker
+                    v-if="scope.row.type[0] === 'DATETIME-YEAR'"
+                    v-model="scope.row.defaultValue"
+                    type="year"
+                    size="small"
+                    value-format="yyyy"
+                    :placeholder="$t('dataset.select_year')"
+                  >
+                  </el-date-picker>
+
+                  <el-date-picker
+                    v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH'"
+                    v-model="scope.row.defaultValue"
+                    type="month"
+                    size="small"
+                    :format="scope.row.type[1]"
+                    :value-format="scope.row.type[1]"
+                    :placeholder="$t('dataset.select_month')"
+                  >
+                  </el-date-picker>
+
+                  <el-date-picker
+                    v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH-DAY'"
+                    v-model="scope.row.defaultValue"
+                    type="date"
+                    size="small"
+                    :format="scope.row.type[1]"
+                    :value-format="scope.row.type[1]"
+                    :placeholder="$t('dataset.select_date')"
+                  >
+                  </el-date-picker>
+
+                  <el-date-picker
+                    v-if="scope.row.type[0] === 'DATETIME'"
+                    v-model="scope.row.defaultValue"
+                    type="datetime"
+                    size="small"
+                    :format="scope.row.type[1]"
+                    :value-format="scope.row.type[1]"
+                    :placeholder="$t('dataset.select_time')"
+                  >
+                  </el-date-picker>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="de-foot">
+              <deBtn secondary @click="closeVariableMgm">{{
+                $t('dataset.cancel')
+              }}</deBtn>
+              <deBtn type="primary" @click="saveVariable()">{{
+                $t('dataset.confirm')
+              }}</deBtn>
+            </div>
+          </el-drawer>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -292,10 +370,12 @@ import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
 import { engineMode } from '@/api/system/engine'
+import msgCfm from '@/components/msgCfm/index'
 
 export default {
   name: 'AddSQL',
   components: { codemirror },
+  mixins: [msgCfm],
   props: {
     param: {
       type: Object,
@@ -305,9 +385,15 @@ export default {
   data() {
     return {
       dataSource: '',
+      dataTable: '',
+      initFlag: true,
+      showTable: false,
+      tableData: [],
+      fieldData: [],
       errMsg: false,
       options: [],
       sql: '',
+      dataReference: false,
       sqlOption: {
         tabSize: 2,
         styleActiveLine: true,
@@ -322,7 +408,8 @@ export default {
       },
       data: [],
       errImg: require('@/assets/error.png'),
-      sqlHeight: 330,
+      initImg: require('@/assets/None.png'),
+      sqlHeight: 248,
       fields: [],
       mode: '0',
       syncType: 'sync_now',
@@ -392,7 +479,8 @@ export default {
   computed: {
     codemirror() {
       return this.$refs.myCm.codemirror
-    }
+    },
+    dataSourceDetail() {}
   },
   watch: {
     'param.tableId': {
@@ -421,6 +509,19 @@ export default {
     })
   },
   methods: {
+    getField(name) {
+      post('/dataset/table/getFields', {
+        dataSourceId: this.dataSource,
+        info: JSON.stringify({ table: name })
+      }).then((res) => {
+        this.fieldData = res.data
+      })
+    },
+    typeSwitch({ name }) {
+      this.showTable = true
+      this.dataTable = name
+      this.getField(name)
+    },
     mousedownDrag() {
       document
         .querySelector('.dataset-sql')
@@ -455,6 +556,9 @@ export default {
           }
         }
       }
+      post('/datasource/getTables/' + this.dataSource, {}).then((response) => {
+        this.tableData = response.data
+      })
     },
     calHeight() {
       const that = this
@@ -492,12 +596,9 @@ export default {
 
     getSQLPreview() {
       this.errMsg = false
+      this.initFlag = false
       if (!this.dataSource || this.datasource === '') {
-        this.$message({
-          showClose: true,
-          message: this.$t('dataset.pls_slc_data_source'),
-          type: 'error'
-        })
+        this.openMessageSuccess('dataset.pls_slc_data_source', 'error')
         return
       }
       this.parseVariable()
@@ -523,33 +624,21 @@ export default {
 
     save() {
       if (!this.dataSource || this.datasource === '') {
-        this.$message({
-          showClose: true,
-          message: this.$t('dataset.pls_slc_data_source'),
-          type: 'error'
-        })
+        this.openMessageSuccess('dataset.pls_slc_data_source', 'error')
         return
       }
-      if (!this.table.name || this.table.name === '') {
-        this.$message({
-          showClose: true,
-          message: this.$t('dataset.pls_input_name'),
-          type: 'error'
-        })
+      if (!this.param.name || this.param.name === '') {
+        this.openMessageSuccess('dataset.pls_input_name', 'error')
         return
       }
-      if (this.table.name.length > 50) {
-        this.$message({
-          showClose: true,
-          message: this.$t('dataset.char_can_not_more_50'),
-          type: 'error'
-        })
+      if (this.param.name.length > 50) {
+        this.openMessageSuccess('dataset.char_can_not_more_50', 'error')
         return
       }
       this.parseVariable()
       const table = {
         id: this.param.tableId,
-        name: this.table.name,
+        name: this.param.name,
         sceneId: this.param.id,
         dataSourceId: this.dataSource,
         type: 'sql',
@@ -562,20 +651,13 @@ export default {
         })
       }
       post('/dataset/table/update', table).then((response) => {
-        this.$emit('saveSuccess', table)
+        this.openMessageSuccess('deDataset.set_saved_successfully')
         this.cancel()
       })
     },
 
     cancel() {
-      if (this.param.tableId) {
-        this.$emit('switchComponent', {
-          name: 'ViewTable',
-          param: this.param.table
-        })
-      } else {
-        this.$emit('switchComponent', { name: '' })
-      }
+      this.$router.back()
     },
 
     showSQL(val) {
@@ -592,7 +674,7 @@ export default {
 
     resetComponent() {
       this.dataSource = ''
-      this.table.name = ''
+      this.param.name = ''
       this.sql = ''
       this.data = []
       this.fields = []
@@ -715,16 +797,90 @@ export default {
   display: flex;
   flex-direction: column;
   .sql-editer {
-    min-height: 330px;
     background: #f5f6f7;
     padding: 16px 24px;
-    .code-container {
-      box-sizing: border-box;
-      height: calc(100% - 64px);
-      margin-top: 16px;
-      color: var(--deTextPrimary, #1f2329);
-      .CodeMirror {
-        height: 100% !important;
+  }
+
+  .refrence-sql-table {
+    flex: 1;
+    display: flex;
+    flex-direction: row-reverse;
+    overflow: hidden;
+    .data-reference {
+      width: 280px;
+      height: 100%;
+      overflow: hidden;
+      border-left: 1px solid var(--deCardStrokeColor, #dee0e3);
+      .no-select-datasource {
+        font-family: PingFang SC;
+        font-size: 14px;
+        color: var(--deTextPrimary, #1f2329);
+        font-weight: 400;
+        display: inline-block;
+        width: 100%;
+        padding: 16px 12px;
+      }
+      .table-database-name {
+        font-family: PingFang SC;
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--deTextPrimary, #1f2329);
+        padding: 16px 12px;
+        border-bottom: 1px solid var(--deCardStrokeColor, #dee0e3);
+        p {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin: 0;
+        }
+
+        :nth-child(2)p {
+          margin-top: 16px;
+        }
+        .grey {
+          font-size: 14px;
+          font-weight: 400;
+          color: var(--deTextSecondary, #646a73);
+        }
+      }
+
+      .item-list {
+        padding: 16px 8px;
+        height: calc(100vh - 200px);
+        overflow: auto;
+        .table-or-field {
+          height: 40px;
+          width: 100%;
+          box-sizing: border-box;
+          border-radius: 4px;
+          color: var(--primary, #3370ff);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: flex;
+          align-items: center;
+          padding-left: 4px;
+
+          &:hover {
+            background: rgba(31, 35, 41, 0.1);
+          }
+        }
+      }
+    }
+    .sql-table {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      .code-container {
+        background: #f5f6f7;
+        box-sizing: border-box;
+        min-height: 248px;
+        color: var(--deTextPrimary, #1f2329);
+        .CodeMirror {
+          height: 100% !important;
+        }
       }
     }
   }
@@ -768,6 +924,14 @@ export default {
       padding: 18px 25px;
       overflow-y: auto;
       box-sizing: border-box;
+      .el-empty__bottom,
+      .el-empty__description p {
+        font-family: PingFang SC;
+        font-size: 14px;
+        font-weight: 400;
+        margin-top: 0;
+        color: var(--deTextSecondary, #646a73);
+      }
     }
   }
 }

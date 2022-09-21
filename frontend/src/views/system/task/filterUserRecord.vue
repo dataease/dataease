@@ -200,6 +200,7 @@ export default {
       this.selectDatasets = [];
       this.datasetCahe = [];
       this.selectDatasetsCahe = [];
+      this.$refs.datasetTreeRef.filter();
       this.$emit("search", [], []);
     },
     clearOneFilter(index) {
@@ -210,6 +211,9 @@ export default {
           this[p][c] = [];
         } else {
           this[ele] = [];
+        }
+        if (ele === 'activeDataset') {
+          this.$refs.datasetTreeRef.filter();
         }
       });
     },

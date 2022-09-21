@@ -134,7 +134,7 @@ export default {
 
     unlock: '解锁',
     unlock_success: '解锁成功',
-    uninstall:'卸载',
+    uninstall: '卸载',
 
     no_result: '没有找到相关内容',
     manage_member: '管理成员',
@@ -523,7 +523,10 @@ export default {
     convert_to_dimension: '转换为维度',
     left_to_edit: '选中左侧的数据表可进行编辑',
     cannot_be_duplicate: '数据集名称不允许重复',
-    set_saved_successfully: '数据集保存成功'
+    set_saved_successfully: '数据集保存成功',
+    to_start_using: '浏览您的数据库，表和列的内容。 选择一个数据库即可开始使用。',
+    to_run_query: '点击运行查询',
+    the_running_results: '即可查看运行结果'
   },
   detabs: {
     eidttitle: '编辑标题',
@@ -669,7 +672,13 @@ export default {
     filter: '筛选',
     list: '列表项',
     list_info: '请选择列表中要展示的信息',
-    sure_delete: '确定删除该用户吗？'
+    sure_delete: '确定删除该用户吗？',
+    wecom_id: '企业微信账号',
+    dingtalk_id: '钉钉账号',
+    lark_id: '飞书账号',
+    input_wecom_id: '请输入企业微信账号',
+    input_dingtalk_id: '请输入钉钉账号',
+    input_lark_id: '请输入飞书账号'
   },
   ldap: {
     url: 'LDAP地址',
