@@ -173,6 +173,13 @@ export default {
             trigger: 'change'
           },
           { required: true, trigger: 'blur', validator: this.nameValidator }
+        ],
+        id: [
+          {
+            required: true,
+            message: this.$t('fu.search_bar.please_select'),
+            trigger: 'blur'
+          },
         ]
       }
     }
@@ -204,7 +211,7 @@ export default {
   },
   methods: {
     back() {
-      this.$router.back()
+      this.$router.push('/dataset/index')
     },
     nameBlur() {
       this.nameExsitValidator()
@@ -340,7 +347,7 @@ export default {
     switchComponent(c) {
       let type = ''
       if (['db', 'excel', 'api'].includes(c)) {
-        this.datasetFormRules = {}
+        this.$delete(this.datasetFormRules, 'name')
       }
       switch (c) {
         case 'db':

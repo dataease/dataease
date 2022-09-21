@@ -42,7 +42,7 @@
           </el-form-item>
           <div class="add-scope-cont" v-if="taskForm.type === 'add_scope'">
             <el-form-item
-              prop="incrementalUpdateType"
+              prop="type"
               :label="$t('dataset.incremental_update_type')"
             >
               <el-radio-group
@@ -312,12 +312,6 @@ export default {
           {
             required: true,
             message: this.$t("components.data_set_required"),
-            trigger: "change",
-          },
-        ],
-        incrementalUpdateType: [
-          {
-            required: true,
             trigger: "change",
           },
         ],

@@ -5,16 +5,15 @@
     <de-aside-container type="dataset">
       <group :save-status="saveStatus" @switchComponent="switchComponent" />
     </de-aside-container>
-
-    <de-main-container>
-      <component
-        :is="component"
-        ref="dynamic_component"
-        :param="param"
-        @switchComponent="switchComponent"
-        @saveSuccess="saveSuccess"
-      />
-    </de-main-container>
+      <de-main-container>
+        <component
+          :is="component"
+          ref="dynamic_component"
+          :param="param"
+          @switchComponent="switchComponent"
+          @saveSuccess="saveSuccess"
+        />
+      </de-main-container>
   </de-container>
 </template>
 

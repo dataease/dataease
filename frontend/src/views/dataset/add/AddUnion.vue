@@ -1,15 +1,5 @@
 <template>
   <div class="dataset-union" @mouseup="mouseupDrag">
-    <!-- <el-form :inline="true" style="display: flex;align-items: center;justify-content: space-between;">
-        <el-form-item class="form-item" :label="$t('commons.name')">
-          <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" clearable />
-        </el-form-item>
-        <el-form-item class="form-item">
-          <el-button :disabled="dataset.length === 0" size="mini" @click="previewData">
-            {{ $t('dataset.preview_result') }}
-          </el-button>
-        </el-form-item>
-      </el-form> -->
     <div :style="{ height: unionHeight + 'px' }" class="unio-editer-container">
       <!--添加第一个数据集按钮-->
       <div v-if="dataset.length === 0">

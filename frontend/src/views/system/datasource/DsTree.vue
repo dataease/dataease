@@ -405,7 +405,6 @@ export default {
         }
         if (!(element.type in types)) {
           types[element.type] = [];
-          // newArr.push(...element, ...{ children: types[element.type] })
           newArr.push({
             id: element.type,
             name: element.typeDesc,
@@ -414,7 +413,6 @@ export default {
           });
         }
         types[element.type].push(element);
-        // newArr.children.push({ id: element.id, label: element.name })
       }
       return newArr;
     },
@@ -448,8 +446,8 @@ export default {
     },
     addDb({ type }) {
       this.$router.push({
-        name: "datasource-form",
-        params: { type },
+        path: "/ds-form",
+        query: { type },
       });
     },
     addFolderWithType(data) {
@@ -459,8 +457,8 @@ export default {
         this.editDriver = true;
       } else {
         this.$router.push({
-          name: "datasource-form",
-          params: { type: data.id },
+          path: "/ds-form",
+          query: { type: data.id },
         });
       }
     },
@@ -546,10 +544,13 @@ export default {
     },
     switchMain(component, componentParam, tData, dsTypes) {
       if (component === "DsForm") {
+        const { id, type, showModel } = componentParam;
         this.$router.push({
-          name: "datasource-form",
-          params: {
-            ...componentParam,
+          path: "/ds-form",
+          query: {
+            id,
+            type,
+            showModel,
             msgNodeId: this.msgNodeId,
           },
         });

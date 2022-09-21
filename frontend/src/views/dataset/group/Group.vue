@@ -113,7 +113,6 @@
                 class="child"
               >
                 <span v-if="data.modelInnerType === 'group'" @click.stop>
-                  <!-- <el-dropdown trigger="click" size="small" @command="clickAdd"> -->
                   <el-dropdown
                     size="small"
                     placement="bottom-start"
@@ -527,6 +526,9 @@ export default {
       this.searchPids = []
       this.$refs.datasetTreeRef.filter(this.filterText)
     }
+  },
+  activated() {
+    this.nodeClick(this.$refs.datasetTreeRef.getCurrentNode())
   },
   created() {
     this.kettleState()

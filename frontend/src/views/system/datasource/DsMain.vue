@@ -1,214 +1,164 @@
 <template>
-  <div class="ds-table de-serach-table">
-    <el-row class="top-operate">
-      <el-col :span="10">
-        <span class="table-name">{{ params.name }}</span>
-      </el-col>
-      <el-col :span="14" class="right-user">
-        <el-input
-          :placeholder="$t('system_parameter_setting.search_keywords')"
-          prefix-icon="el-icon-search"
-          class="name-email-search"
-          size="small"
-          clearable
-          ref="search"
-          v-model="nikeName"
-          @blur="initSearch"
-          @clear="initSearch"
-        >
-        </el-input>
-      </el-col>
-    </el-row>
-    <div class="table-container">
-      <grid-table
-        v-loading="loading"
-        :tableData="tableData"
-        :columns="[]"
-        :pagination="paginationConfig"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      >
-        <el-table-column
-          key="name"
-          prop="name"
-          :label="$t('datasource.table_name')"
-        />
-        <el-table-column
-          slot="__operation"
-          :label="$t('commons.operating')"
-          key="__operation"
-          fixed="right"
-          width="168"
-        >
-          <template slot-scope="scope">
-            <el-button
-              @click="createtDataset(scope.row)"
-              class="text-btn mar3 mar6"
-              type="text"
-              >{{ $t("datasource.create_dataset") }}</el-button
-            >
-            <el-button
-              @click="selectDataset(scope.row)"
-              class="text-btn"
-              type="text"
-              >{{ $t("dataset.detail") }}</el-button
-            >
-          </template>
-        </el-table-column>
-      </grid-table>
+  <div
+    class="de-ds-container"
+    :class="[{ 'is-driver-mgm': currentMgm === 'driverMgm' }]"
+    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+  >
+    <div v-if="currentMgm === 'driverMgm'" class="dsr-route-title">
+      <div>
+        <i class="el-icon-arrow-left back-button" @click="jump" />
+        <span>{{ $t('driver.mgm') }}</span>
+      </div>
+      <deBtn type="primary" @click="addDriver" icon="el-icon-plus"
+        >{{ $t("driver.add") }}
+      </deBtn>
     </div>
-    <el-drawer
-      :title="$t('dataset.detail')"
-      :visible.sync="userDrawer"
-      custom-class="user-drawer-task ds-table-drawer"
-      size="840px"
-      v-closePress
-      direction="rtl"
+    <de-aside-container
+      style="padding: 0 0"
+      type="datasource"
     >
-      <el-row style="margin-top: 12px" :gutter="24">
-        <el-col :span="12">
-          <p class="table-name">
-            {{ $t("datasource.table_name") }}
-          </p>
-          <p class="table-value">
-            {{ dsTableDetail.name }}
-          </p>
-        </el-col>
-        <el-col :span="12">
-          <p class="table-name">
-            {{ $t("datasource.table_description") }}
-          </p>
-          <p class="table-value">
-            {{ dsTableDetail.remark || "-" }}
-          </p>
-        </el-col>
-      </el-row>
-      <el-table
-    :data="dsTableData"
-    stripe
-    style="width: 100%">
-    <el-table-column
-      prop="date"
-      :label="$t('panel.column_name')">
-    </el-table-column>
-    <el-table-column
-      prop="name"
-      :label="$t('dataset.field_type')">
-    </el-table-column>
-    <el-table-column
-      prop="name"
-      :label="$t('datasource.field_description')">
-    </el-table-column>
-  </el-table>
-    </el-drawer>
+      <ds-tree
+        @switch-mgm="switchMgm"
+        ref="dsTree"
+        :datasource="datasource"
+        @switch-main="switchMain"
+      />
+    </de-aside-container>
+    <de-main-container
+    >
+      <component
+        :is="component"
+        v-if="!!component"
+        :params="param"
+        :t-data="tData"
+        :ds-types="dsTypes"
+        @refresh-type="refreshType"
+        @switch-component="switchMain"
+      />
+      <el-empty v-else :image-size="125" :description="$t(`datasource.${swTips}`)" :image="image"></el-empty>
+    </de-main-container>
   </div>
 </template>
 
 <script>
-import keyEnter from "@/components/msgCfm/keyEnter.js";
-import GridTable from "@/components/gridTable/index.vue";
-import { dsTable } from "@/api/dataset/dataset";
+import DeMainContainer from "@/components/dataease/DeMainContainer";
+import DeAsideContainer from "@/components/dataease/DeAsideContainer";
+import DsTree from "./DsTree";
+import DsForm from "./DsForm";
+import dsTable from "./dsTable";
+import DriverForm from "./DriverFormDetail";
 export default {
-  mixins: [keyEnter],
-  components: { GridTable },
-  props: {
-    params: {
-      type: Object,
-      default: () => {},
-    },
-  },
+  name: "DsMain",
+  components: { DeMainContainer, DeAsideContainer, DsTree },
   data() {
     return {
-      userDrawer: false,
-      dsTableDetail: {},
-      nikeName: "",
-      loading: false,
-      paginationConfig: {
-        currentPage: 1,
-        pageSize: 10,
-        total: 0,
-      },
-      dsTableData: [{date: 1}],
-      tableData: [{ name: 1 }],
+      image: require('@/assets/None_Select_ds.png'),
+      component: '',
+      datasource: {},
+      param: null,
+      tData: null,
+      currentMgm: "dsMgm",
+      dsTypes: [],
     };
   },
-  created() {
-    // this.initSearch();
+  computed: {
+    swTips() {
+      return this.currentMgm === 'driverMgm' ? 'on_the_left' : 'on_the_left';
+    }
   },
   methods: {
-    createtDataset(row) {},
-    selectDataset(row) {
-      this.dsTableDetail = row;
-      this.userDrawer = true;
+    jump() {
+      this.$refs.dsTree.dsMgm();
+      this.switchMgm('dsMgm');
     },
-    handleSizeChange(pageSize) {
-      this.paginationConfig.currentPage = 1;
-      this.paginationConfig.pageSize = pageSize;
-      this.search();
+    switchMgm(type) {
+      this.currentMgm = type;
     },
-    handleCurrentChange(currentPage) {
-      this.paginationConfig.currentPage = currentPage;
-      this.search();
+    addDriver() {
+      this.$refs.dsTree.addDriver();
     },
-    initSearch() {
-      this.handleCurrentChange(1);
-    },
-    search() {
-      this.loading = true;
-      const param = {
-        conditions: [],
-      };
-      if (this.nikeName) {
-        param.conditions.push({
-          field: `dataset_table_task.name`,
-          operator: "like",
-          value: this.nikeName,
-        });
-      }
-      const { currentPage, pageSize } = this.paginationConfig;
-      dsTable(currentPage, pageSize, this.params.id).then((response) => {
-        this.tableData = response.data.listObject;
-        this.paginationConfig.total = response.data.itemCount;
-        this.loading = false;
+    // 切换main区内容
+    switchMain(param) {
+      const { component, componentParam, tData, dsTypes } = param;
+      this.component = '';
+      this.param = null;
+      this.$nextTick(() => {
+        switch (component) {
+          case "DsForm":
+            this.component = DsForm;
+            this.param = componentParam;
+            this.tData = tData;
+            this.dsTypes = dsTypes;
+            break;
+          case "DriverForm":
+            this.component = DriverForm;
+            this.param = componentParam;
+            this.tData = tData;
+            this.dsTypes = dsTypes;
+            break;
+          case "dsTable":
+            this.component = dsTable;
+            this.param = componentParam;
+            break;
+          default:
+            this.component = '';
+            this.param = null;
+            break;
+        }
       });
+    },
+    refreshType(datasource) {
+      this.datasource = datasource;
+      this.$refs.dsTree && this.$refs.dsTree.refreshType(datasource);
+    },
+    msg2Current(sourceParam) {
+      this.$refs.dsTree && this.$refs.dsTree.markInvalid(sourceParam);
     },
   },
 };
 </script>
 
-<style lang="scss">
-.ds-table-drawer {
-  .table-value,
-  .table-name {
-    font-family: PingFang SC;
-    font-size: 14px;
-    font-weight: 400;
-    margin: 0;
-  }
-  .table-name {
-    color: var(--deTextSecondary, #646a73);
-  }
-  .table-value {
-    margin: 4px 0 24px 0;
-    color: var(--deTextPrimary, #1f2329);
+<style scoped lang="scss">
+.de-ds-container {
+  height: 100%;
+  // height: calc(100vh - 56px);
+  width: 100%;
+  overflow: hidden;
+  flex-wrap: wrap;
+  display: flex;
+  box-sizing: border-box;
+  .el-empty {
+    height: 100%;
   }
 }
-.ds-table {
-  height: 100%;
-  padding: 10px 14px;
-  box-sizing: border-box;
-  .table-name {
-    font-family: PingFang SC;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 24px;
-    color: var(--deTextPrimary, #1f2329);
+.ms-aside-container {
+  height: calc(100vh - 56px);
+  padding: 0px;
+  min-width: 260px;
+  max-width: 460px;
+}
+.dsr-route-title {
+  width: 100%;
+  margin: -2px 0 22px 0;
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+}
+.is-driver-mgm {
+  background-color: var(--MainBG, #f5f6f7);
+  padding: 24px;
+  .ms-aside-container,
+  .ms-main-container {
+    height: calc(100vh - 170px);
+    background-color: var(--ContentBG, #ffffff);
+    .tree-style {
+      padding-top: 24px;
+    }
   }
-  .table-container {
-    height: calc(100% - 50px);
-  }
-  .el-table__fixed-right::before {
-    background: transparent;
+  .ms-main-container {
+    flex: 1;
+    position: relative;
+    padding: 24px 0 70px 24px;
   }
 }
 </style>

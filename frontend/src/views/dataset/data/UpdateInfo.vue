@@ -185,15 +185,6 @@
       </grid-table>
     </div>
 
-    <!-- <el-row>
-      <el-button v-if="hasDataPermission('manage',param.privileges) && enableUpdate" icon="el-icon-setting" size="mini" @click="showConfig">
-        {{ $t('dataset.update_setting') }}
-      </el-button>
-      <el-button icon="el-icon-refresh" size="mini" @click="refreshLog">
-        {{ $t('commons.refresh') }}
-      </el-button>
-    </el-row> -->
-
     <el-dialog
       v-dialogDrag
       :title="$t('dataset.detail')"
@@ -305,7 +296,7 @@
         </el-form-item>
         <div class="add-scope-cont" v-if="taskForm.type === 'add_scope'">
           <el-form-item
-            prop="incrementalUpdateType"
+            prop="type"
             :label="$t('dataset.incremental_update_type')"
           >
             <el-radio-group
@@ -451,13 +442,11 @@
           </el-form-item>
         </div>
       </el-form>
-      <div class="de-foot-layout">
-        <!-- <div class="cont">
-          <deBtn secondary @click="closeTask">{{ $t("dataset.cancel") }}</deBtn>
-          <deBtn type="primary" @click="saveTask(taskForm)">{{
-            $t("dataset.confirm")
-          }}</deBtn>
-        </div> -->
+      <div class="de-foot">
+        <deBtn secondary @click="closeTask">{{ $t('dataset.cancel') }}</deBtn>
+        <deBtn type="primary" @click="saveTask(taskForm)">{{
+          $t('dataset.confirm')
+        }}</deBtn>
       </div>
     </el-drawer>
   </el-col>
@@ -707,11 +696,7 @@ export default {
     showConfig() {
       this.userDrawer = true
       this.listTaskLog()
-      // this.getIncrementalConfig()
     },
-    // refreshLog() {
-    //   this.listTaskLog();
-    // },
     showErrorMassage(massage) {
       this.show_error_massage = true
       this.error_massage = massage
@@ -857,47 +842,6 @@ export default {
           this.initSearch(false)
         })
     },
-    // getIncrementalConfig() {
-    //   post("/dataset/table/incrementalConfig", { tableId: this.table.id }).then(
-    //     (response) => {
-    //       this.incrementalConfig = response.data;
-    //       if (
-    //         this.incrementalConfig.incrementalAdd.length === 0 &&
-    //         this.incrementalConfig.incrementalDelete.length === 0
-    //       ) {
-    //         this.incrementalUpdateType = "incrementalAdd";
-    //         this.sql = "";
-    //         return;
-    //       }
-    //       if (this.incrementalConfig.incrementalAdd.length > 0) {
-    //         this.incrementalUpdateType = "incrementalAdd";
-    //         this.sql = this.incrementalConfig.incrementalAdd;
-    //       } else {
-    //         this.incrementalUpdateType = "incrementalDelete";
-    //         this.sql = this.incrementalConfig.incrementalDelete;
-    //       }
-    //     }
-    //   );
-    // },
-    // saveIncrementalConfig() {
-    //   if (this.incrementalUpdateType === "incrementalAdd") {
-    //     this.incrementalConfig.incrementalAdd = this.sql;
-    //   } else {
-    //     this.incrementalConfig.incrementalDelete = this.sql;
-    //   }
-    //   this.incrementalConfig.tableId = this.table.id;
-    //   post(
-    //     "/dataset/table/save/incrementalConfig",
-    //     this.incrementalConfig
-    //   ).then((response) => {
-    //     this.$message({
-    //       message: this.$t("dataset.save_success"),
-    //       type: "success",
-    //       showClose: true,
-    //     });
-    //     this.update_setting = false;
-    //   });
-    // },
     saveTask(task) {
       this.$refs.taskForm.validate((valid) => {
         if (valid) {
@@ -1203,7 +1147,7 @@ export default {
 
     .codemirror-cont {
       box-sizing: border-box;
-      width: 560px;
+      width: 100%;
       height: 200px;
       background: #ffffff;
       border: 1px solid #bbbfc4;

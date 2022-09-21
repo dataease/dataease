@@ -33,7 +33,6 @@
         clearable
       />
       <div class="table-checkbox-list">
-        <!-- <div class="item" v-for="(ele, index) in tableData"> -->
         <el-checkbox-group v-model="checkTableList" size="small">
           <el-tooltip
             :disabled="t.enableCheck"
@@ -59,7 +58,6 @@
             </div>
           </el-tooltip>
         </el-checkbox-group>
-        <!-- </div> -->
       </div>
     </div>
     <div class="table-detail">

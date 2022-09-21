@@ -1,14 +1,5 @@
 <template>
   <div class="dataset-sql" @mouseup="mouseupDrag">
-    <!-- <el-input v-model="name" size="mini" :placeholder="$t('commons.name')"/> -->
-
-    <!-- <el-button size="mini" @click="cancel">
-            {{ $t('dataset.cancel') }}
-          </el-button>
-          <el-button size="mini" type="primary" @click="save">
-            {{ $t('dataset.confirm') }}
-          </el-button> -->
-
     <div class="sql-editer">
       <el-row>
         <el-col :span="12">
@@ -264,11 +255,6 @@
                       icon-class="field_value"
                       class="field-icon-value"
                     />
-                    <!-- <svg-icon
-                    v-if="scope.row.deType === 5"
-                    icon-class="field_location"
-                    class="field-icon-location"
-                  /> -->
                   </span>
                 </template>
               </el-table-column>
@@ -641,18 +627,18 @@ export default {
         this.openMessageSuccess('dataset.pls_slc_data_source', 'error')
         return
       }
-      if (!this.table.name || this.table.name === '') {
+      if (!this.param.name || this.param.name === '') {
         this.openMessageSuccess('dataset.pls_input_name', 'error')
         return
       }
-      if (this.table.name.length > 50) {
+      if (this.param.name.length > 50) {
         this.openMessageSuccess('dataset.char_can_not_more_50', 'error')
         return
       }
       this.parseVariable()
       const table = {
         id: this.param.tableId,
-        name: this.table.name,
+        name: this.param.name,
         sceneId: this.param.id,
         dataSourceId: this.dataSource,
         type: 'sql',
@@ -688,7 +674,7 @@ export default {
 
     resetComponent() {
       this.dataSource = ''
-      this.table.name = ''
+      this.param.name = ''
       this.sql = ''
       this.data = []
       this.fields = []

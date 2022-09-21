@@ -1,11 +1,5 @@
 <template>
   <div class="dataset-excel">
-    <!-- <el-button size="mini" @click="cancel">
-            {{ $t('dataset.cancel') }}
-          </el-button>
-          <el-button size="mini" type="primary" @click="save">
-            {{ $t('dataset.confirm') }}
-          </el-button> -->
     <p v-if="!showLeft" @click="showLeft = true" class="arrow-right">
       <i class="el-icon-d-arrow-right"></i>
     </p>
@@ -260,15 +254,6 @@ export default {
       defaultCheckedKeys: []
     }
   },
-  watch: {
-    defaultCheckedKeys(val) {
-      const excelNum = this.excelData.map((ele) => ele.id)
-      this.$emit(
-        'setTableNum',
-        val.filter((ele) => !excelNum.includes(ele)).length
-      )
-    }
-  },
   mounted() {
     window.onresize = () => {
       this.calHeight()
@@ -297,7 +282,9 @@ export default {
         this.defaultCheckedKeys.splice(index, 1)
       }
       this.validateName()
-      this.$emit('setTableNum', this.defaultCheckedKeys.length)
+      const labelList = this.$refs.tree.getCheckedNodes().map(ele => ele.excelLable)
+      const excelList = this.excelData.map(ele => ele.excelLable);
+      this.$emit('setTableNum', labelList.filter(ele => !excelList.includes(ele)).length)
     },
     nameExsitValidator(ele, checkList) {
       this.$set(
@@ -309,7 +296,9 @@ export default {
       )
     },
     validateName() {
-      const checkList = this.$refs.tree.getCheckedNodes().map(ele => ele.datasetName)
+      const checkList = this.$refs.tree
+        .getCheckedNodes()
+        .map((ele) => ele.datasetName)
       this.excelData
         .reduce((pre, next) => pre.concat(next.sheets), [])
         .forEach((ele, index) => {
@@ -343,7 +332,7 @@ export default {
           }
         }
       }
-      this.validateName();
+      this.validateName()
     },
     calHeight() {
       const that = this
