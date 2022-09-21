@@ -237,6 +237,7 @@ export default {
       this.$nextTick(() => {
         bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
       })
+      this.$store.commit('setPanelStatus',false)
     },
     closePanelEdit() {
       if (this.changeTimes === 0 || this.snapshotIndex === this.lastSaveSnapshotIndex) { // 已保存
@@ -244,6 +245,8 @@ export default {
       } else {
         this.closePanelVisible = true
       }
+
+      this.$store.commit('setPanelStatus',false)
     },
     goFile() {
       this.$refs.files.click()

@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 
-export function basePieOption(chart_option, chart,cstyle = {}) {
+export function basePieOption(chart_option, chart, cstyle = {}) {
   console.log('chart data pie: ', chart)
   // 处理shape attr
   let customAttr = {}
@@ -10,12 +10,17 @@ export function basePieOption(chart_option, chart,cstyle = {}) {
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
+    console.log('----------数据-----', customAttr, chart_option, chart)
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
     // tooltip
     if (customAttr.tooltip) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
-      
+
       chart_option.tooltip = tooltip
     }
   }
@@ -54,11 +59,11 @@ export function basePieOption(chart_option, chart,cstyle = {}) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart,cstyle)
+  componentStyle(chart_option, chart, cstyle)
   return chart_option
 }
 
-export function rosePieOption(chart_option, chart,cstyle = {}) {
+export function rosePieOption(chart_option, chart, cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -107,7 +112,7 @@ export function rosePieOption(chart_option, chart,cstyle = {}) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart,cstyle)
+  componentStyle(chart_option, chart, cstyle)
   return chart_option
 }
 
@@ -160,11 +165,11 @@ export function texturePieOption(chart_option, chart, cstyle = {}) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart,cstyle)
+  componentStyle(chart_option, chart, cstyle)
   return chart_option
 }
 
-export function newHartOption(chart_option, chart,cstyle = {}) {
+export function newHartOption(chart_option, chart, cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -213,7 +218,7 @@ export function newHartOption(chart_option, chart,cstyle = {}) {
     }
   }
   // console.log(chart_option);
-  componentStyle(chart_option, chart,cstyle)
+  componentStyle(chart_option, chart, cstyle)
   return chart_option
 }
 
