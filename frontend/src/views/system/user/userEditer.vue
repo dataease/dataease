@@ -299,13 +299,6 @@ export default {
             trigger: "blur",
           },
         ],
-        roleIds: [
-          {
-            required: true,
-            message: this.$t("user.role_mandatory"),
-            trigger: "change",
-          },
-        ],
         deptId: [],
         gender: [],
         enabled: [{ required: true, trigger: "change" }],
