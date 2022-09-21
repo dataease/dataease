@@ -116,3 +116,8 @@ INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_typ
 INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`, `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`, `copy_id`) VALUES ('98d77463-38bb-11ed-8383-0242ac130005', 'f4e07708-26f1-4f42-9a4a-8e6dae63353c', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'admin', 1663661389000, NULL, NULL, NULL);
 INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`, `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`, `copy_id`) VALUES ('98d77856-38bb-11ed-8383-0242ac130005', 'f4e07708-26f1-4f42-9a4a-8e6dae63353c', 'i18n_auth_use', 1, 1, 'use', '基础权限-使用', 'admin', 1663661389000, NULL, NULL, NULL);
 
+ALTER TABLE `sys_user_assist`
+    ADD COLUMN `wecom_id` varchar(255) NULL COMMENT '企业微信账号' AFTER `need_first_noti`,
+    ADD COLUMN `dingtalk_id` varchar(255) NULL COMMENT '钉钉账号' AFTER `wecom_id`,
+    ADD COLUMN `lark_id` varchar(255) NULL COMMENT '飞书账号' AFTER `dingtalk_id`;
+
