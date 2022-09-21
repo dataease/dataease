@@ -1,12 +1,13 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle, seniorCfg } from '../common/common'
 
-export function baseLineOption(chart_option, chart,cstyle = {}) {
-  console.log('echarts,line',chart)
+export function baseLineOption(chart_option, chart, cstyle = {}) {
+  console.log('echarts,line------------', chart_option, chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
+    console.log('chart.customAttr!!!!!!!!!!!', customAttr)
     if (customAttr.color) {
       chart_option.color = customAttr.color.colors
     }
@@ -17,7 +18,12 @@ export function baseLineOption(chart_option, chart,cstyle = {}) {
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
       chart_option.tooltip = tooltip
     }
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
   }
+  // chart_option.grid =
   // 处理data
   if (chart.data) {
     chart_option.title.text = chart.title
@@ -56,13 +62,13 @@ export function baseLineOption(chart_option, chart,cstyle = {}) {
   }
   console.log('图表数据修改===+++++++++++++++', chart_option, chart)
   // console.log(chart_option);
-  componentStyle(chart_option, chart,cstyle)
+  componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
 }
 
-export function stackLineOption(chart_option, chart,cstyle = {}) {
-  baseLineOption(chart_option, chart,cstyle)
+export function stackLineOption(chart_option, chart, cstyle = {}) {
+  baseLineOption(chart_option, chart, cstyle)
 
   let customAttr = {}
   if (chart.customAttr) {
@@ -70,10 +76,10 @@ export function stackLineOption(chart_option, chart,cstyle = {}) {
   }
   // ext
   // chart_option.tooltip.trigger = 'axis'
-  chart_option.series.forEach(function(s,i) {
-    console.log('stack............',s,i)
+  chart_option.series.forEach(function(s, i) {
+    console.log('stack............', s, i)
     s.stack = 'stack'
-    
+
     s.itemStyle = {
       color: {
         type: 'linear',
@@ -82,7 +88,7 @@ export function stackLineOption(chart_option, chart,cstyle = {}) {
         x2: 0,
         y2: 0,
         colorStops: [{
-          offset: 0,  // 0% 的颜色
+          offset: 0, // 0% 的颜色
           color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
         }, {
           offset: 1, // 100% 的颜色
@@ -95,7 +101,7 @@ export function stackLineOption(chart_option, chart,cstyle = {}) {
   return chart_option
 }
 
-export function heatMapOption(chart_option, chart,cstyle = {}) {
+export function heatMapOption(chart_option, chart, cstyle = {}) {
   console.log('数据改变的值++++++++++', chart_option, chart)
   let customAttr = {}
 
@@ -181,7 +187,7 @@ export function heatMapOption(chart_option, chart,cstyle = {}) {
     }
   }
   console.log('最种的渲染样式=====chart_option', chart_option)
-  componentStyle(chart_option, chart,cstyle)
+  componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
 }

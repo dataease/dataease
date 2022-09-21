@@ -51,6 +51,12 @@ export const DEFAULT_SIZE = {
   tableHeaderAlign: 'left',
   tableItemAlign: 'right',
 
+  spaceleft: 10,
+  spaceRight: 10,
+  spaceTop: 32,
+  spaceBottom: 30,
+  containLabel: true,
+
   wordMin: 10,
   wordMax: 32,
   wordShape: 'pentagon',
@@ -94,7 +100,7 @@ export const DEFAULT_LABEL = {
   progressFontSize: '14',
   progressFontColor: '#000000',
   progressInside: true,
-  strokeWidth:  20,
+  strokeWidth: 20,
   progressColor: '#409EFF',
 
   repulsion: 100,
@@ -114,7 +120,7 @@ export const DEFAULT_LABEL = {
   popContentColor: '#FFFFFF',
   popContentHeight: 25,
   // popContentBorderBottomStyle: 'dashed',
-  popContentBorderBottomColor: '#ffffff',
+  popContentBorderBottomColor: '#ffffff'
   // popContentBorderBottomWidth: 1,
 }
 export const DEFAULT_TOOLTIP = {
@@ -181,7 +187,7 @@ export const DEFAULT_LEGEND_STYLE = {
   },
   itemGap: 10,
   marginTop: 5,
-  marginButtom: 5,
+  marginButtom: 5
 }
 export const DEFAULT_XAXIS_STYLE = {
   show: true,
@@ -191,7 +197,7 @@ export const DEFAULT_XAXIS_STYLE = {
   nameTextStyle: {
     color: '#333333',
     fontSize: 12,
-    lineHeight: 40,
+    lineHeight: 40
   },
   axisLabel: {
     show: true,
@@ -669,7 +675,7 @@ export const BASE_LINE = {
 }
 
 export const BASE_PICTORIAL_BAR = {
-  animation: false, //去除加载时缓动动画
+  animation: false, // 去除加载时缓动动画
   title: {
     text: '',
     textStyle: {
@@ -684,7 +690,7 @@ export const BASE_PICTORIAL_BAR = {
     data: [],
     textStyle: {
       color: '#ccc'
-    },
+    }
   },
   xAxis: {
     data: [],
@@ -695,12 +701,12 @@ export const BASE_PICTORIAL_BAR = {
       color: '#333333',
       fontSize: '12',
       formatter: '{value}'
-    },
+    }
   },
   yAxis: {
-    type: 'value',
+    type: 'value'
   },
-  series: [],
+  series: []
   // dataZoom: [
   //   {
   //     type: 'slider',
@@ -1290,7 +1296,7 @@ export const BASE_WORD_CLOUD = {
     height: '90%',
     textStyle: { // 词云中文字的样式， normal 是初始的样式， emphasis 是鼠标移到文字上的样式。
       normal: {
-        color: function () {
+        color: function() {
           // Random color
           return 'rgb(' + [
             Math.round(Math.random() * 160),
