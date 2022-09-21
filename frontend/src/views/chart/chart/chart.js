@@ -382,7 +382,10 @@ export const DEFAULT_SPLIT = {
 }
 export const DEFAULT_FUNCTION_CFG = {
   sliderShow: false,
-  sliderRange: [0, 10]
+  sliderRange: [0, 10],
+  sliderBg: '#FFFFFF',
+  sliderFillBg: '#BCD6F1',
+  sliderTextClolor: '#999999'
 }
 export const DEFAULT_THRESHOLD = {
   gaugeThreshold: '',

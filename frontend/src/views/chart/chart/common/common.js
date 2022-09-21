@@ -192,6 +192,16 @@ export function componentStyle(chart_option, chart) {
   }
 }
 
+const hexToRgba = (hex, opacity) => {
+  let rgbaColor = ''
+  const reg = /^#[\da-f]{6}$/i
+  if (reg.test(hex)) {
+    rgbaColor = `rgba(${parseInt('0x' + hex.slice(1, 3))},${parseInt(
+      '0x' + hex.slice(3, 5)
+    )},${parseInt('0x' + hex.slice(5, 7))},${opacity})`
+  }
+  return rgbaColor
+}
 export function seniorCfg(chart_option, chart) {
   if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
     const senior = JSON.parse(chart.senior)
@@ -209,6 +219,26 @@ export function seniorCfg(chart_option, chart) {
             end: parseInt(senior.functionCfg.sliderRange[1])
           }
         ]
+        if (senior.functionCfg.sliderBg) {
+          chart_option.dataZoom[1].dataBackground = {
+            lineStyle: { color: reverseColor(senior.functionCfg.sliderBg), opacity: 0.3 },
+            areaStyle: { color: reverseColor(senior.functionCfg.sliderBg), opacity: 0.1 }
+          }
+        }
+        if (senior.functionCfg.sliderFillBg) {
+          chart_option.dataZoom[1].selectedDataBackground = {
+            lineStyle: { color: senior.functionCfg.sliderFillBg },
+            areaStyle: { color: senior.functionCfg.sliderFillBg }
+          }
+          const rgba = hexToRgba(senior.functionCfg.sliderFillBg, 0.5)
+          chart_option.dataZoom[1].fillerColor = rgba
+        }
+        if (senior.functionCfg.sliderTextClolor) {
+          chart_option.dataZoom[1].textStyle = { color: senior.functionCfg.sliderTextClolor }
+          const rgba = hexToRgba(senior.functionCfg.sliderTextClolor, 0.5)
+          chart_option.dataZoom[1].handleStyle = { color: rgba }
+        }
+
         if (chart.type.includes('horizontal')) {
           chart_option.dataZoom[0].yAxisIndex = [0]
           chart_option.dataZoom[1].yAxisIndex = [0]

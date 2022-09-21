@@ -8,13 +8,22 @@
         <el-form-item v-show="functionForm.sliderShow" :label="$t('chart.slider_range')+'(%)'" class="form-item form-item-slider">
           <el-slider v-model="functionForm.sliderRange" style="width: 90%" :min="0" :max="100" input-size="mini" range @change="changeFunctionCfg" />
         </el-form-item>
+        <el-form-item v-show="functionForm.sliderShow" :label="$t('chart.slider_bg')" class="form-item">
+          <el-color-picker v-model="functionForm.sliderBg" class="color-picker-style" :predefine="predefineColors" @change="changeFunctionCfg" />
+        </el-form-item>
+        <el-form-item v-show="functionForm.sliderShow" :label="$t('chart.slider_fill_bg')" class="form-item">
+          <el-color-picker v-model="functionForm.sliderFillBg" class="color-picker-style" :predefine="predefineColors" @change="changeFunctionCfg" />
+        </el-form-item>
+        <el-form-item v-show="functionForm.sliderShow" :label="$t('chart.slider_text_color')" class="form-item">
+          <el-color-picker v-model="functionForm.sliderTextClolor" class="color-picker-style" :predefine="predefineColors" @change="changeFunctionCfg" />
+        </el-form-item>
       </el-form>
     </el-col>
   </div>
 </template>
 
 <script>
-import { DEFAULT_FUNCTION_CFG } from '../../chart/chart'
+import { DEFAULT_FUNCTION_CFG, COLOR_PANEL } from '../../chart/chart'
 
 export default {
   name: 'FunctionCfg',
@@ -26,7 +35,8 @@ export default {
   },
   data() {
     return {
-      functionForm: JSON.parse(JSON.stringify(DEFAULT_FUNCTION_CFG))
+      functionForm: JSON.parse(JSON.stringify(DEFAULT_FUNCTION_CFG)),
+      predefineColors: COLOR_PANEL
     }
   },
   watch: {
