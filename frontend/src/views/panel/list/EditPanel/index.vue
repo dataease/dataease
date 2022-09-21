@@ -17,7 +17,7 @@
         <el-input v-model="editPanel.panelInfo.name" clearable size="mini" />
       </el-col>
     </el-row>
-    <el-row v-if="inputType === 'new'" style="margin-top: 5px;">
+    <el-row v-if="editPanel.optType==='new' && editPanel.panelInfo.nodeType==='panel' && inputType === 'new'" style="margin-top: 5px;">
       <el-form ref="form" class="panel_form" :model="panelObj" label-width="120px" label-position="left">
         <el-col :span="12">
           <el-form-item :label="$t('chart.canvasWith')">
