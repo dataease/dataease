@@ -95,9 +95,15 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
     if (customAttr.tooltip) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
+
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
       chart_option.tooltip = tooltip
     }
+    console.log('customAttr____________', chart_option, chart)
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
   }
   // 处理data
   if (chart.data) {
@@ -177,6 +183,11 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
       chart_option.tooltip = tooltip
     }
+    console.log('(((((((((((((((((((((((((', customAttr, chart_option, chart)
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
   }
 
   // 处理data
