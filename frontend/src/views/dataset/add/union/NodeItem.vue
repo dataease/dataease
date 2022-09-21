@@ -319,6 +319,7 @@ export default {
   height: 26px;
   line-height: 26px;
   border: #dcdfe6 solid 1px;
+  background: #fff;
   min-width: 160px;
   color: var(--TextPrimary, #606266);
   font-size: 14px;

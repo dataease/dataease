@@ -528,7 +528,19 @@ export default {
     }
   },
   activated() {
-    this.nodeClick(this.$refs.datasetTreeRef.getCurrentNode())
+    const dataset = this.$refs.datasetTreeRef?.getCurrentNode()
+    if (!dataset) return
+    queryAuthModel({ modelType: 'dataset' }, true).then((res) => {
+      localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+      this.tData = res.data
+      this.$nextTick(() => {
+        this.$refs.datasetTreeRef?.filter(this.filterText)
+        if (dataset) {
+          this.$refs.datasetTreeRef?.setCurrentNode(dataset)
+          this.nodeClick(dataset)
+        }
+      })
+    })
   },
   created() {
     this.kettleState()
@@ -749,7 +761,7 @@ export default {
           this.tData = res.data
         }
         this.$nextTick(() => {
-          this.$refs.datasetTreeRef.filter(this.filterText)
+          this.$refs.datasetTreeRef?.filter(this.filterText)
         })
       })
     },

@@ -49,7 +49,7 @@
       :visible.sync="createDataset"
       width="600px"
       v-loading="loading"
-      :before-close="beforeClose"
+      :before-close="back"
     >
       <el-form
         ref="datasetForm"
@@ -117,7 +117,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <deBtn secondary @click="close">{{ $t('dataset.cancel') }}</deBtn>
+        <deBtn secondary @click="back">{{ $t('dataset.cancel') }}</deBtn>
         <deBtn type="primary" @click="saveDataset"
           >{{ $t('dataset.confirm') }}
         </deBtn>
@@ -285,9 +285,6 @@ export default {
       if (!value) return true
       return data.name.indexOf(value) !== -1
     },
-    beforeClose() {
-      this.close()
-    },
     nameRepeat(value) {
       if (!this.nameList || this.nameList.length === 0) {
         return false
@@ -309,9 +306,6 @@ export default {
       this.nameExsit = this.nameList.some(
         (name) => name === this.table.name && name !== this.originName
       )
-    },
-    close() {
-      this.$router.back()
     },
     saveDataset() {
       this.$refs.datasetForm.validate((result) => {
