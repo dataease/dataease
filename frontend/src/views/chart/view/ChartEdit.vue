@@ -1817,9 +1817,9 @@ export default {
       viewEditSave(this.panelInfo.id, viewSave)
 
       if (modifyName === 'color') {
-        bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.param.id, viewInfo: view, refreshProp: 'customAttr' })
+        bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.view.id, viewInfo: view, refreshProp: 'customAttr' })
       } else {
-        bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.param.id, viewInfo: view })
+        bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.view.id, viewInfo: view })
       }
     },
 

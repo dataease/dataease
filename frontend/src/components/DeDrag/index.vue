@@ -815,11 +815,13 @@ export default {
       e.stopPropagation()
       // 此处阻止冒泡 但是外层需要获取pageX pageY
       this.element.auxiliaryMatrix && this.$emit('elementMouseDown', e)
-      this.$store.commit('setCurComponent', { component: this.element, index: this.index })
       // 移动端组件点击自动置顶
       this.mobileLayoutStatus && this.$store.commit('topComponent')
       eventsFor = events.mouse
       this.elementDown(e)
+      this.$nextTick(()=>{
+        this.$store.commit('setCurComponent', { component: this.element, index: this.index })
+      })
     },
     // 元素按下
     elementDown(e) {
