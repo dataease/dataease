@@ -132,11 +132,10 @@ export default {
   },
   commons: {
 
-
     unlock: '解鎖',
     unlock_success: '解鎖成功',
 
-    uninstall:'卸载',
+    uninstall: '卸载',
 
     no_result: '没有找到相关内容',
     manage_member: '管理成員',
@@ -674,7 +673,13 @@ export default {
     filter: '篩選',
     list: '列表項',
     list_info: '請選擇列表中要展示的信息',
-    sure_delete: '確定刪除該用戶嗎？'
+    sure_delete: '確定刪除該用戶嗎？',
+    wecom_id: '企業微信賬號',
+    dingtalk_id: '釘釘賬號',
+    lark_id: '飛書賬號',
+    input_wecom_id: '請輸入企業微信賬號',
+    input_dingtalk_id: '請輸入釘釘賬號',
+    input_lark_id: '請輸入飛書賬號'
   },
   ldap: {
     url: 'LDAP地址',

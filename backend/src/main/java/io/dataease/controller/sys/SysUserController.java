@@ -24,6 +24,7 @@ import io.dataease.controller.sys.request.SysUserStateRequest;
 import io.dataease.controller.sys.response.RoleUserItem;
 import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.plugins.common.base.domain.SysUser;
+import io.dataease.plugins.common.base.domain.SysUserAssist;
 import io.dataease.service.sys.SysRoleService;
 import io.dataease.service.sys.SysUserService;
 import io.swagger.annotations.Api;
@@ -66,7 +67,7 @@ public class SysUserController {
             @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
     public Pager<List<SysUserGridResponse>> userGrid(@PathVariable int goPage, @PathVariable int pageSize,
-            @RequestBody KeyGridRequest request) {
+                                                     @RequestBody KeyGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<SysUserGridResponse> users = sysUserService.query(request);
         users.forEach(user -> {
@@ -87,9 +88,9 @@ public class SysUserController {
     @RequiresPermissions("user:add")
     @PostMapping("/create")
     @DeLog(
-        operatetype = SysLogConstants.OPERATE_TYPE.CREATE,
-        sourcetype = SysLogConstants.SOURCE_TYPE.USER,
-        value = "userId"
+            operatetype = SysLogConstants.OPERATE_TYPE.CREATE,
+            sourcetype = SysLogConstants.SOURCE_TYPE.USER,
+            value = "userId"
     )
     public void create(@RequestBody SysUserCreateRequest request) {
         sysUserService.save(request);
@@ -99,9 +100,9 @@ public class SysUserController {
     @RequiresPermissions("user:edit")
     @PostMapping("/update")
     @DeLog(
-        operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
-        sourcetype = SysLogConstants.SOURCE_TYPE.USER,
-        value = "userId"
+            operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+            sourcetype = SysLogConstants.SOURCE_TYPE.USER,
+            value = "userId"
     )
     public void update(@RequestBody SysUserCreateRequest request) {
         sysUserService.update(request);
@@ -112,8 +113,8 @@ public class SysUserController {
     @PostMapping("/delete/{userId}")
     @ApiImplicitParam(paramType = "path", value = "用户ID", name = "userId", required = true, dataType = "Integer")
     @DeLog(
-        operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
-        sourcetype = SysLogConstants.SOURCE_TYPE.USER
+            operatetype = SysLogConstants.OPERATE_TYPE.DELETE,
+            sourcetype = SysLogConstants.SOURCE_TYPE.USER
     )
     public void delete(@PathVariable("userId") Long userId) {
         sysUserService.delete(userId);
@@ -124,9 +125,9 @@ public class SysUserController {
     @RequiresRoles("1")
     @PostMapping("/updateStatus")
     @DeLog(
-        operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
-        sourcetype = SysLogConstants.SOURCE_TYPE.USER,
-        value = "userId"
+            operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+            sourcetype = SysLogConstants.SOURCE_TYPE.USER,
+            value = "userId"
     )
     public void updateStatus(@RequestBody SysUserStateRequest request) {
         sysUserService.updateStatus(request);
@@ -201,7 +202,7 @@ public class SysUserController {
             @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
     public Pager<List<SysRole>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize,
-            @RequestBody BaseGridRequest request) {
+                                         @RequestBody BaseGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         Pager<List<SysRole>> listPager = PageUtils.setPageInfo(page, sysRoleService.query(request));
         return listPager;
@@ -224,6 +225,11 @@ public class SysUserController {
         sysUser.setUsername(username);
         SysUser one = sysUserService.findOne(sysUser);
         authUserService.unlockAccount(username, one.getFrom());
+    }
+
+    @PostMapping("/assistInfo/{userId}")
+    public SysUserAssist assistInfo(@PathVariable("userId") Long userId) {
+        return sysUserService.assistInfo(userId);
     }
 
 }

@@ -134,7 +134,7 @@ export default {
 
     unlock: '解锁',
     unlock_success: '解锁成功',
-    uninstall:'卸载',
+    uninstall: '卸载',
 
     no_result: '没有找到相关内容',
     manage_member: '管理成员',
@@ -672,7 +672,13 @@ export default {
     filter: '筛选',
     list: '列表项',
     list_info: '请选择列表中要展示的信息',
-    sure_delete: '确定删除该用户吗？'
+    sure_delete: '确定删除该用户吗？',
+    wecom_id: '企业微信账号',
+    dingtalk_id: '钉钉账号',
+    lark_id: '飞书账号',
+    input_wecom_id: '请输入企业微信账号',
+    input_dingtalk_id: '请输入钉钉账号',
+    input_lark_id: '请输入飞书账号'
   },
   ldap: {
     url: 'LDAP地址',

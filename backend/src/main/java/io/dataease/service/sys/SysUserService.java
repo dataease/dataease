@@ -5,7 +5,6 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.ExtAuthService;
 import io.dataease.commons.exception.DEException;
 import io.dataease.controller.sys.request.*;
-import io.dataease.ext.ExtSysUserAssistMapper;
 import io.dataease.ext.ExtSysUserMapper;
 import io.dataease.ext.query.GridExample;
 import io.dataease.commons.constants.AuthConstants;
@@ -16,6 +15,7 @@ import io.dataease.controller.sys.response.SysUserGridResponse;
 import io.dataease.controller.sys.response.SysUserRole;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.*;
+import io.dataease.plugins.common.base.mapper.SysUserAssistMapper;
 import io.dataease.plugins.common.base.mapper.SysUserMapper;
 import io.dataease.plugins.common.base.mapper.SysUsersRolesMapper;
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
@@ -36,6 +36,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,8 +58,9 @@ public class SysUserService {
     @Resource
     private ExtAuthService extAuthService;
 
+
     @Resource
-    private ExtSysUserAssistMapper extSysUserAssistMapper;
+    private SysUserAssistMapper sysUserAssistMapper;
 
     @Resource
     private AuthUserService authUserService;
@@ -99,8 +101,15 @@ public class SysUserService {
         }
         int insert = sysUserMapper.insert(user);
         SysUser dbUser = findOne(user);
-        request.setUserId(dbUser.getUserId());
-        saveUserRoles(dbUser.getUserId(), request.getRoleIds());//插入用户角色关联
+        Long userId = dbUser.getUserId();
+        request.setUserId(userId);
+        saveUserRoles(userId, request.getRoleIds());//插入用户角色关联
+
+        SysUserAssist sysUserAssist = request.getSysUserAssist();
+        if (ObjectUtils.isNotEmpty(sysUserAssist) && (StringUtils.isNotBlank(sysUserAssist.getWecomId()) || StringUtils.isNotBlank(sysUserAssist.getDingtalkId()) || StringUtils.isNotBlank(sysUserAssist.getLarkId()))) {
+            saveAssist(userId, sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
+        }
+
         return insert;
     }
 
@@ -125,12 +134,12 @@ public class SysUserService {
             // oidc默认角色是普通员工
             List<Long> roleIds = new ArrayList<Long>();
             roleIds.add(2L);
-            saveUserRoles( dbUser.getUserId(), roleIds);
+            saveUserRoles(dbUser.getUserId(), roleIds);
         }
     }
 
     @Transactional
-    public void saveWecomCUser(Map<String, Object> userMap , String userId, String email) {
+    public void saveWecomCUser(Map<String, Object> userMap, String userId, String email) {
         long now = System.currentTimeMillis();
         SysUser sysUser = new SysUser();
 
@@ -148,6 +157,7 @@ public class SysUserService {
         sysUser.setIsAdmin(false);
         sysUser.setSub(userId);
         sysUserMapper.insert(sysUser);
+        Optional.ofNullable(findOne(sysUser)).ifPresent(u -> saveAssist(u.getUserId(), u.getUsername(), null, null));
 
     }
 
@@ -170,7 +180,7 @@ public class SysUserService {
         sysUser.setSub(dingUserEntity.getUnionid());
         sysUser.setPhone(dingUserEntity.getMobile());
         sysUserMapper.insert(sysUser);
-
+        Optional.ofNullable(findOne(sysUser)).ifPresent(u -> saveAssist(u.getUserId(), null, u.getUsername(), null));
     }
 
     @Transactional
@@ -192,7 +202,7 @@ public class SysUserService {
         sysUser.setSub(larkUserInfo.getSub());
         sysUser.setPhone(larkUserInfo.getMobile());
         sysUserMapper.insert(sysUser);
-
+        Optional.ofNullable(findOne(sysUser)).ifPresent(u -> saveAssist(u.getUserId(), null, null, u.getUsername()));
     }
 
     @Transactional
@@ -215,7 +225,7 @@ public class SysUserService {
             // oidc默认角色是普通员工
             List<Long> roleIds = new ArrayList<Long>();
             roleIds.add(2L);
-            saveUserRoles( dbUser.getUserId(), roleIds);
+            saveUserRoles(dbUser.getUserId(), roleIds);
         }
     }
 
@@ -247,7 +257,7 @@ public class SysUserService {
             sysUserMapper.insert(sysUser);
             SysUser dbUser = findOne(sysUser);
             if (null != dbUser && null != dbUser.getUserId()) {
-                saveUserRoles( dbUser.getUserId(), request.getRoleIds());
+                saveUserRoles(dbUser.getUserId(), request.getRoleIds());
             }
         });
     }
@@ -285,7 +295,13 @@ public class SysUserService {
         saveUserRoles(user.getUserId(), request.getRoleIds());//再插入角色关联
         if (ObjectUtils.isEmpty(user.getDeptId())) user.setDeptId(0L);
         authUserService.clearCache(user.getUserId());
-        return sysUserMapper.updateByPrimaryKeySelective(user);
+        int result = sysUserMapper.updateByPrimaryKeySelective(user);
+
+        SysUserAssist sysUserAssist = request.getSysUserAssist();
+        if (ObjectUtils.isNotEmpty(sysUserAssist) && (StringUtils.isNotBlank(sysUserAssist.getWecomId()) || StringUtils.isNotBlank(sysUserAssist.getDingtalkId()) || StringUtils.isNotBlank(sysUserAssist.getLarkId()))) {
+            saveAssist(user.getUserId(), sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
+        }
+        return result;
     }
 
     /**
@@ -308,6 +324,7 @@ public class SysUserService {
      * 更新用户基本信息
      * 只允许修改 email, nickname, phone
      * 防止此接口被恶意利用更改不允许更改的信息，新建SysUser对象并只设置部分值
+     *
      * @param request
      * @return
      */
@@ -426,33 +443,34 @@ public class SysUserService {
         SysUserExample example = new SysUserExample();
         example.createCriteria().andUsernameEqualTo(userName);
         List<SysUser> users = sysUserMapper.selectByExample(example);
-        if(CollectionUtils.isNotEmpty(users)) {
-            throw new RuntimeException("用户ID【"+userName+"】已存在,请联系管理员");
+        if (CollectionUtils.isNotEmpty(users)) {
+            throw new RuntimeException("用户ID【" + userName + "】已存在,请联系管理员");
         }
     }
+
     public void validateExistUser(String userName, String nickName, String email) {
         SysUserExample example = new SysUserExample();
         if (StringUtils.isNotBlank(userName)) {
             example.createCriteria().andUsernameEqualTo(userName);
             List<SysUser> users = sysUserMapper.selectByExample(example);
-            if(CollectionUtils.isNotEmpty(users)) {
-                throw new RuntimeException("用户ID【"+userName+"】已存在,请联系管理员");
+            if (CollectionUtils.isNotEmpty(users)) {
+                throw new RuntimeException("用户ID【" + userName + "】已存在,请联系管理员");
             }
         }
 
         if (StringUtils.isNotBlank(nickName)) {
             example.createCriteria().andNickNameEqualTo(nickName);
             List<SysUser> users = sysUserMapper.selectByExample(example);
-            if(CollectionUtils.isNotEmpty(users)) {
-                throw new RuntimeException("用户姓名【"+nickName+"】已存在,请联系管理员");
+            if (CollectionUtils.isNotEmpty(users)) {
+                throw new RuntimeException("用户姓名【" + nickName + "】已存在,请联系管理员");
             }
         }
         example.clear();
         if (StringUtils.isNotBlank(email)) {
             example.createCriteria().andEmailEqualTo(email);
             List<SysUser> users = sysUserMapper.selectByExample(example);
-            if(CollectionUtils.isNotEmpty(users)) {
-                throw new RuntimeException("用户邮箱【"+email+"】已存在,请联系管理员");
+            if (CollectionUtils.isNotEmpty(users)) {
+                throw new RuntimeException("用户邮箱【" + email + "】已存在,请联系管理员");
             }
         }
     }
@@ -510,16 +528,43 @@ public class SysUserService {
     }
 
     public boolean needPwdNoti(Long userId) {
-        SysUserAssist userAssist = extSysUserAssistMapper.query(userId);
+        SysUserAssist userAssist = sysUserAssistMapper.selectByPrimaryKey(userId);
         return ObjectUtils.isEmpty(userAssist) || userAssist.getNeedFirstNoti();
     }
 
     public void saveUserAssist(Boolean noti) {
         Long userId = AuthUtils.getUser().getUserId();
+        SysUserAssist existAssist = sysUserAssistMapper.selectByPrimaryKey(userId);
+        if (ObjectUtils.isNotEmpty(existAssist)) {
+            existAssist.setNeedFirstNoti(noti);
+            sysUserAssistMapper.updateByPrimaryKey(existAssist);
+            return;
+        }
         SysUserAssist sysUserAssist = new SysUserAssist();
         sysUserAssist.setUserId(userId);
         sysUserAssist.setNeedFirstNoti(noti);
-        extSysUserAssistMapper.save(sysUserAssist);
+        sysUserAssistMapper.insertSelective(sysUserAssist);
+    }
+
+    public void saveAssist(Long userId, String wecomId, String dingtlkId, String larkId) {
+        SysUserAssist existAssist = sysUserAssistMapper.selectByPrimaryKey(userId);
+        if (ObjectUtils.isNotEmpty(existAssist)) {
+            existAssist.setWecomId(wecomId);
+            existAssist.setDingtalkId(dingtlkId);
+            existAssist.setLarkId(larkId);
+            sysUserAssistMapper.updateByPrimaryKey(existAssist);
+            return;
+        }
+        SysUserAssist sysUserAssist = new SysUserAssist();
+        sysUserAssist.setUserId(userId);
+        sysUserAssist.setWecomId(wecomId);
+        sysUserAssist.setDingtalkId(dingtlkId);
+        sysUserAssist.setLarkId(larkId);
+        sysUserAssistMapper.insert(sysUserAssist);
+    }
+
+    public SysUserAssist assistInfo(Long userId) {
+        return sysUserAssistMapper.selectByPrimaryKey(userId);
     }
 
 }

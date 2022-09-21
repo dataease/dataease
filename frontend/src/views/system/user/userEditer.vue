@@ -9,7 +9,7 @@
     :before-close="reset"
   >
     <div v-if="formType === 'add'" class="editer-form-title">
-      <i class="el-icon-info"></i>
+      <i class="el-icon-info" />
       <span class="pwd" type="text">{{
         $t("commons.default_pwd") + "：" + defaultPWD
       }}</span>
@@ -36,16 +36,16 @@
         <el-col :span="12">
           <el-form-item :label="$t('commons.nick_name')" prop="nickName">
             <el-input
-              :placeholder="$t('user.input_name')"
               v-model="form.nickName"
+              :placeholder="$t('user.input_name')"
             />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="ID" prop="username">
             <el-input
-              :placeholder="$t('user.input_id')"
               v-model="form.username"
+              :placeholder="$t('user.input_id')"
               :disabled="formType !== 'add'"
             />
           </el-form-item>
@@ -55,24 +55,24 @@
         <el-col :span="12">
           <el-form-item :label="$t('commons.email')" prop="email">
             <el-input
-              :placeholder="$t('user.input_email')"
               v-model="form.email"
+              :placeholder="$t('user.input_email')"
             />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item :label="$t('commons.mobile_phone_number')" prop="phone">
             <el-input
-              :placeholder="$t('commons.mobile_phone')"
               v-model="form.phone"
+              :placeholder="$t('commons.mobile_phone')"
               class="input-with-select"
             >
               <el-select
-                v-model="form.phonePrefix"
                 slot="prepend"
+                v-model="form.phonePrefix"
                 :placeholder="$t('fu.search_bar.please_select')"
               >
-                <el-option label="+86" value="+86"></el-option>
+                <el-option label="+86" value="+86" />
               </el-select>
             </el-input>
           </el-form-item>
@@ -82,14 +82,13 @@
         <el-col :span="12">
           <el-form-item :label="$t('commons.gender')" prop="gender">
             <el-select
-              class="form-gender-select"
               v-model="form.gender"
+              class="form-gender-select"
               :placeholder="$t('user.select_gender')"
             >
-              <el-option :label="$t('commons.man')" value="男"> </el-option>
-              <el-option :label="$t('commons.woman')" value="女"> </el-option>
-              <el-option :label="$t('commons.keep_secret')" value="保密">
-              </el-option>
+              <el-option :label="$t('commons.man')" value="男" />
+              <el-option :label="$t('commons.woman')" value="女" />
+              <el-option :label="$t('commons.keep_secret')" value="保密" />
             </el-select>
           </el-form-item>
         </el-col>
@@ -100,37 +99,37 @@
             prop="deptId"
           >
             <el-popover
-            placement="bottom"
-            popper-class="user-popper dept"
-            width="384"
-            trigger="click"
-          >
-            <el-tree
-              v-if="dialogVisible"
-              :load="loadNode"
-              :lazy="true"
-              :expand-on-click-node="false"
-              :data="depts"
-              :props="defaultProps"
-              @node-click="handleNodeClick"
-            ></el-tree>
-
-            <el-select
-              ref="roleSelect"
-              v-model="form.deptId"
-              clearable
-              slot="reference"
-              class="form-gender-select"
-              popper-class="tree-select"
-              :placeholder="$t('commons.please_select')"
+              placement="bottom"
+              popper-class="user-popper dept"
+              width="384"
+              trigger="click"
             >
-            <el-option
-              v-for="item in selectDepts"
-              :key="item.label"
-              :label="item.label"
-              :value="item.id"
-            />
-            </el-select>
+              <el-tree
+                v-if="dialogVisible"
+                :load="loadNode"
+                :lazy="true"
+                :expand-on-click-node="false"
+                :data="depts"
+                :props="defaultProps"
+                @node-click="handleNodeClick"
+              />
+
+              <el-select
+                ref="roleSelect"
+                slot="reference"
+                v-model="form.deptId"
+                clearable
+                class="form-gender-select"
+                popper-class="tree-select"
+                :placeholder="$t('commons.please_select')"
+              >
+                <el-option
+                  v-for="item in selectDepts"
+                  :key="item.label"
+                  :label="item.label"
+                  :value="item.id"
+                />
+              </el-select>
             </el-popover>
           </el-form-item>
         </el-col>
@@ -165,14 +164,24 @@
           />
         </el-select>
       </el-form-item>
+
+      <el-form-item v-show="isPluginLoaded && wecomOpen" :label="$t('user.wecom_id')">
+        <el-input v-model="form.sysUserAssist.wecomId" :placeholder="$t('user.input_wecom_id')" />
+      </el-form-item>
+      <el-form-item v-show="isPluginLoaded && dingTalkOpen" :label="$t('user.dingtalk_id')">
+        <el-input v-model="form.sysUserAssist.dingtalkId" :placeholder="$t('user.input_dingtalk_id')" />
+      </el-form-item>
+      <el-form-item v-show="isPluginLoaded && larkOpen" :label="$t('user.lark_id')">
+        <el-input v-model="form.sysUserAssist.larkId" :placeholder="$t('user.input_lark_id')" />
+      </el-form-item>
+
       <el-form-item :label="$t('commons.status')" prop="enabled">
         <el-switch
-          :disabled="formType !== 'add' && form.isAdmin"
           v-model="form.enabled"
+          :disabled="formType !== 'add' && form.isAdmin"
           :active-value="1"
           :inactive-value="0"
-        >
-        </el-switch>
+        />
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -187,280 +196,328 @@
 </template>
 
 <script>
-import { PHONE_REGEX } from "@/utils/validate";
-import { getDeptTree, treeByDeptId } from "@/api/system/dept";
-import { addUser, editUser, allRoles } from "@/api/system/user";
-import { pluginLoaded, defaultPwd } from "@/api/user";
+import { PHONE_REGEX } from '@/utils/validate'
+import { getDeptTree, treeByDeptId } from '@/api/system/dept'
+import { addUser, editUser, allRoles, queryAssist } from '@/api/system/user'
+import { pluginLoaded, defaultPwd, wecomStatus, dingtalkStatus, larkStatus } from '@/api/user'
 export default {
   data() {
     return {
       defaultProps: {
-        children: "children",
-        label: "label",
-        isLeaf: "leaf",
+        children: 'children',
+        label: 'label',
+        isLeaf: 'leaf'
       },
       selectDepts: [],
       form: {
         roles: [
           {
-            id: "",
-          },
+            id: ''
+          }
         ],
+        sysUserAssist: {
+          wecomId: null,
+          dingtalkId: null,
+          larkId: null
+        }
       },
       rule: {
         username: [
           {
             required: true,
-            message: this.$t("user.id_mandatory"),
-            trigger: "blur",
+            message: this.$t('user.id_mandatory'),
+            trigger: 'blur'
           },
           {
             min: 1,
             max: 50,
-            message: this.$t("commons.input_limit", [1, 50]),
-            trigger: "blur",
+            message: this.$t('commons.input_limit', [1, 50]),
+            trigger: 'blur'
           },
           {
             required: true,
-            pattern: "^[^\u4e00-\u9fa5]+$",
-            message: this.$t("user.special_characters_are_not_supported"),
-            trigger: "blur",
-          },
+            pattern: '^[^\u4e00-\u9fa5]+$',
+            message: this.$t('user.special_characters_are_not_supported'),
+            trigger: 'blur'
+          }
         ],
         nickName: [
           {
             required: true,
-            message: this.$t("user.name_mandatory"),
-            trigger: "blur",
+            message: this.$t('user.name_mandatory'),
+            trigger: 'blur'
           },
           {
             min: 2,
             max: 50,
-            message: this.$t("commons.input_limit", [2, 50]),
-            trigger: "blur",
+            message: this.$t('commons.input_limit', [2, 50]),
+            trigger: 'blur'
           },
           {
             required: true,
-            message: this.$t("user.special_characters_are_not_supported"),
-            trigger: "blur",
-          },
+            message: this.$t('user.special_characters_are_not_supported'),
+            trigger: 'blur'
+          }
         ],
         phone: [
           {
             pattern: PHONE_REGEX,
-            message: this.$t("user.phone_format"),
-            trigger: "blur",
-          },
+            message: this.$t('user.phone_format'),
+            trigger: 'blur'
+          }
         ],
         email: [
           {
             required: true,
-            message: this.$t("user.email_mandatory"),
-            trigger: "blur",
+            message: this.$t('user.email_mandatory'),
+            trigger: 'blur'
           },
           {
             required: true,
             pattern: /^[a-zA-Z0-9_._-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
-            message: this.$t("user.email_format_is_incorrect"),
-            trigger: "blur",
-          },
+            message: this.$t('user.email_format_is_incorrect'),
+            trigger: 'blur'
+          }
         ],
         password: [
           {
             required: true,
-            message: this.$t("user.input_password"),
-            trigger: "blur",
+            message: this.$t('user.input_password'),
+            trigger: 'blur'
           },
           {
             required: true,
             pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,30}$/,
-            message: this.$t("member.password_format_is_incorrect"),
-            trigger: "blur",
-          },
+            message: this.$t('member.password_format_is_incorrect'),
+            trigger: 'blur'
+          }
         ],
         confirmPassword: [
           {
             required: true,
-            message: this.$t("user.input_password"),
-            trigger: "blur",
+            message: this.$t('user.input_password'),
+            trigger: 'blur'
           },
-          { required: true, validator: this.repeatValidator, trigger: "blur" },
+          { required: true, validator: this.repeatValidator, trigger: 'blur' }
         ],
         newPassword: [
           {
             required: true,
-            message: this.$t("user.input_password"),
-            trigger: "blur",
+            message: this.$t('user.input_password'),
+            trigger: 'blur'
           },
           {
             required: true,
             pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,30}$/,
-            message: this.$t("member.password_format_is_incorrect"),
-            trigger: "blur",
-          },
+            message: this.$t('member.password_format_is_incorrect'),
+            trigger: 'blur'
+          }
         ],
         deptId: [],
         gender: [],
-        enabled: [{ required: true, trigger: "change" }],
+        enabled: [{ required: true, trigger: 'change' }]
       },
       defaultForm: {
         id: null,
         username: null,
         nickName: null,
-        gender: "男",
+        gender: '男',
         email: null,
         enabled: 1,
         deptId: null,
         phone: null,
-        phonePrefix: "+86",
+        phonePrefix: '+86',
         roleIds: [2],
+        sysUserAssist: {
+          wecomId: null,
+          dingtalkId: null,
+          larkId: null
+        }
       },
       depts: [],
       roles: [],
       roleDatas: [],
       userRoles: [],
-      formType: "add",
+      formType: 'add',
       isPluginLoaded: false,
-      defaultPWD: "DataEase123..",
+      defaultPWD: 'DataEase123..',
       dialogVisible: false,
-    };
+      wecomOpen: false,
+      dingTalkOpen: false,
+      larkOpen: false,
+      assistInfo: {}
+    }
   },
   beforeCreate() {
     pluginLoaded().then((res) => {
-      this.isPluginLoaded = res.success && res.data;
-    });
+      this.isPluginLoaded = res.success && res.data
+    })
+    wecomStatus().then(res => {
+      if (res.success && res.data) {
+        this.wecomOpen = true
+      }
+    })
+
+    dingtalkStatus().then(res => {
+      if (res.success && res.data) {
+        this.dingTalkOpen = true
+      }
+    })
+
+    larkStatus().then(res => {
+      if (res.success && res.data) {
+        this.larkOpen = true
+      }
+    })
     defaultPwd().then((res) => {
       if (res && res.data) {
-        this.defaultPWD = res.data;
+        this.defaultPWD = res.data
       }
-    });
+    })
   },
   methods: {
     repeatValidator(rule, value, callback) {
       if (value !== this.form.password) {
-        callback(new Error(this.$t("member.inconsistent_passwords")));
+        callback(new Error(this.$t('member.inconsistent_passwords')))
       } else {
-        callback();
+        callback()
       }
     },
     create() {
-      this.formType = "add";
-      this.form = Object.assign({}, this.defaultForm);
+      this.formType = 'add'
+      this.form = Object.assign({}, JSON.parse(JSON.stringify(this.defaultForm)))
     },
     init(row) {
-      this.initRoles();
-      this.dialogVisible = true;
-      if (!row) {
-        this.create();
-        return;
-      }
-      const { deptId:id, deptName:label }  = (row.dept || {});
-      this.selectDepts = [{id, label}]
-      this.formType = "modify";
-      this.dialogVisible = true;
-      this.form = Object.assign({}, row);
-      this.form.password = "";
-      if (this.form.deptId === 0) {
-        this.form.deptId = null;
-      }
+      this.initRoles()
 
-      if (!this.form.phonePrefix) {
-        this.form.phonePrefix = '+86';
+      this.dialogVisible = true
+      if (!row) {
+        this.create()
+        return
       }
+      this.initAssistInfo(row.userId).then(res => {
+        this.assistInfo = res.data
+        const { deptId: id, deptName: label } = (row.dept || {})
+        this.selectDepts = [{ id, label }]
+        this.formType = 'modify'
+        this.dialogVisible = true
+        row.sysUserAssist = JSON.parse(JSON.stringify(this.defaultForm.sysUserAssist))
+        this.form = Object.assign({}, row)
+        this.form.password = ''
+        if (this.form.deptId === 0) {
+          this.form.deptId = null
+        }
+
+        if (!this.form.phonePrefix) {
+          this.form.phonePrefix = '+86'
+        }
+
+        if (this.assistInfo) {
+          const info = JSON.parse(JSON.stringify(this.assistInfo))
+          delete info.needFirstNoti
+          delete info.userId
+          const assist = Object.assign(JSON.parse(JSON.stringify(this.defaultForm.sysUserAssist)), info)
+          this.form.sysUserAssist = assist
+        }
+      })
     },
     initRoles() {
       allRoles().then((res) => {
-        this.roles = res.data;
-      });
+        this.roles = res.data
+      })
+    },
+    initAssistInfo(userId) {
+      return queryAssist(userId)
     },
     handleNodeClick({ id, label }) {
-      const [ dept ] = this.selectDepts;
+      const [dept] = this.selectDepts
       if (!dept || dept.id !== id) {
-        this.selectDepts = [{ id, label }];
+        this.selectDepts = [{ id, label }]
         this.form.deptId = id
         return
       }
 
       if (dept.id === id) {
-        this.selectDepts = [];
+        this.selectDepts = []
         this.form.deptId = null
       }
     },
     // 获取弹窗内部门数据
     treeByDeptId() {
       treeByDeptId(0).then((res) => {
-        this.depts =  (res.data || []).map(ele =>  {
-        return {
+        this.depts = (res.data || []).map(ele => {
+          return {
             ...ele,
-            leaf: !ele.hasChildren,
+            leaf: !ele.hasChildren
           }
         })
-      });
+      })
     },
-      loadNode(node, resolve) {
+    loadNode(node, resolve) {
       if (!this.depts.length) {
-        this.treeByDeptId();
-        return;
+        this.treeByDeptId()
+        return
       }
       getDeptTree(node.data.id).then((res) => {
         resolve(
           res.data.map((dept) => {
-            return this.normalizer(dept);
+            return this.normalizer(dept)
           })
-        );
-      });
+        )
+      })
     },
     normalizer(node) {
       return {
         id: node.deptId,
         label: node.name,
-        leaf: !node.hasChildren,
-      };
+        leaf: !node.hasChildren
+      }
     },
     deleteTag(value) {
       this.userRoles.forEach(
-        function (data, index) {
+        function(data, index) {
           if (data.id === value) {
-            this.userRoles.splice(index, value);
+            this.userRoles.splice(index, value)
           }
         }.bind(this)
-      );
+      )
     },
     changeRole(value) {
-      this.userRoles = [];
+      this.userRoles = []
       value.forEach(
-        function (data, index) {
-          const role = { id: data };
-          this.userRoles.push(role);
+        function(data, index) {
+          const role = { id: data }
+          this.userRoles.push(role)
         }.bind(this)
-      );
+      )
     },
     reset() {
-      this.depts = [];
-      this.$refs.createUserForm.resetFields();
-      this.dialogVisible = false;
+      this.depts = []
+      this.form.sysUserAssist = JSON.parse(JSON.stringify(this.defaultForm.sysUserAssist))
+      this.$refs.createUserForm.resetFields()
+      this.dialogVisible = false
     },
     save() {
       this.$refs.createUserForm.validate((valid) => {
         if (valid) {
           // !this.form.deptId && (this.form.deptId = 0)
-          const method = this.formType === "add" ? addUser : editUser;
+          const method = this.formType === 'add' ? addUser : editUser
           method(this.form).then((res) => {
-            this.$success(this.$t("commons.save_success"));
-            this.reset();
+            this.$success(this.$t('commons.save_success'))
+            this.reset()
             this.$emit('saved')
-          });
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     onCopy(e) {
-      this.$success(this.$t("commons.copy_success"));
+      this.$success(this.$t('commons.copy_success'))
     },
-    onError(e) {},
-  },
-};
+    onError(e) {}
+  }
+}
 </script>
 
 <style lang="scss" scoped>
