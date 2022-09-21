@@ -3,22 +3,23 @@ package io.dataease.controller.datasource;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
-import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.commons.utils.DeLogUtils;
-import io.dataease.dto.SysLogDTO;
-import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
+import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AuthUtils;
+import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.datasource.request.UpdataDsRequest;
 import io.dataease.controller.request.DatasourceUnionRequest;
 import io.dataease.controller.request.datasource.ApiDefinition;
-import io.dataease.dto.datasource.DBTableDTO;
-import io.dataease.service.datasource.DatasourceService;
 import io.dataease.dto.DatasourceDTO;
+import io.dataease.dto.SysLogDTO;
+import io.dataease.dto.datasource.DBTableDTO;
+import io.dataease.plugins.common.base.domain.Datasource;
+import io.dataease.service.datasource.DatasourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
@@ -43,19 +44,19 @@ public class DatasourceController {
     @ApiOperation("新增数据源")
     @PostMapping("/add")
     @DeLog(
-        operatetype = SysLogConstants.OPERATE_TYPE.CREATE,
-        sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
-        positionIndex = 0,positionKey = "type",
-        value = "id"
+            operatetype = SysLogConstants.OPERATE_TYPE.CREATE,
+            sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
+            positionIndex = 0, positionKey = "type",
+            value = "id"
     )
-    public Datasource addDatasource(@RequestBody Datasource datasource) throws Exception{
+    public Datasource addDatasource(@RequestBody Datasource datasource) throws Exception {
         return datasourceService.addDatasource(datasource);
     }
 
     @RequiresPermissions("datasource:read")
     @ApiOperation("数据源类型")
     @GetMapping("/types")
-    public Collection types() throws Exception{
+    public Collection types() throws Exception {
         return datasourceService.types();
     }
 
@@ -79,6 +80,16 @@ public class DatasourceController {
         DatasourceUnionRequest request = new DatasourceUnionRequest();
         request.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         return datasourceService.getDatasourceList(request);
+    }
+
+    @ApiOperation("查询数据源详情")
+    @PostMapping("/get/{id}")
+    public DatasourceDTO getDatasource(@PathVariable String id) throws Exception {
+        DatasourceUnionRequest request = new DatasourceUnionRequest();
+        request.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        request.setId(id);
+        List<DatasourceDTO> datasourceList = datasourceService.getDatasourceList(request);
+        return CollectionUtils.isNotEmpty(datasourceList) ? datasourceList.get(0) : null;
     }
 
     @ApiOperation("查询当前用户数据源")
@@ -105,12 +116,12 @@ public class DatasourceController {
     @ApiOperation("更新数据源")
     @PostMapping("/update")
     @DeLog(
-        operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
-        sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
-        positionIndex = 0,positionKey = "type",
-        value = "id"
+            operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+            sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
+            positionIndex = 0, positionKey = "type",
+            value = "id"
     )
-    public void updateDatasource(@RequestBody UpdataDsRequest dsRequest) throws Exception{
+    public void updateDatasource(@RequestBody UpdataDsRequest dsRequest) throws Exception {
         datasourceService.updateDatasource(dsRequest);
     }
 
@@ -124,7 +135,7 @@ public class DatasourceController {
     @ApiIgnore
     @PostMapping("/getSchema")
     public List<String> getSchema(@RequestBody Datasource datasource) throws Exception {
-       return datasourceService.getSchema(datasource);
+        return datasourceService.getSchema(datasource);
     }
 
     @ApiIgnore
