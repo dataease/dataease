@@ -2410,8 +2410,8 @@ export default {
     sameMonthLastYear: 'Same month last year'
   },
   wizard: {
-    welcome_title: 'Welcome To Use DataEase',
-    welcome_hint: 'Open source data visual analysis tool available to everyone',
+    welcome_title: 'Welcome Use DataEase',
+    welcome_hint: 'Easy open-source data visualization and analytics tool',
     demo_video: 'Demo',
     quick_start: 'Quick Start',
     online_document: 'Online',
