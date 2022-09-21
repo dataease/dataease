@@ -10,7 +10,7 @@
     <select id="query" parameterType="io.dataease.ext.query.GridExample" resultMap="BaseResultMapDTO">
         select datasource.*,
         authInfo.privileges as `privileges`
-         from (select GET_V_AUTH_MODEL_ID_P_USE (#{extendCondition}, 'link') cids) t,datasource
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{extendCondition}, 'link') cids) t,datasource
         left join (
         SELECT
         auth_source,
@@ -43,7 +43,7 @@
         ) authInfo
         on datasource.id = authInfo.auth_source
         <if test="_parameter != null">
-            <include refid="io.dataease.ext.query.GridSql.gridCondition" />
+            <include refid="io.dataease.ext.query.GridSql.gridCondition"/>
         </if>
         and FIND_IN_SET(datasource.id,cids)
         <if test="orderByClause != null">
@@ -54,7 +54,7 @@
         </if>
     </select>
 
-    <select id="queryUnion"  resultMap="BaseResultMapDTO">
+    <select id="queryUnion" resultMap="BaseResultMapDTO">
         select datasource.*,
         authInfo.privileges as `privileges`
         from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'link') cids) t,datasource
@@ -91,46 +91,43 @@
         on datasource.id = authInfo.auth_source
         <where>
             FIND_IN_SET(datasource.id,cids)
-        <if test="id != null">
-            id = #{id,jdbcType=VARCHAR}
-        </if>
-        <if test="name != null">
-            `name` like concat('%',#{name,jdbcType=VARCHAR},'%')
-        </if>
-        <if test="desc != null">
-            `desc` = #{desc,jdbcType=VARCHAR}
-        </if>
-        <if test="type != null">
-            `type` = #{type,jdbcType=VARCHAR}
-        </if>
-        <if test="createTime != null">
-            create_time = #{createTime,jdbcType=BIGINT}
-        </if>
-        <if test="updateTime != null">
-            update_time = #{updateTime,jdbcType=BIGINT}
-        </if>
-        <if test="configuration != null">
-            configuration = #{configuration,jdbcType=LONGVARCHAR}
-        </if>
+            <if test="id != null">
+                and id = #{id,jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                and `name` like concat('%',#{name,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="desc != null">
+                and `desc` = #{desc,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null">
+                and create_time = #{createTime,jdbcType=BIGINT}
+            </if>
+            <if test="updateTime != null">
+                and update_time = #{updateTime,jdbcType=BIGINT}
+            </if>
+            <if test="configuration != null">
+                and configuration = #{configuration,jdbcType=LONGVARCHAR}
+            </if>
         </where>
         <if test="sort == null">
             order by ${sort}
         </if>
     </select>
 
-    <select id="findByPanelId"  resultMap="BaseResultMapDTO">
-        SELECT DISTINCT
-            datasource.id,
-            datasource.`name`,
-            datasource.DESC,
-            datasource.type
-        FROM
-            chart_view
-                INNER JOIN panel_view ON chart_view.id = panel_view.chart_view_id
-                INNER JOIN dataset_table ON chart_view.table_id = dataset_table.id
-                INNER JOIN datasource ON dataset_table.data_source_id = datasource.id
-        WHERE
-            panel_view.panel_id = #{panelId}
+    <select id="findByPanelId" resultMap="BaseResultMapDTO">
+        SELECT DISTINCT datasource.id,
+                        datasource.`name`,
+                        datasource.DESC,
+                        datasource.type
+        FROM chart_view
+                 INNER JOIN panel_view ON chart_view.id = panel_view.chart_view_id
+                 INNER JOIN dataset_table ON chart_view.table_id = dataset_table.id
+                 INNER JOIN datasource ON dataset_table.data_source_id = datasource.id
+        WHERE panel_view.panel_id = #{panelId}
     </select>
 
 
