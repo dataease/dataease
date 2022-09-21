@@ -425,6 +425,8 @@ import IconLibrary from '@/views/panel/IconLibrary'
 import PanelTextEditor from '@/components/canvas/custom-component/PanelTextEditor'
 import ChartGroup from '@/views/chart/group/Group'
 import { chartCopy } from '@/api/chart/chart'
+import { panelSave } from '@/api/panel/panel'
+
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
 import '@/components/canvas/styles/animate.css'
@@ -713,7 +715,8 @@ export default {
       'mobileMatrixCount',
       'mobileLayoutStyle',
       'scrollAutoMove',
-      'checkboxStatus'
+      'checkboxStatus',
+      'isPanelStyle'
     ])
   },
 
@@ -896,14 +899,34 @@ export default {
       const _this = this
       _this.initHasStar()
       if (panelId) {
-        initPanelData(panelId, function() {
-          // 初始化视图缓存
-          initViewCache(panelId)
-          // 初始化保存状态
-          setTimeout(() => {
-            _this.$store.commit('refreshSaveStatus')
-          }, 500)
-        })
+
+        if(this.isPanelStyle) {
+          const requestInfo = {
+            id: panelId,
+            panelStyle: JSON.stringify(this.canvasStyleData),
+            panelData: "[]"
+          }
+          panelSave(requestInfo).then(response => {
+
+            initPanelData(panelId, function() {
+              // 初始化视图缓存
+              initViewCache(panelId)
+              // 初始化保存状态
+              setTimeout(() => {
+                _this.$store.commit('refreshSaveStatus')
+              }, 500)
+            })
+          })
+        }else {
+          initPanelData(panelId, function() {
+            // 初始化视图缓存
+            initViewCache(panelId)
+            // 初始化保存状态
+            setTimeout(() => {
+              _this.$store.commit('refreshSaveStatus')
+            }, 500)
+          })
+        }
       }
     },
     star() {

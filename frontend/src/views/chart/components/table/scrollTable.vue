@@ -788,6 +788,7 @@ export default {
 }
 .bgHeightLight{
   padding:0;
+  margin: 0;
     // background-image: linear-gradient(rgb(6 26 85), rgba(6, 26, 85, 0), rgb(6 26 85));
 }
 .table_bode_li{

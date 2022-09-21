@@ -46,6 +46,10 @@ const data = {
     editMode: 'edit',
     // 当前页面全局数据 包括扩展公共样式 公共的仪表板样式，用来实时响应样式的变化
     canvasStyleData: DEFAULT_COMMON_CANVAS_STYLE_STRING,
+    // 新建仪表板自定义样式
+    isPanelStyle: false,
+    // 新建仪表板样式数据
+    panelStyleData: null,
     // 当前展示画布缓存数据
     componentDataCache: null,
     // 当前展示画布组件数据
@@ -133,7 +137,7 @@ const data = {
     setCopyToPaste(state,status) {
       state.isCopyToPaste = status
     },
-    
+
     setEditMode(state, mode) {
       state.editMode = mode
     },
@@ -146,6 +150,14 @@ const data = {
 
       state.canvasStyleData = style
     },
+
+    setPanelStatus(state,status) {
+      state.isPanelStyle = status
+    },
+    setPanelStyleData(state,style) {
+      state.panelStyleData = style
+    },
+
     setTemplateStatus(state, status) {
       console.log('设置temp样式', status)
       state.templateStatus = status

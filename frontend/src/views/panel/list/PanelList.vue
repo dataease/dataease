@@ -235,6 +235,7 @@ import {
 } from '@/views/panel/panel'
 import TreeSelector from '@/components/TreeSelector'
 import { queryAuthModel } from '@/api/authModel/authModel'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'PanelList',
@@ -348,7 +349,9 @@ export default {
       return this.editPanel.titlePre + this.editPanel.titleSuf
     },
     ...mapState([
-      'nowPanelTrackInfo'
+      'nowPanelTrackInfo',
+      'isPanelStyle',
+      'panelStyleData'
     ])
   },
   watch: {
@@ -689,7 +692,19 @@ export default {
       // 清空当前缓存,快照
       this.$store.commit('refreshSnapshot')
       this.$store.commit('setComponentData', [])
-      this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
+      console.log('新建访问编辑？',this.isPanelStyle,this.panelStyleData)
+      if(this.isPanelStyle) {
+        const canvasStyle = deepCopy(DEFAULT_COMMON_CANVAS_STYLE_STRING)
+        canvasStyle.width = this.panelStyleData.canvasWidth
+        canvasStyle.height = this.panelStyleData.canvasHeight
+        canvasStyle.refreshViewLoading = this.panelStyleData.refreshViewLoading
+        canvasStyle.refreshUnit = this.panelStyleData.refreshUnit
+        canvasStyle.refreshTime = this.panelStyleData.refreshTime
+        canvasStyle.panel = this.panelStyleData.panel
+        this.$store.commit('setCanvasStyle',canvasStyle)
+      } else {
+        this.$store.commit('setCanvasStyle', DEFAULT_COMMON_CANVAS_STYLE_STRING)
+      }
       this.$store.dispatch('panel/setPanelInfo', data)
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },
