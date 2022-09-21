@@ -243,6 +243,13 @@ export default {
                 this.label_content_class.color = t.color
                 flag = true
               }
+            } else if (t.term === 'between') {
+              const min = parseFloat(t.min)
+              const max = parseFloat(t.max)
+              if (min <= value && value <= max) {
+                this.label_content_class.color = t.color
+                flag = true
+              }
             }
             if (flag) {
               break

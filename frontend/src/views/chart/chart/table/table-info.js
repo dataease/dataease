@@ -536,6 +536,13 @@ function mappingColor(value, defaultColor, field, type) {
           color = t[type]
           flag = true
         }
+      } else if (t.term === 'between') {
+        const min = parseFloat(t.min)
+        const max = parseFloat(t.max)
+        if (min <= value && value <= max) {
+          color = t[type]
+          flag = true
+        }
       }
       if (flag) {
         break
