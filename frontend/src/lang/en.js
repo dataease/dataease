@@ -131,7 +131,13 @@ export default {
     default_login: 'Normal'
   },
   commons: {
-    uninstall: 'Uninstall',
+
+
+    unlock: 'Unlock',
+    unlock_success: 'Unlock success',
+
+    uninstall:'Uninstall',
+
     no_result: 'No Result',
     manage_member: 'Managing members',
     confirm_remove_cancel: 'Are you sure to delete the role?',

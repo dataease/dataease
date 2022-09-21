@@ -1,6 +1,7 @@
 package io.dataease.auth.service.impl;
 
 import io.dataease.auth.api.dto.CurrentRoleDto;
+import io.dataease.auth.entity.AccountLockStatus;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.exception.DataEaseException;
@@ -9,7 +10,10 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.SysLoginLimit;
+import io.dataease.plugins.common.base.domain.SysLoginLimitExample;
 import io.dataease.plugins.common.base.domain.SysUser;
+import io.dataease.plugins.common.base.mapper.SysLoginLimitMapper;
 import io.dataease.plugins.common.base.mapper.SysUserMapper;
 import io.dataease.plugins.common.service.PluginCommonService;
 import io.dataease.plugins.config.SpringContextUtil;
@@ -18,9 +22,12 @@ import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.dingtalk.service.DingtalkXpackService;
 import io.dataease.plugins.xpack.lark.service.LarkXpackService;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
+import io.dataease.plugins.xpack.loginlimit.dto.response.LoginLimitInfo;
+import io.dataease.plugins.xpack.loginlimit.service.LoginLimitXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 
 import io.dataease.plugins.xpack.wecom.service.WecomXpackService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -45,6 +52,9 @@ public class AuthUserServiceImpl implements AuthUserService {
     private SysUserMapper sysUserMapper;
     @Resource
     private DynamicMenuServiceImpl dynamicMenuService;
+
+    @Resource
+    private SysLoginLimitMapper sysLoginLimitMapper;
 
     /**
      * 此处需被F2CRealm登录认证调用 也就是说每次请求都会被调用 所以最好加上缓存
@@ -197,6 +207,15 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
+    public Boolean supportLoginLimit() {
+        Map<String, LoginLimitXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LoginLimitXpackService.class));
+        if (beansOfType.keySet().size() == 0) return false;
+        LoginLimitXpackService loginLimitXpackService = SpringContextUtil.getBean(LoginLimitXpackService.class);
+        if (ObjectUtils.isEmpty(loginLimitXpackService)) return false;
+        return loginLimitXpackService.isOpen();
+    }
+
+    @Override
     public Boolean pluginLoaded() {
         Map<String, PluginCommonService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((PluginCommonService.class));
         if (beansOfType.keySet().size() == 0) return false;
@@ -220,5 +239,62 @@ public class AuthUserServiceImpl implements AuthUserService {
         if (!StringUtils.equals(pwd, realPwd)) {
             DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
         }
+    }
+
+    @Override
+    public void recordLoginFail(String username, Integer logintype) {
+        if (!supportLoginLimit()) return;
+        long now = System.currentTimeMillis();
+        SysLoginLimit sysLoginLimit = new SysLoginLimit();
+        sysLoginLimit.setUsername(username);
+        sysLoginLimit.setLoginType(logintype);
+        sysLoginLimit.setRecordTime(now);
+        sysLoginLimitMapper.insert(sysLoginLimit);
+    }
+
+    @Override
+    public void unlockAccount(String username, Integer logintype) {
+        SysLoginLimitExample example = new SysLoginLimitExample();
+        example.createCriteria().andUsernameEqualTo(username).andLoginTypeEqualTo(logintype);
+        sysLoginLimitMapper.deleteByExample(example);
+    }
+
+    @Override
+    public AccountLockStatus lockStatus(String username, Integer logintype) {
+        AccountLockStatus accountLockStatus = new AccountLockStatus();
+        accountLockStatus.setUsername(username);
+        if (!supportLoginLimit()) return accountLockStatus;
+
+        LoginLimitXpackService loginLimitXpackService = SpringContextUtil.getBean(LoginLimitXpackService.class);
+        LoginLimitInfo info = loginLimitXpackService.info();
+        Integer limitTimes = info.getLimitTimes();
+        Integer relieveTimes = info.getRelieveTimes();
+
+        long now = System.currentTimeMillis();
+
+        long longRelieveTimes = Long.parseLong(relieveTimes.toString());
+        long dividingPointTime = now - (longRelieveTimes * 60L * 1000L);
+        SysLoginLimitExample example = new SysLoginLimitExample();
+        example.createCriteria().andUsernameEqualTo(username).andLoginTypeEqualTo(logintype).andRecordTimeGreaterThan(dividingPointTime);
+        List<SysLoginLimit> sysLoginLimits = sysLoginLimitMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(sysLoginLimits)) {
+            boolean needLock = sysLoginLimits.size() >= limitTimes;
+            accountLockStatus.setLocked(needLock);
+            if (needLock) {
+                long unlockTime = now + (longRelieveTimes * 60L * 1000L);
+                accountLockStatus.setUnlockTime(unlockTime);
+            }
+
+        }
+        example.clear();
+        example.createCriteria().andUsernameEqualTo(username).andLoginTypeEqualTo(logintype).andRecordTimeLessThanOrEqualTo(dividingPointTime);
+        sysLoginLimitMapper.deleteByExample(example);
+        return accountLockStatus;
+    }
+
+    @Override
+    public void clearAllLock() {
+        SysLoginLimitExample example = new SysLoginLimitExample();
+        sysLoginLimitMapper.deleteByExample(example);
     }
 }

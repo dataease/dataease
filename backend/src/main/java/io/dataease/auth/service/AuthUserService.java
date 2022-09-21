@@ -1,6 +1,7 @@
 package io.dataease.auth.service;
 
 import io.dataease.auth.api.dto.CurrentRoleDto;
+import io.dataease.auth.entity.AccountLockStatus;
 import io.dataease.auth.entity.SysUserEntity;
 
 import java.util.List;
@@ -38,9 +39,19 @@ public interface AuthUserService {
 
     Boolean supportLark();
 
+    Boolean supportLoginLimit();
+
     Boolean pluginLoaded();
 
     void checkAdmin(String uname, String pwd);
+
+    void recordLoginFail(String username, Integer logintype);
+
+    void unlockAccount(String username, Integer logintype);
+
+    AccountLockStatus lockStatus(String username, Integer logintype);
+
+    void clearAllLock();
 
 
 }

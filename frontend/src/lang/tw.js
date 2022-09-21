@@ -131,7 +131,13 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
-    uninstall: '卸载',
+
+
+    unlock: '解鎖',
+    unlock_success: '解鎖成功',
+
+    uninstall:'卸载',
+
     no_result: '没有找到相关内容',
     manage_member: '管理成員',
     user_confirm_remove_cancel: '確定將該用戶從角色中移除嗎?',
