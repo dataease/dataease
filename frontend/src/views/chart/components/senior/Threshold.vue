@@ -32,18 +32,22 @@
         />
         <el-col style="padding: 0 18px;">
           <el-row v-for="(item,index) in thresholdForm.labelThreshold" :key="index" class="line-style">
-            <el-col :span="8">
+            <el-col :span="6">
               <span v-if="item.term === 'eq'" :title="$t('chart.filter_eq')">{{ $t('chart.filter_eq') }}</span>
               <span v-else-if="item.term === 'not_eq'" :title="$t('chart.filter_not_eq')">{{ $t('chart.filter_not_eq') }}</span>
               <span v-else-if="item.term === 'lt'" :title="$t('chart.filter_lt')">{{ $t('chart.filter_lt') }}</span>
               <span v-else-if="item.term === 'gt'" :title="$t('chart.filter_gt')">{{ $t('chart.filter_gt') }}</span>
               <span v-else-if="item.term === 'le'" :title="$t('chart.filter_le')">{{ $t('chart.filter_le') }}</span>
               <span v-else-if="item.term === 'ge'" :title="$t('chart.filter_ge')">{{ $t('chart.filter_ge') }}</span>
+              <span v-else-if="item.term === 'between'" :title="$t('chart.filter_between')">{{ $t('chart.filter_between') }}</span>
             </el-col>
-            <el-col :span="8">
-              <span :title="item.value">{{ item.value }}</span>
+            <el-col :span="12">
+              <span v-if="item.term !== 'between'" :title="item.value">{{ item.value }}</span>
+              <span v-if="item.term === 'between'">
+                {{ item.min }}&nbsp;≤{{ $t('chart.drag_block_label_value') }}≤&nbsp;{{ item.max }}
+              </span>
             </el-col>
-            <el-col :span="8">
+            <el-col :span="6">
               <span :style="{width:'14px', height:'14px', backgroundColor: item.color, border: 'solid 1px #e1e4e8'}" />
             </el-col>
           </el-row>
@@ -81,6 +85,7 @@
                 <span v-else-if="item.term === 'gt'" :title="$t('chart.filter_gt')">{{ $t('chart.filter_gt') }}</span>
                 <span v-else-if="item.term === 'le'" :title="$t('chart.filter_le')">{{ $t('chart.filter_le') }}</span>
                 <span v-else-if="item.term === 'ge'" :title="$t('chart.filter_ge')">{{ $t('chart.filter_ge') }}</span>
+                <span v-else-if="item.term === 'between'" :title="$t('chart.filter_between')">{{ $t('chart.filter_between') }}</span>
                 <span v-else-if="item.term === 'like'" :title="$t('chart.filter_like')">{{ $t('chart.filter_like') }}</span>
                 <span v-else-if="item.term === 'not like'" :title="$t('chart.filter_not_like')">{{ $t('chart.filter_not_like') }}</span>
                 <span v-else-if="item.term === 'null'" :title="$t('chart.filter_null')">{{ $t('chart.filter_null') }}</span>
@@ -88,14 +93,17 @@
                 <span v-else-if="item.term === 'empty'" :title="$t('chart.filter_empty')">{{ $t('chart.filter_empty') }}</span>
                 <span v-else-if="item.term === 'not_empty'" :title="$t('chart.filter_not_empty')">{{ $t('chart.filter_not_empty') }}</span>
               </el-col>
-              <el-col :span="6">
-                <span v-if="!item.term.includes('null') && !item.term.includes('empty')" :title="item.value">{{ item.value }}</span>
+              <el-col :span="10">
+                <span v-if="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'" :title="item.value">{{ item.value }}</span>
+                <span v-else-if="!item.term.includes('null') && !item.term.includes('empty') && item.term === 'between'">
+                  {{ item.min }}&nbsp;≤{{ $t('chart.drag_block_label_value') }}≤&nbsp;{{ item.max }}
+                </span>
                 <span v-else>&nbsp;</span>
               </el-col>
-              <el-col :span="6">
+              <el-col :span="4">
                 <span :title="$t('chart.textColor')" :style="{width:'14px', height:'14px', backgroundColor: item.color, border: 'solid 1px #e1e4e8'}" />
               </el-col>
-              <el-col :span="6">
+              <el-col :span="4">
                 <span :title="$t('chart.backgroundColor')" :style="{width:'14px', height:'14px', backgroundColor: item.backgroundColor, border: 'solid 1px #e1e4e8'}" />
               </el-col>
             </el-row>
@@ -250,21 +258,40 @@ export default {
           })
           return
         }
-        if (!ele.value) {
-          this.$message({
-            message: this.$t('chart.value_can_not_empty'),
-            type: 'error',
-            showClose: true
-          })
-          return
-        }
-        if (parseFloat(ele.value).toString() === 'NaN') {
-          this.$message({
-            message: this.$t('chart.value_error'),
-            type: 'error',
-            showClose: true
-          })
-          return
+        if (ele.term === 'between') {
+          if (!ele.min || !ele.max) {
+            this.$message({
+              message: this.$t('chart.value_can_not_empty'),
+              type: 'error',
+              showClose: true
+            })
+            return
+          }
+          if (parseFloat(ele.min).toString() === 'NaN' || parseFloat(ele.max).toString() === 'NaN') {
+            this.$message({
+              message: this.$t('chart.value_error'),
+              type: 'error',
+              showClose: true
+            })
+            return
+          }
+        } else {
+          if (!ele.value) {
+            this.$message({
+              message: this.$t('chart.value_can_not_empty'),
+              type: 'error',
+              showClose: true
+            })
+            return
+          }
+          if (parseFloat(ele.value).toString() === 'NaN') {
+            this.$message({
+              message: this.$t('chart.value_error'),
+              type: 'error',
+              showClose: true
+            })
+            return
+          }
         }
       }
       this.thresholdForm.labelThreshold = JSON.parse(JSON.stringify(this.thresholdArr))
@@ -314,21 +341,40 @@ export default {
             })
             return
           }
-          if (!ele.term.includes('null') && !ele.term.includes('empty') && !ele.value) {
-            this.$message({
-              message: this.$t('chart.value_can_not_empty'),
-              type: 'error',
-              showClose: true
-            })
-            return
-          }
-          if ((field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) && parseFloat(ele.value).toString() === 'NaN') {
-            this.$message({
-              message: this.$t('chart.value_error'),
-              type: 'error',
-              showClose: true
-            })
-            return
+          if (ele.term === 'between') {
+            if (!ele.term.includes('null') && !ele.term.includes('empty') && (!ele.min || !ele.max)) {
+              this.$message({
+                message: this.$t('chart.value_can_not_empty'),
+                type: 'error',
+                showClose: true
+              })
+              return
+            }
+            if ((field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) && (parseFloat(ele.min).toString() === 'NaN' || parseFloat(ele.max).toString() === 'NaN')) {
+              this.$message({
+                message: this.$t('chart.value_error'),
+                type: 'error',
+                showClose: true
+              })
+              return
+            }
+          } else {
+            if (!ele.term.includes('null') && !ele.term.includes('empty') && !ele.value) {
+              this.$message({
+                message: this.$t('chart.value_can_not_empty'),
+                type: 'error',
+                showClose: true
+              })
+              return
+            }
+            if ((field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) && parseFloat(ele.value).toString() === 'NaN') {
+              this.$message({
+                message: this.$t('chart.value_error'),
+                type: 'error',
+                showClose: true
+              })
+              return
+            }
           }
         }
       }

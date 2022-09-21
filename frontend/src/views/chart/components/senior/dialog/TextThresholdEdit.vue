@@ -19,13 +19,18 @@
             </el-option-group>
           </el-select>
         </el-col>
-        <el-col :span="10" style="text-align: center;">
-          <el-input v-model="item.value" class="value-item" :placeholder="$t('chart.drag_block_label_value')" size="mini" clearable @change="changeThreshold" />
+        <el-col :span="14" style="text-align: center;">
+          <el-input v-if="item.term !== 'between'" v-model="item.value" class="value-item" :placeholder="$t('chart.drag_block_label_value')" size="mini" clearable @change="changeThreshold" />
+          <span v-if="item.term === 'between'">
+            <el-input v-model="item.min" class="between-item" :placeholder="$t('chart.axis_value_min')" size="mini" clearable @change="changeThreshold" />
+            <span style="margin: 0 4px;">≤{{ $t('chart.drag_block_label_value') }}≤</span>
+            <el-input v-model="item.max" class="between-item" :placeholder="$t('chart.axis_value_max')" size="mini" clearable @change="changeThreshold" />
+          </span>
         </el-col>
-        <el-col :span="4" style="text-align: center;">
+        <el-col :span="2" style="text-align: center;">
           <el-color-picker v-model="item.color" show-alpha class="color-picker-style" :predefine="predefineColors" @change="changeThreshold" />
         </el-col>
-        <el-col :span="4">
+        <el-col :span="2">
           <el-button type="text" icon="el-icon-delete" circle style="float: right" @click="removeThreshold(index)" />
         </el-col>
       </el-row>
@@ -51,7 +56,9 @@ export default {
         term: 'eq',
         field: '0',
         value: '0',
-        color: '#ff0000ff'
+        color: '#ff0000ff',
+        min: '0',
+        max: '1'
       },
       valueOptions: [
         {
@@ -82,6 +89,13 @@ export default {
           }, {
             value: 'ge',
             label: this.$t('chart.filter_ge')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'between',
+            label: this.$t('chart.filter_between')
           }]
         }
       ],
@@ -135,6 +149,12 @@ span {
   position: relative;
   display: inline-block;
   width: 200px !important;
+}
+
+.between-item {
+  position: relative;
+  display: inline-block;
+  width: 100px !important;
 }
 
 .select-item {
