@@ -132,11 +132,10 @@ export default {
   },
   commons: {
 
-
     unlock: 'Unlock',
     unlock_success: 'Unlock success',
 
-    uninstall:'Uninstall',
+    uninstall: 'Uninstall',
 
     no_result: 'No Result',
     manage_member: 'Managing members',
@@ -671,7 +670,13 @@ export default {
     filter: 'Screen',
     list: 'List item',
     list_info: 'Please select the information to be displayed in the list',
-    sure_delete: 'Are you sure to delete this user?'
+    sure_delete: 'Are you sure to delete this user?',
+    wecom_id: 'Wecom Account',
+    dingtalk_id: 'Dingtalk Account',
+    lark_id: 'Lark Account',
+    input_wecom_id: 'Please input wecom account',
+    input_dingtalk_id: 'Please input dingtalk account',
+    input_lark_id: 'Please input lark account'
   },
   ldap: {
     url: 'LDAP url',

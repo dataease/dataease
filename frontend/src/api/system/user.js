@@ -10,7 +10,8 @@ const pathMap = {
   updatePath: '/api/user/update',
   editPasswordPath: '/api/user/adminUpdatePwd',
   editStatusPath: '/api/user/updateStatus',
-  unlockPath: '/api/user/unlock/'
+  unlockPath: '/api/user/unlock/',
+  queryAssistPath: '/api/user/assistInfo/'
 }
 export function userLists(page, size, data) {
   return request({
@@ -142,4 +143,12 @@ export function unLock(username) {
   })
 }
 
-export default { editPassword, delUser, editUser, addUser, userLists, editStatus, personInfo, updatePerson, updatePersonPwd, allRoles, roleGrid, ldapUsers, saveLdapUser, existLdapUsers, unLock }
+export function queryAssist(userId) {
+  return request({
+    url: pathMap.queryAssistPath + userId,
+    method: 'post',
+    loading: false
+  })
+}
+
+export default { editPassword, delUser, editUser, addUser, userLists, editStatus, personInfo, updatePerson, updatePersonPwd, allRoles, roleGrid, ldapUsers, saveLdapUser, existLdapUsers, unLock, queryAssist }

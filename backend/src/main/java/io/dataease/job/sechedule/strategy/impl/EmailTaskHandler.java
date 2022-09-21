@@ -14,6 +14,7 @@ import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.job.sechedule.strategy.TaskHandler;
+import io.dataease.plugins.common.base.domain.SysUserAssist;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
 import io.dataease.plugins.config.SpringContextUtil;
@@ -28,6 +29,7 @@ import io.dataease.plugins.xpack.lark.service.LarkXpackService;
 import io.dataease.plugins.xpack.wecom.dto.entity.WecomMsgResult;
 import io.dataease.plugins.xpack.wecom.service.WecomXpackService;
 import io.dataease.service.chart.ViewExportExcel;
+import io.dataease.service.sys.SysUserService;
 import io.dataease.service.system.EmailService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -154,6 +156,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         AuthUserServiceImpl userService = SpringContextUtil.getBean(AuthUserServiceImpl.class);
+        SysUserService sysUserService = SpringContextUtil.getBean(SysUserService.class);
         try {
             XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskInstance.getTaskId());
             if (ObjectUtils.isEmpty(taskForm) || CronUtils.taskExpire(taskForm.getEndTime())) {
@@ -215,17 +218,24 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             for (int i = 0; i < channels.size(); i++) {
                 String channel = channels.get(i);
                 switch (channel) {
-                    case "email" :
+                    case "email":
                         if (StringUtils.isNotBlank(recipients))
-                        emailService.sendWithImageAndFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
+                            emailService.sendWithImageAndFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                         break;
-                    case "wecom" :
+                    case "wecom":
                         if (SpringContextUtil.getBean(AuthUserService.class).supportWecom()) {
-
-                            List<String> wecomUsers = reciLists.stream().filter(reci -> {
+                            List<String> wecomUsers = new ArrayList<>();
+                            for (int j = 0; j < reciLists.size(); j++) {
+                                String reci = reciLists.get(j);
                                 SysUserEntity userBySub = userService.getUserBySub(reci, 4);
-                                return ObjectUtils.isNotEmpty(userBySub);
-                            }).collect(Collectors.toList());
+                                if (ObjectUtils.isEmpty(userBySub)) continue;
+                                Long userId = userBySub.getUserId();
+                                SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
+                                if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getLarkId()))
+                                    continue;
+                                wecomUsers.add(sysUserAssist.getLarkId());
+                            }
+
                             if (CollectionUtils.isNotEmpty(wecomUsers)) {
                                 WecomXpackService wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);
                                 WecomMsgResult wecomMsgResult = wecomXpackService.pushOaMsg(wecomUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
@@ -236,12 +246,20 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
                         }
                         break;
-                    case "dingtalk" :
+                    case "dingtalk":
                         if (SpringContextUtil.getBean(AuthUserService.class).supportDingtalk()) {
-                            List<String> dingTalkUsers = reciLists.stream().filter(reci -> {
+                            List<String> dingTalkUsers = new ArrayList<>();
+                            for (int j = 0; j < reciLists.size(); j++) {
+                                String reci = reciLists.get(j);
                                 SysUserEntity userBySub = userService.getUserBySub(reci, 5);
-                                return ObjectUtils.isNotEmpty(userBySub);
-                            }).collect(Collectors.toList());
+                                if (ObjectUtils.isEmpty(userBySub)) continue;
+                                Long userId = userBySub.getUserId();
+                                SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
+                                if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getLarkId()))
+                                    continue;
+                                dingTalkUsers.add(sysUserAssist.getLarkId());
+                            }
+
                             if (CollectionUtils.isNotEmpty(dingTalkUsers)) {
                                 DingtalkXpackService dingtalkXpackService = SpringContextUtil.getBean(DingtalkXpackService.class);
                                 DingtalkMsgResult dingtalkMsgResult = dingtalkXpackService.pushOaMsg(dingTalkUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
@@ -252,12 +270,20 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
                         }
                         break;
-                    case "lark" :
+                    case "lark":
                         if (SpringContextUtil.getBean(AuthUserService.class).supportLark()) {
-                            List<String> larkUsers = reciLists.stream().filter(reci -> {
+                            List<String> larkUsers = new ArrayList<>();
+                            for (int j = 0; j < reciLists.size(); j++) {
+                                String reci = reciLists.get(j);
                                 SysUserEntity userBySub = userService.getUserBySub(reci, 6);
-                                return ObjectUtils.isNotEmpty(userBySub);
-                            }).collect(Collectors.toList());
+                                if (ObjectUtils.isEmpty(userBySub)) continue;
+                                Long userId = userBySub.getUserId();
+                                SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
+                                if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getLarkId()))
+                                    continue;
+                                larkUsers.add(sysUserAssist.getLarkId());
+                            }
+
                             if (CollectionUtils.isNotEmpty(larkUsers)) {
                                 LarkXpackService larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
                                 LarkMsgResult larkMsgResult = larkXpackService.pushOaMsg(larkUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
