@@ -58,9 +58,9 @@
               </el-option-group>
             </el-select>
           </el-col>
-          <el-col :span="8" style="text-align: center;">
+          <el-col :span="10" style="text-align: center;">
             <el-input
-              v-show="!item.term.includes('null') && !item.term.includes('empty')"
+              v-show="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
               v-model="item.value"
               class="value-item"
               :placeholder="$t('chart.drag_block_label_value')"
@@ -68,6 +68,11 @@
               clearable
               @change="changeThreshold"
             />
+            <span v-if="item.term === 'between'">
+              <el-input v-model="item.min" class="between-item" :placeholder="$t('chart.axis_value_min')" size="mini" clearable @change="changeThreshold" />
+              <span style="margin: 0 4px;">≤{{ $t('chart.drag_block_label_value') }}≤</span>
+              <el-input v-model="item.max" class="between-item" :placeholder="$t('chart.axis_value_max')" size="mini" clearable @change="changeThreshold" />
+            </span>
           </el-col>
           <el-col :span="4" style="display: flex;align-items: center;justify-content: center;">
             <span class="color-title">{{ $t('chart.textColor') }}</span>
@@ -89,7 +94,7 @@
               @change="changeThreshold"
             />
           </el-col>
-          <el-col :span="4">
+          <el-col :span="2">
             <el-button
               type="text"
               icon="el-icon-delete"
@@ -134,7 +139,9 @@ export default {
         field: '0',
         value: '',
         color: '#ff0000ff',
-        backgroundColor: '#ffffffff'
+        backgroundColor: '#ffffffff',
+        min: '0',
+        max: '1'
       },
       textOptions: [
         {
@@ -229,6 +236,13 @@ export default {
           }, {
             value: 'ge',
             label: this.$t('chart.filter_ge')
+          }]
+        },
+        {
+          label: '',
+          options: [{
+            value: 'between',
+            label: this.$t('chart.filter_between')
           }]
         }
       ],
@@ -350,6 +364,12 @@ span {
 .value-item {
   position: relative;
   display: inline-block;
+}
+
+.between-item {
+  position: relative;
+  display: inline-block;
+  width: 80px !important;
 }
 
 .select-item {

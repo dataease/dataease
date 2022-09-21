@@ -134,7 +134,7 @@ export default {
 
     unlock: '解锁',
     unlock_success: '解锁成功',
-    uninstall:'卸载',
+    uninstall: '卸载',
 
     no_result: '没有找到相关内容',
     manage_member: '管理成员',
@@ -672,7 +672,13 @@ export default {
     filter: '筛选',
     list: '列表项',
     list_info: '请选择列表中要展示的信息',
-    sure_delete: '确定删除该用户吗？'
+    sure_delete: '确定删除该用户吗？',
+    wecom_id: '企业微信账号',
+    dingtalk_id: '钉钉账号',
+    lark_id: '飞书账号',
+    input_wecom_id: '请输入企业微信账号',
+    input_dingtalk_id: '请输入钉钉账号',
+    input_lark_id: '请输入飞书账号'
   },
   ldap: {
     url: 'LDAP地址',
@@ -1307,6 +1313,9 @@ export default {
     analyse_cfg: '分析预警',
     slider: '缩略轴',
     slider_range: '默认范围',
+    slider_bg: '背景',
+    slider_fill_bg: '选中背景',
+    slider_text_color: '字体颜色',
     chart_no_senior: '当前图表类型暂无高级配置，敬请期待',
     chart_no_properties: '当前图表类型暂无样式配置',
     assist_line: '辅助线',
