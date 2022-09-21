@@ -636,6 +636,31 @@ export function getSlider(chart) {
           start: parseInt(senior.functionCfg.sliderRange[0]) / 100,
           end: parseInt(senior.functionCfg.sliderRange[1]) / 100
         }
+
+        if (senior.functionCfg.sliderBg) {
+          cfg.backgroundStyle = {
+            fill: senior.functionCfg.sliderBg,
+            stroke: senior.functionCfg.sliderBg,
+            lineWidth: 1,
+            strokeOpacity: 0.5
+          }
+        }
+        if (senior.functionCfg.sliderFillBg) {
+          cfg.foregroundStyle = {
+            'fill': senior.functionCfg.sliderFillBg,
+            'fillOpacity': 0.5
+          }
+        }
+        if (senior.functionCfg.sliderTextClolor) {
+          cfg.textStyle = {
+            'fill': senior.functionCfg.sliderTextClolor
+          }
+          cfg.handlerStyle = {
+            'fill': senior.functionCfg.sliderTextClolor,
+            'fillOpacity': 0.5,
+            'highLightFill': senior.functionCfg.sliderTextClolor
+          }
+        }
       }
     }
   }
