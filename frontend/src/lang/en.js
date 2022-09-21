@@ -525,7 +525,10 @@ export default {
     convert_to_dimension: 'Convert to Dimension',
     left_to_edit: 'Select the data table on the left to edit',
     cannot_be_duplicate: 'The dataset name cannot be duplicate',
-    set_saved_successfully: 'Data set saved successfully'
+    set_saved_successfully: 'Data set saved successfully',
+    to_start_using: 'Browse the contents of your database, tables and columns. Choose a database to get started.',
+    to_run_query: 'Click to run query',
+    the_running_results: 'You can view the running results'
   },
   detabs: {
     eidttitle: 'Edit Title',

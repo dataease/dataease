@@ -47,7 +47,6 @@ import DsTree from "./DsTree";
 import DsForm from "./DsForm";
 import dsTable from "./dsTable";
 import DriverForm from "./DriverFormDetail";
-
 export default {
   name: "DsMain",
   components: { DeMainContainer, DeAsideContainer, DsTree },
@@ -128,7 +127,6 @@ export default {
   flex-wrap: wrap;
   display: flex;
   box-sizing: border-box;
-
   .el-empty {
     height: 100%;
   }
@@ -139,7 +137,6 @@ export default {
   min-width: 260px;
   max-width: 460px;
 }
-
 .dsr-route-title {
   width: 100%;
   margin: -2px 0 22px 0;
@@ -147,7 +144,6 @@ export default {
   justify-content: space-between;
   align-content: center;
 }
-
 .is-driver-mgm {
   background-color: var(--MainBG, #f5f6f7);
   padding: 24px;
@@ -155,7 +151,6 @@ export default {
   .ms-main-container {
     height: calc(100vh - 170px);
     background-color: var(--ContentBG, #ffffff);
-
     .tree-style {
       padding-top: 24px;
     }

@@ -33,7 +33,6 @@
         clearable
       />
       <div class="table-checkbox-list">
-        <!-- <div class="item" v-for="(ele, index) in tableData"> -->
         <el-checkbox-group v-model="checkTableList" size="small">
           <el-tooltip
             :disabled="t.enableCheck"
@@ -59,7 +58,6 @@
             </div>
           </el-tooltip>
         </el-checkbox-group>
-        <!-- </div> -->
       </div>
     </div>
     <div class="table-detail">
@@ -282,14 +280,6 @@ export default {
   },
   methods: {
     nameExsitValidator(activeIndex) {
-      if (
-        !this.nameList ||
-        this.nameList.length === 0 ||
-        !this.checkDatasetName.includes(this.tableData[activeIndex].datasetName)
-      ) {
-        this.tableData[activeIndex].nameExsit = false
-        return
-      }
       this.tableData[activeIndex].nameExsit =
         this.nameList
           .concat(this.checkDatasetName)
@@ -300,6 +290,8 @@ export default {
       this.tableData.forEach((ele, index) => {
         if (this.checkDatasetName.includes(ele.datasetName)) {
           this.nameExsitValidator(index)
+        } else {
+          ele.nameExsit = false;
         }
       })
     },
@@ -402,6 +394,8 @@ export default {
   display: flex;
   height: 100%;
   position: relative;
+  width: 100%;
+
 
   .arrow-right {
     position: absolute;

@@ -211,11 +211,9 @@ export default {
     line-height: 24px;
     color: var(--deTextPrimary, #1f2329);
   }
-
   .table-container {
     height: calc(100% - 50px);
   }
-
   .el-table__fixed-right::before {
     background: transparent;
   }
