@@ -121,3 +121,5 @@ ALTER TABLE `sys_user_assist`
     ADD COLUMN `dingtalk_id` varchar(255) NULL COMMENT '钉钉账号' AFTER `wecom_id`,
     ADD COLUMN `lark_id` varchar(255) NULL COMMENT '飞书账号' AFTER `dingtalk_id`;
 
+
+ALTER TABLE `dataset_table_field` ADD COLUMN `accuracy` INT(11) NULL DEFAULT 0 COMMENT '精度' AFTER `last_sync_time`;

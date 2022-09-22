@@ -1947,6 +1947,7 @@ public class DataSetTableService {
                     datasetTableField.setOriginName(filed.getFieldName());
                     datasetTableField.setType(filed.getFieldType());
                     datasetTableField.setSize(filed.getFieldSize());
+                    datasetTableField.setAccuracy(filed.getAccuracy());
                     if (ObjectUtils.isEmpty(ds)) {
                         datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
                     } else {
@@ -1972,6 +1973,7 @@ public class DataSetTableService {
                         datasetTableField.setDeExtractType(fieldType);
                     }
                     datasetTableField.setSize(filed.getFieldSize());
+                    datasetTableField.setAccuracy(filed.getAccuracy());
                     datasetTableField.setChecked(true);
                     datasetTableField.setLastSyncTime(syncTime);
                     datasetTableField.setExtField(0);
