@@ -25,7 +25,6 @@
 </template>
 
 <script>
-import { log } from '@antv/g2plot/lib/utils';
 import tableBody from "./tableBody";
 export default {
   components: { tableBody },
@@ -112,6 +111,9 @@ export default {
     },
   },
   methods: {
+    toggleRowSelection(row) {
+      this.$refs.table.toggleRowSelection(row, true);
+    },
     handlerSelected(multipleSelection) {
       this.multipleSelectionCach = [
         ...this.multipleSelectionCach,

@@ -445,7 +445,7 @@ export default {
     cost: 'cost',
     developer: 'developer',
     edition: 'edition',
-    installation_time: 'Installation time:'
+    installation_time: 'Install time'
   },
   table: {
     dynamicTips1: 'Fixed header, sorted by header order',
