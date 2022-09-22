@@ -80,23 +80,30 @@ export function stackLineOption(chart_option, chart, cstyle = {}) {
     console.log('stack............', s, i)
     s.stack = 'stack'
 
-    s.itemStyle = {
-      color: {
-        type: 'linear',
-        x: 0,
-        y: 1,
-        x2: 0,
-        y2: 0,
-        colorStops: [{
-          offset: 0, // 0% 的颜色
-          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
-        }, {
-          offset: 1, // 100% 的颜色
-          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha - 50)
-        }],
-        global: false // 缺省为 false
+    if(customAttr.color.variety) {
+      s.itemStyle = {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 1,
+          x2: 0,
+          y2: 0,
+          colorStops: [{
+            offset: 0, // 0% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+          }, {
+            offset: 1, // 100% 的颜色
+            color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+          }],
+          global: false // 缺省为 false
+        }
+      }
+    } else {
+      s.itemStyle = {
+        color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
       }
     }
+    
   })
   return chart_option
 }
