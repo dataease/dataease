@@ -186,10 +186,37 @@ export function componentStyle(chart_option, chart) {
       chart_option.radar.splitLine = customStyle.split.splitLine
       chart_option.radar.splitArea = customStyle.split.splitArea
     }
+    if (customStyle.margin && customStyle.margin.marginModel && customStyle.margin.marginModel !== 'auto') {
+      const unit = getMarginUnit(customStyle.margin)
+      const result = { containLabel: true }
+      const realUnit = (unit === '%' ? unit : '')
+      if (customStyle.margin.marginTop != null) {
+        result.top = customStyle.margin.marginTop + realUnit
+      }
+      if (customStyle.margin.marginBottom != null) {
+        result.bottom = customStyle.margin.marginBottom + realUnit
+      }
+      if (customStyle.margin.marginLeft != null) {
+        result.left = customStyle.margin.marginLeft + realUnit
+      }
+      if (customStyle.margin.marginRight != null) {
+        result.right = customStyle.margin.marginRight + realUnit
+      }
+      if (!chart_option.grid) {
+        chart_option.grid = {}
+      }
+      Object.assign(chart_option.grid, JSON.parse(JSON.stringify(result)))
+    }
     if (customStyle.background) {
       chart_option.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
   }
+}
+export const getMarginUnit = marginForm => {
+  if (!marginForm.marginModel || marginForm.marginModel === 'auto') return null
+  if (marginForm.marginModel === 'absolute') return 'px'
+  if (marginForm.marginModel === 'relative') return '%'
+  return null
 }
 
 const hexToRgba = (hex, opacity) => {
