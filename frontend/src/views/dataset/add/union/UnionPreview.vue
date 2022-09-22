@@ -4,7 +4,7 @@
       ref="plxTable"
       size="mini"
       style="width: 100%"
-      height="100%"
+      :height="height"
       :checkbox-config="{ highlight: true }"
       :width-resize="true"
     >
@@ -22,6 +22,7 @@
 
 <script>
 import { post } from '@/api/dataset/dataset'
+import _ from 'lodash'
 
 export default {
   name: 'UnionPreview',
@@ -33,11 +34,15 @@ export default {
     dataset: {
       type: Array,
       required: true
-    }
+    },
+    unionHeight: {
+      type: Number,
+      default: 298
+    },
   },
   data() {
     return {
-      height: 'auto',
+      height: 200,
       fields: [],
       data: []
     }
@@ -45,12 +50,26 @@ export default {
   watch: {
     table: function () {
       this.initPreview()
+    },
+    unionHeight: {
+      handler: function () {
+        this.calHeight()
+      }
     }
   },
   mounted() {
     this.initPreview()
+    this.calHeight()
+    window.onresize = () => {
+      this.calHeight()
+    }
   },
   methods: {
+    calHeight: _.debounce(function() {
+      const unionHeight = Math.max(this.unionHeight, 298)
+      const currentHeight = document.documentElement.clientHeight
+      this.height = currentHeight - unionHeight - 56 - 54 - 36
+    }, 200),
     initPreview() {
       if (this.dataset && this.dataset.length > 0) {
         post('/dataset/table/unionPreview', this.table).then((response) => {

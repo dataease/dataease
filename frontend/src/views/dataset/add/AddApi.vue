@@ -281,7 +281,7 @@ export default {
       const that = this
       setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
-        that.height = currentHeight - 195 - 54
+        that.height = currentHeight - 56 - 64 - 75 - 32 - 24 - 16 - 10
       }, 10)
     },
     setActiveName({ name, datasourceId, enableCheck }) {
