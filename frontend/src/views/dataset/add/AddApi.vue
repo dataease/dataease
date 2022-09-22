@@ -358,7 +358,7 @@ export default {
     },
 
     cancel() {
-      this.$router.back()
+      this.$router.push('/dataset/index')
     },
 
     dataReset() {

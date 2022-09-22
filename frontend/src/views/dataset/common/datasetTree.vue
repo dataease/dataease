@@ -9,7 +9,7 @@
       clearable
       class="main-area-input"
     />
-    <div class="tree">
+    <div class="tree" v-loading="loading">
       <el-tree
         ref="datasetTreeRef"
         class="de-tree"
@@ -133,6 +133,7 @@ export default {
   data() {
     return {
       searchPids: [], // 查询命中的pid
+      loading: false,
       filterText: '',
       searchType: 'all',
       searchMap: {
@@ -227,6 +228,7 @@ export default {
         this.data = JSON.parse(modelInfo)
       }
       this.customType ? this.customType.push('group') : null
+      this.loading = true;
       queryAuthModel(
         {
           modelType: 'dataset',
@@ -244,6 +246,8 @@ export default {
         if (!userCache) {
           this.data = res.data
         }
+      }).finally(() => {
+        this.loading = false
       })
     },
     nodeClick(data, node) {
