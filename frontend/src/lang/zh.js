@@ -909,6 +909,11 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    margin_model: '模式',
+    margin_model_auto: '自动',
+    margin_model_absolute: '绝对',
+    margin_model_relative: '相对',
+    margin_placeholder: '请输入0-100数字',
     rich_text_view_result_tips: '富文本只选取第一条结果',
     rich_text_view: '富文本视图',
     view_reset: '视图重置',
