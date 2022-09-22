@@ -217,6 +217,15 @@ export const DEFAULT_LEGEND_STYLE = {
     fontSize: '12'
   }
 }
+
+export const DEFAULT_MARGIN_STYLE = {
+  marginModel: 'auto',
+  marginTop: 40,
+  marginBottom: 44,
+  marginLeft: 15,
+  marginRight: 10
+}
+
 export const DEFAULT_XAXIS_STYLE = {
   show: true,
   position: 'bottom',

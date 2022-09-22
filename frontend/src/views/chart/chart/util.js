@@ -1538,9 +1538,17 @@ export const TYPE_CONFIGS = [
     properties: [
       'color-selector',
       'size-selector',
-      'title-selector'
+      'title-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'quotaColor',
         'dimensionColor'
@@ -1582,9 +1590,17 @@ export const TYPE_CONFIGS = [
     properties: [
       'color-selector',
       'size-selector',
-      'title-selector'
+      'title-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'quotaColor',
         'dimensionColor'
@@ -1627,9 +1643,17 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'size-selector',
       'label-selector',
-      'title-selector'
+      'title-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -1674,9 +1698,17 @@ export const TYPE_CONFIGS = [
       'x-axis-selector',
       'y-axis-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -1754,9 +1786,17 @@ export const TYPE_CONFIGS = [
       'x-axis-selector',
       'y-axis-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -1835,9 +1875,17 @@ export const TYPE_CONFIGS = [
       'y-axis-selector',
       'y-axis-ext-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -1920,9 +1968,17 @@ export const TYPE_CONFIGS = [
       'x-axis-selector',
       'y-axis-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -1999,9 +2055,17 @@ export const TYPE_CONFIGS = [
       'x-axis-selector',
       'y-axis-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -2078,9 +2142,17 @@ export const TYPE_CONFIGS = [
       'x-axis-selector',
       'y-axis-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -2157,9 +2229,17 @@ export const TYPE_CONFIGS = [
       'x-axis-selector',
       'y-axis-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -2236,9 +2316,17 @@ export const TYPE_CONFIGS = [
       'label-selector',
       'tooltip-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -2294,9 +2382,17 @@ export const TYPE_CONFIGS = [
       'label-selector',
       'tooltip-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -2354,9 +2450,17 @@ export const TYPE_CONFIGS = [
       'tooltip-selector',
       'split-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -2417,9 +2521,17 @@ export const TYPE_CONFIGS = [
       'size-selector',
       'label-selector',
       'tooltip-selector',
-      'title-selector'
+      'title-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -2468,9 +2580,17 @@ export const TYPE_CONFIGS = [
       'x-axis-selector',
       'y-axis-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -2544,9 +2664,17 @@ export const TYPE_CONFIGS = [
       'label-selector',
       'tooltip-selector',
       'title-selector',
-      'legend-selector'
+      'legend-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
@@ -2599,9 +2727,17 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'label-selector',
       'tooltip-selector',
-      'title-selector'
+      'title-selector',
+      'margin-selector'
     ],
     propertyInner: {
+      'margin-selector': [
+        'marginModel',
+        'marginTop',
+        'marginBottom',
+        'marginLeft',
+        'marginRight'
+      ],
       'color-selector': [
         'value',
         'custom',
