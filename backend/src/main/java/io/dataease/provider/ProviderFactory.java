@@ -30,6 +30,7 @@ public class ProviderFactory implements ApplicationContextAware {
                     dataSourceType.setTargetCharset(d.getTargetCharset());
                 }
                 dataSourceType.setKeywordSuffix(d.getKeywordSuffix());
+                dataSourceType.setDatabaseClassification(d.getDatabaseClassification());
                 dataSourceType.setKeywordPrefix(d.getKeywordPrefix());
                 dataSourceType.setAliasSuffix(d.getAliasSuffix());
                 dataSourceType.setAliasPrefix(d.getAliasPrefix());
