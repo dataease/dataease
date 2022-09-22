@@ -371,7 +371,7 @@ import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
 import { engineMode } from '@/api/system/engine'
 import msgCfm from '@/components/msgCfm/index'
-
+import _ from 'lodash'
 export default {
   name: 'AddSQL',
   components: { codemirror },
@@ -488,6 +488,11 @@ export default {
       handler: function () {
         this.initTableInfo()
       }
+    },
+    sqlHeight: {
+      handler: function () {
+        this.calHeight()
+      }
     }
   },
   mounted() {
@@ -560,14 +565,11 @@ export default {
         this.tableData = response.data
       })
     },
-    calHeight() {
-      const that = this
-      setTimeout(function () {
-        const currentHeight = document.documentElement.clientHeight
-        that.height =
-          currentHeight - 56 - 30 - 26 - 25 - 43 - 160 - 10 - 37 - 20 - 10 - 16
-      }, 10)
-    },
+    calHeight: _.debounce(function() {
+      const sqlHeight = Math.max(this.sqlHeight, 248)
+      const currentHeight = document.documentElement.clientHeight
+      this.height = currentHeight - sqlHeight - 56 - 54 - 36 - 64
+    }, 200),
     initDataSource() {
       listDatasource().then((response) => {
         this.options = response.data.filter((item) => item.type !== 'api')
@@ -636,7 +638,7 @@ export default {
         return
       }
       this.parseVariable()
-      this.loading = true;
+      this.loading = true
       const table = {
         id: this.param.tableId,
         name: this.param.name,
@@ -651,12 +653,14 @@ export default {
           isBase64Encryption: true
         })
       }
-      post('/dataset/table/update', table).then((response) => {
-        this.openMessageSuccess('deDataset.set_saved_successfully')
-        this.cancel()
-      }).finally(() => {
-        this.loading = false;
-      }) 
+      post('/dataset/table/update', table)
+        .then((response) => {
+          this.openMessageSuccess('deDataset.set_saved_successfully')
+          this.cancel()
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
 
     cancel() {

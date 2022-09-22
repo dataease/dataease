@@ -41,7 +41,7 @@
         }}</span>
         <span @mousedown="mousedownDrag" class="drag"></span>
       </div>
-      <union-preview :table="previewTable" :dataset="dataset" />
+      <union-preview :unionHeight="unionHeight" :table="previewTable" :dataset="dataset" />
     </div>
     <!--选择数据集-->
     <el-drawer
