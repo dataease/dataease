@@ -51,7 +51,9 @@ export const DEFAULT_SIZE = {
   tableHeaderAlign: 'left',
   tableItemAlign: 'right',
 
+  barBorderRadius: 0,
   spaceleft: 10,
+  xPaddingOffst: 10,
   spaceRight: 10,
   spaceTop: 32,
   spaceBottom: 30,

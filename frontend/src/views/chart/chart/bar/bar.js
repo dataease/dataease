@@ -25,10 +25,13 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
+    console.log('customAttr?????????', customAttr)
+    const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
       // color
       y.itemStyle = {
+        barBorderRadius: barBorderRadiusArr,
         // color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
         color: {
           type: 'linear',
@@ -183,7 +186,6 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
       chart_option.tooltip = tooltip
     }
-    console.log('(((((((((((((((((((((((((', customAttr, chart_option, chart)
     chart_option.grid.left = customAttr.size.spaceleft
     chart_option.grid.right = customAttr.size.spaceRight
     chart_option.grid.top = customAttr.size.spaceTop
@@ -194,6 +196,8 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
+    chart_option.xAxis.offset = 5
+
     console.log('chart.data', chart.data)
     const series = chart.data.series[0]
     const y = series
@@ -215,7 +219,7 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
       }
     }
     // size
-	  if (customAttr.size) {
+    if (customAttr.size) {
       if (customAttr.size.barDefault) {
         y.barWidth = null
         y.barGap = null
