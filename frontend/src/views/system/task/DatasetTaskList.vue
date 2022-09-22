@@ -104,6 +104,7 @@
         @selection-change="handleSelectionChange"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
+        ref="multipleTable"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column
@@ -507,11 +508,18 @@ export default {
       const { currentPage, pageSize } = this.paginationConfig;
       datasetTaskList(currentPage, pageSize, param, showLoading).then(
         (response) => {
+          const multipleSelection = this.multipleSelection.map(ele => ele.id)
           this.data = response.data.listObject;
-          // this.data.forEach((item) => {
-          //   this.taskStatus(item);
-          // });
           this.paginationConfig.total = response.data.itemCount;
+          if (multipleSelection.length) {
+            this.$nextTick(() => {
+              this.data.forEach(row => {
+                if (multipleSelection.includes(row.id)) {
+                  this.$refs.multipleTable.toggleRowSelection(row);
+                }
+              });
+            })
+          }
         }
       );
     },
