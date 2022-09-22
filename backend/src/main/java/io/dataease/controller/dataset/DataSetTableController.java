@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +46,8 @@ public class DataSetTableController {
     }, logical = Logical.AND)
     @ApiOperation("批量保存")
     @PostMapping("batchAdd")
-    public void batchAdd(@RequestBody List<DataSetTableRequest> datasetTable) throws Exception {
-        dataSetTableService.batchInsert(datasetTable);
+    public List<DatasetTable> batchAdd(@RequestBody List<DataSetTableRequest> datasetTable) throws Exception {
+        return dataSetTableService.batchInsert(datasetTable);
     }
 
     @DePermissions(value = {
@@ -55,11 +57,11 @@ public class DataSetTableController {
     }, logical = Logical.AND)
     @ApiOperation("更新")
     @PostMapping("update")
-    public void save(@RequestBody DataSetTableRequest datasetTable) throws Exception {
+    public List<DatasetTable> save(@RequestBody DataSetTableRequest datasetTable) throws Exception {
         if (datasetTable.getType().equalsIgnoreCase("excel")) {
-            dataSetTableService.saveExcel(datasetTable);
+            return dataSetTableService.saveExcel(datasetTable);
         } else {
-            dataSetTableService.save(datasetTable);
+            return Collections.singletonList(dataSetTableService.save(datasetTable));
         }
     }
 
