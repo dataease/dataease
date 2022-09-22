@@ -529,7 +529,6 @@ export default {
   },
   activated() {
     const dataset = this.$refs.datasetTreeRef?.getCurrentNode()
-    if (!dataset) return
     queryAuthModel({ modelType: 'dataset' }, true).then((res) => {
       localStorage.setItem('dataset-tree', JSON.stringify(res.data))
       this.tData = res.data
