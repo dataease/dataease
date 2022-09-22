@@ -265,7 +265,7 @@ export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, i
     if (customAttr.size) {
       chart_option.chart.options3d.alpha = customAttr.size.alpha ? customAttr.size.alpha : 10
       chart_option.chart.options3d.beta = customAttr.size.beta ? customAttr.size.beta : 0
-      chart_option.chart.options3d.depth = customAttr.size.depth ? customAttr.size.depth : 40
+      chart_option.chart.options3d.depth = customAttr.size.depth ? customAttr.size.depth : 20
     }
   }
 
@@ -302,13 +302,18 @@ export function baseColumnOption(chart_option, chart, terminal = 'pc', isBase, i
           }
           if (customAttr.color) {
             obj.opacity = customAttr.color.alpha / 100
-            obj.color = {
-              linearGradient: {x1: 0,y1: 1,x2: 0,y2: 0},
-              stops: [
-                [0, hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)], // 0% 
-                [1, hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha - 50)], // 100%
-              ]
+            if(customAttr.color.variety) {
+              obj.color = {
+                linearGradient: {x1: 0,y1: 1,x2: 0,y2: 0},
+                stops: [
+                  [0, hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)], // 0% 
+                  [1, hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)], // 100%
+                ]
+              }
+            } else {
+              obj.color = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
             }
+            
           }
           arr.push(obj)
         }

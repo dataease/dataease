@@ -65,7 +65,7 @@ export const DEFAULT_SIZE = {
 
   alpha: 10,
   beta: 0,
-  depth: 40,
+  depth: 20,
 
   gaugeMin: 0,
   gaugeMax: 100,
