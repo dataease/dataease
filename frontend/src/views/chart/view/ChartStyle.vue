@@ -260,6 +260,21 @@
               @onChangeBackgroundForm="onChangeBackgroundForm($event,'background-color-selector')"
             />
           </el-collapse-item>
+          <el-collapse-item
+            v-show="showPropertiesCollapse(['margin-selector'])"
+            name="margin"
+            :title="$t('panel.margin')"
+          >
+            <margin-selector
+              v-if="showProperties('margin-selector')"
+              :param="param"
+              class="attr-selector"
+              :chart="chart"
+              :property-inner="propertyInnerAll['margin-selector']"
+              @onMarginChange="onMarginChange($event,'margin-selector')"
+            />
+
+          </el-collapse-item>
         </el-collapse>
       </el-row>
     </div>
@@ -284,6 +299,7 @@ import YAxisExtSelectorAntV from '@/views/chart/components/component-style/YAxis
 import TitleSelector from '@/views/chart/components/component-style/TitleSelector'
 import TitleSelectorAntV from '@/views/chart/components/component-style/TitleSelectorAntV'
 import LegendSelector from '@/views/chart/components/component-style/LegendSelector'
+import MarginSelector from '@/views/chart/components/component-style/MarginSelector'
 import LegendSelectorAntV from '@/views/chart/components/component-style/LegendSelectorAntV'
 import BackgroundColorSelector from '@/views/chart/components/component-style/BackgroundColorSelector'
 import SplitSelector from '@/views/chart/components/component-style/SplitSelector'
@@ -314,6 +330,7 @@ export default {
     SizeSelectorAntV,
     SizeSelector,
     ColorSelector,
+    MarginSelector,
     PluginCom
   },
   props: {
@@ -431,6 +448,10 @@ export default {
     onLegendChange(val, propertyName) {
       val['propertyName'] = propertyName
       this.$emit('onLegendChange', val)
+    },
+    onMarginChange(val, propertyName) {
+      val['propertyName'] = propertyName
+      this.$emit('onMarginChange', val)
     },
     onChangeBackgroundForm(val, propertyName) {
       val['propertyName'] = propertyName
