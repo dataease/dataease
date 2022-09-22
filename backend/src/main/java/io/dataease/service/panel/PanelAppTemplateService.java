@@ -168,6 +168,7 @@ public class PanelAppTemplateService {
             DataSetTableRequest datasetRequest = new DataSetTableRequest();
             BeanUtils.copyBean(datasetRequest, datasetTable);
             datasetRequest.setOptFrom("appApply");
+            datasetRequest.setSyncType("sync_now");
             DatasetTable newDataset = dataSetTableService.save(datasetRequest);
             datasetsRelaMap.put(oldId, newDataset.getId());
         }
