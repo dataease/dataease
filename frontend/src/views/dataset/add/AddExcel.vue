@@ -1,18 +1,20 @@
 <template>
-  <div class="dataset-excel">
+  <div class="dataset-excel" v-loading="loading">
     <p v-if="!showLeft" @click="showLeft = true" class="arrow-right">
       <i class="el-icon-d-arrow-right"></i>
     </p>
     <div v-else class="table-list">
       <p class="select-ds">
-        <span>{{ $t('deDataset.select_data_table ') }}
+        <span
+          >{{ $t('deDataset.select_data_table ') }}
           <el-tooltip class="item" effect="dark" placement="right">
             <div slot="content">
-              {{ $t('dataset.excel_info_1') }}<br>
-              {{ $t('dataset.excel_info_2') }}<br>
+              {{ $t('dataset.excel_info_1') }}<br />
+              {{ $t('dataset.excel_info_2') }}<br />
               {{ $t('dataset.excel_info_3') }}
             </div>
-            <i class="el-icon-warning-outline" /> </el-tooltip></span>
+            <i class="el-icon-warning-outline" /> </el-tooltip
+        ></span>
         <i class="el-icon-d-arrow-left" @click="showLeft = false" />
       </p>
       <el-upload
@@ -34,7 +36,7 @@
           :loading="uploading"
           secondary
           :disabled="uploading"
-        >{{ $t('deDataset.upload_data') }}
+          >{{ $t('deDataset.upload_data') }}
         </deBtn>
       </el-upload>
       <div class="table-checkbox-list">
@@ -118,22 +120,20 @@
                     <svg-icon
                       v-if="field.fieldType === 'TEXT'"
                       icon-class="field_text"
-                      class="field-icon-text"
-                    />
+                      class="field-icon-text" />
                     <svg-icon
                       v-if="field.fieldType === 'DATETIME'"
                       icon-class="field_time"
-                      class="field-icon-time"
-                    />
+                      class="field-icon-time" />
                     <svg-icon
                       v-if="
                         field.fieldType === 'LONG' ||
-                          field.fieldType === 'DOUBLE'
+                        field.fieldType === 'DOUBLE'
                       "
                       icon-class="field_value"
-                      class="field-icon-value"
-                    />
-                    <i class="el-icon-arrow-down el-icon--right" /></span>
+                      class="field-icon-value" />
+                    <i class="el-icon-arrow-down el-icon--right"
+                  /></span>
                   <el-dropdown-menu
                     slot="dropdown"
                     style="width: 178px"
@@ -143,32 +143,34 @@
                       v-for="item in fieldOptions"
                       :key="item.value"
                       :command="item.value"
-                    ><span>
-                       <svg-icon
-                         v-if="item.value === 'TEXT'"
-                         icon-class="field_text"
-                         class="field-icon-text"
-                       />
-                       <svg-icon
-                         v-if="item.value === 'DATETIME'"
-                         icon-class="field_time"
-                         class="field-icon-time"
-                       />
-                       <svg-icon
-                         v-if="
-                           item.value === 'LONG' || item.value === 'DOUBLE'
-                         "
-                         icon-class="field_value"
-                         class="field-icon-value"
-                       />
-                     </span>
+                      ><span>
+                        <svg-icon
+                          v-if="item.value === 'TEXT'"
+                          icon-class="field_text"
+                          class="field-icon-text"
+                        />
+                        <svg-icon
+                          v-if="item.value === 'DATETIME'"
+                          icon-class="field_time"
+                          class="field-icon-time"
+                        />
+                        <svg-icon
+                          v-if="
+                            item.value === 'LONG' || item.value === 'DOUBLE'
+                          "
+                          icon-class="field_value"
+                          class="field-icon-value"
+                        />
+                      </span>
                       <span
                         style="
                           color: #8492a6;
                           font-size: 14px;
                           margin-left: 10px;
                         "
-                      >{{ item.label }}</span></el-dropdown-item>
+                        >{{ item.label }}</span
+                      ></el-dropdown-item
+                    >
                   </el-dropdown-menu>
                 </el-dropdown>
                 <span style="font-size: 14px; margin-left: 10px">
@@ -216,6 +218,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       showLeft: true,
       errImg: require('@/assets/None_Select_ds.png'),
       sheetObj: { datasetName: ' ', fields: [] },
@@ -279,9 +282,14 @@ export default {
         this.defaultCheckedKeys.splice(index, 1)
       }
       this.validateName()
-      const labelList = this.$refs.tree.getCheckedNodes().map(ele => ele.excelLable)
-      const excelList = this.excelData.map(ele => ele.excelLable);
-      this.$emit('setTableNum', labelList.filter(ele => !excelList.includes(ele)).length)
+      const labelList = this.$refs.tree
+        .getCheckedNodes()
+        .map((ele) => ele.excelLable)
+      const excelList = this.excelData.map((ele) => ele.excelLable)
+      this.$emit(
+        'setTableNum',
+        labelList.filter((ele) => !excelList.includes(ele)).length
+      )
     },
     nameExsitValidator(ele, checkList) {
       this.$set(
@@ -333,7 +341,7 @@ export default {
     },
     calHeight() {
       const that = this
-      setTimeout(function() {
+      setTimeout(function () {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 56 - 30 - 26 - 25 - 35 - 10 - 37 - 20 - 10
       }, 10)
@@ -489,6 +497,7 @@ export default {
         )
           .then(() => {
             table.mergeSheet = true
+            this.loading = true
             post('/dataset/table/update', table).then((response) => {
               this.openMessageSuccess('deDataset.set_saved_successfully')
               this.cancel()
@@ -498,17 +507,30 @@ export default {
             if (action === 'close') {
               return
             }
+            this.loading = true
             table.mergeSheet = false
-            post('/dataset/table/update', table).then((response) => {
-              this.openMessageSuccess('deDataset.set_saved_successfully')
-              this.cancel()
-            })
+            post('/dataset/table/update', table)
+              .then((response) => {
+                this.openMessageSuccess('deDataset.set_saved_successfully')
+                this.cancel()
+              })
+              .finally(() => {
+                this.loading = false
+              })
+          })
+          .finally(() => {
+            this.loading = false
           })
       } else {
-        post('/dataset/table/update', table).then((response) => {
-          this.openMessageSuccess('deDataset.set_saved_successfully')
-          this.cancel()
-        })
+        this.loading = true
+        post('/dataset/table/update', table)
+          .then((response) => {
+            this.openMessageSuccess('deDataset.set_saved_successfully')
+            this.cancel()
+          })
+          .finally(() => {
+            this.loading = false
+          })
       }
     },
     cancel() {

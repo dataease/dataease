@@ -1,11 +1,11 @@
 <template>
-  <div class="dataset-union" @mouseup="mouseupDrag">
+  <div class="dataset-union" @mouseup="mouseupDrag" v-loading="loading">
     <div :style="{ height: unionHeight + 'px' }" class="unio-editer-container">
       <!--添加第一个数据集按钮-->
-      <div v-if="dataset.length === 0">
-        <el-button type="primary" size="mini" @click="selectDs">
+      <div style="padding: 24px" v-if="dataset.length === 0">
+        <deBtn type="primary" @click="selectDs">
           {{ $t('chart.select_dataset') }}
-        </el-button>
+        </deBtn>
       </div>
       <!--数据集关联树型结构-->
       <div v-else class="union-container">
@@ -57,7 +57,7 @@
         :fix-height="true"
         show-mode="union"
         :custom-type="customType"
-        clear-empty-dir="true"
+        :clear-empty-dir="true"
         @getTable="firstDs"
       />
       <div class="de-foot">
@@ -74,30 +74,29 @@
     </el-drawer>
 
     <!--编辑关联关系-->
-    <el-dialog
+    <el-drawer
       v-if="editUnion"
-      v-dialogDrag
-      top="5vh"
       :title="
         unionParam.type === 'add'
           ? $t('dataset.add_union_relation')
           : $t('dataset.edit_union_relation')
       "
-      :visible="editUnion"
-      :show-close="false"
-      width="600px"
-      class="dialog-css"
+      :visible.sync="editUnion"
+      custom-class="user-drawer union-dataset-drawer"
+      size="840px"
+      v-closePress
+      direction="rtl"
     >
       <union-edit :union-param="unionParam" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeEditUnion()">{{
+      <div class="de-foot">
+        <deBtn secondary @click="closeEditUnion()">{{
           $t('dataset.cancel')
-        }}</el-button>
-        <el-button type="primary" size="mini" @click="confirmEditUnion()">{{
+        }}</deBtn>
+        <deBtn type="primary" @click="confirmEditUnion()">{{
           $t('dataset.confirm')
-        }}</el-button>
+        }}</deBtn>
       </div>
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 
@@ -125,6 +124,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       // mock data，结构比较复杂，需要这个结构多看看...
       datasetMock: [
         {
@@ -206,6 +206,7 @@ export default {
         this.openMessageSuccess('dataset.char_can_not_more_50', 'error')
         return
       }
+      this.loading = true;
       const table = {
         id: this.param.tableId,
         name: this.param.name,
@@ -218,7 +219,9 @@ export default {
       post('/dataset/table/update', table).then((response) => {
         this.$emit('saveSuccess', table)
         this.cancel()
-      })
+      }).finally(() => {
+        this.loading = false;
+      }) 
     },
     cancel() {
       this.$router.back()
@@ -357,6 +360,7 @@ export default {
   .unio-editer-container {
     min-height: 298px;
     width: 100%;
+    background: #F5F6F7;
   }
 
   .preview-container {
@@ -398,6 +402,7 @@ export default {
 
   .union-container {
     display: flex;
+    padding: 24px;
     width: 100%;
     overflow: auto;
     height: 100%;

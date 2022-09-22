@@ -149,10 +149,17 @@
           v-if="isPluginLoaded"
           key="roles"
           prop="roles"
-          :formatter="filterRoles"
-          show-overflow-tooltip
           :label="$t('commons.role')"
-        />
+        >
+        <template slot-scope="scope">
+			<el-tooltip popper-class="de-table-tooltips" class="item" effect="dark" placement="top">
+			    <!-- // {{}}会将数据解释为普通文本，而非 HTML 代码。 -->
+			    <div v-html="filterRoles(scope.row.roles)" slot="content"></div>
+			    <div class="de-one-line">{{ filterRoles(scope.row.roles) }}</div>
+		    </el-tooltip>
+		</template>
+
+        </el-table-column>
         <el-table-column
           key="status"
           prop="status"
@@ -453,7 +460,7 @@ export default {
         this.$refs.search.blur()
       }
     },
-    filterRoles(row, column, cellValue) {
+    filterRoles(cellValue) {
       const roleNames = cellValue.map((ele) => ele.roleName)
       return roleNames.length ? roleNames.join() : '-'
     },
@@ -887,6 +894,15 @@ export default {
     color: #1f2329;
     width: 100%;
   }
+}
+.de-one-line {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.de-table-tooltips {
+  max-width: 200px;
 }
 </style>
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="dataset-sql" @mouseup="mouseupDrag">
+  <div class="dataset-sql" @mouseup="mouseupDrag" v-loading="loading">
     <div class="sql-editer">
       <el-row>
         <el-col :span="12">
@@ -385,6 +385,7 @@ export default {
   data() {
     return {
       dataSource: '',
+      loading: false,
       dataTable: '',
       initFlag: true,
       showTable: false,
@@ -485,7 +486,6 @@ export default {
   watch: {
     'param.tableId': {
       handler: function () {
-        this.resetComponent()
         this.initTableInfo()
       }
     }
@@ -636,6 +636,7 @@ export default {
         return
       }
       this.parseVariable()
+      this.loading = true;
       const table = {
         id: this.param.tableId,
         name: this.param.name,
@@ -653,11 +654,13 @@ export default {
       post('/dataset/table/update', table).then((response) => {
         this.openMessageSuccess('deDataset.set_saved_successfully')
         this.cancel()
-      })
+      }).finally(() => {
+        this.loading = false;
+      }) 
     },
 
     cancel() {
-      this.$router.back()
+      this.$router.push('/dataset/index')
     },
 
     showSQL(val) {
@@ -671,17 +674,6 @@ export default {
       this.sql = newCode
       this.$emit('codeChange', this.sql)
     },
-
-    resetComponent() {
-      this.dataSource = ''
-      this.param.name = ''
-      this.sql = ''
-      this.data = []
-      this.fields = []
-      this.mode = '0'
-      this.syncType = 'sync_now'
-    },
-
     variableMgm() {
       this.parseVariable()
       this.dialogTitle = this.$t('sql_variable.variable_mgm') + ' '
