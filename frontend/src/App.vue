@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <keep-alive>
-      <!-- 路由匹配到的组件将显示在这里 -->
       <router-view v-if="['/dataset/index', '/system/system-settings/appearance'].includes(key)"></router-view>
     </keep-alive>
     <router-view v-if="!['/dataset/index', '/system/system-settings/appearance'].includes(key)"></router-view>
