@@ -194,8 +194,8 @@ export default {
       if (this.editStatus&&this.canEdit===false) {
         this.canEdit = true
         this.element['editing'] = true
-        this.reShow()
         this.myValue = this.element.propValue.textValue
+        this.reShow()
       }
     },
     reShow() {
