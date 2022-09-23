@@ -639,7 +639,7 @@ div:focus {
 .blackTheme .el-radio-button__inner {
   background-color: var(--TableBG);
   color: var(--TableColor);
-  border: var(--TableBorder);
+  border-color: var(--TableBorderColor);
 }
 
 .blackTheme .el-loading-mask {
