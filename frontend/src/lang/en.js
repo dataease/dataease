@@ -1633,8 +1633,8 @@ export default {
       desensitization: 'Desensitization'
     },
     row_permissions: 'Row Permissions',
-    column_permissions: '列权限',
-    row_column_permissions: '行列权限',
+    column_permissions: 'Column Permissions',
+    row_column_permissions: 'Row And Column Permissions',
     union_data: 'Union Dataset',
     add_union_table: 'Add Union Dataset',
     edit_union: 'Edit Union Dataset',
