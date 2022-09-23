@@ -759,6 +759,8 @@ export default {
     externalRatation: '外旋转角',
     depth: '深度',
     reductionRate: '图形大小(%)',
+    shadowBlur: '阴影模糊',
+    variety_depth: '渐变深度',
     bar_width: '柱宽',
     bar_gap: '柱间隔',
     adapt: '自适应',

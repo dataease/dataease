@@ -4,7 +4,7 @@
       <el-form ref="colorForm" :model="colorForm" label-width="90px" size="mini">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
           <el-form-item v-show="chart.type && 
-              ((chart.render === 'echarts' && chart.type.includes('bar')) || 
+              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph')) || 
               (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) || 
               chart.type ==='line-stack' || chart.type.includes('3dcolumn'))" 
             :label="$t('chart.color_variety_check')" class="form-item">
@@ -51,7 +51,11 @@
               </div>
             </el-popover>
           </el-form-item>
-          <el-form-item v-show="colorForm.variety" :label="$t('chart.variety_color')" class="form-item">
+          <el-form-item v-show="colorForm.variety && chart.type && 
+              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph')) || 
+              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) || 
+              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))" 
+            :label="$t('chart.variety_color')" class="form-item">
             <el-popover
               placement="bottom"
               width="400"

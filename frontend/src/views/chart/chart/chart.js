@@ -112,6 +112,8 @@ export const DEFAULT_LABEL = {
   edgeLength: 10,
   gravity: 0.1,
   reductionRate: 50,
+  shadowBlur: 10,
+  variety_depth: 1,
 
   popShow: false,
   popOpen: 'right',

@@ -14,6 +14,12 @@
         <el-form-item :label="$t('chart.reductionRate')" class="form-item">
           <el-slider v-model="focusForm.reductionRate" show-input :show-input-controls="false" input-size="mini" :min="5" :step="5" :max="100" @change="changeFocusCase" />
         </el-form-item>
+        <el-form-item :label="$t('chart.shadowBlur')" class="form-item">
+          <el-slider v-model="focusForm.shadowBlur" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeFocusCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.variety_depth')" class="form-item">
+          <el-slider v-model="focusForm.variety_depth" show-input :show-input-controls="false" input-size="mini" :min="0.1" :step="0.1" :max="1" @change="changeFocusCase" />
+        </el-form-item>
       </el-form>
     </el-col>
   </div>
