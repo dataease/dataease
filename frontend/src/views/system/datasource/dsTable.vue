@@ -20,13 +20,10 @@
       </el-col>
     </el-row>
     <div class="table-container">
-      <grid-table
+      <el-table
         v-loading="loading"
-        :tableData="tableData"
-        :columns="[]"
-        :pagination="paginationConfig"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
+        :data="filterTable"
+        :style="{ width: '100%' }"
       >
         <el-table-column
           key="name"
@@ -34,28 +31,20 @@
           :label="$t('datasource.table_name')"
         />
         <el-table-column
-          slot="__operation"
           :label="$t('commons.operating')"
-          key="__operation"
           fixed="right"
-          width="168"
+          width="108"
         >
           <template slot-scope="scope">
             <el-button
-              @click="createtDataset(scope.row)"
-              class="text-btn mar3 mar6"
-              type="text"
-              >{{ $t("datasource.create_dataset") }}</el-button
-            >
-            <el-button
               @click="selectDataset(scope.row)"
-              class="text-btn"
+              class="de-text-btn mar3"
               type="text"
               >{{ $t("dataset.detail") }}</el-button
             >
           </template>
         </el-table-column>
-      </grid-table>
+      </el-table>
     </div>
     <el-drawer
       :title="$t('dataset.detail')"
@@ -106,11 +95,9 @@
 
 <script>
 import keyEnter from "@/components/msgCfm/keyEnter.js";
-import GridTable from "@/components/gridTable/index.vue";
 import {dsTable, post} from "@/api/dataset/dataset";
 export default {
   mixins: [keyEnter],
-  components: { GridTable },
   props: {
     params: {
       type: Object,
@@ -123,22 +110,18 @@ export default {
       dsTableDetail: {},
       nikeName: "",
       loading: false,
-      paginationConfig: {
-        currentPage: 1,
-        pageSize: 10,
-        total: 0,
-      },
-      dsTableData: [{date: 1}],
-      tableData: [{ name: 1 }],
+      dsTableData: [],
+      tableData: [],
+      filterTable: []
     };
   },
   created() {
-    post('/datasource/getTables/' + this.params.id, {}).then((response) => {
-      this.tableData = response.data
-    })
+    this.search()
   },
   methods: {
-    createtDataset(row) {},
+    initSearch() {
+      this.filterTable = this.tableData.filter(ele => ele.name.includes(this.nikeName))
+    },
     selectDataset(row) {
       this.dsTableDetail = row;
       this.userDrawer = true;
@@ -148,36 +131,14 @@ export default {
         this.dsTableData = response.data
       })
     },
-    handleSizeChange(pageSize) {
-      this.paginationConfig.currentPage = 1;
-      this.paginationConfig.pageSize = pageSize;
-      this.search();
-    },
-    handleCurrentChange(currentPage) {
-      this.paginationConfig.currentPage = currentPage;
-      this.search();
-    },
-    initSearch() {
-      this.handleCurrentChange(1);
-    },
     search() {
       this.loading = true;
-      const param = {
-        conditions: [],
-      };
-      if (this.nikeName) {
-        param.conditions.push({
-          field: `dataset_table_task.name`,
-          operator: "like",
-          value: this.nikeName,
-        });
-      }
-      const { currentPage, pageSize } = this.paginationConfig;
-      dsTable(currentPage, pageSize, this.params.id).then((response) => {
-        this.tableData = response.data.listObject;
-        this.paginationConfig.total = response.data.itemCount;
+      post('/datasource/getTables/' + this.params.id, {}).then((response) => {
+        this.tableData = response.data
+        this.initSearch()
+      }).finally(() => {
         this.loading = false;
-      });
+      })
     },
   },
 };
@@ -204,6 +165,9 @@ export default {
   height: 100%;
   padding: 10px 14px;
   box-sizing: border-box;
+  .mar3 {
+    margin-left: -5px;
+  }
   .table-name {
     font-family: PingFang SC;
     font-size: 16px;

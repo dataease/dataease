@@ -107,8 +107,10 @@ import datasetTree from '@/views/dataset/common/datasetTree'
 import UnionEdit from '@/views/dataset/add/union/UnionEdit'
 import { post } from '@/api/dataset/dataset'
 import UnionPreview from '@/views/dataset/add/union/UnionPreview'
+import cancelMix from './cancelMix'
 export default {
   name: 'AddUnion',
+  mixins: [cancelMix],
   components: {
     UnionPreview,
     UnionEdit,
@@ -218,13 +220,10 @@ export default {
       }
       post('/dataset/table/update', table).then((response) => {
         this.$emit('saveSuccess', table)
-        this.cancel()
+        this.cancel(response.data)
       }).finally(() => {
         this.loading = false;
       }) 
-    },
-    cancel() {
-      this.$router.back()
     },
     selectDs() {
       this.selectDsDialog = true
