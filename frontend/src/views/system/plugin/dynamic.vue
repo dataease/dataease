@@ -25,7 +25,7 @@ import DeLayoutContent from '@/components/business/DeLayoutContent'
 import AsyncComponent from '@/components/AsyncComponent'
 import i18n from '@/lang'
 import bus from '@/utils/bus'
-import { execute } from '@/api/system/dynamic'
+import { execute, get } from '@/api/system/dynamic'
 export default {
   name: 'Dynamic',
   components: {
@@ -56,18 +56,24 @@ export default {
       innerLoadingNames: ['SystemDept', 'SystemRole', 'SystemAuth']
     }
   },
-  created() {
-    if (this.jsname && this.menuid) {
-      this.showAsync = true
-      this.url = this.baseUrl + this.menuid
-      //   this.url = 'http://localhost:8081/PluginDemo.js'
-    //   this.url = 'http://localhost:8081/SystemParam.js'
-    } else {
-      this.showAsync = false
+  watch: {
+    'menuid' : function() {
+      this.init()
     }
+  },
+  created() {
+   this.init()
   },
 
   methods: {
+    init() {
+      if (this.jsname && this.menuid) {
+        this.showAsync = true
+        this.url = this.baseUrl + this.menuid
+      } else {
+        this.showAsync = false
+      }
+    },
     // hasLicense
     executeAxios(options) {
       execute(options).then(res => {
