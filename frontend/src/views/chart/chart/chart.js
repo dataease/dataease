@@ -1,6 +1,8 @@
 export const DEFAULT_COLOR_CASE = {
   value: 'default',
+  variety: false,
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+  colors1: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   alpha: 100,
   tableHeaderBgColor: '#e1eaff',
   tableItemBgColor: '#ffffff',
@@ -66,7 +68,7 @@ export const DEFAULT_SIZE = {
 
   alpha: 10,
   beta: 0,
-  depth: 40,
+  depth: 20,
 
   gaugeMin: 0,
   gaugeMax: 100,
@@ -261,10 +263,11 @@ export const DEFAULT_YAXIS_STYLE = {
   position: 'left',
   name: '',
   nameLocation: 'end',
+  nameGap: 20,
   nameTextStyle: {
     color: '#333333',
     fontSize: 12,
-    lineHeight: 40,
+    lineHeight: 20,
     fontFamily: ''
   },
   axisLabel: {

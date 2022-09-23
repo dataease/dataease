@@ -3,6 +3,13 @@
     <el-col>
       <el-form ref="colorForm" :model="colorForm" label-width="90px" size="mini">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
+          <el-form-item v-show="chart.type && 
+              ((chart.render === 'echarts' && chart.type.includes('bar')) || 
+              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) || 
+              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))" 
+            :label="$t('chart.color_variety_check')" class="form-item">
+            <el-checkbox v-model="colorForm.variety" @change="changeColorCase"></el-checkbox>
+          </el-form-item>
           <el-form-item v-show="chart.type && !chart.type.includes('table')&&!chart.type.includes('vertical')&&!chart.type.includes('dialog') && !chart.type.includes('roll')&&!chart.type.includes('dialog') && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.color_case')" class="form-item">
             <el-popover
               placement="bottom"
@@ -41,6 +48,47 @@
               </div>
               <div slot="reference" style="cursor: pointer;margin-top: 2px;width: 180px;">
                 <span v-for="(c,index) in colorForm.colors" :key="index" :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
+              </div>
+            </el-popover>
+          </el-form-item>
+          <el-form-item v-show="colorForm.variety" :label="$t('chart.variety_color')" class="form-item">
+            <el-popover
+              placement="bottom"
+              width="400"
+              trigger="click"
+            >
+              <div style="padding: 6px 10px;">
+                <div>
+                  <span class="color-label">{{ $t('chart.system_case') }}</span>
+                  <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColor1Option">
+                    <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
+                      <div style="float: left">
+                        <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c}" />
+                      </div>
+                      <span style="margin-left: 4px;">{{ option.name }}</span>
+                    </el-option>
+                  </el-select>
+                  <el-button size="mini" type="text" style="margin-left: 2px;" @click="resetCustomColor1">{{ $t('commons.reset') }}</el-button>
+                </div>
+                <div style="display: flex;align-items: center;margin-top: 10px;">
+                  <span class="color-label">{{ $t('chart.custom_case') }}</span>
+                  <span>
+                    <el-radio-group v-model="custom1Color" class="color-type">
+                      <el-radio v-for="(c,index) in colorForm.colors1" :key="index" :label="c" style="padding: 2px;" @change="switchColor1(index)">
+                        <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
+                      </el-radio>
+                    </el-radio-group>
+                  </span>
+                </div>
+                <div style="display: flex;align-items: center;margin-top: 10px;">
+                  <span class="color-label" />
+                  <span>
+                    <el-color-picker v-model="custom1Color" class="color-picker-style" :predefine="predefineColors" @change="switchColorCase1" />
+                  </span>
+                </div>
+              </div>
+              <div slot="reference" style="cursor:  pointer;margin-top: 2px;width: 180px;">
+                <span v-for="(v,index) in colorForm.colors1" :key="index" :style="{width: '20px',height:  '20px',display:'inline-block',backgroundColor: v}"></span>
               </div>
             </el-popover>
           </el-form-item>
@@ -200,7 +248,9 @@ export default {
       ],
       colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE)),
       customColor: null,
+      custom1Color: null,
       colorIndex: 0,
+      color1Index: 0,
       predefineColors: COLOR_PANEL
     }
   },
@@ -208,7 +258,9 @@ export default {
     'chart.id': {
       handler: function() {
         this.customColor = null
+        this.custom1Color = null
         this.colorIndex = 0
+        this.color1Index = 0
       }
     },
     'chart': {
@@ -237,10 +289,24 @@ export default {
 
       this.changeColorCase()
     },
+    changeColor1Option() {
+      const that = this
+      const items = this.colorCases.filter(ele => {
+        return ele.value === that.colorForm.value
+      })
+      // const val = JSON.parse(JSON.stringify(this.colorForm))
+      // val.value = items[0].value
+      // val.colors = items[0].colors
+      // this.colorForm.value = items[0].value
+      this.colorForm.colors1 = JSON.parse(JSON.stringify(items[0].colors))
+
+      this.custom1Color = this.colorForm.colors1[0]
+      this.color1Index = 0
+
+      this.changeColorCase()
+    },
     changeColorCase() {
       this.$emit('onColorChange', this.colorForm)
-      // this.customColor = null
-      // this.colorIndex = 0
     },
     init() {
       console.log('chart是否改变,color', this.chart)
@@ -255,9 +321,16 @@ export default {
         }
         if (customAttr.color) {
           this.colorForm = customAttr.color
+          if(!this.colorForm.colors1) {
+            this.colorForm.colors1 = this.colorForm.colors
+          }
           if (!this.customColor) {
             this.customColor = this.colorForm.colors[0]
             this.colorIndex = 0
+          }
+          if (!this.custom1Color) {
+            this.custom1Color = this.colorForm.colors1[0]
+            this.color1Index = 0
           }
 
           this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
@@ -274,9 +347,19 @@ export default {
       this.colorForm.colors[this.colorIndex] = this.customColor
       this.$emit('onColorChange', this.colorForm)
     },
+    switchColor1(index) {
+      this.color1Index = index
+    },
+    switchColorCase1() {
+      this.colorForm.colors1[this.color1Index] = this.custom1Color
+      this.$emit('onColorChange', this.colorForm)
+    },
 
     resetCustomColor() {
       this.changeColorOption()
+    },
+    resetCustomColor1() {
+      this.changeColor1Option()
     }
   }
 }

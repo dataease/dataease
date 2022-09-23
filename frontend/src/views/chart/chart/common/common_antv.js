@@ -48,7 +48,7 @@ export function getTheme(chart) {
       if(customAttr.color) {
         // 定义柱状图渐变色
         let a = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
-        let b = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha - 50)
+        let b = hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
         if (chart.type === 'bar' || chart.type === 'line-stack') { // 柱状图
           gColors.push(`l(270) 0:${a} 1:${b}`)
         } else if (chart.type === 'bar-horizontal') { // 横向柱状图
@@ -77,8 +77,8 @@ export function getTheme(chart) {
   return {
     styleSheet: {
       brandColor: colors[0],
-      paletteQualitative10: (chart.type === 'bar' || chart.type === 'bar-horizontal' || chart.type === 'line-stack') ? gColors : colors,
-      paletteQualitative20: (chart.type === 'bar' || chart.type === 'bar-horizontal' || chart.type === 'line-stack') ? gColors : colors,
+      paletteQualitative10: customAttr.color.variety && (chart.type === 'bar' || chart.type === 'bar-horizontal' || chart.type === 'line-stack') ? gColors : colors,
+      paletteQualitative20: customAttr.color.variety && (chart.type === 'bar' || chart.type === 'bar-horizontal' || chart.type === 'line-stack') ? gColors : colors,
       backgroundColor: bgColor
     },
     labels: {
@@ -281,7 +281,7 @@ export function getXAxis(chart, cstyle = {}) {
         const title = (a.name && a.name !== '') ? {
           text: a.name,
           position: a.nameLocation? a.nameLocation : 'center',
-          offset: a.nameTextStyle.lineHeight? a.nameTextStyle.lineHeight : 40,
+          offset: a.nameGap? a.nameGap : 20,
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
@@ -348,13 +348,14 @@ export function getYAxis(chart, cstyle = {}) {
         const title = (a.name && a.name !== '') ? {
           text: a.name,
           position: a.nameLocation? a.nameLocation : 'center',
-          offset: a.nameTextStyle.lineHeight? a.nameTextStyle.lineHeight : 40,
+          offset: a.nameGap? a.nameGap : 20,
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
             fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
           },
-          spacing: 8
+          autoRotate: false,
+          spacing: 10
         } : null
         const grid = a.splitLine && a.splitLine.show ? {
           line: {

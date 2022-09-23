@@ -25,9 +25,12 @@
               <el-radio-button label="start">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
-          <el-form-item v-show="axisForm.nameLocation === 'center'" :label="$t('chart.axias_name_lineHeight')" class="form-item">
-            <el-slider v-model="axisForm.nameTextStyle.lineHeight" show-input :show-input-controls="false" :min="0" :max="100" input-size="mini" @change="changeYAxisStyle" />
+          <el-form-item :label="$t('chart.axias_name_gap')" class="form-item">
+            <el-slider v-model="axisForm.nameGap" show-input :show-input-controls="false" :min="0" :max="100" input-size="mini" @change="changeYAxisStyle" />
           </el-form-item>
+          <!-- <el-form-item  :label="$t('chart.axias_name_lineHeight')" class="form-item">
+            <el-slider v-model="axisForm.nameTextStyle.lineHeight" show-input :show-input-controls="false" :min="0" :max="100" input-size="mini" @change="changeYAxisStyle" />
+          </el-form-item> -->
           <el-form-item :label="$t('chart.dimension_font_size')" class="form-item">
             <el-select v-model="axisForm.nameTextStyle.fontSize" :placeholder="$t('chart.dimension_font_size')" @change="changeYAxisStyle">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />

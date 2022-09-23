@@ -64,7 +64,8 @@ export const BASE_PIE = {
     options3d: {
       enabled: true,
       alpha: 45,
-      beta: 0
+      beta: 0,
+      depth: 20,
     },
     backgroundColor: 'rgba(0,0,0,0)'
   },
@@ -106,7 +107,6 @@ export const BASE_PIE = {
 
 let terminalType = 'pc'
 export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) {
-  console.log('apple......')
   terminalType = terminal
   let customAttr = {}
   // console.log('chart.customAttr: ', chart.customAttr)
@@ -146,6 +146,13 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
       dataLabels.format = formatter
 
       chart_option.plotOptions.pie.dataLabels = dataLabels
+    }
+
+    // size
+    if (customAttr.size) {
+      chart_option.chart.options3d.alpha = customAttr.size.alpha ? customAttr.size.alpha : 10
+      chart_option.chart.options3d.beta = customAttr.size.beta ? customAttr.size.beta : 0
+      chart_option.chart.options3d.depth = customAttr.size.depth ? customAttr.size.depth : 20
     }
   }
 
