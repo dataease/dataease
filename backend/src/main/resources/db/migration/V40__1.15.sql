@@ -121,3 +121,8 @@ ALTER TABLE `sys_user_assist`
     ADD COLUMN `dingtalk_id` varchar(255) NULL COMMENT '钉钉账号' AFTER `wecom_id`,
     ADD COLUMN `lark_id` varchar(255) NULL COMMENT '飞书账号' AFTER `dingtalk_id`;
 
+INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`, `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`, `copy_id`) VALUES ('d55c4585-3b0a-11ed-8009-0242ac130005', '379c3124-7a30-4c1b-8ae4-de23eaf34b71', 'i18n_auth_grant', 15, 0, 'grant', '基础权限-授权', 'admin', 1663915323000, NULL, NULL, NULL);
+INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`, `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`, `copy_id`) VALUES ('d55c4c0d-3b0a-11ed-8009-0242ac130005', '379c3124-7a30-4c1b-8ae4-de23eaf34b71', 'i18n_auth_manage', 3, 0, 'manage', '基础权限-管理', 'admin', 1663915323000, NULL, NULL, NULL);
+INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_type`, `privilege_value`, `privilege_extend`, `remark`, `create_user`, `create_time`, `update_time`, `copy_from`, `copy_id`) VALUES ('d55c4d88-3b0a-11ed-8009-0242ac130005', '379c3124-7a30-4c1b-8ae4-de23eaf34b71', 'i18n_auth_use', 1, 1, 'use', '基础权限-使用', 'admin', 1663915323000, NULL, NULL, NULL);
+INSERT INTO `sys_auth` (`id`, `auth_source`, `auth_source_type`, `auth_target`, `auth_target_type`, `auth_time`, `auth_details`, `auth_user`, `update_time`, `copy_from`, `copy_id`) VALUES ('379c3124-7a30-4c1b-8ae4-de23eaf34b71', 'bdfcc324-1181-46a6-b681-a453517c4ffa', 'dataset', '2', 'user', 1663915323123, NULL, 'admin', NULL, NULL, NULL);
+
