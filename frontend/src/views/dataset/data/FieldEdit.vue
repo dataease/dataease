@@ -307,7 +307,7 @@
                   class="de-text-btn"
                   style="margin-left: 8px"
                   @click="editField(scope.row)"
-                  >{{ $t('deDataset.dataset.edit') }}</el-button
+                  >{{ $t('dataset.edit') }}</el-button
                 >
                 <el-dropdown
                   size="medium"
