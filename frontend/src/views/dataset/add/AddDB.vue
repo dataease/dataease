@@ -1,9 +1,9 @@
 <template>
   <div class="dataset-db" v-loading="loading">
-    <p v-if="!showLeft" @click="showLeft = true" class="arrow-right">
+    <p v-show="!showLeft" @click="showLeft = true" class="arrow-right">
       <i class="el-icon-d-arrow-right"></i>
     </p>
-    <div class="table-list" v-else>
+    <div class="table-list" v-show="showLeft">
       <p class="select-ds">
         {{ $t('deDataset.select_data_source') }}
         <i @click="showLeft = false" class="el-icon-d-arrow-left"></i>
@@ -158,10 +158,10 @@
 import { listDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
 import { engineMode, dbPreview } from '@/api/system/engine'
 import msgCfm from '@/components/msgCfm/index'
-
+import cancelMix from './cancelMix'
 export default {
   name: 'AddDB',
-  mixins: [msgCfm],
+  mixins: [ msgCfm, cancelMix],
   props: {
     param: {
       type: Object,
@@ -312,7 +312,7 @@ export default {
       const that = this
       setTimeout(function () {
         const currentHeight = document.documentElement.clientHeight
-        that.height = currentHeight - 195 - 54
+        that.height = currentHeight - 56 - 64 - 75 - 32 - 24 - 16 - 10
       }, 10)
     },
     setActiveName({ name, datasourceId, enableCheck }) {
@@ -368,15 +368,11 @@ export default {
       post('/dataset/table/batchAdd', tables)
         .then((response) => {
           this.openMessageSuccess('deDataset.set_saved_successfully')
-          this.cancel()
+          this.cancel(response.data)
         })
         .finally(() => {
           this.loading = false
         })
-    },
-
-    cancel() {
-      this.$router.back()
     },
     dataReset() {
       this.searchTable = ''

@@ -445,7 +445,7 @@ export default {
     cost: 'cost',
     developer: 'developer',
     edition: 'edition',
-    installation_time: 'Installation time:'
+    installation_time: 'Install time'
   },
   table: {
     dynamicTips1: 'Fixed header, sorted by header order',
@@ -910,6 +910,11 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    margin_model: 'Model',
+    margin_model_auto: 'Auto',
+    margin_model_absolute: 'Absolute',
+    margin_model_relative: 'Relative',
+    margin_placeholder: 'Please enter a number from 0-100',
     rich_text_view_result_tips: 'The rich text view selects only the first result',
     rich_text_view: 'Rich Text View',
     view_reset: 'View Reset',

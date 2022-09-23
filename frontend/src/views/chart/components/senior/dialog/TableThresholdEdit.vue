@@ -139,7 +139,7 @@ export default {
         field: '0',
         value: '',
         color: '#ff0000ff',
-        backgroundColor: '#ffffffff',
+        backgroundColor: '#ffffff00',
         min: '0',
         max: '1'
       },

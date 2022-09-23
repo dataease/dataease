@@ -1,9 +1,9 @@
 <template>
   <div class="dataset-excel" v-loading="loading">
-    <p v-if="!showLeft" @click="showLeft = true" class="arrow-right">
+    <p v-show="!showLeft" @click="showLeft = true" class="arrow-right">
       <i class="el-icon-d-arrow-right"></i>
     </p>
-    <div v-else class="table-list">
+    <div v-show="showLeft" class="table-list">
       <p class="select-ds">
         <span
           >{{ $t('deDataset.select_data_table ') }}
@@ -192,12 +192,13 @@ import i18n from '@/lang'
 import { $alert, $confirm } from '@/utils/message'
 import store from '@/store'
 import msgCfm from '@/components/msgCfm/index'
+import cancelMix from './cancelMix'
 
 const token = getToken()
 
 export default {
   name: 'AddExcel',
-  mixins: [msgCfm],
+  mixins: [ msgCfm, cancelMix],
   props: {
     param: {
       type: Object,
@@ -500,7 +501,7 @@ export default {
             this.loading = true
             post('/dataset/table/update', table).then((response) => {
               this.openMessageSuccess('deDataset.set_saved_successfully')
-              this.cancel()
+              this.cancel(response.data)
             })
           })
           .catch((action) => {
@@ -512,7 +513,7 @@ export default {
             post('/dataset/table/update', table)
               .then((response) => {
                 this.openMessageSuccess('deDataset.set_saved_successfully')
-                this.cancel()
+                this.cancel(response.data)
               })
               .finally(() => {
                 this.loading = false
@@ -526,15 +527,12 @@ export default {
         post('/dataset/table/update', table)
           .then((response) => {
             this.openMessageSuccess('deDataset.set_saved_successfully')
-            this.cancel()
+            this.cancel(response.data)
           })
           .finally(() => {
             this.loading = false
           })
       }
-    },
-    cancel() {
-      this.$router.back()
     },
     dataReset() {
       this.searchTable = ''
