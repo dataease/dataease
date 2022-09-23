@@ -222,10 +222,7 @@
                   />
                 </span>
                 <span
-                  v-if="
-                    data.modelInnerType === 'db' ||
-                    data.modelInnerType === 'sql'
-                  "
+                  v-if="['db', 'sql'].includes(data.modelInnerType)"
                 >
                   <span v-if="data.mode === 0" style="margin-left: 6px"
                     ><i class="el-icon-s-operation"
@@ -241,6 +238,7 @@
                     overflow: hidden;
                     text-overflow: ellipsis;
                   "
+                  :class="[{ 'de-fill-block': !['db', 'sql'].includes(data.modelInnerType)}]"
                   :title="data.name"
                   >{{ data.name }}</span
                 >
@@ -498,6 +496,7 @@ export default {
       },
       isTreeSearch: false,
       kettleRunning: false,
+      pageCreated: false,
       engineMode: 'local',
       searchPids: [], // 查询命中的pid
       filterText: '',
@@ -528,13 +527,17 @@ export default {
     }
   },
   activated() {
+    if (!this.pageCreated) return;
     const dataset = this.$refs.datasetTreeRef?.getCurrentNode()
+    const { id, name } = this.$route.params
     queryAuthModel({ modelType: 'dataset' }, true).then((res) => {
       localStorage.setItem('dataset-tree', JSON.stringify(res.data))
       this.tData = res.data
       this.$nextTick(() => {
         this.$refs.datasetTreeRef?.filter(this.filterText)
-        if (dataset) {
+        if (id && name.includes(this.filterText)) {
+          this.dfsTableData(this.tData, id)
+        } else if (dataset) {
           this.$refs.datasetTreeRef?.setCurrentNode(dataset)
           this.nodeClick(dataset)
         }
@@ -542,6 +545,7 @@ export default {
     })
   },
   created() {
+    this.pageCreated = true;
     this.kettleState()
     engineMode().then((res) => {
       this.engineMode = res.data
@@ -552,6 +556,19 @@ export default {
     this.refresh()
   },
   methods: {
+    dfsTableData(arr, id) {
+      arr.some(ele => {
+        if(ele.id === id) {
+          this.$refs.datasetTreeRef?.setCurrentNode(ele)
+          this.nodeClick(ele)
+          this.expandedArray.push(id)
+          return true
+        } else if (ele.children?.length) {
+          this.dfsTableData(ele.children, id)
+        }
+        return false
+      });
+    },
     nameRepeat(value) {
       if (!this.fileList || this.fileList.length === 0) {
         return false
@@ -978,8 +995,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.search-input {
-  padding: 12px 0;
+.de-fill-block {
+  margin-left: 35px !important;
 }
 
 .custom-tree-container {

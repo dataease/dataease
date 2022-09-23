@@ -371,11 +371,12 @@ import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
 import { engineMode } from '@/api/system/engine'
 import msgCfm from '@/components/msgCfm/index'
+import cancelMix from './cancelMix'
 import _ from 'lodash'
 export default {
   name: 'AddSQL',
   components: { codemirror },
-  mixins: [msgCfm],
+  mixins: [ msgCfm, cancelMix],
   props: {
     param: {
       type: Object,
@@ -656,17 +657,12 @@ export default {
       post('/dataset/table/update', table)
         .then((response) => {
           this.openMessageSuccess('deDataset.set_saved_successfully')
-          this.cancel()
+          this.cancel(response.data)
         })
         .finally(() => {
           this.loading = false
         })
     },
-
-    cancel() {
-      this.$router.push('/dataset/index')
-    },
-
     showSQL(val) {
       this.sql = val || ''
     },
