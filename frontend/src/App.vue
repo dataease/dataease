@@ -1,10 +1,7 @@
 <template>
   <div id="app">
-    <keep-alive>
-      <router-view v-show="['/dataset/index', '/system/system-settings/appearance'].includes(key)"></router-view>
-    </keep-alive>
-    <router-view v-show="!['/dataset/index', '/system/system-settings/appearance'].includes(key)"></router-view>
-    <plugin-com v-show="false" ref="de-theme" component-name="ThemeSetting" />
+    <router-view/>
+    <plugin-com v-show="false" ref="de-theme" component-name="ThemeSetting"/>
   </div>
 </template>
 
@@ -13,11 +10,9 @@ import PluginCom from '@/views/system/plugin/PluginCom'
 
 export default {
   name: 'App',
-  components: { PluginCom },
-  computed: {
-    key() {
-      return this.$route.path
-    }
+  components: {PluginCom},
+  beforeCreate() {
+
   }
 }
 </script>
