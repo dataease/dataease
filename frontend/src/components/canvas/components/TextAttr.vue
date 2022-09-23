@@ -218,7 +218,7 @@ export default {
       innerOpacity: 0,
       mainWidthOffset: 600,
       initFontSize: 12,
-      miniFontSize: 12,
+      miniFontSize: 0,
       maxFontSize: 128,
       textAlignOptions: [
         {
