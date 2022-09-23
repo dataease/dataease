@@ -30,7 +30,7 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
       // color
-      if(customAttr.color.variety) {
+      if (customAttr.color.variety) {
         y.itemStyle = {
           color: {
             type: 'linear',
@@ -47,15 +47,15 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
             }],
             global: false // 缺省为 false
           },
-          barBorderRadius: barBorderRadiusArr,
+          barBorderRadius: barBorderRadiusArr
         }
       } else {
         y.itemStyle = {
           color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
-          barBorderRadius: barBorderRadiusArr,
+          barBorderRadius: barBorderRadiusArr
         }
       }
-      
+
       // size
       if (customAttr.size) {
         if (customAttr.size.barDefault) {
@@ -122,7 +122,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
       // color
-      if(customAttr.color.variety) {
+      if (customAttr.color.variety) {
         y.itemStyle = {
           color: {
             type: 'linear',
@@ -225,8 +225,8 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
           color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha)
         }, {
           offset: 1, // 100% 的颜色
-          color: customAttr.color.variety? hexColorToRGBA(customAttr.color.colors1[0],customAttr.color.alpha) 
-                : hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha)
+          color: customAttr.color.variety ? hexColorToRGBA(customAttr.color.colors1[0], customAttr.color.alpha)
+            : hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha)
         }],
         global: false // 缺省为 false
       }
@@ -277,8 +277,8 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
       symbolOffset: [0, '-60%'],
       symbolSize: [customAttr.size.barDefault ? '84%' : customAttr.size.barWidth, '20'],
       itemStyle: {
-        color: customAttr.color.variety? hexColorToRGBA(customAttr.color.colors1[0],customAttr.color.alpha) 
-              : hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha),
+        color: customAttr.color.variety ? hexColorToRGBA(customAttr.color.colors1[0], customAttr.color.alpha)
+          : hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha),
         borderWidth: 6,
         borderColor: '#eeeeee'
       }
@@ -303,18 +303,18 @@ export function basePictorialBarOption(chart_option, chart, cstyle = {}) {
           colorStops: [{
             offset: 0, // 0% 的颜色
             color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha)
-          },{
+          }, {
             offset: 0.5, // 50% 的颜色
             color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha)
           }, {
             offset: 1, // 100% 的颜色
-            color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha -90)
+            color: hexColorToRGBA(customAttr.color.colors[0], customAttr.color.alpha - 90)
           }],
           global: false // 缺省为 false
         },
         borderWidth: 0
       }
-      
+
     }
 
     const x1 = { // 背景柱
