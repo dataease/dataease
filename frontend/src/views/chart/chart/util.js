@@ -271,6 +271,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
+    value: 'bar-triangle',
+    title: '三角柱状图',
+    icon: 'bar'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
     value: 'bar-stack',
     title: 'chart.chart_bar_stack',
     icon: 'bar-stack'

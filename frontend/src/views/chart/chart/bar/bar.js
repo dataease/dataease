@@ -80,6 +80,90 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
   seniorCfg(chart_option, chart)
   return chart_option
 }
+// triangleBarOption
+export function triangleBarOption(chart_option, chart, cstyle = {}) {
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.color) {
+      chart_option.color = customAttr.color.colors
+    }
+    // tooltip
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
+  }
+  // 处理data
+  if (chart.data) {
+    chart_option.title.text = chart.title
+    chart_option.xAxis.data = chart.data.x
+    console.log('customAttr?????????', customAttr)
+    const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
+    for (let i = 0; i < chart.data.series.length; i++) {
+      const y = chart.data.series[i]
+      // color
+
+      if (customAttr.color.variety) {
+        y.itemStyle = {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 1,
+            x2: 0,
+            y2: 0,
+            colorStops: [{
+              offset: 0, // 0% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+            }, {
+              offset: 1, // 100% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+            }],
+            global: false // 缺省为 false
+          },
+          barBorderRadius: barBorderRadiusArr
+        }
+      } else {
+        y.itemStyle = {
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr
+        }
+      }
+
+      // size
+      if (customAttr.size) {
+        if (customAttr.size.barDefault) {
+          y.barWidth = null
+          y.barGap = null
+        } else {
+          y.barWidth = customAttr.size.barWidth
+          y.barGap = customAttr.size.barGap
+        }
+      }
+      // label
+      if (customAttr.label) {
+        y.label = customAttr.label
+      }
+      y.type = 'pictorialBar'
+      y.symbol = 'triangle'
+      y.barMinHeight = 10
+      y.barCategoryGap = '0%'
+      // y.type = 'bar'
+      chart_option.legend.data.push(y.name)
+      chart_option.series.push(y)
+    }
+  }
+  // console.log(chart_option);
+  componentStyle(chart_option, chart, cstyle)
+  seniorCfg(chart_option, chart)
+  return chart_option
+}
 
 export function stackBarOption(chart_option, chart, cstyle = {}) {
   baseBarOption(chart_option, chart, cstyle)
