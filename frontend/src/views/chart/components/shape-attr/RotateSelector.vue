@@ -3,7 +3,7 @@
     <el-col>
       <el-form v-show="chart.type " ref="rotateFormGraph" :model="rotateForm" label-width="100px" size="mini">
         <el-form-item :label="$t('chart.innerRotation')" class="form-item">
-          <el-slider v-model="rotateForm.alpha" show-input :show-input-controls="false" input-size="mini" :min="0" :max="45" @change="changeFocusCase" />
+          <el-slider v-model="rotateForm.alpha" show-input :show-input-controls="false" input-size="mini" :min="0" :max="90" @change="changeFocusCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.externalRatation')" class="form-item">
           <el-slider v-model="rotateForm.beta" show-input :show-input-controls="false" input-size="mini" :min="-45" :max="45" @change="changeFocusCase" />

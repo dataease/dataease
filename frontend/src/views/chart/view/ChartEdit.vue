@@ -766,7 +766,7 @@
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'highcharts' && view.type && view.type.includes('3dcolumn')"
+                    v-show="view.render && view.render === 'highcharts' && view.type && (view.type.includes('3dcolumn') || view.type === '3dpie')"
                     name="rotate"
                     :title="$t('chart.rotate')"
                   >
