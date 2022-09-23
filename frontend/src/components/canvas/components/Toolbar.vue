@@ -67,7 +67,7 @@
           </el-tooltip>
         </span>
         <span v-else style="padding: 0px 10px;">
-          <el-input-number v-model="moveSize" :min="10" :max="1000" size="mini" style="width: 100px;margin-right: 10px;"></el-input-number>
+          <el-input-number v-model="moveSize" :min="1" :max="1000" size="mini" style="width: 100px;margin-right: 10px;"></el-input-number>
           <el-tooltip :content="$t('commons.move.left')">
             <el-button class="el-icon-back" size="mini" circle @click="moveChange('left')" />
           </el-tooltip>

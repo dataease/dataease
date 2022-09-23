@@ -262,10 +262,11 @@ export const DEFAULT_YAXIS_STYLE = {
   position: 'left',
   name: '',
   nameLocation: 'end',
+  nameGap: 20,
   nameTextStyle: {
     color: '#333333',
     fontSize: 12,
-    lineHeight: 40,
+    lineHeight: 20,
     fontFamily: ''
   },
   axisLabel: {

@@ -72,8 +72,10 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.xAxis.axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       chart_option.xAxis.splitLine = customStyle.xAxis.splitLine
       chart_option.xAxis.nameLocation = customStyle.xAxis.nameLocation
+      chart_option.xAxis.nameGap = customStyle.xAxis.nameGap
       chart_option.xAxis.nameTextStyle = {
         ...customStyle.xAxis.nameTextStyle,
+        lineHeight: 20,
         fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       }
       chart_option.xAxis.axisLabel.showMaxLabel = true
@@ -103,8 +105,11 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.yAxis.axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       chart_option.yAxis.splitLine = customStyle.yAxis.splitLine
       chart_option.yAxis.nameLocation = customStyle.yAxis.nameLocation
+      chart_option.yAxis.nameGap = customStyle.yAxis.nameGap
+      chart_option.yAxis.nameRotate = 0
       chart_option.yAxis.nameTextStyle = {
         ...customStyle.yAxis.nameTextStyle,
+        lineHeight: 20,
         fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       }
 

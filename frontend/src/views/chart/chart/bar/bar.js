@@ -46,11 +46,13 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
               color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
             }],
             global: false // 缺省为 false
-          }
+          },
+          barBorderRadius: barBorderRadiusArr,
         }
       } else {
         y.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr,
         }
       }
       

@@ -944,6 +944,7 @@ export default {
     axis_name_location: '名称位置',
     axis_name_fontsize: '名称字体',
     axias_name_lineHeight: '名称行高',
+    axias_name_gap: '名称轴间距',
     pie_label_line_show: '引导线',
     outside: '外',
     center: '中心',
