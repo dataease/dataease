@@ -25,7 +25,9 @@ module.exports = {
         // target: 'http://localhost:9528/',
         // target: 'http://ew5nffth3rvv.ngrok2.xiaomiqiu.cn/', 192.168.3.223
         // target: 'http://172.16.226.133/',
-        target: 'http://122.9.188.217:8082/',
+        // target: 'http://122.9.188.217:8082/',
+        // target: 'http://183.194.64.166:10080',
+        target: 'http://192.168.3.67/',
         // target: 'http://192.168.3.223/',
         // target: 'http://192.168.3.223/',
         // target: 'http://192.168.3.223/',
