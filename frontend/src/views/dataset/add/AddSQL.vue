@@ -122,7 +122,7 @@
         <span class="no-select-datasource" v-if="!dataSource">{{
           $t('deDataset.to_start_using')
         }}</span>
-        <div v-else-if="dataSource && !dataTable" class="item-list">
+        <div v-loading="tableLoading" v-else-if="dataSource && !dataTable" class="item-list">
           <div
             @click="typeSwitch(ele)"
             :key="ele.name"
@@ -414,6 +414,7 @@ export default {
       sqlHeight: 248,
       fields: [],
       mode: '0',
+      tableLoading: false,
       syncType: 'sync_now',
       height: 500,
       kettleRunning: false,
@@ -485,27 +486,21 @@ export default {
     dataSourceDetail() {}
   },
   watch: {
-    'param.tableId': {
-      handler: function () {
-        this.initTableInfo()
-      }
-    },
     sqlHeight: {
       handler: function () {
         this.calHeight()
       }
     }
   },
-  mounted() {
+  async mounted() {
     window.onresize = () => {
       this.calHeight()
     }
     this.calHeight()
-    this.initDataSource()
+    await this.initDataSource()
     this.$refs.myCm.codemirror.on('keypress', () => {
       this.$refs.myCm.codemirror.showHint()
     })
-
     this.initTableInfo()
   },
   created() {
@@ -562,8 +557,11 @@ export default {
           }
         }
       }
+      this.tableLoading = true
       post('/datasource/getTables/' + this.dataSource, {}).then((response) => {
         this.tableData = response.data
+      }).finally(() => {
+        this.tableLoading = false
       })
     },
     calHeight: _.debounce(function() {
@@ -572,7 +570,7 @@ export default {
       this.height = currentHeight - sqlHeight - 56 - 54 - 36 - 64
     }, 200),
     initDataSource() {
-      listDatasource().then((response) => {
+      return listDatasource().then((response) => {
         this.options = response.data.filter((item) => item.type !== 'api')
       })
     },
@@ -582,6 +580,7 @@ export default {
         getTable(this.param.tableId).then((response) => {
           const table = response.data
           this.dataSource = table.dataSourceId
+          this.changeDatasource()
           this.mode = table.mode + ''
 
           if (JSON.parse(table.info).isBase64Encryption) {
