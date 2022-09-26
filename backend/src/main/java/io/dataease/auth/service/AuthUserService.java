@@ -19,6 +19,10 @@ public interface AuthUserService {
 
     SysUserEntity getUserBySub(String sub, Integer from);
 
+    SysUserEntity getUserByWecomId(String weComId);
+    SysUserEntity getUserByDingtalkId(String dingtalkId);
+    SysUserEntity getUserByLarkId(String larkId);
+
     List<String> roles(Long userId);
 
     List<String> permissions(Long userId);

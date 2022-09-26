@@ -9,6 +9,7 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
+import io.dataease.plugins.common.base.domain.SysUserAssist;
 import io.dataease.plugins.config.SpringContextUtil;
 
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
@@ -17,6 +18,7 @@ import io.dataease.plugins.xpack.lark.dto.entity.LarkUserInfo;
 import io.dataease.plugins.xpack.lark.dto.response.LarkInfo;
 import io.dataease.plugins.xpack.lark.service.LarkXpackService;
 import io.dataease.service.sys.SysUserService;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
@@ -27,6 +29,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
@@ -94,12 +97,12 @@ public class XLarkServer {
             LarkUserInfo larkUserInfo = larkXpackService.userInfo(code, state);
             String username = larkUserInfo.getUser_id();
             String sub = larkUserInfo.getSub();
-            SysUserEntity sysUserEntity = authUserService.getUserBySub(sub, 6);
+            SysUserEntity sysUserEntity = authUserService.getUserByLarkId(sub);
             if (null == sysUserEntity) {
                 String email = StringUtils.isNotBlank(larkUserInfo.getEmail()) ? larkUserInfo.getEmail() : (username + "@lark.work");
                 sysUserService.validateExistUser(username, larkUserInfo.getName(), email);
                 sysUserService.saveLarkCUser(larkUserInfo, email);
-                sysUserEntity = authUserService.getUserBySub(sub, 6);
+                sysUserEntity = authUserService.getUserByLarkId(sub);
             }
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
             String realPwd = sysUserEntity.getPassword();
@@ -130,5 +133,66 @@ public class XLarkServer {
             }
         }
         return modelAndView;
+    }
+
+    private void bindError(HttpServletResponse response, String url, String errorMsg) {
+        Cookie cookie_error = new Cookie("LarkError", errorMsg);
+        cookie_error.setPath("/");
+        response.addCookie(cookie_error);
+        try {
+            response.sendRedirect(url);
+        } catch (IOException e) {
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException(e);
+        }
+    }
+
+    @GetMapping("/bind")
+    public void bind(@RequestParam("code") String code, @RequestParam("state") String state) {
+
+        HttpServletResponse response = ServletUtils.response();
+        String url = "/#person-info/index/";
+
+        LarkXpackService larkXpackService = null;
+        try {
+            SysUserEntity userEntity = authUserService.getUserById(Long.parseLong(state));
+            if (ObjectUtils.isEmpty(userEntity)) {
+                bindError(response, url, "绑定用户不存在");
+            }
+            SysUserAssist sysUserAssist = sysUserService.assistInfo(Long.parseLong(state));
+            if (ObjectUtils.isNotEmpty(sysUserAssist) && StringUtils.isNotBlank(sysUserAssist.getWecomId())) {
+                bindError(response, url, "目标用户已绑定其他飞书账号");
+            }
+
+            Boolean isOpen = authUserService.supportLark();
+            if (!isOpen) {
+                DEException.throwException("未开启飞书");
+            }
+            larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
+            LarkUserInfo larkUserInfo = larkXpackService.userInfo(code, state);
+            String userId = larkUserInfo.getUser_id();
+
+
+            SysUserEntity sysUserEntity = authUserService.getUserByLarkId(userId);
+            if (null != sysUserEntity) {
+                bindError(response, url, "当前飞书账号已绑定其他DE用户");
+            }
+
+
+            response.sendRedirect(url);
+        } catch (Exception e) {
+
+            String msg = e.getMessage();
+            if (null != e.getCause()) {
+                msg = e.getCause().getMessage();
+            }
+            try {
+                msg = URLEncoder.encode(msg, "UTF-8");
+                LogUtil.error(e);
+                bindError(response, url, msg);
+            } catch (UnsupportedEncodingException e1) {
+                e.printStackTrace();
+            }
+        }
     }
 }

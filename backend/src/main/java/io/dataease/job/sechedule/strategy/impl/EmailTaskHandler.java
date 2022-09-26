@@ -227,11 +227,11 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                             List<String> wecomUsers = new ArrayList<>();
                             for (int j = 0; j < reciLists.size(); j++) {
                                 String reci = reciLists.get(j);
-                                SysUserEntity userBySub = userService.getUserBySub(reci, 4);
+                                SysUserEntity userBySub = userService.getUserByName(reci);
                                 if (ObjectUtils.isEmpty(userBySub)) continue;
                                 Long userId = userBySub.getUserId();
                                 SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
-                                if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getLarkId()))
+                                if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getWecomId()))
                                     continue;
                                 wecomUsers.add(sysUserAssist.getLarkId());
                             }
@@ -251,11 +251,11 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                             List<String> dingTalkUsers = new ArrayList<>();
                             for (int j = 0; j < reciLists.size(); j++) {
                                 String reci = reciLists.get(j);
-                                SysUserEntity userBySub = userService.getUserBySub(reci, 5);
+                                SysUserEntity userBySub = userService.getUserByName(reci);
                                 if (ObjectUtils.isEmpty(userBySub)) continue;
                                 Long userId = userBySub.getUserId();
                                 SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
-                                if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getLarkId()))
+                                if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getDingtalkId()))
                                     continue;
                                 dingTalkUsers.add(sysUserAssist.getLarkId());
                             }
@@ -275,7 +275,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                             List<String> larkUsers = new ArrayList<>();
                             for (int j = 0; j < reciLists.size(); j++) {
                                 String reci = reciLists.get(j);
-                                SysUserEntity userBySub = userService.getUserBySub(reci, 6);
+                                SysUserEntity userBySub = userService.getUserByName(reci);
                                 if (ObjectUtils.isEmpty(userBySub)) continue;
                                 Long userId = userBySub.getUserId();
                                 SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);

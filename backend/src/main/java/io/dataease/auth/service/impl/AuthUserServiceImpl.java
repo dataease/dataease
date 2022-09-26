@@ -94,6 +94,21 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
+    public SysUserEntity getUserByWecomId(String weComId) {
+        return authMapper.findWecomUser(weComId);
+    }
+
+    @Override
+    public SysUserEntity getUserByDingtalkId(String dingtalkId) {
+        return authMapper.findDingtalkUser(dingtalkId);
+    }
+
+    @Override
+    public SysUserEntity getUserByLarkId(String larkId) {
+        return authMapper.findLarkUser(larkId);
+    }
+
+    @Override
     public List<String> roles(Long userId) {
         return authMapper.roleCodes(userId);
     }
