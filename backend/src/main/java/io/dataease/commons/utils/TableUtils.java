@@ -26,7 +26,7 @@ public class TableUtils {
         return "f_" + Md5Utils.md5(dorisName).substring(8, 24);
     }
 
-    public static String columnName(String filedName) {
-        return "C_" + Md5Utils.md5(filedName);
+    public static String columnName(String fieldName) {
+        return "C_" + Md5Utils.md5(fieldName);
     }
 }
