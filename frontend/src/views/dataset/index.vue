@@ -3,7 +3,7 @@
     v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
   >
     <de-aside-container type="dataset">
-      <group :save-status="saveStatus" @switchComponent="switchComponent" />
+      <group :currentNodeId="param.id" :save-status="saveStatus" @switchComponent="switchComponent" />
     </de-aside-container>
       <de-main-container>
         <component
