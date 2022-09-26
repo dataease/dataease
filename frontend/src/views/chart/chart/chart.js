@@ -1,5 +1,6 @@
 export const DEFAULT_COLOR_CASE = {
   value: 'default',
+  bgColor: '#031F3E',
   variety: false,
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   colors1: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
