@@ -1,7 +1,7 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <el-col class="tree-style">
     <el-col>
-      <el-row class="title-css" v-show="showView === 'Datasource'">
+      <el-row v-show="showView === 'Datasource'" class="title-css">
         <el-col class="title-text" :span="12">
           {{ $t('commons.datasource') }}
         </el-col>
@@ -13,10 +13,10 @@
             placement="top"
           >
             <i
-              @click="driverMgm"
               v-show="user.isAdmin"
               class="el-icon-setting"
-            ></i>
+              @click="driverMgm"
+            />
           </el-tooltip>
           <el-tooltip
             class="item"
@@ -24,7 +24,7 @@
             :content="$t('datasource.create')"
             placement="top"
           >
-            <i @click="addFolder" class="el-icon-plus"></i>
+            <i class="el-icon-plus" @click="addFolder" />
           </el-tooltip>
         </el-col>
       </el-row>
@@ -54,8 +54,8 @@
                 <span
                   v-if="
                     data.type !== 'folder' &&
-                    data.status !== 'Error' &&
-                    data.status !== 'Warning'
+                      data.status !== 'Error' &&
+                      data.status !== 'Warning'
                   "
                 >
                   <svg-icon
@@ -87,8 +87,8 @@
                   "
                 >
                   <el-tooltip
-                    effect="dark"
                     v-if="['Error', 'Warning'].includes(data.status)"
+                    effect="dark"
                     :content="
                       data.status === 'Warning'
                         ? $t('datasource.warning')
@@ -107,8 +107,8 @@
               </span>
               <span class="child">
                 <el-tooltip
-                  class="item"
                   v-if="data.type === 'folder'"
+                  class="item"
                   effect="dark"
                   :content="
                     $t(
@@ -120,10 +120,10 @@
                   placement="top"
                 >
                   <i
+                    class="el-icon-plus"
                     @click.stop
                     @click="addFolderWithType(data)"
-                    class="el-icon-plus"
-                  ></i>
+                  />
                 </el-tooltip>
 
                 <el-dropdown
@@ -132,15 +132,15 @@
                   trigger="click"
                   @command="(type) => handleCommand(type, data)"
                 >
-                  <i @click.stop class="el-icon-more"></i>
-                  <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+                  <i class="el-icon-more" @click.stop />
+                  <el-dropdown-menu slot="dropdown" class="de-card-dropdown">
                     <slot>
                       <el-dropdown-item command="edit">
-                        <i class="el-icon-edit"></i>
+                        <i class="el-icon-edit" />
                         {{ $t('chart.edit') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="delete">
-                        <i class="el-icon-delete"></i>
+                        <i class="el-icon-delete" />
                         {{ $t('chart.delete') }}
                       </el-dropdown-item>
                     </slot>
@@ -192,13 +192,16 @@
             </el-select>
           </el-form-item>
           <el-form-item :label="$t('commons.description')">
-            <deTextarea v-model="driverForm.desc"></deTextarea>
+            <deTextarea v-model="driverForm.desc" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <deBtn secondary @click="close()">{{ $t('commons.cancel') }}</deBtn>
-          <deBtn type="primary" size="mini" @click="saveDriver(driverForm)"
-            >{{ $t('commons.save') }}
+          <deBtn
+            type="primary"
+            size="mini"
+            @click="saveDriver(driverForm)"
+          >{{ $t('commons.save') }}
           </deBtn>
         </div>
       </el-dialog>
@@ -212,32 +215,34 @@
         append-to-body
       >
         <el-tabs v-model="tabActive">
-          <el-tab-pane :label="$t('datasource.all')" name="all"> </el-tab-pane>
+          <el-tab-pane :label="$t('datasource.all')" name="all" />
           <el-tab-pane
             :label="$t('datasource.relational_database')"
             name="RDBMS"
-          >
-          </el-tab-pane>
+          />
           <el-tab-pane
             :label="$t('datasource.non_relational_database')"
             name="NORDBMS"
-          >
-          </el-tab-pane>
-          <el-tab-pane :label="$t('datasource.other')" name="OTHER">
-          </el-tab-pane>
+          />
+          <el-tab-pane :label="$t('datasource.other')" name="OTHER" />
         </el-tabs>
         <div class="db-container">
           <div
-            @click="addDb(db)"
             v-for="(db, index) in databaseList"
             :key="db.type"
             class="db-card"
             :class="[{ marLeft: index % 4 === 0 }]"
+            @click="addDb(db)"
           >
             <img
-              src="https://gimg3.baidu.com/search/src=http%3A%2F%2Fgips0.baidu.com%2Fit%2Fu%3D3429312337%2C2430696955%26fm%3D3030%26app%3D3030%26f%3DJPEG%3Fw%3D121%26h%3D74%26s%3D51321C7281B1598818E875C1030010B0&refer=http%3A%2F%2Fwww.baidu.com&app=2021&size=f242,150&n=0&g=0n&q=100&fmt=auto?sec=1662483600&t=53d1d1fe51561bb626c94ce63b5b31b8"
+              v-if="!db.isPlugin"
+              :src="require('../../../assets/datasource/' + db.type + '.jpg')"
               alt=""
-            />
+            >
+            <img
+              v-if="db.isPlugin"
+              :src="`/api/pluginCommon/staticInfo/${db.type}/jpg`"
+            >
             <p class="db-name">{{ db.name }}</p>
           </div>
         </div>
@@ -259,13 +264,12 @@ import {
   listDriverByType,
   updateDriver
 } from '@/api/system/datasource'
-import { ApplicationContext } from '@/utils/ApplicationContext'
 import deTextarea from '@/components/deCustomCm/deTextarea.vue'
 import msgCfm from '@/components/msgCfm'
 export default {
   name: 'DsTree',
-  mixins: [msgCfm],
   components: { deTextarea },
+  mixins: [msgCfm],
   props: {
     datasource: {
       type: Object,
@@ -502,7 +506,7 @@ export default {
     },
     showInfo(row) {
       if (this.showView === 'Driver') {
-        const param = { ...row.data, ...{ showModel: 'show' } }
+        const param = { ...row.data, ...{ showModel: 'show' }}
         this.switchMain(
           this.showView === 'Datasource' ? 'DsForm' : 'DriverForm',
           param,
@@ -527,7 +531,7 @@ export default {
     },
     _handleEditer(row) {
       if (this.showView === 'Datasource') {
-        const param = { ...row, ...{ showModel: 'show' } }
+        const param = { ...row, ...{ showModel: 'show' }}
         this.switchMain('DsForm', param, this.tData, this.dsTypes)
         return
       }
