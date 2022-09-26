@@ -72,7 +72,11 @@ public class DorisDDLProvider extends DDLProviderImpl {
                     Column_Fields.append("bigint").append(",`");
                     break;
                 case 3:
-                    Column_Fields.append("DOUBLE").append(",`");
+                   if(datasetTableField.getType().equalsIgnoreCase("DECIMAL") && datasetTableField.getAccuracy() != 0){
+                       Column_Fields.append("DECIMAL(" + datasetTableField.getSize() + "," + datasetTableField.getAccuracy() + ")").append(",`");
+                   }else {
+                       Column_Fields.append("DOUBLE").append(",`");
+                   }
                     break;
                 case 4:
                     Column_Fields.append("TINYINT(length)".replace("length", String.valueOf(size))).append(",`");

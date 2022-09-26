@@ -1768,16 +1768,16 @@ public class DataSetTableService {
         List<DatasetTableField> datasetTableFields = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
-                TableField filed = fields.get(i);
+                TableField field = fields.get(i);
                 DatasetTableField datasetTableField = DatasetTableField.builder().build();
                 datasetTableField.setTableId(datasetTableId);
-                datasetTableField.setOriginName(filed.getFieldName());
-                datasetTableField.setName(filed.getRemarks());
-                datasetTableField.setDataeaseName(TableUtils.columnName(filed.getFieldName()));
-                datasetTableField.setType(filed.getFieldType());
-                datasetTableField.setDeType(transFieldType(filed.getFieldType()));
-                datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
-                datasetTableField.setSize(filed.getFieldSize());
+                datasetTableField.setOriginName(field.getFieldName());
+                datasetTableField.setName(field.getRemarks());
+                datasetTableField.setDataeaseName(TableUtils.columnName(field.getFieldName()));
+                datasetTableField.setType(field.getFieldType());
+                datasetTableField.setDeType(transFieldType(field.getFieldType()));
+                datasetTableField.setDeExtractType(transFieldType(field.getFieldType()));
+                datasetTableField.setSize(field.getFieldSize());
                 datasetTableField.setChecked(true);
                 datasetTableField.setColumnIndex(i);
                 datasetTableField.setLastSyncTime(System.currentTimeMillis());
@@ -1939,44 +1939,46 @@ public class DataSetTableService {
         if (CollectionUtils.isNotEmpty(fields)) {
             List<String> originNameList = new ArrayList<>();
             for (int i = 0; i < fields.size(); i++) {
-                TableField filed = fields.get(i);
-                originNameList.add(filed.getFieldName());
+                TableField field = fields.get(i);
+                originNameList.add(field.getFieldName());
                 DatasetTableField datasetTableField = DatasetTableField.builder().build();
                 // 物理字段名设定为唯一，查询当前数据集下是否已存在该字段，存在则update，不存在则insert
                 DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
                 // 字段名一致，认为字段没有改变
-                datasetTableFieldExample.createCriteria().andTableIdEqualTo(datasetTable.getId()).andOriginNameEqualTo(filed.getFieldName());
+                datasetTableFieldExample.createCriteria().andTableIdEqualTo(datasetTable.getId()).andOriginNameEqualTo(field.getFieldName());
                 List<DatasetTableField> datasetTableFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
                 if (CollectionUtils.isNotEmpty(datasetTableFields)) {
                     datasetTableField.setId(datasetTableFields.get(0).getId());
-                    datasetTableField.setOriginName(filed.getFieldName());
-                    datasetTableField.setType(filed.getFieldType());
-                    datasetTableField.setSize(filed.getFieldSize());
+                    datasetTableField.setOriginName(field.getFieldName());
+                    datasetTableField.setType(field.getFieldType());
+                    datasetTableField.setSize(field.getFieldSize());
+                    datasetTableField.setAccuracy(field.getAccuracy());
                     if (ObjectUtils.isEmpty(ds)) {
-                        datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
+                        datasetTableField.setDeExtractType(transFieldType(field.getFieldType()));
                     } else {
-                        Integer fieldType = qp.transFieldType(filed.getFieldType());
+                        Integer fieldType = qp.transFieldType(field.getFieldType());
                         datasetTableField.setDeExtractType(fieldType);
                     }
                 } else {
                     datasetTableField.setTableId(datasetTable.getId());
-                    datasetTableField.setOriginName(filed.getFieldName());
-                    datasetTableField.setName(filed.getRemarks());
+                    datasetTableField.setOriginName(field.getFieldName());
+                    datasetTableField.setName(field.getRemarks());
                     if (datasetTable.getMode() == 1 && StringUtils.equalsIgnoreCase("union", datasetTable.getType())) {
-                        datasetTableField.setDataeaseName(filed.getFieldName());
+                        datasetTableField.setDataeaseName(field.getFieldName());
                     } else {
-                        datasetTableField.setDataeaseName(TableUtils.columnName(filed.getFieldName()));
+                        datasetTableField.setDataeaseName(TableUtils.columnName(field.getFieldName()));
                     }
-                    datasetTableField.setType(filed.getFieldType());
+                    datasetTableField.setType(field.getFieldType());
                     if (ObjectUtils.isEmpty(ds)) {
-                        datasetTableField.setDeType(transFieldType(filed.getFieldType()));
-                        datasetTableField.setDeExtractType(transFieldType(filed.getFieldType()));
+                        datasetTableField.setDeType(transFieldType(field.getFieldType()));
+                        datasetTableField.setDeExtractType(transFieldType(field.getFieldType()));
                     } else {
-                        Integer fieldType = qp.transFieldType(filed.getFieldType());
+                        Integer fieldType = qp.transFieldType(field.getFieldType());
                         datasetTableField.setDeType(fieldType == 4 ? 2 : (fieldType == 6 ? 0 : fieldType));
                         datasetTableField.setDeExtractType(fieldType);
                     }
-                    datasetTableField.setSize(filed.getFieldSize());
+                    datasetTableField.setSize(field.getFieldSize());
+                    datasetTableField.setAccuracy(field.getAccuracy());
                     datasetTableField.setChecked(true);
                     datasetTableField.setLastSyncTime(syncTime);
                     datasetTableField.setExtField(0);
@@ -2094,8 +2096,8 @@ public class DataSetTableService {
             List<String> sqlFileds = new ArrayList<>();
             try {
                 datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableField::getFieldName)
-                        .forEach(filed -> {
-                            sqlFileds.add(filed);
+                        .forEach(field -> {
+                            sqlFileds.add(field);
                         });
             } catch (Exception e) {
                 DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
@@ -2114,7 +2116,7 @@ public class DataSetTableService {
             List<String> sqlFileds = new ArrayList<>();
             try {
                 datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableField::getFieldName)
-                        .forEach(filed -> sqlFileds.add(filed));
+                        .forEach(field -> sqlFileds.add(field));
             } catch (Exception e) {
                 DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
             }

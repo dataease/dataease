@@ -54,16 +54,16 @@ public class DirectFieldService implements DataSetFieldService {
 
     @Override
     public List<Object> fieldValues(String fieldId, Long userId, Boolean userPermissions, Boolean rowAndColumnMgm) throws Exception {
-        List<String> filedIds = new ArrayList<>();
-        filedIds.add(fieldId);
-        return fieldValues(filedIds, null, userId, userPermissions, false, rowAndColumnMgm);
+        List<String> fieldIds = new ArrayList<>();
+        fieldIds.add(fieldId);
+        return fieldValues(fieldIds, null, userId, userPermissions, false, rowAndColumnMgm);
     }
 
     @Override
     public List<Object> fieldValues(String fieldId, DeSortDTO sortDTO, Long userId, Boolean userPermissions, Boolean rowAndColumnMgm) throws Exception {
-        List<String> filedIds = new ArrayList<>();
-        filedIds.add(fieldId);
-        return fieldValues(filedIds, sortDTO, userId, userPermissions, false, rowAndColumnMgm);
+        List<String> fieldIds = new ArrayList<>();
+        fieldIds.add(fieldId);
+        return fieldValues(fieldIds, sortDTO, userId, userPermissions, false, rowAndColumnMgm);
     }
 
     public List<DeSortField> buildSorts(List<DatasetTableField> allFields, DeSortDTO sortDTO) {
