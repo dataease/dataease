@@ -110,13 +110,13 @@ export default {
     // 监听内容变化
     active(val) {
       if (!val) {
+        const ed = tinymce.editors[this.tinymceId]
         if (this.canEdit) {
-          this.element.propValue.textValue = this.myValue
+          this.element.propValue.textValue = ed.getContent()
         }
         this.canEdit = false
         this.reShow()
         this.myValue = this.assignment(this.element.propValue.textValue)
-        const ed = tinymce.editors[this.tinymceId]
         ed.setContent(this.myValue)
       }
     },
