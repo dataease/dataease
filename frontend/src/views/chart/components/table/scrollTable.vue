@@ -32,8 +32,9 @@
             <div slot="reference" class="pop_position" :style="{left: popOpen.left,top: popOpen.top}" />
           </el-popover>
 
-          <li v-for="(items,inde) in dataInfo" :key="inde" :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items,inde)">
+          <li v-for="(items,inde) in dataInfo" v-show="inde<=tableRowsNumber-1" :key="inde" :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items,inde)">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
+              <!-- {{ inde }} -->
               {{ items[item.datainsName] }}
             </div>
           </li>
@@ -152,6 +153,7 @@ export default {
       infoForm: [],
       isPopShow: false,
       numberLine: '',
+      tableRowsNumber: 5,
       popOpen: {
         position: '',
         left: '0px',
@@ -164,6 +166,7 @@ export default {
         lineHeight: '30px',
         color: '#ffffff'
       },
+
       pop_content: {
         backgroundColor: '#1b2642',
         color: '#ffffff',
@@ -570,6 +573,7 @@ export default {
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
           this.highlight = customAttr.size.highlightNumber ? customAttr.size.highlightNumber : 2
+          this.tableRowsNumber = customAttr.size.tableRowsNumber ? customAttr.size.tableRowsNumber : 5
           this.scrollId.fontSize = (Math.ceil(+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 1) + 'px'
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'

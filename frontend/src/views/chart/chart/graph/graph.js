@@ -43,8 +43,34 @@ export function baseGraphOption(chart_option, chart,cstyle = {}) {
           y.name = chart.data.x[i]
           // color
           y.itemStyle = {
-            color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
-            borderRadius: 0,
+            color: {
+              type: 'radial',
+              x: 0.5,
+              y: 0.5,
+              r: customAttr.label.variety_depth,
+              colorStops: [
+                {
+                  offset: 0, 
+                  color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+                },
+                {
+                  offset: 1, 
+                  color: hexColorToRGBA(
+                    customAttr.color.variety ? customAttr.color.colors1[i % customAttr.color.colors1.length] 
+                      : customAttr.color.colors[i % customAttr.color.colors.length], 
+                    customAttr.color.alpha
+                  )
+                }
+              ]
+            },
+            // borderColor: "#ffffff",
+            // borderWidth: 1,
+            shadowBlur: customAttr.label.shadowBlur,
+            shadowColor: hexColorToRGBA(
+              customAttr.color.variety ? customAttr.color.colors1[i % customAttr.color.colors1.length] 
+                      : customAttr.color.colors[i % customAttr.color.colors.length], 
+              customAttr.color.alpha
+            ),
           }
           y.type = 'graph'
           // 气泡大小

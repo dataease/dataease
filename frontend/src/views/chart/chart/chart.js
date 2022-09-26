@@ -20,6 +20,7 @@ export const DEFAULT_SIZE = {
   tableRollingRate: 30,
   heightLightFontSize: 12,
   highlightNumber: 2,
+  tableRowsNumber: 5,
   tableLightFontSize: 12,
   heightLightLine: 3,
   automaticTime: 2000,
@@ -111,6 +112,8 @@ export const DEFAULT_LABEL = {
   edgeLength: 10,
   gravity: 0.1,
   reductionRate: 50,
+  shadowBlur: 10,
+  variety_depth: 1,
 
   popShow: false,
   popOpen: 'right',
@@ -262,10 +265,11 @@ export const DEFAULT_YAXIS_STYLE = {
   position: 'left',
   name: '',
   nameLocation: 'end',
+  nameGap: 20,
   nameTextStyle: {
     color: '#333333',
     fontSize: 12,
-    lineHeight: 40,
+    lineHeight: 20,
     fontFamily: ''
   },
   axisLabel: {

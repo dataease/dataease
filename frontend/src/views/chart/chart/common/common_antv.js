@@ -281,7 +281,7 @@ export function getXAxis(chart, cstyle = {}) {
         const title = (a.name && a.name !== '') ? {
           text: a.name,
           position: a.nameLocation? a.nameLocation : 'center',
-          offset: a.nameTextStyle.lineHeight? a.nameTextStyle.lineHeight : 40,
+          offset: a.nameGap? a.nameGap : 20,
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
@@ -348,13 +348,14 @@ export function getYAxis(chart, cstyle = {}) {
         const title = (a.name && a.name !== '') ? {
           text: a.name,
           position: a.nameLocation? a.nameLocation : 'center',
-          offset: a.nameTextStyle.lineHeight? a.nameTextStyle.lineHeight : 40,
+          offset: a.nameGap? a.nameGap : 20,
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
             fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
           },
-          spacing: 8
+          autoRotate: false,
+          spacing: 10
         } : null
         const grid = a.splitLine && a.splitLine.show ? {
           line: {
