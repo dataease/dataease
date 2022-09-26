@@ -1,26 +1,6 @@
 <template>
   <el-col>
     <div class="table-count">
-      <span v-if="['excel', 'custom', 'union'].includes(table.type)">
-        <span v-if="page.total <= currentPage.show">
-          {{ $t('dataset.preview_total') }}
-          <span class="span-number">{{ page.total }}</span>
-          {{ $t('dataset.preview_item') }}
-        </span>
-        <span v-if="page.total > currentPage.show">
-          {{ $t('dataset.preview_show') }}
-          <span class="span-number">{{ currentPage.show }}</span>
-          {{ $t('dataset.preview_item') }}
-          ，{{ $t('dataset.preview_total') }}
-          <span class="span-number">{{ page.total }}</span>
-          {{ $t('dataset.preview_item') }}
-        </span>
-      </span>
-      <span v-if="['db', 'sql'].includes(table.type)">
-        {{ $t('dataset.preview_show') }}
-        <span class="span-number">{{ page.total }}</span>
-        {{ $t('dataset.preview_item') }}
-      </span>
       <span class="title-text" style="width: 100px"
         >{{ $t('deDataset.display') }} {{ form.row }}
         {{ $t('deDataset.row') }}</span
@@ -197,7 +177,7 @@ export default {
   line-height: 22px;
   margin: 4px 0;
   .title-text {
-    margin: 0 5px 0 16px;
+    margin: 0 5px 0 0;
   }
 }
 </style>
