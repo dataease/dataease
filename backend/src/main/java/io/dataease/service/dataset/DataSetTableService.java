@@ -145,16 +145,18 @@ public class DataSetTableService {
     private static Logger logger = LoggerFactory.getLogger(ClassloaderResponsity.class);
 
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
-    public void batchInsert(List<DataSetTableRequest> datasetTable) throws Exception {
+    public List<DatasetTable> batchInsert(List<DataSetTableRequest> datasetTable) throws Exception {
         // 保存之前校验table名称
         checkNames(datasetTable);
+        List<DatasetTable> list = new ArrayList<>();
         for (DataSetTableRequest table : datasetTable) {
-            save(table);
+            list.add(save(table));
             // 清理权限缓存
             CacheUtils.removeAll(AuthConstants.USER_DATASET_NAME);
             CacheUtils.removeAll(AuthConstants.ROLE_DATASET_NAME);
             CacheUtils.removeAll(AuthConstants.DEPT_DATASET_NAME);
         }
+        return list;
     }
 
     private void extractData(DataSetTableRequest datasetTable) throws Exception {
@@ -176,10 +178,11 @@ public class DataSetTableService {
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
-    public void saveExcel(DataSetTableRequest datasetTable) throws Exception {
+    public List<DatasetTable> saveExcel(DataSetTableRequest datasetTable) throws Exception {
         List<String> datasetIdList = new ArrayList<>();
 
         if (StringUtils.isEmpty(datasetTable.getId())) {
+            List<DatasetTable> list = new ArrayList<>();
             if (datasetTable.isMergeSheet()) {
                 Map<String, List<ExcelSheetData>> map = datasetTable.getSheets().stream()
                         .collect(Collectors.groupingBy(ExcelSheetData::getFieldsMd5));
@@ -208,6 +211,7 @@ public class DataSetTableService {
                     sysAuthService.copyAuth(sheetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
                     saveExcelTableField(sheetTable.getId(), excelSheetDataList.get(0).getFields(), true);
                     datasetIdList.add(sheetTable.getId());
+                    list.add(sheetTable);
                     DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
                 }
                 datasetIdList.forEach(datasetId -> {
@@ -239,16 +243,16 @@ public class DataSetTableService {
                     sysAuthService.copyAuth(sheetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
                     saveExcelTableField(sheetTable.getId(), sheet.getFields(), true);
                     datasetIdList.add(sheetTable.getId());
+                    list.add(sheetTable);
                     DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
                 }
                 datasetIdList.forEach(datasetId -> {
                     commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetId, "all_scope", "初始导入",
                             null, datasetIdList));
                 });
-
-
             }
-            return;
+
+            return list;
         }
 
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
@@ -287,6 +291,7 @@ public class DataSetTableService {
                     null, Arrays.asList(datasetTable.getId())));
         }
         DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
+        return Collections.singletonList(datasetTable);
     }
 
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")

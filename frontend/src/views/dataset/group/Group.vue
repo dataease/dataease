@@ -69,7 +69,7 @@
       </el-row>
       <el-col class="custom-tree-container de-tree">
         <div class="block">
-          <div v-if="!tData.length" class="no-tdata">
+          <div v-if="!tData.length && !treeLoading" class="no-tdata">
             {{ $t('deDataset.no_dataset_click') }}
             <span @click="() => clickAdd()" class="no-tdata-new">{{
               $t('deDataset.create')
@@ -221,12 +221,7 @@
                     class="ds-icon-api"
                   />
                 </span>
-                <span
-                  v-if="
-                    data.modelInnerType === 'db' ||
-                    data.modelInnerType === 'sql'
-                  "
-                >
+                <span v-if="['db', 'sql'].includes(data.modelInnerType)">
                   <span v-if="data.mode === 0" style="margin-left: 6px"
                     ><i class="el-icon-s-operation"
                   /></span>
@@ -241,6 +236,13 @@
                     overflow: hidden;
                     text-overflow: ellipsis;
                   "
+                  :class="[
+                    {
+                      'de-fill-block': !['db', 'sql'].includes(
+                        data.modelInnerType
+                      )
+                    }
+                  ]"
                   :title="data.name"
                   >{{ data.name }}</span
                 >
@@ -422,6 +424,7 @@ export default {
   data() {
     return {
       sceneMode: false,
+      treeLoading: false,
       dialogTitle: '',
       search: '',
       editGroup: false,
@@ -527,21 +530,6 @@ export default {
       this.$refs.datasetTreeRef.filter(this.filterText)
     }
   },
-  activated() {
-    const dataset = this.$refs.datasetTreeRef?.getCurrentNode()
-    if (!dataset) return
-    queryAuthModel({ modelType: 'dataset' }, true).then((res) => {
-      localStorage.setItem('dataset-tree', JSON.stringify(res.data))
-      this.tData = res.data
-      this.$nextTick(() => {
-        this.$refs.datasetTreeRef?.filter(this.filterText)
-        if (dataset) {
-          this.$refs.datasetTreeRef?.setCurrentNode(dataset)
-          this.nodeClick(dataset)
-        }
-      })
-    })
-  },
   created() {
     this.kettleState()
     engineMode().then((res) => {
@@ -549,10 +537,38 @@ export default {
     })
   },
   mounted() {
-    this.treeNode(true)
+    const { id, name } = this.$route.params
+    this.treeLoading = true
+    queryAuthModel({ modelType: 'dataset' }, true)
+      .then((res) => {
+        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+        this.tData = res.data
+        this.$nextTick(() => {
+          this.$refs.datasetTreeRef?.filter(this.filterText)
+          if (id && name.includes(this.filterText)) {
+            this.dfsTableData(this.tData, id)
+          }
+        })
+      })
+      .finally(() => {
+        this.treeLoading = false
+      })
     this.refresh()
   },
   methods: {
+    dfsTableData(arr, id) {
+      arr.some((ele) => {
+        if (ele.id === id) {
+          this.$refs.datasetTreeRef?.setCurrentNode(ele)
+          this.nodeClick(ele)
+          this.expandedArray.push(id)
+          return true
+        } else if (ele.children?.length) {
+          this.dfsTableData(ele.children, id)
+        }
+        return false
+      })
+    },
     nameRepeat(value) {
       if (!this.fileList || this.fileList.length === 0) {
         return false
@@ -755,15 +771,20 @@ export default {
       if (userCache) {
         this.tData = JSON.parse(modelInfo)
       }
-      queryAuthModel({ modelType: 'dataset' }, !userCache).then((res) => {
-        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
-        if (!userCache) {
-          this.tData = res.data
-        }
-        this.$nextTick(() => {
-          this.$refs.datasetTreeRef?.filter(this.filterText)
+      this.treeLoading = true
+      queryAuthModel({ modelType: 'dataset' }, !userCache)
+        .then((res) => {
+          localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+          if (!userCache) {
+            this.tData = res.data
+          }
+          this.$nextTick(() => {
+            this.$refs.datasetTreeRef?.filter(this.filterText)
+          })
         })
-      })
+        .finally(() => {
+          this.treeLoading = false
+        })
     },
 
     tableTree() {
@@ -979,8 +1000,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.search-input {
-  padding: 12px 0;
+.de-fill-block {
+  margin-left: 35px !important;
 }
 
 .custom-tree-container {

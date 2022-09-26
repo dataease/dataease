@@ -49,15 +49,6 @@
             @click="validaDatasource"
             >{{ $t('commons.validate') }}
           </deBtn>
-          <deBtn
-            v-if="
-              formType === 'add' ||
-              hasDataPermission('manage', params.privileges)
-            "
-            type="primary"
-            @click="changeEdit"
-            >{{ $t('commons.edit') }}
-          </deBtn>
         </template>
       </div>
     </div>
@@ -498,6 +489,7 @@ export default {
         this.params.showModel &&
         this.params.showModel === 'show' &&
         !this.canEdit
+      this.changeEdit()
     },
     reset() {
       this.$refs.dsForm.resetFields()

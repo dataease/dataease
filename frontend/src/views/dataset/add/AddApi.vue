@@ -1,9 +1,9 @@
 <template>
   <div class="dataset-api">
-    <p v-if="!showLeft" class="arrow-right" @click="showLeft = true">
+    <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
       <i class="el-icon-d-arrow-right" />
     </p>
-    <div v-else class="table-list">
+    <div v-show="showLeft" class="table-list">
       <p class="select-ds">
         {{ $t('deDataset.select_data_source') }}
         <i class="el-icon-d-arrow-left" @click="showLeft = false" />
@@ -153,9 +153,11 @@
 <script>
 import { listApiDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
 import { dbPreview, engineMode } from '@/api/system/engine'
+import cancelMix from './cancelMix'
 
 export default {
   name: 'AddApi',
+  mixins: [cancelMix],
   props: {
     param: {
       type: Object,
@@ -281,7 +283,7 @@ export default {
       const that = this
       setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
-        that.height = currentHeight - 195 - 54
+        that.height = currentHeight - 56 - 64 - 75 - 32 - 24 - 16 - 10
       }, 10)
     },
     setActiveName({ name, datasourceId, enableCheck }) {
@@ -350,17 +352,12 @@ export default {
       post('/dataset/table/batchAdd', tables)
         .then((response) => {
           this.openMessageSuccess('deDataset.set_saved_successfully')
-          this.cancel()
+          this.cancel(response.data)
         })
         .finally(() => {
           this.loading = false
         })
     },
-
-    cancel() {
-      this.$router.push('/dataset/index')
-    },
-
     dataReset() {
       this.searchTable = ''
       this.options = []

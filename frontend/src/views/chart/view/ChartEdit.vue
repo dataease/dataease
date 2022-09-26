@@ -757,6 +757,7 @@
             @onChangeSplitForm="onChangeSplitForm"
             @onTextChange="onTextChange"
             @onLegendChange="onLegendChange"
+            @onMarginChange="onMarginChange"
             @onChangeBackgroundForm="onChangeBackgroundForm"
           />
         </el-tab-pane>
@@ -1997,6 +1998,10 @@ export default {
 
     onLegendChange(val) {
       this.view.customStyle.legend = val
+      this.calcStyle()
+    },
+    onMarginChange(val) {
+      this.view.customStyle.margin = val
       this.calcStyle()
     },
 

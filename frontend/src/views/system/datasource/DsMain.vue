@@ -121,10 +121,9 @@ export default {
 <style scoped lang="scss">
 .de-ds-container {
   height: 100%;
-  // height: calc(100vh - 56px);
   width: 100%;
   overflow: hidden;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   display: flex;
   box-sizing: border-box;
   .el-empty {

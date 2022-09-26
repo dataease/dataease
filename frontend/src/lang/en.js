@@ -445,7 +445,7 @@ export default {
     cost: 'cost',
     developer: 'developer',
     edition: 'edition',
-    installation_time: 'Installation time:'
+    installation_time: 'Install time'
   },
   table: {
     dynamicTips1: 'Fixed header, sorted by header order',
@@ -910,6 +910,11 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    margin_model: 'Model',
+    margin_model_auto: 'Auto',
+    margin_model_absolute: 'Absolute',
+    margin_model_relative: 'Relative',
+    margin_placeholder: 'Please enter a number from 0-100',
     rich_text_view_result_tips: 'The rich text view selects only the first result',
     rich_text_view: 'Rich Text View',
     view_reset: 'View Reset',
@@ -1633,8 +1638,8 @@ export default {
       desensitization: 'Desensitization'
     },
     row_permissions: 'Row Permissions',
-    column_permissions: '列权限',
-    row_column_permissions: '行列权限',
+    column_permissions: 'Column Permissions',
+    row_column_permissions: 'Row And Column Permissions',
     union_data: 'Union Dataset',
     add_union_table: 'Add Union Dataset',
     edit_union: 'Edit Union Dataset',

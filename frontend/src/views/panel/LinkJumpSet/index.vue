@@ -362,8 +362,10 @@ export default {
       const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
       let checkJumpStr
       if (chartDetails.type === 'table-pivot') {
-        checkJumpStr = chartDetails.yaxis + chartDetails.yaxisExt
-      } else {
+        checkJumpStr = chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
+      }else if(chartDetails.type === 'table-info') {
+        checkJumpStr = chartDetails.xaxis + chartDetails.drillFields
+      }else {
         checkJumpStr = checkAllAxisStr
       }
       // 获取可关联的仪表板

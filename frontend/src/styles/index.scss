@@ -639,7 +639,7 @@ div:focus {
 .blackTheme .el-radio-button__inner {
   background-color: var(--TableBG);
   color: var(--TableColor);
-  border: var(--TableBorder);
+  border-color: var(--TableBorderColor);
 }
 
 .blackTheme .el-loading-mask {
@@ -1388,6 +1388,14 @@ div:focus {
     height: 14px;
     width: 2px;
     background: #3370ff;
+  }
+
+  .explain {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+    margin-left: 8px;
+    color: var(--deTextSecondary, #646a73);
   }
 }
 
