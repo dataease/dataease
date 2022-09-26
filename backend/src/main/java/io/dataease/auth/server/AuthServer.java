@@ -47,6 +47,7 @@ import javax.servlet.http.HttpSession;
 @RestController
 public class AuthServer implements AuthApi {
 
+    private static final String LDAP_EMAIL_SUFFIX = "@ldap.com";
     @Value("${dataease.init_password:DataEase123..}")
     private String DEFAULT_PWD;
 
@@ -83,6 +84,9 @@ public class AuthServer implements AuthApi {
                 DataEaseException.throwException(validateResult.getMsg());
             }
             XpackLdapUserEntity ldapUserEntity = validateResult.getData();
+            if (StringUtils.isBlank(ldapUserEntity.getEmail())) {
+                ldapUserEntity.setEmail(username + LDAP_EMAIL_SUFFIX);
+            }
             SysUserEntity user = authUserService.getLdapUserByName(username);
             if (ObjectUtils.isEmpty(user) || ObjectUtils.isEmpty(user.getUserId())) {
                 LdapAddRequest ldapAddRequest = new LdapAddRequest();
