@@ -149,8 +149,7 @@ export default {
             message: this.$t('member.password_format_is_incorrect'),
             trigger: 'blur'
           }
-        ],
-        roleIds: [{ required: true, message: this.$t('user.input_roles'), trigger: 'change' }]
+        ]
 
       },
       defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: 1, deptId: null, phone: null, roleIds: [] },
