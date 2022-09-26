@@ -815,6 +815,8 @@ export default {
     empty_msg: 'If empty then default value is 30 days',
     front_error: 'Valid ranger [0 - 300]', // 修改了提示信息
     msg_error: 'Valid ranger [1 - 365]',
+    limit_times_error: 'Valid ranger [1 - 100]',
+    relieve_times_error: 'Valid ranger [1 - 100]',
     SMTP_port: 'SMTP Port',
     SMTP_account: 'SMTP Account',
     SMTP_password: 'SMTP Password',
