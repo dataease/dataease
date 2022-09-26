@@ -69,6 +69,7 @@ export default {
   data() {
     return {
       initReady: false,
+      editReady: false,
       editShow: true,
       canEdit: false,
       // 初始化配置
@@ -109,6 +110,9 @@ export default {
     // 监听内容变化
     active(val) {
       if (!val) {
+        if (this.canEdit) {
+          this.element.propValue.textValue = this.myValue
+        }
         this.canEdit = false
         this.reShow()
         this.myValue = this.assignment(this.element.propValue.textValue)
@@ -117,9 +121,6 @@ export default {
       }
     },
     myValue(newValue) {
-      if (this.canEdit) {
-        this.element.propValue.textValue = newValue
-      }
       this.initReady&&this.$store.commit('canvasChange')
     }
   },
@@ -195,6 +196,8 @@ export default {
         this.canEdit = true
         this.element['editing'] = true
         this.myValue = this.element.propValue.textValue
+        const ed = tinymce.editors[this.tinymceId]
+        ed.setContent(this.myValue)
         this.reShow()
       }
     },
