@@ -46,7 +46,7 @@
           <span><i class="el-icon-arrow-down el-icon--right" /></span>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/person-info/index">
+          <router-link to="/personal">
             <el-dropdown-item>{{ $t('commons.personal_info') }}</el-dropdown-item>
           </router-link>
 

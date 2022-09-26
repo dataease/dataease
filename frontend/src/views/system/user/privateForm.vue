@@ -57,7 +57,7 @@
             </el-select>
           </el-form-item>
 
-          <plugin-com v-if="isPluginLoaded" ref="AuthenticationBind" :form-type="formType" component-name="AuthenticationBind" />
+          <plugin-com v-if="isPluginLoaded" ref="AuthenticationBind" :user-id="form.userId" :form-type="formType" component-name="AuthenticationBind" />
 
           <!--提供修改个人电话，邮箱和昵称的功能-->
           <el-form-item v-if="formType!=='modify'">

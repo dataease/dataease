@@ -156,7 +156,7 @@ public class XWecomServer {
 
     @GetMapping("/bind")
     public void bind(@RequestParam("code") String code, @RequestParam("state") String state) {
-        String url = "/#person-info/index/";
+        String url = "/#personal";
         HttpServletResponse response = ServletUtils.response();
 
         WecomXpackService wecomXpackService = null;
@@ -184,6 +184,13 @@ public class XWecomServer {
             if (null != sysUserEntity) {
                 bindError(response, url, "当前企业微信账号已绑定其他DE用户");
             }
+            if (ObjectUtils.isEmpty(sysUserAssist)) {
+                sysUserAssist = new SysUserAssist();
+                sysUserAssist.setUserId(Long.parseLong(state));
+            }
+            sysUserAssist.setWecomId(userId);
+            sysUserService.saveAssist(sysUserAssist.getUserId(), sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
+
             response.sendRedirect(url);
         } catch (Exception e) {
 
