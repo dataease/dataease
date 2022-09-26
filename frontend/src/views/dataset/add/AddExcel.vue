@@ -1,20 +1,18 @@
 <template>
-  <div class="dataset-excel" v-loading="loading">
-    <p v-show="!showLeft" @click="showLeft = true" class="arrow-right">
-      <i class="el-icon-d-arrow-right"></i>
+  <div v-loading="loading" class="dataset-excel">
+    <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
+      <i class="el-icon-d-arrow-right" />
     </p>
     <div v-show="showLeft" class="table-list">
       <p class="select-ds">
-        <span
-          >{{ $t('deDataset.select_data_table ') }}
+        <span>{{ $t('deDataset.select_data_table ') }}
           <el-tooltip class="item" effect="dark" placement="right">
             <div slot="content">
-              {{ $t('dataset.excel_info_1') }}<br />
-              {{ $t('dataset.excel_info_2') }}<br />
+              {{ $t('dataset.excel_info_1') }}<br>
+              {{ $t('dataset.excel_info_2') }}<br>
               {{ $t('dataset.excel_info_3') }}
             </div>
-            <i class="el-icon-warning-outline" /> </el-tooltip
-        ></span>
+            <i class="el-icon-warning-outline" /> </el-tooltip></span>
         <i class="el-icon-d-arrow-left" @click="showLeft = false" />
       </p>
       <el-upload
@@ -36,7 +34,7 @@
           :loading="uploading"
           secondary
           :disabled="uploading"
-          >{{ $t('deDataset.upload_data') }}
+        >{{ $t('deDataset.upload_data') }}
         </deBtn>
       </el-upload>
       <div class="table-checkbox-list">
@@ -53,9 +51,9 @@
           @node-click="handleNodeClick"
           @check-change="handleCheckChange"
         >
-          <span class="custom-tree-node" slot-scope="{ data }">
+          <span slot-scope="{ data }" class="custom-tree-node">
             {{ data.excelLable }}
-            <span class="error-name-exsit" v-if="data.nameExsit">
+            <span v-if="data.nameExsit && !param.tableId" class="error-name-exsit">
               <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
             </span>
           </span>
@@ -76,11 +74,11 @@
           <el-input
             v-model="sheetObj.datasetName"
             :placeholder="$t('commons.name')"
-            @change="changeDatasetName"
             size="small"
+            @change="changeDatasetName"
           />
           <div
-            v-if="sheetObj.nameExsit"
+            v-if="sheetObj.nameExsit && !param.tableId"
             style="left: 107px; top: 52px"
             class="el-form-item__error"
           >
@@ -120,20 +118,24 @@
                     <svg-icon
                       v-if="field.fieldType === 'TEXT'"
                       icon-class="field_text"
-                      class="field-icon-text" />
+                      class="field-icon-text"
+                    />
                     <svg-icon
                       v-if="field.fieldType === 'DATETIME'"
                       icon-class="field_time"
-                      class="field-icon-time" />
+                      class="field-icon-time"
+                    />
                     <svg-icon
                       v-if="
                         field.fieldType === 'LONG' ||
-                        field.fieldType === 'DOUBLE'
+                          field.fieldType === 'DOUBLE'
                       "
                       icon-class="field_value"
-                      class="field-icon-value" />
-                    <i class="el-icon-arrow-down el-icon--right"
-                  /></span>
+                      class="field-icon-value"
+                    />
+                    <i
+                      class="el-icon-arrow-down el-icon--right"
+                    /></span>
                   <el-dropdown-menu
                     slot="dropdown"
                     style="width: 178px"
@@ -143,34 +145,32 @@
                       v-for="item in fieldOptions"
                       :key="item.value"
                       :command="item.value"
-                      ><span>
-                        <svg-icon
-                          v-if="item.value === 'TEXT'"
-                          icon-class="field_text"
-                          class="field-icon-text"
-                        />
-                        <svg-icon
-                          v-if="item.value === 'DATETIME'"
-                          icon-class="field_time"
-                          class="field-icon-time"
-                        />
-                        <svg-icon
-                          v-if="
-                            item.value === 'LONG' || item.value === 'DOUBLE'
-                          "
-                          icon-class="field_value"
-                          class="field-icon-value"
-                        />
-                      </span>
+                    ><span>
+                       <svg-icon
+                         v-if="item.value === 'TEXT'"
+                         icon-class="field_text"
+                         class="field-icon-text"
+                       />
+                       <svg-icon
+                         v-if="item.value === 'DATETIME'"
+                         icon-class="field_time"
+                         class="field-icon-time"
+                       />
+                       <svg-icon
+                         v-if="
+                           item.value === 'LONG' || item.value === 'DOUBLE'
+                         "
+                         icon-class="field_value"
+                         class="field-icon-value"
+                       />
+                     </span>
                       <span
                         style="
                           color: #8492a6;
                           font-size: 14px;
                           margin-left: 10px;
                         "
-                        >{{ item.label }}</span
-                      ></el-dropdown-item
-                    >
+                      >{{ item.label }}</span></el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
                 <span style="font-size: 14px; margin-left: 10px">
@@ -198,7 +198,7 @@ const token = getToken()
 
 export default {
   name: 'AddExcel',
-  mixins: [ msgCfm, cancelMix],
+  mixins: [msgCfm, cancelMix],
   props: {
     param: {
       type: Object,
@@ -342,7 +342,7 @@ export default {
     },
     calHeight() {
       const that = this
-      setTimeout(function () {
+      setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 56 - 30 - 26 - 25 - 35 - 10 - 37 - 20 - 10
       }, 10)
@@ -406,7 +406,7 @@ export default {
       var effectExtField = false
       var changeFiled = false
       var selectNode = this.$refs.tree.getCheckedNodes()
-      if (selectNode.some((ele) => ele.nameExsit)) {
+      if (!this.param.tableId && selectNode.some((ele) => ele.nameExsit)) {
         this.openMessageSuccess('deDataset.cannot_be_duplicate', 'error')
         return
       }
