@@ -49,8 +49,8 @@
       <el-form-item :label="$t('system_parameter_setting.ds_check_time')">
         <el-form :inline="true" :disabled="show">
 
-          <el-form-item >
-            <el-input size="mini" v-model="formInline.dsCheckInterval" type="number" min="1" @change="onSimpleCronChange()" />
+          <el-form-item>
+            <el-input v-model="formInline.dsCheckInterval" size="mini" type="number" min="1" @change="onSimpleCronChange()" />
           </el-form-item>
 
           <el-form-item class="form-item">
@@ -139,7 +139,7 @@ export default {
       rules: {
         frontTimeOut: [
           {
-            pattern: '^([0-9]|\\b[1-9]\\d\\b|\\b[1-2]\\d\\d\\b|\\b300\\b)$', // 修改了正则表达式，让其正确匹配0-300的数值
+            pattern: '^([0-9]|\\b[1-9]\\d\\b|\\b[1-2]\\d\\d\\b|\\b300\\b)$',
             message: this.$t('system_parameter_setting.front_error'),
             trigger: 'blur'
           }
@@ -148,6 +148,20 @@ export default {
           {
             pattern: '^([1-9]|[1-9][0-9]|[1-2][0-9][0-9]|3[0-5][0-9]|36[0-5])$',
             message: this.$t('system_parameter_setting.msg_error'),
+            trigger: 'blur'
+          }
+        ],
+        limitTimes: [
+          {
+            pattern: '^([1-9]|[1-9]\\d|100)$',
+            message: this.$t('system_parameter_setting.limit_times_error'),
+            trigger: 'blur'
+          }
+        ],
+        relieveTimes: [
+          {
+            pattern: '^([1-9]|[1-9]\\d|100)$',
+            message: this.$t('system_parameter_setting.relieve_times_error'),
             trigger: 'blur'
           }
         ]

@@ -419,7 +419,11 @@ export default {
       type: Object,
       required: false,
       default: null
-    }
+    },
+    currentNodeId: {
+      type: String,
+      default: ''
+    },
   },
   data() {
     return {
@@ -542,11 +546,16 @@ export default {
     queryAuthModel({ modelType: 'dataset' }, true)
       .then((res) => {
         localStorage.setItem('dataset-tree', JSON.stringify(res.data))
-        this.tData = res.data
+        this.tData = res.data || []
         this.$nextTick(() => {
           this.$refs.datasetTreeRef?.filter(this.filterText)
           if (id && name.includes(this.filterText)) {
             this.dfsTableData(this.tData, id)
+          } else {
+            const currentNodeId = sessionStorage.getItem('dataset-current-node')
+            if (currentNodeId) {
+              this.dfsTableData(this.tData, currentNodeId)
+            }
           }
         })
       })
@@ -554,6 +563,9 @@ export default {
         this.treeLoading = false
       })
     this.refresh()
+  },
+  beforeDestroy() {
+    sessionStorage.setItem('dataset-current-node', this.currentNodeId)
   },
   methods: {
     dfsTableData(arr, id) {
@@ -776,7 +788,7 @@ export default {
         .then((res) => {
           localStorage.setItem('dataset-tree', JSON.stringify(res.data))
           if (!userCache) {
-            this.tData = res.data
+            this.tData = res.data || []
           }
           this.$nextTick(() => {
             this.$refs.datasetTreeRef?.filter(this.filterText)

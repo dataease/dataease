@@ -731,14 +731,14 @@ export default {
     },
     // private 监控dragging  resizing
     dragging(val) {
-      if (this.enabled) {
+      if (this.enabled && this.curComponent) {
         this.curComponent.optStatus.dragging = val
         this.$store.commit('setScrollAutoMove', 0)
       }
     },
     // private 监控dragging  resizing
     resizing(val) {
-      if (this.enabled) {
+      if (this.enabled && this.curComponent) {
         this.curComponent.optStatus.resizing = val
         this.$store.commit('setScrollAutoMove', 0)
       }
