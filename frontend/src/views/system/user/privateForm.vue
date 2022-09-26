@@ -56,6 +56,9 @@
               />
             </el-select>
           </el-form-item>
+
+          <plugin-com v-if="isPluginLoaded" ref="AuthenticationBind" :form-type="formType" component-name="AuthenticationBind" />
+
           <!--提供修改个人电话，邮箱和昵称的功能-->
           <el-form-item v-if="formType!=='modify'">
             <el-button @click="formType = 'modify'">修改个人信息</el-button>
@@ -86,9 +89,11 @@ import { LOAD_CHILDREN_OPTIONS, LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselec
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
 import { allRoles } from '@/api/system/user'
 import { updatePerson, personInfo } from '@/api/system/user'
+import { pluginLoaded } from '@/api/user'
+import PluginCom from '@/views/system/plugin/PluginCom'
 export default {
 
-  components: { LayoutContent, Treeselect },
+  components: { LayoutContent, Treeselect, PluginCom },
   data() {
     return {
       form: {
@@ -158,7 +163,8 @@ export default {
       roles: [],
       roleDatas: [],
       userRoles: [],
-      formType: 'add'
+      formType: 'add',
+      isPluginLoaded: false
     }
   },
   mounted() {
@@ -170,6 +176,12 @@ export default {
     this.$store.dispatch('app/toggleSideBarHide', true)
     this.queryPerson()
     this.initRoles()
+  },
+  beforeCreate() {
+    pluginLoaded().then(res => {
+      this.isPluginLoaded = res.success && res.data
+    }).catch(() => {
+    })
   },
   methods: {
 

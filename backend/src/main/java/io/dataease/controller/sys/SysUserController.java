@@ -8,8 +8,10 @@ import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.entity.AccountLockStatus;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.sys.request.KeyGridRequest;
+import io.dataease.controller.sys.response.AuthBindDTO;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysRole;
@@ -32,6 +34,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -48,6 +51,10 @@ import java.util.stream.Collectors;
 @ApiSupport(order = 220)
 @RequestMapping("/api/user")
 public class SysUserController {
+
+    private static final String WECOM = "wecom";
+    private static final String DINGTALK = "dingtalk";
+    private static final String LARK = "lark";
 
     @Resource
     private SysUserService sysUserService;
@@ -230,6 +237,46 @@ public class SysUserController {
     @PostMapping("/assistInfo/{userId}")
     public SysUserAssist assistInfo(@PathVariable("userId") Long userId) {
         return sysUserService.assistInfo(userId);
+    }
+
+    @PostMapping("/bindStatus")
+    public AuthBindDTO bindStatus() {
+        Long userId = AuthUtils.getUser().getUserId();
+        SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
+        AuthBindDTO dto = new AuthBindDTO();
+        if (ObjectUtils.isEmpty(sysUserAssist)) return dto;
+        if (authUserService.supportWecom() && StringUtils.isNotBlank(sysUserAssist.getWecomId())) {
+            dto.setWecomBinded(true);
+        }
+        if (authUserService.supportDingtalk() && StringUtils.isNotBlank(sysUserAssist.getDingtalkId())) {
+            dto.setDingtalkBinded(true);
+        }
+        if (authUserService.supportLark() && StringUtils.isNotBlank(sysUserAssist.getLarkId())) {
+            dto.setLarkBinded(true);
+        }
+        return dto;
+    }
+
+    @PostMapping("/unbindAssist/{type}")
+    public void unbindAssist(String type) {
+
+        Boolean valid = StringUtils.equals(WECOM, type) || StringUtils.equals(DINGTALK, type) || StringUtils.equals(LARK, type);
+        if (!valid) {
+            DEException.throwException("only [wecom, dingtalk, lark] is valid");
+        }
+        Long userId = AuthUtils.getUser().getUserId();
+        SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
+        if (StringUtils.equals(WECOM, type)) {
+            sysUserAssist.setWecomId(null);
+        }
+        if (StringUtils.equals(DINGTALK, type)) {
+            sysUserAssist.setDingtalkId(null);
+        }
+        if (StringUtils.equals(LARK, type)) {
+            sysUserAssist.setLarkId(null);
+        }
+        sysUserService.saveAssist(userId, sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
+
     }
 
 }

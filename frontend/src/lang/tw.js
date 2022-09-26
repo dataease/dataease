@@ -131,7 +131,9 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
-
+    operate_cancelled: '已取消操作',
+    bind: '綁定',
+    unbind: '解綁',
     unlock: '解鎖',
     unlock_success: '解鎖成功',
 

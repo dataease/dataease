@@ -131,7 +131,9 @@ export default {
     default_login: 'Normal'
   },
   commons: {
-
+    operate_cancelled: 'Operation cancelled',
+    bind: 'Bind',
+    unbind: 'Unbind',
     unlock: 'Unlock',
     unlock_success: 'Unlock success',
 

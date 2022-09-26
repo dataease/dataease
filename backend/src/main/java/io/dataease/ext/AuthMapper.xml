@@ -107,5 +107,34 @@
 			plugin_sys_menu
     </select>
 
+    <select id="findWecomUser" resultMap="baseMap">
+        select
+            user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from`
+        from
+            sys_user_assist a
+        left join
+            sys_user u on u.user_id = a.user_id
+        where a.wecom_id = #{wecomId}
+    </select>
+
+    <select id="findDingtalkUser" resultMap="baseMap">
+        select
+            user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from`
+        from
+            sys_user_assist a
+            left join
+            sys_user u on u.user_id = a.user_id
+        where a.dingtalk_id = #{dingtalkId}
+    </select>
+
+    <select id="findLarkUser" resultMap="baseMap">
+        select
+            user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from`
+        from
+            sys_user_assist a
+            left join
+            sys_user u on u.user_id = a.user_id
+        where a.lark_id = #{larkId}
+    </select>
 
 </mapper>
