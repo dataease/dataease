@@ -813,8 +813,10 @@ export default {
     login_type: 'Default login type',
     empty_front: 'If empty then default value is 10s',
     empty_msg: 'If empty then default value is 30 days',
-    front_error: 'Valid ranger [0 - 300]', // 修改了提示信息
-    msg_error: 'Valid ranger [1 - 365]',
+    front_error: 'Valid range [0 - 300]', // 修改了提示信息
+    msg_error: 'Valid range [1 - 365]',
+    limit_times_error: 'Valid range [1 - 100]',
+    relieve_times_error: 'Valid range [1 - 100]',
     SMTP_port: 'SMTP Port',
     SMTP_account: 'SMTP Account',
     SMTP_password: 'SMTP Password',
@@ -2349,7 +2351,7 @@ export default {
     label: 'Search Button',
     text: 'Text',
     auto_trigger: 'Auto Trigger',
-    range: 'Ranger',
+    range: 'Range',
     relative: 'Relation',
     auto_trigger_tip: 'Automatically trigger once when entering the preview page',
     range_tip: 'Default association all filter components'
