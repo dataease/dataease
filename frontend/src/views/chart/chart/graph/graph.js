@@ -36,6 +36,9 @@ export function baseGraphOption(chart_option, chart,cstyle = {}) {
           chart_option.series[0].force.repulsion = customAttr.label.repulsion? customAttr.label.repulsion : 100
           chart_option.series[0].force.edgeLength = customAttr.label.edgeLength? customAttr.label.edgeLength : 30
           chart_option.series[0].force.gravity = customAttr.label.gravity? customAttr.label.gravity : 0.1
+
+          chart_option.series[0].scaleLimit.max = customAttr.label.scaleLimitMax? customAttr.label.scaleLimitMax : 0
+          chart_option.series[0].scaleLimit.min = customAttr.label.scaleLimitMin? customAttr.label.scaleLimitMin : 0
         }
         const valueArr = chart.data.series[0].data
         for (let i = 0; i < valueArr.length; i++) {

@@ -20,6 +20,12 @@
         <el-form-item :label="$t('chart.variety_depth')" class="form-item">
           <el-slider v-model="focusForm.variety_depth" show-input :show-input-controls="false" input-size="mini" :min="0.1" :step="0.1" :max="1" @change="changeFocusCase" />
         </el-form-item>
+        <el-form-item :label="$t('chart.scaleLimit_max')" class="form-item">
+          <el-slider v-model="focusForm.scaleLimitMax" show-input :show-input-controls="false" input-size="mini" :min="0" :step="0.1" :max="10" @change="changeFocusCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.scaleLimit_min')" class="form-item">
+          <el-slider v-model="focusForm.scaleLimitMin" show-input :show-input-controls="false" input-size="mini" :min="0" :step="0.1" :max="1" @change="changeFocusCase" />
+        </el-form-item>
       </el-form>
     </el-col>
   </div>

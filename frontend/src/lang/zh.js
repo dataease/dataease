@@ -761,6 +761,8 @@ export default {
     reductionRate: '图形大小(%)',
     shadowBlur: '阴影模糊',
     variety_depth: '渐变深度',
+    scaleLimit_max: '缩放最大值',
+    scaleLimit_min: '缩放最小值',
     bar_width: '柱宽',
     bar_gap: '柱间隔',
     adapt: '自适应',

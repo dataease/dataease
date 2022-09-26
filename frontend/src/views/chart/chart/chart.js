@@ -114,6 +114,8 @@ export const DEFAULT_LABEL = {
   reductionRate: 50,
   shadowBlur: 10,
   variety_depth: 1,
+  scaleLimitMax: 0.5,
+  scaleLimitMin: 0.1,
 
   popShow: false,
   popOpen: 'right',
@@ -1238,6 +1240,10 @@ export const BASE_GRAPH = {
         repulsion: 100,
         edgeLength: 10,
         gravity: 0.1
+      },
+      scaleLimit: {
+        max: null,
+        min: null,
       },
       roam: true,
       label: {
