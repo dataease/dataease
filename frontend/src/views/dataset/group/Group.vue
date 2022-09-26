@@ -69,7 +69,7 @@
       </el-row>
       <el-col class="custom-tree-container de-tree">
         <div class="block">
-          <div v-if="!tData.length" class="no-tdata">
+          <div v-if="!tData.length && !treeLoading" class="no-tdata">
             {{ $t('deDataset.no_dataset_click') }}
             <span @click="() => clickAdd()" class="no-tdata-new">{{
               $t('deDataset.create')
@@ -424,6 +424,7 @@ export default {
   data() {
     return {
       sceneMode: false,
+      treeLoading: false,
       dialogTitle: '',
       search: '',
       editGroup: false,
@@ -537,16 +538,21 @@ export default {
   },
   mounted() {
     const { id, name } = this.$route.params
-    queryAuthModel({ modelType: 'dataset' }, true).then((res) => {
-      localStorage.setItem('dataset-tree', JSON.stringify(res.data))
-      this.tData = res.data
-      this.$nextTick(() => {
-        this.$refs.datasetTreeRef?.filter(this.filterText)
-        if (id && name.includes(this.filterText)) {
-          this.dfsTableData(this.tData, id)
-        }
+    this.treeLoading = true
+    queryAuthModel({ modelType: 'dataset' }, true)
+      .then((res) => {
+        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+        this.tData = res.data
+        this.$nextTick(() => {
+          this.$refs.datasetTreeRef?.filter(this.filterText)
+          if (id && name.includes(this.filterText)) {
+            this.dfsTableData(this.tData, id)
+          }
+        })
       })
-    })
+      .finally(() => {
+        this.treeLoading = false
+      })
     this.refresh()
   },
   methods: {
@@ -765,15 +771,20 @@ export default {
       if (userCache) {
         this.tData = JSON.parse(modelInfo)
       }
-      queryAuthModel({ modelType: 'dataset' }, !userCache).then((res) => {
-        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
-        if (!userCache) {
-          this.tData = res.data
-        }
-        this.$nextTick(() => {
-          this.$refs.datasetTreeRef?.filter(this.filterText)
+      this.treeLoading = true
+      queryAuthModel({ modelType: 'dataset' }, !userCache)
+        .then((res) => {
+          localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+          if (!userCache) {
+            this.tData = res.data
+          }
+          this.$nextTick(() => {
+            this.$refs.datasetTreeRef?.filter(this.filterText)
+          })
         })
-      })
+        .finally(() => {
+          this.treeLoading = false
+        })
     },
 
     tableTree() {
