@@ -26,8 +26,6 @@ INSERT INTO `task_instance` (`task_id`) VALUES ('Datasource_check_status');
 
 
 update sys_menu set menu_sort=10 where menu_id=1;
-INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (41, 1, 1, 1, '应用管理', 'system-app-template', 'panel/appTemplate/index', 13, 'sys-param', 'panel/appTemplate/index', 0, 0, 0, NULL, NULL, NULL, NULL, 1620444227389);
-INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (203, 0, 0, 1, '应用市场', 'app-template-market', 'panel/appTemplateMarket/index', 6, 'dashboard', '/appTemplateMarket', 0, 0, 0, NULL, NULL, NULL, NULL, 1620444227389);
 -- ----------------------------
 -- Table structure for panel_app_template
 -- ----------------------------
