@@ -116,6 +116,8 @@ public class MysqlQueryProvider extends QueryProvider {
             } else {
                 if(f.getType().equalsIgnoreCase("YEAR")){
                     fieldName = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + originField + ",'-01-01')", MySQLConstants.DEFAULT_DATE_FORMAT);
+                }else if(f.getType().equalsIgnoreCase("TIME")){
+                    fieldName = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(1970-01-01 " + originField + ")", MySQLConstants.DEFAULT_DATE_FORMAT);
                 }else {
                     fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, MySQLConstants.DEFAULT_DATE_FORMAT);
                 }
@@ -173,6 +175,8 @@ public class MysqlQueryProvider extends QueryProvider {
                     } else {
                         if(f.getType().equalsIgnoreCase("YEAR")){
                             fieldName = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + originField + ",'-01-01')", MySQLConstants.DEFAULT_DATE_FORMAT);
+                        }else if(f.getType().equalsIgnoreCase("TIME")){
+                            fieldName = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(1970-01-01 " + originField + ")", MySQLConstants.DEFAULT_DATE_FORMAT);
                         }else {
                             fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, MySQLConstants.DEFAULT_DATE_FORMAT);
                         }
@@ -1135,6 +1139,8 @@ public class MysqlQueryProvider extends QueryProvider {
             } else if (x.getDeType() == 1) {
                 if(x.getType().equalsIgnoreCase("YEAR")){
                     fieldName = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + originField + ",'-01-01')", transDateFormat(x.getDateStyle(), x.getDatePattern()));
+                }else if(x.getType().equalsIgnoreCase("TIME")){
+                    fieldName = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(1970-01-01 " + originField + ")", MySQLConstants.DEFAULT_DATE_FORMAT);
                 }else {
                     String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                     fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
