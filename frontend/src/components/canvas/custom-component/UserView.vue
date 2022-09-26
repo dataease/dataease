@@ -141,6 +141,7 @@ import { viewEditSave, viewPropsSave } from '@/api/chart/chart'
 import { checkAddHttp } from '@/utils/urlUtils'
 import DeRichTextView from '@/components/canvas/custom-component/DeRichTextView'
 import Vue from 'vue'
+import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 
 export default {
   name: 'UserView',
@@ -653,7 +654,20 @@ export default {
           pre[next['dataeaseName']] = next['name']
           return pre
         }, {})
+        let yAxis = []
+        try {
+          yAxis = JSON.parse(chartDetails.yaxis)
+        } catch (err) {
+          yAxis = JSON.parse(JSON.stringify(chartDetails.yaxis))
+        }
+        let yDataeaseNames = []
+        let yDataeaseNamesCfg = []
+        yAxis.forEach(yItem => {
+          yDataeaseNames.push(yItem.dataeaseName)
+          yDataeaseNamesCfg[yItem.dataeaseName]=yItem.formatterCfg
+        })
         const rowData = chartDetails.data.tableRow[0]
+        this.rowDataFormat(rowData,yDataeaseNames,yDataeaseNamesCfg)
         for (const key in rowData) {
           this.dataRowSelect[nameIdMap[key]] = rowData[key]
           this.dataRowNameSelect[sourceFieldNameIdMap[key]] = rowData[key]
@@ -665,6 +679,25 @@ export default {
           bus.$emit('initCurFields-' + this.element.id)
         })
       }
+    },
+    rowDataFormat(rowData,yDataeaseNames,yDataeaseNamesCfg) {
+      for (const key in rowData) {
+       if(yDataeaseNames.includes(key)){
+         let formatterCfg = yDataeaseNamesCfg[key]
+         let value = rowData[key]
+         if (value === null || value === undefined) {
+           rowData[key] = '-'
+         }
+         if (formatterCfg) {
+           const v = valueFormatter(value, formatterCfg)
+           rowData[key] = v.includes('NaN') ? value : v
+         } else {
+           const v = valueFormatter(value, formatterItem)
+           rowData[key] =  v.includes('NaN') ? value : v
+         }
+       }
+      }
+
     },
     viewIdMatch(viewIds, viewId) {
       return !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
