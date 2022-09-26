@@ -1,6 +1,6 @@
 <template>
   <div @mousedown="fieldsAreaDown">
-    <el-button v-for="(field) in fields" :key="field.id" size="mini" class="field-area" @click="fieldSelect(field)">
+    <el-button v-for="(field) in fields" :title="field.name" :key="field.id" size="mini" class="field-area" @click="fieldSelect(field)">
       {{ field.name }}
     </el-button>
   </div>
@@ -51,6 +51,9 @@ export default {
   margin: 4px 0 0 0;
   text-align: left;
   margin-left: 0px!important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 </style>

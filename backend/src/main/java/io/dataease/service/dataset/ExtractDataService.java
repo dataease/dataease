@@ -198,25 +198,25 @@ public class ExtractDataService {
                     saveSuccessLog(datasetTableTaskLog, false);
                     updateTableStatus(datasetTableId, JobStatus.Completed, execTime);
                     if (ops.equalsIgnoreCase("替换")) {
-                        List<DatasetTableField> oldFileds = getDatasetTableFields(datasetTable.getId());
+                        List<DatasetTableField> oldFields = getDatasetTableFields(datasetTable.getId());
                         List<DatasetTableField> toAdd = new ArrayList<>();
                         List<DatasetTableField> toDelete = new ArrayList<>();
-                        for (DatasetTableField oldFiled : oldFileds) {
+                        for (DatasetTableField oldField : oldFields) {
                             boolean delete = true;
                             for (DatasetTableField datasetTableField : datasetTableFields) {
-                                if (oldFiled.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
+                                if (oldField.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldField.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
                                     delete = false;
                                 }
                             }
                             if (delete) {
-                                toDelete.add(oldFiled);
+                                toDelete.add(oldField);
                             }
                         }
 
                         for (DatasetTableField datasetTableField : datasetTableFields) {
                             boolean add = true;
-                            for (DatasetTableField oldFiled : oldFileds) {
-                                if (oldFiled.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldFiled.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
+                            for (DatasetTableField oldField : oldFields) {
+                                if (oldField.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldField.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
                                     add = false;
                                 }
                             }
@@ -887,8 +887,8 @@ public class ExtractDataService {
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setQuery(qp.wrapSql(sql));
         List<String> dorisFields = new ArrayList<>();
-        datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableField::getFieldName).forEach(filed -> {
-            dorisFields.add(TableUtils.columnName(filed));
+        datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableField::getFieldName).forEach(field -> {
+            dorisFields.add(TableUtils.columnName(field));
         });
         return String.join(",", dorisFields);
     }

@@ -173,6 +173,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 }
             }
         }
+        if(StringUtils.isNotEmpty(tableField.getFieldType()) && tableField.getFieldType().equalsIgnoreCase("DECIMAL")){
+            tableField.setAccuracy(Integer.valueOf(resultSet.getString("DECIMAL_DIGITS")));
+        }
         return tableField;
     }
 
