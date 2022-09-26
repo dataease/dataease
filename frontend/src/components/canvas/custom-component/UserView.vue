@@ -476,7 +476,9 @@ export default {
         this.chart.customStyle = this.sourceCustomStyleStr
         updateParams['customStyle'] = this.sourceCustomStyleStr
       }
-      viewPropsSave(this.panelInfo.id, updateParams)
+      viewPropsSave(this.panelInfo.id, updateParams).then(rsp =>{
+        this.active && bus.$emit('current-component-change')
+      })
       this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
       this.mergeScale()
     },
@@ -491,7 +493,9 @@ export default {
       this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
       this.chart.customStyle = this.sourceCustomStyleStr
       updateParams['customStyle'] = this.sourceCustomStyleStr
-      viewPropsSave(this.panelInfo.id, updateParams)
+      viewPropsSave(this.panelInfo.id, updateParams).then(rsp =>{
+        this.active && bus.$emit('current-component-change')
+      })
       this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
       this.mergeScale()
     },

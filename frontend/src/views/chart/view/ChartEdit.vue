@@ -1459,6 +1459,9 @@ export default {
   },
 
   methods: {
+    resetChartData(){
+      this.getChart(this.param.id)
+    },
     setDynamicAreaCode(code) {
       this.currentAreaCode = code
     },

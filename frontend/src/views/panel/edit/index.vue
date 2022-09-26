@@ -697,6 +697,7 @@ export default {
     bus.$off('previewFullScreenClose', this.previewFullScreenClose)
     bus.$off('change_panel_right_draw', this.changeRightDrawOpen)
     bus.$off('delete-condition', this.deleteCustomComponent)
+    bus.$off('current-component-change', this.asideRefresh)
     const elx = this.$refs.rightPanel
     elx && elx.remove()
   },
@@ -718,6 +719,12 @@ export default {
       bus.$on('previewFullScreenClose', this.previewFullScreenClose)
       bus.$on('change_panel_right_draw', this.changeRightDrawOpen)
       bus.$on('delete-condition', this.deleteCustomComponent)
+      bus.$on('current-component-change', this.asideRefresh)
+    },
+    asideRefresh(){
+      if(this.$refs['chartEditRef']){
+        this.$refs['chartEditRef'].resetChartData()
+      }
     },
     deleteCustomComponent(param) {
       param && param.componentId && this.componentData.forEach(com => {
