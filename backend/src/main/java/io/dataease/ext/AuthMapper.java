@@ -34,4 +34,8 @@ public interface AuthMapper {
 
     List<CurrentRoleDto> roles(@Param("userId") Long userId);
 
+    SysUserEntity findWecomUser(@Param("wecomId") String wecomId);
+    SysUserEntity findDingtalkUser(@Param("dingtalkId") String dingtalkId);
+    SysUserEntity findLarkUser(@Param("larkId") String larkId);
+
 }
