@@ -654,20 +654,22 @@ export default {
           pre[next['dataeaseName']] = next['name']
           return pre
         }, {})
-        let yAxis = []
-        try {
-          yAxis = JSON.parse(chartDetails.yaxis)
-        } catch (err) {
-          yAxis = JSON.parse(JSON.stringify(chartDetails.yaxis))
-        }
-        let yDataeaseNames = []
-        let yDataeaseNamesCfg = []
-        yAxis.forEach(yItem => {
-          yDataeaseNames.push(yItem.dataeaseName)
-          yDataeaseNamesCfg[yItem.dataeaseName]=yItem.formatterCfg
-        })
         const rowData = chartDetails.data.tableRow[0]
-        this.rowDataFormat(rowData,yDataeaseNames,yDataeaseNamesCfg)
+        if(chartDetails.type === 'richTextView'){
+          let yAxis = []
+          try {
+            yAxis = JSON.parse(chartDetails.yaxis)
+          } catch (err) {
+            yAxis = JSON.parse(JSON.stringify(chartDetails.yaxis))
+          }
+          let yDataeaseNames = []
+          let yDataeaseNamesCfg = []
+          yAxis.forEach(yItem => {
+            yDataeaseNames.push(yItem.dataeaseName)
+            yDataeaseNamesCfg[yItem.dataeaseName]=yItem.formatterCfg
+          })
+          this.rowDataFormat(rowData,yDataeaseNames,yDataeaseNamesCfg)
+        }
         for (const key in rowData) {
           this.dataRowSelect[nameIdMap[key]] = rowData[key]
           this.dataRowNameSelect[sourceFieldNameIdMap[key]] = rowData[key]
