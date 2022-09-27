@@ -1538,17 +1538,10 @@ export const TYPE_CONFIGS = [
     properties: [
       'color-selector',
       'size-selector',
-      'title-selector',
-      'margin-selector'
+      'title-selector'
     ],
     propertyInner: {
-      'margin-selector': [
-        'marginModel',
-        'marginTop',
-        'marginBottom',
-        'marginLeft',
-        'marginRight'
-      ],
+
       'color-selector': [
         'quotaColor',
         'dimensionColor'
@@ -1590,17 +1583,10 @@ export const TYPE_CONFIGS = [
     properties: [
       'color-selector',
       'size-selector',
-      'title-selector',
-      'margin-selector'
+      'title-selector'
     ],
     propertyInner: {
-      'margin-selector': [
-        'marginModel',
-        'marginTop',
-        'marginBottom',
-        'marginLeft',
-        'marginRight'
-      ],
+
       'color-selector': [
         'quotaColor',
         'dimensionColor'
@@ -1643,17 +1629,10 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'size-selector',
       'label-selector',
-      'title-selector',
-      'margin-selector'
+      'title-selector'
     ],
     propertyInner: {
-      'margin-selector': [
-        'marginModel',
-        'marginTop',
-        'marginBottom',
-        'marginLeft',
-        'marginRight'
-      ],
+
       'color-selector': [
         'value',
         'custom',
@@ -2727,17 +2706,10 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'label-selector',
       'tooltip-selector',
-      'title-selector',
-      'margin-selector'
+      'title-selector'
     ],
     propertyInner: {
-      'margin-selector': [
-        'marginModel',
-        'marginTop',
-        'marginBottom',
-        'marginLeft',
-        'marginRight'
-      ],
+
       'color-selector': [
         'value',
         'custom',
