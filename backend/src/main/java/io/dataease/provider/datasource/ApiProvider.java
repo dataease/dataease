@@ -197,6 +197,14 @@ public class ApiProvider extends Provider {
             rootPath = "$";
             handleStr(apiDefinition, response, fields, rootPath);
         }
+        for (JSONObject field : fields) {
+            if(field.containsKey("children") && CollectionUtils.isNotEmpty(field.getJSONArray("children"))){
+                field.put("disabled", false);
+            }
+            if(field.containsKey("children") && CollectionUtils.isEmpty(field.getJSONArray("children"))){
+                field.put("disabled", true);
+            }
+        }
         apiDefinition.setJsonFields(fields);
         return apiDefinition;
     }

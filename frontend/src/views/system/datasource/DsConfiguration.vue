@@ -513,6 +513,7 @@
                   <el-checkbox
                     :key="scope.row.jsonPath"
                     v-model="scope.row.checked"
+                    :disabled="scope.row.disabled"
                     @change="handleCheckAllChange(scope.row)"
                   >
                     {{ scope.row.originName }}
