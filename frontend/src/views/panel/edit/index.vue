@@ -366,12 +366,12 @@
           <svg-icon icon-class="warn-tre" style="width: 20px;height: 20px;float: right" />
         </el-col>
         <el-col :span="21">
-          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{$t('panel.panel_cache_use_tips')}}</span>
+          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.panel_cache_use_tips') }}</span>
         </el-col>
       </el-row>
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="useCache(false)">{{$t('panel.no')}}</el-button>
-        <el-button type="primary" size="mini" @click="useCache(true)">{{$t('panel.yes')}}</el-button>
+        <el-button size="mini" @click="useCache(false)">{{ $t('panel.no') }}</el-button>
+        <el-button type="primary" size="mini" @click="useCache(true)">{{ $t('panel.yes') }}</el-button>
       </div>
     </el-dialog>
 
@@ -387,7 +387,7 @@ import FilterGroup from '../filter'
 import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
-import {deepCopy, imgUrlTrans, matrixBaseChange} from '@/components/canvas/utils/utils'
+import { deepCopy, imgUrlTrans, matrixBaseChange } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
   COMMON_BACKGROUND,
@@ -562,7 +562,7 @@ export default {
         return false
       } else if (this.curComponent && this.showAttrComponent.includes(this.curComponent.type)) {
         // 过滤组件有标题才显示
-        if (this.curComponent.type === 'custom' && !this.curComponent.options.attrs.title) {
+        if (this.curComponent.type === 'custom' && (!this.curComponent.options.attrs.showTitle || !this.curComponent.options.attrs.title)) {
           return false
         } else {
           return true
@@ -721,8 +721,8 @@ export default {
       bus.$on('delete-condition', this.deleteCustomComponent)
       bus.$on('current-component-change', this.asideRefresh)
     },
-    asideRefresh(){
-      if(this.$refs['chartEditRef']){
+    asideRefresh() {
+      if (this.$refs['chartEditRef']) {
         this.$refs['chartEditRef'].resetChartData()
       }
     },
@@ -790,7 +790,7 @@ export default {
         setTimeout(() => {
           if (useCache) {
             _this.$store.commit('recordSnapshot', 'cache')
-            _this.$store.commit('recordChangeTimes' )
+            _this.$store.commit('recordChangeTimes')
           } else {
             _this.$store.commit('refreshSaveStatus')
           }

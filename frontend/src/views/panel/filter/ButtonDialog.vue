@@ -76,7 +76,7 @@ export default {
         if (showName) {
           result = this.$t(showName)
         }
-        if (item.options.attrs.title) {
+        if (item.options.attrs.showTitle && item.options.attrs.title) {
           result += '【' + item.options.attrs.title + '】'
         }
 
