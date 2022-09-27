@@ -919,6 +919,7 @@ export default {
     margin_model_absolute: 'Absolute',
     margin_model_relative: 'Relative',
     margin_placeholder: 'Please enter a number from 0-100',
+    margin_absolute_placeholder: 'Please enter a number from 0-40',
     rich_text_view_result_tips: 'The rich text view selects only the first result',
     rich_text_view: 'Rich Text View',
     view_reset: 'View Reset',

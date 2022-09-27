@@ -919,6 +919,7 @@ export default {
     margin_model_absolute: '絕對',
     margin_model_relative: '相對',
     margin_placeholder: '請輸入0-100數字',
+    margin_absolute_placeholder: '請輸入0-40數字',
     rich_text_view_result_tips: '富文本只选取第一条结果',
     rich_text_view: '富文本视图',
     view_reset: '視圖重置',
