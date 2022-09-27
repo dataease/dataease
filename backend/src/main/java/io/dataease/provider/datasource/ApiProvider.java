@@ -5,8 +5,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
@@ -161,11 +162,12 @@ public class ApiProvider extends Provider {
                 if (StringUtils.equalsAny(type, "Form_Data", "WWW_FORM")) {
                     if (apiDefinitionRequest.getBody().get("kvs") != null) {
                         Map<String, String> body = new HashMap<>();
-                        JsonArray kvsArr = JsonParser.parseString(apiDefinitionRequest.getBody().get("kvs").toString()).getAsJsonArray();
+                        JSONObject bodyObj = JSONObject.parseObject(apiDefinitionRequest.getBody().toString());
+                        JSONArray kvsArr = bodyObj.getJSONArray("kvs");
                         for (int i = 0; i < kvsArr.size(); i++) {
-                            JsonObject kv = kvsArr.get(i).getAsJsonObject();
-                            if (kv.get("name") != null) {
-                                body.put(kv.get("name").getAsString(), kv.get("value").getAsString());
+                            JSONObject kv = kvsArr.getJSONObject(i);
+                            if (kv.containsKey("name")) {
+                                body.put(kv.getString("name"), kv.getString("value"));
                             }
                         }
                         response = HttpClientUtil.post(apiDefinition.getUrl(), body, httpClientConfig);
@@ -216,14 +218,14 @@ public class ApiProvider extends Provider {
                     try {
                         JSONArray jsonArray = jsonObject.getJSONArray(s);
                         List<JSONObject> childrenField = new ArrayList<>();
-                        for (Object object: jsonArray) {
+                        for (Object object : jsonArray) {
                             JSONObject.parseObject(object.toString());
                             handleStr(apiDefinition, JSON.toJSONString(object, SerializerFeature.WriteMapNullValue), childrenField, rootPath + "." + s + "[*]");
                         }
                         o.put("children", childrenField);
                         o.put("childrenDataType", "LIST");
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         JSONArray array = new JSONArray();
                         array.add(StringUtils.isNotEmpty(jsonObject.getString(s)) ? jsonObject.getString(s) : "");
                         o.put("value", array);
@@ -295,11 +297,11 @@ public class ApiProvider extends Provider {
     }
 
 
-    static void mergeField(JSONObject field, JSONObject item){
-        if(item.getJSONArray("children") != null ){
+    static void mergeField(JSONObject field, JSONObject item) {
+        if (item.getJSONArray("children") != null) {
             JSONArray itemChildren = item.getJSONArray("children");
             JSONArray fieldChildren = field.getJSONArray("children");
-            if(fieldChildren == null){
+            if (fieldChildren == null) {
                 fieldChildren = new JSONArray();
             }
             for (Object itemChild : itemChildren) {
@@ -307,12 +309,12 @@ public class ApiProvider extends Provider {
                 JSONObject itemChildObject = JSONObject.parseObject(itemChild.toString());
                 for (Object fieldChild : fieldChildren) {
                     JSONObject fieldChildObject = JSONObject.parseObject(fieldChild.toString());
-                    if(itemChildObject.getString("jsonPath").equals(fieldChildObject.getString("jsonPath"))){
+                    if (itemChildObject.getString("jsonPath").equals(fieldChildObject.getString("jsonPath"))) {
                         mergeField(fieldChildObject, itemChildObject);
                         hasKey = true;
                     }
                 }
-                if(!hasKey){
+                if (!hasKey) {
                     fieldChildren.add(itemChild);
                 }
             }
@@ -325,7 +327,7 @@ public class ApiProvider extends Provider {
             array.add(item.getJSONArray("value").get(0).toString());
             field.put("value", array);
         }
-        if(CollectionUtils.isNotEmpty(field.getJSONArray("children"))&&  CollectionUtils.isNotEmpty(item.getJSONArray("children"))){
+        if (CollectionUtils.isNotEmpty(field.getJSONArray("children")) && CollectionUtils.isNotEmpty(item.getJSONArray("children"))) {
             JSONArray fieldChildren = field.getJSONArray("children");
             JSONArray itemChildren = item.getJSONArray("children");
 
@@ -335,11 +337,11 @@ public class ApiProvider extends Provider {
                 JSONObject find = null;
                 for (Object itemChild : itemChildren) {
                     JSONObject itemObject = JSONObject.parseObject(itemChild.toString());
-                    if(jsonObject.getString("jsonPath").equals(itemObject.getString("jsonPath"))){
+                    if (jsonObject.getString("jsonPath").equals(itemObject.getString("jsonPath"))) {
                         find = itemObject;
                     }
                 }
-                if(find != null){
+                if (find != null) {
                     mergeValue(jsonObject, apiDefinition, find);
                 }
                 fieldArrayChildren.add(jsonObject);
