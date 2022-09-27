@@ -150,7 +150,7 @@ public class XDingtalkServer {
     public void bind(@RequestParam("code") String code, @RequestParam("state") String state) {
 
         HttpServletResponse response = ServletUtils.response();
-        String url = "/#person-info/index/";
+        String url = "/#personal";
 
 
         DingtalkXpackService dingtalkXpackService = null;
@@ -178,7 +178,12 @@ public class XDingtalkServer {
             if (null != sysUserEntity) {
                 bindError(response, url, "当前钉钉账号已绑定其他DE用户");
             }
-
+            if (ObjectUtils.isEmpty(sysUserAssist)) {
+                sysUserAssist = new SysUserAssist();
+                sysUserAssist.setUserId(Long.parseLong(state));
+            }
+            sysUserAssist.setDingtalkId(userId);
+            sysUserService.saveAssist(sysUserAssist.getUserId(), sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
             response.sendRedirect(url);
         } catch (Exception e) {
 

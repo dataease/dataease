@@ -93,10 +93,13 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/sso/callBack*", ANON);
         filterChainDefinitionMap.put("/cas/callBack*", ANON);
         filterChainDefinitionMap.put("/plugin/wecom/callBack*", ANON);
+        filterChainDefinitionMap.put("/plugin/wecom/bind*", ANON);
         filterChainDefinitionMap.put("/plugin/wecom/getQrParam", ANON);
         filterChainDefinitionMap.put("/plugin/dingtalk/callBack*", ANON);
+        filterChainDefinitionMap.put("/plugin/dingtalk/bind*", ANON);
         filterChainDefinitionMap.put("/plugin/dingtalk/getQrParam", ANON);
         filterChainDefinitionMap.put("/plugin/lark/callBack*", ANON);
+        filterChainDefinitionMap.put("/plugin/lark/bind*", ANON);
         filterChainDefinitionMap.put("/plugin/lark/getQrParam", ANON);
         filterChainDefinitionMap.put("/cas/reset/**", ANON);
 
@@ -122,7 +125,7 @@ public class ShiroServiceImpl implements ShiroService {
 
     @Override
     public void updatePermission(ShiroFilterFactoryBean shiroFilterFactoryBean, Integer roleId,
-            Boolean isRemoveSession) {
+                                 Boolean isRemoveSession) {
 
     }
 

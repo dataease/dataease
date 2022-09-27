@@ -151,7 +151,7 @@ public class XLarkServer {
     public void bind(@RequestParam("code") String code, @RequestParam("state") String state) {
 
         HttpServletResponse response = ServletUtils.response();
-        String url = "/#person-info/index/";
+        String url = "/#personal";
 
         LarkXpackService larkXpackService = null;
         try {
@@ -178,7 +178,12 @@ public class XLarkServer {
                 bindError(response, url, "当前飞书账号已绑定其他DE用户");
             }
 
-
+            if (ObjectUtils.isEmpty(sysUserAssist)) {
+                sysUserAssist = new SysUserAssist();
+                sysUserAssist.setUserId(Long.parseLong(state));
+            }
+            sysUserAssist.setLarkId(userId);
+            sysUserService.saveAssist(sysUserAssist.getUserId(), sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
             response.sendRedirect(url);
         } catch (Exception e) {
 
