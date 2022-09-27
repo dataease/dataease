@@ -2295,17 +2295,10 @@ export const TYPE_CONFIGS = [
       'label-selector',
       'tooltip-selector',
       'title-selector',
-      'legend-selector',
-      'margin-selector'
+      'legend-selector'
     ],
     propertyInner: {
-      'margin-selector': [
-        'marginModel',
-        'marginTop',
-        'marginBottom',
-        'marginLeft',
-        'marginRight'
-      ],
+
       'color-selector': [
         'value',
         'custom',
@@ -2361,17 +2354,10 @@ export const TYPE_CONFIGS = [
       'label-selector',
       'tooltip-selector',
       'title-selector',
-      'legend-selector',
-      'margin-selector'
+      'legend-selector'
     ],
     propertyInner: {
-      'margin-selector': [
-        'marginModel',
-        'marginTop',
-        'marginBottom',
-        'marginLeft',
-        'marginRight'
-      ],
+
       'color-selector': [
         'value',
         'custom',
@@ -2429,17 +2415,10 @@ export const TYPE_CONFIGS = [
       'tooltip-selector',
       'split-selector',
       'title-selector',
-      'legend-selector',
-      'margin-selector'
+      'legend-selector'
     ],
     propertyInner: {
-      'margin-selector': [
-        'marginModel',
-        'marginTop',
-        'marginBottom',
-        'marginLeft',
-        'marginRight'
-      ],
+
       'color-selector': [
         'value',
         'custom',
@@ -2500,17 +2479,10 @@ export const TYPE_CONFIGS = [
       'size-selector',
       'label-selector',
       'tooltip-selector',
-      'title-selector',
-      'margin-selector'
+      'title-selector'
     ],
     propertyInner: {
-      'margin-selector': [
-        'marginModel',
-        'marginTop',
-        'marginBottom',
-        'marginLeft',
-        'marginRight'
-      ],
+
       'color-selector': [
         'value',
         'custom',
@@ -2643,17 +2615,10 @@ export const TYPE_CONFIGS = [
       'label-selector',
       'tooltip-selector',
       'title-selector',
-      'legend-selector',
-      'margin-selector'
+      'legend-selector'
     ],
     propertyInner: {
-      'margin-selector': [
-        'marginModel',
-        'marginTop',
-        'marginBottom',
-        'marginLeft',
-        'marginRight'
-      ],
+
       'color-selector': [
         'value',
         'custom',
