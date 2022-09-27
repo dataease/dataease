@@ -2,7 +2,7 @@
   <div class="ds-table de-serach-table">
     <el-row class="top-operate">
       <el-col :span="10">
-        <span class="table-name">{{ params.name }}</span>
+        <span class="table-name-top">{{ params.name }}</span>
       </el-col>
       <el-col :span="14" class="right-user">
         <el-input
@@ -46,13 +46,11 @@
         </el-table-column>
       </el-table>
     </div>
-    <el-drawer
+    <el-dialog
       :title="$t('dataset.detail')"
       :visible.sync="userDrawer"
-      custom-class="user-drawer-task ds-table-drawer"
-      size="840px"
-      v-closePress
-      direction="rtl"
+      class="de-dialog-form ds-table-drawer"
+      width="840px"
     >
       <el-row style="margin-top: 12px" :gutter="24">
         <el-col :span="12">
@@ -89,7 +87,7 @@
       :label="$t('datasource.field_description')">
     </el-table-column>
   </el-table>
-    </el-drawer>
+    </el-dialog>
   </div>
 </template>
 
@@ -168,7 +166,7 @@ export default {
   .mar3 {
     margin-left: -5px;
   }
-  .table-name {
+  .table-name-top {
     font-family: PingFang SC;
     font-size: 16px;
     font-weight: 500;

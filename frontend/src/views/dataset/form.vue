@@ -1,6 +1,6 @@
 <template>
   <div class="de-dataset-form">
-    <div class="top" v-if="table.id && !createDataset">
+    <div class="top">
       <span class="name">
         <i @click="back" class="el-icon-arrow-left"></i>
         <svg-icon
@@ -35,94 +35,13 @@
     <div class="container">
       <component
         @setTableNum="(val) => (tableNum = val)"
-        v-if="table.name || !createDataset"
         :param="table"
         :is="component"
         ref="addDataset"
+        :originName="originName"
         :nameList="nameList"
       />
     </div>
-
-    <el-dialog
-      :title="dialogTitle"
-      class="de-dialog-form"
-      :visible.sync="createDataset"
-      width="600px"
-      v-loading="loading"
-      :before-close="back"
-    >
-      <el-form
-        ref="datasetForm"
-        class="de-form-item"
-        :model="datasetForm"
-        :rules="datasetFormRules"
-      >
-        <el-form-item
-          v-if="datasetFormRules.name"
-          :label="$t('dataset.name')"
-          prop="name"
-        >
-          <el-input v-model="datasetForm.name" />
-        </el-form-item>
-        <el-form-item :label="$t('deDataset.folder')" prop="id">
-          <el-popover
-            placement="bottom"
-            popper-class="user-popper dataset-filed"
-            width="552"
-            trigger="click"
-          >
-            <el-tree
-              :data="tData"
-              ref="tree"
-              node-key="id"
-              class="de-tree"
-              :expand-on-click-node="false"
-              highlight-current
-              :filter-node-method="filterNode"
-              @node-click="nodeClick"
-            >
-              <span slot-scope="{ data }" class="custom-tree-node-dataset">
-                <span v-if="data.type === 'group'">
-                  <svg-icon icon-class="scene" class="ds-icon-scene" />
-                </span>
-                <span
-                  style="
-                    margin-left: 6px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                  "
-                  :title="data.name"
-                  >{{ data.name }}</span
-                >
-              </span>
-            </el-tree>
-            <el-select
-              v-model="datasetForm.id"
-              slot="reference"
-              filterable
-              popper-class="tree-select-dataset"
-              style="width: 100%"
-              :filter-method="filterMethod"
-              :placeholder="$t('commons.please_select')"
-            >
-              <el-option
-                v-for="item in selectDatasets"
-                :key="item.label"
-                :label="item.label"
-                :value="item.id"
-              />
-            </el-select>
-          </el-popover>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <deBtn secondary @click="back">{{ $t('dataset.cancel') }}</deBtn>
-        <deBtn type="primary" @click="saveDataset"
-          >{{ $t('dataset.confirm') }}
-        </deBtn>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -133,13 +52,12 @@ import AddSQL from './add/AddSQL'
 import AddExcel from './add/AddExcel'
 import AddUnion from '@/views/dataset/add/AddUnion'
 import { post } from '@/api/dataset/dataset'
-import { groupTree } from '@/api/dataset/dataset'
+import { datasetTypeMap } from './group/options'
 export default {
   name: 'DatasetForm',
   components: { AddDB, AddSQL, AddExcel, AddApi, AddUnion },
   data() {
     return {
-      sceneId: '',
       originName: '',
       tableNum: 0,
       showInput: false,
@@ -147,9 +65,6 @@ export default {
       loading: false,
       selectDatasets: [],
       tData: [],
-      filterText: '',
-      dialogTitle: '',
-      createDataset: false,
       datasetType: '',
       component: '',
       table: {},
@@ -158,7 +73,6 @@ export default {
       datasetForm: {
         id: '',
         name: '',
-        sceneName: ''
       },
       datasetFormRules: {
         name: [
@@ -197,15 +111,20 @@ export default {
     }
   },
   created() {
-    const { datasetType, sceneId, id, editType } = this.$route.query
+    const fromGroup = this.$route.params.fromGroup
+    const routeInfo = fromGroup ? this.$route.params : this.$route.query
+    const { datasetType, sceneId, id, editType, name } =  routeInfo
     this.datasetType = datasetType
     this.editType = editType
-    this.sceneId = sceneId
     if (id) {
       this.initTable(id)
     } else {
-      this.tree(sceneId)
-      this.createDataset = true
+      const name = name || this.$t('commons.create') + this.$t(datasetTypeMap[datasetType]) + this.$t('auth.datasetAuth')
+      this.table = {
+        name,
+        id: sceneId
+      }
+      this.getDatasetNameFromGroup(sceneId, name)
     }
     this.switchComponent(datasetType)
   },
@@ -217,10 +136,13 @@ export default {
       this.nameExsitValidator()
       this.showInput = this.nameExsit
     },
-    getDatasetNameFromGroup(sceneId) {
+    getDatasetNameFromGroup(sceneId, name) {
       post(`/dataset/table/getDatasetNameFromGroup/${sceneId}`, null).then(
         (res) => {
           this.nameList = res.data
+          if (name && ['sql', 'union'].includes(this.datasetType)) {
+            this.nameBlur()
+          }
         }
       )
     },
@@ -237,53 +159,6 @@ export default {
       if (['sql', 'union'].includes(this.datasetType)) {
         this.showInput = true
       }
-    },
-    nodeClick({ id, label }) {
-      this.selectDatasets = [
-        {
-          id,
-          label
-        }
-      ]
-      this.$nextTick(() => {
-        this.datasetForm.id = id
-      })
-      this.getDatasetNameFromGroup(id)
-    },
-    tree(sceneId) {
-      this.loading = true
-      groupTree({
-        name: '',
-        pid: '0',
-        level: 0,
-        type: 'group',
-        children: [],
-        sort: 'type desc,name asc'
-      }).then((res) => {
-        this.tData = res.data
-        if (sceneId) {
-          this.dfsTree(res.data, sceneId)
-        }
-        this.loading = false
-      })
-    },
-    dfsTree(arr, sceneId) {
-      arr.some((ele) => {
-        if (sceneId === ele.id) {
-          this.nodeClick(ele)
-        } else if (ele.children?.length) {
-          this.dfsTree(ele.children, sceneId)
-        }
-        return false
-      })
-    },
-    filterMethod(val) {
-      if (!val) this.$refs.tree.filter(val)
-      this.$refs.tree.filter(val)
-    },
-    filterNode(value, data) {
-      if (!value) return true
-      return data.name.indexOf(value) !== -1
     },
     nameRepeat(value) {
       if (!this.nameList || this.nameList.length === 0) {
@@ -307,19 +182,6 @@ export default {
         (name) => name === this.table.name && name !== this.originName
       )
     },
-    saveDataset() {
-      this.$refs.datasetForm.validate((result) => {
-        if (result) {
-          const { name, id } = this.datasetForm
-          this.table = {
-            id,
-            name
-          }
-          this.createDataset = false
-          this.getDatasetNameFromGroup(id)
-        }
-      })
-    },
     initTable(id) {
       post('/dataset/table/getWithPermission/' + id, null)
         .then((response) => {
@@ -339,36 +201,25 @@ export default {
         .catch(() => {})
     },
     switchComponent(c) {
-      let type = ''
-      if (['db', 'excel', 'api'].includes(c)) {
-        this.$delete(this.datasetFormRules, 'name')
-      }
       switch (c) {
         case 'db':
-          type = 'deDataset.database'
           this.component = AddDB
           break
         case 'sql':
-          type = 'SQL'
           this.component = AddSQL
           break
         case 'excel':
-          type = 'EXCEL'
           this.component = AddExcel
           break
         case 'union':
-          type = 'dataset.union'
           this.component = AddUnion
           break
         case 'api':
-          type = 'API'
           this.component = AddApi
           break
         default:
           break
       }
-      this.dialogTitle =
-        this.$t('commons.create') + this.$t(type) + this.$t('auth.datasetAuth')
     }
   }
 }

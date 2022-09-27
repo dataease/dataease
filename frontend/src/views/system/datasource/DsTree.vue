@@ -40,7 +40,14 @@
 
       <el-col class="custom-tree-container de-tree">
         <div class="block">
+          <div v-if="!tData.length && !treeLoading" class="no-tdata">
+            {{ showView === 'Driver' ? '暂无驱动' : '暂无数据源' }}
+            <span @click="() => addFolder()" class="no-tdata-new">{{
+              $t('deDataset.create')
+            }}</span>
+          </div>
           <el-tree
+            v-else
             ref="myDsTree"
             :default-expanded-keys="expandedArray"
             :data="tData"
@@ -64,7 +71,7 @@
                 </span>
                 <span v-if="data.status === 'Error'">
                   <svg-icon
-                    icon-class="exclamationmark"
+                    icon-class="de-ds-error"
                     class="ds-icon-scene"
                   />
                 </span>
@@ -282,6 +289,7 @@ export default {
       dsTypeRelate: false,
       expandedArray: [],
       tData: [],
+      treeLoading: false,
       dsTypes: [],
       dsTypesForDriver: [],
       showSearchInput: false,
@@ -365,15 +373,20 @@ export default {
       this.showSearchInput = false
     },
     queryTreeDatas() {
+      this.treeLoading = true
       if (this.showView === 'Datasource') {
         listDatasource().then((res) => {
           this.tData = this.buildTree(res.data)
-        })
+        }).finally(() => {
+        this.treeLoading = false
+      })
       }
       if (this.showView === 'Driver') {
         listDrivers().then((res) => {
           this.tData = this.buildTree(res.data)
-        })
+        }).finally(() => {
+        this.treeLoading = false
+      })
       }
     },
     datasourceTypes() {
@@ -418,7 +431,7 @@ export default {
         }
       })
     },
-    buildTree(array) {
+    buildTree(array = []) {
       const types = {}
       const newArr = []
       for (let index = 0; index < array.length; index++) {
@@ -630,6 +643,18 @@ export default {
 <style lang="scss" scoped>
 .custom-tree-container {
   margin-top: 16px;
+  .no-tdata {
+    text-align: center;
+    margin-top: 80px;
+    font-family: PingFang SC;
+    font-size: 14px;
+    color: var(--deTextSecondary, #646a73);
+    font-weight: 400;
+    .no-tdata-new {
+      cursor: pointer;
+      color: var(--primary, #3370ff);
+    }
+  }
 }
 .custom-tree-node {
   flex: 1;

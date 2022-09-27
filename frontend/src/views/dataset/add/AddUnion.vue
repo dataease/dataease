@@ -197,6 +197,14 @@ export default {
         .removeEventListener('mousemove', this.caculateHeight)
     },
     caculateHeight(e) {
+      if (e.pageY - 56 < 298) {
+        this.unionHeight = 298
+        return
+      }
+      if (e.pageY - 56 > document.documentElement.clientHeight - 100) {
+        this.unionHeight = document.documentElement.clientHeight - 100
+        return
+      }
       this.unionHeight = e.pageY - 56
     },
     save() {

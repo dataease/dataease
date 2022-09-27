@@ -167,15 +167,17 @@
                     </span>
                     <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
                       <el-dropdown-item
-                        icon="el-icon-edit-outline"
                         command="rename"
                       >
+                      <svg-icon icon-class="de-ds-rename" />
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-right" command="move">
+                      <el-dropdown-item command="move">
+                        <svg-icon icon-class="de-ds-move" />
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-delete" command="delete">
+                      <el-dropdown-item command="delete">
+                        <svg-icon icon-class="de-ds-trash" />
                         {{ $t('dataset.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -263,18 +265,19 @@
                     </span>
                     <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
                       <el-dropdown-item
-                        icon="el-icon-edit-outline"
                         command="editTable"
                       >
+                      <svg-icon icon-class="de-ds-rename" />
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-right" command="moveDs">
+                      <el-dropdown-item command="moveDs">
+                         <svg-icon icon-class="de-ds-move" />
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
                       <el-dropdown-item
-                        icon="el-icon-delete"
                         command="deleteTable"
                       >
+                      <svg-icon icon-class="de-ds-trash" />
                         {{ $t('dataset.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -297,6 +300,7 @@
           class="de-form-item"
           :model="groupForm"
           :rules="groupFormRules"
+          :before-close="close"
           @submit.native.prevent
           @keypress.enter.native="saveGroup(groupForm)"
         >
@@ -390,6 +394,9 @@
         </deBtn>
       </div>
     </el-drawer>
+
+    <!-- 新增数据集文件夹 -->
+    <CreatDsGroup ref="CreatDsGroup" />
   </el-col>
 </template>
 
@@ -405,6 +412,7 @@ import {
   alter
 } from '@/api/dataset/dataset'
 import GroupMoveSelector from './GroupMoveSelector'
+import CreatDsGroup from './CreatDsGroup'
 import { queryAuthModel } from '@/api/authModel/authModel'
 import { engineMode } from '@/api/system/engine'
 import _ from 'lodash'
@@ -412,7 +420,7 @@ import msgCfm from '@/components/msgCfm/index'
 
 export default {
   name: 'Group',
-  components: { GroupMoveSelector },
+  components: { GroupMoveSelector, CreatDsGroup },
   mixins: [msgCfm],
   props: {
     saveStatus: {
@@ -616,7 +624,7 @@ export default {
         this.add('group')
         return
       }
-      this.dfsTdata(this.tData, param.id)
+      this.fileList = (param?.children || []).map((ele) => ele.label)
       this.add(param.modelInnerType)
       this.groupForm.pid = param.id
       this.groupForm.level = param.level + 1
@@ -831,7 +839,7 @@ export default {
         return
       }
       this.$store.dispatch('dataset/setSceneData', this.currGroup.id)
-      if (!this.tData.length) {
+      if (!this.tData?.length) {
         this.openMessageSuccess('deDataset.new_folder_first', 'error')
         return
       }
@@ -856,6 +864,11 @@ export default {
           break
       }
 
+      if (!param.id) {
+        this.$refs.CreatDsGroup.init(datasetType)
+        return
+      }
+
       this.$router.push({
         path: '/dataset-form',
         query: {
@@ -863,6 +876,7 @@ export default {
           sceneId: param.id
         }
       })
+      
     },
     addData(name) {
       this.$emit('switchComponent', { name: name, param: this.currGroup })
@@ -945,6 +959,7 @@ export default {
         this.closeMoveDs()
         this.expandedArray.push(newSceneId)
         this.treeNode()
+        this.openMessageSuccess('移动成功')
       })
     },
     targetDs(val) {
@@ -1013,7 +1028,7 @@ export default {
 
 <style scoped lang="scss">
 .de-fill-block {
-  margin-left: 35px !important;
+  margin-left: 25px !important;
 }
 
 .custom-tree-container {
