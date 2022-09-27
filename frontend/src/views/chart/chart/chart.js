@@ -56,6 +56,7 @@ export const DEFAULT_SIZE = {
   tableItemAlign: 'right',
 
   barBorderRadius: 0,
+  barBorderValue: 0,
   spaceleft: 10,
   xPaddingOffst: 10,
   spaceRight: 10,

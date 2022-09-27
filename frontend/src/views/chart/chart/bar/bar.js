@@ -47,11 +47,15 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
             }],
             global: false // 缺省为 false
           },
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
           barBorderRadius: barBorderRadiusArr
         }
       } else {
         y.itemStyle = {
           color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
           barBorderRadius: barBorderRadiusArr
         }
       }
@@ -75,7 +79,7 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
       chart_option.series.push(y)
     }
   }
-  // console.log(chart_option);
+  console.log('_____________', chart_option)
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
