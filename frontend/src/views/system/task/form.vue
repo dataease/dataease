@@ -359,6 +359,7 @@ export default {
           res.data.extraData = JSON.parse(res.data.extraData);
         }
         this.taskForm = res.data;
+        this.showCron = this.taskForm.rate === 'CRON'
         this.disableForm = this.disableEdit();
       });
     },

@@ -1,5 +1,5 @@
 <template>
-  <div class="dataset-api">
+  <div class="dataset-api" v-loading="loading">
     <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
       <i class="el-icon-d-arrow-right" />
     </p>
@@ -154,14 +154,19 @@
 import { listApiDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
 import { dbPreview, engineMode } from '@/api/system/engine'
 import cancelMix from './cancelMix'
+import msgCfm from '@/components/msgCfm/index'
 
 export default {
   name: 'AddApi',
-  mixins: [cancelMix],
+  mixins: [cancelMix, msgCfm],
   props: {
     param: {
       type: Object,
       default: null
+    },
+    nameList: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
@@ -203,6 +208,10 @@ export default {
     }
   },
   watch: {
+    checkTableList(val) {
+      this.validateName()
+      this.$emit('setTableNum', val.length)
+    },
     dataSource(val) {
       if (val) {
         this.checkTableList = []
@@ -258,14 +267,6 @@ export default {
   },
   methods: {
     nameExsitValidator(activeIndex) {
-      if (
-        !this.nameList ||
-        this.nameList.length === 0 ||
-        !this.checkDatasetName.includes(this.tableData[activeIndex].datasetName)
-      ) {
-        this.tableData[activeIndex].nameExsit = false
-        return
-      }
       this.tableData[activeIndex].nameExsit =
         this.nameList
           .concat(this.checkDatasetName)
@@ -276,6 +277,8 @@ export default {
       this.tableData.forEach((ele, index) => {
         if (this.checkDatasetName.includes(ele.datasetName)) {
           this.nameExsitValidator(index)
+        } else {
+          ele.nameExsit = false;
         }
       })
     },
@@ -335,7 +338,7 @@ export default {
       const tables = []
       const mode = this.mode
       const syncType = this.syncType
-      this.checkTableList.forEach(function(name) {
+      this.checkTableList.forEach((name) => {
         const datasetName = this.tableData.find(
           (ele) => ele.name === name
         ).datasetName

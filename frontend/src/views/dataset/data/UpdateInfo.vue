@@ -3,8 +3,8 @@
     <el-row style="margin: 6px 0 16px 0">
       <el-col :span="12">
         <deBtn
-          type="primary"
-          icon="el-icon-circle-plus-outline"
+          secondary
+          icon="el-icon-plus"
           @click="() => addTask()"
           >{{ $t('dataset.add_task') }}</deBtn
         >
@@ -75,13 +75,6 @@
               >{{
                 $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
               }}
-              <svg-icon
-                style="cursor: pointer"
-                v-if="scope.row.lastExecStatus === 'Error'"
-                @click="showErrorMassage(scope.row.msg)"
-                icon-class="icon-maybe"
-                class="field-icon-location"
-              />
             </span>
             <span v-else>-</span>
           </template>
@@ -242,7 +235,6 @@
               <span v-if="scope.row.status === 'Error'" style="color: red">
                 <el-link
                   type="danger"
-                  style="font-size: 12px"
                   @click="showErrorMassage(scope.row.info)"
                   >{{ $t('dataset.error') }}</el-link
                 >
@@ -264,9 +256,9 @@
       </el-row>
     </el-drawer>
     <el-drawer
-      :title="$t('dataset.add_task')"
+      :title="header"
       :visible.sync="update_task"
-      custom-class="update-drawer-task"
+      custom-class="user-drawer update-drawer-task"
       size="680px"
       v-closePress
       direction="rtl"
@@ -277,6 +269,7 @@
         :model="taskForm"
         label-width="100px"
         class="de-form-item"
+        :disabled="disableForm"
         :rules="taskFormRules"
       >
         <el-form-item :label="$t('dataset.task_name')" prop="name">
@@ -444,7 +437,7 @@
       </el-form>
       <div class="de-foot">
         <deBtn secondary @click="closeTask">{{ $t('dataset.cancel') }}</deBtn>
-        <deBtn type="primary" @click="saveTask(taskForm)">{{
+        <deBtn v-if="!disableForm" type="primary" @click="saveTask(taskForm)">{{
           $t('dataset.confirm')
         }}</deBtn>
       </div>
@@ -506,6 +499,7 @@ export default {
       show_error_massage: false,
       update_task_dialog_title: '',
       error_massage: '',
+      disableForm: false,
       taskForm: {
         name: '',
         type: 'all_scope',
@@ -600,7 +594,14 @@ export default {
   computed: {
     codemirror() {
       return this.$refs.myCm.codemirror
-    }
+    },
+    header() {
+      return this.disableForm
+        ? "查看任务"
+        : this.taskForm.id
+        ? "编辑任务"
+        : this.$t('dataset.add_task');
+    },
   },
   watch: {
     table: {
@@ -705,6 +706,7 @@ export default {
       if (!task) {
         // add
         this.resetTaskForm()
+        this.disableForm = false
         this.taskForm.name =
           this.table.name + ' ' + this.$t('dataset.task_update')
         this.taskForm.startTime = new Date()
@@ -712,7 +714,11 @@ export default {
       } else {
         // update
         this.taskForm = JSON.parse(JSON.stringify(task))
-        this.taskForm.extraData = JSON.parse(this.taskForm.extraData)
+        this.taskForm.extraData = JSON.parse(this.taskForm.extraData) || {
+          simple_cron_type: 'hour',
+          simple_cron_value: 1
+        }
+        this.showCron = this.taskForm.rate === 'CRON'
         this.update_task_dialog_title = this.$t('dataset.task_edit_title')
       }
       this.update_task = true
@@ -739,16 +745,15 @@ export default {
     handleSizeChange(pageSize) {
       this.paginationConfig.currentPage = 1
       this.paginationConfig.pageSize = pageSize
-      this.search()
+      this.listTask()
     },
     handleCurrentChange(currentPage) {
       this.paginationConfig.currentPage = currentPage
-      this.search()
+      this.listTask()
     },
     initSearch() {
       this.handleCurrentChange(1)
     },
-    search() {},
     handleCommand(key, row) {
       switch (key) {
         case 'exec':
@@ -776,7 +781,7 @@ export default {
       )
         .then(() => {
           post('/dataset/task/execTask', task).then((response) => {
-            this.initSearch(true)
+            this.initSearch()
           })
         })
         .catch(() => {})
@@ -814,6 +819,7 @@ export default {
       this.handlerConfirm(options)
     },
     selectDataset(row) {
+      this.disableForm = this.disableEdit(row);
       this.addTask(row)
     },
     changeTaskStatus(task) {
@@ -1023,6 +1029,7 @@ export default {
           simple_cron_value: 1
         }
       }
+      this.sql = ''
     },
     showSQL(val) {
       this.sql = val || ''
@@ -1088,6 +1095,8 @@ export default {
 .update-drawer-task {
   .el-drawer__body {
     padding: 24px;
+    padding-bottom: 80px;
+    position: unset;
   }
   .simple-cron {
     display: flex;

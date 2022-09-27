@@ -5,12 +5,14 @@
         <span class="title-text" style="line-height: 26px">
           {{ table.name }}
         </span>
-        <span v-if="table.mode === 0" class="de-tag primary">{{
-          $t('dataset.direct_connect')
-        }}</span>
-        <span v-if="table.mode === 1" class="de-tag warning">{{
-          $t('dataset.sync_data')
-        }}</span>
+        <template v-if="['db', 'sql'].includes(param.modelInnerType)">
+          <span v-if="table.mode === 0" class="de-tag primary">{{
+            $t('dataset.direct_connect')
+          }}</span>
+          <span v-if="table.mode === 1" class="de-tag warning">{{
+            $t('dataset.sync_data')
+          }}</span>
+        </template>
         <span
           v-if="sycnStatus === 'Underway'"
           class="blue-color"
@@ -102,9 +104,7 @@
       <el-tab-pane
         v-if="
           table.mode === 1 &&
-          (table.type === 'db' ||
-            table.type === 'sql' ||
-            table.type === 'api')
+          (table.type === 'db' || table.type === 'sql' || table.type === 'api')
         "
         :label="$t('dataset.update_info')"
         name="updateInfo"

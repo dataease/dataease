@@ -1405,6 +1405,7 @@ div:focus {
   width: 100%;
   padding: 24px;
   right: 0;
+  z-index: 1;
   bottom: 0;
   text-align: right;
   background-color: #fff;
@@ -1478,7 +1479,8 @@ div:focus {
       background: rgba(31, 35, 41, 0.1);
     }
 
-    i {
+    .el-icon-more,
+    .el-icon-plus {
       width: 24px;
       height: 24px;
       line-height: 24px;
@@ -1488,12 +1490,14 @@ div:focus {
       cursor: pointer;
     }
 
-    i:hover {
+    .el-icon-more:hover,
+    .el-icon-plus:hover {
       background: rgba(31, 35, 41, 0.1);
       border-radius: 4px;
     }
 
-    i:active {
+    .el-icon-more:active,
+    .el-icon-plus:active {
       background: rgba(31, 35, 41, 0.2);
       border-radius: 4px;
     }

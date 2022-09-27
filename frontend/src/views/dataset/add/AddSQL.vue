@@ -105,7 +105,7 @@
               "
             />
           </p>
-          <p v-if="dataSource">
+          <p v-if="dataSource" style="margin-top: 16px">
             <span>
               <svg-icon icon-class="db-de" />
               {{ (showTable && dataTable) || selectedDatasource.name }}
@@ -527,7 +527,15 @@ export default {
         .removeEventListener('mousemove', this.caculateHeight)
     },
     caculateHeight(e) {
-      this.sqlHeight = e.pageY - 56
+      if (e.pageY - 120 < 248) {
+        this.sqlHeight = 248
+        return
+      }
+      if (e.pageY - 120 > document.documentElement.clientHeight - 170) {
+        this.sqlHeight = document.documentElement.clientHeight - 170
+        return
+      }
+      this.sqlHeight = e.pageY - 120
     },
     kettleState() {
       isKettleRunning().then((res) => {
@@ -551,13 +559,15 @@ export default {
         }
       }
       this.tableLoading = true
-      post('/datasource/getTables/' + this.dataSource, {}).then((response) => {
-        this.tableData = response.data
-      }).finally(() => {
-        this.tableLoading = false
-      })
+      post('/datasource/getTables/' + this.dataSource, {})
+        .then((response) => {
+          this.tableData = response.data
+        })
+        .finally(() => {
+          this.tableLoading = false
+        })
     },
-    calHeight: _.debounce(function() {
+    calHeight: _.debounce(function () {
       const sqlHeight = Math.max(this.sqlHeight, 248)
       const currentHeight = document.documentElement.clientHeight
       this.height = currentHeight - sqlHeight - 56 - 54 - 36 - 64
@@ -712,6 +722,7 @@ export default {
     saveVariable() {
       this.variables = JSON.parse(JSON.stringify(this.variablesTmp)).concat()
       this.showVariableMgm = false
+      this.openMessageSuccess('参数设置成功')
     },
     variableTypeChange(row) {
       row.defaultValue = ''
@@ -846,6 +857,14 @@ export default {
           display: flex;
           align-items: center;
           padding-left: 4px;
+
+          &.field {
+            color: var(--deTextPrimary, #1f2329);
+          }
+
+          &.field:hover {
+            background: none;
+          }
 
           &:hover {
             background: rgba(31, 35, 41, 0.1);
