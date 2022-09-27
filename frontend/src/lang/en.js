@@ -1790,7 +1790,7 @@ export default {
     driver_name: 'Driver name:',
     drive_type: 'Drive type',
     add_driver: 'Add driver',
-    diver_on_the_left: 'Please select drive on the left',
+    diver_on_the_left: 'Please select the driver on the left',
     no_data_table: 'No data table',
     on_the_left: 'Please select the data source on the left',
     table_name: 'Table name:',
