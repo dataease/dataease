@@ -52,7 +52,7 @@ export function getTheme(chart) {
     }
   }
 
-  return {
+  const theme = {
     styleSheet: {
       brandColor: colors[0],
       paletteQualitative10: colors,
@@ -102,6 +102,12 @@ export function getTheme(chart) {
       }
     }
   }
+  // 百分比堆叠柱状图需要取消 offset，因为在顶部类别占比较低的时候有可能会把标签挤出去
+  // 并且视觉上也比较不舒服
+  if (chart.type === 'percentage-bar-stack') {
+    theme.innerLabels.offset = 0
+  }
+  return theme
 }
 // 通用label
 export function getLabel(chart) {
@@ -148,27 +154,35 @@ export function getLabel(chart) {
               extStack = JSON.parse(JSON.stringify(chart.extStack))
             }
 
-            if (chart.type === 'bar-stack' || chart.type === 'line-stack' || chart.type === 'bar-stack-horizontal') {
+            if (chart.type === 'bar-stack' ||
+              chart.type === 'line-stack' ||
+              chart.type === 'bar-stack-horizontal' ||
+              chart.type === 'percentage-bar-stack'
+            ) {
+              let f
               if (extStack && extStack.length > 0) {
-                const f = yAxis[0]
-                if (f.formatterCfg) {
-                  res = valueFormatter(param.value, f.formatterCfg)
-                } else {
-                  res = valueFormatter(param.value, formatterItem)
-                }
+                f = yAxis[0]
               } else {
                 for (let i = 0; i < yAxis.length; i++) {
-                  const f = yAxis[i]
-                  if (f.name === param.category) {
-                    if (f.formatterCfg) {
-                      res = valueFormatter(param.value, f.formatterCfg)
-                    } else {
-                      res = valueFormatter(param.value, formatterItem)
-                    }
+                  if (yAxis[i].name === param.category) {
+                    f = yAxis[i]
                     break
                   }
                 }
               }
+              if (!f) {
+                return res
+              }
+              if (!f.formatterCfg) {
+                f.formatterCfg = formatterItem
+              }
+              // 百分比堆叠柱状图保留小数处理
+              if (chart.type === 'percentage-bar-stack') {
+                f.formatterCfg.type = 'percent'
+                f.formatterCfg.decimalCount = l.reserveDecimalCount
+                f.formatterCfg.thousandSeparator = false
+              }
+              res = valueFormatter(param.value, f.formatterCfg)
             } else if (chart.type === 'bar-group') {
               const f = yAxis[0]
               if (f.formatterCfg) {
@@ -214,7 +228,7 @@ export function getTooltip(chart) {
         if (chart.type && chart.type !== 'waterfall') {
           tooltip.formatter = function(param) {
             let yAxis, extStack
-            let res
+            let res = param.value
             try {
               yAxis = JSON.parse(chart.yaxis)
             } catch (e) {
@@ -227,29 +241,37 @@ export function getTooltip(chart) {
             }
 
             let obj
-            if (chart.type === 'bar-stack' || chart.type === 'line-stack' || chart.type === 'bar-stack-horizontal') {
+            if (chart.type === 'bar-stack' ||
+              chart.type === 'line-stack' ||
+              chart.type === 'bar-stack-horizontal' ||
+              chart.type === 'percentage-bar-stack') {
+              let f
               if (extStack && extStack.length > 0) {
                 obj = { name: param.category, value: param.value }
-                const f = yAxis[0]
-                if (f.formatterCfg) {
-                  res = valueFormatter(param.value, f.formatterCfg)
-                } else {
-                  res = valueFormatter(param.value, formatterItem)
-                }
+                f = yAxis[0]
               } else {
                 obj = { name: param.category, value: param.value }
                 for (let i = 0; i < yAxis.length; i++) {
-                  const f = yAxis[i]
-                  if (f.name === param.category) {
-                    if (f.formatterCfg) {
-                      res = valueFormatter(param.value, f.formatterCfg)
-                    } else {
-                      res = valueFormatter(param.value, formatterItem)
-                    }
+                  if (yAxis[i].name === param.category) {
+                    f = yAxis[i]
                     break
                   }
                 }
               }
+              if (!f) {
+                return res
+              }
+              if (!f.formatterCfg) {
+                f.formatterCfg = formatterItem
+              }
+              if (chart.type === 'percentage-bar-stack') {
+                // 保留小数位数和标签保持一致，这边拿一下标签的配置
+                const l = JSON.parse(JSON.stringify(customAttr.label))
+                f.formatterCfg.type = 'percent'
+                f.formatterCfg.decimalCount = l.reserveDecimalCount
+                f.formatterCfg.thousandSeparator = false
+              }
+              res = valueFormatter(param.value, f.formatterCfg)
             } else if (chart.type === 'word-cloud') {
               obj = { name: param.text, value: param.value }
               for (let i = 0; i < yAxis.length; i++) {
@@ -311,7 +333,13 @@ export function getTooltip(chart) {
           }
         }
       } else {
-        tooltip = false
+        // 百分比堆叠柱状图隐藏 tooltip 设置 show 为 false 或者直接设置 tooltip 为 false 都无效，会变成分组显示，
+        // 需要将容器(container)或者内容框(showContent)设置为 false 或者 null 才可以隐藏
+        if (chart.type === 'percentage-bar-stack') {
+          tooltip.showContent = false
+        } else {
+          tooltip = false
+        }
       }
     }
   }
@@ -390,7 +418,8 @@ export function getLegend(chart) {
           offsetY: offsetY,
           marker: {
             symbol: legendSymbol
-          }
+          },
+          radio: false // 柱状图图例的聚焦功能，默认先关掉
         }
       } else {
         legend = false
