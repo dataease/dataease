@@ -117,7 +117,11 @@ export default {
         }
         if (customStyle.margin) {
           this.marginForm = customStyle.margin
+        } else {
+          this.marginForm = JSON.parse(JSON.stringify(DEFAULT_MARGIN_STYLE))
         }
+      } else {
+        this.marginForm = JSON.parse(JSON.stringify(DEFAULT_MARGIN_STYLE))
       }
     },
 
