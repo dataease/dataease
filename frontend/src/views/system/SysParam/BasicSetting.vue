@@ -152,18 +152,11 @@ export default {
           }
         ],
         limitTimes: [
-          {
-            pattern: '^([1-9]|[1-9]\\d|100)$',
-            message: this.$t('system_parameter_setting.limit_times_error'),
-            trigger: 'blur'
-          }
+
+          { validator: this.validateNumber, trigger: 'blur' }
         ],
         relieveTimes: [
-          {
-            pattern: '^([1-9]|[1-9]\\d|100)$',
-            message: this.$t('system_parameter_setting.relieve_times_error'),
-            trigger: 'blur'
-          }
+          { validator: this.validateNumber, trigger: 'blur' }
         ]
       },
       originLoginType: null
@@ -193,6 +186,17 @@ export default {
     this.query()
   },
   methods: {
+    validateNumber(rule, value, callback) {
+      if (value != null && value !== '') {
+        const reg = new RegExp('^([1-9]|[1-9]\\d|100)$')
+        if (!reg.test(value)) {
+          const msg = this.$t('system_parameter_setting.relieve_times_error')
+          callback(new Error(msg))
+          return
+        }
+      }
+      callback()
+    },
     query() {
       basicInfo().then((response) => {
         this.formInline = response.data
