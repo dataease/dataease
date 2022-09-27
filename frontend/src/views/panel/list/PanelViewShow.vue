@@ -60,7 +60,6 @@
                   <el-dropdown-item icon="el-icon-copy-document" @click.native="downloadToTemplate">{{ $t('panel.export_to_panel') }}</el-dropdown-item>
                   <el-dropdown-item icon="el-icon-notebook-2" @click.native="downloadAsPDF">{{ $t('panel.export_to_pdf') }}</el-dropdown-item>
                   <el-dropdown-item icon="el-icon-picture-outline" @click.native="downloadAsImage">{{ $t('panel.export_to_img') }}</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-s-data" @click.native="downLoadToApp">{{ $t('panel.export_to_app') }}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
