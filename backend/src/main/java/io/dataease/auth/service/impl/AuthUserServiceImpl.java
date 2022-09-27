@@ -298,6 +298,7 @@ public class AuthUserServiceImpl implements AuthUserService {
             if (needLock) {
                 long unlockTime = now + (longRelieveTimes * 60L * 1000L);
                 accountLockStatus.setUnlockTime(unlockTime);
+                accountLockStatus.setRelieveTimes(relieveTimes);
             }
 
         }

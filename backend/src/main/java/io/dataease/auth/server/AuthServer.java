@@ -72,7 +72,7 @@ public class AuthServer implements AuthApi {
             AccountLockStatus accountLockStatus = authUserService.lockStatus(username, 1);
             if (accountLockStatus.getLocked()) {
                 String msg = Translator.get("I18N_ACCOUNT_LOCKED");
-                msg = String.format(msg, username);
+                msg = String.format(msg, username, accountLockStatus.getRelieveTimes().toString());
                 DataEaseException.throwException(msg);
             }
             LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
@@ -112,7 +112,7 @@ public class AuthServer implements AuthApi {
         AccountLockStatus accountLockStatus = authUserService.lockStatus(username, 0);
         if (accountLockStatus.getLocked()) {
             String msg = Translator.get("I18N_ACCOUNT_LOCKED");
-            msg = String.format(msg, username);
+            msg = String.format(msg, username, accountLockStatus.getRelieveTimes().toString());
             DataEaseException.throwException(msg);
         }
 
