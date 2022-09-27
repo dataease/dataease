@@ -165,16 +165,6 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item v-show="isPluginLoaded && wecomOpen" :label="$t('user.wecom_id')">
-        <el-input v-model="form.sysUserAssist.wecomId" :placeholder="$t('user.input_wecom_id')" />
-      </el-form-item>
-      <el-form-item v-show="isPluginLoaded && dingTalkOpen" :label="$t('user.dingtalk_id')">
-        <el-input v-model="form.sysUserAssist.dingtalkId" :placeholder="$t('user.input_dingtalk_id')" />
-      </el-form-item>
-      <el-form-item v-show="isPluginLoaded && larkOpen" :label="$t('user.lark_id')">
-        <el-input v-model="form.sysUserAssist.larkId" :placeholder="$t('user.input_lark_id')" />
-      </el-form-item>
-
       <el-form-item :label="$t('commons.status')" prop="enabled">
         <el-switch
           v-model="form.enabled"
