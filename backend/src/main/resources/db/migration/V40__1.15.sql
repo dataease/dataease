@@ -127,3 +127,83 @@ INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_typ
 INSERT INTO `sys_auth` (`id`, `auth_source`, `auth_source_type`, `auth_target`, `auth_target_type`, `auth_time`, `auth_details`, `auth_user`, `update_time`, `copy_from`, `copy_id`) VALUES ('379c3124-7a30-4c1b-8ae4-de23eaf34b71', 'bdfcc324-1181-46a6-b681-a453517c4ffa', 'dataset', '2', 'user', 1663915323123, NULL, 'admin', NULL, NULL, NULL);
 
 DELETE from `sys_menu` where `menu_id` = 50;
+
+
+
+-- ----------------------------
+-- Function structure for GET_V_AUTH_MODEL_WITH_CHILDREN
+-- ----------------------------
+DROP FUNCTION IF EXISTS `GET_V_AUTH_MODEL_WITH_CHILDREN`;
+delimiter ;;
+CREATE FUNCTION `GET_V_AUTH_MODEL_WITH_CHILDREN`(parentId longtext,modelType varchar(255))
+    RETURNS longtext CHARSET utf8mb4
+  READS SQL DATA
+BEGIN
+
+DECLARE oTemp longtext;
+
+DECLARE oTempChild longtext;
+
+DECLARE levelCount INTEGER;
+
+SET levelCount = 0;
+
+SET oTemp = '';
+
+SET oTempChild = CAST(parentId AS CHAR CHARACTER set utf8mb4) COLLATE utf8mb4_general_ci;
+
+WHILE oTempChild IS NOT NULL and levelCount < 15
+
+DO
+
+SET oTemp = CONCAT(oTemp,',',oTempChild);
+
+SELECT GROUP_CONCAT(id) INTO oTempChild FROM V_AUTH_MODEL WHERE FIND_IN_SET(pid,oTempChild) > 0 and V_AUTH_MODEL.model_type=modelType order by id asc;
+
+END WHILE;
+
+RETURN oTemp;
+
+END
+;;
+delimiter ;
+
+-- ----------------------------
+-- Function structure for GET_V_AUTH_MODEL_WITH_PARENT
+-- ----------------------------
+DROP FUNCTION IF EXISTS `GET_V_AUTH_MODEL_WITH_PARENT`;
+delimiter ;;
+CREATE FUNCTION `GET_V_AUTH_MODEL_WITH_PARENT`(childrenId longtext,modelType varchar(255))
+    RETURNS longtext CHARSET utf8mb4
+  READS SQL DATA
+BEGIN
+
+DECLARE oTemp longtext;
+
+DECLARE oTempParent longtext;
+
+DECLARE levelCount INTEGER;
+
+SET levelCount = 0;
+
+SET oTemp = '';
+
+SET oTempParent = CAST(childrenId AS CHAR CHARACTER set utf8mb4) COLLATE utf8mb4_general_ci;
+
+WHILE oTempParent IS NOT NULL and levelCount < 15
+
+DO
+
+SET oTemp = CONCAT(oTemp,',',oTempParent);
+
+SET levelCount = levelCount + 1;
+
+SELECT GROUP_CONCAT(distinct pid) INTO oTempParent FROM V_AUTH_MODEL WHERE FIND_IN_SET(id,oTempParent) > 0 and V_AUTH_MODEL.model_type=modelType order by pid asc;
+
+END WHILE;
+
+RETURN oTemp;
+
+END
+;;
+delimiter ;
