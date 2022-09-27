@@ -113,7 +113,7 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
                     break;
                 case SQL:
                     String sql = dataTableInfoDTO.isBase64Encryption()? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())): dataTableInfoDTO.getSql();
-                    tableName = dataSetTableService.handleVariableDefaultValue( sql, null);
+                    tableName = dataSetTableService.handleVariableDefaultValue(sql, null, pluginViewSet.getDsType());
 
                     tableName = "(" + sqlFix(tableName) + ")";
                     break;

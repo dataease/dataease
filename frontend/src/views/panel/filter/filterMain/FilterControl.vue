@@ -50,8 +50,13 @@
           </el-checkbox>
           <el-popover v-model="titlePopovervisible" placement="bottom-end" :disabled="!attrs.showTitle" width="200">
             <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
-              <el-input v-model="attrs.title" :placeholder="$t('panel.input_title')" type="textarea" maxlength="15"
-                        show-word-limit/>
+              <el-input
+                v-model="attrs.title"
+                :placeholder="$t('panel.input_title')"
+                type="textarea"
+                maxlength="15"
+                show-word-limit
+              />
             </div>
 
             <i
@@ -75,7 +80,7 @@
                   class="de-checkbox"
                 >
                   <div class="span-div">
-                    <svg-icon :icon-class="item.type" class="chart-icon"/>
+                    <svg-icon :icon-class="item.type" class="chart-icon" />
                     <span v-if="item.name && item.name.length <= 7" style="margin-left: 6px">{{ item.name }}</span>
                     <el-tooltip v-else class="item" effect="dark" :content="item.name" placement="left">
                       <span style="margin-left: 6px">{{ item.name }}</span>
@@ -107,8 +112,10 @@
                   class="de-checkbox"
                 >
                   <div class="span-div">
-                    <span v-if="item.alias && item.alias.length <= 7"
-                          style="margin-left: 6px">{{ item.alias }}</span>
+                    <span
+                      v-if="item.alias && item.alias.length <= 7"
+                      style="margin-left: 6px"
+                    >{{ item.alias }}</span>
                     <el-tooltip v-else class="item" effect="dark" :content="item.alias" placement="left">
                       <span style="margin-left: 6px">{{ item.alias }}</span>
                     </el-tooltip>
@@ -164,9 +171,9 @@ export default {
       parametersVisible: false,
       timePopovervisible: false,
       accuracyOptions: [
-        {id: 'HH', name: 'HH'},
-        {id: 'HH:mm', name: 'HH:mm'},
-        {id: 'HH:mm:ss', name: 'HH:mm:ss'}
+        { id: 'HH', name: 'HH' },
+        { id: 'HH:mm', name: 'HH:mm' },
+        { id: 'HH:mm:ss', name: 'HH:mm:ss' }
 
       ]
 
@@ -179,61 +186,44 @@ export default {
     if ('timeYearWidget,timeMonthWidget,timeDateWidget,textSelectWidget,numberSelectWidget'.indexOf(this.widget.name) !== -1) {
       this.showParams = true
     }
-}
-,
-methods: {
-  multipleChange(value)
-  {
-    this.fillAttrs2Filter()
-  }
-,
-  showTimeChange(value)
-  {
-    this.attrs.accuracy = this.accuracyOptions[1].id
-    this.attrs.default.isDynamic = false
-    this.fillAttrs2Filter()
-  }
-,
-  checkedViewsChange(values)
-  {
-    this.fillAttrs2Filter()
-  }
-,
-  enableRangeChange(value)
-  {
-    if (!value) {
-      this.attrs.viewIds = []
-    }
-    this.fillAttrs2Filter()
-  }
-,
-  enableParametersChange(value)
-  {
-    if (!value) {
-      this.attrs.parameters = []
-    }
-    this.fillAttrs2Filter()
-  }
-,
-  showTitleChange(value)
-  {
-    if (!value) {
-      this.attrs.title = ''
-      this.element.style.backgroundColor = ''
-    }
-    this.fillAttrs2Filter()
-  }
-,
-  showVisualChange(value)
-  {
-    this.fillAttrs2Filter()
-  }
-,
+  },
+  methods: {
+    multipleChange(value) {
+      this.fillAttrs2Filter()
+    },
+    showTimeChange(value) {
+      this.attrs.accuracy = this.accuracyOptions[1].id
+      this.attrs.default.isDynamic = false
+      this.fillAttrs2Filter()
+    },
+    checkedViewsChange(values) {
+      this.fillAttrs2Filter()
+    },
+    enableRangeChange(value) {
+      if (!value) {
+        this.attrs.viewIds = []
+      }
+      this.fillAttrs2Filter()
+    },
+    enableParametersChange(value) {
+      if (!value) {
+        this.attrs.parameters = []
+      }
+      this.fillAttrs2Filter()
+    },
+    showTitleChange(value) {
+      if (!value) {
+        this.element.style.backgroundColor = ''
+      }
+      this.fillAttrs2Filter()
+    },
+    showVisualChange(value) {
+      this.fillAttrs2Filter()
+    },
 
-  fillAttrs2Filter()
-  {
+    fillAttrs2Filter() {
+    }
   }
-}
 }
 
 </script>

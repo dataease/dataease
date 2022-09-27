@@ -16,21 +16,20 @@
             icon="el-icon-plus"
             type="primary"
             @click="addApiItem(undefined)"
-            >{{ $t('commons.add') }}</deBtn
-          >
+          >{{ $t('commons.add') }}</deBtn>
         </div>
         <el-empty
-          :image="noneImg"
           v-if="!form.apiConfiguration.length"
+          :image="noneImg"
           :description="$t('datasource.no_data_table')"
-        ></el-empty>
+        />
         <template v-else>
           <div
             v-for="api in form.apiConfiguration"
             :key="api.id"
-            @click="addApiItem(api)"
             :style="{ cursor: disabled ? 'not-allowed': 'pointer'}"
             class="api-card"
+            @click="addApiItem(api)"
           >
             <el-row>
               <el-col :span="12">
@@ -39,44 +38,41 @@
                   v-if="api.status === 'Error'"
                   class="de-tag"
                   style="color: #646a73; background: rgba(31, 35, 41, 0.1)"
-                  >{{ $t('datasource.invalid') }}</span
-                >
+                >{{ $t('datasource.invalid') }}</span>
                 <span
                   v-if="api.status === 'Success'"
                   class="de-tag"
                   style="color: green; background: rgba(52, 199, 36, 0.2)"
-                  >{{ $t('datasource.valid') }}</span
-                >
+                >{{ $t('datasource.valid') }}</span>
               </el-col>
               <el-col style="text-align: right" :span="12">
                 <svg-icon
-                  @click.stop="copyItem(api)"
                   icon-class="de-copy"
                   class="de-copy-icon"
+                  @click.stop="copyItem(api)"
                 />
 
                 <span @click.stop>
                   <el-popover
+                    :ref="`apiTable${api.name}`"
                     placement="top"
                     width="200"
-                    :ref="`apiTable${api.name}`"
                     popper-class="api-table-delete"
                     trigger="click"
                   >
-                    <i class="el-icon-warning"></i>
+                    <i class="el-icon-warning" />
                     <div class="tips">
                       {{ $t('datasource.delete_this_item') }}
                     </div>
                     <div class="foot">
-                      <deBtn class="small" @click="cancelItem(api)" secondary>{{
+                      <deBtn class="small" secondary @click="cancelItem(api)">{{
                         $t('fu.search_bar.cancel')
                       }}</deBtn>
                       <deBtn
                         class="small"
-                        @click="deleteItem(api)"
                         type="primary"
-                        >{{ $t('fu.search_bar.ok') }}</deBtn
-                      >
+                        @click="deleteItem(api)"
+                      >{{ $t('fu.search_bar.ok') }}</deBtn>
                     </div>
                     <svg-icon
                       slot="reference"
@@ -105,8 +101,8 @@
         prop="configuration.host"
       >
         <el-input
-          :placeholder="$t('datasource._ip_address')"
           v-model="form.configuration.host"
+          :placeholder="$t('datasource._ip_address')"
           autocomplete="off"
         />
       </el-form-item>
@@ -129,8 +125,8 @@
         prop="configuration.dataBase"
       >
         <el-input
-          :placeholder="$t('datasource.please_input_data_base')"
           v-model="form.configuration.dataBase"
+          :placeholder="$t('datasource.please_input_data_base')"
           autocomplete="off"
         />
       </el-form-item>
@@ -140,8 +136,10 @@
         :label="$t('datasource.connection_mode')"
         prop="configuration.connectionType"
       >
-        <el-radio v-model="form.configuration.connectionType" label="sid"
-          >{{ $t('datasource.oracle_sid') }}
+        <el-radio
+          v-model="form.configuration.connectionType"
+          label="sid"
+        >{{ $t('datasource.oracle_sid') }}
         </el-radio>
         <el-radio
           v-model="form.configuration.connectionType"
@@ -190,20 +188,19 @@
         v-if="
           form.type === 'hive' && form.configuration.authMethod === 'kerberos'
         "
-      >
-      </span>
+      />
 
       <el-form-item
         v-if="
           form.type !== 'es' &&
-          form.type !== 'api' &&
-          form.configuration.authMethod !== 'kerberos'
+            form.type !== 'api' &&
+            form.configuration.authMethod !== 'kerberos'
         "
         :label="$t('datasource.user_name')"
       >
         <el-input
-          :placeholder="$t('components.one_user_name')"
           v-model="form.configuration.username"
+          :placeholder="$t('components.one_user_name')"
           autocomplete="off"
         />
       </el-form-item>
@@ -211,14 +208,14 @@
       <el-form-item
         v-if="
           form.type !== 'es' &&
-          form.type !== 'api' &&
-          form.configuration.authMethod !== 'kerberos'
+            form.type !== 'api' &&
+            form.configuration.authMethod !== 'kerberos'
         "
         :label="$t('datasource.password')"
       >
         <dePwd
-          :placeholder="$t('components.input_a_password')"
           v-model="form.configuration.password"
+          :placeholder="$t('components.input_a_password')"
         />
       </el-form-item>
 
@@ -227,8 +224,8 @@
         :label="$t('datasource.user_name')"
       >
         <el-input
-          :placeholder="$t('components.one_user_name')"
           v-model="form.configuration.esUsername"
+          :placeholder="$t('components.one_user_name')"
           autocomplete="off"
         />
       </el-form-item>
@@ -238,8 +235,8 @@
         :label="$t('datasource.password')"
       >
         <dePwd
-          :placeholder="$t('components.input_a_password')"
           v-model="form.configuration.esPassword"
+          :placeholder="$t('components.input_a_password')"
         />
       </el-form-item>
 
@@ -279,7 +276,7 @@
             icon="el-icon-plus"
             size="small"
             @click="getSchema()"
-            >{{ $t('datasource.get_schema') }}
+          >{{ $t('datasource.get_schema') }}
           </el-button>
         </template>
         <el-select
@@ -337,12 +334,11 @@
 
       <span
         v-if="!['es', 'api', 'mongo'].includes(form.type)"
-        @click="showPriority = !showPriority"
         class="de-expand de-mar0"
-        >{{ $t('datasource.priority')
-        }}<i v-if="showPriority" class="el-icon-arrow-up"></i>
-        <i v-else class="el-icon-arrow-down"></i
-      ></span>
+        @click="showPriority = !showPriority"
+      >{{ $t('datasource.priority')
+       }}<i v-if="showPriority" class="el-icon-arrow-up" />
+        <i v-else class="el-icon-arrow-down" /></span>
 
       <template v-if="showPriority">
         <el-row :gutter="24">
@@ -352,8 +348,8 @@
               prop="configuration.initialPoolSize"
             >
               <el-input-number
-                controls-position="right"
                 v-model="form.configuration.initialPoolSize"
+                controls-position="right"
                 autocomplete="off"
                 type="number"
                 :min="0"
@@ -367,8 +363,8 @@
               prop="configuration.minPoolSize"
             >
               <el-input-number
-                controls-position="right"
                 v-model="form.configuration.minPoolSize"
+                controls-position="right"
                 autocomplete="off"
                 type="number"
                 :min="0"
@@ -383,8 +379,8 @@
               prop="configuration.maxPoolSize"
             >
               <el-input-number
-                controls-position="right"
                 v-model="form.configuration.maxPoolSize"
+                controls-position="right"
                 autocomplete="off"
                 type="number"
                 :min="0"
@@ -411,11 +407,11 @@
       </template>
     </el-form>
     <el-drawer
+      v-closePress
       :title="api_table_title"
       :visible.sync="edit_api_item"
       custom-class="api-datasource-drawer"
       size="840px"
-      v-closePress
       :before-close="closeEditItem"
       direction="rtl"
     >
@@ -423,13 +419,13 @@
         <el-step
           v-if="active === 1"
           :title="$t('datasource.api_step_1')"
-        ></el-step>
+        />
         <el-step
           v-else
           icon="el-icon-circle-check"
           :title="$t('datasource.api_step_1')"
-        ></el-step>
-        <el-step :title="$t('datasource.api_step_2')"></el-step>
+        />
+        <el-step :title="$t('datasource.api_step_2')" />
       </el-steps>
 
       <el-row v-show="active === 1">
@@ -450,14 +446,14 @@
 
           <el-form-item :label="$t('datasource.request')" prop="url">
             <el-input
-              :placeholder="$t('datasource.path_all_info')"
               v-model="apiItem.url"
+              :placeholder="$t('datasource.path_all_info')"
               class="input-with-select"
               size="small"
             >
               <el-select
-                v-model="apiItem.method"
                 slot="prepend"
+                v-model="apiItem.method"
                 style="width: 100px"
                 size="small"
               >
@@ -478,6 +474,7 @@
             <!-- HTTP 请求参数 -->
             <el-form-item>
               <api-http-request-form
+                v-if="edit_api_item"
                 :headers="apiItem.request.headers"
                 :request="apiItem.request"
                 :response="responseData"
@@ -500,10 +497,10 @@
           </div>
           <div class="table-container">
             <el-table
+              ref="apiItemTable"
               :data="apiItem.jsonFields"
               style="width: 100%"
               row-key="jsonPath"
-              ref="apiItemTable"
             >
               <el-table-column
                 class-name="checkbox-table"
@@ -514,8 +511,9 @@
               >
                 <template slot-scope="scope">
                   <el-checkbox
-                    v-model="scope.row.checked"
                     :key="scope.row.jsonPath"
+                    v-model="scope.row.checked"
+                    :disabled="scope.row.disabled"
                     @change="handleCheckAllChange(scope.row)"
                   >
                     {{ scope.row.originName }}
@@ -525,10 +523,10 @@
               <el-table-column prop="name" :label="$t('dataset.field_rename')">
                 <template slot-scope="scope">
                   <el-input
+                    v-model="scope.row.name"
                     :disabled="scope.row.children"
                     size="mini"
                     type="text"
-                    v-model="scope.row.name"
                     @change="fieldNameChange(scope.row)"
                   />
                 </template>
@@ -540,8 +538,8 @@
               >
                 <template slot-scope="scope">
                   <el-select
-                    :disabled="scope.row.children"
                     v-model="scope.row.deExtractType"
+                    :disabled="scope.row.children"
                     size="mini"
                     style="display: inline-block; width: 120px"
                     @change="fieldTypeChange(scope.row)"
@@ -566,8 +564,7 @@
                       </span>
                       <span
                         style="float: left; color: #8492a6; font-size: 12px"
-                        >{{ item.label }}</span
-                      >
+                      >{{ item.label }}</span>
                     </el-option>
                   </el-select>
                 </template>
@@ -626,26 +623,26 @@
           $t('commons.cancel')
         }}</el-button>
         <el-button
+          v-show="active === 1"
           class="btn"
           type="primary"
-          @click="next"
           :disabled="disabledNext"
-          v-show="active === 1"
-          >{{ $t('fu.steps.next') }}
+          @click="next"
+        >{{ $t('fu.steps.next') }}
         </el-button>
         <el-button
+          v-show="active === 2"
           class="btn"
           type="primary"
           @click="before"
-          v-show="active === 2"
-          >{{ $t('fu.steps.prev') }}
+        >{{ $t('fu.steps.prev') }}
         </el-button>
         <el-button
+          v-show="active === 2"
           class="btn"
           type="primary"
           @click="saveItem"
-          v-show="active === 2"
-          >{{ $t('commons.save') }}
+        >{{ $t('commons.save') }}
         </el-button>
       </div>
     </el-drawer>
@@ -660,11 +657,11 @@ import dePwd from '@/components/deCustomCm/dePwd.vue'
 import msgCfm from '@/components/msgCfm'
 export default {
   name: 'DsConfiguration',
-  mixins: [msgCfm],
   components: {
     ApiHttpRequestForm,
     dePwd
   },
+  mixins: [msgCfm],
   props: {
     disabled: {
       type: Boolean,
@@ -933,8 +930,8 @@ export default {
       certinKey: false
     }
   },
-  created() {},
   watch: {},
+  created() {},
   methods: {
     getSchema() {
       this.$refs.DsConfig.validate((valid) => {
@@ -1074,7 +1071,7 @@ export default {
         this.apiItem.serialNumber =
           this.form.apiConfiguration.length > 0
             ? this.form.apiConfiguration[this.form.apiConfiguration.length - 1]
-                .serialNumber + 1
+              .serialNumber + 1
             : 0
         this.api_table_title = this.$t('datasource.add_api_table')
       }
@@ -1135,7 +1132,7 @@ export default {
       }
     },
     previewData() {
-      let datas = []
+      const datas = []
       let maxPreviewNum = 0
       for (let j = 0; j < this.apiItem.fields.length; j++) {
         if (

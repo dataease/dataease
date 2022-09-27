@@ -1,5 +1,5 @@
 <template>
-  <div class="dataset-sql" @mouseup="mouseupDrag" v-loading="loading">
+  <div v-loading="loading" class="dataset-sql" @mouseup="mouseupDrag">
     <div class="sql-editer">
       <el-row>
         <el-col :span="12">
@@ -69,7 +69,7 @@
             <svg-icon icon-class="reference-setting" />
             {{ $t('sql_variable.variable_mgm') }}
           </el-button>
-          <el-divider direction="vertical"></el-divider>
+          <el-divider direction="vertical" />
           <el-button
             class="de-text-btn"
             type="text"
@@ -83,28 +83,27 @@
       </el-row>
     </div>
     <div class="refrence-sql-table">
-      <div class="data-reference" v-if="dataReference">
+      <div v-if="dataReference" class="data-reference">
         <div class="table-database-name">
           <p>
             <span
+              v-if="showTable"
+              style="cursor: pointer"
               @click="
                 showTable = false
                 dataTable = ''
               "
-              style="cursor: pointer"
-              v-if="showTable"
-              ><i class="el-icon-arrow-left"></i> {{ $t('chart.back') }}</span
-            >
+            ><i class="el-icon-arrow-left" /> {{ $t('chart.back') }}</span>
             <span v-else>{{ $t('deDataset.data_reference') }}</span>
             <i
+              style="cursor: pointer"
+              class="el-icon-close"
               @click="
                 showTable = false
                 dataTable = ''
                 dataReference = false
               "
-              style="cursor: pointer"
-              class="el-icon-close"
-            ></i>
+            />
           </p>
           <p v-if="dataSource" style="margin-top: 16px">
             <span>
@@ -119,28 +118,24 @@
             </span>
           </p>
         </div>
-        <span class="no-select-datasource" v-if="!dataSource">{{
+        <span v-if="!dataSource" class="no-select-datasource">{{
           $t('deDataset.to_start_using')
         }}</span>
-        <div
-          v-loading="tableLoading"
-          v-else-if="dataSource && !dataTable"
-          class="item-list"
-        >
+        <div v-else-if="dataSource && !dataTable" v-loading="tableLoading" class="item-list">
           <div
-            @click="typeSwitch(ele)"
-            :key="ele.name"
             v-for="ele in tableData"
+            :key="ele.name"
             class="table-or-field"
+            @click="typeSwitch(ele)"
           >
             {{ ele.name }}
           </div>
         </div>
         <div v-else-if="dataSource && dataTable" class="item-list">
           <div
-            :key="ele.fieldName"
             v-for="ele in fieldData"
-            class="table-or-field field"
+            :key="ele.fieldName"
+            class="table-or-field"
           >
             {{ ele.fieldName }}
           </div>
@@ -168,23 +163,23 @@
               )})`
             }}</span>
 
-            <span @mousedown="mousedownDrag" class="drag"></span>
+            <span class="drag" @mousedown="mousedownDrag" />
           </div>
           <div class="table-sql">
             <el-empty
-              :image-size="125"
               v-if="initFlag"
+              :image-size="125"
               style="margin-top: 80px"
               :image="initImg"
               :description="$t('deDataset.to_run_query')"
-              >{{ $t('deDataset.the_running_results') }}
+            >{{ $t('deDataset.the_running_results') }}
             </el-empty>
             <el-empty
-              :image-size="60"
               v-else-if="errMsg"
+              :image-size="60"
               :image="errImg"
               :description="$t('deDataset.run_failed')"
-            ></el-empty>
+            />
             <ux-grid
               v-else
               ref="plxTable"
@@ -205,24 +200,23 @@
             </ux-grid>
           </div>
           <el-drawer
+            v-closePress
             :title="dialogTitle"
             :visible.sync="showVariableMgm"
             custom-class="user-drawer sql-dataset-drawer"
             size="840px"
-            v-closePress
             direction="rtl"
           >
             <div class="content">
-              <i class="el-icon-info"></i>
-              {{ $t('dataset.sql_variable_limit_1') }}<br />
-              {{ $t('dataset.sql_variable_limit_2') }}<br />
+              <i class="el-icon-info" />
+              {{ $t('dataset.sql_variable_limit_1') }}<br>
+              {{ $t('dataset.sql_variable_limit_2') }}<br>
             </div>
             <el-table :data="variablesTmp">
               <el-table-column
                 prop="variableName"
                 :label="$t('panel.param_name')"
-              >
-              </el-table-column>
+              />
               <el-table-column
                 width="200"
                 :label="$t('deDataset.parameter_type')"
@@ -234,8 +228,7 @@
                     class="select-type"
                     :options="fieldOptions"
                     @change="variableTypeChange(scope.row)"
-                  >
-                  </el-cascader>
+                  />
                   <span class="select-svg-icon">
                     <svg-icon
                       v-if="scope.row.type[0] === 'TEXT'"
@@ -269,21 +262,21 @@
               >
                 <template slot-scope="scope">
                   <el-input
-                    size="small"
                     v-if="scope.row.type[0] === 'TEXT'"
+                    v-model="scope.row.defaultValue"
+                    size="small"
                     type="text"
                     :placeholder="$t('fu.search_bar.please_input')"
-                    v-model="scope.row.defaultValue"
                   />
                   <el-input
-                    size="small"
                     v-if="
                       scope.row.type[0] === 'LONG' ||
-                      scope.row.type[0] === 'DOUBLE'
+                        scope.row.type[0] === 'DOUBLE'
                     "
+                    v-model="scope.row.defaultValue"
+                    size="small"
                     :placeholder="$t('fu.search_bar.please_input')"
                     type="number"
-                    v-model="scope.row.defaultValue"
                   />
 
                   <el-date-picker
@@ -293,8 +286,7 @@
                     size="small"
                     value-format="yyyy"
                     :placeholder="$t('dataset.select_year')"
-                  >
-                  </el-date-picker>
+                  />
 
                   <el-date-picker
                     v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH'"
@@ -304,8 +296,7 @@
                     :format="scope.row.type[1]"
                     :value-format="scope.row.type[1]"
                     :placeholder="$t('dataset.select_month')"
-                  >
-                  </el-date-picker>
+                  />
 
                   <el-date-picker
                     v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH-DAY'"
@@ -315,8 +306,7 @@
                     :format="scope.row.type[1]"
                     :value-format="scope.row.type[1]"
                     :placeholder="$t('dataset.select_date')"
-                  >
-                  </el-date-picker>
+                  />
 
                   <el-date-picker
                     v-if="scope.row.type[0] === 'DATETIME'"
@@ -326,8 +316,7 @@
                     :format="scope.row.type[1]"
                     :value-format="scope.row.type[1]"
                     :placeholder="$t('dataset.select_time')"
-                  >
-                  </el-date-picker>
+                  />
                 </template>
               </el-table-column>
             </el-table>
@@ -491,7 +480,7 @@ export default {
   },
   watch: {
     sqlHeight: {
-      handler: function () {
+      handler: function() {
         this.calHeight()
       }
     }
@@ -618,6 +607,8 @@ export default {
         return
       }
       this.parseVariable()
+      this.fields = []
+      this.$refs.plxTable.reloadData([])
       post('/dataset/table/sqlPreview', {
         dataSourceId: this.dataSource,
         type: 'sql',

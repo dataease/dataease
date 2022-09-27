@@ -1244,7 +1244,13 @@ public class SqlserverQueryProvider extends QueryProvider {
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
                 String convert = String.format(SqlServerSQLConstants.CONVERT, y.getDeType() == DeTypeConstants.DE_INT ? SqlServerSQLConstants.DEFAULT_INT_FORMAT : SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, originField);
-                String agg = String.format(SqlServerSQLConstants.AGG_FIELD, y.getSummary(), convert);
+                String summary = y.getSummary();
+                if (StringUtils.equalsIgnoreCase(y.getSummary(), "stddev_pop")) {
+                    summary = "STDEVP";
+                } else if (StringUtils.equalsIgnoreCase(y.getSummary(), "var_pop")) {
+                    summary = "VARP";
+                }
+                String agg = String.format(SqlServerSQLConstants.AGG_FIELD, summary, convert);
                 fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, agg);
             } else {
                 String convert = String.format(SqlServerSQLConstants.CONVERT, y.getDeType() == 2 ? SqlServerSQLConstants.DEFAULT_INT_FORMAT : SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, originField);
