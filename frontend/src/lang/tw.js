@@ -2168,7 +2168,8 @@ export default {
     homeLink: '首頁鏈接',
     defaultHomeLink: '默認為系統內置首頁',
     showFoot: '顯示登錄頁腳',
-    footContent: '頁腳內容'
+    footContent: '頁腳內容',
+    webFormat: '請輸入以[https://或http://]開頭的正確網址'
   },
   auth: {
     no_item_selected: '请在左侧选择组织、角色或用户',
