@@ -1,5 +1,5 @@
 <template>
-  <div class="de-ds-form">
+  <div class="de-ds-form" v-loading="formLoading">
     <div class="de-ds-top">
       <span class="name">
         <i @click="backToList" class="el-icon-arrow-left"></i>
@@ -359,6 +359,7 @@ export default {
         { id: 'POST', label: 'POST' }
       ],
       loading: false,
+      formLoading: false,
       responseData: { type: 'HTTP', responseResult: {}, subRequestResults: [] },
       api_table_title: '',
       api_step2_active_name: 'first',
@@ -695,10 +696,13 @@ export default {
       })
     },
     method(method, form) {
+      this.formLoading = true
       method(form).then((res) => {
         this.$success(i18n.t('commons.save_success'))
         this.refreshType(form)
         this.backToList()
+      }).finally(() => {
+        this.formLoading = false
       })
     },
     getSchema() {

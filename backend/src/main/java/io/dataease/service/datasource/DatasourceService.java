@@ -184,7 +184,7 @@ public class DatasourceService {
 
                     for (int i = 0; i < apiDefinitionList.size(); i++) {
                         String status = null;
-                        if(apiItemStatuses.get(apiDefinitionList.get(i).getName()) != null){
+                        if (apiItemStatuses.get(apiDefinitionList.get(i).getName()) != null) {
                             status = apiItemStatuses.get(apiDefinitionList.get(i).getName()).getAsString();
                         }
                         apiDefinitionList.get(i).setStatus(status);
@@ -304,9 +304,9 @@ public class DatasourceService {
                     return ResultHolder.success(datasourceDTO);
                 }
                 if (success > 0 && success < apiDefinitionList.size()) {
-                    return ResultHolder.error(Translator.get("I18N_DS_INVALID_TABLE") , datasourceDTO);
+                    return ResultHolder.error(Translator.get("I18N_DS_INVALID_TABLE"), datasourceDTO);
                 }
-                return ResultHolder.error(Translator.get("I18N_DS_INVALID") , datasourceDTO);
+                return ResultHolder.error(Translator.get("I18N_DS_INVALID"), datasourceDTO);
             }
             return ResultHolder.success(datasourceDTO);
         } catch (Exception e) {
@@ -530,7 +530,7 @@ public class DatasourceService {
         });
     }
 
-    public void updateDatasourceStatusJob(BasicInfo basicInfo, List<SystemParameter> parameters)  {
+    public void updateDatasourceStatusJob(BasicInfo basicInfo, List<SystemParameter> parameters) {
         String type = "";
         Integer interval = 30;
 
@@ -547,7 +547,7 @@ public class DatasourceService {
                 type = parameter.getParamValue();
             }
         }
-        if(!changeDsCheckTime){
+        if (!changeDsCheckTime) {
             return;
         }
         addJob(type, interval);
@@ -555,7 +555,7 @@ public class DatasourceService {
 
     private void addJob(String type, Integer interval) {
         String cron = "";
-        switch (type){
+        switch (type) {
             case "hour":
                 cron = "0 0 0/hour *  * ? *".replace("hour", interval.toString());
                 break;
@@ -572,12 +572,12 @@ public class DatasourceService {
         globalTask.setStartTime(System.currentTimeMillis());
         try {
             scheduleService.addSchedule(globalTask);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void initDsCheckJob(){
+    public void initDsCheckJob() {
         BasicInfo basicInfo = systemParameterService.basicInfo();
         addJob(basicInfo.getDsCheckIntervalType(), Integer.valueOf(basicInfo.getDsCheckInterval()));
     }

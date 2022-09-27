@@ -125,8 +125,8 @@ export default {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  flex-wrap: nowrap;
   display: flex;
+  flex-wrap: wrap;
   box-sizing: border-box;
   .el-empty {
     height: 100%;
@@ -146,6 +146,7 @@ export default {
   align-content: center;
 }
 .is-driver-mgm {
+  height: calc(100vh - 56px);
   background-color: var(--MainBG, #f5f6f7);
   padding: 24px;
   .ms-aside-container,

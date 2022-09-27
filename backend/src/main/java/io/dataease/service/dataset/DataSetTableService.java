@@ -673,7 +673,7 @@ public class DataSetTableService {
                 datasourceRequest.setDatasource(ds);
                 DataTableInfoDTO dataTableInfo = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
-                sql = handleVariableDefaultValue(sql, null);
+                sql = handleVariableDefaultValue(sql, null, ds.getType());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
                         qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, null, rowPermissionsTree));
@@ -1002,14 +1002,14 @@ public class DataSetTableService {
     }
 
 
-    public void checkVariable(final String sql) throws Exception {
-        String tmpSql = removeVariables(sql);
+    public void checkVariable(final String sql, String dsType) throws Exception {
+        String tmpSql = removeVariables(sql, dsType);
         if (tmpSql.contains(SubstitutedParams)) {
             throw new Exception(Translator.get("I18N_SQL_variable_limit"));
         }
     }
 
-    public String handleVariableDefaultValue(String sql, String sqlVariableDetails) {
+    public String handleVariableDefaultValue(String sql, String sqlVariableDetails, String dsType) {
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
@@ -1033,14 +1033,14 @@ public class DataSetTableService {
         }
 
         try {
-            sql = removeVariables(sql);
+            sql = removeVariables(sql, dsType);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return sql;
     }
 
-    public String removeVariables(String sql) throws Exception {
+    public String removeVariables(String sql, String dsType) throws Exception {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(sql);
         boolean hasVariables = false;
@@ -1060,15 +1060,19 @@ public class DataSetTableService {
         if (fromItem instanceof SubSelect) {
             SelectBody selectBody = ((SubSelect) fromItem).getSelectBody();
             SubSelect subSelect = new SubSelect();
-            Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString()));
+            Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
             PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
             subSelect.setSelectBody(subPlainSelect);
-            subSelect.setAlias(new Alias(fromItem.getAlias().toString()));
+            if(dsType.equals(DatasourceTypes.oracle.getType())){
+                subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
+            }else {
+                subSelect.setAlias(new Alias(fromItem.getAlias().toString()));
+            }
             plainSelect.setFromItem(subSelect);
         }
         Expression expr = plainSelect.getWhere();
         if (expr == null) {
-            return handleWith(plainSelect, select);
+            return handleWith(plainSelect, select, dsType);
         }
         StringBuilder stringBuilder = new StringBuilder();
         BinaryExpression binaryExpression = null;
@@ -1082,17 +1086,17 @@ public class DataSetTableService {
             expr.accept(getExpressionDeParser(stringBuilder));
         }
         plainSelect.setWhere(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
-        return handleWith(plainSelect, select);
+        return handleWith(plainSelect, select, dsType);
     }
 
-    private String handleWith(PlainSelect plainSelect, Select select) throws Exception {
+    private String handleWith(PlainSelect plainSelect, Select select, String dsType) throws Exception {
         StringBuilder builder = new StringBuilder();
         if (CollectionUtils.isNotEmpty(select.getWithItemsList())) {
             builder.append("WITH");
             builder.append(" ");
             for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext(); ) {
                 WithItem withItem = iter.next();
-                builder.append(withItem.getName() + " AS ( " + removeVariables(withItem.getSubSelect().toString()) + " ) ");
+                builder.append(withItem.getName() + " AS ( " + removeVariables(withItem.getSubSelect().toString(), dsType) + " ) ");
                 if (iter.hasNext()) {
                     builder.append(",");
                 }
@@ -1152,11 +1156,11 @@ public class DataSetTableService {
         datasourceRequest.setDatasource(ds);
         DataTableInfoDTO dataTableInfo = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
         String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
-        sql = handleVariableDefaultValue(sql, dataSetTableRequest.getSqlVariableDetails());
+        sql = handleVariableDefaultValue(sql, dataSetTableRequest.getSqlVariableDetails(), ds.getType());
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
-        checkVariable(sql);
+        checkVariable(sql, ds.getType());
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
         datasourceRequest.setQuery(sqlAsTable);
@@ -1811,7 +1815,7 @@ public class DataSetTableService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             DataTableInfoDTO dataTableInfo = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
             String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
-            sql = handleVariableDefaultValue(sql, null);
+            sql = handleVariableDefaultValue(sql, null, ds.getType());
             String sqlAsTable = qp.createSQLPreview(sql, null);
             datasourceRequest.setQuery(sqlAsTable);
             fields = datasourceProvider.fetchResultField(datasourceRequest);

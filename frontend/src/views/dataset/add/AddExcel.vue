@@ -215,7 +215,11 @@ export default {
     nameList: {
       type: Array,
       default: () => []
-    }
+    },
+    originName: {
+      type: String,
+      default: ''
+    },
   },
   data() {
     return {
@@ -255,6 +259,11 @@ export default {
       defaultCheckedKeys: []
     }
   },
+  computed: {
+    nameListCopy() {
+      return this.nameList.filter((ele) => ele !== this.originName)
+    }
+  },
   mounted() {
     window.onresize = () => {
       this.calHeight()
@@ -285,8 +294,8 @@ export default {
       this.validateName()
       const labelList = this.$refs.tree
         .getCheckedNodes()
-        .map((ele) => ele.excelLable)
-      const excelList = this.excelData.map((ele) => ele.excelLable)
+        .map((ele) => ele.id)
+      const excelList = this.excelData.map((ele) => ele.id)
       this.$emit(
         'setTableNum',
         labelList.filter((ele) => !excelList.includes(ele)).length
@@ -296,7 +305,7 @@ export default {
       this.$set(
         ele,
         'nameExsit',
-        this.nameList
+        this.nameListCopy
           .concat(checkList)
           .filter((name) => name === ele.datasetName).length > 1
       )
@@ -379,7 +388,7 @@ export default {
       this.sheets = []
       this.data = []
       const datas = this.data
-      this.$refs.plxTable.reloadData(datas)
+      this.$refs.plxTable?.reloadData(datas)
       this.fileList = []
       this.uploading = false
       this.$message({

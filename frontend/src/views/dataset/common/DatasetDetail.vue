@@ -1,6 +1,9 @@
 <template>
   <div v-if="tabStatus" class="info-tab">
     <div v-if="type === 'chart' && detail.chart" class="info-card">
+      <div class="title-type">
+        {{ $t('chart.datalist') }}
+      </div>
       <div class="info-item">
         <p class="info-title">
           {{ $t('chart.datalist') + $t('desearchbutton.text') }}
@@ -28,6 +31,9 @@
     </div>
 
     <div v-if="detail.table" class="info-card">
+      <div class="title-type">
+        {{ $t('dataset.datalist') }}
+      </div>
       <div class="info-item">
         <p class="info-title">
           {{ $t('dataset.datalist') + $t('desearchbutton.text') }}
@@ -51,6 +57,7 @@
         <p v-if="detail.table.type === 'union'" class="info-content">
           {{ $t('dataset.union_data') }}
         </p>
+        <p v-if="detail.table.type === 'api'" class="info-content">Api</p>
       </div>
       <div v-show="detail.table.type === 'db'" class="info-item">
         <p class="info-title">{{ $t('dataset.table') }}</p>
@@ -81,6 +88,9 @@
     </div>
 
     <div v-if="detail.datasource" class="info-card">
+      <div class="title-type">
+        {{ $t('datasource.datasource') }}
+      </div>
       <div class="info-item">
         <p class="info-title">
           {{ $t('datasource.datasource') + $t('desearchbutton.text') }}
@@ -93,38 +103,8 @@
       </div>
       <div class="info-item">
         <p class="info-title">{{ $t('datasource.type') }}</p>
-        <p v-if="detail.datasource.type === 'mysql'" class="info-content">
-          MySQL
-        </p>
-        <p v-if="detail.datasource.type === 'sqlServer'" class="info-content">
-          SQL Server
-        </p>
-        <p v-if="detail.datasource.type === 'oracle'" class="info-content">
-          Oracle
-        </p>
-        <p v-if="detail.datasource.type === 'hive'" class="info-content">
-          Apache Hive
-        </p>
-        <p v-if="detail.datasource.type === 'pg'" class="info-content">
-          PostgreSQL
-        </p>
-        <p v-if="detail.datasource.type === 'es'" class="info-content">
-          Elasticsearch
-        </p>
-        <p v-if="detail.datasource.type === 'mariadb'" class="info-content">
-          MariaDB
-        </p>
-        <p v-if="detail.datasource.type === 'ds_doris'" class="info-content">
-          Doris
-        </p>
-        <p v-if="detail.datasource.type === 'ck'" class="info-content">
-          ClickHouse
-        </p>
-        <p v-if="detail.datasource.type === 'redshift'" class="info-content">
-          AWS Redshift
-        </p>
-        <p v-if="detail.datasource.type === 'mongo'" class="info-content">
-          MongoDB
+        <p class="info-content">
+          {{ detail.datasource.type }}
         </p>
       </div>
       <div class="info-item">
@@ -222,18 +202,26 @@ export default {
 
 <style lang="scss" scoped>
 .info-tab {
-  padding: 0 4;
   width: 100%;
+  padding: 0 4px;
+  font-family: PingFang SC;
   box-sizing: border-box;
+
+  .title-type {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--deTextPrimary, #1f2329);
+  }
 
   .info-card {
     padding-bottom: 4px;
     border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+    margin-bottom: 12px;
     .info-item {
-      margin: 6px 0;
       font-family: PingFang SC;
       font-weight: 400;
-      margin-bottom: 8px;
+      margin-bottom: 8px !important;
       p {
         margin: 0;
       }
@@ -241,7 +229,7 @@ export default {
     .info-title {
       font-size: 12px;
       color: var(--deTextPrimary, #1f2329);
-      margin-bottom: 4px;
+      margin-bottom: 4px !important;
     }
     .info-content {
       font-size: 14px;

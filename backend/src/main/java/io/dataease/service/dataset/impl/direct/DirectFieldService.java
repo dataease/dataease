@@ -148,7 +148,7 @@ public class DirectFieldService implements DataSetFieldService {
                 if(dataTableInfoDTO.isBase64Encryption()){
                     sql = new String(java.util.Base64.getDecoder().decode(sql));
                 }
-                sql = dataSetTableService.removeVariables(sql);
+                sql = dataSetTableService.removeVariables(sql, ds.getType());
                 datasourceRequest.setQuery(qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields));
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.CUSTOM.toString())) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);

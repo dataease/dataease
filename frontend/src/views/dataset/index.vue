@@ -3,7 +3,7 @@
     v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
   >
     <de-aside-container type="dataset">
-      <group :currentNodeId="param.id" :save-status="saveStatus" @switchComponent="switchComponent" />
+      <group :currentNodeId="currentNodeId" :save-status="saveStatus" @switchComponent="switchComponent" />
     </de-aside-container>
       <de-main-container>
         <component
@@ -43,6 +43,11 @@ export default {
       component: noSelect,
       param: {},
       saveStatus: null
+    }
+  },
+  computed: {
+    currentNodeId() {
+      return this.param?.id
     }
   },
   mounted() {
