@@ -2170,7 +2170,8 @@ export default {
     homeLink: 'Home Link',
     defaultHomeLink: 'Default is the system built-in home page',
     showFoot: 'Show login page footer',
-    footContent: 'Foot content'
+    footContent: 'Foot content',
+    webFormat: 'Please enter the correct URL starting with [https:// or http://]'
   },
   auth: {
     no_item_selected: 'Please select organization、user or role on the left',
