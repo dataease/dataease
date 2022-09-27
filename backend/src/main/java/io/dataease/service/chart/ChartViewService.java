@@ -465,7 +465,7 @@ public class ChartViewService {
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
                 String sql = dataTableInfoDTO.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())) : dataTableInfoDTO.getSql();
-                sql = handleVariable(sql, requestList, qp, table);
+                sql = handleVariable(sql, requestList, qp, table, ds);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
@@ -874,7 +874,7 @@ public class ChartViewService {
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
                 String sql = dataTableInfoDTO.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())) : dataTableInfoDTO.getSql();
-                sql = handleVariable(sql, requestList, qp, table);
+                sql = handleVariable(sql, requestList, qp, table, ds);
                 if (StringUtils.equalsIgnoreCase("text", view.getType()) || StringUtils.equalsIgnoreCase("gauge", view.getType()) || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLSummaryAsTmp(sql, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
@@ -1590,7 +1590,7 @@ public class ChartViewService {
         chartViewMapper.updateByPrimaryKeySelective(chartView);
     }
 
-    private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table) throws Exception {
+    private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table, Datasource ds) throws Exception {
 
         List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
         }.getType());
@@ -1614,7 +1614,7 @@ public class ChartViewService {
                 }
             }
         }
-        sql = dataSetTableService.removeVariables(sql);
+        sql = dataSetTableService.removeVariables(sql, ds.getType());
         return sql;
     }
 
