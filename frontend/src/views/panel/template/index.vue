@@ -24,7 +24,7 @@
             ref="templateList"
             :template-type="currentTemplateType"
             :template-list="templateList"
-            @templateDelete="templateDelete"
+            @templateDelete="templateFolderDelete"
             @templateEdit="templateEdit"
             @showCurrentTemplate="showCurrentTemplate"
             @templateImport="templateImport"
@@ -250,6 +250,14 @@ export default {
       if (this.currentTemplateId) {
         find({ pid: this.currentTemplateId }).then((response) => {
           this.currentTemplateShowList = response.data;
+        });
+      }
+    },
+    templateFolderDelete(id) {
+      if (id) {
+        templateDelete(id).then((response) => {
+          this.openMessageSuccess("commons.delete_success");
+          this.getTree()
         });
       }
     },

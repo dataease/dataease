@@ -10,4 +10,6 @@ public class AccountLockStatus {
     private String username;
 
     private Long unlockTime;
+
+    private Integer relieveTimes;
 }

@@ -72,7 +72,7 @@ public class AuthServer implements AuthApi {
             AccountLockStatus accountLockStatus = authUserService.lockStatus(username, 1);
             if (accountLockStatus.getLocked()) {
                 String msg = Translator.get("I18N_ACCOUNT_LOCKED");
-                msg = String.format(msg, username);
+                msg = String.format(msg, username, accountLockStatus.getRelieveTimes().toString());
                 DataEaseException.throwException(msg);
             }
             LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
@@ -112,7 +112,7 @@ public class AuthServer implements AuthApi {
         AccountLockStatus accountLockStatus = authUserService.lockStatus(username, 0);
         if (accountLockStatus.getLocked()) {
             String msg = Translator.get("I18N_ACCOUNT_LOCKED");
-            msg = String.format(msg, username);
+            msg = String.format(msg, username, accountLockStatus.getRelieveTimes().toString());
             DataEaseException.throwException(msg);
         }
 
@@ -155,6 +155,7 @@ public class AuthServer implements AuthApi {
         result.put("token", token);
         ServletUtils.setToken(token);
         DeLogUtils.save(SysLogConstants.OPERATE_TYPE.LOGIN, SysLogConstants.SOURCE_TYPE.USER, user.getUserId(), null, null, null);
+        authUserService.unlockAccount(username, ObjectUtils.isEmpty(loginType) ? 0 : loginType);
         authUserService.clearCache(user.getUserId());
         return result;
     }

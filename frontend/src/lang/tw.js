@@ -916,6 +916,7 @@ export default {
     margin_model_absolute: '絕對',
     margin_model_relative: '相對',
     margin_placeholder: '請輸入0-100數字',
+    margin_absolute_placeholder: '請輸入0-40數字',
     rich_text_view_result_tips: '富文本只选取第一条结果',
     rich_text_view: '富文本视图',
     view_reset: '視圖重置',
@@ -2168,7 +2169,8 @@ export default {
     homeLink: '首頁鏈接',
     defaultHomeLink: '默認為系統內置首頁',
     showFoot: '顯示登錄頁腳',
-    footContent: '頁腳內容'
+    footContent: '頁腳內容',
+    webFormat: '請輸入以[https://或http://]開頭的正確網址'
   },
   auth: {
     no_item_selected: '请在左侧选择组织、角色或用户',
