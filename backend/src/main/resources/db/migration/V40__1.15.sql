@@ -158,6 +158,8 @@ DO
 
 SET oTemp = CONCAT(oTemp,',',oTempChild);
 
+SET levelCount = 0;
+
 SELECT GROUP_CONCAT(id) INTO oTempChild FROM V_AUTH_MODEL WHERE FIND_IN_SET(pid,oTempChild) > 0 and V_AUTH_MODEL.model_type=modelType order by id asc;
 
 END WHILE;
