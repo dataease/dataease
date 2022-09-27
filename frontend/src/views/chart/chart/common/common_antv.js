@@ -45,7 +45,7 @@ export function getTheme(chart) {
         }
     }
     for (let i = 0; i < arr.length; i++) {
-      if(customAttr.color) {
+      if(customAttr.color && customAttr.color.variety) {
         // 定义柱状图渐变色
         let a = hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
         let b = hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)

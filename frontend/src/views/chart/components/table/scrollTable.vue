@@ -281,6 +281,7 @@ export default {
       console.log(num)
       this.numberLine = num
       this.newData = JSON.parse(JSON.stringify(this.chart))
+      console.log('newdata',this.newData)
       let drillList = []
       if (typeof this.newData.drillFields === 'object') {
         drillList = JSON.parse(JSON.stringify(this.newData.drillFields))
@@ -315,7 +316,7 @@ export default {
       // 缓存对组件的数据维度进行处理的操作为了之后查询的数据
       save2Cache(this.newData.sceneId, this.newData).then(() => {
         viewData(this.newData.id, this.newData.sceneId, obj).then(res => {
-          // console.log('response',res)
+          console.log('response',res)
           const data = res.data.data
           const fields = data.fields
           const tableRow = []
@@ -336,22 +337,26 @@ export default {
           const arr = []
           for (const k in obj) {
             const a = k
-            fields.map(item => {
+            fields.map((item,index) => {
               if (a === item.datainsName) {
                 arr.push({
                   name: item.name,
-                  value: obj[a]
+                  value: obj[a],
+                  num: index,
                 })
               }
             })
           }
+          console.log(arr)
           const hash = {}
           const arr1 = arr.reduceRight((item, next) => {
             hash[next.name] ? '' : hash[next.name] = true && item.push(next)
             return item
           }, [])
-          console.log(arr, arr1)
-          this.infoForm = arr1
+          this.infoForm = arr1.sort((a,b) => {
+            return a.num - b.num
+          })
+          console.log(this.infoForm)
 
           this.isVisible = true
           // this.dialogVisible = true
