@@ -50,19 +50,6 @@
         </el-table-column>
 
         <el-table-column
-          prop="lastExecTime"
-          key="lastExecTime"
-          min-width="178"
-          :label="$t('dataset.task.last_exec_time')"
-        >
-          <template slot-scope="scope">
-            <span>
-              {{ scope.row.lastExecTime | timestampFormatDate }}
-            </span>
-          </template>
-        </el-table-column>
-
-        <el-table-column
           prop="lastExecStatus"
           key="lastExecStatus"
           min-width="140"
@@ -77,6 +64,19 @@
               }}
             </span>
             <span v-else>-</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="lastExecTime"
+          key="lastExecTime"
+          min-width="178"
+          :label="$t('dataset.task.last_exec_time')"
+        >
+          <template slot-scope="scope">
+            <span>
+              {{ scope.row.lastExecTime | timestampFormatDate }}
+            </span>
           </template>
         </el-table-column>
 
@@ -269,7 +269,7 @@
           <el-input
             v-model="taskForm.name"
             size="small"
-            :placeholder="$t('dataset.task_name')"
+            :placeholder="$t('fu.search_bar.please_input') + $t('dataset.task_name')"
           />
         </el-form-item>
         <el-form-item :label="$t('dataset.update_type')" prop="type">
@@ -280,7 +280,7 @@
             >
           </el-radio-group>
         </el-form-item>
-        <div class="add-scope-cont" v-if="taskForm.type === 'add_scope'">
+        <div class="add-scope-cont" v-if="taskForm.type === 'add_scope' && table.type !== 'api'">
           <el-form-item
             prop="type"
             :label="$t('dataset.incremental_update_type')"
@@ -542,7 +542,7 @@ export default {
         startTime: [
           {
             required: true,
-            message: this.$t('dataset.required'),
+            message: this.$t('components.time_is_required'),
             trigger: 'change'
           }
         ],

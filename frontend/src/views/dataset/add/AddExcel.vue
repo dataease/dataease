@@ -5,14 +5,16 @@
     </p>
     <div v-show="showLeft" class="table-list">
       <p class="select-ds">
-        <span>{{ $t('deDataset.select_data_table ') }}
+        <span
+          >{{ $t('deDataset.select_data_table ') }}
           <el-tooltip class="item" effect="dark" placement="right">
             <div slot="content">
-              {{ $t('dataset.excel_info_1') }}<br>
-              {{ $t('dataset.excel_info_2') }}<br>
+              {{ $t('dataset.excel_info_1') }}<br />
+              {{ $t('dataset.excel_info_2') }}<br />
               {{ $t('dataset.excel_info_3') }}
             </div>
-            <i class="el-icon-warning-outline" /> </el-tooltip></span>
+            <i class="el-icon-warning-outline" /> </el-tooltip
+        ></span>
         <i class="el-icon-d-arrow-left" @click="showLeft = false" />
       </p>
       <el-upload
@@ -34,7 +36,7 @@
           :loading="uploading"
           secondary
           :disabled="uploading"
-        >{{ $t('deDataset.upload_data') }}
+          >{{ $t('deDataset.upload_data') }}
         </deBtn>
       </el-upload>
       <div class="table-checkbox-list">
@@ -53,7 +55,10 @@
         >
           <span slot-scope="{ data }" class="custom-tree-node">
             {{ data.excelLable }}
-            <span v-if="data.nameExsit && !param.tableId" class="error-name-exsit">
+            <span
+              v-if="data.nameExsit && !param.tableId"
+              class="error-name-exsit"
+            >
               <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
             </span>
           </span>
@@ -118,24 +123,20 @@
                     <svg-icon
                       v-if="field.fieldType === 'TEXT'"
                       icon-class="field_text"
-                      class="field-icon-text"
-                    />
+                      class="field-icon-text" />
                     <svg-icon
                       v-if="field.fieldType === 'DATETIME'"
                       icon-class="field_time"
-                      class="field-icon-time"
-                    />
+                      class="field-icon-time" />
                     <svg-icon
                       v-if="
                         field.fieldType === 'LONG' ||
-                          field.fieldType === 'DOUBLE'
+                        field.fieldType === 'DOUBLE'
                       "
                       icon-class="field_value"
-                      class="field-icon-value"
-                    />
-                    <i
-                      class="el-icon-arrow-down el-icon--right"
-                    /></span>
+                      class="field-icon-value" />
+                    <i class="el-icon-arrow-down el-icon--right"
+                  /></span>
                   <el-dropdown-menu
                     slot="dropdown"
                     style="width: 178px"
@@ -145,32 +146,34 @@
                       v-for="item in fieldOptions"
                       :key="item.value"
                       :command="item.value"
-                    ><span>
-                       <svg-icon
-                         v-if="item.value === 'TEXT'"
-                         icon-class="field_text"
-                         class="field-icon-text"
-                       />
-                       <svg-icon
-                         v-if="item.value === 'DATETIME'"
-                         icon-class="field_time"
-                         class="field-icon-time"
-                       />
-                       <svg-icon
-                         v-if="
-                           item.value === 'LONG' || item.value === 'DOUBLE'
-                         "
-                         icon-class="field_value"
-                         class="field-icon-value"
-                       />
-                     </span>
+                      ><span>
+                        <svg-icon
+                          v-if="item.value === 'TEXT'"
+                          icon-class="field_text"
+                          class="field-icon-text"
+                        />
+                        <svg-icon
+                          v-if="item.value === 'DATETIME'"
+                          icon-class="field_time"
+                          class="field-icon-time"
+                        />
+                        <svg-icon
+                          v-if="
+                            item.value === 'LONG' || item.value === 'DOUBLE'
+                          "
+                          icon-class="field_value"
+                          class="field-icon-value"
+                        />
+                      </span>
                       <span
                         style="
                           color: #8492a6;
                           font-size: 14px;
                           margin-left: 10px;
                         "
-                      >{{ item.label }}</span></el-dropdown-item>
+                        >{{ item.label }}</span
+                      ></el-dropdown-item
+                    >
                   </el-dropdown-menu>
                 </el-dropdown>
                 <span style="font-size: 14px; margin-left: 10px">
@@ -219,7 +222,7 @@ export default {
     originName: {
       type: String,
       default: ''
-    },
+    }
   },
   data() {
     return {
@@ -292,9 +295,7 @@ export default {
         this.defaultCheckedKeys.splice(index, 1)
       }
       this.validateName()
-      const labelList = this.$refs.tree
-        .getCheckedNodes()
-        .map((ele) => ele.id)
+      const labelList = this.$refs.tree.getCheckedNodes().map((ele) => ele.id)
       const excelList = this.excelData.map((ele) => ele.id)
       this.$emit(
         'setTableNum',
@@ -351,7 +352,7 @@ export default {
     },
     calHeight() {
       const that = this
-      setTimeout(function() {
+      setTimeout(function () {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 56 - 30 - 26 - 25 - 35 - 10 - 37 - 20 - 10
       }, 10)
@@ -478,14 +479,15 @@ export default {
         this.param.tableId &&
         (effectExtField || changeFiled)
       ) {
-        var msg = effectExtField
-          ? i18n.t('dataset.task.effect_ext_field') +
-            ', ' +
-            i18n.t('dataset.task.excel_replace_msg')
-          : i18n.t('dataset.task.excel_replace_msg')
-        $confirm(msg, () => {
-          this.saveExcelData(sheetFileMd5, table)
-        })
+        const options = {
+          title: 'deDataset.replace_the_data',
+          confirmButtonText: this.$t('commons.confirm'),
+          content:
+            '替换可能会影响自定义数据集、关联数据集、仪表板等，是否替换？',
+          type: 'primary',
+          cb: () => this.saveExcelData(sheetFileMd5, table)
+        }
+        this.handlerConfirm(options)
       } else {
         this.saveExcelData(sheetFileMd5, table)
       }
@@ -495,25 +497,23 @@ export default {
         new Set(sheetFileMd5).size !== sheetFileMd5.length &&
         !this.param.tableId
       ) {
-        this.$confirm(
-          this.$t('dataset.task.excel_replace_msg'),
-          this.$t('dataset.merge_title'),
-          {
-            distinguishCancelAndClose: true,
-            confirmButtonText: this.$t('dataset.merge'),
-            cancelButtonText: this.$t('dataset.no_merge'),
-            type: 'info'
-          }
-        )
-          .then(() => {
+        const options = {
+          title: 'dataset.merge_title',
+          content: 'dataset.task.excel_replace_msg',
+          confirmButtonText: this.$t('dataset.merge'),
+          cancelButtonText: this.$t('dataset.no_merge'),
+          type: 'primary',
+          cb: () => {
             table.mergeSheet = true
             this.loading = true
             post('/dataset/table/update', table).then((response) => {
               this.openMessageSuccess('deDataset.set_saved_successfully')
               this.cancel(response.data)
-            })
-          })
-          .catch((action) => {
+            }).finally(() => {
+                this.loading = false
+              })
+          },
+          cancelCb: (action) => {
             if (action === 'close') {
               return
             }
@@ -527,10 +527,9 @@ export default {
               .finally(() => {
                 this.loading = false
               })
-          })
-          .finally(() => {
-            this.loading = false
-          })
+          }
+        }
+        this.handlerConfirm(options)
       } else {
         this.loading = true
         post('/dataset/table/update', table)

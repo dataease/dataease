@@ -179,7 +179,7 @@
               :image-size="60"
               :image="errImg"
               :description="$t('deDataset.run_failed')"
-            />
+            >{{ errMsgCont }}</el-empty>
             <ux-grid
               v-else
               ref="plxTable"
@@ -386,6 +386,7 @@ export default {
       tableData: [],
       fieldData: [],
       errMsg: false,
+      errMsgCont: '',
       options: [],
       sql: '',
       dataReference: false,
@@ -601,6 +602,7 @@ export default {
 
     getSQLPreview() {
       this.errMsg = false
+      this.errMsgCont = ''
       this.initFlag = false
       if (!this.dataSource || this.datasource === '') {
         this.openMessageSuccess('dataset.pls_slc_data_source', 'error')
@@ -608,7 +610,7 @@ export default {
       }
       this.parseVariable()
       this.fields = []
-      this.$refs.plxTable.reloadData([])
+      this.$refs.plxTable?.reloadData([])
       post('/dataset/table/sqlPreview', {
         dataSourceId: this.dataSource,
         type: 'sql',
@@ -617,7 +619,7 @@ export default {
           sql: Base64.encode(this.sql.trim()),
           isBase64Encryption: true
         })
-      })
+      }, true, 60000, true)
         .then((response) => {
           this.fields = response.data.fields
           this.data = response.data.data
@@ -626,7 +628,8 @@ export default {
             this.$refs.plxTable?.reloadData(datas)
           })
         })
-        .catch((err) => {
+        .catch((err, msg) => {
+          this.errMsgCont = err
           this.errMsg = true
         })
     },

@@ -12,7 +12,7 @@ export default {
       });
     },
     handlerConfirm(options,confirmButtonTextInfo) {
-      let { title, content, type = 'danger', cb, confirmButtonText = confirmButtonTextInfo?confirmButtonTextInfo:this.$t('commons.delete'), showCancelButton = true, cancelButtonText = this.$t("commons.cancel"), cancelCb = () => {} } = options;
+      let { title, content, type = 'danger', cb, confirmButtonText = confirmButtonTextInfo?confirmButtonTextInfo:this.$t('commons.delete'), showCancelButton = true, cancelButtonText = this.$t("commons.cancel"), cancelCb = () => {}, finallyCb = () => {} } = options;
       let text = content ? `<span>${ this.$t(title) }</span><br><span class="use-html">${ this.$t(content) }</span>` : this.$t(title);
       const dangerouslyUseHTMLString = Boolean(content);
       let customClass = `de-confirm de-confirm-fail ${ dangerouslyUseHTMLString && 'de-use-html'}`
@@ -34,8 +34,11 @@ export default {
         .then(() => {
           cb();
         })
-        .catch(() => {
-          cancelCb()
+        .catch((action) => {
+          cancelCb(action)
+        })
+        .finally(() => {
+          finallyCb()
         });
     },
   },

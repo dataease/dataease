@@ -2,7 +2,7 @@
   <div class="de-dataset-form">
     <div class="top">
       <span class="name">
-        <i @click="back" class="el-icon-arrow-left"></i>
+        <i @click="logOutTips" class="el-icon-arrow-left"></i>
         <svg-icon
           style="margin: 0 9.5px 0 16.2px"
           :icon-class="`de-${datasetType}-new`"
@@ -53,9 +53,11 @@ import AddExcel from './add/AddExcel'
 import AddUnion from '@/views/dataset/add/AddUnion'
 import { post } from '@/api/dataset/dataset'
 import { datasetTypeMap } from './group/options'
+import msgCfm from '@/components/msgCfm/index'
 export default {
   name: 'DatasetForm',
   components: { AddDB, AddSQL, AddExcel, AddApi, AddUnion },
+  mixins: [msgCfm],
   data() {
     return {
       originName: '',
@@ -131,6 +133,18 @@ export default {
   methods: {
     back() {
       this.$router.push('/dataset/index')
+    },
+    logOutTips() {
+      const options = {
+        title: 'role.tips',
+          confirmButtonText: this.$t('commons.confirm'),
+        content: 'system_parameter_setting.sure_to_exit',
+          type: 'primary',
+        cb: () => {
+          this.back()
+        }
+      }
+      this.handlerConfirm(options)
     },
     nameBlur() {
       this.nameExsitValidator()
