@@ -1,6 +1,7 @@
 import { sin, cos } from '@/components/canvas/utils/translate'
 import store from '@/store'
 import Vue from 'vue'
+
 export const LIGHT_THEME_COLOR_MAIN = '#000000'
 export const LIGHT_THEME_COLOR_SLAVE1 = '#CCCCCC'
 export const LIGHT_THEME_PANEL_BACKGROUND = '#F1F3F5'
@@ -35,7 +36,7 @@ export function getStyle(style, filter = []) {
           if (key === 'backgroundColor') {
             result[key] = colorRgb(style[key], style.opacity)
           }
-          if(key=== 'fontSize' && result[key] < 12){
+          if (key === 'fontSize' && result[key] < 12) {
             result[key] = 12
           }
           if (needUnit.includes(key)) {
