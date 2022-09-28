@@ -961,16 +961,14 @@ public class DataSetTableService {
             return new ArrayList<>();
         }
         List<SqlVariableDetails> sqlVariableDetails = new ArrayList<>();
-        List<String> sqlVariableNames = new ArrayList<>();
         for (DatasetTable datasetTable : datasetTables) {
             if (StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())) {
                 List<SqlVariableDetails> sqlVariables = new Gson().fromJson(datasetTable.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
                 }.getType());
                 for (SqlVariableDetails sqlVariable : sqlVariables) {
-                    if (!sqlVariableNames.contains(sqlVariable.getVariableName())) {
-                        sqlVariableNames.add(sqlVariable.getVariableName());
-                        sqlVariableDetails.add(sqlVariable);
-                    }
+                    sqlVariable.setId(datasetTable.getId() + "|DE|" + sqlVariable.getVariableName());
+                    sqlVariable.setVariableName("[" + datasetTable.getName() + "]-" + sqlVariable.getVariableName());
+                    sqlVariableDetails.add(sqlVariable);
                 }
             }
         }
@@ -1063,9 +1061,9 @@ public class DataSetTableService {
             Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
             PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
             subSelect.setSelectBody(subPlainSelect);
-            if(dsType.equals(DatasourceTypes.oracle.getType())){
+            if (dsType.equals(DatasourceTypes.oracle.getType())) {
                 subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
-            }else {
+            } else {
                 subSelect.setAlias(new Alias(fromItem.getAlias().toString()));
             }
             plainSelect.setFromItem(subSelect);
