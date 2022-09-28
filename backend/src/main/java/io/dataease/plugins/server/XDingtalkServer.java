@@ -95,13 +95,12 @@ public class XDingtalkServer {
             }
             DingUserEntity dingUserEntity = dingtalkXpackService.userInfo(code);
             String username = dingUserEntity.getUserid();
-            String unionid = dingUserEntity.getUnionid();
-            SysUserEntity sysUserEntity = authUserService.getUserByDingtalkId(unionid);
+            SysUserEntity sysUserEntity = authUserService.getUserByDingtalkId(username);
             if (null == sysUserEntity) {
                 String email = StringUtils.isNotBlank(dingUserEntity.getOrg_email()) ? dingUserEntity.getOrg_email() : StringUtils.isNotBlank(dingUserEntity.getEmail()) ? dingUserEntity.getEmail() : (username + "@dingtalk.work");
                 sysUserService.validateExistUser(username, dingUserEntity.getName(), email);
                 sysUserService.saveDingtalkCUser(dingUserEntity, email);
-                sysUserEntity = authUserService.getUserByDingtalkId(unionid);
+                sysUserEntity = authUserService.getUserByDingtalkId(username);
             }
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
             String realPwd = sysUserEntity.getPassword();
