@@ -96,6 +96,12 @@
               </div>
             </el-popover>
           </el-form-item>
+          <el-form-item v-show="chart.type ==='bar'" :label="'边框颜色'" class="form-item">
+            <el-color-picker v-model="colorForm.borderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
+          <el-form-item v-show="chart.type ==='bar-annular'" :label="'柱状背景色'" class="form-item">
+            <el-color-picker v-model="colorForm.bgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
 
           <el-form-item v-show="(chart.type && (chart.type.includes('text') || chart.type === 'label')) || sourceType==='panelTable'" :label="$t('chart.quota_color')" class="form-item">
             <el-color-picker v-model="colorForm.quotaColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
@@ -338,7 +344,7 @@ export default {
         }
         if (customAttr.color) {
           this.colorForm = customAttr.color
-          if(!this.colorForm.colors1) {
+          if (!this.colorForm.colors1) {
             this.colorForm.colors1 = this.colorForm.colors
           }
           if (!this.customColor) {

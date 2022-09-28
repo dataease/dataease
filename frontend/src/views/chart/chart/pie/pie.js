@@ -1,5 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
+// import echa
+import echarts from 'echarts'
 
 export function basePieOption(chart_option, chart, cstyle = {}) {
   console.log('chart data pie: ', chart)
@@ -112,7 +114,33 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
         y.name = chart.data.x[i]
         // color
         y.itemStyle = {
-          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          // color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+          //   offset: 0,
+          //   color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+          // }, {
+          //   offset: 1,
+          //   color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], 20)
+          // }]),
+          // color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 1,
+            x2: 0,
+            y2: 0,
+            // type: 'radial',
+            // x: 0.8,
+            // y: 1,
+            // r: 1,
+            colorStops: [{
+              offset: 0, // 0% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], 10)
+            }, {
+              offset: 1, // 100% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+            }],
+            global: false // 缺省为 false
+          },
           borderRadius: customAttr.size.pieRoseRadius
         }
         y.type = 'pie'

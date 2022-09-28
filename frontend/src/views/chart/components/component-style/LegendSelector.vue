@@ -7,6 +7,7 @@
         </el-form-item>
         <div v-show="legendForm.show">
           <!-- {{ chart.render }} -->
+          <!-- {{ chart.type }} -->
           <el-form-item v-show="chart.render!=='highcharts'" :label="$t('chart.icon')" class="form-item">
             <el-select v-model="legendForm.icon" :placeholder="$t('chart.icon')" @change="changeLegendStyle">
               <el-option
@@ -17,7 +18,7 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item :label="$t('chart.orient')" class="form-item">
+          <el-form-item v-show="chart.type !=='bar-annular'" :label="$t('chart.orient')" class="form-item">
             <el-radio-group v-model="legendForm.orient" size="mini" @change="changeLegendStyle">
               <el-radio-button label="horizontal">{{ $t('chart.horizontal') }}</el-radio-button>
               <el-radio-button label="vertical">{{ $t('chart.vertical') }}</el-radio-button>
@@ -31,14 +32,14 @@
           <el-form-item :label="$t('chart.text_color')" class="form-item">
             <el-color-picker v-model="legendForm.textStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeLegendStyle" />
           </el-form-item>
-          <el-form-item :label="$t('chart.text_h_position')" class="form-item">
+          <el-form-item v-show="chart.type !=='bar-annular'" :label="$t('chart.text_h_position')" class="form-item">
             <el-radio-group v-model="legendForm.hPosition" size="mini" @change="changeLegendStyle">
               <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
               <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
               <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
-          <el-form-item :label="$t('chart.text_v_position')" class="form-item">
+          <el-form-item v-show="chart.type !=='bar-annular'" :label="$t('chart.text_v_position')" class="form-item">
             <el-radio-group v-model="legendForm.vPosition" size="mini" @change="changeLegendStyle">
               <el-radio-button label="top">{{ $t('chart.text_pos_top') }}</el-radio-button>
               <el-radio-button :disabled="chart.render === 'highcharts'" label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
@@ -46,13 +47,13 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item :label="$t('chart.text_margin')" class="form-item">
-            <el-input-number v-model="legendForm.itemGap" :min="1" :max="100" size="mini"  @change="changeLegendStyle"></el-input-number>
+            <el-input-number v-model="legendForm.itemGap" :min="1" :max="100" size="mini" @change="changeLegendStyle" />
           </el-form-item>
           <el-form-item v-if="chart.render === 'highcharts'" :label="$t('chart.text_margin_top')" class="form-item">
-            <el-input-number v-model="legendForm.marginTop" :min="1" :max="100" size="mini"  @change="changeLegendStyle"></el-input-number>
+            <el-input-number v-model="legendForm.marginTop" :min="1" :max="100" size="mini" @change="changeLegendStyle" />
           </el-form-item>
           <el-form-item v-if="chart.render === 'highcharts'" :label="$t('chart.text_margin_bottom')" class="form-item">
-            <el-input-number v-model="legendForm.marginButtom" :min="1" :max="100" size="mini"  @change="changeLegendStyle"></el-input-number>
+            <el-input-number v-model="legendForm.marginButtom" :min="1" :max="100" size="mini" @change="changeLegendStyle" />
           </el-form-item>
         </div>
       </el-form>

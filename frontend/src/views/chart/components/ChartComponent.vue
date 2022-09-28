@@ -46,6 +46,8 @@ import {
 import {
   baseBarOption,
   triangleBarOption,
+  annularBarOption,
+  annularBarOptions,
   stackBarOption,
   horizontalBarOption,
   horizontalStackBarOption,
@@ -205,9 +207,14 @@ export default {
       const chart = this.chart
       let chart_option = {}
       // type
+
       // console.log(this.$store.state.canvasStyleData)
       if (chart.type === 'bar') {
         chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-circular') {
+        chart_option = annularBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-annular') {
+        chart_option = annularBarOptions(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-triangle') {
         chart_option = triangleBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack') {
