@@ -680,6 +680,7 @@ export default {
         }
       }
       Vue.set(this.element.propValue, 'innerType', chartDetails.type)
+      Vue.set(this.element.propValue, 'render', chartDetails.render)
       if (chartDetails.type === 'richTextView') {
         this.$nextTick(() => {
           bus.$emit('initCurFields-' + this.element.id)

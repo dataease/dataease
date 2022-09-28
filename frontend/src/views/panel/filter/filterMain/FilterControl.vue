@@ -107,8 +107,8 @@
               <el-checkbox-group v-model="attrs.parameters">
                 <el-checkbox
                   v-for="(item ) in childViews.datasetParams"
-                  :key="item.variableName"
-                  :label="item.variableName"
+                  :key="item.id"
+                  :label="item.id"
                   class="de-checkbox"
                 >
                   <div class="span-div">
@@ -174,12 +174,27 @@ export default {
         { id: 'HH', name: 'HH' },
         { id: 'HH:mm', name: 'HH:mm' },
         { id: 'HH:mm:ss', name: 'HH:mm:ss' }
-
       ]
-
     }
   },
   computed: {},
+  watch: {
+    'childViews.datasetParams': {
+      handler(newName, oldName) {
+        if (this.attrs.parameters.length > 0) {
+          const parameters = []
+          for (var i = 0; i < this.attrs.parameters.length; i++) {
+            for (var j = 0; j < this.childViews.datasetParams.length; j++) {
+              if (this.childViews.datasetParams[j].id.split('|DE|')[1] === this.attrs.parameters[i]) {
+                parameters.push(this.childViews.datasetParams[j].id)
+              }
+            }
+          }
+          this.attrs.parameters = parameters
+        }
+      }
+    }
+  },
 
   created() {
     this.attrs = this.controlAttrs
@@ -213,6 +228,7 @@ export default {
     },
     showTitleChange(value) {
       if (!value) {
+        this.attrs.title = ''
         this.element.style.backgroundColor = ''
       }
       this.fillAttrs2Filter()

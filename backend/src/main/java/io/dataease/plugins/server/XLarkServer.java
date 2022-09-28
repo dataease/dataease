@@ -151,7 +151,7 @@ public class XLarkServer {
     public void bind(@RequestParam("code") String code, @RequestParam("state") String state) {
 
         HttpServletResponse response = ServletUtils.response();
-        String url = "/#personal";
+        String url = "/#person-info/index";
 
         LarkXpackService larkXpackService = null;
         try {
