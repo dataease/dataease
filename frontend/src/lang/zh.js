@@ -910,7 +910,7 @@ export default {
     chart_3Dpie: '3D饼图',
     chart_arcgis_map: '地图',
     chart_pie_rose: '玫瑰图',
-    chart_pie_rose_gradient: '渐变玫瑰图',
+    chart_pie_rose_gradient: '玫瑰环图',
     chart_funnel: '漏斗图',
     chart_3dfunnel: '3D 漏斗图',
     chart_3dpyramid: '3D 金字塔图',
