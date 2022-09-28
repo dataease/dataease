@@ -6,60 +6,58 @@
       </el-col>
       <el-col :span="14" class="right-user">
         <el-input
+          ref="search"
+          v-model="nickName"
           :placeholder="$t('components.by_task_name')"
           prefix-icon="el-icon-search"
           class="name-email-search"
           size="small"
           clearable
-          ref="search"
-          v-model="nikeName"
           @blur="initSearch"
           @clear="initSearch"
-        >
-        </el-input>
+        />
         <deBtn
           :secondary="!cacheCondition.length"
           :plain="!!cacheCondition.length"
           icon="iconfont icon-icon-filter"
           @click="filterShow"
-          >{{ $t("user.filter")
-          }}<template v-if="filterTexts.length">
-            ({{ cacheCondition.length }})
-          </template>
+        >{{ $t("user.filter")
+        }}<template v-if="filterTexts.length">
+          ({{ cacheCondition.length }})
+        </template>
         </deBtn>
       </el-col>
     </el-row>
-    <div class="filter-texts" v-if="filterTexts.length">
+    <div v-if="filterTexts.length" class="filter-texts">
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t("user.result_one") }}</span>
-      <el-divider direction="vertical"></el-divider>
+      <el-divider direction="vertical" />
       <i
-        @click="scrollPre"
         v-if="showScroll"
         class="el-icon-arrow-left arrow-filter"
-      ></i>
+        @click="scrollPre"
+      />
       <div class="filter-texts-container">
-        <p class="text" v-for="(ele, index) in filterTexts" :key="ele">
-          {{ ele }} <i @click="clearOneFilter(index)" class="el-icon-close"></i>
+        <p v-for="(ele, index) in filterTexts" :key="ele" class="text">
+          {{ ele }} <i class="el-icon-close" @click="clearOneFilter(index)" />
         </p>
       </div>
       <i
-        @click="scrollNext"
         v-if="showScroll"
         class="el-icon-arrow-right arrow-filter"
-      ></i>
+        @click="scrollNext"
+      />
       <el-button
         type="text"
         class="clear-btn"
         icon="el-icon-delete"
         @click="clearFilter"
-        >{{ $t("user.clear_filter") }}</el-button
-      >
+      >{{ $t("user.clear_filter") }}</el-button>
     </div>
     <div id="resize-for-filter" class="table-container">
       <grid-table
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
-        :tableData="data"
+        :table-data="data"
         :columns="[]"
         :pagination="paginationConfig"
         @size-change="handleSizeChange"
@@ -74,8 +72,7 @@
                 "
                 style="font-size: 12px"
                 @click="jumpTask(scope.row)"
-                >{{ scope.row.name }}</el-link
-              >
+              >{{ scope.row.name }}</el-link>
             </span>
           </template>
         </el-table-column>
@@ -107,7 +104,7 @@
         </el-table-column>
       </grid-table>
       <keep-alive>
-        <filterUser ref="filterUser" @search="filterDraw"></filterUser>
+        <filterUser ref="filterUser" @search="filterDraw" />
       </keep-alive>
     </div>
     <el-dialog
@@ -131,284 +128,284 @@
 import {
   formatCondition,
   formatOrders,
-  formatQuickCondition,
-} from "@/utils/index";
-import { exportExcel, post } from "@/api/dataset/dataset";
-import GridTable from "@/components/gridTable/index.vue";
-import filterUser from "./filterUserRecord.vue";
-import _ from "lodash";
+  formatQuickCondition
+} from '@/utils/index'
+import { exportExcel, post } from '@/api/dataset/dataset'
+import GridTable from '@/components/gridTable/index.vue'
+import filterUser from './filterUserRecord.vue'
+import _ from 'lodash'
 import keyEnter from '@/components/msgCfm/keyEnter.js'
 
 export default {
-  name: "TaskRecord",
+  name: 'TaskRecord',
   components: { GridTable, filterUser },
   mixins: [keyEnter],
   props: {
     param: {
       type: Object,
-      default: () => {},
+      default: () => {}
     },
     transCondition: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {}
+    }
   },
   data() {
     return {
       columns: [],
-      nikeName: "",
+      nickName: '',
       showScroll: false,
       filterTexts: [],
       cacheCondition: [],
       paginationConfig: {
         currentPage: 1,
         pageSize: 10,
-        total: 0,
+        total: 0
       },
       data: [],
       orderConditions: [],
       show_error_massage: false,
-      error_massage: "",
+      error_massage: '',
       matchLogId: null,
-      lastRequestComplete: true,
-    };
-  },
-  created() {
-    const { taskId: id, name: label } = this.transCondition;
-    if (id) {
-      this.nikeName = label;
+      lastRequestComplete: true
     }
-    const { taskId, name, logId } = (this.param || {});
-    if (this.param !== null && taskId) {
-      this.matchLogId = logId || this.matchLogId;
-      this.transCondition.taskId = taskId;
-      this.transCondition.name = name;
-      this.nikeName = name;
-    }
-    this.createTimer();
-  },
-  mounted() {
-    this.resizeObserver();
   },
   watch: {
     filterTexts: {
       handler() {
-        this.getScrollStatus();
+        this.getScrollStatus()
       },
-      deep: true,
-    },
+      deep: true
+    }
+  },
+  created() {
+    const { taskId: id, name: label } = this.transCondition
+    if (id) {
+      this.nickName = label
+    }
+    const { taskId, name, logId } = (this.param || {})
+    if (this.param !== null && taskId) {
+      this.matchLogId = logId || this.matchLogId
+      this.transCondition.taskId = taskId
+      this.transCondition.name = name
+      this.nickName = name
+    }
+    this.createTimer()
+  },
+  mounted() {
+    this.resizeObserver()
   },
   beforeDestroy() {
-    this.destroyTimer();
+    this.destroyTimer()
   },
   methods: {
     exportConfirm() {
-      this.$confirm(this.$t("log.confirm"), "", {
-        confirmButtonText: this.$t("commons.confirm"),
-        cancelButtonText: this.$t("commons.cancel"),
-        type: "warning",
+      this.$confirm(this.$t('log.confirm'), '', {
+        confirmButtonText: this.$t('commons.confirm'),
+        cancelButtonText: this.$t('commons.cancel'),
+        type: 'warning'
       })
         .then(() => {
-          this.exportData();
+          this.exportData()
         })
         .catch(() => {
           // this.$info(this.$t('commons.delete_cancel'))
-        });
+        })
     },
     exportData() {
-      const { taskId, name } = this.transCondition;
+      const { taskId, name } = this.transCondition
       const param = {
         orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition],
-      };
-      if (this.nikeName) {
+        conditions: [...this.cacheCondition]
+      }
+      if (this.nickName) {
         param.conditions.push({
           field: `dataset_table_task.name`,
-          operator: "like",
-          value: this.nikeName,
-        });
+          operator: 'like',
+          value: this.nickName
+        })
       }
-      if (taskId && this.nikeName === name) {
+      if (taskId && this.nickName === name) {
         param.conditions.push({
-          operator: "eq",
+          operator: 'eq',
           value: taskId,
-          field: "dataset_table_task.id",
-        });
+          field: 'dataset_table_task.id'
+        })
       }
       exportExcel(param).then((res) => {
-        const blob = new Blob([res], { type: "application/vnd.ms-excel" });
-        const link = document.createElement("a");
-        link.style.display = "none";
-        link.href = URL.createObjectURL(blob);
-        link.download = "DataEase" + this.$t("dataset.sync_log") + ".xls";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      });
+        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = 'DataEase' + this.$t('dataset.sync_log') + '.xls'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
     },
     getScrollStatus() {
       this.$nextTick(() => {
-        const dom = document.querySelector(".filter-texts-container");
-        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth;
-      });
+        const dom = document.querySelector('.filter-texts-container')
+        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth
+      })
     },
     resizeObserver() {
       this.resizeForFilter = new ResizeObserver((entries) => {
-        if (!this.filterTexts.length) return;
-        this.layoutResize();
-      });
+        if (!this.filterTexts.length) return
+        this.layoutResize()
+      })
       this.resizeForFilter.observe(
-        document.querySelector("#resize-for-filter")
-      );
+        document.querySelector('#resize-for-filter')
+      )
     },
-    layoutResize: _.debounce(function () {
-      this.getScrollStatus();
+    layoutResize: _.debounce(function() {
+      this.getScrollStatus()
     }, 200),
     scrollPre() {
-      const dom = document.querySelector(".filter-texts-container");
-      dom.scrollLeft -= 10;
+      const dom = document.querySelector('.filter-texts-container')
+      dom.scrollLeft -= 10
       if (dom.scrollLeft <= 0) {
-        dom.scrollLeft = 0;
+        dom.scrollLeft = 0
       }
     },
     scrollNext() {
-      const dom = document.querySelector(".filter-texts-container");
-      dom.scrollLeft += 10;
-      const width = dom.scrollWidth - dom.offsetWidth;
+      const dom = document.querySelector('.filter-texts-container')
+      dom.scrollLeft += 10
+      const width = dom.scrollWidth - dom.offsetWidth
       if (dom.scrollLeft > width) {
-        dom.scrollLeft = width;
+        dom.scrollLeft = width
       }
     },
     clearFilter() {
-      this.$refs.filterUser.clearFilter();
+      this.$refs.filterUser.clearFilter()
     },
     clearOneFilter(index) {
-      this.$refs.filterUser.clearOneFilter(index);
-      this.$refs.filterUser.search();
+      this.$refs.filterUser.clearOneFilter(index)
+      this.$refs.filterUser.search()
     },
     filterDraw(condition, filterTexts = []) {
-      this.cacheCondition = condition;
-      this.filterTexts = filterTexts;
-      this.initSearch();
+      this.cacheCondition = condition
+      this.filterTexts = filterTexts
+      this.initSearch()
     },
     filterShow() {
-      this.$refs.filterUser.init();
+      this.$refs.filterUser.init()
     },
     createTimer() {
-      this.initSearch();
+      this.initSearch()
       if (!this.timer) {
         this.timer = setInterval(() => {
-          this.timerSearch(false);
-        }, 15000);
+          this.timerSearch(false)
+        }, 15000)
       }
     },
     destroyTimer() {
       if (this.timer) {
-        clearInterval(this.timer);
-        this.timer = null;
+        clearInterval(this.timer)
+        this.timer = null
       }
     },
     handleSizeChange(pageSize) {
-      this.paginationConfig.currentPage = 1;
-      this.paginationConfig.pageSize = pageSize;
-      this.search();
+      this.paginationConfig.currentPage = 1
+      this.paginationConfig.pageSize = pageSize
+      this.search()
     },
     handleCurrentChange(currentPage) {
-      this.paginationConfig.currentPage = currentPage;
-      this.search();
+      this.paginationConfig.currentPage = currentPage
+      this.search()
     },
     initSearch() {
-      this.handleCurrentChange(1);
+      this.handleCurrentChange(1)
     },
     timerSearch(showLoading = true) {
       if (!this.lastRequestComplete) {
-        return;
+        return
       } else {
-        this.lastRequestComplete = false;
+        this.lastRequestComplete = false
       }
-      const { taskId, name } = this.transCondition;
+      const { taskId, name } = this.transCondition
       const param = {
         orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition],
-      };
-      if (this.nikeName) {
+        conditions: [...this.cacheCondition]
+      }
+      if (this.nickName) {
         param.conditions.push({
           field: `dataset_table_task.name`,
-          operator: "like",
-          value: this.nikeName,
-        });
+          operator: 'like',
+          value: this.nickName
+        })
       }
-      if (taskId && this.nikeName === name) {
+      if (taskId && this.nickName === name) {
         param.conditions.push({
-          operator: "eq",
+          operator: 'eq',
           value: taskId,
-          field: "dataset_table_task.id",
-        });
+          field: 'dataset_table_task.id'
+        })
       }
       post(
-        "/dataset/taskLog/list/notexcel/" +
+        '/dataset/taskLog/list/notexcel/' +
           this.paginationConfig.currentPage +
-          "/" +
+          '/' +
           this.paginationConfig.pageSize,
         param,
         showLoading
       )
         .then((response) => {
-          this.data = response.data.listObject;
-          this.paginationConfig.total = response.data.itemCount;
-          this.lastRequestComplete = true;
+          this.data = response.data.listObject
+          this.paginationConfig.total = response.data.itemCount
+          this.lastRequestComplete = true
         })
         .catch(() => {
-          this.lastRequestComplete = true;
-        });
+          this.lastRequestComplete = true
+        })
     },
     search(condition, showLoading = true) {
-      const { taskId, name } = this.transCondition;
+      const { taskId, name } = this.transCondition
       const param = {
         orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition],
-      };
-      if (this.nikeName) {
+        conditions: [...this.cacheCondition]
+      }
+      if (this.nickName) {
         param.conditions.push({
           field: `dataset_table_task.name`,
-          operator: "like",
-          value: this.nikeName,
-        });
+          operator: 'like',
+          value: this.nickName
+        })
       }
-      if (taskId && this.nikeName === name) {
+      if (taskId && this.nickName === name) {
         param.conditions.push({
-          operator: "eq",
+          operator: 'eq',
           value: taskId,
-          field: "dataset_table_task.id",
-        });
+          field: 'dataset_table_task.id'
+        })
       }
       post(
-        "/dataset/taskLog/list/notexcel/" +
+        '/dataset/taskLog/list/notexcel/' +
           this.paginationConfig.currentPage +
-          "/" +
+          '/' +
           this.paginationConfig.pageSize,
         param,
         showLoading
       ).then((response) => {
-        this.data = response.data.listObject;
-        this.paginationConfig.total = response.data.itemCount;
-      });
+        this.data = response.data.listObject
+        this.paginationConfig.total = response.data.itemCount
+      })
     },
     showErrorMassage(massage) {
-      this.show_error_massage = true;
-      this.error_massage = massage;
+      this.show_error_massage = true
+      this.error_massage = massage
     },
     jumpTask(item) {
-      this.$emit("jumpTask", item);
+      this.$emit('jumpTask', item)
     },
     rowClassMethod({ row, rowIndex }) {
       if (this.matchLogId && this.matchLogId === row.id) {
-        return "row-match-class";
+        return 'row-match-class'
       }
-      return "";
-    },
-  },
-};
+      return ''
+    }
+  }
+}
 </script>
 
 <style scoped>
