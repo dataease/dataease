@@ -16,7 +16,7 @@
       <el-col :span="12" class="right-user">
         <el-input
           ref="search"
-          v-model="nikeName"
+          v-model="nickName"
           :placeholder="$t('role.search_by_name_email')"
           prefix-icon="el-icon-search"
           class="name-email-search"
@@ -151,13 +151,13 @@
           prop="roles"
           :label="$t('commons.role')"
         >
-        <template slot-scope="scope">
-			<el-tooltip popper-class="de-table-tooltips" class="item" effect="dark" placement="top">
-			    <!-- // {{}}会将数据解释为普通文本，而非 HTML 代码。 -->
-			    <div v-html="filterRoles(scope.row.roles)" slot="content"></div>
-			    <div class="de-one-line">{{ filterRoles(scope.row.roles) }}</div>
-		    </el-tooltip>
-		</template>
+          <template slot-scope="scope">
+            <el-tooltip popper-class="de-table-tooltips" class="item" effect="dark" placement="top">
+              <!-- // {{}}会将数据解释为普通文本，而非 HTML 代码。 -->
+              <div slot="content" v-html="filterRoles(scope.row.roles)" />
+              <div class="de-one-line">{{ filterRoles(scope.row.roles) }}</div>
+            </el-tooltip>
+          </template>
 
         </el-table-column>
         <el-table-column
@@ -366,7 +366,7 @@ export default {
       cacheCondition: [],
       depts: null,
       roles: [],
-      nikeName: '',
+      nickName: '',
       userRoles: [],
       orderConditions: [],
       isPluginLoaded: false,
@@ -540,11 +540,11 @@ export default {
         orders: formatOrders(this.orderConditions),
         conditions: [...this.cacheCondition]
       }
-      if (this.nikeName) {
+      if (this.nickName) {
         param.conditions.push({
           field: `concat(nick_name, ',' , email)`,
           operator: 'like',
-          value: this.nikeName
+          value: this.nickName
         })
       }
       const { currentPage, pageSize } = this.paginationConfig

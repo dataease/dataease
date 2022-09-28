@@ -274,9 +274,11 @@ export function seniorCfg(chart_option, chart) {
       }
     }
     // begin mark line settings
-    chart_option.series[0].markLine = {
-      symbol: 'none',
-      data: []
+    if (chart_option.series && chart_option.series.length > 0) {
+      chart_option.series[0].markLine = {
+        symbol: 'none',
+        data: []
+      }
     }
     if (senior.assistLine && senior.assistLine.length > 0) {
       if (chart_option.series && chart_option.series.length > 0) {

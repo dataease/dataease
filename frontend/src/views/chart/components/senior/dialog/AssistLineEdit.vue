@@ -124,7 +124,7 @@ export default {
     addLine() {
       const obj = { ...this.lineObj,
         curField: this.quotaData ? this.quotaData[0] : null,
-        fieldId: this.quotaData ? this.quotaData[0].id : null
+        fieldId: this.quotaData ? this.quotaData[0]?.id : null
       }
       this.lineArr.push(JSON.parse(JSON.stringify(obj)))
       this.changeAssistLine()

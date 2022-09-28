@@ -1655,7 +1655,11 @@ export default {
     sql_ds_union_error: '直连模式下SQL数据集，不支持关联',
     api_data: 'API 数据集',
     copy: '复制',
-    sync_log: '同步日志'
+    sync_log: '同步日志',
+    field_edit_name: '字段名称',
+    input_edit_name: '请输入字段名称',
+    edit_search: '通过名称搜索',
+    na: '暂无'
   },
   driver: {
     driver: '驱动',

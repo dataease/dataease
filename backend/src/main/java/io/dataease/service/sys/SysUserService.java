@@ -529,7 +529,7 @@ public class SysUserService {
 
     public boolean needPwdNoti(Long userId) {
         SysUserAssist userAssist = sysUserAssistMapper.selectByPrimaryKey(userId);
-        return ObjectUtils.isEmpty(userAssist) || userAssist.getNeedFirstNoti();
+        return ObjectUtils.isEmpty(userAssist) || ObjectUtils.isEmpty(userAssist.getNeedFirstNoti()) || userAssist.getNeedFirstNoti();
     }
 
     public void saveUserAssist(Boolean noti) {
@@ -565,6 +565,13 @@ public class SysUserService {
 
     public SysUserAssist assistInfo(Long userId) {
         return sysUserAssistMapper.selectByPrimaryKey(userId);
+    }
+
+    public void changeUserFrom(Long userId, Integer from) {
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(userId);
+        sysUser.setFrom(from);
+        sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
 
 }

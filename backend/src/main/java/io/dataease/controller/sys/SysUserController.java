@@ -258,7 +258,7 @@ public class SysUserController {
     }
 
     @PostMapping("/unbindAssist/{type}")
-    public void unbindAssist(String type) {
+    public void unbindAssist(@PathVariable("type") String type) {
 
         Boolean valid = StringUtils.equals(WECOM, type) || StringUtils.equals(DINGTALK, type) || StringUtils.equals(LARK, type);
         if (!valid) {
@@ -274,6 +274,9 @@ public class SysUserController {
         }
         if (StringUtils.equals(LARK, type)) {
             sysUserAssist.setLarkId(null);
+        }
+        if (StringUtils.isBlank(sysUserAssist.getWecomId()) && StringUtils.isBlank(sysUserAssist.getDingtalkId()) && StringUtils.isBlank(sysUserAssist.getLarkId())) {
+            sysUserService.changeUserFrom(userId, 0);
         }
         sysUserService.saveAssist(userId, sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
 

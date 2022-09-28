@@ -158,10 +158,12 @@ public class XLarkServer {
             SysUserEntity userEntity = authUserService.getUserById(Long.parseLong(state));
             if (ObjectUtils.isEmpty(userEntity)) {
                 bindError(response, url, "绑定用户不存在");
+                return;
             }
             SysUserAssist sysUserAssist = sysUserService.assistInfo(Long.parseLong(state));
-            if (ObjectUtils.isNotEmpty(sysUserAssist) && StringUtils.isNotBlank(sysUserAssist.getWecomId())) {
+            if (ObjectUtils.isNotEmpty(sysUserAssist) && StringUtils.isNotBlank(sysUserAssist.getLarkId())) {
                 bindError(response, url, "目标用户已绑定其他飞书账号");
+                return;
             }
 
             Boolean isOpen = authUserService.supportLark();
@@ -176,6 +178,7 @@ public class XLarkServer {
             SysUserEntity sysUserEntity = authUserService.getUserByLarkId(userId);
             if (null != sysUserEntity) {
                 bindError(response, url, "当前飞书账号已绑定其他DE用户");
+                return;
             }
 
             if (ObjectUtils.isEmpty(sysUserAssist)) {
