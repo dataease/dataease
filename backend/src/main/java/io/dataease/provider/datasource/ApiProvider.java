@@ -360,7 +360,7 @@ public class ApiProvider extends Provider {
 
     private List<String[]> fetchResult(String result, ApiDefinition apiDefinition) {
         List<String[]> dataList = new LinkedList<>();
-        if (StringUtils.isNotEmpty(apiDefinition.getDataPath()) && CollectionUtils.isNotEmpty(apiDefinition.getJsonFields())) {
+        if (StringUtils.isNotEmpty(apiDefinition.getDataPath()) && CollectionUtils.isEmpty(apiDefinition.getJsonFields())) {
             List<LinkedHashMap> datas = new ArrayList<>();
             Object object = JsonPath.read(result, apiDefinition.getDataPath());
             if (object instanceof List) {
