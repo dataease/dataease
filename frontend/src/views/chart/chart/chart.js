@@ -1,5 +1,6 @@
 export const DEFAULT_COLOR_CASE = {
   value: 'default',
+  bgColor: '#031F3E',
   variety: false,
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   colors1: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
@@ -55,6 +56,7 @@ export const DEFAULT_SIZE = {
   tableItemAlign: 'right',
 
   barBorderRadius: 0,
+  barBorderValue: 0,
   spaceleft: 10,
   xPaddingOffst: 10,
   spaceRight: 10,

@@ -11,8 +11,11 @@
         <el-form-item v-show="chart.type && chart.type !== 'bar-stack'" :label="$t('chart.bar_gap')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barGap" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="-1" :max="5" :step="0.1" @change="changeBarSizeCase" />
         </el-form-item>
-        <el-form-item v-show="chart.type==='bar'" :label="'柱圆角'" class="form-item">
+        <el-form-item v-show="chart.type==='bar'" :label="'柱圆角'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barBorderRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="50" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item v-show="chart.type==='bar'" :label="'柱边框'" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.barBorderValue" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
       <!-- {{ sizeForm }} -->

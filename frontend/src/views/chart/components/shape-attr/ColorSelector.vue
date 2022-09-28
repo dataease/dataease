@@ -3,12 +3,15 @@
     <el-col>
       <el-form ref="colorForm" :model="colorForm" label-width="90px" size="mini">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
-          <el-form-item v-show="chart.type && 
-              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph')) || 
-              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) || 
-              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))" 
-            :label="$t('chart.color_variety_check')" class="form-item">
-            <el-checkbox v-model="colorForm.variety" @change="changeColorCase"></el-checkbox>
+          <el-form-item
+            v-show="chart.type &&
+              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph')) ||
+              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) ||
+              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))"
+            :label="$t('chart.color_variety_check')"
+            class="form-item"
+          >
+            <el-checkbox v-model="colorForm.variety" @change="changeColorCase" />
           </el-form-item>
           <el-form-item v-show="chart.type && !chart.type.includes('table')&&!chart.type.includes('vertical')&&!chart.type.includes('dialog') && !chart.type.includes('roll')&&!chart.type.includes('dialog') && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.color_case')" class="form-item">
             <el-popover
@@ -51,11 +54,14 @@
               </div>
             </el-popover>
           </el-form-item>
-          <el-form-item v-show="colorForm.variety && chart.type && 
-              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph')) || 
-              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) || 
-              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))" 
-            :label="$t('chart.variety_color')" class="form-item">
+          <el-form-item
+            v-show="colorForm.variety && chart.type &&
+              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph')) ||
+              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) ||
+              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))"
+            :label="$t('chart.variety_color')"
+            class="form-item"
+          >
             <el-popover
               placement="bottom"
               width="400"
@@ -92,9 +98,15 @@
                 </div>
               </div>
               <div slot="reference" style="cursor:  pointer;margin-top: 2px;width: 180px;">
-                <span v-for="(v,index) in colorForm.colors1" :key="index" :style="{width: '20px',height:  '20px',display:'inline-block',backgroundColor: v}"></span>
+                <span v-for="(v,index) in colorForm.colors1" :key="index" :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: v}" />
               </div>
             </el-popover>
+          </el-form-item>
+          <el-form-item v-show="chart.type ==='bar'" :label="'边框颜色'" class="form-item">
+            <el-color-picker v-model="colorForm.borderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
+          <el-form-item v-show="chart.type ==='bar-annular'" :label="'柱状背景色'" class="form-item">
+            <el-color-picker v-model="colorForm.bgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
 
           <el-form-item v-show="(chart.type && (chart.type.includes('text') || chart.type === 'label')) || sourceType==='panelTable'" :label="$t('chart.quota_color')" class="form-item">
@@ -325,7 +337,7 @@ export default {
         }
         if (customAttr.color) {
           this.colorForm = customAttr.color
-          if(!this.colorForm.colors1) {
+          if (!this.colorForm.colors1) {
             this.colorForm.colors1 = this.colorForm.colors
           }
           if (!this.customColor) {
