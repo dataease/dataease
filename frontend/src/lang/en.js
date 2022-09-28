@@ -1545,7 +1545,7 @@ export default {
     preview_100_data: 'Show 100 lines data',
     invalid_table_check: 'Please sync data first.',
     parse_error: 'Parse failed,please check.Reference：https://dataease.io/docs/user_manual/dataset_configuration/dataset_Excel',
-    origin_field_type: 'Origin Type',
+    origin_field_type: 'Field Origin Type',
     edit_excel_table: 'Edit Excel Dataset',
     edit_excel: 'Edit Excel',
     excel_replace: 'Replace',
