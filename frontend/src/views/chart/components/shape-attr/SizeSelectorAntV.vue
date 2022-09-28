@@ -59,6 +59,13 @@
           <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
 
+        <el-form-item :label="$t('chart.pie_circle_center_left')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleLeft" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.pie_circle_center_top')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleTop" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+
         <el-form-item v-if="chart.type && chart.type === 'pie-rose'" :label="$t('chart.pie_rose_label_offset')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.pieRoseOffset" show-input :show-input-controls="false" input-size="mini" :min="-100" :max="100" @change="changeBarSizeCase" />
         </el-form-item>

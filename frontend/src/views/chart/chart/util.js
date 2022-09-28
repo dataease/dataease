@@ -334,6 +334,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_distribute',
+    value: 'pie-rose-gradient',
+    title: 'chart.chart_pie_rose_gradient',
+    icon: 'pie-rose-gradient'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
     value: 'radar',
     title: 'chart.chart_radar',
     icon: 'radar'

@@ -59,6 +59,7 @@ import {
 import {
   basePieOption,
   rosePieOption,
+  rosePieGradientOption,
   texturePieOption
   // newHartOption
 } from '../chart/pie/pie'
@@ -223,6 +224,8 @@ export default {
         chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie-rose') {
         chart_option = rosePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'pie-rose-gradient') {
+        chart_option = rosePieGradientOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie-txture') {
         chart_option = texturePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'diagram') {

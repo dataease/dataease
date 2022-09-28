@@ -63,12 +63,19 @@
         <!--        </el-form-item>-->
       </el-form>
 
-      <el-form v-show="chart.type && chart.type.includes('pie')" ref="sizeFormPie" :model="sizeForm" label-width="80px" size="mini">
+      <el-form v-show="chart.type && chart.type.includes('pie')" ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
         <el-form-item :label="$t('chart.pie_inner_radius')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.pieInnerRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.pie_outer_radius')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+
+        <el-form-item :label="$t('chart.pie_circle_center_left')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleLeft" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.pie_circle_center_top')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleTop" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
 
         <span v-show="chart.type && chart.type.includes('pie-rose')">

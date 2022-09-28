@@ -7,7 +7,7 @@
         </el-form-item>
         <div v-show="legendForm.show">
           <!-- {{ chart.render }} -->
-          <el-form-item v-show="chart.render!=='highcharts'" :label="$t('chart.icon')+'21212'" class="form-item">
+          <el-form-item v-show="chart.render!=='highcharts'" :label="$t('chart.icon')" class="form-item">
             <el-select v-model="legendForm.icon" :placeholder="$t('chart.icon')" @change="changeLegendStyle">
               <el-option
                 v-for="item in iconSymbolOptions"
