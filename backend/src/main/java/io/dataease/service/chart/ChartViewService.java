@@ -647,6 +647,12 @@ public class ChartViewService {
                 xAxis = xAxis.stream().filter(item -> StringUtils.isNotEmpty(item.getChartId()) || dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 yAxis = yAxis.stream().filter(item -> StringUtils.isNotEmpty(item.getChartId()) || dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 break;
+            case "bar-group":
+                xAxis = xAxis.stream().filter(item -> StringUtils.isNotEmpty(item.getChartId()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                yAxis = yAxis.stream().filter(item -> StringUtils.isNotEmpty(item.getChartId()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                xAxisBase = xAxisBase.stream().filter(item -> StringUtils.isNotEmpty(item.getChartId()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                xAxisExt = xAxisExt.stream().filter(item -> StringUtils.isNotEmpty(item.getChartId()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                break;
             default:
                 xAxis = xAxis.stream().filter(item -> StringUtils.isNotEmpty(item.getChartId()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
                 yAxis = yAxis.stream().filter(item -> StringUtils.isNotEmpty(item.getChartId()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
