@@ -228,7 +228,6 @@ export default {
     },
     showTitleChange(value) {
       if (!value) {
-        this.attrs.title = ''
         this.element.style.backgroundColor = ''
       }
       this.fillAttrs2Filter()
