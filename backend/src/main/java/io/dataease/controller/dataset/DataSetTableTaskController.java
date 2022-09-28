@@ -58,14 +58,14 @@ public class DataSetTableTaskController {
     @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("查询")
     @PostMapping("list")
-    public List<DatasetTableTask> list(@RequestBody DatasetTableTask datasetTableTask) {
+    public List<DataSetTaskDTO> list(@RequestBody DatasetTableTask datasetTableTask) {
         return dataSetTableTaskService.list(datasetTableTask);
     }
 
     @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     @ApiOperation("分页查询")
     @PostMapping("list/{goPage}/{pageSize}")
-    public Pager<List<DatasetTableTask>> list(@RequestBody DatasetTableTask datasetTableTask, @PathVariable int goPage, @PathVariable int pageSize) {
+    public Pager<List<DataSetTaskDTO>> list(@RequestBody DatasetTableTask datasetTableTask, @PathVariable int goPage, @PathVariable int pageSize) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, dataSetTableTaskService.list(datasetTableTask));
     }
