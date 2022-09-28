@@ -35,6 +35,9 @@ export function getStyle(style, filter = []) {
           if (key === 'backgroundColor') {
             result[key] = colorRgb(style[key], style.opacity)
           }
+          if(key=== 'fontSize' && result[key] < 12){
+            result[key] = 12
+          }
           if (needUnit.includes(key)) {
             result[key] += 'px'
           }
