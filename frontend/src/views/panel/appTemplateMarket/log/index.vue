@@ -2,74 +2,73 @@
   <el-row style="text-align: left">
     <el-row class="top-operate">
       <el-col :span="12">
-        <el-button v-show="position==='templateLog'"
+        <el-button
+          v-show="position==='templateLog'"
           class="btn"
           type="primary"
           icon="el-icon-plus"
           @click="applyNew()"
-        >{{$t('commons.create')}}</el-button>
+        >{{ $t('commons.create') }}</el-button>
         <span>&nbsp;</span>
       </el-col>
       <el-col :span="12" class="right-user">
         <el-input
+          ref="search"
+          v-model="nickName"
           :placeholder="$t('app_template.search_by_keyword')"
           prefix-icon="el-icon-search"
           class="name-email-search"
           size="small"
           clearable
-          ref="search"
-          v-model="nikeName"
           @blur="initSearch"
           @clear="initSearch"
-        >
-        </el-input>
+        />
         <deBtn
           :secondary="!cacheCondition.length"
           :plain="!!cacheCondition.length"
           icon="iconfont icon-icon-filter"
           @click="filterShow"
-          >{{ $t("user.filter")
-          }}<template v-if="filterTexts.length">
-            ({{ cacheCondition.length }})
-          </template>
+        >{{ $t("user.filter")
+        }}<template v-if="filterTexts.length">
+          ({{ cacheCondition.length }})
+        </template>
         </deBtn>
       </el-col>
     </el-row>
-    <div class="filter-texts" v-if="filterTexts.length">
+    <div v-if="filterTexts.length" class="filter-texts">
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t("user.result_one") }}</span>
-      <el-divider direction="vertical"></el-divider>
+      <el-divider direction="vertical" />
       <i
-        @click="scrollPre"
         v-if="showScroll"
         class="el-icon-arrow-left arrow-filter"
-      ></i>
+        @click="scrollPre"
+      />
       <div class="filter-texts-container">
-        <p class="text" v-for="(ele, index) in filterTexts" :key="ele">
-          {{ ele }} <i @click="clearOneFilter(index)" class="el-icon-close"></i>
+        <p v-for="(ele, index) in filterTexts" :key="ele" class="text">
+          {{ ele }} <i class="el-icon-close" @click="clearOneFilter(index)" />
         </p>
       </div>
       <i
-        @click="scrollNext"
         v-if="showScroll"
         class="el-icon-arrow-right arrow-filter"
-      ></i>
+        @click="scrollNext"
+      />
       <el-button
         type="text"
         class="clear-btn"
         icon="el-icon-delete"
         @click="clearFilter"
-        >{{ $t("user.clear_filter") }}</el-button
-      >
+      >{{ $t("user.clear_filter") }}</el-button>
     </div>
     <div
-      class="table-container"
       id="resize-for-filter"
+      class="table-container"
       :class="[filterTexts.length ? 'table-container-filter' : '']"
     >
       <grid-table
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
-        :tableData="data"
+        :table-data="data"
         :columns="[]"
         :pagination="paginationConfig"
         @sort-change="sortChange"
@@ -113,22 +112,22 @@
       </grid-table>
     </div>
     <keep-alive>
-        <filterUser ref="filterUser" @search="filterDraw"></filterUser>
-      </keep-alive>
+      <filterUser ref="filterUser" @search="filterDraw" />
+    </keep-alive>
   </el-row>
 </template>
 
 <script>
-import DeLayoutContent from "@/components/business/DeLayoutContent";
-import GridTable from "@/components/gridTable/index.vue";
-import filterUser from './filterUser';
-import _ from 'lodash';
+import DeLayoutContent from '@/components/business/DeLayoutContent'
+import GridTable from '@/components/gridTable/index.vue'
+import filterUser from './filterUser'
+import _ from 'lodash'
 import keyEnter from '@/components/msgCfm/keyEnter.js'
 import {
   addOrder,
-  formatOrders,
-} from "@/utils/index";
-import { logGrid } from "@/api/appTemplateMarket/log";
+  formatOrders
+} from '@/utils/index'
+import { logGrid } from '@/api/appTemplateMarket/log'
 export default {
   name: 'AppTemplateLog',
   components: { GridTable, DeLayoutContent, filterUser },
@@ -150,133 +149,133 @@ export default {
       paginationConfig: {
         currentPage: 1,
         pageSize: 10,
-        total: 0,
+        total: 0
       },
       data: [],
       orderConditions: [],
-      nikeName: "",
+      nickName: '',
       showScroll: false,
       filterTexts: [],
-      cacheCondition: [],
-    };
+      cacheCondition: []
+    }
   },
   watch: {
     filterTexts: {
       handler() {
-        this.getScrollStatus();
+        this.getScrollStatus()
       },
-      deep: true,
+      deep: true
     },
-    appTemplateId:{
+    appTemplateId: {
       handler() {
         this.search()
-      },
+      }
     }
   },
   mounted() {
-    this.search();
-    this.resizeObserver();
+    this.search()
+    this.resizeObserver()
   },
   methods: {
-    applyNew(){
+    applyNew() {
       this.$emit('applyNew')
     },
     sortChange({ column, prop, order }) {
-      this.orderConditions = [];
+      this.orderConditions = []
       if (!order) {
-        this.initSearch();
-        return;
+        this.initSearch()
+        return
       }
-      this.orderConditions = [];
-      addOrder({ field: prop, value: order }, this.orderConditions);
-      this.initSearch();
+      this.orderConditions = []
+      addOrder({ field: prop, value: order }, this.orderConditions)
+      this.initSearch()
     },
     getScrollStatus() {
       this.$nextTick(() => {
-        const dom = document.querySelector(".filter-texts-container");
-        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth;
-      });
+        const dom = document.querySelector('.filter-texts-container')
+        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth
+      })
     },
     resizeObserver() {
       this.resizeForFilter = new ResizeObserver((entries) => {
-        if (!this.filterTexts.length) return;
-        this.layoutResize();
-      });
+        if (!this.filterTexts.length) return
+        this.layoutResize()
+      })
       this.resizeForFilter.observe(
-        document.querySelector("#resize-for-filter")
-      );
+        document.querySelector('#resize-for-filter')
+      )
     },
-    layoutResize: _.debounce(function () {
-      this.getScrollStatus();
+    layoutResize: _.debounce(function() {
+      this.getScrollStatus()
     }, 200),
     scrollPre() {
-      const dom = document.querySelector(".filter-texts-container");
-      dom.scrollLeft -= 10;
+      const dom = document.querySelector('.filter-texts-container')
+      dom.scrollLeft -= 10
       if (dom.scrollLeft <= 0) {
-        dom.scrollLeft = 0;
+        dom.scrollLeft = 0
       }
     },
     scrollNext() {
-      const dom = document.querySelector(".filter-texts-container");
-      dom.scrollLeft += 10;
-      const width = dom.scrollWidth - dom.offsetWidth;
+      const dom = document.querySelector('.filter-texts-container')
+      dom.scrollLeft += 10
+      const width = dom.scrollWidth - dom.offsetWidth
       if (dom.scrollLeft > width) {
-        dom.scrollLeft = width;
+        dom.scrollLeft = width
       }
     },
     handleSizeChange(pageSize) {
-      this.paginationConfig.currentPage = 1;
-      this.paginationConfig.pageSize = pageSize;
-      this.search();
+      this.paginationConfig.currentPage = 1
+      this.paginationConfig.pageSize = pageSize
+      this.search()
     },
     handleCurrentChange(currentPage) {
-      this.paginationConfig.currentPage = currentPage;
-      this.search();
+      this.paginationConfig.currentPage = currentPage
+      this.search()
     },
     initSearch() {
-      this.handleCurrentChange(1);
+      this.handleCurrentChange(1)
     },
     clearFilter() {
-      this.$refs.filterUser.clearFilter();
+      this.$refs.filterUser.clearFilter()
     },
     clearOneFilter(index) {
-      this.$refs.filterUser.clearOneFilter(index);
-      this.$refs.filterUser.search();
+      this.$refs.filterUser.clearOneFilter(index)
+      this.$refs.filterUser.search()
     },
     filterDraw(condition, filterTexts = []) {
-      this.cacheCondition = condition;
-      this.filterTexts = filterTexts;
-      this.initSearch();
+      this.cacheCondition = condition
+      this.filterTexts = filterTexts
+      this.initSearch()
     },
     filterShow() {
-      this.$refs.filterUser.init();
+      this.$refs.filterUser.init()
     },
     search() {
-      if(this.position==='templateLog'&&!this.appTemplateId){
+      if (this.position === 'templateLog' && !this.appTemplateId) {
         return
       }
       const param = {
         orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition],
-      };
-      if (this.nikeName) {
-        param.keyWord = this.nikeName;
+        conditions: [...this.cacheCondition]
       }
-      if(this.appTemplateId){
+      if (this.nickName) {
+        param.keyWord = this.nickName
+      }
+      if (this.appTemplateId) {
         param.conditions.push({
-          field: "app_template_id",
-          operator: "eq",
-          value: this.appTemplateId,
+          field: 'app_template_id',
+          operator: 'eq',
+          value: this.appTemplateId
         })
       }
-      const { currentPage, pageSize } = this.paginationConfig;
+      const { currentPage, pageSize } = this.paginationConfig
       logGrid(currentPage, pageSize, param).then((response) => {
-        this.data = response.data.listObject;
-        this.paginationConfig.total = response.data.itemCount;
-      });
-    },
-  },
-};
+        this.data = response.data.listObject
+        this.paginationConfig.total = response.data.itemCount
+      })
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 .table-container {

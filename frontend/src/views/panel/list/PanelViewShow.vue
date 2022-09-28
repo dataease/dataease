@@ -25,7 +25,7 @@
               width="400"
               trigger="click"
             >
-              <panel-detail-info></panel-detail-info>
+              <panel-detail-info />
               <i
                 slot="reference"
                 class="el-icon-warning icon-class"
@@ -164,15 +164,15 @@ import { starStatus, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
-import {export2AppCheck, initPanelData, updatePanelStatus} from '@/api/panel/panel'
+import { export2AppCheck, initPanelData, updatePanelStatus } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import { dataURLToBlob } from '@/components/canvas/utils/utils'
 import { findResourceAsBase64 } from '@/api/staticResource/staticResource'
-import PanelDetailInfo from "@/views/panel/list/common/PanelDetailInfo";
+import PanelDetailInfo from '@/views/panel/list/common/PanelDetailInfo'
 
 export default {
   name: 'PanelViewShow',
-  components: {PanelDetailInfo, Preview, SaveToTemplate, PDFPreExport, ShareHead },
+  components: { PanelDetailInfo, Preview, SaveToTemplate, PDFPreExport, ShareHead },
   props: {
     activeTab: {
       type: String,
@@ -354,12 +354,12 @@ export default {
         _this.dataLoading = false
       }
     },
-    downLoadToApp(){
+    downLoadToApp() {
       this.dataLoading = true
-      export2AppCheck(this.$store.state.panel.panelInfo.id).then(rsp=>{
-        if(rsp.data.checkStatus){
+      export2AppCheck(this.$store.state.panel.panelInfo.id).then(rsp => {
+        if (rsp.data.checkStatus) {
           this.saveAppFile(rsp.data)
-        }else{
+        } else {
           this.dataLoading = false
           this.$message({
             message: rsp.data.checkMes,
@@ -496,7 +496,7 @@ export default {
       if (this.showType === 1 && this.shareUserId !== null) {
         const param = { userId: this.shareUserId }
         proxyInitPanelData(this.panelInfo.id, param, null)
-      } else { initPanelData(this.panelInfo.id,false) }
+      } else { initPanelData(this.panelInfo.id, false) }
     },
     changePublishState() {
       if (this.panelInfo.status === 'publish') {

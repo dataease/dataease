@@ -7,7 +7,7 @@
       <el-col :span="14" class="right-user">
         <el-input
           ref="search"
-          v-model="nikeName"
+          v-model="nickName"
           :placeholder="$t('system_parameter_setting.search_keywords')"
           prefix-icon="el-icon-search"
           class="name-email-search"
@@ -122,7 +122,7 @@ export default {
     return {
       userDrawer: false,
       dsTableDetail: {},
-      nikeName: '',
+      nickName: '',
       loading: false,
       dsTableData: [],
       tableData: [],
@@ -134,7 +134,7 @@ export default {
   },
   methods: {
     initSearch() {
-      this.filterTable = this.tableData.filter(ele => ele.name.includes(this.nikeName))
+      this.filterTable = this.tableData.filter(ele => ele.name.includes(this.nickName))
     },
     selectDataset(row) {
       this.dsTableDetail = row
