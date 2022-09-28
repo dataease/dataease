@@ -91,6 +91,7 @@ import { allRoles } from '@/api/system/user'
 import { updatePerson, personInfo } from '@/api/system/user'
 import { pluginLoaded } from '@/api/user'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import Cookies from 'js-cookie'
 export default {
 
   components: { LayoutContent, Treeselect, PluginCom },
@@ -173,6 +174,7 @@ export default {
   },
   created() {
     this.$store.dispatch('app/toggleSideBarHide', true)
+    this.showError()
     this.queryPerson()
     this.initRoles()
   },
@@ -183,7 +185,16 @@ export default {
     })
   },
   methods: {
-
+    showError() {
+      const errKeys = ['WecomError', 'DingtalkError', 'LarkError']
+      errKeys.forEach(key => {
+        const msg = Cookies.get(key)
+        if (msg) {
+          this.$error(msg)
+          Cookies.remove(key)
+        }
+      })
+    },
     queryPerson() {
       personInfo().then(res => {
         const info = res.data
