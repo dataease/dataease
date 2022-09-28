@@ -76,11 +76,7 @@ export const constantRoutes = [
     component: () => import('@/views/link'),
     hidden: true
   },
-  {
-    path: '/personal',
-    component: () => import('@/views/system/user/privateForm'),
-    hidden: true
-  },
+
   {
     path: '/preview/:reportId',
     component: () => import('@/components/canvas/components/Editor/PreviewEject'),

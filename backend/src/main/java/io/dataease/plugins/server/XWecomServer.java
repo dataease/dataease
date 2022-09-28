@@ -156,7 +156,7 @@ public class XWecomServer {
 
     @GetMapping("/bind")
     public void bind(@RequestParam("code") String code, @RequestParam("state") String state) {
-        String url = "/#personal";
+        String url = "/#person-info/index";
         HttpServletResponse response = ServletUtils.response();
 
         WecomXpackService wecomXpackService = null;
