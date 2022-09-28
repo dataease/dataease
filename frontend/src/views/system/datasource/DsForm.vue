@@ -2,7 +2,7 @@
   <div class="de-ds-form" v-loading="formLoading">
     <div class="de-ds-top">
       <span class="name">
-        <i @click="backToList" class="el-icon-arrow-left"></i>
+        <i @click="logOutTips" class="el-icon-arrow-left"></i>
         {{
           params &&
           params.id &&
@@ -17,7 +17,7 @@
       </span>
       <div class="apply">
         <template v-if="canEdit">
-          <deBtn secondary @click="backToList"
+          <deBtn secondary @click="logOutTips"
             >{{ $t('commons.cancel') }}
           </deBtn>
           <deBtn
@@ -189,7 +189,7 @@ export default {
         name: [
           {
             required: true,
-            message: i18n.t('datasource.input_name'),
+            validator: this.nameRepeat,
             trigger: 'blur'
           },
           {
@@ -833,6 +833,18 @@ export default {
     },
     backToList() {
       this.$router.push('/datasource/index')
+    },
+    logOutTips() {
+      const options = {
+        title: 'role.tips',
+          confirmButtonText: this.$t('commons.confirm'),
+        content: 'system_parameter_setting.sure_to_exit',
+          type: 'primary',
+        cb: () => {
+          this.backToList()
+        }
+      }
+      this.handlerConfirm(options)
     },
     refreshType(form) {
       this.$emit('refresh-type', form)

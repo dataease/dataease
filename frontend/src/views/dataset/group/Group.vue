@@ -562,6 +562,7 @@ export default {
           } else {
             const currentNodeId = sessionStorage.getItem('dataset-current-node')
             if (currentNodeId) {
+              sessionStorage.setItem('dataset-current-node', '')
               this.dfsTableData(this.tData, currentNodeId)
             }
           }

@@ -246,7 +246,7 @@
         "
         :label="$t('datasource.extra_params')"
       >
-        <el-input v-model="form.configuration.extraParams" autocomplete="off" />
+        <el-input :placeholder="$t('fu.search_bar.please_input') + $t('datasource.extra_params')" v-model="form.configuration.extraParams" autocomplete="off" />
       </el-form-item>
 
       <el-form-item
@@ -495,7 +495,7 @@
           <div class="row-rules">
             <span>{{ $t('datasource.column_info') }}</span>
           </div>
-          <div class="table-container">
+          <div class="table-container de-svg-in-table">
             <el-table
               ref="apiItemTable"
               :data="apiItem.jsonFields"
@@ -525,7 +525,7 @@
                   <el-input
                     v-model="scope.row.name"
                     :disabled="scope.row.children"
-                    size="mini"
+                    size="small"
                     type="text"
                     @change="fieldNameChange(scope.row)"
                   />
@@ -540,7 +540,8 @@
                   <el-select
                     v-model="scope.row.deExtractType"
                     :disabled="scope.row.children"
-                    size="mini"
+                    size="small"
+                    class="select-type"
                     style="display: inline-block; width: 120px"
                     @change="fieldTypeChange(scope.row)"
                   >
@@ -567,6 +568,20 @@
                       >{{ item.label }}</span>
                     </el-option>
                   </el-select>
+                  <span class="select-svg-icon">
+                <span v-if="scope.row.deType === 0">
+                  <svg-icon
+                    icon-class="field_text"
+                    class="field-icon-text"
+                  />
+                </span>
+                <span v-if="[ 2, 3 ].includes(scope.row.deType)">
+                  <svg-icon
+                    icon-class="field_value"
+                    class="field-icon-value"
+                  />
+                </span>
+              </span>
                 </template>
               </el-table-column>
             </el-table>
@@ -712,7 +727,7 @@ export default {
         name: [
           {
             required: true,
-            message: i18n.t('datasource.input_name'),
+            validator: this.nameRepeat,
             trigger: 'blur'
           }
         ],
@@ -954,6 +969,22 @@ export default {
           return false
         }
       })
+    },
+    nameRepeat(rule, value, callback) {
+      let hasRepeatName = false
+        this.form.apiConfiguration.forEach((item) => {
+          if (
+            item.name === this.apiItem.name &&
+            item.serialNumber !== this.apiItem.serialNumber
+          ) {
+            hasRepeatName = true
+          }
+        })
+        if (hasRepeatName) {
+          callback(new Error(i18n.t('theme.name_repeat')));
+          return
+        }
+        callback();
     },
     next() {
       if (this.active === 1) {
@@ -1501,6 +1532,25 @@ export default {
     }
     .el-input-number__increase {
       border-bottom-color: #e4e7ed;
+    }
+  }
+}
+.de-svg-in-table {
+  .select-type {
+    width: 180px;
+    ::v-deep.el-input__inner {
+      padding-left: 32px;
+    }
+  }
+  .select-svg-icon {
+    position: absolute;
+    left: 24px;
+    top: 15px;
+  }
+
+  ::v-deep.el-table__expand-icon {
+    .el-icon-arrow-right::before {
+      content: "\E791" !important;
     }
   }
 }

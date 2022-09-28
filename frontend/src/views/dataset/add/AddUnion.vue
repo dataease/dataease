@@ -40,8 +40,20 @@
           `(${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')})`
         }}</span>
         <span @mousedown="mousedownDrag" class="drag"></span>
+        <el-button
+          class="de-text-btn posi-right"
+          type="text"
+          size="small"
+          @click="previewData"
+        >
+          {{ $t('deDataset.data_preview') }}
+        </el-button>
       </div>
-      <union-preview :unionHeight="unionHeight" :table="previewTable" :dataset="dataset" />
+      <union-preview
+        :unionHeight="unionHeight"
+        :table="previewTable"
+        :dataset="dataset"
+      />
     </div>
     <!--选择数据集-->
     <el-drawer
@@ -108,9 +120,10 @@ import UnionEdit from '@/views/dataset/add/union/UnionEdit'
 import { post } from '@/api/dataset/dataset'
 import UnionPreview from '@/views/dataset/add/union/UnionPreview'
 import cancelMix from './cancelMix'
+import msgCfm from '@/components/msgCfm/index'
 export default {
   name: 'AddUnion',
-  mixins: [cancelMix],
+  mixins: [cancelMix, msgCfm],
   components: {
     UnionPreview,
     UnionEdit,
@@ -216,7 +229,7 @@ export default {
         this.openMessageSuccess('dataset.char_can_not_more_50', 'error')
         return
       }
-      this.loading = true;
+      this.loading = true
       const table = {
         id: this.param.tableId,
         name: this.param.name,
@@ -226,12 +239,14 @@ export default {
         mode: this.dataset[0].currentDs.mode,
         info: '{"union":' + JSON.stringify(this.dataset) + '}'
       }
-      post('/dataset/table/update', table).then((response) => {
-        this.$emit('saveSuccess', table)
-        this.cancel(response.data)
-      }).finally(() => {
-        this.loading = false;
-      }) 
+      post('/dataset/table/update', table)
+        .then((response) => {
+          this.$emit('saveSuccess', table)
+          this.cancel(response.data)
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     selectDs() {
       this.selectDsDialog = true
@@ -367,7 +382,7 @@ export default {
   .unio-editer-container {
     min-height: 298px;
     width: 100%;
-    background: #F5F6F7;
+    background: #f5f6f7;
   }
 
   .preview-container {
@@ -382,11 +397,19 @@ export default {
       height: 54px;
       display: flex;
       align-items: center;
+      position: relative;
       padding: 16px 24px;
       font-weight: 500;
       position: relative;
       color: var(--deTextPrimary, #1f2329);
       border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+
+      .posi-right {
+        position: absolute;
+        right: 24px;
+        top: 50%;
+        transform: translateY(-50%);
+      }
 
       .result-num {
         font-weight: 400;

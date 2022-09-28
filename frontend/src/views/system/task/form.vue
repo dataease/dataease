@@ -15,6 +15,7 @@
             @click.native="selectDataset"
             :label="$t('chart.select_dataset')"
             prop="datasetName"
+            :disabled="taskForm.id"
           >
             <el-input
               v-model="taskForm.datasetName"

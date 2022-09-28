@@ -116,7 +116,7 @@ service.interceptors.response.use(response => {
     msg = error.message
   }
   !config.hideMsg && (!headers['authentication-status']) && $error(msg)
-  return Promise.reject(error)
+  return Promise.reject(config.url === '/dataset/table/sqlPreview' ? msg : error)
 })
 const checkDownError = response => {
   if (response.request && response.request.responseType && response.request.responseType === 'blob' && response.headers && response.headers['de-down-error-msg']) {

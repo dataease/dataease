@@ -17,7 +17,7 @@ export const $confirm = (message, callback, options = {}) => {
   const title = i18n.t('commons.message_box.confirm')
   MessageBox.confirm(message, title, defaultOptions).then(() => {
     callback()
-  })
+  }).catch(() => {})
 }
 
 export const $success = (message, duration) => {
