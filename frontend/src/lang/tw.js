@@ -1656,7 +1656,11 @@ export default {
     sql_ds_union_error: '直連模式下SQL數據集，不支持關聯',
     api_data: 'API 數據集',
     copy: '復製',
-    sync_log: '同步日誌'
+    sync_log: '同步日誌',
+    field_edit_name: '字段名稱',
+    input_edit_name: '請輸入字段名稱',
+    edit_search: '通過名稱搜索',
+    na: '暫無'
   },
   driver: {
     driver: '驅動',
