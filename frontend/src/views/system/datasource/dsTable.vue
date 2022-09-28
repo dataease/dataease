@@ -6,17 +6,16 @@
       </el-col>
       <el-col :span="14" class="right-user">
         <el-input
+          ref="search"
+          v-model="nikeName"
           :placeholder="$t('system_parameter_setting.search_keywords')"
           prefix-icon="el-icon-search"
           class="name-email-search"
           size="small"
           clearable
-          ref="search"
-          v-model="nikeName"
           @blur="initSearch"
           @clear="initSearch"
-        >
-        </el-input>
+        />
       </el-col>
     </el-row>
     <div class="table-container">
@@ -37,11 +36,11 @@
         >
           <template slot-scope="scope">
             <el-button
-              @click="selectDataset(scope.row)"
               class="de-text-btn mar3"
               type="text"
-              >{{ $t("dataset.detail") }}</el-button
-            >
+              @click="selectDataset(scope.row)"
+            >{{ $t("dataset.detail") }}
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -71,47 +70,64 @@
         </el-col>
       </el-row>
       <el-table
-    :data="dsTableData"
-    stripe
-    style="width: 100%">
-    <el-table-column
-      prop="fieldName"
-      :label="$t('panel.column_name')">
-    </el-table-column>
-    <el-table-column
-      prop="fieldType"
-      :label="$t('dataset.field_type')">
-    </el-table-column>
-    <el-table-column
-      prop="remarks"
-      :label="$t('datasource.field_description')">
-    </el-table-column>
-  </el-table>
+        :data="dsTableData"
+        stripe
+        style="width: 100%"
+      >
+        <el-table-column
+          prop="fieldName"
+          :label="$t('panel.column_name')"
+        />
+        <el-table-column
+          prop="fieldType"
+          :label="$t('dataset.field_type')"
+        >
+
+          <template v-if="params.type==='api'" slot-scope="scope">
+            <span v-if="scope.row.fieldType === '0'">{{
+              $t("dataset.text")
+            }}</span>
+            <span v-if="scope.row.fieldType === '2'">{{
+              $t("dataset.value")
+            }}</span>
+            <span v-if="scope.row.fieldType === '3'">{{
+              $t("dataset.value") + '(' + $t("dataset.float") + ')'
+            }}</span>
+          </template>
+
+        </el-table-column>
+        <el-table-column
+          prop="remarks"
+          :label="$t('datasource.field_description')"
+        />
+      </el-table>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import keyEnter from "@/components/msgCfm/keyEnter.js";
-import {dsTable, post} from "@/api/dataset/dataset";
+import keyEnter from '@/components/msgCfm/keyEnter.js'
+import { dsTable, post } from '@/api/dataset/dataset'
+
 export default {
   mixins: [keyEnter],
   props: {
     params: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {
+      }
+    }
   },
   data() {
     return {
       userDrawer: false,
       dsTableDetail: {},
-      nikeName: "",
+      nikeName: '',
       loading: false,
       dsTableData: [],
       tableData: [],
       filterTable: []
-    };
+    }
   },
   created() {
     this.search()
@@ -121,25 +137,25 @@ export default {
       this.filterTable = this.tableData.filter(ele => ele.name.includes(this.nikeName))
     },
     selectDataset(row) {
-      this.dsTableDetail = row;
-      this.userDrawer = true;
-      var table = {dataSourceId: this.params.id}
-      table.info = JSON.stringify({table: row.name})
+      this.dsTableDetail = row
+      this.userDrawer = true
+      var table = { dataSourceId: this.params.id }
+      table.info = JSON.stringify({ table: row.name })
       post('/dataset/table/getFields', table).then((response) => {
         this.dsTableData = response.data
       })
     },
     search() {
-      this.loading = true;
+      this.loading = true
       post('/datasource/getTables/' + this.params.id, {}).then((response) => {
         this.tableData = response.data
         this.initSearch()
       }).finally(() => {
-        this.loading = false;
+        this.loading = false
       })
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss">
@@ -151,21 +167,26 @@ export default {
     font-weight: 400;
     margin: 0;
   }
+
   .table-name {
     color: var(--deTextSecondary, #646a73);
   }
+
   .table-value {
     margin: 4px 0 24px 0;
     color: var(--deTextPrimary, #1f2329);
   }
 }
+
 .ds-table {
   height: 100%;
   padding: 10px 14px;
   box-sizing: border-box;
+
   .mar3 {
     margin-left: -5px;
   }
+
   .table-name-top {
     font-family: PingFang SC;
     font-size: 16px;
@@ -173,9 +194,11 @@ export default {
     line-height: 24px;
     color: var(--deTextPrimary, #1f2329);
   }
+
   .table-container {
     height: calc(100% - 50px);
   }
+
   .el-table__fixed-right::before {
     background: transparent;
   }
