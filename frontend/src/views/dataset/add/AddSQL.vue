@@ -228,7 +228,33 @@
                     class="select-type"
                     :options="fieldOptions"
                     @change="variableTypeChange(scope.row)"
-                  />
+                  >
+                  <template slot-scope="{ data }">
+                    <svg-icon
+                      v-if="data.value === 'TEXT'"
+                      icon-class="field_text"
+                      class="field-icon-text"
+                    />
+                    <svg-icon
+                      v-if="
+                        [
+                          'DATETIME-YEAR',
+                          'DATETIME-YEAR-MONTH',
+                          'DATETIME',
+                          'DATETIME-YEAR-MONTH-DAY'
+                        ].includes(data.value)
+                      "
+                      icon-class="field_time"
+                      class="field-icon-time"
+                    />
+                    <svg-icon
+                      v-if="['LONG', 'DOUBLE'].includes(data.value)"
+                      icon-class="field_value"
+                      class="field-icon-value"
+                    />
+                    <span>{{ data.label }}</span>
+                  </template>
+                  </el-cascader>
                   <span class="select-svg-icon">
                     <svg-icon
                       v-if="scope.row.type[0] === 'TEXT'"
