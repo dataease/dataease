@@ -1526,3 +1526,49 @@ div:focus {
     background: rgba(51, 112, 255, 0.1) !important;
   }
 }
+
+.de-status {
+  position: relative;
+  margin-left: 15px;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -13px;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
+}
+
+.de-Pending-result,
+.de-Underway-result {
+  &::before {
+    background: var(--deTextPlaceholder, #8f959e);
+  }
+}
+
+.de-Exec-result,
+.de-Underway-pre {
+  &::before {
+    background: var(--primary, #3370ff);
+  }
+}
+
+.de-Stopped-result,
+.de-Completed-pre {
+  &::before {
+    background: var(--deSuccess, #34C724);
+  }
+}
+
+.de-Error-pre {
+  &::before {
+    background: var(--deDanger, #F54A45);
+  }
+  .el-icon-s-order {
+    color: var(--primary, #3370ff);
+    cursor: pointer;
+  }
+}

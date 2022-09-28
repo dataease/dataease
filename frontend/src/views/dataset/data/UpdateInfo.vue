@@ -71,7 +71,7 @@
           <template slot-scope="scope">
             <span
               v-if="scope.row.lastExecStatus"
-              :class="[`de-${scope.row.lastExecStatus}`, 'de-status']"
+              :class="[`de-${scope.row.lastExecStatus}-pre`, 'de-status']"
               >{{
                 $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
               }}
@@ -110,7 +110,7 @@
           :label="$t('dataset.task.task_status')"
         >
           <template slot-scope="scope">
-            <span :class="[`de-${scope.row.status}`, 'de-status']"
+            <span :class="[`de-${scope.row.status}-result`, 'de-status']"
               >{{ $t(`dataset.task.${scope.row.status.toLocaleLowerCase()}`) }}
             </span>
           </template>
@@ -223,23 +223,16 @@
 
           <el-table-column prop="status" :label="$t('dataset.status')">
             <template slot-scope="scope">
-              <span
-                v-if="scope.row.status === 'Completed'"
-                style="color: green"
-                >{{ $t('dataset.completed') }}</span
-              >
-              <span v-if="scope.row.status === 'Underway'" class="blue-color">
-                <i class="el-icon-loading" />
-                {{ $t('dataset.underway') }}
-              </span>
-              <span v-if="scope.row.status === 'Error'" style="color: red">
-                <el-link
-                  type="danger"
-                  @click="showErrorMassage(scope.row.info)"
-                  >{{ $t('dataset.error') }}</el-link
-                >
-              </span>
-            </template>
+            <span
+              v-if="scope.row.status"
+              :class="[`de-${scope.row.status}-pre`, 'de-status']"
+              >{{
+                $t(`dataset.${scope.row.status.toLocaleLowerCase()}`)
+              }}
+            <svg-icon style="cursor: pointer;" v-if="scope.row.status === 'Error'"  @click="showErrorMassage(scope.row.info)" icon-class="icon-maybe" class="field-icon-location" />
+            </span>
+            <span v-else>-</span>
+          </template>
           </el-table-column>
         </el-table>
         <el-row style="margin-top: 10px; text-align: right">
@@ -1163,63 +1156,6 @@ export default {
       border-radius: 4px;
       overflow: auto;
     }
-  }
-}
-</style>
-<style lang="scss">
-.de-status {
-  position: relative;
-  margin-left: 15px;
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: -13px;
-    transform: translateY(-50%);
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-  }
-}
-
-.de-Completed {
-  &::before {
-    background: var(--deSuccess, #3370ff);
-  }
-}
-
-.de-Underway {
-  &::before {
-    background: #8f959e;
-  }
-}
-
-.de-Pending {
-  &::before {
-    background: #8f959e;
-  }
-}
-
-.de-Exec {
-  &::before {
-    background: var(--primary, #3370ff);
-  }
-}
-
-.de-Stopped {
-  &::before {
-    background: var(--deSuccess, #3370ff);
-  }
-}
-
-.de-Error {
-  &::before {
-    background: var(--deDanger, #3370ff);
-  }
-
-  .el-icon-s-order {
-    color: var(--primary, #3370ff);
-    cursor: pointer;
   }
 }
 </style>

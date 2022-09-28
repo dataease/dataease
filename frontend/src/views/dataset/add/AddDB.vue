@@ -32,7 +32,12 @@
         prefix-icon="el-icon-search"
         clearable
       />
-      <div class="table-checkbox-list">
+      <div v-if="!tableData.length && searchTable !== ''" class="el-empty">
+        <div class="el-empty__description" style="margin-top: 80px;color: #5e6d82;">
+          没有找到相关内容
+        </div>
+      </div>
+      <div v-else class="table-checkbox-list">
         <el-checkbox-group v-model="checkTableList" size="small">
           <el-tooltip
             :disabled="t.enableCheck"
@@ -396,6 +401,7 @@ export default {
   .arrow-right {
     position: absolute;
     top: 15px;
+    z-index: 2;
     cursor: pointer;
     margin: 0;
     display: flex;

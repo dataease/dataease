@@ -25,7 +25,7 @@
           class="table-num"
           v-if="['db', 'excel', 'api'].includes(datasetType)"
           >{{ $t('deDataset.selected') }} {{ tableNum }}
-          {{ $t('deDataset.table') }}</span
+          {{ ['excel'].includes(datasetType) ? $t('deDataset.table') : '项' }}</span
         >
         <deBtn @click="datasetSave" type="primary">{{
           $t('commons.save')

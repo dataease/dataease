@@ -575,6 +575,7 @@ export default {
 
   .arrow-right {
     position: absolute;
+    z-index: 2;
     top: 15px;
     cursor: pointer;
     margin: 0;

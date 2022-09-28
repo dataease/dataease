@@ -31,7 +31,12 @@
         prefix-icon="el-icon-search"
         clearable
       />
-      <div class="table-checkbox-list">
+      <div v-if="!tableData.length && searchTable !== ''" class="el-empty">
+        <div class="el-empty__description" style="margin-top: 80px;color: #5e6d82;">
+          没有找到相关内容
+        </div>
+      </div>
+      <div class="table-checkbox-list" v-else>
         <el-checkbox-group v-model="checkTableList" size="small">
           <el-tooltip
             v-for="t in tableData"
@@ -278,13 +283,13 @@ export default {
         if (this.checkDatasetName.includes(ele.datasetName)) {
           this.nameExsitValidator(index)
         } else {
-          ele.nameExsit = false;
+          ele.nameExsit = false
         }
       })
     },
     calHeight() {
       const that = this
-      setTimeout(function() {
+      setTimeout(function () {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 56 - 64 - 75 - 32 - 24 - 16 - 10
       }, 10)
@@ -381,6 +386,7 @@ export default {
 
   .arrow-right {
     position: absolute;
+    z-index: 2;
     top: 15px;
     cursor: pointer;
     margin: 0;
