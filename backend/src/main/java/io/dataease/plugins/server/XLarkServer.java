@@ -161,7 +161,7 @@ public class XLarkServer {
                 return;
             }
             SysUserAssist sysUserAssist = sysUserService.assistInfo(Long.parseLong(state));
-            if (ObjectUtils.isNotEmpty(sysUserAssist) && StringUtils.isNotBlank(sysUserAssist.getWecomId())) {
+            if (ObjectUtils.isNotEmpty(sysUserAssist) && StringUtils.isNotBlank(sysUserAssist.getLarkId())) {
                 bindError(response, url, "目标用户已绑定其他飞书账号");
                 return;
             }
