@@ -32,7 +32,7 @@
             @click="addApiItem(api)"
           >
             <el-row>
-              <el-col :span="12">
+              <el-col style="display: flex" :span="19">
                 <span class="name">{{ api.name }}</span>
                 <span
                   v-if="api.status === 'Error'"
@@ -45,7 +45,7 @@
                   style="color: green; background: rgba(52, 199, 36, 0.2)"
                 >{{ $t('datasource.valid') }}</span>
               </el-col>
-              <el-col style="text-align: right" :span="12">
+              <el-col style="text-align: right" :span="5">
                 <svg-icon
                   icon-class="de-copy"
                   class="de-copy-icon"
@@ -441,7 +441,7 @@
             <span>{{ $t('datasource.base_info') }}</span>
           </div>
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="apiItem.name" autocomplete="off" />
+            <el-input :placeholder="$t('commons.input_name')" v-model="apiItem.name" autocomplete="off" />
           </el-form-item>
 
           <el-form-item :label="$t('datasource.request')" prop="url">
@@ -575,8 +575,15 @@
           <div class="row-rules">
             <span>{{ $t('dataset.data_preview') }}</span>
           </div>
-
+          <el-empty
+            size="125"
+            v-if="showEmpty"
+            :image="noneImg"
+            style="margin-top: 24px"
+            :description="$t('暂无数据，请在数据结构勾选字段')"
+          />
           <ux-grid
+            v-else
             ref="plxTable"
             size="mini"
             style="width: 100%"
@@ -839,6 +846,7 @@ export default {
       },
       api_table_title: '',
       schemas: [],
+      showEmpty: false,
       canEdit: false,
       edit_api_item: false,
       add_api_item: true,
@@ -1132,6 +1140,7 @@ export default {
       }
     },
     previewData() {
+      this.showEmpty = false
       const datas = []
       let maxPreviewNum = 0
       for (let j = 0; j < this.apiItem.fields.length; j++) {
@@ -1154,6 +1163,7 @@ export default {
           )
         }
         this.$refs.plxTable.reloadData(datas)
+        this.showEmpty = !!datas.length
       }
     },
     handleCheckChange(node) {
@@ -1427,6 +1437,10 @@ export default {
     font-size: 16px;
     font-weight: 500;
     margin-right: 8px;
+    max-width: 80%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
   .req-title,
   .req-value {

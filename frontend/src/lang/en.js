@@ -1545,7 +1545,7 @@ export default {
     preview_100_data: 'Show 100 lines data',
     invalid_table_check: 'Please sync data first.',
     parse_error: 'Parse failed,please check.Reference：https://dataease.io/docs/user_manual/dataset_configuration/dataset_Excel',
-    origin_field_type: 'Origin Type',
+    origin_field_type: 'Field Origin Type',
     edit_excel_table: 'Edit Excel Dataset',
     edit_excel: 'Edit Excel',
     excel_replace: 'Replace',
@@ -1656,7 +1656,11 @@ export default {
     sql_ds_union_error: 'Direct connect SQL dataset can not be union',
     api_data: 'API dataset',
     copy: 'Copy',
-    sync_log: 'Sync log'
+    sync_log: 'Sync log',
+    field_edit_name: 'Field Name',
+    input_edit_name: 'Input field name',
+    edit_search: 'Search by name',
+    na: 'None'
   },
   driver: {
     driver: 'Driver',

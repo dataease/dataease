@@ -146,22 +146,22 @@
                     <svg-icon
                       v-if="item.value === 0"
                       icon-class="field_text"
-                      class="field-icon-text"
+                      class="field-icon-text field-icon-dimension"
                     />
                     <svg-icon
                       v-if="item.value === 1"
                       icon-class="field_time"
-                      class="field-icon-time"
+                      class="field-icon-time field-icon-dimension"
                     />
                     <svg-icon
                       v-if="item.value === 2 || item.value === 3"
                       icon-class="field_value"
-                      class="field-icon-value"
+                      class="field-icon-value field-icon-dimension"
                     />
                     <svg-icon
                       v-if="item.value === 5"
                       icon-class="field_location"
-                      class="field-icon-location"
+                      class="field-icon-location field-icon-dimension"
                     />
                   </span>
                   <span style="float: left; color: #8492a6; font-size: 12px">{{
@@ -174,28 +174,28 @@
                   <svg-icon
                     v-if="scope.row.deType === 0 || scope.row.deType === 6"
                     icon-class="field_text"
-                    class="field-icon-text"
+                    class="field-icon-text field-icon-dimension"
                   />
                 </span>
                 <span v-if="scope.row.deType === 1">
                   <svg-icon
                     v-if="scope.row.deType === 1"
                     icon-class="field_time"
-                    class="field-icon-time"
+                    class="field-icon-time field-icon-dimension"
                   />
                 </span>
                 <span v-if="scope.row.deType === 2 || scope.row.deType === 3">
                   <svg-icon
                     v-if="scope.row.deType === 2 || scope.row.deType === 3"
                     icon-class="field_value"
-                    class="field-icon-value"
+                    class="field-icon-value field-icon-dimension"
                   />
                 </span>
                 <span v-if="scope.row.deType === 5">
                   <svg-icon
                     v-if="scope.row.deType === 5"
                     icon-class="field_location"
-                    class="field-icon-location"
+                    class="field-icon-location field-icon-dimension"
                   />
                 </span>
               </span>
@@ -220,7 +220,7 @@
                       scope.row.deExtractType === 6
                     "
                     icon-class="field_text"
-                    class="field-icon-text"
+                    class="field-icon-text field-icon-dimension"
                   />
                   <span class="field-class">{{ $t('dataset.text') }}</span>
                 </span>
@@ -228,7 +228,7 @@
                   <svg-icon
                     v-if="scope.row.deExtractType === 1"
                     icon-class="field_time"
-                    class="field-icon-time"
+                    class="field-icon-time field-icon-dimension"
                   />
                   <span class="field-class">{{ $t('dataset.time') }}</span>
                 </span>
@@ -246,7 +246,7 @@
                       scope.row.deExtractType === 4
                     "
                     icon-class="field_value"
-                    class="field-icon-value"
+                    class="field-icon-value field-icon-dimension"
                   />
                   <span
                     v-if="
@@ -268,7 +268,7 @@
                   <svg-icon
                     v-if="scope.row.deExtractType === 5"
                     icon-class="field_location"
-                    class="field-icon-location"
+                    class="field-icon-location field-icon-dimension"
                   />
                   <span class="field-class">{{ $t('dataset.location') }}</span>
                 </span>
@@ -464,22 +464,22 @@
                     <svg-icon
                       v-if="item.value === 0"
                       icon-class="field_text"
-                      class="field-icon-text"
+                      class="field-icon-text field-icon-quota"
                     />
                     <svg-icon
                       v-if="item.value === 1"
                       icon-class="field_time"
-                      class="field-icon-time"
+                      class="field-icon-time field-icon-quota"
                     />
                     <svg-icon
                       v-if="item.value === 2 || item.value === 3"
                       icon-class="field_value"
-                      class="field-icon-value"
+                      class="field-icon-value field-icon-quota"
                     />
                     <svg-icon
                       v-if="item.value === 5"
                       icon-class="field_location"
-                      class="field-icon-location"
+                      class="field-icon-location field-icon-quota"
                     />
                   </span>
                   <span style="float: left; color: #8492a6; font-size: 12px">{{
@@ -492,28 +492,28 @@
                   <svg-icon
                     v-if="scope.row.deType === 0"
                     icon-class="field_text"
-                    class="field-icon-text"
+                    class="field-icon-text field-icon-quota"
                   />
                 </span>
                 <span v-if="scope.row.deType === 1">
                   <svg-icon
                     v-if="scope.row.deType === 1"
                     icon-class="field_time"
-                    class="field-icon-time"
+                    class="field-icon-time field-icon-quota"
                   />
                 </span>
                 <span v-if="scope.row.deType === 2 || scope.row.deType === 3">
                   <svg-icon
                     v-if="scope.row.deType === 2 || scope.row.deType === 3"
                     icon-class="field_value"
-                    class="field-icon-value"
+                    class="field-icon-value field-icon-quota"
                   />
                 </span>
                 <span v-if="scope.row.deType === 5">
                   <svg-icon
                     v-if="scope.row.deType === 5"
                     icon-class="field_location"
-                    class="field-icon-location"
+                    class="field-icon-location field-icon-quota"
                   />
                 </span>
               </span>
@@ -530,7 +530,7 @@
                   <svg-icon
                     v-if="scope.row.deExtractType === 0"
                     icon-class="field_text"
-                    class="field-icon-text"
+                    class="field-icon-text field-icon-quota"
                   />
                   <span class="field-class">{{ $t('dataset.text') }}</span>
                 </span>
@@ -538,7 +538,7 @@
                   <svg-icon
                     v-if="scope.row.deExtractType === 1"
                     icon-class="field_time"
-                    class="field-icon-time"
+                    class="field-icon-time field-icon-quota"
                   />
                   <span class="field-class">{{ $t('dataset.time') }}</span>
                 </span>
@@ -556,7 +556,7 @@
                       scope.row.deExtractType === 4
                     "
                     icon-class="field_value"
-                    class="field-icon-value"
+                    class="field-icon-value field-icon-quota"
                   />
                   <span
                     v-if="
@@ -578,7 +578,7 @@
                   <svg-icon
                     v-if="scope.row.deExtractType === 5"
                     icon-class="field_location"
-                    class="field-icon-location"
+                    class="field-icon-location field-icon-quota"
                   />
                   <span class="field-class">{{ $t('dataset.location') }}</span>
                 </span>

@@ -1461,8 +1461,8 @@ export default {
     create_view: '创建视图',
     data_preview: '数据预览',
     field_type: '字段类型',
-    field_name: '字段名',
-    field_origin_name: '原始名',
+    field_name: '字段名称',
+    field_origin_name: '原始名称',
     field_check: '选中',
     update_info: '更新信息',
     join_view: '数据关联',
@@ -1544,7 +1544,7 @@ export default {
     preview_100_data: '显示前100行数据',
     invalid_table_check: '非直连数据集请先完成数据同步',
     parse_error: 'Excel解析失败，请检查格式、字段等信息。具体参考：https://dataease.io/docs/user_manual/dataset_configuration/dataset_Excel',
-    origin_field_type: '原始类型',
+    origin_field_type: '字段原始类型',
     edit_excel_table: '编辑Excel数据集',
     edit_excel: '编辑Excel',
     excel_replace: '替换',
@@ -1655,7 +1655,11 @@ export default {
     sql_ds_union_error: '直连模式下SQL数据集，不支持关联',
     api_data: 'API 数据集',
     copy: '复制',
-    sync_log: '同步日志'
+    sync_log: '同步日志',
+    field_edit_name: '字段名称',
+    input_edit_name: '请输入字段名称',
+    edit_search: '通过名称搜索',
+    na: '暂无'
   },
   driver: {
     driver: '驱动',

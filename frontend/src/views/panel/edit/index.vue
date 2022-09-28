@@ -429,6 +429,7 @@ import ChartStyleBatchSet from '@/views/chart/view/ChartStyleBatchSet'
 import Multiplexing from '@/views/panel/ViewSelect/multiplexing'
 import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
 import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
+import eventBus from '@/components/canvas/utils/eventBus'
 export default {
   name: 'PanelEdit',
   components: {
@@ -794,6 +795,7 @@ export default {
           } else {
             _this.$store.commit('refreshSaveStatus')
           }
+          eventBus.$emit('editPanelInitReady')
         }, 500)
       })
     },

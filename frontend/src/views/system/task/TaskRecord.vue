@@ -95,9 +95,9 @@
           <template slot-scope="scope">
             <span
               v-if="scope.row.status"
-              :class="[`de-${scope.row.status}`, 'de-status']"
-            >{{ $t(`dataset.${scope.row.status.toLocaleLowerCase()}`) }}
-              <svg-icon v-if="scope.row.status === 'Error'" style="cursor: pointer;" icon-class="icon-maybe" class="field-icon-location" @click="showErrorMassage(scope.row.info)" />
+              :class="[`de-${scope.row.status}-pre`, 'de-status']"
+              >{{ $t(`dataset.${scope.row.status.toLocaleLowerCase()}`) }}
+            <svg-icon style="cursor: pointer;" v-if="scope.row.status === 'Error'"  @click="showErrorMassage(scope.row.info)" icon-class="icon-maybe" class="field-icon-location" />
             </span>
             <span v-else>-</span>
           </template>
@@ -587,63 +587,6 @@ span {
 
   .name-email-search {
     width: 240px;
-  }
-}
-</style>
-<style lang="scss">
-.de-status {
-  position: relative;
-  margin-left: 15px;
-  &::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: -13px;
-    transform: translateY(-50%);
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-  }
-}
-
-.de-Completed {
-  &::before {
-    background: var(--deSuccess, #3370ff);
-  }
-}
-
-.de-Underway {
-  &::before {
-    background: #8f959e;
-  }
-}
-
-.de-Pending {
-  &::before {
-    background: #8f959e;
-  }
-}
-
-.de-Exec {
-  &::before {
-    background: var(--primary, #3370ff);
-  }
-}
-
-.de-Stopped {
-  &::before {
-    background: var(--deSuccess, #3370ff);
-  }
-}
-
-.de-Error {
-  &::before {
-    background: var(--deDanger, #3370ff);
-  }
-
-  .el-icon-question {
-    color: #646a73;
-    cursor: pointer;
   }
 }
 </style>

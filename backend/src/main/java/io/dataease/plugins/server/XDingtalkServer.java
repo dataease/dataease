@@ -150,7 +150,7 @@ public class XDingtalkServer {
     public void bind(@RequestParam("code") String code, @RequestParam("state") String state) {
 
         HttpServletResponse response = ServletUtils.response();
-        String url = "/#personal";
+        String url = "/#person-info/index";
 
 
         DingtalkXpackService dingtalkXpackService = null;
@@ -159,10 +159,12 @@ public class XDingtalkServer {
             SysUserEntity userEntity = authUserService.getUserById(Long.parseLong(state));
             if (ObjectUtils.isEmpty(userEntity)) {
                 bindError(response, url, "绑定用户不存在");
+                return;
             }
             SysUserAssist sysUserAssist = sysUserService.assistInfo(Long.parseLong(state));
-            if (ObjectUtils.isNotEmpty(sysUserAssist) && StringUtils.isNotBlank(sysUserAssist.getWecomId())) {
+            if (ObjectUtils.isNotEmpty(sysUserAssist) && StringUtils.isNotBlank(sysUserAssist.getDingtalkId())) {
                 bindError(response, url, "目标用户已绑定其他钉钉账号");
+                return;
             }
             Boolean isOpen = authUserService.supportDingtalk();
             if (!isOpen) {
@@ -177,6 +179,7 @@ public class XDingtalkServer {
             SysUserEntity sysUserEntity = authUserService.getUserByDingtalkId(userId);
             if (null != sysUserEntity) {
                 bindError(response, url, "当前钉钉账号已绑定其他DE用户");
+                return;
             }
             if (ObjectUtils.isEmpty(sysUserAssist)) {
                 sysUserAssist = new SysUserAssist();

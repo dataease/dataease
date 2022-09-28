@@ -109,7 +109,7 @@
 
     <select id="findWecomUser" resultMap="baseMap">
         select
-            user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from`
+            u.user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from`
         from
             sys_user_assist a
         left join
@@ -119,7 +119,7 @@
 
     <select id="findDingtalkUser" resultMap="baseMap">
         select
-            user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from`
+            u.user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from`
         from
             sys_user_assist a
             left join
@@ -129,7 +129,7 @@
 
     <select id="findLarkUser" resultMap="baseMap">
         select
-            user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from`
+            u.user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from`
         from
             sys_user_assist a
             left join

@@ -1,11 +1,11 @@
 <template>
   <div class="calcu-feild">
     <el-form ref="form" :model="fieldForm" class="de-form-item">
-      <el-form-item :label="$t('dataset.field_name')">
+      <el-form-item :label="$t('dataset.field_edit_name')">
         <el-input
           v-model="fieldForm.name"
           size="small"
-          :placeholder="$t('dataset.input_name')"
+          :placeholder="$t('dataset.input_edit_name')"
         />
       </el-form-item>
     </el-form>
@@ -19,7 +19,7 @@
               <el-tooltip class="item" effect="dark" placement="bottom">
                 <div slot="content">
                   表达式语法请遵循该数据源对应的数据库语法。
-                  <br />
+                  <br>
                   数据集中不支持聚合运算。
                 </div>
                 <i class="el-icon-info" style="cursor: pointer" />
@@ -51,8 +51,7 @@
                   :key="item.value"
                   v-model="fieldForm.deType"
                   :label="item.value"
-                  >{{ item.label }}</el-radio
-                >
+                >{{ item.label }}</el-radio>
               </el-form-item>
             </el-form>
           </el-row>
@@ -64,9 +63,9 @@
           <el-tooltip class="item" effect="dark" placement="bottom">
             <div slot="content">
               引用字段以 "[" 开始， "]" 结束
-              <br />
+              <br>
               请勿修改引用内容，否则将引用失败
-              <br />
+              <br>
               若输入与引用字段相同格式的内容，将被当作引用字段处理
             </div>
             <i class="el-icon-info" style="cursor: pointer" />
@@ -75,7 +74,7 @@
         <el-input
           v-model="searchField"
           size="small"
-          :placeholder="$t('dataset.search')"
+          :placeholder="$t('dataset.edit_search')"
           prefix-icon="el-icon-search"
           style="margin-bottom: 12px"
           clearable
@@ -83,6 +82,7 @@
         <div class="field-height">
           <span>{{ $t('chart.dimension') }}</span>
           <draggable
+            v-if="dimensionData && dimensionData.length > 0"
             v-model="dimensionData"
             :options="{ group: { name: 'drag', pull: 'clone' }, sort: true }"
             animation="300"
@@ -121,10 +121,12 @@
               </span>
             </transition-group>
           </draggable>
+          <div v-else class="class-na">{{ $t('dataset.na') }}</div>
         </div>
         <div class="field-height">
           <span>{{ $t('chart.quota') }}</span>
           <draggable
+            v-if="quotaData && quotaData.length > 0"
             v-model="quotaData"
             :options="{ group: { name: 'drag', pull: 'clone' }, sort: true }"
             animation="300"
@@ -163,6 +165,7 @@
               </span>
             </transition-group>
           </draggable>
+          <div v-else class="class-na">{{ $t('dataset.na') }}</div>
         </div>
       </div>
       <div class="padding-lr">
@@ -171,9 +174,9 @@
           <el-tooltip class="item" effect="dark" placement="bottom">
             <div slot="content">
               使用数据集对应数据库类型所支持的函数，语法同对应数据库
-              <br />
+              <br>
               如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])
-              <br />
+              <br>
               非直连模式数据集，使用Doris数据库函数，可参考Doris官网
               https://doris.apache.org/zh-CN/
             </div>
@@ -184,7 +187,7 @@
           v-model="searchFunction"
           size="small"
           style="margin-bottom: 12px"
-          :placeholder="$t('dataset.search')"
+          :placeholder="$t('dataset.edit_search')"
           prefix-icon="el-icon-search"
           clearable
         />
@@ -205,8 +208,7 @@
               slot="reference"
               class="function-style"
               @click="insertParamToCodeMirror(item.func)"
-              >{{ item.func }}</span
-            >
+            >{{ item.func }}</span>
           </el-popover>
         </el-row>
       </div>
@@ -221,8 +223,7 @@
         :loading="loading"
         type="primary"
         @click="saveCalcField"
-        >{{ $t('dataset.confirm') }}</deBtn
-      >
+      >{{ $t('dataset.confirm') }}</deBtn>
     </div>
   </div>
 </template>
@@ -326,16 +327,16 @@ export default {
     }
   },
   watch: {
-    param: function () {
+    param: function() {
       this.initFunctions()
     },
     field: {
-      handler: function () {
+      handler: function() {
         this.initField()
       },
       deep: true
     },
-    tableFields: function () {
+    tableFields: function() {
       this.dimensionData = JSON.parse(
         JSON.stringify(this.tableFields.dimensionList)
       ).filter((ele) => ele.extField === 0)
@@ -343,7 +344,7 @@ export default {
         JSON.stringify(this.tableFields.quotaList)
       ).filter((ele) => ele.extField === 0)
     },
-    searchField: function (val) {
+    searchField: function(val) {
       if (val && val !== '') {
         this.dimensionData = JSON.parse(
           JSON.stringify(
@@ -374,7 +375,7 @@ export default {
         ).filter((ele) => ele.extField === 0)
       }
     },
-    searchFunction: function (val) {
+    searchFunction: function(val) {
       if (val && val !== '') {
         this.functionData = JSON.parse(
           JSON.stringify(
@@ -563,10 +564,10 @@ export default {
   box-sizing: border-box;
   margin-left: 12px;
   width: 214px;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 .field-height {
-  height: calc(50% - 25px);
+  height: calc(50% - 41px);
   margin-top: 4px;
 }
 .drag-list {
@@ -673,7 +674,7 @@ export default {
   background: var(--ContentBG);
 }
 .function-height {
-  height: calc(100% - 50px);
+  height: calc(100% - 21px - 32px - 4px - 24px);
   overflow: auto;
   margin-top: 4px;
 }
@@ -688,6 +689,13 @@ export default {
 .pop-info {
   margin: 6px 0 0 0;
   font-size: 10px;
+}
+
+.class-na {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--deTextDisable);
 }
 </style>
 

@@ -162,11 +162,11 @@
           <template slot-scope="scope">
             <span
               v-if="scope.row.lastExecStatus"
-              :class="[`de-${scope.row.lastExecStatus}`, 'de-status']"
-            >{{
-               $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
-             }}
-              <svg-icon v-if="scope.row.lastExecStatus === 'Error'" style="cursor: pointer;" icon-class="icon-maybe" class="field-icon-location" @click="showErrorMassage(scope.row.msg)" />
+              :class="[`de-${scope.row.lastExecStatus}-pre`, 'de-status']"
+              >{{
+                $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
+              }}
+            <svg-icon style="cursor: pointer;" v-if="scope.row.lastExecStatus === 'Error'"  @click="showErrorMassage(scope.row.msg)" icon-class="icon-maybe" class="field-icon-location" />
             </span>
             <span v-else>-</span>
           </template>
@@ -202,9 +202,8 @@
           :label="$t('dataset.task.task_status')"
         >
           <template slot-scope="scope">
-            <span
-              :class="[`de-${scope.row.status}`, 'de-status']"
-            >{{ $t(`dataset.task.${scope.row.status.toLocaleLowerCase()}`) }}
+            <span :class="[`de-${scope.row.status}-result`, 'de-status']"
+              >{{ $t(`dataset.task.${scope.row.status.toLocaleLowerCase()}`) }}
             </span>
           </template>
         </el-table-column>
@@ -856,61 +855,6 @@ export default {
   margin-top: 0 !important;
   .popper__arrow {
     display: none !important;
-  }
-}
-.de-status {
-  position: relative;
-  margin-left: 15px;
-  &::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: -13px;
-    transform: translateY(-50%);
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-  }
-}
-
-.de-Completed {
-  &::before {
-    background: var(--deSuccess, #3370ff);
-  }
-}
-
-.de-Underway {
-  &::before {
-    background: #8f959e;
-  }
-}
-
-.de-Pending {
-  &::before {
-    background: #8f959e;
-  }
-}
-
-.de-Exec {
-  &::before {
-    background: var(--primary, #3370ff);
-  }
-}
-
-.de-Stopped {
-  &::before {
-    background: var(--deSuccess, #3370ff);
-  }
-}
-
-.de-Error {
-  &::before {
-    background: var(--deDanger, #3370ff);
-  }
-
-  .el-icon-s-order {
-    color: var(--primary, #3370ff);
-    cursor: pointer;
   }
 }
 </style>
