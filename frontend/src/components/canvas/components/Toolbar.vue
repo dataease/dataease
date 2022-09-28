@@ -193,6 +193,7 @@ export default {
     ])
   },
   created() {
+    eventBus.$on('editPanelInitReady', this.editPanelInit)
     eventBus.$on('preview', this.preview)
     eventBus.$on('save', this.save)
     eventBus.$on('clearCanvas', this.clearCanvas)
@@ -205,10 +206,14 @@ export default {
     eventBus.$off('preview', this.preview)
     eventBus.$off('save', this.save)
     eventBus.$off('clearCanvas', this.clearCanvas)
+    eventBus.$off('editPanelInitReady', this.editPanelInit)
     clearInterval(this.timer)
     this.timer = null
   },
   methods: {
+    editPanelInit(){
+      this.showGridSwitch = this.canvasStyleData.aidedDesign.showGrid
+    },
     close() {
       // 关闭页面清理缓存
       this.$store.commit('initCanvasBase')
