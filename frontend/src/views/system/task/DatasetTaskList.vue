@@ -6,110 +6,104 @@
           type="primary"
           icon="el-icon-circle-plus-outline"
           @click="() => selectDataset()"
-          >{{ $t("dataset.add_task") }}</deBtn
-        >
+        >{{ $t("dataset.add_task") }}</deBtn>
         <deBtn
           :disabled="!multipleSelection.length"
           secondary
           @click="confirmDelete"
-          >{{ $t("organization.delete") }}</deBtn
-        >
+        >{{ $t("organization.delete") }}</deBtn>
       </el-col>
       <el-col :span="14" class="right-user">
         <el-input
+          ref="search"
+          v-model="nickName"
           :placeholder="$t('components.by_task_name')"
           prefix-icon="el-icon-search"
           class="name-email-search"
           size="small"
           clearable
-          ref="search"
-          v-model="nikeName"
           @blur="initSearch"
           @clear="initSearch"
-        >
-        </el-input>
+        />
         <deBtn
           :secondary="!filterTexts.length"
           :plain="!!filterTexts.length"
           icon="iconfont icon-icon-filter"
           @click="filterShow"
-          >{{ $t("user.filter")
-          }}<template v-if="filterTexts.length">
-            ({{ filterTexts.length }})
-          </template>
+        >{{ $t("user.filter")
+        }}<template v-if="filterTexts.length">
+          ({{ filterTexts.length }})
+        </template>
         </deBtn>
         <el-dropdown trigger="click" :hide-on-click="false">
           <deBtn secondary icon="el-icon-setting">{{ $t("user.list") }}</deBtn>
-          <el-dropdown-menu class="list-colums-slect" slot="dropdown">
+          <el-dropdown-menu slot="dropdown" class="list-colums-slect">
             <p class="title">{{ $t("user.list_info") }}</p>
             <el-checkbox
-              :indeterminate="isIndeterminate"
               v-model="checkAll"
+              :indeterminate="isIndeterminate"
               @change="handleCheckAllChange"
-              >{{ $t("dataset.check_all") }}</el-checkbox
-            >
+            >{{ $t("dataset.check_all") }}</el-checkbox>
             <el-checkbox-group
               v-model="checkedColumnNames"
               @change="handleCheckedColumnNamesChange"
             >
               <el-checkbox
                 v-for="column in columnNames"
-                :label="column.props"
                 :key="column.props"
-                >{{ $t(column.label) }}</el-checkbox
-              >
+                :label="column.props"
+              >{{ $t(column.label) }}</el-checkbox>
             </el-checkbox-group>
           </el-dropdown-menu>
         </el-dropdown>
       </el-col>
     </el-row>
-    <div class="filter-texts" v-if="filterTexts.length">
+    <div v-if="filterTexts.length" class="filter-texts">
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t("user.result_one") }}</span>
-      <el-divider direction="vertical"></el-divider>
+      <el-divider direction="vertical" />
       <i
-        @click="scrollPre"
         v-if="showScroll"
         class="el-icon-arrow-left arrow-filter"
-      ></i>
+        @click="scrollPre"
+      />
       <div class="filter-texts-container">
-        <p class="text" v-for="(ele, index) in filterTexts" :key="ele">
-          {{ ele }} <i @click="clearOneFilter(index)" class="el-icon-close"></i>
+        <p v-for="(ele, index) in filterTexts" :key="ele" class="text">
+          {{ ele }} <i class="el-icon-close" @click="clearOneFilter(index)" />
         </p>
       </div>
       <i
-        @click="scrollNext"
         v-if="showScroll"
         class="el-icon-arrow-right arrow-filter"
-      ></i>
+        @click="scrollNext"
+      />
       <el-button
         type="text"
         class="clear-btn"
         icon="el-icon-delete"
         @click="clearFilter"
-        >{{ $t("user.clear_filter") }}</el-button
-      >
+      >{{ $t("user.clear_filter") }}</el-button>
     </div>
     <div
-      class="table-container"
       id="resize-for-filter"
+      class="table-container"
       :class="[filterTexts.length ? 'table-container-filter' : '']"
     >
       <grid-table
+        ref="multipleTable"
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
-        :tableData="data"
+        :table-data="data"
         :columns="checkedColumnNames"
-        :multipleSelection="multipleSelection"
+        :multiple-selection="multipleSelection"
         :pagination="paginationConfig"
         @selection-change="handleSelectionChange"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        ref="multipleTable"
       >
         <el-table-column type="selection" width="55" />
         <el-table-column
-          min-width="178"
           key="name"
+          min-width="178"
           prop="name"
           :label="$t('dataset.task_name')"
         >
@@ -117,20 +111,19 @@
             <span>
               <el-link
                 @click="jumpTaskRecord(scope.row)"
-                >{{ scope.row.name }}</el-link
-              >
+              >{{ scope.row.name }}</el-link>
             </span>
           </template>
         </el-table-column>
         <el-table-column
-          min-width="178"
           key="datasetName"
+          min-width="178"
           prop="datasetName"
           :label="$t('dataset.task.dataset')"
         />
         <el-table-column
-          min-width="100"
           key="rate"
+          min-width="100"
           prop="rate"
           :label="$t('dataset.execute_rate')"
         >
@@ -148,8 +141,8 @@
         </el-table-column>
 
         <el-table-column
-          prop="lastExecTime"
           key="lastExecTime"
+          prop="lastExecTime"
           min-width="178"
           :label="$t('dataset.task.last_exec_time')"
         >
@@ -161,8 +154,8 @@
         </el-table-column>
 
         <el-table-column
-          prop="lastExecStatus"
           key="lastExecStatus"
+          prop="lastExecStatus"
           min-width="140"
           :label="$t('dataset.task.last_exec_status')"
         >
@@ -180,8 +173,8 @@
         </el-table-column>
 
         <el-table-column
-          prop="nextExecTime"
           key="nextExecTime"
+          prop="nextExecTime"
           min-width="178"
           :label="$t('dataset.task.next_exec_time')"
         >
@@ -189,22 +182,22 @@
             <span
               v-if="
                 scope.row.nextExecTime &&
-                scope.row.nextExecTime !== -1 &&
-                scope.row.rate !== 'SIMPLE' &&
-                scope.row.status !== 'Pending'
+                  scope.row.nextExecTime !== -1 &&
+                  scope.row.rate !== 'SIMPLE' &&
+                  scope.row.status !== 'Pending'
               "
             >
               {{ scope.row.nextExecTime | timestampFormatDate }}
             </span>
-            <span v-if="!scope.row.nextExecTime || scope.row.rate === 'SIMPLE'"
-              >-</span
-            >
+            <span
+              v-if="!scope.row.nextExecTime || scope.row.rate === 'SIMPLE'"
+            >-</span>
           </template>
         </el-table-column>
 
         <el-table-column
-          min-width="120"
           key="status"
+          min-width="120"
           prop="status"
           :label="$t('dataset.task.task_status')"
         >
@@ -216,27 +209,26 @@
         </el-table-column>
         <el-table-column
           slot="__operation"
-          :label="$t('commons.operating')"
           key="__operation"
+          :label="$t('commons.operating')"
           fixed="right"
           width="84"
         >
           <template slot-scope="scope">
             <el-button
-              @click="selectDataset(scope.row)"
               class="text-btn mar3 mar6"
               type="text"
-              >{{
-                $t(disableEdit(scope.row) ? "auth.view" : "commons.edit")
-              }}</el-button
-            >
+              @click="selectDataset(scope.row)"
+            >{{
+              $t(disableEdit(scope.row) ? "auth.view" : "commons.edit")
+            }}</el-button>
             <el-dropdown
               size="medium"
               trigger="click"
               @command="(type) => handleCommand(type, scope.row)"
             >
-              <i @click.stop class="el-icon-more"></i>
-              <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+              <i class="el-icon-more" @click.stop />
+              <el-dropdown-menu slot="dropdown" class="de-card-dropdown">
                 <template
                   v-if="!['Stopped', 'Exec'].includes(scope.row.status)"
                 >
@@ -273,7 +265,7 @@
     </div>
 
     <keep-alive>
-      <filterUser ref="filterUser" @search="filterDraw"></filterUser>
+      <filterUser ref="filterUser" @search="filterDraw" />
     </keep-alive>
 
     <el-dialog
@@ -296,58 +288,58 @@
 <script>
 const columnOptions = [
   {
-    label: "dataset.task_name",
-    props: "name",
+    label: 'dataset.task_name',
+    props: 'name'
   },
   {
-    label: "dataset.task.dataset",
-    props: "datasetName",
+    label: 'dataset.task.dataset',
+    props: 'datasetName'
   },
   {
-    label: "dataset.execute_rate",
-    props: "rate",
+    label: 'dataset.execute_rate',
+    props: 'rate'
   },
   {
-    label: "dataset.task.last_exec_time",
-    props: "lastExecTime",
+    label: 'dataset.task.last_exec_time',
+    props: 'lastExecTime'
   },
   {
-    label: "dataset.task.last_exec_status",
-    props: "lastExecStatus",
+    label: 'dataset.task.last_exec_status',
+    props: 'lastExecStatus'
   },
   {
-    label: "dataset.task.next_exec_time",
-    props: "nextExecTime",
+    label: 'dataset.task.next_exec_time',
+    props: 'nextExecTime'
   },
   {
-    label: "dataset.task.task_status",
-    props: "status",
-  },
-];
-import { formatOrders } from "@/utils/index";
-import { datasetTaskList, post } from "@/api/dataset/dataset";
-import cron from "@/components/cron/cron";
-import TableSelector from "@/views/chart/view/TableSelector";
-import { hasDataPermission } from "@/utils/permission";
-import GridTable from "@/components/gridTable/index.vue";
-import filterUser from "./filterUser.vue";
-import msgCfm from "@/components/msgCfm/index";
-import _ from "lodash";
+    label: 'dataset.task.task_status',
+    props: 'status'
+  }
+]
+import { formatOrders } from '@/utils/index'
+import { datasetTaskList, post } from '@/api/dataset/dataset'
+import cron from '@/components/cron/cron'
+import TableSelector from '@/views/chart/view/TableSelector'
+import { hasDataPermission } from '@/utils/permission'
+import GridTable from '@/components/gridTable/index.vue'
+import filterUser from './filterUser.vue'
+import msgCfm from '@/components/msgCfm/index'
+import _ from 'lodash'
 import keyEnter from '@/components/msgCfm/keyEnter.js'
 
 export default {
-  name: "DatasetTaskList",
+  name: 'DatasetTaskList',
   components: { GridTable, cron, filterUser, TableSelector },
   mixins: [msgCfm, keyEnter],
   props: {
     transCondition: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {}
+    }
   },
   data() {
     return {
-      nikeName: "",
+      nickName: '',
       showScroll: false,
       checkAll: true,
       multipleSelection: [],
@@ -358,7 +350,7 @@ export default {
       paginationConfig: {
         currentPage: 1,
         pageSize: 10,
-        total: 0,
+        total: 0
       },
       cacheCondition: [],
       data: [],
@@ -366,290 +358,290 @@ export default {
       selectDatasetFlag: false,
       table: {},
       show_error_massage: false,
-      error_massage: "",
-      customType: ["db", "sql", "api"],
-    };
+      error_massage: '',
+      customType: ['db', 'sql', 'api']
+    }
   },
   watch: {
     filterTexts: {
       handler() {
-        this.getScrollStatus();
+        this.getScrollStatus()
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   created() {
-    const { taskId, name } = this.transCondition;
+    const { taskId, name } = this.transCondition
     if (taskId) {
-      this.nikeName = name;
+      this.nickName = name
     }
-    this.search();
+    this.search()
     this.timer = setInterval(() => {
-      this.search(false);
-    }, 10000);
+      this.search(false)
+    }, 10000)
   },
   beforeDestroy() {
-    clearInterval(this.timer);
+    clearInterval(this.timer)
   },
   mounted() {
-    this.resizeObserver();
+    this.resizeObserver()
   },
   methods: {
     getScrollStatus() {
       this.$nextTick(() => {
-        const dom = document.querySelector(".filter-texts-container");
-        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth;
-      });
+        const dom = document.querySelector('.filter-texts-container')
+        this.showScroll = dom && dom.scrollWidth > dom.offsetWidth
+      })
     },
     resizeObserver() {
       this.resizeForFilter = new ResizeObserver((entries) => {
-        if (!this.filterTexts.length) return;
-        this.layoutResize();
-      });
+        if (!this.filterTexts.length) return
+        this.layoutResize()
+      })
       this.resizeForFilter.observe(
-        document.querySelector("#resize-for-filter")
-      );
+        document.querySelector('#resize-for-filter')
+      )
     },
-    layoutResize: _.debounce(function () {
-      this.getScrollStatus();
+    layoutResize: _.debounce(function() {
+      this.getScrollStatus()
     }, 200),
     scrollPre() {
-      const dom = document.querySelector(".filter-texts-container");
-      dom.scrollLeft -= 10;
+      const dom = document.querySelector('.filter-texts-container')
+      dom.scrollLeft -= 10
       if (dom.scrollLeft <= 0) {
-        dom.scrollLeft = 0;
+        dom.scrollLeft = 0
       }
     },
     scrollNext() {
-      const dom = document.querySelector(".filter-texts-container");
-      dom.scrollLeft += 10;
-      const width = dom.scrollWidth - dom.offsetWidth;
+      const dom = document.querySelector('.filter-texts-container')
+      dom.scrollLeft += 10
+      const width = dom.scrollWidth - dom.offsetWidth
       if (dom.scrollLeft > width) {
-        dom.scrollLeft = width;
+        dom.scrollLeft = width
       }
     },
     clearFilter() {
-      this.$refs.filterUser.clearFilter();
+      this.$refs.filterUser.clearFilter()
     },
     clearOneFilter(index) {
-      this.$refs.filterUser.clearOneFilter(index);
-      this.$refs.filterUser.search();
+      this.$refs.filterUser.clearOneFilter(index)
+      this.$refs.filterUser.search()
     },
     filterDraw(condition, filterTexts = []) {
-      this.cacheCondition = condition;
-      this.filterTexts = filterTexts;
-      this.initSearch();
+      this.cacheCondition = condition
+      this.filterTexts = filterTexts
+      this.initSearch()
     },
     filterShow() {
-      this.$refs.filterUser.init();
+      this.$refs.filterUser.init()
     },
     handleCommand(key, row) {
       switch (key) {
-        case "exec":
-          this.execTask(row);
-          return;
-          break;
-        case "delete":
-          this.deleteTask(row);
-          return;
-          break;
+        case 'exec':
+          this.execTask(row)
+          return
+          break
+        case 'delete':
+          this.deleteTask(row)
+          return
+          break
         default:
-          break;
+          break
       }
-      this.changeTaskStatus(row);
+      this.changeTaskStatus(row)
     },
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.multipleSelection = val
     },
     handleCheckAllChange(val) {
       this.checkedColumnNames = val
         ? columnOptions.map((ele) => ele.props)
-        : [];
-      this.isIndeterminate = false;
+        : []
+      this.isIndeterminate = false
     },
     handleCheckedColumnNamesChange(value) {
-      let checkedCount = value.length;
-      this.checkAll = checkedCount === this.columnNames.length;
+      const checkedCount = value.length
+      this.checkAll = checkedCount === this.columnNames.length
       this.isIndeterminate =
-        checkedCount > 0 && checkedCount < this.columnNames.length;
+        checkedCount > 0 && checkedCount < this.columnNames.length
     },
     handleSizeChange(pageSize) {
-      this.paginationConfig.currentPage = 1;
-      this.paginationConfig.pageSize = pageSize;
-      this.search();
+      this.paginationConfig.currentPage = 1
+      this.paginationConfig.pageSize = pageSize
+      this.search()
     },
     handleCurrentChange(currentPage) {
-      this.paginationConfig.currentPage = currentPage;
-      this.search();
+      this.paginationConfig.currentPage = currentPage
+      this.search()
     },
     initSearch() {
-      this.handleCurrentChange(1);
+      this.handleCurrentChange(1)
     },
     search(showLoading = true) {
-      const { taskId, name } = this.transCondition;
+      const { taskId, name } = this.transCondition
       const param = {
         orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition],
-      };
-      if (this.nikeName) {
+        conditions: [...this.cacheCondition]
+      }
+      if (this.nickName) {
         param.conditions.push({
           field: `dataset_table_task.name`,
-          operator: "like",
-          value: this.nikeName,
-        });
+          operator: 'like',
+          value: this.nickName
+        })
       }
-      if (taskId && this.nikeName === name) {
+      if (taskId && this.nickName === name) {
         param.conditions.push({
-          operator: "eq",
+          operator: 'eq',
           value: taskId,
-          field: "dataset_table_task.id",
-        });
+          field: 'dataset_table_task.id'
+        })
       }
-      const { currentPage, pageSize } = this.paginationConfig;
+      const { currentPage, pageSize } = this.paginationConfig
       datasetTaskList(currentPage, pageSize, param, showLoading).then(
         (response) => {
           const multipleSelection = this.multipleSelection.map(ele => ele.id)
-          this.data = response.data.listObject;
-          this.paginationConfig.total = response.data.itemCount;
+          this.data = response.data.listObject
+          this.paginationConfig.total = response.data.itemCount
           if (multipleSelection.length) {
             this.$nextTick(() => {
               this.data.forEach(row => {
                 if (multipleSelection.includes(row.id)) {
-                  this.$refs.multipleTable.toggleRowSelection(row);
+                  this.$refs.multipleTable.toggleRowSelection(row)
                 }
-              });
+              })
             })
           }
         }
-      );
+      )
     },
     batchDelete() {
       post(
-        "/dataset/task/batchDelete",
+        '/dataset/task/batchDelete',
         this.multipleSelection.map((ele) => ele.id),
         false
       ).then(() => {
-        this.initSearch();
-        this.openMessageSuccess("commons.delete_success");
-      });
+        this.initSearch()
+        this.openMessageSuccess('commons.delete_success')
+      })
     },
     confirmDelete() {
       const options = {
-        title: "确定删除该任务吗？",
-        type: "primary",
-        cb: this.batchDelete,
-      };
-      this.handlerConfirm(options);
+        title: '确定删除该任务吗？',
+        type: 'primary',
+        cb: this.batchDelete
+      }
+      this.handlerConfirm(options)
     },
     taskStatus(item) {
-      post("/dataset/task/lastExecStatus", item, false).then((response) => {
+      post('/dataset/task/lastExecStatus', item, false).then((response) => {
         if (!item.lastExecStatus) {
-          item.lastExecStatus = response.data.lastExecStatus;
+          item.lastExecStatus = response.data.lastExecStatus
         }
         if (!item.lastExecTime) {
-          item.lastExecTime = response.data.lastExecTime;
+          item.lastExecTime = response.data.lastExecTime
         }
-        item.msg = response.data.msg;
-      });
+        item.msg = response.data.msg
+      })
     },
     changeTaskStatus(task) {
-      const { status } = task;
-      if (!["Pending", "Underway"].includes(status)) {
-        return;
+      const { status } = task
+      if (!['Pending', 'Underway'].includes(status)) {
+        return
       }
       const param = {
         ...task,
-        status: status === "Underway" ? "Pending" : "Underway",
-      };
-      post("/dataset/task/updateStatus", param)
+        status: status === 'Underway' ? 'Pending' : 'Underway'
+      }
+      post('/dataset/task/updateStatus', param)
         .then((response) => {
           if (response.success) {
-            task.status = param.status;
+            task.status = param.status
             this.$message({
-              message: this.$t("dataset.task.change_success"),
-              type: "success",
-              showClose: true,
-            });
+              message: this.$t('dataset.task.change_success'),
+              type: 'success',
+              showClose: true
+            })
           } else {
-            this.initSearch(false);
+            this.initSearch(false)
           }
         })
         .catch(() => {
-          this.initSearch(false);
-        });
+          this.initSearch(false)
+        })
     },
     execTask(task) {
       this.$confirm(
-        this.$t("dataset.task.confirm_exec"),
-        this.$t("dataset.tips"),
+        this.$t('dataset.task.confirm_exec'),
+        this.$t('dataset.tips'),
         {
-          confirmButtonText: this.$t("dataset.confirm"),
-          cancelButtonText: this.$t("dataset.cancel"),
-          type: "warning",
+          confirmButtonText: this.$t('dataset.confirm'),
+          cancelButtonText: this.$t('dataset.cancel'),
+          type: 'warning'
         }
       )
         .then(() => {
-          post("/dataset/task/execTask", task).then((response) => {
-            this.initSearch(true);
-          });
+          post('/dataset/task/execTask', task).then((response) => {
+            this.initSearch(true)
+          })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     selectDataset(row) {
       if (row) {
-        const { datasetName, id } = row;
+        const { datasetName, id } = row
         this.$router.push({
-          path: "/task-ds-form",
+          path: '/task-ds-form',
           query: {
             datasetName,
-            id,
-          },
-        });
+            id
+          }
+        })
       } else {
-        this.$router.push("/task-ds-form");
+        this.$router.push('/task-ds-form')
       }
     },
     disableEdit(task) {
       return (
-        task.rate === "SIMPLE" ||
-        task.status === "Stopped" ||
-        !hasDataPermission("manage", task.privileges)
-      );
+        task.rate === 'SIMPLE' ||
+        task.status === 'Stopped' ||
+        !hasDataPermission('manage', task.privileges)
+      )
     },
     disableExec(task) {
       return (
-        task.status === "Stopped" ||
-        task.status === "Pending" ||
-        task.rate === "SIMPLE" ||
-        !hasDataPermission("manage", task.privileges)
-      );
+        task.status === 'Stopped' ||
+        task.status === 'Pending' ||
+        task.rate === 'SIMPLE' ||
+        !hasDataPermission('manage', task.privileges)
+      )
     },
     disableDelete(task) {
-      return false;
+      return false
       // !hasDataPermission('manage',task.privileges)
     },
     deleteTask(task) {
       const options = {
-        title: "确定删除该任务吗？",
-        type: "primary",
+        title: '确定删除该任务吗？',
+        type: 'primary',
         cb: () => {
-          post("/dataset/task/delete/" + task.id, null).then((response) => {
-            this.openMessageSuccess("commons.delete_success");
-            this.initSearch();
-          });
-        },
-      };
-      this.handlerConfirm(options);
+          post('/dataset/task/delete/' + task.id, null).then((response) => {
+            this.openMessageSuccess('commons.delete_success')
+            this.initSearch()
+          })
+        }
+      }
+      this.handlerConfirm(options)
     },
     showErrorMassage(massage) {
-      this.show_error_massage = true;
-      this.error_massage = massage;
+      this.show_error_massage = true
+      this.error_massage = massage
     },
     jumpTaskRecord(item) {
-      this.$emit("jumpTaskRecord", item);
-    },
-  },
-};
+      this.$emit('jumpTaskRecord', item)
+    }
+  }
+}
 </script>
 
 <style scoped>

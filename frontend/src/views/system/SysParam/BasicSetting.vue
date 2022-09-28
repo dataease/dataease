@@ -47,7 +47,7 @@
       </el-form-item>
 
       <el-form-item :label="$t('system_parameter_setting.ds_check_time')">
-        <el-form :inline="true" :disabled="show">
+        <el-form :inline="true" :disabled="show" class="demo-form-inline-ds">
 
           <el-form-item>
             <el-input v-model="formInline.dsCheckInterval" size="mini" type="number" min="1" @change="onSimpleCronChange()" />
@@ -374,6 +374,13 @@ export default {
       width: 156px;
     }
 }
+
+.demo-form-inline-ds {
+  .el-form-item {
+    margin-bottom: 0px !important;
+  }
+}
+
 </style>
 <style lang="scss">
 .de-i118 {

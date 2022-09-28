@@ -204,6 +204,19 @@ public class DataSetTableService {
                         excelSheetData.setData(null);
                         excelSheetData.setJsonArray(null);
                     });
+                }
+                for (String s : map.keySet()) {
+                    DataSetTableRequest sheetTable = new DataSetTableRequest();
+                    BeanUtils.copyBean(sheetTable, datasetTable);
+                    sheetTable.setId(UUID.randomUUID().toString());
+                    sheetTable.setCreateBy(AuthUtils.getUser().getUsername());
+                    sheetTable.setCreateTime(System.currentTimeMillis());
+                    List<ExcelSheetData> excelSheetDataList = map.get(s);
+                    sheetTable.setName(excelSheetDataList.get(0).getDatasetName());
+                    excelSheetDataList.forEach(excelSheetData -> {
+                        excelSheetData.setData(null);
+                        excelSheetData.setJsonArray(null);
+                    });
                     DataTableInfoDTO info = new DataTableInfoDTO();
                     info.setExcelSheetDataList(excelSheetDataList);
                     sheetTable.setInfo(new Gson().toJson(info));
@@ -225,6 +238,9 @@ public class DataSetTableService {
                     if (checkIsRepeat(fieldArray)) {
                         DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
                     }
+                }
+
+                for (ExcelSheetData sheet : datasetTable.getSheets()) {
                     DataSetTableRequest sheetTable = new DataSetTableRequest();
                     BeanUtils.copyBean(sheetTable, datasetTable);
                     sheetTable.setId(UUID.randomUUID().toString());
