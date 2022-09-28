@@ -421,6 +421,7 @@ public class SysUserService {
     public int delete(Long userId) {
         extAuthService.clearUserResource(userId);
         deleteUserRoles(userId);
+        sysUserAssistMapper.deleteByPrimaryKey(userId);
         return sysUserMapper.deleteByPrimaryKey(userId);
     }
 
