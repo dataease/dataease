@@ -1604,7 +1604,7 @@ public class ChartViewService {
                 }
 
                 for (String parameter : chartExtFilterRequest.getParameters()) {
-                    if(parameter.contains("|DE")){
+                    if(parameter.contains("|DE|")){
                         if(!parameter.split("|DE|")[0].equals(table.getId())){
                             continue;
                         }
