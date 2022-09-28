@@ -162,7 +162,7 @@ public class XDingtalkServer {
                 return;
             }
             SysUserAssist sysUserAssist = sysUserService.assistInfo(Long.parseLong(state));
-            if (ObjectUtils.isNotEmpty(sysUserAssist) && StringUtils.isNotBlank(sysUserAssist.getWecomId())) {
+            if (ObjectUtils.isNotEmpty(sysUserAssist) && StringUtils.isNotBlank(sysUserAssist.getDingtalkId())) {
                 bindError(response, url, "目标用户已绑定其他钉钉账号");
                 return;
             }
