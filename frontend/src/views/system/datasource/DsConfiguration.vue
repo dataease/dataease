@@ -441,7 +441,7 @@
             <span>{{ $t('datasource.base_info') }}</span>
           </div>
           <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input :placeholder="$t('commons.input_name')" v-model="apiItem.name" autocomplete="off" />
+            <el-input v-model="apiItem.name" :placeholder="$t('commons.input_name')" autocomplete="off" />
           </el-form-item>
 
           <el-form-item :label="$t('datasource.request')" prop="url">
@@ -576,8 +576,8 @@
             <span>{{ $t('dataset.data_preview') }}</span>
           </div>
           <el-empty
-            size="125"
             v-if="showEmpty"
+            size="125"
             :image="noneImg"
             style="margin-top: 24px"
             :description="$t('暂无数据，请在数据结构勾选字段')"
@@ -1162,9 +1162,11 @@ export default {
             this.apiItem.fields[i].value[j]
           )
         }
-        this.$refs.plxTable.reloadData(datas)
-        this.showEmpty = !!datas.length
+        this.$nextTick(() => {
+          this.$refs.plxTable?.reloadData(datas)
+        })
       }
+      this.showEmpty = this.apiItem.fields.length === 0
     },
     handleCheckChange(node) {
       if (node.children !== undefined) {
