@@ -483,9 +483,10 @@ export default {
       this.queryTreeDatas()
     },
     addDb({ type }) {
+      const name = (this.dsTypes.find(ele => type === ele.type ) || {}).name
       this.$router.push({
         path: '/ds-form',
-        query: { type }
+        query: { type, name }
       })
     },
     addFolderWithType(data) {
@@ -494,9 +495,10 @@ export default {
         this.dialogTitle = this.$t('datasource.add_driver')
         this.editDriver = true
       } else {
+        const name = (this.dsTypes.find(ele => data.id === ele.type ) || {}).name
         this.$router.push({
           path: '/ds-form',
-          query: { type: data.id }
+          query: { type: data.id, name }
         })
       }
     },

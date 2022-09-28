@@ -305,7 +305,7 @@
           @keypress.enter.native="saveGroup(groupForm)"
         >
           <el-form-item :label="$t('deDataset.folder_name')" prop="name">
-            <el-input v-model="groupForm.name" />
+            <el-input placeholder="请输入文件夹名称" v-model="groupForm.name" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">

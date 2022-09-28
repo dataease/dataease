@@ -622,7 +622,9 @@ export default {
           this.fields = response.data.fields
           this.data = response.data.data
           const datas = this.data
-          this.$refs.plxTable.reloadData(datas)
+          this.$nextTick(() => {
+            this.$refs.plxTable?.reloadData(datas)
+          })
         })
         .catch((err) => {
           this.errMsg = true
@@ -747,7 +749,9 @@ export default {
 .sql-dataset-drawer {
   .el-drawer__body {
     padding: 16px 24px;
-    position: relative;
+    position: unset;
+    overflow-y: auto;
+    padding-bottom: 80px;
   }
 
   .el-date-editor {

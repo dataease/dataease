@@ -11,7 +11,7 @@
           !canEdit
             ? $t('datasource.show_info')
             : formType == 'add'
-            ? $t('datasource.create')
+            ? `${$t('commons.create') + typeMap }${ $t('commons.datasource')}`
             : $t('datasource.modify')
         }}
       </span>
@@ -71,6 +71,9 @@
             label-width="180px"
             label-position="right"
           >
+          <div class="de-row-rules">
+            <span>基本信息</span>
+          </div>
             <el-form-item :label="$t('datasource.display_name')" prop="name">
               <el-input
                 v-model="form.name"
@@ -318,6 +321,7 @@ export default {
         ]
       },
       schemas: [],
+      typeMap: '',
       canEdit: false,
       originConfiguration: {},
       edit_api_item: false,
@@ -387,7 +391,7 @@ export default {
   async created() {
     await this.datasourceTypes()
     this.queryTreeDatas()
-    const { id, showModel, msgNodeId, type } = this.$route.query
+    const { id, showModel, msgNodeId, type, name } = this.$route.query
     this.params = this.$route.query
     if (id) {
       await this.getDatasourceDetail(id, showModel)
@@ -397,6 +401,7 @@ export default {
       this.canEdit = true
       this.disabled = false
       if (type) {
+        this.typeMap = name
         this.setType()
         this.changeType()
       }
@@ -457,6 +462,10 @@ export default {
         connectTimeout: 5,
         customDriver: 'default',
         queryTimeout: 30
+      }
+      if (this.form.type == 'oracle') {
+        this.$set(this.form.configuration, 'charset', 'Default')
+        this.$set(this.form.configuration, 'targetCharset', 'Default')
       }
     },
     changeEdit() {
