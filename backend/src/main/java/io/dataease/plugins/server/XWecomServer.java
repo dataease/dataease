@@ -165,15 +165,18 @@ public class XWecomServer {
             SysUserEntity userEntity = authUserService.getUserById(Long.parseLong(state));
             if (ObjectUtils.isEmpty(userEntity)) {
                 bindError(response, url, "绑定用户不存在");
+                return;
             }
             SysUserAssist sysUserAssist = sysUserService.assistInfo(Long.parseLong(state));
             if (ObjectUtils.isNotEmpty(sysUserAssist) && StringUtils.isNotBlank(sysUserAssist.getWecomId())) {
                 bindError(response, url, "目标用户已绑定其他企业微信账号");
+                return;
             }
 
             Boolean supportWecom = authUserService.supportWecom();
             if (!supportWecom) {
                 DEException.throwException("未开启企业微信");
+                return;
             }
             wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);
             WecomAuthResult authResult = wecomXpackService.auth(code);
@@ -183,6 +186,7 @@ public class XWecomServer {
             SysUserEntity sysUserEntity = authUserService.getUserByWecomId(userId);
             if (null != sysUserEntity) {
                 bindError(response, url, "当前企业微信账号已绑定其他DE用户");
+                return;
             }
             if (ObjectUtils.isEmpty(sysUserAssist)) {
                 sysUserAssist = new SysUserAssist();
