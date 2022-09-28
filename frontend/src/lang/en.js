@@ -1656,7 +1656,11 @@ export default {
     sql_ds_union_error: 'Direct connect SQL dataset can not be union',
     api_data: 'API dataset',
     copy: 'Copy',
-    sync_log: 'Sync log'
+    sync_log: 'Sync log',
+    field_edit_name: 'Field Name',
+    input_edit_name: 'Input field name',
+    edit_search: 'Search by name',
+    na: 'None'
   },
   driver: {
     driver: 'Driver',
