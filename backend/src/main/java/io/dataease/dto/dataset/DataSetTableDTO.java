@@ -22,4 +22,6 @@ public class DataSetTableDTO extends DatasetTable {
     private Boolean isLeaf;
     @ApiModelProperty("父ID")
     private String pid;
+    @ApiModelProperty("创建者姓名")
+    private String creatorName;
 }

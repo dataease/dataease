@@ -77,7 +77,7 @@
       </div>
       <div class="info-item">
         <p class="info-title">{{ $t('dataset.create_by') }}</p>
-        <p class="info-content">{{ detail.table.createBy }}</p>
+        <p class="info-content">{{ detail.table.creatorName || 'N/A' }}</p>
       </div>
       <div class="info-item">
         <p class="info-title">{{ $t('dataset.create_time') }}</p>
