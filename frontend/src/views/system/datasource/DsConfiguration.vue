@@ -1100,9 +1100,9 @@ export default {
       if (this.disabled) {
         return
       }
+      this.api_table_title = this.$t('datasource.data_table')
       if (item) {
         this.add_api_item = false
-        this.api_table_title = this.$t('datasource.edit_api_table')
         this.apiItem = JSON.parse(JSON.stringify(item))
       } else {
         this.add_api_item = true
@@ -1112,7 +1112,6 @@ export default {
             ? this.form.apiConfiguration[this.form.apiConfiguration.length - 1]
               .serialNumber + 1
             : 0
-        this.api_table_title = this.$t('datasource.add_api_table')
       }
       this.active = 1
       this.edit_api_item = true

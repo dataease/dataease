@@ -160,7 +160,6 @@
       </el-col>
 
       <el-dialog
-        v-dialogDrag
         :title="dialogTitle"
         class="de-dialog-form"
         :visible.sync="editDriver"
@@ -361,6 +360,20 @@ export default {
     this.datasourceTypes()
   },
   methods: {
+    dataUpdate(row) {
+      this.dfsTdata(this.tData, row)
+    },
+    dfsTdata(arr = [], row) {
+      arr.some(ele => {
+        if (ele.id === row.id) {
+          ele.driverClass = row.driverClass
+          return true
+        } else if (ele.children?.length) {
+          this.dfsTdata(ele.children, row)
+        }
+        return false
+      })
+    },
     filterNode(value, data) {
       if (!value) return true
       return data.name.indexOf(value) !== -1
@@ -552,7 +565,7 @@ export default {
       }
       this.editDriver = true
       this.dialogTitle = this.$t('datasource.edit_driver')
-      this.driverForm = row
+      this.driverForm = {...row}
     },
     _handleDelete(datasource) {
       const params = {
@@ -707,7 +720,7 @@ export default {
 <style lang="scss">
 .db-container {
   width: 100%;
-  max-height: 674px;
+  max-height: 60vh;
   overflow-y: auto;
   display: flex;
   flex-wrap: wrap;

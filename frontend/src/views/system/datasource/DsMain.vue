@@ -32,6 +32,7 @@
         :is="component"
         v-if="!!component"
         :params="param"
+        @DataUpdate="dataUpdate"
         :t-data="tData"
         :ds-types="dsTypes"
         @refresh-type="refreshType"
@@ -69,6 +70,9 @@ export default {
     }
   },
   methods: {
+    dataUpdate(row) {
+      this.$refs.dsTree.dataUpdate(row)
+    },
     jump() {
       this.$refs.dsTree.dsMgm()
       this.switchMgm('dsMgm')
@@ -126,7 +130,7 @@ export default {
   width: 100%;
   overflow: hidden;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   box-sizing: border-box;
   .el-empty {
     height: 100%;
@@ -149,6 +153,7 @@ export default {
   height: calc(100vh - 56px);
   background-color: var(--MainBG, #f5f6f7);
   padding: 24px;
+  flex-wrap: wrap;
   .ms-aside-container,
   .ms-main-container {
     height: calc(100vh - 170px);
