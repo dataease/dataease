@@ -1814,7 +1814,8 @@ export default {
     can_be_uploaded: 'Only files in jar format can be uploaded',
     query_timeout: 'query timeout',
     add_data_source: 'add data source',
-    delete_this_driver: 'Are you sure to delete this driver?'
+    delete_this_driver: 'Are you sure to delete this driver?',
+    basic_info: 'Basic Info'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',
