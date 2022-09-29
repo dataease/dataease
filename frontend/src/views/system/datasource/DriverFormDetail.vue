@@ -259,6 +259,7 @@ export default {
         }
         updateDriver(this.driverForm).then((res) => {
           this.$success(i18n.t('commons.success'))
+          this.$emit('DataUpdate', res.data)
           this.canEdit = false
         })
       })
