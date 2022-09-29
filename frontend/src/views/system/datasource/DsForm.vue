@@ -732,10 +732,14 @@ export default {
       })
     },
     validaDatasource() {
-      if (!this.form.configuration.schema && this.form.type === 'oracle') {
+      if (!this.form.configuration.schema && (this.form.type === 'oracle' || this.form.type === 'sqlServer' ||
+          this.form.type === 'pg' ||
+          this.form.type === 'redshift' ||
+          this.form.type === 'db2')) {
         this.openMessageSuccess('datasource.please_choose_schema', 'error')
         return
       }
+
       if (
         this.form.type !== 'es' &&
         this.form.type !== 'api' &&

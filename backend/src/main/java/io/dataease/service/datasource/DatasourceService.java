@@ -310,7 +310,7 @@ public class DatasourceService {
             }
             return ResultHolder.success(datasourceDTO);
         } catch (Exception e) {
-            return ResultHolder.error(Translator.get("I18N_DS_INVALID"), e.getMessage());
+            return ResultHolder.error(Translator.get("I18N_DS_INVALID") + ": " + e.getMessage());
         }
     }
 
