@@ -159,6 +159,16 @@ export default {
     },
     resize() {
       this.drawEcharts()
+    },
+    'themeStyle.color'(value, old) {
+      if (value !== old) {
+        this.preDraw()
+      }
+    },
+    'themeStyle.commonBackground.color'(value, old) {
+      if (value !== old) {
+        this.preDraw()
+      }
     }
   },
   mounted() {

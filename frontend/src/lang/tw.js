@@ -911,6 +911,7 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    map_center_lost: '圖形缺失中心點centroid或center屬性，請補全後再試',
     margin_model: '模式',
     margin_model_auto: '自動',
     margin_model_absolute: '絕對',
