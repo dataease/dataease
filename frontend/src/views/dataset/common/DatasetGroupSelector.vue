@@ -44,7 +44,7 @@
                   <!--                    type="text"-->
                   <!--                    size="mini"-->
                   <!--                  />-->
-                  <svg-icon icon-class="scene" class="ds-icon-scene" />
+                  <svg-icon icon-class="scene"/>
                 </span>
                 <span
                   style="

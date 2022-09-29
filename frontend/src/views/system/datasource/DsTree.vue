@@ -82,7 +82,7 @@
                   />
                 </span>
                 <span v-if="data.type === 'folder'">
-                  <svg-icon icon-class="scene" class="ds-icon-scene" />
+                  <svg-icon icon-class="scene"/>
                 </span>
                 <span
                   style="
@@ -217,7 +217,7 @@
         :title="$t('datasource.create')"
         :visible.sync="dsTypeRelate"
         width="1200px"
-        class="de-dialog-form"
+        class="de-dialog-form none-scroll-bar"
         append-to-body
       >
         <el-tabs v-model="tabActive">
@@ -718,9 +718,11 @@ export default {
 }
 </style>
 <style lang="scss">
+.none-scroll-bar::-webkit-scrollbar { display: none; }
+
 .db-container {
   width: 100%;
-  max-height: 60vh;
+  max-height: 65vh;
   overflow-y: auto;
   display: flex;
   flex-wrap: wrap;

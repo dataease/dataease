@@ -54,7 +54,8 @@
               class="item"
               @click="setActiveName(t)"
             >
-              <el-checkbox :label="t.name" :disabled="!t.enableCheck">
+              <svg-icon v-if="!t.enableCheck" icon-class="Checkbox" style="margin-right: 8px"/>
+              <el-checkbox v-else :label="t.name" :disabled="!t.enableCheck">
               </el-checkbox>
               <span class="label">{{ showTableNameWithComment(t) }}</span>
               <span class="error-name-exsit" v-if="t.nameExsit">

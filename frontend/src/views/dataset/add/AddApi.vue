@@ -53,7 +53,8 @@
               class="item"
               @click="setActiveName(t)"
             >
-              <el-checkbox :label="t.name" :disabled="!t.enableCheck" />
+              <svg-icon v-if="!t.enableCheck" icon-class="Checkbox" style="margin-right: 8px"/>
+              <el-checkbox :label="t.name" v-else />
               <span class="label">{{ showTableNameWithComment(t) }}</span>
               <span v-if="t.nameExsit" class="error-name-exsit">
                 <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />

@@ -53,10 +53,18 @@
           @node-click="handleNodeClick"
           @check-change="handleCheckChange"
         >
-          <span slot-scope="{ data }" class="custom-tree-node">
+          <span
+            :title="data.excelLable"
+            slot-scope="{ data }"
+            class="custom-tree-node"
+          >
             {{ data.excelLable }}
             <span
-              v-if="data.nameExsit && !param.tableId"
+              v-if="
+                (data.nameExsit && !param.tableId) ||
+                data.empty ||
+                data.overLength
+              "
               class="error-name-exsit"
             >
               <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
@@ -83,11 +91,23 @@
             @change="changeDatasetName"
           />
           <div
-            v-if="sheetObj.nameExsit && !param.tableId"
+            v-if="
+              (sheetObj.nameExsit && !param.tableId) ||
+              sheetObj.empty ||
+              sheetObj.overLength
+            "
             style="left: 107px; top: 52px"
             class="el-form-item__error"
           >
-            {{ $t('deDataset.already_exists') }}
+            {{
+              $t(
+                sheetObj.nameExsit
+                  ? 'deDataset.already_exists'
+                  : sheetObj.overLength
+                  ? 'dataset.char_can_not_more_50'
+                  : 'dataset.pls_input_name'
+              )
+            }}
           </div>
         </div>
         <div class="data">
@@ -320,10 +340,17 @@ export default {
         .forEach((ele, index) => {
           if (checkList.includes(ele.datasetName)) {
             this.nameExsitValidator(ele, checkList)
+            this.nameLengthValidator(ele)
           } else {
             this.$set(ele, 'nameExsit', false)
+            this.$set(ele, 'empty', false)
+            this.$set(ele, 'overLength', false)
           }
         })
+    },
+    nameLengthValidator(ele) {
+      this.$set(ele, 'empty', !ele.datasetName.length)
+      this.$set(ele, 'overLength', ele.datasetName.length > 50)
     },
     handleNodeClick(data) {
       if (data.sheet) {
@@ -506,10 +533,12 @@ export default {
           cb: () => {
             table.mergeSheet = true
             this.loading = true
-            post('/dataset/table/update', table).then((response) => {
-              this.openMessageSuccess('deDataset.set_saved_successfully')
-              this.cancel(response.data)
-            }).finally(() => {
+            post('/dataset/table/update', table)
+              .then((response) => {
+                this.openMessageSuccess('deDataset.set_saved_successfully')
+                this.cancel(response.data)
+              })
+              .finally(() => {
                 this.loading = false
               })
           },
