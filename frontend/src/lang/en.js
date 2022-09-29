@@ -1249,6 +1249,7 @@ export default {
     liquid_shape_rect: 'Rect',
     dimension_or_quota: 'Dimension Or Quota',
     axis_value_split_count: 'Tick Count',
+    axis_value_split_space: 'Tick Interval',
     chart_waterfall: 'Waterfall',
     pie_inner_radius_percent: 'Inner Radius(%)',
     pie_outer_radius_size: 'Outer Radius',
@@ -1815,7 +1816,8 @@ export default {
     can_be_uploaded: 'Only files in jar format can be uploaded',
     query_timeout: 'query timeout',
     add_data_source: 'add data source',
-    delete_this_driver: 'Are you sure to delete this driver?'
+    delete_this_driver: 'Are you sure to delete this driver?',
+    basic_info: 'Basic Info'
   },
   pblink: {
     key_pwd: 'Please enter the password to open the link',

@@ -128,7 +128,7 @@ public class DriverService {
         }
         String filename = file.getOriginalFilename();
         if(!filename.endsWith(".jar")){
-            throw new Exception("File is not jar!");
+            throw new Exception(Translator.get("I18N_NOT_JAR"));
         }
         String dirPath = DRIVER_PATH + driverId + "/";
         String filePath = dirPath + Md5Utils.md5(filename) + ".jar";

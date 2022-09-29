@@ -6,8 +6,7 @@
           secondary
           icon="el-icon-plus"
           @click="() => addTask()"
-          >{{ $t('dataset.add_task') }}</deBtn
-        >
+        >{{ $t('dataset.add_task') }}</deBtn>
       </el-col>
       <el-col style="text-align: right" :span="12">
         <el-button type="text" icon="el-icon-document" @click="showConfig">
@@ -18,21 +17,21 @@
     <div class="table-task-container">
       <grid-table
         v-loading="loading"
-        :tableData="taskData"
+        :table-data="taskData"
         :columns="[]"
         :pagination="paginationConfig"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       >
         <el-table-column
-          min-width="178"
           key="name"
+          min-width="178"
           prop="name"
           :label="$t('dataset.task_name')"
         />
         <el-table-column
-          min-width="100"
           key="rate"
+          min-width="100"
           prop="rate"
           :label="$t('dataset.execute_rate')"
         >
@@ -50,8 +49,8 @@
         </el-table-column>
 
         <el-table-column
-          prop="lastExecStatus"
           key="lastExecStatus"
+          prop="lastExecStatus"
           min-width="140"
           :label="$t('dataset.task.last_exec_status')"
         >
@@ -59,17 +58,17 @@
             <span
               v-if="scope.row.lastExecStatus"
               :class="[`de-${scope.row.lastExecStatus}-pre`, 'de-status']"
-              >{{
-                $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
-              }}
+            >{{
+              $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
+            }}
             </span>
             <span v-else>-</span>
           </template>
         </el-table-column>
 
         <el-table-column
-          prop="lastExecTime"
           key="lastExecTime"
+          prop="lastExecTime"
           min-width="178"
           :label="$t('dataset.task.last_exec_time')"
         >
@@ -81,8 +80,8 @@
         </el-table-column>
 
         <el-table-column
-          prop="nextExecTime"
           key="nextExecTime"
+          prop="nextExecTime"
           min-width="178"
           :label="$t('dataset.task.next_exec_time')"
         >
@@ -90,48 +89,48 @@
             <span
               v-if="
                 scope.row.nextExecTime &&
-                scope.row.nextExecTime !== -1 &&
-                scope.row.rate !== 'SIMPLE' &&
-                scope.row.status !== 'Pending'
+                  scope.row.nextExecTime !== -1 &&
+                  scope.row.rate !== 'SIMPLE' &&
+                  scope.row.status !== 'Pending'
               "
             >
               {{ scope.row.nextExecTime | timestampFormatDate }}
             </span>
-            <span v-if="!scope.row.nextExecTime || scope.row.rate === 'SIMPLE'"
-              >-</span
-            >
+            <span
+              v-if="!scope.row.nextExecTime || scope.row.rate === 'SIMPLE'"
+            >-</span>
           </template>
         </el-table-column>
 
         <el-table-column
-          min-width="120"
           key="status"
+          min-width="120"
           prop="status"
           :label="$t('dataset.task.task_status')"
         >
           <template slot-scope="scope">
-            <span :class="[`de-${scope.row.status}-result`, 'de-status']"
-              >{{ $t(`dataset.task.${scope.row.status.toLocaleLowerCase()}`) }}
+            <span
+              :class="[`de-${scope.row.status}-result`, 'de-status']"
+            >{{ $t(`dataset.task.${scope.row.status.toLocaleLowerCase()}`) }}
             </span>
           </template>
         </el-table-column>
         <el-table-column
           slot="__operation"
-          :label="$t('commons.operating')"
           key="__operation"
+          :label="$t('commons.operating')"
           fixed="right"
           min-width="100"
         >
           <template slot-scope="scope">
             <el-button
-              @click="selectDataset(scope.row)"
               class="de-text-btn"
               style="margin-left: -4px"
               type="text"
-              >{{
-                $t(disableEdit(scope.row) ? 'auth.view' : 'commons.edit')
-              }}</el-button
-            >
+              @click="selectDataset(scope.row)"
+            >{{
+              $t(disableEdit(scope.row) ? 'auth.view' : 'commons.edit')
+            }}</el-button>
             <el-dropdown
               size="medium"
               trigger="click"
@@ -141,8 +140,8 @@
                 style="margin-left: 8px"
                 class="el-icon-more de-text-btn"
                 type="text"
-              ></el-button>
-              <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+              />
+              <el-dropdown-menu slot="dropdown" class="de-card-dropdown">
                 <template
                   v-if="!['Stopped', 'Exec'].includes(scope.row.status)"
                 >
@@ -195,11 +194,11 @@
     </el-dialog>
 
     <el-drawer
+      v-closePress
       :title="$t('dataset.task.record')"
       :visible.sync="userDrawer"
       custom-class="user-drawer-task"
       size="840px"
-      v-closePress
       direction="rtl"
     >
       <el-row style="margin-top: 12px">
@@ -223,16 +222,16 @@
 
           <el-table-column prop="status" :label="$t('dataset.status')">
             <template slot-scope="scope">
-            <span
-              v-if="scope.row.status"
-              :class="[`de-${scope.row.status}-pre`, 'de-status']"
+              <span
+                v-if="scope.row.status"
+                :class="[`de-${scope.row.status}-pre`, 'de-status']"
               >{{
-                $t(`dataset.${scope.row.status.toLocaleLowerCase()}`)
-              }}
-            <svg-icon style="cursor: pointer;" v-if="scope.row.status === 'Error'"  @click="showErrorMassage(scope.row.info)" icon-class="icon-maybe" class="field-icon-location" />
-            </span>
-            <span v-else>-</span>
-          </template>
+                 $t(`dataset.${scope.row.status.toLocaleLowerCase()}`)
+               }}
+                <svg-icon v-if="scope.row.status === 'Error'" style="cursor: pointer;" icon-class="icon-maybe" class="field-icon-location" @click="showErrorMassage(scope.row.info)" />
+              </span>
+              <span v-else>-</span>
+            </template>
           </el-table-column>
         </el-table>
         <el-row style="margin-top: 10px; text-align: right">
@@ -249,11 +248,11 @@
       </el-row>
     </el-drawer>
     <el-drawer
+      v-closePress
       :title="header"
       :visible.sync="update_task"
       custom-class="user-drawer update-drawer-task"
       size="680px"
-      v-closePress
       direction="rtl"
     >
       <el-form
@@ -276,11 +275,10 @@
           <el-radio-group v-model="taskForm.type">
             <el-radio label="all_scope">{{ $t('dataset.all_scope') }}</el-radio>
             <el-radio label="add_scope">
-              {{ $t('dataset.add_scope') }}</el-radio
-            >
+              {{ $t('dataset.add_scope') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <div class="add-scope-cont" v-if="taskForm.type === 'add_scope' && table.type !== 'api'">
+        <div v-if="taskForm.type === 'add_scope' && table.type !== 'api'" class="add-scope-cont">
           <el-form-item
             prop="type"
             :label="$t('dataset.incremental_update_type')"
@@ -304,14 +302,12 @@
                   type="text"
                   size="small"
                   @click="insertParamToCodeMirror('${__last_update_time__}')"
-                  >{{ $t('dataset.last_update_time') }}</el-button
-                >
+                >{{ $t('dataset.last_update_time') }}</el-button>
                 <el-button
                   type="text"
                   size="small"
                   @click="insertParamToCodeMirror('${__current_update_time__}')"
-                  >{{ $t('dataset.current_update_time') }}</el-button
-                >
+                >{{ $t('dataset.current_update_time') }}</el-button>
               </div>
             </div>
             <div class="codemirror-cont">
@@ -337,7 +333,7 @@
             }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <div class="execute-rate-cont" v-if="taskForm.rate !== 'SIMPLE'">
+        <div v-if="taskForm.rate !== 'SIMPLE'" class="execute-rate-cont">
           <el-form-item
             v-if="taskForm.rate === 'SIMPLE_CRON'"
             :label="$t('dataset.execute_rate')"
@@ -351,7 +347,7 @@
                 :min="1"
                 size="small"
                 @change="onSimpleCronChange()"
-              ></el-input-number>
+              />
               <el-select
                 v-model="taskForm.extraData.simple_cron_type"
                 filterable
@@ -366,14 +362,14 @@
             </div>
           </el-form-item>
           <el-form-item
-            prop="cron"
             v-if="taskForm.rate === 'CRON' && showCron"
+            prop="cron"
             :label="$t('emailtask.cron_exp')"
           >
             <el-popover v-model="cronEdit">
               <cron
-                :isRate="taskForm.rate === 'CRON'"
                 v-model="taskForm.cron"
+                :is-rate="taskForm.rate === 'CRON'"
                 @close="cronEdit = false"
               />
               <el-input
@@ -396,8 +392,7 @@
               type="datetime"
               :placeholder="$t('dataset.start_time')"
               size="small"
-            >
-            </el-date-picker>
+            />
             <svg-icon
               icon-class="icon_calendar_outlined"
               class="icon-calendar-outlined"
@@ -590,11 +585,11 @@ export default {
     },
     header() {
       return this.disableForm
-        ? "查看任务"
+        ? '查看任务'
         : this.taskForm.id
-        ? "编辑任务"
-        : this.$t('dataset.add_task');
-    },
+          ? '编辑任务'
+          : this.$t('dataset.add_task')
+    }
   },
   watch: {
     table: {
@@ -655,12 +650,12 @@ export default {
   methods: {
     calHeight() {
       const that = this
-      setTimeout(function () {
+      setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10
       }, 10)
     },
-    incrementalUpdateTypeChange: function () {
+    incrementalUpdateTypeChange: function() {
       if (this.incrementalUpdateType === 'incrementalAdd') {
         if (this.sql) {
           this.incrementalConfig.incrementalDelete = this.sql
@@ -782,7 +777,6 @@ export default {
     disableEdit(task) {
       return (
         task.rate === 'SIMPLE' ||
-        task.status === 'Stopped' ||
         !hasDataPermission('manage', task.privileges)
       )
     },
@@ -812,7 +806,7 @@ export default {
       this.handlerConfirm(options)
     },
     selectDataset(row) {
-      this.disableForm = this.disableEdit(row);
+      this.disableForm = this.disableEdit(row)
       this.addTask(row)
     },
     changeTaskStatus(task) {

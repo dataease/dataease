@@ -10,7 +10,7 @@ export function getItemType(dimensionData, quotaData, item) {
   if (status === 'd') {
     for (let i = 0; i < dimensionData.length; i++) {
       const ele = dimensionData[i]
-      if (ele.id === item.id && ele.deType === item.deType && ele.groupType === item.groupType) {
+      if (((item.chartId && item.extField === 2 && item.tableId === ele.tableId) || ele.id === item.id) && ele.deType === item.deType && ele.groupType === item.groupType) {
         checked = true
         break
       }
@@ -19,7 +19,7 @@ export function getItemType(dimensionData, quotaData, item) {
   if (status === 'q') {
     for (let i = 0; i < quotaData.length; i++) {
       const ele = quotaData[i]
-      if (ele.id === item.id && ele.deType === item.deType && ele.groupType === item.groupType) {
+      if (((item.chartId && item.extField === 2 && item.tableId === ele.tableId) || ele.id === item.id) && ele.deType === item.deType && ele.groupType === item.groupType) {
         checked = true
         break
       }

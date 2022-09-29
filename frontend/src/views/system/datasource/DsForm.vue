@@ -1,42 +1,44 @@
 <template>
-  <div class="de-ds-form" v-loading="formLoading">
+  <div v-loading="formLoading" class="de-ds-form">
     <div class="de-ds-top">
       <span class="name">
-        <i @click="logOutTips" class="el-icon-arrow-left"></i>
+        <i class="el-icon-arrow-left" @click="logOutTips" />
         {{
           params &&
-          params.id &&
-          params.showModel &&
-          params.showModel === 'show' &&
-          !canEdit
+            params.id &&
+            params.showModel &&
+            params.showModel === 'show' &&
+            !canEdit
             ? $t('datasource.show_info')
             : formType == 'add'
-            ? `${$t('commons.create') + typeMap }${ $t('commons.datasource')}`
-            : $t('datasource.modify')
+              ? `${$t('commons.create') + typeMap }${ $t('commons.datasource')}`
+              : $t('datasource.modify')
         }}
       </span>
       <div class="apply">
         <template v-if="canEdit">
-          <deBtn secondary @click="logOutTips"
-            >{{ $t('commons.cancel') }}
-          </deBtn>
           <deBtn
             secondary
-            v-if="
-              formType === 'add' ||
-              hasDataPermission('manage', params.privileges)
-            "
-            @click="validaDatasource"
-            >{{ $t('commons.validate') }}
+            @click="logOutTips"
+          >{{ $t('commons.cancel') }}
           </deBtn>
           <deBtn
             v-if="
               formType === 'add' ||
-              hasDataPermission('manage', params.privileges)
+                hasDataPermission('manage', params.privileges)
+            "
+            secondary
+            @click="validaDatasource"
+          >{{ $t('commons.validate') }}
+          </deBtn>
+          <deBtn
+            v-if="
+              formType === 'add' ||
+                hasDataPermission('manage', params.privileges)
             "
             type="primary"
             @click="save"
-            >{{ $t('commons.save') }}
+          >{{ $t('commons.save') }}
           </deBtn>
         </template>
         <template v-else>
@@ -47,7 +49,7 @@
                 : hasDataPermission('manage', params.privileges)
             "
             @click="validaDatasource"
-            >{{ $t('commons.validate') }}
+          >{{ $t('commons.validate') }}
           </deBtn>
         </template>
       </div>
@@ -62,18 +64,18 @@
             size="small"
             :disabled="
               params &&
-              params.id &&
-              params.showModel &&
-              params.showModel === 'show' &&
-              !canEdit
+                params.id &&
+                params.showModel &&
+                params.showModel === 'show' &&
+                !canEdit
             "
             class="de-form-item"
             label-width="180px"
             label-position="right"
           >
-          <div class="de-row-rules">
-            <span>基本信息</span>
-          </div>
+            <div class="de-row-rules">
+              <span>{{ $t('datasource.basic_info') }}</span>
+            </div>
             <el-form-item :label="$t('datasource.display_name')" prop="name">
               <el-input
                 v-model="form.name"
@@ -83,9 +85,9 @@
             </el-form-item>
             <el-form-item :label="$t('commons.description')" prop="desc">
               <deTextarea
-                class="w100-textarea"
                 v-model="form.desc"
-              ></deTextarea>
+                class="w100-textarea"
+              />
             </el-form-item>
 
             <el-form-item
@@ -116,10 +118,10 @@
               :form="form"
               :disabled="
                 params &&
-                params.id &&
-                params.showModel &&
-                params.showModel === 'show' &&
-                !canEdit
+                  params.id &&
+                  params.showModel &&
+                  params.showModel === 'show' &&
+                  !canEdit
               "
             />
             <plugin-com
@@ -157,7 +159,6 @@ import deTextarea from '@/components/deCustomCm/deTextarea.vue'
 import msgCfm from '@/components/msgCfm'
 export default {
   name: 'DsForm',
-  mixins: [msgCfm],
   components: {
     DsConfiguration,
     LayoutContent,
@@ -165,6 +166,7 @@ export default {
     PluginCom,
     deTextarea
   },
+  mixins: [msgCfm],
   data() {
     return {
       disabled: false,
@@ -190,6 +192,7 @@ export default {
           {
             required: true,
             validator: this.nameRepeat,
+            message: i18n.t('datasource.input_name'),
             trigger: 'blur'
           },
           {
@@ -416,7 +419,7 @@ export default {
     },
     getDatasourceDetail(id, showModel) {
       return getDatasourceDetail(id).then((res) => {
-        this.params = {...res.data, showModel}
+        this.params = { ...res.data, showModel }
       })
     },
     queryTreeDatas() {
@@ -837,9 +840,9 @@ export default {
     logOutTips() {
       const options = {
         title: 'role.tips',
-          confirmButtonText: this.$t('commons.confirm'),
+        confirmButtonText: this.$t('commons.confirm'),
         content: 'system_parameter_setting.sure_to_exit',
-          type: 'primary',
+        type: 'primary',
         cb: () => {
           this.backToList()
         }

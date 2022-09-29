@@ -1249,6 +1249,7 @@ export default {
     liquid_shape_rect: '矩形',
     dimension_or_quota: '維度或指標',
     axis_value_split_count: '刻度數',
+    axis_value_split_space: '刻度間距',
     chart_waterfall: '瀑佈圖',
     pie_inner_radius_percent: '內徑佔比',
     pie_outer_radius_size: '外徑大小',
@@ -1815,7 +1816,8 @@ export default {
     can_be_uploaded: '僅支持上傳JAR格式的檔案',
     query_timeout: '査詢超時',
     add_data_source: '添加資料來源',
-    delete_this_driver: '確定删除該驅動嗎？'
+    delete_this_driver: '確定删除該驅動嗎？',
+    basic_info: '基本信息'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',

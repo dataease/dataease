@@ -675,7 +675,7 @@ public class ChartViewService {
                         if (sqlVariables.stream().map(SqlVariableDetails::getVariableName).collect(Collectors.toList()).contains(parameter)) {
                             hasParameters = true;
                         }
-                        if (parameter.contains("|DE|") && table.getId().equals(parameter.split("|DE|")[0]) && sqlVariables.stream().map(SqlVariableDetails::getVariableName).collect(Collectors.toList()).contains(parameter.split("|DE|")[1])) {
+                        if (parameter.contains("|DE|") && table.getId().equals(parameter.split("\\|DE\\|")[0]) && sqlVariables.stream().map(SqlVariableDetails::getVariableName).collect(Collectors.toList()).contains(parameter.split("\\|DE\\|")[1])) {
                             hasParameters = true;
                         }
                     }
@@ -1611,13 +1611,13 @@ public class ChartViewService {
 
                 for (String parameter : chartExtFilterRequest.getParameters()) {
                     if(parameter.contains("|DE|")){
-                        if(!parameter.split("|DE|")[0].equals(table.getId())){
+                        if(!parameter.split("\\|DE\\|")[0].equals(table.getId())){
                             continue;
                         }
-                        List<SqlVariableDetails> parameters = sqlVariables.stream().filter(item -> item.getVariableName().equalsIgnoreCase(parameter.split("|DE|")[1])).collect(Collectors.toList());
+                        List<SqlVariableDetails> parameters = sqlVariables.stream().filter(item -> item.getVariableName().equalsIgnoreCase(parameter.split("\\|DE\\|")[1])).collect(Collectors.toList());
                         if (CollectionUtils.isNotEmpty(parameters)) {
                             String filter = qp.transFilter(chartExtFilterRequest, parameters.get(0));
-                            sql = sql.replace("${" + parameter.split("|DE|")[1] + "}", filter);
+                            sql = sql.replace("${" + parameter.split("\\|DE\\|")[1] + "}", filter);
                         }
                     }else {
                         List<SqlVariableDetails> parameters = sqlVariables.stream().filter(item -> item.getVariableName().equalsIgnoreCase(parameter)).collect(Collectors.toList());
