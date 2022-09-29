@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 // import echa
-import echarts from 'echarts'
+// import echarts from 'echarts'
 
 export function basePieOption(chart_option, chart, cstyle = {}) {
   console.log('chart data pie: ', chart)

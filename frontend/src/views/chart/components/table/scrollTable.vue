@@ -32,7 +32,7 @@
             <div slot="reference" class="pop_position" :style="{left: popOpen.left,top: popOpen.top}" />
           </el-popover>
 
-          <li v-for="(items,inde) in dataInfo" v-show="inde<=tableRowsNumber-1" :key="inde" :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" class="table_bode_li" @click="showDialogInfo(items,inde)">
+          <li v-for="(items,inde) in dataInfo" v-show="inde<=tableRowsNumber-1" :key="inde" :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" class="table_bode_li" @click.stop="showDialogInfo(items,inde)">
             <div v-for="(item,index) in fields" :key="index" class="body_info">
               <!-- {{ inde }} -->
               {{ items[item.datainsName] }}
@@ -281,7 +281,7 @@ export default {
       console.log(num)
       this.numberLine = num
       this.newData = JSON.parse(JSON.stringify(this.chart))
-      console.log('newdata',this.newData)
+      console.log('newdata', this.newData)
       let drillList = []
       if (typeof this.newData.drillFields === 'object') {
         drillList = JSON.parse(JSON.stringify(this.newData.drillFields))
@@ -316,7 +316,7 @@ export default {
       // 缓存对组件的数据维度进行处理的操作为了之后查询的数据
       save2Cache(this.newData.sceneId, this.newData).then(() => {
         viewData(this.newData.id, this.newData.sceneId, obj).then(res => {
-          console.log('response',res)
+          console.log('response', res)
           const data = res.data.data
           const fields = data.fields
           const tableRow = []
@@ -337,12 +337,12 @@ export default {
           const arr = []
           for (const k in obj) {
             const a = k
-            fields.map((item,index) => {
+            fields.map((item, index) => {
               if (a === item.datainsName) {
                 arr.push({
                   name: item.name,
                   value: obj[a],
-                  num: index,
+                  num: index
                 })
               }
             })
@@ -353,7 +353,7 @@ export default {
             hash[next.name] ? '' : hash[next.name] = true && item.push(next)
             return item
           }, [])
-          this.infoForm = arr1.sort((a,b) => {
+          this.infoForm = arr1.sort((a, b) => {
             return a.num - b.num
           })
           console.log(this.infoForm)
@@ -574,12 +574,14 @@ export default {
           }
           // this.table_header_class.fontSize = ((customAttr.size.tableTitleFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
           // this.table_item_class.fontSize = ((customAttr.size.tableItemFontSize - 4) * this.previewCanvasScale.scalePointWidth) + 'px'
-          this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
-          this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
+          this.table_header_class.fontSize = (customAttr.size.tableTitleFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
+          this.table_item_class.fontSize = (customAttr.size.tableItemFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
           this.highlight = customAttr.size.highlightNumber ? customAttr.size.highlightNumber : 2
           this.tableRowsNumber = customAttr.size.tableRowsNumber ? customAttr.size.tableRowsNumber : 5
-          this.scrollId.fontSize = (Math.ceil(+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 1) + 'px'
+          // this.scrollId.fontSize = (Math.ceil(+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth)) + 'px'
+          console.log('customAttr.size.heightLightFontSize', customAttr.size.heightLightFontSize, this.previewCanvasScale.scalePointWidth)
+          this.scrollId.fontSize = (+customAttr.size.heightLightFontSize * this.previewCanvasScale.scalePointWidth) + 'px'
           this.setStyle.top = (customAttr.size.tableItemHeight) + 'px'
           this.setStyle.height = customAttr.size.tableItemHeight + 'px'
           this.rollingRate = customAttr.size.tableRollingRate
@@ -613,7 +615,7 @@ export default {
         const customStyle = JSON.parse(this.chart.customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
-          this.title_class.fontSize = customStyle.text.fontSize + 'px'
+          this.title_class.fontSize = (customStyle.text.fontSize * this.previewCanvasScale.scalePointWidth) + 'px'
           this.title_class.color = customStyle.text.color
           this.title_class.textAlign = customStyle.text.hPosition
           this.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'

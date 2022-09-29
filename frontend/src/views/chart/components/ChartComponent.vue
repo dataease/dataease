@@ -45,6 +45,7 @@ import {
 } from '../chart/chart'
 import {
   baseBarOption,
+  pyramidBarOption,
   triangleBarOption,
   annularBarOption,
   annularBarOptions,
@@ -210,6 +211,8 @@ export default {
       // console.log(this.$store.state.canvasStyleData)
       if (chart.type === 'bar') {
         chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'pyramid') {
+        chart_option = pyramidBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-circular') {
         chart_option = annularBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-annular') {

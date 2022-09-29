@@ -377,7 +377,11 @@ export default {
       )
     },
     tableRollFlag() {
-      // console.log('----------111111', this.chart)
+      console.log('shuju________----------111111', this.chart)
+      const rollChart = JSON.parse(JSON.stringify(this.chart))
+
+      localStorage.setItem('rollChart', JSON.stringify(rollChart))
+
       return (
         this.httpRequest.status &&
         this.chart.type &&
@@ -682,18 +686,21 @@ export default {
         ) * this.scaleCoefficient
       const customAttrChart = JSON.parse(this.sourceCustomAttrStr)
       const customStyleChart = JSON.parse(this.sourceCustomStyleStr)
-      recursionTransObj(
-        customAttrTrans,
-        customAttrChart,
-        scale,
-        this.scaleCoefficientType
-      )
-      recursionTransObj(
-        customStyleTrans,
-        customStyleChart,
-        scale,
-        this.scaleCoefficientType
-      )
+      if (this.chart.type !== 'roll-elemnt') {
+        // this.mergeScale()
+        recursionTransObj(
+          customAttrTrans,
+          customAttrChart,
+          scale,
+          this.scaleCoefficientType
+        )
+        recursionTransObj(
+          customStyleTrans,
+          customStyleChart,
+          scale,
+          this.scaleCoefficientType
+        )
+      }
 
       // 移动端地图标签不显示
       if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {
@@ -968,7 +975,11 @@ export default {
                   )
                   this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
                   // this.requestStatus = 'merging'
+                  // if (this.chart.type !== 'roll-elemnt') {
+
+                  // }
                   this.mergeScale()
+
                   // this.requestStatus = 'success'
                   this.httpRequest.status = true
                   console.log('thissssss', this.chart)
@@ -978,7 +989,7 @@ export default {
                 }
               } else {
                 // localStorage.setItem('permissionId', JSON.stringify('万达广场'))
-                console.log('有过滤需求的字段')
+                console.log('有过滤需求的字段', response.data)
                 const filterData = JSON.parse(response.data.customFilter)
                 // filterData[0].filter = []
                 // permissionId
@@ -1176,6 +1187,9 @@ export default {
                       this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
                       // this.requestStatus = 'merging'
                       this.mergeScale()
+                      // if (this.chart.type !== 'roll-elemnt') {
+                      //   this.mergeScale()
+                      // }
                       // this.requestStatus = 'success'
                       this.httpRequest.status = true
                       console.log('thissssss', this.chart)

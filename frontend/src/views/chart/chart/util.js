@@ -412,6 +412,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_graph',
     icon: 'graph'
   },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_distribute',
+  //   value: 'pyramid',
+  //   title: '金字塔图',
+  //   icon: 'pyramid'
+  // },
 
   /* 下面是highcharts图表类型 */
   // highcharts
