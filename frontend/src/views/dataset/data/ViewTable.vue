@@ -22,7 +22,7 @@
         </span>
         <el-divider direction="vertical"></el-divider>
         <span class="create-by">{{ $t('dataset.create_by') }}</span>
-        <span class="create-by">:{{ table.createBy }}</span>
+        <span class="create-by">:{{ table.creatorName || 'N/A' }}</span>
         <el-popover
           placement="bottom"
           width="420"

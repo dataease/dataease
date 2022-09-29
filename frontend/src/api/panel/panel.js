@@ -170,6 +170,7 @@ export function initPanelData(panelId, useCache = false, callback) {
       createTime: response.data.createTime,
       creatorName: response.data.creatorName,
       updateBy: response.data.updateBy,
+      updateName: response.data.updateName,
       updateTime: response.data.updateTime
     })
     // 刷新联动信息

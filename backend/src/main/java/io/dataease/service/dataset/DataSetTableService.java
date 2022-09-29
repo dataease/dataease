@@ -2190,7 +2190,7 @@ public class DataSetTableService {
 
     public DataSetDetail getDatasetDetail(String id) {
         DataSetDetail dataSetDetail = new DataSetDetail();
-        DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
+        DataSetTableDTO table = extDataSetTableMapper.findOneDetails(id);
         dataSetDetail.setTable(table);
         if (ObjectUtils.isNotEmpty(table)) {
             Datasource datasource = datasourceMapper.selectByPrimaryKey(table.getDataSourceId());
