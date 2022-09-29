@@ -1815,7 +1815,8 @@ export default {
     can_be_uploaded: '僅支持上傳JAR格式的檔案',
     query_timeout: '査詢超時',
     add_data_source: '添加資料來源',
-    delete_this_driver: '確定删除該驅動嗎？'
+    delete_this_driver: '確定删除該驅動嗎？',
+    basic_info: '基本信息'
   },
   pblink: {
     key_pwd: '請輸入密碼打開鏈接',
