@@ -51,7 +51,7 @@
               <el-form-item :label="$t('chart.axis_value_split')" class="form-item">
                 <span slot="label">
                   <span class="span-box">
-                    <span>{{ $t('chart.axis_value_split_count') }}</span>
+                    <span>{{ $t('chart.axis_value_split_space') }}</span>
                     <el-tooltip class="item" effect="dark" placement="bottom">
                       <div slot="content">
                         间隔表示两个刻度之间的单位长度。
