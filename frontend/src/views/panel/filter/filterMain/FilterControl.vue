@@ -181,13 +181,17 @@ export default {
   watch: {
     'childViews.datasetParams': {
       handler(newName, oldName) {
-        if (this.attrs.parameters.length > 0) {
+        if (this.attrs.parameters.length > 0 && this.attrs.parameters[0].indexOf('|DE|') === -1) {
           const parameters = []
           for (var i = 0; i < this.attrs.parameters.length; i++) {
-            for (var j = 0; j < this.childViews.datasetParams.length; j++) {
-              if (this.childViews.datasetParams[j].id.split('|DE|')[1] === this.attrs.parameters[i]) {
-                parameters.push(this.childViews.datasetParams[j].id)
+            if (this.attrs.parameters[i].indexOf('|DE|') === -1) {
+              for (var j = 0; j < this.childViews.datasetParams.length; j++) {
+                if (this.childViews.datasetParams[j].id.split('|DE|')[1] === this.attrs.parameters[i]) {
+                  parameters.push(this.childViews.datasetParams[j].id)
+                }
               }
+            } else {
+              parameters.push(this.attrs.parameters[i])
             }
           }
           this.attrs.parameters = parameters
