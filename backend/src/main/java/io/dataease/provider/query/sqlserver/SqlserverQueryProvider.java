@@ -1324,4 +1324,11 @@ public class SqlserverQueryProvider extends QueryProvider {
         }
         return originField;
     }
+
+    @Override
+    public String sqlForPreview(String table, Datasource ds){
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+        schema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema);
+        return "SELECT * FROM " + schema + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table);
+    }
 }
