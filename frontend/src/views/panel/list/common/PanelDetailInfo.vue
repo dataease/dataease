@@ -10,7 +10,7 @@
     </el-col>
     <el-col class="info-item">
       <p class="info-title">{{ $t('panel.update_by') }}</p>
-      <p class="info-content">{{ panelInfo.updateBy || 'N/A' }}</p>
+      <p class="info-content">{{ panelInfo.updateName || 'N/A' }}</p>
     </el-col>
     <el-col class="info-item">
       <p class="info-title">{{ $t('panel.update_time') }}</p>
