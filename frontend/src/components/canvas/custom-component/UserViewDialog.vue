@@ -270,6 +270,9 @@ export default {
     position: absolute;
     width: 100%;
     margin-left: -20px;
+    .ms-main-container {
+      padding: 0px !important;
+    }
   }
 
   .svg-background {
