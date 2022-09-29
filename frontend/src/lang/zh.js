@@ -910,6 +910,7 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    map_center_lost: '图形缺失中心点centroid或center属性，请补全后再试',
     margin_model: '模式',
     margin_model_auto: '自动',
     margin_model_absolute: '绝对',
@@ -1601,9 +1602,9 @@ export default {
     merge_msg: '数据表中存在字段一致的情况，是否合并到一个数据集中?',
     merge_title: '合并数据',
     field_name_less_50: '字段名不能超过50个字符',
-    excel_info_1: '1、文件中不能存在合并单元格；',
-    excel_info_2: '2、文件的第一行为标题行，不能为空，不能为日期型；',
-    excel_info_3: '3、Excel文件大小请确保在500M以内。',
+    excel_info_1: '1、Excel 文件中不能存在合并单元格；',
+    excel_info_2: '2、Excel 文件的第一行为标题行，不能为空，不能为日期型；',
+    excel_info_3: '3、文件大小请确保在500M以内。',
     sync_field: '同步字段',
     confirm_sync_field: '确认同步',
     confirm_sync_field_tips: '同步字段可能会导致已编辑字段发生变更，请确认',

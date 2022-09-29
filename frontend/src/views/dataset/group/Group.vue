@@ -12,11 +12,11 @@
           @command="(type) => clickAddData(type)"
         >
           <span class="el-dropdown-link">
-            <i @click.stop class="el-icon-plus"></i>
+            <i class="el-icon-plus" @click.stop />
           </span>
           <el-dropdown-menu
-            class="de-dataset-dropdown de-card-dropdown"
             slot="dropdown"
+            class="de-dataset-dropdown de-card-dropdown"
           >
             <el-dropdown-item command="db">
               <svg-icon icon-class="ds-db" class="ds-icon-db" />
@@ -58,12 +58,12 @@
           class="main-area-input"
         >
           <el-select
-            v-model="searchType"
             slot="append"
+            v-model="searchType"
             :placeholder="searchMap[searchType]"
           >
-            <el-option :label="$t('commons.all')" value="all"></el-option>
-            <el-option :label="$t('commons.folder')" value="folder"></el-option>
+            <el-option :label="$t('commons.all')" value="all" />
+            <el-option :label="$t('commons.folder')" value="folder" />
           </el-select>
         </el-input>
       </el-row>
@@ -71,7 +71,7 @@
         <div class="block">
           <div v-if="!tData.length && !treeLoading" class="no-tdata">
             {{ $t('deDataset.no_dataset_click') }}
-            <span @click="() => clickAdd()" class="no-tdata-new">{{
+            <span class="no-tdata-new" @click="() => clickAdd()">{{
               $t('deDataset.create')
             }}</span>
           </div>
@@ -105,8 +105,7 @@
                     text-overflow: ellipsis;
                   "
                   :title="data.name"
-                  >{{ data.name }}</span
-                >
+                >{{ data.name }}</span>
               </span>
               <span
                 v-if="hasDataPermission('manage', data.privileges)"
@@ -119,11 +118,11 @@
                     @command="(type) => clickAddData(type, data)"
                   >
                     <span class="el-dropdown-link">
-                      <i @click.stop class="el-icon-plus"></i>
+                      <i class="el-icon-plus" @click.stop />
                     </span>
                     <el-dropdown-menu
-                      class="de-dataset-dropdown de-card-dropdown"
                       slot="dropdown"
+                      class="de-dataset-dropdown de-card-dropdown"
                     >
                       <el-dropdown-item command="db">
                         <svg-icon icon-class="ds-db" class="ds-icon-db" />
@@ -165,11 +164,11 @@
                     <span class="el-dropdown-link">
                       <el-button icon="el-icon-more" type="text" size="small" />
                     </span>
-                    <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+                    <el-dropdown-menu slot="dropdown" class="de-card-dropdown">
                       <el-dropdown-item
                         command="rename"
                       >
-                      <svg-icon icon-class="de-ds-rename" />
+                        <svg-icon icon-class="de-ds-rename" />
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="move">
@@ -224,11 +223,17 @@
                   />
                 </span>
                 <span v-if="['db', 'sql'].includes(data.modelInnerType)">
-                  <span v-if="data.mode === 0" style="margin-left: 6px"
-                    ><i class="el-icon-s-operation"
+                  <span
+                    v-if="data.mode === 0"
+                    style="margin-left: 6px"
+                  ><i
+                    class="el-icon-s-operation"
                   /></span>
-                  <span v-if="data.mode === 1" style="margin-left: 6px"
-                    ><i class="el-icon-alarm-clock"
+                  <span
+                    v-if="data.mode === 1"
+                    style="margin-left: 6px"
+                  ><i
+                    class="el-icon-alarm-clock"
                   /></span>
                 </span>
                 <span
@@ -246,8 +251,7 @@
                     }
                   ]"
                   :title="data.name"
-                  >{{ data.name }}</span
-                >
+                >{{ data.name }}</span>
               </span>
               <span
                 v-if="hasDataPermission('manage', data.privileges)"
@@ -263,21 +267,21 @@
                     <span class="el-dropdown-link">
                       <el-button icon="el-icon-more" type="text" size="small" />
                     </span>
-                    <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+                    <el-dropdown-menu slot="dropdown" class="de-card-dropdown">
                       <el-dropdown-item
                         command="editTable"
                       >
-                      <svg-icon icon-class="de-ds-rename" />
+                        <svg-icon icon-class="de-ds-rename" />
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="moveDs">
-                         <svg-icon icon-class="de-ds-move" />
+                        <svg-icon icon-class="de-ds-move" />
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
                       <el-dropdown-item
                         command="deleteTable"
                       >
-                      <svg-icon icon-class="de-ds-trash" />
+                        <svg-icon icon-class="de-ds-trash" />
                         {{ $t('dataset.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -305,13 +309,15 @@
           @keypress.enter.native="saveGroup(groupForm)"
         >
           <el-form-item :label="$t('deDataset.folder_name')" prop="name">
-            <el-input placeholder="请输入文件夹名称" v-model="groupForm.name" />
+            <el-input v-model.trim="groupForm.name" placeholder="请输入文件夹名称" />
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <deBtn secondary @click="close()">{{ $t('dataset.cancel') }}</deBtn>
-          <deBtn type="primary" @click="saveGroup(groupForm)"
-            >{{ $t('dataset.confirm') }}
+          <deBtn
+            type="primary"
+            @click="saveGroup(groupForm)"
+          >{{ $t('dataset.confirm') }}
           </deBtn>
         </div>
       </el-dialog>
@@ -339,23 +345,25 @@
         <deBtn secondary @click="closeTable()">{{
           $t('dataset.cancel')
         }}</deBtn>
-        <deBtn type="primary" @click="saveTable(tableForm)"
-          >{{ $t('dataset.confirm') }}
+        <deBtn
+          type="primary"
+          @click="saveTable(tableForm)"
+        >{{ $t('dataset.confirm') }}
         </deBtn>
       </div>
     </el-dialog>
 
     <!--移动分组-->
     <el-drawer
+      v-closePress
       :title="moveDialogTitle"
       :visible.sync="moveGroup"
       custom-class="user-drawer sql-dataset-drawer"
       size="600px"
-      v-closePress
       direction="rtl"
     >
       <group-move-selector
-        moveDir
+        move-dir
         :item="groupForm"
         @targetGroup="targetGroup"
       />
@@ -367,18 +375,18 @@
           :disabled="groupMoveConfirmDisabled"
           type="primary"
           @click="saveMoveGroup(tGroup)"
-          >{{ $t('dataset.confirm') }}
+        >{{ $t('dataset.confirm') }}
         </deBtn>
       </div>
     </el-drawer>
 
     <!--移动数据集-->
     <el-drawer
+      v-closePress
       :title="moveDialogTitle"
       :visible.sync="moveDs"
       custom-class="user-drawer sql-dataset-drawer"
       size="600px"
-      v-closePress
       direction="rtl"
     >
       <group-move-selector :item="groupForm" @targetGroup="targetDs" />
@@ -390,7 +398,7 @@
           :disabled="dsMoveConfirmDisabled"
           type="primary"
           @click="saveMoveDs(tDs)"
-          >{{ $t('dataset.confirm') }}
+        >{{ $t('dataset.confirm') }}
         </deBtn>
       </div>
     </el-drawer>
@@ -431,7 +439,7 @@ export default {
     currentNodeId: {
       type: String,
       default: ''
-    },
+    }
   },
   data() {
     return {
@@ -526,7 +534,7 @@ export default {
     }
   },
   computed: {
-    hideCustomDs: function () {
+    hideCustomDs: function() {
       return this.$store.getters.hideCustomDs
     }
   },
@@ -630,7 +638,7 @@ export default {
       this.groupForm.pid = param.id
       this.groupForm.level = param.level + 1
     },
-    loadTree: _.debounce(function () {
+    loadTree: _.debounce(function() {
       this.searchPids = []
       this.$refs.datasetTreeRef.filter(this.filterText)
     }, 600),
@@ -877,7 +885,6 @@ export default {
           sceneId: param.id
         }
       })
-      
     },
     addData(name) {
       this.$emit('switchComponent', { name: name, param: this.currGroup })

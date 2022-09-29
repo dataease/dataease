@@ -911,6 +911,7 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    map_center_lost: '圖形缺失中心點centroid或center屬性，請補全後再試',
     margin_model: '模式',
     margin_model_auto: '自動',
     margin_model_absolute: '絕對',
@@ -1602,8 +1603,8 @@ export default {
     merge_msg: '數據表中存在字段一致的情況，是否合並到一個數據集中?',
     merge_title: '合並數據',
     field_name_less_50: '字段名不能超過50個字符',
-    excel_info_1: '1、文件終不能存在合併單元格；',
-    excel_info_2: '2、文件的第一行為標題行，不能為空，不能為日期；',
+    excel_info_1: '1、Excel 文件中不能存在合併單元格；',
+    excel_info_2: '2、Excel 文件的第一行為標題行，不能為空，不能為日期；',
     excel_info_3: '3、文件不超過500M。',
     sync_field: '同步字段',
     confirm_sync_field: '確認同步',

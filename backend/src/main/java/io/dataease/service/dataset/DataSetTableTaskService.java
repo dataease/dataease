@@ -263,14 +263,19 @@ public class DataSetTableTaskService {
         datasetTableTaskMapper.updateByExampleSelective(datasetTableTask, datasetTableTaskExample);
     }
 
-    public List<DatasetTableTask> list(DatasetTableTask datasetTableTask) {
-        DatasetTableTaskExample datasetTableTaskExample = new DatasetTableTaskExample();
-        DatasetTableTaskExample.Criteria criteria = datasetTableTaskExample.createCriteria();
-        if (datasetTableTask != null && StringUtils.isNotEmpty(datasetTableTask.getTableId())) {
-            criteria.andTableIdEqualTo(datasetTableTask.getTableId());
+    public List<DataSetTaskDTO> list(DatasetTableTask datasetTableTask) {
+        BaseGridRequest request = new BaseGridRequest();
+        List<ConditionEntity> conditionEntities = new ArrayList<>();
+        if(datasetTableTask != null && StringUtils.isNotEmpty(datasetTableTask.getTableId())){
+            ConditionEntity entity = new ConditionEntity();
+            entity.setField("table_id");
+            entity.setOperator("eq");
+            entity.setValue(datasetTableTask.getTableId());
+            conditionEntities.add(entity);
         }
-        datasetTableTaskExample.setOrderByClause("create_time desc,name asc");
-        return datasetTableTaskMapper.selectByExample(datasetTableTaskExample);
+        request.setConditions(conditionEntities);
+        GridExample gridExample = request.convertExample();
+        return extDataSetTaskMapper.taskList(gridExample);
     }
 
     public List<DataSetTaskDTO> taskList4User(BaseGridRequest request) {

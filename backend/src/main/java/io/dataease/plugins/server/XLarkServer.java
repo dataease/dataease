@@ -94,15 +94,14 @@ public class XLarkServer {
             if (!isOpen) {
                 DEException.throwException("未开启飞书");
             }
-            LarkUserInfo larkUserInfo = larkXpackService.userInfo(code, state);
+            LarkUserInfo larkUserInfo = larkXpackService.userInfo(code, state, false);
             String username = larkUserInfo.getUser_id();
-            String sub = larkUserInfo.getSub();
-            SysUserEntity sysUserEntity = authUserService.getUserByLarkId(sub);
+            SysUserEntity sysUserEntity = authUserService.getUserByLarkId(username);
             if (null == sysUserEntity) {
                 String email = StringUtils.isNotBlank(larkUserInfo.getEmail()) ? larkUserInfo.getEmail() : (username + "@lark.work");
                 sysUserService.validateExistUser(username, larkUserInfo.getName(), email);
                 sysUserService.saveLarkCUser(larkUserInfo, email);
-                sysUserEntity = authUserService.getUserByLarkId(sub);
+                sysUserEntity = authUserService.getUserByLarkId(username);
             }
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
             String realPwd = sysUserEntity.getPassword();
@@ -171,7 +170,7 @@ public class XLarkServer {
                 DEException.throwException("未开启飞书");
             }
             larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
-            LarkUserInfo larkUserInfo = larkXpackService.userInfo(code, state);
+            LarkUserInfo larkUserInfo = larkXpackService.userInfo(code, state, true);
             String userId = larkUserInfo.getUser_id();
 
 

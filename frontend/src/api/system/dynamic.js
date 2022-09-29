@@ -17,7 +17,8 @@ export function execute(options) {
     url: options.url,
     method: options.type,
     loading: true,
-    data: options.data
+    data: options.data,
+    hideMsg: options.hideMsg
   }
   if (options.responseType) {
     param.responseType = options.responseType

@@ -343,14 +343,16 @@ export default {
     },
     onSimpleCronChange() {
       if (this.formInline.dsCheckIntervalType === 'minute') {
-        if (this.formInline.dsCheckInterval < 1 || this.formInline.dsCheckInterval > 59) {
+        const pattern = '^([1-9]|[1-5][0-9])$'
+        if (!new RegExp(pattern).test(this.formInline.dsCheckInterval)) {
           this.$message({ message: this.$t('cron.minute_limit'), type: 'warning', showClose: true })
           this.formInline.dsCheckInterval = 1
         }
         return
       }
       if (this.formInline.dsCheckIntervalType === 'hour') {
-        if (this.formInline.dsCheckInterval < 1 || this.formInline.dsCheckInterval > 23) {
+        const pattern = '^([1-9]|[1-2][0-3])$'
+        if (!new RegExp(pattern).test(this.formInline.dsCheckInterval)) {
           this.$message({ message: this.$t('cron.hour_limit'), type: 'warning', showClose: true })
           this.formInline.dsCheckInterval = 1
         }

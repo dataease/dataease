@@ -5,7 +5,6 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.impl.AuthUserServiceImpl;
 import io.dataease.auth.util.JWTUtils;
-import io.dataease.commons.exception.DEException;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.ext.ExtTaskMapper;
 import io.dataease.commons.utils.CommonBeanFactory;
@@ -214,13 +213,17 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                 channels = Arrays.stream(recisetting.split(",")).collect(Collectors.toList());
             }
 
-
+            List<String> errorMsgs = new ArrayList<>();
             for (int i = 0; i < channels.size(); i++) {
                 String channel = channels.get(i);
                 switch (channel) {
                     case "email":
                         if (StringUtils.isNotBlank(recipients))
-                            emailService.sendWithImageAndFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
+                            try {
+                                emailService.sendWithImageAndFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
+                            } catch (Exception e) {
+                                errorMsgs.add("email: " + e.getMessage());
+                            }
                         break;
                     case "wecom":
                         if (SpringContextUtil.getBean(AuthUserService.class).supportWecom()) {
@@ -233,14 +236,14 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                                 SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
                                 if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getWecomId()))
                                     continue;
-                                wecomUsers.add(sysUserAssist.getLarkId());
+                                wecomUsers.add(sysUserAssist.getWecomId());
                             }
 
                             if (CollectionUtils.isNotEmpty(wecomUsers)) {
                                 WecomXpackService wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);
                                 WecomMsgResult wecomMsgResult = wecomXpackService.pushOaMsg(wecomUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 if (wecomMsgResult.getErrcode() != 0) {
-                                    DEException.throwException(wecomMsgResult.getErrmsg());
+                                    errorMsgs.add("wecom: " + wecomMsgResult.getErrmsg());
                                 }
                             }
 
@@ -257,14 +260,14 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                                 SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
                                 if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getDingtalkId()))
                                     continue;
-                                dingTalkUsers.add(sysUserAssist.getLarkId());
+                                dingTalkUsers.add(sysUserAssist.getDingtalkId());
                             }
 
                             if (CollectionUtils.isNotEmpty(dingTalkUsers)) {
                                 DingtalkXpackService dingtalkXpackService = SpringContextUtil.getBean(DingtalkXpackService.class);
                                 DingtalkMsgResult dingtalkMsgResult = dingtalkXpackService.pushOaMsg(dingTalkUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 if (dingtalkMsgResult.getErrcode() != 0) {
-                                    DEException.throwException(dingtalkMsgResult.getErrmsg());
+                                    errorMsgs.add("dingtalk: " + dingtalkMsgResult.getErrmsg());
                                 }
                             }
 
@@ -288,7 +291,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                                 LarkXpackService larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
                                 LarkMsgResult larkMsgResult = larkXpackService.pushOaMsg(larkUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 if (larkMsgResult.getCode() != 0) {
-                                    DEException.throwException(larkMsgResult.getMsg());
+                                    errorMsgs.add("lark: " + larkMsgResult.getMsg());
                                 }
                             }
 
@@ -297,6 +300,11 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                     default:
                         break;
                 }
+            }
+            if (CollectionUtils.isNotEmpty(errorMsgs)) {
+                String msg = errorMsgs.stream().collect(Collectors.joining(" \n "));
+                Exception exception = new RuntimeException(msg);
+                throw exception;
             }
             success(taskInstance);
         } catch (Exception e) {
