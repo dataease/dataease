@@ -124,10 +124,9 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
                     tableName = dataSetTableService.getCustomSQLDatasource(dataTableInfoDTO, list, ds);
                     break;
                 case UNION:
-                    Datasource datasource = new Datasource();
-                    datasource.setType(pluginViewSet.getDsType());
+                    Datasource datasource = ((PluginViewSetImpl) pluginViewSet).getDs();
                     Map<String, Object> sqlMap = dataSetTableService.getUnionSQLDatasource(dataTableInfoDTO, datasource);
-                    tableName = (String) sqlMap.get("sql");
+                    tableName = "(" + ((String) sqlMap.get("sql")) + ")";
                     break;
                 default:
                     tableName = dataTableInfoDTO.getTable();
