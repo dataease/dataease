@@ -87,9 +87,13 @@ export default {
   },
   methods: {
     loadFields() {
-      fieldListWithPermission(this.firstTableId).then(res => {
-        this.tableFields = JSON.parse(JSON.stringify(res.data))
-      })
+      if (this.firstTableId) {
+        fieldListWithPermission(this.firstTableId).then(res => {
+          this.tableFields = JSON.parse(JSON.stringify(res.data))
+        })
+      } else {
+        this.tableFields = []
+      }
     },
     onMove(e, originalEvent) {
       return true
