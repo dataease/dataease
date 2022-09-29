@@ -18,6 +18,7 @@ import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
+import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.datasource.query.Utils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -1333,5 +1334,12 @@ public class Db2QueryProvider extends QueryProvider {
         } else {
             return sql;
         }
+    }
+
+    @Override
+    public String sqlForPreview(String table, Datasource ds){
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+        schema = String.format(Db2Constants.KEYWORD_TABLE, schema);
+        return "SELECT * FROM " + schema + "." + String.format(Db2Constants.KEYWORD_TABLE, table);
     }
 }

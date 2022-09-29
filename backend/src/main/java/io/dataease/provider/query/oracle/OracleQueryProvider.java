@@ -1370,4 +1370,11 @@ public class OracleQueryProvider extends QueryProvider {
             return sql;
         }
     }
+
+    @Override
+    public String sqlForPreview(String table, Datasource ds){
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+        schema = String.format(OracleConstants.KEYWORD_TABLE, schema);
+       return "SELECT * FROM " + schema + "." + String.format(OracleConstants.KEYWORD_TABLE, table);
+    }
 }
