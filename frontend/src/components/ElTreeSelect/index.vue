@@ -241,6 +241,7 @@ export default {
       if (val) {
         this.ids = this._checkSum()
         this._emitFun()
+        this.$emit('check', null, this.ids, null)
         return
       }
       this._selectClearFun()
