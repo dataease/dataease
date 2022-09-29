@@ -910,6 +910,7 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    map_center_lost: '图形缺失中心点centroid或center属性，请补全后再试',
     margin_model: '模式',
     margin_model_auto: '自动',
     margin_model_absolute: '绝对',

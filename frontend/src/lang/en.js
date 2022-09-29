@@ -911,6 +911,7 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    map_center_lost: 'The graph is missing the centroid or center attribute, please complete it and try again',
     margin_model: 'Model',
     margin_model_auto: 'Auto',
     margin_model_absolute: 'Absolute',
