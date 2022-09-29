@@ -248,17 +248,19 @@ export function seniorCfg(chart_option, chart) {
         ]
         if (senior.functionCfg.sliderBg) {
           chart_option.dataZoom[1].dataBackground = {
-            lineStyle: { color: reverseColor(senior.functionCfg.sliderBg), opacity: 0.3 },
-            areaStyle: { color: reverseColor(senior.functionCfg.sliderBg), opacity: 0.1 }
+            lineStyle: { color: hexToRgba(senior.functionCfg.sliderBg, 0.5) },
+            areaStyle: { color: hexToRgba(senior.functionCfg.sliderBg, 0.5) }
           }
+          chart_option.dataZoom[1].borderColor = hexToRgba(senior.functionCfg.sliderBg, 0.3)
         }
         if (senior.functionCfg.sliderFillBg) {
           chart_option.dataZoom[1].selectedDataBackground = {
             lineStyle: { color: senior.functionCfg.sliderFillBg },
             areaStyle: { color: senior.functionCfg.sliderFillBg }
           }
-          const rgba = hexToRgba(senior.functionCfg.sliderFillBg, 0.5)
+          const rgba = hexToRgba(senior.functionCfg.sliderFillBg, 0.2)
           chart_option.dataZoom[1].fillerColor = rgba
+          
         }
         if (senior.functionCfg.sliderTextClolor) {
           chart_option.dataZoom[1].textStyle = { color: senior.functionCfg.sliderTextClolor }
