@@ -164,10 +164,8 @@
                     <span class="el-dropdown-link">
                       <el-button icon="el-icon-more" type="text" size="small" />
                     </span>
-                    <el-dropdown-menu slot="dropdown" class="de-card-dropdown">
-                      <el-dropdown-item
-                        command="rename"
-                      >
+                    <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+                      <el-dropdown-item command="rename">
                         <svg-icon icon-class="de-ds-rename" />
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
@@ -267,10 +265,8 @@
                     <span class="el-dropdown-link">
                       <el-button icon="el-icon-more" type="text" size="small" />
                     </span>
-                    <el-dropdown-menu slot="dropdown" class="de-card-dropdown">
-                      <el-dropdown-item
-                        command="editTable"
-                      >
+                    <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+                      <el-dropdown-item command="editTable">
                         <svg-icon icon-class="de-ds-rename" />
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
@@ -278,9 +274,7 @@
                         <svg-icon icon-class="de-ds-move" />
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
-                      <el-dropdown-item
-                        command="deleteTable"
-                      >
+                      <el-dropdown-item command="deleteTable">
                         <svg-icon icon-class="de-ds-trash" />
                         {{ $t('dataset.delete') }}
                       </el-dropdown-item>
@@ -355,13 +349,18 @@
 
     <!--移动分组-->
     <el-drawer
-      v-closePress
-      :title="moveDialogTitle"
       :visible.sync="moveGroup"
       custom-class="user-drawer sql-dataset-drawer"
       size="600px"
       direction="rtl"
     >
+      <template slot="title">
+        {{ $t('dataset.m1') }}
+        <span :title="moveDialogTitle" class="text-overflow">{{
+          moveDialogTitle
+        }}</span>
+        {{ $t('dataset.m2') }}
+      </template>
       <group-move-selector
         move-dir
         :item="groupForm"
@@ -382,13 +381,18 @@
 
     <!--移动数据集-->
     <el-drawer
-      v-closePress
-      :title="moveDialogTitle"
       :visible.sync="moveDs"
       custom-class="user-drawer sql-dataset-drawer"
       size="600px"
       direction="rtl"
     >
+      <template slot="title">
+        {{ $t('dataset.m1') }}
+        <span :title="moveDialogTitle" class="text-overflow">{{
+          moveDialogTitle
+        }}</span>
+        {{ $t('dataset.m2') }}
+      </template>
       <group-move-selector :item="groupForm" @targetGroup="targetDs" />
       <div class="de-foot">
         <deBtn secondary @click="closeMoveDs()">{{
@@ -912,10 +916,7 @@ export default {
 
     moveTo(data) {
       this.moveGroup = true
-      this.moveDialogTitle =
-        this.$t('dataset.m1') +
-        (data.name.length > 10 ? data.name.substr(0, 10) + '...' : data.name) +
-        this.$t('dataset.m2')
+      this.moveDialogTitle = data.name
     },
     closeMoveGroup() {
       this.moveGroup = false
@@ -943,10 +944,7 @@ export default {
 
     moveToDs(data) {
       this.moveDs = true
-      this.moveDialogTitle =
-        this.$t('dataset.m1') +
-        (data.name.length > 10 ? data.name.substr(0, 10) + '...' : data.name) +
-        this.$t('dataset.m2')
+      this.moveDialogTitle = data.name
     },
     closeMoveDs() {
       this.moveDs = false

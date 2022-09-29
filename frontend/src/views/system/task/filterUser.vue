@@ -44,7 +44,7 @@
             >
               <span slot-scope="{ data }" class="custom-tree-node">
                 <span v-if="data.modelInnerType === 'group'">
-                  <svg-icon icon-class="scene" class="ds-icon-scene" />
+                  <svg-icon icon-class="scene"/>
                   <span
                     style="
                       margin-left: 6px;

@@ -35,7 +35,7 @@
           >
             <span slot-scope="{ data }" class="custom-tree-node-dataset">
               <span v-if="data.type === 'group'">
-                <svg-icon icon-class="scene" class="ds-icon-scene" />
+                <svg-icon icon-class="scene"/>
               </span>
               <span
                 style="

@@ -21,7 +21,7 @@
         <span slot-scope="{ node, data }" :class="treeClass(data, node)">
           <span style="display: flex; flex: 1; width: 0">
             <span v-if="data.type === 'group'">
-              <svg-icon icon-class="scene" class="ds-icon-scene" />
+              <svg-icon icon-class="scene"/>
             </span>
             <span
               style="

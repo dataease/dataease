@@ -26,7 +26,7 @@
         v-for="ele in templateListComputed"
         :key="ele.name"
       >
-        <svg-icon icon-class="scene" class="ds-icon-scene" />
+        <svg-icon icon-class="scene"/>
         <span>{{ ele.name }}</span>
         <span @click.stop class="more">
           <el-dropdown

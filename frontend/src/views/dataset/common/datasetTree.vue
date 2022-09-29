@@ -29,7 +29,7 @@
         >
           <span style="display: flex; flex: 1; width: 0">
             <span v-if="data.modelInnerType === 'group'">
-              <svg-icon icon-class="scene" class="ds-icon-scene" />
+              <svg-icon icon-class="scene"/>
             </span>
             <span
               style="

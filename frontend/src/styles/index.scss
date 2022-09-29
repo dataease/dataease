@@ -1243,6 +1243,15 @@ div:focus {
     mix-blend-mode: normal;
     border-bottom: 1px solid var(--deComBorderColor50, rgba(187, 191, 196, 0.5));
 
+    .text-overflow {
+      max-width: 300px;
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      flex: none;
+    }
+
     .el-drawer__close-btn {
       position: absolute;
       right: 24px;
