@@ -6,6 +6,7 @@
           <el-checkbox v-model="legendForm.show" @change="changeLegendStyle">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="legendForm.show">
+          <!-- {{ chart.render }} -->
           <!-- {{ chart.type }} -->
           <el-form-item v-show="chart.render!=='highcharts'" :label="$t('chart.icon')" class="form-item">
             <el-select v-model="legendForm.icon" :placeholder="$t('chart.icon')" @change="changeLegendStyle">

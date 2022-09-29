@@ -106,6 +106,19 @@ export default {
         }
         if (customAttr.label) {
           this.popForm = customAttr.label
+
+          this.popForm.popShow = this.popForm.popShow? this.popForm.popShow : DEFAULT_LABEL.popShow
+          this.popForm.popOpen = this.popForm.popOpen? this.popForm.popOpen : DEFAULT_LABEL.popOpen
+          this.popForm.popLeft = this.popForm.popLeft? this.popForm.popLeft : DEFAULT_LABEL.popLeft
+          this.popForm.popTop = this.popForm.popTop? this.popForm.popTop : DEFAULT_LABEL.popTop
+          this.popForm.popTitleColor = this.popForm.popTitleColor? this.popForm.popTitleColor : DEFAULT_LABEL.popTitleColor
+          this.popForm.popTitleBackground = this.popForm.popTitleBackground? this.popForm.popTitleBackground : DEFAULT_LABEL.popTitleBackground
+          this.popForm.popHeight = this.popForm.popHeight? this.popForm.popHeight : DEFAULT_LABEL.popHeight
+          this.popForm.popPosition = this.popForm.popPosition? this.popForm.popPosition : DEFAULT_LABEL.popPosition
+          this.popForm.popContentColor = this.popForm.popContentColor? this.popForm.popContentColor : DEFAULT_LABEL.popContentColor
+          this.popForm.popContentBackground = this.popForm.popContentBackground? this.popForm.popContentBackground : DEFAULT_LABEL.popContentBackground
+          this.popForm.popContentHeight = this.popForm.popContentHeight? this.popForm.popContentHeight : DEFAULT_LABEL.popContentHeight
+          this.popForm.popContentBorderBottomColor = this.popForm.popContentBorderBottomColor? this.popForm.popContentBorderBottomColor : DEFAULT_LABEL.popContentBorderBottomColor
         }
       }
     },

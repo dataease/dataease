@@ -3,15 +3,12 @@
     <el-col>
       <el-form ref="colorForm" :model="colorForm" label-width="90px" size="mini">
         <div v-if="sourceType==='view' || sourceType==='panelEchart'">
-          <el-form-item
-            v-show="chart.type &&
-              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph')) ||
-              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) ||
-              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))"
-            :label="$t('chart.color_variety_check')"
-            class="form-item"
-          >
-            <el-checkbox v-model="colorForm.variety" @change="changeColorCase" />
+          <el-form-item v-show="chart.type && 
+              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph' || chart.type === 'pie-rose-gradient')) || 
+              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) || 
+              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))" 
+            :label="$t('chart.color_variety_check')" class="form-item">
+            <el-checkbox v-model="colorForm.variety" @change="changeColorCase"></el-checkbox>
           </el-form-item>
           <el-form-item v-show="chart.type && !chart.type.includes('table')&&!chart.type.includes('vertical')&&!chart.type.includes('dialog') && !chart.type.includes('roll')&&!chart.type.includes('dialog') && !chart.type.includes('text') && chart.type !== 'label'" :label="$t('chart.color_case')" class="form-item">
             <el-popover
@@ -25,7 +22,7 @@
                   <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorOption">
                     <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
                       <div style="float: left">
-                        <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c}" />
+                        <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c,border: '1px solid #eeeeee'}" />
                       </div>
                       <span style="margin-left: 4px;">{{ option.name }}</span>
                     </el-option>
@@ -37,7 +34,7 @@
                   <span>
                     <el-radio-group v-model="customColor" class="color-type">
                       <el-radio v-for="(c,index) in colorForm.colors" :key="index" :label="c" style="padding: 2px;" @change="switchColor(index)">
-                        <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
+                        <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c,border: '1px solid #eeeeee'}" />
                       </el-radio>
                     </el-radio-group>
                   </span>
@@ -50,18 +47,15 @@
                 </div>
               </div>
               <div slot="reference" style="cursor: pointer;margin-top: 2px;width: 180px;">
-                <span v-for="(c,index) in colorForm.colors" :key="index" :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
+                <span v-for="(c,index) in colorForm.colors" :key="index" :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c,border: '1px solid #eeeeee'}" />
               </div>
             </el-popover>
           </el-form-item>
-          <el-form-item
-            v-show="colorForm.variety && chart.type &&
-              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph')) ||
-              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) ||
-              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))"
-            :label="$t('chart.variety_color')"
-            class="form-item"
-          >
+          <el-form-item v-show="colorForm.variety && chart.type && 
+              ((chart.render === 'echarts' && (chart.type.includes('bar') || chart.type === 'graph' || chart.type === 'pie-rose-gradient')) || 
+              (chart.render === 'antv' && (chart.type === 'bar' || chart.type === 'bar-horizontal')) || 
+              chart.type ==='line-stack' || chart.type.includes('3dcolumn'))" 
+            :label="$t('chart.variety_color')" class="form-item">
             <el-popover
               placement="bottom"
               width="400"
@@ -70,10 +64,10 @@
               <div style="padding: 6px 10px;">
                 <div>
                   <span class="color-label">{{ $t('chart.system_case') }}</span>
-                  <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColor1Option">
+                  <el-select v-model="colorForm.value1" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColor1Option">
                     <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
                       <div style="float: left">
-                        <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c}" />
+                        <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c,border: '1px solid #eeeeee'}" />
                       </div>
                       <span style="margin-left: 4px;">{{ option.name }}</span>
                     </el-option>
@@ -85,7 +79,7 @@
                   <span>
                     <el-radio-group v-model="custom1Color" class="color-type">
                       <el-radio v-for="(c,index) in colorForm.colors1" :key="index" :label="c" style="padding: 2px;" @change="switchColor1(index)">
-                        <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
+                        <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c,border: '1px solid #eeeeee'}" />
                       </el-radio>
                     </el-radio-group>
                   </span>
@@ -98,7 +92,7 @@
                 </div>
               </div>
               <div slot="reference" style="cursor:  pointer;margin-top: 2px;width: 180px;">
-                <span v-for="(v,index) in colorForm.colors1" :key="index" :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: v}" />
+                <span v-for="(v,index) in colorForm.colors1" :key="index" :style="{width: '20px',height:  '20px',display:'inline-block',backgroundColor: v,border: '1px solid #eeeeee'}"></span>
               </div>
             </el-popover>
           </el-form-item>
@@ -115,7 +109,15 @@
           <el-form-item v-show="(chart.type && (chart.type.includes('text') || chart.type === 'label')) || sourceType==='panelTable'" :label="$t('chart.dimension_color')" class="form-item">
             <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
+
+          <el-form-item v-show="chart.type && chart.type === 'pie-rose-gradient'" :label="$t('chart.inner_ring_color')" class="form-item">
+            <el-color-picker v-model="colorForm.innerRing" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
+          <el-form-item v-show="chart.type && chart.type === 'pie-rose-gradient'" :label="$t('chart.outer_ring_color')" class="form-item">
+            <el-color-picker v-model="colorForm.outerRing" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+          </el-form-item>
         </div>
+
         <div v-if="sourceType==='view' || sourceType==='panelTable'">
           <el-form-item v-show="(chart.type && (chart.type.includes('table')||chart.type.includes('roll')||chart.type.includes('dialog'))) || sourceType==='panelTable'" :label="$t('chart.table_header_bg')" class="form-item">
             <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
@@ -260,7 +262,12 @@ export default {
           name: this.$t('chart.color_spiritual'),
           value: 'spiritual',
           colors: ['#00a3af', '#4da798', '#57baaa', '#62d0bd', '#6ee4d0', '#86e7d6', '#aeede1', '#bde1e6', '#e5e5e5']
-        }
+        },
+        {
+          name: this.$t('chart.color_blank'),
+          value: 'blank',
+          colors: ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff']
+        },
       ],
       colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE)),
       customColor: null,
@@ -308,7 +315,7 @@ export default {
     changeColor1Option() {
       const that = this
       const items = this.colorCases.filter(ele => {
-        return ele.value === that.colorForm.value
+        return ele.value === that.colorForm.value1
       })
       // const val = JSON.parse(JSON.stringify(this.colorForm))
       // val.value = items[0].value

@@ -1,5 +1,6 @@
 export const DEFAULT_COLOR_CASE = {
   value: 'default',
+  value1: 'default',
   bgColor: '#031F3E',
   variety: false,
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
@@ -14,7 +15,10 @@ export const DEFAULT_COLOR_CASE = {
   tableStripe: true,
   dimensionColor: '#000000',
   quotaColor: '#000000',
-  tableBorderColor: '#cfdaf4'
+  tableBorderColor: '#cfdaf4',
+
+  innerRing: "#eeeeee",
+  outerRing: '#eeeeee',
 }
 export const DEFAULT_SIZE = {
   automatic: false,
@@ -37,6 +41,8 @@ export const DEFAULT_SIZE = {
   lineArea: false,
   pieInnerRadius: 0,
   pieOuterRadius: 80,
+  pieCircleLeft: 50,
+  pieCircleTop: 50,
   pieRoseOffset: 10,
   pieRoseType: 'radius',
   pieRoseRadius: 5,
