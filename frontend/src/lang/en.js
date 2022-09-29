@@ -1249,6 +1249,7 @@ export default {
     liquid_shape_rect: 'Rect',
     dimension_or_quota: 'Dimension Or Quota',
     axis_value_split_count: 'Tick Count',
+    axis_value_split_space: 'Tick Interval',
     chart_waterfall: 'Waterfall',
     pie_inner_radius_percent: 'Inner Radius(%)',
     pie_outer_radius_size: 'Outer Radius',
