@@ -454,6 +454,7 @@ public class SysUserService {
         if (StringUtils.isNotBlank(userName)) {
             example.createCriteria().andUsernameEqualTo(userName);
             List<SysUser> users = sysUserMapper.selectByExample(example);
+            example.clear();
             if (CollectionUtils.isNotEmpty(users)) {
                 throw new RuntimeException("用户ID【" + userName + "】已存在,请联系管理员");
             }
@@ -462,14 +463,16 @@ public class SysUserService {
         if (StringUtils.isNotBlank(nickName)) {
             example.createCriteria().andNickNameEqualTo(nickName);
             List<SysUser> users = sysUserMapper.selectByExample(example);
+            example.clear();
             if (CollectionUtils.isNotEmpty(users)) {
                 throw new RuntimeException("用户姓名【" + nickName + "】已存在,请联系管理员");
             }
         }
-        example.clear();
+
         if (StringUtils.isNotBlank(email)) {
             example.createCriteria().andEmailEqualTo(email);
             List<SysUser> users = sysUserMapper.selectByExample(example);
+            example.clear();
             if (CollectionUtils.isNotEmpty(users)) {
                 throw new RuntimeException("用户邮箱【" + email + "】已存在,请联系管理员");
             }
