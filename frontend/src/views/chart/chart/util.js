@@ -276,13 +276,13 @@ export const TYPE_CONFIGS = [
     icon: 'bar'
   },
   // 暂时隐藏环形朱柱状图
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_compare',
-  //   value: 'bar-annular',
-  //   title: '环形柱状图',
-  //   icon: 'bar'
-  // },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-annular',
+    title: '环形柱状图',
+    icon: 'bar'
+  },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
@@ -350,6 +350,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_distribute',
+    value: 'pie-rose-gradient',
+    title: 'chart.chart_pie_rose_gradient',
+    icon: 'pie-rose-gradient'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
     value: 'radar',
     title: 'chart.chart_radar',
     icon: 'radar'
@@ -412,6 +419,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_graph',
     icon: 'graph'
   },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_distribute',
+  //   value: 'pyramid',
+  //   title: '金字塔图',
+  //   icon: 'pyramid'
+  // },
 
   /* 下面是highcharts图表类型 */
   // highcharts

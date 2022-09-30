@@ -45,6 +45,7 @@ import {
 } from '../chart/chart'
 import {
   baseBarOption,
+  pyramidBarOption,
   triangleBarOption,
   annularBarOption,
   annularBarOptions,
@@ -61,6 +62,7 @@ import {
 import {
   basePieOption,
   rosePieOption,
+  rosePieGradientOption,
   texturePieOption
   // newHartOption
 } from '../chart/pie/pie'
@@ -210,6 +212,8 @@ export default {
       // console.log(this.$store.state.canvasStyleData)
       if (chart.type === 'bar') {
         chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'pyramid') {
+        chart_option = pyramidBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-circular') {
         chart_option = annularBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-annular') {
@@ -230,6 +234,8 @@ export default {
         chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie-rose') {
         chart_option = rosePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'pie-rose-gradient') {
+        chart_option = rosePieGradientOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie-txture') {
         chart_option = texturePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'diagram') {
