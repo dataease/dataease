@@ -791,6 +791,7 @@ export default {
     title_style: '标题样式',
     text_fontsize: '字体大小',
     text_color: '字体颜色',
+    text_position: '字体位置',
     internal_display: '百分比内显',
     progress_width: '进度条宽度',
     graphic_color: '图形颜色',
