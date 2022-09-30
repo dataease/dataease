@@ -1,10 +1,9 @@
 <template>
-  <div class="dataset-db" @mouseup="mouseupDrag" v-loading="loading">
+  <div class="dataset-db" v-loading="loading">
     <p v-show="!showLeft" @click="showLeft = true" class="arrow-right">
       <i class="el-icon-d-arrow-right"></i>
     </p>
-    <div v-show="showLeft" @mousedown="mousedownDrag" :style="{ left: LeftWidth + 'px' }" class="drag-left"></div>
-    <div class="table-list" :style="{ width: LeftWidth + 'px' }" v-show="showLeft">
+    <div class="table-list" v-show="showLeft">
       <p class="select-ds">
         {{ $t('deDataset.select_data_source') }}
         <i @click="showLeft = false" class="el-icon-d-arrow-left"></i>
@@ -38,7 +37,7 @@
           没有找到相关内容
         </div>
       </div>
-      <div v-loading="dsLoading" v-else class="table-checkbox-list">
+      <div v-else class="table-checkbox-list">
         <el-checkbox-group v-model="checkTableList" size="small">
           <el-tooltip
             :disabled="t.enableCheck"
@@ -53,7 +52,6 @@
                 { active: activeName === t.name, 'not-allow': !t.enableCheck }
               ]"
               class="item"
-              :title="t.name"
               @click="setActiveName(t)"
             >
               <svg-icon v-if="!t.enableCheck" icon-class="Checkbox" style="margin-right: 8px"/>
@@ -183,7 +181,6 @@ export default {
   data() {
     return {
       showLeft: true,
-      LeftWidth: 240,
       tableLoading: false,
       loading: false,
       height: 400,
@@ -192,7 +189,6 @@ export default {
       searchTable: '',
       options: [],
       dataSource: '',
-      dsLoading: false,
       tables: [],
       checkTableList: [],
       mode: '0',
@@ -227,7 +223,6 @@ export default {
     },
     dataSource(val) {
       if (val) {
-        this.dsLoading = true
         this.checkTableList = []
         this.activeName = ''
         const dsName = this.options.find((ele) => ele.id === val).name
@@ -239,8 +234,6 @@ export default {
             this.$set(ele, 'nameExsit', false)
           })
           this.avilibelTable = !this.tableData.some((ele) => ele.enableCheck)
-        }).finally(() => {
-          this.dsLoading = false
         })
         for (let i = 0; i < this.options.length; i++) {
           if (this.options[i].id === val) {
@@ -292,27 +285,6 @@ export default {
     })
   },
   methods: {
-    mousedownDrag() {
-      document
-        .querySelector('.dataset-db')
-        .addEventListener('mousemove', this.caculateHeight)
-    },
-    mouseupDrag() {
-      document
-        .querySelector('.dataset-db')
-        .removeEventListener('mousemove', this.caculateHeight)
-    },
-    caculateHeight(e) {
-      if (e.pageX < 240) {
-        this.LeftWidth = 240
-        return
-      }
-      if (e.pageX > 500) {
-        this.LeftWidth = 500
-        return
-      }
-      this.LeftWidth = e.pageX
-    },
     nameExsitValidator(activeIndex) {
       this.tableData[activeIndex].nameExsit =
         this.nameList
@@ -426,15 +398,6 @@ export default {
   position: relative;
   width: 100%;
 
-  .drag-left {
-    position: absolute;
-    height: calc(100vh - 56px);
-    width: 2px;
-    top: 0;
-    z-index: 5;
-    cursor: col-resize;
-  }
-
 
   .arrow-right {
     position: absolute;
@@ -489,7 +452,7 @@ export default {
       overflow-y: auto;
       .item {
         height: 40px;
-        width: 100%;
+        width: 215px;
         border-radius: 4px;
         display: flex;
         align-items: center;
