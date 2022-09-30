@@ -169,13 +169,12 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
       /* if (customAttr.size) {
           chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
         }*/
-
+      chart_option.series[0].depth = customAttr.size.depth ? customAttr.size.depth : 20
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
         const y = valueArr[i]
         y.name = chart.data.x[i]
         y.y = y.value
-
         chart_option.series[0].data.push(y)
       }
     }

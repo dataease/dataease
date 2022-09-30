@@ -436,6 +436,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_pie',
     icon: '3dpie'
   },
+  // {
+  //   render: 'highcharts',
+  //   category: 'chart.chart_type_distribute',
+  //   value: '3dpie-annular',
+  //   title: 'chart.chart_pie',
+  //   icon: '3dpie-annular'
+  // },
   {
     render: 'highcharts',
     category: 'chart.chart_type_compare',
