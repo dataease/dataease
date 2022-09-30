@@ -252,6 +252,9 @@ export default {
     },
     isCurrentEdit() {
       return this.isEdit && this.curComponent && this.curComponent.id === this.element.id
+    },
+    themeStyle() {
+      return this.element.commonBackground
     }
   },
   watch: {
@@ -282,17 +285,34 @@ export default {
           this.$store.commit('setCurActiveTabInner', null)
         }
       }
-
+    },
+    'themeStyle.color'(value, old) {
+      if (value !== old) {
+        this.setContentThemeStyle()
+      }
+    },
+    'themeStyle.commonBackground.color'(value, old) {
+      if (value !== old) {
+        this.setContentThemeStyle()
+      }
     }
   },
   created() {
     bus.$on('add-new-tab', this.addNewTab)
     this.activeTabName = this.element.options.tabList[0].name
+    this.setContentThemeStyle()
   },
   beforeDestroy() {
     bus.$off('add-new-tab', this.addNewTab)
   },
   methods: {
+    setContentThemeStyle() {
+      this.element.options.tabList.forEach(tab => {
+        if(tab.content && tab.content.type === 'view') {
+          tab.content.commonBackground = this.themeStyle ? JSON.parse(JSON.stringify(this.themeStyle)) : null
+        }
+      })
+    },
     beforeHandleCommond(item, param) {
       return {
         'command': item,
@@ -374,6 +394,8 @@ export default {
           component.propValue = propValue
           component.filters = []
           component.linkageFilters = []
+          if(this.themeStyle)
+          component.commonBackground = JSON.parse(JSON.stringify(this.themeStyle))
         }
       })
       component.id = newComponentId

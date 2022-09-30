@@ -942,10 +942,30 @@ public class ChartDataBuild {
     public static Map<String, Object> transTableNormal(Map<String, List<ChartViewFieldDTO>> fieldMap, ChartViewWithBLOBs view, List<String[]> data, List<String> desensitizationList) {
 
         List<ChartViewFieldDTO> fields = new ArrayList<>();
+        List<ChartViewFieldDTO> yfields = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fieldMap.get("xAxis"))) fields.addAll(fieldMap.get("xAxis"));
-        if (CollectionUtils.isNotEmpty(fieldMap.get("tooltipAxis"))) fields.addAll(fieldMap.get("tooltipAxis"));
-        if (CollectionUtils.isNotEmpty(fieldMap.get("labelAxis"))) fields.addAll(fieldMap.get("labelAxis"));
+        if (CollectionUtils.isNotEmpty(fieldMap.get("tooltipAxis"))) {
+            fieldMap.get("tooltipAxis").forEach(field -> {
+                Integer deType = field.getDeType();
+                if(deType == 2 || deType == 3) {
+                    yfields.add(field);
+                } else {
+                    fields.add(field);
+                }
+            });
+        }
+        if (CollectionUtils.isNotEmpty(fieldMap.get("labelAxis"))) {
+            fieldMap.get("labelAxis").forEach(field -> {
+                Integer deType = field.getDeType();
+                if(deType == 2 || deType == 3) {
+                    yfields.add(field);
+                } else {
+                    fields.add(field);
+                }
+            });
+        }
         if (CollectionUtils.isNotEmpty(fieldMap.get("yAxis"))) fields.addAll(fieldMap.get("yAxis"));
+        if (CollectionUtils.isNotEmpty(yfields)) fields.addAll(yfields);
         return transTableNormal(fields, view, data, desensitizationList);
     }
 

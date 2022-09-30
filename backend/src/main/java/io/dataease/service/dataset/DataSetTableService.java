@@ -1130,9 +1130,8 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         DataTableInfoDTO dataTableInfo = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
-        String sql = "SELECT * FROM " + dataTableInfo.getTable();
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-        String sqlAsTable = qp.createSQLPreview(sql, null);
+        String sqlAsTable = qp.createSQLPreview(qp.sqlForPreview(dataTableInfo.getTable(), ds), null);
         datasourceRequest.setQuery(sqlAsTable);
         datasourceRequest.setTable(dataTableInfo.getTable());
         Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
@@ -2190,7 +2189,7 @@ public class DataSetTableService {
 
     public DataSetDetail getDatasetDetail(String id) {
         DataSetDetail dataSetDetail = new DataSetDetail();
-        DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
+        DataSetTableDTO table = extDataSetTableMapper.findOneDetails(id);
         dataSetDetail.setTable(table);
         if (ObjectUtils.isNotEmpty(table)) {
             Datasource datasource = datasourceMapper.selectByPrimaryKey(table.getDataSourceId());

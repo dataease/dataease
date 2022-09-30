@@ -7,10 +7,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.plugins.common.constants.DeTypeConstants;
-import io.dataease.plugins.common.constants.datasource.PgConstants;
-import io.dataease.plugins.common.constants.datasource.RedshiftConstants;
-import io.dataease.plugins.common.constants.datasource.SQLConstants;
-import io.dataease.plugins.common.constants.datasource.SqlServerSQLConstants;
+import io.dataease.plugins.common.constants.datasource.*;
 import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
@@ -1195,5 +1192,12 @@ public class RedshiftQueryProvider extends QueryProvider {
         } else {
             return sql;
         }
+    }
+
+    @Override
+    public String sqlForPreview(String table, Datasource ds){
+        String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+        schema = String.format(PgConstants.KEYWORD_TABLE, schema);
+        return "SELECT * FROM " + schema + "." + String.format(PgConstants.KEYWORD_TABLE, table);
     }
 }
