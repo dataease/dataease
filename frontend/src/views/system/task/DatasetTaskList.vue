@@ -163,10 +163,10 @@
             <span
               v-if="scope.row.lastExecStatus"
               :class="[`de-${scope.row.lastExecStatus}-pre`, 'de-status']"
-              >{{
-                $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
-              }}
-            <svg-icon style="cursor: pointer;" v-if="scope.row.lastExecStatus === 'Error'"  @click="showErrorMassage(scope.row.msg)" icon-class="icon-maybe" class="field-icon-location" />
+            >{{
+               $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
+             }}
+              <svg-icon v-if="scope.row.lastExecStatus === 'Error'" style="cursor: pointer;" icon-class="icon-maybe" class="field-icon-location" @click="showErrorMassage(scope.row.msg)" />
             </span>
             <span v-else>-</span>
           </template>
@@ -202,8 +202,9 @@
           :label="$t('dataset.task.task_status')"
         >
           <template slot-scope="scope">
-            <span :class="[`de-${scope.row.status}-result`, 'de-status']"
-              >{{ $t(`dataset.task.${scope.row.status.toLocaleLowerCase()}`) }}
+            <span
+              :class="[`de-${scope.row.status}-result`, 'de-status']"
+            >{{ $t(`dataset.task.${scope.row.status.toLocaleLowerCase()}`) }}
             </span>
           </template>
         </el-table-column>
@@ -589,12 +590,13 @@ export default {
     },
     selectDataset(row) {
       if (row) {
-        const { datasetName, id } = row
+        const { datasetName, id, tableId } = row
         this.$router.push({
           path: '/task-ds-form',
           query: {
             datasetName,
-            id
+            id,
+            tableId
           }
         })
       } else {
