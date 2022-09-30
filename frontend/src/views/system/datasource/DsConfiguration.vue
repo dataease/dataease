@@ -12,11 +12,8 @@
       <template v-if="form.type == 'api'">
         <div class="de-row-rules flex-space">
           <span>{{ $t('datasource.data_table') }}</span>
-          <deBtn
-            icon="el-icon-plus"
-            type="primary"
-            @click="addApiItem(undefined)"
-          >{{ $t('commons.add') }}</deBtn>
+           <el-button style="min-width: 80px;
+    font-size: 14px;padding: 8px 15px;" icon="el-icon-plus" size="small" @click="() => addApiItem()" type="primary">{{ $t('commons.add') }}</el-button>
         </div>
         <el-empty
           v-if="!form.apiConfiguration.length"
@@ -929,6 +926,7 @@ export default {
         },
         { label: this.$t('dataset.location'), value: 5 }
       ],
+      errMsg: [],
       height: 500,
       disabledNext: false,
       authMethodList: [
@@ -1128,10 +1126,18 @@ export default {
       this.$refs[`apiTable${name}`][0].doClose()
     },
     handleCheckAllChange(row) {
+      this.errMsg = []
       this.handleCheckChange(row)
       this.apiItem.fields = []
       this.handleFiledChange(row)
       this.previewData()
+      if (this.errMsg.length) {
+        this.$message.error(
+                 [...new Set(this.errMsg)].join(',') +
+                   ', ' +
+                   i18n.t('datasource.has_repeat_field_name')
+               )
+      }
     },
     handleFiledChange() {
       for (var i = 0; i < this.apiItem.jsonFields.length; i++) {
@@ -1151,15 +1157,11 @@ export default {
         if (jsonFields[i].checked && jsonFields[i].children === undefined) {
           for (var j = 0; j < this.apiItem.fields.length; j++) {
             if (this.apiItem.fields[j].name === jsonFields[i].name) {
+              jsonFields[i].checked = false
               this.$nextTick(() => {
                 jsonFields[i].checked = false
               })
-              this.$message.error(
-                jsonFields[i].name +
-                  ', ' +
-                  i18n.t('datasource.has_repeat_field_name')
-              )
-              return
+              this.errMsg.push(jsonFields[i].name)
             }
           }
           this.apiItem.fields.push(jsonFields[i])
