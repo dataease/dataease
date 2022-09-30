@@ -26,8 +26,8 @@
         v-for="ele in templateListComputed"
         :key="ele.name"
       >
-        <svg-icon icon-class="scene"/>
-        <span>{{ ele.name }}</span>
+        <svg-icon icon-class="scene" class="de-icon-sence"/>
+        <span class="text-template-overflow" :title="ele.name">{{ ele.name }}</span>
         <span @click.stop class="more">
           <el-dropdown
             trigger="click"
@@ -175,6 +175,14 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    .text-template-overflow{
+      display: inline-block;
+      max-width: 87%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
 
     .folder {
       color: #8f959e;

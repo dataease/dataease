@@ -77,7 +77,7 @@
                 </span>
                 <span v-if="data.status === 'Warning'">
                   <svg-icon
-                    icon-class="exclamationmark2"
+                    icon-class="de-ds-warning"
                     class="ds-icon-scene"
                   />
                 </span>
