@@ -22,6 +22,7 @@
 <script>
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
+import eventBus from '@/components/canvas/utils/eventBus'
 export default {
   name: 'DeFrame',
   props: {
@@ -68,6 +69,7 @@ export default {
   },
   mounted() {
     bus.$on('frameLinksChange-' + this.element.id, this.frameLinksChange)
+    eventBus.$on('startMoveIn',this.frameLinksChange)
   },
   beforeDestroy() {
     bus.$off('frameLinksChange-' + this.element.id, this.frameLinksChange)
