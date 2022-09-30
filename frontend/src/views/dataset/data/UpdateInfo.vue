@@ -1021,7 +1021,6 @@ export default {
           simple_cron_value: 1
         }
       }
-      this.sql = ''
     },
     showSQL(val) {
       this.sql = val || ''
