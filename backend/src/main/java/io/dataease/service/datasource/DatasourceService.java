@@ -310,7 +310,7 @@ public class DatasourceService {
             }
             return ResultHolder.success(datasourceDTO);
         } catch (Exception e) {
-            return ResultHolder.error(Translator.get("I18N_DS_INVALID"), e.getMessage());
+            return ResultHolder.error(Translator.get("I18N_DS_INVALID") + ": " + e.getMessage());
         }
     }
 
@@ -350,7 +350,7 @@ public class DatasourceService {
             return ResultHolder.success("Success");
         } catch (Exception e) {
             datasourceStatus = "Error";
-            return ResultHolder.error(Translator.get("I18N_DS_INVALID"), e.getMessage());
+            return ResultHolder.error(Translator.get("I18N_DS_INVALID") + ": " + e.getMessage());
         } finally {
             Datasource record = new Datasource();
             record.setStatus(datasourceStatus);
