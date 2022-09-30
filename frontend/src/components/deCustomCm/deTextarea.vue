@@ -27,8 +27,9 @@ export default {
       update: function (el, binding) {
         const lg = binding.value?.length || 0;
         const count = el.querySelector(".el-input__count");
+        if (!count) return
         if (!lg) {
-          if (count.classList.contains("no-zore")) {
+          if (count?.classList?.contains("no-zore")) {
             count.classList.remove("no-zore");
           }
           count.innerHTML = "0/200";
@@ -44,6 +45,7 @@ export default {
         num.style.color = "#1F2329";
         total.innerHTML = "/200";
         num.innerHTML = lg;
+        if (!newCount) return
         newCount.classList.add("el-input__count", "no-zore");
         newCount.appendChild(num);
         newCount.appendChild(total);
