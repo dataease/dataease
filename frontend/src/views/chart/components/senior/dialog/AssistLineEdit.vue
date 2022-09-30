@@ -37,9 +37,9 @@
             </el-option>
           </el-select>
           <el-select v-model="item.summary" size="mini" class="select-item" :placeholder="$t('chart.aggregation')" @change="changeAssistLine">
-            <el-option v-if="item.curField && item.curField.id" key="avg" value="avg" :label="$t('chart.avg')" />
-            <el-option v-if="item.curField && item.curField.id" key="max" value="max" :label="$t('chart.max')" />
-            <el-option v-if="item.curField && item.curField.id" key="min" value="min" :label="$t('chart.min')" />
+            <el-option key="avg" value="avg" :label="$t('chart.avg')" />
+            <el-option key="max" value="max" :label="$t('chart.max')" />
+            <el-option key="min" value="min" :label="$t('chart.min')" />
           </el-select>
         </el-col>
         <el-col :span="4">
