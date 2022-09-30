@@ -276,13 +276,13 @@ export const TYPE_CONFIGS = [
     icon: 'bar'
   },
   // 暂时隐藏环形朱柱状图
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_compare',
-  //   value: 'bar-annular',
-  //   title: '环形柱状图',
-  //   icon: 'bar'
-  // },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-annular',
+    title: '环形柱状图',
+    icon: 'bar'
+  },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
