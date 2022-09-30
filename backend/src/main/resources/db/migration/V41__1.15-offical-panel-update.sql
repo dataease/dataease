@@ -790,3 +790,6 @@ COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
+delete from dataset_table where id ='4e603bf1-84f0-4234-b789-b68adfe45f5b';
+delete from dataset_table_field where table_id='4e603bf1-84f0-4234-b789-b68adfe45f5b';
+
