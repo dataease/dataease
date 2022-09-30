@@ -24,6 +24,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.annotation.Resource;
 import java.io.IOException;
 
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,9 +110,10 @@ public class SystemParameterController {
         return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
 
-    @GetMapping("/filedown/{fileId}/{fileName}")
-    public ResponseEntity<ByteArrayResource> down(@PathVariable("fileId") String fileId, @PathVariable("fileName") String fileName) throws Exception {
-
+    @GetMapping("/filedown/{fileId}/{fileName}/{suffix}")
+    public ResponseEntity<ByteArrayResource> down(@PathVariable("fileId") String fileId, @PathVariable("fileName") String fileName, @PathVariable("suffix") String suffix) throws Exception {
+        fileName = URLDecoder.decode(fileName, "UTF-8");
+        fileName += ("." + suffix);
         return GlobalFileUtil.down(fileId, fileName);
     }
 
