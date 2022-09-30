@@ -781,6 +781,8 @@ public class MysqlQueryProvider extends QueryProvider {
             StringBuilder stringBuilder = new StringBuilder();
             if (f.getDeExtractType() == 4) { // 处理 tinyint
                 stringBuilder.append("concat(`").append(f.getOriginName()).append("`,'') AS ").append(f.getDataeaseName());
+            } if (f.getDeExtractType() == 1 && f.getType().equalsIgnoreCase("YEAR")) { // 处理 YEAR
+                stringBuilder.append("").append(String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + f.getOriginName() + ",'-01-01')", MySQLConstants.DEFAULT_DATE_FORMAT)).append(" AS ").append(f.getDataeaseName());
             } else {
                 stringBuilder.append("`").append(f.getOriginName()).append("` AS ").append(f.getDataeaseName());
             }
