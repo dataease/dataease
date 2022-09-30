@@ -596,6 +596,7 @@ export default {
       handler() {
         if (hasDataPermission('manage', this.param.privileges)) {
           this.listTask()
+          this.getIncrementalConfig()
         }
         this.listTaskLog()
       },
@@ -792,19 +793,6 @@ export default {
       return false
       // !hasDataPermission('manage',task.privileges)
     },
-    deleteTask(task) {
-      const options = {
-        title: '确定删除该任务吗？',
-        type: 'primary',
-        cb: () => {
-          post('/dataset/task/delete/' + task.id, null).then((response) => {
-            this.openMessageSuccess('commons.delete_success')
-            this.initSearch()
-          })
-        }
-      }
-      this.handlerConfirm(options)
-    },
     selectDataset(row) {
       this.disableForm = this.disableEdit(row)
       this.addTask(row)
@@ -866,6 +854,23 @@ export default {
           })
         } else {
           return false
+        }
+      })
+    },
+    getIncrementalConfig() {
+      post('/dataset/table/incrementalConfig', { tableId: this.table.id }).then(response => {
+        this.incrementalConfig = response.data
+        if (this.incrementalConfig.incrementalAdd.length === 0 && this.incrementalConfig.incrementalDelete.length === 0) {
+          this.incrementalUpdateType = 'incrementalAdd'
+          this.sql = ''
+          return
+        }
+        if (this.incrementalConfig.incrementalAdd.length > 0) {
+          this.incrementalUpdateType = 'incrementalAdd'
+          this.sql = this.incrementalConfig.incrementalAdd
+        } else {
+          this.incrementalUpdateType = 'incrementalDelete'
+          this.sql = this.incrementalConfig.incrementalDelete
         }
       })
     },

@@ -1,5 +1,5 @@
 <template>
-  <de-layout-content :header="header" backPath="/system/system-task/dataset">
+  <de-layout-content :header="header" back-path="/system/system-task/dataset">
     <div class="dataset-editer-form">
       <div class="w600">
         <el-form
@@ -12,9 +12,9 @@
           :rules="taskFormRules"
         >
           <el-form-item
-            @click.native="selectDataset"
             :label="$t('chart.select_dataset')"
             prop="datasetName"
+            @click.native="selectDataset"
           >
             <el-input
               v-model="taskForm.datasetName"
@@ -37,11 +37,10 @@
                 $t("dataset.all_scope")
               }}</el-radio>
               <el-radio label="add_scope">
-                {{ $t("dataset.add_scope") }}</el-radio
-              >
+                {{ $t("dataset.add_scope") }}</el-radio>
             </el-radio-group>
           </el-form-item>
-          <div class="add-scope-cont" v-if="taskForm.type === 'add_scope'">
+          <div v-if="taskForm.type === 'add_scope'" class="add-scope-cont">
             <el-form-item
               prop="type"
               :label="$t('dataset.incremental_update_type')"
@@ -65,16 +64,14 @@
                     type="text"
                     size="small"
                     @click="insertParamToCodeMirror('${__last_update_time__}')"
-                    >{{ $t("dataset.last_update_time") }}</el-button
-                  >
+                  >{{ $t("dataset.last_update_time") }}</el-button>
                   <el-button
                     type="text"
                     size="small"
                     @click="
                       insertParamToCodeMirror('${__current_update_time__}')
                     "
-                    >{{ $t("dataset.current_update_time") }}</el-button
-                  >
+                  >{{ $t("dataset.current_update_time") }}</el-button>
                 </div>
               </div>
               <div class="codemirror-cont">
@@ -102,7 +99,7 @@
               }}</el-radio>
             </el-radio-group>
           </el-form-item>
-          <div class="execute-rate-cont" v-if="taskForm.rate !== 'SIMPLE'">
+          <div v-if="taskForm.rate !== 'SIMPLE'" class="execute-rate-cont">
             <el-form-item
               v-if="taskForm.rate === 'SIMPLE_CRON'"
               :label="$t('dataset.execute_rate')"
@@ -116,7 +113,7 @@
                   :min="1"
                   size="small"
                   @change="onSimpleCronChange()"
-                ></el-input-number>
+                />
                 <el-select
                   v-model="taskForm.extraData.simple_cron_type"
                   filterable
@@ -131,14 +128,14 @@
               </div>
             </el-form-item>
             <el-form-item
-              prop="cron"
               v-if="taskForm.rate === 'CRON' && showCron"
+              prop="cron"
               :label="$t('emailtask.cron_exp')"
             >
               <el-popover v-model="cronEdit">
                 <cron
-                  :isRate="taskForm.rate === 'CRON'"
                   v-model="taskForm.cron"
+                  :is-rate="taskForm.rate === 'CRON'"
                   @close="cronEdit = false"
                 />
                 <el-input
@@ -161,8 +158,7 @@
                 type="datetime"
                 :placeholder="$t('dataset.start_time')"
                 size="small"
-              >
-              </el-date-picker>
+              />
               <svg-icon icon-class="icon_calendar_outlined" class="icon-calendar-outlined" />
             </el-form-item>
             <el-form-item
@@ -188,13 +184,13 @@
         </el-form>
         <table-selector
           ref="tableSelector"
-          previewForTask="true"
+          preview-for-task="true"
           privileges="manage"
-          @getTableId="getTableId"
           :mode="1"
           :clear-empty-dir="true"
           :custom-type="['db', 'sql', 'api']"
           show-mode="datasetTask"
+          @getTableId="getTableId"
         />
       </div>
       <div v-if="!disableForm" class="de-foot-layout">
@@ -210,30 +206,30 @@
 </template>
 
 <script>
-import { post } from "@/api/dataset/dataset";
-import DeLayoutContent from "@/components/business/DeLayoutContent";
-import { hasDataPermission } from "@/utils/permission";
-import msgCfm from "@/components/msgCfm/index";
+import { post } from '@/api/dataset/dataset'
+import DeLayoutContent from '@/components/business/DeLayoutContent'
+import { hasDataPermission } from '@/utils/permission'
+import msgCfm from '@/components/msgCfm/index'
 
-import cron from "@/components/cron/cron";
-import { codemirror } from "vue-codemirror";
-import "codemirror/lib/codemirror.css";
-import "codemirror/theme/eclipse.css";
-import "codemirror/mode/sql/sql.js";
-import "codemirror/addon/selection/active-line.js";
-import "codemirror/addon/edit/closebrackets.js";
-import "codemirror/mode/clike/clike.js";
-import "codemirror/addon/edit/matchbrackets.js";
-import "codemirror/addon/comment/comment.js";
-import "codemirror/addon/dialog/dialog.js";
-import "codemirror/addon/dialog/dialog.css";
-import "codemirror/addon/search/searchcursor.js";
-import "codemirror/addon/search/search.js";
-import "codemirror/keymap/emacs.js";
-import "codemirror/addon/hint/show-hint.css";
-import "codemirror/addon/hint/sql-hint";
-import "codemirror/addon/hint/show-hint";
-import TableSelector from "./TableSelector";
+import cron from '@/components/cron/cron'
+import { codemirror } from 'vue-codemirror'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/theme/eclipse.css'
+import 'codemirror/mode/sql/sql.js'
+import 'codemirror/addon/selection/active-line.js'
+import 'codemirror/addon/edit/closebrackets.js'
+import 'codemirror/mode/clike/clike.js'
+import 'codemirror/addon/edit/matchbrackets.js'
+import 'codemirror/addon/comment/comment.js'
+import 'codemirror/addon/dialog/dialog.js'
+import 'codemirror/addon/dialog/dialog.css'
+import 'codemirror/addon/search/searchcursor.js'
+import 'codemirror/addon/search/search.js'
+import 'codemirror/keymap/emacs.js'
+import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/addon/hint/sql-hint'
+import 'codemirror/addon/hint/show-hint'
+import TableSelector from './TableSelector'
 
 export default {
   components: { cron, codemirror, TableSelector, DeLayoutContent },
@@ -242,80 +238,80 @@ export default {
     return {
       disableForm: false,
       table: {
-        name: "",
-        id: "",
+        name: '',
+        id: ''
       },
       showCron: false,
       taskForm: {
-        name: "",
-        type: "all_scope",
-        startTime: "",
-        tableId: "",
-        rate: "SIMPLE",
-        cron: "",
-        endTime: "",
-        end: "0",
+        name: '',
+        type: 'all_scope',
+        startTime: '',
+        tableId: '',
+        rate: 'SIMPLE',
+        cron: '',
+        endTime: '',
+        end: '0',
         extraData: {
-          simple_cron_type: "hour",
-          simple_cron_value: 1,
-        },
+          simple_cron_type: 'hour',
+          simple_cron_value: 1
+        }
       },
       taskFormRules: {
         name: [
           {
             required: true,
-            message: this.$t("dataset.required"),
-            trigger: "change",
+            message: this.$t('dataset.required'),
+            trigger: 'change'
           },
           {
             min: 2,
             max: 50,
-            message: this.$t("datasource.input_limit_2_50", [2, 50]),
-            trigger: "blur",
-          },
+            message: this.$t('datasource.input_limit_2_50', [2, 50]),
+            trigger: 'blur'
+          }
         ],
         type: [
           {
             required: true,
-            message: this.$t("dataset.required"),
-            trigger: "change",
-          },
+            message: this.$t('dataset.required'),
+            trigger: 'change'
+          }
         ],
         startTime: [
           {
             required: true,
-            message: this.$t("components.time_is_required"),
-            trigger: "change",
-          },
+            message: this.$t('components.time_is_required'),
+            trigger: 'change'
+          }
         ],
         rate: [
           {
             required: true,
-            message: this.$t("dataset.required"),
-            trigger: "change",
-          },
+            message: this.$t('dataset.required'),
+            trigger: 'change'
+          }
         ],
         end: [
           {
             required: true,
-            message: this.$t("dataset.required"),
-            trigger: "change",
-          },
+            message: this.$t('dataset.required'),
+            trigger: 'change'
+          }
         ],
         cron: [
           {
             required: true,
-            message: this.$t("dataset.required"),
-            trigger: "change",
-          },
+            message: this.$t('dataset.required'),
+            trigger: 'change'
+          }
         ],
         datasetName: [
           {
             required: true,
-            message: this.$t("components.data_set_required"),
-            trigger: "change",
-          },
-        ],
+            message: this.$t('components.data_set_required'),
+            trigger: 'change'
+          }
+        ]
       },
       cronEdit: false,
       sqlOption: {
@@ -323,230 +319,231 @@ export default {
         styleActiveLine: true,
         lineNumbers: true,
         line: true,
-        mode: "text/x-sql",
-        theme: "eclipse",
+        mode: 'text/x-sql',
+        theme: 'eclipse',
         hintOptions: {
           // 自定义提示选项
-          completeSingle: false, // 当匹配只有一项的时候是否自动补全
-        },
+          completeSingle: false // 当匹配只有一项的时候是否自动补全
+        }
       },
       incrementalConfig: {},
-      sql: "",
-      incrementalUpdateType: "incrementalAdd",
-    };
+      sql: '',
+      incrementalUpdateType: 'incrementalAdd'
+    }
   },
   computed: {
     header() {
       return this.disableForm
-        ? "查看任务"
+        ? '查看任务'
         : this.taskDetail.id
-        ? "编辑任务"
-        : "添加任务";
-    },
+          ? '编辑任务'
+          : '添加任务'
+    }
   },
   created() {
-    const { datasetName, id } = this.$route.query;
-    this.taskDetail = { datasetName, id };
+    const { datasetName, id, tableId } = this.$route.query
+    this.taskDetail = { datasetName, id, tableId }
     if (!id) {
       this.taskForm.startTime = new Date()
-      return;
-    };
-    this.getTaskDetail(id);
+      return
+    }
+    this.getTaskDetail(id)
+    this.getIncrementalConfig(tableId)
   },
   methods: {
     getTaskDetail(id) {
       post(`/dataset/task/detail/${id}`, {}).then((res) => {
         if (res.data.extraData) {
-          res.data.extraData = JSON.parse(res.data.extraData);
+          res.data.extraData = JSON.parse(res.data.extraData)
         }
-        this.taskForm = res.data;
+        this.taskForm = res.data
         this.showCron = this.taskForm.rate === 'CRON'
-        this.disableForm = this.disableEdit();
-      });
+        this.disableForm = this.disableEdit()
+      })
     },
     selectDataset() {
-      if (this.taskForm.id) return;
-      this.$refs.tableSelector.init();
+      if (this.taskForm.id) return
+      this.$refs.tableSelector.init()
     },
     getTableId(id, name) {
-      this.taskForm.tableId = id;
-      this.$set(this.taskForm, "datasetName", name);
+      this.taskForm.tableId = id
+      this.$set(this.taskForm, 'datasetName', name)
     },
     onRateChange() {
-      if (this.taskForm.rate === "SIMPLE") {
-        this.taskForm.end = "0";
-        this.taskForm.endTime = "";
-        this.taskForm.cron = "";
-        this.showCron = false;
+      if (this.taskForm.rate === 'SIMPLE') {
+        this.taskForm.end = '0'
+        this.taskForm.endTime = ''
+        this.taskForm.cron = ''
+        this.showCron = false
       }
-      if (this.taskForm.rate === "SIMPLE_CRON") {
-        this.taskForm.cron = "0 0 0/1 *  * ? *";
-        this.showCron = false;
+      if (this.taskForm.rate === 'SIMPLE_CRON') {
+        this.taskForm.cron = '0 0 0/1 *  * ? *'
+        this.showCron = false
       }
-      if (this.taskForm.rate === "CRON") {
-        this.taskForm.cron = "00 00 * ? * * *";
+      if (this.taskForm.rate === 'CRON') {
+        this.taskForm.cron = '00 00 * ? * * *'
         this.$nextTick(() => {
-          this.showCron = true;
-        });
+          this.showCron = true
+        })
       }
     },
     disableEdit() {
-      const { privileges, rate, status } = this.taskForm;
+      const { privileges, rate, status } = this.taskForm
       return (
-        rate === "SIMPLE" ||
-        status === "Stopped" ||
-        !hasDataPermission("manage", privileges)
-      );
+        rate === 'SIMPLE' ||
+        status === 'Stopped' ||
+        !hasDataPermission('manage', privileges)
+      )
     },
     onCmReady(cm) {
       //   this.codemirror.setSize("-webkit-fill-available", "auto");
     },
     onCmFocus(cm) {},
     onCmCodeChange(newCode) {
-      this.sql = newCode;
-      this.$emit("codeChange", this.sql);
+      this.sql = newCode
+      this.$emit('codeChange', this.sql)
     },
     closeTask() {
-      this.$router.back();
+      this.$router.back()
     },
     onSimpleCronChange() {
-      if (this.taskForm.extraData.simple_cron_type === "minute") {
+      if (this.taskForm.extraData.simple_cron_type === 'minute') {
         if (
           this.taskForm.extraData.simple_cron_value < 1 ||
           this.taskForm.extraData.simple_cron_value > 59
         ) {
           this.$message({
-            message: this.$t("cron.minute_limit"),
-            type: "warning",
-            showClose: true,
-          });
-          this.taskForm.extraData.simple_cron_value = 59;
+            message: this.$t('cron.minute_limit'),
+            type: 'warning',
+            showClose: true
+          })
+          this.taskForm.extraData.simple_cron_value = 59
         }
         this.taskForm.cron =
-          "0 0/" + this.taskForm.extraData.simple_cron_value + " * * * ? *";
-        return;
+          '0 0/' + this.taskForm.extraData.simple_cron_value + ' * * * ? *'
+        return
       }
-      if (this.taskForm.extraData.simple_cron_type === "hour") {
+      if (this.taskForm.extraData.simple_cron_type === 'hour') {
         if (
           this.taskForm.extraData.simple_cron_value < 1 ||
           this.taskForm.extraData.simple_cron_value > 23
         ) {
           this.$message({
-            message: this.$t("cron.hour_limit"),
-            type: "warning",
-            showClose: true,
-          });
-          this.taskForm.extraData.simple_cron_value = 23;
+            message: this.$t('cron.hour_limit'),
+            type: 'warning',
+            showClose: true
+          })
+          this.taskForm.extraData.simple_cron_value = 23
         }
         this.taskForm.cron =
-          "0 0 0/" + this.taskForm.extraData.simple_cron_value + " * * ? *";
-        return;
+          '0 0 0/' + this.taskForm.extraData.simple_cron_value + ' * * ? *'
+        return
       }
-      if (this.taskForm.extraData.simple_cron_type === "day") {
+      if (this.taskForm.extraData.simple_cron_type === 'day') {
         if (
           this.taskForm.extraData.simple_cron_value < 1 ||
           this.taskForm.extraData.simple_cron_value > 31
         ) {
           this.$message({
-            message: this.$t("cron.day_limit"),
-            type: "warning",
-            showClose: true,
-          });
-          this.taskForm.extraData.simple_cron_value = 31;
+            message: this.$t('cron.day_limit'),
+            type: 'warning',
+            showClose: true
+          })
+          this.taskForm.extraData.simple_cron_value = 31
         }
         this.taskForm.cron =
-          "0 0 0 1/" + this.taskForm.extraData.simple_cron_value + " * ? *";
-        return;
+          '0 0 0 1/' + this.taskForm.extraData.simple_cron_value + ' * ? *'
+        return
       }
     },
     insertParamToCodeMirror(param) {
-      const pos1 = this.$refs.myCm.codemirror.getCursor();
-      const pos2 = {};
-      pos2.line = pos1.line;
-      pos2.ch = pos1.ch;
-      this.$refs.myCm.codemirror.replaceRange(param, pos2);
+      const pos1 = this.$refs.myCm.codemirror.getCursor()
+      const pos2 = {}
+      pos2.line = pos1.line
+      pos2.ch = pos1.ch
+      this.$refs.myCm.codemirror.replaceRange(param, pos2)
     },
     saveTask(task) {
       this.$refs.taskForm.validate((valid) => {
         if (valid) {
-          if (task.rate !== "SIMPLE") {
-            if (this.incrementalUpdateType === "incrementalAdd") {
-              this.incrementalConfig.incrementalAdd = this.sql;
+          if (task.rate !== 'SIMPLE') {
+            if (this.incrementalUpdateType === 'incrementalAdd') {
+              this.incrementalConfig.incrementalAdd = this.sql
             } else {
-              this.incrementalConfig.incrementalDelete = this.sql;
+              this.incrementalConfig.incrementalDelete = this.sql
             }
-            this.incrementalConfig.tableId = task.tableId;
+            this.incrementalConfig.tableId = task.tableId
           }
-          task.startTime = new Date(task.startTime).getTime();
-          task.endTime = new Date(task.endTime).getTime();
-          const form = JSON.parse(JSON.stringify(task));
-          form.extraData = JSON.stringify(form.extraData);
+          task.startTime = new Date(task.startTime).getTime()
+          task.endTime = new Date(task.endTime).getTime()
+          const form = JSON.parse(JSON.stringify(task))
+          form.extraData = JSON.stringify(form.extraData)
           const dataSetTaskRequest = {
             datasetTableTask: form,
             datasetTableIncrementalConfig:
-              task.type === "add_scope" ? this.incrementalConfig : undefined,
-          };
-          post("/dataset/task/save", dataSetTaskRequest).then((response) => {
-            this.openMessageSuccess("dataset.save_success");
-            this.closeTask();
-          });
+              task.type === 'add_scope' ? this.incrementalConfig : undefined
+          }
+          post('/dataset/task/save', dataSetTaskRequest).then((response) => {
+            this.openMessageSuccess('dataset.save_success')
+            this.closeTask()
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     getIncrementalConfig(tableId) {
-      post("/dataset/table/incrementalConfig", { tableId: tableId }).then(
+      post('/dataset/table/incrementalConfig', { tableId: tableId }).then(
         (response) => {
-          this.incrementalConfig = response.data;
+          this.incrementalConfig = response.data
 
           if (
             this.incrementalConfig.incrementalAdd.length === 0 &&
             this.incrementalConfig.incrementalDelete.length === 0
           ) {
-            this.incrementalUpdateType = "incrementalAdd";
-            this.sql = "";
-            return;
+            this.incrementalUpdateType = 'incrementalAdd'
+            this.sql = ''
+            return
           }
           if (this.incrementalConfig.incrementalAdd.length > 0) {
-            this.incrementalUpdateType = "incrementalAdd";
-            this.sql = this.incrementalConfig.incrementalAdd;
+            this.incrementalUpdateType = 'incrementalAdd'
+            this.sql = this.incrementalConfig.incrementalAdd
           } else {
-            this.incrementalUpdateType = "incrementalDelete";
-            this.sql = this.incrementalConfig.incrementalDelete;
+            this.incrementalUpdateType = 'incrementalDelete'
+            this.sql = this.incrementalConfig.incrementalDelete
           }
         }
-      );
+      )
     },
-    incrementalUpdateTypeChange: function () {
-      if (this.incrementalUpdateType === "incrementalAdd") {
+    incrementalUpdateTypeChange: function() {
+      if (this.incrementalUpdateType === 'incrementalAdd') {
         if (this.sql) {
-          this.incrementalConfig.incrementalDelete = this.sql;
+          this.incrementalConfig.incrementalDelete = this.sql
         } else {
-          this.incrementalConfig.incrementalDelete = "";
+          this.incrementalConfig.incrementalDelete = ''
         }
         if (this.incrementalConfig.incrementalAdd) {
-          this.sql = this.incrementalConfig.incrementalAdd;
+          this.sql = this.incrementalConfig.incrementalAdd
         } else {
-          this.sql = "";
+          this.sql = ''
         }
       }
 
-      if (this.incrementalUpdateType === "incrementalDelete") {
+      if (this.incrementalUpdateType === 'incrementalDelete') {
         if (this.sql) {
-          this.incrementalConfig.incrementalAdd = this.sql;
+          this.incrementalConfig.incrementalAdd = this.sql
         } else {
-          this.incrementalConfig.incrementalAdd = "";
+          this.incrementalConfig.incrementalAdd = ''
         }
         if (this.incrementalConfig.incrementalDelete) {
-          this.sql = this.incrementalConfig.incrementalDelete;
+          this.sql = this.incrementalConfig.incrementalDelete
         } else {
-          this.sql = "";
+          this.sql = ''
         }
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss">
