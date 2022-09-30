@@ -23,8 +23,8 @@
           <el-dropdown-item v-if="linkageSettingShow" icon="el-icon-link" @click.native="linkageSetting">{{ $t('panel.linkage_setting') }}</el-dropdown-item>
           <el-dropdown-item v-if="'de-tabs'===curComponent.type" icon="el-icon-plus" @click.native="addTab">{{ $t('panel.add_tab') }}</el-dropdown-item>
           <el-dropdown-item v-if="linkJumpSetShow" icon="el-icon-connection" @click.native="linkJumpSet">{{ $t('panel.setting_jump') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-magic-stick" @click.native="boardSet">{{ $t('panel.component_style') }}</el-dropdown-item>
-          <el-dropdown-item @click.native="hyperlinksSet">
+          <el-dropdown-item v-if="curComponent.type != 'custom-button'" icon="el-icon-magic-stick" @click.native="boardSet">{{ $t('panel.component_style') }}</el-dropdown-item>
+          <el-dropdown-item v-if="curComponent.type != 'custom-button'" @click.native="hyperlinksSet">
             <i class="icon iconfont icon-font icon-chaolianjie1" />
             {{ $t('panel.hyperlinks') }}
           </el-dropdown-item>

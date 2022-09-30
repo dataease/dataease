@@ -243,7 +243,7 @@
         "
         :label="$t('datasource.extra_params')"
       >
-        <el-input :placeholder="$t('fu.search_bar.please_input') + $t('datasource.extra_params')" v-model="form.configuration.extraParams" autocomplete="off" />
+        <el-input v-model="form.configuration.extraParams" :placeholder="$t('fu.search_bar.please_input') + $t('datasource.extra_params')" autocomplete="off" />
       </el-form-item>
 
       <el-form-item
@@ -566,19 +566,19 @@
                     </el-option>
                   </el-select>
                   <span class="select-svg-icon">
-                <span v-if="scope.row.deType === 0">
-                  <svg-icon
-                    icon-class="field_text"
-                    class="field-icon-text"
-                  />
-                </span>
-                <span v-if="[ 2, 3 ].includes(scope.row.deType)">
-                  <svg-icon
-                    icon-class="field_value"
-                    class="field-icon-value"
-                  />
-                </span>
-              </span>
+                    <span v-if="scope.row.deType === 0">
+                      <svg-icon
+                        icon-class="field_text"
+                        class="field-icon-text"
+                      />
+                    </span>
+                    <span v-if="[ 2, 3 ].includes(scope.row.deType)">
+                      <svg-icon
+                        icon-class="field_value"
+                        class="field-icon-value"
+                      />
+                    </span>
+                  </span>
                 </template>
               </el-table-column>
             </el-table>
@@ -725,7 +725,8 @@ export default {
           {
             required: true,
             validator: this.nameRepeat,
-            trigger: 'blur'
+            trigger: 'blur',
+            message: i18n.t('commons.input_name')
           }
         ],
         desc: [
@@ -969,20 +970,24 @@ export default {
       })
     },
     nameRepeat(rule, value, callback) {
+      if (!value) {
+        callback(new Error(i18n.t('commons.input_name')))
+        return
+      }
       let hasRepeatName = false
-        this.form.apiConfiguration.forEach((item) => {
-          if (
-            item.name === this.apiItem.name &&
+      this.form.apiConfiguration.forEach((item) => {
+        if (
+          item.name === this.apiItem.name &&
             item.serialNumber !== this.apiItem.serialNumber
-          ) {
-            hasRepeatName = true
-          }
-        })
-        if (hasRepeatName) {
-          callback(new Error(i18n.t('theme.name_repeat')));
-          return
+        ) {
+          hasRepeatName = true
         }
-        callback();
+      })
+      if (hasRepeatName) {
+        callback(new Error(i18n.t('theme.name_repeat')))
+        return
+      }
+      callback()
     },
     next() {
       if (this.active === 1) {
