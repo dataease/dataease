@@ -240,9 +240,8 @@ END
 ;;
 delimiter ;
 
-
-delete from sys_auth  where (auth_source in ('6','700','710','810','910') and auth_source_type='menu' and auth_target='1' and auth_target_type='role');
 delete from sys_auth_detail where auth_id in (select id from sys_auth  where auth_source in ('6','700','710','810','910') and auth_source_type='menu' and auth_target='1' and auth_target_type='role');
+delete from sys_auth  where (auth_source in ('6','700','710','810','910') and auth_source_type='menu' and auth_target='1' and auth_target_type='role');
 COMMIT;
 INSERT INTO `sys_auth` (`id`, `auth_source`, `auth_source_type`, `auth_target`, `auth_target_type`, `auth_time`, `auth_details`, `auth_user`, `update_time`, `copy_from`, `copy_id`) VALUES ('0c045d89-85ea-4676-8b5e-4b3dae5a734d', '700', 'menu', '1', 'role', 1664521306828, NULL, 'admin', NULL, NULL, NULL);
 INSERT INTO `sys_auth` (`id`, `auth_source`, `auth_source_type`, `auth_target`, `auth_target_type`, `auth_time`, `auth_details`, `auth_user`, `update_time`, `copy_from`, `copy_id`) VALUES ('1a18aa12-8daa-4f47-b5eb-999e473273df', '6', 'menu', '1', 'role', 1630482450994, NULL, 'admin', NULL, NULL, NULL);
