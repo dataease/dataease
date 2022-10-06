@@ -82,6 +82,7 @@ import {
 } from '@/api/map/map'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 import { reverseColor } from '../chart/common/common'
+import { mapState } from 'vuex'
 export default {
   name: 'ChartComponent',
   components: {
@@ -148,7 +149,10 @@ export default {
   computed: {
     trackBarStyleTime() {
       return this.trackBarStyle
-    }
+    },
+    ...mapState([
+      'canvasStyleData'
+    ])
   },
   watch: {
     chart: {
@@ -165,7 +169,7 @@ export default {
         this.preDraw()
       }
     },
-    'themeStyle.commonBackground.color'(value, old) {
+    'themeStyle.backgroundColorSelect'(value, old) {
       if (value !== old) {
         this.preDraw()
       }
@@ -230,15 +234,7 @@ export default {
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
-        if (themeStyle && themeStyle.commonBackground) {
-          const viewBGColor = themeStyle.commonBackground.color
-          if (viewBGColor !== '#FFFFFF') {
-            const reverseValue = reverseColor(viewBGColor)
-            this.buttonTextColor = reverseValue
-          } else {
-            this.buttonTextColor = null
-          }
-        }
+        
         if (themeStyle && themeStyle.backgroundColorSelect) {
           const panelColor = themeStyle.color
           if (panelColor !== '#FFFFFF') {
@@ -247,6 +243,16 @@ export default {
           } else {
             this.buttonTextColor = null
           }
+        } else if(this.canvasStyleData.openCommonStyle && this.canvasStyleData.panel.backgroundType === 'color') {
+          const panelColor = this.canvasStyleData.panel.color
+          if (panelColor !== '#FFFFFF') {
+            const reverseValue = reverseColor(panelColor)
+            this.buttonTextColor = reverseValue
+          } else {
+            this.buttonTextColor = null
+          }
+        } else {
+          this.buttonTextColor = null
         }
       }
     },
@@ -329,15 +335,7 @@ export default {
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
-        if (themeStyle && themeStyle.commonBackground) {
-          const viewBGColor = themeStyle.commonBackground.color
-          if (viewBGColor !== '#FFFFFF') {
-            const reverseValue = reverseColor(viewBGColor)
-            this.buttonTextColor = reverseValue
-          } else {
-            this.buttonTextColor = null
-          }
-        }
+        
         if (themeStyle && themeStyle.backgroundColorSelect) {
           const panelColor = themeStyle.color
           if (panelColor !== '#FFFFFF') {
@@ -346,9 +344,19 @@ export default {
           } else {
             this.buttonTextColor = null
           }
+        } else if(this.canvasStyleData.openCommonStyle && this.canvasStyleData.panel.backgroundType === 'color') {
+          const panelColor = this.canvasStyleData.panel.color
+          if (panelColor !== '#FFFFFF') {
+            const reverseValue = reverseColor(panelColor)
+            this.buttonTextColor = reverseValue
+          } else {
+            this.buttonTextColor = null
+          }
+        } else {
+          this.buttonTextColor = null
         }
       }
-      const chart_option = baseMapOption(base_json, chart, themeStyle, curAreaCode)
+      const chart_option = baseMapOption(base_json, chart, this.buttonTextColor, curAreaCode)
       this.myEcharts(chart_option)
       const opt = this.myChart.getOption()
       if (opt && opt.series) {
