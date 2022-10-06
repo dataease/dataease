@@ -52,7 +52,7 @@
               <svg-icon icon-class="ds-excel" class="ds-icon-excel" />{{ $t('chart.export') }}Excel
             </el-button>
           </span>
-          <UserViewDialog v-if="chartDetailsVisible" ref="userViewDialog" :open-type="showChartInfoType" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+          <UserViewDialog v-if="chartDetailsVisible" ref="userViewDialog" :canvas-style-data="canvasStyleData" :open-type="showChartInfoType" :chart="showChartInfo" :chart-table="showChartTableInfo" />
         </el-dialog>
 
         <!--手机视图详情-->
@@ -62,7 +62,7 @@
           class="mobile-dialog-css"
           :destroy-on-close="true"
         >
-          <UserViewMobileDialog v-if="mobileChartDetailsVisible" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+          <UserViewMobileDialog v-if="mobileChartDetailsVisible" :canvas-style-data="canvasStyleData" :chart="showChartInfo" :chart-table="showChartTableInfo" />
         </el-dialog>
       </div>
     </div>

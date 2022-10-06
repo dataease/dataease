@@ -36,6 +36,7 @@
       :terminal-type="scaleCoefficientType"
       :scale="scale"
       :theme-style="element.commonBackground"
+      :canvas-style-data="canvasStyleData"
       class="chart-class"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"

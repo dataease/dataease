@@ -18,6 +18,7 @@
           :key="index"
           :config="item"
           :search-count="searchCount"
+          :canvas-style-data="canvasStyleData"
           :in-screen="inScreen"
         />
         <!--视图详情-->
@@ -33,7 +34,7 @@
               {{ $t('chart.export_details') }}
             </el-button>
           </span>
-          <UserViewDialog ref="userViewDialog" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+          <UserViewDialog ref="userViewDialog" :canvas-style-data="canvasStyleData" :chart="showChartInfo" :chart-table="showChartTableInfo" />
         </el-dialog>
       </div>
     </div>
