@@ -82,7 +82,7 @@
           prop="fieldType"
           :label="$t('dataset.field_type')"
         >
-          <template v-if="params.type==='api'" slot-scope="scope">
+          <template slot-scope="scope">
             <span v-if="scope.row.fieldType === '0' && params.type==='api'">{{
               $t("dataset.text")
             }}</span>
