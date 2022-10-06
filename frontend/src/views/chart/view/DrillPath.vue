@@ -32,7 +32,7 @@ export default {
     }
   },
   watch: {
-    'themeStyle.commonBackground.color'() {
+    'themeStyle.backgroundColorSelect'() {
       this.loadThemeStyle()
     },
     'themeStyle.color'() {

@@ -291,7 +291,7 @@ export default {
         this.setContentThemeStyle()
       }
     },
-    'themeStyle.commonBackground.color'(value, old) {
+    'themeStyle.backgroundColorSelect'(value, old) {
       if (value !== old) {
         this.setContentThemeStyle()
       }
