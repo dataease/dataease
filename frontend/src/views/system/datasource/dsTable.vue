@@ -82,22 +82,20 @@
           prop="fieldType"
           :label="$t('dataset.field_type')"
         >
-
           <template v-if="params.type==='api'" slot-scope="scope">
-            <span v-if="scope.row.fieldType === '0'">{{
+            <span v-if="scope.row.fieldType === '0' && params.type==='api'">{{
               $t("dataset.text")
             }}</span>
-            <span v-if="scope.row.fieldType === '2'">{{
+            <span v-if="scope.row.fieldType === '2' && params.type==='api'">{{
               $t("dataset.value")
             }}</span>
-            <span v-if="scope.row.fieldType === '3'">{{
+            <span v-if="scope.row.fieldType === '3' && params.type==='api'">{{
               $t("dataset.value") + '(' + $t("dataset.float") + ')'
             }}</span>
+            <span v-if="params.type !=='api'">
+              {{ scope.row.fieldType }}
+            </span>
           </template>
-          <template v-if="params.type !== 'api'"  slot-scope="scope">
-            <span> scope.row.fieldType </span>
-          </template>
-
         </el-table-column>
         <el-table-column
           prop="remarks"
