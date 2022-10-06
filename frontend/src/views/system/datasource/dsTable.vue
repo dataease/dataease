@@ -94,7 +94,7 @@
               $t("dataset.value") + '(' + $t("dataset.float") + ')'
             }}</span>
           </template>
-          <template v-else slot-scope="scope">
+          <template v-if="params.type !== 'api'"  slot-scope="scope">
             <span> scope.row.fieldType </span>
           </template>
 
