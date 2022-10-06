@@ -94,6 +94,9 @@
               $t("dataset.value") + '(' + $t("dataset.float") + ')'
             }}</span>
           </template>
+          <template v-else slot-scope="scope">
+            <span> scope.row.fieldType </span>
+          </template>
 
         </el-table-column>
         <el-table-column
