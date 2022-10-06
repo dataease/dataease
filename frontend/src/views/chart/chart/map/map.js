@@ -1,5 +1,5 @@
 // import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { componentStyle, reverseColor } from '../common/common'
+import { componentStyle } from '../common/common'
 import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
@@ -81,10 +81,9 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
         chart_option.visualMap.inRange.color = customAttr.color.colors
         chart_option.visualMap.inRange.colorAlpha = customAttr.color.alpha / 100
       }
-      if (themeStyle && themeStyle.backgroundColorSelect) {
-        const panelColor = themeStyle.color
-        const reverseValue = reverseColor(panelColor)
-        chart_option.visualMap.textStyle = { color: reverseValue }
+      if (themeStyle) {
+        
+        chart_option.visualMap.textStyle = { color: themeStyle }
       }
       for (let i = 0; i < valueArr.length; i++) {
         const y = valueArr[i]
