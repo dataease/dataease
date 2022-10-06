@@ -9,6 +9,7 @@
             :obj="{chart: mapChart || chart}"
             :chart="mapChart || chart"
             :theme-style="element.commonBackground"
+            :canvas-style-data="canvasStyleData"
             class="chart-class"
           />
           <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" :theme-style="element.commonBackground" class="chart-class" :chart="mapChart || chart" />
@@ -60,6 +61,7 @@ export default {
       type: String,
       default: 'details'
     }
+    
   },
   data() {
     return {

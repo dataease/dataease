@@ -153,6 +153,7 @@
         ref="userViewDialog"
         :chart="showChartInfo"
         :chart-table="showChartTableInfo"
+        :canvas-style-data="canvasStyleData"
         :open-type="showChartInfoType"
       />
     </el-dialog>
