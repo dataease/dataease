@@ -425,7 +425,7 @@ export default {
     name_is_required: '用户名为必填',
     password_is_required: '密码为必填',
     help_document_link: '帮助文档链接无效',
-    such_as_dataeasedataease: '请输入登录页面标题，比如：DataEaseDataEase',
+    such_as_dataeasedataease: '请输入登录页面标题，比如：DataEase',
     for_example_dataease: '请输入系统名称，比如：DataEase',
     time_is_required: '开始时间为必填',
     it_takes_effect: '卸载并重启服务器之后才能生效',

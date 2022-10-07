@@ -426,7 +426,7 @@ export default {
     name_is_required: '用戶名為必填',
     password_is_required: '密碼為必填',
     help_document_link: '幫助文檔連結無效',
-    such_as_dataeasedataease: '請輸入登入頁面標題，比如：DataEaseDataEase',
+    such_as_dataeasedataease: '請輸入登入頁面標題，比如：DataEase',
     for_example_dataease: '請輸入系統名稱，比如：DataEase',
     time_is_required: '開始時間為必填',
     it_takes_effect: '卸載並重啓服務器之後才能生效',
