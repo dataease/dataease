@@ -42,7 +42,7 @@
         <div class="block">
           <div v-if="!tData.length && !treeLoading" class="no-tdata">
             {{ showView === 'Driver' ? '暂无驱动' : '暂无数据源' }}
-            <span @click="() => addFolder()" class="no-tdata-new">{{
+            <span @click="() => createDriveOrDs()" class="no-tdata-new">{{
               $t('deDataset.create')
             }}</span>
           </div>
@@ -360,6 +360,13 @@ export default {
     this.datasourceTypes()
   },
   methods: {
+    createDriveOrDs() {
+      if (this.showView === 'Driver') {
+        this.addDriver()
+      } else {
+        this.addFolder()
+      }
+    },
     dataUpdate(row) {
       this.dfsTdata(this.tData, row)
     },
