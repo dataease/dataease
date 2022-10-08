@@ -204,9 +204,9 @@ export default {
         ],
         desc: [
           {
-            min: 2,
-            max: 50,
-            message: i18n.t('datasource.input_limit_2_50'),
+            min: 0,
+            max: 200,
+            message: i18n.t('datasource.input_limit', { num: '0~200' }),
             trigger: 'blur'
           }
         ],
