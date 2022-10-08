@@ -61,7 +61,7 @@ export default {
       type: String,
       default: 'details'
     }
-    
+
   },
   data() {
     return {
@@ -231,7 +231,7 @@ export default {
         const link = document.createElement('a')
         link.style.display = 'none'
         link.href = URL.createObjectURL(blob)
-        link.download = excelName + '.xls' // 下载的文件名
+        link.download = excelName + '.xlsx' // 下载的文件名
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
