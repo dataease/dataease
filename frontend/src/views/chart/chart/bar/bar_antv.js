@@ -93,6 +93,8 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   } else {
     delete options.isStack
   }
+  // 目前只有百分比堆叠柱状图需要这个属性，先直接在这边判断而不作为参数传过来
+  options.isPercent = chart.type === 'percentage-bar-stack'
   // custom color
   options.color = antVCustomColor(chart)
 

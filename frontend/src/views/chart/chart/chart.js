@@ -129,7 +129,8 @@ export const DEFAULT_LABEL = {
     suffix: '', // 单位后缀
     decimalCount: 2, // 小数位数
     thousandSeparator: true// 千分符
-  }
+  },
+  reserveDecimalCount: 2 // 百分比堆叠柱状图保留小数位数
 }
 export const DEFAULT_TOOLTIP = {
   show: true,

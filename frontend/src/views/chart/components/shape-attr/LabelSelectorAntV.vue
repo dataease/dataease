@@ -29,6 +29,11 @@
               <el-option v-for="option in labelPositionH" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
+          <el-form-item v-show="showProperty('reserve-decimal-count')" :label="$t('chart.label_reserve_decimal_count')" class="form-item">
+            <el-radio-group v-model="labelForm.reserveDecimalCount" :label="$t('chart.label_reserve_decimal_count')" @change="changeLabelAttr('reserveDecimalCount')">
+              <el-radio v-for="option in reserveDecimalCountOptions" :key="option.value" :label="option.value">{{ option.name }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
         </div>
       </el-form>
 
@@ -93,7 +98,7 @@ export default {
       }
     }
   },
-  data() {
+  data: function() {
     return {
       labelForm: JSON.parse(JSON.stringify(DEFAULT_LABEL)),
       fontSize: [],
@@ -115,7 +120,12 @@ export default {
       ],
       predefineColors: COLOR_PANEL,
       typeList: formatterType,
-      unitList: unitList
+      unitList: unitList,
+      reserveDecimalCountOptions: [
+        { name: '取整', value: 0 },
+        { name: '一位', value: 1 },
+        { name: '两位', value: 2 }
+      ]
     }
   },
   watch: {
@@ -179,11 +189,17 @@ export default {
           this.labelPosition = this.labelPositionH
         } else if (type.includes('pie')) {
           this.labelPosition = this.labelPositionPie
+        } else if (type === 'percentage-bar-stack') {
+          // 百分比堆叠柱状图的标签位置为 top 的话最顶上的标签会看不到，这个是 G2plot 的 bug，所以这边暂时先把默认值设置为 middle
+          this.labelForm.position = 'middle'
         } else {
           this.labelPosition = this.labelPositionV
         }
       }
     },
+    /*
+      判断该属性是否应该出现在当前视图的标签属性编辑列表中
+     */
     showProperty(property) {
       return this.propertyInner.includes(property)
     }
