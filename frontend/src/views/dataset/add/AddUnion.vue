@@ -1,8 +1,8 @@
 <template>
-  <div class="dataset-union" @mouseup="mouseupDrag" v-loading="loading">
+  <div v-loading="loading" class="dataset-union" @mouseup="mouseupDrag">
     <div :style="{ height: unionHeight + 'px' }" class="unio-editer-container">
       <!--添加第一个数据集按钮-->
-      <div style="padding: 24px" v-if="dataset.length === 0">
+      <div v-if="dataset.length === 0" style="padding: 24px">
         <deBtn type="primary" @click="selectDs">
           {{ $t('chart.select_dataset') }}
         </deBtn>
@@ -39,7 +39,7 @@
         <span class="result-num">{{
           `(${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')})`
         }}</span>
-        <span @mousedown="mousedownDrag" class="drag"></span>
+        <span class="drag" @mousedown="mousedownDrag" />
         <el-button
           class="de-text-btn posi-right"
           type="text"
@@ -50,7 +50,7 @@
         </el-button>
       </div>
       <union-preview
-        :unionHeight="unionHeight"
+        :union-height="unionHeight"
         :table="previewTable"
         :dataset="dataset"
       />
@@ -58,11 +58,11 @@
     <!--选择数据集-->
     <el-drawer
       v-if="selectDsDialog"
+      v-closePress
       :title="$t('chart.select_dataset')"
       :visible.sync="selectDsDialog"
       custom-class="user-drawer sql-dataset-drawer"
       size="600px"
-      v-closePress
       direction="rtl"
     >
       <dataset-tree
@@ -80,14 +80,14 @@
           :disabled="!tempDs.id"
           type="primary"
           @click="confirmSelectDs()"
-          >{{ $t('dataset.confirm') }}</deBtn
-        >
+        >{{ $t('dataset.confirm') }}</deBtn>
       </div>
     </el-drawer>
 
     <!--编辑关联关系-->
     <el-drawer
       v-if="editUnion"
+      v-closePress
       :title="
         unionParam.type === 'add'
           ? $t('dataset.add_union_relation')
@@ -96,7 +96,6 @@
       :visible.sync="editUnion"
       custom-class="user-drawer union-dataset-drawer"
       size="840px"
-      v-closePress
       direction="rtl"
     >
       <union-edit :union-param="unionParam" />
@@ -123,7 +122,6 @@ import cancelMix from './cancelMix'
 import msgCfm from '@/components/msgCfm/index'
 export default {
   name: 'AddUnion',
-  mixins: [cancelMix, msgCfm],
   components: {
     UnionPreview,
     UnionEdit,
@@ -131,6 +129,7 @@ export default {
     NodeItem,
     UnionNode
   },
+  mixins: [cancelMix, msgCfm],
   props: {
     param: {
       type: Object,
@@ -190,7 +189,7 @@ export default {
     }
   },
   watch: {
-    'param.tableId': function () {
+    'param.tableId': function() {
       this.resetComponent()
       this.initTableData()
     }
@@ -260,7 +259,7 @@ export default {
     },
     confirmSelectDs() {
       if (this.tempDs.mode === 0 && this.tempDs.modelInnerType === 'sql') {
-        this.openMessageSuccess('deDataset.sql_ds_union_error')
+        this.openMessageSuccess('dataset.sql_ds_union_error')
         return
       }
       const ds = JSON.parse(JSON.stringify(this.unionItem))
@@ -311,7 +310,7 @@ export default {
       if (this.checkUnion()) {
         this.editUnion = false
       } else {
-        this.openMessageSuccess('deDataset.union_error')
+        this.openMessageSuccess('dataset.union_error')
       }
     },
     cancelUnion(val) {
