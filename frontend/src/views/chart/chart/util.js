@@ -453,6 +453,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'highcharts',
     category: 'chart.chart_type_compare',
+    value: '3dcylinder',
+    title: 'chart.chart_cylinder',
+    icon: '3dcylinder'
+  },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_compare',
     value: '3dcolumn_stack',
     title: 'chart.chart_column_stack',
     icon: '3dcolumn_stack'

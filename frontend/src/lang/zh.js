@@ -899,6 +899,7 @@ export default {
     chart_card: '指标卡',
     chart_bar: '基础柱状图',
     chart_column: '3D 柱状图',
+    chart_cylinder: '3D 圆柱图',
     chart_bar_stack: '堆叠柱状图',
     chart_column_stack: '堆叠3D柱状图',
     chart_bar_horizontal: '横向柱状图',

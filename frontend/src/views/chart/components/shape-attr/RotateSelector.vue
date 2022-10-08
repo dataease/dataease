@@ -12,7 +12,7 @@
           <el-slider v-model="rotateForm.depth" show-input :show-input-controls="false" input-size="mini" :min="20" :max="100" @change="changeFocusCase" />
         </el-form-item>
 
-        <el-form-item :label="$t('chart.pie_inner_radius')" class="form-item form-item-slider">
+        <el-form-item v-if="chart.type && chart.type.includes('3dpie')" :label="$t('chart.pie_inner_radius')" class="form-item form-item-slider">
           <el-slider v-model="rotateForm.pieInnerRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeFocusCase" />
         </el-form-item>
       </el-form>
