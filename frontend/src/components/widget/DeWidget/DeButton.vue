@@ -6,7 +6,7 @@
     :round="element.options.attrs.round"
     :plain="element.options.attrs.plain"
     :size="size"
-    class="de-search-button"
+    :class="'de-search-button' + (useDarkClass ? ' dark-search-button' : '')"
     @click="triggerSearch"
   >
     {{ element.options.value }}
@@ -15,6 +15,7 @@
 
 <script>
 import bus from '@/utils/bus'
+import { mapState } from 'vuex'
 export default {
 
   props: {
@@ -28,11 +29,27 @@ export default {
     },
     size: String
   },
+
   data() {
     return {
       operator: 'eq',
       values: null
     }
+  },
+  computed: {
+    useDarkClass() {
+      if (this.canvasStyleData.openCommonStyle && this.canvasStyleData.panel.backgroundType === 'color') {
+        const themeColor = this.canvasStyleData.panel.themeColor
+        if (themeColor !== 'light') {
+          return true
+        }
+      }
+      return false
+    },
+    ...mapState([
+      'canvasStyleData'
+    ])
+
   },
   created() {
   },
@@ -48,5 +65,15 @@ export default {
 .de-search-button {
   height: 100%;
   width: 100%;
+}
+.dark-search-button {
+  color: #21333B !important;
+  background-color: #2681FF !important;
+  border-color: #2681FF !important;
+  &:hover {
+    background: rgb(81, 154, 255) !important;
+    border-color: rgb(81, 154, 255) !important;
+    color: #21333B !important;
+  }
 }
 </style>
