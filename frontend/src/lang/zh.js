@@ -1715,6 +1715,7 @@ export default {
     input_name: '请输入名称',
     input_limit_2_25: '2-25字符',
     input_limit_2_50: '2-50字符',
+    input_limit: '{num}字符',
     oracle_connection_type: '服务名/SID',
     oracle_sid: 'SID',
     oracle_service_name: '服务名',
