@@ -45,6 +45,7 @@
     <de-rich-text-view
       v-else-if="richTextViewShowFlag"
       :ref="element.propValue.id"
+      :scale="scale"
       :element="element"
       :prop-value="element.propValue.textValue"
       :active="active"
