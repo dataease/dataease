@@ -12,8 +12,11 @@
     </span>
     <div v-if="chart.data && show_Prog" :id="chartId" style="width: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius,'height': title_show? 'calc(100% - 30px);' : '100%;'}">
       <el-row class="prog_box" :style="{width:progStyle.inside? '100%' : '97%'}">
-          <el-col :style="progStyle">
+          <el-col :span="progStyle.position === 'top'? 24 : 6" :style="{fontSize: progStyle.fontSize,color: progStyle.color,fontFamily: progStyle.fontFamily}">
             <p style="text-align: center;" >{{progressData.name}}</p>
+            <!-- <el-progress :text-inside="progStyle.inside" :color="customColor" :stroke-width="progStyle.strokeWidth" :percentage="progressData.value"></el-progress> -->
+          </el-col>
+          <el-col :span="progStyle.position === 'top'? 24 : 18">
             <el-progress :text-inside="progStyle.inside" :color="customColor" :stroke-width="progStyle.strokeWidth" :percentage="progressData.value"></el-progress>
           </el-col>
       </el-row>
@@ -99,6 +102,7 @@ export default {
         fontFamily: '',
         inside: true,
         strokeWidth: 20,
+        position: 'top'
       }
     }
   },
@@ -220,6 +224,7 @@ export default {
         this.progStyle.fontFamily =  this.canvasStyleData.fontFamily
         this.progStyle.inside = customAttr.label.progressInside !== undefined? customAttr.label.progressInside : true
         this.progStyle.strokeWidth = customAttr.label.strokeWidth !== undefined? customAttr.label.strokeWidth : 20
+        this.progStyle.position = customAttr.label.progressPosition !== undefined? customAttr.label.progressPosition : 'top'
         this.customColor = customAttr.color.colors[0]
       }
     },
@@ -249,6 +254,7 @@ export default {
   margin: 0px;
   width: 100%;
   height: 100%;
+  padding-top: 5px;
   // overflow: hidden;
 }
 </style>

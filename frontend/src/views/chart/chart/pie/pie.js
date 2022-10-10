@@ -224,6 +224,7 @@ export function rosePieOption(chart_option, chart, cstyle = {}) {
 
 export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
   console.log('渐变玫瑰图', cstyle)
+  console.log('玫瑰环图', chart, cstyle)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -243,6 +244,9 @@ export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
   // 处理data
   if (chart.data) {
     chart_option.title.text = chart.title
+
+    chart_option.legend.data = chart.data.x
+
     if (chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[0].name
       chart_option.series[0].zlevel = 2
@@ -370,8 +374,8 @@ export function rosePieGradientOption(chart_option, chart, cstyle = {}) {
       }]
     }
 
-    chart_option.series[3] = {
-      name: '线1',
+    chart_option.series[3] = { // 线
+      name: '线',
       type: 'pie',
       zlevel: 2,
       silent: true,

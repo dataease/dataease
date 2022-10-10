@@ -25,6 +25,7 @@ pyramid3d(highcharts)
 
 import { BASE_PIE, basePieOption, uuid } from '@/views/chart/chart/pie/pie_hc'
 import { BASE_COLUMM, BASE_COLUMN_STACK, baseColumnOption } from '@/views/chart/chart/column/column_hc'
+import { BASE_CYLINDER, baseCylinderOption} from '@/views/chart/chart/column/cylinder_hc'
 import { BASE_FUNNEL, baseFunnelOption } from '@/views/chart/chart/funnel/funnel_hc'
 import { BASE_PYRAMID, basePyramidOption } from '@/views/chart/chart/pyramid/pyramid_hc'
 import { BASE_SCATTER, baseScatterOption } from '@/views/chart/chart/scatter/scatter_hc'
@@ -157,6 +158,9 @@ export default {
           } else if (this.chart.type === '3dcolumn') {
             // 柱状图
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_COLUMM)))
+          } else if (this.chart.type === '3dcylinder') {
+            // 圆柱图
+            this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_CYLINDER)))
           } else if (this.chart.type === '3dcolumn_stack') {
             // 堆叠柱状图
             this.myChart = this.$highcharts.chart(this.chartId, JSON.parse(JSON.stringify(BASE_COLUMN_STACK)))
@@ -202,6 +206,9 @@ export default {
       } else if (chart.type === '3dcolumn') {
         const base_json = JSON.parse(JSON.stringify(BASE_COLUMM))
         chart_option = baseColumnOption(base_json, chart, this.terminalType, true, false, this.$store.state.canvasStyleData)
+      } else if (chart.type === '3dcylinder') {
+        const base_json = JSON.parse(JSON.stringify(BASE_CYLINDER))
+        chart_option = baseCylinderOption(base_json, chart, this.terminalType, this.$store.state.canvasStyleData)
       } else if (chart.type === '3dcolumn_stack') {
         const base_json = JSON.parse(JSON.stringify(BASE_COLUMN_STACK))
         chart_option = baseColumnOption(base_json, chart, this.terminalType, false, true, this.$store.state.canvasStyleData)

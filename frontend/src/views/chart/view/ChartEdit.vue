@@ -766,7 +766,7 @@
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'highcharts' && view.type && (view.type.includes('3dcolumn') || view.type === '3dpie')"
+                    v-show="view.render && view.render === 'highcharts' && view.type && (view.type.includes('3dcolumn') || view.type === '3dpie' || view.type === '3dcylinder')"
                     name="rotate"
                     :title="$t('chart.rotate')"
                   >
@@ -905,7 +905,7 @@
                     v-show="view.type
                       && (view.type.includes('bar') || view.type.includes('line')
                       || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
-                      || view.type === '3dcolumn' || view.type === '3dcolumn_stack')"
+                      || view.type === '3dcolumn' || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
                     name="xAxis"
                     :title="$t('chart.xAxis')"
                   >
@@ -935,7 +935,7 @@
                     v-show="view.type
                       && (view.type.includes('bar') || view.type.includes('line')
                       || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall'
-                      || view.type === '3dcolumn' || view.type === '3dcolumn_stack')"
+                      || view.type === '3dcolumn' || view.type === '3dcolumn_stack' || view.type === '3dcylinder')"
                     name="yAxis"
                     :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
                   >

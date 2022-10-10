@@ -84,6 +84,7 @@ export const BASE_PIE = {
     pie: {
       allowPointSelect: true,
       cursor: 'pointer',
+      innerSize: '0%',
       depth: 35,
       dataLabels: {
         enabled: true
@@ -166,16 +167,16 @@ export function basePieOption(chart_option, chart, terminal = 'pc',cstyle = {}) 
       }
 
       // size
-      /* if (customAttr.size) {
-          chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
-        }*/
+      if (customAttr.size) {
+        chart_option.plotOptions.pie.innerSize = customAttr.size.pieInnerRadius? customAttr.size.pieInnerRadius + '%' : '0%'
+      }
 
+      chart_option.series[0].depth = customAttr.size.depth ? customAttr.size.depth : 20
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
         const y = valueArr[i]
         y.name = chart.data.x[i]
         y.y = y.value
-
         chart_option.series[0].data.push(y)
       }
     }

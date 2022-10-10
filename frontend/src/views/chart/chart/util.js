@@ -238,6 +238,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_gauge',
     icon: 'gauge'
   },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_quota',
+  //   value: 'liquid',
+  //   title: 'chart.chart_liquid',
+  //   icon: 'liquid'
+  // },
 
   {
     render: 'echarts',
@@ -283,13 +290,13 @@ export const TYPE_CONFIGS = [
     icon: 'bar'
   },
   // 暂时隐藏环形朱柱状图
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_compare',
-  //   value: 'bar-annular',
-  //   title: '环形柱状图',
-  //   icon: 'bar'
-  // },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-annular',
+    title: '环形柱状图',
+    icon: 'bar'
+  },
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
@@ -457,12 +464,26 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_pie',
     icon: '3dpie'
   },
+  // {
+  //   render: 'highcharts',
+  //   category: 'chart.chart_type_distribute',
+  //   value: '3dpie-annular',
+  //   title: 'chart.chart_pie',
+  //   icon: '3dpie-annular'
+  // },
   {
     render: 'highcharts',
     category: 'chart.chart_type_compare',
     value: '3dcolumn',
     title: 'chart.chart_column',
     icon: '3dcolumn'
+  },
+  {
+    render: 'highcharts',
+    category: 'chart.chart_type_compare',
+    value: '3dcylinder',
+    title: 'chart.chart_cylinder',
+    icon: '3dcylinder'
   },
   {
     render: 'highcharts',
