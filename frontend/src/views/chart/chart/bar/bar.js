@@ -83,7 +83,7 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
       chart_option.series.push(y)
     }
   }
-  console.log('_____________', chart_option)
+  console.log('bar_echarts', chart_option)
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option

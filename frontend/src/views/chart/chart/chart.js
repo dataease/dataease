@@ -212,6 +212,11 @@ export const DEFAULT_XAXIS_STYLE = {
   position: 'bottom',
   name: '',
   nameLocation: 'end',
+  nameGap: 20,
+  paddingLeft: 0,
+  paddingRight: 0,
+  paddingTop: 0,
+  paddingBottom: 0,
   nameTextStyle: {
     color: '#333333',
     fontSize: 12,
@@ -277,11 +282,15 @@ export const DEFAULT_YAXIS_STYLE = {
   name: '',
   nameLocation: 'end',
   nameGap: 20,
+  paddingLeft: 0,
+  paddingRight: 0,
+  paddingTop: 0,
+  paddingBottom: 0,
   nameTextStyle: {
     color: '#333333',
     fontSize: 12,
     lineHeight: 20,
-    fontFamily: ''
+    fontFamily: '',
   },
   axisLabel: {
     show: true,
