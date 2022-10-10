@@ -80,6 +80,9 @@
         <el-form-item :label="$t('chart.pie_circle_center_top')" class="form-item">
           <el-slider v-model="sizeForm.pieCircleTop" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
+        <el-form-item v-show="chart.type === 'clock-pie'" :label="'饼图突出模块'" class="form-item">
+          <el-slider v-model="sizeForm.pieKeyValue" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
+        </el-form-item>
 
         <span v-show="chart.type && chart.type.includes('pie-rose')">
           <el-form-item :label="$t('chart.rose_type')" class="form-item">
