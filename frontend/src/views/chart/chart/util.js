@@ -275,6 +275,13 @@ export const TYPE_CONFIGS = [
     title: '三角柱状图',
     icon: 'bar'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-ranking',
+    title: '极坐标柱状图',
+    icon: 'bar'
+  },
   // 暂时隐藏环形朱柱状图
   // {
   //   render: 'echarts',
@@ -296,6 +303,13 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_compare',
     value: 'bar-stack',
     title: 'chart.chart_bar_stack',
+    icon: 'bar-stack'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-polarStack',
+    title: '极坐标堆叠柱状图',
     icon: 'bar-stack'
   },
   {
@@ -389,6 +403,13 @@ export const TYPE_CONFIGS = [
     value: 'funnel',
     title: 'chart.chart_funnel',
     icon: 'funnel'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'clock-pie',
+    title: '凸块饼图',
+    icon: 'pie'
   },
 
   {

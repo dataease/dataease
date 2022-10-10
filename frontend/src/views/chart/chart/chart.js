@@ -17,8 +17,8 @@ export const DEFAULT_COLOR_CASE = {
   quotaColor: '#000000',
   tableBorderColor: '#cfdaf4',
 
-  innerRing: "#eeeeee",
-  outerRing: '#eeeeee',
+  innerRing: '#eeeeee',
+  outerRing: '#eeeeee'
 }
 export const DEFAULT_SIZE = {
   automatic: false,
@@ -43,6 +43,7 @@ export const DEFAULT_SIZE = {
   pieOuterRadius: 80,
   pieCircleLeft: 50,
   pieCircleTop: 50,
+  pieKeyValue: 1,
   pieRoseOffset: 10,
   pieRoseType: 'radius',
   pieRoseRadius: 5,
@@ -1251,7 +1252,7 @@ export const BASE_GRAPH = {
       },
       scaleLimit: {
         max: null,
-        min: null,
+        min: null
       },
       roam: true,
       label: {

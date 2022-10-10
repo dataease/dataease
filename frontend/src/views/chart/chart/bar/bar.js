@@ -88,6 +88,338 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
   seniorCfg(chart_option, chart)
   return chart_option
 }
+const compare = function(prop) {
+  return function(obj1, obj2) {
+    var val1 = obj1[prop]
+    var val2 = obj2[prop]; if (val1 < val2) {
+      return -1
+    } else if (val1 > val2) {
+      return 1
+    } else {
+      return 0
+    }
+  }
+}
+// rankingBarOption
+export function rankingBarOption(chart_option, chart, cstyle = {}) {
+  // 处理shape attr
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.color) {
+      chart_option.color = customAttr.color.colors
+    }
+    // tooltip
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
+  }
+  // 处理data
+  if (chart.data) {
+    chart_option.title.text = chart.title
+    // chart_option.xAxis.show = false
+    chart_option.polar = {
+      radius: [10, '70%']
+    }
+    chart_option.radiusAxis = {
+      // max: 4
+    }
+    chart_option.angleAxis = {
+      type: 'category',
+      data: chart.data.x,
+      startAngle: 75
+    }
+    console.log('customAttr?????????', customAttr)
+    const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
+    let dataArr = []
+    dataArr = chart.data.series[0].data
+    // dataArr.forEach(res => {
+    //   console.log('res===>', res)
+    // })
+    // console.log('++++++>>>>', dataArr)
+    const arrss = [{ value: 2, name: '222' }, { value: 1, name: '322' }]
+    console.log('------------>>>>>', arrss.sort(compare('value')))
+
+    // dataArr.sort((a, b) => { return b.value - a.value })
+    console.log('dataArr', dataArr)
+
+    for (let i = 0; i < chart.data.series.length; i++) {
+      const y = chart.data.series[i]
+      // color
+      if (customAttr.color.variety) {
+        y.itemStyle = {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 1,
+            x2: 0,
+            y2: 0,
+            colorStops: [{
+              offset: 0, // 0% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+            }, {
+              offset: 1, // 100% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+            }],
+            global: false // 缺省为 false
+          },
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr
+        }
+      } else {
+        y.itemStyle = {
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr
+        }
+      }
+
+      // size
+      if (customAttr.size) {
+        if (customAttr.size.barDefault) {
+          y.barWidth = null
+          y.barGap = null
+        } else {
+          y.barWidth = customAttr.size.barWidth
+          y.barGap = customAttr.size.barGap
+        }
+      }
+      // label
+      if (customAttr.label) {
+        y.label = customAttr.label
+      }
+      y.coordinateSystem = 'polar'
+      y.type = 'bar'
+      chart_option.legend.data.push(y.name)
+      chart_option.series.push(y)
+    }
+    // chart.data.series[0].forEach(res => {
+    //   console.log('res===>', res)
+    // })
+  }
+  chart_option.xAxis = [
+    {
+      show: false
+    }
+  ]
+  chart_option.yAxis = [
+    {
+      show: false
+    }
+  ]
+  console.log('_____________+++++++++++++', chart_option, chart.data)
+  componentStyle(chart_option, chart, cstyle)
+  seniorCfg(chart_option, chart)
+  return chart_option
+}
+// polarStackBarOption
+export function polarStackBarOption(chart_option, chart, cstyle = {}) {
+  // 处理shape attr
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.color) {
+      chart_option.color = customAttr.color.colors
+    }
+    // tooltip
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
+  }
+  // 处理data
+  if (chart.data) {
+    chart_option.title.text = chart.title
+    // chart_option.xAxis.show = false
+    chart_option.polar = {
+      radius: [0, '70%']
+    }
+    chart_option.radiusAxis = {
+      // max: 4
+    }
+    chart_option.angleAxis = {
+      type: 'category',
+      data: chart.data.x
+      // startAngle: 75
+    }
+    console.log('customAttr?????????', customAttr)
+    const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
+
+    for (let i = 0; i < chart.data.series.length; i++) {
+      const y = chart.data.series[i]
+      // color
+      if (customAttr.color.variety) {
+        y.itemStyle = {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 1,
+            x2: 0,
+            y2: 0,
+            colorStops: [{
+              offset: 0, // 0% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+            }, {
+              offset: 1, // 100% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+            }],
+            global: false // 缺省为 false
+          },
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr
+        }
+      } else {
+        y.itemStyle = {
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr
+        }
+      }
+
+      // size
+      if (customAttr.size) {
+        if (customAttr.size.barDefault) {
+          y.barWidth = null
+          y.barGap = null
+        } else {
+          y.barWidth = customAttr.size.barWidth
+          y.barGap = customAttr.size.barGap
+        }
+      }
+      // label
+      if (customAttr.label) {
+        y.label = customAttr.label
+      }
+      y.coordinateSystem = 'polar'
+      y.type = 'bar'
+      y.stack = 'stack'
+      y.emphasis = {
+        focus: 'series'
+      }
+      chart_option.legend.data.push(y.name)
+      chart_option.series.push(y)
+    }
+    // chart.data.series[0].forEach(res => {
+    //   console.log('res===>', res)
+    // })
+  }
+  chart_option.xAxis = [
+    {
+      show: false
+    }
+  ]
+  chart_option.yAxis = [
+    {
+      show: false
+    }
+  ]
+  console.log('_____________+++++++++++++', chart_option, chart.data)
+  componentStyle(chart_option, chart, cstyle)
+  seniorCfg(chart_option, chart)
+  return chart_option
+}
+// clockcatterOption
+export function clockcatterOption(chart_option, chart, cstyle = {}) {
+  // 处理shape attr
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.color) {
+      chart_option.color = customAttr.color.colors
+    }
+    // tooltip
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
+  }
+  // 处理data
+  if (chart.data) {
+    chart_option.title.text = chart.title
+    chart_option.xAxis.data = chart.data.x
+    console.log('customAttr?????????', customAttr)
+    const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
+    for (let i = 0; i < chart.data.series.length; i++) {
+      const y = chart.data.series[i]
+      // color
+      if (customAttr.color.variety) {
+        y.itemStyle = {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 1,
+            x2: 0,
+            y2: 0,
+            colorStops: [{
+              offset: 0, // 0% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+            }, {
+              offset: 1, // 100% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+            }],
+            global: false // 缺省为 false
+          },
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr
+        }
+      } else {
+        y.itemStyle = {
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr
+        }
+      }
+
+      // size
+      if (customAttr.size) {
+        if (customAttr.size.barDefault) {
+          y.barWidth = null
+          y.barGap = null
+        } else {
+          y.barWidth = customAttr.size.barWidth
+          y.barGap = customAttr.size.barGap
+        }
+      }
+      // label
+      if (customAttr.label) {
+        y.label = customAttr.label
+      }
+      y.type = 'candlestick'
+      console.log('yyyyyyyyyyyyyyyy', y)
+      chart_option.legend.data.push(y.name)
+      chart_option.series.push(y)
+    }
+  }
+  console.log('_____________', chart_option)
+  componentStyle(chart_option, chart, cstyle)
+  seniorCfg(chart_option, chart)
+  return chart_option
+}
 
 //
 // pyramidBarOption

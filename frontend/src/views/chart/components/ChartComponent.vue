@@ -45,6 +45,8 @@ import {
 } from '../chart/chart'
 import {
   baseBarOption,
+  rankingBarOption,
+  polarStackBarOption,
   pyramidBarOption,
   triangleBarOption,
   annularBarOption,
@@ -53,6 +55,7 @@ import {
   horizontalBarOption,
   horizontalStackBarOption,
   basePictorialBarOption
+  // clockcatterOption
 } from '../chart/bar/bar'
 import {
   baseLineOption,
@@ -63,7 +66,8 @@ import {
   basePieOption,
   rosePieOption,
   rosePieGradientOption,
-  texturePieOption
+  texturePieOption,
+  prominentPieOption
   // newHartOption
 } from '../chart/pie/pie'
 import {
@@ -86,6 +90,7 @@ import {
 } from '@/views/chart/chart/wordCloud/word_cloud_es'
 import {
   baseScatterOption
+  // clockcatterOption
 } from '../chart/scatter/scatter'
 import {
   baseTreemapOption
@@ -212,6 +217,12 @@ export default {
       // console.log(this.$store.state.canvasStyleData)
       if (chart.type === 'bar') {
         chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-ranking') {
+        chart_option = rankingBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'clock-pie') {
+        chart_option = prominentPieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
+
+        // chart_option = prominentPieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pyramid') {
         chart_option = pyramidBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-circular') {
@@ -222,6 +233,8 @@ export default {
         chart_option = triangleBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack') {
         chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-polarStack') {
+        chart_option = polarStackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {
         chart_option = horizontalBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack-horizontal') {
