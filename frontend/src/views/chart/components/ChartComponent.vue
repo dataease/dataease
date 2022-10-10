@@ -52,6 +52,7 @@ import {
   annularBarOption,
   annularBarOptions,
   stackBarOption,
+  stackBarPartOption,
   horizontalBarOption,
   horizontalStackBarOption,
   basePictorialBarOption
@@ -233,6 +234,8 @@ export default {
         chart_option = triangleBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack') {
         chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-stack-part') {
+        chart_option = stackBarPartOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-polarStack') {
         chart_option = polarStackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {

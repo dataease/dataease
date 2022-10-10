@@ -901,6 +901,7 @@ export default {
     chart_column: '3D 柱状图',
     chart_cylinder: '3D 圆柱图',
     chart_bar_stack: '堆叠柱状图',
+    chart_bar_stack_part: '部分堆叠柱状图',
     chart_column_stack: '堆叠3D柱状图',
     chart_bar_horizontal: '横向柱状图',
     chart_bar_stack_horizontal: '横向堆叠柱状图',

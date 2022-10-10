@@ -1097,6 +1097,21 @@ export function stackBarOption(chart_option, chart, cstyle = {}) {
   return chart_option
 }
 
+export function stackBarPartOption(chart_option, chart, cstyle = {}) {
+  baseBarOption(chart_option, chart, cstyle)
+  
+  // ext
+  chart_option.series.forEach(function(s,index) {
+    if(index !== 0) {
+      s.stack = 'stack'
+      s.emphasis = {
+        focus: 'series'
+      }
+    }
+  })
+  return chart_option
+}
+
 export function horizontalBarOption(chart_option, chart, cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
