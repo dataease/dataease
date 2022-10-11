@@ -1,5 +1,5 @@
 <template>
-  <el-col class="tree-style de-dataset-search">
+  <el-col class="de-dataset-search">
     <!-- group -->
     <el-col>
       <div
@@ -1241,14 +1241,12 @@ export default {
   align-items: center;
   width: 100%;
 }
-.tree-style {
-  padding: 10px 15px;
-  height: 100%;
-  overflow-y: auto;
-}
 </style>
 <style lang="scss">
 .de-dataset-search {
+  padding: 10px 24px;
+  height: 100%;
+  overflow-y: auto;
   .main-area-input {
     .el-input-group__append {
       width: 70px;

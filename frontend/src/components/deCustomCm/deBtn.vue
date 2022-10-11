@@ -79,9 +79,9 @@ export default {
 $namespace: "de";
 $state-prefix: "is-de-";
 $modifier-separator: "--";
+$B: null;
 @mixin b($block) {
-  $B: $namespace + "-" + $block !global;
-
+  $B: $namespace + "-" + $block;
   .#{$B} {
     @content;
   }

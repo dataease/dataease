@@ -1,6 +1,6 @@
 <template>
   <de-layout-content>
-    <div class="organization">
+    <div class="de-task-record">
       <el-tabs
         v-model="tabActive"
         @tab-click="changeTab"
@@ -120,32 +120,8 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.de-msg-radio-class {
-  padding: 0 5px;
-  ::v-deep .el-radio-button__inner {
-    border-radius: 4px 4px 4px 4px !important;
-    border-left: 1px solid #dcdfe6 !important;
-    padding: 10px 10px;
-  }
-
-  ::v-deep .el-radio-button__orig-radio:checked + .el-radio-button__inner {
-    color: #fff;
-    background-color: #0a7be0;
-    border-color: #0a7be0;
-    -webkit-box-shadow: 0px 0 0 0 #0a7be0;
-    box-shadow: 0px 0 0 0 #0a7be0;
-  }
-}
-.de-msg-a:hover {
-  text-decoration: underline !important;
-  color: #0a7be0 !important;
-  cursor: pointer !important;
-}
-</style>
 <style scoped lang="scss">
-.organization {
+.de-task-record {
   height: 100%;
   background-color: var(--MainBG, #f5f6f7);
 
@@ -155,11 +131,11 @@ export default {
     overflow-x: auto;
   }
 
-  >>> .el-tabs__header {
+  ::v-deep.el-tabs__header {
     margin: 0 0 12px;
   }
 
-  >>> .el-tabs__item {
+  ::v-deep.el-tabs__item {
     height: 24px;
     line-height: 24px;
     margin-bottom: 9px;
