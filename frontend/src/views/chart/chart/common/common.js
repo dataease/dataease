@@ -72,11 +72,17 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.xAxis.axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       chart_option.xAxis.splitLine = customStyle.xAxis.splitLine
       chart_option.xAxis.nameLocation = customStyle.xAxis.nameLocation
-      chart_option.xAxis.nameGap = customStyle.xAxis.nameGap
+      // chart_option.xAxis.nameGap = customStyle.xAxis.nameGap
       chart_option.xAxis.nameTextStyle = {
         ...customStyle.xAxis.nameTextStyle,
         lineHeight: 20,
-        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+        padding: [
+          customStyle.xAxis.paddingTop !== undefined? customStyle.xAxis.paddingTop : 0,
+          customStyle.xAxis.paddingRight !== undefined? customStyle.xAxis.paddingRight : 0,
+          customStyle.xAxis.paddingBottom !== undefined? customStyle.xAxis.paddingBottom : 0,
+          customStyle.xAxis.paddingLeft !== undefined? customStyle.xAxis.paddingLeft : 0,
+        ]
       }
       chart_option.xAxis.axisLabel.showMaxLabel = true
       chart_option.xAxis.axisLabel.showMinLabel = true
@@ -105,13 +111,20 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.yAxis.axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       chart_option.yAxis.splitLine = customStyle.yAxis.splitLine
       chart_option.yAxis.nameLocation = customStyle.yAxis.nameLocation
-      chart_option.yAxis.nameGap = customStyle.yAxis.nameGap
+      // chart_option.yAxis.nameGap = customStyle.yAxis.nameGap
       chart_option.yAxis.nameRotate = 0
       chart_option.yAxis.nameTextStyle = {
         ...customStyle.yAxis.nameTextStyle,
         lineHeight: 20,
-        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+        padding: [
+          customStyle.yAxis.paddingTop !== undefined? customStyle.yAxis.paddingTop : 0,
+          customStyle.yAxis.paddingRight !== undefined? customStyle.yAxis.paddingRight : 0,
+          customStyle.yAxis.paddingBottom !== undefined? customStyle.yAxis.paddingBottom : 0,
+          customStyle.yAxis.paddingLeft !== undefined? customStyle.yAxis.paddingLeft : 0,
+        ]
       }
+      console.log('common,yAixs,',customStyle.yAxis)
 
       chart_option.yAxis.axisLabel.showMaxLabel = true
       chart_option.yAxis.axisLabel.showMinLabel = true

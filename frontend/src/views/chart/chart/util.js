@@ -329,6 +329,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
+    value: 'bar-stack-part',
+    title: 'chart.chart_bar_stack_part',
+    icon: 'bar-stack'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
     value: 'bar-polarStack',
     title: '极坐标堆叠柱状图',
     icon: 'bar-stack'

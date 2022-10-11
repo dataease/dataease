@@ -83,7 +83,7 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
       chart_option.series.push(y)
     }
   }
-  console.log('_____________', chart_option)
+  console.log('bar_echarts', chart_option)
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option
@@ -1315,6 +1315,21 @@ export function stackBarOption(chart_option, chart, cstyle = {}) {
     s.stack = 'stack'
     s.emphasis = {
       focus: 'series'
+    }
+  })
+  return chart_option
+}
+
+export function stackBarPartOption(chart_option, chart, cstyle = {}) {
+  baseBarOption(chart_option, chart, cstyle)
+  
+  // ext
+  chart_option.series.forEach(function(s,index) {
+    if(index !== 0) {
+      s.stack = 'stack'
+      s.emphasis = {
+        focus: 'series'
+      }
     }
   })
   return chart_option
