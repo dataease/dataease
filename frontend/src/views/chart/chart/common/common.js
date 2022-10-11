@@ -1,5 +1,5 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { DEFAULT_YAXIS_EXT_STYLE } from '@/views/chart/chart/chart'
+import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_EXT_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 
 let xAxisLabelFormatter = null
@@ -260,7 +260,6 @@ export function seniorCfg(chart_option, chart) {
           }
           const rgba = hexToRgba(senior.functionCfg.sliderFillBg, 0.2)
           chart_option.dataZoom[1].fillerColor = rgba
-          
         }
         if (senior.functionCfg.sliderTextClolor) {
           chart_option.dataZoom[1].textStyle = { color: senior.functionCfg.sliderTextClolor }
@@ -285,12 +284,18 @@ export function seniorCfg(chart_option, chart) {
     if (senior.assistLine && senior.assistLine.length > 0) {
       if (chart_option.series && chart_option.series.length > 0) {
         const customStyle = JSON.parse(chart.customStyle)
-        let xAxis, yAxis
+        let xAxis, yAxis, axisFormatterCfg
         if (customStyle.xAxis) {
           xAxis = JSON.parse(JSON.stringify(customStyle.xAxis))
+          if (chart.type.includes('horizontal')) {
+            axisFormatterCfg = xAxis.axisLabelFormatter ? xAxis.axisLabelFormatter : DEFAULT_XAXIS_STYLE.axisLabelFormatter
+          }
         }
         if (customStyle.yAxis) {
           yAxis = JSON.parse(JSON.stringify(customStyle.yAxis))
+          if (!chart.type.includes('horizontal')) {
+            axisFormatterCfg = yAxis.axisLabelFormatter ? yAxis.axisLabelFormatter : DEFAULT_YAXIS_STYLE.axisLabelFormatter
+          }
         }
 
         const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
@@ -313,7 +318,7 @@ export function seniorCfg(chart_option, chart) {
                 fontSize: 10,
                 position: xAxis.position === 'bottom' ? 'insideStartTop' : 'insideEndTop',
                 formatter: function(param) {
-                  return ele.name + ' : ' + param.value
+                  return ele.name + ' : ' + valueFormatter(param.value, axisFormatterCfg)
                 }
               },
               tooltip: {
@@ -335,7 +340,7 @@ export function seniorCfg(chart_option, chart) {
                 fontSize: 10,
                 position: yAxis.position === 'left' ? 'insideStartTop' : 'insideEndTop',
                 formatter: function(param) {
-                  return ele.name + ' : ' + param.value
+                  return ele.name + ' : ' + valueFormatter(param.value, axisFormatterCfg)
                 }
               },
               tooltip: {

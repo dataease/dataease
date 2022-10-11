@@ -1,5 +1,6 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
+import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
 
 export function getPadding(chart) {
   if (chart.drill) {
@@ -703,14 +704,20 @@ export function getAnalyse(chart) {
     senior = JSON.parse(chart.senior)
     if (senior.assistLine && senior.assistLine.length > 0) {
       const customStyle = JSON.parse(chart.customStyle)
-      let xAxisPosition, yAxisPosition
+      let xAxisPosition, yAxisPosition, axisFormatterCfg
       if (customStyle.xAxis) {
         const a = JSON.parse(JSON.stringify(customStyle.xAxis))
         xAxisPosition = transAxisPosition(chart, a)
+        if (chart.type.includes('horizontal')) {
+          axisFormatterCfg = a.axisLabelFormatter ? a.axisLabelFormatter : DEFAULT_XAXIS_STYLE.axisLabelFormatter
+        }
       }
       if (customStyle.yAxis) {
         const a = JSON.parse(JSON.stringify(customStyle.yAxis))
         yAxisPosition = transAxisPosition(chart, a)
+        if (!chart.type.includes('horizontal')) {
+          axisFormatterCfg = a.axisLabelFormatter ? a.axisLabelFormatter : DEFAULT_YAXIS_STYLE.axisLabelFormatter
+        }
       }
 
       const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
@@ -718,11 +725,12 @@ export function getAnalyse(chart) {
       const lines = fixedLines.concat(dynamicLines)
 
       lines.forEach(ele => {
-        const content = ele.name + ' : ' + parseFloat(ele.value)
+        const value = parseFloat(ele.value)
+        const content = ele.name + ' : ' + valueFormatter(value, axisFormatterCfg)
         assistLine.push({
           type: 'line',
-          start: ['start', parseFloat(ele.value)],
-          end: ['end', parseFloat(ele.value)],
+          start: ['start', value],
+          end: ['end', value],
           style: {
             stroke: ele.color,
             lineDash: getLineDash(ele.lineType)
@@ -731,7 +739,7 @@ export function getAnalyse(chart) {
         if (!chart.type.includes('horizontal')) {
           assistLine.push({
             type: 'text',
-            position: [yAxisPosition === 'left' ? 'start' : 'end', parseFloat(ele.value)],
+            position: [yAxisPosition === 'left' ? 'start' : 'end', value],
             content: content,
             offsetY: -2,
             offsetX: yAxisPosition === 'left' ? 2 : -10 * (content.length - 2),
@@ -744,7 +752,7 @@ export function getAnalyse(chart) {
         } else {
           assistLine.push({
             type: 'text',
-            position: [xAxisPosition === 'left' ? 'start' : 'end', parseFloat(ele.value)],
+            position: [xAxisPosition === 'left' ? 'start' : 'end', value],
             content: content,
             offsetY: xAxisPosition === 'left' ? -2 : -10 * (content.length - 2),
             offsetX: 2,
