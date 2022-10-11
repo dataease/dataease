@@ -1,7 +1,10 @@
 <template>
   <el-col>
     <!-- group -->
-    <el-col v-if="!sceneMode" v-loading="dsLoading">
+    <el-col
+      v-if="!sceneMode"
+      v-loading="dsLoading"
+    >
       <el-row class="title-css">
         <span class="title-text">
           {{ $t('dataset.datalist') }}
@@ -24,11 +27,14 @@
       </el-row>
 
       <el-col class="custom-tree-container">
-        <div class="block" :style="treeStyle">
+        <div
+          class="block"
+          :style="treeStyle"
+        >
           <el-tree
             ref="tree"
             :default-expanded-keys="expandedArray"
-            :data="data"
+            :data="treeData"
             node-key="id"
             :expand-on-click-node="false"
             :filter-node-method="filterNode"
@@ -36,7 +42,10 @@
             @node-expand="nodeExpand"
             @node-collapse="nodeCollapse"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span
+              slot-scope="{ data }"
+              class="custom-tree-node"
+            >
               <span style="display: flex; flex: 1; width: 0">
                 <span v-if="data.type === 'scene'">
                   <!--                  <el-button-->
@@ -44,7 +53,7 @@
                   <!--                    type="text"-->
                   <!--                    size="mini"-->
                   <!--                  />-->
-                  <svg-icon icon-class="scene"/>
+                  <svg-icon icon-class="scene" />
                 </span>
                 <span
                   style="
@@ -54,8 +63,7 @@
                     text-overflow: ellipsis;
                   "
                   :title="data.name"
-                  >{{ data.name }}</span
-                >
+                >{{ data.name }}</span>
               </span>
             </span>
           </el-tree>
@@ -64,9 +72,15 @@
     </el-col>
 
     <!--scene-->
-    <el-col v-if="sceneMode" v-loading="dsLoading">
+    <el-col
+      v-if="sceneMode"
+      v-loading="dsLoading"
+    >
       <el-row class="title-css scene-title">
-        <span class="title-text scene-title-name" :title="currGroup.name">
+        <span
+          class="title-text scene-title-name"
+          :title="currGroup.name"
+        >
           {{ currGroup.name }}
         </span>
         <el-button
@@ -95,7 +109,10 @@
       </el-row>
 
       <el-col class="custom-tree-container">
-        <div class="block" :style="treeStyle">
+        <div
+          class="block"
+          :style="treeStyle"
+        >
           <el-tree
             :data="tableData"
             node-key="id"
@@ -104,8 +121,14 @@
             highlight-current
             @node-click="sceneClick"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node-list">
-              <span :id="data.id" style="display: flex; flex: 1; width: 0">
+            <span
+              slot-scope="{ data }"
+              class="custom-tree-node-list"
+            >
+              <span
+                :id="data.id"
+                style="display: flex; flex: 1; width: 0"
+              >
                 <span>
                   <svg-icon
                     v-if="data.type === 'db'"
@@ -139,12 +162,14 @@
                   />
                 </span>
                 <span v-if="data.type === 'db' || data.type === 'sql'">
-                  <span v-if="data.mode === 0" style="margin-left: 6px"
-                    ><i class="el-icon-s-operation"
-                  /></span>
-                  <span v-if="data.mode === 1" style="margin-left: 6px"
-                    ><i class="el-icon-alarm-clock"
-                  /></span>
+                  <span
+                    v-if="data.mode === 0"
+                    style="margin-left: 6px"
+                  ><i class="el-icon-s-operation" /></span>
+                  <span
+                    v-if="data.mode === 1"
+                    style="margin-left: 6px"
+                  ><i class="el-icon-alarm-clock" /></span>
                 </span>
                 <span
                   style="
@@ -154,8 +179,7 @@
                     text-overflow: ellipsis;
                   "
                   :title="data.name"
-                  >{{ data.name }}</span
-                >
+                >{{ data.name }}</span>
               </span>
             </span>
           </el-tree>
@@ -213,7 +237,7 @@ export default {
       kettleRunning: false,
       sceneMode: false,
       search: '',
-      data: [],
+      treeData: [],
       tableData: [],
       tables: [],
       currGroup: null,
@@ -233,25 +257,25 @@ export default {
       dsLoading: false,
       treeStyle: this.fixHeight
         ? {
-            height: '200px',
-            overflow: 'auto'
-          }
+          height: '200px',
+          overflow: 'auto'
+        }
         : {},
       filterText: ''
     }
   },
   computed: {},
   watch: {
-    unionData: function () {
+    unionData: function() {
       this.unionDataChange()
     },
-    table: function () {
+    table: function() {
       if (this.table && this.table.sceneId) {
         post('dataset/group/getScene/' + this.table.sceneId, {}, false).then(
           (response) => {
             this.currGroup = response.data
 
-            this.$nextTick(function () {
+            this.$nextTick(function() {
               this.sceneMode = true
               this.tableTree()
             })
@@ -320,7 +344,7 @@ export default {
     tree(group) {
       this.dsLoading = true
       post('/dataset/group/tree', group, false).then((response) => {
-        this.data = response.data
+        this.treeData = response.data
         this.dsLoading = false
       })
     },
@@ -354,7 +378,7 @@ export default {
             }
             this.tableData = JSON.parse(JSON.stringify(this.tables))
 
-            this.$nextTick(function () {
+            this.$nextTick(function() {
               this.unionDataChange()
             })
             this.dsLoading = false
@@ -403,7 +427,7 @@ export default {
           false
         ).then((response) => {
           if (response.data) {
-            this.$nextTick(function () {
+            this.$nextTick(function() {
               this.$emit('getTable', data)
             })
           } else {

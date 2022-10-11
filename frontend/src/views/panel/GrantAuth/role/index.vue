@@ -9,8 +9,19 @@
       @select="selectOne"
       @select-all="selectAll"
     >
-      <el-table-column :column-key="fieldName" :label="columnLabel" :prop="fieldName" filter-placement="right-start" :filters="filter_options" :filter-multiple="false" :filter-method="filterHandler" />
-      <el-table-column type="selection" fixd />
+      <el-table-column
+        :column-key="fieldName"
+        :label="columnLabel"
+        :prop="fieldName"
+        filter-placement="right-start"
+        :filters="filter_options"
+        :filter-multiple="false"
+        :filter-method="filterHandler"
+      />
+      <el-table-column
+        type="selection"
+        fixd
+      />
     </el-table>
   </div>
 </template>

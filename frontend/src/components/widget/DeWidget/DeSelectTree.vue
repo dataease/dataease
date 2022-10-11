@@ -60,6 +60,7 @@ export default {
       show: true,
       selectOptionWidth: 0,
       datas: [],
+      // eslint-disable-next-line
       value: this.isSingle ? '' : [],
       selectParams: {
         clearable: true,

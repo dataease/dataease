@@ -1,6 +1,10 @@
 <template>
   <div>
-    <canvas :id="'complex_canvas'+element.id" width="500" height="500" />
+    <canvas
+      :id="'complex_canvas'+element.id"
+      width="500"
+      height="500"
+    />
   </div>
 </template>
 

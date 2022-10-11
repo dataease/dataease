@@ -1,14 +1,23 @@
 <template>
   <el-row class="demo_main">
     <el-row class="demo_content">
-      <el-row v-for="(details,index) in blogsInfo" :key="index">
-        <a :href="details.href" target="_blank">{{ details.title }}</a>
+      <el-row
+        v-for="(details,index) in blogsInfo"
+        :key="index"
+      >
+        <a
+          :href="details.href"
+          target="_blank"
+        >{{ details.title }}</a>
         <br>
         <span style="color: lightgray">{{ details.time }}</span>
       </el-row>
     </el-row>
     <el-row class="demo_bottom">
-      <a href="https://blog.fit2cloud.com/?cat=321" target="_blank">{{ $t('wizard.show_more') }}</a>
+      <a
+        href="https://blog.fit2cloud.com/?cat=321"
+        target="_blank"
+      >{{ $t('wizard.show_more') }}</a>
     </el-row>
   </el-row>
 </template>

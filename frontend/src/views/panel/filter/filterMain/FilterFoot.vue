@@ -22,11 +22,20 @@
 
         </el-card>
 
-        <el-card v-if="element.component && element.component === 'de-date' && element.serviceName && element.serviceName !== 'timeDateRangeWidget'" class="box-card">
-          <de-date-default v-if="element.component === 'de-date' && element.serviceName !== 'timeDateRangeWidget'" :element="element" />
+        <el-card
+          v-if="element.component && element.component === 'de-date' && element.serviceName && element.serviceName !== 'timeDateRangeWidget'"
+          class="box-card"
+        >
+          <de-date-default
+            v-if="element.component === 'de-date' && element.serviceName !== 'timeDateRangeWidget'"
+            :element="element"
+          />
         </el-card>
 
-        <el-card v-if="element.component && element.component === 'de-date' && element.serviceName && element.serviceName === 'timeDateRangeWidget'" class="box-card">
+        <el-card
+          v-if="element.component && element.component === 'de-date' && element.serviceName && element.serviceName === 'timeDateRangeWidget'"
+          class="box-card"
+        >
           <de-date-range-default
             v-if="element.component === 'de-date' && element.serviceName === 'timeDateRangeWidget'"
             :element="element"

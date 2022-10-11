@@ -1,13 +1,27 @@
 <template>
   <div>
     <operater title="system_parameter_setting.basic_setting">
-      <deBtn v-if="showEdit" type="primary" @click="edit">{{
+      <deBtn
+        v-if="showEdit"
+        type="primary"
+        @click="edit"
+      >{{
         $t("commons.edit")
       }}</deBtn>
-      <deBtn v-if="showCancel" secondary @click="cancel">{{
+      <deBtn
+        v-if="showCancel"
+        secondary
+        @click="cancel"
+      >{{
         $t("commons.cancel")
       }}</deBtn>
-      <deBtn v-if="showSave" type="primary" :disabled="disabledSave" size="small" @click="save('formInline')">
+      <deBtn
+        v-if="showSave"
+        type="primary"
+        :disabled="disabledSave"
+        size="small"
+        @click="save('formInline')"
+      >
         {{ $t("commons.save") }}
       </deBtn>
     </operater>
@@ -36,41 +50,93 @@
             <i class="el-icon-warning-outline tips" />
           </el-tooltip>
         </template>
-        <el-input v-model="formInline.frontTimeOut" :placeholder="$t('system_parameter_setting.empty_front')"><template
+        <el-input
+          v-model="formInline.frontTimeOut"
+          :placeholder="$t('system_parameter_setting.empty_front')"
+        ><template
           slot="append"
         >{{ $t("panel.second") }}</template></el-input>
       </el-form-item>
-      <el-form-item :label="$t('system_parameter_setting.message_retention_time')" prop="msgTimeOut">
-        <el-input v-model="formInline.msgTimeOut" :placeholder="$t('system_parameter_setting.empty_msg')"><template
+      <el-form-item
+        :label="$t('system_parameter_setting.message_retention_time')"
+        prop="msgTimeOut"
+      >
+        <el-input
+          v-model="formInline.msgTimeOut"
+          :placeholder="$t('system_parameter_setting.empty_msg')"
+        ><template
           slot="append"
         >{{ $t('components.day') }}</template></el-input>
       </el-form-item>
 
       <el-form-item :label="$t('system_parameter_setting.ds_check_time')">
-        <el-form :inline="true" :disabled="show" class="demo-form-inline-ds">
+        <el-form
+          :inline="true"
+          :disabled="show"
+          class="demo-form-inline-ds"
+        >
 
           <el-form-item>
-            <el-input v-model="formInline.dsCheckInterval" size="mini" type="number" min="1" @change="onSimpleCronChange()" />
+            <el-input
+              v-model="formInline.dsCheckInterval"
+              size="mini"
+              type="number"
+              min="1"
+              @change="onSimpleCronChange()"
+            />
           </el-form-item>
 
           <el-form-item class="form-item">
-            <el-select v-model="formInline.dsCheckIntervalType" filterable size="mini" @change="onSimpleCronChange()">
-              <el-option :label="$t('cron.minute_default')" value="minute" />
-              <el-option :label="$t('cron.hour_default')" value="hour" />
+            <el-select
+              v-model="formInline.dsCheckIntervalType"
+              filterable
+              size="mini"
+              @change="onSimpleCronChange()"
+            >
+              <el-option
+                :label="$t('cron.minute_default')"
+                value="minute"
+              />
+              <el-option
+                :label="$t('cron.hour_default')"
+                value="hour"
+              />
             </el-select>
           </el-form-item>
-          <el-form-item class="form-item" :label="$t('cron.every_exec')" />
+          <el-form-item
+            class="form-item"
+            :label="$t('cron.every_exec')"
+          />
         </el-form>
       </el-form-item>
 
-      <el-form-item v-if="loginTypes.length > 1" :label="$t('system_parameter_setting.login_type')" prop="loginType">
+      <el-form-item
+        v-if="loginTypes.length > 1"
+        :label="$t('system_parameter_setting.login_type')"
+        prop="loginType"
+      >
         <el-radio-group v-model="formInline.loginType">
-          <el-radio :label="0" size="mini">{{
+          <el-radio
+            :label="0"
+            size="mini"
+          >{{
             $t("login.default_login")
           }}</el-radio>
-          <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
-          <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
-          <el-radio v-if="loginTypes.includes(3)" :label="3" size="mini">CAS</el-radio>
+          <el-radio
+            v-if="loginTypes.includes(1)"
+            :label="1"
+            size="mini"
+          >LDAP</el-radio>
+          <el-radio
+            v-if="loginTypes.includes(2)"
+            :label="2"
+            size="mini"
+          >OIDC</el-radio>
+          <el-radio
+            v-if="loginTypes.includes(3)"
+            :label="3"
+            size="mini"
+          >CAS</el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -78,7 +144,12 @@
         <el-button class="pwd-tips" type="text">{{ $t('system_parameter_setting.cas_reset') + '[/cas/reset/{adminAcount}/{adminPwd}]' }}</el-button>
       </el-row> -->
 
-      <plugin-com v-if="isPluginLoaded" ref="LoginLimitSetting" :form="formInline" component-name="LoginLimitSetting" />
+      <plugin-com
+        v-if="isPluginLoaded"
+        ref="LoginLimitSetting"
+        :form="formInline"
+        component-name="LoginLimitSetting"
+      />
 
       <el-form-item
         :label="
@@ -86,8 +157,14 @@
         "
       >
         <el-radio-group v-model="formInline.openMarketPage">
-          <el-radio label="true" size="mini">{{ $t("commons.yes") }}</el-radio>
-          <el-radio label="false" size="mini">{{ $t("commons.no") }}</el-radio>
+          <el-radio
+            label="true"
+            size="mini"
+          >{{ $t("commons.yes") }}</el-radio>
+          <el-radio
+            label="false"
+            size="mini"
+          >{{ $t("commons.no") }}</el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -98,8 +175,14 @@
         prop="openHomePage"
       >
         <el-radio-group v-model="formInline.openHomePage">
-          <el-radio label="true" size="mini">{{ $t("commons.yes") }}</el-radio>
-          <el-radio label="false" size="mini">{{ $t("commons.no") }}</el-radio>
+          <el-radio
+            label="true"
+            size="mini"
+          >{{ $t("commons.yes") }}</el-radio>
+          <el-radio
+            label="false"
+            size="mini"
+          >{{ $t("commons.no") }}</el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>

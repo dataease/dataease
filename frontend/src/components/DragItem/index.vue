@@ -1,12 +1,23 @@
 <template>
   <span>
-    <el-dropdown trigger="click" size="mini" @command="clickItem">
+    <el-dropdown
+      trigger="click"
+      size="mini"
+      @command="clickItem"
+    >
       <span class="el-dropdown-link">
-        <el-tag size="small" class="item-axis">
+        <el-tag
+          size="small"
+          class="item-axis"
+        >
           {{ item.name }}<i class="el-icon-arrow-down el-icon--right" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-if="isSortWidget" :disabled="disabledSort" :command="beforeClickItem('none')">
+          <el-dropdown-item
+            v-if="isSortWidget"
+            :disabled="disabledSort"
+            :command="beforeClickItem('none')"
+          >
             <span
               class="de-sort-menu"
               :class="!disabledSort && (!sortNode || sortNode.sort === 'none') ? 'de-active-li': ''"
@@ -14,7 +25,11 @@
               $t('chart.none')
             }}</span>
           </el-dropdown-item>
-          <el-dropdown-item v-if="isSortWidget" :disabled="disabledSort" :command="beforeClickItem('asc')">
+          <el-dropdown-item
+            v-if="isSortWidget"
+            :disabled="disabledSort"
+            :command="beforeClickItem('asc')"
+          >
             <span
               v-popover:popoverasc
               class="el-dropdown-link inner-dropdown-menu de-sort-menu"
@@ -47,7 +62,11 @@
               </ul>
             </el-popover>
           </el-dropdown-item>
-          <el-dropdown-item v-if="isSortWidget" :disabled="disabledSort" :command="beforeClickItem('desc')">
+          <el-dropdown-item
+            v-if="isSortWidget"
+            :disabled="disabledSort"
+            :command="beforeClickItem('desc')"
+          >
             <span
               v-popover:popoverdesc
               class="el-dropdown-link inner-dropdown-menu de-sort-menu"
@@ -80,7 +99,11 @@
               </ul>
             </el-popover>
           </el-dropdown-item>
-          <el-dropdown-item :divided="isSortWidget" icon="el-icon-delete" :command="beforeClickItem('remove')">
+          <el-dropdown-item
+            :divided="isSortWidget"
+            icon="el-icon-delete"
+            :command="beforeClickItem('remove')"
+          >
             <span class="de-delete-field">{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
           <slot />

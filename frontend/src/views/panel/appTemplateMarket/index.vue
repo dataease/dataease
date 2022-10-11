@@ -1,21 +1,43 @@
 <template>
   <el-row class="outer-body">
     <!--预览模式-->
-    <MarketPreview v-if="previewModel" :preview-id="templatePreviewId" :current-app="currentApp" @closePreview="previewModel=false" @templateApply="templateApply" />
+    <MarketPreview
+      v-if="previewModel"
+      :preview-id="templatePreviewId"
+      :current-app="currentApp"
+      @closePreview="previewModel=false"
+      @templateApply="templateApply"
+    />
     <!--列表模式-->
-    <el-row v-show="!previewModel" class="market-main">
+    <el-row
+      v-show="!previewModel"
+      class="market-main"
+    >
       <el-row>
         <el-col span="12">
-          <span class="title-left">{{$t('app_template.app_manager')}}</span>
+          <span class="title-left">{{ $t('app_template.app_manager') }}</span>
         </el-col>
       </el-row>
       <el-row>
-        <el-tabs v-model="marketActiveTab" @tab-click="handleClick">
-          <el-tab-pane v-for="(tabItem,index) in marketTabs" :key="index" :label="tabItem.label" :name="tabItem.name" />
+        <el-tabs
+          v-model="marketActiveTab"
+          @tab-click="handleClick"
+        >
+          <el-tab-pane
+            v-for="(tabItem,index) in marketTabs"
+            :key="index"
+            :label="tabItem.label"
+            :name="tabItem.name"
+          />
         </el-tabs>
       </el-row>
       <el-row v-show="marketActiveTab==='apps'">
-        <el-row v-show="hasResult" id="template-main" v-loading="$store.getters.loadingMap[$store.getters.currentPath]" class="template-main">
+        <el-row
+          v-show="hasResult"
+          id="template-main"
+          v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+          class="template-main"
+        >
           <el-col
             v-for="(templateItem) in currentAppShowList"
             :key="templateItem.id"
@@ -30,16 +52,25 @@
             />
           </el-col>
         </el-row>
-        <el-row v-show="!hasResult" class="custom-position template-main">
+        <el-row
+          v-show="!hasResult"
+          class="custom-position template-main"
+        >
           <div style="text-align: center">
-            <svg-icon icon-class="no_result" style="font-size: 75px;margin-bottom: 16px" />
+            <svg-icon
+              icon-class="no_result"
+              style="font-size: 75px;margin-bottom: 16px"
+            />
             <br>
             <span>{{ $t('commons.no_result') }}</span>
           </div>
         </el-row>
       </el-row>
-      <el-row v-show="marketActiveTab==='apply_logs'" class="main-log-area template-main">
-        <app-template-log class="log-area"></app-template-log>
+      <el-row
+        v-show="marketActiveTab==='apply_logs'"
+        class="main-log-area template-main"
+      >
+        <app-template-log class="log-area" />
       </el-row>
     </el-row>
 
@@ -53,11 +84,26 @@
       append-to-body="true"
       :destroy-on-close="true"
     >
-      <el-form ref="panelForm" :model="panelForm" :rules="rule" label-width="80px">
-        <el-form-item :label="$t('panel.name')" prop="name">
-          <el-input v-model="panelForm.name" :clearable="true" :placeholder="$t('panel.enter_name_tips')" />
+      <el-form
+        ref="panelForm"
+        :model="panelForm"
+        :rules="rule"
+        label-width="80px"
+      >
+        <el-form-item
+          :label="$t('panel.name')"
+          prop="name"
+        >
+          <el-input
+            v-model="panelForm.name"
+            :clearable="true"
+            :placeholder="$t('panel.enter_name_tips')"
+          />
         </el-form-item>
-        <el-form-item :label="$t('commons.folder')" prop="pid">
+        <el-form-item
+          :label="$t('commons.folder')"
+          prop="pid"
+        >
           <treeselect
             v-model="panelForm.pid"
             :clearable="false"
@@ -70,27 +116,37 @@
           />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer dialog-footer-self">
-        <el-button size="mini" @click="folderSelectShow=false">{{ $t('commons.cancel') }}</el-button>
-        <el-button size="mini" type="primary" :disabled="!panelForm.name || !panelForm.pid" @click="apply">{{ $t('commons.confirm') }}</el-button>
+      <div
+        slot="footer"
+        class="dialog-footer dialog-footer-self"
+      >
+        <el-button
+          size="mini"
+          @click="folderSelectShow=false"
+        >{{ $t('commons.cancel') }}</el-button>
+        <el-button
+          size="mini"
+          type="primary"
+          :disabled="!panelForm.name || !panelForm.pid"
+          @click="apply"
+        >{{ $t('commons.confirm') }}</el-button>
       </div>
     </el-dialog>
   </el-row>
 </template>
 
 <script>
-import { searchAppTemplate, getCategories } from '@/api/appTemplateMarket'
-import TemplateMarketItem from '@/views/panel/appTemplateMarket/component/TemplateMarketItem'
+import { searchAppTemplate } from '@/api/appTemplateMarket'
 import { groupTree, panelSave } from '@/api/panel/panel'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
 import MarketPreview from '@/views/panel/appTemplateMarket/component/MarketPreview'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import AppTemplateItem from "@/views/panel/appTemplateMarket/component/AppTemplateItem";
-import AppTemplateLog from "@/views/panel/appTemplateMarket/log";
+import AppTemplateItem from '@/views/panel/appTemplateMarket/component/AppTemplateItem'
+import AppTemplateLog from '@/views/panel/appTemplateMarket/log'
 
 export default {
-  name: 'appTemplateMarket',
-  components: {AppTemplateLog, AppTemplateItem, MarketPreview, TemplateMarketItem },
+  name: 'AppTemplateMarket',
+  components: { AppTemplateLog, AppTemplateItem, MarketPreview },
   data() {
     return {
       hasResult: true,
@@ -100,8 +156,8 @@ export default {
       previewModel: false,
       previewVisible: false,
       templatePreviewId: '',
-      currentApp:null,
-      marketTabs: [{label:'Apps',name:'apps'},{label:this.$t('app_template.apply_logs'),name:'apply_logs'}],
+      currentApp: null,
+      marketTabs: [{ label: 'Apps', name: 'apps' }, { label: this.$t('app_template.apply_logs'), name: 'apply_logs' }],
       marketActiveTab: 'apps',
       searchText: null,
       panelForm: {
@@ -160,7 +216,7 @@ export default {
   },
   methods: {
     initMarketTemplate() {
-      searchAppTemplate({nodeType:'folder'}).then(rsp => {
+      searchAppTemplate({ nodeType: 'folder' }).then(rsp => {
         this.currentAppShowList = rsp.data
       }).catch(() => {
         this.networkStatus = false
@@ -214,7 +270,7 @@ export default {
     newPanel() {
 
     },
-    appPreview(appTemplate){
+    appPreview(appTemplate) {
       this.templatePreviewId = appTemplate.id
       this.currentApp = appTemplate
       this.previewModel = true

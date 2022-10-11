@@ -12,8 +12,14 @@
       <template v-if="form.type == 'api'">
         <div class="de-row-rules flex-space">
           <span>{{ $t('datasource.data_table') }}</span>
-           <el-button style="min-width: 80px;
-    font-size: 14px;padding: 8px 15px;" icon="el-icon-plus" size="small" @click="() => addApiItem()" type="primary">{{ $t('commons.add') }}</el-button>
+          <el-button
+            style="min-width: 80px;
+    font-size: 14px;padding: 8px 15px;"
+            icon="el-icon-plus"
+            size="small"
+            type="primary"
+            @click="() => addApiItem()"
+          >{{ $t('commons.add') }}</el-button>
         </div>
         <el-empty
           v-if="!form.apiConfiguration.length"
@@ -29,7 +35,10 @@
             @click="addApiItem(api)"
           >
             <el-row>
-              <el-col style="display: flex" :span="19">
+              <el-col
+                style="display: flex"
+                :span="19"
+              >
                 <span class="name">{{ api.name }}</span>
                 <span
                   v-if="api.status === 'Error'"
@@ -42,7 +51,10 @@
                   style="color: green; background: rgba(52, 199, 36, 0.2)"
                 >{{ $t('datasource.valid') }}</span>
               </el-col>
-              <el-col style="text-align: right" :span="5">
+              <el-col
+                style="text-align: right"
+                :span="5"
+              >
                 <svg-icon
                   icon-class="de-copy"
                   class="de-copy-icon"
@@ -62,7 +74,11 @@
                       {{ $t('datasource.delete_this_item') }}
                     </div>
                     <div class="foot">
-                      <deBtn class="small" secondary @click="cancelItem(api)">{{
+                      <deBtn
+                        class="small"
+                        secondary
+                        @click="cancelItem(api)"
+                      >{{
                         $t('fu.search_bar.cancel')
                       }}</deBtn>
                       <deBtn
@@ -150,7 +166,10 @@
         v-if="form.type == 'hive'"
         :label="$t('datasource.auth_method')"
       >
-        <el-select v-model="form.configuration.authMethod" class="de-select">
+        <el-select
+          v-model="form.configuration.authMethod"
+          class="de-select"
+        >
           <el-option
             v-for="item in authMethodList"
             :key="item.id"
@@ -166,7 +185,10 @@
         "
         :label="$t('datasource.client_principal')"
       >
-        <el-input v-model="form.configuration.username" autocomplete="off" />
+        <el-input
+          v-model="form.configuration.username"
+          autocomplete="off"
+        />
       </el-form-item>
 
       <el-form-item
@@ -243,7 +265,11 @@
         "
         :label="$t('datasource.extra_params')"
       >
-        <el-input v-model="form.configuration.extraParams" :placeholder="$t('fu.search_bar.please_input') + $t('datasource.extra_params')" autocomplete="off" />
+        <el-input
+          v-model="form.configuration.extraParams"
+          :placeholder="$t('fu.search_bar.please_input') + $t('datasource.extra_params')"
+          autocomplete="off"
+        />
       </el-form-item>
 
       <el-form-item
@@ -334,8 +360,14 @@
         class="de-expand de-mar0"
         @click="showPriority = !showPriority"
       >{{ $t('datasource.priority')
-       }}<i v-if="showPriority" class="el-icon-arrow-up" />
-        <i v-else class="el-icon-arrow-down" /></span>
+       }}<i
+         v-if="showPriority"
+         class="el-icon-arrow-up"
+       />
+        <i
+          v-else
+          class="el-icon-arrow-down"
+        /></span>
 
       <template v-if="showPriority">
         <el-row :gutter="24">
@@ -412,7 +444,11 @@
       :before-close="closeEditItem"
       direction="rtl"
     >
-      <el-steps :active="active" align-center :space="144">
+      <el-steps
+        :active="active"
+        align-center
+        :space="144"
+      >
         <el-step
           v-if="active === 1"
           :title="$t('datasource.api_step_1')"
@@ -437,11 +473,21 @@
           <div class="row-rules">
             <span>{{ $t('datasource.base_info') }}</span>
           </div>
-          <el-form-item :label="$t('commons.name')" prop="name">
-            <el-input v-model="apiItem.name" :placeholder="$t('commons.input_name')" autocomplete="off" />
+          <el-form-item
+            :label="$t('commons.name')"
+            prop="name"
+          >
+            <el-input
+              v-model="apiItem.name"
+              :placeholder="$t('commons.input_name')"
+              autocomplete="off"
+            />
           </el-form-item>
 
-          <el-form-item :label="$t('datasource.request')" prop="url">
+          <el-form-item
+            :label="$t('datasource.request')"
+            prop="url"
+          >
             <el-input
               v-model="apiItem.url"
               :placeholder="$t('datasource.path_all_info')"
@@ -517,7 +563,10 @@
                   </el-checkbox>
                 </template>
               </el-table-column>
-              <el-table-column prop="name" :label="$t('dataset.field_rename')">
+              <el-table-column
+                prop="name"
+                :label="$t('dataset.field_rename')"
+              >
                 <template slot-scope="scope">
                   <el-input
                     v-model="scope.row.name"
@@ -638,7 +687,10 @@
         </el-form>
       </el-row>
       <div class="foot">
-        <el-button class="btn normal" @click="closeEditItem">{{
+        <el-button
+          class="btn normal"
+          @click="closeEditItem"
+        >{{
           $t('commons.cancel')
         }}</el-button>
         <el-button
@@ -689,9 +741,10 @@ export default {
       }
     },
     method: String,
-    request: {},
-    response: {},
-    datasourceType: {},
+    datasourceType: {
+      type: Object,
+      default: () => {}
+    },
     showScript: {
       type: Boolean,
       default: true
@@ -1045,8 +1098,8 @@ export default {
         this.$message.warning(i18n.t('datasource.api_field_not_empty'))
         return
       }
-      for (var i = 0; i < this.apiItem.fields.length - 1; i++) {
-        for (var j = i + 1; j < this.apiItem.fields.length; j++) {
+      for (let i = 0; i < this.apiItem.fields.length - 1; i++) {
+        for (let j = i + 1; j < this.apiItem.fields.length; j++) {
           if (this.apiItem.fields[i].name === this.apiItem.fields[j].name) {
             this.$message.error(
               this.apiItem.fields[i].name +
@@ -1060,7 +1113,7 @@ export default {
       this.active = 0
       this.edit_api_item = false
       if (!this.add_api_item) {
-        for (var i = 0; i < this.form.apiConfiguration.length; i++) {
+        for (let i = 0; i < this.form.apiConfiguration.length; i++) {
           if (
             this.form.apiConfiguration[i].serialNumber ===
             this.apiItem.serialNumber
@@ -1089,7 +1142,7 @@ export default {
             this.form.apiConfiguration[i].name.length + 5,
             match[0].length - 1
           )
-          if (parseInt(num) != NaN && parseInt(num) > number) {
+          if (!isNaN(parseInt(num)) && parseInt(num) > number) {
             number = parseInt(num)
           }
         }
@@ -1138,10 +1191,10 @@ export default {
       this.previewData()
       if (this.errMsg.length) {
         this.$message.error(
-                 [...new Set(this.errMsg)].join(',') +
+          [...new Set(this.errMsg)].join(',') +
                    ', ' +
                    i18n.t('datasource.has_repeat_field_name')
-               )
+        )
       }
     },
     handleFiledChange() {

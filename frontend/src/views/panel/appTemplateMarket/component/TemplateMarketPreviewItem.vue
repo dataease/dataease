@@ -8,7 +8,10 @@
     ]"
     @click.stop="previewTemplate"
   >
-    <div class="template-item-img" :style="classBackground" />
+    <div
+      class="template-item-img"
+      :style="classBackground"
+    />
     <span class="demonstration">{{ template.name }}</span>
   </div>
 </template>

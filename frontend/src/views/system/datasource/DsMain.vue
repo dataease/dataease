@@ -4,9 +4,15 @@
     class="de-ds-container"
     :class="[{ 'is-driver-mgm': currentMgm === 'driverMgm' }]"
   >
-    <div v-if="currentMgm === 'driverMgm'" class="dsr-route-title">
+    <div
+      v-if="currentMgm === 'driverMgm'"
+      class="dsr-route-title"
+    >
       <div>
-        <i class="el-icon-arrow-left back-button" @click="jump" />
+        <i
+          class="el-icon-arrow-left back-button"
+          @click="jump"
+        />
         <span>{{ $t('driver.mgm') }}</span>
       </div>
       <deBtn
@@ -32,13 +38,18 @@
         :is="component"
         v-if="!!component"
         :params="param"
-        @DataUpdate="dataUpdate"
         :t-data="tData"
         :ds-types="dsTypes"
+        @DataUpdate="dataUpdate"
         @refresh-type="refreshType"
         @switch-component="switchMain"
       />
-      <el-empty v-else :image-size="125" :description="$t(`datasource.${swTips}`)" :image="image" />
+      <el-empty
+        v-else
+        :image-size="125"
+        :description="$t(`datasource.${swTips}`)"
+        :image="image"
+      />
     </de-main-container>
   </div>
 </template>

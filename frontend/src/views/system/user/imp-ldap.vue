@@ -1,8 +1,21 @@
 <template>
-  <layout-content :header="$t('user.import_ldap') " back-name="system-user">
-    <el-form ref="importUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
+  <layout-content
+    :header="$t('user.import_ldap') "
+    back-name="system-user"
+  >
+    <el-form
+      ref="importUserForm"
+      :model="form"
+      :rules="rule"
+      size="small"
+      label-width="auto"
+      label-position="right"
+    >
 
-      <el-form-item :label="$t('commons.user')" prop="userIds">
+      <el-form-item
+        :label="$t('commons.user')"
+        prop="userIds"
+      >
         <el-select
           ref="userSelect"
           v-model="form.userIds"
@@ -26,7 +39,10 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item :label="$t('commons.organization')" prop="deptId">
+      <el-form-item
+        :label="$t('commons.organization')"
+        prop="deptId"
+      >
         <treeselect
           ref="deptTreeSelect"
           v-model="form.deptId"
@@ -34,13 +50,16 @@
           :load-options="loadDepts"
           :auto-load-root-options="false"
           :placeholder="$t('user.choose_org')"
-          :noChildrenText="$t('commons.treeselect.no_children_text')"
-          :noOptionsText="$t('commons.treeselect.no_options_text')"
-          :noResultsText="$t('commons.treeselect.no_results_text')"
+          :no-children-text="$t('commons.treeselect.no_children_text')"
+          :no-options-text="$t('commons.treeselect.no_options_text')"
+          :no-results-text="$t('commons.treeselect.no_results_text')"
           @open="filterData"
         />
       </el-form-item>
-      <el-form-item :label="$t('commons.role')" prop="roleIds">
+      <el-form-item
+        :label="$t('commons.role')"
+        prop="roleIds"
+      >
         <el-select
           ref="roleSelect"
           v-model="form.roleIds"
@@ -61,15 +80,24 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item :label="$t('commons.status')" prop="enabled">
-        <el-radio-group v-model="form.enabled" style="width: 140px">
+      <el-form-item
+        :label="$t('commons.status')"
+        prop="enabled"
+      >
+        <el-radio-group
+          v-model="form.enabled"
+          style="width: 140px"
+        >
           <el-radio :label="1">{{ $t('commons.enable') }}</el-radio>
           <el-radio :label="0">{{ $t('commons.disable') }}</el-radio>
         </el-radio-group>
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
+        <el-button
+          type="primary"
+          @click="save"
+        >{{ $t('commons.confirm') }}</el-button>
         <el-button @click="cancel">{{ $t('commons.cancel') }}</el-button>
       </el-form-item>
     </el-form>

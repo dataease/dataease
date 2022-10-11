@@ -11,8 +11,16 @@
             prefix-icon="el-icon-search"
           />
         </el-col>
-        <el-col v-if="!selectModel" :span="7">
-          <el-button type="primary" size="mini" style="float: right" @click="newChart">新建 </el-button>
+        <el-col
+          v-if="!selectModel"
+          :span="7"
+        >
+          <el-button
+            type="primary"
+            size="mini"
+            style="float: right"
+            @click="newChart"
+          >新建 </el-button>
         </el-col>
 
       </el-row>
@@ -21,7 +29,7 @@
           ref="templateTree"
           :default-expanded-keys="defaultExpandedKeys"
           :show-checkbox="selectModel"
-          :data="data"
+          :data="treeData"
           node-key="id"
           :props="defaultProps"
           draggable
@@ -34,7 +42,10 @@
           @check="checkChanged"
           @node-drag-end="dragEnd"
         >
-          <span slot-scope="{ node, data }" class="custom-tree-node-list father">
+          <span
+            slot-scope="{ node, data }"
+            class="custom-tree-node-list father"
+          >
             <span style="display: flex; flex: 1 1 0%; width: 0px;">
               <span v-if="data.modelInnerType==='history'">
                 <i class="el-icon-collection" />
@@ -43,14 +54,26 @@
                 <i class="el-icon-folder" />
               </span>
               <span v-else-if="data.modelType==='panel'&& data.nodeType === 'leaf'">
-                <svg-icon icon-class="panel" class="ds-icon-scene" />
+                <svg-icon
+                  icon-class="panel"
+                  class="ds-icon-scene"
+                />
               </span>
               <span v-else>
-                <svg-icon :icon-class="data.isPlugin && data.modelInnerType && data.modelInnerType !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + data.modelInnerType + '/svg') : data.modelInnerType" style="width: 14px;height: 14px" />
+                <svg-icon
+                  :icon-class="data.isPlugin && data.modelInnerType && data.modelInnerType !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + data.modelInnerType + '/svg') : data.modelInnerType"
+                  style="width: 14px;height: 14px"
+                />
               </span>
-              <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+              <span
+                style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                :title="data.name"
+              >{{ data.name }}</span>
             </span>
-            <span v-if="data.mode===1" class="child">
+            <span
+              v-if="data.mode===1"
+              class="child"
+            >
               <span @click.stop>
                 <el-button
                   icon="el-icon-delete"
@@ -94,7 +117,7 @@ export default {
         label: 'name',
         disabled: 'disabled'
       },
-      data: [],
+      treeData: [],
       showdetail: false,
       detailItem: null,
       loading: false,
@@ -139,7 +162,7 @@ export default {
         if (this.selectModel) {
           this.setParentDisable(nodeDatas)
         }
-        this.data = nodeDatas
+        this.treeData = nodeDatas
         this.loading = false
       })
     },

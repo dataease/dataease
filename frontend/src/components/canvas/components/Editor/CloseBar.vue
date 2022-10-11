@@ -1,35 +1,17 @@
 <template>
   <div class="bar-main">
     <div style="margin-right: -1px;width: 18px">
-      <i class="icon iconfont icon-guanbi" @click.stop="closePreview" />
+      <i
+        class="icon iconfont icon-guanbi"
+        @click.stop="closePreview"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import bus from '@/utils/bus'
-import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
-import LinkageField from '@/components/canvas/components/Editor/LinkageField'
 
 export default {
-  components: { },
-
-  props: {
-
-  },
-  data() {
-    return {
-
-    }
-  },
-  computed: {
-
-  },
-  mounted() {
-  },
-  beforeDestroy() {
-  },
   methods: {
     closePreview() {
       this.$emit('closePreview')

@@ -1,5 +1,8 @@
 <template>
-  <div class="el-view-select" :class="selectClass">
+  <div
+    class="el-view-select"
+    :class="selectClass"
+  >
     <el-select
       ref="select"
       v-model="innerValues"
@@ -20,8 +23,22 @@
       />
     </el-select>
 
-    <el-popover ref="popover" v-model="visible" :placement="placement" :transition="transition" :popper-class="popperClass" :width="width" trigger="click">
-      <el-scrollbar v-if="viewLoaded" tag="div" wrap-class="el-select-dropdown__wrap" view-class="el-select-dropdown__list" class="is-empty">
+    <el-popover
+      ref="popover"
+      v-model="visible"
+      :placement="placement"
+      :transition="transition"
+      :popper-class="popperClass"
+      :width="width"
+      trigger="click"
+    >
+      <el-scrollbar
+        v-if="viewLoaded"
+        tag="div"
+        wrap-class="el-select-dropdown__wrap"
+        view-class="el-select-dropdown__list"
+        class="is-empty"
+      >
         <div :style="{'height': panelHeight + 'px'}">
           <Preview
             :component-data="componentData"
@@ -32,7 +49,12 @@
         </div>
 
       </el-scrollbar>
-      <el-empty v-else style="height: 150px;" :image-size="120" description="" />
+      <el-empty
+        v-else
+        style="height: 150px;"
+        :image-size="120"
+        description=""
+      />
 
     </el-popover>
   </div>

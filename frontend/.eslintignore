@@ -1,4 +1,7 @@
 build/*.js
 src/assets
+src/styles/deicon/iconfont.js
+src/components/canvas/assets/iconfont/iconfont.js
 public
 dist
+node_modules

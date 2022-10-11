@@ -1,8 +1,21 @@
 <template>
-  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" :class="isAbsoluteContainer ? 'abs-container' : ''">
-    <de-main-container v-show="showChartCanvas" class="">
-      <div id="chartCanvas" class="canvas-class" :style="customStyle">
-        <div class="canvas-class" :style="commonStyle">
+  <de-container
+    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+    :class="isAbsoluteContainer ? 'abs-container' : ''"
+  >
+    <de-main-container
+      v-show="showChartCanvas"
+      class=""
+    >
+      <div
+        id="chartCanvas"
+        class="canvas-class"
+        :style="customStyle"
+      >
+        <div
+          class="canvas-class"
+          :style="commonStyle"
+        >
           <plugin-com
             v-if="chart.isPlugin"
             :component-name="chart.type + '-view'"
@@ -12,17 +25,47 @@
             :canvas-style-data="canvasStyleData"
             class="chart-class"
           />
-          <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" :theme-style="element.commonBackground" class="chart-class" :chart="mapChart || chart" />
-          <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-          <chart-component-s2 v-else-if="chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-          <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
-          <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
-          <table-normal v-else-if="chart.type.includes('table') && renderComponent() === 'echarts'" :chart="chart" class="table-class" />
+          <chart-component
+            v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'"
+            :theme-style="element.commonBackground"
+            class="chart-class"
+            :chart="mapChart || chart"
+          />
+          <chart-component-g2
+            v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'"
+            class="chart-class"
+            :chart="chart"
+          />
+          <chart-component-s2
+            v-else-if="chart.type.includes('table') && renderComponent() === 'antv'"
+            class="chart-class"
+            :chart="chart"
+          />
+          <label-normal
+            v-else-if="chart.type.includes('text')"
+            :chart="chart"
+            class="table-class"
+          />
+          <label-normal-text
+            v-else-if="chart.type === 'label'"
+            :chart="chart"
+            class="table-class"
+          />
+          <table-normal
+            v-else-if="chart.type.includes('table') && renderComponent() === 'echarts'"
+            :chart="chart"
+            class="table-class"
+          />
         </div>
       </div>
     </de-main-container>
     <de-main-container v-show="!showChartCanvas">
-      <table-normal :enable-scroll="false" :chart="chartTable" :show-summary="false" class="table-class" />
+      <table-normal
+        :enable-scroll="false"
+        :chart="chartTable"
+        :show-summary="false"
+        class="table-class"
+      />
     </de-main-container>
   </de-container>
 </template>
@@ -34,7 +77,6 @@ import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '@/views/chart/components/normal/LabelNormal'
 import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
-import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import { mapState } from 'vuex'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import PluginCom from '@/views/system/plugin/PluginCom'
@@ -47,7 +89,7 @@ import { deepCopy, exportImg, imgUrlTrans } from '@/components/canvas/utils/util
 import { getLinkToken, getToken } from '@/utils/auth'
 export default {
   name: 'UserViewDialog',
-  components: { LabelNormalText, ChartComponentS2, ChartComponentG2, DeMainContainer, DeContainer, DeAsideContainer, ChartComponent, TableNormal, LabelNormal, PluginCom },
+  components: { LabelNormalText, ChartComponentS2, ChartComponentG2, DeMainContainer, DeContainer, ChartComponent, TableNormal, LabelNormal, PluginCom },
   props: {
     chart: {
       type: Object,

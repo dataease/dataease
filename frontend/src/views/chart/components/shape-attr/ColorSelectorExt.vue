@@ -2,7 +2,12 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">
+      <el-form
+        ref="colorForm"
+        :model="colorForm"
+        label-width="80px"
+        size="mini"
+      >
         <div>
           <el-form-item
             v-show="chart.type && !chart.type.includes('table') && !chart.type.includes('text') && chart.type !== 'label'"
@@ -40,14 +45,23 @@
                       <span style="margin-left: 4px;">{{ option.name }}</span>
                     </el-option>
                   </el-select>
-                  <el-button size="mini" type="text" style="margin-left: 2px;" @click="resetCustomColor">
+                  <el-button
+                    size="mini"
+                    type="text"
+                    style="margin-left: 2px;"
+                    @click="resetCustomColor"
+                  >
                     {{ $t('commons.reset') }}
                   </el-button>
                 </div>
                 <div style="display: flex;align-items: center;margin-top: 10px;">
                   <span class="color-label" />
                   <span>
-                    <span v-for="(c,index) in colorForm.colors" :key="index" style="padding: 2px;">
+                    <span
+                      v-for="(c,index) in colorForm.colors"
+                      :key="index"
+                      style="padding: 2px;"
+                    >
                       <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
                     </span>
                   </span>
@@ -58,7 +72,10 @@
                     :key="index"
                     style="display: flex;align-items: center;margin: 2px 0;"
                   >
-                    <span class="span-label" :title="item.name">{{ item.name }}</span>
+                    <span
+                      class="span-label"
+                      :title="item.name"
+                    >{{ item.name }}</span>
                     <el-color-picker
                       v-model="item.color"
                       class="color-picker-style"
@@ -69,7 +86,10 @@
                 </div>
               </div>
 
-              <div slot="reference" style="cursor: pointer;margin-top: 2px;width: 180px;">
+              <div
+                slot="reference"
+                style="cursor: pointer;margin-top: 2px;width: 180px;"
+              >
                 <span
                   v-for="(c,index) in colorForm.colors"
                   :key="index"

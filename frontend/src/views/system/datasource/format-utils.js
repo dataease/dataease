@@ -11,7 +11,7 @@ export function formatJson(json) {
     currentChar = json.charAt(i)
     switch (currentChar) {
       case '{':
-        if (i != 0 && json.charAt(i - 1) === '$') {
+        if (i !== 0 && json.charAt(i - 1) === '$') {
           newJson += currentChar
           flag = true
         } else if (!inString) {
@@ -101,12 +101,12 @@ export function formatXml(text) {
   var rgx = /\n(<(([^\?]).+?)(?:\s|\s*?>|\s*?(\/)>)(?:.*?(?:(?:(\/)>)|(?:<(\/)\2>)))?)/mg
   var nodeStack = []
   var output = text.replace(rgx, function($0, all, name, isBegin, isCloseFull1, isCloseFull2, isFull1, isFull2) {
-    var isClosed = (isCloseFull1 == '/') || (isCloseFull2 == '/') || (isFull1 == '/') || (isFull2 == '/')
+    var isClosed = (isCloseFull1 === '/') || (isCloseFull2 === '/') || (isFull1 === '/') || (isFull2 === '/')
     var prefix = ''
-    if (isBegin == '!') {
+    if (isBegin === '!') {
       prefix = getPrefix(nodeStack.length)
     } else {
-      if (isBegin != '/') {
+      if (isBegin !== '/') {
         prefix = getPrefix(nodeStack.length)
         if (!isClosed) {
           nodeStack.push(name)
@@ -119,11 +119,10 @@ export function formatXml(text) {
     var ret = '\n' + prefix + all
     return ret
   })
-  var prefixSpace = -1
   var outputText = output.substring(1)
   // 把注释还原并解码，调格式
   outputText = outputText.replace(/(\s*)<!--(.+?)-->/g, function($0, prefix, text) {
-    if (prefix.charAt(0) == '\r') { prefix = prefix.substring(1) }
+    if (prefix.charAt(0) === '\r') { prefix = prefix.substring(1) }
     text = unescape(text).replace(/\r/g, '\n')
     var ret = '\n' + prefix + '<!--' + text.replace(/^\s*/mg, prefix) + '-->'
     return ret

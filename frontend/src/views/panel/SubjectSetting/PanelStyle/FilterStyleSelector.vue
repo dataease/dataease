@@ -1,43 +1,112 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="filterForm" :model="filterForm" label-width="80px" size="mini">
+      <el-form
+        ref="filterForm"
+        :model="filterForm"
+        label-width="80px"
+        size="mini"
+      >
         <div>
-          <el-form-item :label="$t('chart.text_h_position')" class="form-item">
-            <el-radio-group v-model="filterForm.horizontal" size="mini" @change="themeChange('horizontal')">
+          <el-form-item
+            :label="$t('chart.text_h_position')"
+            class="form-item"
+          >
+            <el-radio-group
+              v-model="filterForm.horizontal"
+              size="mini"
+              @change="themeChange('horizontal')"
+            >
               <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
-              <el-radio-button :disabled="filterForm.vertical === 'center'" label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
+              <el-radio-button
+                :disabled="filterForm.vertical === 'center'"
+                label="center"
+              >{{ $t('chart.text_pos_center') }}</el-radio-button>
               <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
-          <el-form-item :label="$t('chart.text_v_position')" class="form-item">
-            <el-radio-group v-model="filterForm.vertical" size="mini" @change="themeChange('vertical')">
+          <el-form-item
+            :label="$t('chart.text_v_position')"
+            class="form-item"
+          >
+            <el-radio-group
+              v-model="filterForm.vertical"
+              size="mini"
+              @change="themeChange('vertical')"
+            >
               <el-radio-button label="top">{{ $t('chart.text_pos_top') }}</el-radio-button>
-              <el-radio-button :disabled="filterForm.horizontal === 'center'" label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
+              <el-radio-button
+                :disabled="filterForm.horizontal === 'center'"
+                label="center"
+              >{{ $t('chart.text_pos_center') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
-          <el-form-item :label="'标题颜色'" class="form-item">
-            <el-color-picker v-model="filterForm.color" class="color-picker-style" :predefine="predefineColors" @change="themeChange('color')" />
+          <el-form-item
+            :label="'标题颜色'"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="filterForm.color"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="themeChange('color')"
+            />
           </el-form-item>
           <el-divider>输入框样式(颜色)</el-divider>
           <el-row style="height: 40px;overflow: hidden;">
-            <el-col :span="4" style="padding-left: 10px;padding-top: 8px">
+            <el-col
+              :span="4"
+              style="padding-left: 10px;padding-top: 8px"
+            >
               边框
             </el-col>
-            <el-col :span="4" style="padding-top: 5px">
-              <el-color-picker v-model="filterForm.brColor" size="mini" class="color-picker-style" :predefine="predefineColors" @change="themeChange('brColor')" />
+            <el-col
+              :span="4"
+              style="padding-top: 5px"
+            >
+              <el-color-picker
+                v-model="filterForm.brColor"
+                size="mini"
+                class="color-picker-style"
+                :predefine="predefineColors"
+                @change="themeChange('brColor')"
+              />
             </el-col>
-            <el-col :span="4" style="padding-left: 10px;padding-top: 8px">
+            <el-col
+              :span="4"
+              style="padding-left: 10px;padding-top: 8px"
+            >
               文字
             </el-col>
-            <el-col :span="4" style="padding-top: 5px">
-              <el-color-picker v-model="filterForm.wordColor" size="mini" class="color-picker-style" :predefine="predefineColors" @change="themeChange('wordColor')" />
+            <el-col
+              :span="4"
+              style="padding-top: 5px"
+            >
+              <el-color-picker
+                v-model="filterForm.wordColor"
+                size="mini"
+                class="color-picker-style"
+                :predefine="predefineColors"
+                @change="themeChange('wordColor')"
+              />
             </el-col>
-            <el-col :span="4" style="padding-left: 10px;padding-top: 8px">
+            <el-col
+              :span="4"
+              style="padding-left: 10px;padding-top: 8px"
+            >
               背景
             </el-col>
-            <el-col :span="4" style="padding-top: 5px">
-              <el-color-picker v-model="filterForm.innerBgColor" size="mini" class="color-picker-style" :predefine="predefineColors" @change="themeChange('innerBgColor')" />
+            <el-col
+              :span="4"
+              style="padding-top: 5px"
+            >
+              <el-color-picker
+                v-model="filterForm.innerBgColor"
+                size="mini"
+                class="color-picker-style"
+                :predefine="predefineColors"
+                @change="themeChange('innerBgColor')"
+              />
             </el-col>
           </el-row>
         </div>

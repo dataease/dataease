@@ -18,7 +18,12 @@
     <!-- 选择动画 -->
     <Modal v-model="isShowAnimation">
       <el-tabs v-model="animationActiveName">
-        <el-tab-pane v-for="item in animationClassData" :key="item.label" :label="item.label" :name="item.label">
+        <el-tab-pane
+          v-for="item in animationClassData"
+          :key="item.label"
+          :label="item.label"
+          :name="item.label"
+        >
           <el-scrollbar class="animate-container">
             <div
               v-for="(animate, index) in item.children"

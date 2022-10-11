@@ -1,6 +1,12 @@
 <template>
-  <div v-if="tabStatus" class="info-tab">
-    <div v-if="type === 'chart' && detail.chart" class="info-card">
+  <div
+    v-if="tabStatus"
+    class="info-tab"
+  >
+    <div
+      v-if="type === 'chart' && detail.chart"
+      class="info-card"
+    >
       <div class="title-type">
         {{ $t('chart.datalist') }}
       </div>
@@ -12,7 +18,10 @@
       </div>
       <div class="info-item">
         <p class="info-title">{{ $t('chart.chart_type') }}</p>
-        <svg-icon v-if="detail.chart.type" :icon-class="detail.chart.type" />
+        <svg-icon
+          v-if="detail.chart.type"
+          :icon-class="detail.chart.type"
+        />
       </div>
       <div class="info-item">
         <p class="info-title">{{ $t('chart.title') }}</p>
@@ -30,7 +39,10 @@
       </div>
     </div>
 
-    <div v-if="detail.table" class="info-card">
+    <div
+      v-if="detail.table"
+      class="info-card"
+    >
       <div class="title-type">
         {{ $t('dataset.datalist') }}
       </div>
@@ -42,24 +54,45 @@
       </div>
       <div class="info-item">
         <p class="info-title">{{ $t('dataset.type') }}</p>
-        <p v-if="detail.table.type === 'db'" class="info-content">
+        <p
+          v-if="detail.table.type === 'db'"
+          class="info-content"
+        >
           {{ $t('dataset.db_data') }}
         </p>
-        <p v-if="detail.table.type === 'sql'" class="info-content">
+        <p
+          v-if="detail.table.type === 'sql'"
+          class="info-content"
+        >
           {{ $t('dataset.sql_data') }}
         </p>
-        <p v-if="detail.table.type === 'excel'" class="info-content">
+        <p
+          v-if="detail.table.type === 'excel'"
+          class="info-content"
+        >
           {{ $t('dataset.excel_data') }}
         </p>
-        <p v-if="detail.table.type === 'custom'" class="info-content">
+        <p
+          v-if="detail.table.type === 'custom'"
+          class="info-content"
+        >
           {{ $t('dataset.custom_data') }}
         </p>
-        <p v-if="detail.table.type === 'union'" class="info-content">
+        <p
+          v-if="detail.table.type === 'union'"
+          class="info-content"
+        >
           {{ $t('dataset.union_data') }}
         </p>
-        <p v-if="detail.table.type === 'api'" class="info-content">Api</p>
+        <p
+          v-if="detail.table.type === 'api'"
+          class="info-content"
+        >Api</p>
       </div>
-      <div v-show="detail.table.type === 'db'" class="info-item">
+      <div
+        v-show="detail.table.type === 'db'"
+        class="info-item"
+      >
         <p class="info-title">{{ $t('dataset.table') }}</p>
         <p class="info-content">{{ info.table }}</p>
       </div>
@@ -68,10 +101,16 @@
         class="info-item"
       >
         <p class="info-title">{{ $t('dataset.mode') }}</p>
-        <p v-if="detail.table.mode === 0" class="info-content">
+        <p
+          v-if="detail.table.mode === 0"
+          class="info-content"
+        >
           {{ $t('dataset.direct_connect') }}
         </p>
-        <p v-if="detail.table.mode === 1" class="info-content">
+        <p
+          v-if="detail.table.mode === 1"
+          class="info-content"
+        >
           {{ $t('dataset.sync_data') }}
         </p>
       </div>
@@ -87,7 +126,10 @@
       </div>
     </div>
 
-    <div v-if="detail.datasource" class="info-card">
+    <div
+      v-if="detail.datasource"
+      class="info-card"
+    >
       <div class="title-type">
         {{ $t('datasource.datasource') }}
       </div>
@@ -152,13 +194,13 @@ export default {
     }
   },
   watch: {
-    data: function () {
+    data: function() {
       this.init()
     },
-    type: function () {
+    type: function() {
       this.typeChange()
     },
-    tabStatus: function () {
+    tabStatus: function() {
       this.typeChange()
     }
   },

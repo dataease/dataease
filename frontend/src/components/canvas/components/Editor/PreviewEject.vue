@@ -1,5 +1,9 @@
 <template>
-  <div v-loading="dataLoading" class="bg" :style="bgStyle">
+  <div
+    v-loading="dataLoading"
+    class="bg"
+    :style="bgStyle"
+  >
     <Preview
       v-if="!dataLoading"
       :component-data="componentData"

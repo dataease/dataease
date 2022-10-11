@@ -3,27 +3,28 @@
     <el-row style="margin: 6px 0 16px 0">
       <el-col :span="12">
         <deBtn
-          secondary
           v-if="hasDataPermission('manage', param.privileges)"
+          secondary
           icon="el-icon-plus"
           @click="addCalcField"
-          >{{ $t('dataset.add_calc_field') }}</deBtn
-        >
+        >{{ $t('dataset.add_calc_field') }}</deBtn>
         <deBtn
-          secondary
           v-if="
             hasDataPermission('manage', param.privileges) &&
-            table.type !== 'excel' &&
-            table.type !== 'custom' &&
-            table.type !== 'union'
+              table.type !== 'excel' &&
+              table.type !== 'custom' &&
+              table.type !== 'union'
           "
+          secondary
           :loading="isSyncField"
           icon="el-icon-refresh-left"
           @click="syncField"
-          >{{ $t('dataset.sync_field') }}</deBtn
-        >
+        >{{ $t('dataset.sync_field') }}</deBtn>
       </el-col>
-      <el-col style="text-align: right" :span="12">
+      <el-col
+        style="text-align: right"
+        :span="12"
+      >
         <el-input
           v-model="searchField"
           size="small"
@@ -36,7 +37,10 @@
       </el-col>
     </el-row>
 
-    <el-collapse v-model="fieldActiveNames" class="style-collapse">
+    <el-collapse
+      v-model="fieldActiveNames"
+      class="style-collapse"
+    >
       <el-collapse-item
         class="dimension"
         name="d"
@@ -44,13 +48,18 @@
           tableFields.dimensionListData.length
         })`"
       >
-        <el-table :data="tableFields.dimensionListData" size="mini">
+        <el-table
+          :data="tableFields.dimensionListData"
+          size="mini"
+        >
           <el-table-column
             property="checked"
             :label="$t('dataset.field_check')"
             width="60"
           >
-            <template slot="header" slot-scope="scope">
+            <template
+              slot="header"
+            >
               <el-checkbox
                 v-model="dimensionChecked"
                 :indeterminate="dimensionIndeterminate"
@@ -211,13 +220,13 @@
                 <span
                   v-if="
                     scope.row.deExtractType === 0 ||
-                    scope.row.deExtractType === 6
+                      scope.row.deExtractType === 6
                   "
                 >
                   <svg-icon
                     v-if="
                       scope.row.deExtractType === 0 ||
-                      scope.row.deExtractType === 6
+                        scope.row.deExtractType === 6
                     "
                     icon-class="field_text"
                     class="field-icon-text field-icon-dimension"
@@ -235,15 +244,15 @@
                 <span
                   v-if="
                     scope.row.deExtractType === 2 ||
-                    scope.row.deExtractType === 3 ||
-                    scope.row.deExtractType === 4
+                      scope.row.deExtractType === 3 ||
+                      scope.row.deExtractType === 4
                   "
                 >
                   <svg-icon
                     v-if="
                       scope.row.deExtractType === 2 ||
-                      scope.row.deExtractType === 3 ||
-                      scope.row.deExtractType === 4
+                        scope.row.deExtractType === 3 ||
+                        scope.row.deExtractType === 4
                     "
                     icon-class="field_value"
                     class="field-icon-value field-icon-dimension"
@@ -251,18 +260,16 @@
                   <span
                     v-if="
                       scope.row.deExtractType === 2 ||
-                      scope.row.deExtractType === 4
+                        scope.row.deExtractType === 4
                     "
                     class="field-class"
-                    >{{ $t('dataset.value') }}</span
-                  >
+                  >{{ $t('dataset.value') }}</span>
                   <span
                     v-if="scope.row.deExtractType === 3"
                     class="field-class"
-                    >{{
-                      $t('dataset.value') + '(' + $t('dataset.float') + ')'
-                    }}</span
-                  >
+                  >{{
+                    $t('dataset.value') + '(' + $t('dataset.float') + ')'
+                  }}</span>
                 </span>
                 <span v-if="scope.row.deExtractType === 5">
                   <svg-icon
@@ -290,7 +297,10 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column min-width="182" :label="$t('dataset.operator')">
+          <el-table-column
+            min-width="182"
+            :label="$t('dataset.operator')"
+          >
             <template slot-scope="scope">
               <el-button
                 class="de-text-btn"
@@ -298,8 +308,7 @@
                 style="margin-left: -4px"
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 @click="dqTrans(scope.row, 'd')"
-                >{{ $t('deDataset.convert_to_indicator') }}</el-button
-              >
+              >{{ $t('deDataset.convert_to_indicator') }}</el-button>
               <template v-if="scope.row.extField !== 0">
                 <el-button
                   :disabled="!hasDataPermission('manage', param.privileges)"
@@ -307,8 +316,7 @@
                   class="de-text-btn"
                   style="margin-left: 8px"
                   @click="editField(scope.row)"
-                  >{{ $t('dataset.edit') }}</el-button
-                >
+                >{{ $t('dataset.edit') }}</el-button>
                 <el-dropdown
                   size="medium"
                   trigger="click"
@@ -318,8 +326,11 @@
                     style="margin-left: 8px"
                     class="el-icon-more de-text-btn"
                     type="text"
-                  ></el-button>
-                  <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+                  />
+                  <el-dropdown-menu
+                    slot="dropdown"
+                    class="de-card-dropdown"
+                  >
                     <slot>
                       <el-dropdown-item
                         :disabled="
@@ -327,7 +338,7 @@
                         "
                         command="copy"
                       >
-                        <i class="el-icon-document-copy"></i>
+                        <i class="el-icon-document-copy" />
                         {{ $t('dataset.copy') }}
                       </el-dropdown-item>
                       <el-dropdown-item
@@ -336,7 +347,7 @@
                         "
                         command="delete"
                       >
-                        <i class="el-icon-delete"></i>
+                        <i class="el-icon-delete" />
                         {{ $t('chart.delete') }}
                       </el-dropdown-item>
                     </slot>
@@ -350,8 +361,7 @@
                 style="margin-left: 8px"
                 class="de-text-btn"
                 @click="copyField(scope.row)"
-                >{{ $t('dataset.copy') }}</el-button
-              >
+              >{{ $t('dataset.copy') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -362,13 +372,18 @@
         name="q"
         :title="`${$t('chart.quota')} (${tableFields.quotaListData.length})`"
       >
-        <el-table :data="tableFields.quotaListData" size="mini">
+        <el-table
+          :data="tableFields.quotaListData"
+          size="mini"
+        >
           <el-table-column
             property="checked"
             :label="$t('dataset.field_check')"
             width="60"
           >
-            <template slot="header" slot-scope="scope">
+            <template
+              slot="header"
+            >
               <el-checkbox
                 v-model="quotaChecked"
                 :indeterminate="quotaIndeterminate"
@@ -545,15 +560,15 @@
                 <span
                   v-if="
                     scope.row.deExtractType === 2 ||
-                    scope.row.deExtractType === 3 ||
-                    scope.row.deExtractType === 4
+                      scope.row.deExtractType === 3 ||
+                      scope.row.deExtractType === 4
                   "
                 >
                   <svg-icon
                     v-if="
                       scope.row.deExtractType === 2 ||
-                      scope.row.deExtractType === 3 ||
-                      scope.row.deExtractType === 4
+                        scope.row.deExtractType === 3 ||
+                        scope.row.deExtractType === 4
                     "
                     icon-class="field_value"
                     class="field-icon-value field-icon-quota"
@@ -561,18 +576,16 @@
                   <span
                     v-if="
                       scope.row.deExtractType === 2 ||
-                      scope.row.deExtractType === 4
+                        scope.row.deExtractType === 4
                     "
                     class="field-class"
-                    >{{ $t('dataset.value') }}</span
-                  >
+                  >{{ $t('dataset.value') }}</span>
                   <span
                     v-if="scope.row.deExtractType === 3"
                     class="field-class"
-                    >{{
-                      $t('dataset.value') + '(' + $t('dataset.float') + ')'
-                    }}</span
-                  >
+                  >{{
+                    $t('dataset.value') + '(' + $t('dataset.float') + ')'
+                  }}</span>
                 </span>
                 <span v-if="scope.row.deExtractType === 5">
                   <svg-icon
@@ -612,8 +625,7 @@
                 style="margin-left: -4px"
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 @click="dqTrans(scope.row, 'q')"
-                >{{ $t('deDataset.convert_to_dimension') }}</el-button
-              >
+              >{{ $t('deDataset.convert_to_dimension') }}</el-button>
               <template v-if="scope.row.extField !== 0">
                 <el-button
                   :disabled="!hasDataPermission('manage', param.privileges)"
@@ -621,8 +633,7 @@
                   class="de-text-btn"
                   style="margin-left: 8px"
                   @click="editField(scope.row)"
-                  >{{ $t('dataset.edit') }}</el-button
-                >
+                >{{ $t('dataset.edit') }}</el-button>
                 <el-dropdown
                   size="medium"
                   trigger="click"
@@ -632,8 +643,11 @@
                     style="margin-left: 8px"
                     class="el-icon-more de-text-btn"
                     type="text"
-                  ></el-button>
-                  <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+                  />
+                  <el-dropdown-menu
+                    slot="dropdown"
+                    class="de-card-dropdown"
+                  >
                     <slot>
                       <el-dropdown-item
                         :disabled="
@@ -641,7 +655,7 @@
                         "
                         command="copy"
                       >
-                        <i class="el-icon-document-copy"></i>
+                        <i class="el-icon-document-copy" />
                         {{ $t('dataset.copy') }}
                       </el-dropdown-item>
                       <el-dropdown-item
@@ -650,7 +664,7 @@
                         "
                         command="delete"
                       >
-                        <i class="el-icon-delete"></i>
+                        <i class="el-icon-delete" />
                         {{ $t('chart.delete') }}
                       </el-dropdown-item>
                     </slot>
@@ -664,8 +678,7 @@
                 style="margin-left: 8px"
                 class="de-text-btn"
                 @click="copyField(scope.row)"
-                >{{ $t('dataset.copy') }}</el-button
-              >
+              >{{ $t('dataset.copy') }}</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -744,7 +757,7 @@ export default {
     }
   },
   watch: {
-    param: function () {
+    param: function() {
       this.initField()
     },
     searchField(val) {
@@ -761,7 +774,7 @@ export default {
   methods: {
     calcHeight() {
       const that = this
-      setTimeout(function () {
+      setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
         that.maxHeight = currentHeight - 56 - 30 - 35 - 26 - 10 - 10 + 'px'
       }, 10)

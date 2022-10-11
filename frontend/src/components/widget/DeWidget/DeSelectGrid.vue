@@ -1,6 +1,9 @@
 <template>
 
-  <div v-if="element.options!== null && element.options.attrs!==null && show" class="de-select-grid-class">
+  <div
+    v-if="element.options!== null && element.options.attrs!==null && show"
+    class="de-select-grid-class"
+  >
     <div class="de-select-grid-search">
       <el-input
         ref="de-select-grid"
@@ -13,18 +16,43 @@
     </div>
     <div class="list">
 
-      <div v-if="element.options.attrs.multiple" class="checkbox-group-container">
-        <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
+      <div
+        v-if="element.options.attrs.multiple"
+        class="checkbox-group-container"
+      >
+        <el-checkbox
+          v-model="checkAll"
+          :indeterminate="isIndeterminate"
+          @change="handleCheckAllChange"
+        >
           {{ $t('commons.all') }}</el-checkbox>
 
-        <el-checkbox-group v-model="value" @change="handleCheckedChange">
-          <el-checkbox v-for="item in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
+        <el-checkbox-group
+          v-model="value"
+          @change="handleCheckedChange"
+        >
+          <el-checkbox
+            v-for="item in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))"
+            :key="item.id"
+            :label="item.id"
+          >{{ item.id }}</el-checkbox>
         </el-checkbox-group>
       </div>
 
-      <div v-else class="radio-group-container">
-        <el-radio-group v-model="value" @change="changeRadioBox">
-          <el-radio v-for="(item, index) in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))" :key="index" :label="item.id" @click.native.prevent="testChange(item)">
+      <div
+        v-else
+        class="radio-group-container"
+      >
+        <el-radio-group
+          v-model="value"
+          @change="changeRadioBox"
+        >
+          <el-radio
+            v-for="(item, index) in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))"
+            :key="index"
+            :label="item.id"
+            @click.native.prevent="testChange(item)"
+          >
             <span>{{ item.id }}</span>
           </el-radio>
         </el-radio-group>

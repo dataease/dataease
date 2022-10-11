@@ -1,69 +1,198 @@
 <template>
   <div style="width: 100%;">
     <el-col>
-      <el-form ref="labelForm" :model="labelForm" label-width="80px" size="mini">
-        <el-form-item v-show="showProperty('show')" :label="$t('chart.show')" class="form-item">
-          <el-checkbox v-model="labelForm.show" @change="changeLabelAttr('show')">{{ $t('chart.show') }}</el-checkbox>
+      <el-form
+        ref="labelForm"
+        :model="labelForm"
+        label-width="80px"
+        size="mini"
+      >
+        <el-form-item
+          v-show="showProperty('show')"
+          :label="$t('chart.show')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="labelForm.show"
+            @change="changeLabelAttr('show')"
+          >{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="labelForm.show">
-          <el-form-item v-show="showProperty('labelLine')" :label="$t('chart.pie_label_line_show')" class="form-item">
-            <el-checkbox v-model="labelForm.labelLine.show" @change="changeLabelAttr('labelLine')">{{ $t('chart.pie_label_line_show') }}</el-checkbox>
+          <el-form-item
+            v-show="showProperty('labelLine')"
+            :label="$t('chart.pie_label_line_show')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="labelForm.labelLine.show"
+              @change="changeLabelAttr('labelLine')"
+            >{{ $t('chart.pie_label_line_show') }}</el-checkbox>
           </el-form-item>
-          <el-form-item v-show="showProperty('fontSize')" :label="$t('chart.text_fontsize')" class="form-item">
-            <el-select v-model="labelForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr('fontSize')">
-              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+          <el-form-item
+            v-show="showProperty('fontSize')"
+            :label="$t('chart.text_fontsize')"
+            class="form-item"
+          >
+            <el-select
+              v-model="labelForm.fontSize"
+              :placeholder="$t('chart.text_fontsize')"
+              size="mini"
+              @change="changeLabelAttr('fontSize')"
+            >
+              <el-option
+                v-for="option in fontSize"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
             </el-select>
           </el-form-item>
-          <el-form-item v-show="showProperty('color')" :label="$t('chart.text_color')" class="form-item">
-            <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr('color')" />
+          <el-form-item
+            v-show="showProperty('color')"
+            :label="$t('chart.text_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="labelForm.color"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeLabelAttr('color')"
+            />
           </el-form-item>
-          <el-form-item v-show="showProperty('position-pie') " :label="$t('chart.label_position')" class="form-item">
-            <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr('position')">
-              <el-option v-for="option in labelPositionPie" :key="option.value" :label="option.name" :value="option.value" />
+          <el-form-item
+            v-show="showProperty('position-pie') "
+            :label="$t('chart.label_position')"
+            class="form-item"
+          >
+            <el-select
+              v-model="labelForm.position"
+              :placeholder="$t('chart.label_position')"
+              @change="changeLabelAttr('position')"
+            >
+              <el-option
+                v-for="option in labelPositionPie"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
             </el-select>
           </el-form-item>
-          <el-form-item v-show="showProperty('position-h') " :label="$t('chart.label_position')" class="form-item">
-            <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr('position')">
-              <el-option v-for="option in labelPositionH" :key="option.value" :label="option.name" :value="option.value" />
+          <el-form-item
+            v-show="showProperty('position-h') "
+            :label="$t('chart.label_position')"
+            class="form-item"
+          >
+            <el-select
+              v-model="labelForm.position"
+              :placeholder="$t('chart.label_position')"
+              @change="changeLabelAttr('position')"
+            >
+              <el-option
+                v-for="option in labelPositionH"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
             </el-select>
           </el-form-item>
-          <el-form-item v-show="showProperty('position-v') " :label="$t('chart.label_position')" class="form-item">
-            <el-select v-model="labelForm.position" :placeholder="$t('chart.label_position')" @change="changeLabelAttr('position')">
-              <el-option v-for="option in labelPositionV" :key="option.value" :label="option.name" :value="option.value" />
+          <el-form-item
+            v-show="showProperty('position-v') "
+            :label="$t('chart.label_position')"
+            class="form-item"
+          >
+            <el-select
+              v-model="labelForm.position"
+              :placeholder="$t('chart.label_position')"
+              @change="changeLabelAttr('position')"
+            >
+              <el-option
+                v-for="option in labelPositionV"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
             </el-select>
           </el-form-item>
-          <el-form-item v-show="showProperty('label-bg') " :label="$t('chart.label_bg')" class="form-item">
-            <el-color-picker v-model="labelForm.bgColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr('bgColor')" />
+          <el-form-item
+            v-show="showProperty('label-bg') "
+            :label="$t('chart.label_bg')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="labelForm.bgColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeLabelAttr('bgColor')"
+            />
           </el-form-item>
-          <el-form-item v-show="showProperty('label-show-shadow')" :label="$t('chart.label_shadow')" class="form-item">
-            <el-checkbox v-model="labelForm.showShadow" @change="changeLabelAttr('showShadow')">{{ $t('chart.show') }}</el-checkbox>
+          <el-form-item
+            v-show="showProperty('label-show-shadow')"
+            :label="$t('chart.label_shadow')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="labelForm.showShadow"
+              @change="changeLabelAttr('showShadow')"
+            >{{ $t('chart.show') }}</el-checkbox>
           </el-form-item>
-          <el-form-item v-show="showProperty('label-shadow-color') && labelForm.showShadow" :label="$t('chart.label_shadow_color')" class="form-item">
-            <el-color-picker v-model="labelForm.shadowColor" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr('shadowColor')" />
+          <el-form-item
+            v-show="showProperty('label-shadow-color') && labelForm.showShadow"
+            :label="$t('chart.label_shadow_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="labelForm.shadowColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeLabelAttr('shadowColor')"
+            />
           </el-form-item>
 
-          <el-form-item v-show="showProperty('formatter')" class="form-item">
+          <el-form-item
+            v-show="showProperty('formatter')"
+            class="form-item"
+          >
             <span slot="label">
               <span class="span-box">
                 <span>{{ $t('chart.content_formatter') }}</span>
-                <el-tooltip class="item" effect="dark" placement="bottom">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  placement="bottom"
+                >
                   <div slot="content">
                     字符串模板 模板变量有：<br>{a}：系列名。<br>{b}：数据名。<br>{c}：数据值。<br>{d}：百分比（用于饼图等）。
                   </div>
-                  <i class="el-icon-info" style="cursor: pointer;" />
+                  <i
+                    class="el-icon-info"
+                    style="cursor: pointer;"
+                  />
                 </el-tooltip>
               </span>
             </span>
-            <el-input v-model="labelForm.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeLabelAttr('formatter')" />
+            <el-input
+              v-model="labelForm.formatter"
+              type="textarea"
+              :autosize="{ minRows: 4, maxRows: 4}"
+              @blur="changeLabelAttr('formatter')"
+            />
           </el-form-item>
         </div>
-        <el-form-item v-show="showProperty('gaugeFormatter')" class="form-item">
+        <el-form-item
+          v-show="showProperty('gaugeFormatter')"
+          class="form-item"
+        >
           <span slot="label">
             <span class="span-box">
               <span>{{ $t('chart.content_formatter') }}</span>
             </span>
           </span>
-          <el-input v-model="labelForm.gaugeFormatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeLabelAttr('gaugeFormatter')" />
+          <el-input
+            v-model="labelForm.gaugeFormatter"
+            type="textarea"
+            :autosize="{ minRows: 4, maxRows: 4}"
+            @blur="changeLabelAttr('gaugeFormatter')"
+          />
         </el-form-item>
       </el-form>
     </el-col>

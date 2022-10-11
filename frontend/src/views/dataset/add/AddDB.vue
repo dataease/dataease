@@ -1,17 +1,37 @@
 <template>
-  <div class="dataset-db" @mouseup="mouseupDrag" v-loading="loading">
-    <p v-show="!showLeft" @click="showLeft = true" class="arrow-right">
-      <i class="el-icon-d-arrow-right"></i>
+  <div
+    v-loading="loading"
+    class="dataset-db"
+    @mouseup="mouseupDrag"
+  >
+    <p
+      v-show="!showLeft"
+      class="arrow-right"
+      @click="showLeft = true"
+    >
+      <i class="el-icon-d-arrow-right" />
     </p>
-    <div v-show="showLeft" @mousedown="mousedownDrag" :style="{ left: LeftWidth + 'px' }" class="drag-left"></div>
-    <div class="table-list" :style="{ width: LeftWidth + 'px' }" v-show="showLeft">
+    <div
+      v-show="showLeft"
+      :style="{ left: LeftWidth + 'px' }"
+      class="drag-left"
+      @mousedown="mousedownDrag"
+    />
+    <div
+      v-show="showLeft"
+      class="table-list"
+      :style="{ width: LeftWidth + 'px' }"
+    >
       <p class="select-ds">
         {{ $t('deDataset.select_data_source') }}
-        <i @click="showLeft = false" class="el-icon-d-arrow-left"></i>
+        <i
+          class="el-icon-d-arrow-left"
+          @click="showLeft = false"
+        />
       </p>
       <el-select
-        class="ds-list"
         v-model="dataSource"
+        class="ds-list"
         filterable
         popper-class="db-select-pop"
         :placeholder="$t('dataset.pls_slc_data_source')"
@@ -33,18 +53,31 @@
         prefix-icon="el-icon-search"
         clearable
       />
-      <div v-if="!tableData.length && searchTable !== ''" class="el-empty">
-        <div class="el-empty__description" style="margin-top: 80px;color: #5e6d82;">
+      <div
+        v-if="!tableData.length && searchTable !== ''"
+        class="el-empty"
+      >
+        <div
+          class="el-empty__description"
+          style="margin-top: 80px;color: #5e6d82;"
+        >
           没有找到相关内容
         </div>
       </div>
-      <div v-loading="dsLoading" v-else class="table-checkbox-list">
-        <el-checkbox-group v-model="checkTableList" size="small">
+      <div
+        v-else
+        v-loading="dsLoading"
+        class="table-checkbox-list"
+      >
+        <el-checkbox-group
+          v-model="checkTableList"
+          size="small"
+        >
           <el-tooltip
-            :disabled="t.enableCheck"
-            effect="dark"
             v-for="t in tableData"
             :key="t.name"
+            :disabled="t.enableCheck"
+            effect="dark"
             :content="$t('dataset.table_already_add_to') + ': ' + t.datasetPath"
             placement="right"
           >
@@ -56,12 +89,25 @@
               :title="t.name"
               @click="setActiveName(t)"
             >
-              <svg-icon v-if="!t.enableCheck" icon-class="Checkbox" style="margin-right: 8px"/>
-              <el-checkbox v-else :label="t.name" :disabled="!t.enableCheck">
-              </el-checkbox>
+              <svg-icon
+                v-if="!t.enableCheck"
+                icon-class="Checkbox"
+                style="margin-right: 8px"
+              />
+              <el-checkbox
+                v-else
+                :label="t.name"
+                :disabled="!t.enableCheck"
+              />
               <span class="label">{{ showTableNameWithComment(t) }}</span>
-              <span class="error-name-exsit" v-if="t.nameExsit">
-                <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
+              <span
+                v-if="t.nameExsit"
+                class="error-name-exsit"
+              >
+                <svg-icon
+                  icon-class="exclamationmark"
+                  class="ds-icon-scene"
+                />
               </span>
             </div>
           </el-tooltip>
@@ -76,7 +122,10 @@
           :placeholder="$t('dataset.connect_mode')"
           size="small"
         >
-          <el-option :label="$t('dataset.direct_connect')" value="0" />
+          <el-option
+            :label="$t('dataset.direct_connect')"
+            value="0"
+          />
           <el-option
             :label="$t('dataset.sync_data')"
             value="1"
@@ -90,26 +139,32 @@
           :placeholder="$t('dataset.connect_mode')"
           size="small"
         >
-          <el-option :label="$t('dataset.sync_now')" value="sync_now" />
-          <el-option :label="$t('dataset.sync_latter')" value="sync_latter" />
+          <el-option
+            :label="$t('dataset.sync_now')"
+            value="sync_now"
+          />
+          <el-option
+            :label="$t('dataset.sync_latter')"
+            value="sync_latter"
+          />
         </el-select>
       </div>
       <el-empty
+        v-if="!dataSource"
         style="padding-top: 160px"
         size="125"
-        v-if="!dataSource"
         :description="$t('dataset.pls_slc_data_source')"
         :image="noSelectTable"
-      ></el-empty>
+      />
       <template v-else-if="activeName">
         <div class="dataset">
           <span class="name">{{ $t('dataset.name') }}</span>
           <el-input
-            @change="validateName"
             v-if="activeIndex !== -1"
             v-model="tableData[activeIndex].datasetName"
             size="small"
             clearable
+            @change="validateName"
           />
           <div
             v-if="tableData[activeIndex].nameExsit"
@@ -119,7 +174,10 @@
             {{ $t('deDataset.already_exists') }}
           </div>
         </div>
-        <div class="data" v-loading="tableLoading">
+        <div
+          v-loading="tableLoading"
+          class="data"
+        >
           <span class="result-num">{{
             `${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')}`
           }}</span>
@@ -145,19 +203,19 @@
         </div>
       </template>
       <el-empty
+        v-else-if="avilibelTable"
         style="padding-top: 160px"
         size="125"
-        v-else-if="avilibelTable"
         :description="$t('deDataset.is_currently_available')"
         :image="noAvilibelTableImg"
-      ></el-empty>
+      />
       <el-empty
+        v-else-if="!activeName"
         style="padding-top: 160px"
         size="125"
-        v-else-if="!activeName"
         :description="$t('deDataset.left_to_edit')"
         :image="noSelectTable"
-      ></el-empty>
+      />
     </div>
   </div>
 </template>
@@ -169,7 +227,7 @@ import msgCfm from '@/components/msgCfm/index'
 import cancelMix from './cancelMix'
 export default {
   name: 'AddDB',
-  mixins: [ msgCfm, cancelMix],
+  mixins: [msgCfm, cancelMix],
   props: {
     param: {
       type: Object,
@@ -325,7 +383,7 @@ export default {
         if (this.checkDatasetName.includes(ele.datasetName)) {
           this.nameExsitValidator(index)
         } else {
-          ele.nameExsit = false;
+          ele.nameExsit = false
         }
       })
     },
@@ -344,7 +402,7 @@ export default {
     },
     calHeight() {
       const that = this
-      setTimeout(function () {
+      setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 56 - 64 - 75 - 32 - 24 - 16 - 10
       }, 10)
@@ -434,7 +492,6 @@ export default {
     z-index: 5;
     cursor: col-resize;
   }
-
 
   .arrow-right {
     position: absolute;

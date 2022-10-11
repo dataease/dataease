@@ -1,10 +1,10 @@
 <template>
   <el-drawer
+    v-closePress
     :title="$t('user.filter_method')"
     :visible.sync="userDrawer"
     custom-class="user-drawer-task"
     size="680px"
-    v-closePress
     direction="rtl"
   >
     <div class="el-drawer__body-cont">
@@ -12,13 +12,12 @@
         <span>{{ $t("dataset.datalist") }}</span>
         <div class="filter-item">
           <span
-            class="item"
-            @click="activeDatasetChange(ele.id)"
-            :class="[activeDataset.includes(ele.id) ? 'active' : '']"
-            :key="ele.id"
             v-for="ele in selectDatasetsCahe"
-            >{{ ele.name }}</span
-          >
+            :key="ele.id"
+            class="item"
+            :class="[activeDataset.includes(ele.id) ? 'active' : '']"
+            @click="activeDatasetChange(ele.id)"
+          >{{ ele.name }}</span>
           <el-popover
             placement="bottom"
             popper-class="user-popper"
@@ -26,11 +25,11 @@
             trigger="click"
           >
             <el-popover
+              v-loading="treeLoading"
               placement="bottom"
               popper-class="user-popper dept"
               width="200"
               trigger="click"
-              v-loading="treeLoading"
             >
               <el-tree
                 ref="datasetTreeRef"
@@ -42,9 +41,12 @@
                 :expand-on-click-node="true"
                 @node-click="nodeClick"
               >
-                <span slot-scope="{ data }" class="custom-tree-node">
+                <span
+                  slot-scope="{ data }"
+                  class="custom-tree-node"
+                >
                   <span v-if="data.modelInnerType === 'group'">
-                    <svg-icon icon-class="scene"/>
+                    <svg-icon icon-class="scene" />
                     <span
                       style="
                         margin-left: 6px;
@@ -53,8 +55,7 @@
                         text-overflow: ellipsis;
                       "
                       :title="data.name"
-                      >{{ data.name }}</span
-                    >
+                    >{{ data.name }}</span>
                   </span>
                   <span v-else>
                     <span>
@@ -71,16 +72,15 @@
                         text-overflow: ellipsis;
                       "
                       :title="data.name"
-                      >{{ data.name }}</span
-                    >
+                    >{{ data.name }}</span>
                   </span>
                 </span>
               </el-tree>
 
               <el-select
                 ref="datasetSelect"
-                v-model="selectDatasets"
                 slot="reference"
+                v-model="selectDatasets"
                 popper-class="tree-select"
                 multiple
                 :placeholder="$t('commons.please_select')"
@@ -94,38 +94,51 @@
                 />
               </el-select>
             </el-popover>
-            <span class="more" slot="reference">+ {{ $t("panel.more") }}</span>
+            <span
+              slot="reference"
+              class="more"
+            >+ {{ $t("panel.more") }}</span>
           </el-popover>
         </div>
       </div>
-      <div v-for="ele in filterDataset" :key="ele.name" class="filter">
+      <div
+        v-for="ele in filterDataset"
+        :key="ele.name"
+        class="filter"
+      >
         <span>{{ $t(ele.name) }}</span>
         <div class="filter-item">
           <span
+            v-for="item in ele.list"
+            :key="item.name"
             class="item"
-            @click="statusChange(item.value, ele.activeType)"
             :class="[
               active[ele.activeType].includes(item.value) ? 'active' : '',
             ]"
-            :key="item.name"
-            v-for="item in ele.list"
-            >{{ $t(item.name) }}</span
-          >
+            @click="statusChange(item.value, ele.activeType)"
+          >{{ $t(item.name) }}</span>
         </div>
       </div>
 
       <div class="filter">
         <span>{{ $t("dedaterange.label") }}</span>
         <div class="filter-item">
-          <DeDatePick v-model="dataRange"></DeDatePick>
+          <DeDatePick v-model="dataRange" />
         </div>
       </div>
     </div>
     <div class="foot">
-      <el-button class="btn normal" @click="reset">{{
+      <el-button
+        class="btn normal"
+        @click="reset"
+      >{{
         $t("commons.reset")
       }}</el-button>
-      <el-button type="primary" class="btn" @click="search">{{
+      <el-button
+        type="primary"
+        class="btn"
+        @click="search"
+      >{{
         $t("commons.adv_search.search")
       }}</el-button>
     </div>
@@ -133,13 +146,13 @@
 </template>
 
 <script>
-import { filterDatasetRecord, dateFormat } from "./options";
-import { queryAuthModel } from "@/api/authModel/authModel";
-import DeDatePick from "@/components/deCustomCm/deDatePick.vue";
+import { filterDatasetRecord, dateFormat } from './options'
+import { queryAuthModel } from '@/api/authModel/authModel'
+import DeDatePick from '@/components/deCustomCm/deDatePick.vue'
 
 export default {
   components: {
-    DeDatePick,
+    DeDatePick
   },
   data() {
     return {
@@ -153,183 +166,184 @@ export default {
       treeData: [],
       filterDataset: [filterDatasetRecord],
       active: {
-        execStatus: [],
+        execStatus: []
       },
-      userDrawer: false,
-    };
+      userDrawer: false
+    }
   },
   mounted() {
-    this.treeNode();
+    this.treeNode()
   },
   methods: {
     treeNode() {
-      this.treeLoading = true;
+      this.treeLoading = true
       queryAuthModel(
         {
-          modelType: "dataset",
-          privileges: "manage",
+          modelType: 'dataset',
+          privileges: 'manage',
           datasetMode: 1,
           clearEmptyDir: true,
           mode: 1,
-          modelInnerTypeArray: ["db", "sql", "api", "group"],
+          modelInnerTypeArray: ['db', 'sql', 'api', 'group']
         },
         true
       )
         .then((res) => {
-          this.treeData = res.data;
+          this.treeData = res.data
         })
         .finally(() => {
-          this.treeLoading = false;
-        });
+          this.treeLoading = false
+        })
     },
     nodeClick(data) {
-      const { id, name, modelInnerType: type } = data;
-      if (type === "group") return;
-      this.handleNodeClick(id, name);
+      const { id, name, modelInnerType: type } = data
+      if (type === 'group') return
+      this.handleNodeClick(id, name)
     },
     filterNode(value, data) {
-      if (!value) return true;
-      return !this.activeDataset.includes(data.id);
+      if (!value) return true
+      return !this.activeDataset.includes(data.id)
     },
     clearFilter() {
       this.active = {
-        execStatus: [],
-      };
-      this.dataRange = [];
-      this.activeDataset = [];
-      this.selectDatasets = [];
-      this.datasetCahe = [];
-      this.selectDatasetsCahe = [];
-      this.$refs.datasetTreeRef.filter();
-      this.$emit("search", [], []);
+        execStatus: []
+      }
+      this.dataRange = []
+      this.activeDataset = []
+      this.selectDatasets = []
+      this.datasetCahe = []
+      this.selectDatasetsCahe = []
+      this.$refs.datasetTreeRef.filter()
+      this.$emit('search', [], [])
     },
     clearOneFilter(index) {
       (this.filterTextMap[index] || []).forEach((ele) => {
-        const eleKey = ele.split(".");
+        const eleKey = ele.split('.')
         if (eleKey.length === 2) {
-          const [p, c] = eleKey;
-          this[p][c] = [];
+          const [p, c] = eleKey
+          this[p][c] = []
         } else {
-          this[ele] = [];
+          this[ele] = []
         }
         if (ele === 'activeDataset') {
-          this.$refs.datasetTreeRef.filter();
+          this.$refs.datasetTreeRef.filter()
         }
-      });
+      })
     },
     statusChange(value, type) {
-      const statusIndex = this.active[type].findIndex((ele) => ele === value);
+      const statusIndex = this.active[type].findIndex((ele) => ele === value)
       if (statusIndex === -1) {
-        this.active[type].push(value);
+        this.active[type].push(value)
       } else {
-        this.active[type].splice(statusIndex, 1);
+        this.active[type].splice(statusIndex, 1)
       }
     },
     handleNodeClick(id, name) {
-      const datasetIdx = this.selectDatasets.findIndex((ele) => ele.id === id);
+      const datasetIdx = this.selectDatasets.findIndex((ele) => ele.id === id)
       if (datasetIdx !== -1) {
-        this.selectDatasets.splice(datasetIdx, 1);
+        this.selectDatasets.splice(datasetIdx, 1)
       }
-      this.activeDataset.push(id);
-      this.selectDatasetsCahe.push({ id, name });
-      this.datasetCahe.push({ id, name });
-      this.$refs.datasetTreeRef.filter(id);
+      this.activeDataset.push(id)
+      this.selectDatasetsCahe.push({ id, name })
+      this.datasetCahe.push({ id, name })
+      this.$refs.datasetTreeRef.filter(id)
     },
     activeDatasetChange(id) {
-      const dataset = this.datasetCahe.find((ele) => ele.id === id);
-      this.selectDatasets.push(dataset);
-      this.activeDataset = this.activeDataset.filter((ele) => ele !== id);
+      const dataset = this.datasetCahe.find((ele) => ele.id === id)
+      this.selectDatasets.push(dataset)
+      this.activeDataset = this.activeDataset.filter((ele) => ele !== id)
       this.datasetCahe = this.datasetCahe.filter(
         (ele) => ele.id !== id
-      );
+      )
       this.selectDatasetsCahe = this.selectDatasetsCahe.filter(
         (ele) => ele.id !== id
-      );
-      this.$refs.datasetTreeRef.filter(true);
+      )
+      this.$refs.datasetTreeRef.filter(true)
     },
     search() {
-      this.userDrawer = false;
-      this.$emit("search", this.formatCondition(), this.formatText());
+      this.userDrawer = false
+      this.$emit('search', this.formatCondition(), this.formatText())
     },
     formatText() {
-      this.filterTextMap = [];
-      const params = [];
+      this.filterTextMap = []
+      const params = []
       if (this.activeDataset.length) {
-        let str = `${this.$t("dataset.datalist")}:${this.activeDataset.reduce(
+        const str = `${this.$t('dataset.datalist')}:${this.activeDataset.reduce(
           (pre, next) =>
             (this.datasetCahe.find((ele) => ele.id === next) || {}).name +
-            "、" +
+            '、' +
             pre,
-          ""
-        )}`;
-        params.push(str.slice(0, str.length - 1));
+          ''
+        )}`
+        params.push(str.slice(0, str.length - 1))
         this.filterTextMap.push([
-          "activeDataset",
-          "selectDatasets",
-          "selectDatasetsCahe",
-          "datasetCahe",
-        ]);
+          'activeDataset',
+          'selectDatasets',
+          'selectDatasetsCahe',
+          'datasetCahe'
+        ])
       }
-      ["dataset.task.last_exec_status"].forEach((ele, index) => {
-        const { activeType: type, list } = this.filterDataset[index];
+      ['dataset.task.last_exec_status'].forEach((ele, index) => {
+        const { activeType: type, list } = this.filterDataset[index]
         if (this.active[type].length) {
           params.push(
             `${this.$t(ele)}:${this.active[type]
               .map((item) =>
                 this.$t(list.find((itx) => itx.value === item).name)
               )
-              .join("、")}`
-          );
-          this.filterTextMap.push([`active.${type}`]);
+              .join('、')}`
+          )
+          this.filterTextMap.push([`active.${type}`])
         }
-      });
+      })
       if (this.dataRange.length) {
         params.push(
-          `${this.$t("dedaterange.label")}:${this.dataRange
+          `${this.$t('dedaterange.label')}:${this.dataRange
             .map((ele) => {
-              return dateFormat("YYYY-mm-dd", ele);
+              return dateFormat('YYYY-mm-dd', ele)
             })
-            .join("-")}`
-        );
-        this.filterTextMap.push(["dataRange"]);
+            .join('-')}`
+        )
+        this.filterTextMap.push(['dataRange'])
       }
-      return params;
+      return params
     },
     formatCondition() {
       const fildMap = {
-        "dataset_table_task.last_exec_status": this.active.execStatus,
-        "dataset_table.id": this.activeDataset,
-      };
-      const conditions = [];
+        'dataset_table_task.last_exec_status': this.active.execStatus,
+        'dataset_table.id': this.activeDataset
+      }
+      const conditions = []
       Object.keys(fildMap).forEach((ele) => {
         if (fildMap[ele].length) {
           conditions.push({
             field: ele,
-            operator: "in",
-            value: fildMap[ele],
-          });
+            operator: 'in',
+            value: fildMap[ele]
+          })
         }
-      });
-      let [min, max] = this.dataRange;
+      })
+      // eslint-disable-next-line
+      let [min, max] = this.dataRange
       if (min && max) {
         if (+min === +max) {
-          max = +max + 24 * 3600 * 1000;
+          max = +max + 24 * 3600 * 1000
         }
         conditions.push({
-          field: "dataset_table_task.last_exec_time",
-          operator: "between",
-          value: [+min, +max],
-        });
+          field: 'dataset_table_task.last_exec_time',
+          operator: 'between',
+          value: [+min, +max]
+        })
       }
-      return conditions;
+      return conditions
     },
     init() {
-      this.userDrawer = true;
+      this.userDrawer = true
     },
     reset() {
-      this.clearFilter();
-      this.userDrawer = false;
-    },
-  },
-};
+      this.clearFilter()
+      this.userDrawer = false
+    }
+  }
+}
 </script>

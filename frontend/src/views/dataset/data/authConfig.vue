@@ -1,14 +1,41 @@
 <template>
   <de-container style="height: auto">
     <de-aside-container style="height: auto">
-      <el-button v-show="!showTargetSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showTargetSearchWidget" />
-      <div v-show="showTargetSearchInput" class="de-input">
-        <el-input v-model="targetFilterText" class="main-area-input">
-          <el-button slot="append" icon="el-icon-close" @click="closeTargetSearchWidget" />
+      <el-button
+        v-show="!showTargetSearchInput"
+        class="de-icon"
+        icon="el-icon-search"
+        circle
+        size="mini"
+        @click="showTargetSearchWidget"
+      />
+      <div
+        v-show="showTargetSearchInput"
+        class="de-input"
+      >
+        <el-input
+          v-model="targetFilterText"
+          class="main-area-input"
+        >
+          <el-button
+            slot="append"
+            icon="el-icon-close"
+            @click="closeTargetSearchWidget"
+          />
         </el-input>
       </div>
-      <el-tabs v-model="targetActiveName" :class="{'de-search-header': showTargetSearchInput}" @tab-click="handleClick">
-        <el-tab-pane v-for="(targetInfo, index) in targetInfoArray" :key="index" :lazy="true" :label="targetInfo.tabName" :name="targetInfo.authType">
+      <el-tabs
+        v-model="targetActiveName"
+        :class="{'de-search-header': showTargetSearchInput}"
+        @tab-click="handleClick"
+      >
+        <el-tab-pane
+          v-for="(targetInfo, index) in targetInfoArray"
+          :key="index"
+          :lazy="true"
+          :label="targetInfo.tabName"
+          :name="targetInfo.authType"
+        >
           <lazy-tree
             v-if="targetActiveName===targetInfo.authType"
             :active-name="targetActiveName"
@@ -22,14 +49,41 @@
       </el-tabs>
     </de-aside-container>
     <de-main-container class="de-main-container-auth">
-      <el-button v-show="!showSourceSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showSourceSearchWidget" />
-      <div v-show="showSourceSearchInput" class="de-input">
-        <el-input v-model="sourceFilterText" class="main-area-input">
-          <el-button slot="append" icon="el-icon-close" @click="closeSourceSearchWidget" />
+      <el-button
+        v-show="!showSourceSearchInput"
+        class="de-icon"
+        icon="el-icon-search"
+        circle
+        size="mini"
+        @click="showSourceSearchWidget"
+      />
+      <div
+        v-show="showSourceSearchInput"
+        class="de-input"
+      >
+        <el-input
+          v-model="sourceFilterText"
+          class="main-area-input"
+        >
+          <el-button
+            slot="append"
+            icon="el-icon-close"
+            @click="closeSourceSearchWidget"
+          />
         </el-input>
       </div>
-      <el-tabs v-model="sourceActiveName" :class="{'de-search-header': showSourceSearchInput}" @tab-click="handleClick">
-        <el-tab-pane v-for="(sourceInfo, index) in sourceInfoTabs" :key="index" :lazy="true" :label="sourceInfo.tabName" :name="sourceInfo.authType">
+      <el-tabs
+        v-model="sourceActiveName"
+        :class="{'de-search-header': showSourceSearchInput}"
+        @tab-click="handleClick"
+      >
+        <el-tab-pane
+          v-for="(sourceInfo, index) in sourceInfoTabs"
+          :key="index"
+          :lazy="true"
+          :label="sourceInfo.tabName"
+          :name="sourceInfo.authType"
+        >
           <lazy-tree
             v-if="authCondition"
             :active-name="sourceActiveName"
@@ -37,8 +91,8 @@
             :data-info="sourceInfo"
             show-extent
             :auth-condition="authCondition"
-            @execute-axios="executeAxios"
             :attach-active-name="targetActiveName"
+            @execute-axios="executeAxios"
           />
         </el-tab-pane>
       </el-tabs>
@@ -62,7 +116,7 @@ export default {
       default: null
     }
   },
-  data () {
+  data() {
     return {
       targetInfoArray:
         [
@@ -133,7 +187,7 @@ export default {
     }
   },
   computed: {
-    sourceInfoTabs () {
+    sourceInfoTabs() {
       const tabs = []
       this.sourceInfoArray.forEach(item => {
         if (item.authTargets.indexOf(this.targetActiveName) > -1) {
@@ -143,43 +197,43 @@ export default {
       return tabs
     }
   },
-  created () {
+  created() {
     this.targetActiveName = this.targetInfoArray[0].authType
     this.sourceActiveName = this.sourceInfoArray[0].authType
   },
 
   methods: {
-    executeAxios (param) {
+    executeAxios(param) {
       this.$emit('execute-axios', param)
     },
-    handleClick (tab, event) {
+    handleClick(tab, event) {
     },
-    showSourceSearchWidget () {
+    showSourceSearchWidget() {
       this.showSourceSearchInput = true
     },
-    closeSourceSearchWidget () {
+    closeSourceSearchWidget() {
       this.sourceFilterText = ''
       this.showSourceSearchInput = false
     },
-    showTargetSearchWidget () {
+    showTargetSearchWidget() {
       this.showTargetSearchInput = true
     },
-    closeTargetSearchWidget () {
+    closeTargetSearchWidget() {
       this.targetFilterText = ''
       this.showTargetSearchInput = false
     },
-    save () {
+    save() {
       this.$refs[this.activeName].save()
       this.$emit('close-grant', 0)
     },
-    cancel () {
+    cancel() {
       this.$refs[this.activeName].cancel()
       this.$emit('close-grant', 0)
     },
-    authNodeClick (val) {
+    authNodeClick(val) {
       this.authCondition = val
     },
-    clickAuth (auth) {
+    clickAuth(auth) {
     }
   }
 }

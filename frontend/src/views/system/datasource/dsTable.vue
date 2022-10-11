@@ -4,7 +4,10 @@
       <el-col :span="10">
         <span class="table-name-top">{{ params.name }}</span>
       </el-col>
-      <el-col :span="14" class="right-user">
+      <el-col
+        :span="14"
+        class="right-user"
+      >
         <el-input
           ref="search"
           v-model="nickName"
@@ -51,7 +54,10 @@
       class="de-dialog-form ds-table-drawer"
       width="840px"
     >
-      <el-row style="margin-top: 12px" :gutter="24">
+      <el-row
+        style="margin-top: 12px"
+        :gutter="24"
+      >
         <el-col :span="12">
           <p class="table-name">
             {{ $t("datasource.table_name") }}
@@ -108,7 +114,7 @@
 
 <script>
 import keyEnter from '@/components/msgCfm/keyEnter.js'
-import { dsTable, post } from '@/api/dataset/dataset'
+import { post } from '@/api/dataset/dataset'
 
 export default {
   mixins: [keyEnter],

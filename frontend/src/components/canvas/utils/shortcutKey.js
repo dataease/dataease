@@ -13,13 +13,9 @@ const gKey = 71 // 组合
 const bKey = 66 // 拆分
 
 const lKey = 76 // 锁定
-const uKey = 85 // 解锁
 
-const sKey = 83 // 保存
-const pKey = 80 // 预览
 const dKey = 68 // 删除
 const deleteKey = 46 // 删除
-const eKey = 69 // 清空画布
 
 export const keycodes = [66, 67, 68, 69, 71, 76, 80, 83, 85, 86, 88, 89, 90]
 
@@ -28,12 +24,6 @@ const basemap = {
   [vKey]: paste,
   [yKey]: redo,
   [zKey]: undo
-}
-
-// 组件锁定状态下可以执行的操作
-const lockMap = {
-  ...basemap,
-  [uKey]: unlock
 }
 
 // 组件未锁定状态下可以执行的操作
@@ -116,8 +106,4 @@ function deleteComponent() {
 
 function lock() {
   store.commit('lock')
-}
-
-function unlock() {
-  store.commit('unlock')
 }

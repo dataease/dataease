@@ -3,7 +3,10 @@
     <div> 导出时间：$TIME$</div>
     <div contenteditable="true"> 可以输入内容</div>
     <div>
-      <img width="100%" src="$snapshot$">
+      <img
+        width="100%"
+        src="$snapshot$"
+      >
     </div>
   </div>
 </template>

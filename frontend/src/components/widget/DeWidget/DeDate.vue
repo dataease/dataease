@@ -309,7 +309,7 @@ export default {
   .el-date-picker__time-header {
     border-bottom: 1px solid var(--BrDateColor, #dfe4ed) !important;
   }
-  
+
   .el-picker-panel__footer {
     border-top: 1px solid var(--BrDateColor, #dfe4ed) !important;
     background: var(--BgDateColor, #FFFFFF) !important;
@@ -329,7 +329,6 @@ export default {
     background: var(--BgDateColor, #FFFFFF) !important;
     border:1px solid var(--BrDateColor, #dfe4ed) !important;
   }
-  
 
   .popper__arrow,
   .popper__arrow::after {

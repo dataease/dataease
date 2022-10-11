@@ -6,9 +6,17 @@
     class="main_outer"
   />
   <div v-else-if="homeLink">
-    <iframe id="mobsf" :src="homeLink" frameborder="0" style="position:absolute;top:55px;width: 100%;height: calc(100% - 55px);" />
+    <iframe
+      id="mobsf"
+      :src="homeLink"
+      frameborder="0"
+      style="position:absolute;top:55px;width: 100%;height: calc(100% - 55px);"
+    />
   </div>
-  <el-row v-else class="main_container_outer">
+  <el-row
+    v-else
+    class="main_container_outer"
+  >
     <el-row class="main_container">
       <el-row class="main_content">
         <el-row class="content_top_banner">
@@ -16,33 +24,57 @@
             <div class="hint_head">{{ $t('wizard.welcome_title') }}</div>
             <div class="hint_content">{{ $t('wizard.welcome_hint') }}</div>
           </div>
-          <svg-icon class="top_banner_img"  icon-class="wizard_main_bg_inner"></svg-icon>
+          <svg-icon
+            class="top_banner_img"
+            icon-class="wizard_main_bg_inner"
+          />
         </el-row>
         <el-row class="top_banner_card">
-          <wizard-card :details="cardList[0]"></wizard-card>
-          <wizard-card :details="cardList[1]" style="margin:0 24px 0 24px"></wizard-card>
-          <wizard-card-enterprise :details="cardList[2]"></wizard-card-enterprise>
+          <wizard-card :details="cardList[0]" />
+          <wizard-card
+            :details="cardList[1]"
+            style="margin:0 24px 0 24px"
+          />
+          <wizard-card-enterprise :details="cardList[2]" />
         </el-row>
         <el-row class="content_middle">
           <div class="content_middle_left">
             <el-row>
               <span class="content_middle_title">{{ $t('wizard.teaching_video') }}</span>
-              <div class="content_middle_more"><a target="_blank" href="https://space.bilibili.com/510493147/channel/collectiondetail?sid=262774">{{ $t('wizard.more') }}<i class="el-icon-arrow-right" /></a></div>
+              <div class="content_middle_more"><a
+                target="_blank"
+                href="https://space.bilibili.com/510493147/channel/collectiondetail?sid=262774"
+              >{{ $t('wizard.more') }}<i class="el-icon-arrow-right" /></a></div>
             </el-row>
             <el-row style="margin-top: 12px">
-              <video-card :details="videoList[0]"></video-card>
-              <video-card style="margin:0 12px 0 12px" :details="videoList[1]"></video-card>
-              <video-card :details="videoList[2]"></video-card>
+              <video-card :details="videoList[0]" />
+              <video-card
+                style="margin:0 12px 0 12px"
+                :details="videoList[1]"
+              />
+              <video-card :details="videoList[2]" />
             </el-row>
           </div>
           <div class="content_middle_right">
             <el-row>
               <span class="content_middle_title">{{ $t('wizard.latest_developments') }}</span>
-              <div class="content_middle_more"><a target="_blank" href="https://blog.fit2cloud.com/?cat=321">{{ $t('wizard.more') }}<i class="el-icon-arrow-right" /></a></div>
+              <div class="content_middle_more"><a
+                target="_blank"
+                href="https://blog.fit2cloud.com/?cat=321"
+              >{{ $t('wizard.more') }}<i class="el-icon-arrow-right" /></a></div>
             </el-row>
-            <el-row >
+            <el-row>
               <ul class="ul-custom">
-                <li class="li-custom" v-for="blogItem in blogsInfo"><a target="_blank" class="li-a" :href="blogItem.href" :title="blogItem.title" >{{blogItem.title}}</a></li>
+                <li
+                  v-for="blogItem in blogsInfo"
+                  :key="blogItem.title"
+                  class="li-custom"
+                ><a
+                  target="_blank"
+                  class="li-a"
+                  :href="blogItem.href"
+                  :title="blogItem.title"
+                >{{ blogItem.title }}</a></li>
               </ul>
             </el-row>
           </div>
@@ -51,27 +83,37 @@
         <el-row class="content_bottom">
           <div class="content_bottom_contact">
             <el-row class="contact_title">
-              <span>{{$t('wizard.contact_us')}}</span>
+              <span>{{ $t('wizard.contact_us') }}</span>
             </el-row>
             <el-row class="contact_content">
-              <span>{{$t('wizard.email')}}dataease@fit2cloud.com</span>
+              <span>{{ $t('wizard.email') }}dataease@fit2cloud.com</span>
             </el-row>
             <el-row class="contact_content">
-              <span>{{$t('wizard.tel')}}400-052-0755</span>
+              <span>{{ $t('wizard.tel') }}400-052-0755</span>
             </el-row>
             <el-row class="contact_content">
-              {{$t('wizard.web')}}<a style="text-decoration:underline;" target="_blank" href="https://www.dataease.io">www.dataease.io</a>
+              {{ $t('wizard.web') }}<a
+                style="text-decoration:underline;"
+                target="_blank"
+                href="https://www.dataease.io"
+              >www.dataease.io</a>
             </el-row>
           </div>
 
           <div class="content_bottom_qr_code">
             <div class="contact_wechat_official">
               <div class="contact_title_qr">微信公众号</div>
-              <img class="contact_wechat_official_img" src="@/assets/wizard_wechat-official.jpeg"></img>
+              <img
+                class="contact_wechat_official_img"
+                src="@/assets/wizard_wechat-official.jpeg"
+              >
             </div>
             <div class="contact_wechat_group">
               <div class="contact_title_qr">技术交流群</div>
-              <img class="contact_wechat_group_img"  src="@/assets/wizard_wechat-group.png"></img>
+              <img
+                class="contact_wechat_group_img"
+                src="@/assets/wizard_wechat-group.png"
+              >
             </div>
           </div>
         </el-row>
@@ -79,35 +121,26 @@
       </el-row>
     </el-row>
 
-
   </el-row>
 </template>
 
 <script>
 
-import Card from '@/views/wizard/card'
-import DemoVideo from '@/views/wizard/details/DemoVideo'
-import OnlineDocument from '@/views/wizard/details/OnlineDocument'
-import LatestDevelopments from '@/views/wizard/details/LatestDevelopments'
-import TeachingVideo from '@/views/wizard/details/TeachingVideo'
-import EnterpriseEdition from '@/views/wizard/details/EnterpriseEdition'
-import ContactUs from '@/views/wizard/details/ContactUs'
-import InfoCard from '@/views/wizard/infoCard'
-import CardDetail from '@/views/wizard/details/CardDetail'
 import { blogLastActive } from '@/api/wizard/wizard'
-import WizardCard from "@/views/wizard/wizardCard";
-import VideoCard from "@/views/wizard/videoCard";
-import WizardCardEnterprise from "@/views/wizard/wizardCardEnterprise";
+import WizardCard from '@/views/wizard/wizardCard'
+import VideoCard from '@/views/wizard/videoCard'
+import WizardCardEnterprise from '@/views/wizard/wizardCardEnterprise'
 
 export default {
   name: 'Wizard',
   components: {
     WizardCardEnterprise,
     VideoCard,
-    WizardCard, InfoCard, Card, DemoVideo, OnlineDocument, LatestDevelopments, TeachingVideo, EnterpriseEdition, ContactUs, CardDetail },
+    WizardCard
+  },
   data() {
     return {
-      blogsInfo:[],
+      blogsInfo: [],
       cardList: [
         {
           head: this.$t('wizard.quick_start'),
@@ -121,15 +154,15 @@ export default {
           content: this.$t('wizard.online_document_hint'),
           img: 'wizard_help',
           bgColor: '#F3F2FF',
-          href: 'https://dataease.io/docs/index.html',
+          href: 'https://dataease.io/docs/index.html'
         },
         {
           head: this.$t('wizard.enterprise_edition'),
           content: this.$t('wizard.enterprise_edition_hint1') + '<br>' + this.$t('wizard.enterprise_edition_hint2') + '<br>' + this.$t('wizard.enterprise_edition_hint3'),
           img: 'wizard_enterprise',
           bgColor: '#FFFAF0',
-          href: 'https://jinshuju.net/f/TK5TTd',
-        },
+          href: 'https://jinshuju.net/f/TK5TTd'
+        }
       ],
       videoList: [
         {

@@ -1,5 +1,8 @@
 <template>
-  <el-col :span="8" class="card_main">
+  <el-col
+    :span="8"
+    class="card_main"
+  >
     <el-row class="card_content">
       <slot />
     </el-row>

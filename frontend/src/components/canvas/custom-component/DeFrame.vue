@@ -1,19 +1,49 @@
 <template>
   <el-row class="main-frame">
-    <div v-if="element.frameLinks.src" class="main-frame">
-      <iframe v-if="frameShow" id="iframe" :src="element.frameLinks.src" scrolling="auto" frameborder="0" class="main-frame" @load="loaded" @error="onError" />
-      <div v-if="editMode==='edit'" class="frame-mask edit-mask">
+    <div
+      v-if="element.frameLinks.src"
+      class="main-frame"
+    >
+      <iframe
+        v-if="frameShow"
+        id="iframe"
+        :src="element.frameLinks.src"
+        scrolling="auto"
+        frameborder="0"
+        class="main-frame"
+        @load="loaded"
+        @error="onError"
+      />
+      <div
+        v-if="editMode==='edit'"
+        class="frame-mask edit-mask"
+      >
         <span style="opacity: 1;">
           <span style="font-weight: bold;color: lawngreen;">{{ $t('panel.edit_web_tips') }}</span>
         </span>
       </div>
       <!--Here are three 15px wide masks(left top right) for easy clicking on the display jump button-->
-      <div v-if="editMode!=='edit'" class="frame-mask preview-top-mask" />
-      <div v-if="editMode!=='edit'" class="frame-mask preview-right-mask" />
-      <div v-if="editMode!=='edit'" class="frame-mask preview-left-mask" />
-      <div v-if="screenShot" class="frame-mask" />
+      <div
+        v-if="editMode!=='edit'"
+        class="frame-mask preview-top-mask"
+      />
+      <div
+        v-if="editMode!=='edit'"
+        class="frame-mask preview-right-mask"
+      />
+      <div
+        v-if="editMode!=='edit'"
+        class="frame-mask preview-left-mask"
+      />
+      <div
+        v-if="screenShot"
+        class="frame-mask"
+      />
     </div>
-    <div v-else class="info-class">
+    <div
+      v-else
+      class="info-class"
+    >
       {{ $t('panel.web_add_tips') }}
     </div>
   </el-row>
@@ -69,7 +99,7 @@ export default {
   },
   mounted() {
     bus.$on('frameLinksChange-' + this.element.id, this.frameLinksChange)
-    eventBus.$on('startMoveIn',this.frameLinksChange)
+    eventBus.$on('startMoveIn', this.frameLinksChange)
   },
   beforeDestroy() {
     bus.$off('frameLinksChange-' + this.element.id, this.frameLinksChange)

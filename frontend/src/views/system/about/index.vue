@@ -1,8 +1,15 @@
 <template>
   <div style="width: 100%;display: flex;justify-content: center;">
     <el-card class="box-card about-card">
-      <div slot="header" class="clearfix license-header">
-        <img src="@/assets/DataEase-white.png" alt="" width="300">
+      <div
+        slot="header"
+        class="clearfix license-header"
+      >
+        <img
+          src="@/assets/DataEase-white.png"
+          alt=""
+          width="300"
+        >
       </div>
       <div class="license-content">
         <div v-if="license.status === 'Fail'">{{ $t('about.invalid_license') }}</div>
@@ -15,7 +22,10 @@
             <tr>
               <th>{{ $t('about.expiration_time') }}</th>
               <td>
-                <label v-if="license.status === 'expired'" style="color: red">{{ license.expired }} {{ $t('about.expirationed') }}</label>
+                <label
+                  v-if="license.status === 'expired'"
+                  style="color: red"
+                >{{ license.expired }} {{ $t('about.expirationed') }}</label>
                 <label v-if="license.status === 'valid'">{{ license.expired }}</label>
               </td>
             </tr>
@@ -42,7 +52,12 @@
         </div>
 
         <div class="md-padding" />
-        <div v-if="user.isAdmin" layout="row" layout-align="space-between center" class="lic_rooter">
+        <div
+          v-if="user.isAdmin"
+          layout="row"
+          layout-align="space-between center"
+          class="lic_rooter"
+        >
           <el-upload
             action=""
             :multiple="false"
@@ -56,7 +71,10 @@
 
           </el-upload>
 
-          <a class="md-primary pointer" @click="support">{{ $t('about.suport') }}</a>
+          <a
+            class="md-primary pointer"
+            @click="support"
+          >{{ $t('about.suport') }}</a>
 
         </div>
       </div>

@@ -1,6 +1,17 @@
 <template>
-  <el-select v-model="selected" multiple v-bind="$attrsAll" v-on="$listenserAll" @change="onChange">
-    <el-option v-for="item in mdoptionsList" :key="item.key" :label="item.label" :value="item.value" />
+  <el-select
+    v-model="selected"
+    multiple
+    v-bind="$attrsAll"
+    v-on="$listenserAll"
+    @change="onChange"
+  >
+    <el-option
+      v-for="item in mdoptionsList"
+      :key="item.key"
+      :label="item.label"
+      :value="item.value"
+    />
     <slot name="default" />
   </el-select>
 </template>

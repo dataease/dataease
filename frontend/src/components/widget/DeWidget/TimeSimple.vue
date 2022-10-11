@@ -1,6 +1,11 @@
 <template>
   <div :style="{ 'height': containerHeight}">
-    <div ref="canvasContainer" class="time-s-class" style="height: calc(100% - 50px);" :style="{'margin':timeMargin +'px'}">
+    <div
+      ref="canvasContainer"
+      class="time-s-class"
+      style="height: calc(100% - 50px);"
+      :style="{'margin':timeMargin +'px'}"
+    >
       <canvas
         :id="'simple-canvas'+element.id"
         class="de-canvas"
@@ -9,7 +14,11 @@
       />
     </div>
     <div style="height: 50px;display: flex;align-items: center;">
-      <p :id="element.id + '_fulltime'" :style="{'fontSize': (parseInt(element.style.fontSize) * 1) + 'px', 'color':element.style.color}" style="width:100%;margin:auto;" />
+      <p
+        :id="element.id + '_fulltime'"
+        :style="{'fontSize': (parseInt(element.style.fontSize) * 1) + 'px', 'color':element.style.color}"
+        style="width:100%;margin:auto;"
+      />
     </div>
   </div>
 </template>

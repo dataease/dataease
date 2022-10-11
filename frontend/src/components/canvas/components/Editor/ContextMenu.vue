@@ -1,9 +1,16 @@
 <template>
-  <div v-show="menuShow" class="contextmenu" :style="{ top: menuTop + 'px', left: menuLeft + 'px' }">
+  <div
+    v-show="menuShow"
+    class="contextmenu"
+    :style="{ top: menuTop + 'px', left: menuLeft + 'px' }"
+  >
     <ul @mouseup="handleMouseUp">
       <template v-if="curComponent">
         <template v-if="!curComponent.isLock">
-          <li v-if="editFilter.includes(curComponent.type)" @click="edit"> {{ $t('panel.edit') }}</li>
+          <li
+            v-if="editFilter.includes(curComponent.type)"
+            @click="edit"
+          > {{ $t('panel.edit') }}</li>
           <li @click="copy"> {{ $t('panel.copy') }}</li>
           <li @click="cut"> {{ $t('panel.cut') }}</li>
           <li @click="deleteComponent"> {{ $t('panel.delete') }}</li>
@@ -13,9 +20,15 @@
           <li @click="upComponent"> {{ $t('panel.upComponent') }}</li>
           <li @click="downComponent"> {{ $t('panel.downComponent') }}</li>
         </template>
-        <li v-else @click="unlock">解锁</li>
+        <li
+          v-else
+          @click="unlock"
+        >解锁</li>
       </template>
-      <li v-else @click="paste">粘贴</li>
+      <li
+        v-else
+        @click="paste"
+      >粘贴</li>
     </ul>
   </div>
 </template>

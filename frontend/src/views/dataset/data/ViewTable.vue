@@ -1,15 +1,27 @@
 <template>
   <div class="view-table">
     <el-row>
-      <el-col class="de-dataset-name" :span="16">
-        <span class="title-text" style="line-height: 26px">
+      <el-col
+        class="de-dataset-name"
+        :span="16"
+      >
+        <span
+          class="title-text"
+          style="line-height: 26px"
+        >
           {{ table.name }}
         </span>
         <template v-if="['db', 'sql'].includes(param.modelInnerType)">
-          <span v-if="table.mode === 0" class="de-tag primary">{{
+          <span
+            v-if="table.mode === 0"
+            class="de-tag primary"
+          >{{
             $t('dataset.direct_connect')
           }}</span>
-          <span v-if="table.mode === 1" class="de-tag warning">{{
+          <span
+            v-if="table.mode === 1"
+            class="de-tag warning"
+          >{{
             $t('dataset.sync_data')
           }}</span>
         </template>
@@ -20,7 +32,7 @@
         >
           {{ $t('dataset.dataset_sync') }}
         </span>
-        <el-divider direction="vertical"></el-divider>
+        <el-divider direction="vertical" />
         <span class="create-by">{{ $t('dataset.create_by') }}</span>
         <span class="create-by">:{{ table.creatorName || 'N/A' }}</span>
         <el-popover
@@ -35,7 +47,10 @@
             :data="table"
             :tab-status="tabStatus"
           />
-          <i slot="reference" class="el-icon-warning-outline detail" />
+          <i
+            slot="reference"
+            class="el-icon-warning-outline detail"
+          />
         </el-popover>
       </el-col>
       <el-col
@@ -55,18 +70,18 @@
           </deBtn>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="0">
-              <svg-icon icon-class="icon_add-entry_outlined"> </svg-icon>
+              <svg-icon icon-class="icon_add-entry_outlined" />
               {{ $t('dataset.excel_replace') + $t('chart.chart_data') }}
             </el-dropdown-item>
             <el-dropdown-item command="1">
-              <svg-icon icon-class="icon_doc-replace_outlined"> </svg-icon>
+              <svg-icon icon-class="icon_doc-replace_outlined" />
               {{ $t('dataset.excel_add') + $t('chart.chart_data') }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <deBtn
-          type="primary"
           v-if="['sql', 'union'].includes(table.type)"
+          type="primary"
           @click="editDataset(table.type)"
         >
           {{
@@ -78,8 +93,15 @@
       </el-col>
     </el-row>
 
-    <el-tabs class="de-tabs" v-model="tabActive" @tab-click="tabClick">
-      <el-tab-pane :label="$t('dataset.data_preview')" name="dataPreview">
+    <el-tabs
+      v-model="tabActive"
+      class="de-tabs"
+      @tab-click="tabClick"
+    >
+      <el-tab-pane
+        :label="$t('dataset.data_preview')"
+        name="dataPreview"
+      >
         <tab-data-preview
           :param="param"
           :table="table"
@@ -104,7 +126,7 @@
       <el-tab-pane
         v-if="
           table.mode === 1 &&
-          (table.type === 'db' || table.type === 'sql' || table.type === 'api')
+            (table.type === 'db' || table.type === 'sql' || table.type === 'api')
         "
         :label="$t('dataset.update_info')"
         name="updateInfo"
@@ -192,12 +214,12 @@ export default {
     }
   },
   computed: {
-    hideCustomDs: function () {
+    hideCustomDs: function() {
       return this.$store.getters.hideCustomDs
     }
   },
   watch: {
-    param: function () {
+    param: function() {
       this.tabActive = 'dataPreview'
       this.initTable(this.param.id)
     }

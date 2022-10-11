@@ -1,7 +1,17 @@
 <template>
   <span class="box">
-    <el-tooltip class="item" effect="dark" :content="tips" placement="right">
-      <el-button type="primary" size="mini" circle @click="exec()">
+    <el-tooltip
+      class="item"
+      effect="dark"
+      :content="tips"
+      placement="right"
+    >
+      <el-button
+        type="primary"
+        size="mini"
+        circle
+        @click="exec()"
+      >
         <font-awesome-icon :icon="['fas', 'plus']" />
       </el-button>
     </el-tooltip>

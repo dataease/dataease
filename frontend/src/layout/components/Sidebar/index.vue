@@ -1,7 +1,13 @@
 <template>
   <!-- <div :class="{'has-logo':showLogo}" :style="{'--active-bg': activeBg, '--theme':$store.state.settings.theme , '--left-menu-hovor': variables.leftMenuHovor}"> -->
-  <div :class="{ 'has-logo': showLogo }" class="de-sidebar-container">
-    <logo v-if="showLogo" :collapse="isCollapse" />
+  <div
+    :class="{ 'has-logo': showLogo }"
+    class="de-sidebar-container"
+  >
+    <logo
+      v-if="showLogo"
+      :collapse="isCollapse"
+    />
     <el-menu
       :default-active="activeMenu"
       :collapse="isCollapse"
@@ -12,8 +18,8 @@
     >
       <sidebar-item
         v-for="route in routes"
-        :isCollapse="isCollapse"
         :key="route.path"
+        :is-collapse="isCollapse"
         :item="route"
         :base-path="route.path"
       />
@@ -26,52 +32,50 @@
       <i
         :style="{ transform: isCollapse ? 'rotate(90deg)' : 'rotate(-90deg)' }"
         class="el-icon-upload2"
-      ></i>
+      />
       {{ isCollapse ? "" : "收起导航" }}
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
-import Logo from "./Logo";
-import SidebarItem from "./SidebarItem";
-import variables from "@/styles/variables.scss";
-import path from "path";
-import { isExternal } from "@/utils/validate";
+import { mapGetters, mapState } from 'vuex'
+import Logo from './Logo'
+import SidebarItem from './SidebarItem'
+import variables from '@/styles/variables.scss'
 export default {
   components: { SidebarItem, Logo },
   computed: {
-    ...mapGetters(["sidebar"]),
+    ...mapGetters(['sidebar']),
     ...mapState({
-      isCollapse: state => state.isCollapse,
+      isCollapse: state => state.isCollapse
     }),
     routes() {
-      return this.$store.state.permission.currentRoutes.children;
+      return this.$store.state.permission.currentRoutes.children
     },
     activeMenu() {
-      const route = this.$route;
-      const { meta, path } = route;
+      const route = this.$route
+      const { meta, path } = route
       // if set path, the sidebar will highlight the path you set
       if (meta.activeMenu) {
-        return meta.activeMenu;
+        return meta.activeMenu
       }
-      return path;
+      return path
     },
     showLogo() {
-      return this.$store.state.settings.sidebarLogo;
+      return this.$store.state.settings.sidebarLogo
     },
     variables() {
-      return variables;
-    },
+      return variables
+    }
   },
   methods: {
     changeSideWidth() {
-      this.$store.commit('setIsCollapse', !this.isCollapse);
-      this.$emit("changeSideWidth", this.isCollapse ? "70px" : "");
-    },
-  },
-};
+      this.$store.commit('setIsCollapse', !this.isCollapse)
+      this.$emit('changeSideWidth', this.isCollapse ? '70px' : '')
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

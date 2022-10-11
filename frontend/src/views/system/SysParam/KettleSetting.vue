@@ -1,11 +1,15 @@
 <template>
   <div class="kettle-setting">
-    <deBtn type="primary" icon="el-icon-plus" @click="create(undefined)">{{
+    <deBtn
+      type="primary"
+      icon="el-icon-plus"
+      @click="create(undefined)"
+    >{{
       $t("kettle.add")
     }}</deBtn>
     <div class="table-box">
       <grid-table
-        :tableData="data"
+        :table-data="data"
         :pagination="paginationConfig"
         @size-change="sizeChange"
         @current-change="currentChange"
@@ -14,21 +18,25 @@
           prop="configuration.carte"
           :label="$t('kettle.carte')"
         />
-        <el-table-column prop="configuration.port" :label="$t('kettle.port')" />
-        <el-table-column prop="status" :label="$t('kettle.status')">
+        <el-table-column
+          prop="configuration.port"
+          :label="$t('kettle.port')"
+        />
+        <el-table-column
+          prop="status"
+          :label="$t('kettle.status')"
+        >
           <template slot-scope="scope">
             <span
               v-if="scope.row.status === 'Error'"
               class="de-tag"
               style="color: #646a73; background: rgba(31, 35, 41, 0.1)"
-              >{{ $t("datasource.invalid") }}</span
-            >
+            >{{ $t("datasource.invalid") }}</span>
             <span
               v-if="scope.row.status === 'Success'"
               class="de-tag"
               style="color: green; background: rgba(52, 199, 36, 0.2)"
-              >{{ $t("datasource.valid") }}</span
-            >
+            >{{ $t("datasource.valid") }}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -39,18 +47,20 @@
         >
           <template slot-scope="scope">
             <el-button
+              class="text-btn"
+              type="text"
               @click="create(scope.row)"
-              class="text-btn"
-              type="text"
-              >{{ $t("commons.edit") }}</el-button
-            >
+            >{{ $t("commons.edit") }}</el-button>
             <el-button
-              @click="validateById(scope.row)"
               class="text-btn"
               type="text"
-              >{{ $t("commons.validate") }}</el-button
-            >
-            <el-button @click="del(scope.row)" class="text-btn" type="text">{{
+              @click="validateById(scope.row)"
+            >{{ $t("commons.validate") }}</el-button>
+            <el-button
+              class="text-btn"
+              type="text"
+              @click="del(scope.row)"
+            >{{
               $t("commons.delete")
             }}</el-button>
           </template>
@@ -69,42 +79,72 @@
     >
       <el-col>
         <el-form
-          class="de-form-item"
           ref="kettleform"
+          class="de-form-item"
           :form="form"
           :model="form"
           label-width="120px"
           :rules="rule"
         >
-          <el-form-item :label="$t('kettle.carte')" prop="configuration.carte">
-            <el-input v-model="form.configuration.carte" :placeholder="$t('components.enter_kettle_address')" />
+          <el-form-item
+            :label="$t('kettle.carte')"
+            prop="configuration.carte"
+          >
+            <el-input
+              v-model="form.configuration.carte"
+              :placeholder="$t('components.enter_kettle_address')"
+            />
           </el-form-item>
-          <el-form-item :label="$t('kettle.port')" prop="configuration.port">
+          <el-form-item
+            :label="$t('kettle.port')"
+            prop="configuration.port"
+          >
             <el-input-number
               v-model="form.configuration.port"
               controls-position="right"
               :placeholder="$t('components.enter_the_port')"
             />
           </el-form-item>
-          <el-form-item :label="$t('kettle.user')" prop="configuration.user">
-            <el-input :placeholder="$t('components.one_user_name')" v-model="form.configuration.user" />
+          <el-form-item
+            :label="$t('kettle.user')"
+            prop="configuration.user"
+          >
+            <el-input
+              v-model="form.configuration.user"
+              :placeholder="$t('components.one_user_name')"
+            />
           </el-form-item>
           <el-form-item
             :label="$t('kettle.passwd')"
             prop="configuration.passwd"
           >
-            <dePwd :placeholder="$t('components.input_a_password')" v-model="form.configuration.passwd"/>
+            <dePwd
+              v-model="form.configuration.passwd"
+              :placeholder="$t('components.input_a_password')"
+            />
           </el-form-item>
         </el-form>
       </el-col>
-      <div slot="footer" class="dialog-footer">
-        <deBtn secondary @click="closeDialog">
-        {{ $t("commons.cancel") }}
-      </deBtn>
-        <deBtn secondary @click="validate()">{{
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <deBtn
+          secondary
+          @click="closeDialog"
+        >
+          {{ $t("commons.cancel") }}
+        </deBtn>
+        <deBtn
+          secondary
+          @click="validate()"
+        >{{
           $t("commons.validate")
         }}</deBtn>
-        <deBtn type="primary"  @click="save()">{{
+        <deBtn
+          type="primary"
+          @click="save()"
+        >{{
           $t("commons.confirm")
         }}</deBtn>
       </div>
@@ -118,15 +158,14 @@ import {
   validate,
   save,
   pageList,
-  validateById,
-} from "@/api/system/kettle";
-import i18n from "@/lang";
-import GridTable from "@/components/gridTable/index.vue";
+  validateById
+} from '@/api/system/kettle'
+import GridTable from '@/components/gridTable/index.vue'
 import dePwd from '@/components/deCustomCm/dePwd.vue'
 import msgCfm from '@/components/msgCfm'
 
 export default {
-  name: "KettleSetting",
+  name: 'KettleSetting',
   components: { GridTable, dePwd },
   mixins: [msgCfm],
   data() {
@@ -134,120 +173,120 @@ export default {
       paginationConfig: {
         currentPage: 1,
         pageSize: 10,
-        total: 0,
+        total: 0
       },
       data: [],
       show_dialog: false,
-      edit_dialog_title: "",
+      edit_dialog_title: '',
       form: {
         configuration: {
-          carte: "",
-          port: "",
-          user: "",
-          passwd: "",
-        },
+          carte: '',
+          port: '',
+          user: '',
+          passwd: ''
+        }
       },
       rule: {
-        "configuration.carte": [
+        'configuration.carte': [
           {
             required: true,
-            message: this.$t("components.address_is_required"),
-            trigger: "blur",
-          },
+            message: this.$t('components.address_is_required'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.port": [
+        'configuration.port': [
           {
             required: true,
-            message: this.$t("components.port_is_required"),
-            trigger: "blur",
-          },
+            message: this.$t('components.port_is_required'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.user": [
+        'configuration.user': [
           {
             required: true,
-            message: this.$t("components.name_is_required"),
-            trigger: "blur",
-          },
+            message: this.$t('components.name_is_required'),
+            trigger: 'blur'
+          }
         ],
-        "configuration.passwd": [
+        'configuration.passwd': [
           {
             required: true,
-            message: this.$t("components.password_is_required"),
-            trigger: "blur",
-          },
-        ],
-      },
-    };
+            message: this.$t('components.password_is_required'),
+            trigger: 'blur'
+          }
+        ]
+      }
+    }
   },
 
   created() {
-    this.search();
+    this.search()
   },
   methods: {
     initSearch() {
-      this.currentChange(1);
+      this.currentChange(1)
     },
     currentChange(currentPage) {
-      this.paginationConfig.currentPage = currentPage;
-      this.search();
+      this.paginationConfig.currentPage = currentPage
+      this.search()
     },
     sizeChange(pageSize) {
-      this.paginationConfig.pageSize = pageSize;
-      this.paginationConfig.currentPage = 1;
-      this.search();
+      this.paginationConfig.pageSize = pageSize
+      this.paginationConfig.currentPage = 1
+      this.search()
     },
     search() {
-      const { currentPage, pageSize } = this.paginationConfig;
-      pageList("/kettle/pageList/" + currentPage + "/" + pageSize, {}).then(
+      const { currentPage, pageSize } = this.paginationConfig
+      pageList('/kettle/pageList/' + currentPage + '/' + pageSize, {}).then(
         (response) => {
-          this.data = response.data.listObject;
+          this.data = response.data.listObject
           this.data.forEach((item) => {
-            item.configuration = JSON.parse(item.configuration);
-          });
-          this.paginationConfig.total = response.data.itemCount;
+            item.configuration = JSON.parse(item.configuration)
+          })
+          this.paginationConfig.total = response.data.itemCount
         }
-      );
+      )
     },
     del(item) {
       deleteKettle(item.id).then((response) => {
-        this.initSearch();
-      });
+        this.initSearch()
+      })
     },
     create(item) {
       if (!item) {
-        this.targetObjs = [];
+        this.targetObjs = []
         this.form = {
-          configuration: { carte: "", port: "", user: "", passwd: "" },
-        };
-        this.edit_dialog_title = this.$t("kettle.add");
+          configuration: { carte: '', port: '', user: '', passwd: '' }
+        }
+        this.edit_dialog_title = this.$t('kettle.add')
       } else {
-        this.edit_dialog_title = this.$t("commons.edit");
-        this.form = JSON.parse(JSON.stringify(item));
+        this.edit_dialog_title = this.$t('commons.edit')
+        this.form = JSON.parse(JSON.stringify(item))
       }
-      this.show_dialog = true;
+      this.show_dialog = true
     },
 
     save() {
       this.$refs.kettleform.validate((valid) => {
         if (!valid) {
-          return false;
+          return false
         }
-        const form = JSON.parse(JSON.stringify(this.form));
-        form.configuration = JSON.stringify(form.configuration);
+        const form = JSON.parse(JSON.stringify(this.form))
+        form.configuration = JSON.stringify(form.configuration)
         save(form).then((res) => {
-          this.show_dialog = false;
-          this.openMessageSuccess("commons.save_success");
-          this.initSearch();
-        });
-      });
+          this.show_dialog = false
+          this.openMessageSuccess('commons.save_success')
+          this.initSearch()
+        })
+      })
     },
 
     closeDialog() {
-      this.$refs.kettleform.resetFields();
-      this.show_dialog = false;
+      this.$refs.kettleform.resetFields()
+      this.show_dialog = false
       this.form = {
-        configuration: { carte: "", port: "", user: "", passwd: "" },
-      };
+        configuration: { carte: '', port: '', user: '', passwd: '' }
+      }
     },
 
     validate() {
@@ -256,45 +295,45 @@ export default {
           validate(this.form.configuration)
             .then((res) => {
               if (res.success) {
-                this.openMessageSuccess("datasource.validate_success");
+                this.openMessageSuccess('datasource.validate_success')
               } else {
                 if (res.message.length < 2500) {
-                  this.$error(res.message);
+                  this.$error(res.message)
                 } else {
-                  this.$error(res.message.substring(0, 2500) + "......");
+                  this.$error(res.message.substring(0, 2500) + '......')
                 }
               }
             })
             .catch((res) => {
-              this.$error(res.message);
-            });
+              this.$error(res.message)
+            })
         } else {
-          return;
+          return
         }
-      });
+      })
     },
 
     validateById(item) {
       validateById(item.id)
         .then((res) => {
           if (res.success) {
-            item.status = res.data.status;
-            this.openMessageSuccess("datasource.validate_success");
+            item.status = res.data.status
+            this.openMessageSuccess('datasource.validate_success')
           } else {
-            item.status = "Error";
+            item.status = 'Error'
             if (res.message.length < 2500) {
-              this.$error(res.message);
+              this.$error(res.message)
             } else {
-              this.$error(res.message.substring(0, 2500) + "......");
+              this.$error(res.message.substring(0, 2500) + '......')
             }
           }
         })
         .catch((res) => {
-          this.$error(res.message);
-        });
-    },
-  },
-};
+          this.$error(res.message)
+        })
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 .kettle-setting {

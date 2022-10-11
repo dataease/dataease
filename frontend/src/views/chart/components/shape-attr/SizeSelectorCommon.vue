@@ -1,7 +1,5 @@
 <template>
-  <div style="width: 100%" >
-
-  </div>
+  <div style="width: 100%" />
 </template>
 
 <script>

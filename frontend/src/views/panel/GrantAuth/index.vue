@@ -1,21 +1,76 @@
 <template>
   <div>
-    <el-button v-show="!showSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showSearchWidget" />
-    <div v-show="showSearchInput" class="de-input">
-      <el-input v-model="key" class="main-area-input">
-        <el-button slot="append" icon="el-icon-close" @click="closeSearchWidget" />
+    <el-button
+      v-show="!showSearchInput"
+      class="de-icon"
+      icon="el-icon-search"
+      circle
+      size="mini"
+      @click="showSearchWidget"
+    />
+    <div
+      v-show="showSearchInput"
+      class="de-input"
+    >
+      <el-input
+        v-model="key"
+        class="main-area-input"
+      >
+        <el-button
+          slot="append"
+          icon="el-icon-close"
+          @click="closeSearchWidget"
+        />
       </el-input>
     </div>
 
-    <el-tabs v-model="activeName" :class="{'de-search-header': showSearchInput}" @tab-click="handleClick">
-      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.organization')" :name="tabNames[0]"><grant-dept :ref="tabNames[0]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
-      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.role')" :name="tabNames[1]"><grant-role :ref="tabNames[1]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
-      <el-tab-pane :lazy="true" class="de-tab" :label="$t('commons.user')" :name="tabNames[2]"><grant-user :ref="tabNames[2]" :resource-id="resourceId" :key-word="key" /></el-tab-pane>
+    <el-tabs
+      v-model="activeName"
+      :class="{'de-search-header': showSearchInput}"
+      @tab-click="handleClick"
+    >
+      <el-tab-pane
+        :lazy="true"
+        class="de-tab"
+        :label="$t('commons.organization')"
+        :name="tabNames[0]"
+      ><grant-dept
+        :ref="tabNames[0]"
+        :resource-id="resourceId"
+        :key-word="key"
+      /></el-tab-pane>
+      <el-tab-pane
+        :lazy="true"
+        class="de-tab"
+        :label="$t('commons.role')"
+        :name="tabNames[1]"
+      ><grant-role
+        :ref="tabNames[1]"
+        :resource-id="resourceId"
+        :key-word="key"
+      /></el-tab-pane>
+      <el-tab-pane
+        :lazy="true"
+        class="de-tab"
+        :label="$t('commons.user')"
+        :name="tabNames[2]"
+      ><grant-user
+        :ref="tabNames[2]"
+        :resource-id="resourceId"
+        :key-word="key"
+      /></el-tab-pane>
     </el-tabs>
     <div class="auth-root-class">
       <span slot="footer">
-        <el-button size="mini" @click="cancel">{{ $t('commons.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="save">{{ $t('commons.confirm') }}</el-button>
+        <el-button
+          size="mini"
+          @click="cancel"
+        >{{ $t('commons.cancel') }}</el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          @click="save"
+        >{{ $t('commons.confirm') }}</el-button>
       </span>
     </div>
   </div>

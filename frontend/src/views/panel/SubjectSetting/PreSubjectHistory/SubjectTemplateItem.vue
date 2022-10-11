@@ -9,52 +9,126 @@
       ]"
       @click.stop="subjectChange"
     >
-      <i v-if="subjectItem.type==='self'" class="el-icon-error" @click.stop="subjectDelete" />
-      <span v-show="themeSelected" class="el-icon-success theme-selected-icon" />
+      <i
+        v-if="subjectItem.type==='self'"
+        class="el-icon-error"
+        @click.stop="subjectDelete"
+      />
+      <span
+        v-show="themeSelected"
+        class="el-icon-success theme-selected-icon"
+      />
       <!-- 背景-->
-      <div class="allBack" :style="customBackground" style="inset: 1px; position: absolute;" />
+      <div
+        class="allBack"
+        :style="customBackground"
+        style="inset: 1px; position: absolute;"
+      />
       <!-- 视图组件 背景-->
-      <div style="inset: 17px 10px 10px; position: absolute;" :style="chartBackground" />
+      <div
+        style="inset: 17px 10px 10px; position: absolute;"
+        :style="chartBackground"
+      />
       <!-- 视图组件 主题-->
       <div style="inset: 20px 13px 15px; position: absolute;">
         <div style="position: absolute; inset: 0px 4px; width: auto; height: auto;">
           <!--柱形-->
-          <div style="left: 0px; top: 11px; bottom: 0px; width: 3px; position: absolute;" :style="columnBackgroundLeft" />
-          <div style="left: 5px; top: 6px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundMiddle" />
-          <div style="left: 10px; top: 2px; bottom: 0px; width: 3px; position: absolute;" :style="columnBackgroundRight" />
+          <div
+            style="left: 0px; top: 11px; bottom: 0px; width: 3px; position: absolute;"
+            :style="columnBackgroundLeft"
+          />
+          <div
+            style="left: 5px; top: 6px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundMiddle"
+          />
+          <div
+            style="left: 10px; top: 2px; bottom: 0px; width: 3px; position: absolute;"
+            :style="columnBackgroundRight"
+          />
 
           <!--柱形-->
-          <div style="left: 20px; top: 11px; bottom: 0px; width: 3px; position: absolute;" :style="columnBackgroundLeft" />
-          <div style="left: 25px; top: 2px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundMiddle" />
-          <div style="left: 30px; top: 6px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundRight" />
+          <div
+            style="left: 20px; top: 11px; bottom: 0px; width: 3px; position: absolute;"
+            :style="columnBackgroundLeft"
+          />
+          <div
+            style="left: 25px; top: 2px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundMiddle"
+          />
+          <div
+            style="left: 30px; top: 6px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundRight"
+          />
 
           <!--柱形-->
-          <div style="left: 40px; top: 2px; bottom: 0px; width: 3px; position: absolute;" :style="columnBackgroundLeft" />
-          <div style="left: 45px; top: 6px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundMiddle" />
-          <div style="left: 50px; top: 11px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundRight" />
+          <div
+            style="left: 40px; top: 2px; bottom: 0px; width: 3px; position: absolute;"
+            :style="columnBackgroundLeft"
+          />
+          <div
+            style="left: 45px; top: 6px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundMiddle"
+          />
+          <div
+            style="left: 50px; top: 11px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundRight"
+          />
 
           <!--柱形-->
-          <div style="left: 60px; top: 6px; bottom: 0px; width: 3px; position: absolute;" :style="columnBackgroundLeft" />
-          <div style="left: 65px; top: 11px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundMiddle" />
-          <div style="left: 70px; top: 2px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundRight" />
+          <div
+            style="left: 60px; top: 6px; bottom: 0px; width: 3px; position: absolute;"
+            :style="columnBackgroundLeft"
+          />
+          <div
+            style="left: 65px; top: 11px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundMiddle"
+          />
+          <div
+            style="left: 70px; top: 2px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundRight"
+          />
         </div>
       </div>
 
       <!-- 表格表头颜色 -->
-      <div style="left: 10px; right: 10px; top: 10px; height: 6px; position: absolute;" :style="tableHeadBackground" />
+      <div
+        style="left: 10px; right: 10px; top: 10px; height: 6px; position: absolute;"
+        :style="tableHeadBackground"
+      />
 
       <!-- 字体颜色 -->
       <div style="left: 14px; top: 10px; height: 6px; position: absolute; vertical-align: middle">
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
       </div>
 
     </div>
-    <div style="position: absolute; left: 0px; right: 0px; bottom: 0px; height: 30px;" @dblclick="setEdit">
+    <div
+      style="position: absolute; left: 0px; right: 0px; bottom: 0px; height: 30px;"
+      @dblclick="setEdit"
+    >
       <div style=" background-color:#f7f8fa;color:#3d4d66;font-size:12px;height: 30px; line-height: 30px; text-align: center; white-space: pre; text-overflow: ellipsis; margin-left: 1px; margin-right: 1px;overflow: hidden">
         <el-input
           v-if="canEdit"
@@ -63,7 +137,11 @@
           size="mini"
           @blur="loseFocus()"
         />
-        <span v-if="!canEdit" style="margin-top: 8px" :title="subjectItem.name">{{ subjectItem.name }}</span>
+        <span
+          v-if="!canEdit"
+          style="margin-top: 8px"
+          :title="subjectItem.name"
+        >{{ subjectItem.name }}</span>
       </div>
     </div>
   </div>
@@ -74,8 +152,7 @@ import { chartTransStr2Object } from '@/views/panel/panel'
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import { saveOrUpdateSubject } from '@/api/panel/panel'
-import { resetViewCacheCallBack } from '@/api/chart/chart'
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'StyleTemplateItem',

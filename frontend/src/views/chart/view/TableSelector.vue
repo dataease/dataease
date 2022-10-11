@@ -1,7 +1,16 @@
 <template>
   <de-container>
     <de-aside-container>
-      <dataset-group-selector-tree :checked-table="checkedTable" :privileges="privileges" :mode="mode" :clear-empty-dir="clearEmptyDir" :type="type" :custom-type="customType" :show-mode="showMode" @getTable="getTable" />
+      <dataset-group-selector-tree
+        :checked-table="checkedTable"
+        :privileges="privileges"
+        :mode="mode"
+        :clear-empty-dir="clearEmptyDir"
+        :type="type"
+        :custom-type="customType"
+        :show-mode="showMode"
+        @getTable="getTable"
+      />
     </de-aside-container>
     <de-main-container>
       <dataset-table-data :table="table" />

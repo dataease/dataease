@@ -68,15 +68,13 @@ export default {
       }
     }
   },
-  
+
   created() {
-    if(!this.showTable) {
+    if (!this.showTable) {
       this.init.plugins = this.init.plugins.replace(' table', '')
-      
     }
-    if(!this.showMedia) {
+    if (!this.showMedia) {
       this.init.plugins = this.init.plugins.replace(' media', '')
-      
     }
   },
   mounted() {

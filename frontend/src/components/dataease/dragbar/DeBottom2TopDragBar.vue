@@ -1,5 +1,8 @@
 <template>
-  <div v-bottom-to-top-drag class="drag-bar" />
+  <div
+    v-bottom-to-top-drag
+    class="drag-bar"
+  />
 </template>
 
 <script>

@@ -25,10 +25,19 @@
         <span slot="label">
           <span>{{ item.title }}</span>
 
-          <el-dropdown v-if="dropdownShow" slot="label" class="de-tab-drop" trigger="click" @command="handleCommand">
+          <el-dropdown
+            v-if="dropdownShow"
+            slot="label"
+            class="de-tab-drop"
+            trigger="click"
+            @command="handleCommand"
+          >
             <span class="el-dropdown-link">
 
-              <i v-if="isEdit" class="de-tab-i el-icon-arrow-down el-icon--right" />
+              <i
+                v-if="isEdit"
+                class="de-tab-i el-icon-arrow-down el-icon--right"
+              />
             </span>
 
             <el-dropdown-menu slot="dropdown">
@@ -102,9 +111,16 @@
         show-word-limit
         :placeholder="$t('dataset.input_content')"
       />
-      <span slot="footer" class="dialog-footer">
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button @click="dialogVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button :disabled="!titleValid" type="primary" @click="sureCurTitle">{{ $t('table.confirm') }}</el-button>
+        <el-button
+          :disabled="!titleValid"
+          type="primary"
+          @click="sureCurTitle"
+        >{{ $t('table.confirm') }}</el-button>
       </span>
     </el-dialog>
 
@@ -119,12 +135,22 @@
       center
     >
       <div style="width: 100%;min-height: 250px; max-height: 300px; overflow-y: auto;">
-        <view-select v-if="viewDialogVisible" ref="viewSelect" :select-model="true" />
+        <view-select
+          v-if="viewDialogVisible"
+          ref="viewSelect"
+          :select-model="true"
+        />
       </div>
 
-      <span slot="footer" class="dialog-footer">
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button @click="viewDialogVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="sureViewSelector">{{ $t('table.confirm') }}</el-button>
+        <el-button
+          type="primary"
+          @click="sureViewSelector"
+        >{{ $t('table.confirm') }}</el-button>
       </span>
     </el-dialog>
 
@@ -138,10 +164,19 @@
       :close-on-click-modal="false"
       center
     >
-      <tab-use-list v-if="otherComponentDialogVisible" ref="otherComponentSelect" />
-      <span slot="footer" class="dialog-footer">
+      <tab-use-list
+        v-if="otherComponentDialogVisible"
+        ref="otherComponentSelect"
+      />
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button @click="otherComponentDialogVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="sureOtherComponentSelector">{{ $t('table.confirm') }}</el-button>
+        <el-button
+          type="primary"
+          @click="sureOtherComponentSelector"
+        >{{ $t('table.confirm') }}</el-button>
       </span>
     </el-dialog>
 
@@ -159,7 +194,7 @@ import { mapState } from 'vuex'
 import { chartCopy } from '@/api/chart/chart'
 import { buildFilterMap } from '@/utils/conditionUtil'
 import TabUseList from '@/views/panel/AssistComponent/tabUseList'
-import {findPanelElementInfo} from "@/api/panel/panel";
+import { findPanelElementInfo } from '@/api/panel/panel'
 
 export default {
   name: 'DeTabls',
@@ -308,7 +343,7 @@ export default {
   methods: {
     setContentThemeStyle() {
       this.element.options.tabList.forEach(tab => {
-        if(tab.content && tab.content.type === 'view') {
+        if (tab.content && tab.content.type === 'view') {
           tab.content.commonBackground = this.themeStyle ? JSON.parse(JSON.stringify(this.themeStyle)) : null
         }
       })
@@ -394,8 +429,7 @@ export default {
           component.propValue = propValue
           component.filters = []
           component.linkageFilters = []
-          if(this.themeStyle)
-          component.commonBackground = JSON.parse(JSON.stringify(this.themeStyle))
+          if (this.themeStyle) { component.commonBackground = JSON.parse(JSON.stringify(this.themeStyle)) }
         }
       })
       component.id = newComponentId
@@ -407,20 +441,19 @@ export default {
         this.curItem.name = newComponentId
         this.viewDialogVisible = false
         this.activeTabName = newComponentId
-        if(node.modelInnerType==='richTextView'){
-          findPanelElementInfo(node.innerId).then(viewElement =>{
-            if(viewElement.data){
+        if (node.modelInnerType === 'richTextView') {
+          findPanelElementInfo(node.innerId).then(viewElement => {
+            if (viewElement.data) {
               this.curItem.content.propValue.textValue = viewElement.data.propValue.textValue
             }
             this.$store.dispatch('chart/setViewId', component.propValue.viewId)
             this.styleChange()
           })
-        }else{
+        } else {
           this.$store.dispatch('chart/setViewId', component.propValue.viewId)
           this.styleChange()
         }
       })
-
     },
 
     setComponentInfo() {

@@ -7,10 +7,22 @@
         trigger="click"
       >
         <el-col>
-          <el-radio v-model="panel.gap" label="yes" @change="onChangePanelStyle">{{ $t('panel.gap') }}</el-radio>
-          <el-radio v-model="panel.gap" label="no" @change="onChangePanelStyle">{{ $t('panel.no_gap') }}</el-radio>
+          <el-radio
+            v-model="panel.gap"
+            label="yes"
+            @change="onChangePanelStyle"
+          >{{ $t('panel.gap') }}</el-radio>
+          <el-radio
+            v-model="panel.gap"
+            label="no"
+            @change="onChangePanelStyle"
+          >{{ $t('panel.no_gap') }}</el-radio>
         </el-col>
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('panel.component_gap') }} <i
+        <el-button
+          slot="reference"
+          size="mini"
+          class="shape-item"
+        >{{ $t('panel.component_gap') }} <i
           class="el-icon-setting el-icon--right"
         /></el-button>
       </el-popover>

@@ -2,7 +2,10 @@
   <el-col style="padding: 0 5px 0 5px;">
     <el-row>
       <span class="header-title">{{ $t('panel.share_in') }}</span>
-      <div class="block" style="margin-top:8px;">
+      <div
+        class="block"
+        style="margin-top:8px;"
+      >
         <el-tree
           ref="topTree"
           :data="datas"
@@ -12,10 +15,19 @@
           :default-expanded-keys="expandNodes"
           @node-click="handleNodeClick"
         >
-          <span slot-scope="{ data }" class="custom-tree-node father">
-            <span style="display: flex; flex: 1 1 0%; width: 0px;" :class="!!data.msgNode ? 'msg-node-class': ''">
+          <span
+            slot-scope="{ data }"
+            class="custom-tree-node father"
+          >
+            <span
+              style="display: flex; flex: 1 1 0%; width: 0px;"
+              :class="!!data.msgNode ? 'msg-node-class': ''"
+            >
               <span v-if="!!data.id">
-                <svg-icon :icon-class="'panel-'+data.status" class="ds-icon-scene" />
+                <svg-icon
+                  :icon-class="'panel-'+data.status"
+                  class="ds-icon-scene"
+                />
               </span>
               <span
                 :class="data.status"
@@ -30,7 +42,10 @@
 
     <el-row>
       <span class="header-title">{{ $t('panel.share_out') }}</span>
-      <div class="block" style="margin-top:8px;">
+      <div
+        class="block"
+        style="margin-top:8px;"
+      >
         <el-tree
           ref="botTree"
           :data="outDatas"
@@ -39,10 +54,19 @@
           node-key="name"
           :default-expand-all="true"
         >
-          <span slot-scope="{ data }" class="custom-tree-node father">
-            <span style="display: flex; flex: 1 1 0%; width: 0px;" @click="viewMyShare(data)">
+          <span
+            slot-scope="{ data }"
+            class="custom-tree-node father"
+          >
+            <span
+              style="display: flex; flex: 1 1 0%; width: 0px;"
+              @click="viewMyShare(data)"
+            >
               <span v-if="!!data.id">
-                <svg-icon :icon-class="'panel-'+data.status" class="ds-icon-scene" />
+                <svg-icon
+                  :icon-class="'panel-'+data.status"
+                  class="ds-icon-scene"
+                />
               </span>
               <span
                 :class="data.status"

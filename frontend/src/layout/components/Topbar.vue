@@ -1,8 +1,21 @@
 <template>
   <div class="top-nav">
-    <div v-loading="!axiosFinished" class="log">
-      <svg-icon v-if="!logoUrl && axiosFinished" icon-class="DataEase" custom-class="top-nav-logo-icon" />
-      <img v-if="logoUrl && axiosFinished" :src="logoUrl" width="140" alt="" style="padding-top: 10px;">
+    <div
+      v-loading="!axiosFinished"
+      class="log"
+    >
+      <svg-icon
+        v-if="!logoUrl && axiosFinished"
+        icon-class="DataEase"
+        custom-class="top-nav-logo-icon"
+      />
+      <img
+        v-if="logoUrl && axiosFinished"
+        :src="logoUrl"
+        width="140"
+        alt=""
+        style="padding-top: 10px;"
+      >
     </div>
     <el-menu
       class="de-top-menu"
@@ -12,28 +25,39 @@
       :default-active="activeMenu"
       @select="handleSelect"
     >
-      <div v-for="item in permission_routes" :key="item.path" class="nav-item">
+      <div
+        v-for="item in permission_routes"
+        :key="item.path"
+        class="nav-item"
+      >
         <app-link :to="resolvePath(item)">
-          <el-menu-item v-if="!item.hidden" :index="item.path">
+          <el-menu-item
+            v-if="!item.hidden"
+            :index="item.path"
+          >
             {{ item.meta ? item.meta.title : item.children[0].meta.title }}</el-menu-item>
         </app-link>
       </div>
     </el-menu>
 
-    <div class="right-menu" style="color: var(--TopTextColor)">
-      <template>
-        <notification class="right-menu-item hover-effect" />
-        <lang-select class="right-menu-item hover-effect" />
-        <div style="height: 100%;padding: 0 8px;" class="right-menu-item hover-effect">
-          <a
-            :href="helpLink"
-            target="_blank"
-            style="display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;"
-          >
-            <svg-icon icon-class="docs" />
-          </a>
-        </div>
-      </template>
+    <div
+      class="right-menu"
+      style="color: var(--TopTextColor)"
+    >
+      <notification class="right-menu-item hover-effect" />
+      <lang-select class="right-menu-item hover-effect" />
+      <div
+        style="height: 100%;padding: 0 8px;"
+        class="right-menu-item hover-effect"
+      >
+        <a
+          :href="helpLink"
+          target="_blank"
+          style="display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;"
+        >
+          <svg-icon icon-class="docs" />
+        </a>
+      </div>
 
       <el-dropdown
         ref="my-drop"
@@ -41,7 +65,10 @@
         style="display: flex;align-items: center; width:100px;"
         trigger="click"
       >
-        <div class="el-dropdown-link" style="display: flex;color: var(--TopTextColor);font-size: 14px; width:100%;">
+        <div
+          class="el-dropdown-link"
+          style="display: flex;color: var(--TopTextColor);font-size: 14px; width:100%;"
+        >
           <span style="max-width:80px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{ name }}</span>
           <span><i class="el-icon-arrow-down el-icon--right" /></span>
         </div>
@@ -50,7 +77,10 @@
             <el-dropdown-item>{{ $t('commons.personal_info') }}</el-dropdown-item>
           </router-link>
 
-          <router-link v-if="$store.getters.validate" to="/ukey/index">
+          <router-link
+            v-if="$store.getters.validate"
+            to="/ukey/index"
+          >
             <el-dropdown-item>{{ $t('commons.ukey_title') }}</el-dropdown-item>
           </router-link>
 
@@ -61,7 +91,10 @@
           <router-link to="/about/index">
             <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
           </router-link>
-          <el-dropdown-item divided @click.native="logout">
+          <el-dropdown-item
+            divided
+            @click.native="logout"
+          >
             <span style="display:block;">{{ $t('commons.exit_system') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -76,7 +109,11 @@
       :fullscreen="true"
       append-to-body
     >
-      <template-market v-if="templateMarketShow" style="text-align: center" @closeDialog="changeTemplateMarketShow(false)" />
+      <template-market
+        v-if="templateMarketShow"
+        style="text-align: center"
+        @closeDialog="changeTemplateMarketShow(false)"
+      />
     </el-dialog>
   </div>
 

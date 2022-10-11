@@ -2,11 +2,27 @@
 <template>
   <div class="attr-list">
     <el-form>
-      <el-form-item v-for="(key, index) in styleKeys.filter(item => item != 'rotate')" :key="index" :label="map[key]">
-        <el-color-picker v-if="key == 'borderColor'" v-model="curComponent.style[key]" />
-        <el-color-picker v-else-if="key == 'color'" v-model="curComponent.style[key]" />
-        <el-color-picker v-else-if="key == 'backgroundColor'" v-model="curComponent.style[key]" />
-        <el-select v-else-if="selectKey.includes(key)" v-model="curComponent.style[key]">
+      <el-form-item
+        v-for="(key, index) in styleKeys.filter(item => item != 'rotate')"
+        :key="index"
+        :label="map[key]"
+      >
+        <el-color-picker
+          v-if="key == 'borderColor'"
+          v-model="curComponent.style[key]"
+        />
+        <el-color-picker
+          v-else-if="key == 'color'"
+          v-model="curComponent.style[key]"
+        />
+        <el-color-picker
+          v-else-if="key == 'backgroundColor'"
+          v-model="curComponent.style[key]"
+        />
+        <el-select
+          v-else-if="selectKey.includes(key)"
+          v-model="curComponent.style[key]"
+        >
           <template v-if="key == 'textAlign'">
             <el-option
               v-for="item in textAlignOptions"
@@ -32,10 +48,20 @@
             />
           </template>
         </el-select>
-        <el-input v-else v-model="curComponent.style[key]" type="number" />
+        <el-input
+          v-else
+          v-model="curComponent.style[key]"
+          type="number"
+        />
       </el-form-item>
-      <el-form-item v-if="curComponent && !excludes.includes(curComponent.component)" :label="$t('panel.content')">
-        <el-input v-model="curComponent.propValue" type="textarea" />
+      <el-form-item
+        v-if="curComponent && !excludes.includes(curComponent.component)"
+        :label="$t('panel.content')"
+      >
+        <el-input
+          v-model="curComponent.propValue"
+          type="textarea"
+        />
       </el-form-item>
     </el-form>
   </div>

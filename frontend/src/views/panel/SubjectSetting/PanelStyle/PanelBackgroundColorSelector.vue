@@ -6,8 +6,15 @@
         width="400"
         trigger="click"
       >
-        <background-color-selector :chart="chart" @onChangeBackgroundForm="onChangeBackgroundForm" />
-        <el-button slot="reference" size="mini" class="shape-item">{{ $t('chart.background') }}<i class="el-icon-setting el-icon--right" /></el-button>
+        <background-color-selector
+          :chart="chart"
+          @onChangeBackgroundForm="onChangeBackgroundForm"
+        />
+        <el-button
+          slot="reference"
+          size="mini"
+          class="shape-item"
+        >{{ $t('chart.background') }}<i class="el-icon-setting el-icon--right" /></el-button>
       </el-popover>
     </div>
   </div>

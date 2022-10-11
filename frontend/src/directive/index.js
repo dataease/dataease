@@ -64,10 +64,10 @@ export const bottom2TopDrag = {
   }
 }
 
-const closePress =  {
-  inserted: function (el) {
-    el.querySelector('.el-drawer__close-btn').onmousedown = function (e) {
-      e.currentTarget.style.setProperty('background', '#d2d3d4', 'important');
+const closePress = {
+  inserted: function(el) {
+    el.querySelector('.el-drawer__close-btn').onmousedown = function(e) {
+      e.currentTarget.style.setProperty('background', '#d2d3d4', 'important')
     }
     el.querySelector('.el-drawer__close-btn').onmouseup = function(e) {
       e.currentTarget.style.background = 'none'
@@ -83,7 +83,7 @@ const btnPress = {
     el.onmouseup = function(e) {
       e.currentTarget.style.background = 'none'
     }
-  },
+  }
 }
 
 const customStyle = {
@@ -96,7 +96,7 @@ const customStyle = {
       label.style.setProperty('color', binding.value.wordColor, 'important')
       label.setAttribute('data-color', binding.value.wordColor)
     }
-  },
+  }
 }
 
 export default {

@@ -1,33 +1,92 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="tooltipForm" :model="tooltipForm" label-width="80px" size="mini">
-        <el-form-item v-show="showProperty('show')" :label="$t('chart.show')" class="form-item">
-          <el-checkbox v-model="tooltipForm.show" @change="changeTooltipAttr('show')">{{ $t('chart.show') }}</el-checkbox>
+      <el-form
+        ref="tooltipForm"
+        :model="tooltipForm"
+        label-width="80px"
+        size="mini"
+      >
+        <el-form-item
+          v-show="showProperty('show')"
+          :label="$t('chart.show')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="tooltipForm.show"
+            @change="changeTooltipAttr('show')"
+          >{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="tooltipForm.show">
-          <el-form-item v-show="showProperty('trigger')" :label="$t('chart.trigger_position')" class="form-item">
-            <el-radio-group v-model="tooltipForm.trigger" size="mini" @change="changeTooltipAttr('trigger')">
+          <el-form-item
+            v-show="showProperty('trigger')"
+            :label="$t('chart.trigger_position')"
+            class="form-item"
+          >
+            <el-radio-group
+              v-model="tooltipForm.trigger"
+              size="mini"
+              @change="changeTooltipAttr('trigger')"
+            >
               <el-radio-button label="item">{{ $t('chart.tooltip_item') }}</el-radio-button>
               <el-radio-button label="axis">{{ $t('chart.tooltip_axis') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
-          <el-form-item v-show="showProperty('textStyle')" :label="$t('chart.text_fontsize')" class="form-item">
-            <el-select v-model="tooltipForm.textStyle.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeTooltipAttr('textStyle')">
-              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+          <el-form-item
+            v-show="showProperty('textStyle')"
+            :label="$t('chart.text_fontsize')"
+            class="form-item"
+          >
+            <el-select
+              v-model="tooltipForm.textStyle.fontSize"
+              :placeholder="$t('chart.text_fontsize')"
+              size="mini"
+              @change="changeTooltipAttr('textStyle')"
+            >
+              <el-option
+                v-for="option in fontSize"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
             </el-select>
           </el-form-item>
-          <el-form-item v-show="showProperty('textStyle')" :label="$t('chart.text_color')" class="form-item">
-            <el-color-picker v-model="tooltipForm.textStyle.color" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr('textStyle')" />
+          <el-form-item
+            v-show="showProperty('textStyle')"
+            :label="$t('chart.text_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="tooltipForm.textStyle.color"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeTooltipAttr('textStyle')"
+            />
           </el-form-item>
-          <el-form-item v-show="showProperty('textStyle')" :label="$t('chart.background')" class="form-item">
-            <el-color-picker v-model="tooltipForm.backgroundColor" class="color-picker-style" :predefine="predefineColors" @change="changeTooltipAttr('backgroundColor')" />
+          <el-form-item
+            v-show="showProperty('textStyle')"
+            :label="$t('chart.background')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="tooltipForm.backgroundColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeTooltipAttr('backgroundColor')"
+            />
           </el-form-item>
-          <el-form-item v-show="showProperty('formatter')" class="form-item">
+          <el-form-item
+            v-show="showProperty('formatter')"
+            class="form-item"
+          >
             <span slot="label">
               <span class="span-box">
                 <span>{{ $t('chart.content_formatter') }}</span>
-                <el-tooltip class="item" effect="dark" placement="bottom">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  placement="bottom"
+                >
                   <div slot="content">
                     模板变量有 {a}, {b}，{c}，{d}，分别表示系列名，数据名，数据值等。
                     <br>
@@ -39,11 +98,20 @@
                     <br>
                     饼图、漏斗图: {a}（系列名称），{b}（数据项名称），{c}（数值）, {d}（百分比）
                   </div>
-                  <i class="el-icon-info" style="cursor: pointer;" />
+                  <i
+                    class="el-icon-info"
+                    style="cursor: pointer;"
+                  />
                 </el-tooltip>
               </span>
             </span>
-            <el-input v-model="tooltipForm.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" :placeholder="$t('chart.formatter_plc')" @blur="changeTooltipAttr('formatter')" />
+            <el-input
+              v-model="tooltipForm.formatter"
+              type="textarea"
+              :autosize="{ minRows: 4, maxRows: 4}"
+              :placeholder="$t('chart.formatter_plc')"
+              @blur="changeTooltipAttr('formatter')"
+            />
           </el-form-item>
         </div>
       </el-form>

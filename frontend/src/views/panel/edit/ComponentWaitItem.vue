@@ -1,8 +1,19 @@
 <template>
   <div class="component-item">
-    <mobile-check-bar v-if="mobileCheckBarShow" :element="config" />
-    <div :style="commonStyle" class="inner-item">
-      <svg-icon v-if="svgInnerEnable" :style="{'color':this.config.commonBackground.innerImageColor}" class="svg-background" :icon-class="mainSlotSvgInner" />
+    <mobile-check-bar
+      v-if="mobileCheckBarShow"
+      :element="config"
+    />
+    <div
+      :style="commonStyle"
+      class="inner-item"
+    >
+      <svg-icon
+        v-if="svgInnerEnable"
+        :style="{'color':config.commonBackground.innerImageColor}"
+        class="svg-background"
+        :icon-class="mainSlotSvgInner"
+      />
       <de-out-widget
         v-if="config.type==='custom'"
         :id="'component' + config.id"
@@ -36,7 +47,7 @@ import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar
 import { getStyle } from '@/components/canvas/utils/style'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'ComponentWaitItem',

@@ -1,11 +1,25 @@
 <template>
   <el-col>
-    <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addThreshold" />
+    <el-button
+      icon="el-icon-plus"
+      circle
+      size="mini"
+      style="margin-bottom: 10px;"
+      @click="addThreshold"
+    />
     <div style="max-height: 50vh;overflow-y: auto;">
-      <div v-for="(fieldItem,fieldIndex) in thresholdArr" :key="fieldIndex" class="field-item">
+      <div
+        v-for="(fieldItem,fieldIndex) in thresholdArr"
+        :key="fieldIndex"
+        class="field-item"
+      >
         <el-row style="margin-top: 6px;">
           <span class="color-title">{{ $t('chart.field') }}</span>
-          <el-select v-model="fieldItem.fieldId" size="mini" @change="addField(fieldItem)">
+          <el-select
+            v-model="fieldItem.fieldId"
+            size="mini"
+            @change="addField(fieldItem)"
+          >
             <el-option
               v-for="fieldOption in fields"
               :key="fieldOption.id"
@@ -13,14 +27,26 @@
               :value="fieldOption.id"
             >
               <span style="float: left">
-                <svg-icon v-if="fieldOption.deType === 0" icon-class="field_text" class="field-icon-text" />
-                <svg-icon v-if="fieldOption.deType === 1" icon-class="field_time" class="field-icon-time" />
+                <svg-icon
+                  v-if="fieldOption.deType === 0"
+                  icon-class="field_text"
+                  class="field-icon-text"
+                />
+                <svg-icon
+                  v-if="fieldOption.deType === 1"
+                  icon-class="field_time"
+                  class="field-icon-time"
+                />
                 <svg-icon
                   v-if="fieldOption.deType === 2 || fieldOption.deType === 3"
                   icon-class="field_value"
                   class="field-icon-value"
                 />
-                <svg-icon v-if="fieldOption.deType === 5" icon-class="field_location" class="field-icon-location" />
+                <svg-icon
+                  v-if="fieldOption.deType === 5"
+                  icon-class="field_location"
+                  class="field-icon-location"
+                />
               </span>
               <span style="float: left; color: #8492a6; font-size: 12px">{{ fieldOption.name }}</span>
             </el-option>
@@ -41,9 +67,17 @@
             @click="removeThreshold(fieldIndex)"
           />
         </el-row>
-        <el-row v-for="(item,index) in fieldItem.conditions" :key="index" class="line-item">
+        <el-row
+          v-for="(item,index) in fieldItem.conditions"
+          :key="index"
+          class="line-item"
+        >
           <el-col :span="4">
-            <el-select v-model="item.term" size="mini" @change="changeThreshold">
+            <el-select
+              v-model="item.term"
+              size="mini"
+              @change="changeThreshold"
+            >
               <el-option-group
                 v-for="(group,idx) in fieldItem.options"
                 :key="idx"
@@ -58,7 +92,10 @@
               </el-option-group>
             </el-select>
           </el-col>
-          <el-col :span="10" style="text-align: center;">
+          <el-col
+            :span="10"
+            style="text-align: center;"
+          >
             <el-input
               v-show="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
               v-model="item.value"
@@ -69,12 +106,29 @@
               @change="changeThreshold"
             />
             <span v-if="item.term === 'between'">
-              <el-input v-model="item.min" class="between-item" :placeholder="$t('chart.axis_value_min')" size="mini" clearable @change="changeThreshold" />
+              <el-input
+                v-model="item.min"
+                class="between-item"
+                :placeholder="$t('chart.axis_value_min')"
+                size="mini"
+                clearable
+                @change="changeThreshold"
+              />
               <span style="margin: 0 4px;">≤{{ $t('chart.drag_block_label_value') }}≤</span>
-              <el-input v-model="item.max" class="between-item" :placeholder="$t('chart.axis_value_max')" size="mini" clearable @change="changeThreshold" />
+              <el-input
+                v-model="item.max"
+                class="between-item"
+                :placeholder="$t('chart.axis_value_max')"
+                size="mini"
+                clearable
+                @change="changeThreshold"
+              />
             </span>
           </el-col>
-          <el-col :span="4" style="display: flex;align-items: center;justify-content: center;">
+          <el-col
+            :span="4"
+            style="display: flex;align-items: center;justify-content: center;"
+          >
             <span class="color-title">{{ $t('chart.textColor') }}</span>
             <el-color-picker
               v-model="item.color"
@@ -84,7 +138,10 @@
               @change="changeThreshold"
             />
           </el-col>
-          <el-col :span="4" style="display: flex;align-items: center;justify-content: center;">
+          <el-col
+            :span="4"
+            style="display: flex;align-items: center;justify-content: center;"
+          >
             <span class="color-title">{{ $t('chart.backgroundColor') }}</span>
             <el-color-picker
               v-model="item.backgroundColor"

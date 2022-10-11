@@ -8,7 +8,7 @@ const mutations = {
     state.loadingMap = value
   },
   ADD_LOADING: (state, key) => {
-    if (state.loadingMap.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(state.loadingMap, key)) {
       const map = state.loadingMap
       map[key] += 1
       state.loadingMap = map

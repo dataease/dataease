@@ -5,29 +5,31 @@
       size="small"
       :disabled="disabled"
       type="daterange"
-      @input="handleChange"
       range-separator="-"
       :start-placeholder="$t('commons.date.start_date')"
       :end-placeholder="$t('commons.date.end_date')"
-    >
-    </el-date-picker>
-    <svg-icon icon-class="icon_calendar_outlined" class="calendar-outlined" />
+      @input="handleChange"
+    />
+    <svg-icon
+      icon-class="icon_calendar_outlined"
+      class="calendar-outlined"
+    />
   </div>
 </template>
 
 <script>
 export default {
-  name: "DeDatePick",
+  name: 'DeDatePick',
   props: {
     disabled: Boolean,
-    value: Array,
+    value: Array
   },
   methods: {
     handleChange(val) {
-      this.$emit("input", val);
-    },
-  },
-};
+      this.$emit('input', val)
+    }
+  }
+}
 </script>
 
 <style lang="scss">

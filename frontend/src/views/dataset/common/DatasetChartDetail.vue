@@ -4,15 +4,26 @@
       <span style="font-weight: 500;">{{ $t('dataset.detail') }}</span>
     </el-row>
     <el-col>
-      <el-tabs v-if="tabStatus" v-model="tabActive" class="info-tab">
-        <el-tab-pane v-if="type === 'chart' && detail.chart" :label="$t('chart.datalist')" name="chart">
+      <el-tabs
+        v-if="tabStatus"
+        v-model="tabActive"
+        class="info-tab"
+      >
+        <el-tab-pane
+          v-if="type === 'chart' && detail.chart"
+          :label="$t('chart.datalist')"
+          name="chart"
+        >
           <el-col class="info-item">
             <p class="info-title">{{ $t('commons.name') }}</p>
             <p class="info-content">{{ detail.chart.name }}</p>
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('chart.chart_type') }}</p>
-            <svg-icon v-if="detail.chart.type" :icon-class="detail.chart.type" />
+            <svg-icon
+              v-if="detail.chart.type"
+              :icon-class="detail.chart.type"
+            />
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('chart.title') }}</p>
@@ -28,27 +39,58 @@
           </el-col>
         </el-tab-pane>
 
-        <el-tab-pane v-if="detail.table" :label="$t('dataset.datalist')" name="table">
+        <el-tab-pane
+          v-if="detail.table"
+          :label="$t('dataset.datalist')"
+          name="table"
+        >
           <el-col class="info-item">
             <p class="info-title">{{ $t('commons.name') }}</p>
             <p class="info-content">{{ detail.table.name }}</p>
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('dataset.type') }}</p>
-            <p v-if="detail.table.type === 'db'" class="info-content">{{ $t('dataset.db_data') }}</p>
-            <p v-if="detail.table.type === 'sql'" class="info-content">{{ $t('dataset.sql_data') }}</p>
-            <p v-if="detail.table.type === 'excel'" class="info-content">{{ $t('dataset.excel_data') }}</p>
-            <p v-if="detail.table.type === 'custom'" class="info-content">{{ $t('dataset.custom_data') }}</p>
-            <p v-if="detail.table.type === 'union'" class="info-content">{{ $t('dataset.union_data') }}</p>
+            <p
+              v-if="detail.table.type === 'db'"
+              class="info-content"
+            >{{ $t('dataset.db_data') }}</p>
+            <p
+              v-if="detail.table.type === 'sql'"
+              class="info-content"
+            >{{ $t('dataset.sql_data') }}</p>
+            <p
+              v-if="detail.table.type === 'excel'"
+              class="info-content"
+            >{{ $t('dataset.excel_data') }}</p>
+            <p
+              v-if="detail.table.type === 'custom'"
+              class="info-content"
+            >{{ $t('dataset.custom_data') }}</p>
+            <p
+              v-if="detail.table.type === 'union'"
+              class="info-content"
+            >{{ $t('dataset.union_data') }}</p>
           </el-col>
-          <el-col v-show="detail.table.type === 'db'" class="info-item">
+          <el-col
+            v-show="detail.table.type === 'db'"
+            class="info-item"
+          >
             <p class="info-title">{{ $t('dataset.table') }}</p>
             <p class="info-content">{{ info.table }}</p>
           </el-col>
-          <el-col v-if="detail.table.type === 'db' || detail.table.type === 'sql'" class="info-item">
+          <el-col
+            v-if="detail.table.type === 'db' || detail.table.type === 'sql'"
+            class="info-item"
+          >
             <p class="info-title">{{ $t('dataset.mode') }}</p>
-            <p v-if="detail.table.mode === 0" class="info-content">{{ $t('dataset.direct_connect') }}</p>
-            <p v-if="detail.table.mode === 1" class="info-content">{{ $t('dataset.sync_data') }}</p>
+            <p
+              v-if="detail.table.mode === 0"
+              class="info-content"
+            >{{ $t('dataset.direct_connect') }}</p>
+            <p
+              v-if="detail.table.mode === 1"
+              class="info-content"
+            >{{ $t('dataset.sync_data') }}</p>
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('dataset.create_by') }}</p>
@@ -60,7 +102,11 @@
           </el-col>
         </el-tab-pane>
 
-        <el-tab-pane v-if="detail.datasource" :label="$t('datasource.datasource')" name="datasource">
+        <el-tab-pane
+          v-if="detail.datasource"
+          :label="$t('datasource.datasource')"
+          name="datasource"
+        >
           <el-col class="info-item">
             <p class="info-title">{{ $t('commons.name') }}</p>
             <p class="info-content">{{ detail.datasource.name }}</p>
@@ -71,17 +117,50 @@
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('datasource.type') }}</p>
-            <p v-if="detail.datasource.type === 'mysql'" class="info-content">MySQL</p>
-            <p v-if="detail.datasource.type === 'sqlServer'" class="info-content">SQL Server</p>
-            <p v-if="detail.datasource.type === 'oracle'" class="info-content">Oracle</p>
-            <p v-if="detail.datasource.type === 'hive'" class="info-content">Apache Hive</p>
-            <p v-if="detail.datasource.type === 'pg'" class="info-content">PostgreSQL</p>
-            <p v-if="detail.datasource.type === 'es'" class="info-content">Elasticsearch</p>
-            <p v-if="detail.datasource.type === 'mariadb'" class="info-content">MariaDB</p>
-            <p v-if="detail.datasource.type === 'ds_doris'" class="info-content">Doris</p>
-            <p v-if="detail.datasource.type === 'ck'" class="info-content">ClickHouse</p>
-            <p v-if="detail.datasource.type === 'redshift'" class="info-content">AWS Redshift</p>
-            <p v-if="detail.datasource.type === 'mongo'" class="info-content">MongoDB</p>
+            <p
+              v-if="detail.datasource.type === 'mysql'"
+              class="info-content"
+            >MySQL</p>
+            <p
+              v-if="detail.datasource.type === 'sqlServer'"
+              class="info-content"
+            >SQL Server</p>
+            <p
+              v-if="detail.datasource.type === 'oracle'"
+              class="info-content"
+            >Oracle</p>
+            <p
+              v-if="detail.datasource.type === 'hive'"
+              class="info-content"
+            >Apache Hive</p>
+            <p
+              v-if="detail.datasource.type === 'pg'"
+              class="info-content"
+            >PostgreSQL</p>
+            <p
+              v-if="detail.datasource.type === 'es'"
+              class="info-content"
+            >Elasticsearch</p>
+            <p
+              v-if="detail.datasource.type === 'mariadb'"
+              class="info-content"
+            >MariaDB</p>
+            <p
+              v-if="detail.datasource.type === 'ds_doris'"
+              class="info-content"
+            >Doris</p>
+            <p
+              v-if="detail.datasource.type === 'ck'"
+              class="info-content"
+            >ClickHouse</p>
+            <p
+              v-if="detail.datasource.type === 'redshift'"
+              class="info-content"
+            >AWS Redshift</p>
+            <p
+              v-if="detail.datasource.type === 'mongo'"
+              class="info-content"
+            >MongoDB</p>
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('dataset.create_time') }}</p>
@@ -145,12 +224,12 @@ export default {
     init() {
       if (this.data.id) {
         if (this.type === 'dataset') {
-          post('/dataset/table/datasetDetail/' + this.data.id, null,false).then(res => {
+          post('/dataset/table/datasetDetail/' + this.data.id, null, false).then(res => {
             this.detail = res.data
             this.info = JSON.parse(res.data.table.info)
           })
         } else if (this.type === 'chart') {
-          post('/chart/view/chartDetail/' + this.data.id + '/' + this.panelInfo.id, null,false).then(res => {
+          post('/chart/view/chartDetail/' + this.data.id + '/' + this.panelInfo.id, null, false).then(res => {
             this.detail = res.data
             this.info = JSON.parse(res.data.table.info)
           })

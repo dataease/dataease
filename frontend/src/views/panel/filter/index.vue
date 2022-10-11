@@ -1,6 +1,14 @@
 <template>
-  <div class="filter-container" @dragstart="handleDragStart" @dragend="handleDragEnd()">
-    <div v-for="(item, key) in widgetSubjects" :key="key" class="widget-subject">
+  <div
+    class="filter-container"
+    @dragstart="handleDragStart"
+    @dragend="handleDragEnd()"
+  >
+    <div
+      v-for="(item, key) in widgetSubjects"
+      :key="key"
+      class="widget-subject"
+    >
       <div class="filter-header">
         <div class="filter-header-text"> {{ key }} </div>
       </div>

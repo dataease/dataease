@@ -1,5 +1,8 @@
 <template>
-  <div class="rich-main-class" :style="autoStyle" @dblclick="setEdit">
+  <div
+    class="rich-main-class"
+    @dblclick="setEdit"
+  >
     <Editor
       v-if="editShow"
       :id="tinymceId"
@@ -97,7 +100,7 @@ export default {
     }
   },
   computed: {
-    scale(){
+    scale() {
       return Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
     },
     editStatus() {
@@ -107,7 +110,7 @@ export default {
       return {
         height: (100 / this.scale) + '%!important',
         width: (100 / this.scale) + '%!important',
-        left: 50 * (1 - 1 / this.scale) + '%', //放大余量 除以 2
+        left: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
         top: 50 * (1 - 1 / this.scale) + '%',
         transform: 'scale(' + this.scale + ')'
       }

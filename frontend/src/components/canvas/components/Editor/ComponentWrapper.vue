@@ -5,10 +5,29 @@
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
-    <edit-bar v-if="componentActiveFlag" :source-element="sourceConfig" :terminal="terminal" :element="config" :show-position="showPosition" @showViewDetails="showViewDetails" />
-    <div :id="componentCanvasId" :style="commonStyle" class="main_view">
-      <svg-icon v-if="svgInnerEnable" :style="{'color':this.config.commonBackground.innerImageColor}" class="svg-background" :icon-class="mainSlotSvgInner" />
-      <close-bar v-if="previewVisible" @closePreview="closePreview" />
+    <edit-bar
+      v-if="componentActiveFlag"
+      :source-element="sourceConfig"
+      :terminal="terminal"
+      :element="config"
+      :show-position="showPosition"
+      @showViewDetails="showViewDetails"
+    />
+    <div
+      :id="componentCanvasId"
+      :style="commonStyle"
+      class="main_view"
+    >
+      <svg-icon
+        v-if="svgInnerEnable"
+        :style="{'color':config.commonBackground.innerImageColor}"
+        class="svg-background"
+        :icon-class="mainSlotSvgInner"
+      />
+      <close-bar
+        v-if="previewVisible"
+        @closePreview="closePreview"
+      />
       <de-out-widget
         v-if="config.type==='custom'"
         :id="'component' + config.id"
@@ -58,7 +77,7 @@ import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import CloseBar from '@/components/canvas/components/Editor/CloseBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
@@ -132,7 +151,7 @@ export default {
       }
     },
     svgInnerEnable() {
-      return !this.screenShot&&this.config.commonBackground.enable && this.config.commonBackground.backgroundType === 'innerImage' && typeof this.config.commonBackground.innerImage === 'string'
+      return !this.screenShot && this.config.commonBackground.enable && this.config.commonBackground.backgroundType === 'innerImage' && typeof this.config.commonBackground.innerImage === 'string'
     },
     mainSlotSvgInner() {
       if (this.svgInnerEnable) {
@@ -155,7 +174,7 @@ export default {
         }
         if (this.config.commonBackground.enable) {
           if (this.screenShot && this.config.commonBackground.backgroundType === 'innerImage' && typeof this.config.commonBackground.innerImage === 'string') {
-            let innerImage = this.config.commonBackground.innerImage.replace('svg', 'png')
+            const innerImage = this.config.commonBackground.innerImage.replace('svg', 'png')
             style['background'] = `url(${imgUrlTrans(innerImage)}) no-repeat ${colorRGBA}`
           } else if (this.config.commonBackground.backgroundType === 'outerImage' && typeof this.config.commonBackground.outerImage === 'string') {
             style['background'] = `url(${imgUrlTrans(this.config.commonBackground.outerImage)}) no-repeat ${colorRGBA}`

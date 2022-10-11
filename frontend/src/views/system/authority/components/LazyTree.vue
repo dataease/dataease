@@ -1,8 +1,18 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col v-loading="loading" class="tree-main">
-    <el-row v-if="showExtent" class="tree-head">
+  <el-col
+    v-loading="loading"
+    class="tree-main"
+  >
+    <el-row
+      v-if="showExtent"
+      class="tree-head"
+    >
       <span style="float: left;padding-left: 10px">{{ dataInfo.head }}</span>
-      <span v-for="auth in defaultAuthDetails" :key="auth.privilegeName" class="auth-span">
+      <span
+        v-for="auth in defaultAuthDetails"
+        :key="auth.privilegeName"
+        class="auth-span"
+      >
         {{ auth.privilegeName }}
       </span>
     </el-row>
@@ -17,24 +27,53 @@
         lazy
         @node-click="nodeClick"
       >
-        <span slot-scope="{ node, data }" class="custom-tree-node">
+        <span
+          slot-scope="{ data }"
+          class="custom-tree-node"
+        >
           <span>
-            <span style="margin-left: 6px" v-html="data.name" />
+            <span
+              style="margin-left: 6px"
+              v-html="data.name"
+            />
           </span>
-          <span v-if="showExtent" @click.stop>
+          <span
+            v-if="showExtent"
+            @click.stop
+          >
             <div v-if="authDetails[data.id]">
-              <span v-for="auth in authDetails[data.id]" :key="auth.privilegeType" class="auth-span">
+              <span
+                v-for="auth in authDetails[data.id]"
+                :key="auth.privilegeType"
+                class="auth-span"
+              >
                 <!-- 1-{{ auth.privilegeType }}-{{ auth.privilegeValue }}-->
-                <a href="javascript:;" @click="clickAuth(data.id,auth)">
-                  <svg-icon style="width: 22px;height: 22px" :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'" />
+                <a
+                  href="javascript:;"
+                  @click="clickAuth(data.id,auth)"
+                >
+                  <svg-icon
+                    style="width: 22px;height: 22px"
+                    :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'"
+                  />
                 </a>
               </span>
             </div>
             <div v-else>
-              <span v-for="auth in defaultAuthDetails" :key="auth.privilegeType" class="auth-span">
+              <span
+                v-for="auth in defaultAuthDetails"
+                :key="auth.privilegeType"
+                class="auth-span"
+              >
                 <!--2-{{ auth.privilegeType }}-{{ auth.privilegeValue }}-->
-                <a href="javascript:;" @click="clickAuth(data.id,auth)">
-                  <svg-icon style="width: 22px;height: 22px" :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'" />
+                <a
+                  href="javascript:;"
+                  @click="clickAuth(data.id,auth)"
+                >
+                  <svg-icon
+                    style="width: 22px;height: 22px"
+                    :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'"
+                  />
                 </a>
               </span>
             </div></span>

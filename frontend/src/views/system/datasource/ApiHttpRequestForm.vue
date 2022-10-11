@@ -4,30 +4,68 @@
       <el-col :span="spanCount">
         <!-- HTTP 请求参数 -->
         <div style="border:1px #DCDFE6 solid; height: 100%;border-radius: 4px ;width: 100%">
-          <el-tabs v-model="activeName" class="request-tabs">
+          <el-tabs
+            v-model="activeName"
+            class="request-tabs"
+          >
             <!-- 请求头-->
-            <el-tab-pane :label="$t('datasource.headers')" name="headers">
-              <el-tooltip class="item-tabs" effect="dark" :content="$t('datasource.headers')" placement="top-start" slot="label">
-              <span>{{ $t('datasource.headers') }}
-                <div class="el-step__icon is-text ms-api-col ms-header" v-if="headers.length>1">
-                  <div class="el-step__icon-inner">{{ headers.length - 1 }}</div>
-                </div>
-              </span>
+            <el-tab-pane
+              :label="$t('datasource.headers')"
+              name="headers"
+            >
+              <el-tooltip
+                slot="label"
+                class="item-tabs"
+                effect="dark"
+                :content="$t('datasource.headers')"
+                placement="top-start"
+              >
+                <span>{{ $t('datasource.headers') }}
+                  <div
+                    v-if="headers.length>1"
+                    class="el-step__icon is-text ms-api-col ms-header"
+                  >
+                    <div class="el-step__icon-inner">{{ headers.length - 1 }}</div>
+                  </div>
+                </span>
               </el-tooltip>
-              <api-key-value :show-desc="true"  :suggestions="headerSuggestions" :items="headers"/>
+              <api-key-value
+                :show-desc="true"
+                :suggestions="headerSuggestions"
+                :items="headers"
+              />
             </el-tab-pane>
 
             <!--请求体-->
-            <el-tab-pane v-if="isBodyShow" :label="$t('datasource.request_body')" name="body" style="overflow: auto">
-              <api-body @headersChange="reloadBody" :isShowEnable="isShowEnable" :headers="headers" :body="request.body"/>
+            <el-tab-pane
+              v-if="isBodyShow"
+              :label="$t('datasource.request_body')"
+              name="body"
+              style="overflow: auto"
+            >
+              <api-body
+                :is-show-enable="isShowEnable"
+                :headers="headers"
+                :body="request.body"
+                @headersChange="reloadBody"
+              />
             </el-tab-pane>
 
             <!-- 认证配置 -->
-            <el-tab-pane :label="$t('datasource.auth_config')" name="authConfig">
-              <el-tooltip class="item-tabs" effect="dark" :content="$t('datasource.auth_config_info')" placement="top-start" slot="label">
+            <el-tab-pane
+              :label="$t('datasource.auth_config')"
+              name="authConfig"
+            >
+              <el-tooltip
+                slot="label"
+                class="item-tabs"
+                effect="dark"
+                :content="$t('datasource.auth_config_info')"
+                placement="top-start"
+              >
                 <span>{{ $t('datasource.auth_config') }}</span>
               </el-tooltip>
-              <api-auth-config :request="request"/>
+              <api-auth-config :request="request" />
             </el-tab-pane>
 
           </el-tabs>
@@ -38,14 +76,14 @@
 </template>
 
 <script>
-import ApiKeyValue from "@/views/system/datasource/ApiKeyValue";
-import ApiBody from "@/views/system/datasource/ApiBody";
-import ApiAuthConfig from "@/views/system/datasource/ApiAuthConfig";
-import {Body, KeyValue} from "@/views/system/datasource/ApiTestModel";
-import Convert from "@/views/system/datasource/convert";
+import ApiKeyValue from '@/views/system/datasource/ApiKeyValue'
+import ApiBody from '@/views/system/datasource/ApiBody'
+import ApiAuthConfig from '@/views/system/datasource/ApiAuthConfig'
+import { Body, KeyValue } from '@/views/system/datasource/ApiTestModel'
+import Convert from '@/views/system/datasource/convert'
 
 export default {
-  name: "ApiHttpRequestForm",
+  name: 'ApiHttpRequestForm',
   components: {
     ApiAuthConfig,
     ApiBody,
@@ -53,59 +91,61 @@ export default {
   },
   props: {
     method: String,
-    request: {},
-    response: {},
+    request: {
+      type: Object,
+      default: () => {}
+    },
     definitionTest: {
       type: Boolean,
       default() {
-        return false;
+        return false
       }
     },
     showScript: {
       type: Boolean,
-      default: true,
+      default: true
     },
     headers: {
       type: Array,
       default() {
-        return [];
+        return []
       }
     },
     referenced: {
       type: Boolean,
-      default: false,
+      default: false
     },
     isShowEnable: {
       type: Boolean,
-      default: false,
+      default: false
     },
     jsonPathList: Array,
     isReadOnly: {
       type: Boolean,
       default: false
     },
-    type: String,
+    type: String
   },
   data() {
-    let validateURL = (rule, value, callback) => {
+    const validateURL = (rule, value, callback) => {
       try {
-        new URL(this.addProtocol(this.request.url));
+        new URL(this.addProtocol(this.request.url))
       } catch (e) {
-        callback(this.$t('api_test.request.url_invalid'));
+        callback(this.$t('api_test.request.url_invalid'))
       }
-    };
+    }
     return {
       activeName: 'headers',
       rules: {
         name: [
-          {max: 300, message: this.$t('commons.input_limit', [1, 300]), trigger: 'blur'}
+          { max: 300, message: this.$t('commons.input_limit', [1, 300]), trigger: 'blur' }
         ],
         url: [
-          {max: 500, required: true, message: this.$t('commons.input_limit', [1, 500]), trigger: 'blur'},
-          {validator: validateURL, trigger: 'blur'}
+          { max: 500, required: true, message: this.$t('commons.input_limit', [1, 500]), trigger: 'blur' },
+          { validator: validateURL, trigger: 'blur' }
         ],
         path: [
-          {max: 500, message: this.$t('commons.input_limit', [0, 500]), trigger: 'blur'},
+          { max: 500, message: this.$t('commons.input_limit', [0, 500]), trigger: 'blur' }
         ]
       },
       spanCount: 21,
@@ -115,97 +155,96 @@ export default {
       hasOwnProperty: Object.prototype.hasOwnProperty,
       propIsEnumerable: Object.prototype.propertyIsEnumerable,
       headerSuggestions: [
-        {value: 'Accept'},
-        {value: 'Accept-Charset'},
-        {value: 'Accept-Language'},
-        {value: 'Accept-Datetime'},
-        {value: 'Authorization'},
-        {value: 'Cache-Control'},
-        {value: 'Connection'},
-        {value: 'Cookie'},
-        {value: 'Content-Length'},
-        {value: 'Content-MD5'},
-        {value: 'Content-Type'},
-        {value: 'Date'},
-        {value: 'Expect'},
-        {value: 'From'},
-        {value: 'Host'},
-        {value: 'If-Match'},
-        {value: 'If-Modified-Since'},
-        {value: 'If-None-Match'},
-        {value: 'If-Range'},
-        {value: 'If-Unmodified-Since'},
-        {value: 'Max-Forwards'},
-        {value: 'Origin'},
-        {value: 'Pragma'},
-        {value: 'Proxy-Authorization'},
-        {value: 'Range'},
-        {value: 'Referer'},
-        {value: 'TE'},
-        {value: 'User-Agent'},
-        {value: 'Upgrade'},
-        {value: 'Via'},
-        {value: 'Warning'}
+        { value: 'Accept' },
+        { value: 'Accept-Charset' },
+        { value: 'Accept-Language' },
+        { value: 'Accept-Datetime' },
+        { value: 'Authorization' },
+        { value: 'Cache-Control' },
+        { value: 'Connection' },
+        { value: 'Cookie' },
+        { value: 'Content-Length' },
+        { value: 'Content-MD5' },
+        { value: 'Content-Type' },
+        { value: 'Date' },
+        { value: 'Expect' },
+        { value: 'From' },
+        { value: 'Host' },
+        { value: 'If-Match' },
+        { value: 'If-Modified-Since' },
+        { value: 'If-None-Match' },
+        { value: 'If-Range' },
+        { value: 'If-Unmodified-Since' },
+        { value: 'Max-Forwards' },
+        { value: 'Origin' },
+        { value: 'Pragma' },
+        { value: 'Proxy-Authorization' },
+        { value: 'Range' },
+        { value: 'Referer' },
+        { value: 'TE' },
+        { value: 'User-Agent' },
+        { value: 'Upgrade' },
+        { value: 'Via' },
+        { value: 'Warning' }
       ]
 
     }
   },
-  created() {
-    if (!this.referenced && this.showScript) {
-      this.spanCount = 21;
-    } else {
-      this.spanCount = 24;
-    }
-    this.init();
-  },
   watch: {
     'request.changeId'() {
       if (this.request.headers && this.request.headers.length > 1) {
-        this.activeName = 'headers';
+        this.activeName = 'headers'
       }
       if (this.request.rest && this.request.rest.length > 1) {
-        this.activeName = 'rest';
+        this.activeName = 'rest'
       }
       if (this.request.arguments && this.request.arguments.length > 1) {
-        this.activeName = 'parameters';
+        this.activeName = 'parameters'
       }
-      if(this.request.body) {
-        this.request.body.typeChange = this.request.changeId;
+      if (this.request.body) {
+        this.request.body.typeChange = this.request.changeId
       }
-      this.reload();
+      this.reload()
     }
+  },
+  created() {
+    if (!this.referenced && this.showScript) {
+      this.spanCount = 21
+    } else {
+      this.spanCount = 24
+    }
+    this.init()
   },
   methods: {
     generate() {
       if (this.request.body && (this.request.body.jsonSchema || this.request.body.raw)) {
         if (!this.request.body.jsonSchema) {
-          const MsConvert = new Convert();
-          this.request.body.jsonSchema = MsConvert.format(JSON.parse(this.request.body.raw));
+          const MsConvert = new Convert()
+          this.request.body.jsonSchema = MsConvert.format(JSON.parse(this.request.body.raw))
         }
         this.$post('/api/test/data/generator', this.request.body.jsonSchema, response => {
           if (response.data) {
             if (this.request.body.format !== 'JSON-SCHEMA') {
-              this.request.body.raw = response.data;
+              this.request.body.raw = response.data
             } else {
-              const MsConvert = new Convert();
-              let data = MsConvert.format(JSON.parse(response.data));
-              this.request.body.jsonSchema = this.deepAssign(this.request.body.jsonSchema, data);
+              const MsConvert = new Convert()
+              const data = MsConvert.format(JSON.parse(response.data))
+              this.request.body.jsonSchema = this.deepAssign(this.request.body.jsonSchema, data)
             }
-            this.reloadBody();
+            this.reloadBody()
           }
-        });
+        })
       }
     },
     remove(row) {
-      let index = this.request.hashTree.indexOf(row);
-      this.request.hashTree.splice(index, 1);
-      this.reload();
+      const index = this.request.hashTree.indexOf(row)
+      this.request.hashTree.splice(index, 1)
+      this.reload()
     },
     copyRow(row) {
-      let obj = JSON.parse(JSON.stringify(row));
-      obj.id = getUUID();
-      this.request.hashTree.push(obj);
-      this.reload();
+      const obj = JSON.parse(JSON.stringify(row))
+      this.request.hashTree.push(obj)
+      this.reload()
     },
     reload() {
       this.isReloadData = true
@@ -215,153 +254,153 @@ export default {
     },
     init() {
       if (Object.prototype.toString.call(this.request).match(/\[object (\w+)\]/)[1].toLowerCase() !== 'object') {
-        this.request = JSON.parse(this.request);
+        this.request = JSON.parse(this.request)
       }
       if (!this.request.body) {
-        this.request.body = new Body();
+        this.request.body = new Body()
       }
       if (!this.request.body.kvs) {
-        this.request.body.kvs = [];
+        this.request.body.kvs = []
       }
       if (!this.request.rest) {
-        this.request.rest = [];
+        this.request.rest = []
       }
       if (!this.request.arguments) {
-        this.request.arguments = [];
+        this.request.arguments = []
       }
     },
     reloadBody() {
       // 解决修改请求头后 body 显示错位
-      this.isBodyShow = false;
+      this.isBodyShow = false
       this.$nextTick(() => {
-        this.isBodyShow = true;
-      });
+        this.isBodyShow = true
+      })
     },
     batchAdd() {
-      this.$refs.batchAddParameter.open();
+      this.$refs.batchAddParameter.open()
     },
     format(array, obj) {
       if (array) {
-        let isAdd = true;
-        for (let i in array) {
-          let item = array[i];
+        let isAdd = true
+        for (const i in array) {
+          const item = array[i]
           if (item.name === obj.name) {
-            item.value = obj.value;
-            isAdd = false;
+            item.value = obj.value
+            isAdd = false
           }
         }
         if (isAdd) {
           switch (this.activeName) {
-            case "parameters":
-              this.request.arguments.unshift(obj);
-              break;
-            case "rest":
-              this.request.rest.unshift(obj);
-              break;
-            case "headers":
-              this.request.headers.unshift(obj);
-              break;
+            case 'parameters':
+              this.request.arguments.unshift(obj)
+              break
+            case 'rest':
+              this.request.rest.unshift(obj)
+              break
+            case 'headers':
+              this.request.headers.unshift(obj)
+              break
             default:
-              break;
+              break
           }
         }
       }
     },
     batchSave(data) {
       if (data) {
-        let params = data.split("\n");
-        let keyValues = [];
+        const params = data.split('\n')
+        const keyValues = []
         params.forEach(item => {
-          let line = item.split(/：|:/);
-          let required = false;
+          const line = item.split(/：|:/)
+          const required = false
           keyValues.unshift(new KeyValue({
             name: line[0],
             required: !required,
             value: line[1],
             description: line[2],
-            type: "text",
+            type: 'text',
             valid: false,
             file: false,
             encode: true,
             enable: true,
-            contentType: "text/plain"
-          }));
+            contentType: 'text/plain'
+          }))
         })
 
         keyValues.forEach(item => {
           switch (this.activeName) {
-            case "parameters":
-              this.format(this.request.arguments, item);
-              break;
-            case "rest":
-              this.format(this.request.rest, item);
-              break;
-            case "headers":
-              this.format(this.request.headers, item);
-              break;
+            case 'parameters':
+              this.format(this.request.arguments, item)
+              break
+            case 'rest':
+              this.format(this.request.rest, item)
+              break
+            case 'headers':
+              this.format(this.request.headers, item)
+              break
             default:
-              break;
+              break
           }
         })
       }
     },
 
     isObj(x) {
-      let type = typeof x;
-      return x !== null && (type === 'object' || type === 'function');
+      const type = typeof x
+      return x !== null && (type === 'object' || type === 'function')
     },
 
     toObject(val) {
       if (val === null || val === undefined) {
-        return;
+        return
       }
 
-      return Object(val);
+      return Object(val)
     },
 
     assignKey(to, from, key) {
-      let val = from[key];
+      const val = from[key]
 
       if (val === undefined || val === null) {
-        return;
+        return
       }
       if (!this.hasOwnProperty.call(to, key) || !this.isObj(val)) {
-        to[key] = val;
+        to[key] = val
       } else {
-        to[key] = this.assign(Object(to[key]), from[key]);
+        to[key] = this.assign(Object(to[key]), from[key])
       }
     },
 
     assign(to, from) {
       if (to === from) {
-        return to;
+        return to
       }
-      from = Object(from);
-      for (let key in from) {
+      from = Object(from)
+      for (const key in from) {
         if (this.hasOwnProperty.call(from, key)) {
-          this.assignKey(to, from, key);
+          this.assignKey(to, from, key)
         }
       }
 
       if (Object.getOwnPropertySymbols) {
-        let symbols = Object.getOwnPropertySymbols(from);
+        const symbols = Object.getOwnPropertySymbols(from)
 
         for (let i = 0; i < symbols.length; i++) {
           if (this.propIsEnumerable.call(from, symbols[i])) {
-            this.assignKey(to, from, symbols[i]);
+            this.assignKey(to, from, symbols[i])
           }
         }
       }
 
-      return to;
+      return to
     },
 
     deepAssign(target) {
-      target = this.toObject(target);
+      target = this.toObject(target)
       for (let s = 1; s < arguments.length; s++) {
-        this.assign(target, arguments[s]);
+        this.assign(target, arguments[s])
       }
-      return target;
+      return target
     }
   }
 }

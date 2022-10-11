@@ -1,30 +1,75 @@
 <template>
   <div>
     <div style="width: 100%;">
-      <el-dropdown trigger="click" @mouseup="handleMouseUp">
+      <el-dropdown
+        trigger="click"
+        @mouseup="handleMouseUp"
+      >
         <slot name="icon" />
         <el-dropdown-menu v-if="curComponent">
-          <el-dropdown-item v-if="editFilter.includes(curComponent.type)" icon="el-icon-edit-outline" @click.native="edit">{{ $t('panel.edit') }}</el-dropdown-item>
-          <el-dropdown-item v-if="curComponent.type != 'custom-button'" icon="el-icon-document-copy" @click.native="copy">{{ $t('panel.copy') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-delete" @click.native="deleteComponent">{{ $t('panel.delete') }}</el-dropdown-item>
+          <el-dropdown-item
+            v-if="editFilter.includes(curComponent.type)"
+            icon="el-icon-edit-outline"
+            @click.native="edit"
+          >{{ $t('panel.edit') }}</el-dropdown-item>
+          <el-dropdown-item
+            v-if="curComponent.type != 'custom-button'"
+            icon="el-icon-document-copy"
+            @click.native="copy"
+          >{{ $t('panel.copy') }}</el-dropdown-item>
+          <el-dropdown-item
+            icon="el-icon-delete"
+            @click.native="deleteComponent"
+          >{{ $t('panel.delete') }}</el-dropdown-item>
           <el-dropdown-item v-if="!curComponent.auxiliaryMatrix">
             <el-dropdown placement="right-start">
               <span class="el-icon-copy-document">
                 {{ $t('panel.level') }} <i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item icon="el-icon-upload2" @click.native="topComponent">{{ $t('panel.topComponent') }}</el-dropdown-item>
-                <el-dropdown-item icon="el-icon-download" @click.native="bottomComponent">{{ $t('panel.bottomComponent') }}</el-dropdown-item>
-                <el-dropdown-item icon="el-icon-arrow-up" @click.native="upComponent">{{ $t('panel.upComponent') }}</el-dropdown-item>
-                <el-dropdown-item icon="el-icon-arrow-down" @click.native="downComponent">{{ $t('panel.downComponent') }}</el-dropdown-item>
+                <el-dropdown-item
+                  icon="el-icon-upload2"
+                  @click.native="topComponent"
+                >{{ $t('panel.topComponent') }}</el-dropdown-item>
+                <el-dropdown-item
+                  icon="el-icon-download"
+                  @click.native="bottomComponent"
+                >{{ $t('panel.bottomComponent') }}</el-dropdown-item>
+                <el-dropdown-item
+                  icon="el-icon-arrow-up"
+                  @click.native="upComponent"
+                >{{ $t('panel.upComponent') }}</el-dropdown-item>
+                <el-dropdown-item
+                  icon="el-icon-arrow-down"
+                  @click.native="downComponent"
+                >{{ $t('panel.downComponent') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item v-if="linkageSettingShow" icon="el-icon-link" @click.native="linkageSetting">{{ $t('panel.linkage_setting') }}</el-dropdown-item>
-          <el-dropdown-item v-if="'de-tabs'===curComponent.type" icon="el-icon-plus" @click.native="addTab">{{ $t('panel.add_tab') }}</el-dropdown-item>
-          <el-dropdown-item v-if="linkJumpSetShow" icon="el-icon-connection" @click.native="linkJumpSet">{{ $t('panel.setting_jump') }}</el-dropdown-item>
-          <el-dropdown-item v-if="curComponent.type != 'custom-button'" icon="el-icon-magic-stick" @click.native="boardSet">{{ $t('panel.component_style') }}</el-dropdown-item>
-          <el-dropdown-item v-if="curComponent.type != 'custom-button'" @click.native="hyperlinksSet">
+          <el-dropdown-item
+            v-if="linkageSettingShow"
+            icon="el-icon-link"
+            @click.native="linkageSetting"
+          >{{ $t('panel.linkage_setting') }}</el-dropdown-item>
+          <el-dropdown-item
+            v-if="'de-tabs'===curComponent.type"
+            icon="el-icon-plus"
+            @click.native="addTab"
+          >{{ $t('panel.add_tab') }}</el-dropdown-item>
+          <el-dropdown-item
+            v-if="linkJumpSetShow"
+            icon="el-icon-connection"
+            @click.native="linkJumpSet"
+          >{{ $t('panel.setting_jump') }}</el-dropdown-item>
+          <el-dropdown-item
+            v-if="curComponent.type != 'custom-button'"
+            icon="el-icon-magic-stick"
+            @click.native="boardSet"
+          >{{ $t('panel.component_style') }}</el-dropdown-item>
+          <el-dropdown-item
+            v-if="curComponent.type != 'custom-button'"
+            @click.native="hyperlinksSet"
+          >
             <i class="icon iconfont icon-font icon-chaolianjie1" />
             {{ $t('panel.hyperlinks') }}
           </el-dropdown-item>
@@ -40,7 +85,11 @@
       :append-to-body="true"
       :show-close="true"
     >
-      <HyperlinksDialog v-if="hyperlinksSetVisible" :link-info="curComponent.hyperlinks" @onClose="hyperlinksSetVisible = false" />
+      <HyperlinksDialog
+        v-if="hyperlinksSetVisible"
+        :link-info="curComponent.hyperlinks"
+        @onClose="hyperlinksSetVisible = false"
+      />
     </el-dialog>
   </div>
 
@@ -83,14 +132,14 @@ export default {
   },
   computed: {
     linkJumpSetShow() {
-      return this.curComponent.type === 'view'
-        && !this.jumpExcludeViewType.includes(this.curComponent.propValue.innerType)
-        && !(this.curComponent.propValue.innerType.includes('table') && this.curComponent.propValue.render === 'echarts')
+      return this.curComponent.type === 'view' &&
+        !this.jumpExcludeViewType.includes(this.curComponent.propValue.innerType) &&
+        !(this.curComponent.propValue.innerType.includes('table') && this.curComponent.propValue.render === 'echarts')
     },
     linkageSettingShow() {
-      return this.curComponent.type === 'view'
-        && !this.linkageExcludeViewType.includes(this.curComponent.propValue.innerType)
-        && !(this.curComponent.propValue.innerType.includes('table') && this.curComponent.propValue.render === 'echarts')
+      return this.curComponent.type === 'view' &&
+        !this.linkageExcludeViewType.includes(this.curComponent.propValue.innerType) &&
+        !(this.curComponent.propValue.innerType.includes('table') && this.curComponent.propValue.render === 'echarts')
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo

@@ -44,7 +44,11 @@
         @boardSet="boardSet"
         @fieldSelect="fieldSelect"
       />
-      <mobile-check-bar v-if="mobileCheckBarShow" :element="element" @amRemoveItem="amRemoveItem" />
+      <mobile-check-bar
+        v-if="mobileCheckBarShow"
+        :element="element"
+        @amRemoveItem="amRemoveItem"
+      />
       <div
         v-if="resizing"
         style="transform: translateZ(11px);position: absolute; z-index: 3"
@@ -60,8 +64,17 @@
       >
         <slot :name="handlei" />
       </div>
-      <div :id="componentCanvasId" :style="mainSlotStyleInner" class="main-background">
-        <svg-icon v-if="svgInnerEnable" :style="{'color':this.element.commonBackground.innerImageColor}" class="svg-background" :icon-class="mainSlotSvgInner" />
+      <div
+        :id="componentCanvasId"
+        :style="mainSlotStyleInner"
+        class="main-background"
+      >
+        <svg-icon
+          v-if="svgInnerEnable"
+          :style="{'color':element.commonBackground.innerImageColor}"
+          class="svg-background"
+          :icon-class="mainSlotSvgInner"
+        />
         <slot />
       </div>
     </div>
@@ -81,7 +94,7 @@ import { mapState } from 'vuex'
 import EditBar from '@/components/canvas/components/Editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   replace: true,
@@ -819,7 +832,7 @@ export default {
       this.mobileLayoutStatus && this.$store.commit('topComponent')
       eventsFor = events.mouse
       this.elementDown(e)
-      this.$nextTick(()=>{
+      this.$nextTick(() => {
         this.$store.commit('setCurComponent', { component: this.element, index: this.index })
       })
     },

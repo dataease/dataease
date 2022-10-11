@@ -82,7 +82,6 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
         chart_option.visualMap.inRange.colorAlpha = customAttr.color.alpha / 100
       }
       if (themeStyle) {
-        
         chart_option.visualMap.textStyle = { color: themeStyle }
       }
       for (let i = 0; i < valueArr.length; i++) {

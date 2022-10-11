@@ -1,5 +1,8 @@
 <template>
-  <i class="el-icon-arrow-left back-button" @click="jump" />
+  <i
+    class="el-icon-arrow-left back-button"
+    @click="jump"
+  />
 </template>
 
 <script>

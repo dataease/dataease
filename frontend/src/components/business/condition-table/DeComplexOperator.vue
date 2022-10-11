@@ -13,7 +13,12 @@
         @change="change"
         @input="change"
       >
-        <el-option v-for="o in operators" :key="o.value" :label="$t(o.label)" :value="o.value" />
+        <el-option
+          v-for="o in operators"
+          :key="o.value"
+          :label="$t(o.label)"
+          :value="o.value"
+        />
       </el-select>
     </div>
     <div class="fu-operator-component__value">

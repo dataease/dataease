@@ -1,13 +1,35 @@
 <template>
   <el-col>
-    <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addLine" />
+    <el-button
+      icon="el-icon-plus"
+      circle
+      size="mini"
+      style="margin-bottom: 10px;"
+      @click="addLine"
+    />
     <div style="max-height: 50vh;overflow-y: auto;">
-      <el-row v-for="(item,index) in lineArr" :key="index" class="line-item">
+      <el-row
+        v-for="(item,index) in lineArr"
+        :key="index"
+        class="line-item"
+      >
         <el-col :span="4">
-          <el-input v-model="item.name" class="value-item" :placeholder="$t('chart.name')" size="mini" clearable @change="changeAssistLine" />
+          <el-input
+            v-model="item.name"
+            class="value-item"
+            :placeholder="$t('chart.name')"
+            size="mini"
+            clearable
+            @change="changeAssistLine"
+          />
         </el-col>
         <el-col :span="4">
-          <el-select v-model="item.field" size="mini" class="select-item" @change="changeAssistLine">
+          <el-select
+            v-model="item.field"
+            size="mini"
+            class="select-item"
+            @change="changeAssistLine"
+          >
             <el-option
               v-for="opt in fieldOptions"
               :key="opt.value"
@@ -16,11 +38,30 @@
             />
           </el-select>
         </el-col>
-        <el-col v-if="item.field === '0'" :span="8">
-          <el-input v-model="item.value" class="value-item" :placeholder="$t('chart.drag_block_label_value')" size="mini" clearable @change="changeAssistLine" />
+        <el-col
+          v-if="item.field === '0'"
+          :span="8"
+        >
+          <el-input
+            v-model="item.value"
+            class="value-item"
+            :placeholder="$t('chart.drag_block_label_value')"
+            size="mini"
+            clearable
+            @change="changeAssistLine"
+          />
         </el-col>
-        <el-col v-if="item.field === '1'" :span="8">
-          <el-select v-model="item.fieldId" size="mini" class="select-item" :placeholder="$t('chart.field')" @change="changeAssistLineField(item)">
+        <el-col
+          v-if="item.field === '1'"
+          :span="8"
+        >
+          <el-select
+            v-model="item.fieldId"
+            size="mini"
+            class="select-item"
+            :placeholder="$t('chart.field')"
+            @change="changeAssistLineField(item)"
+          >
             <el-option
               v-for="quota in quotaData"
               :key="quota.id"
@@ -28,22 +69,61 @@
               :value="quota.id"
             >
               <span style="float: left">
-                <svg-icon v-if="quota.deType === 0" icon-class="field_text" class="field-icon-text" />
-                <svg-icon v-if="quota.deType === 1" icon-class="field_time" class="field-icon-time" />
-                <svg-icon v-if="quota.deType === 2 || quota.deType === 3" icon-class="field_value" class="field-icon-value" />
-                <svg-icon v-if="quota.deType === 5" icon-class="field_location" class="field-icon-location" />
+                <svg-icon
+                  v-if="quota.deType === 0"
+                  icon-class="field_text"
+                  class="field-icon-text"
+                />
+                <svg-icon
+                  v-if="quota.deType === 1"
+                  icon-class="field_time"
+                  class="field-icon-time"
+                />
+                <svg-icon
+                  v-if="quota.deType === 2 || quota.deType === 3"
+                  icon-class="field_value"
+                  class="field-icon-value"
+                />
+                <svg-icon
+                  v-if="quota.deType === 5"
+                  icon-class="field_location"
+                  class="field-icon-location"
+                />
               </span>
               <span style="float: left; color: #8492a6; font-size: 12px">{{ quota.name }}</span>
             </el-option>
           </el-select>
-          <el-select v-model="item.summary" size="mini" class="select-item" :placeholder="$t('chart.aggregation')" @change="changeAssistLine">
-            <el-option key="avg" value="avg" :label="$t('chart.avg')" />
-            <el-option key="max" value="max" :label="$t('chart.max')" />
-            <el-option key="min" value="min" :label="$t('chart.min')" />
+          <el-select
+            v-model="item.summary"
+            size="mini"
+            class="select-item"
+            :placeholder="$t('chart.aggregation')"
+            @change="changeAssistLine"
+          >
+            <el-option
+              key="avg"
+              value="avg"
+              :label="$t('chart.avg')"
+            />
+            <el-option
+              key="max"
+              value="max"
+              :label="$t('chart.max')"
+            />
+            <el-option
+              key="min"
+              value="min"
+              :label="$t('chart.min')"
+            />
           </el-select>
         </el-col>
         <el-col :span="4">
-          <el-select v-model="item.lineType" size="mini" class="select-item" @change="changeAssistLine">
+          <el-select
+            v-model="item.lineType"
+            size="mini"
+            class="select-item"
+            @change="changeAssistLine"
+          >
             <el-option
               v-for="opt in lineOptions"
               :key="opt.value"
@@ -52,11 +132,25 @@
             />
           </el-select>
         </el-col>
-        <el-col :span="2" style="text-align: center;">
-          <el-color-picker v-model="item.color" class="color-picker-style" :predefine="predefineColors" @change="changeAssistLine" />
+        <el-col
+          :span="2"
+          style="text-align: center;"
+        >
+          <el-color-picker
+            v-model="item.color"
+            class="color-picker-style"
+            :predefine="predefineColors"
+            @change="changeAssistLine"
+          />
         </el-col>
         <el-col :span="2">
-          <el-button type="text" icon="el-icon-delete" circle style="float: right" @click="removeLine(index)" />
+          <el-button
+            type="text"
+            icon="el-icon-delete"
+            circle
+            style="float: right"
+            @click="removeLine(index)"
+          />
         </el-col>
       </el-row>
     </div>

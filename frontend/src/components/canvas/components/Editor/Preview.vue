@@ -1,15 +1,32 @@
 <template>
-  <div class="bg" :style="customStyle" @scroll="canvasScroll">
+  <div
+    class="bg"
+    :style="customStyle"
+    @scroll="canvasScroll"
+  >
     <canvas-opt-bar />
-    <div id="canvasInfoMain" ref="canvasInfoMain" :style="canvasInfoMainStyle">
-      <el-row v-if="showUnpublishedArea" class="custom-position">
+    <div
+      id="canvasInfoMain"
+      ref="canvasInfoMain"
+      :style="canvasInfoMainStyle"
+    >
+      <el-row
+        v-if="showUnpublishedArea"
+        class="custom-position"
+      >
         <div style="text-align: center">
-          <svg-icon icon-class="unpublished" style="font-size: 75px" />
+          <svg-icon
+            icon-class="unpublished"
+            style="font-size: 75px"
+          />
           <br>
           <span>{{ $t('panel.panel_off') }}</span>
         </div>
       </el-row>
-      <el-row v-else-if="componentDataShow && componentDataShow.length===0" class="custom-position">
+      <el-row
+        v-else-if="componentDataShow && componentDataShow.length===0"
+        class="custom-position"
+      >
         {{ $t('panel.panelNull') }}
       </el-row>
       <div
@@ -44,15 +61,37 @@
           :destroy-on-close="true"
           top="5vh"
         >
-          <span v-if="chartDetailsVisible" style="position: absolute;right: 70px;top:15px">
-            <el-button v-if="showChartInfoType==='enlarge' && showChartInfo && showChartInfo.type !== 'symbol-map'" class="el-icon-picture-outline" size="mini" @click="exportViewImg">
+          <span
+            v-if="chartDetailsVisible"
+            style="position: absolute;right: 70px;top:15px"
+          >
+            <el-button
+              v-if="showChartInfoType==='enlarge' && showChartInfo && showChartInfo.type !== 'symbol-map'"
+              class="el-icon-picture-outline"
+              size="mini"
+              @click="exportViewImg"
+            >
               {{ $t('chart.export_img') }}
             </el-button>
-            <el-button v-if="showChartInfoType==='details'" size="mini" @click="exportExcel">
-              <svg-icon icon-class="ds-excel" class="ds-icon-excel" />{{ $t('chart.export') }}Excel
+            <el-button
+              v-if="showChartInfoType==='details'"
+              size="mini"
+              @click="exportExcel"
+            >
+              <svg-icon
+                icon-class="ds-excel"
+                class="ds-icon-excel"
+              />{{ $t('chart.export') }}Excel
             </el-button>
           </span>
-          <UserViewDialog v-if="chartDetailsVisible" ref="userViewDialog" :canvas-style-data="canvasStyleData" :open-type="showChartInfoType" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+          <UserViewDialog
+            v-if="chartDetailsVisible"
+            ref="userViewDialog"
+            :canvas-style-data="canvasStyleData"
+            :open-type="showChartInfoType"
+            :chart="showChartInfo"
+            :chart-table="showChartTableInfo"
+          />
         </el-dialog>
 
         <!--手机视图详情-->
@@ -62,7 +101,12 @@
           class="mobile-dialog-css"
           :destroy-on-close="true"
         >
-          <UserViewMobileDialog v-if="mobileChartDetailsVisible" :canvas-style-data="canvasStyleData" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+          <UserViewMobileDialog
+            v-if="mobileChartDetailsVisible"
+            :canvas-style-data="canvasStyleData"
+            :chart="showChartInfo"
+            :chart-table="showChartTableInfo"
+          />
         </el-dialog>
       </div>
     </div>
@@ -177,12 +221,6 @@ export default {
       buttonFilterMap: null
     }
   },
-  created() {
-    // 取消视图请求
-    this.$cancelRequest('/chart/view/getData/**')
-    this.$cancelRequest('/api/link/viewDetail/**')
-    this.$cancelRequest('/static-resource/**')
-  },
   computed: {
     mainActiveName() {
       return this.$store.state.panel.mainActiveName
@@ -253,7 +291,7 @@ export default {
     },
     // 此处单独计算componentData的值 不放入全局mapState中
     componentDataInfo() {
-      return this.componentDataShow||[]
+      return this.componentDataShow || []
     },
     ...mapState([
       'isClickComponent'
@@ -296,6 +334,12 @@ export default {
       },
       deep: true
     }
+  },
+  created() {
+    // 取消视图请求
+    this.$cancelRequest('/chart/view/getData/**')
+    this.$cancelRequest('/api/link/viewDetail/**')
+    this.$cancelRequest('/static-resource/**')
   },
   mounted() {
     this._isMobile()

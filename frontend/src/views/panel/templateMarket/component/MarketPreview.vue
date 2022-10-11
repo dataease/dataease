@@ -1,12 +1,27 @@
 <template>
   <el-row>
     <el-col :class="asideActive?'aside-active':'aside-inActive'">
-      <svg-icon v-show="!asideActive" icon-class="button_right" class="open-button" @click="asideActiveChange(true)" />
-      <el-row v-show="asideActive" style="padding: 12px 12px 0 12px ">
+      <svg-icon
+        v-show="!asideActive"
+        icon-class="button_right"
+        class="open-button"
+        @click="asideActiveChange(true)"
+      />
+      <el-row
+        v-show="asideActive"
+        style="padding: 12px 12px 0 12px "
+      >
         <el-row>
-          <span class="icon iconfont icon-close icon20 insert" @click="closePreview()" />
+          <span
+            class="icon iconfont icon-close icon20 insert"
+            @click="closePreview()"
+          />
           <span class="main-title">{{ $t('panel.template_preview') }}</span>
-          <span style="float: right" class="icon iconfont icon-icon_up-left_outlined insert icon20" @click="asideActiveChange(false)" />
+          <span
+            style="float: right"
+            class="icon iconfont icon-icon_up-left_outlined insert icon20"
+            @click="asideActiveChange(false)"
+          />
         </el-row>
         <el-row class="margin-top16 search-area">
           <el-input
@@ -17,10 +32,19 @@
             :placeholder="$t('panel.enter_template_name_tips')"
             clearable="true"
           />
-          <span class="icon iconfont icon-icon-filter insert-filter filter-icon-span" :class="extFilterActive?'filter-icon-active':''" @click="extFilterActiveChange()" />
+          <span
+            class="icon iconfont icon-icon-filter insert-filter filter-icon-span"
+            :class="extFilterActive?'filter-icon-active':''"
+            @click="extFilterActiveChange()"
+          />
         </el-row>
         <el-row v-show="extFilterActive">
-          <el-select v-model="marketActiveTab" class="margin-top16" size="small" placeholder="请选择">
+          <el-select
+            v-model="marketActiveTab"
+            class="margin-top16"
+            size="small"
+            placeholder="请选择"
+          >
             <el-option
               v-for="item in marketTabs"
               :key="item"
@@ -32,7 +56,11 @@
         <el-divider />
       </el-row>
 
-      <el-row v-show="asideActive" class="aside-list" :class="extFilterActive?'aside-list-filter-active':''">
+      <el-row
+        v-show="asideActive"
+        class="aside-list"
+        :class="extFilterActive?'aside-list-filter-active':''"
+      >
         <template-market-preview-item
           v-for="(templateItem) in currentMarketTemplateShowList"
           v-show="templateItem.showFlag"
@@ -42,22 +70,43 @@
           :active="active(templateItem)"
           @previewTemplate="previewTemplate"
         />
-        <el-row v-show="!hasResult" class="custom-position">
+        <el-row
+          v-show="!hasResult"
+          class="custom-position"
+        >
           <div style="text-align: center">
-            <svg-icon icon-class="no_result" style="font-size: 75px;margin-bottom: 16px" />
+            <svg-icon
+              icon-class="no_result"
+              style="font-size: 75px;margin-bottom: 16px"
+            />
             <br>
             <span>{{ $t('commons.no_result') }}</span>
           </div>
         </el-row>
       </el-row>
     </el-col>
-    <el-col class="main-area" :class="asideActive ? 'main-area-active': ''">
+    <el-col
+      class="main-area"
+      :class="asideActive ? 'main-area-active': ''"
+    >
       <el-row>
-        <span v-if="curTemplate" class="template-title">{{ curTemplate.title }}</span>
-        <el-button style="float: right" type="primary" size="small" @click="templateApply(curTemplate)">{{ $t('panel.apply_this_template') }}</el-button>
+        <span
+          v-if="curTemplate"
+          class="template-title"
+        >{{ curTemplate.title }}</span>
+        <el-button
+          style="float: right"
+          type="primary"
+          size="small"
+          @click="templateApply(curTemplate)"
+        >{{ $t('panel.apply_this_template') }}</el-button>
       </el-row>
       <el-row class="img-main">
-        <img height="100%" :src="templatePreviewUrl" alt="">
+        <img
+          height="100%"
+          :src="templatePreviewUrl"
+          alt=""
+        >
       </el-row>
     </el-col>
   </el-row>
