@@ -2,7 +2,7 @@ export class BaseConfig {
   set(options, notUndefined) {
     options = this.initOptions(options)
     for (const name in options) {
-      if (options.hasOwnProperty(name)) {
+      if (Object.prototype.hasOwnProperty.call(options, name)) {
         if (!(this[name] instanceof Array)) {
           if (notUndefined === true) {
             this[name] = options[name] === undefined ? this[name] : options[name]
@@ -18,7 +18,7 @@ export class BaseConfig {
     options = this.initOptions(options)
     if (types) {
       for (const name in types) {
-        if (types.hasOwnProperty(name) && options.hasOwnProperty(name)) {
+        if (Object.prototype.hasOwnProperty.call(types, name) && Object.prototype.hasOwnProperty.call(options, name)) {
           options[name].forEach(o => {
             this[name].push(new types[name](o))
           })
@@ -88,15 +88,6 @@ export class Body extends BaseConfig {
   }
 }
 
-export const createComponent = function(name) {
-  const component = MODELS[name]
-  if (component) {
-    return new component()
-  } else {
-    return new UnsupportedComponent()
-  }
-}
-
 export const BODY_TYPE = {
   KV: 'KeyValue',
   FORM_DATA: 'Form_Data',
@@ -125,24 +116,17 @@ export class Scenario extends BaseConfig {
     this.set(options)
     this.sets({
       variables: KeyValue,
-      headers: KeyValue,
-      requests: RequestFactory,
-      databaseConfigs: DatabaseConfig
+      headers: KeyValue
     }, options)
   }
 
   initOptions(options = {}) {
-    options.id = options.id || uuid()
-    options.requests = options.requests || [new RequestFactory()]
     options.databaseConfigs = options.databaseConfigs || []
-    options.dubboConfig = new DubboConfig(options.dubboConfig)
-    options.tcpConfig = new TCPConfig(options.tcpConfig)
     return options
   }
 
   clone() {
     const clone = new Scenario(this)
-    clone.id = uuid()
     return clone
   }
 

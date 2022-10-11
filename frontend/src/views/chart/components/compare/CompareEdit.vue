@@ -1,15 +1,35 @@
 <template>
   <div>
-    <el-form ref="form" :model="compareItem.compareCalc" label-width="80px" size="mini" class="compare-form">
+    <el-form
+      ref="form"
+      :model="compareItem.compareCalc"
+      label-width="80px"
+      size="mini"
+      class="compare-form"
+    >
       <el-form-item :label="$t('chart.compare_date')">
-        <el-select v-model="compareItem.compareCalc.field" :placeholder="$t('chart.pls_select_field')" size="mini" @change="initCompareType">
-          <el-option v-for="field in fieldList" :key="field.id" :label="field.name + '(' + $t('chart.' + field.dateStyle) + ')'" :value="field.id" />
+        <el-select
+          v-model="compareItem.compareCalc.field"
+          :placeholder="$t('chart.pls_select_field')"
+          size="mini"
+          @change="initCompareType"
+        >
+          <el-option
+            v-for="field in fieldList"
+            :key="field.id"
+            :label="field.name + '(' + $t('chart.' + field.dateStyle) + ')'"
+            :value="field.id"
+          />
         </el-select>
       </el-form-item>
 
       <el-form-item :label="$t('chart.compare_type')">
         <el-radio-group v-model="compareItem.compareCalc.type">
-          <el-radio v-for="radio in compareList" :key="radio.value" :label="radio.value">{{ $t('chart.' + radio.value) }}</el-radio>
+          <el-radio
+            v-for="radio in compareList"
+            :key="radio.value"
+            :label="radio.value"
+          >{{ $t('chart.' + radio.value) }}</el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -21,8 +41,14 @@
       </el-form-item>
 
       <el-form-item :label="$t('chart.compare_calc_expression')">
-        <span v-if="compareItem.compareCalc.resultData === 'sub'" class="exp-style">本期数据 - 上期数据</span>
-        <span v-else-if="compareItem.compareCalc.resultData === 'percent'" class="exp-style">(本期数据 / 上期数据 - 1) * 100%</span>
+        <span
+          v-if="compareItem.compareCalc.resultData === 'sub'"
+          class="exp-style"
+        >本期数据 - 上期数据</span>
+        <span
+          v-else-if="compareItem.compareCalc.resultData === 'percent'"
+          class="exp-style"
+        >(本期数据 / 上期数据 - 1) * 100%</span>
       </el-form-item>
     </el-form>
   </div>

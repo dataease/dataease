@@ -380,9 +380,9 @@ export function adaptCurThemeCommonStyle(component) {
   } else if (isTabComponent(component.component)) {
     const tabStyle = store.state.canvasStyleData.chartInfo.tabStyle
     for (const styleKey in tabStyle) {
-      if(typeof tabStyle[styleKey] === 'string'){
+      if (typeof tabStyle[styleKey] === 'string') {
         Vue.set(component.style, styleKey, tabStyle[styleKey])
-      }else{
+      } else {
         Vue.set(component.style, styleKey, null)
       }
     }

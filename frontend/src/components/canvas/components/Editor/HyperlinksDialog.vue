@@ -1,23 +1,42 @@
 <template>
   <el-row>
-    <el-form ref="form" size="mini" label-width="70px">
+    <el-form
+      ref="form"
+      size="mini"
+      label-width="70px"
+    >
       <el-form-item :label="$t('panel.enable_jump')">
-        <el-switch v-model="linkInfo.enable" size="mini" />
-        <span v-show="linkInfo.enable" style="color: #909399; font-size: 8px;margin-left: 3px">
+        <el-switch
+          v-model="linkInfo.enable"
+          size="mini"
+        />
+        <span
+          v-show="linkInfo.enable"
+          style="color: #909399; font-size: 8px;margin-left: 3px"
+        >
           Tips:{{ $t('panel.link_open_tips') }}
         </span>
       </el-form-item>
       <el-form-item :label="$t('panel.open_mode')">
-        <el-radio-group v-model="linkInfo.openMode" :disabled="!linkInfo.enable">
+        <el-radio-group
+          v-model="linkInfo.openMode"
+          :disabled="!linkInfo.enable"
+        >
           <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
           <el-radio label="_self">{{ $t('panel.now_window') }}</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item :label="$t('panel.hyperLinks')">
-        <el-input v-model="linkInfo.content" :disabled="!linkInfo.enable" />
+        <el-input
+          v-model="linkInfo.content"
+          :disabled="!linkInfo.enable"
+        />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">{{ $t('panel.confirm') }}</el-button>
+        <el-button
+          type="primary"
+          @click="onSubmit"
+        >{{ $t('panel.confirm') }}</el-button>
         <el-button @click="onClose">{{ $t('panel.cancel') }}</el-button>
       </el-form-item>
     </el-form>
@@ -42,13 +61,13 @@ export default {
       linkageActiveStatus: false
     }
   },
-  mounted() {
-    this.linkInfo = { ...this.linkInfo }
-  },
   computed: {
     ...mapState([
       'curComponent'
     ])
+  },
+  mounted() {
+    this.linkInfo = { ...this.linkInfo }
   },
   methods: {
     onSubmit() {

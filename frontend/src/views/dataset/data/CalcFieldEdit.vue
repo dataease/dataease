@@ -1,6 +1,10 @@
 <template>
   <div class="calcu-feild">
-    <el-form ref="form" :model="fieldForm" class="de-form-item">
+    <el-form
+      ref="form"
+      :model="fieldForm"
+      class="de-form-item"
+    >
       <el-form-item :label="$t('dataset.field_edit_name')">
         <el-input
           v-model="fieldForm.name"
@@ -10,19 +14,29 @@
       </el-form-item>
     </el-form>
 
-    <div class="calcu-cont" style="height: 544px">
+    <div
+      class="calcu-cont"
+      style="height: 544px"
+    >
       <div style="flex: 1">
         <el-row>
           <el-row>
             <span class="mb8">
               {{ $t('dataset.field_exp') }}
-              <el-tooltip class="item" effect="dark" placement="bottom">
+              <el-tooltip
+                class="item"
+                effect="dark"
+                placement="bottom"
+              >
                 <div slot="content">
                   表达式语法请遵循该数据源对应的数据库语法。
                   <br>
                   数据集中不支持聚合运算。
                 </div>
-                <i class="el-icon-info" style="cursor: pointer" />
+                <i
+                  class="el-icon-info"
+                  style="cursor: pointer"
+                />
               </el-tooltip>
             </span>
             <codemirror
@@ -36,12 +50,22 @@
             />
           </el-row>
           <el-row style="margin-top: 28px">
-            <el-form ref="form" :model="fieldForm" class="de-form-item">
+            <el-form
+              ref="form"
+              :model="fieldForm"
+              class="de-form-item"
+            >
               <el-form-item :label="$t('dataset.data_type')">
-                <el-radio v-model="fieldForm.groupType" label="d">{{
+                <el-radio
+                  v-model="fieldForm.groupType"
+                  label="d"
+                >{{
                   $t('chart.dimension')
                 }}</el-radio>
-                <el-radio v-model="fieldForm.groupType" label="q">{{
+                <el-radio
+                  v-model="fieldForm.groupType"
+                  label="q"
+                >{{
                   $t('chart.quota')
                 }}</el-radio>
               </el-form-item>
@@ -60,7 +84,11 @@
       <div class="padding-lr">
         <span class="mb8">
           {{ $t('dataset.click_ref_field') }}
-          <el-tooltip class="item" effect="dark" placement="bottom">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            placement="bottom"
+          >
             <div slot="content">
               引用字段以 "[" 开始， "]" 结束
               <br>
@@ -68,7 +96,10 @@
               <br>
               若输入与引用字段相同格式的内容，将被当作引用字段处理
             </div>
-            <i class="el-icon-info" style="cursor: pointer" />
+            <i
+              class="el-icon-info"
+              style="cursor: pointer"
+            />
           </el-tooltip>
         </span>
         <el-input
@@ -121,7 +152,10 @@
               </span>
             </transition-group>
           </draggable>
-          <div v-else class="class-na">{{ $t('dataset.na') }}</div>
+          <div
+            v-else
+            class="class-na"
+          >{{ $t('dataset.na') }}</div>
         </div>
         <div class="field-height">
           <span>{{ $t('chart.quota') }}</span>
@@ -165,13 +199,20 @@
               </span>
             </transition-group>
           </draggable>
-          <div v-else class="class-na">{{ $t('dataset.na') }}</div>
+          <div
+            v-else
+            class="class-na"
+          >{{ $t('dataset.na') }}</div>
         </div>
       </div>
       <div class="padding-lr">
         <span class="mb8">
           {{ $t('dataset.click_ref_function') }}
-          <el-tooltip class="item" effect="dark" placement="bottom">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            placement="bottom"
+          >
             <div slot="content">
               使用数据集对应数据库类型所支持的函数，语法同对应数据库
               <br>
@@ -180,7 +221,10 @@
               非直连模式数据集，使用Doris数据库函数，可参考Doris官网
               https://doris.apache.org/zh-CN/
             </div>
-            <i class="el-icon-info" style="cursor: pointer" />
+            <i
+              class="el-icon-info"
+              style="cursor: pointer"
+            />
           </el-tooltip>
         </span>
         <el-input
@@ -215,7 +259,10 @@
     </div>
 
     <div class="de-foot">
-      <deBtn secondary @click="closeCalcField">{{
+      <deBtn
+        secondary
+        @click="closeCalcField"
+      >{{
         $t('dataset.cancel')
       }}</deBtn>
       <deBtn

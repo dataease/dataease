@@ -1,11 +1,20 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <el-col class="tree-style">
     <el-col>
-      <el-row v-show="showView === 'Datasource'" class="title-css">
-        <el-col class="title-text" :span="12">
+      <el-row
+        v-show="showView === 'Datasource'"
+        class="title-css"
+      >
+        <el-col
+          class="title-text"
+          :span="12"
+        >
           {{ $t('commons.datasource') }}
         </el-col>
-        <el-col class="title-operate" :span="12">
+        <el-col
+          class="title-operate"
+          :span="12"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -24,7 +33,10 @@
             :content="$t('datasource.create')"
             placement="top"
           >
-            <i class="el-icon-plus" @click="addFolder" />
+            <i
+              class="el-icon-plus"
+              @click="addFolder"
+            />
           </el-tooltip>
         </el-col>
       </el-row>
@@ -40,9 +52,15 @@
 
       <el-col class="custom-tree-container de-tree">
         <div class="block">
-          <div v-if="!tData.length && !treeLoading" class="no-tdata">
+          <div
+            v-if="!tData.length && !treeLoading"
+            class="no-tdata"
+          >
             {{ showView === 'Driver' ? '暂无驱动' : '暂无数据源' }}
-            <span @click="() => createDriveOrDs()" class="no-tdata-new">{{
+            <span
+              class="no-tdata-new"
+              @click="() => createDriveOrDs()"
+            >{{
               $t('deDataset.create')
             }}</span>
           </div>
@@ -56,7 +74,10 @@
             :filter-node-method="filterNode"
             @node-click="nodeClick"
           >
-            <span slot-scope="{ data }" class="custom-tree-node-list">
+            <span
+              slot-scope="{ data }"
+              class="custom-tree-node-list"
+            >
               <span style="display: flex; width: calc(100% - 20px)">
                 <span
                   v-if="
@@ -82,7 +103,7 @@
                   />
                 </span>
                 <span v-if="data.type === 'folder'">
-                  <svg-icon icon-class="scene"/>
+                  <svg-icon icon-class="scene" />
                 </span>
                 <span
                   style="
@@ -139,8 +160,14 @@
                   trigger="click"
                   @command="(type) => handleCommand(type, data)"
                 >
-                  <i class="el-icon-more" @click.stop />
-                  <el-dropdown-menu slot="dropdown" class="de-card-dropdown">
+                  <i
+                    class="el-icon-more"
+                    @click.stop
+                  />
+                  <el-dropdown-menu
+                    slot="dropdown"
+                    class="de-card-dropdown"
+                  >
                     <slot>
                       <el-dropdown-item command="edit">
                         <i class="el-icon-edit" />
@@ -175,13 +202,19 @@
           size="small"
           :rules="rule"
         >
-          <el-form-item :label="$t('datasource.driver_name')" prop="name">
+          <el-form-item
+            :label="$t('datasource.driver_name')"
+            prop="name"
+          >
             <el-input
               v-model="driverForm.name"
               :placeholder="$t('fu.search_bar.please_input')"
             />
           </el-form-item>
-          <el-form-item :label="$t('datasource.drive_type')" prop="type">
+          <el-form-item
+            :label="$t('datasource.drive_type')"
+            prop="type"
+          >
             <el-select
               v-model="driverForm.type"
               :placeholder="$t('fu.search_bar.please_select')"
@@ -201,8 +234,14 @@
             <deTextarea v-model="driverForm.desc" />
           </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer">
-          <deBtn secondary @click="close()">{{ $t('commons.cancel') }}</deBtn>
+        <div
+          slot="footer"
+          class="dialog-footer"
+        >
+          <deBtn
+            secondary
+            @click="close()"
+          >{{ $t('commons.cancel') }}</deBtn>
           <deBtn
             type="primary"
             size="mini"
@@ -221,7 +260,10 @@
         append-to-body
       >
         <el-tabs v-model="tabActive">
-          <el-tab-pane :label="$t('datasource.all')" name="all" />
+          <el-tab-pane
+            :label="$t('datasource.all')"
+            name="all"
+          />
           <el-tab-pane
             :label="$t('datasource.relational_database')"
             name="RDBMS"
@@ -230,7 +272,10 @@
             :label="$t('datasource.non_relational_database')"
             name="NORDBMS"
           />
-          <el-tab-pane :label="$t('datasource.other')" name="OTHER" />
+          <el-tab-pane
+            :label="$t('datasource.other')"
+            name="OTHER"
+          />
         </el-tabs>
         <div class="db-container">
           <div
@@ -339,11 +384,6 @@ export default {
       }
     }
   },
-  watch: {
-    key(val) {
-      this.$refs.myDsTree.filter(val)
-    }
-  },
   computed: {
     ...mapGetters(['user']),
     databaseList() {
@@ -353,6 +393,11 @@ export default {
       return this.dsTypes.filter(
         (ele) => ele.databaseClassification === this.tabActive
       )
+    }
+  },
+  watch: {
+    key(val) {
+      this.$refs.myDsTree.filter(val)
     }
   },
   created() {
@@ -398,15 +443,15 @@ export default {
         listDatasource().then((res) => {
           this.tData = this.buildTree(res.data)
         }).finally(() => {
-        this.treeLoading = false
-      })
+          this.treeLoading = false
+        })
       }
       if (this.showView === 'Driver') {
         listDrivers().then((res) => {
           this.tData = this.buildTree(res.data)
         }).finally(() => {
-        this.treeLoading = false
-      })
+          this.treeLoading = false
+        })
       }
     },
     datasourceTypes() {
@@ -503,7 +548,7 @@ export default {
       this.queryTreeDatas()
     },
     addDb({ type }) {
-      const name = (this.dsTypes.find(ele => type === ele.type ) || {}).name
+      const name = (this.dsTypes.find(ele => type === ele.type) || {}).name
       this.$router.push({
         path: '/ds-form',
         query: { type, name }
@@ -515,7 +560,7 @@ export default {
         this.dialogTitle = this.$t('datasource.add_driver')
         this.editDriver = true
       } else {
-        const name = (this.dsTypes.find(ele => data.id === ele.type ) || {}).name
+        const name = (this.dsTypes.find(ele => data.id === ele.type) || {}).name
         this.$router.push({
           path: '/ds-form',
           query: { type: data.id, name }
@@ -572,7 +617,7 @@ export default {
       }
       this.editDriver = true
       this.dialogTitle = this.$t('datasource.edit_driver')
-      this.driverForm = {...row}
+      this.driverForm = { ...row }
     },
     _handleDelete(datasource) {
       const params = {

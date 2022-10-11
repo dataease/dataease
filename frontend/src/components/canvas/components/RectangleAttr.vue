@@ -1,9 +1,16 @@
 <template>
-  <el-card class="el-card-main" :style="mainStyle">
+  <el-card
+    class="el-card-main"
+    :style="mainStyle"
+  >
     <div style="position: relative;">
       <div style="width: 80px;margin-top: 2px;margin-left: 2px;float: left">
         <el-tooltip content="边框风格">
-          <el-select v-model="styleInfo.borderStyle" size="mini" @change="styleChange">
+          <el-select
+            v-model="styleInfo.borderStyle"
+            size="mini"
+            @change="styleChange"
+          >
             <el-option
               v-for="item in lineStyle"
               :key="item.value"
@@ -21,7 +28,12 @@
 
       <div style="width: 55px;float: left;margin-top: 2px;margin-left: 2px;">
         <el-tooltip content="边框宽度">
-          <el-select v-model="styleInfo.borderWidth" size="mini" placeholder="" @change="styleChange">
+          <el-select
+            v-model="styleInfo.borderWidth"
+            size="mini"
+            placeholder=""
+            @change="styleChange"
+          >
             <el-option
               v-for="item in lineFont"
               :key="item.value"
@@ -33,38 +45,78 @@
       </div>
 
       <el-tooltip :content="$t('panel.borderRadius')">
-        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-fangxing-" />
+        <i
+          style="float: left;margin-top: 3px;margin-left: 2px;"
+          class="icon iconfont icon-fangxing-"
+        />
       </el-tooltip>
 
       <div style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.borderRadius" type="number" size="mini" min="0" max="100" step="1" @change="styleChange" />
+        <el-input
+          v-model="styleInfo.borderRadius"
+          type="number"
+          size="mini"
+          min="0"
+          max="100"
+          step="1"
+          @change="styleChange"
+        />
       </div>
 
       <el-tooltip :content="$t('panel.opacity')">
-        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-touming" />
+        <i
+          style="float: left;margin-top: 3px;margin-left: 2px;"
+          class="icon iconfont icon-touming"
+        />
       </el-tooltip>
 
       <div style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="innerOpacity" type="number" size="mini" min="0" max="100" step="10" @change="styleChange" />
+        <el-input
+          v-model="innerOpacity"
+          type="number"
+          size="mini"
+          min="0"
+          max="100"
+          step="10"
+          @change="styleChange"
+        />
       </div>
 
       <div style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <div style="width: 16px;height: 18px">
           <el-tooltip content="边框颜色">
-            <i class="iconfont icon-huabi" @click="goBoardColor" />
+            <i
+              class="iconfont icon-huabi"
+              @click="goBoardColor"
+            />
           </el-tooltip>
           <div :style="boardDivColor" />
-          <el-color-picker ref="boardColorPicker" v-model="styleInfo.borderColor" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange" />
+          <el-color-picker
+            ref="boardColorPicker"
+            v-model="styleInfo.borderColor"
+            style="margin-top: 7px;height: 0px"
+            size="mini"
+            @change="styleChange"
+          />
         </div>
       </div>
 
       <div style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
         <div style="width: 16px;height: 18px">
           <el-tooltip content="背景颜色">
-            <i class="iconfont icon-beijingse1" @click="goBackgroundColor" />
+            <i
+              class="iconfont icon-beijingse1"
+              @click="goBackgroundColor"
+            />
           </el-tooltip>
           <div :style="backgroundDivColor" />
-          <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" size="mini" @change="styleChange" />
+          <el-color-picker
+            ref="backgroundColorPicker"
+            v-model="styleInfo.backgroundColor"
+            style="margin-top: 7px;height: 0px"
+            size="mini"
+            @change="styleChange"
+          />
         </div>
       </div>
 
@@ -122,20 +174,8 @@ export default {
       innerOpacity: 0
     }
   },
-  watch: {
-    innerOpacity: {
-      handler(oldVal, newVal) {
-        this.styleInfo['opacity'] = this.innerOpacity / 100
-      }
-    }
-  },
-  mounted() {
-    if (this.styleInfo['opacity']) {
-      this.innerOpacity = this.styleInfo['opacity'] * 100
-    }
-  },
-  computed: {
 
+  computed: {
     boardDivColor() {
       const style = {
         height: '2px',
@@ -174,6 +214,18 @@ export default {
       'canvasStyleData'
     ])
 
+  },
+  watch: {
+    innerOpacity: {
+      handler(oldVal, newVal) {
+        this.styleInfo['opacity'] = this.innerOpacity / 100
+      }
+    }
+  },
+  mounted() {
+    if (this.styleInfo['opacity']) {
+      this.innerOpacity = this.styleInfo['opacity'] * 100
+    }
   },
   methods: {
     goBoardColor() {

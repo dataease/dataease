@@ -6,7 +6,12 @@
     trigger="click"
   >
     <el-row>
-      <el-form ref="form" :inline="true" size="mini" label-width="70px">
+      <el-form
+        ref="form"
+        :inline="true"
+        size="mini"
+        label-width="70px"
+      >
 
         <el-form-item :label="$t('deshowdate.open_mode')">
 
@@ -27,14 +32,23 @@
         </el-form-item>
 
         <el-form-item :label="$t('deshowdate.show_week')">
-          <el-switch v-model="formatInfo.showWeek" size="mini" />
+          <el-switch
+            v-model="formatInfo.showWeek"
+            size="mini"
+          />
         </el-form-item>
 
         <el-form-item :label="$t('deshowdate.show_date')">
-          <el-switch v-model="formatInfo.showDate" size="mini" />
+          <el-switch
+            v-model="formatInfo.showDate"
+            size="mini"
+          />
         </el-form-item>
 
-        <el-form-item v-show="formatInfo.showDate" :label="$t('deshowdate.date_format')">
+        <el-form-item
+          v-show="formatInfo.showDate"
+          :label="$t('deshowdate.date_format')"
+        >
           <el-select
             v-model="formatInfo.dateFormat"
             :placeholder="$t('deshowdate.select_date_format')"
@@ -77,7 +91,10 @@
         </el-form-item> -->
       </el-form>
     </el-row>
-    <i slot="reference" class="icon iconfont icon-shijiangeshizhuanhuan" />
+    <i
+      slot="reference"
+      class="icon iconfont icon-shijiangeshizhuanhuan"
+    />
   </el-popover>
 </template>
 

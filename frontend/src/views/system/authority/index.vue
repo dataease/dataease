@@ -1,6 +1,9 @@
 <template>
   <de-main-container style="height: calc(100vh - 56px)">
-    <el-tabs v-model="authorityType" @tab-click="handleClick">
+    <el-tabs
+      v-model="authorityType"
+      @tab-click="handleClick"
+    >
       <el-tab-pane name="authConfig">
         <span slot="label">{{ $t('auth.authConfig') }}</span>
         <auth-config />

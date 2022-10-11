@@ -7,13 +7,28 @@
         trigger="click"
       >
         <el-col v-if="aidedDesign">
-          <el-form ref="aidedForm" label-width="110px" size="mini">
-            <el-form-item :label="'辅助网格'" class="form-item form-item-slider">
-              <el-checkbox v-model="aidedDesign.showGrid" size="mini" @change="onChangePanelStyle" />
+          <el-form
+            ref="aidedForm"
+            label-width="110px"
+            size="mini"
+          >
+            <el-form-item
+              :label="'辅助网格'"
+              class="form-item form-item-slider"
+            >
+              <el-checkbox
+                v-model="aidedDesign.showGrid"
+                size="mini"
+                @change="onChangePanelStyle"
+              />
             </el-form-item>
           </el-form>
         </el-col>
-        <el-button slot="reference" size="mini" class="shape-item">辅助设计 <i
+        <el-button
+          slot="reference"
+          size="mini"
+          class="shape-item"
+        >辅助设计 <i
           class="el-icon-setting el-icon--right"
         /></el-button>
       </el-popover>

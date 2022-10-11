@@ -152,7 +152,7 @@ export function getDatasourceDetail(id) {
   return request({
     url: `/datasource/get/${id}`,
     loading: true,
-    method: 'post',
+    method: 'post'
   })
 }
 export default { getDatasourceDetail, dsGrid, addDs, editDs, delDs, validateDs, listDatasource, getSchema }

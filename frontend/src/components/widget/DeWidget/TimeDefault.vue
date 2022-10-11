@@ -1,5 +1,8 @@
 <template>
-  <div style="display: flex;align-items: center;" :style="{ 'height': containerHeight, 'margin':timeMargin +'px'}">
+  <div
+    style="display: flex;align-items: center;"
+    :style="{ 'height': containerHeight, 'margin':timeMargin +'px'}"
+  >
 
     <p style="width:100%;margin:auto;">{{ nowDate }}</p>
 

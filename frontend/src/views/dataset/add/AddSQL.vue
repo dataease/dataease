@@ -1,5 +1,9 @@
 <template>
-  <div v-loading="loading" class="dataset-sql" @mouseup="mouseupDrag">
+  <div
+    v-loading="loading"
+    class="dataset-sql"
+    @mouseup="mouseupDrag"
+  >
     <div class="sql-editer">
       <el-row>
         <el-col :span="12">
@@ -26,7 +30,10 @@
             :placeholder="$t('dataset.connect_mode')"
             size="small"
           >
-            <el-option :label="$t('dataset.direct_connect')" value="0" />
+            <el-option
+              :label="$t('dataset.direct_connect')"
+              value="0"
+            />
             <el-option
               :label="$t('dataset.sync_data')"
               value="1"
@@ -46,10 +53,16 @@
               value="sync_now"
               :disabled="engineMode === 'simple'"
             />
-            <el-option :label="$t('dataset.sync_latter')" value="sync_latter" />
+            <el-option
+              :label="$t('dataset.sync_latter')"
+              value="sync_latter"
+            />
           </el-select>
         </el-col>
-        <el-col style="text-align: right" :span="12">
+        <el-col
+          style="text-align: right"
+          :span="12"
+        >
           <el-button
             type="text"
             size="small"
@@ -83,7 +96,10 @@
       </el-row>
     </div>
     <div class="refrence-sql-table">
-      <div v-if="dataReference" class="data-reference">
+      <div
+        v-if="dataReference"
+        class="data-reference"
+      >
         <div class="table-database-name">
           <p>
             <span
@@ -105,7 +121,10 @@
               "
             />
           </p>
-          <p v-if="dataSource" style="margin-top: 16px">
+          <p
+            v-if="dataSource"
+            style="margin-top: 16px"
+          >
             <span>
               <svg-icon icon-class="db-de" />
               {{ (showTable && dataTable) || selectedDatasource.name }}
@@ -118,10 +137,17 @@
             </span>
           </p>
         </div>
-        <span v-if="!dataSource" class="no-select-datasource">{{
+        <span
+          v-if="!dataSource"
+          class="no-select-datasource"
+        >{{
           $t('deDataset.to_start_using')
         }}</span>
-        <div v-else-if="dataSource && !dataTable" v-loading="tableLoading" class="item-list">
+        <div
+          v-else-if="dataSource && !dataTable"
+          v-loading="tableLoading"
+          class="item-list"
+        >
           <div
             v-for="ele in tableData"
             :key="ele.name"
@@ -131,7 +157,10 @@
             {{ ele.name }}
           </div>
         </div>
-        <div v-else-if="dataSource && dataTable" class="item-list">
+        <div
+          v-else-if="dataSource && dataTable"
+          class="item-list"
+        >
           <div
             v-for="ele in fieldData"
             :key="ele.fieldName"
@@ -142,7 +171,10 @@
         </div>
       </div>
       <div class="sql-table">
-        <div class="code-container" :style="{ height: sqlHeight + 'px' }">
+        <div
+          class="code-container"
+          :style="{ height: sqlHeight + 'px' }"
+        >
           <codemirror
             ref="myCm"
             v-model="sql"
@@ -163,7 +195,10 @@
               )})`
             }}</span>
 
-            <span class="drag" @mousedown="mousedownDrag" />
+            <span
+              class="drag"
+              @mousedown="mousedownDrag"
+            />
           </div>
           <div class="table-sql">
             <el-empty
@@ -229,31 +264,31 @@
                     :options="fieldOptions"
                     @change="variableTypeChange(scope.row)"
                   >
-                  <template slot-scope="{ data }">
-                    <svg-icon
-                      v-if="data.value === 'TEXT'"
-                      icon-class="field_text"
-                      class="field-icon-text"
-                    />
-                    <svg-icon
-                      v-if="
-                        [
-                          'DATETIME-YEAR',
-                          'DATETIME-YEAR-MONTH',
-                          'DATETIME',
-                          'DATETIME-YEAR-MONTH-DAY'
-                        ].includes(data.value)
-                      "
-                      icon-class="field_time"
-                      class="field-icon-time"
-                    />
-                    <svg-icon
-                      v-if="['LONG', 'DOUBLE'].includes(data.value)"
-                      icon-class="field_value"
-                      class="field-icon-value"
-                    />
-                    <span>{{ data.label }}</span>
-                  </template>
+                    <template slot-scope="{ data }">
+                      <svg-icon
+                        v-if="data.value === 'TEXT'"
+                        icon-class="field_text"
+                        class="field-icon-text"
+                      />
+                      <svg-icon
+                        v-if="
+                          [
+                            'DATETIME-YEAR',
+                            'DATETIME-YEAR-MONTH',
+                            'DATETIME',
+                            'DATETIME-YEAR-MONTH-DAY'
+                          ].includes(data.value)
+                        "
+                        icon-class="field_time"
+                        class="field-icon-time"
+                      />
+                      <svg-icon
+                        v-if="['LONG', 'DOUBLE'].includes(data.value)"
+                        icon-class="field_value"
+                        class="field-icon-value"
+                      />
+                      <span>{{ data.label }}</span>
+                    </template>
                   </el-cascader>
                   <span class="select-svg-icon">
                     <svg-icon
@@ -347,10 +382,16 @@
               </el-table-column>
             </el-table>
             <div class="de-foot">
-              <deBtn secondary @click="closeVariableMgm">{{
+              <deBtn
+                secondary
+                @click="closeVariableMgm"
+              >{{
                 $t('dataset.cancel')
               }}</deBtn>
-              <deBtn type="primary" @click="saveVariable()">{{
+              <deBtn
+                type="primary"
+                @click="saveVariable()"
+              >{{
                 $t('dataset.confirm')
               }}</deBtn>
             </div>
@@ -428,7 +469,6 @@ export default {
           completeSingle: false // 当匹配只有一项的时候是否自动补全
         }
       },
-      data: [],
       errImg: require('@/assets/error.png'),
       initImg: require('@/assets/None.png'),
       sqlHeight: 248,
@@ -502,8 +542,7 @@ export default {
   computed: {
     codemirror() {
       return this.$refs.myCm.codemirror
-    },
-    dataSourceDetail() {}
+    }
   },
   watch: {
     sqlHeight: {
@@ -594,7 +633,7 @@ export default {
           this.tableLoading = false
         })
     },
-    calHeight: _.debounce(function () {
+    calHeight: _.debounce(function() {
       const sqlHeight = Math.max(this.sqlHeight, 248)
       const currentHeight = document.documentElement.clientHeight
       this.height = currentHeight - sqlHeight - 56 - 54 - 36 - 64
@@ -648,10 +687,8 @@ export default {
       }, true, 60000, true)
         .then((response) => {
           this.fields = response.data.fields
-          this.data = response.data.data
-          const datas = this.data
           this.$nextTick(() => {
-            this.$refs.plxTable?.reloadData(datas)
+            this.$refs.plxTable?.reloadData(response.data.data)
           })
         })
         .catch((err, msg) => {
@@ -724,6 +761,7 @@ export default {
           var name = match[index].substring(2, match[index].length - 1)
           if (names.indexOf(name) < 0) {
             names.push(name)
+            // eslint-disable-next-line
             var obj = undefined
             for (let i = 0; i < this.variables.length; i++) {
               if (this.variables[i].variableName === name) {

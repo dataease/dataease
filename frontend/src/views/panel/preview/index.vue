@@ -2,7 +2,10 @@
   <el-container>
     <!-- <de-header>Header</de-header> -->
     <span style="line-height: 35px; position: absolute; top:10px;right: 10px">
-      <el-button size="mini" @click="toDir">
+      <el-button
+        size="mini"
+        @click="toDir"
+      >
         {{ $t('commons.close') }}
       </el-button>
     </span>

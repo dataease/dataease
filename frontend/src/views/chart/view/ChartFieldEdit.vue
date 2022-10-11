@@ -3,11 +3,18 @@
     <el-row>
       <el-form :inline="true">
         <el-form-item class="form-item">
-          <el-button size="mini" icon="el-icon-circle-plus-outline" @click="addCalcField">
+          <el-button
+            size="mini"
+            icon="el-icon-circle-plus-outline"
+            @click="addCalcField"
+          >
             {{ $t('dataset.add_calc_field') }}
           </el-button>
         </el-form-item>
-        <el-form-item class="form-item" style="float: right;margin-right: 0;">
+        <el-form-item
+          class="form-item"
+          style="float: right;margin-right: 0;"
+        >
           <el-input
             v-model="searchField"
             size="mini"
@@ -20,10 +27,23 @@
       </el-form>
     </el-row>
 
-    <el-collapse v-model="fieldActiveNames" class="style-collapse">
-      <el-collapse-item name="d" :title="$t('chart.dimension')">
-        <el-table :data="tableFields.dimensionListData" size="mini">
-          <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
+    <el-collapse
+      v-model="fieldActiveNames"
+      class="style-collapse"
+    >
+      <el-collapse-item
+        name="d"
+        :title="$t('chart.dimension')"
+      >
+        <el-table
+          :data="tableFields.dimensionListData"
+          size="mini"
+        >
+          <el-table-column
+            property="name"
+            :label="$t('dataset.field_name')"
+            width="180"
+          >
             <template slot-scope="scope">
               <el-input
                 v-model="scope.row.name"
@@ -33,7 +53,11 @@
               />
             </template>
           </el-table-column>
-          <el-table-column property="deType" :label="$t('dataset.field_type')" width="140">
+          <el-table-column
+            property="deType"
+            :label="$t('dataset.field_type')"
+            width="140"
+          >
             <template slot-scope="scope">
               <el-select
                 v-model="scope.row.deType"
@@ -48,14 +72,26 @@
                   :value="item.value"
                 >
                   <span style="float: left">
-                    <svg-icon v-if="item.value === 0" icon-class="field_text" class="field-icon-text" />
-                    <svg-icon v-if="item.value === 1" icon-class="field_time" class="field-icon-time" />
+                    <svg-icon
+                      v-if="item.value === 0"
+                      icon-class="field_text"
+                      class="field-icon-text"
+                    />
+                    <svg-icon
+                      v-if="item.value === 1"
+                      icon-class="field_time"
+                      class="field-icon-time"
+                    />
                     <svg-icon
                       v-if="item.value === 2 || item.value === 3"
                       icon-class="field_value"
                       class="field-icon-value"
                     />
-                    <svg-icon v-if="item.value === 5" icon-class="field_location" class="field-icon-location" />
+                    <svg-icon
+                      v-if="item.value === 5"
+                      icon-class="field_location"
+                      class="field-icon-location"
+                    />
                   </span>
                   <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>
                 </el-option>
@@ -70,7 +106,11 @@
                   <span class="field-class">{{ $t('dataset.text') }}</span>
                 </span>
                 <span v-if="scope.row.deType === 1">
-                  <svg-icon v-if="scope.row.deType === 1" icon-class="field_time" class="field-icon-time" />
+                  <svg-icon
+                    v-if="scope.row.deType === 1"
+                    icon-class="field_time"
+                    class="field-icon-time"
+                  />
                   <span class="field-class">{{ $t('dataset.time') }}</span>
                 </span>
                 <span v-if="scope.row.deType === 2 || scope.row.deType === 3">
@@ -79,20 +119,31 @@
                     icon-class="field_value"
                     class="field-icon-value"
                   />
-                  <span v-if="scope.row.deType === 2" class="field-class">{{ $t('dataset.value') }}</span>
+                  <span
+                    v-if="scope.row.deType === 2"
+                    class="field-class"
+                  >{{ $t('dataset.value') }}</span>
                   <span
                     v-if="scope.row.deType === 3"
                     class="field-class"
                   >{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>
                 </span>
                 <span v-if="scope.row.deType === 5">
-                  <svg-icon v-if="scope.row.deType === 5" icon-class="field_location" class="field-icon-location" />
+                  <svg-icon
+                    v-if="scope.row.deType === 5"
+                    icon-class="field_location"
+                    class="field-icon-location"
+                  />
                   <span class="field-class">{{ $t('dataset.location') }}</span>
                 </span>
               </span>
             </template>
           </el-table-column>
-          <el-table-column property="deExtractType" :label="$t('dataset.origin_field_type')" width="100">
+          <el-table-column
+            property="deExtractType"
+            :label="$t('dataset.origin_field_type')"
+            width="100"
+          >
             <template slot-scope="scope">
               <span>
                 <span v-if="scope.row.deExtractType === 0 || scope.row.deExtractType === 6">
@@ -104,7 +155,11 @@
                   <span class="field-class">{{ $t('dataset.text') }}</span>
                 </span>
                 <span v-if="scope.row.deExtractType === 1">
-                  <svg-icon v-if="scope.row.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
+                  <svg-icon
+                    v-if="scope.row.deExtractType === 1"
+                    icon-class="field_time"
+                    class="field-icon-time"
+                  />
                   <span class="field-class">{{ $t('dataset.time') }}</span>
                 </span>
                 <span
@@ -135,21 +190,41 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column property="fromType" :label="$t('chart.form_type')" width="120">
+          <el-table-column
+            property="fromType"
+            :label="$t('chart.form_type')"
+            width="120"
+          >
             <template slot-scope="scope">
-              <span v-if="scope.row.extField === 1" class="from-type-span">{{ $t('chart.copy_field') }}</span>
-              <span v-if="scope.row.extField === 2" class="from-type-span">{{ $t('chart.calc_field') }}</span>
+              <span
+                v-if="scope.row.extField === 1"
+                class="from-type-span"
+              >{{ $t('chart.copy_field') }}</span>
+              <span
+                v-if="scope.row.extField === 2"
+                class="from-type-span"
+              >{{ $t('chart.calc_field') }}</span>
             </template>
           </el-table-column>
-          <el-table-column property="groupType" width="120">
+          <el-table-column
+            property="groupType"
+            width="120"
+          >
             <template slot="header">
               <span style="font-size: 12px;">
                 {{ $t('dataset.d_q_trans') }}
-                <el-tooltip class="item" effect="dark" placement="bottom">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  placement="bottom"
+                >
                   <div slot="content">
                     若字段表达式中使用聚合函数，则字段不能设置为维度使用。
                   </div>
-                  <i class="el-icon-info" style="cursor: pointer;" />
+                  <i
+                    class="el-icon-info"
+                    style="cursor: pointer;"
+                  />
                 </el-tooltip>
               </span>
             </template>
@@ -162,7 +237,10 @@
               />
             </template>
           </el-table-column>
-          <el-table-column property="" :label="$t('dataset.operator')">
+          <el-table-column
+            property=""
+            :label="$t('dataset.operator')"
+          >
             <template slot-scope="scope">
               <el-button
                 v-if="scope.row.extField !== 0"
@@ -183,9 +261,19 @@
         </el-table>
       </el-collapse-item>
 
-      <el-collapse-item name="q" :title="$t('chart.quota')">
-        <el-table :data="tableFields.quotaListData" size="mini">
-          <el-table-column property="name" :label="$t('dataset.field_name')" width="180">
+      <el-collapse-item
+        name="q"
+        :title="$t('chart.quota')"
+      >
+        <el-table
+          :data="tableFields.quotaListData"
+          size="mini"
+        >
+          <el-table-column
+            property="name"
+            :label="$t('dataset.field_name')"
+            width="180"
+          >
             <template slot-scope="scope">
               <el-input
                 v-model="scope.row.name"
@@ -195,7 +283,11 @@
               />
             </template>
           </el-table-column>
-          <el-table-column property="deType" :label="$t('dataset.field_type')" width="140">
+          <el-table-column
+            property="deType"
+            :label="$t('dataset.field_type')"
+            width="140"
+          >
             <template slot-scope="scope">
               <el-select
                 v-model="scope.row.deType"
@@ -210,25 +302,45 @@
                   :value="item.value"
                 >
                   <span style="float: left">
-                    <svg-icon v-if="item.value === 0" icon-class="field_text" class="field-icon-text" />
-                    <svg-icon v-if="item.value === 1" icon-class="field_time" class="field-icon-time" />
+                    <svg-icon
+                      v-if="item.value === 0"
+                      icon-class="field_text"
+                      class="field-icon-text"
+                    />
+                    <svg-icon
+                      v-if="item.value === 1"
+                      icon-class="field_time"
+                      class="field-icon-time"
+                    />
                     <svg-icon
                       v-if="item.value === 2 || item.value === 3"
                       icon-class="field_value"
                       class="field-icon-value"
                     />
-                    <svg-icon v-if="item.value === 5" icon-class="field_location" class="field-icon-location" />
+                    <svg-icon
+                      v-if="item.value === 5"
+                      icon-class="field_location"
+                      class="field-icon-location"
+                    />
                   </span>
                   <span style="float: left; color: #8492a6; font-size: 12px">{{ item.label }}</span>
                 </el-option>
               </el-select>
               <span style="margin-left: 8px;">
                 <span v-if="scope.row.deType === 0">
-                  <svg-icon v-if="scope.row.deType === 0" icon-class="field_text" class="field-icon-text" />
+                  <svg-icon
+                    v-if="scope.row.deType === 0"
+                    icon-class="field_text"
+                    class="field-icon-text"
+                  />
                   <span class="field-class">{{ $t('dataset.text') }}</span>
                 </span>
                 <span v-if="scope.row.deType === 1">
-                  <svg-icon v-if="scope.row.deType === 1" icon-class="field_time" class="field-icon-time" />
+                  <svg-icon
+                    v-if="scope.row.deType === 1"
+                    icon-class="field_time"
+                    class="field-icon-time"
+                  />
                   <span class="field-class">{{ $t('dataset.time') }}</span>
                 </span>
                 <span v-if="scope.row.deType === 2 || scope.row.deType === 3">
@@ -237,28 +349,47 @@
                     icon-class="field_value"
                     class="field-icon-value"
                   />
-                  <span v-if="scope.row.deType === 2" class="field-class">{{ $t('dataset.value') }}</span>
+                  <span
+                    v-if="scope.row.deType === 2"
+                    class="field-class"
+                  >{{ $t('dataset.value') }}</span>
                   <span
                     v-if="scope.row.deType === 3"
                     class="field-class"
                   >{{ $t('dataset.value') + '(' + $t('dataset.float') + ')' }}</span>
                 </span>
                 <span v-if="scope.row.deType === 5">
-                  <svg-icon v-if="scope.row.deType === 5" icon-class="field_location" class="field-icon-location" />
+                  <svg-icon
+                    v-if="scope.row.deType === 5"
+                    icon-class="field_location"
+                    class="field-icon-location"
+                  />
                   <span class="field-class">{{ $t('dataset.location') }}</span>
                 </span>
               </span>
             </template>
           </el-table-column>
-          <el-table-column property="deExtractType" :label="$t('dataset.origin_field_type')" width="100">
+          <el-table-column
+            property="deExtractType"
+            :label="$t('dataset.origin_field_type')"
+            width="100"
+          >
             <template slot-scope="scope">
               <span>
                 <span v-if="scope.row.deExtractType === 0">
-                  <svg-icon v-if="scope.row.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
+                  <svg-icon
+                    v-if="scope.row.deExtractType === 0"
+                    icon-class="field_text"
+                    class="field-icon-text"
+                  />
                   <span class="field-class">{{ $t('dataset.text') }}</span>
                 </span>
                 <span v-if="scope.row.deExtractType === 1">
-                  <svg-icon v-if="scope.row.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
+                  <svg-icon
+                    v-if="scope.row.deExtractType === 1"
+                    icon-class="field_time"
+                    class="field-icon-time"
+                  />
                   <span class="field-class">{{ $t('dataset.time') }}</span>
                 </span>
                 <span
@@ -289,21 +420,41 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column property="fromType" :label="$t('chart.form_type')" width="120">
+          <el-table-column
+            property="fromType"
+            :label="$t('chart.form_type')"
+            width="120"
+          >
             <template slot-scope="scope">
-              <span v-if="scope.row.extField === 1" class="from-type-span">{{ $t('chart.copy_field') }}</span>
-              <span v-if="scope.row.extField === 2" class="from-type-span">{{ $t('chart.calc_field') }}</span>
+              <span
+                v-if="scope.row.extField === 1"
+                class="from-type-span"
+              >{{ $t('chart.copy_field') }}</span>
+              <span
+                v-if="scope.row.extField === 2"
+                class="from-type-span"
+              >{{ $t('chart.calc_field') }}</span>
             </template>
           </el-table-column>
-          <el-table-column property="groupType" width="120">
+          <el-table-column
+            property="groupType"
+            width="120"
+          >
             <template slot="header">
               <span style="font-size: 12px;">
                 {{ $t('dataset.d_q_trans') }}
-                <el-tooltip class="item" effect="dark" placement="bottom">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  placement="bottom"
+                >
                   <div slot="content">
                     若字段表达式中使用聚合函数，则字段不能设置为维度使用。
                   </div>
-                  <i class="el-icon-info" style="cursor: pointer;" />
+                  <i
+                    class="el-icon-info"
+                    style="cursor: pointer;"
+                  />
                 </el-tooltip>
               </span>
             </template>
@@ -316,7 +467,10 @@
               />
             </template>
           </el-table-column>
-          <el-table-column property="" :label="$t('dataset.operator')">
+          <el-table-column
+            property=""
+            :label="$t('dataset.operator')"
+          >
             <template slot-scope="scope">
               <el-button
                 v-if="scope.row.extField !== 0"

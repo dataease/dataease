@@ -9,12 +9,23 @@
           @change="multipleChange"
         />
 
-        <span v-if="widget.isTimeWidget && widget.isTimeWidget()" style="padding-left: 10px;">
-          <el-checkbox v-model="attrs.showTime" @change="showTimeChange">
+        <span
+          v-if="widget.isTimeWidget && widget.isTimeWidget()"
+          style="padding-left: 10px;"
+        >
+          <el-checkbox
+            v-model="attrs.showTime"
+            @change="showTimeChange"
+          >
             <span>{{ $t('panel.show_time') }} </span>
           </el-checkbox>
 
-          <el-popover v-model="timePopovervisible" placement="bottom-end" :disabled="!attrs.showTime" width="140">
+          <el-popover
+            v-model="timePopovervisible"
+            placement="bottom-end"
+            :disabled="!attrs.showTime"
+            width="140"
+          >
             <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
               <ul class="de-ul">
                 <li
@@ -46,9 +57,17 @@
     <el-col :span="16">
       <div class="filter-options-right">
         <span style="padding-right: 10px;">
-          <el-checkbox v-model="attrs.showTitle" @change="showTitleChange">{{ $t('panel.show_title') }}
+          <el-checkbox
+            v-model="attrs.showTitle"
+            @change="showTitleChange"
+          >{{ $t('panel.show_title') }}
           </el-checkbox>
-          <el-popover v-model="titlePopovervisible" placement="bottom-end" :disabled="!attrs.showTitle" width="200">
+          <el-popover
+            v-model="titlePopovervisible"
+            placement="bottom-end"
+            :disabled="!attrs.showTitle"
+            width="200"
+          >
             <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
               <el-input
                 v-model="attrs.title"
@@ -67,12 +86,23 @@
           </el-popover>
         </span>
         <span style="padding-left: 10px;">
-          <el-checkbox v-model="attrs.enableRange" @change="enableRangeChange"><span>
+          <el-checkbox
+            v-model="attrs.enableRange"
+            @change="enableRangeChange"
+          ><span>
             {{ $t('panel.custom_scope') }} </span> </el-checkbox>
 
-          <el-popover v-model="popovervisible" placement="bottom-end" :disabled="!attrs.enableRange" width="200">
+          <el-popover
+            v-model="popovervisible"
+            placement="bottom-end"
+            :disabled="!attrs.enableRange"
+            width="200"
+          >
             <div class="view-container-class">
-              <el-checkbox-group v-model="attrs.viewIds" @change="checkedViewsChange">
+              <el-checkbox-group
+                v-model="attrs.viewIds"
+                @change="checkedViewsChange"
+              >
                 <el-checkbox
                   v-for="(item ) in childViews.viewInfos"
                   :key="item.id"
@@ -80,9 +110,21 @@
                   class="de-checkbox"
                 >
                   <div class="span-div">
-                    <svg-icon :icon-class="item.type" class="chart-icon" />
-                    <span v-if="item.name && item.name.length <= 7" style="margin-left: 6px">{{ item.name }}</span>
-                    <el-tooltip v-else class="item" effect="dark" :content="item.name" placement="left">
+                    <svg-icon
+                      :icon-class="item.type"
+                      class="chart-icon"
+                    />
+                    <span
+                      v-if="item.name && item.name.length <= 7"
+                      style="margin-left: 6px"
+                    >{{ item.name }}</span>
+                    <el-tooltip
+                      v-else
+                      class="item"
+                      effect="dark"
+                      :content="item.name"
+                      placement="left"
+                    >
                       <span style="margin-left: 6px">{{ item.name }}</span>
                     </el-tooltip>
                   </div>
@@ -98,11 +140,21 @@
             />
           </el-popover>
         </span>
-        <span v-if="showParams" style="padding-left: 10px;">
-          <el-checkbox v-model="attrs.enableParameters" @change="enableParametersChange"><span>
+        <span
+          v-if="showParams"
+          style="padding-left: 10px;"
+        >
+          <el-checkbox
+            v-model="attrs.enableParameters"
+            @change="enableParametersChange"
+          ><span>
             {{ $t('panel.binding_parameters') }} </span> </el-checkbox>
 
-          <el-popover placement="bottom-end" :disabled="!attrs.enableParameters" width="200">
+          <el-popover
+            placement="bottom-end"
+            :disabled="!attrs.enableParameters"
+            width="200"
+          >
             <div class="view-container-class">
               <el-checkbox-group v-model="attrs.parameters">
                 <el-checkbox
@@ -116,7 +168,13 @@
                       v-if="item.alias && item.alias.length <= 7"
                       style="margin-left: 6px"
                     >{{ item.alias }}</span>
-                    <el-tooltip v-else class="item" effect="dark" :content="item.alias" placement="left">
+                    <el-tooltip
+                      v-else
+                      class="item"
+                      effect="dark"
+                      :content="item.alias"
+                      placement="left"
+                    >
                       <span style="margin-left: 6px">{{ item.alias }}</span>
                     </el-tooltip>
                   </div>

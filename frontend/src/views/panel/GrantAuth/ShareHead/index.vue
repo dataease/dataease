@@ -2,15 +2,24 @@
   <div>
     <el-col>
       <el-row>
-        <el-col :span="8" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
+        <el-col
+          :span="8"
+          style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px"
+        >
           <span>{{ $t('panel.who_share') + ': ' + $store.getters.user.nickName }}</span>
         </el-col>
 
-        <el-col :span="8" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
+        <el-col
+          :span="8"
+          style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px"
+        >
           <span>{{ $t('panel.when_share') + ': ' + (granterTime ? new Date(granterTime).format('yyyy-MM-dd hh:mm:ss') : '') }}</span>
         </el-col>
 
-        <el-col :span="8" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
+        <el-col
+          :span="8"
+          style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px"
+        >
           <!-- 分享维度提醒 先注释 因为后面有可能还是需要的 -->
           <!-- <el-link type="primary" disabled class="share-checked">
             {{ $t('panel.org') }}
@@ -41,8 +50,20 @@
             {{ tag.targetName }}
           </el-tag>
 
-          <el-tooltip class="item" effect="dark" :content="$t('commons.edit')" placement="bottom">
-            <el-button type="primary" circle icon="el-icon-edit" class="button-new-tag" size="mini" @click="showEditPage" />
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="$t('commons.edit')"
+            placement="bottom"
+          >
+            <el-button
+              type="primary"
+              circle
+              icon="el-icon-edit"
+              class="button-new-tag"
+              size="mini"
+              @click="showEditPage"
+            />
           </el-tooltip>
         </el-col>
       </el-row>
@@ -57,7 +78,11 @@
       width="800px"
       class="dialog-css"
     >
-      <grant-auth v-if="authVisible" :resource-id="authResourceId" @close-grant="closeGrant" />
+      <grant-auth
+        v-if="authVisible"
+        :resource-id="authResourceId"
+        @close-grant="closeGrant"
+      />
     </el-dialog>
   </div>
 

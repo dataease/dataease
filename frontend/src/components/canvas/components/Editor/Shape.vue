@@ -1,7 +1,21 @@
 <template>
-  <div class="shape" :class="classInfo" @mouseenter="enter" @mouseleave="leave" @click="selectCurComponent" @mousedown="handleMouseDownOnShape">
-    <span v-show="isActive()" class="iconfont icon-xiangyouxuanzhuan" @mousedown="handleRotate" />
-    <span v-show="element.isLock" class="iconfont icon-suo" />
+  <div
+    class="shape"
+    :class="classInfo"
+    @mouseenter="enter"
+    @mouseleave="leave"
+    @click="selectCurComponent"
+    @mousedown="handleMouseDownOnShape"
+  >
+    <span
+      v-show="isActive()"
+      class="iconfont icon-xiangyouxuanzhuan"
+      @mousedown="handleRotate"
+    />
+    <span
+      v-show="element.isLock"
+      class="iconfont icon-suo"
+    />
 
     <!--    <span v-show="isActive()" class="iconfont icon-more">-->
     <!--      <el-button-->

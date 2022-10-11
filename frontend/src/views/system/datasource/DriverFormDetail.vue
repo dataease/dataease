@@ -19,10 +19,13 @@
       label-width="180px"
       label-position="right"
     >
-      <el-form-item :label="$t('driver.driver')" prop="driverClass">
+      <el-form-item
+        :label="$t('driver.driver')"
+        prop="driverClass"
+      >
         <el-input
-          style="width: 600px"
           v-model="driverForm.driverClass"
+          style="width: 600px"
           autocomplete="off"
         />
       </el-form-item>
@@ -53,8 +56,15 @@
       {{ $t('datasource.can_be_uploaded') }}
     </p>
     <div class="jar-cont">
-      <div v-for="jar in driverFiles" :key="jar.id" class="jar-info">
-        <img :src="imgUrl" alt="" />
+      <div
+        v-for="jar in driverFiles"
+        :key="jar.id"
+        class="jar-info"
+      >
+        <img
+          :src="imgUrl"
+          alt=""
+        >
         <p class="name-descript">
           <span class="jar-name">
             {{ jar.fileName }}
@@ -69,19 +79,23 @@
           :content="$t('commons.delete')"
           placement="top"
         >
-          <i @click="deleteDriverFile(jar)" class="el-icon-delete"></i>
+          <i
+            class="el-icon-delete"
+            @click="deleteDriverFile(jar)"
+          />
         </el-tooltip>
       </div>
     </div>
     <div class="de-foot">
-      <deBtn type="primary" @click="save">{{ $t('commons.save') }}</deBtn>
+      <deBtn
+        type="primary"
+        @click="save"
+      >{{ $t('commons.save') }}</deBtn>
     </div>
   </div>
 </template>
 <script>
 import i18n from '@/lang/index'
-import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
-import DsConfiguration from '@/views/system/datasource/DsConfiguration'
 import {
   deleteDriverFile,
   listDriverDetails,
@@ -95,10 +109,6 @@ const token = getToken()
 
 export default {
   name: 'DriverForm',
-  components: {
-    DsConfiguration,
-    ApiHttpRequestForm
-  },
   props: {
     params: {
       type: Object,
@@ -271,9 +281,8 @@ export default {
       this.$emit('switch-component', {})
     },
     refreshType(form) {
-      this.$emit('refresh-type', DsForm)
-    },
-    handleClick(tab, event) {}
+      this.$emit('refresh-type', form)
+    }
   }
 }
 </script>

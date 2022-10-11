@@ -1,5 +1,8 @@
 <template>
-  <div class="rich-main-class" @dblclick="setEdit">
+  <div
+    class="rich-main-class"
+    @dblclick="setEdit"
+  >
     <Editor
       v-if="editShow"
       :id="tinymceId"
@@ -121,23 +124,23 @@ export default {
       }
     },
     myValue(newValue) {
-      this.initReady&&this.$store.commit('canvasChange')
+      this.initReady && this.$store.commit('canvasChange')
     }
   },
   mounted() {
-   this.viewInit()
+    this.viewInit()
   },
   beforeDestroy() {
     bus.$off('fieldSelect-' + this.element.propValue.viewId)
   },
   methods: {
-    viewInit(){
+    viewInit() {
       bus.$on('fieldSelect-' + this.element.propValue.viewId, this.fieldSelect)
       tinymce.init({})
       this.myValue = this.assignment(this.element.propValue.textValue)
       bus.$on('initCurFields-' + this.element.id, this.initCurFieldsChange)
-      this.$nextTick(()=>{
-        this.initReady=true
+      this.$nextTick(() => {
+        this.initReady = true
       })
     },
     initCurFieldsChange() {
@@ -154,45 +157,44 @@ export default {
           content = content.replace(itm, _this.dataRowNameSelect[ele] !== undefined ? _this.dataRowNameSelect[ele] : '[无法获取字段值]')
         })
       }
-      content = content.replace('class="base-selected"','')
+      content = content.replace('class="base-selected"', '')
       this.resetSelect()
       return content
     },
     fieldSelect(field) {
       const ed = tinymce.editors[this.tinymceId]
-      const fieldId = 'changeText-'+uuid.v1()
-      const value = '<span id="'+fieldId+'"><span class="mceNonEditable" contenteditable="false" data-mce-content="['+field.name +']">[' + field.name + ']</span></span>'
+      const fieldId = 'changeText-' + uuid.v1()
+      const value = '<span id="' + fieldId + '"><span class="mceNonEditable" contenteditable="false" data-mce-content="[' + field.name + ']">[' + field.name + ']</span></span>'
       const attachValue = '<span id="attachValue">&nbsp;</span>'
       ed.insertContent(value)
       ed.insertContent(attachValue)
     },
     onClick(e) {
-      const edInner = tinymce.get(this.tinymceId);
       const node = tinymce.activeEditor.selection.getNode()
       this.resetSelect(node)
     },
-    resetSelect(node){
-      const edInner = tinymce.get(this.tinymceId);
-      if(edInner.dom){
-        const nodeArray = edInner.dom.select(".base-selected")
-        if(nodeArray){
-          nodeArray.forEach(nodeInner=>{
+    resetSelect(node) {
+      const edInner = tinymce.get(this.tinymceId)
+      if (edInner.dom) {
+        const nodeArray = edInner.dom.select('.base-selected')
+        if (nodeArray) {
+          nodeArray.forEach(nodeInner => {
             nodeInner.removeAttribute('class')
           })
         }
-        if(node){
+        if (node) {
           const pNode = node.parentElement
-          if(pNode && pNode.id&& pNode.id.indexOf('changeText')>-1){
-            const innerId = '#'+pNode.id
+          if (pNode && pNode.id && pNode.id.indexOf('changeText') > -1) {
+            const innerId = '#' + pNode.id
             const domTest = edInner.dom.select(innerId)[0]
-            domTest.setAttribute("class",'base-selected')
+            domTest.setAttribute('class', 'base-selected')
             edInner.selection.select(domTest)
           }
         }
       }
     },
     setEdit() {
-      if (this.editStatus&&this.canEdit===false) {
+      if (this.editStatus && this.canEdit === false) {
         this.canEdit = true
         this.element['editing'] = true
         this.myValue = this.element.propValue.textValue

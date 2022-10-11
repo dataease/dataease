@@ -1,5 +1,8 @@
 <template>
-  <div v-if="!licValidate && licStatus !== 'no_record'" class="lic">
+  <div
+    v-if="!licValidate && licStatus !== 'no_record'"
+    class="lic"
+  >
     <strong>{{ $t(licMsg) }}</strong>
   </div>
 </template>

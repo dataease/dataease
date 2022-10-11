@@ -4,14 +4,13 @@
   >
     <div class="top-install">
       <el-input
+        v-model="name"
         :placeholder="$t('components.by_plugin_name')"
         size="small"
         prefix-icon="el-icon-search"
-        v-model="name"
         clearable
         @blur="search"
-      >
-      </el-input>
+      />
       <el-upload
         v-permission="['plugin:upload']"
         :action="baseUrl + 'api/plugin/upload'"
@@ -34,18 +33,34 @@
         </deBtn>
       </el-upload>
     </div>
-    <div v-if="!data.length" class="plugin-cont">
-      <el-empty style="width: 100%" description="没有找到相关内容"></el-empty>
+    <div
+      v-if="!data.length"
+      class="plugin-cont"
+    >
+      <el-empty
+        style="width: 100%"
+        description="没有找到相关内容"
+      />
     </div>
-    <div v-else class="plugin-cont">
-      <div v-for="ele in data" :key="ele.pluginId" class="de-card-plugin">
+    <div
+      v-else
+      class="plugin-cont"
+    >
+      <div
+        v-for="ele in data"
+        :key="ele.pluginId"
+        class="de-card-plugin"
+      >
         <div class="card-info">
           <div class="info-top">
             <el-image
               :src="`/api/pluginCommon/staticInfo/${ele.moduleName}/svg`"
             >
-              <div slot="error" class="image-slot">
-                <img  :src="imgDefault"/>
+              <div
+                slot="error"
+                class="image-slot"
+              >
+                <img :src="imgDefault">
               </div>
             </el-image>
             <p class="title">{{ ele.descript }}</p>
@@ -59,14 +74,25 @@
             </el-tooltip>
           </div>
           <div class="info-left">
-            <p class="list name" v-for="item in listName" :key="item">
+            <p
+              v-for="item in listName"
+              :key="item"
+              class="list name"
+            >
               {{ $t(`components.${item}`) }}
             </p>
           </div>
           <div class="info-right">
-            <p class="list value" v-for="item in listValue" :key="item">
+            <p
+              v-for="item in listValue"
+              :key="item"
+              class="list value"
+            >
               <template v-if="item === 'cost' && !ele.cost">
-                <el-tag size="mini" type="success">{{ $t('components.free')}}</el-tag>
+                <el-tag
+                  size="mini"
+                  type="success"
+                >{{ $t('components.free') }}</el-tag>
               </template>
               <template v-else>
                 {{ ele[item] }}
@@ -74,7 +100,10 @@
             </p>
           </div>
         </div>
-        <div class="card-method" :class="`btn-${numPlugin}`">
+        <div
+          class="card-method"
+          :class="`btn-${numPlugin}`"
+        >
           <el-upload
             v-permission="['plugin:upload']"
             :action="baseUrl + 'api/plugin/update/' + ele.pluginId"
@@ -89,10 +118,13 @@
             :headers="headers"
           >
             <div class="btn-plugin update">
-              <i class="el-icon-more"></i>{{ $t('dataset.update')}}
+              <i class="el-icon-more" />{{ $t('dataset.update') }}
             </div>
           </el-upload>
-          <el-divider v-if="numPlugin === 2" direction="vertical"></el-divider>
+          <el-divider
+            v-if="numPlugin === 2"
+            direction="vertical"
+          />
           <el-tooltip
             class="item"
             effect="dark"
@@ -100,21 +132,21 @@
             placement="top"
           >
             <div
-              :class="[{ 'is-disable': btnDisabled(ele) }]"
               v-if="checkPermission(['plugin:uninstall']) && btnDisabled(ele)"
-              @click="del(ele)"
+              :class="[{ 'is-disable': btnDisabled(ele) }]"
               class="btn-plugin uninstall"
+              @click="del(ele)"
             >
-              <i class="el-icon-more"></i> {{$t('components.uninstall')}}
+              <i class="el-icon-more" /> {{ $t('components.uninstall') }}
             </div>
           </el-tooltip>
           <div
-            :class="[{ 'is-disable': btnDisabled(ele) }]"
             v-if="checkPermission(['plugin:uninstall']) && !btnDisabled(ele)"
-            @click="del(ele)"
+            :class="[{ 'is-disable': btnDisabled(ele) }]"
             class="btn-plugin uninstall"
+            @click="del(ele)"
           >
-            <i class="el-icon-more"></i>{{$t('components.uninstall')}}
+            <i class="el-icon-more" />{{ $t('components.uninstall') }}
           </div>
         </div>
       </div>
@@ -123,126 +155,124 @@
 </template>
 
 <script>
-import DeLayoutContent from "@/components/business/DeLayoutContent";
+import DeLayoutContent from '@/components/business/DeLayoutContent'
 
-import { checkPermission } from "@/utils/permission";
-import { formatCondition, formatQuickCondition } from "@/utils/index";
-import { pluginLists, uninstall } from "@/api/system/plugin";
-import { getToken } from "@/utils/auth";
-import msgCfm from "@/components/msgCfm/index";
-import { log } from '@antv/g2plot/lib/utils';
+import { checkPermission } from '@/utils/permission'
+import { pluginLists, uninstall } from '@/api/system/plugin'
+import { getToken } from '@/utils/auth'
+import msgCfm from '@/components/msgCfm/index'
 export default {
   components: { DeLayoutContent },
   mixins: [msgCfm],
   data() {
     return {
-      listName: ["cost", "developer", "edition", "installation_time"],
-      name: "",
-      listValue: ["cost", "creator", "version", "installTime"],
+      listName: ['cost', 'developer', 'edition', 'installation_time'],
+      name: '',
+      listValue: ['cost', 'creator', 'version', 'installTime'],
       data: [],
       imgDefault: require('@/assets/icon_nopicture_filled.png'),
       uploading: false,
       baseUrl: process.env.VUE_APP_BASE_API,
       fileList: [],
       numPlugin: 0,
-      headers: { Authorization: getToken() },
-    };
+      headers: { Authorization: getToken() }
+    }
   },
   mounted() {
-    this.search();
-    this.bindKey();
+    this.search()
+    this.bindKey()
     this.authValidate()
   },
   destroyed() {
-    this.unBindKey();
+    this.unBindKey()
   },
   methods: {
     authValidate() {
       this.numPlugin = Number(checkPermission(['plugin:uninstall'])) + Number(checkPermission(['plugin:upload']))
     },
     entryKey(event) {
-      const keyCode = event.keyCode;
+      const keyCode = event.keyCode
       if (keyCode === 13) {
-        this.search();
+        this.search()
       }
     },
     bindKey() {
-      document.addEventListener("keypress", this.entryKey);
+      document.addEventListener('keypress', this.entryKey)
     },
     unBindKey() {
-      document.removeEventListener("keypress", this.entryKey);
+      document.removeEventListener('keypress', this.entryKey)
     },
     search() {
-      const param = {};
+      const param = {}
       if (this.name) {
         param.conditions = [
           {
-            field: "name",
-            operator: "like",
-            value: this.name,
-          },
-        ];
+            field: 'name',
+            operator: 'like',
+            value: this.name
+          }
+        ]
       }
       pluginLists(0, 0, param).then((response) => {
-        this.data = response.data.listObject;
+        this.data = response.data.listObject
         this.data.forEach((ele) => {
           if (ele.cost) {
-            ele.cost = ele.cost.toLocaleString();
+            ele.cost = ele.cost.toLocaleString()
           }
           ele.installTime = ele.installTime
-            ? new Date(ele.installTime).format("yyyy-MM-dd hh:mm:ss")
-            : "-";
-        });
-      });
+            ? new Date(ele.installTime).format('yyyy-MM-dd hh:mm:ss')
+            : '-'
+        })
+      })
     },
     beforeUpload(file) {
-      this.uploading = true;
+      this.uploading = true
     },
     uploadFail(response, file, fileList) {
-      const msg = (response && response.message) || "安装失败";
+      const msg = (response && response.message) || '安装失败'
       try {
-        const result = JSON.parse(msg);
+        const result = JSON.parse(msg)
         if (result && result.message) {
-          this.$error(result.message);
-          this.uploading = false;
+          this.$error(result.message)
+          this.uploading = false
         }
-        return;
+        return
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
-      this.$error(msg);
-      this.uploading = false;
+      this.$error(msg)
+      this.uploading = false
     },
     uploadSuccess(response, file, fileList) {
-      this.uploading = false;
-      this.search();
+      this.uploading = false
+      this.search()
     },
 
     del(row) {
-      if (row.pluginId < 4) return;
+      if (row.pluginId < 4) return
       const options = {
-        title: "components.uninstall_the_plugin",
-        content: "components.it_takes_effect",
-        confirmButtonText: this.$t("components.uninstall"),
-        type: "primary",
+        title: 'components.uninstall_the_plugin',
+        content: 'components.it_takes_effect',
+        confirmButtonText: this.$t('components.uninstall'),
+        type: 'primary',
         cb: () => {
           uninstall(row.pluginId)
             .then((res) => {
-              this.search();
-              this.openMessageSuccess("plugin.un_install_success");
+              this.search()
+              this.openMessageSuccess('plugin.un_install_success')
             })
             .catch(() => {
-              this.$error(this.$t("plugin.un_install_error"));
-            });
-        },
-      };
-      this.handlerConfirm(options);
+              this.$error(this.$t('plugin.un_install_error'))
+            })
+        }
+      }
+      this.handlerConfirm(options)
     },
     btnDisabled(row) {
-      return row.pluginId < 4;
-    },
-  },
-};
+      return row.pluginId < 4
+    }
+  }
+}
 </script>
 <style lang="scss">
 .top-install {

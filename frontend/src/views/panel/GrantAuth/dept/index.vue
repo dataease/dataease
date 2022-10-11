@@ -8,7 +8,7 @@
 
       <el-tree
         ref="tree"
-        :data="data"
+        :data="treeData"
         lazy
         :load="loadTree"
         style="width: 100%"
@@ -16,7 +16,10 @@
         :default-expanded-keys="expandNodeIds"
         node-key="deptId"
       >
-        <span slot-scope="{ node, data }" class="custom-tree-node">
+        <span
+          slot-scope="{ node, data }"
+          class="custom-tree-node"
+        >
           <span>
             <span style="margin-left: 6px">{{ node.data.name }}</span>
           </span>
@@ -24,7 +27,10 @@
 
             <div>
               <span class="auth-span">
-                <el-checkbox v-model="data.checked" @change="nodeStatusChange(data)" />
+                <el-checkbox
+                  v-model="data.checked"
+                  @change="nodeStatusChange(data)"
+                />
               </span>
             </div>
           </span>
@@ -51,7 +57,7 @@ export default {
   },
   data() {
     return {
-      data: [],
+      treeData: [],
       defaultCondition: {
         field: 'pid',
         operator: 'eq',
@@ -119,7 +125,7 @@ export default {
 
     // 加载表格数据
     search(condition) {
-      this.data = []
+      this.treeData = []
       let param = {}
       if (condition && condition.value) {
         param = { conditions: [condition] }
@@ -149,12 +155,12 @@ export default {
         this.setCheckExpandNodes(data)
         this.expandNodeIds = []
         if (condition && condition.value) {
-          this.data = this.buildTree(data)
+          this.treeData = this.buildTree(data)
           this.$nextTick(() => {
-            this.expandResult(this.data)
+            this.expandResult(this.treeData)
           })
         } else {
-          this.data = data
+          this.treeData = data
         }
       })
     },

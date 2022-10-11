@@ -709,11 +709,11 @@ const data = {
     setInEditorStatus(state, status) {
       state.isInEditor = status
     },
-    adaptorStatusDisable(state,componentId) {
+    adaptorStatusDisable(state, componentId) {
       state.componentData.forEach(item => {
-       if(item.id === componentId){
-         item.needAdaptor = false
-       }
+        if (item.id === componentId) {
+          item.needAdaptor = false
+        }
       })
     }
   },

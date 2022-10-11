@@ -1,7 +1,14 @@
 <template>
-  <div v-show="existLinkage" class="bar-main">
+  <div
+    v-show="existLinkage"
+    class="bar-main"
+  >
     <div>
-      <el-button size="mini" type="warning" @click="clearAllLinkage"><i class="icon iconfont icon-quxiaoliandong" />{{ $t('panel.remove_all_linkage') }}</el-button>
+      <el-button
+        size="mini"
+        type="warning"
+        @click="clearAllLinkage"
+      ><i class="icon iconfont icon-quxiaoliandong" />{{ $t('panel.remove_all_linkage') }}</el-button>
     </div>
   </div>
 </template>

@@ -1,8 +1,8 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <el-form
+    ref="authConfig"
     :model="authConfig"
     :rules="rule"
-    ref="authConfig"
     label-position="right"
   >
     <el-form-item
@@ -11,52 +11,50 @@
     >
       <el-select
         v-model="authConfig.verification"
-        @change="change"
         :placeholder="$t('datasource.verification_method')"
         filterable
         size="small"
+        @change="change"
       >
         <el-option
           v-for="item in options"
           :key="item.name"
           :label="item.name"
           :value="item.name"
-        >
-        </el-option>
+        />
       </el-select>
     </el-form-item>
     <el-row :gutter="24">
       <el-col :span="12">
         <el-form-item
-          :label="$t('datasource.username')"
-          prop="username"
           v-if="
             authConfig.verification != undefined &&
-            authConfig.verification != 'No Auth'
+              authConfig.verification != 'No Auth'
           "
+          :label="$t('datasource.username')"
+          prop="username"
         >
           <el-input
-            :placeholder="$t('datasource.username')"
             v-model="authConfig.username"
+            :placeholder="$t('datasource.username')"
             class="ms-http-input"
             size="small"
-          >
-          </el-input>
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item
-          :label="$t('datasource.password')"
-          prop="password"
           v-if="
             authConfig.verification != undefined &&
-            authConfig.verification != 'No Auth'
+              authConfig.verification != 'No Auth'
           "
+          :label="$t('datasource.password')"
+          prop="password"
         >
           <dePwd
-           v-model="authConfig.password"
-          :placeholder="$t('datasource.password')"
-        />
+            v-model="authConfig.password"
+            :placeholder="$t('datasource.password')"
+          />
         </el-form-item>
       </el-col>
     </el-row>
@@ -69,10 +67,21 @@ export default {
   name: 'ApiAuthConfig',
   components: { dePwd },
   props: {
-    request: {},
+    request: {
+      type: Object,
+      default: () => {}
+    },
     encryptShow: {
       type: Boolean,
       default: true
+    }
+  },
+  data() {
+    return {
+      options: [{ name: 'No Auth' }, { name: 'Basic Auth' }],
+      activeName: 'verified',
+      rule: {},
+      authConfig: {}
     }
   },
   watch: {
@@ -82,14 +91,6 @@ export default {
   },
   created() {
     this.initData()
-  },
-  data() {
-    return {
-      options: [{ name: 'No Auth' }, { name: 'Basic Auth' }],
-      activeName: 'verified',
-      rule: {},
-      authConfig: {}
-    }
   },
   methods: {
     change() {

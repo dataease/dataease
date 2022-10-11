@@ -9,7 +9,11 @@
       ]"
       @click.stop="setBoard"
     >
-      <svg-icon :style="{'color':this.curComponent.commonBackground.innerImageColor}" class="svg-background" :icon-class="mainIconClass" />
+      <svg-icon
+        :style="{'color':curComponent.commonBackground.innerImageColor}"
+        class="svg-background"
+        :icon-class="mainIconClass"
+      />
     </div>
     <span class="demonstration">{{ template.name }}</span>
   </div>
@@ -17,7 +21,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'BackgroundItem',

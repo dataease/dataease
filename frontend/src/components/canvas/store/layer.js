@@ -1,4 +1,4 @@
-import { swap, toBottom, toTop, moveUp, moveDown } from '@/components/canvas/utils/utils'
+import { toBottom, toTop, moveUp, moveDown } from '@/components/canvas/utils/utils'
 import toast from '@/components/canvas/utils/toast'
 
 export default {

@@ -1,5 +1,8 @@
 <template>
-  <div v-right-to-left-drag class="drag-bar" />
+  <div
+    v-right-to-left-drag
+    class="drag-bar"
+  />
 </template>
 
 <script>

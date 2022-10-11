@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import { validateDs } from '@/api/system/datasource'
 
 export function engineMode() {
   return request({
@@ -34,7 +33,6 @@ export function save(data) {
     data
   })
 }
-
 
 export function dbPreview(data) {
   return request({

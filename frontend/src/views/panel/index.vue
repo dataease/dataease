@@ -1,7 +1,13 @@
 <template>
-  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="background-color: #f7f8fa">
+  <de-container
+    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+    style="background-color: #f7f8fa"
+  >
     <de-main-container :class="{'full-height':fullHeightFlag}">
-      <panel-main v-show="componentName==='PanelMain'" ref="panel_main" />
+      <panel-main
+        v-show="componentName==='PanelMain'"
+        ref="panel_main"
+      />
       <panel-edit v-if="componentName==='PanelEdit'" />
     </de-main-container>
   </de-container>
@@ -17,6 +23,17 @@ import PanelEdit from '@/views/panel/edit'
 export default {
   name: 'Panel',
   components: { DeMainContainer, DeContainer, PanelMain, PanelEdit },
+  beforeRouteLeave(to, from, next) {
+    if (this.componentName === 'PanelEdit') {
+      next(false)
+      if (confirm(this.$t('panel.edit_leave_tips'))) {
+        bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
+        next()
+      }
+    } else {
+      next()
+    }
+  },
   data() {
     return {
       component: PanelMain,
@@ -28,17 +45,6 @@ export default {
   computed: {
     fullHeightFlag() {
       return this.$route.path.indexOf('panel') > -1 && (this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit')
-    }
-  },
-  beforeRouteLeave(to, from, next) {
-    if (this.componentName === 'PanelEdit') {
-      next(false)
-      if (confirm(this.$t('panel.edit_leave_tips'))) {
-        bus.$emit('PanelSwitchComponent', { name: 'PanelMain' })
-        next()
-      }
-    } else {
-      next()
     }
   },
   watch: {

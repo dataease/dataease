@@ -1,32 +1,89 @@
 <template>
   <el-row v-loading="loading">
     <el-row v-if="editPanel.optType==='new' && editPanel.panelInfo.nodeType==='panel'">
-      <el-col :span="18" style="height: 40px">
-        <el-radio v-model="inputType" label="new"> {{ $t('panel.custom') }}</el-radio>
-        <el-radio v-model="inputType" label="new_outer_template">{{ $t('panel.import_template') }}  </el-radio>
-        <el-radio v-model="inputType" label="new_inner_template" @click.native="getTree">{{ $t('panel.copy_template') }}  </el-radio>
+      <el-col
+        :span="18"
+        style="height: 40px"
+      >
+        <el-radio
+          v-model="inputType"
+          label="new"
+        > {{ $t('panel.custom') }}</el-radio>
+        <el-radio
+          v-model="inputType"
+          label="new_outer_template"
+        >{{ $t('panel.import_template') }}  </el-radio>
+        <el-radio
+          v-model="inputType"
+          label="new_inner_template"
+          @click.native="getTree"
+        >{{ $t('panel.copy_template') }}  </el-radio>
       </el-col>
-      <el-col v-if="inputType==='new_outer_template'" :span="6">
-        <el-button class="el-icon-upload" size="small" type="primary" @click="goFile">{{ $t('panel.upload_template') }}</el-button>
-        <input id="input" ref="files" type="file" accept=".DET" hidden @change="handleFileChange">
+      <el-col
+        v-if="inputType==='new_outer_template'"
+        :span="6"
+      >
+        <el-button
+          class="el-icon-upload"
+          size="small"
+          type="primary"
+          @click="goFile"
+        >{{ $t('panel.upload_template') }}</el-button>
+        <input
+          id="input"
+          ref="files"
+          type="file"
+          accept=".DET"
+          hidden
+          @change="handleFileChange"
+        >
       </el-col>
     </el-row>
     <el-row style="margin-top: 5px">
       <el-col :span="4">{{ editPanel.titleSuf }}{{ $t('commons.name') }}</el-col>
       <el-col :span="20">
-        <el-input v-model="editPanel.panelInfo.name" clearable size="mini" />
+        <el-input
+          v-model="editPanel.panelInfo.name"
+          clearable
+          size="mini"
+        />
       </el-col>
     </el-row>
-    <el-row v-if="inputType==='new_inner_template'" class="preview">
-      <el-col :span="8" style="height:100%;overflow-y: auto">
-        <template-all-list :template-list="templateList" @showCurrentTemplateInfo="showCurrentTemplateInfo" />
+    <el-row
+      v-if="inputType==='new_inner_template'"
+      class="preview"
+    >
+      <el-col
+        :span="8"
+        style="height:100%;overflow-y: auto"
+      >
+        <template-all-list
+          :template-list="templateList"
+          @showCurrentTemplateInfo="showCurrentTemplateInfo"
+        />
       </el-col>
-      <el-col :span="16" :style="classBackground" class="preview-show" />
+      <el-col
+        :span="16"
+        :style="classBackground"
+        class="preview-show"
+      />
     </el-row>
-    <el-row v-if="inputType==='new_outer_template'" class="preview" :style="classBackground" />
+    <el-row
+      v-if="inputType==='new_outer_template'"
+      class="preview"
+      :style="classBackground"
+    />
     <el-row class="root-class">
-      <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
-      <el-button type="primary" size="mini" :disabled="!saveStatus" @click="save()">{{ $t('commons.confirm') }}</el-button>
+      <el-button
+        size="mini"
+        @click="cancel()"
+      >{{ $t('commons.cancel') }}</el-button>
+      <el-button
+        type="primary"
+        size="mini"
+        :disabled="!saveStatus"
+        @click="save()"
+      >{{ $t('commons.confirm') }}</el-button>
     </el-row>
   </el-row>
 </template>
@@ -35,7 +92,7 @@
 import { panelSave, panelUpdate } from '@/api/panel/panel'
 import { showTemplateList } from '@/api/system/template'
 import TemplateAllList from './TemplateAllList'
-import {deepCopy, imgUrlTrans} from '@/components/canvas/utils/utils'
+import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   components: { TemplateAllList },

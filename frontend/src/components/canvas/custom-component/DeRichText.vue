@@ -1,5 +1,8 @@
 <template>
-  <div class="rich-main-class" @dblclick="setEdit">
+  <div
+    class="rich-main-class"
+    @dblclick="setEdit"
+  >
     <Editor
       v-if="editShow"
       :id="tinymceId"

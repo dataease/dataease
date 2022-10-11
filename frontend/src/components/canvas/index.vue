@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Toolbar/>
+    <Toolbar />
     <main>
       <section class="center">
         <div
@@ -10,7 +10,7 @@
           @mousedown="handleMouseDown"
           @mouseup="deselectCurComponent"
         >
-          <Editor/>
+          <Editor />
         </div>
       </section>
 
@@ -22,12 +22,12 @@
 import Editor from '@/components/Editor/index'
 import componentList from '@/components/canvas/custom-component/component-list' // 左侧列表数据
 import Toolbar from '@/components/Toolbar'
-import {deepCopy} from '@/utils/utils'
-import {mapState} from 'vuex'
+import { deepCopy } from '@/utils/utils'
+import { mapState } from 'vuex'
 import generateID from '@/utils/generateID'
-
+import { uuid } from 'vue-uuid'
 export default {
-  components: {Editor, Toolbar},
+  components: { Editor, Toolbar },
   data() {
     return {
       activeName: 'attr',
@@ -80,7 +80,7 @@ export default {
       component.style.top = e.offsetY
       component.style.left = e.offsetX
       component.id = generateID()
-      this.$store.commit('addComponent', {component})
+      this.$store.commit('addComponent', { component })
       this.$store.commit('recordSnapshot', 'handleDrop')
     },
 
@@ -95,7 +95,7 @@ export default {
 
     deselectCurComponent(e) {
       if (!this.isClickComponent) {
-        this.$store.commit('setCurComponent', {component: null, index: null})
+        this.$store.commit('setCurComponent', { component: null, index: null })
       }
 
       // 0 左击 1 滚轮 2 右击

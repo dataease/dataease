@@ -1,12 +1,16 @@
 <template>
-  <div class="main-shadow" style="z-index:-1" :style="styleInfo" />
+  <div
+    class="main-shadow"
+    style="z-index:-1"
+    :style="styleInfo"
+  />
 </template>
 
 <script>
 import { mapState } from 'vuex'
 export default {
   replace: true,
-  name: 'Shadow',
+  name: 'ShadowDe',
   computed: {
     styleInfo() {
       let left = 0

@@ -7,18 +7,43 @@
       :style="trackBarStyleTime"
       @trackClick="trackClick"
     />
-    <div :id="chartId" style="width: 100%;height: 100%;overflow: hidden;" :style="{ borderRadius: borderRadius}" />
-    <div v-if="chart.type === 'map'" class="map-zoom-box">
+    <div
+      :id="chartId"
+      style="width: 100%;height: 100%;overflow: hidden;"
+      :style="{ borderRadius: borderRadius}"
+    />
+    <div
+      v-if="chart.type === 'map'"
+      class="map-zoom-box"
+    >
       <div style="margin-bottom: 0.5em;">
-        <el-button :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}" size="mini" icon="el-icon-plus" circle @click="roamMap(true)" />
+        <el-button
+          :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}"
+          size="mini"
+          icon="el-icon-plus"
+          circle
+          @click="roamMap(true)"
+        />
       </div>
 
       <div style="margin-bottom: 0.5em;">
-        <el-button :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}" size="mini" icon="el-icon-refresh" circle @click="resetZoom()" />
+        <el-button
+          :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}"
+          size="mini"
+          icon="el-icon-refresh"
+          circle
+          @click="resetZoom()"
+        />
       </div>
 
       <div>
-        <el-button :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}" size="mini" icon="el-icon-minus" circle @click="roamMap(false)" />
+        <el-button
+          :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}"
+          size="mini"
+          icon="el-icon-minus"
+          circle
+          @click="roamMap(false)"
+        />
       </div>
 
     </div>
@@ -234,7 +259,7 @@ export default {
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
-        
+
         if (themeStyle && themeStyle.backgroundColorSelect) {
           const panelColor = themeStyle.color
           if (panelColor !== '#FFFFFF') {
@@ -243,7 +268,7 @@ export default {
           } else {
             this.buttonTextColor = null
           }
-        } else if(this.canvasStyleData.openCommonStyle && this.canvasStyleData.panel.backgroundType === 'color') {
+        } else if (this.canvasStyleData.openCommonStyle && this.canvasStyleData.panel.backgroundType === 'color') {
           const panelColor = this.canvasStyleData.panel.color
           if (panelColor !== '#FFFFFF') {
             const reverseValue = reverseColor(panelColor)
@@ -335,7 +360,7 @@ export default {
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
-        
+
         if (themeStyle && themeStyle.backgroundColorSelect) {
           const panelColor = themeStyle.color
           if (panelColor !== '#FFFFFF') {
@@ -344,7 +369,7 @@ export default {
           } else {
             this.buttonTextColor = null
           }
-        } else if(this.canvasStyleData.openCommonStyle && this.canvasStyleData.panel.backgroundType === 'color') {
+        } else if (this.canvasStyleData.openCommonStyle && this.canvasStyleData.panel.backgroundType === 'color') {
           const panelColor = this.canvasStyleData.panel.color
           if (panelColor !== '#FFFFFF') {
             const reverseValue = reverseColor(panelColor)

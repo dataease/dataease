@@ -1,9 +1,22 @@
 <template>
-  <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
-    <span v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
+  <div
+    ref="tableContainer"
+    :style="bg_class"
+    style="padding: 8px;width: 100%;height: 100%;overflow: hidden;"
+  >
+    <span
+      v-show="title_show"
+      ref="title"
+      :style="title_class"
+      style="cursor: default;display: block;"
+    >
       <div>
         <p style="padding:6px 4px 0;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;">{{ chart.title }}</p>
-        <title-remark v-if="chart.render && chart.render === 'antv' && remarkCfg.show" style="text-shadow: none!important;" :remark-cfg="remarkCfg" />
+        <title-remark
+          v-if="chart.render && chart.render === 'antv' && remarkCfg.show"
+          style="text-shadow: none!important;"
+          :remark-cfg="remarkCfg"
+        />
       </div>
     </span>
     <div
@@ -16,7 +29,10 @@
           {{ result }}
         </p>
       </span>
-      <span v-if="dimensionShow" :style="label_space">
+      <span
+        v-if="dimensionShow"
+        :style="label_space"
+      >
         <p :style="label_class">
           {{ chart.data.series[0].name }}
         </p>

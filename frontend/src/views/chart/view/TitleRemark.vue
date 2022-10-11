@@ -7,8 +7,16 @@
       popper-class="remark-pop"
       :visible-arrow="false"
     >
-      <div class="remark-style" :style="{backgroundColor:remarkCfg.bgFill}" v-html="remarkCfg.content" />
-      <i slot="reference" class="el-icon-info" style="cursor: pointer;color: gray;font-size: 12px;" />
+      <div
+        class="remark-style"
+        :style="{backgroundColor:remarkCfg.bgFill}"
+        v-html="remarkCfg.content"
+      />
+      <i
+        slot="reference"
+        class="el-icon-info"
+        style="cursor: pointer;color: gray;font-size: 12px;"
+      />
     </el-popover>
   </span>
 </template>

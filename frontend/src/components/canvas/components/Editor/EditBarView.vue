@@ -1,21 +1,53 @@
 <template>
   <div class="bar-main">
     <div v-if="!positionCheck('multiplexing') && !positionCheck('email-task')">
-      <span v-if="isEdit" :title="$t('panel.edit')">
-        <i class="icon iconfont icon-edit" @click.stop="edit" />
+      <span
+        v-if="isEdit"
+        :title="$t('panel.edit')"
+      >
+        <i
+          class="icon iconfont icon-edit"
+          @click.stop="edit"
+        />
       </span>
-      <span v-show="detailsShow" :title="$t('panel.details')">
-        <i class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
+      <span
+        v-show="detailsShow"
+        :title="$t('panel.details')"
+      >
+        <i
+          class="icon iconfont icon-chakan"
+          @click.stop="showViewDetails('details')"
+        />
       </span>
-      <span v-show="enlargeShow" :title="$t('panel.enlarge')">
-        <i class="icon iconfont icon-fangda" @click.stop="showViewDetails('enlarge')" />
+      <span
+        v-show="enlargeShow"
+        :title="$t('panel.enlarge')"
+      >
+        <i
+          class="icon iconfont icon-fangda"
+          @click.stop="showViewDetails('enlarge')"
+        />
       </span>
     </div>
-    <div v-if="positionCheck('multiplexing')" style="margin-right: -1px;width: 18px;z-index: 5">
-      <el-checkbox v-model="multiplexingCheckModel" size="medium" @change="multiplexingCheck" />
+    <div
+      v-if="positionCheck('multiplexing')"
+      style="margin-right: -1px;width: 18px;z-index: 5"
+    >
+      <el-checkbox
+        v-model="multiplexingCheckModel"
+        size="medium"
+        @change="multiplexingCheck"
+      />
     </div>
-    <div v-if="positionCheck('email-task') && element.component === 'user-view'" style="margin-right: -1px;width: 18px;z-index: 5">
-      <el-checkbox v-model="isTaskChecked" size="medium" @change="emailTaskCheck" />
+    <div
+      v-if="positionCheck('email-task') && element.component === 'user-view'"
+      style="margin-right: -1px;width: 18px;z-index: 5"
+    >
+      <el-checkbox
+        v-model="isTaskChecked"
+        size="medium"
+        @change="emailTaskCheck"
+      />
     </div>
   </div>
 </template>
@@ -63,10 +95,10 @@ export default {
     }
   },
   computed: {
-    detailsShow(){
+    detailsShow() {
       return this.element.propValue.innerType !== 'richTextView'
     },
-    enlargeShow(){
+    enlargeShow() {
       return this.element.propValue.innerType !== 'richTextView'
     },
     // gapStyle() {

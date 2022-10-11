@@ -260,7 +260,6 @@ export function seniorCfg(chart_option, chart) {
           }
           const rgba = hexToRgba(senior.functionCfg.sliderFillBg, 0.2)
           chart_option.dataZoom[1].fillerColor = rgba
-          
         }
         if (senior.functionCfg.sliderTextClolor) {
           chart_option.dataZoom[1].textStyle = { color: senior.functionCfg.sliderTextClolor }

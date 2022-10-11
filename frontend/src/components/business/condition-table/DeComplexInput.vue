@@ -1,6 +1,16 @@
 <template>
-  <de-complex-operator v-model="operator" :label="label" :operators="operators" :size="configSize">
-    <el-input v-model="value" :placeholder="$t('fu.search_bar.please_input')" :size="configSize" v-bind="$attrs" />
+  <de-complex-operator
+    v-model="operator"
+    :label="label"
+    :operators="operators"
+    :size="configSize"
+  >
+    <el-input
+      v-model="value"
+      :placeholder="$t('fu.search_bar.please_input')"
+      :size="configSize"
+      v-bind="$attrs"
+    />
   </de-complex-operator>
 </template>
 

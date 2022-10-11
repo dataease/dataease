@@ -16,7 +16,10 @@
     </el-header>
     <de-container>
       <de-aside-container class="ms-aside-container">
-        <div v-show="showAside" style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute">
+        <div
+          v-show="showAside"
+          style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute"
+        >
           <div
             style="width: 60px;height: 100%;overflow: hidden auto;position: relative;margin: 0px auto; font-size: 14px"
           >
@@ -25,9 +28,17 @@
               class="button-div-class"
               style=" width: 24px;height: 24px;text-align: center;line-height: 1;position: relative;margin: 16px auto 0px;"
             >
-              <el-button circle class="el-icon-circle-plus-outline" size="mini" @click="newChart()" />
+              <el-button
+                circle
+                class="el-icon-circle-plus-outline"
+                size="mini"
+                @click="newChart()"
+              />
             </div>
-            <div class="button-text" style="position: relative; margin: 18px auto 16px;">
+            <div
+              class="button-text"
+              style="position: relative; margin: 18px auto 16px;"
+            >
               <div
                 style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               >
@@ -54,7 +65,10 @@
                 @click="showPanel(1)"
               />
             </div>
-            <div class="button-text" style=" position: relative; margin: 18px auto 16px;">
+            <div
+              class="button-text"
+              style=" position: relative; margin: 18px auto 16px;"
+            >
               <div
                 style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               >
@@ -82,7 +96,10 @@
                 @click="showPanel(3)"
               />
             </div>
-            <div class="button-text" style=" position: relative; margin: 18px auto 16px;">
+            <div
+              class="button-text"
+              style=" position: relative; margin: 18px auto 16px;"
+            >
               <div
                 style=" max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               >
@@ -109,7 +126,10 @@
                 @click="showMultiplexing(true)"
               />
             </div>
-            <div class="button-text" style="position: relative; margin: 18px auto 16px;">
+            <div
+              class="button-text"
+              style="position: relative; margin: 18px auto 16px;"
+            >
               <div
                 style="max-width: 100%;text-align: center;white-space: nowrap;text-overflow: ellipsis;position: relative;flex-shrink: 0;"
               >
@@ -160,11 +180,22 @@
         >
           <!-- 仪表板联动清除按钮-->
           <canvas-opt-bar />
-          <Editor ref="canvasEditor" :matrix-count="pcMatrixCountBase" :out-style="outStyle" :scroll-top="scrollTop" />
+          <Editor
+            ref="canvasEditor"
+            :matrix-count="pcMatrixCountBase"
+            :out-style="outStyle"
+            :scroll-top="scrollTop"
+          />
         </div>
         <!--移动端画布区域 保持宽高比2.5-->
-        <el-row v-if="mobileLayoutStatus" class="mobile_canvas_main">
-          <el-col :span="8" class="this_mobile_canvas_cell">
+        <el-row
+          v-if="mobileLayoutStatus"
+          class="mobile_canvas_main"
+        >
+          <el-col
+            :span="8"
+            class="this_mobile_canvas_cell"
+          >
             <div
               v-proportion="2.1"
               :style="customCanvasMobileStyle"
@@ -196,7 +227,12 @@
               </el-row>
               <el-row class="this_mobile_canvas_inner_bottom">
                 <el-col :span="12">
-                  <i v-if="!hasStar" class="el-icon-star-off" size="mini" @click="star" />
+                  <i
+                    v-if="!hasStar"
+                    class="el-icon-star-off"
+                    size="mini"
+                    @click="star"
+                  />
                   <i
                     v-if="hasStar"
                     class="el-icon-star-on"
@@ -205,22 +241,41 @@
                     @click="unstar"
                   />
                 </el-col>
-                <el-col :span="12" style="float: right">
-                  <i class="el-icon-refresh-right" size="mini" @click="mobileRefresh" />
+                <el-col
+                  :span="12"
+                  style="float: right"
+                >
+                  <i
+                    class="el-icon-refresh-right"
+                    size="mini"
+                    @click="mobileRefresh"
+                  />
                 </el-col>
               </el-row>
               <el-row class="this_mobile_canvas_bottom" />
             </div>
           </el-col>
-          <el-col :span="16" class="this_mobile_canvas_cell this_mobile_canvas_wait_cell" :style="mobileCanvasStyle">
+          <el-col
+            :span="16"
+            class="this_mobile_canvas_cell this_mobile_canvas_wait_cell"
+            :style="mobileCanvasStyle"
+          >
             <component-wait />
           </el-col>
         </el-row>
       </de-main-container>
 
-      <div v-show="!mobileLayoutStatus&&rightDrawOpen" class="tools-window-main">
+      <div
+        v-show="!mobileLayoutStatus&&rightDrawOpen"
+        class="tools-window-main"
+      >
         <div v-if="showViewToolsAside">
-          <chart-edit ref="chartEditRef" :edit-statue="showViewToolsAside&&!mobileLayoutStatus&&rightDrawOpen" :edit-from="'panel'" :param="chartEditParam" />
+          <chart-edit
+            ref="chartEditRef"
+            :edit-statue="showViewToolsAside&&!mobileLayoutStatus&&rightDrawOpen"
+            :edit-from="'panel'"
+            :param="chartEditParam"
+          />
         </div>
         <div v-if="showBatchViewToolsAside">
           <chart-style-batch-set />
@@ -228,7 +283,13 @@
         <div v-if="!showViewToolsAside&&!showBatchViewToolsAside">
           <el-row style="height: 40px">
             <el-tooltip :content="$t('chart.draw_back')">
-              <el-button class="el-icon-d-arrow-right" style="position:absolute;left: 4px;top: 5px;" size="mini" circle @click="changeRightDrawOpen(false)" />
+              <el-button
+                class="el-icon-d-arrow-right"
+                style="position:absolute;left: 4px;top: 5px;"
+                size="mini"
+                circle
+                @click="changeRightDrawOpen(false)"
+              />
             </el-tooltip>
           </el-row>
           <el-row>
@@ -284,13 +345,24 @@
       />
       <div style="text-align: end !important;margin: 0 15px 10px !important;">
         <span slot="footer">
-          <el-button size="mini" @click="cancelFilter">{{ $t('commons.cancel') }}</el-button>
-          <el-button :disabled="!enableSureButton" type="primary" size="mini" @click="sureFilter">{{ $t('commons.confirm') }}</el-button>
+          <el-button
+            size="mini"
+            @click="cancelFilter"
+          >{{ $t('commons.cancel') }}</el-button>
+          <el-button
+            :disabled="!enableSureButton"
+            type="primary"
+            size="mini"
+            @click="sureFilter"
+          >{{ $t('commons.confirm') }}</el-button>
         </span>
       </div>
     </el-dialog>
 
-    <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="previewVisible">
+    <fullscreen
+      style="height: 100%;background: #f7f8fa;overflow-y: auto"
+      :fullscreen.sync="previewVisible"
+    >
       <Preview
         v-if="previewVisible"
         :in-screen="!previewVisible"
@@ -312,7 +384,11 @@
     >
 
     <!--矩形样式组件-->
-    <TextAttr v-if="showAttr" :scroll-left="scrollLeft" :scroll-top="scrollTop" />
+    <TextAttr
+      v-if="showAttr"
+      :scroll-left="scrollLeft"
+      :scroll-top="scrollTop"
+    />
     <!--复用ChartGroup组件 不做显示-->
     <ChartGroup
       ref="chartGroup"
@@ -332,7 +408,10 @@
       :destroy-on-close="true"
       :append-to-body="true"
     >
-      <OuterParamsSet v-if="outerParamsSetVisible" @outerParamsSetVisibleChange="outerParamsSetVisibleChange" />
+      <OuterParamsSet
+        v-if="outerParamsSetVisible"
+        @outerParamsSetVisibleChange="outerParamsSetVisibleChange"
+      />
     </el-dialog>
 
     <!--复用视图全屏显示框-->
@@ -342,14 +421,27 @@
       class="dialog-css"
       :fullscreen="true"
     >
-      <multiplexing v-if="multiplexingShow" :view-data="viewData" />
-      <div slot="title" class="dialog-footer title-text">
+      <multiplexing
+        v-if="multiplexingShow"
+        :view-data="viewData"
+      />
+      <div
+        slot="title"
+        class="dialog-footer title-text"
+      >
         <span style="font-size: 14px;">
           {{ $t('panel.multiplexing') }}
         </span>
         <span style="float: right;">
-          <el-button type="primary" size="mini" @click="saveMultiplexing()">{{ $t('commons.confirm') }}</el-button>
-          <el-button size="mini" @click="showMultiplexing(false)">{{ $t('commons.cancel') }}</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            @click="saveMultiplexing()"
+          >{{ $t('commons.confirm') }}</el-button>
+          <el-button
+            size="mini"
+            @click="showMultiplexing(false)"
+          >{{ $t('commons.cancel') }}</el-button>
         </span>
       </div>
     </el-dialog>
@@ -363,15 +455,28 @@
     >
       <el-row style="height: 20px">
         <el-col :span="3">
-          <svg-icon icon-class="warn-tre" style="width: 20px;height: 20px;float: right" />
+          <svg-icon
+            icon-class="warn-tre"
+            style="width: 20px;height: 20px;float: right"
+          />
         </el-col>
         <el-col :span="21">
           <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.panel_cache_use_tips') }}</span>
         </el-col>
       </el-row>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="useCache(false)">{{ $t('panel.no') }}</el-button>
-        <el-button type="primary" size="mini" @click="useCache(true)">{{ $t('panel.yes') }}</el-button>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="useCache(false)"
+        >{{ $t('panel.no') }}</el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          @click="useCache(true)"
+        >{{ $t('panel.yes') }}</el-button>
       </div>
     </el-dialog>
 
@@ -398,7 +503,6 @@ import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
 import {
   checkUserCache,
-  findUserCache,
   initPanelData,
   initViewCache,
   queryPanelMultiplexingViewTree

@@ -1,9 +1,16 @@
 <template>
   <layout-content :header="headName">
-    <template v-if="!optType" v-slot:header>
-      <el-icon name="back" class="back-button" @click.native="backToList" />
+    <template
+      v-if="!optType"
+      #header
+    >
+      <el-icon
+        name="back"
+        class="back-button"
+        @click.native="backToList"
+      />
       {{
-        params && params.id && params.showModel && params.showModel === 'show' && !canEdit ? $t('datasource.show_info') : formType == 'add' ? $t('datasource.create') : $t('datasource.modify')
+        params && params.id && params.showModel && params.showModel === 'show' && !canEdit ? $t('datasource.show_info') : formType === 'add' ? $t('datasource.create') : $t('datasource.modify')
       }}
     </template>
     <template v-if="optType==='appApply'">
@@ -18,22 +25,31 @@
         label-width="180px"
         label-position="right"
       >
-        <el-form-item :label="'仪表板位置'" prop="panelId">
-            <treeselect
-              v-model="attachForm.panelId"
-              :clearable="false"
-              :options="panelGroupList"
-              :normalizer="normalizer"
-              :placeholder="$t('chart.select_group')"
-              :no-children-text="$t('commons.treeselect.no_children_text')"
-              :no-options-text="$t('commons.treeselect.no_options_text')"
-              :no-results-text="$t('commons.treeselect.no_results_text')"
-            />
+        <el-form-item
+          :label="'仪表板位置'"
+          prop="panelId"
+        >
+          <treeselect
+            v-model="attachForm.panelId"
+            :clearable="false"
+            :options="panelGroupList"
+            :normalizer="normalizer"
+            :placeholder="$t('chart.select_group')"
+            :no-children-text="$t('commons.treeselect.no_children_text')"
+            :no-options-text="$t('commons.treeselect.no_options_text')"
+            :no-results-text="$t('commons.treeselect.no_results_text')"
+          />
         </el-form-item>
-        <el-form-item :label="'仪表板名称'" prop="panelName">
+        <el-form-item
+          :label="'仪表板名称'"
+          prop="panelName"
+        >
           <el-input v-model="attachForm.panelName" />
         </el-form-item>
-        <el-form-item :label="'数据集位置'" prop="desc">
+        <el-form-item
+          :label="'数据集位置'"
+          prop="desc"
+        >
           <treeselect
             v-model="attachForm.datasetGroupId"
             :clearable="false"
@@ -45,7 +61,10 @@
             :no-results-text="$t('commons.treeselect.no_results_text')"
           />
         </el-form-item>
-        <el-form-item :label="'数据集分组名称'" prop="datasetGroupName">
+        <el-form-item
+          :label="'数据集分组名称'"
+          prop="datasetGroupName"
+        >
           <el-input v-model="attachForm.datasetGroupName" />
         </el-form-item>
       </el-form>
@@ -64,19 +83,34 @@
         label-width="180px"
         label-position="right"
       >
-        <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="form.name" autocomplete="off" />
+        <el-form-item
+          :label="$t('commons.name')"
+          prop="name"
+        >
+          <el-input
+            v-model="form.name"
+            autocomplete="off"
+          />
         </el-form-item>
-        <el-form-item :label="$t('commons.description')" prop="desc">
-          <el-input v-model="form.desc" autocomplete="off" />
+        <el-form-item
+          :label="$t('commons.description')"
+          prop="desc"
+        >
+          <el-input
+            v-model="form.desc"
+            autocomplete="off"
+          />
         </el-form-item>
-        <el-form-item :label="$t('datasource.type')" prop="type">
+        <el-form-item
+          :label="$t('datasource.type')"
+          prop="type"
+        >
           <el-select
             v-model="form.type"
             :placeholder="$t('datasource.please_choose_type')"
             class="select-width"
             style="width: 100%"
-            :disabled="formType=='modify' || (formType==='add' && params && !!params.type)"
+            :disabled="formType==='modify' || (formType==='add' && params && !!params.type)"
             filterable
             @change="changeType()"
           >
@@ -89,7 +123,10 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item v-if="datasourceType.isJdbc" :label="$t('driver.driver')">
+        <el-form-item
+          v-if="datasourceType.isJdbc"
+          :label="$t('driver.driver')"
+        >
           <el-select
             v-model="form.configuration.customDriver"
             :placeholder="$t('driver.please_choose_driver')"
@@ -107,12 +144,27 @@
           </el-select>
         </el-form-item>
 
-        <ds-configuration v-if="!datasourceType.isPlugin" ref="dsConfig" :datasource-type="datasourceType" :form="form" :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit" />
-        <plugin-com v-if="datasourceType.isPlugin" ref="pluginDsConfig" :component-name="datasourceType.type" :obj="{form, disabled }" />
+        <ds-configuration
+          v-if="!datasourceType.isPlugin"
+          ref="dsConfig"
+          :datasource-type="datasourceType"
+          :form="form"
+          :disabled="params && params.id && params.showModel && params.showModel === 'show' && !canEdit"
+        />
+        <plugin-com
+          v-if="datasourceType.isPlugin"
+          ref="pluginDsConfig"
+          :component-name="datasourceType.type"
+          :obj="{form, disabled }"
+        />
 
       </el-form>
 
-      <div v-if="canEdit" slot="footer" class="dialog-footer">
+      <div
+        v-if="canEdit"
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button
           v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
           @click="validaDatasource"
@@ -125,7 +177,11 @@
         >{{ $t('commons.save') }}
         </el-button>
       </div>
-      <div v-else slot="footer" class="dialog-footer">
+      <div
+        v-else
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button
           v-if="formType==='add'?true: hasDataPermission('manage',params.privileges)"
           @click="validaDatasource"
@@ -155,10 +211,9 @@ import {
 } from '@/api/system/datasource'
 import { $confirm } from '@/utils/message'
 import i18n from '@/lang/index'
-import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
 import DsConfiguration from '@/views/system/datasource/DsConfiguration'
 import PluginCom from '@/views/system/plugin/PluginCom'
-import {groupTree,appApply} from "@/api/panel/panel";
+import { groupTree, appApply } from '@/api/panel/panel'
 import { dsGroupTree } from '@/api/dataset/dataset'
 import { deepCopy } from '@/components/canvas/utils/utils'
 export default {
@@ -166,7 +221,6 @@ export default {
   components: {
     DsConfiguration,
     LayoutContent,
-    ApiHttpRequestForm,
     PluginCom
   },
   props: {
@@ -186,7 +240,7 @@ export default {
       type: Object,
       default: null
     },
-    optType:{
+    optType: {
       type: String,
       default: null
     }
@@ -200,11 +254,11 @@ export default {
       },
       panelGroupList: [],
       datasetGroupList: [],
-      attachForm:{
-        appTemplateId:'',
-        panelId:'',
-        panelName:'',
-        datasetGroupId:'0',
+      attachForm: {
+        appTemplateId: '',
+        panelId: '',
+        panelName: '',
+        datasetGroupId: '0',
         datasetGroupName: ''
       },
       form: {
@@ -340,11 +394,11 @@ export default {
   },
   computed: {
     headName() {
-      if(this.optType==='appApply'){
+      if (this.optType === 'appApply') {
         return ''
-      }else if(this.formType==='add'){
+      } else if (this.formType === 'add') {
         return this.$t('datasource.create')
-      }else{
+      } else {
         return this.$t('datasource.modify')
       }
     }
@@ -364,7 +418,7 @@ export default {
     this.disabled = this.params && this.params.id && this.params.showModel && this.params.showModel === 'show' && !this.canEdit
   },
   mounted() {
-    if(this.optType==='appApply'){
+    if (this.optType === 'appApply') {
       this.getPanelGroupTree()
       this.getDatasetGroupTree()
       this.attachForm.appTemplateId = this.attachParams.appTemplateId
@@ -380,7 +434,7 @@ export default {
       }
     },
     getDatasetGroupTree() {
-      dsGroupTree({nodeType: 'group',}).then(res => {
+      dsGroupTree({ nodeType: 'group' }).then(res => {
         this.datasetGroupList = [{
           id: '0',
           name: this.$t('dataset.dataset_group'),
@@ -395,8 +449,8 @@ export default {
     getPanelGroupTree() {
       groupTree({ nodeType: 'folder' }).then(res => {
         this.panelGroupList = res.data
-        if(this.panelGroupList && this.panelGroupList.length>0){
-          this.attachForm.panelId =this.panelGroupList[0].id
+        if (this.panelGroupList && this.panelGroupList.length > 0) {
+          this.attachForm.panelId = this.panelGroupList[0].id
         }
       })
     },
@@ -458,7 +512,7 @@ export default {
       }
       let repeat = false
       const repeatDsName = []
-      if(!this.datasourceType.isPlugin){
+      if (!this.datasourceType.isPlugin) {
         this.tData.forEach(item => {
           if (item.id === this.form.type) {
             item.children.forEach(child => {
@@ -478,9 +532,8 @@ export default {
                 case 'ds_doris':
                 case 'ck':
                 case 'mongo':
-                case 'mariadb':
                 case 'impala':
-                  if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port) {
+                  if (configuration.host === this.form.configuration.host && configuration.dataBase === this.form.configuration.dataBase && configuration.port === this.form.configuration.port) {
                     repeat = true
                     repeatDsName.push(child.name)
                   }
@@ -490,13 +543,13 @@ export default {
                 case 'redshift':
                 case 'oracle':
                 case 'db2':
-                  if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port && configuration.schema == this.form.configuration.schema) {
+                  if (configuration.host === this.form.configuration.host && configuration.dataBase === this.form.configuration.dataBase && configuration.port === this.form.configuration.port && configuration.schema === this.form.configuration.schema) {
                     repeatDsName.push(child.name)
                     repeat = true
                   }
                   break
                 case 'es':
-                  if (configuration.url == this.form.configuration.url) {
+                  if (configuration.url === this.form.configuration.url) {
                     repeatDsName.push(child.name)
                     repeat = true
                   }
@@ -507,33 +560,33 @@ export default {
             })
           }
         })
-      }else {
-       if( this.datasourceType.isJdbc){
-         this.tData.forEach(item => {
-           if (item.id === this.form.type) {
-             item.children.forEach(child => {
-               if (this.formType === 'modify' && child.id === this.form.id) {
-                 return
-               }
-               const configuration = JSON.parse(child.configuration)
-               if (!configuration) {
-                 return
-               }
-               if(configuration.schema != null){
-                 if (configuration.schema == this.form.configuration.schema  && configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port) {
-                   repeat = true
-                   repeatDsName.push(child.name)
-                 }
-               }else {
-                 if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port) {
-                   repeat = true
-                   repeatDsName.push(child.name)
-                 }
-               }
-             })
-           }
-         })
-       }
+      } else {
+        if (this.datasourceType.isJdbc) {
+          this.tData.forEach(item => {
+            if (item.id === this.form.type) {
+              item.children.forEach(child => {
+                if (this.formType === 'modify' && child.id === this.form.id) {
+                  return
+                }
+                const configuration = JSON.parse(child.configuration)
+                if (!configuration) {
+                  return
+                }
+                if (configuration.schema !== null) {
+                  if (configuration.schema === this.form.configuration.schema && configuration.host === this.form.configuration.host && configuration.dataBase === this.form.configuration.dataBase && configuration.port === this.form.configuration.port) {
+                    repeat = true
+                    repeatDsName.push(child.name)
+                  }
+                } else {
+                  if (configuration.host === this.form.configuration.host && configuration.dataBase === this.form.configuration.dataBase && configuration.port === this.form.configuration.port) {
+                    repeat = true
+                    repeatDsName.push(child.name)
+                  }
+                }
+              })
+            }
+          })
+        }
       }
       let status = null
       if (this.datasourceType.isPlugin) {
@@ -546,12 +599,12 @@ export default {
       if (!status) {
         return
       }
-      if(this.optType==='appApply'){
+      if (this.optType === 'appApply') {
         this.$refs.attachParamsForm.validate(valid => {
-            if (!valid) {
-              return false
-            }
+          if (!valid) {
+            return false
           }
+        }
         )
       }
       this.$refs.dsForm.validate(valid => {
@@ -572,10 +625,10 @@ export default {
         } else {
           form.configuration = JSON.stringify(form.configuration)
         }
-        if(this.optType==='appApply'){
+        if (this.optType === 'appApply') {
           const appApplyForm = {
             ...this.attachForm,
-            datasourceList:[deepCopy(form)]
+            datasourceList: [deepCopy(form)]
           }
           appApply(appApplyForm).then(res => {
             this.$success(i18n.t('commons.save_success'))
@@ -798,26 +851,23 @@ export default {
       this.form.apiConfiguration.splice(this.form.apiConfiguration.indexOf(item), 1)
     },
     validateApi(item) {
-      if (undefined) {
-      } else {
-        this.$refs.apiItem.validate(valid => {
-          if (valid) {
-            const data = JSON.parse(JSON.stringify(this.apiItem))
-            data.request = JSON.stringify(data.request)
-            this.loading = true
-            checkApiDatasource(data).then(res => {
-              this.loading = false
-              this.$success(i18n.t('commons.success'))
-              this.apiItem.fields = res.data.fields
-              this.$refs.plxTable.reloadData(res.data.datas)
-            }).catch(res => {
-              this.loading = false
-            })
-          } else {
-            return false
-          }
-        })
-      }
+      this.$refs.apiItem.validate(valid => {
+        if (valid) {
+          const data = JSON.parse(JSON.stringify(this.apiItem))
+          data.request = JSON.stringify(data.request)
+          this.loading = true
+          checkApiDatasource(data).then(res => {
+            this.loading = false
+            this.$success(i18n.t('commons.success'))
+            this.apiItem.fields = res.data.fields
+            this.$refs.plxTable.reloadData(res.data.datas)
+          }).catch(res => {
+            this.loading = false
+          })
+        } else {
+          return false
+        }
+      })
     },
     handleClick(tab, event) {
     }

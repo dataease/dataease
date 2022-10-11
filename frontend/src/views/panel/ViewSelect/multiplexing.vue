@@ -3,8 +3,15 @@
     v-loading="panelLoading"
     class="main-class"
   >
-    <de-aside-container v-loading="viewLoading" class="aside-class" type="panel">
-      <multiplexing-view :view-data="viewData" @showDetails="showDetails" />
+    <de-aside-container
+      v-loading="viewLoading"
+      class="aside-class"
+      type="panel"
+    >
+      <multiplexing-view
+        :view-data="viewData"
+        @showDetails="showDetails"
+      />
     </de-aside-container>
     <de-main-container>
       <Preview
@@ -14,8 +21,14 @@
         :panel-info="panelInfo"
         :show-position="showPosition"
       />
-      <el-col v-else style="height: 100%;">
-        <el-row style="height: 100%; background-color: var(--ContentBG);" class="custom-position">
+      <el-col
+        v-else
+        style="height: 100%;"
+      >
+        <el-row
+          style="height: 100%; background-color: var(--ContentBG);"
+          class="custom-position"
+        >
           {{ $t('panel.select_panel_from_left') }}
         </el-row>
       </el-col>

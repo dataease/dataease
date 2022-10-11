@@ -1,7 +1,10 @@
 <template>
   <div class="batch-opt-main">
     <el-row style="height: 40px">
-      <span class="title-text view-title-name" style="line-height: 40px;">{{ $t('panel.batch_opt') }}</span>
+      <span
+        class="title-text view-title-name"
+        style="line-height: 40px;"
+      >{{ $t('panel.batch_opt') }}</span>
     </el-row>
     <chart-style
       v-if="mixProperties&&batchOptChartInfo"

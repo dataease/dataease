@@ -10,10 +10,17 @@
           @click="create"
         >{{ $t("user.create") }}</el-button>
 
-        <plugin-com v-if="isPluginLoaded" ref="ImportUserCom" component-name="ImportUser" />
+        <plugin-com
+          v-if="isPluginLoaded"
+          ref="ImportUserCom"
+          component-name="ImportUser"
+        />
 
       </el-col>
-      <el-col :span="12" class="right-user">
+      <el-col
+        :span="12"
+        class="right-user"
+      >
         <el-input
           ref="search"
           v-model="nickName"
@@ -35,13 +42,19 @@
           ({{ filterTexts.length }})
         </template>
         </el-button>
-        <el-dropdown trigger="click" :hide-on-click="false">
+        <el-dropdown
+          trigger="click"
+          :hide-on-click="false"
+        >
           <el-button
             v-btnPress
             class="normal btn filter-zero"
             icon="el-icon-setting"
           >{{ $t('user.list') }}</el-button>
-          <el-dropdown-menu slot="dropdown" class="list-colums-slect">
+          <el-dropdown-menu
+            slot="dropdown"
+            class="list-colums-slect"
+          >
             <p class="title">{{ $t('user.list_info') }}</p>
             <el-checkbox
               v-model="checkAll"
@@ -62,17 +75,35 @@
         </el-dropdown>
       </el-col>
     </el-row>
-    <div v-if="filterTexts.length" class="filter-texts">
+    <div
+      v-if="filterTexts.length"
+      class="filter-texts"
+    >
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t('user.result_one') }}</span>
       <el-divider direction="vertical" />
-      <i v-if="showScroll" class="el-icon-arrow-left arrow-filter" @click="scrollPre" />
+      <i
+        v-if="showScroll"
+        class="el-icon-arrow-left arrow-filter"
+        @click="scrollPre"
+      />
       <div class="filter-texts-container">
-        <p v-for="(ele, index) in filterTexts" :key="ele" class="text">
-          {{ ele }} <i class="el-icon-close" @click="clearOneFilter(index)" />
+        <p
+          v-for="(ele, index) in filterTexts"
+          :key="ele"
+          class="text"
+        >
+          {{ ele }} <i
+            class="el-icon-close"
+            @click="clearOneFilter(index)"
+          />
         </p>
       </div>
-      <i v-if="showScroll" class="el-icon-arrow-right arrow-filter" @click="scrollNext" />
+      <i
+        v-if="showScroll"
+        class="el-icon-arrow-right arrow-filter"
+        @click="scrollNext"
+      />
       <el-button
         type="text"
         class="clear-btn"
@@ -95,7 +126,10 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       >
-        <el-table-column prop="username" label="ID" />
+        <el-table-column
+          prop="username"
+          label="ID"
+        />
         <el-table-column
           key="nickName"
           show-overflow-tooltip
@@ -104,7 +138,11 @@
           :label="$t('commons.nick_name')"
         />
         <!-- <el-table-column prop="gender" :label="$t('commons.gender')" width="60" /> -->
-        <el-table-column prop="from" :label="$t('user.source')" width="80">
+        <el-table-column
+          prop="from"
+          :label="$t('user.source')"
+          width="80"
+        >
           <template slot-scope="scope">
             <div>
               {{
@@ -152,9 +190,17 @@
           :label="$t('commons.role')"
         >
           <template slot-scope="scope">
-            <el-tooltip popper-class="de-table-tooltips" class="item" effect="dark" placement="top">
+            <el-tooltip
+              popper-class="de-table-tooltips"
+              class="item"
+              effect="dark"
+              placement="top"
+            >
               <!-- // {{}}会将数据解释为普通文本，而非 HTML 代码。 -->
-              <div slot="content" v-html="filterRoles(scope.row.roles)" />
+              <div
+                slot="content"
+                v-html="filterRoles(scope.row.roles)"
+              />
               <div class="de-one-line">{{ filterRoles(scope.row.roles) }}</div>
             </el-tooltip>
           </template>
@@ -167,7 +213,7 @@
           :label="$t('commons.status')"
           width="80"
         >
-          <template v-slot:default="scope">
+          <template #default="scope">
             <el-switch
               v-model="scope.row.enabled"
               :active-value="1"
@@ -186,7 +232,7 @@
           :label="$t('commons.create_time')"
           width="180"
         >
-          <template v-slot:default="scope">
+          <template #default="scope">
             <span>{{ scope.row.createTime | timestampFormatDate }}</span>
           </template>
         </el-table-column>
@@ -214,7 +260,10 @@
               <i class="el-icon-warning" />
               <div class="tips">{{ $t('user.recover_pwd') }}</div>
               <div class="editer-form-title">
-                <span class="pwd" type="text">{{
+                <span
+                  class="pwd"
+                  type="text"
+                >{{
                   $t("commons.default_pwd") + "：" + defaultPWD
                 }}</span>
                 <el-button
@@ -264,9 +313,15 @@
       </grid-table>
     </div>
     <keep-alive>
-      <filterUser ref="filterUser" @search="filterDraw" />
+      <filterUser
+        ref="filterUser"
+        @search="filterDraw"
+      />
     </keep-alive>
-    <user-editer ref="userEditer" @saved="search" />
+    <user-editer
+      ref="userEditer"
+      @saved="search"
+    />
   </de-layout-content>
 </template>
 

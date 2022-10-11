@@ -1,23 +1,28 @@
 <template>
   <div>
-    <el-form ref="form" v-loading="loading"
-             :model="form"
-             :rules="rules"
-             class="demo-form-inline"
-             :disabled="show"
-             label-width="180px"
-             label-position="top"
-             size="small"
+    <el-form
+      ref="form"
+      v-loading="loading"
+      :model="form"
+      :rules="rules"
+      class="demo-form-inline"
+      :disabled="show"
+      label-width="180px"
+      label-position="top"
+      size="small"
     >
       <el-row>
         <el-col>
-          <el-form-item :label="$t('datasource.type')" prop="type">
+          <el-form-item
+            :label="$t('datasource.type')"
+            prop="type"
+          >
             <el-select
               v-model="form.type"
               :placeholder="$t('datasource.please_choose_type')"
 
-              @change="changeType()"
               filterable
+              @change="changeType()"
             >
               <el-option
                 v-for="item in allTypes"
@@ -31,58 +36,93 @@
       </el-row>
       <el-row>
         <el-col>
-          <el-form-item :label="$t('datasource.host')" prop="configuration.host">
-            <el-input v-model="form.configuration.host"/>
+          <el-form-item
+            :label="$t('datasource.host')"
+            prop="configuration.host"
+          >
+            <el-input v-model="form.configuration.host" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col>
-          <el-form-item :label="$t('datasource.data_base')" prop="configuration.dataBase">
-            <el-input v-model="form.configuration.dataBase"/>
+          <el-form-item
+            :label="$t('datasource.data_base')"
+            prop="configuration.dataBase"
+          >
+            <el-input v-model="form.configuration.dataBase" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col>
           <el-form-item :label="$t('datasource.user_name')">
-            <el-input v-model="form.configuration.username"/>
+            <el-input v-model="form.configuration.username" />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col>
           <el-form-item :label="$t('datasource.password')">
-            <el-input v-model="form.configuration.password" show-password/>
+            <el-input
+              v-model="form.configuration.password"
+              show-password
+            />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col>
-          <el-form-item :label="$t('datasource.port')" prop="configuration.port">
-            <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0"/>
+          <el-form-item
+            :label="$t('datasource.port')"
+            prop="configuration.port"
+          >
+            <el-input
+              v-model="form.configuration.port"
+              autocomplete="off"
+              type="number"
+              min="0"
+            />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col>
           <el-form-item :label="$t('datasource.extra_params')">
-            <el-input v-model="form.configuration.extraParams"/>
+            <el-input v-model="form.configuration.extraParams" />
           </el-form-item>
         </el-col>
       </el-row>
     </el-form>
     <div>
-      <el-button type="primary" size="small" @click="validaDatasource">
+      <el-button
+        type="primary"
+        size="small"
+        @click="validaDatasource"
+      >
         {{ $t('commons.validate') }}
       </el-button>
-      <el-button v-if="showEdit" size="small" @click="edit">
+      <el-button
+        v-if="showEdit"
+        size="small"
+        @click="edit"
+      >
         {{ $t('commons.edit') }}
       </el-button>
-      <el-button v-if="showSave" type="success" size="small" @click="save">
+      <el-button
+        v-if="showSave"
+        type="success"
+        size="small"
+        @click="save"
+      >
         {{ $t('commons.save') }}
       </el-button>
-      <el-button v-if="showCancel" type="info" size="small" @click="cancel">
+      <el-button
+        v-if="showCancel"
+        type="info"
+        size="small"
+        @click="cancel"
+      >
         {{ $t('commons.cancel') }}
       </el-button>
     </div>
@@ -91,8 +131,8 @@
 
 <script>
 
-import {engineInfo, validate, save} from '@/api/system/engine'
-import i18n from "@/lang";
+import { engineInfo, validate, save } from '@/api/system/engine'
+import i18n from '@/lang'
 import msgCfm from '@/components/msgCfm'
 
 export default {
@@ -206,7 +246,7 @@ export default {
           this.showSave = false
           this.show = true
           this.originConfiguration = JSON.parse(JSON.stringify(this.form.configuration))
-          this.openMessageSuccess("commons.save_success");
+          this.openMessageSuccess('commons.save_success')
         })
       })
     },
@@ -240,7 +280,7 @@ export default {
           data.configuration = JSON.stringify(data.configuration)
           validate(data).then(res => {
             if (res.success) {
-              this.openMessageSuccess("datasource.validate_success");
+              this.openMessageSuccess('datasource.validate_success')
             } else {
               if (res.message.length < 2500) {
                 this.$error(res.message)
@@ -253,7 +293,7 @@ export default {
           return false
         }
       })
-    },
+    }
   }
 }
 </script>

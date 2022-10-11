@@ -1,6 +1,9 @@
 <template>
   <div>
-    <el-switch v-model="value" active-text="当前用户" />
+    <el-switch
+      v-model="value"
+      active-text="当前用户"
+    />
   </div>
 </template>
 

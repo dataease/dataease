@@ -1,10 +1,24 @@
 <template>
   <el-col>
-    <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addThreshold" />
+    <el-button
+      icon="el-icon-plus"
+      circle
+      size="mini"
+      style="margin-bottom: 10px;"
+      @click="addThreshold"
+    />
     <div style="max-height: 50vh;overflow-y: auto;">
-      <el-row v-for="(item,index) in thresholdArr" :key="index" class="line-item">
+      <el-row
+        v-for="(item,index) in thresholdArr"
+        :key="index"
+        class="line-item"
+      >
         <el-col :span="6">
-          <el-select v-model="item.term" size="mini" @change="changeThreshold">
+          <el-select
+            v-model="item.term"
+            size="mini"
+            @change="changeThreshold"
+          >
             <el-option-group
               v-for="(group,idx) in valueOptions"
               :key="idx"
@@ -19,19 +33,59 @@
             </el-option-group>
           </el-select>
         </el-col>
-        <el-col :span="14" style="text-align: center;">
-          <el-input v-if="item.term !== 'between'" v-model="item.value" class="value-item" :placeholder="$t('chart.drag_block_label_value')" size="mini" clearable @change="changeThreshold" />
+        <el-col
+          :span="14"
+          style="text-align: center;"
+        >
+          <el-input
+            v-if="item.term !== 'between'"
+            v-model="item.value"
+            class="value-item"
+            :placeholder="$t('chart.drag_block_label_value')"
+            size="mini"
+            clearable
+            @change="changeThreshold"
+          />
           <span v-if="item.term === 'between'">
-            <el-input v-model="item.min" class="between-item" :placeholder="$t('chart.axis_value_min')" size="mini" clearable @change="changeThreshold" />
+            <el-input
+              v-model="item.min"
+              class="between-item"
+              :placeholder="$t('chart.axis_value_min')"
+              size="mini"
+              clearable
+              @change="changeThreshold"
+            />
             <span style="margin: 0 4px;">≤{{ $t('chart.drag_block_label_value') }}≤</span>
-            <el-input v-model="item.max" class="between-item" :placeholder="$t('chart.axis_value_max')" size="mini" clearable @change="changeThreshold" />
+            <el-input
+              v-model="item.max"
+              class="between-item"
+              :placeholder="$t('chart.axis_value_max')"
+              size="mini"
+              clearable
+              @change="changeThreshold"
+            />
           </span>
         </el-col>
-        <el-col :span="2" style="text-align: center;">
-          <el-color-picker v-model="item.color" show-alpha class="color-picker-style" :predefine="predefineColors" @change="changeThreshold" />
+        <el-col
+          :span="2"
+          style="text-align: center;"
+        >
+          <el-color-picker
+            v-model="item.color"
+            show-alpha
+            class="color-picker-style"
+            :predefine="predefineColors"
+            @change="changeThreshold"
+          />
         </el-col>
         <el-col :span="2">
-          <el-button type="text" icon="el-icon-delete" circle style="float: right" @click="removeThreshold(index)" />
+          <el-button
+            type="text"
+            icon="el-icon-delete"
+            circle
+            style="float: right"
+            @click="removeThreshold(index)"
+          />
         </el-col>
       </el-row>
     </div>

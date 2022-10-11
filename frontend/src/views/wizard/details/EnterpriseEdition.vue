@@ -6,15 +6,18 @@
       </span>
       <br>
       <span>
-         {{ $t('wizard.enterprise_edition_hint2') }}
+        {{ $t('wizard.enterprise_edition_hint2') }}
       </span>
       <br>
       <span>
-         {{ $t('wizard.enterprise_edition_hint3') }}
+        {{ $t('wizard.enterprise_edition_hint3') }}
       </span>
     </el-row>
     <el-row class="demo_bottom">
-      <a href="https://jinshuju.net/f/TK5TTd" target="_blank"> {{ $t('wizard.click_inner') }}</a>
+      <a
+        href="https://jinshuju.net/f/TK5TTd"
+        target="_blank"
+      > {{ $t('wizard.click_inner') }}</a>
     </el-row>
   </el-row>
 </template>

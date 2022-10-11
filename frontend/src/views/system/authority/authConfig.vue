@@ -1,14 +1,38 @@
 <template>
   <de-container style="height: auto">
     <de-aside-container style="height: auto">
-      <el-button v-show="!showTargetSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showTargetSearchWidget" />
-      <div v-show="showTargetSearchInput" class="de-input">
+      <el-button
+        v-show="!showTargetSearchInput"
+        class="de-icon"
+        icon="el-icon-search"
+        circle
+        size="mini"
+        @click="showTargetSearchWidget"
+      />
+      <div
+        v-show="showTargetSearchInput"
+        class="de-input"
+      >
         <el-input v-model="targetFilterText">
-          <el-button slot="append" icon="el-icon-close" @click="closeTargetSearchWidget" />
+          <el-button
+            slot="append"
+            icon="el-icon-close"
+            @click="closeTargetSearchWidget"
+          />
         </el-input>
       </div>
-      <el-tabs v-model="targetActiveName" :class="{'de-search-header': showTargetSearchInput}" @tab-click="handleClick">
-        <el-tab-pane v-for="(targetInfo, index) in targetInfoArray" :key="index" :lazy="true" :label="targetInfo.tabName" :name="targetInfo.authType">
+      <el-tabs
+        v-model="targetActiveName"
+        :class="{'de-search-header': showTargetSearchInput}"
+        @tab-click="handleClick"
+      >
+        <el-tab-pane
+          v-for="(targetInfo, index) in targetInfoArray"
+          :key="index"
+          :lazy="true"
+          :label="targetInfo.tabName"
+          :name="targetInfo.authType"
+        >
           <lazy-tree
             v-if="targetActiveName===targetInfo.authType"
             :active-name="targetActiveName"
@@ -21,14 +45,38 @@
       </el-tabs>
     </de-aside-container>
     <de-main-container class="de-main-container-auth">
-      <el-button v-show="!showSourceSearchInput" class="de-icon" icon="el-icon-search" circle size="mini" @click="showSourceSearchWidget" />
-      <div v-show="showSourceSearchInput" class="de-input">
+      <el-button
+        v-show="!showSourceSearchInput"
+        class="de-icon"
+        icon="el-icon-search"
+        circle
+        size="mini"
+        @click="showSourceSearchWidget"
+      />
+      <div
+        v-show="showSourceSearchInput"
+        class="de-input"
+      >
         <el-input v-model="sourceFilterText">
-          <el-button slot="append" icon="el-icon-close" @click="closeSourceSearchWidget" />
+          <el-button
+            slot="append"
+            icon="el-icon-close"
+            @click="closeSourceSearchWidget"
+          />
         </el-input>
       </div>
-      <el-tabs v-model="sourceActiveName" :class="{'de-search-header': showSourceSearchInput}" @tab-click="handleClick">
-        <el-tab-pane v-for="(sourceInfo, index) in sourceInfoTabs" :key="index" :lazy="true" :label="sourceInfo.tabName" :name="sourceInfo.authType">
+      <el-tabs
+        v-model="sourceActiveName"
+        :class="{'de-search-header': showSourceSearchInput}"
+        @tab-click="handleClick"
+      >
+        <el-tab-pane
+          v-for="(sourceInfo, index) in sourceInfoTabs"
+          :key="index"
+          :lazy="true"
+          :label="sourceInfo.tabName"
+          :name="sourceInfo.authType"
+        >
           <lazy-tree
             v-if="authCondition"
             :active-name="sourceActiveName"

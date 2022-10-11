@@ -5,16 +5,31 @@
     style="position:absolute;top:55px;width: 100%;height: calc(100% - 55px);"
   />
   <div v-else-if="homeLink">
-    <iframe id="mobsf" :src="homeLink" frameborder="0" style="position:absolute;top:55px;width: 100%;height: calc(100% - 55px);" />
+    <iframe
+      id="mobsf"
+      :src="homeLink"
+      frameborder="0"
+      style="position:absolute;top:55px;width: 100%;height: calc(100% - 55px);"
+    />
   </div>
-  <el-row v-else class="main_container">
+  <el-row
+    v-else
+    class="main_container"
+  >
     <el-row class="head">
       <span class="hint_head">{{ $t('wizard.welcome_title') }}</span> <br>
       <span class="hint_content">{{ $t('wizard.welcome_hint') }}</span>
     </el-row>
     <el-row class="card_container">
-      <info-card v-for="(cardDetail,index) in cardList" :key="index">
-        <component :is="cardDetail.component" :img-index="index" :details="cardDetail" />
+      <info-card
+        v-for="(cardDetail,index) in cardList"
+        :key="index"
+      >
+        <component
+          :is="cardDetail.component"
+          :img-index="index"
+          :details="cardDetail"
+        />
       </info-card>
     </el-row>
   </el-row>
@@ -117,8 +132,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .main_container {
-  }
   .head {
     text-align: center;
     color: white;

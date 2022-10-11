@@ -1,6 +1,13 @@
 <template>
-  <div v-if="show" class="modal-bg" @click="hide">
-    <div class="fadeInLeft animated modal" @click="stopPropagation">
+  <div
+    v-if="show"
+    class="modal-bg"
+    @click="hide"
+  >
+    <div
+      class="fadeInLeft animated modal"
+      @click="stopPropagation"
+    >
       <slot />
     </div>
   </div>

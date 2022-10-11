@@ -246,7 +246,7 @@ export function exportExcel(data) {
 export function dsTable(page, size, id) {
   return request({
     url: '/datasource/getTables/' + id + '/' + page + '/' + size,
-    method: 'post',
+    method: 'post'
   })
 }
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs }

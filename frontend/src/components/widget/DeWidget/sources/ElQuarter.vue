@@ -5,22 +5,37 @@
       style="position:fixed;top:0;bottom:0;left:0;right:0;background:rgba(0,0,0,0);z-index:999;"
       @click.stop="showSeason=false"
     />
-    <el-input v-model="showValue" :placeholder="placeholder" style="width:138px;" @focus="showSeason=true">
-      <i slot="prefix" class="el-input__icon el-icon-date" />
+    <el-input
+      v-model="showValue"
+      :placeholder="placeholder"
+      style="width:138px;"
+      @focus="showSeason=true"
+    >
+      <i
+        slot="prefix"
+        class="el-input__icon el-icon-date"
+      />
     </el-input>
     <el-card
       v-show="showSeason"
       class="box-card"
       style="width:322px !important;padding: 0 3px 20px;margin-top:10px;position:fixed;z-index:9999"
     >
-      <div slot="header" class="clearfix" style="text-align:center;padding:0">
+      <div
+        slot="header"
+        class="clearfix"
+        style="text-align:center;padding:0"
+      >
         <button
           type="button"
           aria-label="前一年"
           class="el-picker-panel__icon-btn el-date-picker__prev-btn el-icon-d-arrow-left"
           @click="prev"
         />
-        <span role="button" class="el-date-picker__header-label">{{ year }}年</span>
+        <span
+          role="button"
+          class="el-date-picker__header-label"
+        >{{ year }}年</span>
         <button
           type="button"
           aria-label="后一年"
@@ -28,7 +43,10 @@
           @click="next"
         />
       </div>
-      <div class="text item" style="text-align:center;">
+      <div
+        class="text item"
+        style="text-align:center;"
+      >
         <el-button
           type="text"
           size="medium"
@@ -42,7 +60,10 @@
           @click="selectSeason(1)"
         >第二季度</el-button>
       </div>
-      <div class="text item" style="text-align:center;">
+      <div
+        class="text item"
+        style="text-align:center;"
+      >
         <el-button
           type="text"
           size="medium"

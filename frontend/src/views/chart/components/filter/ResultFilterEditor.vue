@@ -14,7 +14,13 @@
 
     <div v-if="((item.deType === 0 || item.deType === 5) && filterType === 'logic') || item.deType === 1 || item.deType === 2 || item.deType === 3">
       <div style="display: inline-block;">
-        <el-button icon="el-icon-plus" circle size="mini" style="margin-bottom: 10px;" @click="addFilter" />
+        <el-button
+          icon="el-icon-plus"
+          circle
+          size="mini"
+          style="margin-bottom: 10px;"
+          @click="addFilter"
+        />
         <el-radio-group
           v-show="item.filter && item.filter.length > 1"
           v-model="logic"
@@ -27,12 +33,19 @@
         </el-radio-group>
       </div>
       <div style="max-height: 50vh;overflow-y: auto;">
-        <el-row v-for="(f,index) in item.filter" :key="index" class="filter-item">
+        <el-row
+          v-for="(f,index) in item.filter"
+          :key="index"
+          class="filter-item"
+        >
           <el-col :span="4">
             <span>{{ item.name }}</span>
           </el-col>
           <el-col :span="8">
-            <el-select v-model="f.term" size="mini">
+            <el-select
+              v-model="f.term"
+              size="mini"
+            >
               <el-option-group
                 v-for="(group,idx) in options"
                 :key="idx"
@@ -48,10 +61,23 @@
             </el-select>
           </el-col>
           <el-col :span="6">
-            <el-input v-show="!f.term.includes('null') && !f.term.includes('empty')" v-model="f.value" class="value-item" :placeholder="$t('chart.condition')" size="mini" clearable />
+            <el-input
+              v-show="!f.term.includes('null') && !f.term.includes('empty')"
+              v-model="f.value"
+              class="value-item"
+              :placeholder="$t('chart.condition')"
+              size="mini"
+              clearable
+            />
           </el-col>
           <el-col :span="6">
-            <el-button type="text" icon="el-icon-delete" circle style="float: right" @click="removeFilter(index)" />
+            <el-button
+              type="text"
+              icon="el-icon-delete"
+              circle
+              style="float: right"
+              @click="removeFilter(index)"
+            />
           </el-col>
         </el-row>
       </div>
@@ -239,7 +265,7 @@ export default {
     initEnumOptions() {
       // 查找枚举值
       if (this.item.deType === 0 || this.item.deType === 5) {
-        multFieldValues({fieldIds: [this.item.id]}).then(res => {
+        multFieldValues({ fieldIds: [this.item.id] }).then(res => {
           this.fieldOptions = this.optionDatas(res.data)
         })
       }

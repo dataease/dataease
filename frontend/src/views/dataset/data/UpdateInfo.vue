@@ -8,8 +8,15 @@
           @click="() => addTask()"
         >{{ $t('dataset.add_task') }}</deBtn>
       </el-col>
-      <el-col style="text-align: right" :span="12">
-        <el-button type="text" icon="el-icon-document" @click="showConfig">
+      <el-col
+        style="text-align: right"
+        :span="12"
+      >
+        <el-button
+          type="text"
+          icon="el-icon-document"
+          @click="showConfig"
+        >
           {{ $t('dataset.task.record') }}
         </el-button>
       </el-col>
@@ -141,7 +148,10 @@
                 class="el-icon-more de-text-btn"
                 type="text"
               />
-              <el-dropdown-menu slot="dropdown" class="de-card-dropdown">
+              <el-dropdown-menu
+                slot="dropdown"
+                class="de-card-dropdown"
+              >
                 <template
                   v-if="!['Stopped', 'Exec'].includes(scope.row.status)"
                 >
@@ -186,8 +196,14 @@
       class="de-dialog-form"
     >
       <span class="err-msg">{{ error_massage }} </span>
-      <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="show_error_massage = false">{{
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="show_error_massage = false"
+        >{{
           $t('dataset.close')
         }}</el-button>
       </span>
@@ -208,19 +224,31 @@
           :height="height"
           style="width: 100%"
         >
-          <el-table-column prop="name" :label="$t('dataset.task_name')" />
-          <el-table-column prop="startTime" :label="$t('dataset.start_time')">
+          <el-table-column
+            prop="name"
+            :label="$t('dataset.task_name')"
+          />
+          <el-table-column
+            prop="startTime"
+            :label="$t('dataset.start_time')"
+          >
             <template slot-scope="scope">
               <span>{{ scope.row.startTime | timestampFormatDate }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="endTime" :label="$t('dataset.end_time')">
+          <el-table-column
+            prop="endTime"
+            :label="$t('dataset.end_time')"
+          >
             <template slot-scope="scope">
               <span>{{ scope.row.endTime | timestampFormatDate }}</span>
             </template>
           </el-table-column>
 
-          <el-table-column prop="status" :label="$t('dataset.status')">
+          <el-table-column
+            prop="status"
+            :label="$t('dataset.status')"
+          >
             <template slot-scope="scope">
               <span
                 v-if="scope.row.status"
@@ -228,7 +256,13 @@
               >{{
                  $t(`dataset.${scope.row.status.toLocaleLowerCase()}`)
                }}
-                <svg-icon v-if="scope.row.status === 'Error'" style="cursor: pointer;" icon-class="icon-maybe" class="field-icon-location" @click="showErrorMassage(scope.row.info)" />
+                <svg-icon
+                  v-if="scope.row.status === 'Error'"
+                  style="cursor: pointer;"
+                  icon-class="icon-maybe"
+                  class="field-icon-location"
+                  @click="showErrorMassage(scope.row.info)"
+                />
               </span>
               <span v-else>-</span>
             </template>
@@ -264,21 +298,30 @@
         :disabled="disableForm"
         :rules="taskFormRules"
       >
-        <el-form-item :label="$t('dataset.task_name')" prop="name">
+        <el-form-item
+          :label="$t('dataset.task_name')"
+          prop="name"
+        >
           <el-input
             v-model="taskForm.name"
             size="small"
             :placeholder="$t('fu.search_bar.please_input') + $t('dataset.task_name')"
           />
         </el-form-item>
-        <el-form-item :label="$t('dataset.update_type')" prop="type">
+        <el-form-item
+          :label="$t('dataset.update_type')"
+          prop="type"
+        >
           <el-radio-group v-model="taskForm.type">
             <el-radio label="all_scope">{{ $t('dataset.all_scope') }}</el-radio>
             <el-radio label="add_scope">
               {{ $t('dataset.add_scope') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <div v-if="taskForm.type === 'add_scope' && table.type !== 'api'" class="add-scope-cont">
+        <div
+          v-if="taskForm.type === 'add_scope' && table.type !== 'api'"
+          class="add-scope-cont"
+        >
           <el-form-item
             prop="type"
             :label="$t('dataset.incremental_update_type')"
@@ -324,8 +367,14 @@
           </el-form-item>
         </div>
 
-        <el-form-item :label="$t('dataset.execute_rate')" prop="rate">
-          <el-radio-group v-model="taskForm.rate" @change="onRateChange">
+        <el-form-item
+          :label="$t('dataset.execute_rate')"
+          prop="rate"
+        >
+          <el-radio-group
+            v-model="taskForm.rate"
+            @change="onRateChange"
+          >
             <el-radio label="SIMPLE">{{ $t('dataset.execute_once') }}</el-radio>
             <el-radio label="CRON">{{ $t('dataset.cron_config') }}</el-radio>
             <el-radio label="SIMPLE_CRON">{{
@@ -333,7 +382,10 @@
             }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <div v-if="taskForm.rate !== 'SIMPLE'" class="execute-rate-cont">
+        <div
+          v-if="taskForm.rate !== 'SIMPLE'"
+          class="execute-rate-cont"
+        >
           <el-form-item
             v-if="taskForm.rate === 'SIMPLE_CRON'"
             :label="$t('dataset.execute_rate')"
@@ -354,9 +406,18 @@
                 size="small"
                 @change="onSimpleCronChange()"
               >
-                <el-option :label="$t('components.minute')" value="minute" />
-                <el-option :label="$t('components.hour')" value="hour" />
-                <el-option :label="$t('components.day')" value="day" />
+                <el-option
+                  :label="$t('components.minute')"
+                  value="minute"
+                />
+                <el-option
+                  :label="$t('components.hour')"
+                  value="hour"
+                />
+                <el-option
+                  :label="$t('components.day')"
+                  value="day"
+                />
               </el-select>
               {{ $t('cron.every_exec') }}
             </div>
@@ -424,8 +485,15 @@
         </div>
       </el-form>
       <div class="de-foot">
-        <deBtn secondary @click="closeTask">{{ $t('dataset.cancel') }}</deBtn>
-        <deBtn v-if="!disableForm" type="primary" @click="saveTask(taskForm)">{{
+        <deBtn
+          secondary
+          @click="closeTask"
+        >{{ $t('dataset.cancel') }}</deBtn>
+        <deBtn
+          v-if="!disableForm"
+          type="primary"
+          @click="saveTask(taskForm)"
+        >{{
           $t('dataset.confirm')
         }}</deBtn>
       </div>
@@ -747,16 +815,14 @@ export default {
       switch (key) {
         case 'exec':
           this.execTask(row)
-          return
           break
         case 'delete':
           this.deleteTask(row)
-          return
           break
         default:
+          this.changeTaskStatus(row)
           break
       }
-      this.changeTaskStatus(row)
     },
     execTask(task) {
       this.$confirm(

@@ -1,13 +1,33 @@
 <template>
 
-  <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]" class="de-dialog-container">
-    <de-aside-container :show-drag-bar="false" class="ms-aside-container">
-      <el-tabs v-model="activeName" class="filter-dialog-tabs">
-        <el-tab-pane class="de-tab" :label="$t('panel.select_by_table')" name="dataset">
+  <de-container
+    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+    class="de-dialog-container"
+  >
+    <de-aside-container
+      :show-drag-bar="false"
+      class="ms-aside-container"
+    >
+      <el-tabs
+        v-model="activeName"
+        class="filter-dialog-tabs"
+      >
+        <el-tab-pane
+          class="de-tab"
+          :label="$t('panel.select_by_table')"
+          name="dataset"
+        >
           <div class="component-header filter-common">
             <el-breadcrumb separator-class="el-icon-arrow-right">
-              <el-breadcrumb-item v-for="bread in dataSetBreads" :key="bread.label">
-                <a v-if="bread.link" :class="{'link-text' : bread.link}" @click="backToLink(bread)">
+              <el-breadcrumb-item
+                v-for="bread in dataSetBreads"
+                :key="bread.label"
+              >
+                <a
+                  v-if="bread.link"
+                  :class="{'link-text' : bread.link}"
+                  @click="backToLink(bread)"
+                >
                   {{ bread.label }}</a>
                 <span v-else>{{ bread.label }}</span>
               </el-breadcrumb-item>
@@ -38,21 +58,58 @@
 
                   @node-click="handleNodeClick"
                 >
-                  <span slot-scope="{ node, data }" style="display: flex;flex: 1;width: 0%;" class="custom-tree-node">
+                  <span
+                    slot-scope="{ node, data }"
+                    style="display: flex;flex: 1;width: 0%;"
+                    class="custom-tree-node"
+                  >
                     <span>
-                      <svg-icon v-if="data.modelInnerType === 'db'" icon-class="ds-db" class="ds-icon-db" />
-                      <svg-icon v-if="data.modelInnerType === 'sql'" icon-class="ds-sql" class="ds-icon-sql" />
-                      <svg-icon v-if="data.modelInnerType === 'excel'" icon-class="ds-excel" class="ds-icon-excel" />
-                      <svg-icon v-if="data.modelInnerType === 'custom'" icon-class="ds-custom" class="ds-icon-custom" />
-                      <svg-icon v-if="data.modelInnerType === 'union'" icon-class="ds-union" class="ds-icon-union" />
-                      <svg-icon v-if="data.modelInnerType === 'api'" icon-class="ds-api" class="ds-icon-api" />
+                      <svg-icon
+                        v-if="data.modelInnerType === 'db'"
+                        icon-class="ds-db"
+                        class="ds-icon-db"
+                      />
+                      <svg-icon
+                        v-if="data.modelInnerType === 'sql'"
+                        icon-class="ds-sql"
+                        class="ds-icon-sql"
+                      />
+                      <svg-icon
+                        v-if="data.modelInnerType === 'excel'"
+                        icon-class="ds-excel"
+                        class="ds-icon-excel"
+                      />
+                      <svg-icon
+                        v-if="data.modelInnerType === 'custom'"
+                        icon-class="ds-custom"
+                        class="ds-icon-custom"
+                      />
+                      <svg-icon
+                        v-if="data.modelInnerType === 'union'"
+                        icon-class="ds-union"
+                        class="ds-icon-union"
+                      />
+                      <svg-icon
+                        v-if="data.modelInnerType === 'api'"
+                        icon-class="ds-api"
+                        class="ds-icon-api"
+                      />
                     </span>
                     <span v-if="data.modelInnerType === 'db' || data.modelInnerType === 'sql'">
-                      <span v-if="data.mode === 0" style="margin-left: 6px"><i class="el-icon-s-operation" /></span>
-                      <span v-if="data.mode === 1" style="margin-left: 6px"><i class="el-icon-alarm-clock" /></span>
+                      <span
+                        v-if="data.mode === 0"
+                        style="margin-left: 6px"
+                      ><i class="el-icon-s-operation" /></span>
+                      <span
+                        v-if="data.mode === 1"
+                        style="margin-left: 6px"
+                      ><i class="el-icon-alarm-clock" /></span>
                     </span>
 
-                    <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="node.label">{{ node.label }}</span>
+                    <span
+                      style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                      :title="node.label"
+                    >{{ node.label }}</span>
 
                   </span>
                 </el-tree>
@@ -79,7 +136,10 @@
                             <i class="el-icon-s-data" />
                           </span>
 
-                          <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="item.name">{{ item.name }}</span>
+                          <span
+                            style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                            :title="item.name"
+                          >{{ item.name }}</span>
                         </span>
                       </div>
                     </transition-group>
@@ -89,11 +149,22 @@
             </el-col>
           </div>
         </el-tab-pane>
-        <el-tab-pane class="de-tab" :label="$t('panel.select_by_module')" name="assembly">
+        <el-tab-pane
+          class="de-tab"
+          :label="$t('panel.select_by_module')"
+          name="assembly"
+        >
           <div class="component-header filter-common">
             <el-breadcrumb separator-class="el-icon-arrow-right">
-              <el-breadcrumb-item v-for="bread in componentSetBreads" :key="bread.label">
-                <a v-if="bread.link" :class="{'link-text' : bread.link}" @click="comBackLink(bread)">
+              <el-breadcrumb-item
+                v-for="bread in componentSetBreads"
+                :key="bread.label"
+              >
+                <a
+                  v-if="bread.link"
+                  :class="{'link-text' : bread.link}"
+                  @click="comBackLink(bread)"
+                >
                   {{ bread.label }}</a>
                 <span v-else>{{ bread.label }}</span>
               </el-breadcrumb-item>
@@ -126,17 +197,27 @@
                   :highlight-current-row="true"
                   style="width: 100%"
                 >
-                  <el-table-column prop="name" :label="$t('commons.name')">
-                    <template v-if="comShowDomType === 'view'" :id="scope.row.id" slot-scope="scope">
-                      <div class="filter-db-row" @click="comShowFieldDatas(scope.row)">
-                        <!-- <i class="el-icon-s-data" />
-                        <span> {{ scope.row.name }}</span> -->
+                  <el-table-column
+                    prop="name"
+                    :label="$t('commons.name')"
+                  >
+                    <template
+                      v-if="comShowDomType === 'view'"
+                      slot-scope="scope"
+                    >
+                      <div
+                        class="filter-db-row"
+                        @click="comShowFieldDatas(scope.row)"
+                      >
                         <span style="display: flex;flex: 1;">
                           <span>
                             <i class="el-icon-s-data" />
                           </span>
 
-                          <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="scope.row.name">{{ scope.row.name }}</span>
+                          <span
+                            style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                            :title="scope.row.name"
+                          >{{ scope.row.name }}</span>
                         </span>
                       </div>
                     </template>
@@ -165,7 +246,10 @@
                             <i class="el-icon-s-data" />
                           </span>
 
-                          <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="item.name">{{ item.name }}</span>
+                          <span
+                            style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                            :title="item.name"
+                          >{{ item.name }}</span>
                         </span>
 
                       </div>
@@ -181,9 +265,17 @@
 
     <de-main-container class="ms-main-container">
       <div v-if="currentElement.options && currentElement.options.attrs">
-        <filter-head :element="currentElement" :widget="widget" />
+        <filter-head
+          :element="currentElement"
+          :widget="widget"
+        />
 
-        <filter-control :element="currentElement" :widget="widget" :control-attrs="myAttrs" :child-views="childViews" />
+        <filter-control
+          :element="currentElement"
+          :widget="widget"
+          :control-attrs="myAttrs"
+          :child-views="childViews"
+        />
 
         <filter-foot :element="currentElement" />
 
@@ -481,10 +573,10 @@ export default {
         this.childViews.viewInfos = datas
       })
       var type = 'TEXT'
-      if(this.widgetInfo.name.indexOf('time') !== -1){
+      if (this.widgetInfo.name.indexOf('time') !== -1) {
         type = 'DATE'
       }
-      if(this.widgetInfo.name === 'numberSelectWidget'){
+      if (this.widgetInfo.name === 'numberSelectWidget') {
         type = 'NUM'
       }
       viewIds && viewIds.length > 0 && paramsWithIds(type, viewIds).then(res => {

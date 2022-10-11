@@ -1,16 +1,34 @@
 <template>
-  <el-dropdown style="display: flex;align-items: center;" trigger="click" class="international" @command="handleSetLanguage">
+  <el-dropdown
+    style="display: flex;align-items: center;"
+    trigger="click"
+    class="international"
+    @command="handleSetLanguage"
+  >
     <div>
-      <svg-icon style="color: var(--TextPrimary)" class-name="international-icon" icon-class="language" />
+      <svg-icon
+        style="color: var(--TextPrimary)"
+        class-name="international-icon"
+        icon-class="language"
+      />
     </div>
     <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item :disabled="language==='zh_CN'" command="zh_CN">
+      <el-dropdown-item
+        :disabled="language==='zh_CN'"
+        command="zh_CN"
+      >
         简体中文
       </el-dropdown-item>
-      <el-dropdown-item :disabled="language==='zh_TW'" command="zh_TW">
+      <el-dropdown-item
+        :disabled="language==='zh_TW'"
+        command="zh_TW"
+      >
         繁体中文
       </el-dropdown-item>
-      <el-dropdown-item :disabled="language==='en_US'" command="en_US">
+      <el-dropdown-item
+        :disabled="language==='en_US'"
+        command="en_US"
+      >
         English
       </el-dropdown-item>
       <!-- <el-dropdown-item :disabled="language==='es'" command="es">

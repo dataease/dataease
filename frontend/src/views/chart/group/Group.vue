@@ -5,7 +5,13 @@
         <span class="title-text">
           {{ $t('chart.datalist') }}
         </span>
-        <el-button icon="el-icon-plus" type="text" size="mini" style="float: right;" @click="add('group')" />
+        <el-button
+          icon="el-icon-plus"
+          type="text"
+          size="mini"
+          style="float: right;"
+          @click="add('group')"
+        />
       </el-row>
       <el-divider />
       <el-row style="margin-bottom: 10px">
@@ -21,12 +27,15 @@
         </el-col>
         <el-col :span="8">
           <el-dropdown>
-            <el-button size="mini" type="primary">
+            <el-button
+              size="mini"
+              type="primary"
+            >
               {{ searchMap[searchType] }}<i class="el-icon-arrow-down el-icon--right" />
             </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item @click.native="searchTypeClick('all')">{{ $t('commons.all') }}</el-dropdown-item>
-              <el-dropdown-item @click.native="searchTypeClick('folder')">{{ this.$t('commons.folder') }}
+              <el-dropdown-item @click.native="searchTypeClick('folder')">{{ $t('commons.folder') }}
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -47,7 +56,11 @@
             @node-expand="nodeExpand"
             @node-collapse="nodeCollapse"
           >
-            <span v-if="data.modelInnerType ==='group'" slot-scope="{ node, data }" class="custom-tree-node father">
+            <span
+              v-if="data.modelInnerType ==='group'"
+              slot-scope="{ node, data }"
+              class="custom-tree-node father"
+            >
               <span style="display: flex;flex: 1;width: 0;">
                 <span>
                   <i class="el-icon-folder" />
@@ -57,9 +70,19 @@
                   :title="data.name"
                 >{{ data.name }}</span>
               </span>
-              <span v-if="hasDataPermission('manage',data.privileges)" class="child">
-                <span v-if="data.modelInnerType ==='group'" @click.stop>
-                  <el-dropdown trigger="click" size="small" @command="clickAdd">
+              <span
+                v-if="hasDataPermission('manage',data.privileges)"
+                class="child"
+              >
+                <span
+                  v-if="data.modelInnerType ==='group'"
+                  @click.stop
+                >
+                  <el-dropdown
+                    trigger="click"
+                    size="small"
+                    @command="clickAdd"
+                  >
                     <span class="el-dropdown-link">
                       <el-button
                         icon="el-icon-plus"
@@ -68,17 +91,30 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-folder-add" :command="beforeClickAdd('group',data,node)">
+                      <el-dropdown-item
+                        icon="el-icon-folder-add"
+                        :command="beforeClickAdd('group',data,node)"
+                      >
                         {{ $t('chart.group') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-circle-plus" :command="beforeClickAdd('chart',data,node)">
+                      <el-dropdown-item
+                        icon="el-icon-circle-plus"
+                        :command="beforeClickAdd('chart',data,node)"
+                      >
                         {{ $t('chart.add_chart') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
                 </span>
-                <span style="margin-left: 12px;" @click.stop>
-                  <el-dropdown trigger="click" size="small" @command="clickMore">
+                <span
+                  style="margin-left: 12px;"
+                  @click.stop
+                >
+                  <el-dropdown
+                    trigger="click"
+                    size="small"
+                    @command="clickMore"
+                  >
                     <span class="el-dropdown-link">
                       <el-button
                         icon="el-icon-more"
@@ -87,13 +123,22 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
+                      <el-dropdown-item
+                        icon="el-icon-edit-outline"
+                        :command="beforeClickMore('rename',data,node)"
+                      >
                         {{ $t('chart.rename') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">
+                      <el-dropdown-item
+                        icon="el-icon-right"
+                        :command="beforeClickMore('move',data,node)"
+                      >
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
+                      <el-dropdown-item
+                        icon="el-icon-delete"
+                        :command="beforeClickMore('delete',data,node)"
+                      >
                         {{ $t('chart.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -101,7 +146,11 @@
                 </span>
               </span>
             </span>
-            <span v-else slot-scope="{ node, data }" class="custom-tree-node-list father">
+            <span
+              v-else
+              slot-scope="{ node, data }"
+              class="custom-tree-node-list father"
+            >
               <span style="display: flex;flex: 1;width: 0;">
                 <span><svg-icon :icon-class="data.modelInnerType" /></span>
                 <span
@@ -109,9 +158,19 @@
                   :title="data.name"
                 >{{ data.name }}</span>
               </span>
-              <span v-if="hasDataPermission('manage',data.privileges)" class="child">
-                <span style="margin-left: 12px;" @click.stop>
-                  <el-dropdown trigger="click" size="small" @command="clickMore">
+              <span
+                v-if="hasDataPermission('manage',data.privileges)"
+                class="child"
+              >
+                <span
+                  style="margin-left: 12px;"
+                  @click.stop
+                >
+                  <el-dropdown
+                    trigger="click"
+                    size="small"
+                    @command="clickMore"
+                  >
                     <span class="el-dropdown-link">
                       <el-button
                         icon="el-icon-more"
@@ -120,13 +179,22 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('renameChart',data,node)">
+                      <el-dropdown-item
+                        icon="el-icon-edit-outline"
+                        :command="beforeClickMore('renameChart',data,node)"
+                      >
                         {{ $t('chart.rename') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('moveDs',data,node)">
+                      <el-dropdown-item
+                        icon="el-icon-right"
+                        :command="beforeClickMore('moveDs',data,node)"
+                      >
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('deleteChart',data,node)">
+                      <el-dropdown-item
+                        icon="el-icon-delete"
+                        :command="beforeClickMore('deleteChart',data,node)"
+                      >
                         {{ $t('chart.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -139,7 +207,13 @@
       </el-col>
 
       <!--group add/edit-->
-      <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="30%">
+      <el-dialog
+        v-dialogDrag
+        :title="dialogTitle"
+        :visible="editGroup"
+        :show-close="false"
+        width="30%"
+      >
         <el-form
           ref="groupForm"
           :model="groupForm"
@@ -147,27 +221,65 @@
           @keypress.enter.native="saveGroup(groupForm)"
           @submit.native.prevent
         >
-          <el-form-item :label="$t('commons.name')" prop="name">
+          <el-form-item
+            :label="$t('commons.name')"
+            prop="name"
+          >
             <el-input v-model="groupForm.name" />
           </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="close()">{{ $t('chart.cancel') }}</el-button>
-          <el-button type="primary" size="mini" @click="saveGroup(groupForm)">{{ $t('chart.confirm') }}</el-button>
+        <div
+          slot="footer"
+          class="dialog-footer"
+        >
+          <el-button
+            size="mini"
+            @click="close()"
+          >{{ $t('chart.cancel') }}</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            @click="saveGroup(groupForm)"
+          >{{ $t('chart.confirm') }}</el-button>
         </div>
       </el-dialog>
     </el-col>
 
     <!--rename chart-->
-    <el-dialog v-dialogDrag :title="$t('chart.chart')" :visible="editTable" :show-close="false" width="30%">
-      <el-form ref="tableForm" :model="tableForm" :rules="tableFormRules" @submit.native.prevent @keypress.enter.native="saveTable(tableForm)">
-        <el-form-item :label="$t('commons.name')" prop="name">
+    <el-dialog
+      v-dialogDrag
+      :title="$t('chart.chart')"
+      :visible="editTable"
+      :show-close="false"
+      width="30%"
+    >
+      <el-form
+        ref="tableForm"
+        :model="tableForm"
+        :rules="tableFormRules"
+        @submit.native.prevent
+        @keypress.enter.native="saveTable(tableForm)"
+      >
+        <el-form-item
+          :label="$t('commons.name')"
+          prop="name"
+        >
           <el-input v-model="tableForm.name" />
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeTable()">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="saveTable(tableForm)">{{ $t('chart.confirm') }}</el-button>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="closeTable()"
+        >{{ $t('chart.cancel') }}</el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          @click="saveTable(tableForm)"
+        >{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
 
@@ -182,27 +294,55 @@
       class="dialog-css"
     >
       <el-row style="width: 800px;">
-        <el-form ref="form" :model="table" label-width="80px" size="mini" class="form-item" @submit.native.prevent>
+        <el-form
+          ref="form"
+          :model="table"
+          label-width="80px"
+          size="mini"
+          class="form-item"
+          @submit.native.prevent
+        >
           <el-col :span="12">
             <el-form-item :label="$t('chart.view_name')">
-              <el-input v-model="chartName" style="height: 34px" size="mini" />
+              <el-input
+                v-model="chartName"
+                style="height: 34px"
+                size="mini"
+              />
             </el-form-item>
           </el-col>
         </el-form>
       </el-row>
 
-      <el-steps :active="createActive" align-center>
+      <el-steps
+        :active="createActive"
+        align-center
+      >
         <el-step :title="$t('chart.select_dataset')" />
         <el-step :title="$t('chart.select_chart_type')" />
       </el-steps>
 
-      <table-selector v-show="createActive === 1" @getTable="getTable" />
-      <el-row v-show="createActive === 2" style="padding: 0 20px;">
+      <table-selector
+        v-show="createActive === 1"
+        @getTable="getTable"
+      />
+      <el-row
+        v-show="createActive === 2"
+        style="padding: 0 20px;"
+      >
         <el-row class="chart-box">
           <span>
-            <span class="theme-border-class" style="font-size: 12px">{{ $t('chart.chart_type') }}</span>
+            <span
+              class="theme-border-class"
+              style="font-size: 12px"
+            >{{ $t('chart.chart_type') }}</span>
             <span style="float: right;">
-              <el-select v-model="view.render" class="render-select" style="width: 70px" size="mini">
+              <el-select
+                v-model="view.render"
+                class="render-select"
+                style="width: 70px"
+                size="mini"
+              >
                 <el-option
                   v-for="item in pluginRenderOptions"
                   :key="item.value"
@@ -218,19 +358,40 @@
                 v-model="view.type"
                 style="width: 100%"
               >
-                <chart-type ref="cu-chart-type" :chart="view" style="height: 350px;" />
+                <chart-type
+                  ref="cu-chart-type"
+                  :chart="view"
+                  style="height: 350px;"
+                />
               </el-radio-group>
             </div>
           </el-row>
         </el-row>
-        <el-row class="chart-box" style="text-align: center;">
-          <svg-icon :icon-class="view.isPlugin && view.type && view.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + view.type + '/svg') : view.type" class="chart-icon" />
+        <el-row
+          class="chart-box"
+          style="text-align: center;"
+        >
+          <svg-icon
+            :icon-class="view.isPlugin && view.type && view.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + view.type + '/svg') : view.type"
+            class="chart-icon"
+          />
         </el-row>
       </el-row>
 
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeCreateChart">{{ $t('chart.cancel') }}</el-button>
-        <el-button v-if="createActive === 2" type="primary" size="mini" @click="createPreview">{{ $t('chart.preview')
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="closeCreateChart"
+        >{{ $t('chart.cancel') }}</el-button>
+        <el-button
+          v-if="createActive === 2"
+          type="primary"
+          size="mini"
+          @click="createPreview"
+        >{{ $t('chart.preview')
         }}
         </el-button>
         <el-button
@@ -261,10 +422,24 @@
       width="30%"
       class="dialog-css"
     >
-      <group-move-selector :item="groupForm" @targetGroup="targetGroup" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeMoveGroup()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button :disabled="groupMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveGroup(tGroup)">{{
+      <group-move-selector
+        :item="groupForm"
+        @targetGroup="targetGroup"
+      />
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="closeMoveGroup()"
+        >{{ $t('dataset.cancel') }}</el-button>
+        <el-button
+          :disabled="groupMoveConfirmDisabled"
+          type="primary"
+          size="mini"
+          @click="saveMoveGroup(tGroup)"
+        >{{
           $t('dataset.confirm') }}
         </el-button>
       </div>
@@ -279,10 +454,24 @@
       width="30%"
       class="dialog-css"
     >
-      <chart-move-selector :item="dsForm" @targetDs="targetDs" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeMoveDs()">{{ $t('dataset.cancel') }}</el-button>
-        <el-button :disabled="dsMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveDs(tDs)">{{
+      <chart-move-selector
+        :item="dsForm"
+        @targetDs="targetDs"
+      />
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="closeMoveDs()"
+        >{{ $t('dataset.cancel') }}</el-button>
+        <el-button
+          :disabled="dsMoveConfirmDisabled"
+          type="primary"
+          size="mini"
+          @click="saveMoveDs(tDs)"
+        >{{
           $t('dataset.confirm') }}
         </el-button>
       </div>
@@ -308,7 +497,6 @@ import {
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
-  DEFAULT_BACKGROUND_COLOR,
   DEFAULT_SPLIT,
   DEFAULT_FUNCTION_CFG,
   DEFAULT_THRESHOLD,

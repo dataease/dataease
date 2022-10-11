@@ -5,7 +5,7 @@
     v-bind="$attrs"
     v-on="$listeners"
   >
-    <template v-slot:default>
+    <template #default>
       <slot name="default" />
     </template>
   </component>

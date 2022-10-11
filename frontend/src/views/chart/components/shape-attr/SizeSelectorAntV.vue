@@ -1,12 +1,28 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="sizeFormBar" :model="sizeForm" label-width="80px" size="mini">
+      <el-form
+        ref="sizeFormBar"
+        :model="sizeForm"
+        label-width="80px"
+        size="mini"
+      >
         <!--bar-begin-->
-        <el-form-item v-show="showProperty('barDefault')" :label="$t('chart.adapt')" class="form-item">
-          <el-checkbox v-model="sizeForm.barDefault" @change="changeBarSizeCase('barDefault')">{{ $t('chart.adapt') }}</el-checkbox>
+        <el-form-item
+          v-show="showProperty('barDefault')"
+          :label="$t('chart.adapt')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.barDefault"
+            @change="changeBarSizeCase('barDefault')"
+          >{{ $t('chart.adapt') }}</el-checkbox>
         </el-form-item>
-        <el-form-item v-show="showProperty('barGap')" :label="$t('chart.bar_gap')" class="form-item form-item-slider">
+        <el-form-item
+          v-show="showProperty('barGap')"
+          :label="$t('chart.bar_gap')"
+          class="form-item form-item-slider"
+        >
           <el-slider
             v-model="sizeForm.barGap"
             :disabled="sizeForm.barDefault"
@@ -36,8 +52,16 @@
             @change="changeBarSizeCase('lineWidth')"
           />
         </el-form-item>
-        <el-form-item v-show="showProperty('lineSymbol')" :label="$t('chart.line_symbol')" class="form-item">
-          <el-select v-model="sizeForm.lineSymbol" :placeholder="$t('chart.line_symbol')" @change="changeBarSizeCase('lineSymbol')">
+        <el-form-item
+          v-show="showProperty('lineSymbol')"
+          :label="$t('chart.line_symbol')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.lineSymbol"
+            :placeholder="$t('chart.line_symbol')"
+            @change="changeBarSizeCase('lineSymbol')"
+          >
             <el-option
               v-for="item in lineSymbolOptions"
               :key="item.value"
@@ -61,8 +85,15 @@
             @change="changeBarSizeCase('lineSymbolSize')"
           />
         </el-form-item>
-        <el-form-item v-show="showProperty('lineSmooth')" :label="$t('chart.line_smooth')" class="form-item">
-          <el-checkbox v-model="sizeForm.lineSmooth" @change="changeBarSizeCase('lineSmooth')">{{ $t('chart.line_smooth') }}
+        <el-form-item
+          v-show="showProperty('lineSmooth')"
+          :label="$t('chart.line_smooth')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.lineSmooth"
+            @change="changeBarSizeCase('lineSmooth')"
+          >{{ $t('chart.line_smooth') }}
           </el-checkbox>
         </el-form-item>
         <!--line-end-->
@@ -100,8 +131,16 @@
         </el-form-item>
         <!--pie-end-->
         <!--radar-begin-->
-        <el-form-item v-show="showProperty('radarShape')" :label="$t('chart.shape')" class="form-item">
-          <el-radio-group v-model="sizeForm.radarShape" size="mini" @change="changeBarSizeCase('radarShape')">
+        <el-form-item
+          v-show="showProperty('radarShape')"
+          :label="$t('chart.shape')"
+          class="form-item"
+        >
+          <el-radio-group
+            v-model="sizeForm.radarShape"
+            size="mini"
+            @change="changeBarSizeCase('radarShape')"
+          >
             <el-radio-button label="polygon">{{ $t('chart.polygon') }}</el-radio-button>
             <el-radio-button label="circle">{{ $t('chart.circle') }}</el-radio-button>
           </el-radio-group>
@@ -124,14 +163,25 @@
         <!--radar-end-->
         <!--table-begin-->
 
-        <el-form-item v-show="showProperty('tablePageMode')" label-width="100px" :label="$t('chart.table_page_mode')" class="form-item">
+        <el-form-item
+          v-show="showProperty('tablePageMode')"
+          label-width="100px"
+          :label="$t('chart.table_page_mode')"
+          class="form-item"
+        >
           <el-select
             v-model="sizeForm.tablePageMode"
             :placeholder="$t('chart.table_page_mode')"
             @change="changeBarSizeCase('tablePageMode')"
           >
-            <el-option :label="$t('chart.page_mode_page')" value="page" />
-            <el-option :label="$t('chart.page_mode_pull')" value="pull" />
+            <el-option
+              :label="$t('chart.page_mode_page')"
+              value="page"
+            />
+            <el-option
+              :label="$t('chart.page_mode_pull')"
+              value="pull"
+            />
           </el-select>
         </el-form-item>
         <el-form-item
@@ -164,7 +214,12 @@
             :placeholder="$t('chart.table_title_fontsize')"
             @change="changeBarSizeCase('tableTitleFontSize')"
           >
-            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+            <el-option
+              v-for="option in fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item
@@ -178,7 +233,12 @@
             :placeholder="$t('chart.table_item_fontsize')"
             @change="changeBarSizeCase('tableItemFontSize')"
           >
-            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+            <el-option
+              v-for="option in fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item
@@ -192,16 +252,31 @@
             :placeholder="$t('chart.table_header_align')"
             @change="changeBarSizeCase('tableHeaderAlign')"
           >
-            <el-option v-for="option in alignOptions" :key="option.value" :label="option.name" :value="option.value" />
+            <el-option
+              v-for="option in alignOptions"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="showProperty('tableItemAlign')" label-width="100px" :label="$t('chart.table_item_align')" class="form-item">
+        <el-form-item
+          v-show="showProperty('tableItemAlign')"
+          label-width="100px"
+          :label="$t('chart.table_item_align')"
+          class="form-item"
+        >
           <el-select
             v-model="sizeForm.tableItemAlign"
             :placeholder="$t('chart.table_item_align')"
             @change="changeBarSizeCase('tableItemAlign')"
           >
-            <el-option v-for="option in alignOptions" :key="option.value" :label="option.name" :value="option.value" />
+            <el-option
+              v-for="option in alignOptions"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
         <el-form-item
@@ -242,19 +317,29 @@
           :label="$t('chart.table_column_width_config')"
           class="form-item"
         >
-          <el-radio-group v-model="sizeForm.tableColumnMode" @change="changeBarSizeCase('tableColumnMode')">
+          <el-radio-group
+            v-model="sizeForm.tableColumnMode"
+            @change="changeBarSizeCase('tableColumnMode')"
+          >
             <el-radio label="adapt"><span>{{ $t('chart.table_column_adapt') }}</span></el-radio>
             <el-radio label="custom">
               <span>{{ $t('chart.table_column_custom') }}</span>
             </el-radio>
           </el-radio-group>
-          <el-tooltip class="item" effect="dark" placement="bottom">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            placement="bottom"
+          >
             <div slot="content">
               列宽并非任何时候都能生效。
               <br>
               容器宽度优先级高于列宽，即(表格容器宽度 / 列数 > 指定列宽)，则列宽优先取(容器宽度 / 列数)。
             </div>
-            <i class="el-icon-info" style="cursor: pointer;color: #606266;margin-left: 4px;" />
+            <i
+              class="el-icon-info"
+              style="cursor: pointer;color: #606266;margin-left: 4px;"
+            />
           </el-tooltip>
         </el-form-item>
         <el-form-item
@@ -277,18 +362,45 @@
       <!--table-end-->
 
       <!--gauge-begin-->
-      <el-form ref="sizeFormGauge" :model="sizeForm" label-width="100px" size="mini">
-        <el-form-item v-show="showProperty('gaugeMin')" :label="$t('chart.min')" class="form-item">
-          <el-radio-group v-model="sizeForm.gaugeMinType" size="mini" @change="changeQuotaField('min')">
+      <el-form
+        ref="sizeFormGauge"
+        :model="sizeForm"
+        label-width="100px"
+        size="mini"
+      >
+        <el-form-item
+          v-show="showProperty('gaugeMin')"
+          :label="$t('chart.min')"
+          class="form-item"
+        >
+          <el-radio-group
+            v-model="sizeForm.gaugeMinType"
+            size="mini"
+            @change="changeQuotaField('min')"
+          >
             <el-radio-button label="fix">{{ $t('chart.fix') }}</el-radio-button>
             <el-radio-button label="dynamic">{{ $t('chart.dynamic') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-if="showProperty('gaugeMin') && sizeForm.gaugeMinType === 'fix'" class="form-item form-item-slider">
-          <el-input-number v-model="sizeForm.gaugeMin" size="mini" @change="changeBarSizeCase('gaugeMin')" />
+        <el-form-item
+          v-if="showProperty('gaugeMin') && sizeForm.gaugeMinType === 'fix'"
+          class="form-item form-item-slider"
+        >
+          <el-input-number
+            v-model="sizeForm.gaugeMin"
+            size="mini"
+            @change="changeBarSizeCase('gaugeMin')"
+          />
         </el-form-item>
-        <el-form-item v-if="showProperty('gaugeMin') && sizeForm.gaugeMinType === 'dynamic'" class="form-item form-flex">
-          <el-select v-model="sizeForm.gaugeMinField.id" :placeholder="$t('chart.field')" @change="changeQuotaField('min',true)">
+        <el-form-item
+          v-if="showProperty('gaugeMin') && sizeForm.gaugeMinType === 'dynamic'"
+          class="form-item form-flex"
+        >
+          <el-select
+            v-model="sizeForm.gaugeMinField.id"
+            :placeholder="$t('chart.field')"
+            @change="changeQuotaField('min',true)"
+          >
             <el-option
               v-for="item in quotaData"
               :key="item.id"
@@ -296,37 +408,118 @@
               :value="item.id"
             >
               <span style="float: left">
-                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-                <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                <svg-icon
+                  v-if="item.deType === 0"
+                  icon-class="field_text"
+                  class="field-icon-text"
+                />
+                <svg-icon
+                  v-if="item.deType === 1"
+                  icon-class="field_time"
+                  class="field-icon-time"
+                />
+                <svg-icon
+                  v-if="item.deType === 2 || item.deType === 3"
+                  icon-class="field_value"
+                  class="field-icon-value"
+                />
+                <svg-icon
+                  v-if="item.deType === 5"
+                  icon-class="field_location"
+                  class="field-icon-location"
+                />
               </span>
               <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
             </el-option>
           </el-select>
-          <el-select v-model="sizeForm.gaugeMinField.summary" :placeholder="$t('chart.summary')" @change="changeQuotaField('min')">
-            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="sum" value="sum" :label="$t('chart.sum')" />
-            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="avg" value="avg" :label="$t('chart.avg')" />
-            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="max" value="max" :label="$t('chart.max')" />
-            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="min" value="min" :label="$t('chart.min')" />
-            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="stddev_pop" value="stddev_pop" :label="$t('chart.stddev_pop')" />
-            <el-option v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5" key="var_pop" value="var_pop" :label="$t('chart.var_pop')" />
-            <el-option key="count" value="count" :label="$t('chart.count')" />
-            <el-option v-if="minField.id !== 'count'" key="count_distinct" value="count_distinct" :label="$t('chart.count_distinct')" />
+          <el-select
+            v-model="sizeForm.gaugeMinField.summary"
+            :placeholder="$t('chart.summary')"
+            @change="changeQuotaField('min')"
+          >
+            <el-option
+              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              key="sum"
+              value="sum"
+              :label="$t('chart.sum')"
+            />
+            <el-option
+              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              key="avg"
+              value="avg"
+              :label="$t('chart.avg')"
+            />
+            <el-option
+              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              key="max"
+              value="max"
+              :label="$t('chart.max')"
+            />
+            <el-option
+              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              key="min"
+              value="min"
+              :label="$t('chart.min')"
+            />
+            <el-option
+              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              key="stddev_pop"
+              value="stddev_pop"
+              :label="$t('chart.stddev_pop')"
+            />
+            <el-option
+              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              key="var_pop"
+              value="var_pop"
+              :label="$t('chart.var_pop')"
+            />
+            <el-option
+              key="count"
+              value="count"
+              :label="$t('chart.count')"
+            />
+            <el-option
+              v-if="minField.id !== 'count'"
+              key="count_distinct"
+              value="count_distinct"
+              :label="$t('chart.count_distinct')"
+            />
           </el-select>
         </el-form-item>
 
-        <el-form-item v-show="showProperty('gaugeMax')" :label="$t('chart.max')" class="form-item">
-          <el-radio-group v-model="sizeForm.gaugeMaxType" size="mini" @change="changeQuotaField('max')">
+        <el-form-item
+          v-show="showProperty('gaugeMax')"
+          :label="$t('chart.max')"
+          class="form-item"
+        >
+          <el-radio-group
+            v-model="sizeForm.gaugeMaxType"
+            size="mini"
+            @change="changeQuotaField('max')"
+          >
             <el-radio-button label="fix">{{ $t('chart.fix') }}</el-radio-button>
             <el-radio-button label="dynamic">{{ $t('chart.dynamic') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-if="showProperty('gaugeMax') && sizeForm.gaugeMaxType === 'fix'" class="form-item form-item-slider">
-          <el-input-number v-model="sizeForm.gaugeMax" size="mini" @change="changeBarSizeCase('gaugeMax')" />
+        <el-form-item
+          v-if="showProperty('gaugeMax') && sizeForm.gaugeMaxType === 'fix'"
+          class="form-item form-item-slider"
+        >
+          <el-input-number
+            v-model="sizeForm.gaugeMax"
+            size="mini"
+            @change="changeBarSizeCase('gaugeMax')"
+          />
         </el-form-item>
-        <el-form-item v-if="showProperty('gaugeMax') && sizeForm.gaugeMaxType === 'dynamic'" class="form-item form-flex">
-          <el-select v-model="sizeForm.gaugeMaxField.id" :placeholder="$t('chart.field')" @change="changeQuotaField('max',true)">
+        <el-form-item
+          v-if="showProperty('gaugeMax') && sizeForm.gaugeMaxType === 'dynamic'"
+          class="form-item form-flex"
+        >
+          <el-select
+            v-model="sizeForm.gaugeMaxField.id"
+            :placeholder="$t('chart.field')"
+            @change="changeQuotaField('max',true)"
+          >
             <el-option
               v-for="item in quotaData"
               :key="item.id"
@@ -334,23 +527,82 @@
               :value="item.id"
             >
               <span style="float: left">
-                <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-                <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-                <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-                <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
+                <svg-icon
+                  v-if="item.deType === 0"
+                  icon-class="field_text"
+                  class="field-icon-text"
+                />
+                <svg-icon
+                  v-if="item.deType === 1"
+                  icon-class="field_time"
+                  class="field-icon-time"
+                />
+                <svg-icon
+                  v-if="item.deType === 2 || item.deType === 3"
+                  icon-class="field_value"
+                  class="field-icon-value"
+                />
+                <svg-icon
+                  v-if="item.deType === 5"
+                  icon-class="field_location"
+                  class="field-icon-location"
+                />
               </span>
               <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
             </el-option>
           </el-select>
-          <el-select v-model="sizeForm.gaugeMaxField.summary" :placeholder="$t('chart.summary')" @change="changeQuotaField('max')">
-            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="sum" value="sum" :label="$t('chart.sum')" />
-            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="avg" value="avg" :label="$t('chart.avg')" />
-            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="max" value="max" :label="$t('chart.max')" />
-            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="min" value="min" :label="$t('chart.min')" />
-            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="stddev_pop" value="stddev_pop" :label="$t('chart.stddev_pop')" />
-            <el-option v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5" key="var_pop" value="var_pop" :label="$t('chart.var_pop')" />
-            <el-option key="count" value="count" :label="$t('chart.count')" />
-            <el-option v-if="maxField.id !== 'count'" key="count_distinct" value="count_distinct" :label="$t('chart.count_distinct')" />
+          <el-select
+            v-model="sizeForm.gaugeMaxField.summary"
+            :placeholder="$t('chart.summary')"
+            @change="changeQuotaField('max')"
+          >
+            <el-option
+              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              key="sum"
+              value="sum"
+              :label="$t('chart.sum')"
+            />
+            <el-option
+              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              key="avg"
+              value="avg"
+              :label="$t('chart.avg')"
+            />
+            <el-option
+              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              key="max"
+              value="max"
+              :label="$t('chart.max')"
+            />
+            <el-option
+              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              key="min"
+              value="min"
+              :label="$t('chart.min')"
+            />
+            <el-option
+              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              key="stddev_pop"
+              value="stddev_pop"
+              :label="$t('chart.stddev_pop')"
+            />
+            <el-option
+              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              key="var_pop"
+              value="var_pop"
+              :label="$t('chart.var_pop')"
+            />
+            <el-option
+              key="count"
+              value="count"
+              :label="$t('chart.count')"
+            />
+            <el-option
+              v-if="maxField.id !== 'count'"
+              key="count_distinct"
+              value="count_distinct"
+              :label="$t('chart.count_distinct')"
+            />
           </el-select>
         </el-form-item>
 
@@ -384,35 +636,96 @@
             @change="changeBarSizeCase('gaugeEndAngle')"
           />
         </el-form-item>
-<!--        <el-form-item v-show="showProperty('gaugeTickCount')" :label="$t('chart.tick_count')" class="form-item form-item-slider">-->
-<!--          <el-input-number v-model="sizeForm.gaugeTickCount" :min="1" :step="1" :precision="0" size="mini" @change="changeBarSizeCase('gaugeTickCount')" />-->
-<!--        </el-form-item>-->
+        <!--        <el-form-item v-show="showProperty('gaugeTickCount')" :label="$t('chart.tick_count')" class="form-item form-item-slider">-->
+        <!--          <el-input-number v-model="sizeForm.gaugeTickCount" :min="1" :step="1" :precision="0" size="mini" @change="changeBarSizeCase('gaugeTickCount')" />-->
+        <!--        </el-form-item>-->
       </el-form>
       <!--gauge-end-->
 
-      <el-form ref="sizeFormPie" :model="sizeForm" label-width="100px" size="mini">
+      <el-form
+        ref="sizeFormPie"
+        :model="sizeForm"
+        label-width="100px"
+        size="mini"
+      >
         <!--text&label-start-->
-        <el-form-item v-show="showProperty('quotaFontSize')" :label="$t('chart.quota_font_size')" class="form-item">
-          <el-select v-model="sizeForm.quotaFontSize" :placeholder="$t('chart.quota_font_size')" @change="changeBarSizeCase('quotaFontSize')">
-            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+        <el-form-item
+          v-show="showProperty('quotaFontSize')"
+          :label="$t('chart.quota_font_size')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.quotaFontSize"
+            :placeholder="$t('chart.quota_font_size')"
+            @change="changeBarSizeCase('quotaFontSize')"
+          >
+            <el-option
+              v-for="option in fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="showProperty('quotaFontFamily')" :label="$t('chart.quota_font_family')" class="form-item">
-          <el-select v-model="sizeForm.quotaFontFamily" :placeholder="$t('chart.quota_font_family')" @change="changeBarSizeCase('quotaFontFamily')">
-            <el-option v-for="option in fontFamily" :key="option.value" :label="option.name" :value="option.value" />
+        <el-form-item
+          v-show="showProperty('quotaFontFamily')"
+          :label="$t('chart.quota_font_family')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.quotaFontFamily"
+            :placeholder="$t('chart.quota_font_family')"
+            @change="changeBarSizeCase('quotaFontFamily')"
+          >
+            <el-option
+              v-for="option in fontFamily"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="showProperty('quotaFontStyle')" :label="$t('chart.quota_text_style')" class="form-item">
-          <el-checkbox v-model="sizeForm.quotaFontIsItalic" @change="changeBarSizeCase('quotaFontIsItalic')">{{ $t('chart.italic') }}</el-checkbox>
-          <el-checkbox v-model="sizeForm.quotaFontIsBolder" @change="changeBarSizeCase('quotaFontIsBolder')">{{ $t('chart.bolder') }}</el-checkbox>
+        <el-form-item
+          v-show="showProperty('quotaFontStyle')"
+          :label="$t('chart.quota_text_style')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.quotaFontIsItalic"
+            @change="changeBarSizeCase('quotaFontIsItalic')"
+          >{{ $t('chart.italic') }}</el-checkbox>
+          <el-checkbox
+            v-model="sizeForm.quotaFontIsBolder"
+            @change="changeBarSizeCase('quotaFontIsBolder')"
+          >{{ $t('chart.bolder') }}</el-checkbox>
         </el-form-item>
-        <el-form-item v-show="showProperty('quotaLetterSpace')" :label="$t('chart.quota_letter_space')" class="form-item">
-          <el-select v-model="sizeForm.quotaLetterSpace" :placeholder="$t('chart.quota_letter_space')" @change="changeBarSizeCase('quotaLetterSpace')">
-            <el-option v-for="option in fontLetterSpace" :key="option.value" :label="option.name" :value="option.value" />
+        <el-form-item
+          v-show="showProperty('quotaLetterSpace')"
+          :label="$t('chart.quota_letter_space')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.quotaLetterSpace"
+            :placeholder="$t('chart.quota_letter_space')"
+            @change="changeBarSizeCase('quotaLetterSpace')"
+          >
+            <el-option
+              v-for="option in fontLetterSpace"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="showProperty('quotaFontShadow')" :label="$t('chart.font_shadow')" class="form-item">
-          <el-checkbox v-model="sizeForm.quotaFontShadow" @change="changeBarSizeCase('quotaFontShadow')">{{ $t('chart.font_shadow') }}</el-checkbox>
+        <el-form-item
+          v-show="showProperty('quotaFontShadow')"
+          :label="$t('chart.font_shadow')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.quotaFontShadow"
+            @change="changeBarSizeCase('quotaFontShadow')"
+          >{{ $t('chart.font_shadow') }}</el-checkbox>
         </el-form-item>
         <el-divider v-if="showProperty('dimensionShow')" />
         <el-form-item
@@ -420,7 +733,10 @@
           :label="$t('chart.dimension_show')"
           class="form-item"
         >
-          <el-checkbox v-model="sizeForm.dimensionShow" @change="changeBarSizeCase('dimensionShow')">{{ $t('chart.show') }}</el-checkbox>
+          <el-checkbox
+            v-model="sizeForm.dimensionShow"
+            @change="changeBarSizeCase('dimensionShow')"
+          >{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <el-form-item
           v-show="showProperty('dimensionFontSize')"
@@ -432,25 +748,73 @@
             :placeholder="$t('chart.dimension_font_size')"
             @change="changeBarSizeCase('dimensionFontSize')"
           >
-            <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
+            <el-option
+              v-for="option in fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="showProperty('dimensionFontFamily')" :label="$t('chart.dimension_font_family')" class="form-item">
-          <el-select v-model="sizeForm.dimensionFontFamily" :placeholder="$t('chart.dimension_font_family')" @change="changeBarSizeCase('dimensionFontFamily')">
-            <el-option v-for="option in fontFamily" :key="option.value" :label="option.name" :value="option.value" />
+        <el-form-item
+          v-show="showProperty('dimensionFontFamily')"
+          :label="$t('chart.dimension_font_family')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.dimensionFontFamily"
+            :placeholder="$t('chart.dimension_font_family')"
+            @change="changeBarSizeCase('dimensionFontFamily')"
+          >
+            <el-option
+              v-for="option in fontFamily"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="showProperty('dimensionFontStyle')" :label="$t('chart.dimension_text_style')" class="form-item">
-          <el-checkbox v-model="sizeForm.dimensionFontIsItalic" @change="changeBarSizeCase('dimensionFontIsItalic')">{{ $t('chart.italic') }}</el-checkbox>
-          <el-checkbox v-model="sizeForm.dimensionFontIsBolder" @change="changeBarSizeCase('dimensionFontIsBolder')">{{ $t('chart.bolder') }}</el-checkbox>
+        <el-form-item
+          v-show="showProperty('dimensionFontStyle')"
+          :label="$t('chart.dimension_text_style')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.dimensionFontIsItalic"
+            @change="changeBarSizeCase('dimensionFontIsItalic')"
+          >{{ $t('chart.italic') }}</el-checkbox>
+          <el-checkbox
+            v-model="sizeForm.dimensionFontIsBolder"
+            @change="changeBarSizeCase('dimensionFontIsBolder')"
+          >{{ $t('chart.bolder') }}</el-checkbox>
         </el-form-item>
-        <el-form-item v-show="showProperty('dimensionLetterSpace')" :label="$t('chart.dimension_letter_space')" class="form-item">
-          <el-select v-model="sizeForm.dimensionLetterSpace" :placeholder="$t('chart.dimension_letter_space')" @change="changeBarSizeCase('dimensionLetterSpace')">
-            <el-option v-for="option in fontLetterSpace" :key="option.value" :label="option.name" :value="option.value" />
+        <el-form-item
+          v-show="showProperty('dimensionLetterSpace')"
+          :label="$t('chart.dimension_letter_space')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.dimensionLetterSpace"
+            :placeholder="$t('chart.dimension_letter_space')"
+            @change="changeBarSizeCase('dimensionLetterSpace')"
+          >
+            <el-option
+              v-for="option in fontLetterSpace"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
           </el-select>
         </el-form-item>
-        <el-form-item v-show="showProperty('dimensionFontShadow')" :label="$t('chart.font_shadow')" class="form-item">
-          <el-checkbox v-model="sizeForm.dimensionFontShadow" @change="changeBarSizeCase('dimensionFontShadow')">{{ $t('chart.font_shadow') }}</el-checkbox>
+        <el-form-item
+          v-show="showProperty('dimensionFontShadow')"
+          :label="$t('chart.font_shadow')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.dimensionFontShadow"
+            @change="changeBarSizeCase('dimensionFontShadow')"
+          >{{ $t('chart.font_shadow') }}</el-checkbox>
         </el-form-item>
         <el-divider v-if="showProperty('spaceSplit')" />
         <el-form-item
@@ -458,11 +822,20 @@
           :label="$t('chart.space_split')"
           class="form-item"
         >
-          <el-input-number v-model="sizeForm.spaceSplit" :min="0" size="mini" @change="changeBarSizeCase('spaceSplit')" />
+          <el-input-number
+            v-model="sizeForm.spaceSplit"
+            :min="0"
+            size="mini"
+            @change="changeBarSizeCase('spaceSplit')"
+          />
         </el-form-item>
         <!--text&label-end-->
         <!--scatter-begin-->
-        <el-form-item v-show="showProperty('scatterSymbol')" :label="$t('chart.bubble_symbol')" class="form-item">
+        <el-form-item
+          v-show="showProperty('scatterSymbol')"
+          :label="$t('chart.bubble_symbol')"
+          class="form-item"
+        >
           <el-select
             v-model="sizeForm.scatterSymbol"
             :placeholder="$t('chart.line_symbol')"
@@ -493,8 +866,16 @@
         </el-form-item>
         <!--scatter-end-->
         <!--liquid-begin-->
-        <el-form-item v-show="showProperty('liquidShape')" :label="$t('chart.liquid_shape')" class="form-item">
-          <el-select v-model="sizeForm.liquidShape" :placeholder="$t('chart.liquid_shape')" @change="changeBarSizeCase('liquidShape')">
+        <el-form-item
+          v-show="showProperty('liquidShape')"
+          :label="$t('chart.liquid_shape')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.liquidShape"
+            :placeholder="$t('chart.liquid_shape')"
+            @change="changeBarSizeCase('liquidShape')"
+          >
             <el-option
               v-for="item in liquidShapeOptions"
               :key="item.value"
@@ -508,7 +889,12 @@
           :label="$t('chart.liquid_max')"
           class="form-item form-item-slider"
         >
-          <el-input-number v-model="sizeForm.liquidMax" :min="1" size="mini" @change="changeBarSizeCase('liquidMax')" />
+          <el-input-number
+            v-model="sizeForm.liquidMax"
+            :min="1"
+            size="mini"
+            @change="changeBarSizeCase('liquidMax')"
+          />
         </el-form-item>
         <el-form-item
           v-show="showProperty('liquidSize')"
@@ -526,12 +912,36 @@
           />
         </el-form-item>
         <!--liquid-end-->
-        <el-form-item v-if="showProperty('symbolOpacity')" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.symbolOpacity" show-input :show-input-controls="false" input-size="mini" :min="0" :max="10" @change="changeBarSizeCase('symbolOpacity')" />
+        <el-form-item
+          v-if="showProperty('symbolOpacity')"
+          :label="$t('chart.not_alpha')"
+          class="form-item form-item-slider"
+        >
+          <el-slider
+            v-model="sizeForm.symbolOpacity"
+            show-input
+            :show-input-controls="false"
+            input-size="mini"
+            :min="0"
+            :max="10"
+            @change="changeBarSizeCase('symbolOpacity')"
+          />
         </el-form-item>
 
-        <el-form-item v-if="showProperty('symbolStrokeWidth') && sizeForm.scatterSymbol && sizeForm.scatterSymbol !== 'marker'" :label="$t('plugin_style.border')" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.symbolStrokeWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="5" @change="changeBarSizeCase('symbolStrokeWidth')" />
+        <el-form-item
+          v-if="showProperty('symbolStrokeWidth') && sizeForm.scatterSymbol && sizeForm.scatterSymbol !== 'marker'"
+          :label="$t('plugin_style.border')"
+          class="form-item form-item-slider"
+        >
+          <el-slider
+            v-model="sizeForm.symbolStrokeWidth"
+            show-input
+            :show-input-controls="false"
+            input-size="mini"
+            :min="0"
+            :max="5"
+            @change="changeBarSizeCase('symbolStrokeWidth')"
+          />
         </el-form-item>
       </el-form>
 

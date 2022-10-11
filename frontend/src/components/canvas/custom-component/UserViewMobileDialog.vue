@@ -1,7 +1,14 @@
 <template>
   <de-container>
-    <de-main-container v-if="chart.type !== 'table-normal' && chart.type !== 'table-info'" :style="customStyle" class="full-div">
-      <div class="canvas-class" :style="commonStyle">
+    <de-main-container
+      v-if="chart.type !== 'table-normal' && chart.type !== 'table-info'"
+      :style="customStyle"
+      class="full-div"
+    >
+      <div
+        class="canvas-class"
+        :style="commonStyle"
+      >
         <plugin-com
           v-if="chart.isPlugin"
           :component-name="chart.type + '-view'"
@@ -11,15 +18,40 @@
           :canvas-style-data="canvasStyleData"
           class="chart-class"
         />
-        <chart-component v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'" :theme-style="element.commonBackground" class="chart-class" :chart="mapChart || chart" />
-        <chart-component-g2 v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-        <chart-component-s2 v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'" class="chart-class" :chart="chart" />
-        <label-normal v-else-if="chart.type.includes('text')" :chart="chart" class="table-class" />
-        <label-normal-text v-else-if="chart.type === 'label'" :chart="chart" class="table-class" />
+        <chart-component
+          v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'"
+          :theme-style="element.commonBackground"
+          class="chart-class"
+          :chart="mapChart || chart"
+        />
+        <chart-component-g2
+          v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'"
+          class="chart-class"
+          :chart="chart"
+        />
+        <chart-component-s2
+          v-else-if="chart.type === 'table-pivot' && renderComponent() === 'antv'"
+          class="chart-class"
+          :chart="chart"
+        />
+        <label-normal
+          v-else-if="chart.type.includes('text')"
+          :chart="chart"
+          class="table-class"
+        />
+        <label-normal-text
+          v-else-if="chart.type === 'label'"
+          :chart="chart"
+          class="table-class"
+        />
       </div>
     </de-main-container>
     <de-main-container v-else>
-      <table-normal :chart="chartTable" :show-summary="false" class="table-class" />
+      <table-normal
+        :chart="chartTable"
+        :show-summary="false"
+        class="table-class"
+      />
     </de-main-container>
   </de-container>
 </template>
@@ -50,7 +82,7 @@ export default {
       type: Object,
       default: null
     }
-    
+
   },
   data() {
     return {
@@ -58,9 +90,6 @@ export default {
       element: {},
       lastMapChart: null
     }
-  },
-  created() {
-    this.element = deepCopy(this.curComponent)
   },
   computed: {
     customStyle() {
@@ -145,6 +174,9 @@ export default {
       }
       return null
     }
+  },
+  created() {
+    this.element = deepCopy(this.curComponent)
   },
   methods: {
 

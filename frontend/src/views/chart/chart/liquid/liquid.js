@@ -8,7 +8,7 @@ let labelFormatter = null
 export function baseLiquid(plot, container, chart) {
   let value = 0
   const colors = []
-  let max, radius, bgColor, shape, labelContent, title
+  let max, radius, bgColor, shape, labelContent
   if (chart.data) {
     if (chart.data.series.length > 0) {
       value = chart.data.series[0].data[0]
@@ -57,22 +57,6 @@ export function baseLiquid(plot, container, chart) {
     if (customStyle.background) {
       bgColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
-    if (customStyle.text) {
-      const t = JSON.parse(JSON.stringify(customStyle.text))
-      if (t.show) {
-        title = {
-          formatter: () => { return chart.title },
-          style: ({ percent }) => ({
-            fontSize: parseInt(t.fontSize),
-            color: t.color,
-            fontWeight: t.isBolder ? 'bold' : 'normal',
-            fontStyle: t.isItalic ? 'italic' : 'normal'
-          })
-        }
-      } else {
-        title = false
-      }
-    }
   }
   // 开始渲染
   if (plot) {
@@ -91,7 +75,6 @@ export function baseLiquid(plot, container, chart) {
     radius: radius,
     shape: shape,
     statistic: {
-      // title: title,
       content: labelContent
     }
   })

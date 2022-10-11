@@ -1,10 +1,19 @@
 <template>
-  <el-col :span="8" class="card_main">
+  <el-col
+    :span="8"
+    class="card_main"
+  >
     <el-row>
-      <el-col :span="8" class="card_head">
+      <el-col
+        :span="8"
+        class="card_head"
+      >
         <span>{{ headInfo }}</span>
       </el-col>
-      <el-col :span="1" class="triangle" />
+      <el-col
+        :span="1"
+        class="triangle"
+      />
     </el-row>
     <el-row class="card_content">
       <slot />

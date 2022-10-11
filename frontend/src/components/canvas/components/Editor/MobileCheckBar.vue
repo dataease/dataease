@@ -2,7 +2,10 @@
   <div class="bar-main">
     <div style="width: 20px">
       <!--      <svg-icon icon-class="field_text" class="el-icon-close" />-->
-      <el-checkbox v-model="element.mobileSelected" @change="onChange" />
+      <el-checkbox
+        v-model="element.mobileSelected"
+        @change="onChange"
+      />
     </div>
   </div>
 </template>

@@ -25,7 +25,11 @@
         <el-row class="custom-item-text-row"><span class="custom-item-text bl">{{ $t('panel.component_gap') }}</span>
         </el-row>
         <el-row class="function-area">
-          <el-radio-group v-model="overallSettingForm.panel.gap" size="mini" @change="themeChange()">
+          <el-radio-group
+            v-model="overallSettingForm.panel.gap"
+            size="mini"
+            @change="themeChange()"
+          >
             <el-radio label="yes">{{ $t('panel.gap') }}</el-radio>
             <el-radio label="no">{{ $t('panel.no_gap') }}</el-radio>
           </el-radio-group>
@@ -59,8 +63,14 @@
             size="mini"
             @change="themeChange"
           >
-            <el-option :label="$t('panel.minute')" :value="'minute'" />
-            <el-option :label="$t('panel.second')" :value="'second'" />
+            <el-option
+              :label="$t('panel.minute')"
+              :value="'minute'"
+            />
+            <el-option
+              :label="$t('panel.second')"
+              :value="'second'"
+            />
           </el-select>
         </el-row>
       </el-row>
@@ -69,11 +79,18 @@
           <span class="custom-item-text bl">
             {{ $t('panel.panel_view_result_show') }}
             <span>
-              <el-tooltip class="item" effect="dark" placement="bottom">
+              <el-tooltip
+                class="item"
+                effect="dark"
+                placement="bottom"
+              >
                 <div slot="content">
                   {{ $t('panel.panel_view_result_tips') }}
                 </div>
-                <i class="el-icon-info" style="cursor: pointer;" />
+                <i
+                  class="el-icon-info"
+                  style="cursor: pointer;"
+                />
               </el-tooltip>
             </span>
           </span>
@@ -93,7 +110,10 @@
                 </el-radio>
               </el-radio-group>
             </el-col>
-            <el-col :span="8" class="slider-area">
+            <el-col
+              :span="8"
+              class="slider-area"
+            >
               <el-slider
                 v-model="overallSettingForm.panel.resultCount"
                 :disabled="overallSettingForm.panel.resultMode==='all'"
@@ -143,7 +163,6 @@ export default {
       overallSettingForm: {}
     }
   },
-  watch: {},
   computed: {
     ...mapState([
       'canvasStyleData'

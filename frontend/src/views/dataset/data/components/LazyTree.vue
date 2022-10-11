@@ -1,8 +1,18 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col v-loading="loading" class="tree-main">
-    <el-row v-if="showExtent" class="tree-head">
+  <el-col
+    v-loading="loading"
+    class="tree-main"
+  >
+    <el-row
+      v-if="showExtent"
+      class="tree-head"
+    >
       <span style="float: left;padding-left: 10px">{{ dataInfo.head }}</span>
-      <span v-for="auth in defaultAuthDetails" :key="auth.privilegeName" class="auth-span">
+      <span
+        v-for="auth in defaultAuthDetails"
+        :key="auth.privilegeName"
+        class="auth-span"
+      >
         {{ auth.privilegeName }}
       </span>
     </el-row>
@@ -17,24 +27,53 @@
         lazy
         @node-click="nodeClick"
       >
-        <span slot-scope="{ node, data }" class="custom-tree-node">
+        <span
+          slot-scope="{ data }"
+          class="custom-tree-node"
+        >
           <span>
-            <span style="margin-left: 6px" v-html="data.name" />
+            <span
+              style="margin-left: 6px"
+              v-html="data.name"
+            />
           </span>
-          <span v-if="showExtent" @click.stop>
+          <span
+            v-if="showExtent"
+            @click.stop
+          >
             <div v-if="authDetails[data.id]">
-              <span v-for="auth in authDetails[data.id]" :key="auth.privilegeType" class="auth-span">
+              <span
+                v-for="auth in authDetails[data.id]"
+                :key="auth.privilegeType"
+                class="auth-span"
+              >
                 <!-- 1-{{ auth.privilegeType }}-{{ auth.privilegeValue }}-->
-                <a href="javascript:;" @click="clickAuth(data.id,auth)">
-                  <svg-icon style="width: 25px;height: 25px" :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'" />
+                <a
+                  href="javascript:;"
+                  @click="clickAuth(data.id,auth)"
+                >
+                  <svg-icon
+                    style="width: 25px;height: 25px"
+                    :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'"
+                  />
                 </a>
               </span>
             </div>
             <div v-else>
-              <span v-for="auth in defaultAuthDetails" :key="auth.privilegeType" class="auth-span">
+              <span
+                v-for="auth in defaultAuthDetails"
+                :key="auth.privilegeType"
+                class="auth-span"
+              >
                 <!--2-{{ auth.privilegeType }}-{{ auth.privilegeValue }}-->
-                <a href="javascript:;" @click="clickAuth(data.id,auth)">
-                  <svg-icon style="width: 25px;height: 25px" :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'" />
+                <a
+                  href="javascript:;"
+                  @click="clickAuth(data.id,auth)"
+                >
+                  <svg-icon
+                    style="width: 25px;height: 25px"
+                    :icon-class="auth.privilegeValue===1?'lock_open':'lock_closed'"
+                  />
                 </a>
               </span>
             </div></span>
@@ -72,7 +111,7 @@ export default {
     defaultProps: {
       type: Object,
       required: false,
-      default: function () {
+      default: function() {
         return {
           children: 'children',
           label: 'name',
@@ -85,7 +124,7 @@ export default {
     showExtent: Boolean,
     highlightCurrent: Boolean
   },
-  data () {
+  data() {
     return {
       loading: false,
       treeData: [],
@@ -105,7 +144,7 @@ export default {
   computed: {
   },
   watch: {
-    filterText (val) {
+    filterText(val) {
       this.expandedKey = []
       if (val && val.length > 0) {
         this.searchStatus = true
@@ -118,25 +157,25 @@ export default {
       }
     },
     authCondition: {
-      handler (newVal, oldVla) {
+      handler(newVal, oldVla) {
         this.loadAuth()
       },
       deep: true
     },
     activeName: {
-      handler (newVal, oldVla) {
+      handler(newVal, oldVla) {
         this.loadAuth()
       },
       deep: true
     },
     attachActiveName: {
-      handler (newVal, oldVla) {
+      handler(newVal, oldVla) {
         this.authDetails = {}
       },
       deep: true
     }
   },
-  created () {
+  created() {
     // 初始化授权模板
     if (this.showExtent) {
       this.executeAxios('/plugin/auth/authDetailsModel/' + this.dataInfo.authType, 'get', {}, res => {
@@ -149,7 +188,7 @@ export default {
     }
   },
   methods: {
-    executeAxios (url, type, data, callBack) {
+    executeAxios(url, type, data, callBack) {
       const param = {
         url: url,
         type: type,
@@ -169,7 +208,7 @@ export default {
       //   })
       // }
     },
-    loadAuth () {
+    loadAuth() {
       if (this.authCondition && this.showExtent) {
         let authQueryCondition = {}
         if (this.dataInfo.direction === 'source') {
@@ -193,7 +232,7 @@ export default {
         // })
       }
     },
-    loadNodes (node, resolve) {
+    loadNodes(node, resolve) {
       if (!this.searchStatus) {
         if (node.level === 0) {
           const queryCondition = {
@@ -226,7 +265,7 @@ export default {
         resolve(node.data.children)
       }
     },
-    filterNode (index) {
+    filterNode(index) {
       this.timeMachine = setTimeout(() => {
         if (index === this.changeIndex) {
           const queryCondition = {
@@ -252,14 +291,14 @@ export default {
         this.destroyTimeMachine()
       }, 1500)
     },
-    nodeClick (data, node) {
+    nodeClick(data, node) {
       this.$emit('nodeClick', { id: data.id, type: this.dataInfo.authType })
     },
-    destroyTimeMachine () {
+    destroyTimeMachine() {
       this.timeMachine && clearTimeout(this.timeMachine)
       this.timeMachine = null
     },
-    buildTree (arrs) {
+    buildTree(arrs) {
       const idMapping = arrs.reduce((acc, el, i) => {
         acc[el[this.defaultProps.id]] = i
         return acc
@@ -284,7 +323,7 @@ export default {
       return roots
     },
     // 权限修改
-    clickAuth (dataId, auth) {
+    clickAuth(dataId, auth) {
       let authChangeCondition = {}
       if (this.dataInfo.direction === 'source') { // 当前为授权数据
         authChangeCondition = {
@@ -312,7 +351,7 @@ export default {
       })
     },
     // 高亮显示搜索内容
-    highlights (data) {
+    highlights(data) {
       if (data && this.filterText && this.filterText.length > 0) {
         const replaceReg = new RegExp(this.filterText, 'g')// 匹配关键字正则
         const replaceString = '<span style="color: #faaa39">' + this.filterText + '</span>' // 高亮替换v-html值

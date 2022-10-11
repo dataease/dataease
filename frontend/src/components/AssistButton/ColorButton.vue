@@ -1,7 +1,14 @@
 <template>
   <div class="color-button-main">
-    <div class="color-button-outer" :class="active?'color-button-active':''" @click.stop="colorButtonClick">
-      <div class="color-button-inner" :class="'color-button-inner-'+colorType" />
+    <div
+      class="color-button-outer"
+      :class="active?'color-button-active':''"
+      @click.stop="colorButtonClick"
+    >
+      <div
+        class="color-button-inner"
+        :class="'color-button-inner-'+colorType"
+      />
     </div>
     <span class="text-area">
       <slot />

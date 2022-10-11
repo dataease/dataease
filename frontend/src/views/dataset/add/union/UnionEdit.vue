@@ -54,7 +54,7 @@ export default {
     }
   },
   watch: {
-    unionParam: function () {}
+    unionParam: function() {}
   },
   mounted() {
     this.getParentFieldList()

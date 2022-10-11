@@ -5,7 +5,11 @@
     trigger="click"
   >
     <el-row>
-      <el-form ref="form" size="mini" label-width="70px">
+      <el-form
+        ref="form"
+        size="mini"
+        label-width="70px"
+      >
         <el-form-item :label="'Tips:'">
           <span style="color: #909399; font-size: 8px;margin-left: 3px">
             {{ $t('panel.web_set_tips') }}
@@ -15,12 +19,18 @@
           <el-input v-model="linkInfoTemp.src" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">{{ $t('panel.confirm') }}</el-button>
+          <el-button
+            type="primary"
+            @click="onSubmit"
+          >{{ $t('panel.confirm') }}</el-button>
           <el-button @click="onClose">{{ $t('panel.cancel') }}</el-button>
         </el-form-item>
       </el-form>
     </el-row>
-    <i slot="reference" class="icon iconfont icon-chaolianjie" />
+    <i
+      slot="reference"
+      class="icon iconfont icon-chaolianjie"
+    />
   </el-popover>
 </template>
 
@@ -54,6 +64,12 @@ export default {
       ]
     }
   },
+  computed: {
+    ...mapState([
+      'curComponent',
+      'curActiveTabInner'
+    ])
+  },
   watch: {
     linkInfo: {
       handler: function() {
@@ -64,14 +80,6 @@ export default {
   },
   created() {
     this.init()
-  },
-  mounted() {
-  },
-  computed: {
-    ...mapState([
-      'curComponent',
-      'curActiveTabInner'
-    ])
   },
   methods: {
     init() {

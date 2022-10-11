@@ -1,8 +1,20 @@
 <template>
   <div style="overflow: hidden;width: 100%;height: 100%;">
-    <img v-if="!showLink" :style="imageAdapter" :src="element.propValue">
-    <a v-if="showLink" :title="element.hyperlinks.content " :target="element.hyperlinks.openMode " :href="element.hyperlinks.content ">
-      <img :style="imageAdapter" :src="element.propValue">
+    <img
+      v-if="!showLink"
+      :style="imageAdapter"
+      :src="element.propValue"
+    >
+    <a
+      v-if="showLink"
+      :title="element.hyperlinks.content "
+      :target="element.hyperlinks.openMode "
+      :href="element.hyperlinks.content "
+    >
+      <img
+        :style="imageAdapter"
+        :src="element.propValue"
+      >
     </a>
   </div>
 </template>

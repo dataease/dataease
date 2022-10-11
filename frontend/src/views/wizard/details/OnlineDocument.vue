@@ -4,7 +4,10 @@
       <span>{{ $t('wizard.online_document_hint') }}</span>
     </el-row>
     <el-row class="demo_bottom">
-      <a href="https://dataease.io/docs/dev_manual/dev_manual/" target="_blank">{{ $t('wizard.click_show') }}</a>
+      <a
+        href="https://dataease.io/docs/dev_manual/dev_manual/"
+        target="_blank"
+      >{{ $t('wizard.click_show') }}</a>
     </el-row>
   </el-row>
 </template>

@@ -8,9 +8,15 @@
     width="840px"
     :before-close="reset"
   >
-    <div v-if="formType === 'add'" class="editer-form-title">
+    <div
+      v-if="formType === 'add'"
+      class="editer-form-title"
+    >
       <i class="el-icon-info" />
-      <span class="pwd" type="text">{{
+      <span
+        class="pwd"
+        type="text"
+      >{{
         $t("commons.default_pwd") + "：" + defaultPWD
       }}</span>
       <el-button
@@ -34,7 +40,10 @@
     >
       <el-row :gutter="24">
         <el-col :span="12">
-          <el-form-item :label="$t('commons.nick_name')" prop="nickName">
+          <el-form-item
+            :label="$t('commons.nick_name')"
+            prop="nickName"
+          >
             <el-input
               v-model="form.nickName"
               :placeholder="$t('user.input_name')"
@@ -42,7 +51,10 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="ID" prop="username">
+          <el-form-item
+            label="ID"
+            prop="username"
+          >
             <el-input
               v-model="form.username"
               :placeholder="$t('user.input_id')"
@@ -53,7 +65,10 @@
       </el-row>
       <el-row :gutter="24">
         <el-col :span="12">
-          <el-form-item :label="$t('commons.email')" prop="email">
+          <el-form-item
+            :label="$t('commons.email')"
+            prop="email"
+          >
             <el-input
               v-model="form.email"
               :placeholder="$t('user.input_email')"
@@ -61,7 +76,10 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item :label="$t('commons.mobile_phone_number')" prop="phone">
+          <el-form-item
+            :label="$t('commons.mobile_phone_number')"
+            prop="phone"
+          >
             <el-input
               v-model="form.phone"
               :placeholder="$t('commons.mobile_phone')"
@@ -72,7 +90,10 @@
                 v-model="form.phonePrefix"
                 :placeholder="$t('fu.search_bar.please_select')"
               >
-                <el-option label="+86" value="+86" />
+                <el-option
+                  label="+86"
+                  value="+86"
+                />
               </el-select>
             </el-input>
           </el-form-item>
@@ -80,15 +101,27 @@
       </el-row>
       <el-row :gutter="24">
         <el-col :span="12">
-          <el-form-item :label="$t('commons.gender')" prop="gender">
+          <el-form-item
+            :label="$t('commons.gender')"
+            prop="gender"
+          >
             <el-select
               v-model="form.gender"
               class="form-gender-select"
               :placeholder="$t('user.select_gender')"
             >
-              <el-option :label="$t('commons.man')" value="男" />
-              <el-option :label="$t('commons.woman')" value="女" />
-              <el-option :label="$t('commons.keep_secret')" value="保密" />
+              <el-option
+                :label="$t('commons.man')"
+                value="男"
+              />
+              <el-option
+                :label="$t('commons.woman')"
+                value="女"
+              />
+              <el-option
+                :label="$t('commons.keep_secret')"
+                value="保密"
+              />
             </el-select>
           </el-form-item>
         </el-col>
@@ -165,7 +198,10 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item :label="$t('commons.status')" prop="enabled">
+      <el-form-item
+        :label="$t('commons.status')"
+        prop="enabled"
+      >
         <el-switch
           v-model="form.enabled"
           :disabled="formType !== 'add' && form.isAdmin"
@@ -174,11 +210,21 @@
         />
       </el-form-item>
     </el-form>
-    <span slot="footer" class="dialog-footer">
-      <el-button class="btn normal" @click="reset">{{
+    <span
+      slot="footer"
+      class="dialog-footer"
+    >
+      <el-button
+        class="btn normal"
+        @click="reset"
+      >{{
         $t("commons.cancel")
       }}</el-button>
-      <el-button class="btn" type="primary" @click="save">{{
+      <el-button
+        class="btn"
+        type="primary"
+        @click="save"
+      >{{
         $t("commons.confirm")
       }}</el-button>
     </span>

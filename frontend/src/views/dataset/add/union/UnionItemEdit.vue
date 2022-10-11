@@ -19,7 +19,11 @@
             icon-class="inner-join"
             class="join-icon"
           />
-          <svg-icon v-else icon-class="no-join" class="join-icon" />
+          <svg-icon
+            v-else
+            icon-class="no-join"
+            class="join-icon"
+          />
         </span>
         <el-select
           v-model="unionParam.node.unionToParent.unionType"
@@ -38,16 +42,21 @@
           icon="el-icon-plus"
           class="union-add"
           @click="addUnion"
-          >{{ $t('dataset.add_union_field') }}</deBtn
-        >
+        >{{ $t('dataset.add_union_field') }}</deBtn>
       </div>
     </div>
     <div class="union-body">
       <div class="union-body-header">
-        <span class="column" :title="unionParam.parent.currentDs.name">{{
+        <span
+          class="column"
+          :title="unionParam.parent.currentDs.name"
+        >{{
           unionParam.parent.currentDs.name
         }}</span>
-        <span class="column" :title="unionParam.node.currentDs.name">{{
+        <span
+          class="column"
+          :title="unionParam.node.currentDs.name"
+        >{{
           unionParam.node.currentDs.name
         }}</span>
         <span class="column-last">{{ $t('dataset.operator') }}</span>
@@ -110,7 +119,10 @@
               </el-option>
             </el-select>
           </span>
-          <svg-icon icon-class="join-join" class="join-icon" />
+          <svg-icon
+            icon-class="join-join"
+            class="join-icon"
+          />
           <!--右侧孩子field-->
           <span class="column">
             <el-select
@@ -168,7 +180,7 @@
             <el-button
               :disabled="
                 unionParam.node.unionToParent.unionFields &&
-                unionParam.node.unionToParent.unionFields.length === 1
+                  unionParam.node.unionToParent.unionFields.length === 1
               "
               type="text"
               icon="el-icon-delete"

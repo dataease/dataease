@@ -18,7 +18,10 @@
       :view-id="element.propValue.viewId"
       @showViewDetails="openChartDetailsDialog"
     />
-    <div v-if="requestStatus==='error'" class="chart-error-class">
+    <div
+      v-if="requestStatus==='error'"
+      class="chart-error-class"
+    >
       <div class="chart-error-message-class">
         {{ message }},{{ $t('chart.chart_show_error') }}
         <br>
@@ -110,7 +113,11 @@
       @onJumpClick="jumpClick"
     />
     <div style="position: absolute;left: 8px;bottom:8px;">
-      <drill-path :drill-filters="drillFilters" :theme-style="element.commonBackground" @onDrillJump="drillJump" />
+      <drill-path
+        :drill-filters="drillFilters"
+        :theme-style="element.commonBackground"
+        @onDrillJump="drillJump"
+      />
     </div>
   </div>
 </template>
@@ -477,7 +484,7 @@ export default {
         this.chart.customStyle = this.sourceCustomStyleStr
         updateParams['customStyle'] = this.sourceCustomStyleStr
       }
-      viewPropsSave(this.panelInfo.id, updateParams).then(rsp =>{
+      viewPropsSave(this.panelInfo.id, updateParams).then(rsp => {
         this.active && bus.$emit('current-component-change')
       })
       this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
@@ -494,7 +501,7 @@ export default {
       this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
       this.chart.customStyle = this.sourceCustomStyleStr
       updateParams['customStyle'] = this.sourceCustomStyleStr
-      viewPropsSave(this.panelInfo.id, updateParams).then(rsp =>{
+      viewPropsSave(this.panelInfo.id, updateParams).then(rsp => {
         this.active && bus.$emit('current-component-change')
       })
       this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
@@ -660,20 +667,20 @@ export default {
           return pre
         }, {})
         const rowData = chartDetails.data.tableRow[0]
-        if(chartDetails.type === 'richTextView'){
+        if (chartDetails.type === 'richTextView') {
           let yAxis = []
           try {
             yAxis = JSON.parse(chartDetails.yaxis)
           } catch (err) {
             yAxis = JSON.parse(JSON.stringify(chartDetails.yaxis))
           }
-          let yDataeaseNames = []
-          let yDataeaseNamesCfg = []
+          const yDataeaseNames = []
+          const yDataeaseNamesCfg = []
           yAxis.forEach(yItem => {
             yDataeaseNames.push(yItem.dataeaseName)
-            yDataeaseNamesCfg[yItem.dataeaseName]=yItem.formatterCfg
+            yDataeaseNamesCfg[yItem.dataeaseName] = yItem.formatterCfg
           })
-          this.rowDataFormat(rowData,yDataeaseNames,yDataeaseNamesCfg)
+          this.rowDataFormat(rowData, yDataeaseNames, yDataeaseNamesCfg)
         }
         for (const key in rowData) {
           this.dataRowSelect[nameIdMap[key]] = rowData[key]
@@ -688,24 +695,23 @@ export default {
         })
       }
     },
-    rowDataFormat(rowData,yDataeaseNames,yDataeaseNamesCfg) {
+    rowDataFormat(rowData, yDataeaseNames, yDataeaseNamesCfg) {
       for (const key in rowData) {
-       if(yDataeaseNames.includes(key)){
-         let formatterCfg = yDataeaseNamesCfg[key]
-         let value = rowData[key]
-         if (value === null || value === undefined) {
-           rowData[key] = '-'
-         }
-         if (formatterCfg) {
-           const v = valueFormatter(value, formatterCfg)
-           rowData[key] = v.includes('NaN') ? value : v
-         } else {
-           const v = valueFormatter(value, formatterItem)
-           rowData[key] =  v.includes('NaN') ? value : v
-         }
-       }
+        if (yDataeaseNames.includes(key)) {
+          const formatterCfg = yDataeaseNamesCfg[key]
+          const value = rowData[key]
+          if (value === null || value === undefined) {
+            rowData[key] = '-'
+          }
+          if (formatterCfg) {
+            const v = valueFormatter(value, formatterCfg)
+            rowData[key] = v.includes('NaN') ? value : v
+          } else {
+            const v = valueFormatter(value, formatterItem)
+            rowData[key] = v.includes('NaN') ? value : v
+          }
+        }
       }
-
     },
     viewIdMatch(viewIds, viewId) {
       return !viewIds || viewIds.length === 0 || viewIds.includes(viewId)

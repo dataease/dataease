@@ -1,7 +1,15 @@
 <template>
-  <div ref="tableContainer" :style="bg_class" style="padding: 8px;width: 100%;height: 100%;overflow: hidden;">
+  <div
+    ref="tableContainer"
+    :style="bg_class"
+    style="padding: 8px;width: 100%;height: 100%;overflow: hidden;"
+  >
     <el-row style="height: 100%;">
-      <p v-show="title_show" ref="title" :style="title_class">{{ chart.title }}</p>
+      <p
+        v-show="title_show"
+        ref="title"
+        :style="title_class"
+      >{{ chart.title }}</p>
       <ux-grid
         ref="plxTable"
         size="mini"
@@ -18,7 +26,7 @@
       >
         <ux-table-column
           v-for="field in fields"
-          :key="Math.random()"
+          :key="field.name"
           :field="field.dataeaseName"
           :resizable="true"
           sortable
@@ -27,7 +35,10 @@
         />
       </ux-grid>
 
-      <el-row v-show="showPage" class="table-page">
+      <el-row
+        v-show="showPage"
+        class="table-page"
+      >
         <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>

@@ -1,16 +1,31 @@
 <template>
   <div>
     <operater title="system_parameter_setting.engine_mode_setting">
-      <deBtn v-if="showCancel" secondary @click="cancel">
+      <deBtn
+        v-if="showCancel"
+        secondary
+        @click="cancel"
+      >
         {{ $t("commons.cancel") }}
       </deBtn>
-      <deBtn secondary  @click="validaDatasource">
+      <deBtn
+        secondary
+        @click="validaDatasource"
+      >
         {{ $t("commons.validate") }}
       </deBtn>
-      <deBtn v-if="showEdit" type="primary" @click="edit">
+      <deBtn
+        v-if="showEdit"
+        type="primary"
+        @click="edit"
+      >
         {{ $t("commons.edit") }}
       </deBtn>
-      <deBtn v-if="showSave" type="primary"  @click="save">
+      <deBtn
+        v-if="showSave"
+        type="primary"
+        @click="save"
+      >
         {{ $t("commons.save") }}
       </deBtn>
     </operater>
@@ -41,15 +56,15 @@
         <el-input v-model="form.configuration.username" />
       </el-form-item>
       <el-form-item :label="$t('datasource.password')">
-        <dePwd v-model="form.configuration.password"/>
+        <dePwd v-model="form.configuration.password" />
       </el-form-item>
       <el-form-item
         :label="$t('datasource.query_port')"
         prop="configuration.port"
       >
         <el-input-number
-          controls-position="right"
           v-model="form.configuration.port"
+          controls-position="right"
           autocomplete="off"
           type="number"
           min="0"
@@ -60,19 +75,26 @@
         prop="configuration.httpPort"
       >
         <el-input-number
-          controls-position="right"
           v-model="form.configuration.httpPort"
+          controls-position="right"
           autocomplete="off"
           type="number"
           min="0"
         />
       </el-form-item>
 
-      <span @click="showPriority = !showPriority" class="de-expand"
-        >{{ $t("datasource.priority")
-        }}<i v-if="showPriority" class="el-icon-arrow-up"></i>
-        <i v-else class="el-icon-arrow-down"></i
-      ></span>
+      <span
+        class="de-expand"
+        @click="showPriority = !showPriority"
+      >{{ $t("datasource.priority")
+       }}<i
+         v-if="showPriority"
+         class="el-icon-arrow-up"
+       />
+        <i
+          v-else
+          class="el-icon-arrow-down"
+        /></span>
       <template v-if="showPriority">
         <el-row :gutter="24">
           <el-col :span="12">
@@ -81,8 +103,8 @@
               prop="configuration.replicationNum"
             >
               <el-input-number
-                controls-position="right"
                 v-model="form.configuration.replicationNum"
+                controls-position="right"
                 autocomplete="off"
                 type="number"
                 min="1"
@@ -95,8 +117,8 @@
               prop="configuration.bucketNum"
             >
               <el-input-number
-                controls-position="right"
                 v-model="form.configuration.bucketNum"
+                controls-position="right"
                 autocomplete="off"
                 type="number"
                 min="1"
@@ -112,8 +134,8 @@
               prop="configuration.initialPoolSize"
             >
               <el-input-number
-                controls-position="right"
                 v-model="form.configuration.initialPoolSize"
+                controls-position="right"
                 autocomplete="off"
                 type="number"
                 min="0"
@@ -127,8 +149,8 @@
               prop="configuration.minPoolSize"
             >
               <el-input-number
-                controls-position="right"
                 v-model="form.configuration.minPoolSize"
+                controls-position="right"
                 autocomplete="off"
                 type="number"
                 min="0"
@@ -143,8 +165,8 @@
               prop="configuration.maxPoolSize"
             >
               <el-input-number
-                controls-position="right"
                 v-model="form.configuration.maxPoolSize"
+                controls-position="right"
                 autocomplete="off"
                 type="number"
                 min="0"
@@ -158,55 +180,55 @@
 </template>
 
 <script>
-import { engineInfo, validate, save } from "@/api/system/engine";
-import i18n from "@/lang";
-import operater from "./operater";
+import { engineInfo, validate, save } from '@/api/system/engine'
+import i18n from '@/lang'
+import operater from './operater'
 import msgCfm from '@/components/msgCfm'
 import dePwd from '@/components/deCustomCm/dePwd.vue'
 export default {
-  name: "ClusterMode",
-  mixins: [msgCfm],
+  name: 'ClusterMode',
   components: {
     operater,
     dePwd
   },
+  mixins: [msgCfm],
   data() {
     return {
       showPriority: false,
       form: {
-        type: "engine_doris",
+        type: 'engine_doris',
         configuration: {
-          host: "",
-          dataBase: "",
-          username: "",
-          password: "",
-          port: "",
+          host: '',
+          dataBase: '',
+          username: '',
+          password: '',
+          port: '',
           httpPort: 8030,
           extraParams:
-            "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull",
+            'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull',
           replicationNum: 1,
           bucketNum: 10,
           minPoolSize: 5,
           maxPoolSize: 50,
-          initialPoolSize: 5,
-        },
+          initialPoolSize: 5
+        }
       },
       originConfiguration: {
-        host: "",
-        dataBase: "",
-        username: "",
-        password: "",
-        port: "",
+        host: '',
+        dataBase: '',
+        username: '',
+        password: '',
+        port: '',
         httpPort: 8030,
         extraParams:
-          "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull",
+          'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull',
         replicationNum: 1,
         bucketNum: 10,
         minPoolSize: 5,
         maxPoolSize: 50,
-        initialPoolSize: 5,
+        initialPoolSize: 5
       },
-      input: "",
+      input: '',
       visible: true,
       showEdit: true,
       showSave: false,
@@ -216,193 +238,193 @@ export default {
       disabledSave: false,
       loading: false,
       rules: {
-        "configuration.host": [
+        'configuration.host': [
           {
             required: true,
-            message: this.$t("datasource.please_input_host"),
-            trigger: ["change", "blur"],
-          },
+            message: this.$t('datasource.please_input_host'),
+            trigger: ['change', 'blur']
+          }
         ],
-        "configuration.port": [
+        'configuration.port': [
           {
             required: true,
-            message: this.$t("datasource.please_input_port"),
-            trigger: ["change", "blur"],
-          },
+            message: this.$t('datasource.please_input_port'),
+            trigger: ['change', 'blur']
+          }
         ],
-        "configuration.httpPort": [
+        'configuration.httpPort': [
           {
             required: true,
-            message: this.$t("datasource.please_input_port"),
-            trigger: ["change", "blur"],
-          },
+            message: this.$t('datasource.please_input_port'),
+            trigger: ['change', 'blur']
+          }
         ],
-        "configuration.dataBase": [
+        'configuration.dataBase': [
           {
             required: true,
-            message: this.$t("datasource.please_input_data_base"),
-            trigger: ["change", "blur"],
-          },
+            message: this.$t('datasource.please_input_data_base'),
+            trigger: ['change', 'blur']
+          }
         ],
-        "configuration.replicationNum": [
+        'configuration.replicationNum': [
           {
             required: true,
-            message: this.$t("datasource.please_input_replication_num"),
-            trigger: ["change", "blur"],
-          },
+            message: this.$t('datasource.please_input_replication_num'),
+            trigger: ['change', 'blur']
+          }
         ],
-        "configuration.bucketNum": [
+        'configuration.bucketNum': [
           {
             required: true,
-            message: this.$t("datasource.please_input_bucket_num"),
-            trigger: ["change", "blur"],
-          },
+            message: this.$t('datasource.please_input_bucket_num'),
+            trigger: ['change', 'blur']
+          }
         ],
-        "configuration.minPoolSize": [
+        'configuration.minPoolSize': [
           {
             required: true,
-            message: this.$t("datasource.commons.cannot_be_null"),
-            trigger: ["change", "blur"],
-          },
+            message: this.$t('datasource.commons.cannot_be_null'),
+            trigger: ['change', 'blur']
+          }
         ],
-        "configuration.initialPoolSize": [
+        'configuration.initialPoolSize': [
           {
             required: true,
-            message: this.$t("commons.cannot_be_null"),
-            trigger: ["change", "blur"],
-          },
+            message: this.$t('commons.cannot_be_null'),
+            trigger: ['change', 'blur']
+          }
         ],
-        "configuration.maxPoolSize": [
+        'configuration.maxPoolSize': [
           {
             required: true,
-            message: this.$t("datasource.commons.cannot_be_null"),
-            trigger: ["change", "blur"],
-          },
-        ],
+            message: this.$t('datasource.commons.cannot_be_null'),
+            trigger: ['change', 'blur']
+          }
+        ]
       },
       allTypes: [
         {
-          name: "engine_mysql",
-          label: "MySQL",
-          type: "jdbc",
+          name: 'engine_mysql',
+          label: 'MySQL',
+          type: 'jdbc',
           extraParams:
-            "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true",
-        },
-      ],
-    };
+            'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
+        }
+      ]
+    }
   },
 
   created() {
-    this.query();
+    this.query()
   },
   methods: {
     query() {
       engineInfo().then((response) => {
         if (response.data.id) {
-          this.form = JSON.parse(JSON.stringify(response.data));
-          this.form.configuration = JSON.parse(this.form.configuration);
+          this.form = JSON.parse(JSON.stringify(response.data))
+          this.form.configuration = JSON.parse(this.form.configuration)
           this.originConfiguration = JSON.parse(
             JSON.stringify(this.form.configuration)
-          );
+          )
         }
         this.$nextTick(() => {
-          this.$refs.form.clearValidate();
-        });
-      });
+          this.$refs.form.clearValidate()
+        })
+      })
     },
     edit() {
-      this.showEdit = false;
-      this.showSave = true;
-      this.showCancel = true;
-      this.show = false;
+      this.showEdit = false
+      this.showSave = true
+      this.showCancel = true
+      this.show = false
     },
     save() {
       if (
-        this.form.configuration.dataSourceType === "jdbc" &&
+        this.form.configuration.dataSourceType === 'jdbc' &&
         (this.form.configuration.port <= 0 ||
           this.form.configuration.httpPort <= 0)
       ) {
-        this.$message.error(i18n.t("datasource.port_no_less_then_0"));
-        return;
+        this.$message.error(i18n.t('datasource.port_no_less_then_0'))
+        return
       }
       if (
         this.form.configuration.initialPoolSize < 0 ||
         this.form.configuration.minPoolSize < 0 ||
         this.form.configuration.maxPoolSize < 0
       ) {
-        this.$message.error(i18n.t("datasource.no_less_then_0"));
-        return;
+        this.$message.error(i18n.t('datasource.no_less_then_0'))
+        return
       }
       this.$refs.form.validate((valid) => {
         if (!valid) {
-          return false;
+          return false
         }
-        const form = JSON.parse(JSON.stringify(this.form));
-        form.configuration = JSON.stringify(form.configuration);
+        const form = JSON.parse(JSON.stringify(this.form))
+        form.configuration = JSON.stringify(form.configuration)
         save(form).then((res) => {
-          this.showEdit = true;
-          this.showCancel = false;
-          this.showSave = false;
-          this.show = true;
+          this.showEdit = true
+          this.showCancel = false
+          this.showSave = false
+          this.show = true
           this.originConfiguration = JSON.parse(
             JSON.stringify(this.form.configuration)
-          );
-          this.openMessageSuccess("commons.save_success");
-        });
-      });
+          )
+          this.openMessageSuccess('commons.save_success')
+        })
+      })
     },
     cancel() {
-      this.showEdit = true;
-      this.showCancel = false;
-      this.showSave = false;
-      this.show = true;
+      this.showEdit = true
+      this.showCancel = false
+      this.showSave = false
+      this.show = true
       this.form.configuration = JSON.parse(
         JSON.stringify(this.originConfiguration)
-      );
+      )
     },
     changeType() {
       for (let i = 0; i < this.allTypes.length; i++) {
         if (this.allTypes[i].name === this.form.type) {
-          this.form.configuration.dataSourceType = this.allTypes[i].type;
-          this.form.configuration.extraParams = this.allTypes[i].extraParams;
+          this.form.configuration.dataSourceType = this.allTypes[i].type
+          this.form.configuration.extraParams = this.allTypes[i].extraParams
         }
       }
     },
     validaDatasource() {
-      if (!this.form.configuration.schema && this.form.type === "oracle") {
-        this.$message.error(i18n.t("datasource.please_choose_schema"));
-        return;
+      if (!this.form.configuration.schema && this.form.type === 'oracle') {
+        this.$message.error(i18n.t('datasource.please_choose_schema'))
+        return
       }
       if (
-        this.form.configuration.dataSourceType === "jdbc" &&
+        this.form.configuration.dataSourceType === 'jdbc' &&
         (this.form.configuration.port <= 0 ||
           this.form.configuration.httpPort <= 0)
       ) {
-        this.$message.error(i18n.t("datasource.port_no_less_then_0"));
-        return;
+        this.$message.error(i18n.t('datasource.port_no_less_then_0'))
+        return
       }
       this.$refs.form.validate((valid) => {
         if (valid) {
-          const data = JSON.parse(JSON.stringify(this.form));
-          data.configuration = JSON.stringify(data.configuration);
+          const data = JSON.parse(JSON.stringify(this.form))
+          data.configuration = JSON.stringify(data.configuration)
           validate(data).then((res) => {
             if (res.success) {
-              this.openMessageSuccess("datasource.validate_success");
+              this.openMessageSuccess('datasource.validate_success')
             } else {
               if (res.message.length < 2500) {
-                this.$error(res.message);
+                this.$error(res.message)
               } else {
-                this.$error(res.message.substring(0, 2500) + "......");
+                this.$error(res.message.substring(0, 2500) + '......')
               }
             }
-          });
+          })
         } else {
-          return false;
+          return false
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 .de-expand {

@@ -1,36 +1,89 @@
 <template>
   <div>
 
-    <div v-show="contentShow" class="login-background">
+    <div
+      v-show="contentShow"
+      class="login-background"
+    >
 
       <div class="login-container">
-        <el-row v-loading="loading" type="flex">
+        <el-row
+          v-loading="loading"
+          type="flex"
+        >
           <el-col :span="12">
-            <div v-show="qrTypes.length" :class="codeShow ? 'trans-pc' : 'trans'" @click="showQr">
-              <div v-show="imgAppShow" class="imgApp" />
+            <div
+              v-show="qrTypes.length"
+              :class="codeShow ? 'trans-pc' : 'trans'"
+              @click="showQr"
+            >
+              <div
+                v-show="imgAppShow"
+                class="imgApp"
+              />
             </div>
-            <el-form v-show="!codeShow" ref="loginForm" :model="loginForm" :rules="loginRules" size="default">
+            <el-form
+              v-show="!codeShow"
+              ref="loginForm"
+              :model="loginForm"
+              :rules="loginRules"
+              size="default"
+            >
 
               <div class="login-logo">
-                <svg-icon v-if="!loginLogoUrl && axiosFinished" icon-class="DataEase" custom-class="login-logo-icon" />
-                <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="">
+                <svg-icon
+                  v-if="!loginLogoUrl && axiosFinished"
+                  icon-class="DataEase"
+                  custom-class="login-logo-icon"
+                />
+                <img
+                  v-if="loginLogoUrl && axiosFinished"
+                  :src="loginLogoUrl"
+                  alt=""
+                >
               </div>
-              <div v-if="uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue" class="login-welcome">
+              <div
+                v-if="uiInfo && uiInfo['ui.loginTitle'] && uiInfo['ui.loginTitle'].paramValue"
+                class="login-welcome"
+              >
                 {{ uiInfo['ui.loginTitle'].paramValue }}
               </div>
-              <div v-else class="login-welcome">
+              <div
+                v-else
+                class="login-welcome"
+              >
                 {{ $t('login.welcome') + (uiInfo && uiInfo['ui.title'] && uiInfo['ui.title'].paramValue || ' DataEase') }}
               </div>
               <div class="login-form">
                 <el-form-item v-if="radioTypes.length > 1">
-                  <el-radio-group v-if="radioTypes.length > 1" v-model="loginForm.loginType" @change="changeLoginType">
-                    <el-radio :label="0" size="mini">{{ $t('login.default_login') }}</el-radio>
-                    <el-radio v-if="loginTypes.includes(1)" :label="1" size="mini">LDAP</el-radio>
-                    <el-radio v-if="loginTypes.includes(2)" :label="2" size="mini">OIDC</el-radio>
+                  <el-radio-group
+                    v-if="radioTypes.length > 1"
+                    v-model="loginForm.loginType"
+                    @change="changeLoginType"
+                  >
+                    <el-radio
+                      :label="0"
+                      size="mini"
+                    >{{ $t('login.default_login') }}</el-radio>
+                    <el-radio
+                      v-if="loginTypes.includes(1)"
+                      :label="1"
+                      size="mini"
+                    >LDAP</el-radio>
+                    <el-radio
+                      v-if="loginTypes.includes(2)"
+                      :label="2"
+                      size="mini"
+                    >OIDC</el-radio>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item prop="username">
-                  <el-input v-model="loginForm.username" placeholder="ID" autofocus :disabled="loginTypes.includes(2) && loginForm.loginType === 2" />
+                  <el-input
+                    v-model="loginForm.username"
+                    placeholder="ID"
+                    autofocus
+                    :disabled="loginTypes.includes(2) && loginForm.loginType === 2"
+                  />
                 </el-form-item>
                 <el-form-item prop="password">
                   <el-input
@@ -46,10 +99,19 @@
                 </el-form-item>
               </div>
               <div class="login-btn">
-                <el-button type="primary" class="submit" size="default" :disabled="loginTypes.includes(2) && loginForm.loginType === 2" @click.native.prevent="handleLogin">
+                <el-button
+                  type="primary"
+                  class="submit"
+                  size="default"
+                  :disabled="loginTypes.includes(2) && loginForm.loginType === 2"
+                  @click.native.prevent="handleLogin"
+                >
                   {{ $t('commons.login') }}
                 </el-button>
-                <div v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue" class="demo-tips">
+                <div
+                  v-if="uiInfo && uiInfo['ui.demo.tips'] && uiInfo['ui.demo.tips'].paramValue"
+                  class="demo-tips"
+                >
                   {{ uiInfo['ui.demo.tips'].paramValue }}
                 </div>
               </div>
@@ -57,32 +119,80 @@
                 {{ msg }}
               </div>
             </el-form>
-            <div v-show="codeShow" class="code">
+            <div
+              v-show="codeShow"
+              class="code"
+            >
               <el-row class="code-contaniner">
-                <plugin-com v-if="loginTypes.includes(4) && codeIndex === 4" ref="WecomQr" component-name="WecomQr" />
-                <plugin-com v-if="loginTypes.includes(5) && codeIndex === 5" ref="DingtalkQr" component-name="DingtalkQr" />
-                <plugin-com v-if="loginTypes.includes(6) && codeIndex === 6" ref="LarkQr" component-name="LarkQr" />
+                <plugin-com
+                  v-if="loginTypes.includes(4) && codeIndex === 4"
+                  ref="WecomQr"
+                  component-name="WecomQr"
+                />
+                <plugin-com
+                  v-if="loginTypes.includes(5) && codeIndex === 5"
+                  ref="DingtalkQr"
+                  component-name="DingtalkQr"
+                />
+                <plugin-com
+                  v-if="loginTypes.includes(6) && codeIndex === 6"
+                  ref="LarkQr"
+                  component-name="LarkQr"
+                />
               </el-row>
 
-              <div v-if="qrTypes.length > 1" class="login-third-items">
-                <span v-if="qrTypes.includes(4)" class="login-third-item login-third-wecom" @click="switchCodeIndex(4)" />
-                <span v-if="qrTypes.includes(5)" class="login-third-item login-third-dingtalk" @click="switchCodeIndex(5)" />
-                <span v-if="qrTypes.includes(6)" class="login-third-item login-third-lark" @click="switchCodeIndex(6)" />
+              <div
+                v-if="qrTypes.length > 1"
+                class="login-third-items"
+              >
+                <span
+                  v-if="qrTypes.includes(4)"
+                  class="login-third-item login-third-wecom"
+                  @click="switchCodeIndex(4)"
+                />
+                <span
+                  v-if="qrTypes.includes(5)"
+                  class="login-third-item login-third-dingtalk"
+                  @click="switchCodeIndex(5)"
+                />
+                <span
+                  v-if="qrTypes.includes(6)"
+                  class="login-third-item login-third-lark"
+                  @click="switchCodeIndex(6)"
+                />
               </div>
 
             </div>
           </el-col>
-          <el-col v-loading="!axiosFinished" :span="12">
-            <div v-if="!loginImageUrl && axiosFinished" class="login-image" />
-            <div v-if="loginImageUrl && axiosFinished" class="login-image-de" :style="{background:'url(' + loginImageUrl + ') no-repeat', 'backgroundSize':'contain'}" />
+          <el-col
+            v-loading="!axiosFinished"
+            :span="12"
+          >
+            <div
+              v-if="!loginImageUrl && axiosFinished"
+              class="login-image"
+            />
+            <div
+              v-if="loginImageUrl && axiosFinished"
+              class="login-image-de"
+              :style="{background:'url(' + loginImageUrl + ') no-repeat', 'backgroundSize':'contain'}"
+            />
           </el-col>
         </el-row>
 
       </div>
-      <plugin-com v-if="loginTypes.includes(2) && loginForm.loginType === 2" ref="SSOComponent" component-name="SSOComponent" />
+      <plugin-com
+        v-if="loginTypes.includes(2) && loginForm.loginType === 2"
+        ref="SSOComponent"
+        component-name="SSOComponent"
+      />
 
     </div>
-    <div v-if="showFoot" class="dynamic-login-foot" v-html="footContent" />
+    <div
+      v-if="showFoot"
+      class="dynamic-login-foot"
+      v-html="footContent"
+    />
   </div>
 </template>
 

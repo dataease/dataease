@@ -1,9 +1,17 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="colorForm" :model="colorForm" label-width="80px" size="mini">
+      <el-form
+        ref="colorForm"
+        :model="colorForm"
+        label-width="80px"
+        size="mini"
+      >
         <div>
-          <el-form-item :label="$t('chart.color_case')" class="form-item">
+          <el-form-item
+            :label="$t('chart.color_case')"
+            class="form-item"
+          >
             <el-popover
               placement="bottom"
               width="400"
@@ -12,23 +20,52 @@
               <div style="padding: 6px 10px;">
                 <div>
                   <span class="color-label">{{ $t('chart.system_case') }}</span>
-                  <el-select v-model="colorForm.value" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeColorOption('value')">
-                    <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
+                  <el-select
+                    v-model="colorForm.value"
+                    :placeholder="$t('chart.pls_slc_color_case')"
+                    size="mini"
+                    @change="changeColorOption('value')"
+                  >
+                    <el-option
+                      v-for="option in colorCases"
+                      :key="option.value"
+                      :label="option.name"
+                      :value="option.value"
+                      style="display: flex;align-items: center;"
+                    >
                       <div style="float: left">
-                        <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c}" />
+                        <span
+                          v-for="(c,index) in option.colors"
+                          :key="index"
+                          :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c}"
+                        />
                       </div>
                       <span style="margin-left: 4px;">{{ option.name }}</span>
                     </el-option>
                   </el-select>
-                  <el-button size="mini" type="text" style="margin-left: 2px;" @click="resetCustomColor">{{ $t('commons.reset') }}</el-button>
+                  <el-button
+                    size="mini"
+                    type="text"
+                    style="margin-left: 2px;"
+                    @click="resetCustomColor"
+                  >{{ $t('commons.reset') }}</el-button>
                 </div>
                 <!--自定义配色方案-->
                 <div>
                   <div style="display: flex;align-items: center;margin-top: 10px;">
                     <span class="color-label">{{ $t('chart.custom_case') }}</span>
                     <span>
-                      <el-radio-group v-model="customColor" class="color-type">
-                        <el-radio v-for="(c,index) in colorForm.colors" :key="index" :label="c" style="padding: 2px;" @change="switchColor(index)">
+                      <el-radio-group
+                        v-model="customColor"
+                        class="color-type"
+                      >
+                        <el-radio
+                          v-for="(c,index) in colorForm.colors"
+                          :key="index"
+                          :label="c"
+                          style="padding: 2px;"
+                          @change="switchColor(index)"
+                        >
                           <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
                         </el-radio>
                       </el-radio-group>
@@ -37,44 +74,121 @@
                   <div style="display: flex;align-items: center;margin-top: 10px;">
                     <span class="color-label" />
                     <span>
-                      <el-color-picker v-model="customColor" class="color-picker-style" :predefine="predefineColors" @change="switchColorCase" />
+                      <el-color-picker
+                        v-model="customColor"
+                        class="color-picker-style"
+                        :predefine="predefineColors"
+                        @change="switchColorCase"
+                      />
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div slot="reference" style="cursor: pointer;margin-top: 2px;width: 180px;">
-                <span v-for="(c,index) in colorForm.colors" :key="index" :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}" />
+              <div
+                slot="reference"
+                style="cursor: pointer;margin-top: 2px;width: 180px;"
+              >
+                <span
+                  v-for="(c,index) in colorForm.colors"
+                  :key="index"
+                  :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c}"
+                />
               </div>
             </el-popover>
           </el-form-item>
-          <el-form-item :label="$t('chart.not_alpha')" class="form-item form-item-slider">
-            <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase('alpha')" />
+          <el-form-item
+            :label="$t('chart.not_alpha')"
+            class="form-item form-item-slider"
+          >
+            <el-slider
+              v-model="colorForm.alpha"
+              show-input
+              :show-input-controls="false"
+              input-size="mini"
+              @change="changeColorCase('alpha')"
+            />
           </el-form-item>
           <el-divider>{{ $t('panel.card_color_matching') }}</el-divider>
-          <el-form-item :label="$t('chart.quota_color')" class="form-item">
-            <el-color-picker v-model="colorForm.quotaColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('quotaColor')" />
+          <el-form-item
+            :label="$t('chart.quota_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.quotaColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeColorCase('quotaColor')"
+            />
           </el-form-item>
-          <el-form-item :label="$t('chart.dimension_color')" class="form-item">
-            <el-color-picker v-model="colorForm.dimensionColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('dimensionColor')" />
+          <el-form-item
+            :label="$t('chart.dimension_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.dimensionColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeColorCase('dimensionColor')"
+            />
           </el-form-item>
         </div>
         <el-divider>{{ $t('panel.table_color_matching') }}</el-divider>
         <div>
-          <el-form-item :label="$t('chart.table_header_bg')" class="form-item">
-            <el-color-picker v-model="colorForm.tableHeaderBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableHeaderBgColor')" />
+          <el-form-item
+            :label="$t('chart.table_header_bg')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.tableHeaderBgColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeColorCase('tableHeaderBgColor')"
+            />
           </el-form-item>
-          <el-form-item :label="$t('chart.table_item_bg')" class="form-item">
-            <el-color-picker v-model="colorForm.tableItemBgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableItemBgColor')" />
+          <el-form-item
+            :label="$t('chart.table_item_bg')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.tableItemBgColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeColorCase('tableItemBgColor')"
+            />
           </el-form-item>
-          <el-form-item :label="$t('chart.table_header_font_color')" class="form-item">
-            <el-color-picker v-model="colorForm.tableHeaderFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableHeaderFontColor')" />
+          <el-form-item
+            :label="$t('chart.table_header_font_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.tableHeaderFontColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeColorCase('tableHeaderFontColor')"
+            />
           </el-form-item>
-          <el-form-item :label="$t('chart.table_item_font_color')" class="form-item">
-            <el-color-picker v-model="colorForm.tableFontColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableFontColor')" />
+          <el-form-item
+            :label="$t('chart.table_item_font_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.tableFontColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeColorCase('tableFontColor')"
+            />
           </el-form-item>
-          <el-form-item :label="$t('chart.table_border_color')" class="form-item">
-            <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase('tableBorderColor')" />
+          <el-form-item
+            :label="$t('chart.table_border_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.tableBorderColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeColorCase('tableBorderColor')"
+            />
           </el-form-item>
         </div>
       </el-form>

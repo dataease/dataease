@@ -1,26 +1,39 @@
 <template>
   <el-col>
     <div class="table-count">
-      <span class="title-text" style="width: 100px"
-        >{{ $t('deDataset.display') }} {{ form.row }}
-        {{ $t('deDataset.row') }}</span
-      >
+      <span
+        class="title-text"
+        style="width: 100px"
+      >{{ $t('deDataset.display') }} {{ form.row }}
+        {{ $t('deDataset.row') }}</span>
       <el-popover
+        ref="setCount"
         popper-class="de-set-count de-card-dropdown"
         placement="right-start"
         width="306"
-        ref="setCount"
         trigger="click"
       >
         {{ $t('deDataset.show_rows') }}
-        <el-input size="small" v-model="rowNum"> </el-input>
+        <el-input
+          v-model="rowNum"
+          size="small"
+        />
         <div class="foot">
-          <deBtn @click="cancel" secondary>{{ $t('commons.cancel') }} </deBtn>
-          <deBtn type="primary" @click="searchRow">
+          <deBtn
+            secondary
+            @click="cancel"
+          >{{ $t('commons.cancel') }} </deBtn>
+          <deBtn
+            type="primary"
+            @click="searchRow"
+          >
             {{ $t('commons.confirm') }}
           </deBtn>
         </div>
-        <i slot="reference" class="el-icon-edit"></i>
+        <i
+          slot="reference"
+          class="el-icon-edit"
+        />
       </el-popover>
     </div>
     <ux-grid
@@ -135,7 +148,7 @@ export default {
     },
     calHeight() {
       const that = this
-      setTimeout(function () {
+      setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 215
       }, 10)

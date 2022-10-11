@@ -5,7 +5,10 @@
     :style="{'margin-left': !asideHidden ? 0 : '-' + currentWidth}"
   >
     <slot />
-    <de-horizontal-drag-bar v-if="isSystem" :type="type" />
+    <de-horizontal-drag-bar
+      v-if="isSystem"
+      :type="type"
+    />
   </el-aside>
 </template>
 

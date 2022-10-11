@@ -1,30 +1,92 @@
 <template>
   <span style="position: relative;display: inline-block;">
-    <i class="el-icon-arrow-down el-icon-delete" style="position: absolute;top: 6px;right: 24px;color: #878d9f;cursor: pointer;z-index: 1;" @click="removeItem" />
-    <el-dropdown trigger="click" size="mini" @command="clickItem">
+    <i
+      class="el-icon-arrow-down el-icon-delete"
+      style="position: absolute;top: 6px;right: 24px;color: #878d9f;cursor: pointer;z-index: 1;"
+      @click="removeItem"
+    />
+    <el-dropdown
+      trigger="click"
+      size="mini"
+      @command="clickItem"
+    >
       <span class="el-dropdown-link">
-        <el-tag size="small" class="item-axis" :type="tagType">
+        <el-tag
+          size="small"
+          class="item-axis"
+          :type="tagType"
+        >
           <span style="float: left">
-            <svg-icon v-if="item.deType === 0" icon-class="field_text" class="field-icon-text" />
-            <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
-            <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
-            <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-            <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'bar'" icon-class="bar" class-name="field-icon-sort" />
-            <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'line'" icon-class="line" class-name="field-icon-sort" />
-            <svg-icon v-if="chart.type ==='chart-mix' && item.chartType === 'scatter'" icon-class="scatter" class-name="field-icon-sort" />
-            <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
-            <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
+            <svg-icon
+              v-if="item.deType === 0"
+              icon-class="field_text"
+              class="field-icon-text"
+            />
+            <svg-icon
+              v-if="item.deType === 1"
+              icon-class="field_time"
+              class="field-icon-time"
+            />
+            <svg-icon
+              v-if="item.deType === 2 || item.deType === 3"
+              icon-class="field_value"
+              class="field-icon-value"
+            />
+            <svg-icon
+              v-if="item.deType === 5"
+              icon-class="field_location"
+              class="field-icon-location"
+            />
+            <svg-icon
+              v-if="chart.type ==='chart-mix' && item.chartType === 'bar'"
+              icon-class="bar"
+              class-name="field-icon-sort"
+            />
+            <svg-icon
+              v-if="chart.type ==='chart-mix' && item.chartType === 'line'"
+              icon-class="line"
+              class-name="field-icon-sort"
+            />
+            <svg-icon
+              v-if="chart.type ==='chart-mix' && item.chartType === 'scatter'"
+              icon-class="scatter"
+              class-name="field-icon-sort"
+            />
+            <svg-icon
+              v-if="item.sort === 'asc'"
+              icon-class="sort-asc"
+              class-name="field-icon-sort"
+            />
+            <svg-icon
+              v-if="item.sort === 'desc'"
+              icon-class="sort-desc"
+              class-name="field-icon-sort"
+            />
           </span>
-          <span class="item-span-style" :title="item.name">{{ item.name }}</span>
+          <span
+            class="item-span-style"
+            :title="item.name"
+          >{{ item.name }}</span>
           <field-error-tips v-if="tagType === 'danger'" />
-          <span v-if="chart.type !== 'table-info' && item.summary && !item.chartId" class="summary-span">
+          <span
+            v-if="chart.type !== 'table-info' && item.summary && !item.chartId"
+            class="summary-span"
+          >
             {{ $t('chart.' + item.summary) }}<span v-if="false && item.compareCalc && item.compareCalc.type && item.compareCalc.type !== '' && item.compareCalc.type !== 'none'">-{{ $t('chart.' + item.compareCalc.type) }}</span>
           </span>
-          <i class="el-icon-arrow-down el-icon--right" style="position: absolute;top: 6px;right: 10px;" />
+          <i
+            class="el-icon-arrow-down el-icon--right"
+            style="position: absolute;top: 6px;right: 10px;"
+          />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item v-show="chart.type ==='chart-mix'">
-            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="switchChartType">
+            <el-dropdown
+              placement="right-start"
+              size="mini"
+              style="width: 100%"
+              @command="switchChartType"
+            >
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-s-data" />
@@ -39,8 +101,16 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item v-show="!item.chartId && chart.type !== 'table-info'" :divided="chart.type === 'chart-mix'">
-            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="summary">
+          <el-dropdown-item
+            v-show="!item.chartId && chart.type !== 'table-info'"
+            :divided="chart.type === 'chart-mix'"
+          >
+            <el-dropdown
+              placement="right-start"
+              size="mini"
+              style="width: 100%"
+              @command="summary"
+            >
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-notebook-2" />
@@ -50,21 +120,47 @@
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('sum')">{{ $t('chart.sum') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('avg')">{{ $t('chart.avg') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('max')">{{ $t('chart.max') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('min')">{{ $t('chart.min') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('stddev_pop')">{{ $t('chart.stddev_pop') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5" :command="beforeSummary('var_pop')">{{ $t('chart.var_pop') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5"
+                  :command="beforeSummary('sum')"
+                >{{ $t('chart.sum') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5"
+                  :command="beforeSummary('avg')"
+                >{{ $t('chart.avg') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5"
+                  :command="beforeSummary('max')"
+                >{{ $t('chart.max') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5"
+                  :command="beforeSummary('min')"
+                >{{ $t('chart.min') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5"
+                  :command="beforeSummary('stddev_pop')"
+                >{{ $t('chart.stddev_pop') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1 && item.deType !== 5"
+                  :command="beforeSummary('var_pop')"
+                >{{ $t('chart.var_pop') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSummary('count')">{{ $t('chart.count') }}</el-dropdown-item>
-                <el-dropdown-item v-if="item.id !== 'count'" :command="beforeSummary('count_distinct')">{{ $t('chart.count_distinct') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="item.id !== 'count'"
+                  :command="beforeSummary('count_distinct')"
+                >{{ $t('chart.count_distinct') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
 
           <!--同比/环比-->
           <el-dropdown-item v-show="!item.chartId && chart.type !== 'table-info'">
-            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="quickCalc">
+            <el-dropdown
+              placement="right-start"
+              size="mini"
+              style="width: 100%"
+              @command="quickCalc"
+            >
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-s-grid" />
@@ -75,13 +171,21 @@
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="beforeQuickCalc('none')">{{ $t('chart.none') }}</el-dropdown-item>
-                <el-dropdown-item :disabled="disableEditCompare" :command="beforeQuickCalc('setting')">{{ $t('chart.yoy_label') }}...</el-dropdown-item>
+                <el-dropdown-item
+                  :disabled="disableEditCompare"
+                  :command="beforeQuickCalc('setting')"
+                >{{ $t('chart.yoy_label') }}...</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
 
           <el-dropdown-item :divided="!item.chartId && chart.type !== 'table-info'">
-            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="sort">
+            <el-dropdown
+              placement="right-start"
+              size="mini"
+              style="width: 100%"
+              @command="sort"
+            >
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
                   <i class="el-icon-sort" />
@@ -97,16 +201,32 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
+          <el-dropdown-item
+            icon="el-icon-files"
+            :command="beforeClickItem('filter')"
+          >
             <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>
-          <el-dropdown-item v-if="chart.render === 'antv' && chart.type !== 'gauge' && chart.type !== 'liquid'" icon="el-icon-notebook-2" divided :command="beforeClickItem('formatter')">
+          <el-dropdown-item
+            v-if="chart.render === 'antv' && chart.type !== 'gauge' && chart.type !== 'liquid'"
+            icon="el-icon-notebook-2"
+            divided
+            :command="beforeClickItem('formatter')"
+          >
             <span>{{ $t('chart.value_formatter') }}...</span>
           </el-dropdown-item>
-          <el-dropdown-item icon="el-icon-edit-outline" divided :command="beforeClickItem('rename')">
+          <el-dropdown-item
+            icon="el-icon-edit-outline"
+            divided
+            :command="beforeClickItem('rename')"
+          >
             <span>{{ $t('chart.show_name_set') }}</span>
           </el-dropdown-item>
-          <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
+          <el-dropdown-item
+            icon="el-icon-delete"
+            divided
+            :command="beforeClickItem('remove')"
+          >
             <span>{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
