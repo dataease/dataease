@@ -19,7 +19,6 @@ module.exports = {
     "vue/no-mutating-props": "off",
     "vue/multi-word-component-names": "off",
     "vue/require-default-prop": "off",
-    // "vue/name-property-casing": ["error", "PascalCase"],
     "vue/no-v-html": "off",
     'accessor-pairs': 2,
     'arrow-spacing': [2, {
