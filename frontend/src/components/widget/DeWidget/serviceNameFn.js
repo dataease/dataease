@@ -87,5 +87,5 @@ export {
   textSelectGridWidget,
   textSelectTreeWidget,
   textSelectWidget,
-  handlerInputStyle,
+  handlerInputStyle
 }

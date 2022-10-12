@@ -9,61 +9,61 @@
     @change="handleChange"
   >
     <svg-icon
-      @click="handleClick"
       v-if="!showPwd || buttonDisabled"
       slot="suffix"
       icon-class="de_pwd_invisible"
+      @click="handleClick"
     />
     <svg-icon
-      @click="handleClick"
       v-else
       slot="suffix"
       icon-class="de_pwd_visible"
+      @click="handleClick"
     />
   </el-input>
 </template>
 
 <script>
 export default {
-  name: "DePwd",
+  name: 'DePwd',
   inject: {
     elForm: {
-      default: "",
-    },
+      default: ''
+    }
   },
   props: {
     disabled: Boolean,
     placeholder: String,
-    value: String,
+    value: String
   },
   data() {
     return {
-      showPwd: false,
-    };
+      showPwd: false
+    }
   },
   computed: {
     buttonDisabled() {
-      return this.$options.propsData.hasOwnProperty("disabled")
+      return Object.prototype.hasOwnProperty.call(this.$options.propsData, 'disabled')
         ? this.disabled
-        : (this.elForm || {}).disabled;
+        : (this.elForm || {}).disabled
     },
     type() {
-      return !this.showPwd || this.buttonDisabled ? "password" : "text";
-    },
+      return !this.showPwd || this.buttonDisabled ? 'password' : 'text'
+    }
   },
   methods: {
     handleClick() {
-      if (this.buttonDisabled) return;
-      this.showPwd = !this.showPwd;
+      if (this.buttonDisabled) return
+      this.showPwd = !this.showPwd
     },
     handleInput(val) {
-      this.$emit("input", val);
+      this.$emit('input', val)
     },
     handleChange(val) {
-      this.$emit("change", val);
-    },
-  },
-};
+      this.$emit('change', val)
+    }
+  }
+}
 </script>
 <style lang="scss">
 .de-pwd-input {

@@ -5,7 +5,7 @@
       :image-size="125"
       :image="errImg"
       :description="$t('deDataset.on_the_left')"
-    ></el-empty>
+    />
   </el-col>
 </template>
 

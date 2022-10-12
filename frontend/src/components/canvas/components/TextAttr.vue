@@ -1,8 +1,21 @@
 <template>
-  <el-card class="el-card-main" :style="mainStyle">
-    <div id="main-attr" style="position: relative;">
-      <div v-if="attrShow('textAlign')" style="width: 100px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-radio-group v-model="styleInfo.textAlign" size="mini" @change="styleChange">
+  <el-card
+    class="el-card-main"
+    :style="mainStyle"
+  >
+    <div
+      id="main-attr"
+      style="position: relative;"
+    >
+      <div
+        v-if="attrShow('textAlign')"
+        style="width: 100px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
+        <el-radio-group
+          v-model="styleInfo.textAlign"
+          size="mini"
+          @change="styleChange"
+        >
           <el-radio-button
             v-for="item in textAlignOptions"
             :key="item.label"
@@ -16,9 +29,16 @@
           </el-radio-button>
         </el-radio-group>
       </div>
-      <div v-if="attrShow('borderStyle')" style="width: 80px;margin-top: 2px;margin-left: 2px;float: left">
+      <div
+        v-if="attrShow('borderStyle')"
+        style="width: 80px;margin-top: 2px;margin-left: 2px;float: left"
+      >
         <el-tooltip content="边框风格">
-          <el-select v-model="styleInfo.borderStyle" size="mini" @change="styleChange">
+          <el-select
+            v-model="styleInfo.borderStyle"
+            size="mini"
+            @change="styleChange"
+          >
             <el-option
               v-for="item in lineStyle"
               :key="item.value"
@@ -34,9 +54,17 @@
         </el-tooltip>
       </div>
 
-      <div v-if="attrShow('borderWidth')" style="width: 60px;float: left;margin-top: 2px;margin-left: 2px;">
+      <div
+        v-if="attrShow('borderWidth')"
+        style="width: 60px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
         <el-tooltip content="边框宽度">
-          <el-select v-model="styleInfo.borderWidth" size="mini" placeholder="" @change="styleChange">
+          <el-select
+            v-model="styleInfo.borderWidth"
+            size="mini"
+            placeholder=""
+            @change="styleChange"
+          >
             <el-option
               v-for="item in lineFont"
               :key="item.value"
@@ -46,138 +74,323 @@
           </el-select>
         </el-tooltip>
       </div>
-      <el-tooltip v-if="attrShow('fontSize')" :content="$t('panel.fontSize')">
-        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="iconfont icon-font_size" />
+      <el-tooltip
+        v-if="attrShow('fontSize')"
+        :content="$t('panel.fontSize')"
+      >
+        <i
+          style="float: left;margin-top: 3px;margin-left: 2px;"
+          class="iconfont icon-font_size"
+        />
       </el-tooltip>
 
-      <div v-if="attrShow('fontSize')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="initFontSize" type="number" size="mini" :min="miniFontSize" :max="maxFontSize" @change="styleChange" />
+      <div
+        v-if="attrShow('fontSize')"
+        style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
+        <el-input
+          v-model="initFontSize"
+          type="number"
+          size="mini"
+          :min="miniFontSize"
+          :max="maxFontSize"
+          @change="styleChange"
+        />
       </div>
 
-      <el-tooltip v-if="attrShow('fontWeight')" :content="$t('panel.fontWeight')">
-        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-font-weight-bold" />
+      <el-tooltip
+        v-if="attrShow('fontWeight')"
+        :content="$t('panel.fontWeight')"
+      >
+        <i
+          style="float: left;margin-top: 3px;margin-left: 2px;"
+          class="icon iconfont icon-font-weight-bold"
+        />
       </el-tooltip>
 
-      <div v-if="attrShow('fontWeight')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.fontWeight" type="number" size="mini" min="100" step="100" max="900" @change="styleChange" />
+      <div
+        v-if="attrShow('fontWeight')"
+        style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
+        <el-input
+          v-model="styleInfo.fontWeight"
+          type="number"
+          size="mini"
+          min="100"
+          step="100"
+          max="900"
+          @change="styleChange"
+        />
       </div>
 
-      <el-tooltip v-if="attrShow('letterSpacing')" :content="$t('panel.letterSpacing')">
-        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-letter_spacing" />
+      <el-tooltip
+        v-if="attrShow('letterSpacing')"
+        :content="$t('panel.letterSpacing')"
+      >
+        <i
+          style="float: left;margin-top: 3px;margin-left: 2px;"
+          class="icon iconfont icon-letter_spacing"
+        />
       </el-tooltip>
 
-      <div v-if="attrShow('letterSpacing')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.letterSpacing" type="number" size="mini" min="0" max="99" @change="styleChange" />
+      <div
+        v-if="attrShow('letterSpacing')"
+        style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
+        <el-input
+          v-model="styleInfo.letterSpacing"
+          type="number"
+          size="mini"
+          min="0"
+          max="99"
+          @change="styleChange"
+        />
       </div>
 
-      <el-tooltip v-if="attrShow('margin')" :content="$t('panel.margin')">
-        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-margin" />
+      <el-tooltip
+        v-if="attrShow('margin')"
+        :content="$t('panel.margin')"
+      >
+        <i
+          style="float: left;margin-top: 3px;margin-left: 2px;"
+          class="icon iconfont icon-margin"
+        />
       </el-tooltip>
 
-      <div v-if="attrShow('margin')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.margin" type="number" size="mini" min="0" max="99" @change="styleChange" />
+      <div
+        v-if="attrShow('margin')"
+        style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
+        <el-input
+          v-model="styleInfo.margin"
+          type="number"
+          size="mini"
+          min="0"
+          max="99"
+          @change="styleChange"
+        />
       </div>
 
-      <el-tooltip v-if="attrShow('opacity')" :content="$t('panel.opacity')">
-        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-touming" />
+      <el-tooltip
+        v-if="attrShow('opacity')"
+        :content="$t('panel.opacity')"
+      >
+        <i
+          style="float: left;margin-top: 3px;margin-left: 2px;"
+          class="icon iconfont icon-touming"
+        />
       </el-tooltip>
 
-      <div v-if="attrShow('opacity')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="innerOpacity" type="number" size="mini" min="0" max="100" step="10" @change="styleChange" />
+      <div
+        v-if="attrShow('opacity')"
+        style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
+        <el-input
+          v-model="innerOpacity"
+          type="number"
+          size="mini"
+          min="0"
+          max="100"
+          step="10"
+          @change="styleChange"
+        />
       </div>
 
-      <el-tooltip v-if="attrShow('borderRadius')" :content="$t('panel.borderRadius')">
-        <i style="float: left;margin-top: 3px;margin-left: 2px;" class="icon iconfont icon-fangxing-" />
+      <el-tooltip
+        v-if="attrShow('borderRadius')"
+        :content="$t('panel.borderRadius')"
+      >
+        <i
+          style="float: left;margin-top: 3px;margin-left: 2px;"
+          class="icon iconfont icon-fangxing-"
+        />
       </el-tooltip>
 
-      <div v-if="attrShow('borderRadius')" style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;">
-        <el-input v-model="styleInfo.borderRadius" type="number" size="mini" min="0" max="100" step="1" @change="styleChange" />
+      <div
+        v-if="attrShow('borderRadius')"
+        style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
+        <el-input
+          v-model="styleInfo.borderRadius"
+          type="number"
+          size="mini"
+          min="0"
+          max="100"
+          step="1"
+          @change="styleChange"
+        />
       </div>
 
-      <div v-if="attrShow('color')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+      <div
+        v-if="attrShow('color')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
+      >
         <div style="width: 16px;height: 18px">
           <el-tooltip :content="$t('panel.color')">
-            <i class="icon iconfont icon-zimua" @click="goColor" />
+            <i
+              class="icon iconfont icon-zimua"
+              @click="goColor"
+            />
           </el-tooltip>
           <div :style="letterDivColor" />
-          <el-color-picker ref="colorPicker" v-model="styleInfo.color" style="margin-top: 7px;height: 0px" size="mini" :predefine="predefineColors" @change="styleChange" />
+          <el-color-picker
+            ref="colorPicker"
+            v-model="styleInfo.color"
+            style="margin-top: 7px;height: 0px"
+            size="mini"
+            :predefine="predefineColors"
+            @change="styleChange"
+          />
         </div>
       </div>
-      <div v-if="attrShow('borderColor')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+      <div
+        v-if="attrShow('borderColor')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
+      >
         <div style="width: 16px;height: 18px">
           <el-tooltip :content="$t('panel.border_color')">
-            <i class="iconfont icon-huabi" @click="goBoardColor" />
+            <i
+              class="iconfont icon-huabi"
+              @click="goBoardColor"
+            />
           </el-tooltip>
           <div :style="boardDivColor" />
-          <el-color-picker ref="boardColorPicker" v-model="styleInfo.borderColor" style="margin-top: 7px;height: 0px" size="mini" :predefine="predefineColors" @change="styleChange" />
+          <el-color-picker
+            ref="boardColorPicker"
+            v-model="styleInfo.borderColor"
+            style="margin-top: 7px;height: 0px"
+            size="mini"
+            :predefine="predefineColors"
+            @change="styleChange"
+          />
         </div>
       </div>
 
-      <div v-if="attrShow('backgroundColor')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+      <div
+        v-if="attrShow('backgroundColor')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
+      >
         <div style="width: 16px;height: 18px">
           <el-tooltip :content="$t('panel.background_color')">
-            <i class="iconfont icon-beijingse1" @click="goBackgroundColor" />
+            <i
+              class="iconfont icon-beijingse1"
+              @click="goBackgroundColor"
+            />
           </el-tooltip>
           <div :style="backgroundDivColor" />
-          <el-color-picker ref="backgroundColorPicker" v-model="styleInfo.backgroundColor" style="margin-top: 7px;height: 0px" :predefine="predefineColors" size="mini" @change="styleChange" />
+          <el-color-picker
+            ref="backgroundColorPicker"
+            v-model="styleInfo.backgroundColor"
+            style="margin-top: 7px;height: 0px"
+            :predefine="predefineColors"
+            size="mini"
+            @change="styleChange"
+          />
         </div>
       </div>
-      <div v-if="attrShow('videoLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
+      <div
+        v-if="attrShow('videoLinks')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
         <el-tooltip :content="$t('panel.video_info')">
           <VideoLinks :link-info="curComponent.videoLinks" />
         </el-tooltip>
       </div>
 
-      <div v-if="attrShow('streamMediaLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
+      <div
+        v-if="attrShow('streamMediaLinks')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
         <el-tooltip :content="$t('panel.stream_media_info')">
           <StreamMediaLinks :link-info="curComponent.streamMediaLinks" />
         </el-tooltip>
       </div>
 
-      <div v-if="attrShow('frameLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;">
+      <div
+        v-if="attrShow('frameLinks')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
         <el-tooltip :content="$t('panel.web_addr')">
           <FrameLinks :link-info="curComponent.frameLinks" />
         </el-tooltip>
       </div>
-      <div v-if="attrShow('date-format')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+      <div
+        v-if="attrShow('date-format')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
+      >
         <el-tooltip :content="$t('panel.data_format')">
           <date-format :format-info="curComponent.formatInfo" />
         </el-tooltip>
       </div>
 
-      <div v-if="attrShow('deTabStyle')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+      <div
+        v-if="attrShow('deTabStyle')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
+      >
         <el-tooltip :content="$t('panel.tab_inner_style')">
           <tab-style :style-info="styleInfo" />
         </el-tooltip>
       </div>
 
-      <div v-if="attrShow('titlePostion')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+      <div
+        v-if="attrShow('titlePostion')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
+      >
         <el-tooltip :content="$t('panel.title_position')">
-          <title-postion :element-type="elementType" :show-vertical="showVertical" :style-info="styleInfo" />
+          <title-postion
+            :element-type="elementType"
+            :show-vertical="showVertical"
+            :style-info="styleInfo"
+          />
         </el-tooltip>
       </div>
       <!--tab 内部组件样式-->
-      <div v-if="attrTabShow('videoLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+      <div
+        v-if="attrTabShow('videoLinks')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
+      >
         <el-tooltip :content="$t('panel.video_info')">
-          <VideoLinks :attr-position="'tab'" :link-info="curActiveTabInner.videoLinks" />
+          <VideoLinks
+            :attr-position="'tab'"
+            :link-info="curActiveTabInner.videoLinks"
+          />
         </el-tooltip>
       </div>
 
-      <div v-if="attrTabShow('streamMediaLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+      <div
+        v-if="attrTabShow('streamMediaLinks')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
+      >
         <el-tooltip :content="$t('panel.stream_media_info')">
-          <StreamMediaLinks :attr-position="'tab'" :link-info="curActiveTabInner.streamMediaLinks" />
+          <StreamMediaLinks
+            :attr-position="'tab'"
+            :link-info="curActiveTabInner.streamMediaLinks"
+          />
         </el-tooltip>
       </div>
 
-      <div v-if="attrTabShow('frameLinks')" style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;">
+      <div
+        v-if="attrTabShow('frameLinks')"
+        style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
+      >
         <el-tooltip :content="$t('panel.web_addr')">
-          <FrameLinks :attr-position="'tab'" :link-info="curActiveTabInner.frameLinks" />
+          <FrameLinks
+            :attr-position="'tab'"
+            :link-info="curActiveTabInner.frameLinks"
+          />
         </el-tooltip>
       </div>
 
-      <div v-if="attrShow('adaptation')" style="width: 100px;margin-top: 2px;margin-right:2px;float: left">
+      <div
+        v-if="attrShow('adaptation')"
+        style="width: 100px;margin-top: 2px;margin-right:2px;float: left"
+      >
         <el-tooltip :content="$t('panel.pic_size')">
-          <el-select v-model="styleInfo.adaptation" size="mini" @change="styleChange">
+          <el-select
+            v-model="styleInfo.adaptation"
+            size="mini"
+            @change="styleChange"
+          >
             <el-option
               v-for="item in pictureAdaptation"
               :key="item.value"

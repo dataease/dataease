@@ -1068,8 +1068,23 @@ public class DataSetTableService {
         CCJSqlParserUtil.parse(sql, parser -> parser.withSquareBracketQuotation(true));
         Statement statement = CCJSqlParserUtil.parse(sql);
         Select select = (Select) statement;
-        PlainSelect plainSelect = ((PlainSelect) select.getSelectBody());
-        // 访问from
+
+        if (select.getSelectBody() instanceof PlainSelect) {
+            return handlePlainSelect((PlainSelect) select.getSelectBody(), select, dsType);
+        }else {
+            String result = "";
+            SetOperationList setOperationList = (SetOperationList) select.getSelectBody();
+            for (int i = 0; i < setOperationList.getSelects().size(); i++) {
+                result = result + handlePlainSelect((PlainSelect) setOperationList.getSelects().get(i), null, dsType);
+                if (i < setOperationList.getSelects().size() - 1) {
+                    result = result + " " + setOperationList.getOperations().get(i).toString() + " ";
+                }
+            }
+            return result;
+        }
+    }
+
+    private String handlePlainSelect(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
         FromItem fromItem = plainSelect.getFromItem();
         if (fromItem instanceof SubSelect) {
             SelectBody selectBody = ((SubSelect) fromItem).getSelectBody();
@@ -1086,7 +1101,7 @@ public class DataSetTableService {
         }
         Expression expr = plainSelect.getWhere();
         if (expr == null) {
-            return handleWith(plainSelect, select, dsType);
+            return handleWith(plainSelect, statementSelect, dsType);
         }
         StringBuilder stringBuilder = new StringBuilder();
         BinaryExpression binaryExpression = null;
@@ -1100,12 +1115,12 @@ public class DataSetTableService {
             expr.accept(getExpressionDeParser(stringBuilder));
         }
         plainSelect.setWhere(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
-        return handleWith(plainSelect, select, dsType);
+        return handleWith(plainSelect, statementSelect, dsType);
     }
 
     private String handleWith(PlainSelect plainSelect, Select select, String dsType) throws Exception {
         StringBuilder builder = new StringBuilder();
-        if (CollectionUtils.isNotEmpty(select.getWithItemsList())) {
+        if (select != null && CollectionUtils.isNotEmpty(select.getWithItemsList())) {
             builder.append("WITH");
             builder.append(" ");
             for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext(); ) {

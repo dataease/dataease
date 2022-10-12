@@ -1,6 +1,13 @@
 <template>
   <div>
-    <el-form ref="linkForm" inline :model="form" size="small" :rules="rules" label-width="80px">
+    <el-form
+      ref="linkForm"
+      inline
+      :model="form"
+      size="small"
+      :rules="rules"
+      label-width="80px"
+    >
 
       <el-form-item :label="$t('panel.link_share')">
         <el-switch
@@ -12,13 +19,28 @@
         />
       </el-form-item>
       <el-form-item label=" ">
-        <el-link class="de-link" style="width: 370px;" disabled>{{ $t('panel.link_share_desc') }}</el-link>
+        <el-link
+          class="de-link"
+          style="width: 370px;"
+          disabled
+        >{{ $t('panel.link_share_desc') }}</el-link>
       </el-form-item>
-      <el-form-item v-if="valid" :label="$t('panel.link')">
-        <el-input v-model.number="form.uri" disabled style="width: 370px;" />
+      <el-form-item
+        v-if="valid"
+        :label="$t('panel.link')"
+      >
+        <el-input
+          v-model.number="form.uri"
+          disabled
+          style="width: 370px;"
+        />
       </el-form-item>
 
-      <el-form-item v-if="valid" :label="$t('panel.over_time')" prop="overTime">
+      <el-form-item
+        v-if="valid"
+        :label="$t('panel.over_time')"
+        prop="overTime"
+      >
         <el-date-picker
           v-model="form.overTime"
           type="datetime"
@@ -32,16 +54,35 @@
         />
       </el-form-item>
 
-      <el-form-item v-if="valid" label=" ">
-        <el-checkbox v-model="form.enablePwd" @change="resetEnablePwd">{{ $t('panel.passwd_protect') }} </el-checkbox>
+      <el-form-item
+        v-if="valid"
+        label=" "
+      >
+        <el-checkbox
+          v-model="form.enablePwd"
+          @change="resetEnablePwd"
+        >{{ $t('panel.passwd_protect') }} </el-checkbox>
 
-        <span v-if="form.enablePwd" class="de-span">{{ form.pwd }}</span>
-        <span v-if="form.enablePwd" class="de-span" @click="resetPwd">
-          <el-link :underline="false" type="primary">{{ $t('commons.reset') }}</el-link>
+        <span
+          v-if="form.enablePwd"
+          class="de-span"
+        >{{ form.pwd }}</span>
+        <span
+          v-if="form.enablePwd"
+          class="de-span"
+          @click="resetPwd"
+        >
+          <el-link
+            :underline="false"
+            type="primary"
+          >{{ $t('commons.reset') }}</el-link>
         </span>
       </el-form-item>
 
-      <div v-if="valid" class="auth-root-class">
+      <div
+        v-if="valid"
+        class="auth-root-class"
+      >
         <span slot="footer">
 
           <el-button

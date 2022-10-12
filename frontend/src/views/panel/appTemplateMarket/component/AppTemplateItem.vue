@@ -1,11 +1,15 @@
 <template>
   <div class="testcase-template">
-    <div class="template-img" :style="classBackground" @click.stop="appPreview" />
+    <div
+      class="template-img"
+      :style="classBackground"
+      @click.stop="appPreview"
+    />
   </div>
 </template>
 
 <script>
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'AppTemplateItem',

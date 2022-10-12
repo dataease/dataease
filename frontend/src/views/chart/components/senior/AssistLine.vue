@@ -10,18 +10,34 @@
         @click="editLine"
       />
       <el-col>
-        <el-row v-for="(item,index) in assistLine" :key="index" class="line-style">
+        <el-row
+          v-for="(item,index) in assistLine"
+          :key="index"
+          class="line-style"
+        >
           <el-col :span="8">
             <span :title="item.name">{{ item.name }}</span>
           </el-col>
           <el-col :span="8">
-            <span v-if="item.field === '0'" :title="$t('chart.field_fixed')">{{ $t('chart.field_fixed') }}</span>
-            <span v-if="item.field === '1'" :title="$t('chart.field_dynamic')">{{ $t('chart.field_dynamic') }}</span>
+            <span
+              v-if="item.field === '0'"
+              :title="$t('chart.field_fixed')"
+            >{{ $t('chart.field_fixed') }}</span>
+            <span
+              v-if="item.field === '1'"
+              :title="$t('chart.field_dynamic')"
+            >{{ $t('chart.field_dynamic') }}</span>
           </el-col>
-          <el-col v-if="item.field === '0'" :span="8">
+          <el-col
+            v-if="item.field === '0'"
+            :span="8"
+          >
             <span :title="item.value">{{ item.value }}</span>
           </el-col>
-          <el-col v-if="item.field === '1'" :span="8">
+          <el-col
+            v-if="item.field === '1'"
+            :span="8"
+          >
             <span :title="item.curField.name + '(' + $t('chart.' + item.summary) + ')'">{{ item.curField.name + '(' + $t('chart.' + item.summary) + ')' }}</span>
           </el-col>
         </el-row>
@@ -38,10 +54,24 @@
       width="70%"
       class="dialog-css"
     >
-      <assist-line-edit :line="assistLine" :quota-fields="quotaData" @onAssistLineChange="lineChange" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeEditLine">{{ $t('chart.cancel') }}</el-button>
-        <el-button type="primary" size="mini" @click="changeLine">{{ $t('chart.confirm') }}</el-button>
+      <assist-line-edit
+        :line="assistLine"
+        :quota-fields="quotaData"
+        @onAssistLineChange="lineChange"
+      />
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="closeEditLine"
+        >{{ $t('chart.cancel') }}</el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          @click="changeLine"
+        >{{ $t('chart.confirm') }}</el-button>
       </div>
     </el-dialog>
   </div>

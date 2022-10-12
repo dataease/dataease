@@ -17,8 +17,20 @@
                 @end="end2"
               >
 
-                <v-flex v-for="(item,index) in element.options.attrs.dragItems" :key="item.id">
-                  <drag-item :key="item.id" :is-sort-widget="isSortWidget" :item="item" :index="index" :sort="element.options.attrs.sort" :all-fields="index ? [] : tableFields" @closeItem="closeItem" @sort-change="sortChange" />
+                <v-flex
+                  v-for="(item,index) in element.options.attrs.dragItems"
+                  :key="item.id"
+                >
+                  <drag-item
+                    :key="item.id"
+                    :is-sort-widget="isSortWidget"
+                    :item="item"
+                    :index="index"
+                    :sort="element.options.attrs.sort"
+                    :all-fields="index ? [] : tableFields"
+                    @closeItem="closeItem"
+                    @sort-change="sortChange"
+                  />
                 </v-flex>
 
                 <span solt="footer">{{ $t('panel.drag_here') }}</span>

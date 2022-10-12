@@ -1,8 +1,14 @@
 <template>
-  <div v-loading="formLoading" class="de-ds-form">
+  <div
+    v-loading="formLoading"
+    class="de-ds-form"
+  >
     <div class="de-ds-top">
       <span class="name">
-        <i class="el-icon-arrow-left" @click="logOutTips" />
+        <i
+          class="el-icon-arrow-left"
+          @click="logOutTips"
+        />
         {{
           params &&
             params.id &&
@@ -76,14 +82,20 @@
             <div class="de-row-rules">
               <span>{{ $t('datasource.basic_info') }}</span>
             </div>
-            <el-form-item :label="$t('datasource.display_name')" prop="name">
+            <el-form-item
+              :label="$t('datasource.display_name')"
+              prop="name"
+            >
               <el-input
                 v-model="form.name"
                 autocomplete="off"
                 :placeholder="$t('commons.input_name')"
               />
             </el-form-item>
-            <el-form-item :label="$t('commons.description')" prop="desc">
+            <el-form-item
+              :label="$t('commons.description')"
+              prop="desc"
+            >
               <deTextarea
                 v-model="form.desc"
                 class="w100-textarea"
@@ -138,7 +150,6 @@
 </template>
 
 <script>
-import LayoutContent from '@/components/business/LayoutContent'
 import {
   addDs,
   editDs,
@@ -151,7 +162,6 @@ import {
 } from '@/api/system/datasource'
 import { $confirm } from '@/utils/message'
 import i18n from '@/lang/index'
-import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
 import DsConfiguration from '@/views/system/datasource/DsConfiguration'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { listDatasourceType, listDatasource } from '@/api/system/datasource'
@@ -161,8 +171,6 @@ export default {
   name: 'DsForm',
   components: {
     DsConfiguration,
-    LayoutContent,
-    ApiHttpRequestForm,
     PluginCom,
     deTextarea
   },
@@ -394,7 +402,7 @@ export default {
   async created() {
     await this.datasourceTypes()
     this.queryTreeDatas()
-    const { id, showModel, msgNodeId, type, name } = this.$route.query
+    const { id, showModel, type, name } = this.$route.query
     this.params = this.$route.query
     if (id) {
       await this.getDatasourceDetail(id, showModel)
@@ -466,7 +474,7 @@ export default {
         customDriver: 'default',
         queryTimeout: 30
       }
-      if (this.form.type == 'oracle') {
+      if (this.form.type === 'oracle') {
         this.$set(this.form.configuration, 'charset', 'Default')
         this.$set(this.form.configuration, 'targetCharset', 'Default')
       }
@@ -557,13 +565,12 @@ export default {
                 case 'ds_doris':
                 case 'ck':
                 case 'mongo':
-                case 'mariadb':
                 case 'impala':
                   if (
-                    configuration.host == this.form.configuration.host &&
-                    configuration.dataBase ==
+                    configuration.host === this.form.configuration.host &&
+                    configuration.dataBase ===
                       this.form.configuration.dataBase &&
-                    configuration.port == this.form.configuration.port
+                    configuration.port === this.form.configuration.port
                   ) {
                     repeat = true
                     repeatDsName.push(child.name)
@@ -575,18 +582,18 @@ export default {
                 case 'oracle':
                 case 'db2':
                   if (
-                    configuration.host == this.form.configuration.host &&
-                    configuration.dataBase ==
+                    configuration.host === this.form.configuration.host &&
+                    configuration.dataBase ===
                       this.form.configuration.dataBase &&
-                    configuration.port == this.form.configuration.port &&
-                    configuration.schema == this.form.configuration.schema
+                    configuration.port === this.form.configuration.port &&
+                    configuration.schema === this.form.configuration.schema
                   ) {
                     repeatDsName.push(child.name)
                     repeat = true
                   }
                   break
                 case 'es':
-                  if (configuration.url == this.form.configuration.url) {
+                  if (configuration.url === this.form.configuration.url) {
                     repeatDsName.push(child.name)
                     repeat = true
                   }
@@ -609,23 +616,23 @@ export default {
                 if (!configuration) {
                   return
                 }
-                if (configuration.schema != null) {
+                if (configuration.schema !== null) {
                   if (
-                    configuration.schema == this.form.configuration.schema &&
-                    configuration.host == this.form.configuration.host &&
-                    configuration.dataBase ==
+                    configuration.schema === this.form.configuration.schema &&
+                    configuration.host === this.form.configuration.host &&
+                    configuration.dataBase ===
                       this.form.configuration.dataBase &&
-                    configuration.port == this.form.configuration.port
+                    configuration.port === this.form.configuration.port
                   ) {
                     repeat = true
                     repeatDsName.push(child.name)
                   }
                 } else {
                   if (
-                    configuration.host == this.form.configuration.host &&
-                    configuration.dataBase ==
+                    configuration.host === this.form.configuration.host &&
+                    configuration.dataBase ===
                       this.form.configuration.dataBase &&
-                    configuration.port == this.form.configuration.port
+                    configuration.port === this.form.configuration.port
                   ) {
                     repeat = true
                     repeatDsName.push(child.name)
@@ -940,28 +947,25 @@ export default {
       )
     },
     validateApi(item) {
-      if (undefined) {
-      } else {
-        this.$refs.apiItem.validate((valid) => {
-          if (valid) {
-            const data = JSON.parse(JSON.stringify(this.apiItem))
-            data.request = JSON.stringify(data.request)
-            this.loading = true
-            checkApiDatasource(data)
-              .then((res) => {
-                this.loading = false
-                this.$success(i18n.t('commons.success'))
-                this.apiItem.fields = res.data.fields
-                this.$refs.plxTable.reloadData(res.data.datas)
-              })
-              .catch((res) => {
-                this.loading = false
-              })
-          } else {
-            return false
-          }
-        })
-      }
+      this.$refs.apiItem.validate((valid) => {
+        if (valid) {
+          const data = JSON.parse(JSON.stringify(this.apiItem))
+          data.request = JSON.stringify(data.request)
+          this.loading = true
+          checkApiDatasource(data)
+            .then((res) => {
+              this.loading = false
+              this.$success(i18n.t('commons.success'))
+              this.apiItem.fields = res.data.fields
+              this.$refs.plxTable.reloadData(res.data.datas)
+            })
+            .catch((res) => {
+              this.loading = false
+            })
+        } else {
+          return false
+        }
+      })
     },
     handleClick(tab, event) {}
   }

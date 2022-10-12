@@ -1,14 +1,26 @@
 <template>
   <el-row class="video_main">
-    <div class="video_top" >
-      <a :href="details.href" target="_blank">
-        <img :src="require('@/assets/'+details.img)" alt="404">
-        <svg-icon class="play-icon" icon-class="round_play"></svg-icon>
+    <div class="video_top">
+      <a
+        :href="details.href"
+        target="_blank"
+      >
+        <img
+          :src="require('@/assets/'+details.img)"
+          alt="404"
+        >
+        <svg-icon
+          class="play-icon"
+          icon-class="round_play"
+        />
       </a>
     </div>
     <div class="video_content">
-      <a :href="details.href" target="_blank">
-        {{details.content}}
+      <a
+        :href="details.href"
+        target="_blank"
+      >
+        {{ details.content }}
       </a>
     </div>
   </el-row>

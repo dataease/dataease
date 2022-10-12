@@ -12,6 +12,7 @@ import DeStreamMedia from '@/components/canvas/custom-component/DeStreamMedia'
 import DeRichText from '@/components/canvas/custom-component/DeRichText'
 Vue.component('DeRichText', DeRichText)
 Vue.component('DeStreamMedia', DeStreamMedia)
+// eslint-disable-next-line
 Vue.component('Picture', Picture)
 Vue.component('VText', VText)
 Vue.component('VButton', VButton)

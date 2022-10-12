@@ -1,42 +1,116 @@
 <template>
-  <div class="bar-main" :class="showEditPosition" @mousedown="showLabelInfo">
-    <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange">
-    <div v-if="linkageAreaShow" style="margin-right: -1px;width: 20px">
-      <el-checkbox v-model="linkageInfo.linkageActive" size="medium" />
-      <linkage-field v-if="linkageInfo.linkageActive" :element="element" />
+  <div
+    class="bar-main"
+    :class="showEditPosition"
+    @mousedown="showLabelInfo"
+  >
+    <input
+      id="input"
+      ref="files"
+      type="file"
+      accept="image/*"
+      hidden
+      @click="e => {e.target.value = '';}"
+      @change="handleFileChange"
+    >
+    <div
+      v-if="linkageAreaShow"
+      style="margin-right: -1px;width: 20px"
+    >
+      <el-checkbox
+        v-model="linkageInfo.linkageActive"
+        size="medium"
+      />
+      <linkage-field
+        v-if="linkageInfo.linkageActive"
+        :element="element"
+      />
     </div>
-    <div v-if="positionCheck('multiplexing') && showMultiplexingCheck" style="margin-right: 1px;width: 18px;z-index: 5">
-      <el-checkbox v-model="multiplexingCheckModel" size="medium" @change="multiplexingCheck" />
+    <div
+      v-if="positionCheck('multiplexing') && showMultiplexingCheck"
+      style="margin-right: 1px;width: 18px;z-index: 5"
+    >
+      <el-checkbox
+        v-model="multiplexingCheckModel"
+        size="medium"
+        @change="multiplexingCheck"
+      />
     </div>
-    <div v-if="batchOptAreaShow" style="margin-right: -1px;width: 20px;z-index: 5">
-      <el-checkbox size="medium" @change="batchOptChange" />
+    <div
+      v-if="batchOptAreaShow"
+      style="margin-right: -1px;width: 20px;z-index: 5"
+    >
+      <el-checkbox
+        size="medium"
+        @change="batchOptChange"
+      />
     </div>
     <div v-if="normalAreaShow">
       <span :title="$t('panel.edit')">
-        <i v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)" class="icon iconfont icon-edit" @click.stop="edit" />
+        <i
+          v-if="activeModel==='edit'&&curComponent&&editFilter.includes(curComponent.type)"
+          class="icon iconfont icon-edit"
+          @click.stop="edit"
+        />
       </span>
       <span :title="$t('panel.matrix')">
-        <i v-if="activeModel==='edit'&&curComponent.auxiliaryMatrix" class="icon iconfont icon-shujujuzhen" @click.stop="auxiliaryMatrixChange" />
+        <i
+          v-if="activeModel==='edit'&&curComponent.auxiliaryMatrix"
+          class="icon iconfont icon-shujujuzhen"
+          @click.stop="auxiliaryMatrixChange"
+        />
       </span>
       <span :title="$t('panel.suspension')">
-        <i v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix" class="icon iconfont icon-xuanfuanniu" @click.stop="auxiliaryMatrixChange" />
+        <i
+          v-if="activeModel==='edit'&&!curComponent.auxiliaryMatrix"
+          class="icon iconfont icon-xuanfuanniu"
+          @click.stop="auxiliaryMatrixChange"
+        />
       </span>
       <span :title="$t('panel.enlarge')">
-        <i v-if="enlargeShow" class="icon iconfont icon-fangda" @click.stop="showViewDetails('enlarge')" />
+        <i
+          v-if="enlargeShow"
+          class="icon iconfont icon-fangda"
+          @click.stop="showViewDetails('enlarge')"
+        />
       </span>
       <span :title="$t('panel.details')">
-        <i v-if="detailsShow" class="icon iconfont icon-chakan" @click.stop="showViewDetails('details')" />
+        <i
+          v-if="detailsShow"
+          class="icon iconfont icon-chakan"
+          @click.stop="showViewDetails('details')"
+        />
       </span>
-      <setting-menu v-if="activeModel==='edit'" style="float: right;height: 24px!important;" @amRemoveItem="amRemoveItem" @linkJumpSet="linkJumpSet" @boardSet="boardSet">
-        <span slot="icon" :title="$t('panel.setting')">
-          <i class="icon iconfont icon-shezhi" style="margin-top:2px" />
+      <setting-menu
+        v-if="activeModel==='edit'"
+        style="float: right;height: 24px!important;"
+        @amRemoveItem="amRemoveItem"
+        @linkJumpSet="linkJumpSet"
+        @boardSet="boardSet"
+      >
+        <span
+          slot="icon"
+          :title="$t('panel.setting')"
+        >
+          <i
+            class="icon iconfont icon-shezhi"
+            style="margin-top:2px"
+          />
         </span>
       </setting-menu>
       <span :title="$t('panel.cancel_linkage')">
-        <i v-if="curComponent.type==='view'&&existLinkage" class="icon iconfont icon-quxiaoliandong" @click.stop="clearLinkage" />
+        <i
+          v-if="curComponent.type==='view'&&existLinkage"
+          class="icon iconfont icon-quxiaoliandong"
+          @click.stop="clearLinkage"
+        />
       </span>
       <span :title="$t('panel.switch_picture')">
-        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='picture-add'" class="icon iconfont icon-genghuan" @click.stop="goFile" />
+        <i
+          v-if="activeModel==='edit'&&curComponent&&curComponent.type==='picture-add'"
+          class="icon iconfont icon-genghuan"
+          @click.stop="goFile"
+        />
       </span>
       <el-popover
         v-if="selectFieldShow"
@@ -44,11 +118,25 @@
         trigger="click"
         @mousedown="fieldsAreaDown"
       >
-        <fields-list :fields="curFields" :element="element" />
-        <i slot="reference" :disabled="element.editing" :title="$t('panel.select_field')" class="icon iconfont icon-datasource-select" style="margin-left: 4px;cursor: pointer;font-size: 14px;" />
+        <fields-list
+          :fields="curFields"
+          :element="element"
+        />
+        <i
+          slot="reference"
+          :disabled="element.editing"
+          :title="$t('panel.select_field')"
+          class="icon iconfont icon-datasource-select"
+          style="margin-left: 4px;cursor: pointer;font-size: 14px;"
+        />
       </el-popover>
       <span :title="$t('panel.jump')">
-        <a v-if="showJumpFlag" :title="curComponent.hyperlinks.content " :target="curComponent.hyperlinks.openMode " :href="curComponent.hyperlinks.content ">
+        <a
+          v-if="showJumpFlag"
+          :title="curComponent.hyperlinks.content "
+          :target="curComponent.hyperlinks.openMode "
+          :href="curComponent.hyperlinks.content "
+        >
           <i class="icon iconfont icon-com-jump" />
         </a>
       </span>
@@ -117,12 +205,7 @@ export default {
       viewXArray: []
     }
   },
-  mounted() {
-    this.initCurFields()
-    if (this.element.type === 'view') {
-      bus.$on('initCurFields-' + this.element.id, this.initCurFields)
-    }
-  },
+
   computed: {
     detailsShow() {
       return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType !== 'richTextView'
@@ -212,7 +295,11 @@ export default {
       'panelViewDetailsInfo'
     ])
   },
-  beforeDestroy() {
+  mounted() {
+    this.initCurFields()
+    if (this.element.type === 'view') {
+      bus.$on('initCurFields-' + this.element.id, this.initCurFields)
+    }
   },
   methods: {
     fieldsAreaDown(e) {

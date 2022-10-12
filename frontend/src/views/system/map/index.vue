@@ -1,6 +1,9 @@
 <template>
   <layout-content v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
-    <div id="maptest" style="width: 100%;height:100%;" />
+    <div
+      id="maptest"
+      style="width: 100%;height:100%;"
+    />
   </layout-content>
 </template>
 

@@ -1,5 +1,8 @@
 <template>
-  <div style="z-index:-1" :style="style" />
+  <div
+    style="z-index:-1"
+    :style="style"
+  />
 </template>
 
 <script>

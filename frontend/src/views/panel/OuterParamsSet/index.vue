@@ -1,12 +1,18 @@
 <template>
-  <el-row v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="height: 430px">
+  <el-row
+    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+    style="height: 430px"
+  >
     <el-row>
       <span style="font-weight:600;margin-right: 20px">{{ $t('panel.outer_param_set') }}</span>
       <el-checkbox v-model="outerParams.checked">{{ $t('panel.enable_outer_param_set') }}</el-checkbox>
     </el-row>
     <el-row v-loading="loading">
       <el-row class="preview">
-        <el-col :span="8" style="height:100%;overflow-y: hidden">
+        <el-col
+          :span="8"
+          style="height:100%;overflow-y: hidden"
+        >
           <el-row class="tree-head">
             <span style="float: left;margin-left: 30px">{{ $t('panel.param_name') }}</span>
             <span style="float: right;margin-right: 10px">{{ $t('panel.enable_param') }}</span>
@@ -20,7 +26,10 @@
               :props="treeProp"
               @node-click="nodeClick"
             >
-              <span slot-scope="{ node, data }" class="custom-tree-node">
+              <span
+                slot-scope="{ node, data }"
+                class="custom-tree-node"
+              >
                 <span>
                   <span style="margin-left: 6px"><el-input
                     v-model="data.paramName"
@@ -50,10 +59,19 @@
             </el-tree>
           </el-row>
           <el-row class="tree-bottom">
-            <el-button size="mini" type="success" icon="el-icon-plus" round @click="addOuterParamsInfo">{{ $t('panel.add_param') }}</el-button>
+            <el-button
+              size="mini"
+              type="success"
+              icon="el-icon-plus"
+              round
+              @click="addOuterParamsInfo"
+            >{{ $t('panel.add_param') }}</el-button>
           </el-row>
         </el-col>
-        <el-col :span="16" class="preview-show">
+        <el-col
+          :span="16"
+          class="preview-show"
+        >
           <el-row v-if="outerParamsInfo">
             <el-row class="top_border">
               <el-row style="margin-top: 10px">
@@ -65,7 +83,10 @@
                 </el-col>
               </el-row>
               <el-row style="height: 266px;overflow-y: auto">
-                <el-row v-for="(targetViewInfo,index) in outerParamsInfo.targetViewInfoList" :key="index">
+                <el-row
+                  v-for="(targetViewInfo,index) in outerParamsInfo.targetViewInfoList"
+                  :key="index"
+                >
                   <el-col :span="11">
                     <div class="select-filed">
                       <el-select
@@ -81,11 +102,23 @@
                           :label="item.name"
                           :value="item.id"
                         >
-                          <span v-if="item.isPlugin" style="float: left">
-                            <svg-icon :icon-class="item.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + item.type + '/svg') : item.type" style="width: 14px;height: 14px" />
+                          <span
+                            v-if="item.isPlugin"
+                            style="float: left"
+                          >
+                            <svg-icon
+                              :icon-class="item.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + item.type + '/svg') : item.type"
+                              style="width: 14px;height: 14px"
+                            />
                           </span>
-                          <span v-else style="float: left">
-                            <svg-icon :icon-class="item.type" style="width: 14px;height: 14px" />
+                          <span
+                            v-else
+                            style="float: left"
+                          >
+                            <svg-icon
+                              :icon-class="item.type"
+                              style="width: 14px;height: 14px"
+                            />
                           </span>
                           <span style="float: left; font-size: 12px"> {{ item.name }}</span>
                         </el-option>
@@ -107,8 +140,16 @@
                           :value="viewField.id"
                         >
                           <span style="float: left">
-                            <svg-icon v-if="viewField.deType === 0" icon-class="field_text" class="field-icon-text" />
-                            <svg-icon v-if="viewField.deType === 1" icon-class="field_time" class="field-icon-time" />
+                            <svg-icon
+                              v-if="viewField.deType === 0"
+                              icon-class="field_text"
+                              class="field-icon-text"
+                            />
+                            <svg-icon
+                              v-if="viewField.deType === 1"
+                              icon-class="field_time"
+                              class="field-icon-time"
+                            />
                             <svg-icon
                               v-if="viewField.deType === 2 || viewField.deType === 3"
                               icon-class="field_value"
@@ -140,15 +181,27 @@
               </el-row>
 
               <el-row class="bottom">
-                <el-button size="mini" type="success" icon="el-icon-plus" round @click="addOuterParamsField">{{
+                <el-button
+                  size="mini"
+                  type="success"
+                  icon="el-icon-plus"
+                  round
+                  @click="addOuterParamsField"
+                >{{
                   $t('panel.add_param_link_field') }}
                 </el-button>
               </el-row>
 
               <!--    <el-button slot="reference">T</el-button>-->
-              <i slot="reference" class="icon iconfont icon-edit slot-class" />
+              <i
+                slot="reference"
+                class="icon iconfont icon-edit slot-class"
+              />
             </el-row>
-            <el-row v-if="outerParamsInfo.linkType==='outer'" style="height: 300px">
+            <el-row
+              v-if="outerParamsInfo.linkType==='outer'"
+              style="height: 300px"
+            >
               <el-input
                 v-model="outerParamsInfo.content"
                 :autosize="{ minRows: 14}"
@@ -157,15 +210,26 @@
               />
             </el-row>
           </el-row>
-          <el-row v-else style="height: 100%; background-color: var(--MainContentBG);" class="custom-position">
+          <el-row
+            v-else
+            style="height: 100%; background-color: var(--MainContentBG);"
+            class="custom-position"
+          >
             {{ $t('panel.select_param') }}
           </el-row>
         </el-col>
       </el-row>
     </el-row>
     <el-row class="root-class">
-      <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
-      <el-button type="primary" size="mini" @click="save()">{{ $t('commons.confirm') }}</el-button>
+      <el-button
+        size="mini"
+        @click="cancel()"
+      >{{ $t('commons.cancel') }}</el-button>
+      <el-button
+        type="primary"
+        size="mini"
+        @click="save()"
+      >{{ $t('commons.confirm') }}</el-button>
     </el-row>
   </el-row>
 </template>

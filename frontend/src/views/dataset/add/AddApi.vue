@@ -1,13 +1,33 @@
 <template>
-  <div class="dataset-api" @mouseup="mouseupDrag" v-loading="loading">
-    <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
+  <div
+    v-loading="loading"
+    class="dataset-api"
+    @mouseup="mouseupDrag"
+  >
+    <p
+      v-show="!showLeft"
+      class="arrow-right"
+      @click="showLeft = true"
+    >
       <i class="el-icon-d-arrow-right" />
     </p>
-    <div v-show="showLeft" @mousedown="mousedownDrag" :style="{ left: LeftWidth + 'px' }" class="drag-left"></div>
-    <div v-show="showLeft" :style="{ width: LeftWidth + 'px' }" class="table-list">
+    <div
+      v-show="showLeft"
+      :style="{ left: LeftWidth + 'px' }"
+      class="drag-left"
+      @mousedown="mousedownDrag"
+    />
+    <div
+      v-show="showLeft"
+      :style="{ width: LeftWidth + 'px' }"
+      class="table-list"
+    >
       <p class="select-ds">
         {{ $t('deDataset.select_data_source') }}
-        <i class="el-icon-d-arrow-left" @click="showLeft = false" />
+        <i
+          class="el-icon-d-arrow-left"
+          @click="showLeft = false"
+        />
       </p>
       <el-select
         v-model="dataSource"
@@ -32,13 +52,26 @@
         prefix-icon="el-icon-search"
         clearable
       />
-      <div v-if="!tableData.length && searchTable !== ''" class="el-empty">
-        <div class="el-empty__description" style="margin-top: 80px;color: #5e6d82;">
+      <div
+        v-if="!tableData.length && searchTable !== ''"
+        class="el-empty"
+      >
+        <div
+          class="el-empty__description"
+          style="margin-top: 80px;color: #5e6d82;"
+        >
           没有找到相关内容
         </div>
       </div>
-      <div v-loading="dsLoading" class="table-checkbox-list" v-else>
-        <el-checkbox-group v-model="checkTableList" size="small">
+      <div
+        v-else
+        v-loading="dsLoading"
+        class="table-checkbox-list"
+      >
+        <el-checkbox-group
+          v-model="checkTableList"
+          size="small"
+        >
           <el-tooltip
             v-for="t in tableData"
             :key="t.name"
@@ -55,11 +88,24 @@
               :title="t.name"
               @click="setActiveName(t)"
             >
-              <svg-icon v-if="!t.enableCheck" icon-class="Checkbox" style="margin-right: 8px"/>
-              <el-checkbox :label="t.name" v-else />
+              <svg-icon
+                v-if="!t.enableCheck"
+                icon-class="Checkbox"
+                style="margin-right: 8px"
+              />
+              <el-checkbox
+                v-else
+                :label="t.name"
+              />
               <span class="label">{{ showTableNameWithComment(t) }}</span>
-              <span v-if="t.nameExsit" class="error-name-exsit">
-                <svg-icon icon-class="exclamationmark" class="ds-icon-scene" />
+              <span
+                v-if="t.nameExsit"
+                class="error-name-exsit"
+              >
+                <svg-icon
+                  icon-class="exclamationmark"
+                  class="ds-icon-scene"
+                />
               </span>
             </div>
           </el-tooltip>
@@ -86,8 +132,14 @@
           :placeholder="$t('dataset.connect_mode')"
           size="small"
         >
-          <el-option :label="$t('dataset.sync_now')" value="sync_now" />
-          <el-option :label="$t('dataset.sync_latter')" value="sync_latter" />
+          <el-option
+            :label="$t('dataset.sync_now')"
+            value="sync_now"
+          />
+          <el-option
+            :label="$t('dataset.sync_latter')"
+            value="sync_latter"
+          />
         </el-select>
       </div>
       <el-empty
@@ -115,7 +167,10 @@
             {{ $t('deDataset.already_exists') }}
           </div>
         </div>
-        <div v-loading="tableLoading" class="data">
+        <div
+          v-loading="tableLoading"
+          class="data"
+        >
           <span class="result-num">{{
             `${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')}`
           }}</span>
@@ -318,7 +373,7 @@ export default {
     },
     calHeight() {
       const that = this
-      setTimeout(function () {
+      setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 56 - 64 - 75 - 32 - 24 - 16 - 10
       }, 10)

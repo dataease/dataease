@@ -5,8 +5,7 @@
       size="mini"
       icon="el-icon-circle-plus-outline"
       @click="showUnionEdit"
-      >{{ $t('dataset.add_union') }}</el-button
-    >
+    >{{ $t('dataset.add_union') }}</el-button>
     <el-row>
       <el-table
         size="mini"
@@ -52,22 +51,23 @@
           prop="targetTableFieldName"
           :label="$t('dataset.target_field')"
         />
-        <el-table-column align="left" :label="$t('dataset.operate')">
+        <el-table-column
+          align="left"
+          :label="$t('dataset.operate')"
+        >
           <template slot-scope="scope">
             <el-button
               v-if="hasDataPermission('manage', param.privileges)"
               type="text"
               size="mini"
               @click="edit(scope.row)"
-              >{{ $t('dataset.edit') }}</el-button
-            >
+            >{{ $t('dataset.edit') }}</el-button>
             <el-button
               v-if="hasDataPermission('manage', param.privileges)"
               type="text"
               size="mini"
               @click="deleteUnion(scope.row)"
-              >{{ $t('dataset.delete') }}</el-button
-            >
+            >{{ $t('dataset.delete') }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -85,7 +85,10 @@
         style="display: flex; align-items: center; justify-content: center"
       >
         <el-col :span="6">
-          <p class="table-name-css" :title="table.name">{{ table.name }}</p>
+          <p
+            class="table-name-css"
+            :title="table.name"
+          >{{ table.name }}</p>
           <el-select
             v-model="union.sourceTableFieldId"
             :placeholder="$t('dataset.pls_slc_union_field')"
@@ -142,13 +145,22 @@
             size="mini"
             style="display: block; width: 100%; text-align: center"
           >
-            <el-radio class="union-relation-css" label="1:N">{{
+            <el-radio
+              class="union-relation-css"
+              label="1:N"
+            >{{
               $t('dataset.left_join')
             }}</el-radio>
-            <el-radio class="union-relation-css" label="N:1">{{
+            <el-radio
+              class="union-relation-css"
+              label="N:1"
+            >{{
               $t('dataset.right_join')
             }}</el-radio>
-            <el-radio class="union-relation-css" label="1:1">{{
+            <el-radio
+              class="union-relation-css"
+              label="1:1"
+            >{{
               $t('dataset.inner_join')
             }}</el-radio>
             <!--            <el-radio class="union-relation-css" label="N:N">{{ $t('dataset.full_join') }}</el-radio>-->
@@ -170,7 +182,11 @@
               :mode="table.mode"
               @getTable="getTable"
             />
-            <el-button slot="reference" size="mini" style="width: 100%">
+            <el-button
+              slot="reference"
+              size="mini"
+              style="width: 100%"
+            >
               <p
                 class="table-name-css"
                 :title="targetTable.name || $t('dataset.pls_slc_union_table')"
@@ -231,11 +247,21 @@
         </el-col>
       </el-row>
 
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeUnion">{{
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="closeUnion"
+        >{{
           $t('dataset.cancel')
         }}</el-button>
-        <el-button type="primary" size="mini" @click="saveUnion">{{
+        <el-button
+          type="primary"
+          size="mini"
+          @click="saveUnion"
+        >{{
           $t('dataset.confirm')
         }}</el-button>
       </div>
@@ -281,7 +307,7 @@ export default {
     }
   },
   watch: {
-    table: function () {
+    table: function() {
       this.initUnion()
     }
   },
@@ -292,7 +318,7 @@ export default {
   methods: {
     calHeight() {
       const that = this
-      setTimeout(function () {
+      setTimeout(function() {
         const currentHeight = document.documentElement.clientHeight
         that.height = currentHeight - 56 - 30 - 26 - 25 - 55 - 38 - 28 - 10
       }, 10)

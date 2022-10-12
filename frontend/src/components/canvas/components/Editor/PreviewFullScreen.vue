@@ -1,6 +1,10 @@
 <template>
   <div style="width: 100%;height: 100vh;">
-    <fullscreen style="height:100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen" @change="fullscreenChange">
+    <fullscreen
+      style="height:100%;background: #f7f8fa;overflow-y: auto"
+      :fullscreen.sync="fullscreen"
+      @change="fullscreenChange"
+    >
       <Preview
         v-if="fullscreen"
         :component-data="componentData"
@@ -20,6 +24,11 @@ import { mapState } from 'vuex'
 
 export default {
   components: { Preview },
+  data() {
+    return {
+      fullscreen: false
+    }
+  },
   computed: {
     panelInfo() {
       return this.$store.state.panel.panelInfo
@@ -28,11 +37,6 @@ export default {
       'canvasStyleData',
       'componentData'
     ])
-  },
-  data() {
-    return {
-      fullscreen: false
-    }
   },
   mounted() {
     this.fullscreen = false

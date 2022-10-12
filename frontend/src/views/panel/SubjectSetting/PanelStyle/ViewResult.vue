@@ -3,14 +3,22 @@
     <div style="width: 100%;">
       <el-row>
         <el-col :span="16">
-          <el-radio-group v-model="panel.resultMode" class="radio-span" size="mini" @change="onChangePanelStyle">
+          <el-radio-group
+            v-model="panel.resultMode"
+            class="radio-span"
+            size="mini"
+            @change="onChangePanelStyle"
+          >
             <el-radio label="all"><span>{{ $t('panel.view') }}</span></el-radio>
             <el-radio label="custom">
               <span>{{ $t('panel.panel') }} </span>
             </el-radio>
           </el-radio-group>
         </el-col>
-        <el-col :span="8" class="slider-area">
+        <el-col
+          :span="8"
+          class="slider-area"
+        >
           <el-slider
             v-model="panel.resultCount"
             :disabled="panel.resultMode==='all'"

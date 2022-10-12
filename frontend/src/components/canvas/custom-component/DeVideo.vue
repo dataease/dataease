@@ -1,6 +1,9 @@
 <template>
   <el-row ref="mainPlayer">
-    <div v-if="element.videoLinks[element.videoLinks.videoType].sources[0].src" class="player">
+    <div
+      v-if="element.videoLinks[element.videoLinks.videoType].sources[0].src"
+      class="player"
+    >
       <video-player
         v-if="showVideo"
         ref="videoPlayer"
@@ -19,7 +22,10 @@
         @statechanged="playerStateChanged($event)"
       />
     </div>
-    <div v-else class="info-class">
+    <div
+      v-else
+      class="info-class"
+    >
       {{ $t('panel.video_add_tips') }}
     </div>
   </el-row>

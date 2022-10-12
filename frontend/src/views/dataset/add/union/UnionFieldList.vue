@@ -1,11 +1,9 @@
 <template>
   <div class="field-block-style">
     <div class="field-block-option">
-      <span class="option-field"
-        >{{ $t('dataset.field_select') }}({{ checkedFields.length }}/{{
-          fieldList.length
-        }})</span
-      >
+      <span class="option-field">{{ $t('dataset.field_select') }}({{ checkedFields.length }}/{{
+        fieldList.length
+      }})</span>
       <el-input
         v-model="search"
         size="small"
@@ -21,8 +19,7 @@
         :indeterminate="isIndeterminate"
         class="check-style"
         @change="handleCheckAllChange"
-        >&nbsp;</el-checkbox
-      >
+      >&nbsp;</el-checkbox>
       <span class="label-style">
         <span class="field-origin-style">{{ $t('panel.column_name') }}</span>
         <span class="field-style">{{ $t('deDataset.original_name') }}</span>
@@ -38,11 +35,15 @@
           :key="field.id"
           class="field-item-style"
         >
-          <el-checkbox :label="field.id" class="check-style"
-            >&nbsp;</el-checkbox
-          >
+          <el-checkbox
+            :label="field.id"
+            class="check-style"
+          >&nbsp;</el-checkbox>
           <span class="label-style">
-            <span class="field-origin-style value" :title="field.originName">
+            <span
+              class="field-origin-style value"
+              :title="field.originName"
+            >
               <span>
                 <svg-icon
                   v-if="field.deType === 0"
@@ -69,7 +70,10 @@
                 {{ field.originName }}
               </span>
             </span>
-            <span class="field-style value" :title="field.name">{{
+            <span
+              class="field-style value"
+              :title="field.name"
+            >{{
               field.name
             }}</span>
           </span>
@@ -102,11 +106,11 @@ export default {
     }
   },
   watch: {
-    fieldList: function () {
+    fieldList: function() {
       this.fieldSearchList = JSON.parse(JSON.stringify(this.fieldList))
       this.init()
     },
-    search: function (val) {
+    search: function(val) {
       if (val && val !== '') {
         this.fieldSearchList = JSON.parse(
           JSON.stringify(this.fieldList)

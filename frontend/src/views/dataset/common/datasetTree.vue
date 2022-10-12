@@ -9,13 +9,16 @@
       clearable
       class="main-area-input"
     />
-    <div class="tree" v-loading="loading">
+    <div
+      v-loading="loading"
+      class="tree"
+    >
       <el-tree
         ref="datasetTreeRef"
         class="de-tree"
         :current-node-key="checkedTable ? checkedTable.id : ''"
         :default-expanded-keys="expandedArray"
-        :data="data"
+        :data="treeData"
         node-key="id"
         highlight-current
         :expand-on-click-node="true"
@@ -29,7 +32,7 @@
         >
           <span style="display: flex; flex: 1; width: 0">
             <span v-if="data.modelInnerType === 'group'">
-              <svg-icon icon-class="scene"/>
+              <svg-icon icon-class="scene" />
             </span>
             <span
               style="
@@ -39,12 +42,18 @@
                 text-overflow: ellipsis;
               "
               :title="data.name"
-              >{{ data.name }}</span
-            >
+            >{{ data.name }}</span>
           </span>
         </span>
-        <span v-else slot-scope="{ data }" class="custom-tree-node-list">
-          <span :id="data.id" style="display: flex; flex: 1; width: 0">
+        <span
+          v-else
+          slot-scope="{ data }"
+          class="custom-tree-node-list"
+        >
+          <span
+            :id="data.id"
+            style="display: flex; flex: 1; width: 0"
+          >
             <span>
               <svg-icon
                 :icon-class="`ds-${data.modelInnerType}`"
@@ -59,8 +68,7 @@
                 text-overflow: ellipsis;
               "
               :title="data.name"
-              >{{ data.name }}</span
-            >
+            >{{ data.name }}</span>
           </span>
         </span>
       </el-tree>
@@ -142,7 +150,7 @@ export default {
       },
       sceneMode: false,
       search: '',
-      data: [],
+      treeData: [],
       tableData: [],
       tables: [],
       currGroup: null,
@@ -170,18 +178,18 @@ export default {
       isTreeSearch: false,
       treeStyle: this.fixHeight
         ? {
-            height: '300px',
-            overflow: 'auto'
-          }
+          height: '300px',
+          overflow: 'auto'
+        }
         : {}
     }
   },
   computed: {},
   watch: {
-    unionData: function () {
+    unionData: function() {
       this.unionDataChange()
     },
-    table: function () {
+    table: function() {
       this.treeNode()
     },
     filterText(val) {
@@ -225,10 +233,10 @@ export default {
       const modelInfo = localStorage.getItem('dataset-tree')
       const userCache = modelInfo && cache
       if (userCache) {
-        this.data = JSON.parse(modelInfo)
+        this.treeData = JSON.parse(modelInfo)
       }
       this.customType ? this.customType.push('group') : null
-      this.loading = true;
+      this.loading = true
       queryAuthModel(
         {
           modelType: 'dataset',
@@ -244,7 +252,7 @@ export default {
           localStorage.setItem('dataset-tree', JSON.stringify(res.data))
         }
         if (!userCache) {
-          this.data = res.data
+          this.treeData = res.data
         }
       }).finally(() => {
         this.loading = false
@@ -283,7 +291,7 @@ export default {
           false
         ).then((response) => {
           if (response.data) {
-            this.$nextTick(function () {
+            this.$nextTick(function() {
               this.$emit('getTable', data)
             })
           } else {

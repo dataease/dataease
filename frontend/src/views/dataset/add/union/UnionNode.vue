@@ -1,5 +1,8 @@
 <template>
-  <div class="children-node node-container" :style="{ height: nodeHeight }">
+  <div
+    class="children-node node-container"
+    :style="{ height: nodeHeight }"
+  >
     <div class="node-line">
       <svg-icon
         v-if="childrenNode.unionToParent.unionType === 'left'"
@@ -27,7 +30,11 @@
       />
 
       <svg class="join-svg-container">
-        <path fill="none" stroke="#dcdfe6" :d="pathParam + lineLength" />
+        <path
+          fill="none"
+          stroke="#dcdfe6"
+          :d="pathParam + lineLength"
+        />
       </svg>
     </div>
 
@@ -58,6 +65,7 @@
     <!--编辑关联关系-->
     <el-drawer
       v-if="editUnion"
+      v-closePress
       :title="
         unionParam.type === 'add'
           ? $t('dataset.add_union_relation')
@@ -66,15 +74,20 @@
       :visible.sync="editUnion"
       custom-class="user-drawer union-dataset-drawer"
       size="840px"
-      v-closePress
       direction="rtl"
     >
       <union-edit :union-param="unionParam" />
       <div class="de-foot">
-        <deBtn secondary @click="closeEditUnion()">{{
+        <deBtn
+          secondary
+          @click="closeEditUnion()"
+        >{{
           $t('dataset.cancel')
         }}</deBtn>
-        <deBtn type="primary" @click="confirmEditUnion()">{{
+        <deBtn
+          type="primary"
+          @click="confirmEditUnion()"
+        >{{
           $t('dataset.confirm')
         }}</deBtn>
       </div>
@@ -128,15 +141,15 @@ export default {
     }
   },
   watch: {
-    'childrenNode.allChildCount': function () {
+    'childrenNode.allChildCount': function() {
       this.calcNodeHeight()
       this.nodeLineHeight()
     },
-    nodeIndex: function () {
+    nodeIndex: function() {
       this.calcNodeHeight()
       this.nodeLineHeight()
     },
-    childrenList: function () {
+    childrenList: function() {
       this.calcNodeHeight()
       this.nodeLineHeight()
     }

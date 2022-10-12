@@ -1,17 +1,44 @@
 <template lang="html">
   <div :val="value_">
     <div>
-      <el-radio v-model="type" label="1" size="mini" border>{{ $t('cron.every_year') }}</el-radio>
+      <el-radio
+        v-model="type"
+        label="1"
+        size="mini"
+        border
+      >{{ $t('cron.every_year') }}</el-radio>
     </div>
     <div>
-      <el-radio v-model="type" label="5" size="mini" border>{{ $t('cron.not_set') }}</el-radio>
+      <el-radio
+        v-model="type"
+        label="5"
+        size="mini"
+        border
+      >{{ $t('cron.not_set') }}</el-radio>
     </div>
     <div>
-      <el-radio v-model="type" label="2" size="mini" border>{{ $t('cron.cycle') }}</el-radio>
+      <el-radio
+        v-model="type"
+        label="2"
+        size="mini"
+        border
+      >{{ $t('cron.cycle') }}</el-radio>
       <span style="margin-left: 10px; margin-right: 5px;">{{ $t('cron.from') }}</span>
-      <el-input-number v-model="cycle.start" :min="2000" size="mini" style="width: 100px;" @change="type = '2'" />
+      <el-input-number
+        v-model="cycle.start"
+        :min="2000"
+        size="mini"
+        style="width: 100px;"
+        @change="type = '2'"
+      />
       <span style="margin-left: 5px; margin-right: 5px;">{{ $t('cron.to') }}</span>
-      <el-input-number v-model="cycle.end" :min="2000" size="mini" style="width: 100px;" @change="type = '2'" />
+      <el-input-number
+        v-model="cycle.end"
+        :min="2000"
+        size="mini"
+        style="width: 100px;"
+        @change="type = '2'"
+      />
       {{ $t('cron.year') }}
     </div>
   </div>

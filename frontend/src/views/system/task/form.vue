@@ -1,5 +1,8 @@
 <template>
-  <de-layout-content :header="header" back-path="/system/system-task/dataset">
+  <de-layout-content
+    :header="header"
+    back-path="/system/system-task/dataset"
+  >
     <div class="dataset-editer-form">
       <div class="w600">
         <el-form
@@ -24,14 +27,20 @@
               :placeholder="$t('dataset.task_name')"
             />
           </el-form-item>
-          <el-form-item :label="$t('dataset.task_name')" prop="name">
+          <el-form-item
+            :label="$t('dataset.task_name')"
+            prop="name"
+          >
             <el-input
               v-model="taskForm.name"
               size="small"
               :placeholder="$t('dataset.task_name')"
             />
           </el-form-item>
-          <el-form-item :label="$t('dataset.update_type')" prop="type">
+          <el-form-item
+            :label="$t('dataset.update_type')"
+            prop="type"
+          >
             <el-radio-group v-model="taskForm.type">
               <el-radio label="all_scope">{{
                 $t("dataset.all_scope")
@@ -40,7 +49,10 @@
                 {{ $t("dataset.add_scope") }}</el-radio>
             </el-radio-group>
           </el-form-item>
-          <div v-if="taskForm.type === 'add_scope'" class="add-scope-cont">
+          <div
+            v-if="taskForm.type === 'add_scope'"
+            class="add-scope-cont"
+          >
             <el-form-item
               prop="type"
               :label="$t('dataset.incremental_update_type')"
@@ -88,8 +100,14 @@
             </el-form-item>
           </div>
 
-          <el-form-item :label="$t('dataset.execute_rate')" prop="rate">
-            <el-radio-group v-model="taskForm.rate" @change="onRateChange">
+          <el-form-item
+            :label="$t('dataset.execute_rate')"
+            prop="rate"
+          >
+            <el-radio-group
+              v-model="taskForm.rate"
+              @change="onRateChange"
+            >
               <el-radio label="SIMPLE">{{
                 $t("dataset.execute_once")
               }}</el-radio>
@@ -99,7 +117,10 @@
               }}</el-radio>
             </el-radio-group>
           </el-form-item>
-          <div v-if="taskForm.rate !== 'SIMPLE'" class="execute-rate-cont">
+          <div
+            v-if="taskForm.rate !== 'SIMPLE'"
+            class="execute-rate-cont"
+          >
             <el-form-item
               v-if="taskForm.rate === 'SIMPLE_CRON'"
               :label="$t('dataset.execute_rate')"
@@ -120,9 +141,18 @@
                   size="small"
                   @change="onSimpleCronChange()"
                 >
-                  <el-option :label="$t('components.minute')" value="minute" />
-                  <el-option :label="$t('components.hour')" value="hour" />
-                  <el-option :label="$t('components.day')" value="day" />
+                  <el-option
+                    :label="$t('components.minute')"
+                    value="minute"
+                  />
+                  <el-option
+                    :label="$t('components.hour')"
+                    value="hour"
+                  />
+                  <el-option
+                    :label="$t('components.day')"
+                    value="day"
+                  />
                 </el-select>
                 {{ $t("cron.every_exec") }}
               </div>
@@ -159,7 +189,10 @@
                 :placeholder="$t('dataset.start_time')"
                 size="small"
               />
-              <svg-icon icon-class="icon_calendar_outlined" class="icon-calendar-outlined" />
+              <svg-icon
+                icon-class="icon_calendar_outlined"
+                class="icon-calendar-outlined"
+              />
             </el-form-item>
             <el-form-item
               v-if="taskForm.rate !== 'SIMPLE'"
@@ -178,7 +211,11 @@
                 :placeholder="$t('dataset.end_time')"
                 size="small"
               />
-              <svg-icon v-if="taskForm.end === '1'" icon-class="icon_calendar_outlined" class="icon-calendar-outlined" />
+              <svg-icon
+                v-if="taskForm.end === '1'"
+                icon-class="icon_calendar_outlined"
+                class="icon-calendar-outlined"
+              />
             </el-form-item>
           </div>
         </el-form>
@@ -193,10 +230,19 @@
           @getTableId="getTableId"
         />
       </div>
-      <div v-if="!disableForm" class="de-foot-layout">
+      <div
+        v-if="!disableForm"
+        class="de-foot-layout"
+      >
         <div class="cont">
-          <deBtn secondary @click="closeTask">{{ $t("dataset.cancel") }}</deBtn>
-          <deBtn type="primary" @click="saveTask(taskForm)">{{
+          <deBtn
+            secondary
+            @click="closeTask"
+          >{{ $t("dataset.cancel") }}</deBtn>
+          <deBtn
+            type="primary"
+            @click="saveTask(taskForm)"
+          >{{
             $t("dataset.confirm")
           }}</deBtn>
         </div>

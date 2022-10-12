@@ -22,7 +22,10 @@
         </el-col>
         <el-col :span="8">
           <el-dropdown>
-            <el-button size="mini" type="primary">
+            <el-button
+              size="mini"
+              type="primary"
+            >
               {{ searchMap[searchType]
               }}<i class="el-icon-arrow-down el-icon--right" />
             </el-button>
@@ -30,8 +33,7 @@
               <el-dropdown-item @click.native="searchTypeClick('all')">{{
                 $t('commons.all')
               }}</el-dropdown-item>
-              <el-dropdown-item @click.native="searchTypeClick('folder')"
-                >{{ this.$t('commons.folder') }}
+              <el-dropdown-item @click.native="searchTypeClick('folder')">{{ $t('commons.folder') }}
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -39,12 +41,15 @@
       </el-row>
 
       <el-col class="custom-tree-container">
-        <div class="block" :style="treeStyle">
+        <div
+          class="block"
+          :style="treeStyle"
+        >
           <el-tree
             ref="datasetTreeRef"
             :current-node-key="checkedTable ? checkedTable.id : ''"
             :default-expanded-keys="expandedArray"
-            :data="data"
+            :data="treeData"
             node-key="id"
             highlight-current
             :expand-on-click-node="true"
@@ -53,12 +58,12 @@
           >
             <span
               v-if="data.modelInnerType === 'group'"
-              slot-scope="{ node, data }"
+              slot-scope="{ data }"
               class="custom-tree-node"
             >
               <span style="display: flex; flex: 1; width: 0">
                 <span v-if="data.modelInnerType === 'scene'">
-                  <svg-icon icon-class="scene"/>
+                  <svg-icon icon-class="scene" />
                 </span>
                 <span
                   style="
@@ -68,16 +73,18 @@
                     text-overflow: ellipsis;
                   "
                   :title="data.name"
-                  >{{ data.name }}</span
-                >
+                >{{ data.name }}</span>
               </span>
             </span>
             <span
               v-else
-              slot-scope="{ node, data }"
+              slot-scope="{ data }"
               class="custom-tree-node-list"
             >
-              <span :id="data.id" style="display: flex; flex: 1; width: 0">
+              <span
+                :id="data.id"
+                style="display: flex; flex: 1; width: 0"
+              >
                 <span>
                   <svg-icon
                     v-if="data.modelInnerType === 'db'"
@@ -113,15 +120,17 @@
                 <span
                   v-if="
                     data.modelInnerType === 'db' ||
-                    data.modelInnerType === 'sql'
+                      data.modelInnerType === 'sql'
                   "
                 >
-                  <span v-if="data.mode === 0" style="margin-left: 6px"
-                    ><i class="el-icon-s-operation"
-                  /></span>
-                  <span v-if="data.mode === 1" style="margin-left: 6px"
-                    ><i class="el-icon-alarm-clock"
-                  /></span>
+                  <span
+                    v-if="data.mode === 0"
+                    style="margin-left: 6px"
+                  ><i class="el-icon-s-operation" /></span>
+                  <span
+                    v-if="data.mode === 1"
+                    style="margin-left: 6px"
+                  ><i class="el-icon-alarm-clock" /></span>
                 </span>
                 <span
                   style="
@@ -131,8 +140,7 @@
                     text-overflow: ellipsis;
                   "
                   :title="data.name"
-                  >{{ data.name }}</span
-                >
+                >{{ data.name }}</span>
               </span>
             </span>
           </el-tree>
@@ -215,7 +223,7 @@ export default {
       },
       sceneMode: false,
       search: '',
-      data: [],
+      treeData: [],
       tableData: [],
       tables: [],
       currGroup: null,
@@ -243,18 +251,17 @@ export default {
       isTreeSearch: false,
       treeStyle: this.fixHeight
         ? {
-            height: '300px',
-            overflow: 'auto'
-          }
+          height: '300px',
+          overflow: 'auto'
+        }
         : {}
     }
   },
-  computed: {},
   watch: {
-    unionData: function () {
+    unionData: function() {
       this.unionDataChange()
     },
-    table: function () {
+    table: function() {
       this.treeNode()
     },
     filterText(val) {
@@ -298,7 +305,7 @@ export default {
       const modelInfo = localStorage.getItem('dataset-tree')
       const userCache = modelInfo && cache
       if (userCache) {
-        this.data = JSON.parse(modelInfo)
+        this.treeData = JSON.parse(modelInfo)
       }
       this.customType ? this.customType.push('group') : null
       queryAuthModel(
@@ -316,7 +323,7 @@ export default {
           localStorage.setItem('dataset-tree', JSON.stringify(res.data))
         }
         if (!userCache) {
-          this.data = res.data
+          this.treeData = res.data
         }
       })
     },
@@ -353,7 +360,7 @@ export default {
           false
         ).then((response) => {
           if (response.data) {
-            this.$nextTick(function () {
+            this.$nextTick(function() {
               this.$emit('getTable', data)
             })
           } else {

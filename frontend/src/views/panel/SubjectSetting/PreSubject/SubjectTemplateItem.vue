@@ -12,9 +12,15 @@
       @click.stop="subjectChange"
     >
       <!-- 背景-->
-      <div class="allBack common-background" :style="customBackground" />
+      <div
+        class="allBack common-background"
+        :style="customBackground"
+      />
       <!-- 视图组件 背景-->
-      <div style="inset: 17px 10px 10px; position: absolute;" :style="chartBackground" />
+      <div
+        style="inset: 17px 10px 10px; position: absolute;"
+        :style="chartBackground"
+      />
       <!-- 视图组件 主题-->
       <div style="inset: 20px 13px 15px; position: absolute;">
         <div style="position: absolute; inset: 0px 4px; width: auto; height: auto;">
@@ -77,7 +83,10 @@
       </div>
 
       <!-- 表格表头颜色 -->
-      <div style="left: 10px; right: 10px; top: 10px; height: 6px; position: absolute;" :style="tableHeadBackground" />
+      <div
+        style="left: 10px; right: 10px; top: 10px; height: 6px; position: absolute;"
+        :style="tableHeadBackground"
+      />
 
       <!-- 字体颜色 -->
       <div style="left: 14px; top: 10px; height: 6px; position: absolute; vertical-align: middle">
@@ -108,7 +117,10 @@
       </div>
 
     </div>
-    <div class="title-main" @dblclick="setEdit">
+    <div
+      class="title-main"
+      @dblclick="setEdit"
+    >
       <div class="title-area">
         <el-input
           v-if="canEdit"
@@ -124,7 +136,11 @@
         >{{ subjectItem.name }}</span>
       </div>
     </div>
-    <i v-if="subjectItem.type==='self' && !canEdit" class="el-icon-delete delete-icon" @click.stop="subjectDelete" />
+    <i
+      v-if="subjectItem.type==='self' && !canEdit"
+      class="el-icon-delete delete-icon"
+      @click.stop="subjectDelete"
+    />
   </div>
 </template>
 
@@ -133,7 +149,7 @@ import { chartTransStr2Object } from '@/views/panel/panel'
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import { saveOrUpdateSubject } from '@/api/panel/panel'
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'StyleTemplateItem',

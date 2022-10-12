@@ -1,6 +1,9 @@
 <template>
   <el-col style="height: 100%;">
-    <el-row style="height: 100%;" class="custom-position">
+    <el-row
+      style="height: 100%;"
+      class="custom-position"
+    >
       {{ $t('dataset.pls_slc_tbl_left') }}
     </el-row>
   </el-col>

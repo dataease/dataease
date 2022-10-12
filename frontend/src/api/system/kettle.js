@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import { validateDs } from '@/api/system/datasource'
 
 export function validate(data) {
   return request({

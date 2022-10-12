@@ -1,5 +1,11 @@
 <template>
-  <de-complex-operator v-model="operator" :label="label" :operators="operators" :size="configSize" disabled>
+  <de-complex-operator
+    v-model="operator"
+    :label="label"
+    :operators="operators"
+    :size="configSize"
+    disabled
+  >
     <el-select
       v-model="value"
       class="fu-complex-select"
@@ -8,7 +14,12 @@
       clearable
       v-bind="$attrs"
     >
-      <el-option v-for="o in options" :key="o.value" :label="o.label" :value="o.value" />
+      <el-option
+        v-for="o in options"
+        :key="o.value"
+        :label="o.label"
+        :value="o.value"
+      />
     </el-select>
   </de-complex-operator>
 </template>

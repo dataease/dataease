@@ -13,7 +13,11 @@
     @dblclick="setEdit"
   >
 
-    <el-button slot="append" icon="el-icon-search" @click="search" />
+    <el-button
+      slot="append"
+      icon="el-icon-search"
+      @click="search"
+    />
   </el-input>
 
 </template>

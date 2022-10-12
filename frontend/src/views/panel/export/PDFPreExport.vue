@@ -7,13 +7,28 @@
     element-loading-background="rgba(220,220,220, 1)"
   >
     <el-row class="export_body_class">
-      <div id="exportPdf" ref="exportPdf" :style="mainCanvasStyle">
-        <div class="export_body_inner_class" :style="templateHtmlStyle" v-html="templateContentChange" />
+      <div
+        id="exportPdf"
+        ref="exportPdf"
+        :style="mainCanvasStyle"
+      >
+        <div
+          class="export_body_inner_class"
+          :style="templateHtmlStyle"
+          v-html="templateContentChange"
+        />
       </div>
     </el-row>
     <el-row class="root_class">
-      <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
-      <el-button type="primary" size="mini" @click="save()">{{ $t('panel.export_pdf') }}</el-button>
+      <el-button
+        size="mini"
+        @click="cancel()"
+      >{{ $t('commons.cancel') }}</el-button>
+      <el-button
+        type="primary"
+        size="mini"
+        @click="save()"
+      >{{ $t('panel.export_pdf') }}</el-button>
     </el-row>
   </el-row>
 </template>

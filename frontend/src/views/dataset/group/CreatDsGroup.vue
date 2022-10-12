@@ -1,10 +1,10 @@
 <template>
   <el-dialog
+    v-loading="loading"
     :title="dialogTitle"
     class="de-dialog-form"
     :visible.sync="createDataset"
     width="600px"
-    v-loading="loading"
     :before-close="resetForm"
   >
     <el-form
@@ -13,10 +13,17 @@
       :model="datasetForm"
       :rules="datasetFormRules"
     >
-      <el-form-item v-if="datasetFormRules.name" :label="$t('dataset.name')" prop="name">
+      <el-form-item
+        v-if="datasetFormRules.name"
+        :label="$t('dataset.name')"
+        prop="name"
+      >
         <el-input v-model="datasetForm.name" />
       </el-form-item>
-      <el-form-item :label="$t('deDataset.folder')" prop="id">
+      <el-form-item
+        :label="$t('deDataset.folder')"
+        prop="id"
+      >
         <el-popover
           placement="bottom"
           popper-class="user-popper dataset-filed"
@@ -24,8 +31,8 @@
           trigger="click"
         >
           <el-tree
-            :data="tData"
             ref="tree"
+            :data="tData"
             node-key="id"
             class="de-tree"
             :expand-on-click-node="false"
@@ -33,9 +40,12 @@
             :filter-node-method="filterNode"
             @node-click="nodeClick"
           >
-            <span slot-scope="{ data }" class="custom-tree-node-dataset">
+            <span
+              slot-scope="{ data }"
+              class="custom-tree-node-dataset"
+            >
               <span v-if="data.type === 'group'">
-                <svg-icon icon-class="scene"/>
+                <svg-icon icon-class="scene" />
               </span>
               <span
                 style="
@@ -45,13 +55,12 @@
                   text-overflow: ellipsis;
                 "
                 :title="data.name"
-                >{{ data.name }}</span
-              >
+              >{{ data.name }}</span>
             </span>
           </el-tree>
           <el-select
-            v-model="datasetForm.id"
             slot="reference"
+            v-model="datasetForm.id"
             filterable
             popper-class="tree-select-dataset"
             style="width: 100%"
@@ -68,10 +77,18 @@
         </el-popover>
       </el-form-item>
     </el-form>
-    <div slot="footer" class="dialog-footer">
-      <deBtn secondary @click="resetForm">{{ $t('dataset.cancel') }}</deBtn>
-      <deBtn type="primary" @click="saveDataset"
-        >{{ $t('dataset.confirm') }}
+    <div
+      slot="footer"
+      class="dialog-footer"
+    >
+      <deBtn
+        secondary
+        @click="resetForm"
+      >{{ $t('dataset.cancel') }}</deBtn>
+      <deBtn
+        type="primary"
+        @click="saveDataset"
+      >{{ $t('dataset.confirm') }}
       </deBtn>
     </div>
   </el-dialog>

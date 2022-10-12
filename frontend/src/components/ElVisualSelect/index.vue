@@ -12,8 +12,22 @@
     @change="visualChange"
     @visible-change="popChange"
   >
-    <p v-if="startIndex === 0 && $attrs.multiple" class="select-all"><el-checkbox v-model="selectAll" v-customStyle="customStyle" :indeterminate="isIndeterminate" @change="selectAllChane">{{ $t('dataset.check_all') }}</el-checkbox></p>
-    <el-option v-for="item in options" :key="item.id" :label="item.text" :value="item.id" :class="setSelect(item.id)" />
+    <p
+      v-if="startIndex === 0 && $attrs.multiple"
+      class="select-all"
+    ><el-checkbox
+      v-model="selectAll"
+      v-customStyle="customStyle"
+      :indeterminate="isIndeterminate"
+      @change="selectAllChane"
+    >{{ $t('dataset.check_all') }}</el-checkbox></p>
+    <el-option
+      v-for="item in options"
+      :key="item.id"
+      :label="item.text"
+      :value="item.id"
+      :class="setSelect(item.id)"
+    />
   </el-select>
 </template>
 

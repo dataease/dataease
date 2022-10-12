@@ -38,7 +38,7 @@ export default {
     unionHeight: {
       type: Number,
       default: 298
-    },
+    }
   },
   data() {
     return {
@@ -48,11 +48,11 @@ export default {
     }
   },
   watch: {
-    table: function () {
+    table: function() {
       this.initPreview()
     },
     unionHeight: {
-      handler: function () {
+      handler: function() {
         this.calHeight()
       }
     }

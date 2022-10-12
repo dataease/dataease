@@ -14,7 +14,10 @@
         </el-col>
         <el-col :span="8">
           <el-dropdown>
-            <el-button size="mini" type="primary">
+            <el-button
+              size="mini"
+              type="primary"
+            >
               {{ searchMap[searchType] }}<i class="el-icon-arrow-down el-icon--right" />
             </el-button>
             <el-dropdown-menu slot="dropdown">
@@ -36,16 +39,39 @@
             :filter-node-method="filterNode"
             @node-click="nodeClick"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node father">
+            <span
+              slot-scope="{ node, data }"
+              class="custom-tree-node father"
+            >
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span>
-                  <svg-icon v-if="!data.mobileLayout" :icon-class="'panel-'+data.status" class="ds-icon-scene" />
-                  <svg-icon v-if="data.mobileLayout" :icon-class="'panel-mobile-'+data.status" class="ds-icon-scene" />
+                  <svg-icon
+                    v-if="!data.mobileLayout"
+                    :icon-class="'panel-'+data.status"
+                    class="ds-icon-scene"
+                  />
+                  <svg-icon
+                    v-if="data.mobileLayout"
+                    :icon-class="'panel-mobile-'+data.status"
+                    class="ds-icon-scene"
+                  />
                 </span>
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span
+                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  :title="data.name"
+                >{{ data.name }}</span>
               </span>
-              <span style="margin-left: 12px;" class="child" @click.stop>
-                <el-dropdown v-if="hasDataPermission('manage',data.privileges)" trigger="click" size="small" @command="clickMore">
+              <span
+                style="margin-left: 12px;"
+                class="child"
+                @click.stop
+              >
+                <el-dropdown
+                  v-if="hasDataPermission('manage',data.privileges)"
+                  trigger="click"
+                  size="small"
+                  @command="clickMore"
+                >
                   <span class="el-dropdown-link">
                     <el-button
                       icon="el-icon-more"
@@ -54,10 +80,16 @@
                     />
                   </span>
                   <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
+                    <el-dropdown-item
+                      icon="el-icon-edit-outline"
+                      :command="beforeClickMore('rename',data,node)"
+                    >
                       {{ $t('panel.rename') }}
                     </el-dropdown-item>
-                    <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
+                    <el-dropdown-item
+                      icon="el-icon-delete"
+                      :command="beforeClickMore('delete',data,node)"
+                    >
                       {{ $t('panel.delete') }}
                     </el-dropdown-item>
                   </el-dropdown-menu>
@@ -71,7 +103,12 @@
       <el-row>
         <span class="header-title">
           {{ $t('panel.panel_list') }}
-          <el-button style="float: right;padding-right: 7px;margin-top: -8px" icon="el-icon-plus" type="text" @click="showEditPanel(newFolder)" />
+          <el-button
+            style="float: right;padding-right: 7px;margin-top: -8px"
+            icon="el-icon-plus"
+            type="text"
+            @click="showEditPanel(newFolder)"
+          />
         </span>
       </el-row>
       <el-col class="custom-tree-container">
@@ -88,20 +125,45 @@
             @node-collapse="nodeCollapse"
             @node-click="nodeClick"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node-list father">
+            <span
+              slot-scope="{ node, data }"
+              class="custom-tree-node-list father"
+            >
               <span style="display: flex; flex: 1 1 0%; width: 0px;">
                 <span v-if="data.nodeType === 'panel'">
-                  <svg-icon v-if="!data.mobileLayout" :icon-class="'panel-'+data.status" class="ds-icon-scene" />
-                  <svg-icon v-if="data.mobileLayout" :icon-class="'panel-mobile-'+data.status" class="ds-icon-scene" />
+                  <svg-icon
+                    v-if="!data.mobileLayout"
+                    :icon-class="'panel-'+data.status"
+                    class="ds-icon-scene"
+                  />
+                  <svg-icon
+                    v-if="data.mobileLayout"
+                    :icon-class="'panel-mobile-'+data.status"
+                    class="ds-icon-scene"
+                  />
                 </span>
                 <span v-if="data.nodeType === 'folder'">
                   <i class="el-icon-folder" />
                 </span>
-                <span :class="data.status" style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+                <span
+                  :class="data.status"
+                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  :title="data.name"
+                >{{ data.name }}</span>
               </span>
-              <span v-if="hasDataPermission('manage',data.privileges)" class="child">
-                <span v-if="data.nodeType ==='folder'" @click.stop>
-                  <el-dropdown trigger="click" size="small" @command="showEditPanel">
+              <span
+                v-if="hasDataPermission('manage',data.privileges)"
+                class="child"
+              >
+                <span
+                  v-if="data.nodeType ==='folder'"
+                  @click.stop
+                >
+                  <el-dropdown
+                    trigger="click"
+                    size="small"
+                    @command="showEditPanel"
+                  >
                     <span class="el-dropdown-link">
                       <el-button
                         icon="el-icon-plus"
@@ -115,13 +177,19 @@
                         <span>{{ $t('panel.groupAdd') }}</span>
                       </el-dropdown-item>
                       <el-dropdown-item :command="beforeClickEdit('panel','new',data,node)">
-                        <svg-icon icon-class="panel" class="ds-icon-scene" />
+                        <svg-icon
+                          icon-class="panel"
+                          class="ds-icon-scene"
+                        />
                         <span>{{ $t('panel.panelAdd') }}</span>
                       </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
                 </span>
-                <span v-if="data.nodeType==='panel'" @click.stop>
+                <span
+                  v-if="data.nodeType==='panel'"
+                  @click.stop
+                >
                   <el-button
                     icon="el-icon-edit"
                     type="text"
@@ -129,8 +197,15 @@
                     @click="edit(data, node)"
                   />
                 </span>
-                <span style="margin-left: 12px;" @click.stop>
-                  <el-dropdown trigger="click" size="small" @command="clickMore">
+                <span
+                  style="margin-left: 12px;"
+                  @click.stop
+                >
+                  <el-dropdown
+                    trigger="click"
+                    size="small"
+                    @command="clickMore"
+                  >
                     <span class="el-dropdown-link">
                       <el-button
                         icon="el-icon-more"
@@ -139,28 +214,58 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-edit" :command="beforeClickMore('edit',data,node)">
+                      <el-dropdown-item
+                        v-if="data.nodeType==='panel'"
+                        icon="el-icon-edit"
+                        :command="beforeClickMore('edit',data,node)"
+                      >
                         {{ $t('panel.edit') }}
                       </el-dropdown-item>
-                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-share" :command="beforeClickMore('share',data,node)">
+                      <el-dropdown-item
+                        v-if="data.nodeType==='panel'"
+                        icon="el-icon-share"
+                        :command="beforeClickMore('share',data,node)"
+                      >
                         {{ $t('panel.share') }}
                       </el-dropdown-item>
-                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-document-copy" :command="beforeClickMore('copy',data,node)">
+                      <el-dropdown-item
+                        v-if="data.nodeType==='panel'"
+                        icon="el-icon-document-copy"
+                        :command="beforeClickMore('copy',data,node)"
+                      >
                         {{ $t('panel.copy') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-right" :command="beforeClickMore('move',data,node)">
+                      <el-dropdown-item
+                        icon="el-icon-right"
+                        :command="beforeClickMore('move',data,node)"
+                      >
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
-                      <el-dropdown-item v-if="data.nodeType==='panel'" icon="el-icon-paperclip" :command="beforeClickMore('link',data,node)">
+                      <el-dropdown-item
+                        v-if="data.nodeType==='panel'"
+                        icon="el-icon-paperclip"
+                        :command="beforeClickMore('link',data,node)"
+                      >
                         {{ $t('panel.create_public_links') }}
                       </el-dropdown-item>
-                      <el-dropdown-item v-if="data.nodeType==='panel'" :disabled="data.isDefault" icon="el-icon-copy-document" :command="beforeClickMore('toDefaultPanel',data,node)">
+                      <el-dropdown-item
+                        v-if="data.nodeType==='panel'"
+                        :disabled="data.isDefault"
+                        icon="el-icon-copy-document"
+                        :command="beforeClickMore('toDefaultPanel',data,node)"
+                      >
                         {{ $t('panel.to_default_panel') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-edit-outline" :command="beforeClickMore('rename',data,node)">
+                      <el-dropdown-item
+                        icon="el-icon-edit-outline"
+                        :command="beforeClickMore('rename',data,node)"
+                      >
                         {{ $t('panel.rename') }}
                       </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-delete" :command="beforeClickMore('delete',data,node)">
+                      <el-dropdown-item
+                        icon="el-icon-delete"
+                        :command="beforeClickMore('delete',data,node)"
+                      >
                         {{ $t('panel.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -172,15 +277,39 @@
         </div>
       </el-col>
 
-      <el-dialog v-dialogDrag :title="dialogTitle" :visible="editGroup" :show-close="false" width="500px">
-        <el-form ref="groupForm" :model="groupForm" :rules="groupFormRules" @keypress.enter.native="saveGroup(groupForm)">
-          <el-form-item :label="$t('commons.name')" prop="name">
+      <el-dialog
+        v-dialogDrag
+        :title="dialogTitle"
+        :visible="editGroup"
+        :show-close="false"
+        width="500px"
+      >
+        <el-form
+          ref="groupForm"
+          :model="groupForm"
+          :rules="groupFormRules"
+          @keypress.enter.native="saveGroup(groupForm)"
+        >
+          <el-form-item
+            :label="$t('commons.name')"
+            prop="name"
+          >
             <el-input v-model="groupForm.name" />
           </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="close()">{{ $t('panel.cancel') }}</el-button>
-          <el-button type="primary" size="mini" @click="saveGroup(groupForm)">{{ $t('panel.confirm') }}
+        <div
+          slot="footer"
+          class="dialog-footer"
+        >
+          <el-button
+            size="mini"
+            @click="close()"
+          >{{ $t('panel.cancel') }}</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            @click="saveGroup(groupForm)"
+          >{{ $t('panel.confirm') }}
           </el-button>
         </div>
       </el-dialog>
@@ -192,7 +321,11 @@
         width="800px"
         class="dialog-css"
       >
-        <grant-auth v-if="authVisible" :resource-id="authResourceId" @close-grant="closeGrant" />
+        <grant-auth
+          v-if="authVisible"
+          :resource-id="authResourceId"
+          @close-grant="closeGrant"
+        />
       </el-dialog>
 
       <el-dialog
@@ -202,19 +335,56 @@
         width="500px"
         @closed="removeLink"
       >
-        <link-generate v-if="linkVisible" :resource-id="linkResourceId" />
+        <link-generate
+          v-if="linkVisible"
+          :resource-id="linkResourceId"
+        />
       </el-dialog>
       <!--新建仪表板dialog-->
-      <el-dialog v-dialogDrag :title="panelDialogTitle" :visible.sync="editPanel.visible" :show-close="true" width="600px">
-        <edit-panel v-if="editPanel.visible" :edit-panel-out="editPanel" @closeEditPanelDialog="closeEditPanelDialog" @newPanelSave="newPanelSave" />
+      <el-dialog
+        v-dialogDrag
+        :title="panelDialogTitle"
+        :visible.sync="editPanel.visible"
+        :show-close="true"
+        width="600px"
+      >
+        <edit-panel
+          v-if="editPanel.visible"
+          :edit-panel-out="editPanel"
+          @closeEditPanelDialog="closeEditPanelDialog"
+          @newPanelSave="newPanelSave"
+        />
       </el-dialog>
 
       <!--移动-->
-      <el-dialog v-if="moveGroup" v-dialogDrag :title="moveDialogTitle" :visible="moveGroup" :show-close="false" width="30%" class="dialog-css">
-        <tree-selector :item="moveInfo" :t-data="tGroupData" @targetGroup="targetGroup" />
-        <div slot="footer" class="dialog-footer">
-          <el-button size="mini" @click="closeMoveGroup()">{{ $t('dataset.cancel') }}</el-button>
-          <el-button :disabled="groupMoveConfirmDisabled" type="primary" size="mini" @click="saveMoveGroup(tGroup)">{{ $t('dataset.confirm') }}
+      <el-dialog
+        v-if="moveGroup"
+        v-dialogDrag
+        :title="moveDialogTitle"
+        :visible="moveGroup"
+        :show-close="false"
+        width="30%"
+        class="dialog-css"
+      >
+        <tree-selector
+          :item="moveInfo"
+          :t-data="tGroupData"
+          @targetGroup="targetGroup"
+        />
+        <div
+          slot="footer"
+          class="dialog-footer"
+        >
+          <el-button
+            size="mini"
+            @click="closeMoveGroup()"
+          >{{ $t('dataset.cancel') }}</el-button>
+          <el-button
+            :disabled="groupMoveConfirmDisabled"
+            type="primary"
+            size="mini"
+            @click="saveMoveGroup(tGroup)"
+          >{{ $t('dataset.confirm') }}
           </el-button>
         </div>
       </el-dialog>
@@ -241,7 +411,7 @@ export default {
   components: { GrantAuth, LinkGenerate, EditPanel, TreeSelector },
   data() {
     return {
-      responseSource:'panelQuery',
+      responseSource: 'panelQuery',
       clearLocalStorage: [
         'chart-tree',
         'dataset-tree'
@@ -383,11 +553,11 @@ export default {
     this.defaultTree(true)
     this.initCache()
     const routerParam = this.$router.currentRoute.params
-    if(routerParam && 'appApply'===routerParam.responseSource ){
+    if (routerParam && routerParam.responseSource === 'appApply') {
       this.responseSource = routerParam.responseSource
       this.lastActiveNode = routerParam
       this.tree()
-    }else if (routerParam && routerParam.nodeType === 'panel' && this.historyRequestId !== routerParam.requestId) {
+    } else if (routerParam && routerParam.nodeType === 'panel' && this.historyRequestId !== routerParam.requestId) {
       this.historyRequestId = routerParam.requestId
       this.tree()
       this.edit(routerParam, null)
@@ -396,12 +566,12 @@ export default {
     }
   },
   methods: {
-    fromAppActive(){
+    fromAppActive() {
       this.activeNodeAndClickOnly(this.lastActiveNode)
       this.clearLocalStorage.forEach(item => {
         localStorage.removeItem(item)
       })
-      this.responseSource='panelQuery'
+      this.responseSource = 'panelQuery'
     },
     newPanelFromMarket(panelInfo) {
       if (panelInfo) {
@@ -653,7 +823,7 @@ export default {
         if (!userCache) {
           this.tData = res.data
         }
-        if(this.responseSource==='appApply'){
+        if (this.responseSource === 'appApply') {
           this.fromAppActive()
         }
         if (this.filterText) {

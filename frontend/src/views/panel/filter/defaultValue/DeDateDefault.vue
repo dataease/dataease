@@ -1,9 +1,20 @@
 <template>
-  <div v-if="element" class="default-value-div">
-    <el-form ref="form" :model="element.options.attrs.default" label-width="100px" size="mini">
+  <div
+    v-if="element"
+    class="default-value-div"
+  >
+    <el-form
+      ref="form"
+      :model="element.options.attrs.default"
+      label-width="100px"
+      size="mini"
+    >
 
       <el-form-item :label="$t('dynamic_time.set_default')">
-        <el-radio-group v-model="element.options.attrs.default.isDynamic" @change="dynamicChange">
+        <el-radio-group
+          v-model="element.options.attrs.default.isDynamic"
+          @change="dynamicChange"
+        >
 
           <el-radio
             v-for="(item, index) in defaultSetting.radioOptions"
@@ -16,7 +27,10 @@
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item v-if="element.options.attrs.default.isDynamic" :label="$t('dynamic_time.relative')">
+      <el-form-item
+        v-if="element.options.attrs.default.isDynamic"
+        :label="$t('dynamic_time.relative')"
+      >
 
         <el-select
           v-model="element.options.attrs.default.dkey"
@@ -86,14 +100,23 @@
             placeholder=""
             @change="dynamicSuffixChange"
           >
-            <el-option :label="$t('dynamic_time.before')" value="before" />
-            <el-option :label="$t('dynamic_time.after')" value="after" />
+            <el-option
+              :label="$t('dynamic_time.before')"
+              value="before"
+            />
+            <el-option
+              :label="$t('dynamic_time.after')"
+              value="after"
+            />
           </el-select>
         </el-form-item>
 
       </div>
 
-      <el-form-item v-if="element.options.attrs.default.isDynamic" :label="$t('dynamic_time.preview')">
+      <el-form-item
+        v-if="element.options.attrs.default.isDynamic"
+        :label="$t('dynamic_time.preview')"
+      >
         <el-date-picker
           v-model="dval"
           :type="componentType"
@@ -104,7 +127,10 @@
         />
       </el-form-item>
 
-      <el-form-item v-else :label="$t('dynamic_time.set')">
+      <el-form-item
+        v-else
+        :label="$t('dynamic_time.set')"
+      >
         <component
           :is="element.component"
           :id="'component' + element.id"

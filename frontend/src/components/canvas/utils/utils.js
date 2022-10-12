@@ -94,7 +94,7 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
           item.options.attrs.default = widget.defaultSetting()
         }
       }
-      if (item.options.attrs && widget.isTimeWidget && widget.isTimeWidget() && !item.options.attrs.hasOwnProperty('showTime')) {
+      if (item.options.attrs && widget.isTimeWidget && widget.isTimeWidget() && !Object.prototype.hasOwnProperty.call(item.options.attrs, 'showTime')) {
         item.options.attrs.showTime = false
         item.options.attrs.accuracy = 'HH:mm'
       }
@@ -218,10 +218,9 @@ export function colorReverse(OldColorValue) {
 }
 
 export function imgUrlTrans(url) {
-  if(url && typeof url === 'string' && url.indexOf('static-resource') > -1){
-    return process.env.VUE_APP_BASE_API + url.replace('/static-resource','static-resource')
-  }else {
+  if (url && typeof url === 'string' && url.indexOf('static-resource') > -1) {
+    return process.env.VUE_APP_BASE_API + url.replace('/static-resource', 'static-resource')
+  } else {
     return url
   }
-
 }

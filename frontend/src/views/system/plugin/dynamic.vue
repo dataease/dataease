@@ -1,18 +1,44 @@
 <template>
-  <de-layout-content v-if="!noLayout && menuid !== 740" v-loading="jsname && !innerLoadingNames.includes(jsname) && $store.getters.loadingMap[$store.getters.currentPath]" :header="header" :back-name="backName">
-    <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" @plugin-call-back="pluginCallBack" />
+  <de-layout-content
+    v-if="!noLayout && menuid !== 740"
+    v-loading="jsname && !innerLoadingNames.includes(jsname) && $store.getters.loadingMap[$store.getters.currentPath]"
+    :header="header"
+    :back-name="backName"
+  >
+    <async-component
+      v-if="showAsync"
+      :url="url"
+      @execute-axios="executeAxios"
+      @on-add-languanges="addLanguages"
+      @on-plugin-layout="setLayoutInfo"
+      @plugin-call-back="pluginCallBack"
+    />
     <div v-else>
       <h1>未知组件无法展示</h1>
     </div>
   </de-layout-content>
   <div v-else-if="menuid === 740">
-    <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" @plugin-call-back="pluginCallBack" />
+    <async-component
+      v-if="showAsync"
+      :url="url"
+      @execute-axios="executeAxios"
+      @on-add-languanges="addLanguages"
+      @on-plugin-layout="setLayoutInfo"
+      @plugin-call-back="pluginCallBack"
+    />
     <div v-else>
       <h1>未知组件无法展示</h1>
     </div>
   </div>
   <div v-else>
-    <async-component v-if="showAsync" :url="url" @execute-axios="executeAxios" @on-add-languanges="addLanguages" @on-plugin-layout="setLayoutInfo" @plugin-call-back="pluginCallBack" />
+    <async-component
+      v-if="showAsync"
+      :url="url"
+      @execute-axios="executeAxios"
+      @on-add-languanges="addLanguages"
+      @on-plugin-layout="setLayoutInfo"
+      @plugin-call-back="pluginCallBack"
+    />
     <div v-else>
       <h1>未知组件无法展示</h1>
     </div>
@@ -25,7 +51,7 @@ import DeLayoutContent from '@/components/business/DeLayoutContent'
 import AsyncComponent from '@/components/AsyncComponent'
 import i18n from '@/lang'
 import bus from '@/utils/bus'
-import { execute, get } from '@/api/system/dynamic'
+import { execute } from '@/api/system/dynamic'
 export default {
   name: 'Dynamic',
   components: {
@@ -57,12 +83,12 @@ export default {
     }
   },
   watch: {
-    'menuid' : function() {
+    'menuid': function() {
       this.init()
     }
   },
   created() {
-   this.init()
+    this.init()
   },
 
   methods: {

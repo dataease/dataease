@@ -7,44 +7,62 @@
       class="de-input-search"
       clearable
     >
-      <svg-icon slot="prefix" icon-class="de-search"></svg-icon>
+      <svg-icon
+        slot="prefix"
+        icon-class="de-search"
+      />
     </el-input>
     <el-empty
-      :image="noneImg"
       v-if="!templateListComputed.length && templateFilterText === ''"
+      :image="noneImg"
       :description="$t('components.no_classification')"
-    ></el-empty>
+    />
     <el-empty
-      :image="nothingImg"
       v-if="!templateListComputed.length && templateFilterText !== ''"
+      :image="nothingImg"
       :description="$t('components.relevant_content_found')"
-    ></el-empty>
+    />
     <ul>
       <li
-        :class="[{ select: activeTemplate === ele.id }]"
-        @click="nodeClick(ele)"
         v-for="ele in templateListComputed"
         :key="ele.name"
+        :class="[{ select: activeTemplate === ele.id }]"
+        @click="nodeClick(ele)"
       >
-        <svg-icon icon-class="scene"/>
+        <svg-icon icon-class="scene" />
         <span>{{ ele.name }}</span>
-        <span @click.stop class="more">
+        <span
+          class="more"
+          @click.stop
+        >
           <el-dropdown
             trigger="click"
             size="small"
             @command="(type) => clickMore(type, ele)"
           >
             <span class="el-dropdown-link">
-              <i class="el-icon-more"></i>
+              <i class="el-icon-more" />
             </span>
-            <el-dropdown-menu class="de-template-dropdown" slot="dropdown">
-              <el-dropdown-item icon="el-icon-upload2" command="import">
-               {{$t('app_template.app_upload')}}
+            <el-dropdown-menu
+              slot="dropdown"
+              class="de-template-dropdown"
+            >
+              <el-dropdown-item
+                icon="el-icon-upload2"
+                command="import"
+              >
+                {{ $t('app_template.app_upload') }}
               </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-edit" command="edit">
+              <el-dropdown-item
+                icon="el-icon-edit"
+                command="edit"
+              >
                 {{ $t("commons.edit") }}
               </el-dropdown-item>
-              <el-dropdown-item icon="el-icon-delete" command="delete">
+              <el-dropdown-item
+                icon="el-icon-delete"
+                command="delete"
+              >
                 {{ $t("commons.delete") }}
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -65,31 +83,31 @@
 </template>
 
 <script>
-import msgCfm from "@/components/msgCfm/index";
+import msgCfm from '@/components/msgCfm/index'
 
 export default {
-  name: "TemplateList",
-  mixins: [msgCfm],
+  name: 'TemplateList',
   components: {},
+  mixins: [msgCfm],
   props: {
     templateType: {
       type: String,
-      default: "",
+      default: ''
     },
     templateList: {
       type: Array,
-      default: function () {
-        return [];
-      },
-    },
+      default: function() {
+        return []
+      }
+    }
   },
   data() {
     return {
-      templateFilterText: "",
-      activeTemplate: "",
-      noneImg: require("@/assets/None.png"),
-      nothingImg: require("@/assets/nothing.png"),
-    };
+      templateFilterText: '',
+      activeTemplate: '',
+      noneImg: require('@/assets/None.png'),
+      nothingImg: require('@/assets/nothing.png')
+    }
   },
   computed: {
     templateListComputed() {
@@ -100,50 +118,50 @@ export default {
       //     ...this.templateList,
       //     ...this.templateList,
       //   ];
-      if (!this.templateFilterText) return [...this.templateList];
+      if (!this.templateFilterText) return [...this.templateList]
       return this.templateList.filter((ele) =>
         ele.name.includes(this.templateFilterText)
-      );
-    },
+      )
+    }
   },
   methods: {
     clickMore(type, data) {
       switch (type) {
-        case "edit":
-          this.templateEdit(data);
-          break;
-        case "delete":
-          this.templateDelete(data);
-          break;
-        case "import":
-          this.templateImport(data);
-          break;
+        case 'edit':
+          this.templateEdit(data)
+          break
+        case 'delete':
+          this.templateDelete(data)
+          break
+        case 'import':
+          this.templateImport(data)
+          break
       }
     },
     nodeClick({ id, name }) {
-      this.activeTemplate = id;
-      this.$emit("showCurrentTemplate", id, name);
+      this.activeTemplate = id
+      this.$emit('showCurrentTemplate', id, name)
     },
     add() {
-      this.$emit("showTemplateEditDialog", "new");
+      this.$emit('showTemplateEditDialog', 'new')
     },
     templateDelete(template) {
       const options = {
         title: this.$('app_template.app_group_delete_tips'),
         content: this.$('app_template.app_group_delete_content'),
-        type: "primary",
-        cb: () => this.$emit("templateDelete", template.id),
-      };
-      this.handlerConfirm(options);
+        type: 'primary',
+        cb: () => this.$emit('templateDelete', template.id)
+      }
+      this.handlerConfirm(options)
     },
     templateEdit(template) {
-      this.$emit("templateEdit", template);
+      this.$emit('templateEdit', template)
     },
     templateImport(template) {
-      this.$emit("templateImport", template.id);
-    },
-  },
-};
+      this.$emit('templateImport', template.id)
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">

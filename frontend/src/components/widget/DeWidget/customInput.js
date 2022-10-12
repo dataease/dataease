@@ -27,7 +27,7 @@ export default {
         }
       },
       deep: true
-    },
+    }
   },
   computed: {
     cssArr() {
@@ -57,6 +57,6 @@ export default {
           document.documentElement.style.removeProperty(cssVar[index])
         }
       })
-    },
+    }
   }
 }

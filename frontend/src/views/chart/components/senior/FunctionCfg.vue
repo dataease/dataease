@@ -1,21 +1,71 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="functionForm" :model="functionForm" label-width="80px" size="mini">
-        <el-form-item :label="$t('chart.slider')" class="form-item">
-          <el-checkbox v-model="functionForm.sliderShow" @change="changeFunctionCfg">{{ $t('chart.show') }}</el-checkbox>
+      <el-form
+        ref="functionForm"
+        :model="functionForm"
+        label-width="80px"
+        size="mini"
+      >
+        <el-form-item
+          :label="$t('chart.slider')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="functionForm.sliderShow"
+            @change="changeFunctionCfg"
+          >{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
-        <el-form-item v-show="functionForm.sliderShow" :label="$t('chart.slider_range')+'(%)'" class="form-item form-item-slider">
-          <el-slider v-model="functionForm.sliderRange" style="width: 90%" :min="0" :max="100" input-size="mini" range @change="changeFunctionCfg" />
+        <el-form-item
+          v-show="functionForm.sliderShow"
+          :label="$t('chart.slider_range')+'(%)'"
+          class="form-item form-item-slider"
+        >
+          <el-slider
+            v-model="functionForm.sliderRange"
+            style="width: 90%"
+            :min="0"
+            :max="100"
+            input-size="mini"
+            range
+            @change="changeFunctionCfg"
+          />
         </el-form-item>
-        <el-form-item v-show="functionForm.sliderShow" :label="$t('chart.slider_bg')" class="form-item">
-          <el-color-picker v-model="functionForm.sliderBg" class="color-picker-style" :predefine="predefineColors" @change="changeFunctionCfg" />
+        <el-form-item
+          v-show="functionForm.sliderShow"
+          :label="$t('chart.slider_bg')"
+          class="form-item"
+        >
+          <el-color-picker
+            v-model="functionForm.sliderBg"
+            class="color-picker-style"
+            :predefine="predefineColors"
+            @change="changeFunctionCfg"
+          />
         </el-form-item>
-        <el-form-item v-show="functionForm.sliderShow" :label="$t('chart.slider_fill_bg')" class="form-item">
-          <el-color-picker v-model="functionForm.sliderFillBg" class="color-picker-style" :predefine="predefineColors" @change="changeFunctionCfg" />
+        <el-form-item
+          v-show="functionForm.sliderShow"
+          :label="$t('chart.slider_fill_bg')"
+          class="form-item"
+        >
+          <el-color-picker
+            v-model="functionForm.sliderFillBg"
+            class="color-picker-style"
+            :predefine="predefineColors"
+            @change="changeFunctionCfg"
+          />
         </el-form-item>
-        <el-form-item v-show="functionForm.sliderShow" :label="$t('chart.slider_text_color')" class="form-item">
-          <el-color-picker v-model="functionForm.sliderTextClolor" class="color-picker-style" :predefine="predefineColors" @change="changeFunctionCfg" />
+        <el-form-item
+          v-show="functionForm.sliderShow"
+          :label="$t('chart.slider_text_color')"
+          class="form-item"
+        >
+          <el-color-picker
+            v-model="functionForm.sliderTextClolor"
+            class="color-picker-style"
+            :predefine="predefineColors"
+            @change="changeFunctionCfg"
+          />
         </el-form-item>
       </el-form>
     </el-col>

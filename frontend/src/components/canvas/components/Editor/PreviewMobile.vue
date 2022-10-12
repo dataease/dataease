@@ -1,7 +1,14 @@
 <template>
-  <div class="bg" :style="customStyle">
+  <div
+    class="bg"
+    :style="customStyle"
+  >
     <canvas-opt-bar />
-    <div id="canvasInfoMain" ref="canvasInfoMain" style="width: 100%;height: 100%">
+    <div
+      id="canvasInfoMain"
+      ref="canvasInfoMain"
+      style="width: 100%;height: 100%"
+    >
       <div
         id="canvasInfoTemp"
         ref="canvasInfoTemp"
@@ -10,7 +17,11 @@
         @mouseup="deselectCurComponent"
         @mousedown="handleMouseDown"
       >
-        <el-row v-if="componentDataShow.length===0" style="height: 100%;" class="custom-position">
+        <el-row
+          v-if="componentDataShow.length===0"
+          style="height: 100%;"
+          class="custom-position"
+        >
           {{ $t('panel.panelNull') }}
         </el-row>
         <ComponentWrapper
@@ -29,12 +40,23 @@
           :destroy-on-close="true"
         >
           <span style="position: absolute;right: 70px;top:15px">
-            <el-button size="mini" @click="exportExcel">
-              <svg-icon icon-class="ds-excel" class="ds-icon-excel" />
+            <el-button
+              size="mini"
+              @click="exportExcel"
+            >
+              <svg-icon
+                icon-class="ds-excel"
+                class="ds-icon-excel"
+              />
               {{ $t('chart.export_details') }}
             </el-button>
           </span>
-          <UserViewDialog ref="userViewDialog" :canvas-style-data="canvasStyleData" :chart="showChartInfo" :chart-table="showChartTableInfo" />
+          <UserViewDialog
+            ref="userViewDialog"
+            :canvas-style-data="canvasStyleData"
+            :chart="showChartInfo"
+            :chart-table="showChartTableInfo"
+          />
         </el-dialog>
       </div>
     </div>
@@ -47,7 +69,7 @@ import { mapState } from 'vuex'
 import ComponentWrapper from './ComponentWrapper'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import { uuid } from 'vue-uuid'
-import {deepCopy, imgUrlTrans} from '@/components/canvas/utils/utils'
+import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'

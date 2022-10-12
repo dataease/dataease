@@ -1,7 +1,16 @@
 <template>
-  <div :style="classBackground" class="de-card-model">
-    <div class="card-img-model" :style="classImg">
-      <img :src="model.snapshot" alt=""/>
+  <div
+    :style="classBackground"
+    class="de-card-model"
+  >
+    <div
+      class="card-img-model"
+      :style="classImg"
+    >
+      <img
+        :src="model.snapshot"
+        alt=""
+      >
     </div>
     <div class="card-info">
       <el-tooltip
@@ -12,16 +21,23 @@
       >
         <span class="de-model-text">{{ model.name }}</span>
       </el-tooltip>
-      <el-dropdown size="medium" trigger="click" @command="handleCommand">
-        <i class="el-icon-more"></i>
-        <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+      <el-dropdown
+        size="medium"
+        trigger="click"
+        @command="handleCommand"
+      >
+        <i class="el-icon-more" />
+        <el-dropdown-menu
+          slot="dropdown"
+          class="de-card-dropdown"
+        >
           <slot>
             <el-dropdown-item command="update">
-              <i class="el-icon-edit"></i>
+              <i class="el-icon-edit" />
               {{ $t("commons.update") }}
             </el-dropdown-item>
             <el-dropdown-item command="delete">
-              <i class="el-icon-delete"></i>
+              <i class="el-icon-delete" />
               {{ $t("commons.uninstall") }}
             </el-dropdown-item>
           </slot>
@@ -37,7 +53,7 @@ export default {
     model: {
       type: Object,
       default: () => {
-      },
+      }
     },
     width: {
       type: Number
@@ -47,7 +63,7 @@ export default {
     classBackground() {
       return {
         width: this.width + 'px',
-        height: this.width * 0.714 + 'px',
+        height: this.width * 0.714 + 'px'
       }
     },
     classImg() {
@@ -55,14 +71,14 @@ export default {
         width: (this.width - 2) + 'px',
         height: this.width * 0.576 + 'px'
       }
-    },
+    }
   },
   methods: {
     handleCommand(key) {
-      this.$emit("command", key);
-    },
-  },
-};
+      this.$emit('command', key)
+    }
+  }
+}
 </script>
 
 <style lang="scss">

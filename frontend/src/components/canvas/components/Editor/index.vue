@@ -14,8 +14,15 @@
     @scroll="canvasScroll"
   >
     <!-- 网格线 -->
-    <Grid v-if="showGrid" :matrix-style="matrixStyle" />
-    <PGrid v-if="psDebug" :position-box="positionBoxInfoArray" :matrix-style="matrixStyle" />
+    <Grid
+      v-if="showGrid"
+      :matrix-style="matrixStyle"
+    />
+    <PGrid
+      v-if="psDebug"
+      :position-box="positionBoxInfoArray"
+      :matrix-style="matrixStyle"
+    />
     <!--页面组件列表展示-->
     <de-drag
       v-for="(item, index) in componentData"
@@ -140,12 +147,27 @@
       :show-close="true"
       top="5vh"
     >
-      <span v-if="chartDetailsVisible" style="position: absolute;right: 70px;top:15px">
-        <el-button v-if="showChartInfoType==='enlarge' && showChartInfo && showChartInfo.type !== 'symbol-map'" class="el-icon-picture-outline" size="mini" @click="exportViewImg">
+      <span
+        v-if="chartDetailsVisible"
+        style="position: absolute;right: 70px;top:15px"
+      >
+        <el-button
+          v-if="showChartInfoType==='enlarge' && showChartInfo && showChartInfo.type !== 'symbol-map'"
+          class="el-icon-picture-outline"
+          size="mini"
+          @click="exportViewImg"
+        >
           {{ $t('chart.export_img') }}
         </el-button>
-        <el-button v-if="showChartInfoType==='details'" size="mini" @click="exportExcel">
-          <svg-icon icon-class="ds-excel" class="ds-icon-excel" />{{ $t('chart.export') }}Excel
+        <el-button
+          v-if="showChartInfoType==='details'"
+          size="mini"
+          @click="exportExcel"
+        >
+          <svg-icon
+            icon-class="ds-excel"
+            class="ds-icon-excel"
+          />{{ $t('chart.export') }}Excel
         </el-button>
       </span>
       <UserViewDialog
@@ -166,7 +188,11 @@
       :destroy-on-close="true"
       :append-to-body="true"
     >
-      <LinkJumpSet v-if="linkJumpSetVisible" :view-id="linkJumpSetViewId" @closeJumpSetDialog="closeJumpSetDialog" />
+      <LinkJumpSet
+        v-if="linkJumpSetVisible"
+        :view-id="linkJumpSetViewId"
+        @closeJumpSetDialog="closeJumpSetDialog"
+      />
     </el-dialog>
 
     <el-dialog
@@ -178,7 +204,10 @@
       :destroy-on-close="true"
       :append-to-body="true"
     >
-      <background v-if="boardSetVisible" @backgroundSetClose="backgroundSetClose" />
+      <background
+        v-if="boardSetVisible"
+        @backgroundSetClose="backgroundSetClose"
+      />
     </el-dialog>
   </div>
 </template>
@@ -488,6 +517,7 @@ function removeItem(index) {
       }
     })
     this.yourList.splice(index, 1, {})
+    // eslint-disable-next-line
   } catch (e) {
   }
 }
@@ -784,6 +814,7 @@ export default {
     Shape,
     ContextMenu,
     MarkLine,
+    // eslint-disable-next-line
     Area,
     Grid,
     PGrid,

@@ -2,12 +2,19 @@
   <de-layout-content :header="$t('log.title')">
     <el-row class="top-operate">
       <el-col :span="12">
-        <deBtn v-permission="['log:export']" secondary @click="exportConfirm">{{
+        <deBtn
+          v-permission="['log:export']"
+          secondary
+          @click="exportConfirm"
+        >{{
           $t("zip.export")
         }}</deBtn>
         &nbsp; &nbsp;
       </el-col>
-      <el-col :span="12" class="right-user">
+      <el-col
+        :span="12"
+        class="right-user"
+      >
         <el-input
           ref="search"
           v-model="nickName"
@@ -31,7 +38,10 @@
         </deBtn>
       </el-col>
     </el-row>
-    <div v-if="filterTexts.length" class="filter-texts">
+    <div
+      v-if="filterTexts.length"
+      class="filter-texts"
+    >
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t("user.result_one") }}</span>
       <el-divider direction="vertical" />
@@ -41,8 +51,15 @@
         @click="scrollPre"
       />
       <div class="filter-texts-container">
-        <p v-for="(ele, index) in filterTexts" :key="ele" class="text">
-          {{ ele }} <i class="el-icon-close" @click="clearOneFilter(index)" />
+        <p
+          v-for="(ele, index) in filterTexts"
+          :key="ele"
+          class="text"
+        >
+          {{ ele }} <i
+            class="el-icon-close"
+            @click="clearOneFilter(index)"
+          />
         </p>
       </div>
       <i
@@ -77,7 +94,7 @@
           :label="$t('log.optype')"
           width="140"
         >
-          <template v-slot:default="{ row }">
+          <template #default="{ row }">
             <span>{{ row.opType + row.sourceType }}</span>
           </template>
         </el-table-column>
@@ -99,14 +116,17 @@
           :label="$t('log.time')"
           width="180"
         >
-          <template v-slot:default="scope">
+          <template #default="scope">
             <span>{{ scope.row.time | timestampFormatDate }}</span>
           </template>
         </el-table-column>
       </grid-table>
     </div>
     <keep-alive>
-      <filterUser ref="filterUser" @search="filterDraw" />
+      <filterUser
+        ref="filterUser"
+        @search="filterDraw"
+      />
     </keep-alive>
   </de-layout-content>
 </template>

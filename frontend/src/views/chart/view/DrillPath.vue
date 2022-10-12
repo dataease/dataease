@@ -1,10 +1,21 @@
 <template>
   <div v-if="drillFilters && drillFilters.length > 0">
-    <el-breadcrumb separator-class="el-icon-arrow-right" class="drill-style">
-      <el-breadcrumb-item class="drill-item" @click.native="drillJump(0)">
+    <el-breadcrumb
+      separator-class="el-icon-arrow-right"
+      class="drill-style"
+    >
+      <el-breadcrumb-item
+        class="drill-item"
+        @click.native="drillJump(0)"
+      >
         <span :style="{'color': textColor}">{{ $t('commons.all') }}</span>
       </el-breadcrumb-item>
-      <el-breadcrumb-item v-for="(filter,index) in drillFilters" :key="index" class="drill-item" @click.native="drillJump(index + 1)">
+      <el-breadcrumb-item
+        v-for="(filter,index) in drillFilters"
+        :key="index"
+        class="drill-item"
+        @click.native="drillJump(index + 1)"
+      >
         <span :style="{'color': textColor}">{{ filter.value[0] }}</span>
       </el-breadcrumb-item>
     </el-breadcrumb>

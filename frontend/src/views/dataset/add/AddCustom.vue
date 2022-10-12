@@ -1,14 +1,25 @@
 <template>
   <el-col>
-    <el-row style="height: 26px;" class="title-text">
+    <el-row
+      style="height: 26px;"
+      class="title-text"
+    >
       <span style="line-height: 26px;">
         {{ param.tableId?$t('dataset.edit_custom_table'):$t('dataset.add_custom_table') }}
       </span>
       <el-row style="float: right">
-        <el-button size="mini" @click="cancel">
+        <el-button
+          size="mini"
+          @click="cancel"
+        >
           {{ $t('dataset.cancel') }}
         </el-button>
-        <el-button :disabled="!name || checkedList.length === 0" size="mini" type="primary" @click="save">
+        <el-button
+          :disabled="!name || checkedList.length === 0"
+          size="mini"
+          type="primary"
+          @click="save"
+        >
           {{ $t('dataset.confirm') }}
         </el-button>
       </el-row>
@@ -16,21 +27,53 @@
     <el-divider />
     <el-row>
       <el-form :inline="true">
-        <el-form-item class="form-item" :label="$t('commons.name')">
-          <el-input v-model="name" size="mini" :placeholder="$t('commons.name')" />
+        <el-form-item
+          class="form-item"
+          :label="$t('commons.name')"
+        >
+          <el-input
+            v-model="name"
+            size="mini"
+            :placeholder="$t('commons.name')"
+          />
         </el-form-item>
       </el-form>
     </el-row>
     <el-col style="display: flex;flex-direction: row">
-      <el-col class="panel-height" style="width: 220px;border-right:solid 1px #dcdfe6;border-top:solid 1px #dcdfe6;padding-right: 15px;overflow-y: auto;">
-        <dataset-group-selector :custom-type="customType" :table="table" :checked-list="checkedList" :union-data="unionData" @getTable="getTable" />
+      <el-col
+        class="panel-height"
+        style="width: 220px;border-right:solid 1px #dcdfe6;border-top:solid 1px #dcdfe6;padding-right: 15px;overflow-y: auto;"
+      >
+        <dataset-group-selector
+          :custom-type="customType"
+          :table="table"
+          :checked-list="checkedList"
+          :union-data="unionData"
+          @getTable="getTable"
+        />
       </el-col>
-      <el-col class="panel-height" style="width: 235px;border-top:solid 1px #dcdfe6;padding: 0 15px;overflow-y: auto;">
-        <dataset-custom-field :table="table" :checked-list="checkedList" @getChecked="getChecked" />
+      <el-col
+        class="panel-height"
+        style="width: 235px;border-top:solid 1px #dcdfe6;padding: 0 15px;overflow-y: auto;"
+      >
+        <dataset-custom-field
+          :table="table"
+          :checked-list="checkedList"
+          @getChecked="getChecked"
+        />
       </el-col>
-      <el-col class="panel-height" style="flex: 1;overflow: hidden;">
-        <el-card class="box-card dataPreview" shadow="never">
-          <div slot="header" class="clearfix">
+      <el-col
+        class="panel-height"
+        style="flex: 1;overflow: hidden;"
+      >
+        <el-card
+          class="box-card dataPreview"
+          shadow="never"
+        >
+          <div
+            slot="header"
+            class="clearfix"
+          >
             <span style="font-size: 16px;">{{ $t('dataset.data_preview') }}</span>
           </div>
           <ux-grid

@@ -1,16 +1,52 @@
 <template>
-  <div v-if="loadFinish" class="chart-type">
-    <div v-for="(renderItem, category) in renderMap[chart.render]" :key="category">
+  <div
+    v-if="loadFinish"
+    class="chart-type"
+  >
+    <div
+      v-for="(renderItem, category) in renderMap[chart.render]"
+      :key="category"
+    >
       <el-divider class="chart-type-divider">{{ $t(category) }}</el-divider>
 
-      <div v-for="(container, i) in renderItem" :key="i" style="display: block;">
+      <div
+        v-for="(container, i) in renderItem"
+        :key="i"
+        style="display: block;"
+      >
         <div class="radio-row">
-          <div v-for="(item, idx) in container" :key="idx" style="position: relative;display: block;" :style="{'top': item.isPlugin ? '5px' : '0'}">
-            <el-radio v-if="item.placeholder" value="" label="" disabled class="disabled-none-cursor"><svg-icon icon-class="" class="chart-icon" /></el-radio>
-            <plugin-com v-else-if="item.isPlugin" :component-name="item.value + '-type'" />
-            <el-radio v-else :value="item.value" :label="item.value" border class="radio-style">
+          <div
+            v-for="(item, idx) in container"
+            :key="idx"
+            style="position: relative;display: block;"
+            :style="{'top': item.isPlugin ? '5px' : '0'}"
+          >
+            <el-radio
+              v-if="item.placeholder"
+              value=""
+              label=""
+              disabled
+              class="disabled-none-cursor"
+            ><svg-icon
+              icon-class=""
+              class="chart-icon"
+            /></el-radio>
+            <plugin-com
+              v-else-if="item.isPlugin"
+              :component-name="item.value + '-type'"
+            />
+            <el-radio
+              v-else
+              :value="item.value"
+              :label="item.value"
+              border
+              class="radio-style"
+            >
               <span :title="$t(item.title)">
-                <svg-icon :icon-class="item.icon" class="chart-icon" />
+                <svg-icon
+                  :icon-class="item.icon"
+                  class="chart-icon"
+                />
               </span>
               <p class="radio-label">{{ $t(item.title) }}</p>
             </el-radio>

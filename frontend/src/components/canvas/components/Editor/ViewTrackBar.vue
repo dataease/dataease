@@ -1,9 +1,21 @@
 <template>
   <div>
     <el-dropdown trigger="click">
-      <input id="input" ref="trackButton" type="button" hidden>
-      <el-dropdown-menu class="track-menu" :append-to-body="false">
-        <el-dropdown-item v-for="(item, key) in trackMenu" :key="key" @click.native="trackMenuClick(item)"><span class="menu-item">{{ i18n_map[item] }}</span></el-dropdown-item>
+      <input
+        id="input"
+        ref="trackButton"
+        type="button"
+        hidden
+      >
+      <el-dropdown-menu
+        class="track-menu"
+        :append-to-body="false"
+      >
+        <el-dropdown-item
+          v-for="(item, key) in trackMenu"
+          :key="key"
+          @click.native="trackMenuClick(item)"
+        ><span class="menu-item">{{ i18n_map[item] }}</span></el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
   </div>

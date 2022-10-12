@@ -1,38 +1,103 @@
 <template>
-  <layout-content :header="formType=='add' ? $t('menu.create') : $t('menu.modify')" back-name="system-menu">
-    <el-form ref="menuForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
-      <el-form-item :label="$t('menu.menu_type')" prop="type">
-        <el-radio-group v-model="form.type" size="mini" :disabled="formType!=='add'">
+  <layout-content
+    :header="formType=='add' ? $t('menu.create') : $t('menu.modify')"
+    back-name="system-menu"
+  >
+    <el-form
+      ref="menuForm"
+      :model="form"
+      :rules="rule"
+      size="small"
+      label-width="auto"
+      label-position="right"
+    >
+      <el-form-item
+        :label="$t('menu.menu_type')"
+        prop="type"
+      >
+        <el-radio-group
+          v-model="form.type"
+          size="mini"
+          :disabled="formType!=='add'"
+        >
           <el-radio-button label="0">{{ $t('commons.catalogue') }}</el-radio-button>
           <el-radio-button label="1">{{ $t('commons.menu') }}</el-radio-button>
           <el-radio-button label="2">{{ $t('commons.button') }}</el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item v-if="form.type=== 1 && form.icon" :label="$t('commons.icon')" prop="icon">
+      <el-form-item
+        v-if="form.type=== 1 && form.icon"
+        :label="$t('commons.icon')"
+        prop="icon"
+      >
         <el-popover
           placement="bottom-start"
           width="425"
           trigger="click"
           @show="$refs['iconSelect'].reset()"
         >
-          <IconSelect ref="iconSelect" @selected="selected" />
-          <el-input slot="reference" v-model="form.icon" :placeholder="$t('menu.select_icon')" readonly>
-            <svg-icon v-if="form.icon" slot="prefix" :icon-class="form.icon" class="el-input__icon" style="height: 32px;width: 16px;" />
-            <i v-else slot="prefix" class="el-icon-search el-input__icon" />
+          <IconSelect
+            ref="iconSelect"
+            @selected="selected"
+          />
+          <el-input
+            slot="reference"
+            v-model="form.icon"
+            :placeholder="$t('menu.select_icon')"
+            readonly
+          >
+            <svg-icon
+              v-if="form.icon"
+              slot="prefix"
+              :icon-class="form.icon"
+              class="el-input__icon"
+              style="height: 32px;width: 16px;"
+            />
+            <i
+              v-else
+              slot="prefix"
+              class="el-icon-search el-input__icon"
+            />
           </el-input>
         </el-popover>
       </el-form-item>
 
-      <el-form-item v-if="form.type !== 2" :label="$t('menu.tile')" prop="title">
-        <el-input v-model="form.title" :placeholder="$t('menu.tile')" />
+      <el-form-item
+        v-if="form.type !== 2"
+        :label="$t('menu.tile')"
+        prop="title"
+      >
+        <el-input
+          v-model="form.title"
+          :placeholder="$t('menu.tile')"
+        />
       </el-form-item>
-      <el-form-item v-if="form.type === 2" :label="$t('menu.button_name')" prop="title">
-        <el-input v-model="form.title" :placeholder="$t('menu.button_name')" />
+      <el-form-item
+        v-if="form.type === 2"
+        :label="$t('menu.button_name')"
+        prop="title"
+      >
+        <el-input
+          v-model="form.title"
+          :placeholder="$t('menu.button_name')"
+        />
       </el-form-item>
-      <el-form-item v-if="form.type !== 2" :label="$t('menu.menu_sort')" prop="menuSort">
-        <el-input-number v-model.number="form.menuSort" :min="0" :max="999" controls-position="right" />
+      <el-form-item
+        v-if="form.type !== 2"
+        :label="$t('menu.menu_sort')"
+        prop="menuSort"
+      >
+        <el-input-number
+          v-model.number="form.menuSort"
+          :min="0"
+          :max="999"
+          controls-position="right"
+        />
       </el-form-item>
-      <el-form-item :label="$t('menu.parent_category')" prop="pid">
+      <el-form-item
+        :label="$t('menu.parent_category')"
+        prop="pid"
+      >
         <treeselect
           v-model="form.pid"
           :disabled="formType!=='add'"
@@ -42,7 +107,10 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="save">{{ $t('commons.reset') }}</el-button>
+        <el-button
+          type="primary"
+          @click="save"
+        >{{ $t('commons.reset') }}</el-button>
         <el-button @click="reset">{{ $t('commons.confirm') }}</el-button>
       </el-form-item>
     </el-form>

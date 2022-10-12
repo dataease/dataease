@@ -11,7 +11,7 @@ class Convert {
   constructor() {
     this._option = {
       $id: 'http://example.com/root.json',
-      $schema: 'http://json-schema.org/draft-07/schema#',
+      $schema: 'http://json-schema.org/draft-07/schema#'
     }
     this._object = null
   }
@@ -88,7 +88,7 @@ class Convert {
       return
     }
     // 处理当前路径$id
-    if (name === '' || name == undefined) {
+    if (name === '' || name === undefined) {
       name = '#'
     }
     const result = {}
@@ -100,7 +100,7 @@ class Convert {
     }
     // 遍历传入的对象
     for (const key in object) {
-      if (object.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(object, key)) {
         const element = object[key]
         // 如果只是undefined。跳过
         if (element === undefined) {
@@ -159,7 +159,7 @@ class Convert {
       title: `The ${key} Schema`,
       mock: {
         'mock': value
-      },
+      }
     }
 
     // 判断是否为初始化root数据
@@ -189,4 +189,4 @@ class Convert {
     return objectTemplate
   }
 }
-
+export default Convert

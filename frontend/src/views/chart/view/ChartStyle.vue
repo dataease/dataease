@@ -1,6 +1,9 @@
 <template>
   <el-row class="view-panel">
-    <div v-if="properties.length===0" class="no-properties">
+    <div
+      v-if="properties.length===0"
+      class="no-properties"
+    >
       {{ $t('chart.chart_no_properties') }}
     </div>
     <plugin-com
@@ -17,8 +20,15 @@
     >
       <el-row>
         <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
-        <el-collapse v-model="attrActiveNames" class="style-collapse">
-          <el-collapse-item v-show="showPropertiesCollapse(['color-selector'])" name="color" :title="$t('chart.color')">
+        <el-collapse
+          v-model="attrActiveNames"
+          class="style-collapse"
+        >
+          <el-collapse-item
+            v-show="showPropertiesCollapse(['color-selector'])"
+            name="color"
+            :title="$t('chart.color')"
+          >
             <color-selector
               :param="param"
               class="attr-selector"
@@ -115,7 +125,10 @@
       </el-row>
       <el-row>
         <span class="padding-lr">{{ $t('chart.module_style') }}</span>
-        <el-collapse v-model="styleActiveNames" class="style-collapse">
+        <el-collapse
+          v-model="styleActiveNames"
+          class="style-collapse"
+        >
           <el-collapse-item
             v-show="showPropertiesCollapse(['x-axis-selector','x-axis-selector-ant-v'])"
             name="xAxis"
