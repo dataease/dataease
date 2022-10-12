@@ -1,14 +1,54 @@
 // import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
-
+import { isGradientValue } from '@/components/GradientColorSelector/base'
+const linearCOlor = (start, end) => {
+  return {
+    type: 'linear',
+    x: 0,
+    y: 0,
+    x2: 0,
+    y2: 1,
+    colorStops: [
+      {offset: 0, color: start},
+      {offset: 1, color: end},
+    ],
+    global: false
+  }
+}
+const fillGradientColor = (data, colors) => {
+  if(!data || !data.length) return data
+  const dataLen = data.length
+  const colorLen = colors.length
+  data.forEach((item, index) => {
+    const colorIndex = index % colorLen
+    const colorArr = colors[colorIndex]
+    if(Array.isArray(colorArr)) {
+      item.itemStyle = {
+        normal: {
+          areaColor: linearCOlor(colorArr[0], colorArr[1]),
+          opacity: 0.6
+        },
+        emphasis: {
+          areaColor: linearCOlor(colorArr[0], colorArr[1]),
+          opacity: 1
+        }
+      }
+    }
+  })
+  return data
+}
 export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
   // 处理shape attr
   let customAttr = {}
+  let isGradient = false
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
+    
     if (customAttr.color) {
-      chart_option.color = customAttr.color.colors
+      const colorValue = customAttr.color.value
+      isGradient = isGradientValue(colorValue)
+      // chart_option.color = customAttr.color.colors
       if (customAttr.color.areaBorderColor) {
         chart_option.series[0].itemStyle.normal.borderColor = customAttr.color.areaBorderColor
       }
@@ -57,38 +97,48 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
           chart_option.series[0].label.showdowColor = customAttr.label.shadowColor
         }
       }
-      // visualMap
       const valueArr = chart.data.series[0].data
-      if (valueArr && valueArr.length > 0) {
-        const values = []
-        valueArr.forEach(function(ele) {
-          values.push(ele.value)
-        })
-        chart_option.visualMap.min = Math.min(...values)
-        chart_option.visualMap.max = Math.max(...values)
-        if (chart_option.visualMap.min === chart_option.visualMap.max) {
+      // visualMap
+      if(!isGradient) {
+        
+        if (valueArr && valueArr.length > 0) {
+          const values = []
+          valueArr.forEach(function(ele) {
+            values.push(ele.value)
+          })
+          chart_option.visualMap.min = Math.min(...values)
+          chart_option.visualMap.max = Math.max(...values)
+          if (chart_option.visualMap.min === chart_option.visualMap.max) {
+            chart_option.visualMap.min = 0
+          }
+        } else {
           chart_option.visualMap.min = 0
+          chart_option.visualMap.max = 0
         }
-      } else {
-        chart_option.visualMap.min = 0
-        chart_option.visualMap.max = 0
+        if (chart_option.visualMap.min === 0 && chart_option.visualMap.max === 0) {
+          chart_option.visualMap.max = 100
+        }
+        // color
+        if (customAttr.color && customAttr.color.colors) {
+          chart_option.visualMap.inRange.color = customAttr.color.colors
+          chart_option.visualMap.inRange.colorAlpha = customAttr.color.alpha / 100
+        }
+        if (themeStyle) {
+          
+          chart_option.visualMap.textStyle = { color: themeStyle }
+        }
       }
-      if (chart_option.visualMap.min === 0 && chart_option.visualMap.max === 0) {
-        chart_option.visualMap.max = 100
-      }
-      // color
-      if (customAttr.color && customAttr.color.colors) {
-        chart_option.visualMap.inRange.color = customAttr.color.colors
-        chart_option.visualMap.inRange.colorAlpha = customAttr.color.alpha / 100
-      }
-      if (themeStyle) {
-        chart_option.visualMap.textStyle = { color: themeStyle }
-      }
+      
       for (let i = 0; i < valueArr.length; i++) {
         const y = valueArr[i]
         y.name = chart.data.x[i]
         chart_option.series[0].data.push(y)
       }
+      if (isGradient) {
+        chart_option.series[0].data = fillGradientColor(chart_option.series[0].data, customAttr.color.colors)
+        delete chart_option.visualMap
+      }
+      
       if (chart.senior) {
         const senior = JSON.parse(chart.senior)
 

@@ -8,11 +8,10 @@
         size="mini"
       >
         <div>
-          <el-form-item
-            v-show="showProperty('value')"
-            :label="$t('chart.color_case')"
-            class="form-item"
-          >
+          <el-form-item v-show="showProperty('value') && showProperty('gradient-color')" :label="$t('chart.color_case')" class="form-item">
+            <gradient-color-selector :color-dto="colorForm" @color-change="gradientColorChange"/>
+          </el-form-item>
+          <el-form-item v-show="showProperty('value') && !showProperty('gradient-color')" :label="$t('chart.color_case')" class="form-item">
             <el-popover
               placement="bottom"
               width="400"
@@ -263,10 +262,12 @@
 import { COLOR_PANEL, DEFAULT_COLOR_CASE } from '../../chart/chart'
 import { getColors } from '@/views/chart/chart/util'
 import { mapState } from 'vuex'
+import GradientColorSelector from '@/components/GradientColorSelector'
 import bus from '@/utils/bus'
 
 export default {
   name: 'ColorSelector',
+  components: {GradientColorSelector},
   props: {
     param: {
       type: Object,
@@ -406,6 +407,13 @@ export default {
     bus.$off('prop-change-data', this.initCustomColor)
   },
   methods: {
+    gradientColorChange(colorDto) {
+      const modifyNames = ['value', 'colors', 'seriesColors']
+      modifyNames.forEach(item => {
+        this.colorForm['modifyName'] = item
+        this.$emit('onColorChange', this.colorForm)
+      })
+    },
     changeColorOption(modifyName = 'value') {
       const that = this
       const items = this.colorCases.filter(ele => {
