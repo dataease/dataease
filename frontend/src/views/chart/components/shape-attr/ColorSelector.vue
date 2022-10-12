@@ -8,10 +8,21 @@
         size="mini"
       >
         <div>
-          <el-form-item v-show="showProperty('value') && showProperty('gradient-color')" :label="$t('chart.color_case')" class="form-item">
-            <gradient-color-selector :color-dto="colorForm" @color-change="gradientColorChange"/>
+          <el-form-item
+            v-show="showProperty('value') && showProperty('gradient-color')"
+            :label="$t('chart.color_case')"
+            class="form-item"
+          >
+            <gradient-color-selector
+              :color-dto="colorForm"
+              @color-change="gradientColorChange"
+            />
           </el-form-item>
-          <el-form-item v-show="showProperty('value') && !showProperty('gradient-color')" :label="$t('chart.color_case')" class="form-item">
+          <el-form-item
+            v-show="showProperty('value') && !showProperty('gradient-color')"
+            :label="$t('chart.color_case')"
+            class="form-item"
+          >
             <el-popover
               placement="bottom"
               width="400"
@@ -267,7 +278,7 @@ import bus from '@/utils/bus'
 
 export default {
   name: 'ColorSelector',
-  components: {GradientColorSelector},
+  components: { GradientColorSelector },
   props: {
     param: {
       type: Object,

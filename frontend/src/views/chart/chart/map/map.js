@@ -10,20 +10,19 @@ const linearCOlor = (start, end) => {
     x2: 0,
     y2: 1,
     colorStops: [
-      {offset: 0, color: start},
-      {offset: 1, color: end},
+      { offset: 0, color: start },
+      { offset: 1, color: end }
     ],
     global: false
   }
 }
 const fillGradientColor = (data, colors) => {
-  if(!data || !data.length) return data
-  const dataLen = data.length
+  if (!data || !data.length) return data
   const colorLen = colors.length
   data.forEach((item, index) => {
     const colorIndex = index % colorLen
     const colorArr = colors[colorIndex]
-    if(Array.isArray(colorArr)) {
+    if (Array.isArray(colorArr)) {
       item.itemStyle = {
         normal: {
           areaColor: linearCOlor(colorArr[0], colorArr[1]),
@@ -44,7 +43,7 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
   let isGradient = false
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
-    
+
     if (customAttr.color) {
       const colorValue = customAttr.color.value
       isGradient = isGradientValue(colorValue)
@@ -99,8 +98,7 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
       }
       const valueArr = chart.data.series[0].data
       // visualMap
-      if(!isGradient) {
-        
+      if (!isGradient) {
         if (valueArr && valueArr.length > 0) {
           const values = []
           valueArr.forEach(function(ele) {
@@ -124,11 +122,10 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
           chart_option.visualMap.inRange.colorAlpha = customAttr.color.alpha / 100
         }
         if (themeStyle) {
-          
           chart_option.visualMap.textStyle = { color: themeStyle }
         }
       }
-      
+
       for (let i = 0; i < valueArr.length; i++) {
         const y = valueArr[i]
         y.name = chart.data.x[i]
@@ -138,7 +135,7 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
         chart_option.series[0].data = fillGradientColor(chart_option.series[0].data, customAttr.color.colors)
         delete chart_option.visualMap
       }
-      
+
       if (chart.senior) {
         const senior = JSON.parse(chart.senior)
 
