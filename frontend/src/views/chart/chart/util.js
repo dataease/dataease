@@ -253,13 +253,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_line',
     icon: 'line'
   },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_trend',
-  //   value: 'line-polar',
-  //   title: '极坐标数值轴',
-  //   icon: 'line'
-  // },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_trend',
+    value: 'line-polar',
+    title: '极坐标数值轴',
+    icon: 'line'
+  },
   {
     render: 'echarts',
     category: 'chart.chart_type_trend',
@@ -294,6 +294,13 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_compare',
     value: 'bar-ranking',
     title: '极坐标柱状图',
+    icon: 'bar'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
+    value: 'bar-contrast',
+    title: '对比柱状图',
     icon: 'bar'
   },
   // 暂时隐藏环形朱柱状图

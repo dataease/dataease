@@ -121,12 +121,37 @@ export function polarLineOption(chart_option, chart, cstyle = {}) {
       if (customAttr.label) {
         y.label = customAttr.label
       }
+      y.coordinateSystem = 'polar'
       y.type = 'line'
       chart_option.legend.data.push(y.name)
       chart_option.series.push(y)
     }
   }
   console.log('图表数据修改===+++++++++++++++', chart_option, chart)
+  chart_option.polar = {
+    radius: [0, '70%']
+  }
+  chart_option.tooltip = {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross'
+    }
+  }
+  chart_option.xAxis = [
+    {
+      show: false
+    }
+  ]
+  chart_option.yAxis = [
+    {
+      show: false
+    }
+  ]
+  chart_option.angleAxis = {
+    type: 'value',
+    startAngle: 0
+  }
+  chart_option.radiusAxis = {}
   // console.log(chart_option);
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)

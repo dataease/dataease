@@ -46,6 +46,7 @@ import {
 import {
   baseBarOption,
   doubleBarOption,
+  contrastBarOption,
   rankingBarOption,
   polarStackBarOption,
   pyramidBarOption,
@@ -218,9 +219,12 @@ export default {
       // type
 
       // console.log(this.$store.state.canvasStyleData)
+      // bar-contrast 对比
       // bar-double
       if (chart.type === 'bar') {
         chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-contrast') {
+        chart_option = contrastBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-double') {
         chart_option = doubleBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-ranking') {
