@@ -1,13 +1,28 @@
 <template>
   <div>
-    <div v-if="colorDto.value" class="color-div-base selected-div">
+    <div
+      v-if="colorDto.value"
+      class="color-div-base selected-div"
+    >
       <div style="float: left;display: flex;align-items: center;">
-        <span v-for="(c,index) in colorDto.colors" :key="index" class="color-span-base" :style="{background: formatBgColor(c, true)}" />
+        <span
+          v-for="(c,index) in colorDto.colors"
+          :key="index"
+          class="color-span-base"
+          :style="{background: formatBgColor(c, true)}"
+        />
       </div>
-      <span style="margin-left: 4px;">
-      </span>
-      <span class="reset-span" @click="reset">
-        <el-tooltip class="item" effect="dark" content="重置" placement="top">
+      <span style="margin-left: 4px;" />
+      <span
+        class="reset-span"
+        @click="reset"
+      >
+        <el-tooltip
+          class="item"
+          effect="dark"
+          content="重置"
+          placement="top"
+        >
           <i class="el-icon-refresh" />
         </el-tooltip>
       </span>
@@ -17,41 +32,88 @@
       popper-class="gradient-popper"
       :width="popWidth"
       :append-to-body="true"
-      @show="whenShow"
       trigger="click"
+      @show="whenShow"
     >
       <div class="custom-switch-div">
         <el-switch
           v-model="enableCustom"
           active-text="自定义"
-          inactive-text="">
-        </el-switch>
+          inactive-text=""
+        />
       </div>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane v-for="(pane, i) in tabPanes" :key="i" :label="pane.label" :name="pane.name">
-          <div class="color-tab-content" :id="'color-tab-content-' + i" @click="handler">
-            <div v-for="option in pane.datas" :key="option.value" class="el-select-dropdown__item color-div-base" :class="option.value === colorDto.value ? 'selected hover editor' : ''" @click="selectNode(option)">
-              <div v-if="option.value !== colorDto.value || !enableCustom" style="float: left;display: flex;align-items: center;">
-                <span v-for="(c,index) in option.colors" :key="index" class="color-span-base" :style="{background: formatBgColor(c)}" />
+      <el-tabs
+        v-model="activeName"
+        @tab-click="handleClick"
+      >
+        <el-tab-pane
+          v-for="(pane, i) in tabPanes"
+          :key="i"
+          :label="pane.label"
+          :name="pane.name"
+        >
+          <div
+            :id="'color-tab-content-' + i"
+            class="color-tab-content"
+            @click="handler"
+          >
+            <div
+              v-for="option in pane.datas"
+              :key="option.value"
+              class="el-select-dropdown__item color-div-base"
+              :class="option.value === colorDto.value ? 'selected hover editor' : ''"
+              @click="selectNode(option)"
+            >
+              <div
+                v-if="option.value !== colorDto.value || !enableCustom"
+                style="float: left;display: flex;align-items: center;"
+              >
+                <span
+                  v-for="(c,index) in option.colors"
+                  :key="index"
+                  class="color-span-base"
+                  :style="{background: formatBgColor(c)}"
+                />
               </div>
-              <span v-if="option.value !== colorDto.value || !enableCustom" style="margin-left: 4px;">{{ option.name }}</span>
+              <span
+                v-if="option.value !== colorDto.value || !enableCustom"
+                style="margin-left: 4px;"
+              >{{ option.name }}</span>
 
-              <span v-else v-for="(co,index) in option.colors" :key="index" class="color-span-base is-editor" >
-                <el-color-picker v-if="i === 0" v-model="option.colors[index]" @change="switchColorItem(option.colors, index)"/>
-                <de-color-picker ref="de-color-picker" :id="option.value + index" :base-id="option.value + index" show-alpha color-format="rgb" v-else v-model="option.colors[index]" @change="switchColorItem(option.colors, index)"/>
+              <span
+                v-for="(co,index) in option.colors"
+                v-else
+                :key="index"
+                class="color-span-base is-editor"
+              >
+                <el-color-picker
+                  v-if="i === 0"
+                  v-model="option.colors[index]"
+                  @change="switchColorItem(option.colors, index)"
+                />
+                <de-color-picker
+                  v-else
+                  :id="option.value + index"
+                  ref="de-color-picker"
+                  v-model="option.colors[index]"
+                  :base-id="option.value + index"
+                  show-alpha
+                  color-format="rgb"
+                  @change="switchColorItem(option.colors, index)"
+                />
               </span>
-              
+
             </div>
           </div>
         </el-tab-pane>
-        
+
       </el-tabs>
 
       <el-select
         ref="colorSelect"
         slot="reference"
         v-model="colorDto.value"
-        
+
         class="form-gender-select"
         popper-class="gradient-tree-select"
         :placeholder="$t('commons.please_select')"
@@ -63,16 +125,16 @@
           :label="item.label"
           :value="item.id"
         />
-          
+
       </el-select>
     </el-popover>
   </div>
 </template>
 
 <script>
-import {colorCases, gradientColorCases} from './base'
+import { colorCases, gradientColorCases } from './base'
 import DeColorPicker from './DeColorPicker'
-export default{
+export default {
   name: 'GradientColorSelector',
   components: {
     DeColorPicker
@@ -113,7 +175,7 @@ export default{
     }
   },
   computed: {
-    
+
   },
   mounted() {
     this._updateH()
@@ -130,10 +192,10 @@ export default{
     },
     scrollToSelected() {
       const index = this.activeName === 'simple' ? 0 : 1
-      const parents = document.getElementById("color-tab-content-" + index)
-      if(!parents) return
-      const items = parents.getElementsByClassName("color-div-base selected")
-      if(items && items.length) {
+      const parents = document.getElementById('color-tab-content-' + index)
+      if (!parents) return
+      const items = parents.getElementsByClassName('color-div-base selected')
+      if (items && items.length) {
         const top = items[0].offsetTop || 0
         parents.scrollTo(0, top)
       }
@@ -149,8 +211,8 @@ export default{
         this.colorDto.colors = this.colorCases[0].colors
         haspPropValue = false
       }
-      this.activeName = this.colorCases.some(item => item.value === this.colorDto.value) ? 'simple' : 'gradient' 
-      if(haspPropValue) {
+      this.activeName = this.colorCases.some(item => item.value === this.colorDto.value) ? 'simple' : 'gradient'
+      if (haspPropValue) {
         this.tabPanes[this.activeName === 'simple' ? 0 : 1].datas.forEach(item => {
           if (item.value === this.colorDto.value) {
             item.colors = JSON.parse(JSON.stringify(this.colorDto.colors))
@@ -160,24 +222,22 @@ export default{
     },
     handler(e) {
       const whiteClassName = 'c__block el-popover__reference'
-      if(!e || !e.target || !e.target.className) return
-      if(!this.$refs || !this.$refs['de-color-picker']) return
+      if (!e || !e.target || !e.target.className) return
+      if (!this.$refs || !this.$refs['de-color-picker']) return
       let id = null
       if (e.target.className === whiteClassName) {
-        if(!e.target.parentElement || !e.target.parentElement.parentElement || !e.target.parentElement.parentElement.parentElement || !e.target.parentElement.parentElement.parentElement.id) return
+        if (!e.target.parentElement || !e.target.parentElement.parentElement || !e.target.parentElement.parentElement.parentElement || !e.target.parentElement.parentElement.parentElement.id) return
         id = e.target.parentElement.parentElement.parentElement.id
       }
-      
-      const widget = this.$refs['de-color-picker'] 
-      if (Array.isArray(widget)) {
 
+      const widget = this.$refs['de-color-picker']
+      if (Array.isArray(widget)) {
         widget.forEach(item => {
           (!id || id !== item.$el.id) && item.triggerHide && item.triggerHide()
         })
         return
       }
       (!id || id !== widget.$el.id) && widget.triggerHide && widget.triggerHide()
-      
     },
     handleClick() {
       this.enableCustom = false
@@ -185,9 +245,8 @@ export default{
         this.scrollToSelected()
       })
       const widget = this.$refs['de-color-picker']
-      if(!widget) return
+      if (!widget) return
       if (Array.isArray(widget)) {
-
         widget.forEach(item => {
           item.triggerHide && item.triggerHide()
         })
@@ -215,10 +274,10 @@ export default{
     },
     formatBgColor(color, useValue) {
       let activeName = this.activeName
-      if(useValue) {
+      if (useValue) {
         activeName = this.colorCases.some(item => item.value === this.colorDto.value) ? 'simple' : 'gradient'
       }
-      if(activeName === 'simple') {
+      if (activeName === 'simple') {
         return color
       }
       return 'linear-gradient(0.0deg,' + color[0] + ' 0.0,' + color[1] + ' 100.0%)'
@@ -236,13 +295,13 @@ export default{
       this.$emit('color-change', JSON.parse(JSON.stringify(this.colorDto)))
     },
     reset() {
-      if(this.colorDto.value) {
+      if (this.colorDto.value) {
         let activeName = 'simple'
-        if(this.gradientColorCases.some(item => item.value === this.colorDto.value)) {
+        if (this.gradientColorCases.some(item => item.value === this.colorDto.value)) {
           activeName = 'gradient'
         }
         (activeName === 'simple' ? colorCases : gradientColorCases).forEach(curcase => {
-          if(curcase.value === this.colorDto.value) {
+          if (curcase.value === this.colorDto.value) {
             this.colorDto.colors = JSON.parse(JSON.stringify(curcase.colors))
             this.$emit('color-change', JSON.parse(JSON.stringify(this.colorDto)))
           }
@@ -250,7 +309,7 @@ export default{
       }
     }
   }
-} 
+}
 </script>
 
 <style lang="scss">
@@ -263,7 +322,7 @@ export default{
   margin-top: 1px !important;
   border-top: none;
   height: 300px;
-  
+
   .popper__arrow {
     display: none;
   }
