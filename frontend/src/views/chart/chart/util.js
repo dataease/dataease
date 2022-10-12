@@ -1074,6 +1074,63 @@ export const TYPE_CONFIGS = [
         'alpha'
       ],
       'size-selector-ant-v': [
+        'pieOuterRadius'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position-pie'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'isItalic',
+        'isBolder',
+        'remarkShow',
+        'fontFamily',
+        'letterSpace',
+        'fontShadow'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
+  },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_distribute',
+    value: 'pie-donut',
+    title: 'chart.chart_pie_donut',
+    icon: 'pie-donut',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'colorPanel',
+        'customColor',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
         'pieInnerRadius',
         'pieOuterRadius'
       ],
@@ -1116,6 +1173,63 @@ export const TYPE_CONFIGS = [
     value: 'pie-rose',
     title: 'chart.chart_pie_rose',
     icon: 'pie-rose',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'colorPanel',
+        'customColor',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'pieOuterRadius'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position-pie'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'isItalic',
+        'isBolder',
+        'remarkShow',
+        'fontFamily',
+        'letterSpace',
+        'fontShadow'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
+  },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_distribute',
+    value: 'pie-donut-rose',
+    title: 'chart.chart_pie_donut_rose',
+    icon: 'pie-donut-rose',
     properties: [
       'color-selector',
       'size-selector-ant-v',
@@ -2386,6 +2500,64 @@ export const TYPE_CONFIGS = [
         'alpha'
       ],
       'size-selector': [
+        'pieOuterRadius'
+      ],
+      'label-selector': [
+        'show',
+        'labelLine',
+        'fontSize',
+        'color',
+        'position-pie',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'pie-donut',
+    title: 'chart.chart_pie_donut',
+    icon: 'pie-donut',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'title-selector',
+      'legend-selector'
+    ],
+    propertyInner: {
+
+      'color-selector': [
+        'value',
+        'custom',
+        'alpha'
+      ],
+      'size-selector': [
         'pieInnerRadius',
         'pieOuterRadius'
       ],
@@ -2429,6 +2601,65 @@ export const TYPE_CONFIGS = [
     value: 'pie-rose',
     title: 'chart.chart_pie_rose',
     icon: 'pie-rose',
+    properties: [
+      'color-selector',
+      'size-selector',
+      'label-selector',
+      'tooltip-selector',
+      'title-selector',
+      'legend-selector'
+    ],
+    propertyInner: {
+
+      'color-selector': [
+        'value',
+        'custom',
+        'alpha'
+      ],
+      'size-selector': [
+        'pieOuterRadius',
+        'pieRoseType',
+        'pieRoseRadius'
+      ],
+      'label-selector': [
+        'show',
+        'fontSize',
+        'color',
+        'position-pie',
+        'formatter'
+      ],
+      'tooltip-selector': [
+        'show',
+        'trigger',
+        'textStyle',
+        'formatter'
+      ],
+      'title-selector': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'vPosition',
+        'isItalic',
+        'isBolder'
+      ],
+      'legend-selector': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'pie-donut-rose',
+    title: 'chart.chart_pie_donut_rose',
+    icon: 'pie-donut-rose',
     properties: [
       'color-selector',
       'size-selector',

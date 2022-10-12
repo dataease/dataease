@@ -1038,6 +1038,13 @@ export default {
         } else {
           attr.label.position = 'inner'
         }
+        // 环形图默认内径，玫瑰图为 外径 * 0.5，饼图为 外径 * 0.7
+        if (type === 'pie-donut') {
+          attr.size.pieInnerRadius = Math.round(attr.size.pieOuterRadius * 0.7)
+        }
+        if (type === 'pie-donut-rose') {
+          attr.size.pieInnerRadius = Math.round(attr.size.pieOuterRadius * 0.5)
+        }
       } else if (type.includes('line')) {
         attr.label.position = 'top'
       } else if (type.includes('treemap')) {

@@ -219,9 +219,7 @@ export default {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
       } else if (chart.type === 'bar-group') {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
-      } else if (chart.type === 'bar-stack') {
-        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
-      } else if (chart.type === 'percentage-bar-stack') {
+      } else if (chart.type === 'bar-stack' || chart.type === 'percentage-bar-stack') {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
       } else if (chart.type === 'bar-horizontal') {
         this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
@@ -239,9 +237,9 @@ export default {
         this.myChart = baseRadarOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'gauge') {
         this.myChart = baseGaugeOptionAntV(this.myChart, this.chartId, chart, this.antVAction, this.scale)
-      } else if (chart.type === 'pie') {
+      } else if (chart.type === 'pie' || chart.type === 'pie-donut') {
         this.myChart = basePieOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
-      } else if (chart.type === 'pie-rose') {
+      } else if (chart.type === 'pie-rose' || chart.type === 'pie-donut-rose') {
         this.myChart = basePieRoseOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'funnel') {
         this.myChart = baseFunnelOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
