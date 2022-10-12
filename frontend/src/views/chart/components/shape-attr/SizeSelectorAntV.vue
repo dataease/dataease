@@ -358,6 +358,100 @@
             @change="changeBarSizeCase('tableColumnWidth')"
           />
         </el-form-item>
+
+        <!--chart-mix-start-->
+        <span v-show="showProperty('mix')">
+          <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_bar') }}</el-divider>
+          <el-form-item :label="$t('chart.adapt')" class="form-item">
+            <el-checkbox v-model="sizeForm.barDefault" @change="changeBarSizeCase('barDefault')">{{ $t('chart.adapt') }}</el-checkbox>
+          </el-form-item>
+          <el-form-item :label="$t('chart.bar_gap')" class="form-item form-item-slider">
+            <el-slider
+              v-model="sizeForm.barGap"
+              :disabled="sizeForm.barDefault"
+              show-input
+              :show-input-controls="false"
+              input-size="mini"
+              :min="0"
+              :max="5"
+              :step="0.1"
+              @change="changeBarSizeCase('barGap')"
+            />
+          </el-form-item>
+          <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_line') }}</el-divider>
+          <el-form-item
+            :label="$t('chart.line_width')"
+            class="form-item form-item-slider"
+          >
+            <el-slider
+              v-model="sizeForm.lineWidth"
+              show-input
+              :show-input-controls="false"
+              input-size="mini"
+              :min="0"
+              :max="10"
+              @change="changeBarSizeCase('lineWidth')"
+            />
+          </el-form-item>
+          <el-form-item :label="$t('chart.line_symbol')" class="form-item">
+            <el-select v-model="sizeForm.lineSymbol" :placeholder="$t('chart.line_symbol')" @change="changeBarSizeCase('lineSymbol')">
+              <el-option
+                v-for="item in lineSymbolOptions"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            :label="$t('chart.line_symbol_size')"
+            class="form-item form-item-slider"
+          >
+            <el-slider
+              v-model="sizeForm.lineSymbolSize"
+              show-input
+              :show-input-controls="false"
+              input-size="mini"
+              :min="0"
+              :max="20"
+              @change="changeBarSizeCase('lineSymbolSize')"
+            />
+          </el-form-item>
+          <el-form-item :label="$t('chart.line_smooth')" class="form-item">
+            <el-checkbox v-model="sizeForm.lineSmooth" @change="changeBarSizeCase('lineSmooth')">{{ $t('chart.line_smooth') }}
+            </el-checkbox>
+          </el-form-item>
+          <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_scatter') }}</el-divider>
+          <el-form-item :label="$t('chart.bubble_symbol')" class="form-item">
+            <el-select
+              v-model="sizeForm.scatterSymbol"
+              :placeholder="$t('chart.line_symbol')"
+              @change="changeBarSizeCase('scatterSymbol')"
+            >
+              <el-option
+                v-for="item in lineSymbolOptions"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            :label="$t('chart.bubble_size')"
+            class="form-item form-item-slider"
+          >
+            <el-slider
+              v-model="sizeForm.scatterSymbolSize"
+              show-input
+              :show-input-controls="false"
+              input-size="mini"
+              :min="1"
+              :max="40"
+              @change="changeBarSizeCase('scatterSymbolSize')"
+            />
+          </el-form-item>
+        </span>
+        <!--chart-mix-end-->
       </el-form>
       <!--table-end-->
 

@@ -52,6 +52,7 @@ import { baseWaterfallOptionAntV } from '@/views/chart/chart/waterfall/waterfall
 import { baseWordCloudOptionAntV } from '@/views/chart/chart/wordCloud/word_cloud'
 import TitleRemark from '@/views/chart/view/TitleRemark'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
+import { baseMixOptionAntV } from '@/views/chart/chart/mix/mix_antv'
 
 export default {
   name: 'ChartComponentG2',
@@ -252,6 +253,8 @@ export default {
         this.myChart = baseWaterfallOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'word-cloud') {
         this.myChart = baseWordCloudOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'chart-mix') {
+        this.myChart = baseMixOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false

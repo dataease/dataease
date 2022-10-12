@@ -606,6 +606,21 @@ export function getYAxisExt(chart) {
           style: {
             fill: a.axisLabel.color,
             fontSize: parseInt(a.axisLabel.fontSize)
+          },
+          formatter: function(value) {
+            if (chart.type === 'waterfall') {
+              return value
+            } else {
+              if (!chart.type.includes('horizontal')) {
+                if (!a.axisLabelFormatter) {
+                  return valueFormatter(value, formatterItem)
+                } else {
+                  return valueFormatter(value, a.axisLabelFormatter)
+                }
+              } else {
+                return value
+              }
+            }
           }
         } : null
 
