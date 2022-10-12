@@ -88,6 +88,350 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
   seniorCfg(chart_option, chart)
   return chart_option
 }
+// contrastBarOption
+export function contrastBarOption(chart_option, chart, cstyle = {}) {
+  // 处理shape attr
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.color) {
+      chart_option.color = customAttr.color.colors
+    }
+    // tooltip
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
+  }
+  // 处理data
+  if (chart.data) {
+    chart_option.title.text = chart.title
+    chart_option.xAxis.data = chart.data.x
+    console.log('customAttr?????????', customAttr)
+    const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
+    for (let i = 0; i < chart.data.series.length; i++) {
+      const y = chart.data.series[i]
+      // color
+
+      if (customAttr.color.variety) {
+        y.itemStyle = {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 1,
+            x2: 0,
+            y2: 0,
+            colorStops: [{
+              offset: 0, // 0% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+            }, {
+              offset: 1, // 100% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+            }],
+            global: false // 缺省为 false
+          },
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr
+        }
+      } else {
+        y.itemStyle = {
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr
+        }
+      }
+
+      // size
+      if (customAttr.size) {
+        if (customAttr.size.barDefault) {
+          y.barWidth = null
+          y.barGap = null
+        } else {
+          y.barWidth = customAttr.size.barWidth
+          y.barGap = customAttr.size.barGap
+        }
+      }
+      // label
+      if (customAttr.label) {
+        y.label = customAttr.label
+      }
+      y.yAxisIndex = i
+      y.type = 'bar'
+      chart_option.legend.data.push(y.name)
+      chart_option.series.push(y)
+    }
+  }
+  console.log('bar_echarts', chart_option)
+  componentStyle(chart_option, chart, cstyle)
+  seniorCfg(chart_option, chart)
+  console.log('bar_echarts++++++++++>>>>>', chart_option)
+  const yAixsdata = JSON.parse(JSON.stringify(chart_option.yAxis))
+  // yAixsdata.push(chart_option.yAxis)
+  // yAixsdata.push(chart_option.yAxis)
+  // console.log('yAixsdata===>', yAixsdata)
+  // yAixsdata[0].type = 'value'
+  // yAixsdata[1].type = 'value'
+  // yAixsdata[1].inverse = true
+  console.log('yAixsdata===>', yAixsdata)
+  // chart_option.yAxis = yAixsdata
+  chart_option.yAxis = [
+    {
+      type: 'value',
+      // max: 350,
+      axisLabel: yAixsdata.axisLabel,
+      splitLine: yAixsdata.splitLine,
+      nameTextStyle: yAixsdata.nameTextStyle,
+      show: yAixsdata.show,
+      nameLocation: yAixsdata.nameLocation,
+      nameRotate: yAixsdata.nameRotate
+    },
+    {
+      type: 'value',
+      // max: 350
+      inverse: true,
+      axisLabel: yAixsdata.axisLabel,
+      splitLine: yAixsdata.splitLine,
+      nameTextStyle: yAixsdata.nameTextStyle,
+      show: yAixsdata.show,
+      nameLocation: yAixsdata.nameLocation,
+      nameRotate: yAixsdata.nameRotate
+    }
+  ]
+  chart_option.xAxis.position = 'center'
+
+  return chart_option
+}
+
+// doubleBarOption
+export function doubleBarOption(chart_option, chart, cstyle = {}) {
+  // 处理shape attr
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.color) {
+      chart_option.color = customAttr.color.colors
+    }
+    // tooltip
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
+  }
+  // 处理data
+  const options = []
+  if (chart.data) {
+    chart_option.title.text = chart.title
+    chart_option.xAxis.data = chart.data.x
+    console.log('customAttr?????????', customAttr)
+    const barBorderRadiusArr = [customAttr.size.barBorderRadius, customAttr.size.barBorderRadius, 0, 0]
+    for (let i = 0; i < chart.data.series.length; i++) {
+      const y = chart.data.series[i]
+      // color
+      if (customAttr.color.variety) {
+        y.itemStyle = {
+          color: {
+            type: 'linear',
+            x: 0,
+            y: 1,
+            x2: 0,
+            y2: 0,
+            colorStops: [{
+              offset: 0, // 0% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+            }, {
+              offset: 1, // 100% 的颜色
+              color: hexColorToRGBA(customAttr.color.colors1[i % customAttr.color.colors1.length], customAttr.color.alpha)
+            }],
+            global: false // 缺省为 false
+          },
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr
+        }
+      } else {
+        y.itemStyle = {
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
+          barBorderWidth: customAttr.size.barBorderValue,
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderRadius: barBorderRadiusArr
+        }
+      }
+
+      // size
+      if (customAttr.size) {
+        if (customAttr.size.barDefault) {
+          y.barWidth = null
+          y.barGap = null
+        } else {
+          y.barWidth = customAttr.size.barWidth
+          y.barGap = customAttr.size.barGap
+        }
+      }
+      // label
+      if (customAttr.label) {
+        y.label = customAttr.label
+      }
+      y.type = 'bar'
+      chart_option.legend.data.push(y.name)
+      // chart_option.series.push(y)
+    }
+    chart_option.timeline = {
+      show: false,
+      top: 0,
+      data: []
+    }
+    chart_option.grid = [{
+      show: false,
+      left: '5%',
+      top: '13%',
+      bottom: '10%',
+      containLabel: true,
+      width: '37%'
+    }, {
+      show: false,
+      left: '51%',
+      top: '17%',
+      bottom: '9%',
+      width: '0%'
+    }, {
+      show: false,
+      right: '5%',
+      top: '13%',
+      bottom: '10%',
+      containLabel: true,
+      width: '37%'
+    }]
+
+    options.push(chart.data.series[0])
+    options.push(chart.data.series[1])
+    options[1].xAxisIndex = 2
+    options[1].yAxisIndex = 2
+  }
+
+  chart_option.series = []
+  console.log('_____________', chart_option)
+  componentStyle(chart_option, chart, cstyle)
+  seniorCfg(chart_option, chart)
+  chart_option.xAxis = []
+  chart_option.xAxis = [{
+    type: 'value',
+    inverse: true,
+    axisLine: {
+      show: false
+    },
+    axisTick: {
+      show: false
+    },
+    position: 'top',
+    // axisLabel: {
+    //   show: true,
+    //   color: '#fff'
+    // },
+    splitLine: {
+      show: true
+      // lineStyle: {
+      //   color: 'rgba(255,255,255,0.2)'
+      // }
+    }
+  }, {
+    gridIndex: 1,
+    show: false
+  }, {
+    gridIndex: 2,
+    axisLine: {
+      show: false
+    },
+    axisTick: {
+      show: false
+    },
+    position: 'top',
+    // axisLabel: {
+    //   show: true,
+    //   color: '#fff'
+    // },
+    splitLine: {
+      show: true
+      // lineStyle: {
+      //   color: 'rgba(255,255,255,0.2)'
+      // }
+    }
+  }]
+  chart_option.yAxis = []
+  chart_option.yAxis = [{
+    type: 'category',
+    inverse: true,
+    position: 'right',
+    axisTick: {
+      show: false
+    },
+    axisLabel: {
+      show: false
+    },
+    data: chart.data.x
+  }, {
+    gridIndex: 1,
+    type: 'category',
+    inverse: true,
+    position: 'left',
+    axisLine: {
+      show: false
+    },
+    axisTick: {
+      show: false
+    },
+    axisLabel: {
+      show: true,
+      padding: [30, 0, 0, 0],
+      // textStyle: {
+      //   color: '#ffffff',
+      //   fontSize: 20
+      // },
+      align: 'center'
+
+    },
+    data: chart.data.x
+  }, {
+    gridIndex: 2,
+    type: 'category',
+    inverse: true,
+    position: 'left',
+    axisTick: {
+      show: false
+    },
+    axisLabel: {
+      show: false
+
+    },
+    data: chart.data.x
+  }]
+  // var lastYearData = [3, 20, 62, 34, 55, 65, 33];
+  // var thisYearData = [11, 38, 23, 39, 66, 66, 79];
+  const option = {
+    baseOption: chart_option,
+    options: [
+      {
+        series: options
+      }
+    ]
+  }
+  console.log('options===>', option)
+  return option
+}
+
 const compare = function(prop) {
   return function(obj1, obj2) {
     var val1 = obj1[prop]
@@ -1099,10 +1443,10 @@ export function stackBarOption(chart_option, chart, cstyle = {}) {
 
 export function stackBarPartOption(chart_option, chart, cstyle = {}) {
   baseBarOption(chart_option, chart, cstyle)
-  
+
   // ext
-  chart_option.series.forEach(function(s,index) {
-    if(index !== 0) {
+  chart_option.series.forEach(function(s, index) {
+    if (index !== 0) {
       s.stack = 'stack'
       s.emphasis = {
         focus: 'series'

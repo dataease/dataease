@@ -47,6 +47,8 @@ import {
 } from '../chart/chart'
 import {
   baseBarOption,
+  doubleBarOption,
+  contrastBarOption,
   rankingBarOption,
   polarStackBarOption,
   pyramidBarOption,
@@ -63,6 +65,7 @@ import {
 import {
   baseLineOption,
   stackLineOption,
+  polarLineOption,
   heatMapOption
 } from '../chart/line/line'
 import {
@@ -222,8 +225,14 @@ export default {
       // type
 
       // console.log(this.$store.state.canvasStyleData)
+      // bar-contrast 对比
+      // bar-double
       if (chart.type === 'bar') {
         chart_option = baseBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-contrast') {
+        chart_option = contrastBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'bar-double') {
+        chart_option = doubleBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-ranking') {
         chart_option = rankingBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'clock-pie') {
@@ -249,7 +258,10 @@ export default {
       } else if (chart.type === 'bar-stack-horizontal') {
         chart_option = horizontalStackBarOption(JSON.parse(JSON.stringify(HORIZONTAL_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line') {
+        // line-polar
         chart_option = baseLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'line-polar') {
+        chart_option = polarLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line-stack') {
         chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie') {

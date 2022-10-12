@@ -33,6 +33,7 @@ module.exports = {
         // target: 'http://192.168.3.67/',
         target: 'http://183.194.64.166:9091/',
         // target: 'http://192.168.3.223/',
+        // target: 'http://192.168.3.67/',
         // target: 'http://ofmfa31n5roz.ngrok.xiaomiqiu123.top',
         ws: false
       }
