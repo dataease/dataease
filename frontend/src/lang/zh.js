@@ -1044,6 +1044,8 @@ export default {
     chart_liquid: '水波图',
     drag_block_progress: '进度指示',
     liquid_max: '目标值',
+    liquid_ban: '波动禁止',
+    liquid_outline_show: '边框显示',
     liquid_outline_border: '边框粗细',
     liquid_outline_distance: '边框间隔',
     liquid_wave_length: '水波长度',

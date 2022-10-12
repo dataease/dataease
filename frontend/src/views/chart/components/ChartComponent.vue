@@ -28,6 +28,7 @@
 <script>
 import {
   BASE_BAR,
+  BASE_BAR_PART,
   BASE_LINE,
   HORIZONTAL_BAR,
   BASE_PICTORIAL_BAR,
@@ -41,7 +42,8 @@ import {
   BASE_TREEMAP,
   BASE_MIX,
   BASE_GRAPH,
-  BASE_WORD_CLOUD
+  BASE_WORD_CLOUD,
+  BASE_LIQUID
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -99,6 +101,10 @@ import {
 import {
   baseMixOption
 } from '@/views/chart/chart/mix/mix'
+
+import {
+  baseLiquidOption
+} from '@/views/chart/chart/liquid/liquid_es'
 // import eventBus from '@/components/canvas/utils/eventBus'
 import {
   uuid
@@ -235,7 +241,7 @@ export default {
       } else if (chart.type === 'bar-stack') {
         chart_option = stackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-stack-part') {
-        chart_option = stackBarPartOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
+        chart_option = stackBarPartOption(JSON.parse(JSON.stringify(BASE_BAR_PART)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-polarStack') {
         chart_option = polarStackBarOption(JSON.parse(JSON.stringify(BASE_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'bar-horizontal') {
@@ -275,6 +281,8 @@ export default {
         chart_option = baseWordCloudOption(JSON.parse(JSON.stringify(BASE_WORD_CLOUD)), chart, this.$store.state.canvasStyleData, this.$store.state.previewCanvasScale.scalePointWidth)
       } else if (chart.type === 'pictorial-bar') {
         chart_option = basePictorialBarOption(JSON.parse(JSON.stringify(BASE_PICTORIAL_BAR)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'liquid') {
+        chart_option = baseLiquidOption(JSON.parse(JSON.stringify(BASE_LIQUID)), chart, this.$store.state.canvasStyleData)
       }
       // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {

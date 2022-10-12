@@ -1,3 +1,5 @@
+import { color } from "echarts"
+
 export const DEFAULT_COLOR_CASE = {
   value: 'default',
   value1: 'default',
@@ -93,6 +95,8 @@ export const DEFAULT_SIZE = {
   treemapWidth: 80,
   treemapHeight: 80,
   liquidMax: 100,
+  liquidShow: false,
+  liquidBan: true,
   liquidSize: 80,
   liquidOutlineBorder: 4,
   liquidOutlineDistance: 8,
@@ -283,6 +287,8 @@ export const DEFAULT_YAXIS_STYLE = {
   name: '',
   nameLocation: 'end',
   nameGap: 20,
+  nameTop: 0,
+  nameLeft: 0,
   paddingLeft: 0,
   paddingRight: 0,
   paddingTop: 0,
@@ -588,6 +594,69 @@ export const BASE_BAR = {
     }
   ]
 }
+
+export const BASE_BAR_PART = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  tooltip: {},
+  legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
+    data: []
+  },
+  xAxis: {
+    data: []
+  },
+  yAxis: [
+    {
+      type: 'value'
+    },
+    {
+      type: 'value'
+    }
+  ],
+  series: [],
+  dataZoom: [
+    {
+      type: 'slider',
+      show: false,
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'slider',
+      show: false,
+      yAxisIndex: [0],
+      left: '93%',
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      xAxisIndex: [0],
+      start: 0,
+      end: 100
+    },
+    {
+      type: 'inside',
+      yAxisIndex: [0],
+      start: 0,
+      end: 100
+    }
+  ]
+}
+
 export const HORIZONTAL_BAR = {
   title: {
     text: '',
@@ -1301,6 +1370,40 @@ export const BASE_GRAPH = {
       yAxisIndex: [0],
       start: 0,
       end: 100
+    }
+  ]
+}
+
+export const BASE_LIQUID = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  series: [
+    {
+      type: 'liquidFill',
+      shape:'circle',
+      label: {
+        show: false,
+        textStyle: {
+          fontSize: 14,
+          color: '#909399',
+        }
+      },
+      outline: {
+        show: false,
+        itemStyle: {},
+        borderDistance:8
+      },
+      waveLength: 100,
+      waveAnimation: true,
+      radius: '50%',
+      data: [],
     }
   ]
 }

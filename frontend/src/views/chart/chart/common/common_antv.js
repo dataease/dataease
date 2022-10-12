@@ -352,7 +352,9 @@ export function getYAxis(chart, cstyle = {}) {
           style: {
             fill: a.nameTextStyle.color,
             fontSize: parseInt(a.nameTextStyle.fontSize),
-            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif'
+            fontFamily: cstyle && cstyle.fontFamily ? cstyle.fontFamily : 'sans-serif',
+            // x: a.nameLeft? a.nameLeft : 10,
+            // y: a.nameTop? a.nameTop : 10,
           },
           autoRotate: false,
           spacing: 10

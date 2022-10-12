@@ -28,6 +28,12 @@
           <el-form-item :label="$t('chart.axias_name_gap')" class="form-item">
             <el-slider v-model="axisForm.nameGap" show-input :show-input-controls="false" :min="0" :max="100" input-size="mini" @change="changeYAxisStyle" />
           </el-form-item>
+          <!-- <el-form-item :label="$t('chart.axias_name_left')" class="form-item">
+            <el-slider v-model="axisForm.nameLeft" show-input :show-input-controls="false" :min="-100" :max="100" input-size="mini" @change="changeYAxisStyle" />
+          </el-form-item> -->
+          <!-- <el-form-item :label="$t('chart.axias_name_top')" class="form-item">
+            <el-slider v-model="axisForm.nameTop" show-input :show-input-controls="false" :min="-100" :max="100" input-size="mini" @change="changeYAxisStyle" />
+          </el-form-item> -->
           <!-- <el-form-item :label="$t('chart.axias_name_lineHeight')" class="form-item">
             <el-slider v-model="axisForm.nameTextStyle.lineHeight" show-input :show-input-controls="false" :min="1" :max="100" input-size="mini" @change="changeYAxisStyle" />
           </el-form-item> -->

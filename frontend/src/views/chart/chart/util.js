@@ -238,14 +238,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_gauge',
     icon: 'gauge'
   },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_quota',
-  //   value: 'liquid',
-  //   title: 'chart.chart_liquid',
-  //   icon: 'liquid'
-  // },
-
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_quota',
+    value: 'liquid',
+    title: 'chart.chart_liquid',
+    icon: 'liquid'
+  },
   {
     render: 'echarts',
     category: 'chart.chart_type_trend',

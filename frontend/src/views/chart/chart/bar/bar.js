@@ -1107,8 +1107,42 @@ export function stackBarPartOption(chart_option, chart, cstyle = {}) {
       s.emphasis = {
         focus: 'series'
       }
+      s.yAxisIndex = 1
+    } else {
+      s.yAxisIndex = 0
     }
   })
+
+  // chart_option.tooltip.formatter = function(params) {
+  //   console.log('paaaaaaaaaaa',params)
+  //   let arr = [] 
+  //   let val = 0
+  //   if(params.length) {
+  //     params.map((item,index) => {
+  //       arr.push(item)
+  //       if(index !== 0) {
+  //         val += item.data.value
+  //       }
+  //     })
+  //     console.log('vvvvvv',val)
+  //     let obj = params[0]
+  //     arr.push({
+  //       ...obj,
+  //       componentIndex: params.length,
+  //       data: {
+  //         value: val
+  //       },
+  //       seriesId: '\u0000总数\u00000',
+  //       seriesIndex: params.length,
+  //       seriesName: '总数',
+  //       value: val
+  //     })
+  //   }
+  //   console.log('arr',arr)
+
+  //   return arr
+  // }
+  
   return chart_option
 }
 
