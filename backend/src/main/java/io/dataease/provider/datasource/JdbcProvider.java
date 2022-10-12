@@ -7,6 +7,7 @@ import io.dataease.commons.utils.LogUtil;
 import io.dataease.dto.datasource.*;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.domain.DeDriver;
 import io.dataease.plugins.common.base.mapper.DeDriverMapper;
 import io.dataease.plugins.common.constants.DatasourceTypes;
@@ -739,6 +740,36 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 return "SELECT nspname FROM pg_namespace;";
             default:
                 return "show tables;";
+        }
+    }
+
+    @Override
+    public void checkConfiguration(Datasource datasource)throws Exception{
+        if (StringUtils.isEmpty(datasource.getConfiguration())){
+            throw new Exception("Datasource configuration is empty");
+        }
+        try {
+            JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasource.getConfiguration(), JdbcConfiguration.class);
+            if(jdbcConfiguration.getQueryTimeout() < 0){
+                throw new Exception("Querytimeout cannot be less than zero." );
+            }
+        }catch (Exception e){
+            throw new Exception("Invalid configuration: " + e.getMessage());
+        }
+
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasource.getType());
+        switch (datasourceType) {
+            case mysql:
+            case mariadb:
+            case engine_doris:
+            case engine_mysql:
+            case ds_doris:
+            case TiDB:
+            case StarRocks:
+                MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);
+                mysqlConfiguration.getJdbc();
+            default:
+                break;
         }
     }
 
