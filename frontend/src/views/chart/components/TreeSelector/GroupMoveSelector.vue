@@ -7,12 +7,18 @@
       highlight-current
       @node-click="nodeClick"
     >
-      <span slot-scope="{ node, data }" :class="treeClass(data,node)">
+      <span
+        slot-scope="{ node, data }"
+        :class="treeClass(data,node)"
+      >
         <span style="display: flex;flex: 1;width: 0;">
           <span v-if="data.type === 'scene'">
-            <svg-icon icon-class="scene"/>
+            <svg-icon icon-class="scene" />
           </span>
-          <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ data.name }}</span>
+          <span
+            style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+            :title="data.name"
+          >{{ data.name }}</span>
         </span>
       </span>
     </el-tree>

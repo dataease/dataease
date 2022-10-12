@@ -1,22 +1,52 @@
 <template>
-  <div :class="classObj" class="app-wrapper">
+  <div
+    :class="classObj"
+    class="app-wrapper"
+  >
     <licbar />
-    <topbar v-if="!fullHeightFlag && finishLoad" :show-tips="showTips" />
+    <topbar
+      v-if="!fullHeightFlag && finishLoad"
+      :show-tips="showTips"
+    />
 
     <de-container :style="mainStyle">
-      <de-aside-container v-if="!sidebar.hide" :isCollapseWidth="sideWidth" type="system" class="le-aside-container">
-        <sidebar @changeSideWidth="(side) => sideWidth = side"  class="sidebar-container" />
+      <de-aside-container
+        v-if="!sidebar.hide"
+        :is-collapse-width="sideWidth"
+        type="system"
+        class="le-aside-container"
+      >
+        <sidebar
+          class="sidebar-container"
+          @changeSideWidth="(side) => sideWidth = side"
+        />
       </de-aside-container>
 
-      <de-main-container class="la-main-container" :class="{'full-height':fullHeightFlag}">
+      <de-main-container
+        class="la-main-container"
+        :class="{'full-height':fullHeightFlag}"
+      >
         <app-main />
       </de-main-container>
     </de-container>
-    <div v-if="showTips" class="pwd-tips">
+    <div
+      v-if="showTips"
+      class="pwd-tips"
+    >
       <span>{{ $t('commons.first_login_tips') }}</span>
       <div style="text-align: right; margin-bottom: 10px;">
-        <el-button size="mini" :disabled="buttonDisable" style="padding-right: 65px;" type="text" @click="doNotNoti">{{ $t('commons.donot_noti') }}</el-button>
-        <el-button type="primary" size="mini" @click="showTips = false">{{ $t('commons.roger_that') }}</el-button>
+        <el-button
+          size="mini"
+          :disabled="buttonDisable"
+          style="padding-right: 65px;"
+          type="text"
+          @click="doNotNoti"
+        >{{ $t('commons.donot_noti') }}</el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          @click="showTips = false"
+        >{{ $t('commons.roger_that') }}</el-button>
       </div>
       <div class="arrow" />
     </div>
@@ -52,7 +82,7 @@ export default {
       showTips: false,
       finishLoad: false,
       buttonDisable: false,
-      sideWidth: "",
+      sideWidth: ''
     }
   },
   computed: {

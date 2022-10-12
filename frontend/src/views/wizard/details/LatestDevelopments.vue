@@ -3,7 +3,10 @@
     class="demo_main"
   >
     <div class="demo_title">
-      <a target="_blank" :href="details.href">
+      <a
+        target="_blank"
+        :href="details.href"
+      >
         <img
           :src="require('../../../assets/DataEase-' +imgIndex + '.jpg')"
           height="100%"

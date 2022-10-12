@@ -27,10 +27,19 @@
             @keyup.enter.native="$event.target.blur()"
           >
 
-            <i slot="suffix" class="el-icon-success el-input__icon map-mapping-ok" @click="finishEdit(scope.row)" />
+            <i
+              slot="suffix"
+              class="el-icon-success el-input__icon map-mapping-ok"
+              @click="finishEdit(scope.row)"
+            />
           </el-input>
 
-          <el-button v-else size="mini" plain @click="triggerEdit(scope)">
+          <el-button
+            v-else
+            size="mini"
+            plain
+            @click="triggerEdit(scope)"
+          >
             <span class="mapping-span">{{ scope.row.attrArea }}</span>
             <i class="el-icon-edit el-icon--right" />
           </el-button>
@@ -39,7 +48,9 @@
       </el-table-column>
       <el-table-column align="right">
 
-        <template slot="header" slot-scope="scope">
+        <template
+          slot="header"
+        >
           <el-input
             v-model="keyWord"
             size="mini"
@@ -49,7 +60,10 @@
 
       </el-table-column>
 
-      <el-empty slot="empty" :description="!!currentAreaCode ? $t('map_mapping.empty'): $t('map_mapping.please_select_map')" />
+      <el-empty
+        slot="empty"
+        :description="!!currentAreaCode ? $t('map_mapping.empty'): $t('map_mapping.please_select_map')"
+      />
     </el-table>
     <div class="mapping-pagination">
       <el-pagination
@@ -215,7 +229,7 @@ export default {
         })
       }
       const cCode = this.currentAreaCode
-      if(!cCode) return
+      if (!cCode) return
       if (this.$store.getters.geoMap[cCode]) {
         const json = this.$store.getters.geoMap[cCode]
         json && innerCallBack(json, cCode)

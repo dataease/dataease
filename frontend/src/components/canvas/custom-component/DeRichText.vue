@@ -1,5 +1,8 @@
 <template>
-  <div class="rich-main-class" @dblclick="setEdit">
+  <div
+    class="rich-main-class"
+    @dblclick="setEdit"
+  >
     <Editor
       v-if="editShow"
       :id="tinymceId"
@@ -39,6 +42,10 @@ export default {
     Editor
   },
   props: {
+    terminal: {
+      type: String,
+      default: 'pc'
+    },
     propValue: {
       type: String,
       require: true
@@ -93,11 +100,31 @@ export default {
     }
   },
   computed: {
+    scale() {
+      return Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
+    },
     editStatus() {
       return this.editMode === 'edit' && !this.mobileLayoutStatus
     },
+    autoStyle() {
+      return {
+        height: (100 / this.scale) + '%!important',
+        width: (100 / this.scale) + '%!important',
+        left: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
+        top: 50 * (1 - 1 / this.scale) + '%',
+        transform: 'scale(' + this.scale + ')'
+      }
+    },
+    scaleCoefficient() {
+      if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
+        return 1.1
+      } else {
+        return 4.5
+      }
+    },
     ...mapState([
-      'mobileLayoutStatus'
+      'mobileLayoutStatus',
+      'previewCanvasScale'
     ])
   },
   watch: {
@@ -146,6 +173,7 @@ export default {
     width: 100%;
     height: 100%;
     overflow-y: auto!important;
+    position: relative;
   }
   ::-webkit-scrollbar {
     width: 0px!important;

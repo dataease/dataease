@@ -1,7 +1,16 @@
 <template>
-  <div :style="classBackground" class="de-card-model">
-    <div class="card-img-model" :style="classImg">
-      <img :src="model.snapshot" alt="" />
+  <div
+    :style="classBackground"
+    class="de-card-model"
+  >
+    <div
+      class="card-img-model"
+      :style="classImg"
+    >
+      <img
+        :src="model.snapshot"
+        alt=""
+      >
     </div>
     <div class="card-info">
       <el-tooltip
@@ -12,17 +21,24 @@
       >
         <span class="de-model-text">{{ model.name }}</span>
       </el-tooltip>
-      <el-dropdown size="medium" trigger="click" @command="handleCommand">
-        <i class="el-icon-more"></i>
-        <el-dropdown-menu class="de-card-dropdown" slot="dropdown">
+      <el-dropdown
+        size="medium"
+        trigger="click"
+        @command="handleCommand"
+      >
+        <i class="el-icon-more" />
+        <el-dropdown-menu
+          slot="dropdown"
+          class="de-card-dropdown"
+        >
           <slot>
             <el-dropdown-item command="rename">
-              <i class="el-icon-edit"></i>
-              {{ $t('chart.rename')}}
+              <i class="el-icon-edit" />
+              {{ $t('chart.rename') }}
             </el-dropdown-item>
             <el-dropdown-item command="delete">
-              <i class="el-icon-delete"></i>
-              {{ $t('chart.delete')}}
+              <i class="el-icon-delete" />
+              {{ $t('chart.delete') }}
             </el-dropdown-item>
           </slot>
         </el-dropdown-menu>
@@ -36,7 +52,7 @@ export default {
   props: {
     model: {
       type: Object,
-      default: () => {},
+      default: () => {}
     },
     width: {
       type: Number
@@ -46,24 +62,24 @@ export default {
     classBackground() {
       return {
         width: this.width + 'px',
-        height: this.width * 0.714 + 'px',
+        height: this.width * 0.714 + 'px'
       }
     },
     classImg() {
       return {
         width: this.width + 'px',
-        height: this.width * 0.576 + 'px',
+        height: this.width * 0.576 + 'px'
         // background: `url(${this.model.snapshot}) no-repeat`,
         // 'background-size': `100% 100%`
       }
-    },
+    }
   },
   methods: {
     handleCommand(key) {
-      this.$emit("command", key);
-    },
-  },
-};
+      this.$emit('command', key)
+    }
+  }
+}
 </script>
 
 <style lang="scss">

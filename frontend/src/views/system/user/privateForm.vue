@@ -5,27 +5,66 @@
         <div class="form-header">
           <span>{{ $t('commons.personal_info') }}</span>
         </div>
-        <el-form ref="createUserForm" :model="form" :rules="rule" size="small" label-width="auto" label-position="right">
-          <el-form-item label="ID" prop="username">
-            <el-input v-model="form.username" disabled />
+        <el-form
+          ref="createUserForm"
+          :model="form"
+          :rules="rule"
+          size="small"
+          label-width="auto"
+          label-position="right"
+        >
+          <el-form-item
+            label="ID"
+            prop="username"
+          >
+            <el-input
+              v-model="form.username"
+              disabled
+            />
           </el-form-item>
-          <el-form-item :label="$t('commons.phone')" prop="phone">
-            <el-input v-model="form.phone" :disabled="formType!=='modify'" />
+          <el-form-item
+            :label="$t('commons.phone')"
+            prop="phone"
+          >
+            <el-input
+              v-model="form.phone"
+              :disabled="formType!=='modify'"
+            />
           </el-form-item>
-          <el-form-item :label="$t('commons.nick_name')" prop="nickName">
-            <el-input v-model="form.nickName" :disabled="formType!=='modify'" />
+          <el-form-item
+            :label="$t('commons.nick_name')"
+            prop="nickName"
+          >
+            <el-input
+              v-model="form.nickName"
+              :disabled="formType!=='modify'"
+            />
           </el-form-item>
-          <el-form-item :label="$t('commons.email')" prop="email">
-            <el-input v-model="form.email" :disabled="formType!=='modify'" />
+          <el-form-item
+            :label="$t('commons.email')"
+            prop="email"
+          >
+            <el-input
+              v-model="form.email"
+              :disabled="formType!=='modify'"
+            />
           </el-form-item>
 
           <el-form-item :label="$t('commons.status')">
-            <el-radio-group v-model="form.enabled" disabled style="width: 140px">
+            <el-radio-group
+              v-model="form.enabled"
+              disabled
+              style="width: 140px"
+            >
               <el-radio :label="1">{{ $t('commons.enable') }}</el-radio>
               <el-radio :label="0">{{ $t('commons.disable') }}</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item disabled :label="$t('commons.organization')" prop="dept">
+          <el-form-item
+            disabled
+            :label="$t('commons.organization')"
+            prop="dept"
+          >
             <treeselect
               v-model="form.deptId"
               disabled
@@ -38,7 +77,10 @@
               :no-results-text="$t('commons.treeselect.no_results_text')"
             />
           </el-form-item>
-          <el-form-item :label="$t('commons.role')" prop="roleIds">
+          <el-form-item
+            :label="$t('commons.role')"
+            prop="roleIds"
+          >
             <el-select
               v-model="form.roleIds"
               disabled
@@ -57,22 +99,51 @@
             </el-select>
           </el-form-item>
 
-          <plugin-com v-if="isPluginLoaded" ref="AuthenticationBind" :user-id="form.userId" :form-type="formType" component-name="AuthenticationBind" />
+          <plugin-com
+            v-if="isPluginLoaded"
+            ref="AuthenticationBind"
+            :user-id="form.userId"
+            :form-type="formType"
+            component-name="AuthenticationBind"
+          />
 
           <!--提供修改个人电话，邮箱和昵称的功能-->
           <el-form-item v-if="formType!=='modify'">
             <el-button @click="formType = 'modify'">修改个人信息</el-button>
           </el-form-item>
           <el-form-item v-else>
-            <el-button v-if="formType==='modify'" type="primary" @click="save">保存</el-button>
-            <el-button v-if="formType==='modify'" @click="reset">取消</el-button>
+            <el-button
+              v-if="formType==='modify'"
+              type="primary"
+              @click="save"
+            >保存</el-button>
+            <el-button
+              v-if="formType==='modify'"
+              @click="reset"
+            >取消</el-button>
           </el-form-item>
         </el-form>
 
-        <div slot="footer" style="margin-left: 30px;" class="dialog-footer">
-          <el-button v-if="formType==='modify'" type="text" @click="reset">{{ $t('commons.cancel') }}</el-button>
-          <el-button v-if="formType==='modify'" type="primary" @click="save">{{ $t('commons.confirm') }}</el-button>
-          <el-button v-if="formType!=='modify'" type="primary" @click="edit">{{ $t('commons.edit') }}</el-button>
+        <div
+          slot="footer"
+          style="margin-left: 30px;"
+          class="dialog-footer"
+        >
+          <el-button
+            v-if="formType==='modify'"
+            type="text"
+            @click="reset"
+          >{{ $t('commons.cancel') }}</el-button>
+          <el-button
+            v-if="formType==='modify'"
+            type="primary"
+            @click="save"
+          >{{ $t('commons.confirm') }}</el-button>
+          <el-button
+            v-if="formType!=='modify'"
+            type="primary"
+            @click="edit"
+          >{{ $t('commons.edit') }}</el-button>
         </div>
       </el-card>
     </div>

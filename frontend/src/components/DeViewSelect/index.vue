@@ -1,5 +1,8 @@
 <template>
-  <div class="el-view-select" :class="selectClass">
+  <div
+    class="el-view-select"
+    :class="selectClass"
+  >
     <el-select
       ref="select"
       v-model="innerValues"
@@ -25,7 +28,11 @@
       class="dialog-css"
       :fullscreen="true"
     >
-      <div v-if="dialogShow && viewLoaded" ref="contaninerDiv" :style="{'height': panelHeight + 'px'}">
+      <div
+        v-if="dialogShow && viewLoaded"
+        ref="contaninerDiv"
+        :style="{'height': panelHeight + 'px'}"
+      >
         <Preview
           :component-data="componentData"
           :canvas-style-data="canvasStyleData"
@@ -34,13 +41,23 @@
         />
       </div>
 
-      <div slot="title" class="dialog-footer title-text">
+      <div
+        slot="title"
+        class="dialog-footer title-text"
+      >
         <span style="font-size: 14px;">
           选择视图
         </span>
         <span style="float: right;">
-          <el-button type="primary" size="mini" @click="sureDialog()">{{ $t('commons.confirm') }}</el-button>
-          <el-button size="mini" @click="cancelDialog()">{{ $t('commons.cancel') }}</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            @click="sureDialog()"
+          >{{ $t('commons.confirm') }}</el-button>
+          <el-button
+            size="mini"
+            @click="cancelDialog()"
+          >{{ $t('commons.cancel') }}</el-button>
         </span>
       </div>
     </el-dialog>

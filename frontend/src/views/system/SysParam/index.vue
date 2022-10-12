@@ -3,7 +3,10 @@
     v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
   >
     <div class="sys-setting">
-      <el-tabs v-model="activeName" class="de-tabs">
+      <el-tabs
+        v-model="activeName"
+        class="de-tabs"
+      >
         <el-tab-pane
           :lazy="true"
           :label="$t('system_parameter_setting.basic_setting')"
@@ -16,7 +19,11 @@
           name="first"
         />
 
-        <el-tab-pane :lazy="true" :label="$t('sysParams.map')" name="ten" />
+        <el-tab-pane
+          :lazy="true"
+          :label="$t('sysParams.map')"
+          name="ten"
+        />
 
         <el-tab-pane
           v-if="engineMode === 'simple'"
@@ -44,9 +51,15 @@
         :class="[activeName !== 'eight' ? 'is-center' : 'pad-center']"
       >
         <div class="min-w600">
-          <basic-setting v-if="activeName === 'zero'" :is-plugin-loaded="isPluginLoaded" />
+          <basic-setting
+            v-if="activeName === 'zero'"
+            :is-plugin-loaded="isPluginLoaded"
+          />
           <email-setting v-if="activeName === 'first'" />
-          <map-setting v-if="activeName === 'ten'" ref="mapSetting" />
+          <map-setting
+            v-if="activeName === 'ten'"
+            ref="mapSetting"
+          />
           <simple-mode v-if="activeName === 'six'" />
           <cluster-mode v-if="activeName === 'seven'" />
           <kettle-setting v-if="activeName === 'eight'" />
@@ -63,7 +76,6 @@ import SimpleMode from './SimpleModeSetting'
 import ClusterMode from './ClusterModeSetting'
 import KettleSetting from './KettleSetting'
 import DeLayoutContent from '@/components/business/DeLayoutContent'
-import PluginCom from '@/views/system/plugin/PluginCom'
 import { pluginLoaded } from '@/api/user'
 import { engineMode } from '@/api/system/engine'
 export default {
@@ -71,7 +83,6 @@ export default {
     BasicSetting,
     EmailSetting,
     DeLayoutContent,
-    PluginCom,
     SimpleMode,
     ClusterMode,
     KettleSetting,

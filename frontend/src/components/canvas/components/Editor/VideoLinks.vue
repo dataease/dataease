@@ -6,7 +6,11 @@
     trigger="click"
   >
     <el-row>
-      <el-form ref="form" size="mini" label-width="70px">
+      <el-form
+        ref="form"
+        size="mini"
+        label-width="70px"
+      >
         <!--        <el-form-item :label="$t('panel.video_type')">-->
         <!--          <el-radio-group v-model="linkInfoTemp.videoType">-->
         <!--            <el-radio :label="'web'">{{$t('panel.online_video')}}</el-radio>-->
@@ -15,12 +19,18 @@
         <!--          </el-radio-group>-->
         <!--        </el-form-item>-->
         <el-form-item :label="$t('panel.auto_play')">
-          <el-switch v-model="linkInfoTemp[linkInfoTemp.videoType].autoplay" size="mini" />
+          <el-switch
+            v-model="linkInfoTemp[linkInfoTemp.videoType].autoplay"
+            size="mini"
+          />
           <span style="color: #909399; font-size: 8px;margin-left: 3px">
             Tips:{{ $t('panel.video_tips') }}
           </span>
         </el-form-item>
-        <el-form-item v-if="linkInfoTemp.videoType==='web'" :label="$t('panel.play_frequency')">
+        <el-form-item
+          v-if="linkInfoTemp.videoType==='web'"
+          :label="$t('panel.play_frequency')"
+        >
           <el-radio-group v-model="linkInfoTemp[linkInfoTemp.videoType].loop">
             <el-radio :label="false">{{ $t('panel.play_once') }}</el-radio>
             <el-radio :label="true">{{ $t('panel.play_circle') }}</el-radio>
@@ -30,12 +40,18 @@
           <el-input v-model="linkInfoTemp[linkInfoTemp.videoType].sources[0].src" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit">{{ $t('panel.confirm') }}</el-button>
+          <el-button
+            type="primary"
+            @click="onSubmit"
+          >{{ $t('panel.confirm') }}</el-button>
           <el-button @click="onClose">{{ $t('panel.cancel') }}</el-button>
         </el-form-item>
       </el-form>
     </el-row>
-    <i slot="reference" class="icon iconfont icon-chaolianjie" />
+    <i
+      slot="reference"
+      class="icon iconfont icon-chaolianjie"
+    />
   </el-popover>
 </template>
 
@@ -69,6 +85,12 @@ export default {
       ]
     }
   },
+  computed: {
+    ...mapState([
+      'curComponent',
+      'curActiveTabInner'
+    ])
+  },
   watch: {
     linkInfo: {
       handler: function() {
@@ -79,14 +101,6 @@ export default {
   },
   created() {
     this.init()
-  },
-  mounted() {
-  },
-  computed: {
-    ...mapState([
-      'curComponent',
-      'curActiveTabInner'
-    ])
   },
   methods: {
     init() {

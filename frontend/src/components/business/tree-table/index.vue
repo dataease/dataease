@@ -1,10 +1,16 @@
 <template>
   <div class="complex-table">
-    <div v-if="$slots.header || header" class="complex-table__header">
+    <div
+      v-if="$slots.header || header"
+      class="complex-table__header"
+    >
       <slot name="header">{{ header }}</slot>
     </div>
 
-    <div v-if="$slots.toolbar || searchConfig" class="complex-table__toolbar">
+    <div
+      v-if="$slots.toolbar || searchConfig"
+      class="complex-table__toolbar"
+    >
       <!-- <slot name="toolbar">
         <fu-search-bar v-bind="searchConfig" @exec="search">
           <slot name="buttons" />
@@ -14,7 +20,10 @@
       <div>
         <slot name="toolbar" />
       </div>
-      <fu-search-bar v-bind="searchConfig" @exec="search">
+      <fu-search-bar
+        v-bind="searchConfig"
+        @exec="search"
+      >
         <template #complex>
           <slot name="complex" />
         </template>
@@ -30,7 +39,10 @@
       </fu-table> -->
     </div>
 
-    <div v-if="$slots.pagination || paginationConfig" class="complex-table__pagination">
+    <div
+      v-if="$slots.pagination || paginationConfig"
+      class="complex-table__pagination"
+    >
       <slot name="pagination">
         <fu-table-pagination
           :current-page.sync="paginationConfig.currentPage"

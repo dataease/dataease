@@ -1,6 +1,12 @@
 <template>
   <el-tooltip :content="tooltip">
-    <el-button circle class="fu-search-bar-button" :type="type" :size="size" @click="click">
+    <el-button
+      circle
+      class="fu-search-bar-button"
+      :type="type"
+      :size="size"
+      @click="click"
+    >
       <slot>
         <i :class="icon" />
       </slot>

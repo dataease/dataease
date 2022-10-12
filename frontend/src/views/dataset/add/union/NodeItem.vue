@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="ds-node" @click="nodeClick">
+    <div
+      class="ds-node"
+      @click="nodeClick"
+    >
       <svg-icon
         v-if="currentNode.currentDs.modelInnerType === 'db'"
         icon-class="ds-db"
@@ -22,20 +25,34 @@
         class="ds-icon-api"
       />
 
-      <span class="node-name" :title="currentNode.currentDs.name">{{
+      <span
+        class="node-name"
+        :title="currentNode.currentDs.name"
+      >{{
         currentNode.currentDs.name
       }}</span>
 
-      <span class="node-menu" @click.stop>
-        <el-dropdown trigger="click" size="small" @command="nodeMenuClick">
+      <span
+        class="node-menu"
+        @click.stop
+      >
+        <el-dropdown
+          trigger="click"
+          size="small"
+          @command="nodeMenuClick"
+        >
           <span class="el-dropdown-link">
-            <el-button icon="el-icon-more" type="text" size="small" />
+            <el-button
+              icon="el-icon-more"
+              type="text"
+              size="small"
+            />
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item
               :disabled="
                 currentNode.currentDs.mode === 0 &&
-                currentNode.currentDs.modelInnerType === 'sql'
+                  currentNode.currentDs.modelInnerType === 'sql'
               "
               icon="el-icon-copy-document"
               :command="beforeNodeMenuClick('union', currentNode)"
@@ -62,11 +79,11 @@
     <!--选择数据集-->
     <el-drawer
       v-if="selectDsDialog"
+      v-closePress
       :title="$t('chart.select_dataset')"
       :visible.sync="selectDsDialog"
       custom-class="user-drawer sql-dataset-drawer"
       size="600px"
-      v-closePress
       direction="rtl"
     >
       <dataset-tree
@@ -78,15 +95,17 @@
         @getTable="firstDs"
       />
       <div class="de-foot">
-        <deBtn secondary @click="closeSelectDs()">{{
+        <deBtn
+          secondary
+          @click="closeSelectDs()"
+        >{{
           $t('dataset.cancel')
         }}</deBtn>
         <deBtn
           :disabled="!tempDs.id"
           type="primary"
           @click="confirmSelectDs()"
-          >{{ $t('dataset.confirm') }}</deBtn
-        >
+        >{{ $t('dataset.confirm') }}</deBtn>
       </div>
     </el-drawer>
 
@@ -120,11 +139,21 @@
       class="dialog-css"
     >
       <union-field-edit :node="currentNode" />
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="closeEditField()">{{
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="closeEditField()"
+        >{{
           $t('dataset.cancel')
         }}</el-button>
-        <el-button type="primary" size="mini" @click="confirmEditField()">{{
+        <el-button
+          type="primary"
+          size="mini"
+          @click="confirmEditField()"
+        >{{
           $t('dataset.confirm')
         }}</el-button>
       </div>

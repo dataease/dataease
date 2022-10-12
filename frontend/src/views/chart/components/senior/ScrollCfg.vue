@@ -1,22 +1,60 @@
 <template>
   <div style="width: 100%;display: block;">
     <el-row class="scroll-style">
-      <el-form ref="scrollForm" :model="scrollForm" label-width="80px" size="mini">
-        <el-form-item :label="$t('chart.scroll')" class="form-item">
-          <el-checkbox v-model="scrollForm.open" @change="changeScrollCfg">{{ $t('chart.open') }}</el-checkbox>
-          <el-tooltip class="item" effect="dark" placement="bottom">
+      <el-form
+        ref="scrollForm"
+        :model="scrollForm"
+        label-width="80px"
+        size="mini"
+      >
+        <el-form-item
+          :label="$t('chart.scroll')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="scrollForm.open"
+            @change="changeScrollCfg"
+          >{{ $t('chart.open') }}</el-checkbox>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            placement="bottom"
+          >
             <div slot="content">
               明细表仅在分页模式为"下拉"时生效。
             </div>
-            <i class="el-icon-info" style="cursor: pointer;color: gray;font-size: 12px;" />
+            <i
+              class="el-icon-info"
+              style="cursor: pointer;color: gray;font-size: 12px;"
+            />
           </el-tooltip>
         </el-form-item>
         <span v-show="scrollForm.open">
-          <el-form-item :label="$t('chart.row')" class="form-item">
-            <el-input-number v-model="scrollForm.row" :min="1" :max="1000" :precision="0" size="mini" @change="changeScrollCfg" />
+          <el-form-item
+            :label="$t('chart.row')"
+            class="form-item"
+          >
+            <el-input-number
+              v-model="scrollForm.row"
+              :min="1"
+              :max="1000"
+              :precision="0"
+              size="mini"
+              @change="changeScrollCfg"
+            />
           </el-form-item>
-          <el-form-item :label="$t('chart.interval') + '(ms)'" class="form-item">
-            <el-input-number v-model="scrollForm.interval" :min="500" :step="1000" :precision="0" size="mini" @change="changeScrollCfg" />
+          <el-form-item
+            :label="$t('chart.interval') + '(ms)'"
+            class="form-item"
+          >
+            <el-input-number
+              v-model="scrollForm.interval"
+              :min="500"
+              :step="1000"
+              :precision="0"
+              size="mini"
+              @change="changeScrollCfg"
+            />
           </el-form-item>
         </span>
       </el-form>

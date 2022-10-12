@@ -47,17 +47,8 @@ export default {
       refId: null
     }
   },
-  created() {
-    this.refId = uuid.v1
-    if (this.componentName) {
-      this.showAsync = true
-      this.url = this.baseUrl + this.componentName
-    } else {
-      this.showAsync = false
-    }
-  },
   watch: {
-    'componentName': function () {
+    'componentName': function() {
       this.refId = uuid.v1
       if (this.componentName) {
         this.showAsync = true
@@ -65,6 +56,15 @@ export default {
       } else {
         this.showAsync = false
       }
+    }
+  },
+  created() {
+    this.refId = uuid.v1
+    if (this.componentName) {
+      this.showAsync = true
+      this.url = this.baseUrl + this.componentName
+    } else {
+      this.showAsync = false
     }
   },
   methods: {

@@ -30,7 +30,10 @@
       :label="item[element.options.attrs.label]"
       :value="item[element.options.attrs.value]"
     >
-      <span :title="item[element.options.attrs.label]" style="display:inline-block;width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">{{ item[element.options.attrs.label] }}</span>
+      <span
+        :title="item[element.options.attrs.label]"
+        style="display:inline-block;width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;"
+      >{{ item[element.options.attrs.label] }}</span>
     </el-option>
   </component>
 

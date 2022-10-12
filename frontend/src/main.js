@@ -35,7 +35,7 @@ import { GaodeMap } from '@antv/l7-maps'
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
 Vue.use(widgets)
-Vue.component('draggable', draggable)
+Vue.component('Draggable', draggable)
 Vue.prototype.$api = api
 
 import * as echarts from 'echarts'
@@ -45,7 +45,6 @@ Vue.prototype.$gaodeMap = GaodeMap
 
 import UmyUi from 'umy-ui'
 Vue.use(UmyUi)
-
 
 // 全屏插件
 import fullscreen from 'vue-fullscreen'
@@ -93,7 +92,7 @@ Vue.component('DeComplexSelect', DeComplexSelect)
 Vue.component('DeViewSelect', DeViewSelect)
 Vue.component('RemarkEditor', RemarkEditor)
 Vue.component('TitleRemark', TitleRemark)
-Vue.component('deBtn', deBtn)
+Vue.component('DeBtn', deBtn)
 
 Vue.config.productionTip = false
 

@@ -29,12 +29,21 @@
             :default-expanded-keys="expandedKeys"
             @current-change="nodeClick"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node father">
+            <span
+              slot-scope="{ node, data }"
+              class="custom-tree-node father"
+            >
               <span style="display: flex;flex: 1;width: 0;">
 
-                <span style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" :title="data.name">{{ node.data.name }}</span>
+                <span
+                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  :title="data.name"
+                >{{ node.data.name }}</span>
               </span>
-              <span v-if="!isChina(data.code)" class="child">
+              <span
+                v-if="!isChina(data.code)"
+                class="child"
+              >
                 <span @click.stop>
                   <span class="el-dropdown-link">
                     <el-button
@@ -45,7 +54,11 @@
                     />
                   </span>
                 </span>
-                <span v-if="!isGlobal(data.code)" style="margin-left: 12px;" @click.stop>
+                <span
+                  v-if="!isGlobal(data.code)"
+                  style="margin-left: 12px;"
+                  @click.stop
+                >
                   <span class="el-dropdown-link">
                     <el-button
                       icon="el-icon-delete"
@@ -72,13 +85,13 @@ import { removeMap } from '@/api/map/map'
 import msgCfm from '@/components/msgCfm'
 export default {
   name: 'MapSettingLeft',
+  mixins: [msgCfm],
   props: {
     treeDatas: {
       type: Array,
       default: () => []
     }
   },
-  mixins: [msgCfm],
   data() {
     return {
       filterText: '',
@@ -87,7 +100,6 @@ export default {
         label: 'name',
         value: 'id'
       },
-      data: [],
       expandedKeys: []
     }
   },
@@ -156,7 +168,7 @@ export default {
             value: null
           }).then(() => {
             this.$emit('refresh-tree')
-            this.openMessageSuccess("commons.delete_success");
+            this.openMessageSuccess('commons.delete_success')
           })
         })
       }).catch(() => {

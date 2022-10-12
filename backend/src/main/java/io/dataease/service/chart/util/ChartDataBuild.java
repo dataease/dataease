@@ -445,6 +445,7 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
+                axisChartDataDTO.setCategory(yAxis.get(j).getName());
                 series.get(j).getData().add(axisChartDataDTO);
             }
         }
@@ -947,7 +948,7 @@ public class ChartDataBuild {
         if (CollectionUtils.isNotEmpty(fieldMap.get("tooltipAxis"))) {
             fieldMap.get("tooltipAxis").forEach(field -> {
                 Integer deType = field.getDeType();
-                if(deType == 2 || deType == 3) {
+                if (deType == 2 || deType == 3) {
                     yfields.add(field);
                 } else {
                     fields.add(field);
@@ -957,7 +958,7 @@ public class ChartDataBuild {
         if (CollectionUtils.isNotEmpty(fieldMap.get("labelAxis"))) {
             fieldMap.get("labelAxis").forEach(field -> {
                 Integer deType = field.getDeType();
-                if(deType == 2 || deType == 3) {
+                if (deType == 2 || deType == 3) {
                     yfields.add(field);
                 } else {
                     fields.add(field);

@@ -21,10 +21,16 @@
           :highlight-current="true"
           @node-click="nodeClick"
         >
-          <span slot-scope="{ node, data }" class="custom-tree-node">
+          <span
+            slot-scope="{ data }"
+            class="custom-tree-node"
+          >
             <span style="display: flex; flex: 1 1 0%; width: 0px;">
               <span v-if="data.nodeType==='template'">
-                <svg-icon icon-class="panel" class="ds-icon-scene" />
+                <svg-icon
+                  icon-class="panel"
+                  class="ds-icon-scene"
+                />
               </span>
               <span v-if="data.nodeType==='folder'">
                 <i class="el-icon-folder" />

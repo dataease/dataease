@@ -4,45 +4,105 @@
       <i class="el-icon-error" />
       <i class="el-icon-edit" />
       <!-- 背景-->
-      <div style="inset: 0px; position: absolute;" :style="customBackground" />
+      <div
+        style="inset: 0px; position: absolute;"
+        :style="customBackground"
+      />
       <!-- 视图组件 背景-->
       <div style="inset: 17px 10px 10px; position: absolute; background: 0% 0% / cover rgb(255, 255, 255);" />
       <!-- 视图组件 主题-->
       <div style="inset: 20px 13px 15px; position: absolute;">
         <div style="position: absolute; inset: 0px 4px; width: auto; height: auto;">
           <!--柱形-->
-          <div style="left: 0px; top: 11px; bottom: 0px; width: 3px; position: absolute;" :style="columnBackgroundLeft" />
-          <div style="left: 5px; top: 6px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundMiddle" />
-          <div style="left: 10px; top: 2px; bottom: 0px; width: 3px; position: absolute;" :style="columnBackgroundRight" />
+          <div
+            style="left: 0px; top: 11px; bottom: 0px; width: 3px; position: absolute;"
+            :style="columnBackgroundLeft"
+          />
+          <div
+            style="left: 5px; top: 6px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundMiddle"
+          />
+          <div
+            style="left: 10px; top: 2px; bottom: 0px; width: 3px; position: absolute;"
+            :style="columnBackgroundRight"
+          />
 
           <!--柱形-->
-          <div style="left: 20px; top: 11px; bottom: 0px; width: 3px; position: absolute;" :style="columnBackgroundLeft" />
-          <div style="left: 25px; top: 2px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundMiddle" />
-          <div style="left: 30px; top: 6px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundRight" />
+          <div
+            style="left: 20px; top: 11px; bottom: 0px; width: 3px; position: absolute;"
+            :style="columnBackgroundLeft"
+          />
+          <div
+            style="left: 25px; top: 2px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundMiddle"
+          />
+          <div
+            style="left: 30px; top: 6px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundRight"
+          />
 
           <!--柱形-->
-          <div style="left: 40px; top: 2px; bottom: 0px; width: 3px; position: absolute;" :style="columnBackgroundLeft" />
-          <div style="left: 45px; top: 6px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundMiddle" />
-          <div style="left: 50px; top: 11px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundRight" />
+          <div
+            style="left: 40px; top: 2px; bottom: 0px; width: 3px; position: absolute;"
+            :style="columnBackgroundLeft"
+          />
+          <div
+            style="left: 45px; top: 6px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundMiddle"
+          />
+          <div
+            style="left: 50px; top: 11px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundRight"
+          />
 
           <!--柱形-->
-          <div style="left: 60px; top: 6px; bottom: 0px; width: 3px; position: absolute;" :style="columnBackgroundLeft" />
-          <div style="left: 65px; top: 11px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundMiddle" />
-          <div style="left: 70px; top: 2px; bottom: 0px; width: 3px; position: absolute; " :style="columnBackgroundRight" />
+          <div
+            style="left: 60px; top: 6px; bottom: 0px; width: 3px; position: absolute;"
+            :style="columnBackgroundLeft"
+          />
+          <div
+            style="left: 65px; top: 11px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundMiddle"
+          />
+          <div
+            style="left: 70px; top: 2px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundRight"
+          />
         </div>
       </div>
 
       <!-- 表格表头颜色 -->
-      <div style="left: 10px; right: 10px; top: 10px; height: 6px; position: absolute;" :style="tableHeadBackground" />
+      <div
+        style="left: 10px; right: 10px; top: 10px; height: 6px; position: absolute;"
+        :style="tableHeadBackground"
+      />
 
       <!-- 字体颜色 -->
       <div style="left: 14px; top: 10px; height: 6px; position: absolute; vertical-align: middle">
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
-        <div style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;" :style="tableFontColor" />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
+        <div
+          style="width: 1px; height: 2px; position: relative; flex-shrink: 0; margin-top: 2px;margin-right: 1px; float: left;"
+          :style="tableFontColor"
+        />
       </div>
 
     </div>
@@ -56,7 +116,7 @@
 
 <script>
 import { chartTransStr2Object } from '@/views/panel/panel'
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 export default {
   name: 'StyleTemplateItem',
   props: {

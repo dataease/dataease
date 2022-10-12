@@ -1,12 +1,19 @@
 <template>
-  <el-row v-if="linkJump" v-loading="$store.getters.loadingMap[$store.getters.currentPath]" style="height: 430px">
+  <el-row
+    v-if="linkJump"
+    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+    style="height: 430px"
+  >
     <el-row>
       <span style="font-weight:600;margin-right: 20px">{{ $t('panel.jump_set') }}</span>
       <el-checkbox v-model="linkJump.checked">{{ $t('panel.enable_jump') }}</el-checkbox>
     </el-row>
     <el-row v-loading="loading">
       <el-row class="preview">
-        <el-col :span="8" style="height:100%;overflow-y: auto">
+        <el-col
+          :span="8"
+          style="height:100%;overflow-y: auto"
+        >
           <el-row class="tree-head">
             <span style="float: left;margin-left: 30px">{{ $t('panel.column_name') }}</span>
             <span style="float: right;margin-right: 10px">{{ $t('panel.enable_column') }}</span>
@@ -19,33 +26,51 @@
             :props="treeProp"
             @node-click="nodeClick"
           >
-            <span slot-scope="{ node, data }" class="custom-tree-node">
+            <span
+              slot-scope="{ data }"
+              class="custom-tree-node"
+            >
               <span>
                 <span style="margin-left: 6px">{{ data.sourceFieldName }}</span>
               </span>
               <span @click.stop>
                 <div>
                   <span class="auth-span">
-                    <el-checkbox v-model="data.checked" @change="sourceFieldCheckedChange(data)" />
+                    <el-checkbox
+                      v-model="data.checked"
+                      @change="sourceFieldCheckedChange(data)"
+                    />
                   </span>
                 </div>
               </span>
             </span>
           </el-tree>
         </el-col>
-        <el-col :span="16" class="preview-show">
+        <el-col
+          :span="16"
+          class="preview-show"
+        >
           <el-row v-if="linkJumpInfo">
             <el-row style="margin-top: 10px;height: 30px;">
-              <el-col :span="4" style="margin-left: 20px">
+              <el-col
+                :span="4"
+                style="margin-left: 20px"
+              >
                 {{ $t('panel.link_type') }}：
               </el-col>
               <el-col :span="10">
-                <el-radio-group v-model="linkJumpInfo.linkType" size="mini">
+                <el-radio-group
+                  v-model="linkJumpInfo.linkType"
+                  size="mini"
+                >
                   <el-radio label="outer">{{ $t('panel.link_outer') }}</el-radio>
                   <el-radio label="inner">{{ $t('panel.link_panel') }}</el-radio>
                 </el-radio-group>
               </el-col>
-              <el-col v-if="linkJumpInfo.linkType==='inner'" :span="9">
+              <el-col
+                v-if="linkJumpInfo.linkType==='inner'"
+                :span="9"
+              >
                 <treeselect
                   v-model="linkJumpInfo.targetPanelId"
                   :options="panelList"
@@ -62,17 +87,27 @@
               </el-col>
             </el-row>
             <el-row style="margin-top: 10px;height: 30px">
-              <el-col :span="4" style="margin-left: 20px">
+              <el-col
+                :span="4"
+                style="margin-left: 20px"
+              >
                 {{ $t('panel.open_model') }}：
               </el-col>
               <el-col :span="10">
-                <el-radio-group v-model="linkJumpInfo.jumpType" size="mini">
+                <el-radio-group
+                  v-model="linkJumpInfo.jumpType"
+                  size="mini"
+                >
                   <el-radio label="_self">{{ $t('panel.now_window') }}</el-radio>
                   <el-radio label="_blank">{{ $t('panel.new_window') }}</el-radio>
                 </el-radio-group>
               </el-col>
             </el-row>
-            <el-row v-if="linkJumpInfo.linkType==='inner'" style="margin-top: 5px;" class="top_border">
+            <el-row
+              v-if="linkJumpInfo.linkType==='inner'"
+              style="margin-top: 5px;"
+              class="top_border"
+            >
               <el-row style="margin-top: 10px">
                 <el-col :span="11">
                   <div class="ellip">{{ $t('panel.link_view') }}</div>
@@ -82,21 +117,42 @@
                 </el-col>
               </el-row>
               <el-row style="height: 180px;overflow-y: auto">
-                <el-row v-for="(targetViewInfo,index) in linkJumpInfo.targetViewInfoList" :key="index">
+                <el-row
+                  v-for="(targetViewInfo,index) in linkJumpInfo.targetViewInfoList"
+                  :key="index"
+                >
                   <el-col :span="11">
                     <div class="select-filed">
-                      <el-select v-model="targetViewInfo.targetViewId" style="width: 100%" size="mini" :placeholder="$t('fu.search_bar.please_select')" @change="viewInfoOnChange(targetViewInfo)">
+                      <el-select
+                        v-model="targetViewInfo.targetViewId"
+                        style="width: 100%"
+                        size="mini"
+                        :placeholder="$t('fu.search_bar.please_select')"
+                        @change="viewInfoOnChange(targetViewInfo)"
+                      >
                         <el-option
                           v-for="item in currentLinkPanelViewArray"
                           :key="item.id"
                           :label="item.name"
                           :value="item.id"
                         >
-                          <span v-if="item.isPlugin" style="float: left">
-                            <svg-icon :icon-class="item.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + item.type + '/svg') : item.type" style="width: 14px;height: 14px" />
+                          <span
+                            v-if="item.isPlugin"
+                            style="float: left"
+                          >
+                            <svg-icon
+                              :icon-class="item.type !== 'buddle-map' ? ('/api/pluginCommon/staticInfo/' + item.type + '/svg') : item.type"
+                              style="width: 14px;height: 14px"
+                            />
                           </span>
-                          <span v-else style="float: left">
-                            <svg-icon :icon-class="item.type" style="width: 14px;height: 14px" />
+                          <span
+                            v-else
+                            style="float: left"
+                          >
+                            <svg-icon
+                              :icon-class="item.type"
+                              style="width: 14px;height: 14px"
+                            />
                           </span>
                           <span style="float: left; font-size: 12px">{{ item.name }}</span>
                         </el-option>
@@ -105,7 +161,12 @@
                   </el-col>
                   <el-col :span="11">
                     <div class="select-filed">
-                      <el-select v-model="targetViewInfo.targetFieldId" style="width: 100%" size="mini" :placeholder="$t('fu.search_bar.please_select')">
+                      <el-select
+                        v-model="targetViewInfo.targetFieldId"
+                        style="width: 100%"
+                        size="mini"
+                        :placeholder="$t('fu.search_bar.please_select')"
+                      >
                         <el-option
                           v-for="viewField in viewIdFieldArrayMap[targetViewInfo.targetViewId]"
                           :key="viewField.id"
@@ -113,10 +174,26 @@
                           :value="viewField.id"
                         >
                           <span style="float: left">
-                            <svg-icon v-if="viewField.deType === 0" icon-class="field_text" class="field-icon-text" />
-                            <svg-icon v-if="viewField.deType === 1" icon-class="field_time" class="field-icon-time" />
-                            <svg-icon v-if="viewField.deType === 2 || viewField.deType === 3" icon-class="field_value" class="field-icon-value" />
-                            <svg-icon v-if="viewField.deType === 5" icon-class="field_location" class="field-icon-location" />
+                            <svg-icon
+                              v-if="viewField.deType === 0"
+                              icon-class="field_text"
+                              class="field-icon-text"
+                            />
+                            <svg-icon
+                              v-if="viewField.deType === 1"
+                              icon-class="field_time"
+                              class="field-icon-time"
+                            />
+                            <svg-icon
+                              v-if="viewField.deType === 2 || viewField.deType === 3"
+                              icon-class="field_value"
+                              class="field-icon-value"
+                            />
+                            <svg-icon
+                              v-if="viewField.deType === 5"
+                              icon-class="field_location"
+                              class="field-icon-location"
+                            />
                           </span>
                           <span style="float: left;font-size: 12px">{{ viewField.name }}</span>
                         </el-option>
@@ -125,28 +202,57 @@
                   </el-col>
                   <el-col :span="2">
                     <div>
-                      <el-button icon="el-icon-delete" type="text" size="small" style="float: left" @click="deleteLinkJumpField(index)" />
+                      <el-button
+                        icon="el-icon-delete"
+                        type="text"
+                        size="small"
+                        style="float: left"
+                        @click="deleteLinkJumpField(index)"
+                      />
                     </div>
                   </el-col>
                 </el-row>
               </el-row>
 
               <el-row class="bottom">
-                <el-button :disabled="!linkJumpInfo.targetPanelId" size="mini" type="success" icon="el-icon-plus" round @click="addLinkJumpField">{{ $t('panel.add_jump_field') }}</el-button>
+                <el-button
+                  :disabled="!linkJumpInfo.targetPanelId"
+                  size="mini"
+                  type="success"
+                  icon="el-icon-plus"
+                  round
+                  @click="addLinkJumpField"
+                >{{ $t('panel.add_jump_field') }}</el-button>
               </el-row>
-              <i slot="reference" class="icon iconfont icon-edit slot-class" />
+              <i
+                slot="reference"
+                class="icon iconfont icon-edit slot-class"
+              />
             </el-row>
-            <el-row v-if="linkJumpInfo.linkType==='outer'" style="border-top: 1px solid #E6E6E6;padding:14px">
+            <el-row
+              v-if="linkJumpInfo.linkType==='outer'"
+              style="border-top: 1px solid #E6E6E6;padding:14px"
+            >
               <el-row style="height: 230px;border: 1px solid #E6E6E6">
-                <el-col :span="18" style="height: 100%">
+                <el-col
+                  :span="18"
+                  style="height: 100%"
+                >
                   <el-row>
                     <span>
                       {{ $t('panel.target_url') }}
-                      <el-tooltip class="item" effect="dark" placement="bottom">
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                        placement="bottom"
+                      >
                         <div slot="content">
                           {{ $t('panel.target_url_tips') }}
                         </div>
-                        <i class="el-icon-info" style="cursor: pointer;" />
+                        <i
+                          class="el-icon-info"
+                          style="cursor: pointer;"
+                        />
                       </el-tooltip>
                     </span>
                     <codemirror
@@ -161,11 +267,22 @@
                     />
                   </el-row>
                 </el-col>
-                <el-col :span="6" style="height: 100%;border-left: 1px solid #E6E6E6;">
-                  <el-col :span="24" style="height: 100%" class="padding-lr">
+                <el-col
+                  :span="6"
+                  style="height: 100%;border-left: 1px solid #E6E6E6;"
+                >
+                  <el-col
+                    :span="24"
+                    style="height: 100%"
+                    class="padding-lr"
+                  >
                     <span>
                       {{ $t('panel.select_world') }}
-                      <el-tooltip class="item" effect="dark" placement="bottom">
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                        placement="bottom"
+                      >
                         <div slot="content">
                           引用字段以 "[" 开始， "]" 结束
                           <br>
@@ -173,7 +290,10 @@
                           <br>
                           若输入与引用字段相同格式的内容，将被当作引用字段处理
                         </div>
-                        <i class="el-icon-info" style="cursor: pointer;" />
+                        <i
+                          class="el-icon-info"
+                          style="cursor: pointer;"
+                        />
                       </el-tooltip>
                     </span>
                     <el-input
@@ -200,14 +320,26 @@
                             :title="item.sourceFieldName"
                             @click="insertFieldToCodeMirror('['+item.sourceFieldName+']')"
                           >
-                            <svg-icon v-if="item.deExtractType === 0" icon-class="field_text" class="field-icon-text" />
-                            <svg-icon v-if="item.deExtractType === 1" icon-class="field_time" class="field-icon-time" />
+                            <svg-icon
+                              v-if="item.deExtractType === 0"
+                              icon-class="field_text"
+                              class="field-icon-text"
+                            />
+                            <svg-icon
+                              v-if="item.deExtractType === 1"
+                              icon-class="field_time"
+                              class="field-icon-time"
+                            />
                             <svg-icon
                               v-if="item.deExtractType === 2 || item.deExtractType === 3"
                               icon-class="field_value"
                               class="field-icon-value"
                             />
-                            <svg-icon v-if="item.deExtractType === 5" icon-class="field_location" class="field-icon-location" />
+                            <svg-icon
+                              v-if="item.deExtractType === 5"
+                              icon-class="field_location"
+                              class="field-icon-location"
+                            />
                             {{ item.sourceFieldName }}
                           </span>
                         </transition-group>
@@ -218,15 +350,26 @@
               </el-row>
             </el-row>
           </el-row>
-          <el-row v-else style="height: 100%; background-color: var(--MainContentBG);" class="custom-position">
+          <el-row
+            v-else
+            style="height: 100%; background-color: var(--MainContentBG);"
+            class="custom-position"
+          >
             {{ $t('panel.select_dimension') }}
           </el-row>
         </el-col>
       </el-row>
     </el-row>
     <el-row class="root-class">
-      <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
-      <el-button type="primary" size="mini" @click="save()">{{ $t('commons.confirm') }}</el-button>
+      <el-button
+        size="mini"
+        @click="cancel()"
+      >{{ $t('commons.cancel') }}</el-button>
+      <el-button
+        type="primary"
+        size="mini"
+        @click="save()"
+      >{{ $t('commons.confirm') }}</el-button>
     </el-row>
   </el-row>
 </template>
@@ -261,7 +404,7 @@ import 'codemirror/keymap/emacs.js'
 import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   components: { codemirror, draggable },
@@ -363,9 +506,9 @@ export default {
       let checkJumpStr
       if (chartDetails.type === 'table-pivot') {
         checkJumpStr = chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
-      }else if(chartDetails.type === 'table-info') {
+      } else if (chartDetails.type === 'table-info') {
         checkJumpStr = chartDetails.xaxis + chartDetails.drillFields
-      }else {
+      } else {
         checkJumpStr = checkAllAxisStr
       }
       // 获取可关联的仪表板

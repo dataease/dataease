@@ -2,20 +2,55 @@
   <div style="width: 100%">
     <el-row>
       <el-col class="custom-item el-form-item">
-        <el-checkbox v-model="componentStyleForm.backgroundColorSelect" style="margin-right: 10px;float: right" @change="themeChange('backgroundColorSelect')">
+        <el-checkbox
+          v-model="componentStyleForm.backgroundColorSelect"
+          style="margin-right: 10px;float: right"
+          @change="themeChange('backgroundColorSelect')"
+        >
           <span style="font-size: 12px">{{ $t('panel.color') }}</span>
         </el-checkbox>
       </el-col>
       <el-col :span="10">
-        <el-color-picker v-model="componentStyleForm.color" :disabled="!componentStyleForm.backgroundColorSelect" size="mini" class="color-picker-style" :predefine="predefineColors" @change="themeChange('color')" />
+        <el-color-picker
+          v-model="componentStyleForm.color"
+          :disabled="!componentStyleForm.backgroundColorSelect"
+          size="mini"
+          class="color-picker-style"
+          :predefine="predefineColors"
+          @change="themeChange('color')"
+        />
       </el-col>
     </el-row>
-    <el-form ref="componentStyleForm" :model="componentStyleForm" label-width="70px" size="mini">
-      <el-form-item :label="$t('panel.opacity')" class="form-item">
-        <el-slider v-model="componentStyleForm.alpha" :disabled="!componentStyleForm.backgroundColorSelect" show-input :show-input-controls="false" input-size="mini" @change="themeChange('alpha')" />
+    <el-form
+      ref="componentStyleForm"
+      :model="componentStyleForm"
+      label-width="70px"
+      size="mini"
+    >
+      <el-form-item
+        :label="$t('panel.opacity')"
+        class="form-item"
+      >
+        <el-slider
+          v-model="componentStyleForm.alpha"
+          :disabled="!componentStyleForm.backgroundColorSelect"
+          show-input
+          :show-input-controls="false"
+          input-size="mini"
+          @change="themeChange('alpha')"
+        />
       </el-form-item>
-      <el-form-item :label="$t('panel.board_radio')" class="form-item">
-        <el-slider v-model="componentStyleForm.borderRadius" show-input :show-input-controls="false" input-size="mini" @change="themeChange('borderRadius')" />
+      <el-form-item
+        :label="$t('panel.board_radio')"
+        class="form-item"
+      >
+        <el-slider
+          v-model="componentStyleForm.borderRadius"
+          show-input
+          :show-input-controls="false"
+          input-size="mini"
+          @change="themeChange('borderRadius')"
+        />
       </el-form-item>
     </el-form>
   </div>

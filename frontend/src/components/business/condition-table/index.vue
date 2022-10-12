@@ -7,9 +7,9 @@
       :options="options"
       :load-options="loadData"
       style="width: 200px"
-      :noChildrenText="$t('commons.treeselect.no_children_text')"
-      :noOptionsText="$t('commons.treeselect.no_options_text')"
-      :noResultsText="$t('commons.treeselect.no_results_text')"
+      :no-children-text="$t('commons.treeselect.no_children_text')"
+      :no-options-text="$t('commons.treeselect.no_options_text')"
+      :no-results-text="$t('commons.treeselect.no_results_text')"
     />
   </div>
 </template>

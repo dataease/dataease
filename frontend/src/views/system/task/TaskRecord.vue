@@ -2,9 +2,15 @@
   <div class="dataset-on-time">
     <el-row class="top-operate">
       <el-col :span="10">
-        <deBtn secondary @click="exportConfirm">{{ $t("zip.export") }}</deBtn>
+        <deBtn
+          secondary
+          @click="exportConfirm"
+        >{{ $t("zip.export") }}</deBtn>
       </el-col>
-      <el-col :span="14" class="right-user">
+      <el-col
+        :span="14"
+        class="right-user"
+      >
         <el-input
           ref="search"
           v-model="nickName"
@@ -28,7 +34,10 @@
         </deBtn>
       </el-col>
     </el-row>
-    <div v-if="filterTexts.length" class="filter-texts">
+    <div
+      v-if="filterTexts.length"
+      class="filter-texts"
+    >
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t("user.result_one") }}</span>
       <el-divider direction="vertical" />
@@ -38,8 +47,15 @@
         @click="scrollPre"
       />
       <div class="filter-texts-container">
-        <p v-for="(ele, index) in filterTexts" :key="ele" class="text">
-          {{ ele }} <i class="el-icon-close" @click="clearOneFilter(index)" />
+        <p
+          v-for="(ele, index) in filterTexts"
+          :key="ele"
+          class="text"
+        >
+          {{ ele }} <i
+            class="el-icon-close"
+            @click="clearOneFilter(index)"
+          />
         </p>
       </div>
       <i
@@ -54,7 +70,10 @@
         @click="clearFilter"
       >{{ $t("user.clear_filter") }}</el-button>
     </div>
-    <div id="resize-for-filter" class="table-container">
+    <div
+      id="resize-for-filter"
+      class="table-container"
+    >
       <grid-table
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
         :table-data="data"
@@ -63,7 +82,10 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       >
-        <el-table-column prop="name" :label="$t('dataset.task_name')">
+        <el-table-column
+          prop="name"
+          :label="$t('dataset.task_name')"
+        >
           <template slot-scope="scope">
             <span>
               <el-link
@@ -80,31 +102,49 @@
           prop="datasetName"
           :label="$t('dataset.task.dataset')"
         />
-        <el-table-column prop="startTime" :label="$t('dataset.start_time')">
+        <el-table-column
+          prop="startTime"
+          :label="$t('dataset.start_time')"
+        >
           <template slot-scope="scope">
             <span>{{ scope.row.startTime | timestampFormatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="endTime" :label="$t('dataset.end_time')">
+        <el-table-column
+          prop="endTime"
+          :label="$t('dataset.end_time')"
+        >
           <template slot-scope="scope">
             <span>{{ scope.row.endTime | timestampFormatDate }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" :label="$t('dataset.status')">
+        <el-table-column
+          prop="status"
+          :label="$t('dataset.status')"
+        >
           <template slot-scope="scope">
             <span
               v-if="scope.row.status"
               :class="[`de-${scope.row.status}-pre`, 'de-status']"
-              >{{ $t(`dataset.${scope.row.status.toLocaleLowerCase()}`) }}
-            <svg-icon style="cursor: pointer;" v-if="scope.row.status === 'Error'"  @click="showErrorMassage(scope.row.info)" icon-class="icon-maybe" class="field-icon-location" />
+            >{{ $t(`dataset.${scope.row.status.toLocaleLowerCase()}`) }}
+              <svg-icon
+                v-if="scope.row.status === 'Error'"
+                style="cursor: pointer;"
+                icon-class="icon-maybe"
+                class="field-icon-location"
+                @click="showErrorMassage(scope.row.info)"
+              />
             </span>
             <span v-else>-</span>
           </template>
         </el-table-column>
       </grid-table>
       <keep-alive>
-        <filterUser ref="filterUser" @search="filterDraw" />
+        <filterUser
+          ref="filterUser"
+          @search="filterDraw"
+        />
       </keep-alive>
     </div>
     <el-dialog
@@ -115,8 +155,14 @@
       class="de-dialog-form"
     >
       <span class="err-msg">{{ error_massage }}</span>
-      <span slot="footer" class="dialog-footer">
-        <deBtn secondary @click="show_error_massage = false">{{
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <deBtn
+          secondary
+          @click="show_error_massage = false"
+        >{{
           $t("dataset.close")
         }}</deBtn>
       </span>
@@ -126,9 +172,7 @@
 
 <script>
 import {
-  formatCondition,
-  formatOrders,
-  formatQuickCondition
+  formatOrders
 } from '@/utils/index'
 import { exportExcel, post } from '@/api/dataset/dataset'
 import GridTable from '@/components/gridTable/index.vue'

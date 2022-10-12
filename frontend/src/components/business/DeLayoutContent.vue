@@ -1,10 +1,18 @@
 <template>
   <div class="layout-container">
     <p class="route-title">
-      <back-button v-if="showBack" :path="backPath" :name="backName" :to="backTo" />
+      <back-button
+        v-if="showBack"
+        :path="backPath"
+        :name="backName"
+        :to="backTo"
+      />
       <span>{{ routeTitle }}</span>
     </p>
-    <div class="container-wrapper" :class="[needInnerPadding ? 'layout-inner-padding' : '']">
+    <div
+      class="container-wrapper"
+      :class="[needInnerPadding ? 'layout-inner-padding' : '']"
+    >
       <slot />
     </div>
   </div>
@@ -34,7 +42,7 @@ export default {
       return backPath || backName || backTo
     },
     needInnerPadding() {
-      return ['sys-identification', 'sys-abutment', 'sys-task-email', 'system-dept', 'system-dept-form', 'system-auth', 'sys-appearance', 'system-param', 'system-template', "sys-task-dataset", "sys-msg-web-all", "system-plugin"].includes(this.$route.name)
+      return ['sys-identification', 'sys-abutment', 'sys-task-email', 'system-dept', 'system-dept-form', 'system-auth', 'sys-appearance', 'system-param', 'system-template', 'sys-task-dataset', 'sys-msg-web-all', 'system-plugin'].includes(this.$route.name)
     }
   }
 }

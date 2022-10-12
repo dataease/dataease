@@ -11,7 +11,10 @@
         >{{ $t('commons.create') }}</el-button>
         <span>&nbsp;</span>
       </el-col>
-      <el-col :span="12" class="right-user">
+      <el-col
+        :span="12"
+        class="right-user"
+      >
         <el-input
           ref="search"
           v-model="nickName"
@@ -35,7 +38,10 @@
         </deBtn>
       </el-col>
     </el-row>
-    <div v-if="filterTexts.length" class="filter-texts">
+    <div
+      v-if="filterTexts.length"
+      class="filter-texts"
+    >
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t("user.result_one") }}</span>
       <el-divider direction="vertical" />
@@ -45,8 +51,15 @@
         @click="scrollPre"
       />
       <div class="filter-texts-container">
-        <p v-for="(ele, index) in filterTexts" :key="ele" class="text">
-          {{ ele }} <i class="el-icon-close" @click="clearOneFilter(index)" />
+        <p
+          v-for="(ele, index) in filterTexts"
+          :key="ele"
+          class="text"
+        >
+          {{ ele }} <i
+            class="el-icon-close"
+            @click="clearOneFilter(index)"
+          />
         </p>
       </div>
       <i
@@ -80,7 +93,7 @@
           prop="opType"
           :label="'数据源'"
         >
-          <template v-slot:default="{ row }">
+          <template #default="{ row }">
             <span>{{ row.datasourceName }}</span>
           </template>
         </el-table-column>
@@ -105,20 +118,22 @@
           sortable="custom"
           :label="'应用时间'"
         >
-          <template v-slot:default="scope">
+          <template #default="scope">
             <span>{{ scope.row.applyTime | timestampFormatDate }}</span>
           </template>
         </el-table-column>
       </grid-table>
     </div>
     <keep-alive>
-      <filterUser ref="filterUser" @search="filterDraw" />
+      <filterUser
+        ref="filterUser"
+        @search="filterDraw"
+      />
     </keep-alive>
   </el-row>
 </template>
 
 <script>
-import DeLayoutContent from '@/components/business/DeLayoutContent'
 import GridTable from '@/components/gridTable/index.vue'
 import filterUser from './filterUser'
 import _ from 'lodash'
@@ -130,7 +145,7 @@ import {
 import { logGrid } from '@/api/appTemplateMarket/log'
 export default {
   name: 'AppTemplateLog',
-  components: { GridTable, DeLayoutContent, filterUser },
+  components: { GridTable, filterUser },
   mixins: [keyEnter],
   props: {
     appTemplateId: {

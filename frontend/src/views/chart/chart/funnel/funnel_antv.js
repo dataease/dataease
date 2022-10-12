@@ -43,14 +43,6 @@ export function baseFunnelOptionAntV(plot, container, chart, action) {
       }
     ]
   }
-  // size
-  let customAttr = {}
-  if (chart.customAttr) {
-    customAttr = JSON.parse(chart.customAttr)
-    if (customAttr.size) {
-      const s = JSON.parse(JSON.stringify(customAttr.size))
-    }
-  }
   // custom color
   options.color = antVCustomColor(chart)
 

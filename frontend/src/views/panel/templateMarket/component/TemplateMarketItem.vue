@@ -1,20 +1,33 @@
 <template>
   <div class="testcase-template">
-    <div class="template-img" :style="classBackground" @click.stop="templatePreview" />
+    <div
+      class="template-img"
+      :style="classBackground"
+      @click.stop="templatePreview"
+    />
     <el-row class="bottom-area">
       <el-row>
         <span class="demonstration">{{ template.title }}</span>
       </el-row>
     </el-row>
     <el-row class="template-button">
-      <el-button size="mini" style="width: 141px" @click="templatePreview">{{ $t('panel.preview') }}</el-button>
-      <el-button size="mini" style="width: 141px" type="primary" @click="apply">{{ $t('panel.apply') }}</el-button>
+      <el-button
+        size="mini"
+        style="width: 141px"
+        @click="templatePreview"
+      >{{ $t('panel.preview') }}</el-button>
+      <el-button
+        size="mini"
+        style="width: 141px"
+        type="primary"
+        @click="apply"
+      >{{ $t('panel.apply') }}</el-button>
     </el-row>
   </div>
 </template>
 
 <script>
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'TemplateMarketItem',

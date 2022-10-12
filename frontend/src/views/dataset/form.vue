@@ -2,44 +2,56 @@
   <div class="de-dataset-form">
     <div class="top">
       <span class="name">
-        <i @click="logOutTips" class="el-icon-arrow-left"></i>
+        <i
+          class="el-icon-arrow-left"
+          @click="logOutTips"
+        />
         <svg-icon
           style="margin: 0 9.5px 0 16.2px"
           :icon-class="`de-${datasetType}-new`"
         />
         <template v-if="showInput">
-          <el-input @blur="nameBlur" v-model="table.name"></el-input>
-          <div v-if="nameExsit" style="left: 55px" class="el-form-item__error">
+          <el-input
+            v-model="table.name"
+            @blur="nameBlur"
+          />
+          <div
+            v-if="nameExsit"
+            style="left: 55px"
+            class="el-form-item__error"
+          >
             {{ $t('deDataset.already_exists') }}
           </div>
         </template>
         <span
-          :class="[{ 'show-point': ['sql', 'union'].includes(datasetType) }]"
           v-else
+          :class="[{ 'show-point': ['sql', 'union'].includes(datasetType) }]"
           @click="handleClick"
-          >{{ datasetName }}</span
-        >
+        >{{ datasetName }}</span>
       </span>
       <span class="oprate">
         <span
-          class="table-num"
           v-if="['db', 'excel', 'api'].includes(datasetType)"
-          >{{ $t('deDataset.selected') }} {{ tableNum }}
-          {{ ['excel'].includes(datasetType) ? $t('deDataset.table') : '项' }}</span
-        >
-        <deBtn :disabled="['db', 'excel', 'api'].includes(datasetType) && !tableNum" @click="datasetSave" type="primary">{{
+          class="table-num"
+        >{{ $t('deDataset.selected') }} {{ tableNum }}
+          {{ ['excel'].includes(datasetType) ? $t('deDataset.table') : '项' }}</span>
+        <deBtn
+          :disabled="['db', 'excel', 'api'].includes(datasetType) && !tableNum"
+          type="primary"
+          @click="datasetSave"
+        >{{
           $t('commons.save')
         }}</deBtn>
       </span>
     </div>
     <div class="container">
       <component
-        @setTableNum="(val) => (tableNum = val)"
-        :param="table"
         :is="component"
         ref="addDataset"
-        :originName="originName"
-        :nameList="nameList"
+        :param="table"
+        :origin-name="originName"
+        :name-list="nameList"
+        @setTableNum="(val) => (tableNum = val)"
       />
     </div>
   </div>
@@ -74,7 +86,7 @@ export default {
       nameList: [],
       datasetForm: {
         id: '',
-        name: '',
+        name: ''
       },
       datasetFormRules: {
         name: [
@@ -95,7 +107,7 @@ export default {
             required: true,
             message: this.$t('fu.search_bar.please_select'),
             trigger: 'blur'
-          },
+          }
         ]
       }
     }
@@ -115,13 +127,13 @@ export default {
   created() {
     const fromGroup = this.$route.params.fromGroup
     const routeInfo = fromGroup ? this.$route.params : this.$route.query
-    const { datasetType, sceneId, id, editType, name } =  routeInfo
+    const { datasetType, sceneId, id, editType, name: label } = routeInfo
     this.datasetType = datasetType
     this.editType = editType
     if (id) {
       this.initTable(id)
     } else {
-      const name = name || this.$t('commons.create') + this.$t(datasetTypeMap[datasetType]) + this.$t('auth.datasetAuth')
+      const name = label || this.$t('commons.create') + this.$t(datasetTypeMap[datasetType]) + this.$t('auth.datasetAuth')
       this.table = {
         name,
         id: sceneId
@@ -137,9 +149,9 @@ export default {
     logOutTips() {
       const options = {
         title: 'role.tips',
-          confirmButtonText: this.$t('commons.confirm'),
+        confirmButtonText: this.$t('commons.confirm'),
         content: 'system_parameter_setting.sure_to_exit',
-          type: 'primary',
+        type: 'primary',
         cb: () => {
           this.back()
         }

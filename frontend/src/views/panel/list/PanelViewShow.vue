@@ -6,20 +6,40 @@
     element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(220,220,220,1)"
   >
-    <el-col v-if="panelInfo.name.length>0" class="panel-design">
+    <el-col
+      v-if="panelInfo.name.length>0"
+      class="panel-design"
+    >
 
-      <el-row v-if="showType === 2" class="panel-design-head panel-share-head" style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;">
+      <el-row
+        v-if="showType === 2"
+        class="panel-design-head panel-share-head"
+        style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;"
+      >
         <div style="height: 100%;">
           <share-head />
         </div>
       </el-row>
-      <el-row v-else class="panel-design-head" style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;">
+      <el-row
+        v-else
+        class="panel-design-head"
+        style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;"
+      >
         <!--仪表板头部区域-->
         <div style="height: 100%;">
-          <el-col :span="12" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px">
+          <el-col
+            :span="12"
+            style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px"
+          >
             <span>{{ panelInfo.name || '测试仪表板' }}</span>
-            <span v-if="panelInfo.isDefault" style="color: green;font-size: 12px">({{ $t('panel.default_panel_name') }}:{{ panelInfo.defaultPanelName }})</span>
-            <span v-if="panelInfo.sourcePanelName" style="color: green;font-size: 12px">&nbsp;({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
+            <span
+              v-if="panelInfo.isDefault"
+              style="color: green;font-size: 12px"
+            >({{ $t('panel.default_panel_name') }}:{{ panelInfo.defaultPanelName }})</span>
+            <span
+              v-if="panelInfo.sourcePanelName"
+              style="color: green;font-size: 12px"
+            >&nbsp;({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
             <el-popover
               placement="right-start"
               width="400"
@@ -35,61 +55,136 @@
           </el-col>
           <el-col :span="12">
 
-            <span v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName" style="float: right;margin-right: 10px">
-              <el-button size="mini" type="primary" @click="editPanel">
+            <span
+              v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName"
+              style="float: right;margin-right: 10px"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+                @click="editPanel"
+              >
                 {{ $t('commons.edit') }}
               </el-button>
             </span>
 
-            <span v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName" style="float: right;margin-right: 10px">
-              <el-button size="mini" type="primary" @click="changePublishState">
+            <span
+              v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName"
+              style="float: right;margin-right: 10px"
+            >
+              <el-button
+                size="mini"
+                type="primary"
+                @click="changePublishState"
+              >
                 <span v-if="panelInfo.status==='publish'">{{ $t('commons.unpublished') }}</span>
                 <span v-if="panelInfo.status!=='publish'">{{ $t('commons.publish') }}</span>
               </el-button>
             </span>
 
-            <span v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
+            <span
+              v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'"
+              style="float: right;margin-right: 10px"
+            >
               <el-tooltip :content="$t('panel.save_to_panel')">
-                <el-button class="el-icon-folder-checked" size="mini" circle @click="saveToTemplate" />
+                <el-button
+                  class="el-icon-folder-checked"
+                  size="mini"
+                  circle
+                  @click="saveToTemplate"
+                />
               </el-tooltip>
             </span>
-            <span v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
+            <span
+              v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'"
+              style="float: right;margin-right: 10px"
+            >
               <el-dropdown>
-                <el-button size="mini" class="el-icon-download" circle />
+                <el-button
+                  size="mini"
+                  class="el-icon-download"
+                  circle
+                />
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item icon="el-icon-copy-document" @click.native="downloadToTemplate">{{ $t('panel.export_to_panel') }}</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-notebook-2" @click.native="downloadAsPDF">{{ $t('panel.export_to_pdf') }}</el-dropdown-item>
-                  <el-dropdown-item icon="el-icon-picture-outline" @click.native="downloadAsImage">{{ $t('panel.export_to_img') }}</el-dropdown-item>
+                  <el-dropdown-item
+                    icon="el-icon-copy-document"
+                    @click.native="downloadToTemplate"
+                  >{{ $t('panel.export_to_panel') }}</el-dropdown-item>
+                  <el-dropdown-item
+                    icon="el-icon-notebook-2"
+                    @click.native="downloadAsPDF"
+                  >{{ $t('panel.export_to_pdf') }}</el-dropdown-item>
+                  <el-dropdown-item
+                    icon="el-icon-picture-outline"
+                    @click.native="downloadAsImage"
+                  >{{ $t('panel.export_to_img') }}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
-            <span v-if="panelInfo.status==='publish'" style="float: right;margin-right: 10px">
+            <span
+              v-if="panelInfo.status==='publish'"
+              style="float: right;margin-right: 10px"
+            >
               <el-tooltip :content="$t('panel.fullscreen_preview')">
-                <el-button class="el-icon-view" size="mini" circle @click="clickFullscreen" />
+                <el-button
+                  class="el-icon-view"
+                  size="mini"
+                  circle
+                  @click="clickFullscreen"
+                />
               </el-tooltip>
             </span>
 
-            <span v-if="panelInfo.status==='publish'" style="float: right;margin-right: 10px">
+            <span
+              v-if="panelInfo.status==='publish'"
+              style="float: right;margin-right: 10px"
+            >
               <el-tooltip :content="$t('panel.new_tab_preview')">
-                <el-button class="el-icon-data-analysis" size="mini" circle @click="newTab" />
+                <el-button
+                  class="el-icon-data-analysis"
+                  size="mini"
+                  circle
+                  @click="newTab"
+                />
               </el-tooltip>
             </span>
 
-            <span v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
+            <span
+              v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
+              style="float: right;margin-right: 10px"
+            >
               <el-tooltip :content="$t('panel.store')">
-                <el-button class="el-icon-star-off" size="mini" circle @click="star" />
+                <el-button
+                  class="el-icon-star-off"
+                  size="mini"
+                  circle
+                  @click="star"
+                />
               </el-tooltip>
             </span>
 
-            <span v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'" style="float: right;margin-right: 10px">
+            <span
+              v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
+              style="float: right;margin-right: 10px"
+            >
               <el-tooltip :content="$t('commons.cancel')">
-                <el-button class="el-icon-star-on" size="mini" circle @click="unstar" />
+                <el-button
+                  class="el-icon-star-on"
+                  size="mini"
+                  circle
+                  @click="unstar"
+                />
               </el-tooltip>
             </span>
 
             <span style="float: right;margin-right: 10px">
               <el-tooltip :content="$t('commons.refresh')">
-                <el-button class="el-icon-refresh" size="mini" circle @click="refreshPanel" />
+                <el-button
+                  class="el-icon-refresh"
+                  size="mini"
+                  circle
+                  @click="refreshPanel"
+                />
               </el-tooltip>
             </span>
 
@@ -99,8 +194,15 @@
       <!-- 仪表板预览区域-->
       <el-row class="panel-design-preview">
         <!--        <div id="imageWrapper" ref="imageWrapper" style="width: 4096px;height: 2160px">-->
-        <div id="imageWrapper" ref="imageWrapper" :style="imageWrapperStyle">
-          <fullscreen style="height: 100%;background: #f7f8fa;overflow-y: auto" :fullscreen.sync="fullscreen">
+        <div
+          id="imageWrapper"
+          ref="imageWrapper"
+          :style="imageWrapperStyle"
+        >
+          <fullscreen
+            style="height: 100%;background: #f7f8fa;overflow-y: auto"
+            :fullscreen.sync="fullscreen"
+          >
             <Preview
               v-if="showMainFlag"
               :component-data="componentData"
@@ -115,8 +217,14 @@
         </div>
       </el-row>
     </el-col>
-    <el-col v-if="panelInfo.name.length===0" style="height: 100%;">
-      <el-row style="height: 100%; background-color: var(--ContentBG);" class="custom-position">
+    <el-col
+      v-if="panelInfo.name.length===0"
+      style="height: 100%;"
+    >
+      <el-row
+        style="height: 100%; background-color: var(--ContentBG);"
+        class="custom-position"
+      >
         {{ $t('panel.select_panel_from_left') }}
       </el-row>
     </el-col>
@@ -127,7 +235,10 @@
       :visible.sync="templateSaveShow"
       width="500px"
     >
-      <save-to-template :template-info="templateInfo" @closeSaveDialog="closeSaveDialog" />
+      <save-to-template
+        :template-info="templateInfo"
+        @closeSaveDialog="closeSaveDialog"
+      />
     </el-dialog>
     <el-dialog
       v-if="pdfExportShow"
@@ -139,8 +250,15 @@
       class="dialog-css2"
     >
       <span style="position: absolute;right: 70px;top:15px">
-        <svg-icon icon-class="PDF" class="ds-icon-pdf" />
-        <el-select v-model="pdfTemplateSelectedIndex" :placeholder="'切换PDF模板'" @change="changePdfTemplate()">
+        <svg-icon
+          icon-class="PDF"
+          class="ds-icon-pdf"
+        />
+        <el-select
+          v-model="pdfTemplateSelectedIndex"
+          :placeholder="'切换PDF模板'"
+          @change="changePdfTemplate()"
+        >
           <el-option
             v-for="(item, index) in pdfTemplateAll"
             :key="index"
@@ -149,7 +267,12 @@
           />
         </el-select>
       </span>
-      <PDFPreExport :snapshot="snapshotInfo" :panel-name="panelInfo.name" :template-content="pdfTemplateContent" @closePreExport="closePreExport" />
+      <PDFPreExport
+        :snapshot="snapshotInfo"
+        :panel-name="panelInfo.name"
+        :template-content="pdfTemplateContent"
+        @closePreExport="closePreExport"
+      />
     </el-dialog>
   </el-row>
 </template>

@@ -293,18 +293,17 @@ export function removePanelCache(panelId) {
   })
 }
 
-
 export function findPanelElementInfo(viewId) {
   return request({
-    url: 'panel/group/findPanelElementInfo/'+viewId,
+    url: 'panel/group/findPanelElementInfo/' + viewId,
     method: 'get',
     loading: false
   })
 }
 
-export function export2AppCheck(panelId){
+export function export2AppCheck(panelId) {
   return request({
-    url: 'panel/group/export2AppCheck/'+panelId,
+    url: 'panel/group/export2AppCheck/' + panelId,
     method: 'get',
     loading: false
   })

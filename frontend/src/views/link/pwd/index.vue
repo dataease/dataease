@@ -13,9 +13,21 @@
         <div class="input-layout">
           <div class="input-main">
             <div class="div-input">
-              <el-form ref="pwdForm" :model="form" :rules="rule" size="small" @submit.native.prevent>
+              <el-form
+                ref="pwdForm"
+                :model="form"
+                :rules="rule"
+                size="small"
+                @submit.native.prevent
+              >
                 <el-form-item prop="password">
-                  <el-input v-model="form.password" maxlength="4" show-password class="real-input" :placeholder="$t('pblink.input_placeholder')" />
+                  <el-input
+                    v-model="form.password"
+                    maxlength="4"
+                    show-password
+                    class="real-input"
+                    :placeholder="$t('pblink.input_placeholder')"
+                  />
                 </el-form-item>
               </el-form>
             </div>
@@ -27,7 +39,11 @@
 
         <div class="auth-root-class">
           <span slot="footer">
-            <el-button size="mini" type="primary" @click="refresh">{{ $t('pblink.sure_bt') }}</el-button>
+            <el-button
+              size="mini"
+              type="primary"
+              @click="refresh"
+            >{{ $t('pblink.sure_bt') }}</el-button>
           </span>
         </div>
       </div>

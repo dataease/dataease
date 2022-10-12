@@ -1,12 +1,31 @@
 <!-- TODO: 这个页面后续将用 JSX 重构 -->
 <template>
   <div class="attr-list">
-    <el-form label-width="80px" size="mini">
-      <el-form-item v-for="(key, index) in styleKeys.filter(item => styleFilter.includes(item))" :key="index" :label="map[key]+':'">
-        <el-color-picker v-if="key == 'borderColor'" v-model="curComponent.style[key]" />
-        <el-color-picker v-else-if="key == 'color'" v-model="curComponent.style[key]" />
-        <el-color-picker v-else-if="key == 'backgroundColor'" v-model="curComponent.style[key]" />
-        <el-select v-else-if="selectKey.includes(key)" v-model="curComponent.style[key]">
+    <el-form
+      label-width="80px"
+      size="mini"
+    >
+      <el-form-item
+        v-for="(key, index) in styleKeys.filter(item => styleFilter.includes(item))"
+        :key="index"
+        :label="map[key]+':'"
+      >
+        <el-color-picker
+          v-if="key == 'borderColor'"
+          v-model="curComponent.style[key]"
+        />
+        <el-color-picker
+          v-else-if="key == 'color'"
+          v-model="curComponent.style[key]"
+        />
+        <el-color-picker
+          v-else-if="key == 'backgroundColor'"
+          v-model="curComponent.style[key]"
+        />
+        <el-select
+          v-else-if="selectKey.includes(key)"
+          v-model="curComponent.style[key]"
+        >
           <template v-if="key == 'textAlign'">
             <el-option
               v-for="item in textAlignOptions"
@@ -32,10 +51,17 @@
             />
           </template>
         </el-select>
-        <el-input v-else v-model="curComponent.style[key]" type="number" />
+        <el-input
+          v-else
+          v-model="curComponent.style[key]"
+          type="number"
+        />
       </el-form-item>
       <el-form-item :label="$t('panel.content_style')+':'">
-        <div v-if="curComponent.type==='v-text'" style="width: 100%;max-height: 400px;overflow: auto">
+        <div
+          v-if="curComponent.type==='v-text'"
+          style="width: 100%;max-height: 400px;overflow: auto"
+        >
           <VText
             style="border: 1px solid #dcdfe6;border-radius:4px;background-color: #f7f8fa;"
             :prop-value="curComponent.propValue"

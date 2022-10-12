@@ -1,36 +1,106 @@
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="marginForm" :model="marginForm" label-width="80px" size="mini" :rules="rules">
-        <el-form-item v-show="showProperty('marginModel')" :label="$t('chart.margin_model')" class="form-item">
-          <el-radio-group v-model="marginForm.marginModel" size="mini" @change="changeMarginStyle(marginForm.marginModel, 'marginModel')">
+      <el-form
+        ref="marginForm"
+        :model="marginForm"
+        label-width="80px"
+        size="mini"
+        :rules="rules"
+      >
+        <el-form-item
+          v-show="showProperty('marginModel')"
+          :label="$t('chart.margin_model')"
+          class="form-item"
+        >
+          <el-radio-group
+            v-model="marginForm.marginModel"
+            size="mini"
+            @change="changeMarginStyle(marginForm.marginModel, 'marginModel')"
+          >
             <el-radio-button label="auto">{{ $t('chart.margin_model_auto') }}</el-radio-button>
             <el-radio-button label="absolute">{{ $t('chart.margin_model_absolute') }}</el-radio-button>
             <el-radio-button label="relative">{{ $t('chart.margin_model_relative') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
         <div v-show="showProperty('marginModel') && marginForm.marginModel !== 'auto'">
-          <el-form-item v-show="showProperty('marginTop')" :label="$t('chart.text_pos_top')" class="form-item" prop="marginTop">
-            <el-input v-model="marginForm.marginTop" :placeholder="placeholder" type="number" class="hide-icon-number" @change="changeMarginStyle(marginForm.marginTop, 'marginTop')">
-              <template v-if="unitSuffix" slot="append">{{ unitSuffix }}</template>
+          <el-form-item
+            v-show="showProperty('marginTop')"
+            :label="$t('chart.text_pos_top')"
+            class="form-item"
+            prop="marginTop"
+          >
+            <el-input
+              v-model="marginForm.marginTop"
+              :placeholder="placeholder"
+              type="number"
+              class="hide-icon-number"
+              @change="changeMarginStyle(marginForm.marginTop, 'marginTop')"
+            >
+              <template
+                v-if="unitSuffix"
+                slot="append"
+              >{{ unitSuffix }}</template>
             </el-input>
           </el-form-item>
 
-          <el-form-item v-show="showProperty('marginBottom')" :label="$t('chart.text_pos_bottom')" class="form-item" prop="marginBottom">
-            <el-input v-model="marginForm.marginBottom" :placeholder="placeholder" type="number" class="hide-icon-number" @change="changeMarginStyle(marginForm.marginBottom, 'marginBottom')">
-              <template v-if="unitSuffix" slot="append">{{ unitSuffix }}</template>
+          <el-form-item
+            v-show="showProperty('marginBottom')"
+            :label="$t('chart.text_pos_bottom')"
+            class="form-item"
+            prop="marginBottom"
+          >
+            <el-input
+              v-model="marginForm.marginBottom"
+              :placeholder="placeholder"
+              type="number"
+              class="hide-icon-number"
+              @change="changeMarginStyle(marginForm.marginBottom, 'marginBottom')"
+            >
+              <template
+                v-if="unitSuffix"
+                slot="append"
+              >{{ unitSuffix }}</template>
             </el-input>
           </el-form-item>
 
-          <el-form-item v-show="showProperty('marginLeft')" :label="$t('chart.text_pos_left')" class="form-item" prop="marginLeft">
-            <el-input v-model="marginForm.marginLeft" :placeholder="placeholder" type="number" class="hide-icon-number" @change="changeMarginStyle(marginForm.marginLeft, 'marginLeft')">
-              <template v-if="unitSuffix" slot="append">{{ unitSuffix }}</template>
+          <el-form-item
+            v-show="showProperty('marginLeft')"
+            :label="$t('chart.text_pos_left')"
+            class="form-item"
+            prop="marginLeft"
+          >
+            <el-input
+              v-model="marginForm.marginLeft"
+              :placeholder="placeholder"
+              type="number"
+              class="hide-icon-number"
+              @change="changeMarginStyle(marginForm.marginLeft, 'marginLeft')"
+            >
+              <template
+                v-if="unitSuffix"
+                slot="append"
+              >{{ unitSuffix }}</template>
             </el-input>
           </el-form-item>
 
-          <el-form-item v-show="showProperty('marginRight')" :label="$t('chart.text_pos_right')" class="form-item" prop="marginRight">
-            <el-input v-model="marginForm.marginRight" :placeholder="placeholder" type="number" class="hide-icon-number" @change="changeMarginStyle(marginForm.marginRight, 'marginRight')">
-              <template v-if="unitSuffix" slot="append">{{ unitSuffix }}</template>
+          <el-form-item
+            v-show="showProperty('marginRight')"
+            :label="$t('chart.text_pos_right')"
+            class="form-item"
+            prop="marginRight"
+          >
+            <el-input
+              v-model="marginForm.marginRight"
+              :placeholder="placeholder"
+              type="number"
+              class="hide-icon-number"
+              @change="changeMarginStyle(marginForm.marginRight, 'marginRight')"
+            >
+              <template
+                v-if="unitSuffix"
+                slot="append"
+              >{{ unitSuffix }}</template>
             </el-input>
           </el-form-item>
 

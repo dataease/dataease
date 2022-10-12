@@ -15,7 +15,10 @@
           prefix-icon="el-icon-search"
           clearable
         />
-        <div class="tree" v-loading="treeLoading">
+        <div
+          v-loading="treeLoading"
+          class="tree"
+        >
           <el-tree
             ref="datasetTreeRef"
             current-node-key="id"
@@ -26,9 +29,12 @@
             :filter-node-method="filterNode"
             @node-click="nodeClick"
           >
-            <span slot-scope="{ data }" class="custom-tree-node">
+            <span
+              slot-scope="{ data }"
+              class="custom-tree-node"
+            >
               <span v-if="data.modelInnerType === 'group'">
-                <svg-icon icon-class="scene"/>
+                <svg-icon icon-class="scene" />
                 <span
                   style="
                     margin-left: 6px;
@@ -37,8 +43,7 @@
                     text-overflow: ellipsis;
                   "
                   :title="data.name"
-                  >{{ data.name }}</span
-                >
+                >{{ data.name }}</span>
               </span>
               <span v-else>
                 <span>
@@ -55,18 +60,28 @@
                     text-overflow: ellipsis;
                   "
                   :title="data.name"
-                  >{{ data.name }}</span
-                >
+                >{{ data.name }}</span>
               </span>
             </span>
           </el-tree>
         </div>
       </div>
-      <div v-loading="dataLoading" class="dataset-tree-table">
-        <p v-if="tableName" class="table-name">
+      <div
+        v-loading="dataLoading"
+        class="dataset-tree-table"
+      >
+        <p
+          v-if="tableName"
+          class="table-name"
+        >
           {{ tableName }} <span>{{ $t("chart.preview_100_data") }}</span>
         </p>
-        <el-table border v-if="table.length" style="width: 100%" :data="table">
+        <el-table
+          v-if="table.length"
+          border
+          style="width: 100%"
+          :data="table"
+        >
           <el-table-column
             v-for="field in fields"
             :key="field.dataeaseName"
@@ -83,14 +98,27 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-empty v-else :description="$t('暂无数据')"></el-empty>
+        <el-empty
+          v-else
+          :description="$t('暂无数据')"
+        />
       </div>
     </div>
-    <div slot="footer" class="dialog-footer">
-      <deBtn secondary @click="selectDatasetFlag = false">{{
+    <div
+      slot="footer"
+      class="dialog-footer"
+    >
+      <deBtn
+        secondary
+        @click="selectDatasetFlag = false"
+      >{{
         $t("chart.cancel")
       }}</deBtn>
-      <deBtn @click="setIdName" :disabled="!tableName" type="primary">{{
+      <deBtn
+        :disabled="!tableName"
+        type="primary"
+        @click="setIdName"
+      >{{
         $t("fu.table.ok")
       }}</deBtn>
     </div>
@@ -98,117 +126,117 @@
 </template>
 
 <script>
-import { queryAuthModel } from "@/api/authModel/authModel";
-import { post } from "@/api/dataset/dataset";
+import { queryAuthModel } from '@/api/authModel/authModel'
+import { post } from '@/api/dataset/dataset'
 
 export default {
   props: {
     customType: {
       type: Array,
       required: false,
-      default: null,
+      default: null
     },
     mode: {
       type: Number,
       required: false,
-      default: -1,
+      default: -1
     },
     privileges: {
       type: String,
       required: false,
-      default: "use",
+      default: 'use'
     },
     clearEmptyDir: {
       type: Boolean,
       required: false,
-      default: false,
-    },
-  },
-  watch: {
-    filterText(val) {
-      this.$refs.datasetTreeRef.filter(val);
-    },
+      default: false
+    }
   },
   data() {
     return {
       selectDatasetFlag: false,
-      tableName: "",
-      tableId: "",
+      tableName: '',
+      tableId: '',
       treeData: [],
       table: [],
-      filterText: "",
+      filterText: '',
       fields: [],
       dataLoading: false,
-      treeLoading: false,
-    };
+      treeLoading: false
+    }
+  },
+  watch: {
+    filterText(val) {
+      this.$refs.datasetTreeRef.filter(val)
+    }
   },
   mounted() {
-    this.treeNode();
+    this.treeNode()
   },
   methods: {
     iconFormate(deType) {
-      const val = ["text", "time", "value", "value", "location"][deType];
+      const val = ['text', 'time', 'value', 'value', 'location'][deType]
       return {
         class: `field-icon-${val}`,
-        iconClass: `field_${val}`,
-      };
+        iconClass: `field_${val}`
+      }
     },
     treeNode() {
-      this.treeLoading = true;
+      this.treeLoading = true
       const modelInnerTypeArray = Array.isArray(this.customType)
-        ? [...this.customType, "group"]
-        : null;
+        ? [...this.customType, 'group']
+        : null
       queryAuthModel(
         {
-          modelType: "dataset",
+          modelType: 'dataset',
           privileges: this.privileges,
           datasetMode: this.mode,
           clearEmptyDir: this.clearEmptyDir,
           mode: this.mode < 0 ? null : this.mode,
-          modelInnerTypeArray,
+          modelInnerTypeArray
         },
         true
       )
         .then((res) => {
-          this.treeData = res.data;
+          this.treeData = res.data
         })
         .finally(() => {
-          this.treeLoading = false;
-        });
+          this.treeLoading = false
+        })
     },
     filterNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
     },
     initData(table) {
-      this.dataLoading = true;
-      table.row = 100;
+      this.dataLoading = true
+      table.row = 100
       table.previewForTask = true
-      post("/dataset/table/getPreviewData/1/100", table, false, 30000)
+      post('/dataset/table/getPreviewData/1/100', table, false, 30000)
         .then((response) => {
-          this.fields = response.data.fields;
-          this.table = response.data.data;
+          this.fields = response.data.fields
+          this.table = response.data.data
         })
         .finally((res) => {
-          this.dataLoading = false;
-        });
+          this.dataLoading = false
+        })
     },
     init() {
-      this.selectDatasetFlag = true;
+      this.selectDatasetFlag = true
     },
     setIdName() {
-      this.$emit("getTableId", this.tableId, this.tableName);
-      this.selectDatasetFlag = false;
+      this.$emit('getTableId', this.tableId, this.tableName)
+      this.selectDatasetFlag = false
     },
     nodeClick(data) {
-      const { id, name, modelInnerType: type } = data;
-      if (type === "group") return;
-      this.tableName = name;
-      this.tableId = id;
-      this.initData(data);
-    },
-  },
-};
+      const { id, name, modelInnerType: type } = data
+      if (type === 'group') return
+      this.tableName = name
+      this.tableId = id
+      this.initData(data)
+    }
+  }
+}
 </script>
 
 <style lang="scss">

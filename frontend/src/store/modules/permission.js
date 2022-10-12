@@ -57,11 +57,11 @@ export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由�
       router.children = filterAsyncRouter(router.children)
     }
 
-    router.hasOwnProperty('id') && delete router.id
-    router.hasOwnProperty('type') && delete router.type
-    router.hasOwnProperty('pid') && delete router.pid
-    router.hasOwnProperty('children') && (!router['children'] || !router['children'].length) && delete router.children
-    router.hasOwnProperty('redirect') && !router['redirect'] && delete router.redirect
+    Object.prototype.hasOwnProperty.call(router, 'id') && delete router.id
+    Object.prototype.hasOwnProperty.call(router, 'type') && delete router.type
+    Object.prototype.hasOwnProperty.call(router, 'pid') && delete router.pid
+    Object.prototype.hasOwnProperty.call(router, 'children') && (!router['children'] || !router['children'].length) && delete router.children
+    Object.prototype.hasOwnProperty.call(router, 'redirect') && !router['redirect'] && delete router.redirect
     return router
   })
 }

@@ -5,7 +5,7 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import { chartBatchCopy, chartCopy } from '@/api/chart/chart'
 import { uuid } from 'vue-uuid'
 import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
-import Vue from "vue";
+import Vue from 'vue'
 
 export default {
   state: {

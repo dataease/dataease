@@ -3,8 +3,14 @@
     <el-row v-loading="slidersLoading">
       <div class="direction-left">
         <span>&nbsp;</span>
-        <ul v-show="currentIndex>1" class="direction">
-          <li class="left" @click="move(sliderWidth, 1, speed)">
+        <ul
+          v-show="currentIndex>1"
+          class="direction"
+        >
+          <li
+            class="left"
+            @click="move(sliderWidth, 1, speed)"
+          >
             <svg
               class="icon"
               width="15px"
@@ -24,7 +30,11 @@
       <el-col :span="24">
         <el-row id="slider">
           <div class="slider-window">
-            <ul v-if="!slidersLoading" class="container" :style="containerStyle">
+            <ul
+              v-if="!slidersLoading"
+              class="container"
+              :style="containerStyle"
+            >
               <li>
                 <div style="width:290px; height: 250px;overflow: hidden">
                   <subject-template-item
@@ -35,7 +45,10 @@
                   />
                 </div>
               </li>
-              <li v-for="(itemSlider, index) in sliders" :key="index">
+              <li
+                v-for="(itemSlider, index) in sliders"
+                :key="index"
+              >
                 <div style="width:290px; height: 250px;">
                   <subject-template-item
                     v-for="item in itemSlider"
@@ -61,8 +74,14 @@
       </el-col>
       <div class="direction-right">
         <span>&nbsp;</span>
-        <ul v-show="currentIndex<sliders.length" class="direction">
-          <li class="right" @click="move(sliderWidth, -1, speed)">
+        <ul
+          v-show="currentIndex<sliders.length"
+          class="direction"
+        >
+          <li
+            class="right"
+            @click="move(sliderWidth, -1, speed)"
+          >
             <svg
               class="icon"
               width="15px"
@@ -81,8 +100,14 @@
       </div>
     </el-row>
     <el-row>
-      <el-col :span="7" style="height: 30px" />
-      <el-col :span="10" style="height: 30px">
+      <el-col
+        :span="7"
+        style="height: 30px"
+      />
+      <el-col
+        :span="10"
+        style="height: 30px"
+      >
         <span hidden>B</span>
         <ul class="dots">
           <li
@@ -93,7 +118,10 @@
           />
         </ul>
       </el-col>
-      <el-col :span="7" style="margin: auto;height: 30px;font-size:12px;color:#3685f2">
+      <el-col
+        :span="7"
+        style="margin: auto;height: 30px;font-size:12px;color:#3685f2"
+      >
         <span><a @click="saveSelfSubject">{{ $t('commons.save') }}</a></span>
       </el-col>
     </el-row>

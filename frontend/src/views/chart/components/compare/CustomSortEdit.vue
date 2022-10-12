@@ -9,8 +9,16 @@
       @update="onUpdate"
     >
       <transition-group class="draggable-group">
-        <span v-for="(item,index) in sortList" :key="index" class="item-dimension" :title="item">
-          <svg-icon icon-class="drag" class="item-icon" />
+        <span
+          v-for="(item) in sortList"
+          :key="item"
+          class="item-dimension"
+          :title="item"
+        >
+          <svg-icon
+            icon-class="drag"
+            class="item-icon"
+          />
           <span class="item-span">
             {{ item }}
           </span>

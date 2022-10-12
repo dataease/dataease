@@ -1,14 +1,30 @@
 <template>
-  <div v-loading="loading" class="dataset-union" @mouseup="mouseupDrag">
-    <div :style="{ height: unionHeight + 'px' }" class="unio-editer-container">
+  <div
+    v-loading="loading"
+    class="dataset-union"
+    @mouseup="mouseupDrag"
+  >
+    <div
+      :style="{ height: unionHeight + 'px' }"
+      class="unio-editer-container"
+    >
       <!--添加第一个数据集按钮-->
-      <div v-if="dataset.length === 0" style="padding: 24px">
-        <deBtn type="primary" @click="selectDs">
+      <div
+        v-if="dataset.length === 0"
+        style="padding: 24px"
+      >
+        <deBtn
+          type="primary"
+          @click="selectDs"
+        >
           {{ $t('chart.select_dataset') }}
         </deBtn>
       </div>
       <!--数据集关联树型结构-->
-      <div v-else class="union-container">
+      <div
+        v-else
+        class="union-container"
+      >
         <node-item
           :current-node="dataset[0]"
           :node-index="0"
@@ -39,7 +55,10 @@
         <span class="result-num">{{
           `(${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')})`
         }}</span>
-        <span class="drag" @mousedown="mousedownDrag" />
+        <span
+          class="drag"
+          @mousedown="mousedownDrag"
+        />
         <el-button
           class="de-text-btn posi-right"
           type="text"
@@ -73,7 +92,10 @@
         @getTable="firstDs"
       />
       <div class="de-foot">
-        <deBtn secondary @click="closeSelectDs()">{{
+        <deBtn
+          secondary
+          @click="closeSelectDs()"
+        >{{
           $t('dataset.cancel')
         }}</deBtn>
         <deBtn
@@ -100,10 +122,16 @@
     >
       <union-edit :union-param="unionParam" />
       <div class="de-foot">
-        <deBtn secondary @click="closeEditUnion()">{{
+        <deBtn
+          secondary
+          @click="closeEditUnion()"
+        >{{
           $t('dataset.cancel')
         }}</deBtn>
-        <deBtn type="primary" @click="confirmEditUnion()">{{
+        <deBtn
+          type="primary"
+          @click="confirmEditUnion()"
+        >{{
           $t('dataset.confirm')
         }}</deBtn>
       </div>

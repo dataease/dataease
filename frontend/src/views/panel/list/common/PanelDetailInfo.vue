@@ -14,8 +14,14 @@
     </el-col>
     <el-col class="info-item">
       <p class="info-title">{{ $t('panel.update_time') }}</p>
-      <p v-if="panelInfo.updateTime" class="info-content">{{ panelInfo.updateTime | timestampFormatDate }}</p>
-      <p v-if="!panelInfo.updateTime" class="info-content">N/A</p>
+      <p
+        v-if="panelInfo.updateTime"
+        class="info-content"
+      >{{ panelInfo.updateTime | timestampFormatDate }}</p>
+      <p
+        v-if="!panelInfo.updateTime"
+        class="info-content"
+      >N/A</p>
     </el-col>
   </el-row>
 </template>

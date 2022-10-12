@@ -13,7 +13,10 @@
           @click="confirmDelete"
         >{{ $t("organization.delete") }}</deBtn>
       </el-col>
-      <el-col :span="14" class="right-user">
+      <el-col
+        :span="14"
+        class="right-user"
+      >
         <el-input
           ref="search"
           v-model="nickName"
@@ -35,9 +38,18 @@
           ({{ filterTexts.length }})
         </template>
         </deBtn>
-        <el-dropdown trigger="click" :hide-on-click="false">
-          <deBtn secondary icon="el-icon-setting">{{ $t("user.list") }}</deBtn>
-          <el-dropdown-menu slot="dropdown" class="list-colums-slect">
+        <el-dropdown
+          trigger="click"
+          :hide-on-click="false"
+        >
+          <deBtn
+            secondary
+            icon="el-icon-setting"
+          >{{ $t("user.list") }}</deBtn>
+          <el-dropdown-menu
+            slot="dropdown"
+            class="list-colums-slect"
+          >
             <p class="title">{{ $t("user.list_info") }}</p>
             <el-checkbox
               v-model="checkAll"
@@ -58,7 +70,10 @@
         </el-dropdown>
       </el-col>
     </el-row>
-    <div v-if="filterTexts.length" class="filter-texts">
+    <div
+      v-if="filterTexts.length"
+      class="filter-texts"
+    >
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t("user.result_one") }}</span>
       <el-divider direction="vertical" />
@@ -68,8 +83,15 @@
         @click="scrollPre"
       />
       <div class="filter-texts-container">
-        <p v-for="(ele, index) in filterTexts" :key="ele" class="text">
-          {{ ele }} <i class="el-icon-close" @click="clearOneFilter(index)" />
+        <p
+          v-for="(ele, index) in filterTexts"
+          :key="ele"
+          class="text"
+        >
+          {{ ele }} <i
+            class="el-icon-close"
+            @click="clearOneFilter(index)"
+          />
         </p>
       </div>
       <i
@@ -100,7 +122,10 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       >
-        <el-table-column type="selection" width="55" />
+        <el-table-column
+          type="selection"
+          width="55"
+        />
         <el-table-column
           key="name"
           min-width="178"
@@ -166,7 +191,13 @@
             >{{
                $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
              }}
-              <svg-icon v-if="scope.row.lastExecStatus === 'Error'" style="cursor: pointer;" icon-class="icon-maybe" class="field-icon-location" @click="showErrorMassage(scope.row.msg)" />
+              <svg-icon
+                v-if="scope.row.lastExecStatus === 'Error'"
+                style="cursor: pointer;"
+                icon-class="icon-maybe"
+                class="field-icon-location"
+                @click="showErrorMassage(scope.row.msg)"
+              />
             </span>
             <span v-else>-</span>
           </template>
@@ -228,8 +259,14 @@
               trigger="click"
               @command="(type) => handleCommand(type, scope.row)"
             >
-              <i class="el-icon-more" @click.stop />
-              <el-dropdown-menu slot="dropdown" class="de-card-dropdown">
+              <i
+                class="el-icon-more"
+                @click.stop
+              />
+              <el-dropdown-menu
+                slot="dropdown"
+                class="de-card-dropdown"
+              >
                 <template
                   v-if="!['Stopped', 'Exec'].includes(scope.row.status)"
                 >
@@ -266,7 +303,10 @@
     </div>
 
     <keep-alive>
-      <filterUser ref="filterUser" @search="filterDraw" />
+      <filterUser
+        ref="filterUser"
+        @search="filterDraw"
+      />
     </keep-alive>
 
     <el-dialog
@@ -277,8 +317,14 @@
       class="de-dialog-form"
     >
       <span class="err-msg">{{ error_massage }}</span>
-      <span slot="footer" class="dialog-footer">
-        <deBtn secondary @click="show_error_massage = false">{{
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
+        <deBtn
+          secondary
+          @click="show_error_massage = false"
+        >{{
           $t("dataset.close")
         }}</deBtn>
       </span>
@@ -319,8 +365,6 @@ const columnOptions = [
 ]
 import { formatOrders } from '@/utils/index'
 import { datasetTaskList, post } from '@/api/dataset/dataset'
-import cron from '@/components/cron/cron'
-import TableSelector from '@/views/chart/view/TableSelector'
 import { hasDataPermission } from '@/utils/permission'
 import GridTable from '@/components/gridTable/index.vue'
 import filterUser from './filterUser.vue'
@@ -330,7 +374,7 @@ import keyEnter from '@/components/msgCfm/keyEnter.js'
 
 export default {
   name: 'DatasetTaskList',
-  components: { GridTable, cron, filterUser, TableSelector },
+  components: { GridTable, filterUser },
   mixins: [msgCfm, keyEnter],
   props: {
     transCondition: {
@@ -440,16 +484,14 @@ export default {
       switch (key) {
         case 'exec':
           this.execTask(row)
-          return
           break
         case 'delete':
           this.deleteTask(row)
-          return
           break
         default:
+          this.changeTaskStatus(row)
           break
       }
-      this.changeTaskStatus(row)
     },
     handleSelectionChange(val) {
       this.multipleSelection = val

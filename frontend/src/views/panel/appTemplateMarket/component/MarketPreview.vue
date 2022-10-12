@@ -1,16 +1,28 @@
 <template>
-  <el-row class="preview-outer-body market-main" v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
+  <el-row
+    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+    class="preview-outer-body market-main"
+  >
     <el-row style="position: absolute;left: 5px;top: 5px">
-      <span class="icon iconfont icon-close icon20 insert" @click="closePreview()" />
+      <span
+        class="icon iconfont icon-close icon20 insert"
+        @click="closePreview()"
+      />
     </el-row>
     <el-row>
       <el-col span="12">
-        <span class="title-left">{{currentApp.name}}</span>
+        <span class="title-left">{{ currentApp.name }}</span>
       </el-col>
     </el-row>
-    <el-row v-if="currentTemplateShowList&&currentTemplateShowList.length>0" class="template-main-preview">
+    <el-row
+      v-if="currentTemplateShowList&&currentTemplateShowList.length>0"
+      class="template-main-preview"
+    >
       <el-row class="preview-slider">
-        <el-row class="top-list" :style="topSlideStyle">
+        <el-row
+          class="top-list"
+          :style="topSlideStyle"
+        >
           <template-market-preview-item
             v-for="(templateItem) in currentTemplateShowList"
             :key="templateItem.id"
@@ -18,9 +30,15 @@
             :active="active(templateItem)"
             @previewTemplate="previewTemplate"
           />
-          <el-row v-show="!hasResult" class="custom-position">
+          <el-row
+            v-show="!hasResult"
+            class="custom-position"
+          >
             <div style="text-align: center">
-              <svg-icon icon-class="no_result" style="font-size: 75px;margin-bottom: 16px" />
+              <svg-icon
+                icon-class="no_result"
+                style="font-size: 75px;margin-bottom: 16px"
+              />
               <br>
               <span>{{ $t('commons.no_result') }}</span>
             </div>
@@ -28,14 +46,22 @@
         </el-row>
       </el-row>
       <el-row style="margin-top: 24px">
-        <app-template-log :app-template-id="curTemplate.id" :position="'templateLog'" @applyNew="applyNew" class="log-area"></app-template-log>
+        <app-template-log
+          :app-template-id="curTemplate.id"
+          :position="'templateLog'"
+          class="log-area"
+          @applyNew="applyNew"
+        />
       </el-row>
     </el-row>
-    <el-row v-else class="template-main-preview">
+    <el-row
+      v-else
+      class="template-main-preview"
+    >
       <el-empty
         :image="noneImg"
         :description="$t('app_template.no_apps')"
-      ></el-empty>
+      />
     </el-row>
     <el-dialog
       v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
@@ -49,24 +75,31 @@
       :destroy-on-close="true"
     >
       <el-row class="ds-from-main">
-        <DsAppForm :params="dsParams" v-if="applyNewVisible" :t-data="this.tData" :ds-types="dsTypes" :opt-type="'appApply'" :attach-params="attachParams"></DsAppForm>
+        <DsAppForm
+          v-if="applyNewVisible"
+          :params="dsParams"
+          :t-data="tData"
+          :ds-types="dsTypes"
+          :opt-type="'appApply'"
+          :attach-params="attachParams"
+        />
       </el-row>
     </el-dialog>
   </el-row>
 </template>
 
 <script>
-import { searchAppTemplate, getCategories } from '@/api/appTemplateMarket'
+import { searchAppTemplate } from '@/api/appTemplateMarket'
 import { groupTree } from '@/api/panel/panel'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
 import TemplateMarketPreviewItem from '@/views/panel/appTemplateMarket/component/TemplateMarketPreviewItem'
-import AppTemplateLog from "@/views/panel/appTemplateMarket/log";
-import {listDatasourceType} from "@/api/system/datasource";
-import DsAppForm from "@/views/system/datasource/DsAppForm";
+import AppTemplateLog from '@/views/panel/appTemplateMarket/log'
+import { listDatasourceType } from '@/api/system/datasource'
+import DsAppForm from '@/views/system/datasource/DsAppForm'
 
 export default {
   name: 'MarketPreview',
-  components: {DsAppForm, AppTemplateLog, TemplateMarketPreviewItem },
+  components: { DsAppForm, AppTemplateLog, TemplateMarketPreviewItem },
   props: {
     previewId: {
       type: String,
@@ -80,8 +113,8 @@ export default {
   data() {
     return {
       noneImg: require('@/assets/None.png'),
-      dsParams:{},
-      attachParams:{},
+      dsParams: {},
+      attachParams: {},
       tData: [],
       dsTypes: [],
       applyNewVisible: false,
@@ -113,9 +146,9 @@ export default {
     }
   },
   computed: {
-    topSlideStyle(){
+    topSlideStyle() {
       return {
-        width: (275*this.currentTemplateShowList.length +50)+'px'
+        width: (275 * this.currentTemplateShowList.length + 50) + 'px'
       }
     }
   },
@@ -146,18 +179,18 @@ export default {
         this.dsTypes = res.data
       })
     },
-    applyNew(){
+    applyNew() {
       this.applyNewVisible = true
-      this.attachParams={
-        appTemplateId:this.curTemplate.id,
-        name:this.curTemplate.name,
+      this.attachParams = {
+        appTemplateId: this.curTemplate.id,
+        name: this.curTemplate.name
       }
     },
     initMarketTemplate() {
-      searchAppTemplate({pid:this.previewId}).then(rsp => {
+      searchAppTemplate({ pid: this.previewId }).then(rsp => {
         this.currentTemplateShowList = rsp.data
-        if(rsp.data){
-          this.curTemplate=rsp.data[0]
+        if (rsp.data) {
+          this.curTemplate = rsp.data[0]
         }
         this.hasResult = true
       }).catch(() => {

@@ -93,7 +93,8 @@ export function baseMixOptionAntV(plot, container, chart, action) {
     appendPadding: getPadding(chart),
     syncViewPadding: true,
     plots: plots,
-    legend: legend
+    legend: legend,
+    tooltip: { shared: true }
   }
 
   // 开始渲染

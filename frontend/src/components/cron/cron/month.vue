@@ -1,31 +1,92 @@
 <template lang="html">
   <div :val="value_">
     <div>
-      <el-radio v-model="type" label="1" size="mini" border>{{ $t('cron.every_month') }}</el-radio>
+      <el-radio
+        v-model="type"
+        label="1"
+        size="mini"
+        border
+      >{{ $t('cron.every_month') }}</el-radio>
     </div>
     <div>
-      <el-radio v-model="type" label="5" size="mini" border>{{ $t('cron.not_set') }}</el-radio>
+      <el-radio
+        v-model="type"
+        label="5"
+        size="mini"
+        border
+      >{{ $t('cron.not_set') }}</el-radio>
     </div>
     <div>
-      <el-radio v-model="type" label="2" size="mini" border>{{ $t('cron.cycle') }}</el-radio>
+      <el-radio
+        v-model="type"
+        label="2"
+        size="mini"
+        border
+      >{{ $t('cron.cycle') }}</el-radio>
       <span style="margin-left: 10px; margin-right: 5px;">{{ $t('cron.from') }}</span>
-      <el-input-number v-model="cycle.start" :min="1" :max="12" size="mini" style="width: 100px;" @change="type = '2'" />
+      <el-input-number
+        v-model="cycle.start"
+        :min="1"
+        :max="12"
+        size="mini"
+        style="width: 100px;"
+        @change="type = '2'"
+      />
       <span style="margin-left: 5px; margin-right: 5px;">{{ $t('cron.to') }}</span>
-      <el-input-number v-model="cycle.end" :min="2" :max="12" size="mini" style="width: 100px;" @change="type = '2'" />
+      <el-input-number
+        v-model="cycle.end"
+        :min="2"
+        :max="12"
+        size="mini"
+        style="width: 100px;"
+        @change="type = '2'"
+      />
       {{ $t('cron.month') }}
     </div>
     <div>
-      <el-radio v-model="type" label="3" size="mini" border>{{ $t('cron.repeat') }}</el-radio>
+      <el-radio
+        v-model="type"
+        label="3"
+        size="mini"
+        border
+      >{{ $t('cron.repeat') }}</el-radio>
       <span style="margin-left: 10px; margin-right: 5px;">{{ $t('cron.from') }}</span>
-      <el-input-number v-model="loop.start" :min="1" :max="12" size="mini" style="width: 100px;" @change="type = '3'" />
+      <el-input-number
+        v-model="loop.start"
+        :min="1"
+        :max="12"
+        size="mini"
+        style="width: 100px;"
+        @change="type = '3'"
+      />
       <span style="margin-left: 5px; margin-right: 5px;">{{ $t('cron.month_begin') }}</span>
-      <el-input-number v-model="loop.end" :min="1" :max="12" size="mini" style="width: 100px;" @change="type = '3'" />
+      <el-input-number
+        v-model="loop.end"
+        :min="1"
+        :max="12"
+        size="mini"
+        style="width: 100px;"
+        @change="type = '3'"
+      />
       {{ $t('cron.month_exec') }}
     </div>
     <div>
-      <el-radio v-model="type" label="4" size="mini" border>{{ $t('cron.set') }}</el-radio>
-      <el-checkbox-group v-model="appoint" style="margin-left: 0px;  line-height: 25px;">
-        <el-checkbox v-for="i in 12" :key="i" :label="i+''" @change="type = '4'" />
+      <el-radio
+        v-model="type"
+        label="4"
+        size="mini"
+        border
+      >{{ $t('cron.set') }}</el-radio>
+      <el-checkbox-group
+        v-model="appoint"
+        style="margin-left: 0px;  line-height: 25px;"
+      >
+        <el-checkbox
+          v-for="i in 12"
+          :key="i"
+          :label="i+''"
+          @change="type = '4'"
+        />
       </el-checkbox-group>
     </div>
   </div>

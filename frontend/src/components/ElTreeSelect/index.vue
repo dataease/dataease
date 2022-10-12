@@ -1,6 +1,9 @@
 
 <template>
-  <div class="el-tree-select" :class="selectClass">
+  <div
+    class="el-tree-select"
+    :class="selectClass"
+  >
     <el-select
       :id="'el-tree-select-' + guid"
       ref="select"
@@ -20,12 +23,45 @@
       @clear="_selectClearFun"
       @focus="_popoverShowFun"
     />
-    <el-popover ref="popover" v-model="visible" :append-to-body="popperAppendToBody" :placement="placement" :transition="transition" :popper-class="popperClass" :width="width" trigger="click" @show="showPopover">
-      <el-input v-if="treeParams.filterable" ref="input" v-model="keywords" size="mini" class="input-with-select mb10">
-        <el-button slot="append" icon="el-icon-search" @click="_searchFun" />
+    <el-popover
+      ref="popover"
+      v-model="visible"
+      :append-to-body="popperAppendToBody"
+      :placement="placement"
+      :transition="transition"
+      :popper-class="popperClass"
+      :width="width"
+      trigger="click"
+      @show="showPopover"
+    >
+      <el-input
+        v-if="treeParams.filterable"
+        ref="input"
+        v-model="keywords"
+        size="mini"
+        class="input-with-select mb10"
+      >
+        <el-button
+          slot="append"
+          icon="el-icon-search"
+          @click="_searchFun"
+        />
       </el-input>
-      <p v-if="selectParams.multiple" class="tree-select-all"><el-checkbox v-model="selectAll" v-customStyle="customStyle" :indeterminate="isIndeterminate" @change="selectAllChane">{{ $t('dataset.check_all') }}</el-checkbox></p>
-      <el-scrollbar tag="div" wrap-class="el-select-dropdown__wrap" view-class="el-select-dropdown__list" class="is-empty">
+      <p
+        v-if="selectParams.multiple"
+        class="tree-select-all"
+      ><el-checkbox
+        v-model="selectAll"
+        v-customStyle="customStyle"
+        :indeterminate="isIndeterminate"
+        @change="selectAllChane"
+      >{{ $t('dataset.check_all') }}</el-checkbox></p>
+      <el-scrollbar
+        tag="div"
+        wrap-class="el-select-dropdown__wrap"
+        view-class="el-select-dropdown__list"
+        class="is-empty"
+      >
         <el-tree
           v-show="data.length > 0"
           ref="tree"
@@ -42,7 +78,10 @@
           @check="_treeCheckFun"
           @check-change="_treeCheckChange"
         />
-        <div v-if="data.length === 0" class="no-data">暂无数据</div>
+        <div
+          v-if="data.length === 0"
+          class="no-data"
+        >暂无数据</div>
       </el-scrollbar>
     </el-popover>
   </div>

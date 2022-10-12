@@ -2,11 +2,21 @@
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
     <de-aside-container>
-      <group ref="group" :save-status="saveStatus" @switchComponent="switchComponent" />
+      <group
+        ref="group"
+        :save-status="saveStatus"
+        @switchComponent="switchComponent"
+      />
     </de-aside-container>
 
     <de-main-container>
-      <component :is="component" :param="param" @switchComponent="switchComponent" @saveSuccess="saveSuccess" @typeChange="typeChange" />
+      <component
+        :is="component"
+        :param="param"
+        @switchComponent="switchComponent"
+        @saveSuccess="saveSuccess"
+        @typeChange="typeChange"
+      />
     </de-main-container>
   </de-container>
 </template>

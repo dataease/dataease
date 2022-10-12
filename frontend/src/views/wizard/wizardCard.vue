@@ -1,25 +1,32 @@
 <template>
-  <div :style='{background:details.bgColor}' class="card_main"  @click.stop="goToWeb">
+  <div
+    :style="{background:details.bgColor}"
+    class="card_main"
+    @click.stop="goToWeb"
+  >
     <el-col style="width: 200px">
       <el-row class="card_head">
-        {{details.head}}
+        {{ details.head }}
       </el-row>
-      <el-row  class="card_content">
-        <span v-html="details.content"></span>
+      <el-row class="card_content">
+        <span v-html="details.content" />
       </el-row>
       <el-row class="card_bottom">
-          {{$t('wizard.click_show') }}
-          <i class="el-icon-arrow-right" />
-      </el-row >
+        {{ $t('wizard.click_show') }}
+        <i class="el-icon-arrow-right" />
+      </el-row>
     </el-col>
-    <svg-icon class="img-position" :icon-class="details.img"></svg-icon>
+    <svg-icon
+      class="img-position"
+      :icon-class="details.img"
+    />
   </div>
 </template>
 
 <script>
 
 export default {
-  name: 'wizardCard',
+  name: 'WizardCard',
   props: {
     details: {
       type: Object,
@@ -29,11 +36,11 @@ export default {
   data() {
     return {}
   },
-  computed:{
+  computed: {
   },
-  methods:{
-    goToWeb(){
-      window.open(this.details.href,'_blank')
+  methods: {
+    goToWeb() {
+      window.open(this.details.href, '_blank')
     }
   }
 }

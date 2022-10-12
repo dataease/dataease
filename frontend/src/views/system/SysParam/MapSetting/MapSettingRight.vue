@@ -11,12 +11,18 @@
       class="demo-form-inline"
       size="small"
     >
-      <el-input v-show="false" v-model="formInline.pLevel" />
+      <el-input
+        v-show="false"
+        v-model="formInline.pLevel"
+      />
 
       <el-row>
         <el-row>
           <el-col>
-            <el-form-item :label="$t('map_setting.parent_area')" prop="pCode">
+            <el-form-item
+              :label="$t('map_setting.parent_area')"
+              prop="pCode"
+            >
               <el-tree-select
                 v-if="treeShow"
                 ref="deSelectTree"
@@ -37,16 +43,30 @@
         </el-row>
         <el-row>
           <el-col>
-            <el-form-item :label="$t('map_setting.area_code')" prop="code">
-              <el-input v-model="formInline.code" :placeholder="$t('map_setting.please_input')" />
+            <el-form-item
+              :label="$t('map_setting.area_code')"
+              prop="code"
+            >
+              <el-input
+                v-model="formInline.code"
+                :placeholder="$t('map_setting.please_input')"
+              />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row>
           <el-col>
-            <el-form-item :label="$t('map_setting.area_name')" prop="name">
-              <el-input v-model="formInline.name" maxlength="30" show-word-limit :placeholder="$t('map_setting.please_input')" />
+            <el-form-item
+              :label="$t('map_setting.area_name')"
+              prop="name"
+            >
+              <el-input
+                v-model="formInline.name"
+                maxlength="30"
+                show-word-limit
+                :placeholder="$t('map_setting.please_input')"
+              />
 
             </el-form-item>
           </el-col>
@@ -68,7 +88,12 @@
               :file-list="filesTmp"
               :http-request="uploadMapFile"
             >
-              <el-button style="display: inline-block" size="mini" type="success" plain>
+              <el-button
+                style="display: inline-block"
+                size="mini"
+                type="success"
+                plain
+              >
                 {{ $t('commons.upload') }}
               </el-button>
             </el-upload>
@@ -90,13 +115,21 @@
       </el-row>
       <div>
 
-        <el-button type="success" size="small" @click="save('formInline')">
+        <el-button
+          type="success"
+          size="small"
+          @click="save('formInline')"
+        >
           {{ $t('commons.save') }}
         </el-button>
       </div>
     </el-form>
 
-    <el-descriptions v-else-if="status === 'read-only'" title="区域信息" :column="1">
+    <el-descriptions
+      v-else-if="status === 'read-only'"
+      title="区域信息"
+      :column="1"
+    >
 
       <el-descriptions-item :label="$t('map_setting.area_code')">{{ nodeInfo.code }}</el-descriptions-item>
 
@@ -109,7 +142,10 @@
       </el-descriptions-item>
     </el-descriptions>
 
-    <el-empty v-else-if="status === 'empty'" description="请在左侧选择区域" />
+    <el-empty
+      v-else-if="status === 'empty'"
+      description="请在左侧选择区域"
+    />
   </div>
 </template>
 
@@ -273,7 +309,7 @@ export default {
         const flag = response.success
         if (flag) {
           this.$emit('refresh-tree', param)
-          this.openMessageSuccess("commons.save_success");
+          this.openMessageSuccess('commons.save_success')
         } else {
           this.$message.error(this.$t('commons.save_failed'))
         }

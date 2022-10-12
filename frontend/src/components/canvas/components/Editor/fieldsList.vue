@@ -1,6 +1,13 @@
 <template>
   <div @mousedown="fieldsAreaDown">
-    <el-button v-for="(field) in fields" :title="field.name" :key="field.id" size="mini" class="field-area" @click="fieldSelect(field)">
+    <el-button
+      v-for="(field) in fields"
+      :key="field.id"
+      :title="field.name"
+      size="mini"
+      class="field-area"
+      @click="fieldSelect(field)"
+    >
       {{ field.name }}
     </el-button>
   </div>

@@ -46,7 +46,10 @@
         </template>
       </ux-table-column>
     </ux-grid>
-    <span v-if="table.name" style="font-size: 12px">{{
+    <span
+      v-if="table.name"
+      style="font-size: 12px"
+    >{{
       $t('chart.preview_100_data')
     }}</span>
   </el-col>

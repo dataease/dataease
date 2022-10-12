@@ -2,7 +2,7 @@
   <div class="operater-bar">
     <p class="title">{{ $t(title) }}</p>
     <div class="btn-grounp">
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>
@@ -12,10 +12,10 @@ export default {
   props: {
     title: {
       type: String,
-      default: "",
-    },
-  },
-};
+      default: ''
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

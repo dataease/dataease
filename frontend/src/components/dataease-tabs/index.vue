@@ -1,5 +1,10 @@
 <template>
-  <el-tabs :class="['de-tabs',...tabClassName]" :style="tabStyle" v-bind="$attrs" v-on="$listeners">
+  <el-tabs
+    :class="['de-tabs',...tabClassName]"
+    :style="tabStyle"
+    v-bind="$attrs"
+    v-on="$listeners"
+  >
     <slot />
   </el-tabs>
 </template>

@@ -3,17 +3,21 @@
     v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
   >
     <de-aside-container type="dataset">
-      <group :currentNodeId="currentNodeId" :save-status="saveStatus" @switchComponent="switchComponent" />
+      <group
+        :current-node-id="currentNodeId"
+        :save-status="saveStatus"
+        @switchComponent="switchComponent"
+      />
     </de-aside-container>
-      <de-main-container>
-        <component
-          :is="component"
-          ref="dynamic_component"
-          :param="param"
-          @switchComponent="switchComponent"
-          @saveSuccess="saveSuccess"
-        />
-      </de-main-container>
+    <de-main-container>
+      <component
+        :is="component"
+        ref="dynamic_component"
+        :param="param"
+        @switchComponent="switchComponent"
+        @saveSuccess="saveSuccess"
+      />
+    </de-main-container>
   </de-container>
 </template>
 
@@ -71,7 +75,6 @@ export default {
       switch (c.name) {
         case 'ViewTable':
           this.component = ViewTable
-          break
           break
         case 'FieldEdit':
           this.component = FieldEdit

@@ -1,7 +1,6 @@
 <template>
   <button
     class="de-button"
-    @click="handleClick"
     :disabled="buttonDisabled || loading"
     :class="[
       type ? 'de-button--' + type : '',
@@ -12,74 +11,77 @@
         'is-de-loading': loading,
       },
     ]"
+    @click="handleClick"
   >
-    <!-- <svg
-      class="de-circular"
+    <svg
       v-if="loading"
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+      viewBox="25 25 50 50"
+      class="de-circular"
     >
-      <path
-        d="M3.04575 3.00511C3.11074 2.94007 3.1879 2.88847 3.27283 2.85326C3.35776 2.81804 3.4488 2.7999 3.54074 2.79987C3.63269 2.79983 3.72374 2.81791 3.80869 2.85306C3.89365 2.88822 3.97085 2.93976 4.03589 3.00475C4.10093 3.06974 4.15253 3.14691 4.18774 3.23184C4.22296 3.31677 4.2411 3.40781 4.24113 3.49975C4.24117 3.5917 4.22309 3.68275 4.18794 3.7677C4.15278 3.85266 4.10124 3.92986 4.03625 3.9949C3.64356 4.38689 3.33222 4.85263 3.12013 5.36535C2.90804 5.87807 2.79938 6.42765 2.80039 6.9825C2.80039 9.31246 4.68128 11.2 7.00039 11.2C9.3195 11.2 11.2004 9.31246 11.2004 6.9825C11.2004 6.79685 11.2741 6.6188 11.4054 6.48753C11.5367 6.35625 11.7147 6.2825 11.9004 6.2825C12.086 6.2825 12.2641 6.35625 12.3954 6.48753C12.5266 6.6188 12.6004 6.79685 12.6004 6.9825C12.6004 10.0846 10.0937 12.6 7.00039 12.6C3.90709 12.6 1.40039 10.0846 1.40039 6.9825C1.40039 5.4705 1.99959 4.05195 3.04575 3.00511Z"
-        fill="#3370ff"
+      <circle
+        cx="50"
+        cy="50"
+        r="20"
+        fill="none"
+        class="path"
       />
-    </svg> -->
-    <svg v-if="loading" viewBox="25 25 50 50" class="de-circular">
-      <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
     </svg>
-    <i :class="icon" v-if="icon && !loading"></i>
-    <span :class="[{'de-btn-mar5': icon || loading }]" v-if="$slots.default"><slot></slot></span>
+    <i
+      v-if="icon && !loading"
+      :class="icon"
+    />
+    <span
+      v-if="$slots.default"
+      :class="[{'de-btn-mar5': icon || loading }]"
+    ><slot /></span>
   </button>
 </template>
 <script>
 export default {
-  name: "DeButton",
+  name: 'DeButton',
   inject: {
     elForm: {
-      default: "",
-    },
+      default: ''
+    }
   },
   props: {
     type: {
       type: String,
-      default: "default",
+      default: 'default'
     },
     size: String,
     icon: {
       type: String,
-      default: "",
+      default: ''
     },
     loading: Boolean,
     disabled: Boolean,
     plain: Boolean,
-    secondary: Boolean,
+    secondary: Boolean
   },
 
   computed: {
     buttonDisabled() {
-      return this.$options.propsData.hasOwnProperty("disabled")
+      return Object.prototype.hasOwnProperty.call(this.$options.propsData, 'disabled')
         ? this.disabled
-        : (this.elForm || {}).disabled;
-    },
+        : (this.elForm || {}).disabled
+    }
   },
 
   methods: {
     handleClick(evt) {
-      this.$emit("click", evt);
-    },
-  },
-};
+      this.$emit('click', evt)
+    }
+  }
+}
 </script>
 <style lang="scss">
 $namespace: "de";
 $state-prefix: "is-de-";
 $modifier-separator: "--";
+$B: null;
 @mixin b($block) {
-  $B: $namespace + "-" + $block !global;
-
+  $B: $namespace + "-" + $block;
   .#{$B} {
     @content;
   }
@@ -240,7 +242,6 @@ $modifier-separator: "--";
       }
     }
   }
-  
 
   @include when(plain) {
     color: var(--primary, #3370FF);
@@ -283,7 +284,6 @@ $modifier-separator: "--";
       }
     }
   }
-
 
     @include when(disabled) {
       &,

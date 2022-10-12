@@ -1,16 +1,16 @@
 <template>
   <div class="ds-move-tree">
     <el-input
+      v-model="filterText"
       :placeholder="$t('deDataset.search_by_name')"
       clearable
       style="margin-bottom: 16px"
       size="small"
-      v-model="filterText"
     />
     <div class="tree">
       <el-tree
-        :data="tData"
         ref="tree"
+        :data="tData"
         node-key="id"
         class="de-tree"
         :expand-on-click-node="false"
@@ -18,10 +18,13 @@
         :filter-node-method="filterNode"
         @node-click="nodeClick"
       >
-        <span slot-scope="{ node, data }" :class="treeClass(data, node)">
+        <span
+          slot-scope="{ node, data }"
+          :class="treeClass(data, node)"
+        >
           <span style="display: flex; flex: 1; width: 0">
             <span v-if="data.type === 'group'">
-              <svg-icon icon-class="scene"/>
+              <svg-icon icon-class="scene" />
             </span>
             <span
               style="
@@ -30,9 +33,9 @@
                 overflow: hidden;
                 text-overflow: ellipsis;
               "
-              v-html="highlights(data.name)"
               :title="data.name"
-            ></span>
+              v-html="highlights(data.name)"
+            />
           </span>
         </span>
       </el-tree>
@@ -72,7 +75,7 @@ export default {
     }
   },
   watch: {
-    item: function () {
+    item: function() {
       this.tree(this.groupForm)
     },
     filterText(val) {

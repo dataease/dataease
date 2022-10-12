@@ -1,6 +1,10 @@
 <template>
 
-  <div class="filter-container" @dragstart="handleDragStart" @dragend="handleDragEnd()">
+  <div
+    class="filter-container"
+    @dragstart="handleDragStart"
+    @dragend="handleDragEnd()"
+  >
 
     <div class="widget-subject">
       <div class="filter-header">
@@ -72,7 +76,13 @@
       </div>
     </div>
 
-    <input id="input" ref="files" type="file" hidden @change="handleFileChange">
+    <input
+      id="input"
+      ref="files"
+      type="file"
+      hidden
+      @change="handleFileChange"
+    >
 
   </div>
 

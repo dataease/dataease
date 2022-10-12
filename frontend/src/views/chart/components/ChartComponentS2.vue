@@ -1,17 +1,59 @@
 <template>
-  <div ref="chartContainer" style="padding: 0;width: 100%;height: 100%;overflow: hidden;" :style="bg_class">
-    <view-track-bar ref="viewTrack" :track-menu="trackMenu" class="track-bar" :style="trackBarStyleTime" @trackClick="trackClick" />
-    <span v-if="chart.type" v-show="title_show" ref="title" :style="title_class" style="cursor: default;display: block;">
+  <div
+    ref="chartContainer"
+    style="padding: 0;width: 100%;height: 100%;overflow: hidden;"
+    :style="bg_class"
+  >
+    <view-track-bar
+      ref="viewTrack"
+      :track-menu="trackMenu"
+      class="track-bar"
+      :style="trackBarStyleTime"
+      @trackClick="trackClick"
+    />
+    <span
+      v-if="chart.type"
+      v-show="title_show"
+      ref="title"
+      :style="title_class"
+      style="cursor: default;display: block;"
+    >
       <div style="padding:6px 4px 0;margin: 0;">
         <p style="overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;">{{ chart.title }}</p>
-        <title-remark v-if="remarkCfg.show" style="text-shadow: none!important;" :remark-cfg="remarkCfg" />
+        <title-remark
+          v-if="remarkCfg.show"
+          style="text-shadow: none!important;"
+          :remark-cfg="remarkCfg"
+        />
       </div>
     </span>
-    <div ref="tableContainer" style="width: 100%;overflow: hidden;" :style="{background:container_bg_class.background}">
-      <div v-if="chart.type === 'table-normal'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? 'table-dom-normal-drill' : 'table-dom-normal'" />
-      <div v-if="chart.type === 'table-info'" :id="chartId" style="width: 100%;overflow: hidden;" :class="chart.drill ? (showPage ? 'table-dom-info-drill' : 'table-dom-info-drill-pull') : (showPage ? 'table-dom-info' : 'table-dom-info-pull')" />
-      <div v-if="chart.type === 'table-pivot'" :id="chartId" style="width: 100%;overflow: hidden;" class="table-dom-normal" />
-      <el-row v-show="showPage" class="table-page">
+    <div
+      ref="tableContainer"
+      style="width: 100%;overflow: hidden;"
+      :style="{background:container_bg_class.background}"
+    >
+      <div
+        v-if="chart.type === 'table-normal'"
+        :id="chartId"
+        style="width: 100%;overflow: hidden;"
+        :class="chart.drill ? 'table-dom-normal-drill' : 'table-dom-normal'"
+      />
+      <div
+        v-if="chart.type === 'table-info'"
+        :id="chartId"
+        style="width: 100%;overflow: hidden;"
+        :class="chart.drill ? (showPage ? 'table-dom-info-drill' : 'table-dom-info-drill-pull') : (showPage ? 'table-dom-info' : 'table-dom-info-pull')"
+      />
+      <div
+        v-if="chart.type === 'table-pivot'"
+        :id="chartId"
+        style="width: 100%;overflow: hidden;"
+        class="table-dom-normal"
+      />
+      <el-row
+        v-show="showPage"
+        class="table-page"
+      >
         <span class="total-style">
           {{ $t('chart.total') }}
           <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
@@ -247,7 +289,7 @@ export default {
       }
       const dimensionList = []
       for (const key in rowData) {
-        if(meta.fieldValue === rowData[key]){
+        if (meta.fieldValue === rowData[key]) {
           dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
         }
       }
@@ -256,7 +298,7 @@ export default {
         data: {
           dimensionList: dimensionList,
           quotaList: [],
-          name: meta.fieldValue||'null'
+          name: meta.fieldValue || 'null'
         }
       }
 

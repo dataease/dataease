@@ -3,7 +3,11 @@
     <el-row style="display: flex;align-items: center;">
       <el-col :span="4"> {{ $t('panel.template_nale') }}</el-col>
       <el-col :span="20">
-        <el-input v-model="templateInfo.name" clearable size="mini" />
+        <el-input
+          v-model="templateInfo.name"
+          clearable
+          size="mini"
+        />
       </el-col>
     </el-row>
     <el-row class="de-tab">
@@ -16,18 +20,32 @@
           highlight-current-row
           @current-change="clickChange"
         >
-          <el-table-column :label="columnLabel" :column-key="fieldName" :prop="fieldName" />
+          <el-table-column
+            :label="columnLabel"
+            :column-key="fieldName"
+            :prop="fieldName"
+          />
           <el-table-column align="right">
             <template slot-scope="scope">
-              <el-radio v-model="tableRadio" :label="scope.row"><i /></el-radio>
+              <el-radio
+                v-model="tableRadio"
+                :label="scope.row"
+              ><i /></el-radio>
             </template>
           </el-table-column>
         </el-table>
       </div>
     </el-row>
     <el-row class="root-class">
-      <el-button size="mini" @click="cancel()">{{ $t('commons.cancel') }}</el-button>
-      <el-button size="mini" type="primary" @click="save()">{{ $t('commons.save') }}</el-button>
+      <el-button
+        size="mini"
+        @click="cancel()"
+      >{{ $t('commons.cancel') }}</el-button>
+      <el-button
+        size="mini"
+        type="primary"
+        @click="save()"
+      >{{ $t('commons.save') }}</el-button>
     </el-row>
   </el-row>
 </template>

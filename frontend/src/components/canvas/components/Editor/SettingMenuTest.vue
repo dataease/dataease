@@ -1,16 +1,43 @@
 <template>
   <div>
     <div style="width: 100%;">
-      <el-dropdown trigger="click" @mouseup="handleMouseUp">
-        <el-button ref="trackButton" class="icon iconfont icon-shezhi">TEST</el-button>
+      <el-dropdown
+        trigger="click"
+        @mouseup="handleMouseUp"
+      >
+        <el-button
+          ref="trackButton"
+          class="icon iconfont icon-shezhi"
+        >TEST</el-button>
         <el-dropdown-menu>
-          <el-dropdown-item icon="el-icon-document-copy" @click.native="copy">{{ $t('panel.copy') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-delete" @click.native="deleteComponent">{{ $t('panel.delete') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-upload2" @click.native="topComponent">{{ $t('panel.topComponent') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-download" @click.native="bottomComponent">{{ $t('panel.bottomComponent') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-arrow-up" @click.native="upComponent">{{ $t('panel.upComponent') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-arrow-down" @click.native="downComponent">{{ $t('panel.downComponent') }}</el-dropdown-item>
-          <el-dropdown-item icon="el-icon-link" @click.native="linkageSetting">联动设置</el-dropdown-item>
+          <el-dropdown-item
+            icon="el-icon-document-copy"
+            @click.native="copy"
+          >{{ $t('panel.copy') }}</el-dropdown-item>
+          <el-dropdown-item
+            icon="el-icon-delete"
+            @click.native="deleteComponent"
+          >{{ $t('panel.delete') }}</el-dropdown-item>
+          <el-dropdown-item
+            icon="el-icon-upload2"
+            @click.native="topComponent"
+          >{{ $t('panel.topComponent') }}</el-dropdown-item>
+          <el-dropdown-item
+            icon="el-icon-download"
+            @click.native="bottomComponent"
+          >{{ $t('panel.bottomComponent') }}</el-dropdown-item>
+          <el-dropdown-item
+            icon="el-icon-arrow-up"
+            @click.native="upComponent"
+          >{{ $t('panel.upComponent') }}</el-dropdown-item>
+          <el-dropdown-item
+            icon="el-icon-arrow-down"
+            @click.native="downComponent"
+          >{{ $t('panel.downComponent') }}</el-dropdown-item>
+          <el-dropdown-item
+            icon="el-icon-link"
+            @click.native="linkageSetting"
+          >联动设置</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>

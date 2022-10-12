@@ -7,19 +7,30 @@
       :highlight-current-row="true"
       style="width: 100%"
     >
-      <el-table-column prop="name" :label="$t('commons.name')">
-        <template :id="scope.row.storeId" slot-scope="scope">
+      <el-table-column
+        prop="name"
+        :label="$t('commons.name')"
+      >
+        <template
+          slot-scope="scope"
+        >
           <div class="start-item">
             <div
               class="filter-db-row star-item-content"
               style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
               @click="showPanel(scope.row)"
             >
-              <svg-icon :icon-class="'panel-'+scope.row.status" class="ds-icon-scene" />
+              <svg-icon
+                :icon-class="'panel-'+scope.row.status"
+                class="ds-icon-scene"
+              />
               <span :class="scope.row.status"> {{ scope.row.name }}</span>
             </div>
             <div class="star-item-close">
-              <i class="el-icon-delete " @click="remove(scope.row)" />
+              <i
+                class="el-icon-delete "
+                @click="remove(scope.row)"
+              />
             </div>
           </div>
         </template>

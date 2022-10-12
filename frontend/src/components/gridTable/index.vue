@@ -3,56 +3,55 @@
     <el-table
       ref="table"
       v-bind="$attrs"
-      v-on="tableEvent"
       height="2000"
       :data="tableData"
       :style="{ width: '100%' }"
+      v-on="tableEvent"
     >
       <table-body :columns="columns">
-        <slot></slot>
+        <slot />
       </table-body>
-      <slot name="__operation"></slot>
+      <slot name="__operation" />
     </el-table>
     <div class="pagination-cont">
       <el-pagination
         background
         v-bind="paginationDefalut"
         v-on="paginationEvent"
-      >
-      </el-pagination>
+      />
     </div>
   </div>
 </template>
 
 <script>
-import tableBody from "./tableBody";
+import tableBody from './tableBody'
 export default {
   components: { tableBody },
   props: {
     columns: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     multipleSelection: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     pagination: {
       type: Object,
-      default: () => {},
+      default: () => {}
     },
     isRememberSelected: {
       type: Boolean,
-      default: false,
+      default: false
     },
     selectedFlags: {
       type: String,
-      default: "id",
+      default: 'id'
     },
     tableData: {
       type: Array,
-      default: () => [],
-    },
+      default: () => []
+    }
   },
   data() {
     return {
@@ -61,98 +60,98 @@ export default {
         currentPage: 1,
         pageSizes: [10, 20, 50, 100],
         pageSize: 10,
-        layout: "total, prev, pager, next, sizes, jumper",
-        total: 0,
+        layout: 'total, prev, pager, next, sizes, jumper',
+        total: 0
       },
       multipleSelectionCach: [],
-      tableEvent: {},
-    };
-  },
-  created() {
-    this.handleListeners();
+      tableEvent: {}
+    }
   },
   computed: {
     multipleSelectionAll() {
-      return [...this.multipleSelectionCach, ...this.multipleSelection];
-    },
+      return [...this.multipleSelectionCach, ...this.multipleSelection]
+    }
   },
   watch: {
     pagination: {
       handler() {
         this.paginationDefalut = {
           ...this.paginationDefalut,
-          ...this.pagination,
-        };
+          ...this.pagination
+        }
       },
       deep: true,
-      immediate: true,
+      immediate: true
     },
     tableData: {
       handler() {
         this.$nextTick(() => {
-          this.$refs.table.doLayout();
-        });
-        if (!this.isRememberSelected) return;
+          this.$refs.table.doLayout()
+        })
+        if (!this.isRememberSelected) return
         // 先拷贝 重新加载数据会触发SelectionChange 导致this.multipleSelection为空
-        const multipleSelection = [...this.multipleSelection];
+        const multipleSelection = [...this.multipleSelection]
         this.$nextTick(() => {
-          this.handlerSelected(multipleSelection);
-        });
+          this.handlerSelected(multipleSelection)
+        })
       },
-      deep: true,
+      deep: true
     },
     columns: {
       handler() {
         this.$nextTick(() => {
-          this.$refs.table.doLayout();
-        });
+          this.$refs.table.doLayout()
+        })
       },
-      deep: true,
-    },
+      deep: true
+    }
+  },
+  created() {
+    this.handleListeners()
   },
   methods: {
     toggleRowSelection(row) {
-      this.$refs.table.toggleRowSelection(row, true);
+      this.$refs.table.toggleRowSelection(row, true)
     },
     handlerSelected(multipleSelection) {
       this.multipleSelectionCach = [
         ...this.multipleSelectionCach,
-        ...multipleSelection,
-      ];
+        ...multipleSelection
+      ]
       const flags = this.multipleSelectionCach.map(
         (ele) => ele[this.selectedFlags]
-      );
+      )
       // 当前页的选中项索引
-      const notCurrenArr = [];
+      const notCurrenArr = []
       this.tableData.forEach((ele) => {
-        const resultIndex = flags.indexOf(ele[this.selectedFlags]);
+        const resultIndex = flags.indexOf(ele[this.selectedFlags])
         if (resultIndex !== -1) {
-          this.$refs.table.toggleRowSelection(ele, true);
-          notCurrenArr.push(resultIndex);
+          this.$refs.table.toggleRowSelection(ele, true)
+          notCurrenArr.push(resultIndex)
         }
-      });
+      })
       notCurrenArr.sort().reduceRight((pre, next) => {
-        this.multipleSelectionCach.splice(next, 1);
-      }, 0);
+        this.multipleSelectionCach.splice(next, 1)
+      }, 0)
     },
     handleListeners() {
       Object.keys(this.$listeners).forEach((key) => {
         if (
           [
-            "size-change",
-            "current-change",
-            "prev-click",
-            "next-click",
+            'size-change',
+            'current-change',
+            'prev-click',
+            'next-click'
           ].includes(key)
         ) {
-          this.paginationEvent[key] = this.$listeners[key];
+          this.paginationEvent[key] = this.$listeners[key]
         } else {
-          this.tableEvent[key] = this.$listeners[key];
+          this.tableEvent[key] = this.$listeners[key]
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

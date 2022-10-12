@@ -8,13 +8,16 @@
     ]"
     @click.stop="previewTemplate"
   >
-    <div class="template-item-img" :style="classBackground" />
+    <div
+      class="template-item-img"
+      :style="classBackground"
+    />
     <span class="demonstration">{{ template.title }}</span>
   </div>
 </template>
 
 <script>
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'TemplateMarketPreviewItem',

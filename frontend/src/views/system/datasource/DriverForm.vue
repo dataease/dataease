@@ -1,13 +1,29 @@
 <template>
   <layout-content>
-    <template v-slot:header>
-      <el-icon name="back" class="back-button" @click.native="backToList" />
+    <template #header>
+      <el-icon
+        name="back"
+        class="back-button"
+        @click.native="backToList"
+      />
       {{
         params && params.id && params.showModel && params.showModel === 'show' && !canEdit ? $t('driver.show_info') : $t('driver.modify')
       }}
-      <el-button v-if="canEdit" size="mini" style="float: right;"type="primary" @click="save">{{ $t('commons.save') }}
+      <el-button
+        v-if="canEdit"
+        size="mini"
+        style="float: right;"
+        type="primary"
+        @click="save"
+      >{{ $t('commons.save') }}
       </el-button>
-      <el-button v-else size="mini" style="float: right;" type="primary" @click="changeEdit">{{ $t('commons.edit') }}
+      <el-button
+        v-else
+        size="mini"
+        style="float: right;"
+        type="primary"
+        @click="changeEdit"
+      >{{ $t('commons.edit') }}
       </el-button>
 
     </template>
@@ -22,13 +38,25 @@
         label-width="180px"
         label-position="right"
       >
-        <el-form-item :label="$t('commons.name')" prop="name">
-          <el-input v-model="driverForm.name" autocomplete="off" />
+        <el-form-item
+          :label="$t('commons.name')"
+          prop="name"
+        >
+          <el-input
+            v-model="driverForm.name"
+            autocomplete="off"
+          />
         </el-form-item>
         <el-form-item :label="$t('commons.description')">
-          <el-input v-model="driverForm.desc" autocomplete="off" />
+          <el-input
+            v-model="driverForm.desc"
+            autocomplete="off"
+          />
         </el-form-item>
-        <el-form-item :label="$t('datasource.type')" prop="type">
+        <el-form-item
+          :label="$t('datasource.type')"
+          prop="type"
+        >
           <el-select
             v-model="driverForm.type"
             :placeholder="$t('datasource.please_choose_type')"
@@ -46,24 +74,14 @@
           </el-select>
         </el-form-item>
 
-        <!--        <el-form-item :label="$t('driver.driver')" >-->
-        <!--          <el-select-->
-        <!--            v-model="driverForm.driverClass"-->
-        <!--            :placeholder="$t('driver.please_choose_driver')"-->
-        <!--            class="select-width"-->
-        <!--            filterable-->
-        <!--          >-->
-        <!--            <el-option-->
-        <!--              v-for="item in driverClassList"-->
-        <!--              :key="item"-->
-        <!--              :label="item"-->
-        <!--              :value="item"-->
-        <!--            />-->
-        <!--          </el-select>-->
-        <!--        </el-form-item>-->
-
-        <el-form-item :label="$t('driver.driver')" prop="driverClass">
-          <el-input v-model="driverForm.driverClass" autocomplete="off" />
+        <el-form-item
+          :label="$t('driver.driver')"
+          prop="driverClass"
+        >
+          <el-input
+            v-model="driverForm.driverClass"
+            autocomplete="off"
+          />
         </el-form-item>
 
       </el-form>
@@ -82,15 +100,32 @@
         :headers="headers"
         style="float: right;"
       >
-        <el-button size="mini" type="primary" style="float: right;" :disabled="uploading">
-          <span v-if="!uploading" style="font-size: 12px;">{{ $t('dataset.upload_file') }}</span>
-          <span v-if="uploading" style="font-size: 12px;"><i class="el-icon-loading" /> {{ $t('dataset.uploading') }}</span>
+        <el-button
+          size="mini"
+          type="primary"
+          style="float: right;"
+          :disabled="uploading"
+        >
+          <span
+            v-if="!uploading"
+            style="font-size: 12px;"
+          >{{ $t('dataset.upload_file') }}</span>
+          <span
+            v-if="uploading"
+            style="font-size: 12px;"
+          ><i class="el-icon-loading" /> {{ $t('dataset.uploading') }}</span>
         </el-button>
       </el-upload>
       <fu-table :data="driverFiles">
-        <el-table-column prop="fileName" :label="$t('driver.file_name')" />
-        <!--      <el-table-column prop="version" :label="$t('driver.version')"/>-->
-        <fu-table-operations :buttons="buttons" :label="$t('commons.operating')" fix />
+        <el-table-column
+          prop="fileName"
+          :label="$t('driver.file_name')"
+        />
+        <fu-table-operations
+          :buttons="buttons"
+          :label="$t('commons.operating')"
+          fix
+        />
       </fu-table>
 
     </div>
@@ -100,11 +135,7 @@
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
 import i18n from '@/lang/index'
-import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
-import DsConfiguration from '@/views/system/datasource/DsConfiguration'
-import PluginCom from '@/views/system/plugin/PluginCom'
 import { deleteDriverFile, listDriverDetails, updateDriver } from '@/api/system/datasource'
-import { delUser } from '@/api/system/user'
 import { $alert } from '@/utils/message'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
@@ -114,10 +145,7 @@ const token = getToken()
 export default {
   name: 'DriverForm',
   components: {
-    DsConfiguration,
-    LayoutContent,
-    ApiHttpRequestForm,
-    PluginCom
+    LayoutContent
   },
   props: {
     params: {
@@ -175,9 +203,6 @@ export default {
     this.disabled = this.params && this.params.id && this.params.showModel && this.params.showModel === 'show' && !this.canEdit
     this.listDriverDetails()
   },
-  mounted() {
-  },
-
   methods: {
     beforeUpload(file) {
       this.uploading = true
@@ -247,21 +272,12 @@ export default {
       this.$emit('switch-component', {})
     },
     refreshType(form) {
-      this.$emit('refresh-type', DsForm)
-    },
-    handleClick(tab, event) {}
+      this.$emit('refresh-type', form)
+    }
   }
 }
 </script>
 <style scoped>
-/* .el-input {
-  width: 300px;
-}
-
-.el-select {
-  width: 300px;
-} */
-
 .ms-http-input {
   width: 500px;
   margin-top: 5px;

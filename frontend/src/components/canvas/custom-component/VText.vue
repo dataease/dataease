@@ -1,5 +1,10 @@
 <template>
-  <div v-if="editStatus" class="v-text" @keydown="handleKeydown" @keyup="handleKeyup">
+  <div
+    v-if="editStatus"
+    class="v-text"
+    @keydown="handleKeydown"
+    @keyup="handleKeyup"
+  >
     <!-- tabindex >= 0 使得双击时聚集该元素 -->
     <div
       v-if="canEdit"
@@ -26,8 +31,14 @@
       v-html="element.propValue"
     />
   </div>
-  <div v-else class="v-text">
-    <div :style="{ verticalAlign: element.style.verticalAlign }" v-html="textInfo" />
+  <div
+    v-else
+    class="v-text"
+  >
+    <div
+      :style="{ verticalAlign: element.style.verticalAlign }"
+      v-html="textInfo"
+    />
   </div>
 </template>
 

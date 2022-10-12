@@ -1,7 +1,17 @@
 <template>
-  <svg class="grid" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <svg
+    class="grid"
+    width="100%"
+    height="100%"
+    xmlns="http://www.w3.org/2000/svg"
+  >
     <defs>
-      <pattern id="smallGrid" :width="smallGridW" :height="smallGridH" patternUnits="userSpaceOnUse">
+      <pattern
+        id="smallGrid"
+        :width="smallGridW"
+        :height="smallGridH"
+        patternUnits="userSpaceOnUse"
+      >
         <path
           :d="smallGridPathD"
           fill="none"
@@ -9,8 +19,17 @@
           stroke-width="1"
         />
       </pattern>
-      <pattern id="middleGrid" :width="middleGridW" :height="middleGridH" patternUnits="userSpaceOnUse">
-        <rect :width="middleGridW" :height="middleGridH" fill="url(#smallGrid)" />
+      <pattern
+        id="middleGrid"
+        :width="middleGridW"
+        :height="middleGridH"
+        patternUnits="userSpaceOnUse"
+      >
+        <rect
+          :width="middleGridW"
+          :height="middleGridH"
+          fill="url(#smallGrid)"
+        />
         <path
           :d="middleGridPathD"
           fill="none"
@@ -18,8 +37,17 @@
           stroke-width="1.5"
         />
       </pattern>
-      <pattern id="grid" :width="gridW" :height="gridH" patternUnits="userSpaceOnUse">
-        <rect :width="gridW" :height="gridH" fill="url(#middleGrid)" />
+      <pattern
+        id="grid"
+        :width="gridW"
+        :height="gridH"
+        patternUnits="userSpaceOnUse"
+      >
+        <rect
+          :width="gridW"
+          :height="gridH"
+          fill="url(#middleGrid)"
+        />
         <path
           :d="pathD"
           fill="none"
@@ -28,7 +56,11 @@
         />
       </pattern>
     </defs>
-    <rect width="100%" height="100%" fill="url(#grid)" />
+    <rect
+      width="100%"
+      height="100%"
+      fill="url(#grid)"
+    />
   </svg>
 </template>
 
