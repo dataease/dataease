@@ -234,7 +234,7 @@ export default {
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
-        
+
         if (themeStyle && themeStyle.backgroundColorSelect) {
           const panelColor = themeStyle.color
           if (panelColor !== '#FFFFFF') {
@@ -272,9 +272,9 @@ export default {
         chart_option = baseLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart)
       } else if (chart.type === 'line-stack') {
         chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart)
-      } else if (chart.type === 'pie') {
+      } else if (chart.type === 'pie' || chart.type === 'pie-donut') {
         chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
-      } else if (chart.type === 'pie-rose') {
+      } else if (chart.type === 'pie-rose' || chart.type === 'pie-donut-rose') {
         chart_option = rosePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart)
       } else if (chart.type === 'funnel') {
         chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart)
@@ -335,7 +335,7 @@ export default {
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
-        
+
         if (themeStyle && themeStyle.backgroundColorSelect) {
           const panelColor = themeStyle.color
           if (panelColor !== '#FFFFFF') {
