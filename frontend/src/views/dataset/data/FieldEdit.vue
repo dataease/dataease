@@ -20,6 +20,7 @@
           icon="el-icon-refresh-left"
           @click="syncField"
         >{{ $t('dataset.sync_field') }}</deBtn>
+        &nbsp;
       </el-col>
       <el-col
         style="text-align: right"

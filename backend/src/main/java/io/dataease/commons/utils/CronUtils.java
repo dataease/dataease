@@ -100,7 +100,7 @@ public class CronUtils {
     }
     private static String getDayOfWeek(Calendar instance) {
         int index = instance.get(Calendar.DAY_OF_WEEK);
-        index = (index + 1) % 7;
+        index = index + 1;
         return String.valueOf(index);
     }
 

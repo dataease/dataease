@@ -330,6 +330,7 @@ export default {
   data() {
     return {
       tabActive: 'all',
+      currentNodeId: '',
       dsTypeRelate: false,
       expandedArray: [],
       tData: [],
@@ -437,11 +438,31 @@ export default {
       this.key = ''
       this.showSearchInput = false
     },
+    dfsTableData(arr, id) {
+      arr.some((ele) => {
+        if (ele.id === id) {
+          this.$refs.myDsTree?.setCurrentNode(ele)
+          this.showInfo({ data: ele })
+          this.expandedArray.push(id)
+          return true
+        } else if (ele.children?.length) {
+          this.dfsTableData(ele.children, id)
+        }
+        return false
+      })
+    },
     queryTreeDatas() {
       this.treeLoading = true
       if (this.showView === 'Datasource') {
         listDatasource().then((res) => {
           this.tData = this.buildTree(res.data)
+          this.$nextTick(() => {
+            const currentNodeId = sessionStorage.getItem('datasource-current-node')
+            if (currentNodeId) {
+              sessionStorage.setItem('datasource-current-node', '')
+              this.dfsTableData(this.tData, currentNodeId)
+            }
+          })
         }).finally(() => {
           this.treeLoading = false
         })
@@ -569,6 +590,7 @@ export default {
     },
     nodeClick(node, data) {
       if (node.type === 'folder') return
+      this.currentNodeId = this.showView !== 'Driver' && node.id
       this.showInfo(data)
     },
     clickFileMore(param) {
@@ -613,6 +635,7 @@ export default {
       if (this.showView === 'Datasource') {
         const param = { ...row, ...{ showModel: 'show' }}
         this.switchMain('DsForm', param, this.tData, this.dsTypes)
+        this.currentNodeId && sessionStorage.setItem('datasource-current-node', this.currentNodeId)
         return
       }
       this.editDriver = true
@@ -634,6 +657,9 @@ export default {
           }
           method(parma).then((res) => {
             if (res.success) {
+              if (datasource.id === this.currentNodeId) {
+                sessionStorage.setItem('datasource-current-node', '')
+              }
               this.openMessageSuccess('commons.delete_success')
               this.switchMain('', {}, this.tData, this.dsTypes)
               this.refreshType(datasource)
