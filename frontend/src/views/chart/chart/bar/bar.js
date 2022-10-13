@@ -1457,8 +1457,8 @@ export function stackBarPartOption(chart_option, chart, cstyle = {}) {
     }
   })
 
-  // chart_option.tooltip.formatter = function(params) {
-  //   console.log('paaaaaaaaaaa',params)
+  // chart_option.tooltip.formatter = function(params,ticket,callback) {
+  //   console.log('paaaaaaaaaaa',params,ticket)
   //   let arr = [] 
   //   let val = 0
   //   if(params.length) {

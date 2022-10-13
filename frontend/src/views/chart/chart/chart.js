@@ -122,13 +122,14 @@ export const DEFAULT_LABEL = {
   strokeWidth: 20,
   progressColor: '#409EFF',
 
+  dragEnable: false,
   repulsion: 100,
   edgeLength: 10,
   gravity: 0.1,
   reductionRate: 50,
   shadowBlur: 10,
   variety_depth: 1,
-  scaleLimitMax: 0.5,
+  scaleLimitMax: 0.7,
   scaleLimitMin: 0.1,
 
   popShow: false,

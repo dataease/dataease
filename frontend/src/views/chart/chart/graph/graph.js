@@ -33,6 +33,7 @@ export function baseGraphOption(chart_option, chart,cstyle = {}) {
           chart_option.series[0].labelLine = {show: false}
           chart_option.series[0].label.labelLine = {show: false}
 
+          chart_option.series[0].roam = customAttr.label.dragEnable !== undefined? customAttr.label.dragEnable : false
           chart_option.series[0].force.repulsion = customAttr.label.repulsion? customAttr.label.repulsion : 100
           chart_option.series[0].force.edgeLength = customAttr.label.edgeLength? customAttr.label.edgeLength : 30
           chart_option.series[0].force.gravity = customAttr.label.gravity? customAttr.label.gravity : 0.1

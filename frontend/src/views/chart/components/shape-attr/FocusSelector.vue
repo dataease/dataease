@@ -2,6 +2,9 @@
   <div style="width: 100%">
     <el-col>
       <el-form v-show="chart.type && chart.type === 'graph'" ref="focusFormGraph" :model="focusForm" label-width="100px" size="mini">
+        <el-form-item :label="$t('chart.dragEnable')" class="form-item">
+          <el-checkbox v-model="focusForm.dragEnable" @change="changeFocusCase">启用</el-checkbox>
+        </el-form-item>
         <el-form-item :label="$t('chart.nodalRepulsion')" class="form-item">
           <el-slider v-model="focusForm.repulsion" show-input :show-input-controls="false" input-size="mini" :min="50" :max="1000" @change="changeFocusCase" />
         </el-form-item>

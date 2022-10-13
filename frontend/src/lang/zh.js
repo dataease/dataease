@@ -752,6 +752,7 @@ export default {
     wordMin: '字体最小值',
     wordMax: '字体最大值',
     wordShape: '词云形状',
+    dragEnable: '拖动启用',
     nodalRepulsion: '节点斥力',
     nodeSpacing: '节点间距',
     centripetalGravitation: '向心引力',
