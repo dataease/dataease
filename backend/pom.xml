@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <artifactId>dataease-server</artifactId>
@@ -14,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <shiro.version>1.7.1</shiro.version>
+        <shiro.version>1.9.1</shiro.version>
         <java.version>1.8</java.version>
         <graalvm.version>20.1.0</graalvm.version>
         <jwt.version>3.12.1</jwt.version>
@@ -504,8 +502,7 @@
                                                 <exclude name="*.html"/>
                                             </fileset>
                                         </copy>
-                                        <copy file="../mobile/dist/index.html"
-                                              tofile="src/main/resources/templates/app.html"/>
+                                        <copy file="../mobile/dist/index.html" tofile="src/main/resources/templates/app.html"/>
                                     </target>
                                 </configuration>
                                 <goals>
