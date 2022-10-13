@@ -17,9 +17,9 @@ export function randomRange(min, max) {
   return returnStr
 }
 
-export function equalsAny(target,...sources) {
+export function equalsAny(target, ...sources) {
   for (let i = 0; i < sources.length; i++) {
-    if (target === sources[i]){
+    if (target === sources[i]) {
       return true
     }
   }

@@ -1588,7 +1588,7 @@ import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
 import ScrollCfg from '@/views/chart/components/senior/ScrollCfg'
 import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
-import { equalsAny } from "@/utils/StringUtils";
+import { equalsAny } from '@/utils/StringUtils'
 
 export default {
   name: 'ChartEdit',
@@ -1854,6 +1854,10 @@ export default {
   },
 
   methods: {
+    setTitle(val) {
+      this.chart.name = val
+      this.view.name = val
+    },
     resetChartData() {
       this.getChart(this.param.id)
     },
@@ -1880,9 +1884,9 @@ export default {
     // v1.16.0 需求，拆分环形图
     convertChart(chart) {
       // v1.16.0，将有内径的饼图和玫瑰图转换成环形图和玫瑰环形图
-      if (equalsAny(chart.type,'pie','pie-rose')) {
-        let customAttr = chart.customAttr;
-        if (typeof chart.customAttr === 'string'){
+      if (equalsAny(chart.type, 'pie', 'pie-rose')) {
+        let customAttr = chart.customAttr
+        if (typeof chart.customAttr === 'string') {
           customAttr = JSON.parse(customAttr)
         }
         if (customAttr.size.pieInnerRadius > 0) {
@@ -2354,9 +2358,9 @@ export default {
           this.httpRequest.msg = err.response.data.message
           return true
         }).then(() => {
-          //视图为编辑状态才进行转换
+          // 视图为编辑状态才进行转换
           if (this.editStatue) {
-            this.convertChart(this.chart);
+            this.convertChart(this.chart)
             this.convertChart(this.view)
           }
         })

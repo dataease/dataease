@@ -20,7 +20,7 @@
     >
       <div style="flex: 1">
         <el-row>
-          <el-row>
+          <el-row style="max-width: 480px;">
             <span class="mb8">
               {{ $t('dataset.field_exp') }}
               <el-tooltip

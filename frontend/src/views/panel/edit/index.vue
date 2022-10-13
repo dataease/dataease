@@ -803,6 +803,7 @@ export default {
     bus.$off('change_panel_right_draw', this.changeRightDrawOpen)
     bus.$off('delete-condition', this.deleteCustomComponent)
     bus.$off('current-component-change', this.asideRefresh)
+    bus.$off('aside-set-title', this.asideSetTitle)
     const elx = this.$refs.rightPanel
     elx && elx.remove()
   },
@@ -825,10 +826,16 @@ export default {
       bus.$on('change_panel_right_draw', this.changeRightDrawOpen)
       bus.$on('delete-condition', this.deleteCustomComponent)
       bus.$on('current-component-change', this.asideRefresh)
+      bus.$on('aside-set-title', this.asideSetTitle)
     },
     asideRefresh() {
       if (this.$refs['chartEditRef']) {
         this.$refs['chartEditRef'].resetChartData()
+      }
+    },
+    asideSetTitle(val) {
+      if (this.$refs['chartEditRef']) {
+        this.$refs['chartEditRef'].setTitle(val)
       }
     },
     deleteCustomComponent(param) {
