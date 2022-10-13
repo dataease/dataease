@@ -253,13 +253,19 @@ export default {
   computed: {
     ...mapState([
       'batchOptStatus'
-    ])
+    ]),
+    title() {
+      return this.chart.name
+    }
   },
   watch: {
     'chart': {
       handler: function() {
         this.initData()
       }
+    },
+    title(val) {
+      this.titleForm = { ...this.titleForm, title: val }
     }
   },
   mounted() {
