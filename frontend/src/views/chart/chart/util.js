@@ -1080,7 +1080,8 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-pie'
+        'position-pie',
+        'formatter'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -1138,7 +1139,8 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-pie'
+        'position-pie',
+        'formatter'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -1195,7 +1197,8 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-pie'
+        'position-pie',
+        'formatter'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -1253,7 +1256,8 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-pie'
+        'position-pie',
+        'formatter'
       ],
       'tooltip-selector-ant-v': [
         'show',

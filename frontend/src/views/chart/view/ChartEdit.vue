@@ -1895,6 +1895,14 @@ export default {
         }
       }
     },
+    // 从后端获取视图之后做一些处理，比如为旧视图类型增加了新的选项设置默认值
+    setUpAfterFetchView(){
+      //视图为编辑状态才进行转换
+      if (this.editStatue) {
+        this.convertChart(this.chart)
+        this.convertChart(this.view)
+      }
+    },
     chartInit() {
       this.fieldShow = false
       this.resetDrill()
@@ -2354,11 +2362,7 @@ export default {
           this.httpRequest.msg = err.response.data.message
           return true
         }).then(() => {
-          //视图为编辑状态才进行转换
-          if (this.editStatue) {
-            this.convertChart(this.chart);
-            this.convertChart(this.view)
-          }
+          this.setUpAfterFetchView()
         })
       } else {
         this.view = {}

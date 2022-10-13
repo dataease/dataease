@@ -1036,7 +1036,20 @@ export default {
         if (view.render === 'echarts') {
           attr.label.position = 'inside'
         } else {
-          attr.label.position = 'inner'
+          // v1.16.0: AntV 饼图默认样式修改
+          // 不显示图例
+          const customStyle = JSON.parse(view.customStyle)
+          customStyle.legend.show = false
+          view.customStyle = JSON.stringify(customStyle)
+          //显示标签，格式为 分类: 占比，显示区域为外部
+          attr.label.show = true
+          attr.label.position = 'outer'
+          //玫瑰图没有百分比
+          if (type.includes('rose')) {
+            attr.label.formatter = '{c}'
+          }else {
+            attr.label.formatter = '{b}: {d}%';
+          }
         }
         // 环形图默认内径，玫瑰图为 外径 * 0.5，饼图为 外径 * 0.7
         if (type === 'pie-donut') {

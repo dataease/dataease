@@ -1,6 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
+import {equalsAny} from "@/utils/StringUtils";
 
 export function getPadding(chart) {
   if (chart.drill) {
@@ -120,7 +121,7 @@ export function getLabel(chart) {
     if (customAttr.label) {
       const l = JSON.parse(JSON.stringify(customAttr.label))
       if (l.show) {
-        if (chart.type === 'pie') {
+        if (equalsAny(chart.type,'pie','pie-donut')) {
           label = {
             type: l.position,
             autoRotate: false
@@ -195,10 +196,23 @@ export function getLabel(chart) {
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
                 if (f.name === param.category) {
+                  let formatterCfg = formatterItem;
                   if (f.formatterCfg) {
-                    res = valueFormatter(param.value, f.formatterCfg)
-                  } else {
-                    res = valueFormatter(param.value, formatterItem)
+                    formatterCfg = f.formatterCfg
+                  }
+                  if (chart.render === 'antv' && chart.type.includes('pie')) {
+                    //和 echarts 保持一致
+                    const a = param.category //系列
+                    const b = param.field //数据
+                    const c = valueFormatter(param.value, formatterCfg) // 值
+                    const d = (Math.round(param.percent * 10000) / 100).toFixed(2) // 百分比
+                    res = l.formatter
+                      .replace('{a}', a)
+                      .replace('{b}', b)
+                      .replace('{c}', c)
+                      .replace('{d}', d);
+                  }else {
+                    res = valueFormatter(param.value, formatterCfg);
                   }
                   break
                 }

@@ -120,6 +120,35 @@
               >{{ option.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
+          <el-form-item
+            v-show="showProperty('formatter')"
+            class="form-item"
+          >
+            <span slot="label">
+              <span class="span-box">
+                <span>{{ $t('chart.content_formatter') }}</span>
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  placement="bottom"
+                >
+                  <div slot="content">
+                    字符串模板 模板变量有：<br>{a}：系列名。<br>{b}：数据名。<br>{c}：数据值。<br>{d}：百分比（用于饼图等）。
+                  </div>
+                  <i
+                    class="el-icon-info"
+                    style="cursor: pointer;"
+                  />
+                </el-tooltip>
+              </span>
+            </span>
+            <el-input
+              v-model="labelForm.formatter"
+              type="textarea"
+              :autosize="{ minRows: 4, maxRows: 4}"
+              @blur="changeLabelAttr('formatter')"
+            />
+          </el-form-item>
         </div>
       </el-form>
 
