@@ -102,7 +102,7 @@
             </div>
             <div class="req-value">
               <span>{{ api.method }}</span>
-              <span>{{ api.url }}</span>
+              <span :title="api.url">{{ api.url }}</span>
             </div>
           </div>
         </template>
@@ -1544,6 +1544,10 @@ export default {
     }
     :nth-child(2) {
       margin-left: 84px;
+      max-width: 415px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
   .req-title {

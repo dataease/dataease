@@ -73,7 +73,7 @@
             :title="data.excelLable"
             class="custom-tree-node"
           >
-            {{ data.excelLable }}
+            <span class="label">{{ data.excelLable }}</span>
             <span
               v-if="
                 (data.nameExsit && !param.tableId) ||
@@ -665,9 +665,13 @@ export default {
       .custom-tree-node {
         position: relative;
         width: 80%;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+        display: flex;
+        .label {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          width: 85%;
+        }
       }
       .error-name-exsit {
         position: absolute;
@@ -702,6 +706,7 @@ export default {
   .table-detail {
     font-family: PingFang SC;
     flex: 1;
+    overflow-x: auto;
 
     .dataset {
       padding: 21px 24px;
