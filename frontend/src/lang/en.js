@@ -992,6 +992,7 @@ export default {
     color_simple: 'Simple',
     not_alpha: 'Opacity',
     area_border_color: 'Map border',
+    area_base_color: 'Base map',
     size: 'Size',
     bar_width: 'Column Width',
     bar_gap: 'Column septum',
