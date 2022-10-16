@@ -443,6 +443,7 @@ export default {
     message_list: '消息清單',
     by_plugin_name: '通過挿件名稱搜索',
     unable_to_uninstall: '內寘挿件，無法卸載',
+    unable_to_update: '內寘挿件，無法更新',
     free: '免費',
     cost: '費用',
     developer: '開發者',

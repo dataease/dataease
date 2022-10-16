@@ -443,6 +443,7 @@ export default {
     all_read_successfully: 'All read successfully',
     by_plugin_name: 'Search by plug-in name',
     unable_to_uninstall: 'Built in plug-in, unable to uninstall',
+    unable_to_update: 'Built in plug-in, unable to update',
     free: 'free',
     cost: 'cost',
     developer: 'developer',
