@@ -2459,7 +2459,7 @@ export default {
     panel: '儀表闆',
     content: '報告正文',
     recipients: '收件人',
-    recisetting: '接受設置',
+    recisetting: '接收設置',
     email: '郵件',
     wecom: '企業微信',
     dingtalk: '釘釘',
