@@ -2455,7 +2455,7 @@ export default {
     panel: '仪表板',
     content: '报告正文',
     recipients: '收件人',
-    recisetting: '接受设置',
+    recisetting: '接收设置',
     email: '邮件',
     wecom: '企业微信',
     dingtalk: '钉钉',
