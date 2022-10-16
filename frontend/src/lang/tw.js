@@ -993,6 +993,7 @@ export default {
     color_simple: '簡潔',
     not_alpha: '不透明度',
     area_border_color: '地圖邊線',
+    area_base_color: '底圖',
     size: '大小',
     bar_width: '柱寬',
     bar_gap: '柱間隔',

@@ -992,6 +992,7 @@ export default {
     color_simple: '简洁',
     not_alpha: '不透明度',
     area_border_color: '地图边线',
+    area_base_color: '底图',
     size: '大小',
     bar_width: '柱宽',
     bar_gap: '柱间隔',
