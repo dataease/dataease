@@ -47,6 +47,7 @@
         @setFontIcon="setFontIcon"
         @setPicture="setPicture"
         @setWeather="setWeather"
+        @setJump="setJump"
         @setCustom="setCustom"
         @boardSet="boardSet"
         @tabRelation="tabRelation"
@@ -1983,6 +1984,10 @@ export default {
     // 文本轮播
     setCustom() {
       this.$emit('setCustom')
+    },
+    // 下拉跳转
+    setJump() {
+      this.$emit('setJump')
     }
   }
 

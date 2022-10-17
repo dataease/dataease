@@ -255,6 +255,14 @@ export const otherList = [
     label: '天气',
     icon: 'iconfont icon-shijian',
     defaultClass: 'text-filter'
+  },
+  {
+    id: '30004',
+    component: 'de-jump',
+    type: 'de-jump',
+    label: '下拉跳转',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter'
   }
 ]
 
@@ -575,6 +583,34 @@ const list = [
       fontSize: 16,
       color: '#333'
     },
+    x: 1,
+    y: 1,
+    sizex: 10,
+    sizey: 5,
+    miniSizex: 1,
+    miniSizey: 1
+  },
+  {
+    id: '30004',
+    component: 'de-jump',
+    type: 'de-jump',
+    label: '下拉跳转',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter',
+    mobileStyle: BASE_MOBILE_STYLE,
+    style: {
+      width: 200,
+      height: 59
+    },
+    options: {
+      jumpList: [
+        {
+          jumpName: '',
+          jumpLink: '',
+        }
+      ],
+    },
+    frameLinks: FRAMELINKS,
     x: 1,
     y: 1,
     sizex: 10,

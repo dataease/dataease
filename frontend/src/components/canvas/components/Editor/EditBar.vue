@@ -50,6 +50,9 @@
       <span :title="$t('panel.switch_picture')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='customBottm'" class="icon iconfont icon-genghuan" @click.stop="setCustom" />
       </span>
+      <span :title="'跳转配置'">
+        <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-jump'" class="icon iconfont icon-genghuan" @click.stop="setJump" />
+      </span>
       <span :title="'锁定'">
         <svg-icon v-if="activeModel==='edit'&&curComponent&&lockValue" :icon-class="'locking'" class="icon" style="color:#fff" @click.stop="setLockout(false)" />
       </span>
@@ -345,6 +348,9 @@ export default {
     },
     setWeather() {
       this.$emit('setWeather')
+    },
+    setJump() {
+      this.$emit('setJump')
     },
     setCustom() {
       console.log('触发此处？？？？？')

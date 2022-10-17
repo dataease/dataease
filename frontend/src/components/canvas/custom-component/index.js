@@ -12,6 +12,7 @@ import DeIcons from '@/components/canvas/custom-component/DeIcons'
 import UserView from '@/components/canvas/custom-component/UserView'
 import DeVideo from '@/components/canvas/custom-component/DeVideo'
 import DeFrame from '@/components/canvas/custom-component/DeFrame'
+import DeJump from '@/components/canvas/custom-component/DeJump'
 import DeStreamMedia from '@/components/canvas/custom-component/DeStreamMedia'
 import DePicture from '@/components/canvas/custom-component/DePicture'
 import DeWeather from '@/components/canvas/custom-component/DeWeather'
@@ -31,4 +32,5 @@ Vue.component('UserView', UserView)
 Vue.component('DeVideo', DeVideo)
 Vue.component('DeFrame', DeFrame)
 Vue.component('DeWeather', DeWeather)
+Vue.component('DeJump', DeJump)
 
