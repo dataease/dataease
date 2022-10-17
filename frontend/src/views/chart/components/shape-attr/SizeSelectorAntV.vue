@@ -358,6 +358,31 @@
             @change="changeBarSizeCase('tableColumnWidth')"
           />
         </el-form-item>
+        <el-form-item
+          v-show="showProperty('tableShowIndex')"
+          label-width="100px"
+          :label="$t('chart.table_show_index')"
+          class="form-item"
+        >
+          <el-radio-group
+            v-model="sizeForm.showIndex"
+            input-size="mini"
+            @change="changeBarSizeCase('tableShowIndex')"
+          >
+            <el-radio :label="true">{{$t('panel.yes')}}</el-radio>
+            <el-radio :label="false">{{$t('panel.no')}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('tableIndexLabel') && sizeForm.showIndex"
+          label-width="100px"
+          class="form-item">
+          <el-input
+            v-model="sizeForm.indexLabel"
+            type="text"
+            @blur="changeBarSizeCase('tableIndexLabel')"
+          />
+        </el-form-item>
 
         <!--chart-mix-start-->
         <span v-show="showProperty('mix')">
@@ -1196,6 +1221,9 @@ export default {
 
           this.sizeForm.tableHeaderAlign = this.sizeForm.tableHeaderAlign ? this.sizeForm.tableHeaderAlign : DEFAULT_SIZE.tableHeaderAlign
           this.sizeForm.tableItemAlign = this.sizeForm.tableItemAlign ? this.sizeForm.tableItemAlign : DEFAULT_SIZE.tableItemAlign
+
+          this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
+          this.sizeForm.indexLabel = this.sizeForm.indexLabel ? this.sizeForm.indexLabel : DEFAULT_SIZE.indexLabel
 
           this.sizeForm.gaugeTickCount = this.sizeForm.gaugeTickCount ? this.sizeForm.gaugeTickCount : DEFAULT_SIZE.gaugeTickCount
 

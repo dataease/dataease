@@ -1096,6 +1096,7 @@ export default {
     table_item_bg: '表格背景',
     table_header_font_color: '表头字体',
     table_item_font_color: '表格字体',
+    table_show_index: '显示序号',
     stripe: '斑马纹',
     start_angle: '起始角度',
     end_angle: '结束角度',

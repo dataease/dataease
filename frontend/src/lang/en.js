@@ -1097,6 +1097,7 @@ export default {
     table_item_bg: 'Table Background',
     table_header_font_color: 'Header Font',
     table_item_font_color: 'Table Font',
+    table_show_index: 'Show Index',
     stripe: 'Zebra pattern',
     start_angle: 'Start Angle',
     end_angle: 'End Angle',

@@ -111,7 +111,9 @@ export const DEFAULT_SIZE = {
   liquidShape: 'circle',
   tablePageMode: 'page',
   symbolOpacity: 0.7,
-  symbolStrokeWidth: 2
+  symbolStrokeWidth: 2,
+  showIndex: false,
+  indexLabel: '序号'
 }
 export const DEFAULT_LABEL = {
   show: false,

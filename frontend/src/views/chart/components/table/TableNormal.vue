@@ -25,6 +25,9 @@
         :summary-method="summaryMethod"
       >
         <ux-table-column
+          type="index"
+          :title='indexLabel'/>
+        <ux-table-column
           v-for="field in fields"
           :key="field.name"
           :field="field.dataeaseName"
@@ -136,7 +139,9 @@ export default {
       showPage: false,
       columnWidth: DEFAULT_SIZE.tableColumnWidth,
       scrollTimer: null,
-      scrollTop: 0
+      scrollTop: 0,
+      showIndex: false,
+      indexLabel: '序号'
     }
   },
   computed: {
@@ -278,6 +283,19 @@ export default {
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
           this.table_item_class.height = customAttr.size.tableItemHeight + 'px'
+
+          // umy-ui 表格的序号列显隐不能通过双向绑定 visible 来切换，
+          // 需要获取 column ，然后将 column 的 visible 设置为 true/false 之后，调用 refreshColumn 来实现
+          const visibleColumn = this.$refs.plxTable.getTableColumn().fullColumn
+          for (let i = 0,column=visibleColumn[i]; i < visibleColumn.length; i++) {
+            // 有变更才刷新
+            if (column.type === 'index' && column.visible !== customAttr.size.showIndex) {
+              column.visible = customAttr.size.showIndex
+              this.$refs.plxTable.refreshColumn()
+              break;
+            }
+          }
+          this.indexLabel = customAttr.size.indexLabel
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
         // 暂不支持斑马纹
@@ -328,13 +346,19 @@ export default {
     summaryMethod({ columns, data }) {
       const that = this
       const means = [] // 合计
+      const x = JSON.parse(that.chart.xaxis);
+      const customAttr = JSON.parse(that.chart.customAttr);
       columns.forEach((column, columnIndex) => {
-        const x = JSON.parse(that.chart.xaxis)
         if (columnIndex === 0 && x.length > 0) {
           means.push('合计')
         } else {
-          if (columnIndex >= x.length) {
-            const values = data.map(item => Number(item[column.property]))
+          // 显示序号就往后推一列
+          let requireSumIndex = x.length
+          if (customAttr.size.showIndex) {
+            requireSumIndex++
+          }
+          if (columnIndex >= requireSumIndex) {
+            const values = data.map(item => Number(item[column.property]));
             // 合计
             if (!values.every(value => isNaN(value))) {
               means[columnIndex] = values.reduce((prev, curr) => {
@@ -350,7 +374,7 @@ export default {
               means[columnIndex] = ''
             }
           } else {
-            means[columnIndex] = ''
+            means[columnIndex] = '';
           }
         }
       })

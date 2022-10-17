@@ -369,6 +369,33 @@
             @change="changeBarSizeCase('tableColumnWidth')"
           />
         </el-form-item>
+        <el-form-item
+          v-show="showProperty('tableShowIndex')"
+          label-width="100px"
+          :label="$t('chart.table_show_index')"
+          class="form-item"
+        >
+          <el-radio-group
+            v-model="sizeForm.showIndex"
+            input-size="mini"
+            @change="changeBarSizeCase('tableShowIndex')"
+          >
+            <el-radio :label="true">{{$t('panel.yes')}}</el-radio>
+            <el-radio :label="false">{{$t('panel.no')}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('tableIndexLabel') && sizeForm.showIndex"
+          label-width="100px"
+          class="form-item">
+          <el-input
+            v-model="sizeForm.indexLabel"
+            type="text"
+            @blur="changeBarSizeCase('tableIndexLabel')"
+          />
+        </el-form-item>
+
+
         <!--table-end-->
         <!--gauge-begin-->
         <el-form-item
@@ -1030,6 +1057,9 @@ export default {
 
           this.sizeForm.tablePageMode = this.sizeForm.tablePageMode ? this.sizeForm.tablePageMode : DEFAULT_SIZE.tablePageMode
           this.sizeForm.tablePageSize = this.sizeForm.tablePageSize ? this.sizeForm.tablePageSize : DEFAULT_SIZE.tablePageSize
+
+          this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
+          this.sizeForm.indexLabel = this.sizeForm.indexLabel ? this.sizeForm.indexLabel : DEFAULT_SIZE.indexLabel
 
           this.sizeForm.quotaFontFamily = this.sizeForm.quotaFontFamily ? this.sizeForm.quotaFontFamily : DEFAULT_SIZE.quotaFontFamily
           this.sizeForm.quotaFontIsBolder = this.sizeForm.quotaFontIsBolder ? this.sizeForm.quotaFontIsBolder : DEFAULT_SIZE.quotaFontIsBolder
