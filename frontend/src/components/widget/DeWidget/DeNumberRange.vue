@@ -4,10 +4,14 @@
     v-if="element.options!== null && element.options.attrs!==null"
     ref="form"
     :model="form"
+    style="width: 100%;"
     :rules="rules"
   >
     <div class="de-number-range-container">
-      <el-form-item prop="min">
+      <el-form-item
+        prop="min"
+        style="padding-left: 0px;"
+      >
         <el-input
           ref="de-number-range-min"
           v-model="form.min"
@@ -18,7 +22,10 @@
         />
       </el-form-item>
       <span>{{ $t('denumberrange.split_placeholder') }}</span>
-      <el-form-item prop="max">
+      <el-form-item
+        prop="max"
+        style="padding-right: 0px;width: calc(50% - 6px) !important;"
+      >
         <el-input
           ref="de-number-range-max"
           v-model="form.max"
