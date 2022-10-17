@@ -442,6 +442,7 @@ export default {
     message_list: '消息列表',
     by_plugin_name: '通过插件名称搜索',
     unable_to_uninstall: '内置插件，无法卸载',
+    unable_to_update: '内置插件，无法更新',
     free: '免费',
     cost: '费用',
     developer: '开发者',

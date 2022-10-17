@@ -104,8 +104,22 @@
           class="card-method"
           :class="`btn-${numPlugin}`"
         >
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="$t('components.unable_to_update')"
+            placement="top"
+          >
+            <div
+              v-if="checkPermission(['plugin:upload']) && updateDisabled(ele)"
+              :class="[{ 'is-disable': updateDisabled(ele) }]"
+              class="btn-plugin update"
+            >
+              <i class="el-icon-more" /> {{ $t('dataset.update') }}
+            </div>
+          </el-tooltip>
           <el-upload
-            v-permission="['plugin:upload']"
+            v-if="checkPermission(['plugin:upload']) && !updateDisabled(ele)"
             :action="baseUrl + 'api/plugin/update/' + ele.pluginId"
             :multiple="false"
             :show-file-list="false"
@@ -270,6 +284,9 @@ export default {
     },
     btnDisabled(row) {
       return row.pluginId < 4
+    },
+    updateDisabled(row) {
+      return row.pluginId === 1
     }
   }
 }
