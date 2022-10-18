@@ -284,8 +284,6 @@ export default {
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
           this.table_item_class.height = customAttr.size.tableItemHeight + 'px'
 
-          // umy-ui 表格的序号列显隐不能通过双向绑定 visible 来切换，
-          // 需要获取 column ，然后将 column 的 visible 设置为 true/false 之后，调用 refreshColumn 来实现
           const visibleColumn = this.$refs.plxTable.getTableColumn().fullColumn
           for (let i = 0,column=visibleColumn[i]; i < visibleColumn.length; i++) {
             // 有变更才刷新
