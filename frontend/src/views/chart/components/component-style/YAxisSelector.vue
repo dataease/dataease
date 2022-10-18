@@ -6,7 +6,7 @@
           <el-checkbox v-model="axisForm.show" @change="changeYAxisStyle">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="axisForm.show">
-          <el-form-item :label="$t('chart.position')" class="form-item">
+          <el-form-item :label="$t('chart.position')" class="form-item" v-show="chart.type && chart.type !== 'bar-double'">
             <el-radio-group v-model="axisForm.position" size="mini" @change="changeYAxisStyle">
               <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
               <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
@@ -48,7 +48,7 @@
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
             </el-select>
           </el-form-item>
-          <span v-show="chart.type && !chart.type.includes('horizontal')">
+          <span v-show="chart.type && !chart.type.includes('horizontal') && chart.type !== 'bar-double'">
             <el-divider />
             <el-form-item class="form-item">
               <span slot="label">

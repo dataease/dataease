@@ -485,6 +485,12 @@ const list = [
         content: null
       }],
       navTabList: [],
+      isFloat: false,
+      floatName: '',
+      floatImg: '',
+      floatSize: 12,
+      floatWidth: 100,
+      floatHeight: 30,
       fontSize: 12,
       color: '#333',
       vertical: 'directory',

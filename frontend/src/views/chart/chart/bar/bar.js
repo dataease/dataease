@@ -327,51 +327,76 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   chart_option.xAxis = []
+  const customStyle = JSON.parse(chart.customStyle)
   chart_option.xAxis = [{
+    show: customStyle.xAxis.show,
     type: 'value',
+    name: customStyle.xAxis.name,
+    nameTextStyle: {
+      ...customStyle.xAxis.nameTextStyle,
+      lineHeight: 20,
+      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+      padding: [
+        customStyle.xAxis.paddingTop !== undefined? customStyle.xAxis.paddingTop : 0,
+        customStyle.xAxis.paddingRight !== undefined? customStyle.xAxis.paddingRight : 0,
+        customStyle.xAxis.paddingBottom !== undefined? customStyle.xAxis.paddingBottom : 0,
+        customStyle.xAxis.paddingLeft !== undefined? customStyle.xAxis.paddingLeft : 0,
+      ]
+    },
     inverse: true,
-    axisLine: {
-      show: false
+    splitLine: {
+      show: customStyle.xAxis.splitLine.show,
+      lineStyle: {
+        ...customStyle.xAxis.splitLine.lineStyle
+      }
     },
     axisTick: {
       show: false
     },
-    position: 'top',
-    // axisLabel: {
-    //   show: true,
-    //   color: '#fff'
-    // },
-    splitLine: {
-      show: true
-      // lineStyle: {
-      //   color: 'rgba(255,255,255,0.2)'
-      // }
-    }
+    position: customStyle.xAxis.position,
+    axisLabel: {
+      ...customStyle.xAxis.axisLabel.show,
+      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+    },
+    // max: !customStyle.xAxis.axisValue.auto? customStyle.axisValue.xAxis.max : null,
+    // min: !customStyle.xAxis.axisValue.auto? customStyle.axisValue.xAxis.min : null,
+    // interval: !customStyle.xAxis.axisValue.auto? customStyle.axisValue.xAxis.split : null,
   }, {
     gridIndex: 1,
-    show: false
+    show: false,
   }, {
+    show: customStyle.xAxis.show,
+    name: customStyle.xAxis.name,
+    nameTextStyle: {
+      ...customStyle.xAxis.nameTextStyle,
+      lineHeight: 20,
+      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+      padding: [
+        customStyle.xAxis.paddingTop !== undefined? customStyle.xAxis.paddingTop : 0,
+        customStyle.xAxis.paddingRight !== undefined? customStyle.xAxis.paddingRight : 0,
+        customStyle.xAxis.paddingBottom !== undefined? customStyle.xAxis.paddingBottom : 0,
+        customStyle.xAxis.paddingLeft !== undefined? customStyle.xAxis.paddingLeft : 0,
+      ]
+    },
     gridIndex: 2,
-    axisLine: {
-      show: false
+    splitLine: {
+      show: customStyle.xAxis.splitLine.show,
+      lineStyle: {
+        ...customStyle.xAxis.splitLine.lineStyle
+      }
     },
     axisTick: {
       show: false
     },
-    position: 'top',
-    // axisLabel: {
-    //   show: true,
-    //   color: '#fff'
-    // },
-    splitLine: {
-      show: true
-      // lineStyle: {
-      //   color: 'rgba(255,255,255,0.2)'
-      // }
-    }
+    position: customStyle.xAxis.position,
+    axisLabel: {
+      ...customStyle.xAxis.axisLabel.show,
+      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+    },
   }]
   chart_option.yAxis = []
   chart_option.yAxis = [{
+    show: customStyle.yAxis.show,
     type: 'category',
     inverse: true,
     position: 'right',
@@ -383,6 +408,20 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     },
     data: chart.data.x
   }, {
+    show: customStyle.yAxis.show,
+    name: customStyle.yAxis.name,
+    nameLocation: customStyle.yAxis.nameLocation,
+    nameTextStyle: {
+      ...customStyle.yAxis.nameTextStyle,
+      lineHeight: 20,
+      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+      padding: [
+        customStyle.yAxis.paddingTop !== undefined? customStyle.yAxis.paddingTop : 0,
+        customStyle.yAxis.paddingRight !== undefined? customStyle.yAxis.paddingRight : 0,
+        customStyle.yAxis.paddingBottom !== undefined? customStyle.yAxis.paddingBottom : 0,
+        customStyle.yAxis.paddingLeft !== undefined? customStyle.yAxis.paddingLeft : 0,
+      ]
+    },
     gridIndex: 1,
     type: 'category',
     inverse: true,
@@ -405,6 +444,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     },
     data: chart.data.x
   }, {
+    show: customStyle.yAxis.show,
     gridIndex: 2,
     type: 'category',
     inverse: true,

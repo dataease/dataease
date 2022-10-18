@@ -1,11 +1,37 @@
 <template>
   <div>
     <div v-show="element.options.pattern !=='scroll'" class="nav_calss" :style="navStyleSet">
-      <div v-for="(item,index) in navList" :key="index" class="nav_info" :style="boxStyle">
+
+      <div v-show="!element.options.isFloat" v-for="(item,index) in navList" :key="index" class="nav_info" :style="boxStyle">
         <div :style="setStyle(item)">
           <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
         </div>
       </div>
+      <div v-show="element.options.isFloat" style="width: 100%;">
+        <el-popover
+          placement="bottom"
+          trigger="hover"
+          class="float_pop"
+          style="padding: 0px;"
+        > 
+          <div class="nav_calss">
+            <div v-for="(item,index) in navList" :key="index" class="nav_info" :style="boxStyle1">
+              <div :style="setStyle1(item)">
+                <span class="title_class" :style="{
+                  color:heightlight(item),
+                  fontSize: floatSize  
+                }" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
+              </div>
+            </div>
+          </div>
+          <div slot="reference">
+            <p :style="floatStyle" style="width: 100%;">{{element.options.floatName}}</p>
+          </div>
+        </el-popover>
+        
+      </div>
+    
+    
     </div>
 
     <!-- <div v-show="element.options.pattern=='scroll'&&element.options.vertical=='elementKey'" class="scroll_box">
@@ -109,6 +135,14 @@ export default {
       style.width = this.boxWidth + 'px'
       return style
     },
+    boxStyle1() {
+      const style = {}
+      style.paddingLeft = this.element.options.spacing + 'px'
+      style.paddingRight = this.element.options.spacing + 'px'
+      style.width = (this.element.options.floatWidth? this.element.options.floatWidth : '100') + 'px'
+      style.height = (this.element.options.floatHeight? this.element.options.floatHeight : '30') + 'px'
+      return style
+    },
     setStyle() {
       return function(value) {
         const style = {}
@@ -148,6 +182,64 @@ export default {
         style.textAlign = this.element.options.horizontal
         return style
       }
+    },
+    setStyle1() {
+      return function(value) {
+        const style = {}
+        console.log('this.element.options', this.element.options)
+        if (this.element.options.vertical !== 'elementKey') {
+          if (this.canvasStyleData.navShowKey === value.name) {
+          // return this.element.options.highlight
+          // return this.element.options.color
+            style.backgroundColor = this.element.options.highlightBg
+            if (this.element.options.heightBgImg) {
+              style.backgroundImage = `url(${this.element.options.heightBgImg})`
+            }
+          } else {
+          // return this.element.options.color
+            style.backgroundColor = ''
+            if (this.element.options.defaultBg) {
+              style.backgroundImage = `url(${this.element.options.defaultBg})`
+            }
+          }
+        } else {
+          if (this.element.options.heightTabs === value.name) {
+            style.backgroundColor = this.element.options.highlightBg
+            if (this.element.options.heightBgImg) {
+              style.backgroundImage = `url(${this.element.options.heightBgImg})`
+            }
+          } else {
+            style.backgroundColor = ''
+            if (this.element.options.defaultBg) {
+              style.backgroundImage = `url(${this.element.options.defaultBg})`
+            }
+          }
+        }
+
+        style.lineHeight = (this.element.options.floatHeight? this.element.options.floatHeight : 30) + 'px'
+        style.backgroundRepeat = 'no-repeat'
+        style.backgroundSize = '100% 100%'
+        style.textAlign = this.element.options.horizontal
+        console.log('floatStyle,,,,',style)
+        return style
+      }
+    },
+    floatSize() {
+      return (this.element.options.floatSize? this.element.options.floatSize : 12) + 'px'
+    },
+    floatStyle() {
+      const style = {}
+      if(this.element.options.floatImg !== '') {
+        style.backgroundImage = `url(${this.element.options.floatImg})`
+      }
+
+      style.lineHeight = this.element.style.height + 'px'
+      style.backgroundRepeat = 'no-repeat'
+      style.backgroundSize = '100% 100%'
+      style.textAlign = this.element.options.horizontal
+
+      // console.log('float........',style)
+      return style
     },
     navList() {
       return this.element.options.navTabList
@@ -204,7 +296,7 @@ export default {
     }
   },
   created() {
-    // console.log('轮播图片组件', this.element)
+    console.log('轮播图片组件', this.element)
   },
   mounted() {
     this.oldName = this.element.options.heightTabs
@@ -306,7 +398,7 @@ export default {
       // 处理主tab切换后，子tab对应的元素组件也隐藏
       console.warn('---处理主tab切换后，子tab对应的元素组件也隐藏---')
       console.warn('数据源', this.componentData, this.canvasStyleData)
-      if (this.element.options.vertical !== 'elementKey') {
+      if (this.element.options.vertical !== 'elementKey' && !this.element.options.isFloat) {
         let chengkey = true
         this.componentData.forEach(res => {
           console.log('res', res)
@@ -346,6 +438,16 @@ export default {
 }
 </script>
 <style >
+.float_box {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+}
+
+/deep/ .float_pop .el-popover{
+  padding: 0px;
+}
+
 .nav_calss{
   display:flex;
   height: 100%;

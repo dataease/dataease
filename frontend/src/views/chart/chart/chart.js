@@ -236,6 +236,7 @@ export const DEFAULT_XAXIS_STYLE = {
     formatter: '{value}'
   },
   splitLine: {
+    show: true,
     lineStyle: {
       color: '#cccccc',
       width: 1,

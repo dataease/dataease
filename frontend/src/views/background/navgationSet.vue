@@ -6,7 +6,14 @@
       </el-col>
     </el-row>
     <el-row class="main-content">
-
+      <el-row style="margin-top: 20px;">
+        <el-col :span="4">
+          <span class="params-title">导航悬浮</span>
+        </el-col>
+        <el-col :span="8" style="line-height: 40px">
+          <el-checkbox v-model="curComponent.options.isFloat">悬浮</el-checkbox>
+        </el-col>
+      </el-row>
       <el-row style="height: 50px;overflow: hidden;margin-top:20px;">
         <el-col :span="4">
           <span class="params-title">{{ '字体大小' }}</span>
@@ -253,6 +260,51 @@
           <img width="100%" :src="dialogImageUrl" alt="">
         </el-dialog>
       </el-row> -->
+
+      <el-row v-if="curComponent.options.isFloat">
+        <el-col :span="4">
+          <span class="params-title">悬浮展示名称</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input v-model="curComponent.options.floatName" placeholder="请输入内容" />
+        </el-col>
+        <el-col :span="4">
+          <span class="params-title">悬浮字体大小</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input-number v-model="curComponent.options.floatSize" :min="1" />
+        </el-col>
+        <el-col>
+          <el-col :span="4">
+            <span class="params-title">悬浮展示宽度</span>
+          </el-col>
+          <el-col :span="8">
+            <el-input-number v-model="curComponent.options.floatWidth" :min="1"></el-input-number>
+          </el-col>
+          <el-col :span="4">
+            <span class="params-title">悬浮展示高度</span>
+          </el-col>
+          <el-col :span="8">
+            <el-input-number v-model="curComponent.options.floatHeight" :min="1"></el-input-number>
+          </el-col>
+        </el-col>
+
+        <el-col style="margin: 20px 0px;">
+          <el-row>
+            <el-col :span="4">
+              <span class="params-title">展示名称背景</span>
+            </el-col>
+            <el-col :span="3">
+              <el-button size="mini" type="primary" @click="openFloatBgImg()">选择</el-button>
+            </el-col>
+            <el-col :span="7" v-show="floatImg !== ''">
+              <div style="height:80px;width:120px;overflow-y:scroll;">
+                <img :src="floatImg" class="img_class">
+              </div>
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-row>
       <el-row style="height: 50px;overflow: hidden;">
         <el-col :span="4">
           <span class="params-title">导航设置</span>
@@ -356,6 +408,7 @@ export default {
       panel: null,
       predefineColors: COLOR_PANEL,
       navBgImg: '',
+      floatImg: '',
       textData: [],
       chengKey: '',
       changImg: '',
@@ -456,6 +509,10 @@ export default {
     if (this.curComponent.options.defaultBg) {
       this.navBgImg = this.curComponent.options.defaultBg
     }
+
+    if (this.curComponent.options.floatImg) {
+      this.floatImg = this.curComponent.options.floatImg
+    }
     // this.curComponent.options.defaultBg = this.navBgImg
   },
 
@@ -495,14 +552,18 @@ export default {
       if (this.activeNameTabs === 'first') {
         if (this.chengKey === 'highlight') {
           this.changImg = this.currentlySelected
-        } else {
+        } else if (this.chengKey === 'default') {
           this.navBgImg = this.currentlySelected
+        } else if (this.chengKey === 'float') {
+          this.floatImg = this.currentlySelected
         }
       } else {
         if (this.chengKey === 'highlight') {
           this.changImg = this.updataUrl
-        } else {
+        } else if (this.chengKey === 'default') {
           this.navBgImg = this.updataUrl
+        } else if (this.chengKey === 'float') {
+          this.floatImg = this.updataUrl
         }
       }
       this.innerVisible = false
@@ -521,6 +582,11 @@ export default {
     openNewBgImg() {
       this.currentlySelected = ''
       this.chengKey = 'default'
+      this.innerVisible = true
+    },
+    openFloatBgImg() {
+      this.currentlySelected = ''
+      this.chengKey = 'float'
       this.innerVisible = true
     },
     addNavInfo() {
@@ -622,6 +688,8 @@ export default {
       this.curComponent.options.heightBgImg = this.changImg
       // 默认背景
       this.curComponent.options.defaultBg = this.navBgImg
+      // 浮动背景
+      this.curComponent.options.floatImg = this.floatImg
       this.commitStyle()
 
       this.$store.commit('recordSnapshot')

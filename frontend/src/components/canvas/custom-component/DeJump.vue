@@ -44,9 +44,10 @@ export default {
   },
   methods: {
     linkChange() {
-      console.log(this.linkOpen)
-
-      window.location.href = this.linkOpen
+      console.log('跳转',this.linkOpen)
+      if(this.linkOpen !== '') {
+        window.location.href = this.linkOpen
+      }
     }
   },
 }
