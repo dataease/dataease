@@ -1,14 +1,13 @@
 <template>
-  <de-layout-content>
+  <de-layout-content class="de-serach-table">
     <el-row class="top-operate">
       <el-col :span="12">
-        <el-button
+        <deBtn
           v-permission="['user:add']"
-          class="btn"
           type="primary"
           icon="el-icon-plus"
           @click="create"
-        >{{ $t("user.create") }}</el-button>
+        >{{ $t("user.create") }}</deBtn>
 
         <plugin-com
           v-if="isPluginLoaded"
@@ -32,25 +31,23 @@
           @blur="initSearch"
           @clear="initSearch"
         />
-        <el-button
-          v-btnPress="filterColor"
-          class="normal btn"
-          :class="[filterTexts.length ? 'active-btn filter-not-null' : 'filter-zero']"
+        <deBtn
+          :secondary="!cacheCondition.length"
+          :plain="!!cacheCondition.length"
           icon="iconfont icon-icon-filter"
           @click="filterShow"
         >{{ $t('user.filter') }}<template v-if="filterTexts.length">
           ({{ filterTexts.length }})
         </template>
-        </el-button>
+        </deBtn>
         <el-dropdown
           trigger="click"
           :hide-on-click="false"
         >
-          <el-button
-            v-btnPress
-            class="normal btn filter-zero"
+          <deBtn
+            secondary
             icon="el-icon-setting"
-          >{{ $t('user.list') }}</el-button>
+          >{{ $t('user.list') }}</deBtn>
           <el-dropdown-menu
             slot="dropdown"
             class="list-colums-slect"
@@ -246,7 +243,7 @@
           <template slot-scope="scope">
             <el-button
               v-permission="['user:edit']"
-              class="text-btn mr2"
+              class="de-text-btn mr2"
               type="text"
               @click="edit(scope.row)"
             >{{ $t("commons.edit") }}</el-button>
@@ -277,34 +274,30 @@
                 </el-button>
               </div>
               <div class="foot">
-                <!-- <el-button class="btn normal">{{
-                  $t("fu.search_bar.cancel")
-                }}</el-button> -->
-                <el-button
+                <deBtn
                   type="primary"
-                  class="btn"
                   @click="resetPwd(scope.row.userId)"
-                >{{ $t("fu.search_bar.ok") }}</el-button>
+                >{{ $t("fu.search_bar.ok") }}</deBtn>
               </div>
 
               <el-button
                 slot="reference"
                 v-permission="['user:editPwd']"
-                class="text-btn mar16"
+                class="de-text-btn mar16"
                 type="text"
               >{{ $t("member.edit_password") }}</el-button>
             </el-popover>
             <el-button
               v-if="scope.row.id !== 1"
               v-permission="['user:del']"
-              class="text-btn"
+              class="de-text-btn"
               type="text"
               @click="del(scope.row)"
             >{{ $t("commons.delete") }}</el-button>
             <el-button
               v-if="scope.row.locked"
               v-permission="['user:edit']"
-              class="text-btn"
+              class="de-text-btn"
               type="text"
               @click="unlock(scope.row)"
             >{{ $t("commons.unlock") }}</el-button>
@@ -326,41 +319,8 @@
 </template>
 
 <script>
-import userEditer from './userEditer.vue'
-const columnOptions = [
-  {
-    label: 'ID',
-    props: 'username'
-  },
-  {
-    label: 'commons.nick_name',
-    props: 'nickName'
-  },
-  {
-    label: 'user.source',
-    props: 'from'
-  },
-  {
-    label: 'commons.email',
-    props: 'email'
-  },
-  {
-    label: 'commons.organization',
-    props: 'dept'
-  },
-  {
-    label: 'commons.role',
-    props: 'roles'
-  },
-  {
-    label: 'commons.status',
-    props: 'status'
-  },
-  {
-    label: 'commons.create_time',
-    props: 'createTime'
-  }
-]
+import userEditer from './UserEditer.vue'
+import { columnOptions } from './options'
 import DeLayoutContent from '@/components/business/DeLayoutContent'
 import { addOrder, formatOrders } from '@/utils/index'
 import { pluginLoaded, defaultPwd } from '@/api/user'
@@ -375,7 +335,7 @@ import {
   unLock
 } from '@/api/system/user'
 import { mapGetters } from 'vuex'
-import filterUser from './filterUser.vue'
+import filterUser from './FilterUser.vue'
 import GridTable from '@/components/gridTable/index.vue'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import _ from 'lodash'
@@ -433,10 +393,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['user']),
-    filterColor() {
-      return this.filterTexts.length ? 'rgba(51, 112, 255, 0.15)' : '#EFF0F1'
-    }
+    ...mapGetters(['user'])
   },
   watch: {
     filterTexts: {
@@ -691,25 +648,6 @@ export default {
 .table-container {
   height: calc(100% - 50px);
 
-  .text-btn {
-    font-family: PingFang SC;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 22px;
-    letter-spacing: 0px;
-    text-align: center;
-    margin-left: 2px;
-    border: none;
-    padding: 2px 4px;
-  }
-
-  .text-btn:hover {
-    background: rgba(51, 112, 255, 0.1);
-  }
-  .disable-btn {
-    color: #bbbfc4;
-  }
-
   .mar16 {
     margin: 0 -2px 0 4px;
   }
@@ -721,149 +659,6 @@ export default {
 
 .table-container-filter {
   height: calc(100% - 110px);
-}
-.filter-texts {
-  display: flex;
-  align-items: center;
-  margin: 17px 0;
-  font-family: "PingFang SC";
-  font-weight: 400;
-
-  .sum {
-    color: #1f2329;
-  }
-
-  .title {
-    color: #999999;
-    margin-left: 8px;
-  }
-
-  .text {
-    max-width: 280px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 1px 22px 1px 6px;
-    display: inline-block;
-    align-items: center;
-    color: #0c296e;
-    font-size: 14px;
-    line-height: 22px;
-    background: rgba(51, 112, 255, 0.1);
-    border-radius: 2px;
-    margin: 0;
-    margin-right: 8px;
-    position: relative;
-    i {
-      position: absolute;
-      right: 2px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-    }
-  }
-
-  .clear-btn {
-    color: #646a73;
-  }
-
-  .clear-btn:hover {
-    color: #3370ff;
-  }
-
-  .filter-texts-container::-webkit-scrollbar { display: none; }
-
-  .arrow-filter {
-    font-size: 16px;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    color: #646A73;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .arrow-filter:hover {
-    background: rgba(31, 35, 41, 0.1);
-    border-radius: 4px;
-  }
-
-  .el-icon-arrow-right.arrow-filter {
-    margin-left: 5px;
-  }
-
-  .el-icon-arrow-left.arrow-filter {
-    margin-right: 5px;
-  }
-  .filter-texts-container {
-    flex: 1;
-    overflow-x: auto;
-    white-space: nowrap;
-    height: 24px;
-  }
-}
-.top-operate {
-  margin-bottom: 16px;
-
-  .btn {
-    border-radius: 4px;
-    padding: 5px 12px;
-    //styleName: 中文/桌面端/正文 14 22 Regular;
-    font-family: PingFang SC;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 20px;
-    letter-spacing: 0px;
-    text-align: center;
-    border: none;
-    box-sizing: border-box;
-
-    ::v-deep span {
-      margin-left: 5px;
-    }
-  }
-
-  .normal {
-    color: var(----deTextPrimary, #1F2329);
-    border: 1px solid var(--deBorderBase, #BBBFC4);
-    margin-left: 12px;
-  }
-
-  .filter-not-null:focus {
-    background: rgba(51, 112, 255, 0.1);
-  }
-
-  .filter-not-null:hover {
-    background: rgba(51, 112, 255, 0.1) !important;
-  }
-
-  .filter-zero:focus {
-    background: #F5F6F7;
-  }
-
-  .filter-zero:hover {
-    background: #F5F6F7 !important;
-  }
-
-  .right-user {
-    text-align: right;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    .el-input--medium .el-input__icon {
-      line-height: 32px;
-    }
-  }
-
-  .name-email-search {
-    width: 240px;
-  }
-
-  .active-btn {
-    border-color: #3370ff;
-    color: #3370ff;
-  }
 }
 </style>
 <style lang="scss">

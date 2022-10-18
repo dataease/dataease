@@ -29,7 +29,10 @@
         :class="[{ select: activeTemplate === ele.id }]"
         @click="nodeClick(ele)"
       >
-        <svg-icon icon-class="scene" />
+        <svg-icon
+          style="margin-right: 9px"
+          icon-class="scene"
+        />
         <span>{{ ele.name }}</span>
         <span
           class="more"

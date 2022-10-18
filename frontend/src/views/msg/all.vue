@@ -22,7 +22,7 @@
         />
       </el-tabs>
       <div class="tabs-container">
-        <div class="msg-cont">
+        <div class="msg-cont de-serach-table">
           <el-row class="top-operate">
             <el-col :span="12">
               <template v-if="tabActive === 'unread'">
@@ -323,18 +323,6 @@ export default {
 
 .table-container {
   height: calc(100% - 50px);
-}
-.top-operate {
-  margin-bottom: 16px;
-  .right-user {
-    text-align: right;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-  .name-email-search {
-    width: 240px;
-  }
 }
 </style>
 <style scoped lang="scss">

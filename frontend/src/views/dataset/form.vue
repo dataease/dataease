@@ -12,6 +12,7 @@
         />
         <template v-if="showInput">
           <el-input
+            ref="editerName"
             v-model="table.name"
             @blur="nameBlur"
           />
@@ -23,11 +24,15 @@
             {{ $t('deDataset.already_exists') }}
           </div>
         </template>
-        <span
-          v-else
-          :class="[{ 'show-point': ['sql', 'union'].includes(datasetType) }]"
-          @click="handleClick"
-        >{{ datasetName }}</span>
+        <template v-else>
+          <span>{{ datasetName }}</span>
+          <i
+            v-if="['sql', 'union'].includes(datasetType)"
+            style="margin-left: 5px"
+            class="el-icon-edit"
+            @click="handleClick"
+          />
+        </template>
       </span>
       <span class="oprate">
         <span
@@ -184,6 +189,9 @@ export default {
     handleClick() {
       if (['sql', 'union'].includes(this.datasetType)) {
         this.showInput = true
+        this.$nextTick(() => {
+          this.$refs.editerName.focus()
+        })
       }
     },
     nameRepeat(value) {
@@ -260,10 +268,6 @@ export default {
     justify-content: space-between;
     padding: 0 24px;
     box-shadow: 0 2px 2px 0 rgb(0 0 0 / 10%);
-
-    .show-point {
-      cursor: pointer;
-    }
 
     .name {
       font-family: PingFang SC;

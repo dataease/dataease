@@ -457,7 +457,7 @@
     <!--移动分组-->
     <el-drawer
       :visible.sync="moveGroup"
-      custom-class="user-drawer sql-dataset-drawer"
+      custom-class="de-user-drawer sql-dataset-drawer"
       size="600px"
       direction="rtl"
     >
@@ -495,7 +495,7 @@
     <!--移动数据集-->
     <el-drawer
       :visible.sync="moveDs"
-      custom-class="user-drawer sql-dataset-drawer"
+      custom-class="de-user-drawer sql-dataset-drawer"
       size="600px"
       direction="rtl"
     >

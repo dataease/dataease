@@ -72,7 +72,7 @@
           : $t('dataset.edit_union_relation')
       "
       :visible.sync="editUnion"
-      custom-class="user-drawer union-dataset-drawer"
+      custom-class="de-user-drawer union-dataset-drawer"
       size="840px"
       direction="rtl"
     >

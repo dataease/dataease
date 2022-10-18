@@ -220,6 +220,7 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.scrollTimer)
+    this.destroyS2()
   },
   methods: {
     initData() {
@@ -262,6 +263,13 @@ export default {
         })
       }
     },
+    destroyS2() {
+      if (!this.myChart) return
+      for (const i in this.myChart) {
+        this.$delete(this.myChart, i)
+      }
+      this.myChart = null
+    },
     drawView() {
       const chart = this.chart
       // type
@@ -287,6 +295,7 @@ export default {
         if (this.myChart) {
           this.antVRenderStatus = false
           this.myChart.destroy()
+          this.destroyS2()
         }
       }
 

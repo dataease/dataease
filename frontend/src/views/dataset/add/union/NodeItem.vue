@@ -82,7 +82,7 @@
       v-closePress
       :title="$t('chart.select_dataset')"
       :visible.sync="selectDsDialog"
-      custom-class="user-drawer sql-dataset-drawer"
+      custom-class="de-user-drawer sql-dataset-drawer"
       size="600px"
       direction="rtl"
     >
@@ -114,7 +114,7 @@
       v-if="editField"
       :title="$t('dataset.field_select')"
       :visible.sync="editField"
-      custom-class="user-drawer sql-dataset-drawer"
+      custom-class="de-user-drawer sql-dataset-drawer"
       size="840px"
       v-closePress
       direction="rtl"
