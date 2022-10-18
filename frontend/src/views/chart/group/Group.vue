@@ -1036,7 +1036,11 @@ export default {
         if (view.render === 'echarts') {
           attr.label.position = 'inside'
         } else {
-          attr.label.position = 'inner'
+          const customStyle = JSON.parse(view.customStyle)
+          customStyle.legend.show = false
+          view.customStyle = JSON.stringify(customStyle)
+          attr.label.show = true
+          attr.label.position = 'outer'
         }
         // 环形图默认内径，玫瑰图为 外径 * 0.5，饼图为 外径 * 0.7
         if (type === 'pie-donut') {

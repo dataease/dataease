@@ -19,6 +19,25 @@
         </el-form-item>
         <div v-show="labelForm.show">
           <el-form-item
+            v-show="showProperty('label-content')"
+            :label="$t('chart.label_content')"
+            class="form-item"
+          >
+            <el-checkbox-group
+              v-model="labelForm.labelContent"
+              :label="$t('chart.label_content')"
+              :min="1"
+              :max="3"
+              @change="changeLabelAttr('labelContent')"
+            >
+              <el-checkbox
+                v-for="option in labelContentOptions"
+                :key="option.value"
+                :label="option.value"
+              >{{ option.name }}</el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item
             v-show="showProperty('fontSize')"
             :label="$t('chart.text_fontsize')"
             class="form-item"
@@ -104,7 +123,7 @@
             </el-select>
           </el-form-item>
           <el-form-item
-            v-show="showProperty('reserve-decimal-count')"
+            v-show="showProperty('reserve-decimal-count') && (chart.type.includes('percentage') || labelForm.labelContent.includes('proportion'))"
             :label="$t('chart.label_reserve_decimal_count')"
             class="form-item"
           >
@@ -292,9 +311,14 @@ export default {
       typeList: formatterType,
       unitList: unitList,
       reserveDecimalCountOptions: [
-        { name: '取整', value: 0 },
-        { name: '一位', value: 1 },
-        { name: '两位', value: 2 }
+        { name: this.$t('chart.reserve_zero'), value: 0 },
+        { name: this.$t('chart.reserve_one'), value: 1 },
+        { name: this.$t('chart.reserve_two'), value: 2 }
+      ],
+      labelContentOptions: [
+        { name: this.$t('chart.dimension'), value: 'dimension' },
+        { name: this.$t('chart.quota'), value: 'quota' },
+        { name: this.$t('chart.proportion'), value: 'proportion' }
       ]
     }
   },
@@ -331,6 +355,12 @@ export default {
           }
           if (!this.labelForm.gaugeLabelFormatter) {
             this.labelForm.gaugeLabelFormatter = JSON.parse(JSON.stringify(DEFAULT_LABEL.gaugeLabelFormatter))
+          }
+          if ((this.labelForm.reserveDecimalCount ?? '') === '') {
+            this.labelForm.reserveDecimalCount = 2
+          }
+          if (!this.labelForm.labelContent) {
+            this.labelForm.labelContent = ['quota']
           }
         }
       }

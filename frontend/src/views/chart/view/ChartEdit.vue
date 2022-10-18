@@ -3078,11 +3078,22 @@ export default {
 
     setChartDefaultOptions() {
       const type = this.view.type
+      const customAttr = this.view.customAttr
+      const customStyle = this.view.customStyle
       if (type.includes('pie')) {
         if (this.view.render === 'echarts') {
-          this.view.customAttr.label.position = 'inside'
+          customAttr.label.position = 'inside'
         } else {
-          this.view.customAttr.label.position = 'inner'
+          customStyle.legend.show = false
+          customAttr.label.show = true
+          customAttr.label.position = 'outer'
+        }
+        // 环形图默认内径，玫瑰图为 外径 * 0.5，饼图为 外径 * 0.7
+        if (type === 'pie-donut') {
+          customAttr.size.pieInnerRadius = Math.round(customAttr.size.pieOuterRadius * 0.7)
+        }
+        if (type === 'pie-donut-rose') {
+          customAttr.size.pieInnerRadius = Math.round(customAttr.size.pieOuterRadius * 0.5)
         }
       } else if (type.includes('line')) {
         this.view.customAttr.label.position = 'top'

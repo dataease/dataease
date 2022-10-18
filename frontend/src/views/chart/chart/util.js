@@ -1083,7 +1083,9 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-pie'
+        'position-pie',
+        'label-content',
+        'reserve-decimal-count'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -1141,7 +1143,9 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-pie'
+        'position-pie',
+        'label-content',
+        'reserve-decimal-count'
       ],
       'tooltip-selector-ant-v': [
         'show',

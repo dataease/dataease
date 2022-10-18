@@ -1,6 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_EXT_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
+import { equalsAny } from '@/utils/StringUtils'
 
 export function getPadding(chart) {
   if (chart.drill) {
@@ -120,7 +121,7 @@ export function getLabel(chart) {
     if (customAttr.label) {
       const l = JSON.parse(JSON.stringify(customAttr.label))
       if (l.show) {
-        if (chart.type === 'pie') {
+        if (equalsAny(chart.type, 'pie', 'pie-donut')) {
           label = {
             type: l.position,
             autoRotate: false
@@ -129,6 +130,13 @@ export function getLabel(chart) {
           label = {
             position: l.position,
             offsetY: -8
+          }
+        } else if (equalsAny(chart.type, 'pie-rose', 'pie-donut-rose')) {
+          label = {
+            autoRotate: true
+          }
+          if (l.position === 'inner') {
+            label.offset = -10
           }
         } else {
           label = {
@@ -195,10 +203,32 @@ export function getLabel(chart) {
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
                 if (f.name === param.category) {
+                  let formatterCfg = formatterItem
                   if (f.formatterCfg) {
-                    res = valueFormatter(param.value, f.formatterCfg)
+                    formatterCfg = f.formatterCfg
+                  }
+                  // 饼图和环形图格式优化
+                  if (equalsAny(chart.type, 'pie', 'pie-donut')) {
+                    // 这边默认值取指标是为了兼容存量的视图
+                    const labelContent = l.labelContent ?? ['quota']
+                    const contentItems = []
+                    if (labelContent.includes('dimension')) {
+                      contentItems.push(param.field)
+                    }
+                    if (labelContent.includes('quota')) {
+                      contentItems.push(valueFormatter(param.value, formatterCfg))
+                    }
+                    if (labelContent.includes('proportion')) {
+                      const percentage = `${(Math.round(param.percent * 10000) / 100).toFixed(l.reserveDecimalCount)}%`
+                      if (labelContent.length === 3) {
+                        contentItems.push(`(${percentage})`)
+                      } else {
+                        contentItems.push(percentage)
+                      }
+                    }
+                    res = contentItems.join(' ')
                   } else {
-                    res = valueFormatter(param.value, formatterItem)
+                    res = valueFormatter(param.value, formatterCfg)
                   }
                   break
                 }
