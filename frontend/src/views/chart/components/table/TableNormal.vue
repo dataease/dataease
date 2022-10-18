@@ -26,7 +26,8 @@
       >
         <ux-table-column
           type="index"
-          :title='indexLabel'/>
+          :title="indexLabel"
+        />
         <ux-table-column
           v-for="field in fields"
           :key="field.name"
@@ -285,12 +286,12 @@ export default {
           this.table_item_class.height = customAttr.size.tableItemHeight + 'px'
 
           const visibleColumn = this.$refs.plxTable.getTableColumn().fullColumn
-          for (let i = 0,column=visibleColumn[i]; i < visibleColumn.length; i++) {
+          for (let i = 0, column = visibleColumn[i]; i < visibleColumn.length; i++) {
             // 有变更才刷新
             if (column.type === 'index' && column.visible !== customAttr.size.showIndex) {
               column.visible = customAttr.size.showIndex
               this.$refs.plxTable.refreshColumn()
-              break;
+              break
             }
           }
           this.indexLabel = customAttr.size.indexLabel
@@ -344,8 +345,8 @@ export default {
     summaryMethod({ columns, data }) {
       const that = this
       const means = [] // 合计
-      const x = JSON.parse(that.chart.xaxis);
-      const customAttr = JSON.parse(that.chart.customAttr);
+      const x = JSON.parse(that.chart.xaxis)
+      const customAttr = JSON.parse(that.chart.customAttr)
       columns.forEach((column, columnIndex) => {
         if (columnIndex === 0 && x.length > 0) {
           means.push('合计')
@@ -356,7 +357,7 @@ export default {
             requireSumIndex++
           }
           if (columnIndex >= requireSumIndex) {
-            const values = data.map(item => Number(item[column.property]));
+            const values = data.map(item => Number(item[column.property]))
             // 合计
             if (!values.every(value => isNaN(value))) {
               means[columnIndex] = values.reduce((prev, curr) => {
@@ -372,7 +373,7 @@ export default {
               means[columnIndex] = ''
             }
           } else {
-            means[columnIndex] = '';
+            means[columnIndex] = ''
           }
         }
       })

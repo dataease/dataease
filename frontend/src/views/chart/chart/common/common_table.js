@@ -21,7 +21,7 @@ export function getCustomTheme(chart) {
         backgroundColor: headerColor,
         horizontalBorderColor: borderColor,
         verticalBorderColor: borderColor,
-        verticalBorderWidth: 0 //左上角顶点单元格左右边缘宽度要设置为 0，不然序号列的数字部分会比表头多几个像素，视觉上会突出去
+        verticalBorderWidth: 0 // 左上角顶点单元格左右边缘宽度要设置为 0，不然序号列的数字部分会比表头多几个像素，视觉上会突出去
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,

@@ -128,9 +128,9 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
     style: getSize(chart),
     conditions: getConditions(chart)
   }
-  //开启序号之后，第一列就是序号列，修改 label 即可
+  // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {
-    s2Options.colCell= (node) => {
+    s2Options.colCell = (node) => {
       if (node.colIndex === 0) {
         node.label = customAttr.size.indexLabel
       }
@@ -266,9 +266,9 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
     style: getSize(chart),
     conditions: getConditions(chart)
   }
-  //开启序号之后，第一列就是序号列，修改 label 即可
+  // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {
-    s2Options.colCell= (node) => {
+    s2Options.colCell = (node) => {
       if (node.colIndex === 0) {
         node.label = customAttr.size.indexLabel
       }

@@ -380,21 +380,21 @@
             input-size="mini"
             @change="changeBarSizeCase('tableShowIndex')"
           >
-            <el-radio :label="true">{{$t('panel.yes')}}</el-radio>
-            <el-radio :label="false">{{$t('panel.no')}}</el-radio>
+            <el-radio :label="true">{{ $t('panel.yes') }}</el-radio>
+            <el-radio :label="false">{{ $t('panel.no') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item
           v-show="showProperty('tableIndexLabel') && sizeForm.showIndex"
           label-width="100px"
-          class="form-item">
+          class="form-item"
+        >
           <el-input
             v-model="sizeForm.indexLabel"
             type="text"
             @blur="changeBarSizeCase('tableIndexLabel')"
           />
         </el-form-item>
-
 
         <!--table-end-->
         <!--gauge-begin-->
