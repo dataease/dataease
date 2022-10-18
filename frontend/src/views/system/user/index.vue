@@ -319,7 +319,7 @@
 </template>
 
 <script>
-import userEditer from './UserEditer.vue'
+import userEditer from './userEditer.vue'
 import { columnOptions } from './options'
 import DeLayoutContent from '@/components/business/DeLayoutContent'
 import { addOrder, formatOrders } from '@/utils/index'
@@ -335,7 +335,7 @@ import {
   unLock
 } from '@/api/system/user'
 import { mapGetters } from 'vuex'
-import filterUser from './FilterUser.vue'
+import filterUser from './filterUser.vue'
 import GridTable from '@/components/gridTable/index.vue'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import _ from 'lodash'

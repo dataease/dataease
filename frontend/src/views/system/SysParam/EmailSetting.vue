@@ -130,7 +130,7 @@
 
 <script>
 import { emailInfo, updateInfo, validate } from '@/api/system/email'
-import operater from './Operater'
+import operater from './operater'
 import msgCfm from '@/components/msgCfm'
 import dePwd from '@/components/deCustomCm/dePwd.vue'
 export default {
