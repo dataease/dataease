@@ -156,13 +156,23 @@
             class="form-item"
           >
             <el-checkbox
+              v-model="axisForm.axisLine.show"
+              @change="changeXAxisStyle('axisLine')"
+            >{{ $t('chart.axis_show') }}</el-checkbox>
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('splitLine')"
+            :label="$t('chart.grid_show')"
+            class="form-item"
+          >
+            <el-checkbox
               v-model="axisForm.splitLine.show"
               @change="changeXAxisStyle('splitLine')"
-            >{{ $t('chart.axis_show') }}</el-checkbox>
+            >{{ $t('chart.grid_show') }}</el-checkbox>
           </el-form-item>
           <span v-show="showProperty('splitLine') && axisForm.splitLine.show">
             <el-form-item
-              :label="$t('chart.axis_color')"
+              :label="$t('chart.grid_color')"
               class="form-item"
             >
               <el-color-picker
@@ -173,7 +183,7 @@
               />
             </el-form-item>
             <el-form-item
-              :label="$t('chart.axis_width')"
+              :label="$t('chart.grid_width')"
               class="form-item form-item-slider"
             >
               <el-slider
@@ -392,6 +402,9 @@ export default {
           }
           if (!this.axisForm.axisLabelFormatter) {
             this.axisForm.axisLabelFormatter = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.axisLabelFormatter))
+          }
+          if (!this.axisForm.axisLine) {
+            this.axisForm.axisLine = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.axisLine))
           }
         }
       }
