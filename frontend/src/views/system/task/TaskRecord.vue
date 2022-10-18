@@ -176,7 +176,7 @@ import {
 } from '@/utils/index'
 import { exportExcel, post } from '@/api/dataset/dataset'
 import GridTable from '@/components/gridTable/index.vue'
-import filterUser from './filterUserRecord.vue'
+import filterUser from './FilterUserRecord.vue'
 import _ from 'lodash'
 import keyEnter from '@/components/msgCfm/keyEnter.js'
 
