@@ -1,33 +1,34 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
-  <el-col style="padding: 0 5px 0 5px;">
+  <el-col style="padding: 1px 24px 16px 24px">
     <el-col>
       <el-row style="margin-bottom: 10px">
-        <el-col :span="16">
+        <el-col :span="24">
           <el-input
             v-model="filterText"
-            size="mini"
+            size="small"
             :placeholder="$t('commons.search')"
             prefix-icon="el-icon-search"
             clearable
             class="main-area-input"
-          />
-        </el-col>
-        <el-col :span="8">
-          <el-dropdown>
-            <el-button
-              size="mini"
-              type="primary"
+          >
+            <el-select
+              slot="append"
+              v-model="searchType"
+              :placeholder="searchMap[searchType]"
             >
-              {{ searchMap[searchType] }}<i class="el-icon-arrow-down el-icon--right" />
-            </el-button>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native="searchTypeClick('all')">全部</el-dropdown-item>
-              <el-dropdown-item @click.native="searchTypeClick('folder')">目录</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+              <el-option
+                :label="$t('commons.all')"
+                value="all"
+              />
+              <el-option
+                :label="$t('commons.folder')"
+                value="folder"
+              />
+            </el-select>
+          </el-input>
         </el-col>
       </el-row>
-      <el-row>
+      <el-row class="de-tree">
         <span class="header-title">{{ $t('panel.default_panel') }}</span>
         <div class="block">
           <el-tree
@@ -111,7 +112,7 @@
           />
         </span>
       </el-row>
-      <el-col class="custom-tree-container">
+      <el-col class="custom-tree-container de-tree">
         <div class="block">
           <el-tree
             ref="panel_list_tree"
@@ -1049,6 +1050,15 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+.main-area-input {
+  ::v-deep.el-input-group__append {
+    width: 70px;
+    background: transparent;
+    .el-input__inner {
+      padding-left: 12px;
+    }
+  }
+}
   .header-title {
     font-size: 14px;
     flex: 1;
@@ -1092,12 +1102,4 @@ export default {
     /*display: inline;*/
     visibility: visible;
   }
-
-  .unpublished {
-    color: #b2b2b2
-  }
-
-  .publish {
-  }
-
 </style>

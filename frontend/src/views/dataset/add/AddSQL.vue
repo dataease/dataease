@@ -125,7 +125,10 @@
             v-if="dataSource"
             style="margin-top: 16px"
           >
-            <span>
+            <span
+              :title="(showTable && dataTable) || selectedDatasource.name"
+              class="grey-name"
+            >
               <svg-icon icon-class="db-de" />
               {{ (showTable && dataTable) || selectedDatasource.name }}
             </span>
@@ -154,7 +157,17 @@
             class="table-or-field"
             @click="typeSwitch(ele)"
           >
-            {{ ele.name }}
+            <span
+              :title="ele.name"
+              class="name"
+            >{{ ele.name }}</span>
+            <i
+              v-clipboard:copy="ele.name"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onError"
+              class="el-icon-document-copy"
+              @click.stop
+            />
           </div>
         </div>
         <div
@@ -164,9 +177,19 @@
           <div
             v-for="ele in fieldData"
             :key="ele.fieldName"
-            class="table-or-field"
+            class="table-or-field field"
           >
-            {{ ele.fieldName }}
+            <span
+              :title="ele.fieldName"
+              class="name"
+            >{{ ele.fieldName }}</span>
+            <i
+              v-clipboard:copy="ele.fieldName"
+              v-clipboard:success="onCopy"
+              v-clipboard:error="onError"
+              class="el-icon-document-copy"
+              @click.stop
+            />
           </div>
         </div>
       </div>
@@ -238,7 +261,7 @@
             v-closePress
             :title="dialogTitle"
             :visible.sync="showVariableMgm"
-            custom-class="user-drawer sql-dataset-drawer"
+            custom-class="de-user-drawer sql-dataset-drawer"
             size="840px"
             direction="rtl"
           >
@@ -735,6 +758,10 @@ export default {
           this.loading = false
         })
     },
+    onCopy(e) {
+      this.openMessageSuccess('commons.copy_success')
+    },
+    onError(e) {},
     showSQL(val) {
       this.sql = val || ''
     },
@@ -902,9 +929,13 @@ export default {
           margin: 0;
         }
 
-        :nth-child(2)p {
-          margin-top: 16px;
+        .grey-name {
+          max-width: 80%;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
         }
+
         .grey {
           font-size: 14px;
           font-weight: 400;
@@ -928,6 +959,23 @@ export default {
           display: flex;
           align-items: center;
           padding-left: 4px;
+          padding-right: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          i {
+            display: none;
+            cursor: pointer;
+          }
+
+          .name {
+            cursor: pointer;
+            width: 90%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
 
           &.field {
             color: var(--deTextPrimary, #1f2329);
@@ -938,6 +986,9 @@ export default {
           }
 
           &:hover {
+            i {
+              display: block;
+            }
             background: rgba(31, 35, 41, 0.1);
           }
         }

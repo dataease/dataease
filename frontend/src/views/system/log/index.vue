@@ -1,5 +1,8 @@
 <template>
-  <de-layout-content :header="$t('log.title')">
+  <de-layout-content
+    class="de-serach-table"
+    :header="$t('log.title')"
+  >
     <el-row class="top-operate">
       <el-col :span="12">
         <deBtn
@@ -303,108 +306,5 @@ export default {
 
 .table-container-filter {
   height: calc(100% - 110px);
-}
-.filter-texts {
-  display: flex;
-  align-items: center;
-  margin: 17px 0;
-  font-family: "PingFang SC";
-  font-weight: 400;
-
-  .sum {
-    color: #1f2329;
-  }
-
-  .title {
-    color: #999999;
-    margin-left: 8px;
-  }
-
-  .text {
-    max-width: 280px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 1px 22px 1px 6px;
-    display: inline-block;
-    align-items: center;
-    color: #0c296e;
-    font-size: 14px;
-    line-height: 22px;
-    background: rgba(51, 112, 255, 0.1);
-    border-radius: 2px;
-    margin: 0;
-    margin-right: 8px;
-    position: relative;
-    i {
-      position: absolute;
-      right: 2px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-    }
-  }
-
-  .clear-btn {
-    color: #646a73;
-  }
-
-  .clear-btn:hover {
-    color: #3370ff;
-  }
-
-  .filter-texts-container::-webkit-scrollbar {
-    display: none;
-  }
-
-  .arrow-filter {
-    font-size: 16px;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    color: #646a73;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .arrow-filter:hover {
-    background: rgba(31, 35, 41, 0.1);
-    border-radius: 4px;
-  }
-
-  .el-icon-arrow-right.arrow-filter {
-    margin-left: 5px;
-  }
-
-  .el-icon-arrow-left.arrow-filter {
-    margin-right: 5px;
-  }
-  .filter-texts-container {
-    flex: 1;
-    overflow-x: auto;
-    white-space: nowrap;
-    height: 24px;
-  }
-}
-.top-operate {
-  margin-bottom: 16px;
-  .right-user {
-    text-align: right;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    .de-button {
-      margin-left: 12px;
-    }
-
-    .el-input--medium .el-input__icon {
-      line-height: 32px;
-    }
-  }
-
-  .name-email-search {
-    width: 240px;
-  }
 }
 </style>

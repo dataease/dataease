@@ -213,7 +213,7 @@
       v-closePress
       :title="$t('dataset.task.record')"
       :visible.sync="userDrawer"
-      custom-class="user-drawer-task"
+      custom-class="de-user-drawer"
       size="840px"
       direction="rtl"
     >
@@ -285,7 +285,7 @@
       v-closePress
       :title="header"
       :visible.sync="update_task"
-      custom-class="user-drawer update-drawer-task"
+      custom-class="de-user-drawer update-drawer-task"
       size="680px"
       direction="rtl"
     >
@@ -1139,7 +1139,7 @@ export default {
 }
 </style>
 <style lang="scss">
-.user-drawer-task {
+.de-user-drawer {
   .el-table::before {
     content: '';
     position: absolute;

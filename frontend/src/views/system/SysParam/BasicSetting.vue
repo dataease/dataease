@@ -193,7 +193,7 @@
 import { basicInfo, updateInfo } from '@/api/system/basic'
 import { ldapStatus, oidcStatus, casStatus } from '@/api/user'
 import bus from '@/utils/bus'
-import operater from './operater'
+import operater from './Operater'
 import msgCfm from '@/components/msgCfm'
 import PluginCom from '@/views/system/plugin/PluginCom'
 export default {

@@ -3,7 +3,7 @@
     v-closePress
     :title="$t('user.filter_method')"
     :visible.sync="userDrawer"
-    custom-class="user-drawer-task"
+    custom-class="de-user-drawer"
     size="680px"
     direction="rtl"
   >

@@ -3,7 +3,7 @@
     v-closePress
     :title="$t('user.filter_method')"
     :visible.sync="userDrawer"
-    custom-class="user-drawer"
+    custom-class="de-user-drawer"
     size="680px"
     direction="rtl"
   >
@@ -115,20 +115,19 @@
         </div>
       </div>
     </div>
-    <div class="foot">
-      <el-button
-        class="btn normal"
+    <div class="de-foot">
+      <deBtn
+        secondary
         @click="reset"
       >{{
         $t("commons.reset")
-      }}</el-button>
-      <el-button
+      }}</deBtn>
+      <deBtn
         type="primary"
-        class="btn"
         @click="search"
       >{{
         $t("commons.adv_search.search")
-      }}</el-button>
+      }}</deBtn>
     </div>
   </el-drawer>
 </template>

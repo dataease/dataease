@@ -182,7 +182,7 @@
 <script>
 import { engineInfo, validate, save } from '@/api/system/engine'
 import i18n from '@/lang'
-import operater from './operater'
+import operater from './Operater'
 import msgCfm from '@/components/msgCfm'
 import dePwd from '@/components/deCustomCm/dePwd.vue'
 export default {

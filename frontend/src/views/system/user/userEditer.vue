@@ -214,19 +214,18 @@
       slot="footer"
       class="dialog-footer"
     >
-      <el-button
-        class="btn normal"
+      <deBtn
+        secondary
         @click="reset"
       >{{
         $t("commons.cancel")
-      }}</el-button>
-      <el-button
-        class="btn"
+      }}</deBtn>
+      <deBtn
         type="primary"
         @click="save"
       >{{
         $t("commons.confirm")
-      }}</el-button>
+      }}</deBtn>
     </span>
   </el-dialog>
 </template>
@@ -634,25 +633,6 @@ export default {
         width: 72px;
       }
     }
-  }
-
-  .btn {
-    border-radius: 4px;
-    padding: 5px 26px 5px 26px;
-    font-family: PingFang SC;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 20px;
-    letter-spacing: 0px;
-    text-align: center;
-    border: none;
-    box-sizing: border-box;
-  }
-
-  .normal {
-    color: #1f2329;
-    border: 1px solid #bbbfc4;
-    margin-left: 12px;
   }
 
   .form-gender-select {

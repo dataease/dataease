@@ -80,7 +80,7 @@
       v-closePress
       :title="$t('chart.select_dataset')"
       :visible.sync="selectDsDialog"
-      custom-class="user-drawer sql-dataset-drawer"
+      custom-class="de-user-drawer sql-dataset-drawer"
       size="600px"
       direction="rtl"
     >
@@ -116,7 +116,7 @@
           : $t('dataset.edit_union_relation')
       "
       :visible.sync="editUnion"
-      custom-class="user-drawer union-dataset-drawer"
+      custom-class="de-user-drawer union-dataset-drawer"
       size="840px"
       direction="rtl"
     >
