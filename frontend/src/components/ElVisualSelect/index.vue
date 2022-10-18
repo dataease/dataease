@@ -27,7 +27,9 @@
       :label="item.text"
       :value="item.id"
       :class="setSelect(item.id)"
-    />
+    >
+      <span :title="item.text">{{ item.text }}</span>
+    </el-option>
   </el-select>
 </template>
 
