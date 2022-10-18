@@ -592,7 +592,6 @@ export const TYPE_CONFIGS = [
       ]
     }
   },
-
   {
     render: 'antv',
     category: 'chart.chart_type_compare',

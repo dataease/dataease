@@ -67,6 +67,9 @@ export function componentStyle(chart_option, chart) {
       chart_option.xAxis.axisLabel = customStyle.xAxis.axisLabel
       chart_option.xAxis.splitLine = customStyle.xAxis.splitLine
       chart_option.xAxis.nameTextStyle = customStyle.xAxis.nameTextStyle
+      const axisLine = customStyle.xAxis.axisLine ? customStyle.xAxis.axisLine : DEFAULT_XAXIS_STYLE.axisLine
+      chart_option.xAxis.axisLine = axisLine
+      chart_option.xAxis.axisTick = axisLine
 
       chart_option.xAxis.axisLabel.showMaxLabel = true
       chart_option.xAxis.axisLabel.showMinLabel = true
@@ -96,6 +99,9 @@ export function componentStyle(chart_option, chart) {
       chart_option.yAxis.axisLabel = customStyle.yAxis.axisLabel
       chart_option.yAxis.splitLine = customStyle.yAxis.splitLine
       chart_option.yAxis.nameTextStyle = customStyle.yAxis.nameTextStyle
+      const axisLine = customStyle.yAxis.axisLine ? customStyle.yAxis.axisLine : DEFAULT_YAXIS_STYLE.axisLine
+      chart_option.yAxis.axisLine = axisLine
+      chart_option.yAxis.axisTick = axisLine
 
       chart_option.yAxis.axisLabel.showMaxLabel = true
       chart_option.yAxis.axisLabel.showMinLabel = true
@@ -125,6 +131,9 @@ export function componentStyle(chart_option, chart) {
       chart_option.yAxis[0].axisLabel = customStyle.yAxis.axisLabel
       chart_option.yAxis[0].splitLine = customStyle.yAxis.splitLine
       chart_option.yAxis[0].nameTextStyle = customStyle.yAxis.nameTextStyle
+      const axisLine0 = customStyle.yAxis[0].axisLine ? customStyle.yAxis[0].axisLine : DEFAULT_YAXIS_STYLE.axisLine
+      chart_option.yAxis[0].axisLine = axisLine0
+      chart_option.yAxis[0].axisTick = axisLine0
 
       chart_option.yAxis[0].axisLabel.showMaxLabel = true
       chart_option.yAxis[0].axisLabel.showMinLabel = true
@@ -155,6 +164,9 @@ export function componentStyle(chart_option, chart) {
       chart_option.yAxis[1].axisLabel = customStyle.yAxisExt.axisLabel
       chart_option.yAxis[1].splitLine = customStyle.yAxisExt.splitLine
       chart_option.yAxis[1].nameTextStyle = customStyle.yAxisExt.nameTextStyle
+      const axisLine1 = customStyle.yAxis[1].axisLine ? customStyle.yAxis[1].axisLine : DEFAULT_YAXIS_EXT_STYLE.axisLine
+      chart_option.yAxis[1].axisLine = axisLine1
+      chart_option.yAxis[1].axisTick = axisLine1
 
       chart_option.yAxis[1].axisLabel.showMaxLabel = true
       chart_option.yAxis[1].axisLabel.showMinLabel = true

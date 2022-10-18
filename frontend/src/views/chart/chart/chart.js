@@ -242,6 +242,14 @@ export const DEFAULT_XAXIS_STYLE = {
     rotate: 0,
     formatter: '{value}'
   },
+  axisLine: {
+    show: true,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
+  },
   splitLine: {
     show: false,
     lineStyle: {
@@ -280,6 +288,14 @@ export const DEFAULT_YAXIS_STYLE = {
     rotate: 0,
     formatter: '{value}'
   },
+  axisLine: {
+    show: false,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
+  },
   splitLine: {
     show: true,
     lineStyle: {
@@ -317,6 +333,14 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     fontSize: '12',
     rotate: 0,
     formatter: '{value}'
+  },
+  axisLine: {
+    show: false,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
   },
   splitLine: {
     show: true,

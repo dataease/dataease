@@ -1,6 +1,6 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
-import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
+import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_EXT_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
 
 export function getPadding(chart) {
   if (chart.drill) {
@@ -455,6 +455,18 @@ export function getXAxis(chart) {
             }
           }
         } : null
+        const axisCfg = a.axisLine ? a.axisLine : DEFAULT_XAXIS_STYLE.axisLine
+        const axisLine = axisCfg.show ? {
+          style: {
+            stroke: axisCfg.lineStyle.color,
+            lineWidth: parseInt(axisCfg.lineStyle.width)
+          }
+        } : null
+        const tickLine = axisCfg.show ? {
+          style: {
+            stroke: axisCfg.lineStyle.color
+          }
+        } : null
         const label = a.axisLabel.show ? {
           rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
           style: {
@@ -478,7 +490,9 @@ export function getXAxis(chart) {
           position: transAxisPosition(chart, a),
           title: title,
           grid: grid,
-          label: label
+          label: label,
+          line: axisLine,
+          tickLine: tickLine
         }
 
         // 轴值设置
@@ -526,6 +540,18 @@ export function getYAxis(chart) {
             }
           }
         } : null
+        const axisCfg = a.axisLine ? a.axisLine : DEFAULT_YAXIS_STYLE.axisLine
+        const axisLine = axisCfg.show ? {
+          style: {
+            stroke: axisCfg.lineStyle.color,
+            lineWidth: parseInt(axisCfg.lineStyle.width)
+          }
+        } : null
+        const tickLine = axisCfg.show ? {
+          style: {
+            stroke: axisCfg.lineStyle.color
+          }
+        } : null
         const label = a.axisLabel.show ? {
           rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
           style: {
@@ -553,7 +579,9 @@ export function getYAxis(chart) {
           position: transAxisPosition(chart, a),
           title: title,
           grid: grid,
-          label: label
+          label: label,
+          line: axisLine,
+          tickLine: tickLine
         }
 
         // 轴值设置
@@ -601,6 +629,18 @@ export function getYAxisExt(chart) {
             }
           }
         } : null
+        const axisCfg = a.axisLine ? a.axisLine : DEFAULT_YAXIS_EXT_STYLE.axisLine
+        const axisLine = axisCfg.show ? {
+          style: {
+            stroke: axisCfg.lineStyle.color,
+            lineWidth: parseInt(axisCfg.lineStyle.width)
+          }
+        } : null
+        const tickLine = axisCfg.show ? {
+          style: {
+            stroke: axisCfg.lineStyle.color
+          }
+        } : null
         const label = a.axisLabel.show ? {
           rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
           style: {
@@ -628,7 +668,9 @@ export function getYAxisExt(chart) {
           position: transAxisPosition(chart, a),
           title: title,
           grid: grid,
-          label: label
+          label: label,
+          line: axisLine,
+          tickLine: tickLine
         }
 
         // 轴值设置
