@@ -112,28 +112,11 @@ export default {
     value(val, old) {
       this.innerValues = val
     },
-    innerValues(val, old) {
-      if (val !== old) {
-        this.$emit('input', val)
-      }
-    },
     panelId(val, old) {
       if (val !== old) {
         this.innerValues = []
         this.loadView()
       }
-    },
-    selectedViews: {
-      handler(val) {
-        if (!val || !JSON.stringify(val)) {
-          this.innerValues = []
-          return
-        }
-        const viewIds = JSON.parse(JSON.stringify(val))
-
-        this.innerValues = JSON.parse(JSON.stringify(viewIds))
-      },
-      deep: true
     }
   },
   mounted() {
@@ -147,7 +130,6 @@ export default {
   },
   methods: {
     loadView() {
-      this._selectClearFun()
       this.innerValues = this.value
       this.viewLoaded = false
       this.panelId && findOne(this.panelId).then(response => {
@@ -198,10 +180,15 @@ export default {
           this.$store.dispatch('task/delView', { 'panelId': this.panelId, 'viewId': item })
         }
       })
+      const viewIds = JSON.parse(JSON.stringify(this.$store.getters.panelViews[this.panelId]))
+      this.$emit('input', viewIds)
     },
     _selectClearFun() {
       this.$store.dispatch('task/delPanelViews', this.panelId)
+      const viewIds = JSON.parse(JSON.stringify(this.$store.getters.panelViews[this.panelId]))
+      this.$emit('input', viewIds)
     },
+
     init() {
       if (this.value && this.value.length) {
         const viewIds = JSON.parse(JSON.stringify(this.value))
@@ -219,6 +206,7 @@ export default {
     },
     sureDialog() {
       this.innerValues = JSON.parse(JSON.stringify(this.$store.getters.panelViews[this.panelId]))
+      this.$emit('input', this.innerValues)
       this.closeDialog()
     },
     cancelDialog() {
