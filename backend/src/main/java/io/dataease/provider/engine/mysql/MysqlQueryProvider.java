@@ -126,7 +126,7 @@ public class MysqlQueryProvider extends QueryProvider {
                     } else if (f.getDeType() == 3) {
                         fieldName = String.format(MysqlConstants.CAST, originField, MysqlConstants.DEFAULT_FLOAT_FORMAT);
                     } else if (f.getDeType() == 1) {
-                        fieldName = String.format(MysqlConstants.STR_TO_DATE, originField, MysqlConstants.DEFAULT_DATE_FORMAT);
+                        fieldName = String.format(MysqlConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
                     } else {
                         fieldName = originField;
                     }
@@ -201,7 +201,7 @@ public class MysqlQueryProvider extends QueryProvider {
             } else if (f.getDeType() == 3) {
                 fieldName = String.format(MysqlConstants.CAST, originField, MysqlConstants.DEFAULT_FLOAT_FORMAT);
             } else if (f.getDeType() == 1) {
-                fieldName = String.format(MysqlConstants.STR_TO_DATE, originField, MysqlConstants.DEFAULT_DATE_FORMAT);
+                fieldName = String.format(MysqlConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
             } else {
                 fieldName = originField;
             }
@@ -801,7 +801,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                whereName = String.format(MysqlConstants.STR_TO_DATE, originName, MysqlConstants.DEFAULT_DATE_FORMAT);
+                whereName = String.format(MysqlConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                 String cast = String.format(MysqlConstants.CAST, originName, MysqlConstants.DEFAULT_INT_FORMAT) + "/1000";
@@ -931,7 +931,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
             if (field.getDeType() == 1) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                    whereName = String.format(MysqlConstants.STR_TO_DATE, originName, MysqlConstants.DEFAULT_DATE_FORMAT);
+                    whereName = String.format(MysqlConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(MysqlConstants.CAST, originName, MysqlConstants.DEFAULT_INT_FORMAT) + "/1000";
@@ -1040,7 +1040,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                        whereName = String.format(MysqlConstants.STR_TO_DATE, originName, MysqlConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(MysqlConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(MysqlConstants.CAST, originName, MysqlConstants.DEFAULT_INT_FORMAT) + "/1000";

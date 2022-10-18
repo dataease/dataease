@@ -851,7 +851,7 @@ public class OracleQueryProvider extends QueryProvider {
 
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                whereName = String.format(OracleConstants.TO_DATE, originName, OracleConstants.DEFAULT_DATE_FORMAT);
+                whereName = String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                 String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
@@ -897,7 +897,7 @@ public class OracleQueryProvider extends QueryProvider {
                 whereValue = "'%" + value + "%'";
             } else {
                 if (field.getDeType() == 1) {
-                    whereValue = String.format(OracleConstants.TO_DATE, "'" + value + "'", OracleConstants.DEFAULT_DATE_FORMAT);
+                    whereValue = String.format(OracleConstants.TO_DATE, "'" + value + "'", StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT);
                 } else {
                     whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value);
                 }
@@ -980,7 +980,7 @@ public class OracleQueryProvider extends QueryProvider {
 
             if (field.getDeType() == 1) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(OracleConstants.TO_DATE, originName, OracleConstants.DEFAULT_DATE_FORMAT);
+                    whereName = String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
@@ -1028,7 +1028,7 @@ public class OracleQueryProvider extends QueryProvider {
                         whereValue = "'%" + value + "%'";
                     } else {
                         if (field.getDeType() == 1) {
-                            whereValue = String.format(OracleConstants.TO_DATE, "'" + value + "'", OracleConstants.DEFAULT_DATE_FORMAT);
+                            whereValue = String.format(OracleConstants.TO_DATE, "'" + value + "'", StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT);
                         } else {
                             whereValue = String.format(OracleConstants.WHERE_VALUE_VALUE, value);
                         }
@@ -1083,7 +1083,7 @@ public class OracleQueryProvider extends QueryProvider {
 
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(OracleConstants.TO_DATE, originName, OracleConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
@@ -1213,7 +1213,7 @@ public class OracleQueryProvider extends QueryProvider {
             if (x.getDeType() == TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == STRING) { //字符串转时间
-                    String toDate = String.format(OracleConstants.TO_DATE, originField, OracleConstants.DEFAULT_DATE_FORMAT);
+                    String toDate = String.format(OracleConstants.TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT);
                     fieldName = String.format(OracleConstants.TO_CHAR, toDate, format);
                 } else {                            //数值转时间
                     String date = originField + "/(1000 * 60 * 60 * 24)+" + String.format(OracleConstants.TO_DATE, OracleConstants.DEFAULT_START_DATE, OracleConstants.DEFAULT_DATE_FORMAT);
@@ -1372,9 +1372,9 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String sqlForPreview(String table, Datasource ds){
+    public String sqlForPreview(String table, Datasource ds) {
         String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
         schema = String.format(OracleConstants.KEYWORD_TABLE, schema);
-       return "SELECT * FROM " + schema + "." + String.format(OracleConstants.KEYWORD_TABLE, table);
+        return "SELECT * FROM " + schema + "." + String.format(OracleConstants.KEYWORD_TABLE, table);
     }
 }

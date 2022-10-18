@@ -131,6 +131,9 @@ public class Db2QueryProvider extends QueryProvider {
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
                         fieldName = String.format(Db2Constants.CAST, originField, Db2Constants.DEFAULT_FLOAT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
+                        if (StringUtils.isNotEmpty(f.getDateFormat())) {
+                            originField = String.format(Db2Constants.TO_DATE, originField, f.getDateFormat());
+                        }
                         fieldName = String.format(Db2Constants.DATE_FORMAT, originField, Db2Constants.DEFAULT_DATE_FORMAT);
                     } else {
                         fieldName = originField;
@@ -213,6 +216,9 @@ public class Db2QueryProvider extends QueryProvider {
             } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
                 fieldName = String.format(Db2Constants.CAST, originField, Db2Constants.DEFAULT_FLOAT_FORMAT);
             } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
+                if (StringUtils.isNotEmpty(f.getDateFormat())) {
+                    originField = String.format(Db2Constants.TO_DATE, originField, f.getDateFormat());
+                }
                 fieldName = String.format(Db2Constants.DATE_FORMAT, originField, Db2Constants.DEFAULT_DATE_FORMAT);
             } else {
                 fieldName = originField;
@@ -824,7 +830,11 @@ public class Db2QueryProvider extends QueryProvider {
         }
         if (field.getDeType() == DeTypeConstants.DE_TIME) {
             if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                originName = String.format(Db2Constants.STR_TO_DATE, originName);
+                if (StringUtils.isNotEmpty(field.getDateFormat())) {
+                    originName = String.format(Db2Constants.TO_DATE, originName, field.getDateFormat());
+                } else {
+                    originName = String.format(Db2Constants.STR_TO_DATE, originName);
+                }
                 whereName = String.format(Db2Constants.DATE_FORMAT, originName, Db2Constants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT) {
@@ -959,7 +969,11 @@ public class Db2QueryProvider extends QueryProvider {
             }
             if (field.getDeType() == DeTypeConstants.DE_TIME) {
                 if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                    originName = String.format(Db2Constants.STR_TO_DATE, originName);
+                    if (StringUtils.isNotEmpty(field.getDateFormat())) {
+                        originName = String.format(Db2Constants.TO_DATE, originName, field.getDateFormat());
+                    } else {
+                        originName = String.format(Db2Constants.STR_TO_DATE, originName);
+                    }
                     whereName = String.format(Db2Constants.DATE_FORMAT, originName, Db2Constants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT) {
@@ -1074,7 +1088,11 @@ public class Db2QueryProvider extends QueryProvider {
 
                 if (field.getDeType() == DeTypeConstants.DE_TIME) {
                     if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                        originName = String.format(Db2Constants.STR_TO_DATE, originName);
+                        if (StringUtils.isNotEmpty(field.getDateFormat())) {
+                            originName = String.format(Db2Constants.TO_DATE, originName, field.getDateFormat());
+                        } else {
+                            originName = String.format(Db2Constants.STR_TO_DATE, originName);
+                        }
                         whereName = String.format(Db2Constants.DATE_FORMAT, originName, Db2Constants.DEFAULT_DATE_FORMAT);
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
@@ -1210,6 +1228,9 @@ public class Db2QueryProvider extends QueryProvider {
             if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
+                    if (StringUtils.isNotEmpty(x.getDateFormat())) {
+                        originField = String.format(Db2Constants.TO_DATE, originField, x.getDateFormat());
+                    }
                     fieldName = String.format(Db2Constants.DATE_FORMAT, originField, format);
                 } else {
                     String cast = String.format(Db2Constants.CAST, originField, Db2Constants.DEFAULT_INT_FORMAT);
@@ -1337,7 +1358,7 @@ public class Db2QueryProvider extends QueryProvider {
     }
 
     @Override
-    public String sqlForPreview(String table, Datasource ds){
+    public String sqlForPreview(String table, Datasource ds) {
         String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
         schema = String.format(Db2Constants.KEYWORD_TABLE, schema);
         return "SELECT * FROM " + schema + "." + String.format(Db2Constants.KEYWORD_TABLE, table);

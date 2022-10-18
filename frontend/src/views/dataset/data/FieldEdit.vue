@@ -7,7 +7,8 @@
           secondary
           icon="el-icon-plus"
           @click="addCalcField"
-        >{{ $t('dataset.add_calc_field') }}</deBtn>
+        >{{ $t('dataset.add_calc_field') }}
+        </deBtn>
         <deBtn
           v-if="
             hasDataPermission('manage', param.privileges) &&
@@ -19,7 +20,8 @@
           :loading="isSyncField"
           icon="el-icon-refresh-left"
           @click="syncField"
-        >{{ $t('dataset.sync_field') }}</deBtn>
+        >{{ $t('dataset.sync_field') }}
+        </deBtn>
         &nbsp;
       </el-col>
       <el-col
@@ -209,6 +211,16 @@
                   />
                 </span>
               </span>
+              <el-input
+                v-if="scope.row.deType === 1"
+                v-model="scope.row.dateFormat"
+                :placeholder="$t('dataset.date_format')"
+                size="small"
+                class="input-type"
+                :disabled="!hasDataPermission('manage', param.privileges)"
+                @blur="saveEdit(scope.row)"
+                @keyup.enter.native="saveEdit(scope.row)"
+              />
             </template>
           </el-table-column>
           <el-table-column
@@ -309,7 +321,8 @@
                 style="margin-left: -4px"
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 @click="dqTrans(scope.row, 'd')"
-              >{{ $t('deDataset.convert_to_indicator') }}</el-button>
+              >{{ $t('deDataset.convert_to_indicator') }}
+              </el-button>
               <template v-if="scope.row.extField !== 0">
                 <el-button
                   :disabled="!hasDataPermission('manage', param.privileges)"
@@ -317,7 +330,8 @@
                   class="de-text-btn"
                   style="margin-left: 8px"
                   @click="editField(scope.row)"
-                >{{ $t('dataset.edit') }}</el-button>
+                >{{ $t('dataset.edit') }}
+                </el-button>
                 <el-dropdown
                   size="medium"
                   trigger="click"
@@ -362,7 +376,8 @@
                 style="margin-left: 8px"
                 class="de-text-btn"
                 @click="copyField(scope.row)"
-              >{{ $t('dataset.copy') }}</el-button>
+              >{{ $t('dataset.copy') }}
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -533,6 +548,14 @@
                   />
                 </span>
               </span>
+              <el-input
+                v-if="scope.row.deType === 1"
+                v-model="scope.row.dateFormat"
+                size="mini"
+                :disabled="!hasDataPermission('manage', param.privileges)"
+                @blur="saveEdit(scope.row)"
+                @keyup.enter.native="saveEdit(scope.row)"
+              />
             </template>
           </el-table-column>
           <el-table-column
@@ -626,7 +649,8 @@
                 style="margin-left: -4px"
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 @click="dqTrans(scope.row, 'q')"
-              >{{ $t('deDataset.convert_to_dimension') }}</el-button>
+              >{{ $t('deDataset.convert_to_dimension') }}
+              </el-button>
               <template v-if="scope.row.extField !== 0">
                 <el-button
                   :disabled="!hasDataPermission('manage', param.privileges)"
@@ -634,7 +658,8 @@
                   class="de-text-btn"
                   style="margin-left: 8px"
                   @click="editField(scope.row)"
-                >{{ $t('dataset.edit') }}</el-button>
+                >{{ $t('dataset.edit') }}
+                </el-button>
                 <el-dropdown
                   size="medium"
                   trigger="click"
@@ -679,7 +704,8 @@
                 style="margin-left: 8px"
                 class="de-text-btn"
                 @click="copyField(scope.row)"
-              >{{ $t('dataset.copy') }}</el-button>
+              >{{ $t('dataset.copy') }}
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -712,6 +738,7 @@ import { post, fieldListDQ, batchEdit } from '@/api/dataset/dataset'
 import CalcFieldEdit from './CalcFieldEdit'
 import { getFieldName } from '@/views/dataset/data/utils'
 import msgCfm from '@/components/msgCfm/index'
+
 export default {
   name: 'FieldEdit',
   components: { CalcFieldEdit },
@@ -896,7 +923,8 @@ export default {
             localStorage.setItem('reloadDsData', 'true')
           })
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
 
     syncField() {
@@ -1032,35 +1060,48 @@ export default {
 .el-divider--horizontal {
   margin: 12px 0;
 }
+
 span {
   font-size: 14px;
 }
+
 .field-class {
   font-size: 12px !important;
 }
+
 .el-select ::v-deep input {
   padding-right: 10px;
 }
+
 .el-select ::v-deep .el-input__suffix {
   right: 0;
 }
+
 .el-radio {
   margin-right: 10px !important;
 }
 
 .style-collapse {
   border: none;
+
   .select-type {
     width: 180px;
+
     ::v-deep.el-input__inner {
       padding-left: 32px;
     }
   }
+
+  .input-type {
+    width: 180px;
+  }
+
   .select-svg-icon {
     position: absolute;
     left: 24px;
     top: 10px;
   }
+
   ::v-deep.el-collapse-item__header {
     height: 30px;
     line-height: 30px;
@@ -1068,6 +1109,7 @@ span {
     position: relative;
     border-bottom: 1px solid rgba(31, 35, 41, 0.15);
   }
+
   ::v-deep.el-checkbox {
     margin-left: 8px;
   }
@@ -1077,6 +1119,7 @@ span {
       background-color: rgba(51, 112, 255, 0.1);
     }
   }
+
   .quota {
     ::v-deep.el-collapse-item__header {
       background-color: rgba(4, 180, 156, 0.1);
@@ -1098,6 +1141,7 @@ span {
     transform: rotate(90deg);
   }
 }
+
 .style-collapse ::v-deep .el-collapse-item__wrap {
   border-bottom: 0 solid #e6ebf5 !important;
 }

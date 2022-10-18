@@ -1673,7 +1673,8 @@ export default {
     field_edit_name: '字段名稱',
     input_edit_name: '請輸入字段名稱',
     edit_search: '通過名稱搜索',
-    na: '暫無'
+    na: '暫無',
+    date_format: '時間格式，默認：年-月-日 時:分:秒'
   },
   driver: {
     driver: '驅動',
