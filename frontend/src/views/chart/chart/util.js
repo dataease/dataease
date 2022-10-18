@@ -57,7 +57,9 @@ export const TYPE_CONFIGS = [
         'tableItemAlign',
         'tableTitleHeight',
         'tableItemHeight',
-        'tableColumnMode'
+        'tableColumnMode',
+        'tableShowIndex',
+        'tableIndexLabel'
       ],
       'title-selector-ant-v': [
         'show',
@@ -103,7 +105,9 @@ export const TYPE_CONFIGS = [
         'tableItemAlign',
         'tableTitleHeight',
         'tableItemHeight',
-        'tableColumnMode'
+        'tableColumnMode',
+        'tableShowIndex',
+        'tableIndexLabel'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1669,7 +1673,9 @@ export const TYPE_CONFIGS = [
         'tableItemFontSize',
         'tableTitleHeight',
         'tableItemHeight',
-        'tableColumnWidth'
+        'tableColumnWidth',
+        'tableShowIndex',
+        'tableIndexLabel'
       ],
       'title-selector': [
         'show',
@@ -1708,7 +1714,9 @@ export const TYPE_CONFIGS = [
         'tableItemFontSize',
         'tableTitleHeight',
         'tableItemHeight',
-        'tableColumnWidth'
+        'tableColumnWidth',
+        'tableShowIndex',
+        'tableIndexLabel'
       ],
       'title-selector': [
         'show',

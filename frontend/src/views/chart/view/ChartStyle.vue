@@ -40,7 +40,7 @@
           <el-collapse-item
             v-show="showPropertiesCollapse(['size-selector'])"
             name="size"
-            :title="$t('chart.size')"
+            :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : $t('chart.size')"
           >
             <size-selector
               :param="param"
