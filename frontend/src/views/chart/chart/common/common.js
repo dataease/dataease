@@ -2,11 +2,34 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_EXT_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 
-let xAxisLabelFormatter = null
-let yAxisLabelFormatter = null
-let yExtAxisLabelFormatter = null
-
 export function componentStyle(chart_option, chart) {
+  let xAxisLabelFormatter = null
+  let yAxisLabelFormatter = null
+  let yExtAxisLabelFormatter = null
+  const xFormatter = function(value) {
+    if (!xAxisLabelFormatter) {
+      return valueFormatter(value, formatterItem)
+    } else {
+      return valueFormatter(value, xAxisLabelFormatter)
+    }
+  }
+
+  const yFormatter = function(value) {
+    if (!yAxisLabelFormatter) {
+      return valueFormatter(value, formatterItem)
+    } else {
+      return valueFormatter(value, yAxisLabelFormatter)
+    }
+  }
+
+  const yExtFormatter = function(value) {
+    if (!yExtAxisLabelFormatter) {
+      return valueFormatter(value, formatterItem)
+    } else {
+      return valueFormatter(value, yExtAxisLabelFormatter)
+    }
+  }
+
   const padding = '8px'
   if (chart.customStyle) {
     const customStyle = JSON.parse(chart.customStyle)
@@ -224,6 +247,7 @@ export function componentStyle(chart_option, chart) {
     }
   }
 }
+
 export const getMarginUnit = marginForm => {
   if (!marginForm.marginModel || marginForm.marginModel === 'auto') return null
   if (marginForm.marginModel === 'absolute') return 'px'
@@ -241,6 +265,7 @@ const hexToRgba = (hex, opacity) => {
   }
   return rgbaColor
 }
+
 export function seniorCfg(chart_option, chart) {
   if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
     const senior = JSON.parse(chart.senior)
@@ -363,30 +388,6 @@ export function seniorCfg(chart_option, chart) {
         })
       }
     }
-  }
-}
-
-const xFormatter = function(value) {
-  if (!xAxisLabelFormatter) {
-    return valueFormatter(value, formatterItem)
-  } else {
-    return valueFormatter(value, xAxisLabelFormatter)
-  }
-}
-
-const yFormatter = function(value) {
-  if (!yAxisLabelFormatter) {
-    return valueFormatter(value, formatterItem)
-  } else {
-    return valueFormatter(value, yAxisLabelFormatter)
-  }
-}
-
-const yExtFormatter = function(value) {
-  if (!yExtAxisLabelFormatter) {
-    return valueFormatter(value, formatterItem)
-  } else {
-    return valueFormatter(value, yExtAxisLabelFormatter)
   }
 }
 
