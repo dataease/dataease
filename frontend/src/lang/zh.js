@@ -1672,7 +1672,8 @@ export default {
     field_edit_name: '字段名称',
     input_edit_name: '请输入字段名称',
     edit_search: '通过名称搜索',
-    na: '暂无'
+    na: '暂无',
+    date_format: '时间格式，默认: 年-月-日 时:分:秒'
   },
   driver: {
     driver: '驱动',

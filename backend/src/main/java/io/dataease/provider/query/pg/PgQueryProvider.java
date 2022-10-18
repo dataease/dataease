@@ -144,7 +144,7 @@ public class PgQueryProvider extends QueryProvider {
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
                         fieldName = String.format(PgConstants.CAST, originField, PgConstants.DEFAULT_FLOAT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                        fieldName = String.format(PgConstants.CAST, originField, "timestamp");
+                        fieldName = String.format(PgConstants.STR_TO_DATE, originField,  StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
                     } else {
                         fieldName = originField;
                     }
@@ -218,7 +218,7 @@ public class PgQueryProvider extends QueryProvider {
             } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
                 fieldName = String.format(PgConstants.CAST, originField, PgConstants.DEFAULT_FLOAT_FORMAT);
             } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                fieldName = String.format(PgConstants.CAST, originField, "timestamp");
+                fieldName = String.format(PgConstants.STR_TO_DATE, originField,  StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
             } else {
                 fieldName = originField;
             }
@@ -823,7 +823,7 @@ public class PgQueryProvider extends QueryProvider {
         }
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                whereName = String.format(PgConstants.CAST, originName, "timestamp");
+                whereName = String.format(PgConstants.STR_TO_DATE, originName,  StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                 String cast = String.format(PgConstants.CAST, originName, "bigint");

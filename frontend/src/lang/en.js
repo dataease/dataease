@@ -1673,7 +1673,8 @@ export default {
     field_edit_name: 'Field Name',
     input_edit_name: 'Input field name',
     edit_search: 'Search by name',
-    na: 'None'
+    na: 'None',
+    date_format: 'Time format, default: year-month-day hour:minute:second'
   },
   driver: {
     driver: 'Driver',

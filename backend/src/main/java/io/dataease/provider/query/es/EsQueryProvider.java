@@ -155,7 +155,7 @@ public class EsQueryProvider extends QueryProvider {
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
                         fieldName = String.format(EsSqlLConstants.CAST, originField, "double");
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                        fieldName = String.format(EsSqlLConstants.CAST, originField, "timestamp");
+                        fieldName = String.format(EsSqlLConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : EsSqlLConstants.DEFAULT_DATE_FORMAT, EsSqlLConstants.DEFAULT_DATE_FORMAT);
                     } else {
                         fieldName = originField;
                     }
@@ -232,7 +232,7 @@ public class EsQueryProvider extends QueryProvider {
             } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
                 fieldName = String.format(EsSqlLConstants.CAST, originField, "double");
             } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                fieldName = String.format(EsSqlLConstants.CAST, originField, "timestamp");
+                fieldName = String.format(EsSqlLConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : EsSqlLConstants.DEFAULT_DATE_FORMAT, EsSqlLConstants.DEFAULT_DATE_FORMAT);
             } else {
                 fieldName = originField;
             }
@@ -858,7 +858,7 @@ public class EsQueryProvider extends QueryProvider {
         }
         if (field.getDeType() == DeTypeConstants.DE_TIME) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                whereName = String.format(EsSqlLConstants.CAST, originName, "timestamp");
+                whereName = String.format(EsSqlLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : EsSqlLConstants.DEFAULT_DATE_FORMAT, EsSqlLConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == DeTypeConstants.DE_BOOL) {
                 String cast = String.format(EsSqlLConstants.CAST, originName, "timestamp");
@@ -981,7 +981,7 @@ public class EsQueryProvider extends QueryProvider {
             }
             if (field.getDeType() == DeTypeConstants.DE_TIME) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(EsSqlLConstants.CAST, originName, "timestamp");
+                    whereName = String.format(EsSqlLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : EsSqlLConstants.DEFAULT_DATE_FORMAT, EsSqlLConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == DeTypeConstants.DE_BOOL) {
                     String cast = String.format(EsSqlLConstants.CAST, originName, "timestamp");
@@ -1079,7 +1079,7 @@ public class EsQueryProvider extends QueryProvider {
 
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(EsSqlLConstants.CAST, originName, "timestamp");
+                        whereName = String.format(EsSqlLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : EsSqlLConstants.DEFAULT_DATE_FORMAT, EsSqlLConstants.DEFAULT_DATE_FORMAT);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(EsSqlLConstants.CAST, originName, "timestamp");
@@ -1193,8 +1193,7 @@ public class EsQueryProvider extends QueryProvider {
             if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
-                    String cast = String.format(EsSqlLConstants.CAST, originField, "timestamp");
-                    fieldName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, format);
+                    fieldName = String.format(EsSqlLConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : EsSqlLConstants.DEFAULT_DATE_FORMAT, format);
                 } else {
                     String cast = String.format(EsSqlLConstants.CAST, originField, "timestamp");
                     fieldName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, format);
