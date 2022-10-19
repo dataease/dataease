@@ -609,6 +609,8 @@ const list = [
       height: 59
     },
     options: {
+      color: '#333333',
+      jumpBgImg: '',
       jumpList: [
         {
           jumpName: '',

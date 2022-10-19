@@ -20,6 +20,19 @@
         :edit-mode="'preview'"
         :h="config.style.height"
       />
+      <component 
+        :is="config.component"
+        v-else-if="config.type === 'de-jump'"
+        :id="'component' + config.id"
+        class="component-custom"
+        :style="getComponentStyleDefault(config.style)"
+        style="overflow: hidden"
+        :out-style="config.style"
+        :element="config"
+        :in-screen="inScreen"
+        :edit-mode="'preview'"
+        :h="config.style.height"
+      />
       <component
         :is="config.component"
         v-else

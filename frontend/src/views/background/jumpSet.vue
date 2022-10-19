@@ -2,6 +2,44 @@
   <div>
     <p style="font-size: 18px;">跳转设置</p>
     <div style="margin-top: 10px;">
+      <el-row class="jump_row">
+        <el-col :span="4" class="jump_col_4">
+          字体颜色:
+        </el-col>
+        <el-col :span="4">
+          <el-color-picker v-model="curComponent.options.color" class="color-picker-style" :predefine="predefineColors" />
+        </el-col>
+        <el-col :span="4" class="jump_col_4">
+          背景:
+        </el-col>
+        <el-col :span="12" v-if="updataUrl === ''">
+          <el-upload
+            action=""
+            accept=".jpeg,.jpg,.png,.gif,.svg"
+            class="avatar-uploader"
+            list-type="picture-card"
+            :class="{disabled:uploadDisabled}"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove"
+            :http-request="upload"
+            :file-list="fileList"
+            :on-change="onChange"
+            :limit="1"
+          >
+            <i class="el-icon-plus" />
+          </el-upload>
+          <span>
+            <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+          </span>
+        </el-col>
+        <el-col :span="12" v-else>
+          <div style="width: 40%;overflow-y:scroll;position: relative;">
+            <img :src="updataUrl" alt="" style="width: 100%"/>
+            <i class="el-icon-delete del_img" @click="handleRemove"></i>
+          </div>
+          
+        </el-col>
+      </el-row>
       <el-row>
         <el-col>
           <el-button type="primary" @click="addLink" size="small">新增</el-button>
@@ -38,6 +76,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { COLOR_PANEL } from '@/views/chart/chart/chart'
 
 export default {
   name: 'jumpSet',
@@ -49,7 +88,10 @@ export default {
   },
   data() {
     return {
-
+      predefineColors: COLOR_PANEL,
+      uploadDisabled: false,
+      fileList: [],
+      updataUrl: '',
     }
   },
   computed: {
@@ -60,10 +102,12 @@ export default {
   },
   mounted() {
     console.log(this.curComponent)
+    this.updataUrl = this.curComponent.options.jumpBgImg? this.curComponent.options.jumpBgImg : ''
   },
   methods: {
     save() {
-      
+      console.log(this.updataUrl)
+      this.curComponent.options.jumpBgImg = this.updataUrl
       this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
     },
@@ -77,7 +121,43 @@ export default {
     delLink(index) {
       console.log(index)
       this.curComponent.options.jumpList.splice(index,1)
-    }
+    },
+    handlePictureCardPreview(file) {
+      console.log('file---', file)
+      this.dialogImageUrl = file.url
+      this.dialogVisible = true
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+      this.uploadDisabled = false
+      // this.panel.imageUrl = null
+      this.curComponent.options.jumpBgImg = ''
+      this.updataUrl = ""
+      this.fileList = []
+      // this.commitStyle()
+    },
+    upload(file) {
+      console.log('this is upload', file)
+    },
+    onChange(file, fileList) {
+      if (file.size / 1024 / 1024 > 10) {
+        this.$message.error('上传的文件大小不能超过 10MB!')
+        this.fileList = []
+        return
+      }
+      console.log('file, fileList', file, fileList)
+      var _this = this
+      _this.uploadDisabled = true
+      const reader = new FileReader()
+      reader.onload = function() {
+        _this.updataUrl = reader.result
+        // _this.curComponent.options.heightBgImg = reader.result
+        // _this.commitStyle()
+        console.log('reader.result6666666', reader.result)
+      }
+      reader.readAsDataURL(file.raw)
+      console.log('222222', file, fileList)
+    },
   }
 }
 </script>
@@ -94,5 +174,18 @@ export default {
     text-align: center;
     font-weight: bold;
   }
+}
+
+.color-picker-style{
+  cursor: pointer;
+  z-index: 1003;
+}
+
+.del_img {
+  position: absolute;
+  top: 40%;
+  left: 46%;
+  color: #ffffff;
+  font-size: 16px;
 }
 </style>
