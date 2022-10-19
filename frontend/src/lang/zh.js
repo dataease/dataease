@@ -2479,18 +2479,19 @@ export default {
     exec_time: '执行时间',
     start_time: '开始时间',
     end_time: '结束时间',
-
+    chart_data: '视图数据',
     preview: '预览',
     emial_preview: '邮件预览',
-
+    chart_data_range: '视图数据范围',
     simple_repeat: '简单重复',
     once_a_day: '每天一次',
     once_a_week: '每周一次',
     once_a_month: '每月一次',
     complex_repeat: '复杂重复',
     pixel_tip: '可直接输入自定义分辨率(例如:2560 * 1600)或选择',
-    task_type: '任务类型'
-
+    task_type: '任务类型',
+    range_view: '展示数据',
+    range_all: '全部数据'
   },
   dynamic_time: {
     set_default: '设置默认值',
