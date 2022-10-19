@@ -10,5 +10,7 @@ UPDATE `sys_menu` set `component` = REPLACE(`component`, 'form', 'Form') where (
 
 ALTER TABLE `dataset_table_field` ADD COLUMN `date_format` VARCHAR(255) NULL AFTER `accuracy`;
 
+ALTER TABLE `sys_task_email` ADD COLUMN `view_data_range` VARCHAR(255) NULL DEFAULT 'view' AFTER `reci_users`;
+
 
 
