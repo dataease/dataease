@@ -2484,18 +2484,19 @@ export default {
     exec_time: 'Execute time',
     start_time: 'Start time',
     end_time: 'End time',
-
+    chart_data: 'View data',
     preview: 'Preview',
     emial_preview: 'Emial preview',
-
+    chart_data_range: 'View data range',
     simple_repeat: 'Simple repeat',
     once_a_day: 'Once a day',
     once_a_week: 'Once a week',
     once_a_month: 'Once a month',
     complex_repeat: 'Complex repeat',
     pixel_tip: 'Please code custom pixel(such as 2560 * 1600) or select',
-    task_type: 'Task type'
-
+    task_type: 'Task type',
+    range_view: 'Displayed data',
+    range_all: 'All data'
   },
   dynamic_time: {
     set_default: 'Set Default',

@@ -113,7 +113,7 @@ public abstract class FilterBuildTemplate {
         return condition;
     }
 
-    private static Map<String, List<ChartExtFilterRequest>> buildEmpty(List<Map<String, Object>> components) {
+    public static Map<String, List<ChartExtFilterRequest>> buildEmpty(List<Map<String, Object>> components) {
         Map<String, List<ChartExtFilterRequest>> result = new HashMap<>();
         components.forEach(element -> {
             if (StringUtils.equals(element.get("type").toString(), "view")) {
