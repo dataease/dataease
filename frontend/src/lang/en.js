@@ -1424,7 +1424,12 @@ export default {
     aggregation: 'Aggregation',
     filter_between: 'Between',
     field_not_empty: 'Field can not be empty',
-    summary_not_empty: 'Summary can not be empty'
+    summary_not_empty: 'Summary can not be empty',
+    reserve_zero: '0',
+    reserve_one: '1',
+    reserve_two: '2',
+    proportion: 'Proportion',
+    label_content: 'Label Content'
   },
   dataset: {
     parse_filed: 'Parse Field',

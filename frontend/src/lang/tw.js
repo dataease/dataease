@@ -1424,7 +1424,12 @@ export default {
     aggregation: '聚合方式',
     filter_between: '介於',
     field_not_empty: '字段不能為空',
-    summary_not_empty: '聚合方式不能為空'
+    summary_not_empty: '聚合方式不能為空',
+    reserve_zero: '取整',
+    reserve_one: '一位',
+    reserve_two: '两位',
+    proportion: '佔比',
+    label_content: '標籤展示'
   },
   dataset: {
     parse_filed: '解析字段',

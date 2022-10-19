@@ -132,7 +132,8 @@ export const DEFAULT_LABEL = {
     decimalCount: 2, // 小数位数
     thousandSeparator: true// 千分符
   },
-  reserveDecimalCount: 2 // 百分比堆叠柱状图保留小数位数
+  reserveDecimalCount: 2, // 百分比堆叠柱状图,饼图，环形图保留小数位数
+  labelContent: ['dimension', 'proportion'] // 饼图，环形图指标展示项
 }
 export const DEFAULT_TOOLTIP = {
   show: true,
