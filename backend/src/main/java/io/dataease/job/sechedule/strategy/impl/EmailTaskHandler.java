@@ -198,10 +198,12 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             List<File> files = null;
             String viewIds = emailTemplateDTO.getViewIds();
             if (StringUtils.isNotBlank(viewIds)) {
+                String viewDataRange = emailTemplateDTO.getViewDataRange();
+                Boolean justExportView = StringUtils.isBlank(viewDataRange) || StringUtils.equals("view", viewDataRange);
                 List<String> viewIdList = Arrays.asList(viewIds.split(",")).stream().filter(StringUtils::isNotBlank).map(s -> (s.trim())).collect(Collectors.toList());
                 PermissionProxy proxy = new PermissionProxy();
                 proxy.setUserId(user.getUserId());
-                files = viewExportExcel.export(panelId, viewIdList, proxy);
+                files = viewExportExcel.export(panelId, viewIdList, proxy, justExportView);
             }
 
             List<String> channels = null;
