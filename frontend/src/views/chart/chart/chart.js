@@ -329,16 +329,27 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
   show: true,
   position: 'right',
   name: '',
+  nameLocation: 'end',
+  nameGap: 20,
+  nameTop: 0,
+  nameLeft: 0,
+  paddingLeft: 0,
+  paddingRight: 0,
+  paddingTop: 0,
+  paddingBottom: 0,
   nameTextStyle: {
     color: '#333333',
-    fontSize: 12
+    fontSize: 12,
+    lineHeight: 20,
+    fontFamily: '',
   },
   axisLabel: {
     show: true,
     color: '#333333',
     fontSize: '12',
     rotate: 0,
-    formatter: '{value}'
+    formatter: '{value}',
+    fontFamily: ''
   },
   splitLine: {
     show: true,

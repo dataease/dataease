@@ -64,7 +64,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
         chart_option.legend.show = false
       }
     }
-    if (customStyle.xAxis && ((chart.type.includes('bar') && chart.type !== 'bar-stack-part') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type === 'chart-mix')) {
+    if (customStyle.xAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type === 'chart-mix')) {
       chart_option.xAxis.show = customStyle.xAxis.show
       chart_option.xAxis.position = customStyle.xAxis.position
       chart_option.xAxis.name = customStyle.xAxis.name
@@ -103,7 +103,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
         }
       }
     }
-    if (customStyle.yAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter'))) {
+    if (customStyle.yAxis && ((chart.type.includes('bar') && chart.type !== 'bar-stack-part') || chart.type.includes('line') || chart.type.includes('scatter'))) {
       chart_option.yAxis.show = customStyle.yAxis.show
       chart_option.yAxis.position = customStyle.yAxis.position
       chart_option.yAxis.name = customStyle.yAxis.name
@@ -149,11 +149,24 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.yAxis[0].show = customStyle.yAxis.show
       chart_option.yAxis[0].position = customStyle.yAxis.position
       chart_option.yAxis[0].name = customStyle.yAxis.name
+      chart_option.yAxis[0].nameLocation = customStyle.yAxis.nameLocation
       chart_option.yAxis[0].axisLabel = customStyle.yAxis.axisLabel
       chart_option.yAxis[0].axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       chart_option.yAxis[0].splitLine = customStyle.yAxis.splitLine
-      chart_option.yAxis[0].nameTextStyle = customStyle.yAxis.nameTextStyle
-      chart_option.yAxis[0].nameTextStyle.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      chart_option.yAxis[0].nameRotate = 0
+      // chart_option.yAxis[0].nameTextStyle = customStyle.yAxis.nameTextStyle
+      // chart_option.yAxis[0].nameTextStyle.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      chart_option.yAxis[0].nameTextStyle = {
+        ...customStyle.yAxis.nameTextStyle,
+        lineHeight: 20,
+        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+        padding: [
+          customStyle.yAxis.paddingTop !== undefined? customStyle.yAxis.paddingTop : 0,
+          customStyle.yAxis.paddingRight !== undefined? customStyle.yAxis.paddingRight : 0,
+          customStyle.yAxis.paddingBottom !== undefined? customStyle.yAxis.paddingBottom : 0,
+          customStyle.yAxis.paddingLeft !== undefined? customStyle.yAxis.paddingLeft : 0,
+        ]
+      }
 
       chart_option.yAxis[0].axisLabel.showMaxLabel = true
       chart_option.yAxis[0].axisLabel.showMinLabel = true
@@ -179,11 +192,24 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
       chart_option.yAxis[1].show = customStyle.yAxisExt.show
       chart_option.yAxis[1].position = customStyle.yAxisExt.position
       chart_option.yAxis[1].name = customStyle.yAxisExt.name
+      chart_option.yAxis[1].nameLocation = customStyle.yAxisExt.nameLocation
       chart_option.yAxis[1].axisLabel = customStyle.yAxisExt.axisLabel
       chart_option.yAxis[1].axisLabel.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
       chart_option.yAxis[1].splitLine = customStyle.yAxisExt.splitLine
-      chart_option.yAxis[1].nameTextStyle = customStyle.yAxisExt.nameTextStyle
-      chart_option.yAxis[1].nameTextStyle.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      chart_option.yAxis[1].nameRotate = 0
+      // chart_option.yAxis[1].nameTextStyle = customStyle.yAxisExt.nameTextStyle
+      // chart_option.yAxis[1].nameTextStyle.fontFamily = cstyle && cstyle.fontFamily? cstyle.fontFamily : ''
+      chart_option.yAxis[1].nameTextStyle = {
+        ...customStyle.yAxisExt.nameTextStyle,
+        lineHeight: 20,
+        fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
+        padding: [
+          customStyle.yAxisExt.paddingTop !== undefined? customStyle.yAxisExt.paddingTop : 0,
+          customStyle.yAxisExt.paddingRight !== undefined? customStyle.yAxisExt.paddingRight : 0,
+          customStyle.yAxisExt.paddingBottom !== undefined? customStyle.yAxisExt.paddingBottom : 0,
+          customStyle.yAxisExt.paddingLeft !== undefined? customStyle.yAxisExt.paddingLeft : 0,
+        ]
+      }
 
       chart_option.yAxis[1].axisLabel.showMaxLabel = true
       chart_option.yAxis[1].axisLabel.showMinLabel = true

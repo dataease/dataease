@@ -332,6 +332,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     show: customStyle.xAxis.show,
     type: 'value',
     name: customStyle.xAxis.name,
+    nameLocation: customStyle.xAxis.nameLocation,
     nameTextStyle: {
       ...customStyle.xAxis.nameTextStyle,
       lineHeight: 20,
@@ -355,7 +356,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     },
     position: customStyle.xAxis.position,
     axisLabel: {
-      ...customStyle.xAxis.axisLabel.show,
+      ...customStyle.xAxis.axisLabel,
       fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
     },
     // max: !customStyle.xAxis.axisValue.auto? customStyle.axisValue.xAxis.max : null,
@@ -367,6 +368,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
   }, {
     show: customStyle.xAxis.show,
     name: customStyle.xAxis.name,
+    nameLocation: customStyle.xAxis.nameLocation,
     nameTextStyle: {
       ...customStyle.xAxis.nameTextStyle,
       lineHeight: 20,
@@ -390,7 +392,7 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     },
     position: customStyle.xAxis.position,
     axisLabel: {
-      ...customStyle.xAxis.axisLabel.show,
+      ...customStyle.xAxis.axisLabel,
       fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
     },
   }]
@@ -406,11 +408,15 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     axisLabel: {
       show: false
     },
+    splitLine: {
+      ...customStyle.yAxis.splitLine
+    },
     data: chart.data.x
   }, {
     show: customStyle.yAxis.show,
     name: customStyle.yAxis.name,
     nameLocation: customStyle.yAxis.nameLocation,
+    nameRotate: 0,
     nameTextStyle: {
       ...customStyle.yAxis.nameTextStyle,
       lineHeight: 20,
@@ -433,12 +439,8 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
       show: false
     },
     axisLabel: {
-      show: true,
-      padding: [30, 0, 0, 0],
-      // textStyle: {
-      //   color: '#ffffff',
-      //   fontSize: 20
-      // },
+      ...customStyle.yAxis.axisLabel,
+      fontFamily: cstyle && cstyle.fontFamily? cstyle.fontFamily : '',
       align: 'center'
 
     },
@@ -454,10 +456,13 @@ export function doubleBarOption(chart_option, chart, cstyle = {}) {
     },
     axisLabel: {
       show: false
-
+    },
+    splitLine: {
+      ...customStyle.yAxis.splitLine
     },
     data: chart.data.x
   }]
+  console.log('double,,,,',chart_option)
   // var lastYearData = [3, 20, 62, 34, 55, 65, 33];
   // var thisYearData = [11, 38, 23, 39, 66, 66, 79];
   const option = {
@@ -1496,37 +1501,7 @@ export function stackBarPartOption(chart_option, chart, cstyle = {}) {
       s.yAxisIndex = 0
     }
   })
-
-  // chart_option.tooltip.formatter = function(params,ticket,callback) {
-  //   console.log('paaaaaaaaaaa',params,ticket)
-  //   let arr = [] 
-  //   let val = 0
-  //   if(params.length) {
-  //     params.map((item,index) => {
-  //       arr.push(item)
-  //       if(index !== 0) {
-  //         val += item.data.value
-  //       }
-  //     })
-  //     console.log('vvvvvv',val)
-  //     let obj = params[0]
-  //     arr.push({
-  //       ...obj,
-  //       componentIndex: params.length,
-  //       data: {
-  //         value: val
-  //       },
-  //       seriesId: '\u0000总数\u00000',
-  //       seriesIndex: params.length,
-  //       seriesName: '总数',
-  //       value: val
-  //     })
-  //   }
-  //   console.log('arr',arr)
-
-  //   return arr
-  // }
-  
+  console.log('部分堆叠',chart_option)
   return chart_option
 }
 

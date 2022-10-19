@@ -962,7 +962,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type && view.type === 'chart-mix'"
+                    v-show="view.type && (view.type === 'chart-mix' || view.type === 'bar-stack-part')"
                     name="yAxisExt"
                     :title="$t('chart.yAxis_ext')"
                   >
