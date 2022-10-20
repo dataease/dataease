@@ -8,7 +8,7 @@
     v-bind="$attrs"
     v-on="$listeners"
     @execute-axios="executeAxios"
-    @on-add-languanges="addLanguages"
+    @on-add-languages="addLanguages"
     @plugin-call-back="pluginCallBack"
   />
   <div v-else>
