@@ -398,7 +398,7 @@ export default {
       // 处理主tab切换后，子tab对应的元素组件也隐藏
       console.warn('---处理主tab切换后，子tab对应的元素组件也隐藏---')
       console.warn('数据源', this.componentData, this.canvasStyleData)
-      if (this.element.options.vertical !== 'elementKey' && !this.element.options.isFloat) {
+      if (this.element.options.vertical !== 'elementKey') {
         let chengkey = true
         this.componentData.forEach(res => {
           console.log('res', res)
