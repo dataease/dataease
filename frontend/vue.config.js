@@ -100,6 +100,9 @@ module.exports = {
       sass: {
         prependData: `@import "@/style/index.scss"`
       }
+    },
+    extract: {
+      ignoreOrder: true,
     }
   }
 

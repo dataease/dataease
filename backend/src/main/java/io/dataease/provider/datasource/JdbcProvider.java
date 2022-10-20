@@ -73,7 +73,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
 
 
     @Override
-    public List<TableField> getTableFileds(DatasourceRequest datasourceRequest) throws Exception {
+    public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
         if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
             datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
             return fetchResultField(datasourceRequest);

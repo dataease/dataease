@@ -241,7 +241,6 @@ export default {
       originLoginType: null
     }
   },
-  computed: {},
   beforeCreate() {
     ldapStatus().then((res) => {
       if (res.success && res.data) {
@@ -392,7 +391,7 @@ export default {
       updateInfo(param).then((response) => {
         const flag = response.success
         if (flag) {
-          if (response.data && response.data.needLogout) {
+          if (response.data?.needLogout) {
             const casEnable = response.data.casEnable
             bus.$emit('sys-logout', { casEnable })
             return

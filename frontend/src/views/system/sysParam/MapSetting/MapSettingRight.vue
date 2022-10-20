@@ -2,7 +2,7 @@
   <div>
     <!--基础配置表单-->
     <el-form
-      v-if="status !== 'empty' && status !== 'read-only'"
+      v-if="!status.includes['read-only', 'empty']"
       ref="formInline"
       v-loading="loading"
       :model="formInline"
@@ -10,11 +10,6 @@
       class="demo-form-inline"
       size="small"
     >
-      <el-input
-        v-show="false"
-        v-model="formInline.pLevel"
-      />
-
       <el-row>
         <el-row>
           <el-col>
@@ -26,7 +21,7 @@
                 v-if="treeShow"
                 ref="deSelectTree"
                 v-model="formInline.pCode"
-                :popper-append-to-body="true"
+                popper-append-to-body
                 popover-class="map-class-wrap"
                 :data="treeDatas"
                 :select-params="selectParams"
@@ -107,7 +102,7 @@
             </el-button>
             <el-input
               v-model="formInline.fileName"
-              :disabled="true"
+              disabled
             />
           </el-form-item>
         </el-col>
@@ -318,13 +313,13 @@ export default {
     },
 
     loadForm(form) {
-      if (form && form.code) {
+      if (form?.code) {
         this.nodeInfo = JSON.parse(JSON.stringify(form))
         this.setGeoJson()
       }
     },
     setGeoJson() {
-      if (!this.nodeInfo || !this.nodeInfo.code) {
+      if (!this.nodeInfo?.code) {
         this.json = JSON.parse(JSON.stringify(this.noGsoJson))
         return
       }
@@ -347,9 +342,6 @@ export default {
     _filterFun(value, data, node) {
       if (!value) return true
       return data.id.toString().indexOf(value.toString()) !== -1
-    },
-    // 树点击
-    _nodeClickFun(data, node, vm) {
     },
     // 树过滤
     _searchFun(value) {

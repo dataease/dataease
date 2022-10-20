@@ -118,12 +118,8 @@ export default {
     },
 
     nodeClick(data, node) {
-      let parent = null
-      if (node.parent.data instanceof Array) {
-        parent = node.parent.data[0]
-      } else {
-        parent = node.parent.data
-      }
+      const arr = node.parent?.data
+      const parent = Array.isArray(arr) ? arr[0] : arr
       const nodeInfo = {
         code: data.code,
         name: data.name,
@@ -132,24 +128,20 @@ export default {
       }
       this.$emit('show-node-info', this.setStatus(nodeInfo, 'read-only'))
     },
-    addHandler(data, node) {
+    addHandler({ code: pCode }, { level: pLevel }) {
       let form = {
-        pLevel: node.level,
-        pCode: data.code
+        pLevel,
+        pCode
       }
-      if (node.level > 4) {
+      if (pLevel > 4) {
         this.$error('不支持4级行政级别')
         form = {}
       }
       this.$emit('emit-add', this.setStatus(form, 'add'))
     },
     removeHandler(data, node) {
-      let parent = null
-      if (node.parent.data instanceof Array) {
-        parent = node.parent.data[0]
-      } else {
-        parent = node.parent.data
-      }
+      const arr = node.parent?.data
+      const parent = Array.isArray(arr) ? arr[0] : arr
       const param = {
         code: data.code,
         pcode: parent.code,
@@ -185,10 +177,10 @@ export default {
       this.$refs.tree.setCurrentKey(code)
     },
     isChina(code) {
-      return code && code.startsWith('156')
+      return code?.startsWith('156')
     },
     isGlobal(code) {
-      return code && code.startsWith('000')
+      return code?.startsWith('000')
     }
   }
 }

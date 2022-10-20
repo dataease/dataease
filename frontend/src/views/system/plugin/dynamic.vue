@@ -9,7 +9,7 @@
       v-if="showAsync"
       :url="url"
       @execute-axios="executeAxios"
-      @on-add-languanges="addLanguages"
+      @on-add-languages="addLanguages"
       @on-plugin-layout="setLayoutInfo"
       @plugin-call-back="pluginCallBack"
     />
@@ -22,7 +22,7 @@
       v-if="showAsync"
       :url="url"
       @execute-axios="executeAxios"
-      @on-add-languanges="addLanguages"
+      @on-add-languages="addLanguages"
       @on-plugin-layout="setLayoutInfo"
       @plugin-call-back="pluginCallBack"
     />
@@ -35,7 +35,7 @@
       v-if="showAsync"
       :url="url"
       @execute-axios="executeAxios"
-      @on-add-languanges="addLanguages"
+      @on-add-languages="addLanguages"
       @on-plugin-layout="setLayoutInfo"
       @plugin-call-back="pluginCallBack"
     />

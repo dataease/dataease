@@ -105,7 +105,7 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         String tableName = null;
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(pluginViewSet.getInfo(), DataTableInfoDTO.class);
         if (ObjectUtils.isNotEmpty(pluginViewSet.getMode()) && 1 == pluginViewSet.getMode()) {
-            tableName = TableUtils.tableName(pluginViewSet.getTabelId());
+            tableName = TableUtils.tableName(pluginViewSet.getTableId());
         }else {
             switch (DatasetType.getEnumObjByKey(pluginViewSet.getType())) {
                 case DB:

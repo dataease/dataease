@@ -502,9 +502,10 @@ export default {
     },
     insertParamToCodeMirror(param) {
       const pos1 = this.$refs.myCm.codemirror.getCursor()
-      const pos2 = {}
-      pos2.line = pos1.line
-      pos2.ch = pos1.ch
+      const pos2 = {
+        line: pos1.line,
+        ch: pos1.ch
+      }
       this.$refs.myCm.codemirror.replaceRange(param, pos2)
     },
     saveTask(task) {
@@ -542,14 +543,14 @@ export default {
           this.incrementalConfig = response.data
 
           if (
-            this.incrementalConfig.incrementalAdd.length === 0 &&
-            this.incrementalConfig.incrementalDelete.length === 0
+            !this.incrementalConfig.incrementalAdd.length &&
+            !this.incrementalConfig.incrementalDelete.length
           ) {
             this.incrementalUpdateType = 'incrementalAdd'
             this.sql = ''
             return
           }
-          if (this.incrementalConfig.incrementalAdd.length > 0) {
+          if (this.incrementalConfig.incrementalAdd.length) {
             this.incrementalUpdateType = 'incrementalAdd'
             this.sql = this.incrementalConfig.incrementalAdd
           } else {
@@ -561,29 +562,13 @@ export default {
     },
     incrementalUpdateTypeChange: function() {
       if (this.incrementalUpdateType === 'incrementalAdd') {
-        if (this.sql) {
-          this.incrementalConfig.incrementalDelete = this.sql
-        } else {
-          this.incrementalConfig.incrementalDelete = ''
-        }
-        if (this.incrementalConfig.incrementalAdd) {
-          this.sql = this.incrementalConfig.incrementalAdd
-        } else {
-          this.sql = ''
-        }
+        this.incrementalConfig.incrementalDelete = this.sql || ''
+        this.sql = this.incrementalConfig.incrementalAdd || ''
       }
 
       if (this.incrementalUpdateType === 'incrementalDelete') {
-        if (this.sql) {
-          this.incrementalConfig.incrementalAdd = this.sql
-        } else {
-          this.incrementalConfig.incrementalAdd = ''
-        }
-        if (this.incrementalConfig.incrementalDelete) {
-          this.sql = this.incrementalConfig.incrementalDelete
-        } else {
-          this.sql = ''
-        }
+        this.incrementalConfig.incrementalAdd = this.sql || ''
+        this.sql = this.incrementalConfig.incrementalDelete || ''
       }
     }
   }
