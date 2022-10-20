@@ -25,7 +25,7 @@
             </div>
           </div>
           <div slot="reference">
-            <p :style="floatStyle" style="width: 100%;">{{element.options.floatName}}</p>
+            <p :style="floatStyle" style="width: 100%;margin: 0px;">{{element.options.floatName}}</p>
           </div>
         </el-popover>
         
