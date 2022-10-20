@@ -2,32 +2,18 @@
   <div>
     <div class="nav_calss">
       <el-select 
+        class="jump_sel"
         v-model="linkOpen" 
         @change="linkChange" 
         style="width: 100%;"
         :popper-append-to-body="inScreen"
+        :style="jumpStyle"
       >
-      <!-- :style="jumpStyle" -->
         <el-option v-for="(item,index) in jumpArr" 
           :key="index" :value="item.jumpLink" 
           :label="item.jumpName" :style="{color: fontColor}">
         </el-option>
       </el-select>
-      <!-- <div style="width: 100%;height: 100%">
-        <div class="j_select">
-          <div class="j_inner">
-            <div class="j_inputWarp">
-              <el-input size="small" readonly placeholder="请选择" :suffix-icon="isClick? 'el-icon-arrow-down' : 'el-icon-arrow-left'"></el-input>
-            </div>
-            <ul class="j_ul">
-              <li v-for="(item,index) in jumpArr" :key="index" 
-                class="j_li" @click="linkChange(item.jumpLink)">
-                {{item.jumpName}}
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div> -->
     </div>
   </div>
 </template>
@@ -66,12 +52,17 @@ export default {
     },
     jumpStyle() {
       const style = {}
-      if(this.element.options.jumpBgImg !== '') {
-        style.backgroundImage = `url(${this.element.options.jumpBgImg})`
+      if(this.element.options.bgType === 'back') {
+        if(this.element.options.jumpBgImg !== '') {
+          style.backgroundImage = `url(${this.element.options.jumpBgImg})`
+        }
+        style.backgroundRepeat = 'no-repeat'
+        style.backgroundSize = '100% 100%'
+      } else {
+        style.backgroundColor = this.element.options.jumpBgColor
       }
-      style.lineHeight = this.element.style.height + 'px'
-      style.backgroundRepeat = 'no-repeat'
-      style.backgroundSize = '100% 100%'
+      style.marginTop = (this.element.style.height - 40) + 'px'
+      // style.lineHeight = this.element.style.height + 'px'
       return style
     },
   },
@@ -94,9 +85,18 @@ export default {
   },
 }
 </script>
-<style lang="scss">
+<style lang="less" scoped>
 .nav_calss{
   display:flex;
   height: 100%;
+}
+
+.jump_sel /deep/ .el-input--medium .el-input__inner {
+  background-color: transparent;
+  border-color: transparent;
+}
+.jump_sel /deep/ .el-input__inner {
+  background-color: transparent;
+  border-color: transparent;
 }
 </style>

@@ -610,6 +610,8 @@ const list = [
     },
     options: {
       color: '#333333',
+      bgType: 'color',
+      jumpBgColor: '#FFFFFF',
       jumpBgImg: '',
       jumpList: [
         {
