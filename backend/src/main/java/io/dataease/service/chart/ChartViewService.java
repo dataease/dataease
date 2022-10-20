@@ -1193,7 +1193,7 @@ public class ChartViewService {
         PluginViewParam pluginViewParam = new PluginViewParam();
         PluginViewSetImpl pluginViewSet = BeanUtils.copyBean(new PluginViewSetImpl(), table);
         pluginViewSet.setDsType(ds.getType());
-        pluginViewSet.setTabelId(table.getId());
+        pluginViewSet.setTableId(table.getId());
         pluginViewSet.setDs(ds);
         PluginViewLimit pluginViewLimit = BeanUtils.copyBean(new PluginViewLimit(), view);
 
