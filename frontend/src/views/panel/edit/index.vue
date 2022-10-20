@@ -272,7 +272,7 @@
         <div v-if="showViewToolsAside">
           <chart-edit
             ref="chartEditRef"
-            :edit-statue="showViewToolsAside&&!mobileLayoutStatus&&rightDrawOpen"
+            :edit-status="showViewToolsAside&&!mobileLayoutStatus&&rightDrawOpen"
             :edit-from="'panel'"
             :param="chartEditParam"
           />

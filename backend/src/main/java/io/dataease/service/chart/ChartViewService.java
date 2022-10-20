@@ -580,7 +580,7 @@ public class ChartViewService {
             List<ChartViewFieldDTO> yAxisExt = gson.fromJson(view.getYAxisExt(), tokenType);
             yAxis.addAll(yAxisExt);
         }
-        if (StringUtils.equalsIgnoreCase(view.getRender(), "antv") && StringUtils.equalsIgnoreCase(view.getType(), "gauge")) {
+        if (StringUtils.equalsIgnoreCase(view.getRender(), "antv") && StringUtils.equalsAnyIgnoreCase(view.getType(), "gauge","liquid")) {
             List<ChartViewFieldDTO> sizeField = getSizeField(view);
             yAxis.addAll(sizeField);
         }
@@ -1656,47 +1656,44 @@ public class ChartViewService {
         JSONObject jsonObject = JSONObject.parseObject(customAttr);
         JSONObject size = jsonObject.getJSONObject("size");
 
-        String gaugeMinType = size.getString("gaugeMinType");
-        if (StringUtils.equalsIgnoreCase("dynamic", gaugeMinType)) {
-            JSONObject gaugeMinField = size.getJSONObject("gaugeMinField");
-            String id = gaugeMinField.getString("id");
-            String summary = gaugeMinField.getString("summary");
-            DatasetTableField datasetTableField = dataSetTableFieldsService.get(id);
-            if (ObjectUtils.isNotEmpty(datasetTableField)) {
-                if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
-                    if (!StringUtils.containsIgnoreCase(summary, "count")) {
-                        DEException.throwException(Translator.get("i18n_gauge_field_change"));
-                    }
-                }
-                ChartViewFieldDTO dto = new ChartViewFieldDTO();
-                BeanUtils.copyBean(dto, datasetTableField);
-                dto.setSummary(summary);
-                list.add(dto);
-            } else {
-                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
-            }
+        ChartViewFieldDTO gaugeMinViewField = getDynamicField(size, "gaugeMinType", "gaugeMinField");
+        if (gaugeMinViewField != null) {
+            list.add(gaugeMinViewField);
         }
-        String gaugeMaxType = size.getString("gaugeMaxType");
-        if (StringUtils.equalsIgnoreCase("dynamic", gaugeMaxType)) {
-            JSONObject gaugeMaxField = size.getJSONObject("gaugeMaxField");
-            String id = gaugeMaxField.getString("id");
-            String summary = gaugeMaxField.getString("summary");
-            DatasetTableField datasetTableField = dataSetTableFieldsService.get(id);
-            if (ObjectUtils.isNotEmpty(datasetTableField)) {
-                if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
-                    if (!StringUtils.containsIgnoreCase(summary, "count")) {
-                        DEException.throwException(Translator.get("i18n_gauge_field_change"));
-                    }
-                }
-                ChartViewFieldDTO dto = new ChartViewFieldDTO();
-                BeanUtils.copyBean(dto, datasetTableField);
-                dto.setSummary(summary);
-                list.add(dto);
-            } else {
-                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
-            }
+        ChartViewFieldDTO gaugeMaxViewField = getDynamicField(size, "gaugeMaxType", "gaugeMaxField");
+        if (gaugeMaxViewField != null) {
+            list.add(gaugeMaxViewField);
         }
+        ChartViewFieldDTO liquidMaxViewField = getDynamicField(size, "liquidMaxType", "liquidMaxField");
+        if (liquidMaxViewField != null) {
+            list.add(liquidMaxViewField);
+        }
+
         return list;
+    }
+
+    private ChartViewFieldDTO getDynamicField(JSONObject sizeObj, String type, String field) {
+        String maxType = sizeObj.getString(type);
+        if (StringUtils.equalsIgnoreCase("dynamic", maxType)) {
+            JSONObject maxField = sizeObj.getJSONObject(field);
+            String id = maxField.getString("id");
+            String summary = maxField.getString("summary");
+            DatasetTableField datasetTableField = dataSetTableFieldsService.get(id);
+            if (ObjectUtils.isNotEmpty(datasetTableField)) {
+                if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
+                    if (!StringUtils.containsIgnoreCase(summary, "count")) {
+                        DEException.throwException(Translator.get("i18n_gauge_field_change"));
+                    }
+                }
+                ChartViewFieldDTO dto = new ChartViewFieldDTO();
+                BeanUtils.copyBean(dto, datasetTableField);
+                dto.setSummary(summary);
+                return dto;
+            } else {
+                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
+            }
+        }
+        return null;
     }
 
     private List<ChartSeniorAssistDTO> getDynamicAssistFields(ChartViewDTO view) {

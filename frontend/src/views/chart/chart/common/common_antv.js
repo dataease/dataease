@@ -126,6 +126,9 @@ export function getLabel(chart) {
             type: l.position,
             autoRotate: false
           }
+          if (l.position === 'outer') {
+            label.type = 'spider'
+          }
         } else if (chart.type.includes('line') || chart.type.includes('area')) {
           label = {
             position: l.position,

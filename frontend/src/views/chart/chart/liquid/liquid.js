@@ -9,10 +9,8 @@ export function baseLiquid(plot, container, chart) {
   let value = 0
   const colors = []
   let max, radius, bgColor, shape, labelContent
-  if (chart.data) {
-    if (chart.data.series.length > 0) {
-      value = chart.data.series[0].data[0]
-    }
+  if (chart.data?.series.length > 0) {
+    value = chart.data.series[0].data[0]
   }
   let customAttr = {}
   if (chart.customAttr) {
@@ -27,7 +25,11 @@ export function baseLiquid(plot, container, chart) {
     // size
     if (customAttr.size) {
       const size = JSON.parse(JSON.stringify(customAttr.size))
-      max = size.liquidMax ? size.liquidMax : DEFAULT_SIZE.liquidMax
+      if (size.liquidMaxType === 'dynamic') {
+        max = chart.data?.series[chart.data?.series.length - 1]?.data[0]
+      } else {
+        max = size.liquidMax ? size.liquidMax : DEFAULT_SIZE.liquidMax
+      }
       radius = parseFloat((size.liquidSize ? size.liquidSize : DEFAULT_SIZE.liquidSize) / 100)
       shape = size.liquidShape ? size.liquidShape : DEFAULT_SIZE.liquidShape
     }

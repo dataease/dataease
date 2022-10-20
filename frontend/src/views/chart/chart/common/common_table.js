@@ -21,7 +21,7 @@ export function getCustomTheme(chart) {
         backgroundColor: headerColor,
         horizontalBorderColor: borderColor,
         verticalBorderColor: borderColor,
-        verticalBorderWidth: 0 // 左上角顶点单元格左右边缘宽度要设置为 0，不然序号列的数字部分会比表头多几个像素，视觉上会突出去
+        verticalBorderWidth: 0
       },
       text: {
         fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
@@ -130,9 +130,9 @@ export function getCustomTheme(chart) {
       theme.rowCell.cell.backgroundColor = i_c // 这个参数其实只对开启序号列的行头生效
       theme.rowCell.cell.horizontalBorderColor = i_c
       theme.rowCell.cell.verticalBorderColor = i_c
-      theme.rowCell.bolderText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
-      theme.rowCell.text.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
-      theme.rowCell.measureText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
+      theme.rowCell.bolderText.fill = c.tableFontColor
+      theme.rowCell.text.fill = c.tableFontColor
+      theme.rowCell.measureText.fill = c.tableFontColor
 
       theme.colCell.cell.backgroundColor = h_c
       theme.colCell.cell.horizontalBorderColor = b_c
@@ -162,11 +162,11 @@ export function getCustomTheme(chart) {
       theme.cornerCell.measureText.textAlign = h_a
 
       // 序号列的数字单元格内容样式使用指标的内容样式而不是表头的内容样式
-      theme.rowCell.bolderText.fontSize = parseInt(s.tableTitleFontSize)
+      theme.rowCell.bolderText.fontSize = parseInt(s.tableItemFontSize)
       theme.rowCell.bolderText.textAlign = i_a
-      theme.rowCell.text.fontSize = parseInt(s.tableTitleFontSize)
+      theme.rowCell.text.fontSize = parseInt(s.tableItemFontSize)
       theme.rowCell.text.textAlign = i_a
-      theme.rowCell.measureText.fontSize = parseInt(s.tableTitleFontSize)
+      theme.rowCell.measureText.fontSize = parseInt(s.tableItemFontSize)
       theme.rowCell.measureText.textAlign = i_a
 
       theme.colCell.bolderText.fontSize = parseInt(s.tableTitleFontSize)
