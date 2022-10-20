@@ -289,7 +289,6 @@ export default {
         const results = res.data.map(node => {
           if (node.hasChildren && !node.children) {
             node.children = null
-            // delete node.children
           }
           return node
         })

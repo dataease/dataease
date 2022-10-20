@@ -132,6 +132,7 @@ import { emailInfo, updateInfo, validate } from '@/api/system/email'
 import operater from './Operater'
 import msgCfm from '@/components/msgCfm'
 import dePwd from '@/components/deCustomCm/dePwd.vue'
+const list = ['host', 'port', 'account', 'password', 'ssl', 'tls', '', 'recipient']
 export default {
   name: 'EmailSetting',
   components: {
@@ -192,28 +193,18 @@ export default {
       })
     },
     change() {
-      if (
-        !this.formInline.host ||
+      const result = !this.formInline.host ||
         !this.formInline.port ||
         !this.formInline.account
-      ) {
-        this.disabledConnection = true
-        this.disabledSave = true
-      } else {
-        this.disabledConnection = false
-        this.disabledSave = false
-      }
+      this.disabledConnection = result
+      this.disabledSave = result
     },
     testConnection(formInline) {
-      const param = {
-        'smtp.host': this.formInline.host,
-        'smtp.port': this.formInline.port,
-        'smtp.account': this.formInline.account,
-        'smtp.password': this.formInline.password,
-        'smtp.ssl': this.formInline.ssl,
-        'smtp.tls': this.formInline.tls,
-        'smtp.recipient': this.formInline.recipient
-      }
+      const param = list.reduce((pre, next) => {
+        if (!next) return pre
+        pre[`smtp.${next}`] = this.formInline[next]
+        return pre
+      }, {})
       this.$refs[formInline].validate((valid) => {
         if (valid) {
           validate(param).then((response) => {
@@ -235,50 +226,16 @@ export default {
       this.showCancel = false
       this.showSave = false
       this.show = true
-      const param = [
-        {
-          paramKey: 'smtp.host',
-          paramValue: this.formInline.host,
+      const param = list.reduce((pre, next, index) => {
+        if (!next) return pre
+        pre.push({
+          paramKey: `smtp.${next}`,
+          paramValue: this.formInline[next],
           type: 'text',
-          sort: 1
-        },
-        {
-          paramKey: 'smtp.port',
-          paramValue: this.formInline.port,
-          type: 'text',
-          sort: 2
-        },
-        {
-          paramKey: 'smtp.account',
-          paramValue: this.formInline.account,
-          type: 'text',
-          sort: 3
-        },
-        {
-          paramKey: 'smtp.password',
-          paramValue: this.formInline.password,
-          type: 'password',
-          sort: 4
-        },
-        {
-          paramKey: 'smtp.ssl',
-          paramValue: this.formInline.ssl,
-          type: 'text',
-          sort: 5
-        },
-        {
-          paramKey: 'smtp.tls',
-          paramValue: this.formInline.tls,
-          type: 'text',
-          sort: 6
-        },
-        {
-          paramKey: 'smtp.recipient',
-          paramValue: this.formInline.recipient,
-          type: 'text',
-          sort: 8
-        }
-      ]
+          sort: index + 1
+        })
+        return pre
+      }, [])
 
       this.$refs[formInline].validate((valid) => {
         if (valid) {

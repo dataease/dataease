@@ -47,17 +47,17 @@
         >
           <template slot-scope="scope">
             <el-button
-              class="text-btn"
+              class="de-text-btn"
               type="text"
               @click="create(scope.row)"
             >{{ $t("commons.edit") }}</el-button>
             <el-button
-              class="text-btn"
+              class="de-text-btn"
               type="text"
               @click="validateById(scope.row)"
             >{{ $t("commons.validate") }}</el-button>
             <el-button
-              class="text-btn"
+              class="de-text-btn"
               type="text"
               @click="del(scope.row)"
             >{{
@@ -341,22 +341,6 @@ export default {
   .table-box {
     height: calc(100% - 52px);
     margin-top: 16px;
-
-    .text-btn {
-      font-family: PingFang SC;
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 22px;
-      letter-spacing: 0px;
-      text-align: center;
-      margin-left: 2px;
-      border: none;
-      padding: 2px 4px;
-    }
-
-    .text-btn:hover {
-      background: rgba(51, 112, 255, 0.1);
-    }
   }
 }
 </style>

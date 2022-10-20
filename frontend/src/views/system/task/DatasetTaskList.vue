@@ -333,36 +333,7 @@
 </template>
 
 <script>
-const columnOptions = [
-  {
-    label: 'dataset.task_name',
-    props: 'name'
-  },
-  {
-    label: 'dataset.task.dataset',
-    props: 'datasetName'
-  },
-  {
-    label: 'dataset.execute_rate',
-    props: 'rate'
-  },
-  {
-    label: 'dataset.task.last_exec_time',
-    props: 'lastExecTime'
-  },
-  {
-    label: 'dataset.task.last_exec_status',
-    props: 'lastExecStatus'
-  },
-  {
-    label: 'dataset.task.next_exec_time',
-    props: 'nextExecTime'
-  },
-  {
-    label: 'dataset.task.task_status',
-    props: 'status'
-  }
-]
+import { columnOptions } from './options'
 import { formatOrders } from '@/utils/index'
 import { datasetTaskList, post } from '@/api/dataset/dataset'
 import { hasDataPermission } from '@/utils/permission'
