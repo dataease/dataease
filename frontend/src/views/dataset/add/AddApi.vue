@@ -153,14 +153,13 @@
         <div class="dataset">
           <span class="name">{{ $t('dataset.name') }}</span>
           <el-input
-            v-if="activeIndex !== -1"
-            v-model="tableData[activeIndex].datasetName"
+            v-model="activeTable.datasetName"
             size="small"
             clearable
             @change="validateName"
           />
           <div
-            v-if="tableData[activeIndex].nameExsit"
+            v-if="activeTable.nameExsit"
             style="left: 107px; top: 52px"
             class="el-form-item__error"
           >
@@ -257,15 +256,13 @@ export default {
       avilibelTable: false,
       noAvilibelTableImg: require('@/assets/None.png'),
       noSelectTable: require('@/assets/None_Select_ds.png'),
+      activeTable: {},
       activeName: ''
     }
   },
   computed: {
-    activeIndex() {
-      return this.tableData.findIndex((ele) => ele.name === this.activeName)
-    },
     checkDatasetName() {
-      return this.tableData
+      return this.tables
         .filter((ele, index) => {
           return this.checkTableList.includes(ele.name)
         })
@@ -285,11 +282,11 @@ export default {
         const dsName = this.options.find((ele) => ele.id === val).name
         post('/datasource/getTables/' + val, {}).then((response) => {
           this.tables = response.data
-          this.tableData = JSON.parse(JSON.stringify(this.tables))
-          this.tableData.forEach((ele) => {
+          this.tables.forEach((ele) => {
             this.$set(ele, 'datasetName', dsName + '_' + ele.name)
             this.$set(ele, 'nameExsit', false)
           })
+          this.tableData = [...this.tables]
           this.avilibelTable = !this.tableData.some((ele) => ele.enableCheck)
         }).finally(() => {
           this.dsLoading = false
@@ -302,18 +299,15 @@ export default {
       }
     },
     searchTable(val) {
+      this.activeName = ''
       if (val && val !== '') {
-        this.tableData = JSON.parse(
-          JSON.stringify(
-            this.tables.filter((ele) => {
-              return ele.name
-                .toLocaleLowerCase()
-                .includes(val.toLocaleLowerCase())
-            })
-          )
-        )
+        this.tableData = [...this.tables.filter((ele) => {
+          return ele.name
+            .toLocaleLowerCase()
+            .includes(val.toLocaleLowerCase())
+        })]
       } else {
-        this.tableData = JSON.parse(JSON.stringify(this.tables))
+        this.tableData = [...this.tables]
       }
     }
   },
@@ -355,17 +349,17 @@ export default {
       }
       this.LeftWidth = e.pageX
     },
-    nameExsitValidator(activeIndex) {
-      this.tableData[activeIndex].nameExsit =
+    nameExsitValidator(ele) {
+      ele.nameExsit =
         this.nameList
           .concat(this.checkDatasetName)
-          .filter((name) => name === this.tableData[activeIndex].datasetName)
+          .filter((name) => name === ele.datasetName)
           .length > 1
     },
     validateName() {
-      this.tableData.forEach((ele, index) => {
-        if (this.checkDatasetName.includes(ele.datasetName)) {
-          this.nameExsitValidator(index)
+      this.tables.forEach((ele, index) => {
+        if (this.checkTableList.includes(ele.name)) {
+          this.nameExsitValidator(ele)
         } else {
           ele.nameExsit = false
         }
@@ -381,6 +375,7 @@ export default {
     setActiveName({ name, datasourceId, enableCheck }) {
       if (!enableCheck) return
       this.activeName = name
+      this.activeTable = this.tableData.find((ele) => ele.name === this.activeName) || {}
       this.dbPreview({
         dataSourceId: datasourceId,
         info: JSON.stringify({ table: name })
@@ -428,7 +423,7 @@ export default {
       const mode = this.mode
       const syncType = this.syncType
       this.checkTableList.forEach((name) => {
-        const datasetName = this.tableData.find(
+        const datasetName = this.tables.find(
           (ele) => ele.name === name
         ).datasetName
         tables.push({
@@ -449,13 +444,6 @@ export default {
         .finally(() => {
           this.loading = false
         })
-    },
-    dataReset() {
-      this.searchTable = ''
-      this.options = []
-      this.dataSource = ''
-      this.tables = []
-      this.checkTableList = []
     }
   }
 }
