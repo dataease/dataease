@@ -1,6 +1,6 @@
 <template>
   <el-col style="padding: 0 5px 0 5px;">
-    <el-row>
+    <el-row class="de-tree">
       <span class="header-title">{{ $t('panel.share_in') }}</span>
       <div
         class="block"
@@ -40,7 +40,7 @@
       </div>
     </el-row>
 
-    <el-row>
+    <el-row class="de-tree">
       <span class="header-title">{{ $t('panel.share_out') }}</span>
       <div
         class="block"

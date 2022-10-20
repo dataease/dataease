@@ -20,7 +20,6 @@
             <el-select
               v-model="form.type"
               :placeholder="$t('datasource.please_choose_type')"
-
               filterable
               @change="changeType()"
             >
@@ -160,14 +159,10 @@ export default {
         port: '',
         extraParams: 'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull'
       },
-      input: '',
-      visible: true,
       showEdit: true,
       showSave: false,
       showCancel: false,
       show: true,
-      disabledConnection: false,
-      disabledSave: false,
       loading: false,
       rules: {
         'configuration.host': [
@@ -202,7 +197,6 @@ export default {
       ]
     }
   },
-
   created() {
     this.query()
   },

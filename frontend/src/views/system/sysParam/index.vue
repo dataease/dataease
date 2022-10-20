@@ -8,40 +8,40 @@
         class="de-tabs"
       >
         <el-tab-pane
-          :lazy="true"
+          lazy
           :label="$t('system_parameter_setting.basic_setting')"
           name="zero"
         />
 
         <el-tab-pane
-          :lazy="true"
+          lazy
           :label="$t('system_parameter_setting.mailbox_service_settings')"
           name="first"
         />
 
         <el-tab-pane
-          :lazy="true"
+          lazy
           :label="$t('sysParams.map')"
           name="ten"
         />
 
         <el-tab-pane
           v-if="engineMode === 'simple'"
-          :lazy="true"
+          lazy
           :label="$t('system_parameter_setting.engine_mode_setting')"
           name="six"
         />
 
         <el-tab-pane
           v-if="engineMode === 'cluster'"
-          :lazy="true"
+          lazy
           :label="$t('system_parameter_setting.engine_mode_setting')"
           name="seven"
         />
 
         <el-tab-pane
           v-if="engineMode === 'cluster'"
-          :lazy="true"
+          lazy
           :label="$t('system_parameter_setting.kettle_setting')"
           name="eight"
         />
@@ -95,8 +95,6 @@ export default {
       engineMode: 'local'
     }
   },
-  computed: {
-  },
   beforeCreate() {
     pluginLoaded().then((res) => {
       this.isPluginLoaded = res.success && res.data
@@ -104,10 +102,6 @@ export default {
     engineMode().then((res) => {
       this.engineMode = res.data
     })
-  },
-  methods: {
-    handlerBtn(btn) {
-    }
   }
 }
 </script>

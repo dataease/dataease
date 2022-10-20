@@ -479,7 +479,7 @@ export default {
       errMsgCont: '',
       options: [],
       sql: '',
-      dataReference: false,
+      dataReference: true,
       sqlOption: {
         tabSize: 2,
         styleActiveLine: true,

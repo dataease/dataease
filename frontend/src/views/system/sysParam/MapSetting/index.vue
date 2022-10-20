@@ -51,28 +51,27 @@ export default {
   methods: {
     emitAdd(form) {
       this.setStatus(form.status)
-      this.$refs && this.$refs['map_setting_form'] && this.$refs['map_setting_form'].emitAdd(form)
+      this.$refs['map_setting_form']?.emitAdd(form)
     },
 
     loadForm(nodeInfo) {
       this.setStatus(nodeInfo.status)
-      this.$refs && this.$refs['map_setting_form'] && this.$refs['map_setting_form'].loadForm(nodeInfo)
+      this.$refs['map_setting_form']?.loadForm(nodeInfo)
     },
 
     setStatus(status) {
       this.formStatus = status
     },
     loadTreeData() {
-      Object.keys(this.treeDatas).length === 0 && areaMapping().then(res => {
+      !Object.keys(this.treeDatas).length && areaMapping().then(res => {
         this.treeDatas = res.data
       })
     },
     refreshTree(node) {
       areaMapping().then(res => {
         this.treeDatas = res.data
-        if (node && node.code) {
-          this.$refs && this.$refs['map_setting_tree'] && this.$refs['map_setting_tree'].showNewNode(node.code)
-        }
+        if (!node?.code) return
+        this.$refs['map_setting_tree']?.showNewNode(node.code)
       })
     }
   }

@@ -14,6 +14,38 @@ const filterDatasetRecord = {
     value: 'Error'
   }]
 }
+
+const columnOptions = [
+  {
+    label: 'dataset.task_name',
+    props: 'name'
+  },
+  {
+    label: 'dataset.task.dataset',
+    props: 'datasetName'
+  },
+  {
+    label: 'dataset.execute_rate',
+    props: 'rate'
+  },
+  {
+    label: 'dataset.task.last_exec_time',
+    props: 'lastExecTime'
+  },
+  {
+    label: 'dataset.task.last_exec_status',
+    props: 'lastExecStatus'
+  },
+  {
+    label: 'dataset.task.next_exec_time',
+    props: 'nextExecTime'
+  },
+  {
+    label: 'dataset.task.task_status',
+    props: 'status'
+  }
+]
+
 const filterDataset = [{
   name: 'dataset.execute_rate',
   type: 'dataset_table_task.rate',
@@ -75,5 +107,6 @@ function dateFormat(fmt, date) {
 export {
   filterDataset,
   dateFormat,
-  filterDatasetRecord
+  filterDatasetRecord,
+  columnOptions
 }
