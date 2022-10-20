@@ -199,9 +199,6 @@ public abstract class TimeBuild extends FilterBuildTemplate {
         return result;
     }
 
-    /*public List<Long> add2List(Long ...elements) {
-        return Arrays.stream(elements).collect(Collectors.toList());
-    }*/
     public List add2List(Object... elements) {
         return Arrays.stream(elements).collect(Collectors.toList());
     }
