@@ -57,7 +57,7 @@ public class SSOServer {
                 DEException.throwException("缺少oidc插件");
             }
             oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
-            Boolean suuportOIDC = oidcXpackService.isSuuportOIDC();
+            Boolean suuportOIDC = oidcXpackService.isSupportOIDC();
             if (!suuportOIDC) {
                 DEException.throwException("未开启oidc");
             }

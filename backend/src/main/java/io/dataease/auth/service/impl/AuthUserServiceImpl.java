@@ -182,7 +182,7 @@ public class AuthUserServiceImpl implements AuthUserService {
         if (beansOfType.keySet().size() == 0) return false;
         OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
         if (ObjectUtils.isEmpty(oidcXpackService)) return false;
-        return oidcXpackService.isSuuportOIDC();
+        return oidcXpackService.isSupportOIDC();
     }
 
     @Override
@@ -191,7 +191,7 @@ public class AuthUserServiceImpl implements AuthUserService {
         if (beansOfType.keySet().size() == 0) return false;
         CasXpackService casXpackService = SpringContextUtil.getBean(CasXpackService.class);
         if (ObjectUtils.isEmpty(casXpackService)) return false;
-        return casXpackService.suuportCas();
+        return casXpackService.supportCas();
     }
 
     @Override
