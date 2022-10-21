@@ -2,7 +2,7 @@
   <div>
     <!--基础配置表单-->
     <el-form
-      v-if="!status.includes['read-only', 'empty']"
+      v-if="!['read-only', 'empty'].includes(status)"
       ref="formInline"
       v-loading="loading"
       :model="formInline"
