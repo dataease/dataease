@@ -166,7 +166,7 @@ export default {
         // 同一方向上同时显示三条线可能不太美观，因此才有了这个解决方案
         // 同一方向上的线只显示一条，例如多条横条只显示一条横线
         if (needToShow.length) {
-          this.chooseTheTureLine(needToShow, isDownward, isRightward)
+          this.chooseTheTrueLine(needToShow, isDownward, isRightward)
         }
       })
     },
@@ -180,7 +180,7 @@ export default {
       return Math.round(condition.dragShift - (width - curComponentStyle.width) / 2)
     },
 
-    chooseTheTureLine(needToShow, isDownward, isRightward) {
+    chooseTheTrueLine(needToShow, isDownward, isRightward) {
       // 如果鼠标向右移动 则按从右到左的顺序显示竖线 否则按相反顺序显示
       // 如果鼠标向下移动 则按从下到上的顺序显示横线 否则按相反顺序显示
       if (isRightward) {

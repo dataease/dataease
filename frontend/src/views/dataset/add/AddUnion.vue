@@ -6,7 +6,7 @@
   >
     <div
       :style="{ height: unionHeight + 'px' }"
-      class="unio-editer-container"
+      class="union-editer-container"
     >
       <!--添加第一个数据集按钮-->
       <div
@@ -229,14 +229,14 @@ export default {
     mousedownDrag() {
       document
         .querySelector('.dataset-union')
-        .addEventListener('mousemove', this.caculateHeight)
+        .addEventListener('mousemove', this.calculateHeight)
     },
     mouseupDrag() {
       document
         .querySelector('.dataset-union')
-        .removeEventListener('mousemove', this.caculateHeight)
+        .removeEventListener('mousemove', this.calculateHeight)
     },
-    caculateHeight(e) {
+    calculateHeight(e) {
       if (e.pageY - 56 < 298) {
         this.unionHeight = 298
         return
@@ -406,7 +406,7 @@ export default {
   flex-direction: column;
   width: 100%;
 
-  .unio-editer-container {
+  .union-editer-container {
     min-height: 298px;
     width: 100%;
     background: #f5f6f7;

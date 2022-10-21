@@ -176,7 +176,7 @@
       <el-row style="height: 20px">
         <el-col :span="4">
           <svg-icon
-            icon-class="warn-tre"
+            icon-class="warn-tree"
             style="width: 20px;height: 20px;float: right"
           />
         </el-col>

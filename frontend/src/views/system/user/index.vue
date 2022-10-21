@@ -1,5 +1,5 @@
 <template>
-  <de-layout-content class="de-serach-table">
+  <de-layout-content class="de-search-table">
     <el-row class="top-operate">
       <el-col :span="12">
         <deBtn
@@ -50,7 +50,7 @@
           >{{ $t('user.list') }}</deBtn>
           <el-dropdown-menu
             slot="dropdown"
-            class="list-colums-slect"
+            class="list-columns-select"
           >
             <p class="title">{{ $t('user.list_info') }}</p>
             <el-checkbox
@@ -726,7 +726,7 @@ export default {
     }
   }
 }
-.list-colums-slect {
+.list-columns-select {
   padding: 8px 11px !important;
   width: 238px;
 

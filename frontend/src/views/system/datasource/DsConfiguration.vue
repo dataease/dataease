@@ -1231,7 +1231,7 @@ export default {
     },
     previewData() {
       this.showEmpty = false
-      const datas = []
+      const data = []
       let maxPreviewNum = 0
       for (let j = 0; j < this.apiItem.fields.length; j++) {
         if (
@@ -1242,18 +1242,18 @@ export default {
         }
       }
       for (let i = 0; i < maxPreviewNum; i++) {
-        datas.push({})
+        data.push({})
       }
       for (let i = 0; i < this.apiItem.fields.length; i++) {
         for (let j = 0; j < this.apiItem.fields[i].value.length; j++) {
           this.$set(
-            datas[j],
+            data[j],
             this.apiItem.fields[i].name,
             this.apiItem.fields[i].value[j]
           )
         }
         this.$nextTick(() => {
-          this.$refs.plxTable?.reloadData(datas)
+          this.$refs.plxTable?.reloadData(data)
         })
       }
       this.showEmpty = this.apiItem.fields.length === 0

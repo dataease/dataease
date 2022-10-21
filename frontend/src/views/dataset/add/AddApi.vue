@@ -331,14 +331,14 @@ export default {
     mousedownDrag() {
       document
         .querySelector('.dataset-api')
-        .addEventListener('mousemove', this.caculateHeight)
+        .addEventListener('mousemove', this.calculateHeight)
     },
     mouseupDrag() {
       document
         .querySelector('.dataset-api')
-        .removeEventListener('mousemove', this.caculateHeight)
+        .removeEventListener('mousemove', this.calculateHeight)
     },
-    caculateHeight(e) {
+    calculateHeight(e) {
       if (e.pageX < 240) {
         this.LeftWidth = 240
         return

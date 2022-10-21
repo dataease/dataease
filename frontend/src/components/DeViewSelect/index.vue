@@ -171,7 +171,7 @@ export default {
     _popoverShowFun(val) {
       this.openDialog()
       this._updateH()
-      this.$emit('onFoucs')
+      this.$emit('onFocus')
     },
 
     _selectRemoveTag(viewId) {

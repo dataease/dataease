@@ -102,14 +102,14 @@ export default {
           .then((response) => {
             this.fields = response.data.fields
             this.data = response.data.data
-            const datas = this.data
+            const data = this.data
             if (response.data.status === 'warnning') {
               this.$warning(response.data.msg, 3000)
             }
             if (response.data.status === 'error') {
               this.$error(response.data.msg, 3000)
             }
-            this.$refs.plxTable.reloadData(datas)
+            this.$refs.plxTable.reloadData(data)
             this.dataLoading = false
           })
           .catch((res) => {

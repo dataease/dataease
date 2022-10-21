@@ -16,7 +16,7 @@
     <div class="pagination-cont">
       <el-pagination
         background
-        v-bind="paginationDefalut"
+        v-bind="paginationDefault"
         v-on="paginationEvent"
       />
     </div>
@@ -56,7 +56,7 @@ export default {
   data() {
     return {
       paginationEvent: {},
-      paginationDefalut: {
+      paginationDefault: {
         currentPage: 1,
         pageSizes: [10, 20, 50, 100],
         pageSize: 10,
@@ -75,8 +75,8 @@ export default {
   watch: {
     pagination: {
       handler() {
-        this.paginationDefalut = {
-          ...this.paginationDefalut,
+        this.paginationDefault = {
+          ...this.paginationDefault,
           ...this.pagination
         }
       },
@@ -122,15 +122,15 @@ export default {
         (ele) => ele[this.selectedFlags]
       )
       // 当前页的选中项索引
-      const notCurrenArr = []
+      const notCurrentArr = []
       this.tableData.forEach((ele) => {
         const resultIndex = flags.indexOf(ele[this.selectedFlags])
         if (resultIndex !== -1) {
           this.$refs.table.toggleRowSelection(ele, true)
-          notCurrenArr.push(resultIndex)
+          notCurrentArr.push(resultIndex)
         }
       })
-      notCurrenArr.sort().reduceRight((pre, next) => {
+      notCurrentArr.sort().reduceRight((pre, next) => {
         this.multipleSelectionCach.splice(next, 1)
       }, 0)
     },

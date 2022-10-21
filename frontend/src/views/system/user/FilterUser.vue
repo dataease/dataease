@@ -24,7 +24,7 @@
         <span>{{ $t("commons.organization") }}</span>
         <div class="filter-item">
           <span
-            v-for="ele in selectDeptsCahe"
+            v-for="ele in selectDeptsCache"
             :key="ele.id"
             class="item"
             :class="[activeDept.includes(ele.id) ? 'active' : '']"
@@ -139,8 +139,8 @@ import { getDeptTree, treeByDeptId } from '@/api/system/dept'
 export default {
   data() {
     return {
-      roleCahe: [],
-      deptCahe: [],
+      roleCache: [],
+      deptCache: [],
       roles: [],
       filterTextMap: [],
       status: [
@@ -158,7 +158,7 @@ export default {
       activeRole: [],
       depts: [],
       selectDepts: [],
-      selectDeptsCahe: [],
+      selectDeptsCache: [],
       activeDept: [],
       defaultProps: {
         children: 'children',
@@ -173,7 +173,7 @@ export default {
       return this.roles.filter((ele) => !this.activeRole.includes(ele.id))
     },
     rolesValueCopy() {
-      return this.roleCahe.filter((ele) => this.activeRole.includes(ele.id))
+      return this.roleCache.filter((ele) => this.activeRole.includes(ele.id))
     },
     deptsComputed() {
       return this.depts.filter((ele) => !this.activeDept.includes(ele.id))
@@ -209,10 +209,10 @@ export default {
     },
     changeRole() {
       if (
-        this.roleCahe.length >
+        this.roleCache.length >
         this.rolesValue.length + this.activeRole.length
       ) {
-        this.roleCahe = this.roleCahe.filter((ele) =>
+        this.roleCache = this.roleCache.filter((ele) =>
           this.rolesValue
             .map((ele) => ele.id)
             .concat(this.activeRole)
@@ -222,14 +222,14 @@ export default {
       }
       const roleIdx = this.rolesValue.findIndex(
         (ele) =>
-          !this.roleCahe
+          !this.roleCache
             .map((ele) => ele.id)
             .concat(this.activeRole)
             .includes(ele.id)
       )
       if (roleIdx === -1) return
       this.activeRole.push(this.rolesValue[roleIdx].id)
-      this.roleCahe.push(this.rolesValue[roleIdx])
+      this.roleCache.push(this.rolesValue[roleIdx])
       this.rolesValue.splice(roleIdx, 1)
     },
     activeRoleChange(id) {
@@ -239,7 +239,7 @@ export default {
         this.rolesValue = this.rolesValue.filter((ele) => ele.id !== id)
       } else {
         this.activeRole.splice(roleIndex, 1)
-        const role = this.roleCahe.find((ele) => ele.id === id)
+        const role = this.roleCache.find((ele) => ele.id === id)
         this.rolesValue.push(role)
       }
     },
@@ -247,21 +247,21 @@ export default {
       const deptIdx = this.selectDepts.findIndex((ele) => ele.id === id)
       if (deptIdx !== -1) {
         this.selectDepts.splice(deptIdx, 1)
-        this.selectDeptsCahe = this.selectDeptsCahe.filter(
+        this.selectDeptsCache = this.selectDeptsCache.filter(
           (ele) => ele.id !== id
         )
-        this.deptCahe = this.deptCahe.filter((ele) => ele.id !== id)
+        this.deptCache = this.deptCache.filter((ele) => ele.id !== id)
         return
       }
       this.activeDept.push(id)
-      this.selectDeptsCahe.push({ id, label })
-      this.deptCahe.push({ id, label })
+      this.selectDeptsCache.push({ id, label })
+      this.deptCache.push({ id, label })
     },
     activeDeptChange(id) {
-      const dept = this.deptCahe.find((ele) => ele.id === id)
+      const dept = this.deptCache.find((ele) => ele.id === id)
       this.selectDepts.push(dept)
       this.activeDept = this.activeDept.filter((ele) => ele !== id)
-      this.selectDeptsCahe = this.selectDeptsCahe.filter(
+      this.selectDeptsCache = this.selectDeptsCache.filter(
         (ele) => ele.id !== id
       )
     },
@@ -325,15 +325,15 @@ export default {
       }
       if (this.activeDept.length) {
         params.push(
-          `${this.$t('panel.org')}:${this.selectDeptsCahe
+          `${this.$t('panel.org')}:${this.selectDeptsCache
             .map((ele) => ele.label)
             .join('、')}`
         )
         this.filterTextMap.push([
           'activeDept',
           'selectDepts',
-          'selectDeptsCahe',
-          'deptCahe'
+          'selectDeptsCache',
+          'deptCache'
         ])
       }
       if (this.activeRole.length) {
@@ -342,7 +342,7 @@ export default {
             .map((ele) => ele.name)
             .join('、')}`
         )
-        this.filterTextMap.push(['rolesValue', 'activeRole', 'roleCahe'])
+        this.filterTextMap.push(['rolesValue', 'activeRole', 'roleCache'])
       }
       return params
     },

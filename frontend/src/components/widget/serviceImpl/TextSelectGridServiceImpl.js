@@ -14,7 +14,7 @@ const dialogPanel = {
       placeholder: 'detextgridselect.placeholder',
       viewIds: [],
       parameters: [],
-      datas: [],
+      data: [],
       key: 'id',
       label: 'text',
       value: 'id',
@@ -74,9 +74,9 @@ class TextSelectGridServiceImpl extends WidgetService {
     })
   }
 
-  optionDatas(datas) {
-    if (!datas) return null
-    return datas.filter(item => !!item).map(item => {
+  optionData(data) {
+    if (!data) return null
+    return data.filter(item => !!item).map(item => {
       return {
         id: item,
         text: item

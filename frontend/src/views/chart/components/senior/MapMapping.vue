@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%;display: block !important;">
     <el-table
-      :data="currentDatas"
+      :data="currentData"
       size="mini"
       :span-method="mergeCellMethod"
       style="width: 100%"
@@ -105,7 +105,7 @@ export default {
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      currentDatas: [],
+      currentData: [],
       usePage: true
     }
   },
@@ -194,7 +194,7 @@ export default {
       }
     },
     buildGridList() {
-      this.currentDatas = []
+      this.currentData = []
       if (!this.currentAreaCode || !this.mappingForm[this.currentAreaCode]) return
       this.gridList = Object.keys(this.mappingForm[this.currentAreaCode]).map(key => {
         return {
@@ -202,17 +202,17 @@ export default {
           attrArea: this.mappingForm[this.currentAreaCode][key] || key
         }
       })
-      const baseDatas = JSON.parse(JSON.stringify(this.gridList))
-      const tempDatas = baseDatas.filter(data => !this.keyWord || data.mapArea.toLowerCase().includes(this.keyWord.toLowerCase()) || (data.attrArea && data.attrArea.toLowerCase().includes(this.keyWord.toLowerCase())))
+      const baseData = JSON.parse(JSON.stringify(this.gridList))
+      const tempData = baseData.filter(data => !this.keyWord || data.mapArea.toLowerCase().includes(this.keyWord.toLowerCase()) || (data.attrArea && data.attrArea.toLowerCase().includes(this.keyWord.toLowerCase())))
       if (this.usePage) {
         const start = (this.currentPage - 1) * this.pageSize
         let end = this.currentPage * this.pageSize
-        if (end >= tempDatas.length) end = tempDatas.length
-        this.currentDatas = tempDatas.slice(start, end)
+        if (end >= tempData.length) end = tempData.length
+        this.currentData = tempData.slice(start, end)
       } else {
-        this.currentDatas = tempDatas
+        this.currentData = tempData
       }
-      this.total = tempDatas.length
+      this.total = tempData.length
     },
     initMapping() {
       const innerCallBack = (json, cCode) => {

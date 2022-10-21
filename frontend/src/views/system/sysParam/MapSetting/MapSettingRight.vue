@@ -23,7 +23,7 @@
                 v-model="formInline.pCode"
                 popper-append-to-body
                 popover-class="map-class-wrap"
-                :data="treeDatas"
+                :data="treeData"
                 :select-params="selectParams"
                 :tree-params="treeParams"
                 :filter-node-method="_filterFun"
@@ -158,7 +158,7 @@ export default {
       type: String,
       default: 'empty'
     },
-    treeDatas: {
+    treeData: {
       type: Array,
       default: () => []
     }
@@ -231,7 +231,7 @@ export default {
     }
   },
   watch: {
-    treeDatas: function(val) {
+    treeData: function(val) {
       this.treeParams.data = val
     }
   },

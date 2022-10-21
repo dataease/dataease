@@ -1,5 +1,5 @@
 <template>
-  <div class="ds-table de-serach-table">
+  <div class="ds-table de-search-table">
     <el-row class="top-operate">
       <el-col :span="10">
         <span class="table-name-top">{{ params.name }}</span>

@@ -1,5 +1,5 @@
 <template>
-  <div class="calcu-feild">
+  <div class="calcu-field">
     <el-form
       ref="form"
       :model="fieldForm"
@@ -747,7 +747,7 @@ export default {
 </style>
 
 <style lang="scss">
-.calcu-feild {
+.calcu-field {
   .calcu-cont {
     display: flex;
     justify-content: space-between;

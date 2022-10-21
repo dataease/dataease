@@ -74,12 +74,12 @@ export default {
   },
   methods: {
     editorInit: function(editor) {
-      require('brace/ext/language_tools') // language extension prerequsite...
+      require('brace/ext/language_tools')
       this.modes.forEach(mode => {
-        require('brace/mode/' + mode) // language
+        require('brace/mode/' + mode)
       })
       require('brace/theme/' + this.theme)
-      require('brace/snippets/javascript') // snippet
+      require('brace/snippets/javascript')
       if (this.readOnly) {
         editor.setReadOnly(true)
       }
