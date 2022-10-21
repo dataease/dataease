@@ -19,9 +19,6 @@ export default {
       mapurl: '/api/map/resourceFull/'
     }
   },
-  created() {
-
-  },
   mounted() {
     const chartDom = document.getElementById('maptest')
     this.myChart = this.$echarts.init(chartDom)
