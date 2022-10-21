@@ -16,6 +16,7 @@
             trigger="manual"
             :disabled="!isPopShow"
             :placement="popOpen.position"
+            popper-class="scroll_pop"
             @show="popShow"
             @hide="popHide"
           >
@@ -716,6 +717,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.scroll_pop {
+  padding: 0px !important;
+}
 
 .pop_position {
   width: 3%;

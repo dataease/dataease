@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div >
     <div class="nav_calss">
       <el-select 
         class="jump_sel"
@@ -61,8 +61,9 @@ export default {
       } else {
         style.backgroundColor = this.element.options.jumpBgColor
       }
-      // style.marginTop = (this.element.style.height - 40) + 'px'
-      style.lineHeight = this.element.style.height + 'px'
+      // console.log('options',this.element.options,style)
+      style.marginTop = (this.element.style.height - 36) + 'px'
+      // style.lineHeight = this.element.style.height + 'px'
       return style
     },
   },
@@ -86,6 +87,30 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.first-element {
+  position: relative;
+  display: table-cell;
+  vertical-align: middle;
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+}
+
+.first-element-contaner {
+    width: calc(100% - 10px);
+    background: initial;
+    position: absolute;
+    bottom: 0px; // 原值为5px
+    margin: 0 4px;
+
+    div {
+      width: 100%;
+    }
+
+    display: flex;
+    align-items: flex-end;
+  }
+
 .nav_calss{
   display:flex;
   height: 100%;

@@ -11,8 +11,8 @@
         <el-popover
           placement="bottom"
           trigger="hover"
-          class="float_pop"
           style="padding: 0px;"
+          popper-class="float_pop"
         > 
           <div class="nav_calss">
             <div v-for="(item,index) in navList" :key="index" class="nav_info" :style="boxStyle1">
@@ -437,14 +437,14 @@ export default {
   }
 }
 </script>
-<style >
+<style lang="less">
 .float_box {
   position: absolute;
   bottom: 0px;
   left: 50%;
 }
 
-/deep/ .float_pop .el-popover{
+.float_pop {
   padding: 0px;
 }
 
