@@ -110,8 +110,8 @@ export default {
       'componentData'
     ]),
     filters() {
-      const datas = this.componentData.filter(item => item.type === 'custom')
-      datas.forEach(item => {
+      const data = this.componentData.filter(item => item.type === 'custom')
+      data.forEach(item => {
         const serviceName = item.serviceName
         const widget = ApplicationContext.getService(serviceName)
         const showName = widget.initLeftPanel().label
@@ -125,7 +125,7 @@ export default {
 
         item.showName = result
       })
-      return datas
+      return data
     }
   },
   watch: {

@@ -121,8 +121,8 @@ export default {
   },
   watch: {
     data() {
-      const datas = this.data
-      this.$refs.plxTable.reloadData(datas)
+      const data = this.data
+      this.$refs.plxTable.reloadData(data)
     },
     page() {
       if (this.page.total < parseInt(this.form.row)) {

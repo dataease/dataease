@@ -535,7 +535,7 @@ export default {
     },
     _popoverShowFun(val) {
       this._updateH()
-      this.$emit('onFoucs')
+      this.$emit('onFocus')
     },
     _popoverHideFun(e) {
       const path = this._getEventPath(e)

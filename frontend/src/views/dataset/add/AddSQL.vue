@@ -95,7 +95,7 @@
         </el-col>
       </el-row>
     </div>
-    <div class="refrence-sql-table">
+    <div class="reference-sql-table">
       <div
         v-if="dataReference"
         class="data-reference"
@@ -608,14 +608,14 @@ export default {
     mousedownDrag() {
       document
         .querySelector('.dataset-sql')
-        .addEventListener('mousemove', this.caculateHeight)
+        .addEventListener('mousemove', this.calculateHeight)
     },
     mouseupDrag() {
       document
         .querySelector('.dataset-sql')
-        .removeEventListener('mousemove', this.caculateHeight)
+        .removeEventListener('mousemove', this.calculateHeight)
     },
-    caculateHeight(e) {
+    calculateHeight(e) {
       if (e.pageY - 120 < 248) {
         this.sqlHeight = 248
         return
@@ -896,7 +896,7 @@ export default {
     padding: 16px 24px;
   }
 
-  .refrence-sql-table {
+  .reference-sql-table {
     flex: 1;
     display: flex;
     flex-direction: row-reverse;

@@ -51,12 +51,12 @@ export default {
           ]
         })
         this.queryAreaCodes(pcode).then(res => {
-          const areaEntitys = res.data
+          const areaEntities = res.data
 
           this.myChart.on('click', param => {
             const name = param.name
-            for (let index = 0; index < areaEntitys.length; index++) {
-              const element = areaEntitys[index]
+            for (let index = 0; index < areaEntities.length; index++) {
+              const element = areaEntities[index]
               if (element.name === name) {
                 this.initMap(element.code)
               }

@@ -30,9 +30,9 @@
         <div class="condition-content-container">
           <div class="first-element">
             <div
-              :class="element.component === 'de-select-grid' ? 'first-element-grid-contaner': ''"
+              :class="element.component === 'de-select-grid' ? 'first-element-grid-container': ''"
               :style="deSelectGridBg"
-              class="first-element-contaner"
+              class="first-element-container"
             >
 
               <component
@@ -241,7 +241,7 @@ export default {
     padding: 0px;
     height: 100%;
   }
-  .first-element-contaner {
+  .first-element-container {
     width: calc(100% - 10px);
     background: initial;
     margin: 0 4px;
@@ -251,7 +251,7 @@ export default {
     display: flex;
     align-items: flex-end;
   }
-  .first-element-grid-contaner {
+  .first-element-grid-container {
     background: #fff;
     border: 1px solid #d7dae2;
     top: 5px;

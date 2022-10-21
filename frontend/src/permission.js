@@ -126,11 +126,11 @@ router.beforeEach(async(to, from, next) => routeBefore(() => {
 }))
 export const loadMenus = (next, to) => {
   buildMenus().then(res => {
-    const datas = res.data
-    const filterDatas = filterRouter(datas)
-    const asyncRouter = filterAsyncRouter(filterDatas)
+    const data = res.data
+    const filterData = filterRouter(data)
+    const asyncRouter = filterAsyncRouter(filterData)
     // 如果包含首页 则默认页面是 首页 否则默认页面是仪表板页面
-    if (JSON.stringify(datas).indexOf('wizard') > -1) {
+    if (JSON.stringify(data).indexOf('wizard') > -1) {
       asyncRouter.push({
         path: '/',
         component: Layout,
@@ -234,8 +234,8 @@ const hasPermission = (router, user_permissions) => {
   }
   // 如果有字菜单 则 判断是否满足 ‘任意一个子菜单有权限’
   if (router.children && router.children.length) {
-    const permissionChilds = router.children.filter(item => hasPermission(item, user_permissions))
-    router.children = permissionChilds
+    const permissionChildren = router.children.filter(item => hasPermission(item, user_permissions))
+    router.children = permissionChildren
     return router.children.length > 0
   }
   return true

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <operater title="system_parameter_setting.basic_setting">
+    <operator title="system_parameter_setting.basic_setting">
       <deBtn
         v-if="showEdit"
         type="primary"
@@ -24,7 +24,7 @@
       >
         {{ $t("commons.save") }}
       </deBtn>
-    </operater>
+    </operator>
 
     <!--基础配置表单-->
     <el-form
@@ -189,13 +189,13 @@
 import { basicInfo, updateInfo } from '@/api/system/basic'
 import { ldapStatus, oidcStatus, casStatus } from '@/api/user'
 import bus from '@/utils/bus'
-import operater from './Operater'
+import operator from './Operator'
 import msgCfm from '@/components/msgCfm'
 import PluginCom from '@/views/system/plugin/PluginCom'
 export default {
   name: 'EmailSetting',
   components: {
-    operater,
+    operator,
     PluginCom
   },
   mixins: [msgCfm],

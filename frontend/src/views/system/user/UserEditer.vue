@@ -363,7 +363,7 @@ export default {
       },
       depts: [],
       roles: [],
-      roleDatas: [],
+      roleData: [],
       userRoles: [],
       formType: 'add',
       isPluginLoaded: false,

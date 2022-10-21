@@ -402,7 +402,7 @@ export default {
     }
   },
   created() {
-    this.queryTreeDatas()
+    this.queryTreeData()
     this.datasourceTypes()
   },
   methods: {
@@ -451,7 +451,7 @@ export default {
         return false
       })
     },
-    queryTreeDatas() {
+    queryTreeData() {
       this.treeLoading = true
       if (this.showView === 'Datasource') {
         listDatasource().then((res) => {
@@ -559,14 +559,14 @@ export default {
       this.showView = 'Driver'
       this.expandedArray = []
       this.tData = []
-      this.queryTreeDatas()
+      this.queryTreeData()
     },
     dsMgm() {
       this.$emit('switch-main', {})
       this.showView = 'Datasource'
       this.expandedArray = []
       this.tData = []
-      this.queryTreeDatas()
+      this.queryTreeData()
     },
     addDb({ type }) {
       const name = (this.dsTypes.find(ele => type === ele.type) || {}).name

@@ -12,7 +12,7 @@
         <span>{{ $t("dataset.datalist") }}</span>
         <div class="filter-item">
           <span
-            v-for="ele in selectDatasetsCahe"
+            v-for="ele in selectDatasetsCache"
             :key="ele.id"
             class="item"
             :class="[activeDataset.includes(ele.id) ? 'active' : '']"
@@ -157,9 +157,9 @@ export default {
       treeLoading: false,
       dataRange: [],
       selectDatasets: [],
-      datasetCahe: [],
+      datasetCache: [],
       activeDataset: [],
-      selectDatasetsCahe: [],
+      selectDatasetsCache: [],
       treeData: [],
       filterDataset,
       active: {
@@ -212,8 +212,8 @@ export default {
       this.dataRange = []
       this.activeDataset = []
       this.selectDatasets = []
-      this.datasetCahe = []
-      this.selectDatasetsCahe = []
+      this.datasetCache = []
+      this.selectDatasetsCache = []
       this.$refs.datasetTreeRef.filter()
       this.$emit('search', [], [])
     },
@@ -245,18 +245,18 @@ export default {
         this.selectDatasets.splice(datasetIdx, 1)
       }
       this.activeDataset.push(id)
-      this.selectDatasetsCahe.push({ id, name })
-      this.datasetCahe.push({ id, name })
+      this.selectDatasetsCache.push({ id, name })
+      this.datasetCache.push({ id, name })
       this.$refs.datasetTreeRef.filter(id)
     },
     activeDatasetChange(id) {
-      const dataset = this.datasetCahe.find((ele) => ele.id === id)
+      const dataset = this.datasetCache.find((ele) => ele.id === id)
       this.selectDatasets.push(dataset)
       this.activeDataset = this.activeDataset.filter((ele) => ele !== id)
-      this.datasetCahe = this.datasetCahe.filter(
+      this.datasetCache = this.datasetCache.filter(
         (ele) => ele.id !== id
       )
-      this.selectDatasetsCahe = this.selectDatasetsCahe.filter(
+      this.selectDatasetsCache = this.selectDatasetsCache.filter(
         (ele) => ele.id !== id
       )
       this.$refs.datasetTreeRef.filter(true)
@@ -271,7 +271,7 @@ export default {
       if (this.activeDataset.length) {
         const str = `${this.$t('dataset.datalist')}:${this.activeDataset.reduce(
           (pre, next) =>
-            (this.datasetCahe.find((ele) => ele.id === next) || {}).name +
+            (this.datasetCache.find((ele) => ele.id === next) || {}).name +
             '、' +
             pre,
           ''
@@ -280,8 +280,8 @@ export default {
         this.filterTextMap.push([
           'activeDataset',
           'selectDatasets',
-          'selectDatasetsCahe',
-          'datasetCahe'
+          'selectDatasetsCache',
+          'datasetCache'
         ])
       }
       [

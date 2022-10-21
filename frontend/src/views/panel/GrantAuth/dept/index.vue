@@ -80,7 +80,7 @@ export default {
   },
   watch: {
     keyWord(v, o) {
-      this.destryTimeMachine()
+      this.destroyTimeMachine()
       this.changeIndex++
       this.searchWithKey(this.changeIndex)
     }
@@ -101,10 +101,10 @@ export default {
           }
           this.search(condition)
         }
-        this.destryTimeMachine()
+        this.destroyTimeMachine()
       }, 1500)
     },
-    destryTimeMachine() {
+    destroyTimeMachine() {
       this.timeMachine && clearTimeout(this.timeMachine)
       this.timeMachine = null
     },

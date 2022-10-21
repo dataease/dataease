@@ -154,7 +154,7 @@ export default {
       default: true
     },
     suggestions: Array,
-    withMorSetting: Boolean
+    withMoreSetting: Boolean
   },
   data() {
     return {

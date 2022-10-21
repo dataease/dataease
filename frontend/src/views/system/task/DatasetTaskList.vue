@@ -1,5 +1,5 @@
 <template>
-  <div class="dataset-on-time de-serach-table">
+  <div class="dataset-on-time de-search-table">
     <el-row class="top-operate">
       <el-col :span="10">
         <deBtn
@@ -48,7 +48,7 @@
           >{{ $t("user.list") }}</deBtn>
           <el-dropdown-menu
             slot="dropdown"
-            class="list-colums-slect"
+            class="list-columns-select"
           >
             <p class="title">{{ $t("user.list_info") }}</p>
             <el-checkbox
@@ -728,7 +728,7 @@ export default {
 }
 </style>
 <style lang="scss">
-.list-colums-slect {
+.list-columns-select {
   padding: 8px 11px !important;
   width: 238px;
 

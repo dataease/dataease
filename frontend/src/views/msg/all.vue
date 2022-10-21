@@ -22,7 +22,7 @@
         />
       </el-tabs>
       <div class="tabs-container">
-        <div class="msg-cont de-serach-table">
+        <div class="msg-cont de-search-table">
           <el-row class="top-operate">
             <el-col :span="12">
               <template v-if="tabActive === 'unread'">
