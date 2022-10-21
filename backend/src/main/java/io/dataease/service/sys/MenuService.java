@@ -113,9 +113,9 @@ public class MenuService {
         return sysMenuMapper.updateByPrimaryKeySelective(sysMenu);
     }
 
-    public List<MenuNodeResponse> childs(Long pid) {
-        Set<SysMenu> childs = getChilds(nodesByPid(pid), new HashSet());
-        List<SysMenu> menus = new ArrayList<>(childs);
+    public List<MenuNodeResponse> children(Long pid) {
+        Set<SysMenu> children = getChildren(nodesByPid(pid), new HashSet());
+        List<SysMenu> menus = new ArrayList<>(children);
         return convert(menus);
     }
 
@@ -138,12 +138,12 @@ public class MenuService {
         return roots.stream().map(node -> node.getMenuId().equals(targetRootNode.getId()) ? targetRootNode : format(node)).collect(Collectors.toList());
     }
 
-    private Set<SysMenu> getChilds(List<SysMenu> lists, Set<SysMenu> sets) {
+    private Set<SysMenu> getChildren(List<SysMenu> lists, Set<SysMenu> sets) {
         lists.forEach(menu -> {
             sets.add(menu);
             List<SysMenu> kidMenus = nodesByPid(menu.getMenuId());
             if (CollectionUtils.isNotEmpty(kidMenus)) {
-                getChilds(kidMenus, sets);
+                getChildren(kidMenus, sets);
             }
         });
         return sets;

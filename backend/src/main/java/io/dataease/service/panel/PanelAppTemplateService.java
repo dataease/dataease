@@ -120,18 +120,18 @@ public class PanelAppTemplateService {
 
     @Transactional(rollbackFor = Exception.class)
     public Map<String, String> applyDatasource(List<Datasource> oldDatasourceList, List<Datasource> newDatasourceList) throws Exception {
-        Map<String, String> datasourceRelaMap = new HashMap<>();
+        Map<String, String> datasourceRealMap = new HashMap<>();
         for (int i = 0; i < newDatasourceList.size(); i++) {
             Datasource datasource = newDatasourceList.get(0);
             datasource.setId(null);
             Datasource newDatasource = datasourceService.addDatasource(datasource);
-            datasourceRelaMap.put(oldDatasourceList.get(i).getId(), newDatasource.getId());
+            datasourceRealMap.put(oldDatasourceList.get(i).getId(), newDatasource.getId());
         }
-        return datasourceRelaMap;
+        return datasourceRealMap;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void applyPanelView(List<PanelView> panelViewsInfo, Map<String, String> chartViewsRelaMap, String panelId) {
+    public void applyPanelView(List<PanelView> panelViewsInfo, Map<String, String> chartViewsRealMap, String panelId) {
         Long time = System.currentTimeMillis();
         String userName = AuthUtils.getUser().getUsername();
         panelViewsInfo.forEach(panelView -> {
@@ -139,13 +139,13 @@ public class PanelAppTemplateService {
             panelView.setPanelId(panelId);
             panelView.setCreateTime(time);
             panelView.setCreateBy(userName);
-            panelView.setChartViewId(chartViewsRelaMap.get(panelView.getChartViewId()));
+            panelView.setChartViewId(chartViewsRealMap.get(panelView.getChartViewId()));
             panelViewService.save(panelView);
         });
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String applyPanel(PanelGroupRequest panelInfo, Map<String, String> chartViewsRelaMap, String newPanelId, String panelName, String pid) {
+    public String applyPanel(PanelGroupRequest panelInfo, Map<String, String> chartViewsRealMap, String newPanelId, String panelName, String pid) {
         panelInfo.setId(newPanelId);
         panelInfo.setPid(pid);
         panelInfo.setName(panelName);
@@ -153,48 +153,48 @@ public class PanelAppTemplateService {
         panelInfo.setPanelType("self");
         panelInfo.setCreateBy(AuthUtils.getUser().getUsername());
         panelInfo.setCreateTime(System.currentTimeMillis());
-        panelGroupService.newPanelFromApp(panelInfo, chartViewsRelaMap);
+        panelGroupService.newPanelFromApp(panelInfo, chartViewsRealMap);
         return newPanelId;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> applyDataset(List<DatasetTable> datasetTablesInfo, Map<String, String> datasourceRelaMap, String sceneId) throws Exception {
-        Map<String, String> datasetsRelaMap = new HashMap<>();
+    public Map<String, String> applyDataset(List<DatasetTable> datasetTablesInfo, Map<String, String> datasourceRealMap, String sceneId) throws Exception {
+        Map<String, String> datasetsRealMap = new HashMap<>();
         for (DatasetTable datasetTable : datasetTablesInfo) {
             String oldId = datasetTable.getId();
             datasetTable.setId(null);
             datasetTable.setSceneId(sceneId);
-            datasetTable.setDataSourceId(datasourceRelaMap.get(datasetTable.getDataSourceId()));
+            datasetTable.setDataSourceId(datasourceRealMap.get(datasetTable.getDataSourceId()));
             DataSetTableRequest datasetRequest = new DataSetTableRequest();
             BeanUtils.copyBean(datasetRequest, datasetTable);
             datasetRequest.setOptFrom("appApply");
             datasetRequest.setSyncType("sync_now");
             DatasetTable newDataset = dataSetTableService.save(datasetRequest);
-            datasetsRelaMap.put(oldId, newDataset.getId());
+            datasetsRealMap.put(oldId, newDataset.getId());
         }
-        return datasetsRelaMap;
+        return datasetsRealMap;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> applyDatasetField(List<DatasetTableField> datasetTableFieldsInfo, Map<String, String> datasetsRelaMap) {
-        Map<String, String> datasetFieldsRelaMap = new HashMap<>();
+    public Map<String, String> applyDatasetField(List<DatasetTableField> datasetTableFieldsInfo, Map<String, String> datasetsRealMap) {
+        Map<String, String> datasetFieldsRealMap = new HashMap<>();
         for (DatasetTableField datasetTableField : datasetTableFieldsInfo) {
             String oldId = datasetTableField.getId();
-            datasetTableField.setTableId(datasetsRelaMap.get(datasetTableField.getTableId()));
+            datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
             DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
-            datasetFieldsRelaMap.put(oldId, newTableField.getId());
+            datasetFieldsRealMap.put(oldId, newTableField.getId());
         }
-        return datasetFieldsRelaMap;
+        return datasetFieldsRealMap;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void resetCustomAndUnionDataset(List<DatasetTable> datasetTablesInfo, Map<String, String> datasetRelaMap, Map<String, String> datasetFieldsRelaMap) throws Exception {
+    public void resetCustomAndUnionDataset(List<DatasetTable> datasetTablesInfo, Map<String, String> datasetRealMap, Map<String, String> datasetFieldsRealMap) throws Exception {
         for (DatasetTable datasetTable : datasetTablesInfo) {
             if ((DatasetType.CUSTOM.name().equalsIgnoreCase(datasetTable.getType()) || DatasetType.UNION.name().equalsIgnoreCase(datasetTable.getType()))) {
-                datasetRelaMap.forEach((k, v) -> {
+                datasetRealMap.forEach((k, v) -> {
                     datasetTable.setInfo(datasetTable.getInfo().replaceAll(k, v));
                 });
-                datasetFieldsRelaMap.forEach((k, v) -> {
+                datasetFieldsRealMap.forEach((k, v) -> {
                     datasetTable.setInfo(datasetTable.getInfo().replaceAll(k, v));
                 });
                 if (1 == datasetTable.getMode()) {
@@ -209,13 +209,13 @@ public class PanelAppTemplateService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> applyViews(List<ChartViewWithBLOBs> chartViewsInfo, Map<String, String> datasetsRelaMap, Map<String, String> datasetFieldsRelaMap, String sceneId) throws Exception {
-        Map<String, String> chartViewsRelaMap = new HashMap<>();
+    public Map<String, String> applyViews(List<ChartViewWithBLOBs> chartViewsInfo, Map<String, String> datasetsRealMap, Map<String, String> datasetFieldsRealMap, String sceneId) throws Exception {
+        Map<String, String> chartViewsRealMap = new HashMap<>();
         for (ChartViewWithBLOBs chartView : chartViewsInfo) {
             String oldViewId = chartView.getId();
             // 替换datasetId
-            chartView.setTableId(datasetsRelaMap.get(chartView.getTableId()));
-            datasetsRelaMap.forEach((k, v) -> {
+            chartView.setTableId(datasetsRealMap.get(chartView.getTableId()));
+            datasetsRealMap.forEach((k, v) -> {
                 chartView.setXAxis(chartView.getXAxis().replaceAll(k, v));
                 chartView.setXAxisExt(chartView.getXAxisExt().replaceAll(k, v));
                 chartView.setYAxis(chartView.getYAxis().replaceAll(k, v));
@@ -228,7 +228,7 @@ public class PanelAppTemplateService {
                 chartView.setDrillFields(chartView.getDrillFields().replaceAll(k, v));
             });
             //替换datasetFieldId
-            datasetFieldsRelaMap.forEach((k, v) -> {
+            datasetFieldsRealMap.forEach((k, v) -> {
                 chartView.setXAxis(chartView.getXAxis().replaceAll(k, v));
                 chartView.setXAxisExt(chartView.getXAxisExt().replaceAll(k, v));
                 chartView.setYAxis(chartView.getYAxis().replaceAll(k, v));
@@ -243,31 +243,31 @@ public class PanelAppTemplateService {
             chartView.setId(null);
             chartView.setSceneId(sceneId);
             ChartViewWithBLOBs newOne = chartViewService.newOne(chartView);
-            chartViewsRelaMap.put(oldViewId, newOne.getId());
+            chartViewsRealMap.put(oldViewId, newOne.getId());
         }
-        return chartViewsRelaMap;
+        return chartViewsRealMap;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> applyViewsField(List<ChartViewField> chartViewFieldsInfo, Map<String, String> chartViewsRelaMap, Map<String, String> datasetsRelaMap, Map<String, String> datasetFieldsRelaMap) {
-        Map<String, String> chartViewFieldsRelaMap = new HashMap<>();
+    public Map<String, String> applyViewsField(List<ChartViewField> chartViewFieldsInfo, Map<String, String> chartViewsRealMap, Map<String, String> datasetsRealMap, Map<String, String> datasetFieldsRealMap) {
+        Map<String, String> chartViewFieldsRealMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(chartViewFieldsInfo)) {
             for (ChartViewField chartViewField : chartViewFieldsInfo) {
                 String oldChartFieldId = chartViewField.getId();
                 chartViewField.setId(null);
                 //替换datasetId
-                chartViewField.setTableId(datasetsRelaMap.get(chartViewField.getTableId()));
+                chartViewField.setTableId(datasetsRealMap.get(chartViewField.getTableId()));
                 //替换chartViewId
-                chartViewField.setChartId(chartViewsRelaMap.get(chartViewField.getId()));
+                chartViewField.setChartId(chartViewsRealMap.get(chartViewField.getId()));
                 //替换datasetFieldId
-                datasetFieldsRelaMap.forEach((k, v) -> {
+                datasetFieldsRealMap.forEach((k, v) -> {
                     chartViewField.setOriginName(chartViewField.getOriginName().replaceAll(k, v));
                 });
                 ChartViewField newChartViewField = chartViewFieldService.save(chartViewField);
-                chartViewFieldsRelaMap.put(oldChartFieldId, newChartViewField.getId());
+                chartViewFieldsRealMap.put(oldChartFieldId, newChartViewField.getId());
             }
         }
-        return chartViewFieldsRelaMap;
+        return chartViewFieldsRealMap;
     }
 
     public void nameCheck(PanelAppTemplateApplyRequest request) {

@@ -114,7 +114,7 @@ public class ViewExportExcel {
             return filterInvalidDecimal(val.toString());
         }).collect(Collectors.toList())).collect(Collectors.toList());
         result.setHeads(heads);
-        result.setDatas(details);
+        result.setData(details);
 
         result.setSheetName(title);
         return result;

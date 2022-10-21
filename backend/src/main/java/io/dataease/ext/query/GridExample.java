@@ -132,7 +132,7 @@ public class GridExample {
 
 
 
-        public Criteria addCondtion(ConditionEntity conditionEntity){
+        public Criteria addCondition(ConditionEntity conditionEntity){
             String field = conditionEntity.getField();
             Object value = conditionEntity.getValue();
             String operator = conditionEntity.getOperator();

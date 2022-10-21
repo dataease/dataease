@@ -28,7 +28,7 @@ public class ExcelUtils {
 
         sheets.forEach(sheet -> {
 
-            List<List<String>> details = sheet.getDatas();
+            List<List<String>> details = sheet.getData();
             details.add(0, sheet.getHeads());
             String sheetName = sheet.getSheetName();
             HSSFSheet curSheet = wb.createSheet(sheetName);

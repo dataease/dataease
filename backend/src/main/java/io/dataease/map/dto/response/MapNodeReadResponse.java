@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class MapNodeReadReponse implements Serializable {
+public class MapNodeReadResponse implements Serializable {
 
     @ApiModelProperty("区域代码")
     private String code;
@@ -15,7 +15,7 @@ public class MapNodeReadReponse implements Serializable {
     @ApiModelProperty("区域级别")
     private Integer level;
     @ApiModelProperty("上级区域")
-    private MapNodeReadReponse parent;
+    private MapNodeReadResponse parent;
     @ApiModelProperty("geoGson")
     private String json;
 }

@@ -351,16 +351,16 @@ public class ShareService {
         param.put("deptId", deptId);
         param.put("roleIds", CollectionUtils.isNotEmpty(roleIds)? roleIds: null);
 
-        List<PanelSharePo> datas = extPanelShareMapper.query(param);
-        List<PanelShareDto> dtoLists = datas.stream().map(po -> BeanUtils.copyBean(new PanelShareDto(), po))
+        List<PanelSharePo> data = extPanelShareMapper.query(param);
+        List<PanelShareDto> dtoLists = data.stream().map(po -> BeanUtils.copyBean(new PanelShareDto(), po))
                 .collect(Collectors.toList());
         return convertTree(dtoLists);
     }
 
     // List构建Tree
-    private List<PanelShareDto> convertTree(List<PanelShareDto> datas) {
+    private List<PanelShareDto> convertTree(List<PanelShareDto> data) {
         String username = AuthUtils.getUser().getUsername();
-        Map<String, List<PanelShareDto>> map = datas.stream()
+        Map<String, List<PanelShareDto>> map = data.stream()
                 .filter(panelShareDto -> StringUtils.isNotEmpty(panelShareDto.getCreator())
                         && !StringUtils.equals(username, panelShareDto.getCreator()))
                 .collect(Collectors.groupingBy(PanelShareDto::getCreator));
