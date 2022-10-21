@@ -52,14 +52,14 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
             global: false // 缺省为 false
           },
           barBorderWidth: customAttr.size.barBorderValue,
-          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
           barBorderRadius: barBorderRadiusArr
         }
       } else {
         y.itemStyle = {
           color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
           barBorderWidth: customAttr.size.barBorderValue,
-          barBorderColor: hexColorToRGBA(customAttr.color.borderColor, customAttr.color.alpha),
+          barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
           barBorderRadius: barBorderRadiusArr
         }
       }

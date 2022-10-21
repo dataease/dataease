@@ -97,7 +97,46 @@
             </el-popover>
           </el-form-item>
           <el-form-item v-show="chart.type ==='bar'" :label="'边框颜色'" class="form-item">
-            <el-color-picker v-model="colorForm.borderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
+            <!-- <el-color-picker v-model="colorForm.borderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" /> -->
+            <el-popover
+              placement="bottom"
+              width="400"
+              trigger="click"
+            >
+              <div style="padding: 6px 10px;">
+                <div>
+                  <span class="color-label">{{ $t('chart.system_case') }}</span>
+                  <el-select v-model="colorForm.borVal" :placeholder="$t('chart.pls_slc_color_case')" size="mini" @change="changeBorderOption">
+                    <el-option v-for="option in colorCases" :key="option.value" :label="option.name" :value="option.value" style="display: flex;align-items: center;">
+                      <div style="float: left">
+                        <span v-for="(c,index) in option.colors" :key="index" :style="{width: '20px',height: '20px',float: 'left',backgroundColor: c,border: '1px solid #eeeeee'}" />
+                      </div>
+                      <span style="margin-left: 4px;">{{ option.name }}</span>
+                    </el-option>
+                  </el-select>
+                  <el-button size="mini" type="text" style="margin-left: 2px;" @click="resetCustomBorder">{{ $t('commons.reset') }}</el-button>
+                </div>
+                <div style="display: flex;align-items: center;margin-top: 10px;">
+                  <span class="color-label">{{ $t('chart.custom_case') }}</span>
+                  <span>
+                    <el-radio-group v-model="customBorColor" class="color-type">
+                      <el-radio v-for="(c,index) in colorForm.borderColors" :key="index" :label="c" style="padding: 2px;" @change="switchBorder(index)">
+                        <span :style="{width: '20px',height: '20px',display:'inline-block',backgroundColor: c,border: '1px solid #eeeeee'}" />
+                      </el-radio>
+                    </el-radio-group>
+                  </span>
+                </div>
+                <div style="display: flex;align-items: center;margin-top: 10px;">
+                  <span class="color-label" />
+                  <span>
+                    <el-color-picker v-model="customBorColor" class="color-picker-style" :predefine="predefineColors" @change="switchBorderCase" />
+                  </span>
+                </div>
+              </div>
+              <div slot="reference" style="cursor:  pointer;margin-top: 2px;width: 180px;">
+                <span v-for="(v,index) in colorForm.borderColors" :key="index" :style="{width: '20px',height:  '20px',display:'inline-block',backgroundColor: v,border: '1px solid #eeeeee'}"></span>
+              </div>
+            </el-popover>
           </el-form-item>
           <el-form-item v-show="chart.type ==='bar-annular'" :label="'柱状背景色'" class="form-item">
             <el-color-picker v-model="colorForm.bgColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
@@ -272,8 +311,10 @@ export default {
       colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE)),
       customColor: null,
       custom1Color: null,
+      customBorColor:  null,
       colorIndex: 0,
       color1Index: 0,
+      borIndex: 0,
       predefineColors: COLOR_PANEL
     }
   },
@@ -282,8 +323,10 @@ export default {
       handler: function() {
         this.customColor = null
         this.custom1Color = null
+        this.customBorColor = null
         this.colorIndex = 0
         this.color1Index = 0
+        this.borIndex = 0
       }
     },
     'chart': {
@@ -328,6 +371,18 @@ export default {
 
       this.changeColorCase()
     },
+    changeBorderOption() {
+      const that = this
+      const items = this.colorCases.filter(ele => {
+        return ele.value === that.colorForm.borVal
+      })
+      this.colorForm.borderColors = JSON.parse(JSON.stringify(items[0].colors))
+
+      this.customBorColor = this.colorForm.borderColors[0]
+      this.borIndex = 0
+
+      this.changeColorCase()
+    },
     changeColorCase() {
       this.$emit('onColorChange', this.colorForm)
     },
@@ -347,13 +402,20 @@ export default {
           if (!this.colorForm.colors1) {
             this.colorForm.colors1 = this.colorForm.colors
           }
+          if (!this.colorForm.borderColors) {
+            this.colorForm.borderColors = this.colorForm.colors
+          }
           if (!this.customColor) {
             this.customColor = this.colorForm.colors[0]
             this.colorIndex = 0
           }
           if (!this.custom1Color) {
-            this.custom1Color = this.colorForm.colors1[0]
+            this.custom1Color = this.colorForm.borderColors[0]
             this.color1Index = 0
+          }
+          if (!this.customBorColor) {
+            this.customBorColor = this.colorForm.borderColors[0]
+            this.borIndex = 0
           }
 
           this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
@@ -377,12 +439,22 @@ export default {
       this.colorForm.colors1[this.color1Index] = this.custom1Color
       this.$emit('onColorChange', this.colorForm)
     },
+    switchBorder(index) {
+      this.borIndex = index
+    },
+    switchBorderCase() {
+      this.colorForm.borderColors[this.borIndex] = this.customBorColor
+      this.$emit('onColorChange', this.colorForm)
+    },
 
     resetCustomColor() {
       this.changeColorOption()
     },
     resetCustomColor1() {
       this.changeColor1Option()
+    },
+    resetCustomBorder() {
+      this.changeBorderOption()
     }
   }
 }
