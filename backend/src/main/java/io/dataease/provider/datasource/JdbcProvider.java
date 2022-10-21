@@ -278,8 +278,8 @@ public class JdbcProvider extends DefaultJdbcProvider {
                             row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
                         } else {
                             if (charset != null && StringUtils.isNotEmpty(rs.getString(j + 1))) {
-                                String orginStr = new String(rs.getString(j + 1).getBytes(charset), targetCharset);
-                                row[j] = new String(orginStr.getBytes("UTF-8"), "UTF-8");
+                                String originStr = new String(rs.getString(j + 1).getBytes(charset), targetCharset);
+                                row[j] = new String(originStr.getBytes("UTF-8"), "UTF-8");
                             } else {
                                 row[j] = rs.getString(j + 1);
                             }

@@ -75,7 +75,7 @@ public class MsgController {
     @PostMapping("/setReaded/{msgId}")
     @ApiImplicitParam(paramType = "path", name = "msgId", value = "消息ID", required = true, dataType = "Long")
     public void setReaded(@PathVariable Long msgId) {
-        sysMsgService.setReaded(msgId);
+        sysMsgService.setRead(msgId);
     }
 
 
@@ -83,7 +83,7 @@ public class MsgController {
     @PostMapping("/batchRead")
     @ApiImplicitParam(name = "msgIds", value = "消息ID集合", required = true, dataType = "List")
     public void batchRead(@RequestBody List<Long> msgIds) {
-        sysMsgService.setBatchReaded(msgIds);
+        sysMsgService.setBatchRead(msgIds);
     }
 
     @ApiOperation("全部设置已读")

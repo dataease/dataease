@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @Service("emailTaskHandler")
 public class EmailTaskHandler extends TaskHandler implements Job {
 
-    private static final Integer RUNING = 0;
+    private static final Integer RUNNING = 0;
     private static final Integer SUCCESS = 1;
     private static final Integer ERROR = -1;
 
@@ -124,7 +124,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
     private GlobalTaskInstance buildInstance(GlobalTaskEntity taskEntity) {
         GlobalTaskInstance taskInstance = new GlobalTaskInstance();
         taskInstance.setTaskId(taskEntity.getTaskId());
-        taskInstance.setStatus(RUNING);
+        taskInstance.setStatus(RUNNING);
         taskInstance.setExecuteTime(System.currentTimeMillis());
         return taskInstance;
     }
