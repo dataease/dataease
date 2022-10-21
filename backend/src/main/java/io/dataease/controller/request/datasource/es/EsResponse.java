@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class EsReponse {
+public class EsResponse {
     private List<Column> columns = new ArrayList<>();
     private List<String[]> rows = new ArrayList<>();
     private String cursor;
