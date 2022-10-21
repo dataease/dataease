@@ -27,7 +27,7 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
     delete yAxis.maxLimit
   }
   // data
-  const data = chart.data.datas
+  const data = chart.data.data
   // total
   const total = {
     label: '合计',
