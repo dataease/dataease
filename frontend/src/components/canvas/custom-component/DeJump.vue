@@ -61,8 +61,8 @@ export default {
       } else {
         style.backgroundColor = this.element.options.jumpBgColor
       }
-      style.marginTop = (this.element.style.height - 40) + 'px'
-      // style.lineHeight = this.element.style.height + 'px'
+      // style.marginTop = (this.element.style.height - 40) + 'px'
+      style.lineHeight = this.element.style.height + 'px'
       return style
     },
   },
