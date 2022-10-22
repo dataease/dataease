@@ -670,7 +670,8 @@ public class ChartViewService {
                 }
                 boolean hasParameters = false;
                 if (StringUtils.isNotEmpty(table.getSqlVariableDetails())) {
-                    List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
+                    List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
+                    }.getType());
                     for (String parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>())) {
                         if (sqlVariables.stream().map(SqlVariableDetails::getVariableName).collect(Collectors.toList()).contains(parameter)) {
                             hasParameters = true;
@@ -994,20 +995,6 @@ public class ChartViewService {
             if (StringUtils.isNotEmpty(compareCalc.getType())
                     && !StringUtils.equalsIgnoreCase(compareCalc.getType(), "none")) {
                 String compareFieldId = compareCalc.getField();// 选中字段
-                String resultData = compareCalc.getResultData();// 数据设置
-                // 获取选中字段以及下标
-                List<ChartViewFieldDTO> checkedField = new ArrayList<>(xAxis);
-                if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                    checkedField.addAll(extStack);
-                }
-                int timeIndex = 0;// 时间字段下标
-                ChartViewFieldDTO timeField = null;
-                for (int j = 0; j < checkedField.size(); j++) {
-                    if (StringUtils.equalsIgnoreCase(checkedField.get(j).getId(), compareFieldId)) {
-                        timeIndex = j;
-                        timeField = checkedField.get(j);
-                    }
-                }
                 // 计算指标对应的下标
                 int dataIndex = 0;// 数据字段下标
                 if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
@@ -1015,49 +1002,87 @@ public class ChartViewService {
                 } else {
                     dataIndex = xAxis.size() + i;
                 }
-                // 无选中字段，或者选中字段已经不在维度list中，或者选中字段日期格式不符合对比类型的，直接将对应数据置为null
-                if (ObjectUtils.isEmpty(timeField) || !checkCalcType(timeField.getDateStyle(), compareCalc.getType())) {
-                    // set null
-                    for (String[] item : data) {
-                        item[dataIndex] = null;
+                if (Arrays.asList(ChartConstants.M_Y).contains(compareCalc.getType())) {
+                    String resultData = compareCalc.getResultData();// 数据设置
+                    // 获取选中字段以及下标
+                    List<ChartViewFieldDTO> checkedField = new ArrayList<>(xAxis);
+                    if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                        checkedField.addAll(extStack);
                     }
-                } else {
-                    // 计算 同比/环比
-                    // 1，处理当期数据；2，根据type计算上一期数据；3，根据resultData计算结果
-                    Map<String, String> currentMap = new LinkedHashMap<>();
-                    for (String[] item : data) {
-                        String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
-                        currentMap.put(StringUtils.join(dimension, "-"), item[dataIndex]);
+                    int timeIndex = 0;// 时间字段下标
+                    ChartViewFieldDTO timeField = null;
+                    for (int j = 0; j < checkedField.size(); j++) {
+                        if (StringUtils.equalsIgnoreCase(checkedField.get(j).getId(), compareFieldId)) {
+                            timeIndex = j;
+                            timeField = checkedField.get(j);
+                        }
                     }
-
-                    for (int index = 0; index < data.size(); index++) {
-                        String[] item = data.get(index);
-                        String cTime = item[timeIndex];
-                        String cValue = item[dataIndex];
-
-                        // 获取计算后的时间，并且与所有维度拼接
-                        String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern());
-                        String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
-                        dimension[timeIndex] = lastTime;
-
-                        String lastValue = currentMap.get(StringUtils.join(dimension, "-"));
-                        if (StringUtils.isEmpty(cValue) || StringUtils.isEmpty(lastValue)) {
+                    // 无选中字段，或者选中字段已经不在维度list中，或者选中字段日期格式不符合对比类型的，直接将对应数据置为null
+                    if (ObjectUtils.isEmpty(timeField) || !checkCalcType(timeField.getDateStyle(), compareCalc.getType())) {
+                        // set null
+                        for (String[] item : data) {
                             item[dataIndex] = null;
-                        } else {
-                            if (StringUtils.equalsIgnoreCase(resultData, "sub")) {
-                                item[dataIndex] = new BigDecimal(cValue).subtract(new BigDecimal(lastValue)).toString();
-                            } else if (StringUtils.equalsIgnoreCase(resultData, "percent")) {
-                                if (new BigDecimal(lastValue).compareTo(BigDecimal.ZERO) == 0) {
-                                    item[dataIndex] = null;
-                                } else {
-                                    item[dataIndex] = new BigDecimal(cValue)
-                                            .divide(new BigDecimal(lastValue), 8, RoundingMode.HALF_UP)
-                                            .subtract(new BigDecimal(1))
-                                            .setScale(8, RoundingMode.HALF_UP)
-                                            .toString();
+                        }
+                    } else {
+                        // 计算 同比/环比
+                        // 1，处理当期数据；2，根据type计算上一期数据；3，根据resultData计算结果
+                        Map<String, String> currentMap = new LinkedHashMap<>();
+                        for (String[] item : data) {
+                            String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
+                            currentMap.put(StringUtils.join(dimension, "-"), item[dataIndex]);
+                        }
+
+                        for (int index = 0; index < data.size(); index++) {
+                            String[] item = data.get(index);
+                            String cTime = item[timeIndex];
+                            String cValue = item[dataIndex];
+
+                            // 获取计算后的时间，并且与所有维度拼接
+                            String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern());
+                            String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
+                            dimension[timeIndex] = lastTime;
+
+                            String lastValue = currentMap.get(StringUtils.join(dimension, "-"));
+                            if (StringUtils.isEmpty(cValue) || StringUtils.isEmpty(lastValue)) {
+                                item[dataIndex] = null;
+                            } else {
+                                if (StringUtils.equalsIgnoreCase(resultData, "sub")) {
+                                    item[dataIndex] = new BigDecimal(cValue).subtract(new BigDecimal(lastValue)).toString();
+                                } else if (StringUtils.equalsIgnoreCase(resultData, "percent")) {
+                                    if (new BigDecimal(lastValue).compareTo(BigDecimal.ZERO) == 0) {
+                                        item[dataIndex] = null;
+                                    } else {
+                                        item[dataIndex] = new BigDecimal(cValue)
+                                                .divide(new BigDecimal(lastValue), 8, RoundingMode.HALF_UP)
+                                                .subtract(new BigDecimal(1))
+                                                .setScale(8, RoundingMode.HALF_UP)
+                                                .toString();
+                                    }
                                 }
                             }
                         }
+                    }
+                } else if (StringUtils.equalsIgnoreCase(compareCalc.getType(), "percent")) {
+                    // 求和
+                    BigDecimal sum = new BigDecimal(0);
+                    for (int index = 0; index < data.size(); index++) {
+                        String[] item = data.get(index);
+                        String cValue = item[dataIndex];
+                        if (StringUtils.isEmpty(cValue)) {
+                            continue;
+                        }
+                        sum = sum.add(new BigDecimal(cValue));
+                    }
+                    // 计算占比
+                    for (int index = 0; index < data.size(); index++) {
+                        String[] item = data.get(index);
+                        String cValue = item[dataIndex];
+                        if (StringUtils.isEmpty(cValue)) {
+                            continue;
+                        }
+                        item[dataIndex] = new BigDecimal(cValue)
+                                .divide(sum, 8, RoundingMode.HALF_UP)
+                                .toString();
                     }
                 }
             }
@@ -1599,7 +1624,8 @@ public class ChartViewService {
     }
 
     private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table, Datasource ds) throws Exception {
-        List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
+        List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
+        }.getType());
         if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
                 if (CollectionUtils.isEmpty(chartExtFilterRequest.getValue())) {
@@ -1610,8 +1636,8 @@ public class ChartViewService {
                 }
 
                 for (String parameter : chartExtFilterRequest.getParameters()) {
-                    if(parameter.contains("|DE|")){
-                        if(!parameter.split("\\|DE\\|")[0].equals(table.getId())){
+                    if (parameter.contains("|DE|")) {
+                        if (!parameter.split("\\|DE\\|")[0].equals(table.getId())) {
                             continue;
                         }
                         List<SqlVariableDetails> parameters = sqlVariables.stream().filter(item -> item.getVariableName().equalsIgnoreCase(parameter.split("\\|DE\\|")[1])).collect(Collectors.toList());
@@ -1619,7 +1645,7 @@ public class ChartViewService {
                             String filter = qp.transFilter(chartExtFilterRequest, parameters.get(0));
                             sql = sql.replace("${" + parameter.split("\\|DE\\|")[1] + "}", filter);
                         }
-                    }else {
+                    } else {
                         List<SqlVariableDetails> parameters = sqlVariables.stream().filter(item -> item.getVariableName().equalsIgnoreCase(parameter)).collect(Collectors.toList());
                         if (CollectionUtils.isNotEmpty(parameters)) {
                             String filter = qp.transFilter(chartExtFilterRequest, parameters.get(0));
