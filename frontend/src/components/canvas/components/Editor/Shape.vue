@@ -39,7 +39,7 @@
 import eventBus from '@/components/canvas/utils/eventBus'
 import runAnimation from '@/components/canvas/utils/runAnimation'
 import { mapState } from 'vuex'
-import calculateComponentPositonAndSize from '@/components/canvas/utils/calculateComponentPositonAndSize'
+import calculateComponentPositionAndSize from '@/components/canvas/utils/calculateComponentPositionAndSize'
 import { mod360 } from '@/components/canvas/utils/translate'
 
 export default {
@@ -347,12 +347,12 @@ export default {
         }
 
         needSave = true
-        const curPositon = {
+        const curPosition = {
           x: moveEvent.clientX - editorRectInfo.left,
           y: moveEvent.clientY - editorRectInfo.top
         }
 
-        calculateComponentPositonAndSize(point, style, curPositon, proportion, needLockProportion, {
+        calculateComponentPositionAndSize(point, style, curPosition, proportion, needLockProportion, {
           center,
           curPoint,
           symmetricPoint

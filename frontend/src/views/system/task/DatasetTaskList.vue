@@ -278,7 +278,7 @@
                   </el-dropdown-item>
                   <el-dropdown-item
                     v-if="scope.row.status === 'Pending'"
-                    command="contine"
+                    command="continue"
                   >
                     {{ $t("components.continue") }}
                   </el-dropdown-item>

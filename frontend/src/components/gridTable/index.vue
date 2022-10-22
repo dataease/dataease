@@ -63,13 +63,13 @@ export default {
         layout: 'total, prev, pager, next, sizes, jumper',
         total: 0
       },
-      multipleSelectionCach: [],
+      multipleSelectionCache: [],
       tableEvent: {}
     }
   },
   computed: {
     multipleSelectionAll() {
-      return [...this.multipleSelectionCach, ...this.multipleSelection]
+      return [...this.multipleSelectionCache, ...this.multipleSelection]
     }
   },
   watch: {
@@ -114,11 +114,11 @@ export default {
       this.$refs.table.toggleRowSelection(row, true)
     },
     handlerSelected(multipleSelection) {
-      this.multipleSelectionCach = [
-        ...this.multipleSelectionCach,
+      this.multipleSelectionCache = [
+        ...this.multipleSelectionCache,
         ...multipleSelection
       ]
-      const flags = this.multipleSelectionCach.map(
+      const flags = this.multipleSelectionCache.map(
         (ele) => ele[this.selectedFlags]
       )
       // 当前页的选中项索引
@@ -131,7 +131,7 @@ export default {
         }
       })
       notCurrentArr.sort().reduceRight((pre, next) => {
-        this.multipleSelectionCach.splice(next, 1)
+        this.multipleSelectionCache.splice(next, 1)
       }, 0)
     },
     handleListeners() {

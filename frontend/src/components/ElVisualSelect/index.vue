@@ -19,7 +19,7 @@
       v-model="selectAll"
       v-customStyle="customStyle"
       :indeterminate="isIndeterminate"
-      @change="selectAllChane"
+      @change="selectAllChange"
     >{{ $t('dataset.check_all') }}</el-checkbox></p>
     <el-option
       v-for="item in options"
@@ -139,7 +139,7 @@ export default {
       }
       return this.selectValue === id && 'selected'
     },
-    selectAllChane(val) {
+    selectAllChange(val) {
       const vals = val ? [...this.list.map(ele => ele.id)] : []
       this.visualChange(vals)
       this.selectValue = vals

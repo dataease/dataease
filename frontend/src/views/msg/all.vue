@@ -14,7 +14,7 @@
         />
         <el-tab-pane
           :label="$t('components.read_message')"
-          name="readed"
+          name="read"
         />
         <el-tab-pane
           :label="$t('components.all_messages')"
@@ -28,20 +28,20 @@
               <template v-if="tabActive === 'unread'">
                 <deBtn
                   secondary
-                  @click="allMarkReaded"
+                  @click="allMarkRead"
                 >{{
-                  $t("webmsg.all_mark_readed")
+                  $t("webmsg.all_mark_read")
                 }}</deBtn>
                 <deBtn
-                  key="mark_readed"
+                  key="mark_read"
                   secondary
                   :disabled="multipleSelection.length === 0"
-                  @click="markReaded"
-                >{{ $t("webmsg.mark_readed") }}</deBtn>
+                  @click="markRead"
+                >{{ $t("webmsg.mark_read") }}</deBtn>
               </template>
 
               <deBtn
-                v-if="tabActive === 'readed'"
+                v-if="tabActive === 'read'"
                 key="delete"
                 secondary
                 :disabled="multipleSelection.length === 0"
@@ -104,7 +104,7 @@
                       />
                       <svg-icon
                         v-else
-                        icon-class="readed-msg"
+                        icon-class="read-msg"
                       />
                     </span>
                     <span
@@ -213,14 +213,14 @@ export default {
     initSearch() {
       this.handleCurrentChange(1)
     },
-    allMarkReaded() {
+    allMarkRead() {
       allRead().then(res => {
         this.openMessageSuccess('components.all_read_successfully')
         bus.$emit('refresh-top-notification')
         this.initSearch()
       })
     },
-    markReaded() {
+    markRead() {
       const param = this.multipleSelection.map(item => item.msgId)
       batchRead(param).then(res => {
         this.openMessageSuccess('webmsg.mark_success')
@@ -249,7 +249,7 @@ export default {
       }
 
       if (this.tabActive !== 'allMsg') {
-        param.status = this.tabActive === 'readed'
+        param.status = this.tabActive === 'read'
       }
 
       const { currentPage, pageSize } = this.paginationConfig
@@ -274,7 +274,7 @@ export default {
       }
       if (this.hasPermissionRoute(row.router)) {
         this.$router.push({ name: row.router, params: param })
-        row.status || this.setReaded(row)
+        row.status || this.setRead(row)
         return
       }
       this.$warning(this.$t('commons.no_target_permission'))
@@ -289,7 +289,7 @@ export default {
       return false
     },
     // 设置已读
-    setReaded(row) {
+    setRead(row) {
       updateStatus(row.msgId).then((res) => {
         bus.$emit('refresh-top-notification')
         this.search()

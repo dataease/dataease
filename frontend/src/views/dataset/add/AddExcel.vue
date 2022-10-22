@@ -76,11 +76,11 @@
             <span class="label">{{ data.excelLabel }}</span>
             <span
               v-if="
-                (data.nameExsit && !param.tableId) ||
+                (data.nameExist && !param.tableId) ||
                   data.empty ||
                   data.overLength
               "
-              class="error-name-exsit"
+              class="error-name-exist"
             >
               <svg-icon
                 icon-class="exclamationmark"
@@ -110,7 +110,7 @@
           />
           <div
             v-if="
-              (sheetObj.nameExsit && !param.tableId) ||
+              (sheetObj.nameExist && !param.tableId) ||
                 sheetObj.empty ||
                 sheetObj.overLength
             "
@@ -119,7 +119,7 @@
           >
             {{
               $t(
-                sheetObj.nameExsit
+                sheetObj.nameExist
                   ? 'deDataset.already_exists'
                   : sheetObj.overLength
                     ? 'dataset.char_can_not_more_50'
@@ -339,10 +339,10 @@ export default {
         labelList.filter((ele) => !excelList.includes(ele)).length
       )
     },
-    nameExsitValidator(ele, checkList) {
+    nameExistValidator(ele, checkList) {
       this.$set(
         ele,
-        'nameExsit',
+        'nameExist',
         this.nameListCopy
           .concat(checkList)
           .filter((name) => name === ele.datasetName).length > 1
@@ -356,10 +356,10 @@ export default {
         .reduce((pre, next) => pre.concat(next.sheets), [])
         .forEach((ele, index) => {
           if (checkList.includes(ele.datasetName)) {
-            this.nameExsitValidator(ele, checkList)
+            this.nameExistValidator(ele, checkList)
             this.nameLengthValidator(ele)
           } else {
-            this.$set(ele, 'nameExsit', false)
+            this.$set(ele, 'nameExist', false)
             this.$set(ele, 'empty', false)
             this.$set(ele, 'overLength', false)
           }
@@ -458,7 +458,7 @@ export default {
       var effectExtField = false
       var changeFiled = false
       var selectNode = this.$refs.tree.getCheckedNodes()
-      if (!this.param.tableId && selectNode.some((ele) => ele.nameExsit)) {
+      if (!this.param.tableId && selectNode.some((ele) => ele.nameExist)) {
         this.openMessageSuccess('deDataset.cannot_be_duplicate', 'error')
         return
       }
@@ -673,7 +673,7 @@ export default {
           width: 85%;
         }
       }
-      .error-name-exsit {
+      .error-name-exist {
         position: absolute;
         top: 0;
         right: 0;
