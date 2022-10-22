@@ -87,7 +87,7 @@ public class SysMsgService {
         return sysMsgMapper.countByExample(example);
     }
 
-    public void setReaded(Long msgId) {
+    public void setRead(Long msgId) {
         SysMsg sysMsg = new SysMsg();
         sysMsg.setMsgId(msgId);
         sysMsg.setStatus(true);
@@ -95,7 +95,7 @@ public class SysMsgService {
         sysMsgMapper.updateByPrimaryKeySelective(sysMsg);
     }
 
-    public void setBatchReaded(List<Long> msgIds) {
+    public void setBatchRead(List<Long> msgIds) {
         extSysMsgMapper.batchStatus(msgIds, System.currentTimeMillis());
     }
 

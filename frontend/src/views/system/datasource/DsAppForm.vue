@@ -805,7 +805,7 @@ export default {
               this.$success(i18n.t('commons.success'))
               this.active++
               this.apiItem.fields = res.data.fields
-              this.$refs.plxTable.reloadData(res.data.datas)
+              this.$refs.plxTable.reloadData(res.data.data)
             }).catch(res => {
               this.loading = false
               this.disabledNext = false
@@ -860,7 +860,7 @@ export default {
             this.loading = false
             this.$success(i18n.t('commons.success'))
             this.apiItem.fields = res.data.fields
-            this.$refs.plxTable.reloadData(res.data.datas)
+            this.$refs.plxTable.reloadData(res.data.data)
           }).catch(res => {
             this.loading = false
           })

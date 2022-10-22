@@ -10,7 +10,7 @@ export function baseTreemapOptionAntV(plot, container, chart, action) {
   // style
   const legend = getLegend(chart)
   // data
-  const data = chart.data.datas
+  const data = chart.data.data
   // options
   const options = {
     theme: theme,
