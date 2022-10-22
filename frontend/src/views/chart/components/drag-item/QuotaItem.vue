@@ -153,7 +153,7 @@
             </el-dropdown>
           </el-dropdown-item>
 
-          <!--同比/环比-->
+          <!--同比/环比等快速计算-->
           <el-dropdown-item v-show="!item.chartId && chart.type !== 'table-info'">
             <el-dropdown
               placement="right-start"
@@ -175,6 +175,7 @@
                   :disabled="disableEditCompare"
                   :command="beforeQuickCalc('setting')"
                 >{{ $t('chart.yoy_label') }}...</el-dropdown-item>
+                <el-dropdown-item :command="beforeQuickCalc('percent')">{{ $t('chart.percent') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -379,6 +380,10 @@ export default {
           break
         case 'setting':
           this.editCompare()
+          break
+        case 'percent':
+          this.item.compareCalc.type = 'percent'
+          this.$emit('onQuotaItemChange', this.item)
           break
         default:
           break

@@ -1429,7 +1429,8 @@ export default {
     reserve_one: '1',
     reserve_two: '2',
     proportion: 'Proportion',
-    label_content: 'Label Content'
+    label_content: 'Label Content',
+    percent: 'Percent'
   },
   dataset: {
     parse_filed: 'Parse Field',
