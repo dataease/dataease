@@ -26,7 +26,7 @@
           }}</span>
         </template>
         <span
-          v-if="sycnStatus === 'Underway'"
+          v-if="syncStatus === 'Underway'"
           class="blue-color"
           style="line-height: 26px"
         >
@@ -198,7 +198,7 @@ export default {
       },
       fields: [],
       data: [],
-      sycnStatus: '',
+      syncStatus: '',
       lastRequestComplete: true,
       page: {
         page: 1,
@@ -231,7 +231,7 @@ export default {
   },
   created() {
     this.taskLogTimer = setInterval(() => {
-      if (this.sycnStatus !== 'Underway') {
+      if (this.syncStatus !== 'Underway') {
         return
       }
       if (!this.lastRequestComplete) {
@@ -279,7 +279,7 @@ export default {
             this.fields = response.data.fields
             this.data = response.data.data
             this.page = response.data.page
-            this.sycnStatus = response.data.sycnStatus
+            this.syncStatus = response.data.syncStatus
             if (response.data.status === 'warnning') {
               this.$warning(response.data.msg, 3000)
             }

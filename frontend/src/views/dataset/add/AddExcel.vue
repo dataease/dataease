@@ -70,10 +70,10 @@
         >
           <span
             slot-scope="{ data }"
-            :title="data.excelLable"
+            :title="data.excelLabel"
             class="custom-tree-node"
           >
-            <span class="label">{{ data.excelLable }}</span>
+            <span class="label">{{ data.excelLabel }}</span>
             <span
               v-if="
                 (data.nameExsit && !param.tableId) ||
@@ -290,7 +290,7 @@ export default {
         }
       ],
       props: {
-        label: 'excelLable',
+        label: 'excelLabel',
         children: 'sheets'
       },
       count: 1,
@@ -374,8 +374,8 @@ export default {
         this.sheetObj = data
         this.fields = data.fields
         this.jsonArray = data.jsonArray
-        const datas = this.jsonArray
-        this.$refs.plxTable.reloadData(datas)
+        const data = this.jsonArray
+        this.$refs.plxTable.reloadData(data)
       }
     },
     handleCommand(type, field) {

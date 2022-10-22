@@ -11,7 +11,7 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
   // attr
   const tooltip = getTooltip(chart)
   // data
-  const data = chart.data.datas
+  const data = chart.data.data
   // options
   const options = {
     theme: theme,

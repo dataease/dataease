@@ -103,7 +103,7 @@ export default {
       usersValue: [],
       activeUser: [],
       users: [],
-      userCahe: [],
+      userCache: [],
       activeType: [],
       userDrawer: false
     }
@@ -113,7 +113,7 @@ export default {
       return this.users.filter((ele) => !this.activeUser.includes(ele.id))
     },
     usersValueCopy() {
-      return this.userCahe.filter((ele) => this.activeUser.includes(ele.id))
+      return this.userCache.filter((ele) => this.activeUser.includes(ele.id))
     }
   },
   mounted() {
@@ -135,10 +135,10 @@ export default {
     },
     changeUser() {
       if (
-        this.userCahe.length >
+        this.userCache.length >
         this.usersValue.length + this.activeUser.length
       ) {
-        this.userCahe = this.userCahe.filter((ele) =>
+        this.userCache = this.userCache.filter((ele) =>
           this.usersValue
             .map((ele) => ele.id)
             .concat(this.activeUser)
@@ -148,14 +148,14 @@ export default {
       }
       const userIdx = this.usersValue.findIndex(
         (ele) =>
-          !this.userCahe
+          !this.userCache
             .map((ele) => ele.id)
             .concat(this.activeUser)
             .includes(ele.id)
       )
       if (userIdx === -1) return
       this.activeUser.push(this.usersValue[userIdx].id)
-      this.userCahe.push(this.usersValue[userIdx])
+      this.userCache.push(this.usersValue[userIdx])
       this.usersValue.splice(userIdx, 1)
     },
     activeUserChange(id) {
@@ -165,7 +165,7 @@ export default {
         this.usersValue = this.usersValue.filter((ele) => ele.id !== id)
       } else {
         this.activeUser.splice(userIndex, 1)
-        const user = this.userCahe.find((ele) => ele.id === id)
+        const user = this.userCache.find((ele) => ele.id === id)
         this.usersValue.push(user)
       }
     },
@@ -174,7 +174,7 @@ export default {
       this.usersValue = []
       this.activeUser = []
       this.activeType = []
-      this.userCahe = []
+      this.userCache = []
       this.$emit('search', [], [])
     },
     clearOneFilter(index) {
@@ -219,7 +219,7 @@ export default {
         this.filterTextMap.push([
           'usersValue',
           'activeUser',
-          'userCahe'
+          'userCache'
         ])
       }
 
