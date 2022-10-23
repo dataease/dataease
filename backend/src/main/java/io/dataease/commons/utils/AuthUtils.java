@@ -131,7 +131,7 @@ public class AuthUtils {
             result.addAll(roleSet);
             result.addAll(deptSet);
             Arrays.stream(defaultPanelPermissions).forEach(item -> {
-                result.add(new AuthItem(item, ResourceAuthLevel.PANNEL_LEVEL_MANAGE.getLevel()));
+                result.add(new AuthItem(item, ResourceAuthLevel.PANEL_LEVEL_MANAGE.getLevel()));
             });
             return result;
         }

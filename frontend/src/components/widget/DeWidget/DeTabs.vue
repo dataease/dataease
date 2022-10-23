@@ -41,21 +41,21 @@
             </span>
 
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item :command="beforeHandleCommond('editTitle', item)">
+              <el-dropdown-item :command="beforeHandleCommand('editTitle', item)">
                 {{ $t('detabs.eidttitle') }}
               </el-dropdown-item>
 
-              <el-dropdown-item :command="beforeHandleCommond('selectView', item)">
+              <el-dropdown-item :command="beforeHandleCommand('selectView', item)">
                 {{ $t('detabs.selectview') }}
               </el-dropdown-item>
 
-              <el-dropdown-item :command="beforeHandleCommond('selectOthers', item)">
+              <el-dropdown-item :command="beforeHandleCommand('selectOthers', item)">
                 {{ $t('detabs.selectOthers') }}
               </el-dropdown-item>
 
               <el-dropdown-item
                 v-if=" element.options.tabList.length > 1"
-                :command="beforeHandleCommond('deleteCur', item)"
+                :command="beforeHandleCommand('deleteCur', item)"
               >
                 {{ $t('table.delete') }}
               </el-dropdown-item>
@@ -348,7 +348,7 @@ export default {
         }
       })
     },
-    beforeHandleCommond(item, param) {
+    beforeHandleCommand(item, param) {
       return {
         'command': item,
         'param': param
@@ -477,8 +477,8 @@ export default {
         if (this.element.options.tabList[len].name === param.name) {
           this.element.options.tabList.splice(len, 1)
 
-          const activIndex = (len - 1 + this.element.options.tabList.length) % this.element.options.tabList.length
-          this.activeTabName = this.element.options.tabList[activIndex].name
+          const activeIndex = (len - 1 + this.element.options.tabList.length) % this.element.options.tabList.length
+          this.activeTabName = this.element.options.tabList[activeIndex].name
         }
       }
       this.$store.dispatch('chart/setViewId', null)

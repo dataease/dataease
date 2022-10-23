@@ -270,8 +270,8 @@ public class XEmailTaskServer {
         String[] headArr = new String[] {Translator.get("I18N_XPACKTASK_NAME"), Translator.get("I18N_XPACKTASK_EXEC_TIME"), Translator.get("I18N_XPACKTASK_STATUS")};
         List<String> head = Arrays.asList(headArr);
         excelSheetModel.setHeads(head);
-        List<List<String>> datas = instanceDTOS.stream().map(this::formatExcelData).collect(Collectors.toList());
-        excelSheetModel.setDatas(datas);
+        List<List<String>> data = instanceDTOS.stream().map(this::formatExcelData).collect(Collectors.toList());
+        excelSheetModel.setData(data);
         return excelSheetModel;
     }
 

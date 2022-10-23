@@ -62,7 +62,7 @@ public class DataSetTableFieldController {
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(tableId);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-        fields = permissionService.filterColumnPermissons(fields, new ArrayList<>(), tableId, null);
+        fields = permissionService.filterColumnPermissions(fields, new ArrayList<>(), tableId, null);
         return fields;
     }
 
@@ -74,7 +74,7 @@ public class DataSetTableFieldController {
         datasetTableField.setTableId(tableId);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
         List<String> desensitizationList = new ArrayList<>();
-        fields = permissionService.filterColumnPermissons(fields, desensitizationList, tableId, null);
+        fields = permissionService.filterColumnPermissions(fields, desensitizationList, tableId, null);
         fields = fields.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName())).collect(Collectors.toList());
         return fields;
     }

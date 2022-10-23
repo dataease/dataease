@@ -104,14 +104,13 @@ export default {
       authVisible: false,
       authTitle: '',
       authResourceId: null,
-      targetDatas: [],
+      targetData: [],
       tagTypes: { 0: 'info', 1: 'success', 2: 'primary' },
       checked: false
     }
   },
   computed: {
     panelInfo() {
-      // this.initTagDatas()
       return this.$store.state.panel.panelInfo
     }
   },
@@ -121,13 +120,13 @@ export default {
       // 刷新 进行重新渲染
 
       this.$nextTick(() => {
-        this.initTagDatas()
+        this.initTagData()
       })
     }
   },
 
   created() {
-    this.initTagDatas()
+    this.initTagData()
   },
   methods: {
     handleClose(tag) {
@@ -140,7 +139,7 @@ export default {
         type: tag.type
       }
       removeShares(param).then(res => {
-        this.initTagDatas()
+        this.initTagData()
       })
     },
     showEditPage() {
@@ -149,13 +148,13 @@ export default {
       this.authVisible = true
     },
     closeGrant() {
-      this.initTagDatas()
+      this.initTagData()
       this.authResourceId = null
       this.authVisible = false
     },
-    initTagDatas() {
+    initTagData() {
       shareTargets(this.panelInfo.id).then(res => {
-        this.targetDatas = res.data
+        this.targetData = res.data
         this.dynamicTags = res.data.map(item => {
           item.tagType = this.tagTypes[item.type]
           this.granterTime = item.createTime

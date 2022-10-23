@@ -230,7 +230,7 @@ export default {
       defaultForm: { id: null, username: null, nickName: null, gender: '男', email: null, enabled: 1, deptId: null, phone: null, roleIds: [] },
       depts: null,
       roles: [],
-      roleDatas: [],
+      roleData: [],
       userRoles: [],
       formType: 'add',
       isPluginLoaded: false

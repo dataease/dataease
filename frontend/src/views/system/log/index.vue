@@ -1,6 +1,6 @@
 <template>
   <de-layout-content
-    class="de-serach-table"
+    class="de-search-table"
     :header="$t('log.title')"
   >
     <el-row class="top-operate">
@@ -137,7 +137,7 @@
 <script>
 import DeLayoutContent from '@/components/business/DeLayoutContent'
 import GridTable from '@/components/gridTable/index.vue'
-import filterUser from './filterUser'
+import filterUser from './FilterUser'
 import _ from 'lodash'
 import keyEnter from '@/components/msgCfm/keyEnter.js'
 import {

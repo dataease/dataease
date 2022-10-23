@@ -10,7 +10,7 @@ public class ExcelFileData {
     @ApiModelProperty("excelID")
     private String id;
     @ApiModelProperty("excel标签")
-    private String excelLable;
+    private String excelLabel;
     @ApiModelProperty("sheets")
     private List<ExcelSheetData> sheets;
     @ApiModelProperty("路径")

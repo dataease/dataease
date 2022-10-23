@@ -31,7 +31,7 @@
       >
         <svg-icon
           icon-class="scene"
-          class="de-icon-sence"
+          class="de-icon-sense"
         />
         <span
           class="text-template-overflow"

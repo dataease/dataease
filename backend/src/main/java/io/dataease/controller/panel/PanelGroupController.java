@@ -59,7 +59,7 @@ public class PanelGroupController {
     @PostMapping("/save")
     @DePermissions(value = {
             @DePermission(type = DePermissionType.PANEL, value = "id"),
-            @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
+            @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANEL_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @I18n
     public PanelGroupDTO save(@RequestBody PanelGroupRequest request) throws Exception{
@@ -77,7 +77,7 @@ public class PanelGroupController {
     @PostMapping("/update")
     @DePermissions(value = {
             @DePermission(type = DePermissionType.PANEL, value = "id"),
-            @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
+            @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANEL_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @I18n
     public String update(@RequestBody PanelGroupRequest request) {
@@ -85,14 +85,14 @@ public class PanelGroupController {
     }
 
     @ApiOperation("删除")
-    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANEL_LEVEL_MANAGE)
     @PostMapping("/deleteCircle/{id}")
     public void deleteCircle(@PathVariable String id) {
         panelGroupService.deleteCircle(id);
     }
 
     @ApiOperation("详细信息")
-    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW)
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANEL_LEVEL_VIEW)
     @GetMapping("/findOne/{id}")
     public PanelGroupDTO findOne(@PathVariable String id) throws Exception {
         return panelGroupService.findOne(id);
@@ -101,7 +101,7 @@ public class PanelGroupController {
     @ApiIgnore
     @ApiOperation("详细信息(分享人代理)")
     @DePermissionProxy(paramIndex = 1)
-    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_VIEW)
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANEL_LEVEL_VIEW)
     @PostMapping("/proxy/findOne/{id}")
     public PanelGroupDTO proxyFindOne(@PathVariable String id, @RequestBody PermissionProxy proxy)
             throws Exception {
@@ -146,7 +146,7 @@ public class PanelGroupController {
     @ApiOperation("更新仪表板状态")
     @PostMapping("/updatePanelStatus/{panelId}")
     @I18n
-    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANEL_LEVEL_MANAGE)
     public void updatePanelStatus(@PathVariable String panelId, @RequestBody PanelGroupBaseInfoRequest request) {
         panelGroupService.updatePanelStatus(panelId, request);
     }
@@ -154,7 +154,7 @@ public class PanelGroupController {
     @PostMapping("/autoCache")
     @DePermissions(value = {
             @DePermission(type = DePermissionType.PANEL, value = "id"),
-            @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANNEL_LEVEL_MANAGE)
+            @DePermission(type = DePermissionType.PANEL, value = "pid", level = ResourceAuthLevel.PANEL_LEVEL_MANAGE)
     }, logical = Logical.AND)
     public void autoCache(@RequestBody PanelGroupRequest request){
         panelGroupService.autoCache(request);

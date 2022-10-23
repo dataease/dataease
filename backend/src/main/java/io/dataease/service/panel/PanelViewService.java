@@ -133,7 +133,7 @@ public class PanelViewService {
         return viewIds;
     }
 
-    public Boolean havaMobileLayout(String panelData){
+    public Boolean haveMobileLayout(String panelData){
         Boolean mobileLayout = false;
         if (StringUtils.isNotEmpty(panelData)) {
             JsonArray dataArray = JsonParser.parseString(panelData).getAsJsonArray();

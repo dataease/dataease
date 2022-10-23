@@ -32,7 +32,7 @@
           @change="handleCheckedChange"
         >
           <el-checkbox
-            v-for="item in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))"
+            v-for="item in data.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))"
             :key="item.id"
             :label="item.id"
           >{{ item.id }}</el-checkbox>
@@ -48,7 +48,7 @@
           @change="changeRadioBox"
         >
           <el-radio
-            v-for="(item, index) in datas.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))"
+            v-for="(item, index) in data.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))"
             :key="index"
             :label="item.id"
             @click.native.prevent="testChange(item)"
@@ -109,7 +109,7 @@ export default {
         indeterminate: false
       },
       show: true,
-      datas: [],
+      data: [],
       isIndeterminate: false,
       checkAll: false
     }
@@ -148,13 +148,13 @@ export default {
       this.changeValue(value)
 
       if (this.element.options.attrs.multiple) {
-        this.checkAll = this.value.length === this.datas.length
-        this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+        this.checkAll = this.value.length === this.data.length
+        this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
       }
     },
     'element.options.attrs.fieldId': function(value, old) {
       if (typeof value === 'undefined' || value === old) return
-      this.datas = []
+      this.data = []
       let method = multFieldValues
       const token = this.$store.getters.token || getToken()
       const linkToken = this.$store.getters.linkToken || getLinkToken()
@@ -168,11 +168,11 @@ export default {
       this.element.options.attrs.fieldId &&
           this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
-        this.datas = this.optionDatas(res.data)
+        this.data = this.optionData(res.data)
         this.changeInputStyle()
         if (this.element.options.attrs.multiple) {
-          this.checkAll = this.value.length === this.datas.length
-          this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+          this.checkAll = this.value.length === this.data.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
         }
       }) || (this.element.options.value = '')
     },
@@ -189,15 +189,15 @@ export default {
       this.$nextTick(() => {
         this.show = true
         if (value) {
-          this.checkAll = this.value.length === this.datas.length
-          this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+          this.checkAll = this.value.length === this.data.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
         }
         this.changeInputStyle()
       })
     },
     'element.options.attrs.sort': function(value, old) {
       if (typeof value === 'undefined' || value === old) return
-      this.datas = []
+      this.data = []
       let method = multFieldValues
       const token = this.$store.getters.token || getToken()
       const linkToken = this.$store.getters.linkToken || getLinkToken()
@@ -211,11 +211,11 @@ export default {
       this.element.options.attrs.fieldId &&
           this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
-        this.datas = this.optionDatas(res.data)
+        this.data = this.optionData(res.data)
         this.changeInputStyle()
         if (this.element.options.attrs.multiple) {
-          this.checkAll = this.value.length === this.datas.length
-          this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+          this.checkAll = this.value.length === this.data.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
         }
       }) || (this.element.options.value = '')
     },
@@ -251,8 +251,8 @@ export default {
         this.changeValue(this.value)
 
         if (this.element.options.attrs.multiple) {
-          this.checkAll = this.value.length === this.datas.length
-          this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+          this.checkAll = this.value.length === this.data.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
         }
       }
     },
@@ -284,11 +284,11 @@ export default {
           method = linkMultFieldValues
         }
         method({ fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }).then(res => {
-          this.datas = this.optionDatas(res.data)
+          this.data = this.optionData(res.data)
           this.changeInputStyle()
           if (this.element.options.attrs.multiple) {
-            this.checkAll = this.value.length === this.datas.length
-            this.isIndeterminate = this.value.length > 0 && this.value.length < this.datas.length
+            this.checkAll = this.value.length === this.data.length
+            this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
           }
         })
       }
@@ -337,9 +337,9 @@ export default {
         return defaultV.split(',')[0]
       }
     },
-    optionDatas(datas) {
-      if (!datas) return null
-      return datas.filter(item => !!item).map(item => {
+    optionData(data) {
+      if (!data) return null
+      return data.filter(item => !!item).map(item => {
         return {
           id: item,
           text: item
@@ -350,14 +350,14 @@ export default {
       this.changeValue(value)
     },
     handleCheckAllChange(val) {
-      this.value = val ? this.datas.map(item => item.id) : []
+      this.value = val ? this.data.map(item => item.id) : []
       this.isIndeterminate = false
       this.changeValue(this.value)
     },
     handleCheckedChange(values) {
       const checkedCount = values.length
-      this.checkAll = checkedCount === this.datas.length
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.datas.length
+      this.checkAll = checkedCount === this.data.length
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.data.length
       this.changeValue(values)
     },
     testChange(item) {

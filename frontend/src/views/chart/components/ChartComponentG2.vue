@@ -237,9 +237,9 @@ export default {
       // type
       // if (chart.data) {
       this.antVRenderStatus = true
-      if (!chart.data || (!chart.data.datas && !chart.data.series)) {
+      if (!chart.data || (!chart.data.data && !chart.data.series)) {
         chart.data = {
-          datas: [{}],
+          data: [{}],
           series: [
             {
               data: [0]

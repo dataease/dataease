@@ -1,5 +1,5 @@
 <template>
-  <div class="operater-bar">
+  <div class="operator-bar">
     <p class="title">{{ $t(title) }}</p>
     <div class="btn-grounp">
       <slot />
@@ -19,7 +19,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.operater-bar {
+.operator-bar {
   width: 100%;
   height: 70px;
   display: flex;

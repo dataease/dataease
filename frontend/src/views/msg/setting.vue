@@ -105,9 +105,9 @@ export default {
     // 加载树节点数据
     loadTreeData() {
       treeList().then((res) => {
-        const datas = res.data
-        datas.forEach((data) => this.formatTreeNode(data))
-        this.treeData = datas
+        const data = res.data
+        data.forEach((data) => this.formatTreeNode(data))
+        this.treeData = data
       })
     },
     formatTreeNode(node) {

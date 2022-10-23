@@ -401,7 +401,7 @@ export default {
   },
   async created() {
     await this.datasourceTypes()
-    this.queryTreeDatas()
+    this.queryTreeData()
     const { id, showModel, type, name } = this.$route.query
     this.params = this.$route.query
     if (id) {
@@ -430,7 +430,7 @@ export default {
         this.params = { ...res.data, showModel }
       })
     },
-    queryTreeDatas() {
+    queryTreeData() {
       listDatasource().then((res) => {
         this.tData = this.buildTree(res.data)
       })
@@ -897,7 +897,7 @@ export default {
                 this.$success(i18n.t('commons.success'))
                 this.active++
                 this.apiItem.fields = res.data.fields
-                this.$refs.plxTable.reloadData(res.data.datas)
+                this.$refs.plxTable.reloadData(res.data.data)
               })
               .catch((res) => {
                 this.loading = false
@@ -957,7 +957,7 @@ export default {
               this.loading = false
               this.$success(i18n.t('commons.success'))
               this.apiItem.fields = res.data.fields
-              this.$refs.plxTable.reloadData(res.data.datas)
+              this.$refs.plxTable.reloadData(res.data.data)
             })
             .catch((res) => {
               this.loading = false

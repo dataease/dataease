@@ -26,16 +26,16 @@ public class MapServer implements MapApi {
         if (StringUtils.equals(pcode, "0")) {
             return areaEntities;
         }
-        return mapService.entitysByPid(areaEntities, pcode);
+        return mapService.entitiesByPid(areaEntities, pcode);
     }
 
     @Override
-    public List<AreaEntity> globalEntitys(String pcode) {
+    public List<AreaEntity> globalEntities(String pcode) {
         List<AreaEntity> areaEntities = mapService.globalEntities();
         if (StringUtils.equals(pcode, "0")) {
             return areaEntities;
         }
-        return mapService.entitysByPid(areaEntities, pcode);
+        return mapService.entitiesByPid(areaEntities, pcode);
     }
 
 

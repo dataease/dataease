@@ -28,7 +28,7 @@ public class CronUtils {
         if (!CronExpression.isValidExpression(cron)) {
             throw new RuntimeException("cron :" + cron + "表达式解析错误");
         }
-        return TriggerBuilder.newTrigger().withIdentity("Caclulate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
+        return TriggerBuilder.newTrigger().withIdentity("Calculate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
     }
 
     /**

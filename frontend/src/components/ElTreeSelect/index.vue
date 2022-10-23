@@ -54,7 +54,7 @@
         v-model="selectAll"
         v-customStyle="customStyle"
         :indeterminate="isIndeterminate"
-        @change="selectAllChane"
+        @change="selectAllChange"
       >{{ $t('dataset.check_all') }}</el-checkbox></p>
       <el-scrollbar
         tag="div"
@@ -276,7 +276,7 @@ export default {
     resetSelectAll() {
       this.selectAll = false
     },
-    selectAllChane(val) {
+    selectAllChange(val) {
       if (val) {
         this.ids = this._checkSum()
         this._emitFun()
@@ -535,7 +535,7 @@ export default {
     },
     _popoverShowFun(val) {
       this._updateH()
-      this.$emit('onFoucs')
+      this.$emit('onFocus')
     },
     _popoverHideFun(e) {
       const path = this._getEventPath(e)

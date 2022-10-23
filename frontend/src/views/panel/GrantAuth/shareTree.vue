@@ -8,7 +8,7 @@
       >
         <el-tree
           ref="topTree"
-          :data="datas"
+          :data="data"
           :props="defaultProps"
           :highlight-current="true"
           node-key="name"
@@ -48,7 +48,7 @@
       >
         <el-tree
           ref="botTree"
-          :data="outDatas"
+          :data="outData"
           :props="defaultProps"
           :highlight-current="true"
           node-key="name"
@@ -109,13 +109,13 @@ export default {
   },
   data() {
     return {
-      datas: [],
+      data: [],
       defaultProps: {
         children: 'children',
         label: 'name'
       },
       expandNodes: [],
-      outDatas: []
+      outData: []
     }
   },
   computed: {
@@ -126,13 +126,13 @@ export default {
   created() {
     bus.$on('refresh-my-share-out', this.refreshMyShareOut)
     this.initData().then(res => {
-      this.datas = res.data
+      this.data = res.data
       if (this.msgPanelIds && this.msgPanelIds.length > 0) {
         this.expandMsgNode(this.msgPanelIds)
       }
     })
     this.initOutData().then(res => {
-      this.outDatas = res.data
+      this.outData = res.data
     })
   },
   beforeDestroy() {
@@ -141,7 +141,7 @@ export default {
   methods: {
     refreshMyShareOut() {
       this.initOutData().then(res => {
-        this.outDatas = res.data
+        this.outData = res.data
         this.setMainNull()
       })
     },
@@ -188,7 +188,7 @@ export default {
       })
     },
     getMsgNodes(panelIds) {
-      this.datas.forEach(item => {
+      this.data.forEach(item => {
         if (item.children && item.children.length > 0) {
           item.children.forEach(node => {
             if (panelIds.includes(node.id)) {
@@ -208,7 +208,7 @@ export default {
         removePanelShares(node.id).then(res => {
           this.panelInfo && this.panelInfo.id && node.id === this.panelInfo.id && this.setMainNull()
           this.initOutData().then(res => {
-            this.outDatas = res.data
+            this.outData = res.data
           })
           this.$success(this.$t('commons.delete_success'))
         })

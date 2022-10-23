@@ -17,7 +17,7 @@ public interface MapApi {
 
 
     @GetMapping("/globalEntitys/{pcode}")
-    List<AreaEntity>  globalEntitys(@PathVariable String pcode);
+    List<AreaEntity>  globalEntities(@PathVariable String pcode);
 
     @PostMapping(value = "/saveMapNode", consumes = {"multipart/form-data"})
     void saveMapNode(MapNodeRequest request, MultipartFile file) throws Exception;

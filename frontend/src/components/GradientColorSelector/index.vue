@@ -58,7 +58,7 @@
             @click="handler"
           >
             <div
-              v-for="option in pane.datas"
+              v-for="option in pane.data"
               :key="option.value"
               class="el-select-dropdown__item color-div-base"
               :class="option.value === colorDto.value ? 'selected hover editor' : ''"
@@ -163,12 +163,12 @@ export default {
         {
           label: '纯色',
           name: 'simple',
-          datas: JSON.parse(JSON.stringify(colorCases))
+          data: JSON.parse(JSON.stringify(colorCases))
         },
         {
           label: '渐变',
           name: 'gradient',
-          datas: JSON.parse(JSON.stringify(gradientColorCases))
+          data: JSON.parse(JSON.stringify(gradientColorCases))
         }
       ],
       testColor: '#5470c6'
@@ -213,7 +213,7 @@ export default {
       }
       this.activeName = this.colorCases.some(item => item.value === this.colorDto.value) ? 'simple' : 'gradient'
       if (haspPropValue) {
-        this.tabPanes[this.activeName === 'simple' ? 0 : 1].datas.forEach(item => {
+        this.tabPanes[this.activeName === 'simple' ? 0 : 1].data.forEach(item => {
           if (item.value === this.colorDto.value) {
             item.colors = JSON.parse(JSON.stringify(this.colorDto.colors))
           }
@@ -261,7 +261,7 @@ export default {
     },
     _popoverShowFun(val) {
       this._updateH()
-      this.$emit('onFoucs')
+      this.$emit('onFocus')
     },
     fillGradientColor() {
       this.gradientColorCases.forEach(item => {
@@ -270,7 +270,7 @@ export default {
           return str
         })
       })
-      this.tabPanes[1].datas = JSON.parse(JSON.stringify(this.gradientColorCases))
+      this.tabPanes[1].data = JSON.parse(JSON.stringify(this.gradientColorCases))
     },
     formatBgColor(color, useValue) {
       let activeName = this.activeName

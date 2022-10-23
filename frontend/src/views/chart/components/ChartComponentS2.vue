@@ -224,27 +224,27 @@ export default {
   },
   methods: {
     initData() {
-      let datas = []
+      let data = []
       this.showPage = false
       if (this.chart.data && this.chart.data.fields) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
         this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
-        datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && datas.length > this.currentPage.pageSize) {
+        data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && data.length > this.currentPage.pageSize) {
           // 计算分页
-          this.currentPage.show = datas.length
+          this.currentPage.show = data.length
           const pageStart = (this.currentPage.page - 1) * this.currentPage.pageSize
           const pageEnd = pageStart + this.currentPage.pageSize
-          datas = datas.slice(pageStart, pageEnd)
+          data = data.slice(pageStart, pageEnd)
           this.showPage = true
         }
       } else {
         this.fields = []
-        datas = []
+        data = []
         this.resetPage()
       }
-      this.tableData = datas
+      this.tableData = data
     },
     preDraw() {
       this.initData()
@@ -275,9 +275,9 @@ export default {
       // type
       // if (chart.data) {
       this.antVRenderStatus = true
-      if (!chart.data || (!chart.data.datas && !chart.data.series)) {
+      if (!chart.data || (!chart.data.data && !chart.data.series)) {
         chart.data = {
-          datas: [{}],
+          data: [{}],
           series: [
             {
               data: [0]

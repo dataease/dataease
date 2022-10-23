@@ -127,7 +127,7 @@ public class ExtAuthServiceImpl implements ExtAuthService {
             @CacheEvict(value = AuthConstants.USER_PANEL_NAME, key = "'user' + #userId")
     })
     public void clearUserResource(Long userId) {
-        LogUtil.info("all permission resource of user {} is cleanning...", userId);
+        LogUtil.info("all permission resource of user {} is cleaning...", userId);
     }
 
     @Caching(evict = {
@@ -136,7 +136,7 @@ public class ExtAuthServiceImpl implements ExtAuthService {
             @CacheEvict(value = AuthConstants.DEPT_PANEL_NAME, key = "'dept' + #deptId")
     })
     public void clearDeptResource(Long deptId) {
-        LogUtil.info("all permission resource of dept {} is cleanning...", deptId);
+        LogUtil.info("all permission resource of dept {} is cleaning...", deptId);
     }
 
     @Caching(evict = {
@@ -145,7 +145,7 @@ public class ExtAuthServiceImpl implements ExtAuthService {
             @CacheEvict(value = AuthConstants.ROLE_PANEL_NAME, key = "'role' + #roleId")
     })
     public void clearRoleResource(Long roleId) {
-        LogUtil.info("all permission resource of role {} is cleanning...", roleId);
+        LogUtil.info("all permission resource of role {} is cleaning...", roleId);
     }
 
     @Override

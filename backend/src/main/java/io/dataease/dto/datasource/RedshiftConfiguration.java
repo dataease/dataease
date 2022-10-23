@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RedshiftConfigration extends JdbcConfiguration {
+public class RedshiftConfiguration extends JdbcConfiguration {
 
     private String driver = "com.amazon.redshift.jdbc42.Driver";
 

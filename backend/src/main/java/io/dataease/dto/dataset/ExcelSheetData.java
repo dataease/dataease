@@ -9,7 +9,7 @@ import java.util.Map;
 @Data
 public class ExcelSheetData {
     @ApiModelProperty("标签")
-    private String excelLable;
+    private String excelLabel;
     @ApiModelProperty("数据集合")
     private List<List<String>> data;
     @ApiModelProperty("字段集合")

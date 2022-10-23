@@ -1,6 +1,6 @@
 <template>
   <div>
-    <operater title="system_parameter_setting.mailbox_service_settings">
+    <operator title="system_parameter_setting.mailbox_service_settings">
       <deBtn
         v-if="showCancel"
         secondary
@@ -31,7 +31,7 @@
       >
         {{ $t("commons.save") }}
       </deBtn>
-    </operater>
+    </operator>
     <!--邮件表单-->
     <el-form
       ref="formInline"
@@ -129,14 +129,14 @@
 
 <script>
 import { emailInfo, updateInfo, validate } from '@/api/system/email'
-import operater from './Operater'
+import operator from './Operator'
 import msgCfm from '@/components/msgCfm'
 import dePwd from '@/components/deCustomCm/dePwd.vue'
 const list = ['host', 'port', 'account', 'password', 'ssl', 'tls', '', 'recipient']
 export default {
   name: 'EmailSetting',
   components: {
-    operater,
+    operator,
     dePwd
   },
   mixins: [msgCfm],

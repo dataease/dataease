@@ -21,7 +21,7 @@ module.exports = {
    */
   sidebarLogo: false,
   showSettings: true,
-  interruptTokenContineUrls: [
+  interruptTokenContinueUrls: [
     '/api/sys_msg/list/',
     '/dataset/taskLog/list/'
   ]

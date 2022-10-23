@@ -19,7 +19,7 @@
       v-model="selectAll"
       v-customStyle="customStyle"
       :indeterminate="isIndeterminate"
-      @change="selectAllChane"
+      @change="selectAllChange"
     >{{ $t('dataset.check_all') }}</el-checkbox></p>
     <el-option
       v-for="item in options"
@@ -74,7 +74,7 @@ export default {
       selectValue: this.value,
       options: [],
       domList: null,
-      slectBoxDom: null,
+      selectBoxDom: null,
       scrollbar: null,
       startIndex: 0,
       endIndex: 0,
@@ -139,7 +139,7 @@ export default {
       }
       return this.selectValue === id && 'selected'
     },
-    selectAllChane(val) {
+    selectAllChange(val) {
       const vals = val ? [...this.list.map(ele => ele.id)] : []
       this.visualChange(vals)
       this.selectValue = vals
@@ -154,9 +154,9 @@ export default {
     reCacularHeight() {
       this.maxHeightDom.style.height = this.newList.length * this.itemHeight + 'px'
     },
-    resetList(arrys) {
-      if (Array.isArray(arrys)) {
-        this.newList = arrys.slice()
+    resetList(arrays) {
+      if (Array.isArray(arrays)) {
+        this.newList = arrays.slice()
         this.domList.style.paddingTop = 0 + 'px'
         this.scrollbar.scrollTop = 0
         this.callback()
@@ -183,13 +183,13 @@ export default {
         `.${this.classId} .el-select-dropdown .el-select-dropdown__wrap`
       )
       this.scrollbar = document.querySelector(`.${this.classId} .el-select-dropdown .el-scrollbar`)
-      this.slectBoxDom = document.querySelector(`.${this.classId} .el-select-dropdown__wrap`)
-      this.slectBoxDom.style.display = 'flex'
-      this.slectBoxDom.style.flexDirection = 'row'
+      this.selectBoxDom = document.querySelector(`.${this.classId} .el-select-dropdown__wrap`)
+      this.selectBoxDom.style.display = 'flex'
+      this.selectBoxDom.style.flexDirection = 'row'
       this.domList = selectDom.querySelector(
         `.${this.classId} .el-select-dropdown__wrap .el-select-dropdown__list`
       )
-      this.addScrollDiv(this.slectBoxDom)
+      this.addScrollDiv(this.selectBoxDom)
 
       this.scrollFn()
       this.customInputStyle()

@@ -2,7 +2,7 @@
   <div>
     <el-table
       class="de-filter-data-table"
-      :data="starDatas"
+      :data="starData"
       :show-header="false"
       :highlight-current-row="true"
       style="width: 100%"
@@ -49,7 +49,7 @@ export default {
   name: 'Enshrine',
   data() {
     return {
-      starDatas: []
+      starData: []
     }
   },
   computed: {
@@ -91,7 +91,7 @@ export default {
     },
     initData() {
       enshrineList({}).then(res => {
-        this.starDatas = res.data
+        this.starData = res.data
       })
     },
     setMainNull() {

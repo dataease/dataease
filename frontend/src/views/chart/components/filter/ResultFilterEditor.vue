@@ -266,13 +266,13 @@ export default {
       // 查找枚举值
       if (this.item.deType === 0 || this.item.deType === 5) {
         multFieldValues({ fieldIds: [this.item.id] }).then(res => {
-          this.fieldOptions = this.optionDatas(res.data)
+          this.fieldOptions = this.optionData(res.data)
         })
       }
     },
-    optionDatas(datas) {
-      if (!datas) return null
-      return datas.filter(item => !!item).map(item => {
+    optionData(data) {
+      if (!data) return null
+      return data.filter(item => !!item).map(item => {
         return {
           id: item,
           text: item

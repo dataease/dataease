@@ -5,7 +5,7 @@
     ref="deSelectTree"
     v-model="value"
     popover-class="test-class-wrap"
-    :data="datas"
+    :data="data"
     :select-params="selectParams"
     :tree-params="treeParams"
     :filter-node-method="_filterFun"
@@ -17,7 +17,7 @@
     @removeTag="changeNodeIds"
     @check="changeCheckNode"
     @select-clear="selectClear"
-    @onFoucs="onFoucs"
+    @onFocus="onFocus"
     @treeCheckChange="handleElTagStyle"
   />
 
@@ -59,7 +59,7 @@ export default {
     return {
       show: true,
       selectOptionWidth: 0,
-      datas: [],
+      data: [],
       // eslint-disable-next-line
       value: this.isSingle ? '' : [],
       selectParams: {
@@ -128,7 +128,7 @@ export default {
     },
     'element.options.attrs.fieldId': function(value, old) {
       if (value === null || typeof value === 'undefined' || value === old) return
-      this.datas = []
+      this.data = []
 
       let method = mappingFieldValues
       const token = this.$store.getters.token || getToken()
@@ -143,9 +143,9 @@ export default {
       this.element.options.attrs.fieldId &&
       this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
-        this.datas = this.optionDatas(res.data)
+        this.data = this.optionData(res.data)
         this.$nextTick(() => {
-          this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.datas)
+          this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.data)
         })
       })
       this.element.options.value = ''
@@ -177,13 +177,13 @@ export default {
               this.value = defaultV.split(',')[0]
             }
           }
-          this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.datas)
+          this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.data)
         })
       })
     },
     'element.options.attrs.sort': function(value, old) {
       if (value === null || typeof value === 'undefined' || value === old || isSameVueObj(value, old)) return
-      this.datas = []
+      this.data = []
 
       let method = mappingFieldValues
       const token = this.$store.getters.token || getToken()
@@ -198,9 +198,9 @@ export default {
       this.element.options.attrs.fieldId &&
       this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
-        this.datas = this.optionDatas(res.data)
+        this.data = this.optionData(res.data)
         this.$nextTick(() => {
-          this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.datas)
+          this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.data)
         })
       })
       this.element.options.value = ''
@@ -233,7 +233,7 @@ export default {
         this.changeValue(this.value)
       }
     },
-    onFoucs() {
+    onFocus() {
       this.$nextTick(() => {
         this.handleCoustomStyle()
       })
@@ -260,7 +260,7 @@ export default {
     },
     initLoad() {
       this.value = this.fillValueDerfault()
-      this.datas = []
+      this.data = []
       if (this.element.options.attrs.fieldId) {
         let method = mappingFieldValues
         const token = this.$store.getters.token || getToken()
@@ -269,9 +269,9 @@ export default {
           method = linkMappingFieldValues
         }
         method({ fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }).then(res => {
-          this.datas = this.optionDatas(res.data)
+          this.data = this.optionData(res.data)
           this.$nextTick(() => {
-            this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.datas)
+            this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.data)
           })
         })
       }
@@ -355,10 +355,10 @@ export default {
         return defaultV.split(',')[0]
       }
     },
-    optionDatas(datas) {
-      if (!datas) return null
+    optionData(data) {
+      if (!data) return null
 
-      return datas.filter(item => !!item)
+      return data.filter(item => !!item)
     },
 
     /* 下面是树的渲染方法 */

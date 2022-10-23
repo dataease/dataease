@@ -1,5 +1,5 @@
 <template>
-  <div class="dataset-on-time de-serach-table">
+  <div class="dataset-on-time de-search-table">
     <el-row class="top-operate">
       <el-col :span="10">
         <deBtn
