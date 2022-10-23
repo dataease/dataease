@@ -17,11 +17,11 @@
             @blur="nameBlur"
           />
           <div
-            v-if="nameExsit"
+            v-if="nameExist"
             style="left: 55px"
             class="el-form-item__error"
           >
-            {{ $t('deDataset.already_exists') }}
+            {{ $t('deDataset.already_Exists') }}
           </div>
         </template>
         <template v-else>
@@ -87,7 +87,7 @@ export default {
       datasetType: '',
       component: '',
       table: {},
-      nameExsit: false,
+      nameExist: false,
       nameList: [],
       datasetForm: {
         id: '',
@@ -164,8 +164,8 @@ export default {
       this.handlerConfirm(options)
     },
     nameBlur() {
-      this.nameExsitValidator()
-      this.showInput = this.nameExsit
+      this.nameExistValidator()
+      this.showInput = this.nameExist
     },
     getDatasetNameFromGroup(sceneId, name) {
       post(`/dataset/table/getDatasetNameFromGroup/${sceneId}`, null).then(
@@ -179,8 +179,8 @@ export default {
     },
     datasetSave() {
       if (['sql', 'union'].includes(this.datasetType)) {
-        this.nameExsitValidator()
-        if (this.nameExsit) {
+        this.nameExistValidator()
+        if (this.nameExist) {
           return
         }
       }
@@ -202,17 +202,17 @@ export default {
     },
     nameValidator(rule, value, callback) {
       if (this.nameRepeat(value)) {
-        callback(new Error(this.$t('deDataset.already_exists')))
+        callback(new Error(this.$t('deDataset.already_Exists')))
       } else {
         callback()
       }
     },
-    nameExsitValidator() {
+    nameExistValidator() {
       if (!this.nameList || this.nameList.length === 0) {
-        this.nameExsit = false
+        this.nameExist = false
         return
       }
-      this.nameExsit = this.nameList.some(
+      this.nameExist = this.nameList.some(
         (name) => name === this.table.name && name !== this.originName
       )
     },
