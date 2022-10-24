@@ -1482,7 +1482,6 @@ export default {
       }
     },
     handleDragOver(e) {
-      console.log('handleDragOver--x='+e.pageX+';y='+e.pageY)
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth

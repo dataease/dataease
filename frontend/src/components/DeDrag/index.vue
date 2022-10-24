@@ -434,10 +434,10 @@ export default {
     }
   },
   computed: {
-    parentWidthOffset(){
-      if(this.canvasId==='canvas-main'){
+    parentWidthOffset() {
+      if (this.canvasId === 'canvas-main') {
         return 0
-      }else{
+      } else {
         return this.parentWidthTabOffset
       }
     },
@@ -677,7 +677,9 @@ export default {
       'tabMoveInActiveId',
       'tabActiveTabNameMap',
       'mousePointShadowMap',
-      'tabMoveOutComponentId'
+      'tabMoveOutComponentId',
+      'tabCollisionActiveId',
+      'tabMoveInActiveId'
     ])
   },
   watch: {
@@ -1495,14 +1497,14 @@ export default {
         const targetCanvasScale = this.curCanvasScaleMap['canvas-main']
         // 按照阴影位置定位
         this.element.style.left = (this.mousePointShadowMap.mouseX - (this.mousePointShadowMap.width)) / targetCanvasScale.scalePointWidth
-        this.element.style.top = (this.mousePointShadowMap.mouseY - (this.mousePointShadowMap.height / 2))/ targetCanvasScale.scalePointHeight
-        this.element.style.width = this.mousePointShadowMap.width/ targetCanvasScale.scalePointWidth
-        this.element.style.height = this.mousePointShadowMap.height/ targetCanvasScale.scalePointHeight
+        this.element.style.top = (this.mousePointShadowMap.mouseY - (this.mousePointShadowMap.height / 2)) / targetCanvasScale.scalePointHeight
+        this.element.style.width = this.mousePointShadowMap.width / targetCanvasScale.scalePointWidth
+        this.element.style.height = this.mousePointShadowMap.height / targetCanvasScale.scalePointHeight
 
         if (this.element.auxiliaryMatrix) {
           this.element.x = Math.round(this.element.style.left / targetCanvasScale.matrixStyleOriginWidth) + 1
           this.element.y = Math.round(this.element.style.top / targetCanvasScale.matrixStyleOriginHeight) + 1
-          this.element.sizex = Math.round(this.element.style.width /targetCanvasScale.matrixStyleOriginWidth)
+          this.element.sizex = Math.round(this.element.style.width / targetCanvasScale.matrixStyleOriginWidth)
           this.element.sizey = Math.round(this.element.style.height / targetCanvasScale.matrixStyleOriginHeight)
           this.recordMatrixCurShadowStyle(targetCanvasScale)
         }
@@ -1922,8 +1924,8 @@ export default {
       const left = this.left
       const width = this.width
       const height = this.height
-      // tab 移入检测开启
-      if (this.isTabMoveCheck) {
+      // tab 移入检测开启 tab组件不能相互移入另一个tab组件
+      if (this.isTabMoveCheck && this.element.type !== 'de-tabs') {
         const nodes = this.$el.parentNode.childNodes // 获取当前父节点下所有子节点
         for (const item of nodes) {
           if (
@@ -1953,7 +1955,7 @@ export default {
             const brAndBr = (collisionT + collisionH) >= (top + height) && (collisionL + collisionW) >= (left + width)
             if (tfAndTf && bfAndBf && trAndTr && brAndBr) {
               this.$store.commit('setTabCollisionActiveId', item.getAttribute('component-id'))
-            } else {
+            } else if (this.tabCollisionActiveId === item.getAttribute('component-id')) {
               this.$store.commit('setTabCollisionActiveId', null)
             }
 
@@ -1974,7 +1976,7 @@ export default {
             const activeBrAndBr = (activeT + activeH) >= (top + height) && (activeL + activeW) >= (left + width)
             if (activeTfAndTf && activeBfAndBf && activeTrAndTr && activeBrAndBr) {
               this.$store.commit('setTabMoveInActiveId', item.getAttribute('component-id'))
-            } else {
+            } else if (this.tabMoveInActiveId === item.getAttribute('component-id')) {
               this.$store.commit('setTabMoveInActiveId', null)
             }
 
