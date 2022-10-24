@@ -374,8 +374,8 @@ export default {
         this.sheetObj = data
         this.fields = data.fields
         this.jsonArray = data.jsonArray
-        const data = this.jsonArray
-        this.$refs.plxTable.reloadData(data)
+        const dataList = this.jsonArray
+        this.$refs.plxTable.reloadData(dataList)
       }
     },
     handleCommand(type, field) {
