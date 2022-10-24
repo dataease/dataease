@@ -116,7 +116,7 @@
                 index: 1
             })
             this.loadStarStatus()
-			this.caclViewHeight()
+			this.calcViewHeight()
 
 
 		},
@@ -194,7 +194,7 @@
 								})
 
             },
-			caclViewHeight() {
+			calcViewHeight() {
 				let systemInfo = uni.getSystemInfoSync()
 				const h5Height = systemInfo.windowHeight - systemInfo.statusBarHeight
 				if(systemInfo.navigationBarHeight) {

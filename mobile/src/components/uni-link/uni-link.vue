@@ -25,7 +25,7 @@
 	 * @tutorial https://ext.dcloud.net.cn/plugin?id=1182
 	 * @property {String} href 点击后打开的外部网页url
 	 * @property {String} text 显示的文字
-	 * @property {String} downlaod H5平台下载文件名
+	 * @property {String} download H5平台下载文件名
 	 * @property {Boolean} showUnderLine 是否显示下划线
 	 * @property {String} copyTips 在小程序端复制链接时显示的提示语
 	 * @property {String} color 链接文字颜色
