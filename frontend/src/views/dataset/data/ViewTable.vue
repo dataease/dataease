@@ -125,14 +125,18 @@
       </el-tab-pane>
       <el-tab-pane
         v-if="
-          table.mode === 1 &&
-            (table.type === 'db' || table.type === 'sql' || table.type === 'api')
+          table.mode === 1 && ['api', 'sql', 'db', 'excel'].includes(table.type)
         "
         :label="$t('dataset.update_info')"
         name="updateInfo"
       >
         <update-info
-          v-if="tabActive == 'updateInfo'"
+          v-if="tabActive == 'updateInfo' && table.type !== 'excel'"
+          :param="param"
+          :table="table"
+        />
+        <update-records
+          v-if="tabActive == 'updateInfo' && table.type === 'excel'"
           :param="param"
           :table="table"
         />
@@ -175,7 +179,7 @@ import DatasetDetail from '../common/DatasetDetail'
 import FieldEdit from './FieldEdit'
 import { pluginLoaded } from '@/api/user'
 import PluginCom from '@/views/system/plugin/PluginCom'
-
+import UpdateRecords from './UpdateRecords'
 export default {
   name: 'ViewTable',
   components: {
@@ -183,6 +187,7 @@ export default {
     DatasetDetail,
     UpdateInfo,
     TabDataPreview,
+    UpdateRecords,
     PluginCom
   },
   props: {

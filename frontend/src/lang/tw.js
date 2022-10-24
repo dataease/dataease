@@ -1436,7 +1436,7 @@ export default {
     field_rename: '字段重命名',
     params_work: '僅在編輯 sql 時生效',
     sql_variable_limit_1: '1、SQL變數只能在WHERE條件中使用',
-    sql_variable_limit_2: '2、示例：select * from table_name where column_name1=${parm_name1} and column_name2 in ${parm_name2}',
+    sql_variable_limit_2: "2、示例：select * from table_name where column_name1='${parm_name1}' and column_name2 in '${parm_name2}'",
     selesql_variable_limit_2ct_year: '選擇年',
     select_month: '選擇月',
     select_date: '選擇日期',

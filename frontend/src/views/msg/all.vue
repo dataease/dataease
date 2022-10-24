@@ -6,6 +6,7 @@
     <div class="organization">
       <el-tabs
         v-model="tabActive"
+        class="de-tabs"
         @tab-click="changeTab"
       >
         <el-tab-pane
