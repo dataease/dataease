@@ -47,6 +47,10 @@ import bus from '@/utils/bus'
 export default {
 
   props: {
+    canvasId: {
+      type: String,
+      required: true
+    },
     element: {
       type: Object,
       default: null
@@ -230,6 +234,7 @@ export default {
     },
     getCondition() {
       const param = {
+        canvasId: this.canvasId,
         component: this.element,
         value: [this.form.min, this.form.max],
         operator: this.operator

@@ -52,6 +52,10 @@ export default {
   components: { ElVisualSelect },
   mixins: [customInput],
   props: {
+    canvasId: {
+      type: String,
+      required: true
+    },
     element: {
       type: Object,
       default: () => {}
@@ -311,6 +315,7 @@ export default {
     },
     getCondition() {
       const param = {
+        canvasId: this.canvasId,
         component: this.element,
         value: this.formatFilterValue(),
         operator: this.operator

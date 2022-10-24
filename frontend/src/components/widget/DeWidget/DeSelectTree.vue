@@ -36,6 +36,10 @@ export default {
   components: { ElTreeSelect },
   mixins: [customInput],
   props: {
+    canvasId: {
+      type: String,
+      required: true
+    },
     element: {
       type: Object,
       default: () => {}
@@ -298,6 +302,7 @@ export default {
       const val = this.formatFilterValue()
 
       const param = {
+        canvasId: this.canvasId,
         component: this.element,
         value: val,
         operator: this.operator,
