@@ -872,7 +872,7 @@ export default {
     border-radius: 4px;
     background: #e1eaff;
     position: relative;
-    padding: 9px 19px 9px 40px;
+    padding: 9px 0 9px 40px;
     font-family: PingFang SC;
     font-size: 14px;
     font-weight: 400;

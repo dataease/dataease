@@ -205,7 +205,7 @@
           >
             <Preview
               v-if="showMainFlag"
-              :component-data="componentData"
+              :component-data="mainCanvasComponentData"
               :canvas-style-data="canvasStyleData"
               :active-tab="activeTab"
               :in-screen="!fullscreen"
@@ -289,7 +289,7 @@ import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'
 import { export2AppCheck, initPanelData, updatePanelStatus } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
-import { dataURLToBlob } from '@/components/canvas/utils/utils'
+import { dataURLToBlob, getNowCanvasComponentData } from '@/components/canvas/utils/utils'
 import { findResourceAsBase64 } from '@/api/staticResource/staticResource'
 import PanelDetailInfo from '@/views/panel/list/common/PanelDetailInfo'
 
@@ -304,6 +304,7 @@ export default {
   },
   data() {
     return {
+      canvasId: 'canvas-main',
       showMain: true,
       pdfTemplateSelectedIndex: 0,
       pdfTemplateContent: '',
@@ -322,6 +323,9 @@ export default {
     }
   },
   computed: {
+    mainCanvasComponentData() {
+      return getNowCanvasComponentData(this.canvasId)
+    },
     imageWrapperStyle() {
       if (this.exporting) {
         return {

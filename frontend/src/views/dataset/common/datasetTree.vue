@@ -60,6 +60,16 @@
                 :class="`ds-icon-${data.modelInnerType}`"
               />
             </span>
+            <span v-if="['db', 'sql'].includes(data.modelInnerType)">
+              <span
+                v-if="data.mode === 0"
+                style="margin-left: 6px"
+              ><i class="el-icon-s-operation" /></span>
+              <span
+                v-if="data.mode === 1"
+                style="margin-left: 6px"
+              ><i class="el-icon-alarm-clock" /></span>
+            </span>
             <span
               style="
                 margin-left: 6px;
@@ -247,16 +257,18 @@ export default {
           modelInnerTypeArray: this.customType
         },
         !userCache
-      ).then((res) => {
-        if (cache) {
-          localStorage.setItem('dataset-tree', JSON.stringify(res.data))
-        }
-        if (!userCache) {
-          this.treeData = res.data
-        }
-      }).finally(() => {
-        this.loading = false
-      })
+      )
+        .then((res) => {
+          if (cache) {
+            localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+          }
+          if (!userCache) {
+            this.treeData = res.data
+          }
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     nodeClick(data, node) {
       if (data.modelInnerType !== 'group') {

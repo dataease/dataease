@@ -63,6 +63,27 @@
             </el-dropdown-menu>
           </el-dropdown>
         </span>
+        <de-canvas-tab v-if="item.content && item.content.type==='canvas' && isEdit"
+                       :ref="'canvasTabRef-'+item.name"
+                       :parent-forbid="true"
+                       :canvas-style-data="canvasStyleData"
+                       :component-data="tabCanvasComponentData(item.name)"
+                       :canvas-id="element.id+'-'+item.name"
+                       class="tab_canvas"
+                       :class="moveActive ? 'canvas_move_in':''"
+        >
+        </de-canvas-tab>
+        <div style="width: 100%;height:100%">
+          <Preview
+            v-if="item.content && item.content.type==='canvas' && !isEdit"
+            :component-data="tabCanvasComponentData(item.name)"
+            :canvas-style-data="canvasStyleData"
+            :canvas-id="element.id+'-'+item.name"
+            :panel-info="panelInfo"
+            :in-screen="true"
+          />
+        </div>
+
         <component
           :is="item.content.component"
           v-if="item.content && item.content.type!=='view'"
@@ -195,10 +216,13 @@ import { chartCopy } from '@/api/chart/chart'
 import { buildFilterMap } from '@/utils/conditionUtil'
 import TabUseList from '@/views/panel/AssistComponent/tabUseList'
 import { findPanelElementInfo } from '@/api/panel/panel'
+import { getNowCanvasComponentData } from '@/components/canvas/utils/utils'
+import DeCanvasTab from '@/components/canvas/DeCanvas'
+import Preview from '@/components/canvas/components/Editor/Preview'
 
 export default {
-  name: 'DeTabls',
-  components: { TabUseList, ViewSelect, DataeaseTabs },
+  name: 'DeTabs',
+  components: { Preview, DeCanvasTab, TabUseList, ViewSelect, DataeaseTabs },
   props: {
     element: {
       type: Object,
@@ -236,9 +260,7 @@ export default {
   },
   data() {
     return {
-
       activeTabName: null,
-
       tabIndex: 1,
       dialogVisible: false,
       textarea: '',
@@ -250,6 +272,9 @@ export default {
     }
   },
   computed: {
+    moveActive() {
+      return this.tabMoveInActiveId && this.tabMoveInActiveId === this.element.id
+    },
     tabH() {
       return this.h - 50
     },
@@ -263,12 +288,12 @@ export default {
       const map = buildFilterMap(this.componentData)
       return map
     },
-
     ...mapState([
       'componentData',
       'curComponent',
       'mobileLayoutStatus',
-      'canvasStyleData'
+      'canvasStyleData',
+      'tabMoveInActiveId'
     ]),
     fontColor() {
       return this.element && this.element.style && this.element.style.headFontColor || 'none'
@@ -295,6 +320,7 @@ export default {
   watch: {
     activeTabName: {
       handler(newVal, oldVla) {
+        this.$store.commit('setTabActiveTabNameMap', { tabId: this.element.id, activeTabName: this.activeTabName })
         const _this = this
         _this.$nextTick(() => {
           try {
@@ -313,7 +339,7 @@ export default {
             activeTabInner = item.content
           }
         })
-        if (newVal && activeTabInner) {
+        if (newVal && activeTabInner && activeTabInner.type === 'view') {
           this.$store.commit('setCurActiveTabInner', activeTabInner)
           this.$store.dispatch('chart/setViewId', activeTabInner.propValue.viewId)
         } else {
@@ -335,12 +361,17 @@ export default {
   created() {
     bus.$on('add-new-tab', this.addNewTab)
     this.activeTabName = this.element.options.tabList[0].name
+    this.$store.commit('setTabActiveTabNameMap', { tabId: this.element.id, activeTabName: this.activeTabName })
     this.setContentThemeStyle()
   },
   beforeDestroy() {
     bus.$off('add-new-tab', this.addNewTab)
   },
   methods: {
+    tabCanvasComponentData(tabName) {
+      const result = getNowCanvasComponentData(this.element.id + '-' + tabName)
+      return result
+    },
     setContentThemeStyle() {
       this.element.options.tabList.forEach(tab => {
         if (tab.content && tab.content.type === 'view') {
@@ -429,7 +460,9 @@ export default {
           component.propValue = propValue
           component.filters = []
           component.linkageFilters = []
-          if (this.themeStyle) { component.commonBackground = JSON.parse(JSON.stringify(this.themeStyle)) }
+          if (this.themeStyle) {
+            component.commonBackground = JSON.parse(JSON.stringify(this.themeStyle))
+          }
         }
       })
       component.id = newComponentId
@@ -494,8 +527,10 @@ export default {
       const tab = {
         title: 'NewTab',
         name: curName,
-        content: null
+        content: { type: 'canvas' }
       }
+      //的Tab都是画布
+
       this.element.options.tabList.push(tab)
 
       this.styleChange()
@@ -523,18 +558,27 @@ export default {
 
 <style lang="scss" scoped>
 
-  .de-tabs-div {
-    height: 100%;
-    overflow: hidden;
-  }
+.de-tabs-div {
+  height: 100%;
+  overflow: hidden;
+}
 
-  .de-tabs-height {
-    height: 100%;
-  }
+.de-tabs-height {
+  height: 100%;
+}
 
-  .de-tab-content {
-    width: 100%;
-    height: 100%;
-  }
+.de-tab-content {
+  width: 100%;
+  height: 100%;
+}
+
+.tab_canvas {
+  height: calc(100% - 5px);
+  border: 2px dotted transparent;
+}
+
+.canvas_move_in {
+  border-color: blueviolet;
+}
 
 </style>

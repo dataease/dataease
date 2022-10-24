@@ -84,11 +84,6 @@
           </el-select>
 
         </el-form-item>
-
-        <!-- <el-form-item>
-          <el-button type="primary" @click="onSubmit">{{ $t('panel.confirm') }}</el-button>
-          <el-button @click="onClose">{{ $t('panel.cancel') }}</el-button>
-        </el-form-item> -->
       </el-form>
     </el-row>
     <i
@@ -104,6 +99,10 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   props: {
+    canvasId: {
+      type: String,
+      require: true
+    },
     formatInfo: {
       type: Object,
       required: true
@@ -131,9 +130,12 @@ export default {
     }
   },
   computed: {
+    curCanvasScaleSelf(){
+      return this.curCanvasScaleMap[this.canvasId]
+    },
     ...mapState([
       'curComponent',
-      'curCanvasScale'
+      'curCanvasScaleMap'
     ])
   },
   watch: {
@@ -162,15 +164,13 @@ export default {
     modelChange(val) {
       if (val === '0') {
         this.curComponent.style.height = 100
-        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
+        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScaleSelf.matrixStyleOriginHeight)
       } else if (val === '1') {
         this.curComponent.style.height = 150
-        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
+        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScaleSelf.matrixStyleOriginHeight)
       } else {
-        // this.curComponent.style.width = this.curComponent.style.width / 2
         this.curComponent.style.height = this.curComponent.style.width + 50
-        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
-        // this.curComponent.sizex = Math.round(this.curComponent.style.width / this.curCanvasScale.matrixStyleOriginWidth)
+        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScaleSelf.matrixStyleOriginHeight)
       }
     }
   }
