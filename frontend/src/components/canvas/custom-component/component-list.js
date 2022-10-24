@@ -394,7 +394,7 @@ const list = [
       tabList: [{
         title: 'Tab1',
         name: '1',
-        content: null
+        content: { type: 'canvas' }
       }]
     },
     x: 1,

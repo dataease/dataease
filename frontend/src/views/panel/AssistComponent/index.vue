@@ -120,6 +120,7 @@ export default {
         type: 'assist',
         id: ev.target.dataset.id
       }
+      this.$store.commit('clearTabMoveInfo')
       ev.dataTransfer.setData('componentInfo', JSON.stringify(dataTrans))
       eventBus.$emit('startMoveIn')
     },
@@ -183,6 +184,8 @@ export default {
         component.auxiliaryMatrix = false
       }
       component.moveStatus = 'start'
+      component['canvasId'] = 'canvas-main'
+      component['canvasPid'] = '0'
       return component
     },
     handleDragEnd(ev) {

@@ -22,6 +22,7 @@
     @mouseleave="leave"
   >
     <div
+      v-show="contentDisplay"
       :class="[
         {
           ['de-drag-active-inner']:enabled,
@@ -35,6 +36,7 @@
         v-if="editBarShow"
         style="transform: translateZ(10px)"
         :active-model="'edit'"
+        :canvas-id="canvasId"
         :element="element"
         @showViewDetails="showViewDetails"
         @amRemoveItem="amRemoveItem"
@@ -62,7 +64,7 @@
         @mousedown.stop.prevent="handleDown(handlei, $event)"
         @touchstart.stop.prevent="handleTouchDown(handlei, $event)"
       >
-        <slot :name="handlei" />
+        <slot :name="handlei"/>
       </div>
       <div
         :id="componentCanvasId"
@@ -75,7 +77,7 @@
           class="svg-background"
           :icon-class="mainSlotSvgInner"
         />
-        <slot />
+        <slot/>
       </div>
     </div>
   </div>
@@ -98,9 +100,13 @@ import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   replace: true,
-  name: 'Dedrag',
+  name: 'DeDrag',
   components: { EditBar, MobileCheckBar },
   props: {
+    canvasId: {
+      type: String,
+      default: 'canvas-main'
+    },
     className: {
       type: String,
       default: 'vdr'
@@ -370,10 +376,21 @@ export default {
     batchOptActive: {
       type: Boolean,
       default: false
+    },
+    // tab 移入检测
+    isTabMoveCheck: {
+      type: Boolean,
+      default: true
     }
   },
   data: function() {
     return {
+      contentDisplay: true,
+      //当画布在tab中是 宽度左右拓展的余量
+      parentWidthTabOffset: 40,
+      canvasChangeTips: 'none',
+      tabMoveInYOffset: 70,
+      tabMoveInXOffset: 40,
       left: this.x,
       top: this.y,
       right: null,
@@ -417,6 +434,16 @@ export default {
     }
   },
   computed: {
+    parentWidthOffset(){
+      if(this.canvasId==='canvas-main'){
+        return 0
+      }else{
+        return this.parentWidthTabOffset
+      }
+    },
+    curCanvasScaleSelf() {
+      return this.curCanvasScaleMap[this.canvasId]
+    },
     svgBg() {
       return {
         width: this.width + 'px!important',
@@ -558,7 +585,7 @@ export default {
         }
       }
       if (this.element.auxiliaryMatrix) {
-        const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
+        const width = Math.round(this.width / this.curCanvasScaleSelf.matrixStyleWidth) * this.curCanvasScaleSelf.matrixStyleWidth
         return (width - this.curGap * 2) + 'px'
       } else {
         return (this.width - this.curGap * 2) + 'px'
@@ -572,7 +599,7 @@ export default {
         }
       }
       if (this.element.auxiliaryMatrix) {
-        const height = Math.round(this.height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
+        const height = Math.round(this.height / this.curCanvasScaleSelf.matrixStyleHeight) * this.curCanvasScaleSelf.matrixStyleHeight
         return (height - this.curGap * 2) + 'px'
       } else {
         return (this.height - this.curGap * 2) + 'px'
@@ -625,14 +652,14 @@ export default {
       return (this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix) ? this.componentGap : 0
     },
     miniWidth() {
-      return this.element.auxiliaryMatrix ? this.curCanvasScale.matrixStyleWidth * (this.mobileLayoutStatus ? 1 : 4) : 0
+      return this.element.auxiliaryMatrix ? this.curCanvasScaleSelf.matrixStyleWidth * (this.mobileLayoutStatus ? 1 : 4) : 0
     },
     miniHeight() {
       if (this.element.auxiliaryMatrix) {
         if (this.element.component === 'de-number-range') {
-          return this.element.auxiliaryMatrix ? this.curCanvasScale.matrixStyleHeight * (this.mobileLayoutStatus ? 1 : 4) : 0
+          return this.element.auxiliaryMatrix ? this.curCanvasScaleSelf.matrixStyleHeight * (this.mobileLayoutStatus ? 1 : 4) : 0
         } else {
-          return this.element.auxiliaryMatrix ? this.curCanvasScale.matrixStyleHeight * (this.mobileLayoutStatus ? 1 : 4) : 0
+          return this.element.auxiliaryMatrix ? this.curCanvasScaleSelf.matrixStyleHeight * (this.mobileLayoutStatus ? 1 : 4) : 0
         }
       } else {
         return 0
@@ -640,13 +667,17 @@ export default {
     },
     ...mapState([
       'editor',
-      'curCanvasScale',
+      'curCanvasScaleMap',
       'canvasStyleData',
       'linkageSettingStatus',
       'mobileLayoutStatus',
       'componentGap',
       'scrollAutoMove',
-      'batchOptStatus'
+      'batchOptStatus',
+      'tabMoveInActiveId',
+      'tabActiveTabNameMap',
+      'mousePointShadowMap',
+      'tabMoveOutComponentId'
     ])
   },
   watch: {
@@ -799,6 +830,7 @@ export default {
         const rect = this.$el.parentNode.getBoundingClientRect()
         this.parentX = rect.x
         this.parentY = rect.y
+        // 高度不设置上限100000 宽度增加左右 60px
         return [Math.round(parseFloat(style.getPropertyValue('width'), 10)) + 6, 100000]
       }
       if (typeof this.parent === 'string') {
@@ -834,6 +866,8 @@ export default {
       this.elementDown(e)
       this.$nextTick(() => {
         this.$store.commit('setCurComponent', { component: this.element, index: this.index })
+        this.curComponent.optStatus.dragging = true
+        this.$store.commit('clearTabMoveInfo')
       })
     },
     // 元素按下
@@ -905,8 +939,9 @@ export default {
         }
       } else {
         return {
-          minLeft: this.left % this.grid[0],
-          maxLeft: Math.floor((this.parentWidth - this.width - this.left) / this.grid[0]) * this.grid[0] + this.left,
+          // X方向余量向左右偏移this.parentWidthOffset 个余量，可以做到类型像移出canvas的效果，适配Tab的canvas组件
+          minLeft: this.left % this.grid[0] - this.parentWidthOffset,
+          maxLeft: (Math.floor((this.parentWidth - this.width - this.left) / this.grid[0]) * this.grid[0] + this.left) + this.parentWidthOffset,
           minRight: this.right % this.grid[0],
           maxRight: Math.floor((this.parentWidth - this.width - this.right) / this.grid[0]) * this.grid[0] + this.right,
           minTop: this.top % this.grid[1],
@@ -1106,7 +1141,8 @@ export default {
       const bounds = this.bounds
       const mouseClickPosition = this.mouseClickPosition
       // 水平移动
-      const tmpDeltaX = axis && axis !== 'y' ? mouseClickPosition.mouseX - (e.touches ? e.touches[0].pageX : e.pageX) : 0
+      const mX = e.touches ? e.touches[0].pageX : e.pageX
+      const tmpDeltaX = axis && axis !== 'y' ? mouseClickPosition.mouseX - mX : 0
       // 垂直移动
       const mY = e.touches ? e.touches[0].pageY : e.pageY
       const tmpDeltaY = axis && axis !== 'x' ? mouseClickPosition.mouseY - mY : 0
@@ -1132,7 +1168,15 @@ export default {
       if (this.element.auxiliaryMatrix) {
         this.$emit('onDragging', e, this.element)
       }
-
+      if ((-left > (this.parentWidthOffset - 10) || left - bounds.maxRight > (this.parentWidthOffset - 10)) && this.canvasId !== 'canvas-main') {
+        this.contentDisplay = false
+        this.$store.commit('setMousePointShadowMap', { mouseX: mX, mouseY: mY, width: this.width, height: this.height })
+        this.$store.commit('setTabMoveOutComponentId', this.element.id)
+      } else {
+        this.$store.commit('setTabMoveOutComponentId', null)
+        this.contentDisplay = true
+      }
+      await this.tabMoveInCheck()
       // private 记录当前样式
       this.recordCurStyle()
     },
@@ -1365,9 +1409,6 @@ export default {
         this.resizing = false
         this.conflictCheck()
         this.$emit('refLineParams', refLine)
-        // this.$emit('resizestop', this.left, this.top, this.width, this.height)
-        // private
-        // this.$emit('resizestop')
       }
       if (this.dragging) {
         this.dragging = false
@@ -1384,9 +1425,14 @@ export default {
 
       // 如果辅助设计 需要最后调整矩阵
       if (this.element.auxiliaryMatrix) {
-        // this.recordMatrixCurStyle()
+        const _this = this
+        const historyTabMoveInActiveId = this.tabMoveInActiveId
+        const historyTabMoveOutComponentId = this.tabMoveOutComponentId
         setTimeout(() => {
-          this.recordMatrixCurShadowStyle()
+          // 移入组件移入Tab时 不需要计算根据阴影面积重置大小
+          if (!historyTabMoveInActiveId && !historyTabMoveOutComponentId) {
+            this.recordMatrixCurShadowStyle(this.curCanvasScaleSelf)
+          }
           this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
           // 记录snapshot后 移动已记录设置为false
           this.hasMove = false
@@ -1404,14 +1450,78 @@ export default {
 
       // 挤占式画布设计 handleUp
       this.element.auxiliaryMatrix && this.$emit('onHandleUp', e)
+      this.componentCanvasChange()
+      // 还原Tab画布状态
+      this.$store.commit('clearTabMoveInfo')
+      // 松开鼠标时 如果当前内容被隐藏，则需要进行显示出来
+      if (!this.contentDisplay) {
+        this.contentDisplay = true
+      }
     },
-    // 新增方法 ↓↓↓
-    // 设置属性
+    // 如果Tab移入状态还是Active 状态 则将当前的组件 放置到tab页中
+    componentCanvasChange() {
+      // 主画布移入Tab画布
+      if (this.tabMoveInActiveId) {
+        //从当前画布移除
+        this.$emit('amRemoveItem')
+        this.element.canvasPid = this.element.canvasId
+        //Tab内部的画布ID 为 tab组件id + '-' + tabActiveName
+        const targetCanvasId = this.tabMoveInActiveId + '-' + this.tabActiveTabNameMap[this.tabMoveInActiveId]
+        const targetCanvasScale = this.curCanvasScaleMap[targetCanvasId]
+        if (this.element.auxiliaryMatrix) {
+          this.element.x = 1
+          this.element.y = 108
+          this.element.sizex = Math.round(this.element.sizex * this.curCanvasScaleSelf.matrixStyleWidth / targetCanvasScale.matrixStyleWidth)
+          this.element.sizey = Math.round(this.element.sizey * this.curCanvasScaleSelf.matrixStyleHeight / targetCanvasScale.matrixStyleHeight)
+          this.element.style.width = this.element.sizex * targetCanvasScale.matrixStyleOriginWidth
+          this.element.style.height = this.element.sizey * targetCanvasScale.matrixStyleOriginHeight
+          this.element.style.left = 0
+          this.element.style.top = (this.element.y - 1) * targetCanvasScale.matrixStyleOriginHeight
+        } else {
+          this.element.style.left = 0
+          this.element.style.top = 0
+          this.element.style.width = this.element.style.width * this.curCanvasScaleSelf.matrixStyleWidth / targetCanvasScale.matrixStyleWidth
+          this.element.style.height = this.element.style.height * this.curCanvasScaleSelf.matrixStyleHeight / targetCanvasScale.matrixStyleHeight
+        }
+        this.element.canvasId = targetCanvasId
+      }
+      // Tab 画布 移入主画布
+      if (this.tabMoveOutComponentId) {
+        //从当前画布移除
+        this.$emit('amRemoveItem')
+        this.element.canvasPid = 0
+        this.element.canvasId = 'canvas-main'
+        //Tab内部的画布ID 为 tab组件id + '-' + tabActiveName
+        const targetCanvasScale = this.curCanvasScaleMap['canvas-main']
+        // 按照阴影位置定位
+        this.element.style.left = (this.mousePointShadowMap.mouseX - (this.mousePointShadowMap.width)) / targetCanvasScale.scalePointWidth
+        this.element.style.top = (this.mousePointShadowMap.mouseY - (this.mousePointShadowMap.height / 2))/ targetCanvasScale.scalePointHeight
+        this.element.style.width = this.mousePointShadowMap.width/ targetCanvasScale.scalePointWidth
+        this.element.style.height = this.mousePointShadowMap.height/ targetCanvasScale.scalePointHeight
+
+        if (this.element.auxiliaryMatrix) {
+          this.element.x = Math.round(this.element.style.left / targetCanvasScale.matrixStyleOriginWidth) + 1
+          this.element.y = Math.round(this.element.style.top / targetCanvasScale.matrixStyleOriginHeight) + 1
+          this.element.sizex = Math.round(this.element.style.width /targetCanvasScale.matrixStyleOriginWidth)
+          this.element.sizey = Math.round(this.element.style.height / targetCanvasScale.matrixStyleOriginHeight)
+          this.recordMatrixCurShadowStyle(targetCanvasScale)
+        }
+      }
+
+    },
+
+    // 设置属性(属性跟随所属canvas component类型 要做出改变)
     settingAttribute() {
       // 设置冲突检测
       this.$el.setAttribute('data-is-check', `${this.isConflictCheck}`)
       // 设置对齐元素
       this.$el.setAttribute('data-is-snap', `${this.snap}`)
+      // 设置Tab移入检测
+      this.$el.setAttribute('tab-is-check', `${this.isTabMoveCheck}`)
+      // 设置组件类型
+      this.$el.setAttribute('component-type', `${this.element.component}`)
+      // 设置组件ID
+      this.$el.setAttribute('component-id', `${this.element.id}`)
     },
     // 冲突检测
     conflictCheck() {
@@ -1688,10 +1798,10 @@ export default {
 
     // 记录当前样式 矩阵处理
     recordMatrixCurStyle() {
-      const left = Math.round(this.left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
-      const top = Math.round(this.top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
-      const width = Math.round(this.width / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
-      const height = Math.round(this.height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
+      const left = Math.round(this.left / this.curCanvasScaleSelf.matrixStyleWidth) * this.curCanvasScaleSelf.matrixStyleWidth
+      const top = Math.round(this.top / this.curCanvasScaleSelf.matrixStyleHeight) * this.curCanvasScaleSelf.matrixStyleHeight
+      const width = Math.round(this.width / this.curCanvasScaleSelf.matrixStyleWidth) * this.curCanvasScaleSelf.matrixStyleWidth
+      const height = Math.round(this.height / this.curCanvasScaleSelf.matrixStyleHeight) * this.curCanvasScaleSelf.matrixStyleHeight
       const style = {
         ...this.defaultStyle
       }
@@ -1705,23 +1815,13 @@ export default {
 
       // resize
       self.$emit('resizeView')
-      // const self = this
-      // setTimeout(function() {
-      //   self.$emit('resizeView')
-      // }, 200)
     },
     // 记录当前样式 跟随阴影位置 矩阵处理
-    recordMatrixCurShadowStyle() {
-      const left = (this.element.x - 1) * this.curCanvasScale.matrixStyleWidth
-      const top = (this.element.y - 1) * this.curCanvasScale.matrixStyleHeight
-      const width = this.element.sizex * this.curCanvasScale.matrixStyleWidth
-      const height = this.element.sizey * this.curCanvasScale.matrixStyleHeight
-      // const t1 = Math.round(this.width / this.curCanvasScale.matrixStyleWidth)
-      // const left = Math.round(this.left / this.curCanvasScale.matrixStyleWidth) * this.curCanvasScale.matrixStyleWidth
-      // const top = Math.round(this.top / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
-      // const width = t1 * this.curCanvasScale.matrixStyleWidth
-      // const height = Math.round(this.height / this.curCanvasScale.matrixStyleHeight) * this.curCanvasScale.matrixStyleHeight
-
+    recordMatrixCurShadowStyle(scaleSelf) {
+      const left = (this.element.x - 1) * scaleSelf.matrixStyleWidth
+      const top = (this.element.y - 1) * scaleSelf.matrixStyleHeight
+      const width = this.element.sizex * scaleSelf.matrixStyleWidth
+      const height = this.element.sizey * scaleSelf.matrixStyleHeight
       const style = {
         ...this.defaultStyle
       }
@@ -1730,16 +1830,10 @@ export default {
       style.width = width
       style.height = height
       style.rotate = this.rotate
-      // this.hasMove = true
-
       this.$store.commit('setShapeStyle', style)
-
       // resize
       const self = this
       self.$emit('resizeView')
-      // setTimeout(function() {
-      //   self.$emit('resizeView')
-      // }, 200)
     },
     mountedFunction() {
       // private 冲突检测 和水平设计值保持一致
@@ -1821,6 +1915,72 @@ export default {
     // 跳转设置
     boardSet() {
       this.$emit('boardSet')
+    },
+    // tab移入检测
+    async tabMoveInCheck() {
+      const top = this.top
+      const left = this.left
+      const width = this.width
+      const height = this.height
+      // tab 移入检测开启
+      if (this.isTabMoveCheck) {
+        const nodes = this.$el.parentNode.childNodes // 获取当前父节点下所有子节点
+        for (const item of nodes) {
+          if (
+            item.className !== undefined &&
+            !item.className.split(' ').includes(this.classNameActive) &&
+            item.getAttribute('tab-is-check') !== null &&
+            item.getAttribute('tab-is-check') !== 'false' &&
+            item.getAttribute('component-type') === 'de-tabs'
+          ) {
+            const tw = item.offsetWidth
+            const th = item.offsetHeight
+            // 正则获取left与right
+            const [tl, tt] = this.formatTransformVal(item.style.transform)
+            // 碰撞有效区域检查
+            const collisionT = tt + this.tabMoveInYOffset
+            const collisionL = tl + (this.curCanvasScaleSelf.matrixStyleWidth / 2) - width
+            const collisionW = tw + 2 * width - this.curCanvasScaleSelf.matrixStyleWidth
+            const collisionH = th + height - this.tabMoveInYOffset
+
+            // 左上角靠近左上角区域
+            const tfAndTf = collisionT <= top && collisionL <= left
+            // 左下角靠近左下角区域
+            const bfAndBf = (collisionT + collisionH) >= (top + height) && collisionL <= left
+            // 右上角靠近右上角区域
+            const trAndTr = collisionT <= top && (collisionL + collisionW) >= (left + width)
+            // 右下角靠近右下角区域
+            const brAndBr = (collisionT + collisionH) >= (top + height) && (collisionL + collisionW) >= (left + width)
+            if (tfAndTf && bfAndBf && trAndTr && brAndBr) {
+              this.$store.commit('setTabCollisionActiveId', item.getAttribute('component-id'))
+            } else {
+              this.$store.commit('setTabCollisionActiveId', null)
+            }
+
+            // 移入有效区域检查
+            // 碰撞有效区域检查
+            const activeT = tt + this.tabMoveInYOffset
+            const activeL = tl + (this.curCanvasScaleSelf.matrixStyleWidth * 10) - width
+            const activeW = tw + 2 * width - this.curCanvasScaleSelf.matrixStyleWidth * 20
+            const activeH = th + height - 2 * this.tabMoveInYOffset
+
+            // 左上角靠近左上角区域
+            const activeTfAndTf = activeT <= top && activeL <= left
+            // 左下角靠近左下角区域
+            const activeBfAndBf = (activeT + activeH) >= (top + height) && activeL <= left
+            // 右上角靠近右上角区域
+            const activeTrAndTr = activeT <= top && (activeL + activeW) >= (left + width)
+            // 右下角靠近右下角区域
+            const activeBrAndBr = (activeT + activeH) >= (top + height) && (activeL + activeW) >= (left + width)
+            if (activeTfAndTf && activeBfAndBf && activeTrAndTr && activeBrAndBr) {
+              this.$store.commit('setTabMoveInActiveId', item.getAttribute('component-id'))
+            } else {
+              this.$store.commit('setTabMoveInActiveId', null)
+            }
+
+          }
+        }
+      }
     }
   }
 

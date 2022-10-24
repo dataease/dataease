@@ -63,6 +63,7 @@ const data = {
     // 当前点击组件
     curComponent: null,
     curCanvasScale: null,
+    curCanvasScaleMap: {},
     curComponentIndex: null,
     // 预览仪表板缩放信息
     previewCanvasScale: {
@@ -95,6 +96,10 @@ const data = {
     mobileLayoutStatus: false,
     // 公共链接状态(当前是否是公共链接打开)
     publicLinkStatus: false,
+    pcTabMatrixCount: {
+      x: 36,
+      y: 36
+    },
     pcMatrixCount: {
       x: 36,
       y: 18
@@ -134,7 +139,20 @@ const data = {
       customAttr: {}
     },
     allViewRender: [],
-    isInEditor: false // 是否在编辑器中，用于判断复制、粘贴组件时是否生效，如果在编辑器外，则无视这些操作
+    isInEditor: false, // 是否在编辑器中，用于判断复制、粘贴组件时是否生效，如果在编辑器外，则无视这些操作
+    tabCollisionActiveId: null, // 当前在碰撞的Tab组件ID
+    tabMoveInActiveId: null, // 当前在移入的Tab ID
+    tabMoveOutActiveId: null, // 当前在移出的Tab ID
+    tabMoveOutComponentId: null, // 当前在移出Tab de组件ID
+    tabActiveTabNameMap: {}, // 编辑器中 tab组件中的活动tab页,
+    // 鼠标处于drag状态的坐标点
+    mousePointShadowMap: {
+      mouseX: 0,
+      mouseY: 0,
+      width: 0,
+      height: 0
+    }
+
   },
   mutations: {
     ...animation.mutations,
@@ -145,6 +163,10 @@ const data = {
     ...layer.mutations,
     ...snapshot.mutations,
     ...lock.mutations,
+
+    setTabActiveTabNameMap(state, tabActiveInfo){
+      state.tabActiveTabNameMap[tabActiveInfo.tabId] = tabActiveInfo.activeTabName
+    },
 
     setClickComponentStatus(state, status) {
       state.isClickComponent = status
@@ -186,8 +208,9 @@ const data = {
       state.curActiveTabInner = curActiveTabInner
     },
 
-    setCurCanvasScale(state, curCanvasScale) {
-      state.curCanvasScale = curCanvasScale
+    setCurCanvasScale(state, curCanvasScaleSelf) {
+      Vue.set(state.curCanvasScaleMap, curCanvasScaleSelf.canvasId, curCanvasScaleSelf)
+      state.curCanvasScale = curCanvasScaleSelf
     },
     setPreviewCanvasScale(state, scale) {
       if (scale.scaleWidth) {
@@ -197,14 +220,16 @@ const data = {
         state.previewCanvasScale.scalePointHeight = scale.scaleHeight
       }
     },
-    setShapeStyle({ curComponent, canvasStyleData, curCanvasScale }, { top, left, width, height, rotate }) {
+    setShapeStyle({ curComponent, canvasStyleData, curCanvasScaleMap }, { top, left, width, height, rotate }) {
+      const curCanvasScaleSelf = curCanvasScaleMap[curComponent.canvasId]
       if (curComponent) {
-        if (top || top === 0) curComponent.style.top = (top / curCanvasScale.scalePointHeight) + 0.0000001
-        if (left || left === 0) curComponent.style.left = (left / curCanvasScale.scalePointWidth) + 0.0000001
-        if (width || width === 0) curComponent.style.width = (width / curCanvasScale.scalePointWidth + 0.0000001)
-        if (height || height === 0) curComponent.style.height = (height / curCanvasScale.scalePointHeight) + 0.0000001
+        if (top || top === 0) curComponent.style.top = (top / curCanvasScaleSelf.scalePointHeight) + 0.0000001
+        if (left || left === 0) curComponent.style.left = (left / curCanvasScaleSelf.scalePointWidth) + 0.0000001
+        if (width || width === 0) curComponent.style.width = (width / curCanvasScaleSelf.scalePointWidth + 0.0000001)
+        if (height || height === 0) curComponent.style.height = (height / curCanvasScaleSelf.scalePointHeight) + 0.0000001
         if (rotate || rotate === 0) curComponent.style.rotate = rotate
       }
+      // console.log("setShapeStyle==="+curComponent.style.width)
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
@@ -715,6 +740,31 @@ const data = {
           item.needAdaptor = false
         }
       })
+    },
+    setTabMoveInActiveId(state, tabId) {
+      state.tabMoveInActiveId = tabId
+    },
+    setTabCollisionActiveId(state, tabId) {
+      state.tabCollisionActiveId = tabId
+    },
+    setTabMoveOutActiveId(state, tabId) {
+      state.tabMoveOutActiveId = tabId
+    },
+    setTabMoveOutComponentId(state, componentId) {
+      state.tabMoveOutComponentId = componentId
+    },
+    clearTabMoveInfo(state){
+      state.tabMoveInActiveId = null
+      state.tabCollisionActiveId = null
+      state.tabMoveOutActiveId = null
+      state.tabMoveOutComponentId = null
+    },
+    setMousePointShadowMap(state,mousePoint){
+      state.mousePointShadowMap.mouseX = mousePoint.mouseX
+      state.mousePointShadowMap.mouseY = mousePoint.mouseY
+      state.mousePointShadowMap.width = mousePoint.width
+      state.mousePointShadowMap.height = mousePoint.height
+      // console.log("mousePointMap:"+JSON.stringify(state.mousePointMap))
     }
   },
   modules: {
