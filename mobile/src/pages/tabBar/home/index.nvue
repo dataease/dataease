@@ -113,9 +113,9 @@
 			    }
 
 			    requestHome({type: index, lastTime: activeTab.lastTime}).then(res => {
-					var datas = res.data.listObject
-					if(datas.length > 0) {
-						datas.forEach(item => {
+					var data = res.data.listObject
+					if(data.length > 0) {
+						data.forEach(item => {
 							item.article_type = 1
 							item.image_url = '../../../static/yibiaobans.png'
                             if(item.nickName) {
@@ -124,11 +124,11 @@
 							if(item.time)
 							    item.rightText = formatHistoryDate(item.time)
 						})
-						activeTab.lastTime = datas[datas.length - 1].time
+						activeTab.lastTime = data[data.length - 1].time
 						if(replace) {
-							activeTab.data = datas
+							activeTab.data = data
 						}else {
-							activeTab.data = activeTab.data.concat(datas)
+							activeTab.data = activeTab.data.concat(data)
 						}
 
 					}

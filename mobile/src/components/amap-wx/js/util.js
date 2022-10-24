@@ -58,7 +58,7 @@ const util = {
 	/**
 	 * 关键字颜色变化
 	 */
-	serachNmme(val, name) {
+	searchNmme(val, name) {
 		let namestr = new RegExp(val);
 		let nameresult =
 			`<div style="font-size: 14px;color: #333;line-height: 1.5;">
@@ -94,7 +94,7 @@ const util = {
 	dataHandle(item, val) {
 		// 改变字体颜色
 		if (val) {
-			item.nameNodes = util.serachNmme(val, item.name);
+			item.nameNodes = util.searchNmme(val, item.name);
 		} else {
 			item.nameNodes = `<div style="font-size: 14px;color: #333;line-height: 1.5;">${item.name}</div>`;
 
@@ -130,9 +130,9 @@ const util = {
 	setHistory(val) {
 		let searchHistory = uni.getStorageSync('search:history');
 		if (!searchHistory) searchHistory = [];
-		let serachData = {};
+		let searchData = {};
 		if (typeof(val) === 'string') {
-			serachData = {
+			searchData = {
 				adcode: [],
 				address: [],
 				city: [],
@@ -143,18 +143,18 @@ const util = {
 				typecode: []
 			};
 		} else {
-			serachData = val
+			searchData = val
 		}
 
 		// 判断数组是否存在，如果存在，那么将放到最前面
 		for (var i = 0; i < searchHistory.length; i++) {
-			if (searchHistory[i].name === serachData.name) {
+			if (searchHistory[i].name === searchData.name) {
 				searchHistory.splice(i, 1);
 				break;
 			}
 		}
 
-		searchHistory.unshift(util.dataHandle(serachData));
+		searchHistory.unshift(util.dataHandle(searchData));
 		uni.setStorage({
 			key: 'search:history',
 			data: searchHistory,
