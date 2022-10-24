@@ -484,16 +484,11 @@
 <script>
 import { post } from '@/api/dataset/dataset'
 import { codemirror } from 'vue-codemirror'
-// 核心样式
 import 'codemirror/lib/codemirror.css'
-// 引入主题后还需要在 options 中指定主题才会生效
 import 'codemirror/theme/solarized.css'
 import 'codemirror/mode/sql/sql.js'
-// require active-line.js
 import 'codemirror/addon/selection/active-line.js'
-// closebrackets
 import 'codemirror/addon/edit/closebrackets.js'
-// keyMap
 import 'codemirror/mode/clike/clike.js'
 import 'codemirror/addon/edit/matchbrackets.js'
 import 'codemirror/addon/comment/comment.js'
@@ -502,11 +497,9 @@ import 'codemirror/addon/dialog/dialog.css'
 import 'codemirror/addon/search/searchcursor.js'
 import 'codemirror/addon/search/search.js'
 import 'codemirror/keymap/emacs.js'
-// 引入代码自动提示插件
 import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
-// vue-cron
 import cron from '@/components/cron/cron'
 import { hasDataPermission } from '@/utils/permission'
 import { engineMode } from '@/api/system/engine'
@@ -711,13 +704,11 @@ export default {
     },
     addTask(task) {
       if (!task) {
-        // add
         this.resetTaskForm()
         this.taskForm.name = this.table.name + ' ' + this.$t('dataset.task_update')
         this.taskForm.startTime = new Date()
         this.update_task_dialog_title = this.$t('dataset.task_add_title')
       } else {
-        // update
         this.taskForm = JSON.parse(JSON.stringify(task))
         this.taskForm.extraData = JSON.parse(this.taskForm.extraData)
         this.update_task_dialog_title = this.$t('dataset.task_edit_title')
