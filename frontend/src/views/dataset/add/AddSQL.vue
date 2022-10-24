@@ -263,7 +263,7 @@
             :title="dialogTitle"
             :visible.sync="showVariableMgm"
             custom-class="de-user-drawer sql-dataset-drawer"
-            size="840px"
+            size="870px"
             direction="rtl"
           >
             <div class="content">
@@ -868,7 +868,7 @@ export default {
   }
   .content {
     height: 62px;
-    width: 792px;
+    width: 822px;
     border-radius: 4px;
     background: #e1eaff;
     position: relative;
