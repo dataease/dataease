@@ -6,8 +6,8 @@
   >
     <canvas-opt-bar />
     <div
-      id="canvasInfoMain"
-      ref="canvasInfoMain"
+      :id="previewDomId"
+      :ref="previewRefId"
       :style="canvasInfoMainStyle"
     >
       <el-row
@@ -31,8 +31,8 @@
       </el-row>
       <div
         v-else
-        id="canvasInfoTemp"
-        ref="canvasInfoTemp"
+        :id="previewTempDomId"
+        :ref="previewTempRefId"
         :style="[canvasInfoTempStyle,screenShotStyle]"
         class="main-class"
         @mouseup="deselectCurComponent"
@@ -53,61 +53,6 @@
           :canvas-style-data="canvasStyleData"
           :show-position="showPosition"
         />
-        <!--视图详情-->
-        <el-dialog
-          :visible.sync="chartDetailsVisible"
-          width="80%"
-          class="dialog-css"
-          :destroy-on-close="true"
-          top="5vh"
-        >
-          <span
-            v-if="chartDetailsVisible"
-            style="position: absolute;right: 70px;top:15px"
-          >
-            <el-button
-              v-if="showChartInfoType==='enlarge' && showChartInfo && showChartInfo.type !== 'symbol-map'"
-              class="el-icon-picture-outline"
-              size="mini"
-              @click="exportViewImg"
-            >
-              {{ $t('chart.export_img') }}
-            </el-button>
-            <el-button
-              v-if="showChartInfoType==='details'"
-              size="mini"
-              @click="exportExcel"
-            >
-              <svg-icon
-                icon-class="ds-excel"
-                class="ds-icon-excel"
-              />{{ $t('chart.export') }}Excel
-            </el-button>
-          </span>
-          <UserViewDialog
-            v-if="chartDetailsVisible"
-            ref="userViewDialog"
-            :canvas-style-data="canvasStyleData"
-            :open-type="showChartInfoType"
-            :chart="showChartInfo"
-            :chart-table="showChartTableInfo"
-          />
-        </el-dialog>
-
-        <!--手机视图详情-->
-        <el-dialog
-          :visible.sync="mobileChartDetailsVisible"
-          :fullscreen="true"
-          class="mobile-dialog-css"
-          :destroy-on-close="true"
-        >
-          <UserViewMobileDialog
-            v-if="mobileChartDetailsVisible"
-            :canvas-style-data="canvasStyleData"
-            :chart="showChartInfo"
-            :chart-table="showChartTableInfo"
-          />
-        </el-dialog>
       </div>
     </div>
   </div>
@@ -187,10 +132,19 @@ export default {
     panelInfo: {
       type: Object,
       required: true
+    },
+    canvasId: {
+      type: String,
+      require: false,
+      default: 'canvas-main'
     }
   },
   data() {
     return {
+      previewDomId: 'preview-'+this.canvasId,
+      previewRefId: 'preview-ref-'+this.canvasId,
+      previewTempDomId: 'preview-temp-'+this.canvasId,
+      previewTempRefId: 'preview-temp-ref-'+this.canvasId,
       isShowPreview: false,
       panelId: '',
       needToChangeHeight: [
@@ -211,11 +165,6 @@ export default {
       mainWidth: '100%',
       mainHeight: '100%',
       searchCount: 0,
-      chartDetailsVisible: false,
-      mobileChartDetailsVisible: false,
-      showChartInfo: {},
-      showChartTableInfo: {},
-      showChartInfoType: 'details',
       // 布局展示 1.pc pc端布局 2.mobile 移动端布局
       terminal: 'pc',
       buttonFilterMap: null
@@ -353,10 +302,9 @@ export default {
     bus.$on('trigger-reset-button', this.triggerResetButton)
   },
   beforeDestroy() {
-    erd.uninstall(this.$refs.canvasInfoTemp)
-    erd.uninstall(this.$refs.canvasInfoMain)
+    erd.uninstall(this.$refs[this.previewTempRefId])
+    erd.uninstall(this.$refs[this.previewRefId])
     clearInterval(this.timer)
-    eventBus.$off('openChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('trigger-reset-button', this.triggerResetButton)
   },
@@ -483,8 +431,8 @@ export default {
     changeStyleWithScale,
     getStyle,
     restore() {
-      const canvasHeight = document.getElementById('canvasInfoMain').offsetHeight
-      const canvasWidth = document.getElementById('canvasInfoMain').offsetWidth
+      const canvasHeight = document.getElementById(this.previewDomId).offsetHeight
+      const canvasWidth = document.getElementById(this.previewDomId).offsetWidth
       this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
       // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
       if (this.backScreenShot) {
@@ -527,16 +475,6 @@ export default {
         this.$nextTick(() => (eventBus.$emit('resizing', '')))
       }
     },
-    openChartDetailsDialog(chartInfo) {
-      this.showChartInfo = chartInfo.chart
-      this.showChartTableInfo = chartInfo.tableChart
-      this.showChartInfoType = chartInfo.openType
-      if (this.terminal === 'pc') {
-        this.chartDetailsVisible = true
-      } else {
-        this.mobileChartDetailsVisible = true
-      }
-    },
     exportExcel() {
       this.$refs['userViewDialog'].exportExcel()
     },
@@ -559,7 +497,7 @@ export default {
     },
     initListen() {
       const _this = this
-      const canvasMain = document.getElementById('canvasInfoMain')
+      const canvasMain = document.getElementById(this.previewDomId)
       // 监听主div变动事件
       if (canvasMain) {
         erd.listenTo(canvasMain, element => {
@@ -570,9 +508,9 @@ export default {
       }
       setTimeout(() => {
         // 监听画布div变动事件
-        const tempCanvas = document.getElementById('canvasInfoTemp')
+        const tempCanvas = document.getElementById(this.previewTempDomId)
         if (tempCanvas) {
-          erd.listenTo(document.getElementById('canvasInfoTemp'), element => {
+          erd.listenTo(document.getElementById(this.previewTempDomId), element => {
             _this.$nextTick(() => {
               // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
               _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
@@ -581,7 +519,6 @@ export default {
           })
         }
       }, 1500)
-      eventBus.$on('openChartDetailsDialog', this.openChartDetailsDialog)
     }
   }
 }

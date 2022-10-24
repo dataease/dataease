@@ -118,9 +118,6 @@ export default {
       }
       return size
     },
-    ...mapState([
-      'curCanvasScale'
-    ]),
     deSelectGridBg() {
       if (this.element.component !== 'de-select-grid') return null
       const { backgroundColorSelect, color } = this.element.commonBackground

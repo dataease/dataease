@@ -10,8 +10,17 @@
 import { mapState } from 'vuex'
 export default {
   replace: true,
-  name: 'ShadowDe',
+  name: 'Shadow',
+  props: {
+    canvasId: {
+      type: String,
+      required: true
+    }
+  },
   computed: {
+    curCanvasScaleSelf(){
+      return this.curCanvasScaleMap[this.canvasId]
+    },
     styleInfo() {
       let left = 0
       let top = 0
@@ -21,11 +30,11 @@ export default {
       if (this.dragComponentInfo) {
         // 组件移入
         if (this.dragComponentInfo.auxiliaryMatrix) {
-          left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleWidth
-          top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleHeight
+          left = (this.dragComponentInfo.x - 1) * this.curCanvasScaleSelf.matrixStyleWidth
+          top = (this.dragComponentInfo.y - 1) * this.curCanvasScaleSelf.matrixStyleHeight
 
-          width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleWidth
-          height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleHeight
+          width = this.dragComponentInfo.sizex * this.curCanvasScaleSelf.matrixStyleWidth
+          height = this.dragComponentInfo.sizey * this.curCanvasScaleSelf.matrixStyleHeight
           transition = 0.1
         } else {
           left = this.dragComponentInfo.shadowStyle.x
@@ -34,14 +43,10 @@ export default {
           height = this.dragComponentInfo.style.height
         }
       } else {
-        // temp 临时测试
-        // left = this.curComponent.style.left * this.curCanvasScale.scaleWidth / 100
-        // top = this.curComponent.style.top * this.curCanvasScale.scaleHeight / 100
-        left = (this.curComponent.x - 1) * this.curCanvasScale.matrixStyleWidth
-        top = (this.curComponent.y - 1) * this.curCanvasScale.matrixStyleHeight
-
-        width = this.curComponent.style.width * this.curCanvasScale.scalePointWidth
-        height = this.curComponent.style.height * this.curCanvasScale.scalePointHeight
+        left = (this.curComponent.x - 1) * this.curCanvasScaleSelf.matrixStyleWidth
+        top = (this.curComponent.y - 1) * this.curCanvasScaleSelf.matrixStyleHeight
+        width = this.curComponent.style.width * this.curCanvasScaleSelf.scalePointWidth
+        height = this.curComponent.style.height * this.curCanvasScaleSelf.scalePointHeight
         if (this.curComponent.optStatus.dragging) {
           transition = 0.1
         }
@@ -70,13 +75,13 @@ export default {
       return this.$store.state.dragComponentInfo
     },
     canvasWidth() {
-      const scaleWidth = this.curCanvasScale.scaleWidth / 100
+      const scaleWidth = this.curCanvasScaleSelf.scaleWidth / 100
       return this.canvasStyleData.width * scaleWidth
     },
     ...mapState([
       'curComponent',
       'editor',
-      'curCanvasScale',
+      'curCanvasScaleMap',
       'canvasStyleData',
       'linkageSettingStatus'
     ])
@@ -89,10 +94,10 @@ export default {
       this.dragComponentInfo.shadowStyle.y = this.scaleH(y)
     },
     scaleH(h) {
-      return h / this.curCanvasScale.scalePointHeight
+      return h / this.curCanvasScaleSelf.scalePointHeight
     },
     scaleW(w) {
-      return w / this.curCanvasScale.scalePointWidth
+      return w / this.curCanvasScaleSelf.scalePointWidth
     }
   }
 
