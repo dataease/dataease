@@ -73,6 +73,7 @@
             {{ $t('deDataset.data_reference') }}
           </el-button>
           <el-button
+            v-if="mode === '1'"
             type="text"
             size="small"
             style="color: #1f2329"
