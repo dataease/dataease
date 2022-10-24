@@ -8,7 +8,7 @@
       >
         <el-tree
           ref="topTree"
-          :data="data"
+          :data="treeData"
           :props="defaultProps"
           :highlight-current="true"
           node-key="name"
@@ -109,7 +109,7 @@ export default {
   },
   data() {
     return {
-      data: [],
+      treeData: [],
       defaultProps: {
         children: 'children',
         label: 'name'
@@ -126,7 +126,7 @@ export default {
   created() {
     bus.$on('refresh-my-share-out', this.refreshMyShareOut)
     this.initData().then(res => {
-      this.data = res.data
+      this.treeData = res.data
       if (this.msgPanelIds && this.msgPanelIds.length > 0) {
         this.expandMsgNode(this.msgPanelIds)
       }
@@ -188,7 +188,7 @@ export default {
       })
     },
     getMsgNodes(panelIds) {
-      this.data.forEach(item => {
+      this.treeData.forEach(item => {
         if (item.children && item.children.length > 0) {
           item.children.forEach(node => {
             if (panelIds.includes(node.id)) {
