@@ -1,7 +1,7 @@
 <template>
   <el-row
     style="text-align: left"
-    class="de-serach-table"
+    class="de-search-table"
   >
     <el-row class="top-operate">
       <el-col :span="12">

@@ -35,7 +35,7 @@ export default {
       custom_table_fields_desc: 'Fixed field is not in the selection range'
     },
     steps: {
-      cancel: 'Cancle',
+      cancel: 'Cancel',
       next: 'next',
       prev: 'Last step',
       finish: 'Finish'
@@ -613,7 +613,7 @@ export default {
   member: {
     create: 'Add members',
     modify: 'Modify members',
-    delete_confirm: 'Comfirm to delete this user?',
+    delete_confirm: 'Confirm to delete this user?',
     please_choose_member: 'Please choose member',
     search_by_name: 'Search by name',
     modify_personal_info: 'Modify personal info',
@@ -792,12 +792,12 @@ export default {
     move_success: 'Removed successfully',
     user: 'user',
     add_organization: 'Add organization',
-    defalut_organization_canot_move: 'The default organization cannot be deleted',
+    default_organization_cannot_move: 'The default organization cannot be deleted',
     organization_name: 'Organization name',
     input_organization_name: 'Please enter the organization name',
     relate_top_organization: 'Associated parent organization',
     organization_name_exist: 'Organization name already exists',
-    canot_delete: 'Cannot delete',
+    cannot_delete: 'Cannot delete',
     remove_user_first: 'Please remove all users in the organization before deleting the organization',
     sure_delete_organization: 'Are you sure to delete this organization?',
     add_child_org: 'Add sub organization',
@@ -1429,7 +1429,8 @@ export default {
     reserve_one: '1',
     reserve_two: '2',
     proportion: 'Proportion',
-    label_content: 'Label Content'
+    label_content: 'Label Content',
+    percent: 'Percent'
   },
   dataset: {
     parse_filed: 'Parse Field',
@@ -1721,7 +1722,7 @@ export default {
     please_input_user_name: 'Please enter user name',
     please_input_password: 'Please enter Password',
     please_input_host: 'Please enter host',
-    please_input_url: 'Please enter url adress',
+    please_input_url: 'Please enter url address',
     please_input_port: 'Please enter port',
     modify: 'Edit data Source',
     validate_success: 'Verification successful',
@@ -1960,7 +1961,7 @@ export default {
     confirm_delete: 'Confirm Delete',
     delete_success: 'Delete Success',
     confirm: 'Confirm',
-    cancel: 'Cancle',
+    cancel: 'Cancel',
     search: 'Search',
     back: 'Back',
     view: 'Chart',
@@ -2165,7 +2166,7 @@ export default {
     install_time: 'Install Time',
     release_time: 'Time',
     un_install: 'Uninstall',
-    uninstall_confirm: 'Comfirm to uninstall the plugin?',
+    uninstall_confirm: 'Confirm to uninstall the plugin?',
     uninstall_cancel: 'Cancel uninstall plugin',
     un_install_success: 'Uninstall is successful and restart takes effect',
     un_install_error: 'Uninstall failed, please contact the administrator'
@@ -2253,7 +2254,7 @@ export default {
     screen_method: 'Screening method',
     select: 'Please select',
     fixed_value: 'Fixed value',
-    defalut_method: 'Default condition',
+    default_method: 'Default condition',
     select_all: 'Select all',
     added: 'Added',
     manual_input: 'Manual input',
@@ -2273,7 +2274,7 @@ export default {
     version_num: 'Version number',
     standard: 'Standard',
     enterprise: 'Enterprise',
-    suport: 'Get technical support',
+    support: 'Get technical support',
     update_success: 'Update Success'
   },
   template: {
@@ -2344,8 +2345,8 @@ export default {
     sned_time: 'Send Time',
     read_time: 'Read Time',
     type: 'Message Type',
-    mark_readed: 'Mark As Read',
-    all_mark_readed: 'Mark All As Read',
+    mark_read: 'Mark As Read',
+    all_mark_read: 'Mark All As Read',
     please_select: 'Please select at least one message',
     mark_success: 'Mark read successfully',
     receive_manage: 'Receive Manage',
@@ -2353,7 +2354,7 @@ export default {
     i18n_msg_type_panel_share_cacnel: 'Dashboard unshared',
     i18n_msg_type_dataset_sync: 'Data set synchronization',
     i18n_msg_type_dataset_sync_success: 'Dataset synchronization successful',
-    i18n_msg_type_dataset_sync_faild: 'Dataset synchronization failed',
+    i18n_msg_type_dataset_sync_failed: 'Dataset synchronization failed',
     i18n_msg_type_all: 'All type',
     i18n_msg_type_ds_invalid: 'Datasource invalid',
     channel_inner_msg: 'On site',
@@ -2369,7 +2370,7 @@ export default {
     please_key_max: 'Please key max value',
     out_of_min: 'The min value cannot be less than the min integer -2³²',
     out_of_max: 'The max value cannot be more than the max integer 2³²-1',
-    must_int: 'Please key interger',
+    must_int: 'Please key integer',
     min_out_max: 'The min value must be less than the max value',
     max_out_min: 'The max value must be more than the min value'
   },

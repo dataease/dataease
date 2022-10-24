@@ -77,11 +77,6 @@ class Convert {
     return baseResult
   }
 
-  /**
-   * 递归函数，转换object对象为json schmea 格式
-   * @param {*} object 需要转换对象
-   * @param {*} name $id值
-   */
   _json2schema(object, name = '') {
     // 如果递归值不是对象，那么return掉
     if (!isObject(object)) {

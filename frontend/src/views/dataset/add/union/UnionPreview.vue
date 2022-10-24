@@ -75,14 +75,14 @@ export default {
         post('/dataset/table/unionPreview', this.table).then((response) => {
           this.fields = response.data.fields
           this.data = response.data.data
-          const datas = this.data
-          this.$refs.plxTable.reloadData(datas)
+          const data = this.data
+          this.$refs.plxTable.reloadData(data)
         })
       } else {
         this.fields = []
         this.data = []
-        const datas = this.data
-        this.$refs.plxTable.reloadData(datas)
+        const data = this.data
+        this.$refs.plxTable.reloadData(data)
       }
     }
   }

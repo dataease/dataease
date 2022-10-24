@@ -7,7 +7,7 @@
         label="1"
         size="mini"
         border
-      >{{ $t('cron.every') }}{{ lable }}</el-radio>
+      >{{ $t('cron.every') }}{{ label }}</el-radio>
     </div>
     <div>
       <el-radio
@@ -34,7 +34,7 @@
         style="width: 100px;"
         @change="type = '2'"
       />
-      {{ lable }}
+      {{ label }}
     </div>
     <div>
       <el-radio
@@ -52,7 +52,7 @@
         style="width: 100px;"
         @change="type = '3'"
       />
-      <span style="margin-left: 5px; margin-right: 5px;">{{ lable }}{{ $t('cron.every_begin') }}</span>
+      <span style="margin-left: 5px; margin-right: 5px;">{{ label }}{{ $t('cron.every_begin') }}</span>
       <el-input-number
         v-model="loop.end"
         :min="1"
@@ -61,7 +61,7 @@
         style="width: 100px;"
         @change="type = '3'"
       />
-      {{ lable }}{{ $t('cron.every_exec') }}
+      {{ label }}{{ $t('cron.every_exec') }}
     </div>
     <div>
       <el-radio
@@ -95,7 +95,7 @@ export default {
       type: String,
       default: '*'
     },
-    lable: {
+    label: {
       type: String
     }
   },

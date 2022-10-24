@@ -23,7 +23,7 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // data
-  const data = chart.data.datas
+  const data = chart.data.data
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
@@ -121,7 +121,7 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // data
-  const data = chart.data.datas
+  const data = chart.data.data
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)

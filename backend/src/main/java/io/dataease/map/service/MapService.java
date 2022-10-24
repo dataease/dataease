@@ -43,7 +43,7 @@ public class MapService {
         return areaEntities;
     }
 
-    public List<AreaEntity> entitysByPid(List<AreaEntity> entities, String pid) {
+    public List<AreaEntity> entitiesByPid(List<AreaEntity> entities, String pid) {
         for (int i = 0; i < entities.size(); i++) {
             AreaEntity areaEntity = entities.get(i);
             if (StringUtils.equals(pid, areaEntity.getCode())) {
@@ -51,7 +51,7 @@ public class MapService {
             }
 
             if (CollectionUtil.isNotEmpty(areaEntity.getChildren())) {
-                List<AreaEntity> areaEntities = entitysByPid(areaEntity.getChildren(), pid);
+                List<AreaEntity> areaEntities = entitiesByPid(areaEntity.getChildren(), pid);
                 if (null != areaEntities) {
                     return areaEntities;
                 }
@@ -65,7 +65,7 @@ public class MapService {
         Long pValue = Long.parseLong(pCode);
         MapService mapService = CommonBeanFactory.getBean(MapService.class);
         List<AreaEntity> areaEntities = mapService.globalEntities();
-        List<AreaEntity> brothers = entitysByPid(areaEntities, pCode);
+        List<AreaEntity> brothers = entitiesByPid(areaEntities, pCode);
 
         brothers.sort(Comparator.comparing(item -> Long.parseLong(item.getCode())));
         AreaEntity lastBrother = brothers.get(brothers.size() - 1);

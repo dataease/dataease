@@ -24,7 +24,7 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // data
-  const data = chart.data.datas
+  const data = chart.data.data
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)

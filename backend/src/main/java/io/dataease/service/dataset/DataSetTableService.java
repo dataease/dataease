@@ -510,7 +510,7 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setTable(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable());
-        return datasourceProvider.getTableFileds(datasourceRequest);
+        return datasourceProvider.getTableFields(datasourceRequest);
     }
 
     public Map<String, List<DatasetTableField>> getFieldsFromDE(DataSetTableRequest dataSetTableRequest)
@@ -519,7 +519,7 @@ public class DataSetTableService {
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-        fields = permissionService.filterColumnPermissons(fields, new ArrayList<>(), dataSetTableRequest.getId(), null);
+        fields = permissionService.filterColumnPermissions(fields, new ArrayList<>(), dataSetTableRequest.getId(), null);
         List<DatasetTableField> dimension = new ArrayList<>();
         List<DatasetTableField> quota = new ArrayList<>();
 
@@ -556,7 +556,7 @@ public class DataSetTableService {
     public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize,
                                               List<DatasetTableField> extFields) throws Exception {
         Map<String, Object> map = new HashMap<>();
-        String sycnStatus = "";
+        String syncStatus = "";
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(dataSetTableRequest.getId())
                 .checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
@@ -574,7 +574,7 @@ public class DataSetTableService {
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionsTreeService.getRowPermissionsTree(fields, datasetTable, null);
         // 列权限
         List<String> desensitizationList = new ArrayList<>();
-        fields = permissionService.filterColumnPermissons(fields, desensitizationList, datasetTable.getId(), null);
+        fields = permissionService.filterColumnPermissions(fields, desensitizationList, datasetTable.getId(), null);
         if (CollectionUtils.isEmpty(fields)) {
             map.put("fields", fields);
             map.put("data", new ArrayList<>());
@@ -783,7 +783,7 @@ public class DataSetTableService {
             List<DataSetTaskLogDTO> dataSetTaskLogDTOS = dataSetTableTaskLogService.listTaskLog(request, "excel");
             if (CollectionUtils.isNotEmpty(dataSetTaskLogDTOS)) {
                 dataSetTaskLogDTOS.get(0).getStatus().equalsIgnoreCase(JobStatus.Underway.name());
-                sycnStatus = dataSetTaskLogDTOS.get(0).getStatus();
+                syncStatus = dataSetTaskLogDTOS.get(0).getStatus();
             }
 
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "custom")) {
@@ -951,7 +951,7 @@ public class DataSetTableService {
         map.put("fields", fields);
         map.put("data", jsonArray);
         map.put("page", dataSetPreviewPage);
-        map.put("sycnStatus", sycnStatus);
+        map.put("syncStatus", syncStatus);
 
         return map;
     }
@@ -1109,7 +1109,7 @@ public class DataSetTableService {
             binaryExpression = (BinaryExpression) expr;
         } catch (Exception e) {
         }
-        if (binaryExpression != null && !(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getRightExpression() instanceof BinaryExpression) && hasVarible(binaryExpression.toString())) {
+        if (binaryExpression != null && !(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getRightExpression() instanceof BinaryExpression) && hasVariable(binaryExpression.toString())) {
             stringBuilder.append(SubstitutedSql);
         } else {
             expr.accept(getExpressionDeParser(stringBuilder));
@@ -2112,7 +2112,7 @@ public class DataSetTableService {
             return o1.getColumnIndex().compareTo(o2.getColumnIndex());
         });
 
-        List<String> originNameFileds = datasetTableFields.stream().map(DatasetTableField::getOriginName)
+        List<String> originNameFields = datasetTableFields.stream().map(DatasetTableField::getOriginName)
                 .collect(Collectors.toList());
         Datasource ds = datasourceMapper.selectByPrimaryKey(datasetTable.getDataSourceId());
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
@@ -2125,18 +2125,18 @@ public class DataSetTableService {
                     .replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
             datasourceRequest.setQuery(qp.wrapSql(sql));
-            List<String> sqlFileds = new ArrayList<>();
+            List<String> sqlFields = new ArrayList<>();
             try {
                 datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableField::getFieldName)
                         .forEach(field -> {
-                            sqlFileds.add(field);
+                            sqlFields.add(field);
                         });
             } catch (Exception e) {
                 DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
             }
 
-            if (!originNameFileds.equals(sqlFileds)) {
-                DataEaseException.throwException(Translator.get("i18n_sql_add_not_matching") + sqlFileds.toString());
+            if (!originNameFields.equals(sqlFields)) {
+                DataEaseException.throwException(Translator.get("i18n_sql_add_not_matching") + sqlFields.toString());
             }
         }
         if (StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalDelete())
@@ -2145,16 +2145,16 @@ public class DataSetTableService {
                     .replace(lastUpdateTime, Long.valueOf(System.currentTimeMillis()).toString())
                     .replace(currentUpdateTime, Long.valueOf(System.currentTimeMillis()).toString());
             datasourceRequest.setQuery(qp.wrapSql(sql));
-            List<String> sqlFileds = new ArrayList<>();
+            List<String> sqlFields = new ArrayList<>();
             try {
                 datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableField::getFieldName)
-                        .forEach(field -> sqlFileds.add(field));
+                        .forEach(field -> sqlFields.add(field));
             } catch (Exception e) {
                 DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
             }
 
-            if (!originNameFileds.equals(sqlFileds)) {
-                DataEaseException.throwException(Translator.get("i18n_sql_delete_not_matching") + sqlFileds.toString());
+            if (!originNameFields.equals(sqlFields)) {
+                DataEaseException.throwException(Translator.get("i18n_sql_delete_not_matching") + sqlFields.toString());
             }
         }
     }
@@ -2218,7 +2218,7 @@ public class DataSetTableService {
         String filename = file.getOriginalFilename();
         // parse file
         List<ExcelSheetData> excelSheetDataList = parseExcel(filename, file.getInputStream(), true);
-        List<ExcelSheetData> retrunSheetDataList = new ArrayList<>();
+        List<ExcelSheetData> returnSheetDataList = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(tableId)) {
             List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(tableId);
@@ -2240,10 +2240,10 @@ public class DataSetTableService {
                     List<TableField> tableFields = excelSheetData.getFields();
                     List<String> newFields = tableFields.stream().map(TableField::getRemarks).collect(Collectors.toList());
                     if (oldFields.equals(newFields)) {
-                        retrunSheetDataList.add(excelSheetData);
+                        returnSheetDataList.add(excelSheetData);
                     }
                 }
-                if (retrunSheetDataList.size() == 0) {
+                if (returnSheetDataList.size() == 0) {
                     DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
                 }
             } else {
@@ -2278,41 +2278,41 @@ public class DataSetTableService {
                     }
                     excelSheetData.setEffectExtField(effectExtField);
 
-                    retrunSheetDataList.add(excelSheetData);
+                    returnSheetDataList.add(excelSheetData);
                 }
-                if (retrunSheetDataList.size() == 0) {
+                if (returnSheetDataList.size() == 0) {
                     DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
                 }
             }
         } else {
-            retrunSheetDataList = excelSheetDataList;
+            returnSheetDataList = excelSheetDataList;
         }
-        retrunSheetDataList = retrunSheetDataList.stream()
+        returnSheetDataList = returnSheetDataList.stream()
                 .filter(excelSheetData -> CollectionUtils.isNotEmpty(excelSheetData.getFields()))
                 .collect(Collectors.toList());
         // save file
         String excelId = UUID.randomUUID().toString();
         String filePath = saveFile(file, excelId);
         ExcelFileData excelFileData = new ExcelFileData();
-        excelFileData.setExcelLable(filename);
+        excelFileData.setExcelLabel(filename);
         excelFileData.setId(excelId);
         excelFileData.setPath(filePath);
 
         filename = filename.substring(0, filename.lastIndexOf('.'));
-        if (retrunSheetDataList.size() == 1) {
-            retrunSheetDataList.get(0).setDatasetName(filename);
-            retrunSheetDataList.get(0).setSheetExcelId(excelId);
-            retrunSheetDataList.get(0).setId(UUID.randomUUID().toString());
-            retrunSheetDataList.get(0).setPath(filePath);
+        if (returnSheetDataList.size() == 1) {
+            returnSheetDataList.get(0).setDatasetName(filename);
+            returnSheetDataList.get(0).setSheetExcelId(excelId);
+            returnSheetDataList.get(0).setId(UUID.randomUUID().toString());
+            returnSheetDataList.get(0).setPath(filePath);
         } else {
-            for (ExcelSheetData excelSheetData : retrunSheetDataList) {
-                excelSheetData.setDatasetName(filename + "-" + excelSheetData.getExcelLable());
+            for (ExcelSheetData excelSheetData : returnSheetDataList) {
+                excelSheetData.setDatasetName(filename + "-" + excelSheetData.getExcelLabel());
                 excelSheetData.setSheetExcelId(excelId);
                 excelSheetData.setId(UUID.randomUUID().toString());
                 excelSheetData.setPath(filePath);
             }
         }
-        excelFileData.setSheets(retrunSheetDataList);
+        excelFileData.setSheets(returnSheetDataList);
         return excelFileData;
     }
 
@@ -2359,7 +2359,7 @@ public class DataSetTableService {
             String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
             excelSheetData.setFields(fields);
             excelSheetData.setData(data);
-            excelSheetData.setExcelLable(filename);
+            excelSheetData.setExcelLabel(filename);
             excelSheetData.setFieldsMd5(Md5Utils.md5(StringUtils.join(fieldArray, ",")));
             excelSheetDataList.add(excelSheetData);
         }
@@ -2644,7 +2644,7 @@ public class DataSetTableService {
 
             @Override
             public void visit(Between between) {
-                if (hasVarible(between.getBetweenExpressionStart().toString()) || hasVarible(between.getBetweenExpressionEnd().toString())) {
+                if (hasVariable(between.getBetweenExpressionStart().toString()) || hasVariable(between.getBetweenExpressionEnd().toString())) {
                     getBuffer().append(SubstitutedSql);
                 } else {
                     getBuffer().append(between.getLeftExpression()).append(" BETWEEN ").append(between.getBetweenExpressionStart()).append(" AND ").append(between.getBetweenExpressionEnd());
@@ -2653,7 +2653,7 @@ public class DataSetTableService {
 
             @Override
             public void visit(MinorThan minorThan) {
-                if (hasVarible(minorThan.getLeftExpression().toString()) || hasVarible(minorThan.getRightExpression().toString())) {
+                if (hasVariable(minorThan.getLeftExpression().toString()) || hasVariable(minorThan.getRightExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                     return;
                 }
@@ -2664,7 +2664,7 @@ public class DataSetTableService {
 
             @Override
             public void visit(MinorThanEquals minorThan) {
-                if (hasVarible(minorThan.getLeftExpression().toString()) || hasVarible(minorThan.getRightExpression().toString())) {
+                if (hasVariable(minorThan.getLeftExpression().toString()) || hasVariable(minorThan.getRightExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                     return;
                 }
@@ -2675,7 +2675,7 @@ public class DataSetTableService {
 
             @Override
             public void visit(GreaterThanEquals minorThan) {
-                if (hasVarible(minorThan.getLeftExpression().toString()) || hasVarible(minorThan.getRightExpression().toString())) {
+                if (hasVariable(minorThan.getLeftExpression().toString()) || hasVariable(minorThan.getRightExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                     return;
                 }
@@ -2686,7 +2686,7 @@ public class DataSetTableService {
 
             @Override
             public void visit(GreaterThan greaterThan) {
-                if (hasVarible(greaterThan.getLeftExpression().toString()) || hasVarible(greaterThan.getRightExpression().toString())) {
+                if (hasVariable(greaterThan.getLeftExpression().toString()) || hasVariable(greaterThan.getRightExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                     return;
                 }
@@ -2708,7 +2708,7 @@ public class DataSetTableService {
 
             @Override
             public void visit(LikeExpression likeExpression) {
-                if (hasVarible(likeExpression.toString())) {
+                if (hasVariable(likeExpression.toString())) {
                     getBuffer().append(SubstitutedSql);
                     return;
                 }
@@ -2723,7 +2723,7 @@ public class DataSetTableService {
 
             @Override
             public void visit(InExpression inExpression) {
-                if (inExpression.getRightItemsList() != null && hasVarible(inExpression.getRightItemsList().toString())) {
+                if (inExpression.getRightItemsList() != null && hasVariable(inExpression.getRightItemsList().toString())) {
                     stringBuilder.append(SubstitutedSql);
                     return;
                 }
@@ -2752,7 +2752,7 @@ public class DataSetTableService {
             public void visit(SubSelect subSelect) {
                 StringBuilder stringBuilder = new StringBuilder();
                 Expression in = ((PlainSelect) subSelect.getSelectBody()).getWhere();
-                if (in instanceof BinaryExpression && hasVarible(in.toString())) {
+                if (in instanceof BinaryExpression && hasVariable(in.toString())) {
                     stringBuilder.append(SubstitutedParams);
                 } else {
                     in.accept(getExpressionDeParser(stringBuilder));
@@ -2777,7 +2777,7 @@ public class DataSetTableService {
                     e.printStackTrace();
                 }
 
-                if (expr.getLeftExpression() instanceof BinaryExpression && !hasSubBinaryExpression && hasVarible(expr.getLeftExpression().toString())) {
+                if (expr.getLeftExpression() instanceof BinaryExpression && !hasSubBinaryExpression && hasVariable(expr.getLeftExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                 } else {
                     expr.getLeftExpression().accept(this);
@@ -2791,7 +2791,7 @@ public class DataSetTableService {
 
                 } catch (Exception e) {
                 }
-                if (expr.getRightExpression() instanceof BinaryExpression && !hasSubBinaryExpression && hasVarible(expr.getRightExpression().toString())) {
+                if (expr.getRightExpression() instanceof BinaryExpression && !hasSubBinaryExpression && hasVariable(expr.getRightExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                 } else {
                     expr.getRightExpression().accept(this);
@@ -2801,7 +2801,7 @@ public class DataSetTableService {
         return expressionDeParser;
     }
 
-    static private boolean hasVarible(String sql) {
+    static private boolean hasVariable(String sql) {
         return sql.contains(SubstitutedParams);
     }
 

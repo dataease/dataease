@@ -12,7 +12,7 @@ const dialogPanel = {
     attrs: {
       multiple: false,
       placeholder: 'denumberselect.placeholder',
-      datas: [],
+      data: [],
       viewIds: [],
       parameters: [],
       key: 'id',
@@ -75,9 +75,9 @@ class NumberSelectServiceImpl extends WidgetService {
     })
   }
 
-  optionDatas(datas) {
-    if (!datas) return null
-    return datas.filter(item => !!item).map(item => {
+  optionData(data) {
+    if (!data) return null
+    return data.filter(item => !!item).map(item => {
       return {
         id: item,
         text: item

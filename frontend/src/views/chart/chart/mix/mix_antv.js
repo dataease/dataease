@@ -23,7 +23,7 @@ export function baseMixOptionAntV(plot, container, chart, action) {
   const yAxis = getYAxis(chart)
   const yAxisExt = getYAxisExt(chart)
   // data
-  const data = chart.data.datas
+  const data = chart.data.data
   const plots = []
   // color
   let customAttr = {}

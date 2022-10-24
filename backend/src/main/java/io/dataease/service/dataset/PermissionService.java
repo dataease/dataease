@@ -73,7 +73,7 @@ public class PermissionService {
         return customFilter;
     }
 
-    public List<DatasetTableField> filterColumnPermissons(List<DatasetTableField> fields, List<String> desensitizationList, String datasetTableId, Long user){
+    public List<DatasetTableField> filterColumnPermissions(List<DatasetTableField> fields, List<String> desensitizationList, String datasetTableId, Long user){
         List<DatasetTableField> result = new ArrayList<>();
         List<ColumnPermissionItem> allColumnPermissionItems = new ArrayList<>();
         for (DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO : columnPermissions(datasetTableId, user)) {

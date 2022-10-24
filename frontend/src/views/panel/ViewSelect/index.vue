@@ -158,11 +158,11 @@ export default {
     loadData() {
       this.loading = true
       queryPanelViewTree().then(res => {
-        const nodeDatas = res.data
+        const nodeData = res.data
         if (this.selectModel) {
-          this.setParentDisable(nodeDatas)
+          this.setParentDisable(nodeData)
         }
-        this.treeData = nodeDatas
+        this.treeData = nodeData
         this.loading = false
       })
     },

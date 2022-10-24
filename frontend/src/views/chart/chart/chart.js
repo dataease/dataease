@@ -103,6 +103,11 @@ export const DEFAULT_SIZE = {
   treemapWidth: 80,
   treemapHeight: 80,
   liquidMax: 100,
+  liquidMaxType: 'fix', // fix or dynamic
+  liquidMaxField: {
+    id: '',
+    summary: ''
+  },
   liquidSize: 80,
   liquidOutlineBorder: 4,
   liquidOutlineDistance: 8,
@@ -132,8 +137,8 @@ export const DEFAULT_LABEL = {
     decimalCount: 2, // 小数位数
     thousandSeparator: true// 千分符
   },
-  reserveDecimalCount: 2, // 百分比堆叠柱状图,饼图，环形图保留小数位数
-  labelContent: ['dimension', 'proportion'] // 饼图，环形图指标展示项
+  reserveDecimalCount: 2,
+  labelContent: ['dimension', 'proportion']
 }
 export const DEFAULT_TOOLTIP = {
   show: true,

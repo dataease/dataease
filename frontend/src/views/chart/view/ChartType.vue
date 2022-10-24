@@ -154,8 +154,8 @@ export default {
 }
 
 .chart-icon{
-  width: 80px;
-  height: 40px;
+  width: 80px !important;
+  height: 40px !important;
 }
 
 .el-radio{

@@ -18,7 +18,7 @@ public class ChartDataBuild {
     public static Map<String, Object> transChartDataAntV(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
-        List<AxisChartDataAntVDTO> datas = new ArrayList<>();
+        List<AxisChartDataAntVDTO> dataList = new ArrayList<>();
         for (int i1 = 0; i1 < data.size(); i1++) {
             String[] row = data.get(i1);
 
@@ -65,7 +65,7 @@ public class ChartDataBuild {
                         }
                         axisChartDataDTO.setCategory(yAxis.get(j).getName());
                     }
-                    datas.add(axisChartDataDTO);
+                    dataList.add(axisChartDataDTO);
                 }
             } else {
                 for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
@@ -95,18 +95,18 @@ public class ChartDataBuild {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
                     axisChartDataDTO.setCategory(yAxis.get(j).getName());
-                    datas.add(axisChartDataDTO);
+                    dataList.add(axisChartDataDTO);
                 }
             }
         }
-        map.put("datas", datas);
+        map.put("data", dataList);
         return map;
     }
 
     public static Map<String, Object> transBaseGroupDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
-        List<AxisChartDataAntVDTO> datas = new ArrayList<>();
+        List<AxisChartDataAntVDTO> dataList = new ArrayList<>();
         for (int i1 = 0; i1 < data.size(); i1++) {
             String[] row = data.get(i1);
 
@@ -159,10 +159,10 @@ public class ChartDataBuild {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
                 axisChartDataDTO.setCategory(b.toString());
-                datas.add(axisChartDataDTO);
+                dataList.add(axisChartDataDTO);
             }
         }
-        map.put("datas", datas);
+        map.put("data", dataList);
         return map;
     }
 
@@ -170,7 +170,7 @@ public class ChartDataBuild {
     public static Map<String, Object> transStackChartDataAntV(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extStack, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
-        List<AxisChartDataAntVDTO> datas = new ArrayList<>();
+        List<AxisChartDataAntVDTO> dataList = new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(extStack)) {
             for (int i1 = 0; i1 < data.size(); i1++) {
@@ -219,7 +219,7 @@ public class ChartDataBuild {
                     axisChartDataDTO.setQuotaList(quotaList);
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
-                datas.add(axisChartDataDTO);
+                dataList.add(axisChartDataDTO);
             }
         } else {
             for (int i1 = 0; i1 < data.size(); i1++) {
@@ -265,11 +265,11 @@ public class ChartDataBuild {
                         axisChartDataDTO.setValue(new BigDecimal(0));
                     }
                     axisChartDataDTO.setCategory(yAxis.get(j).getName());
-                    datas.add(axisChartDataDTO);
+                    dataList.add(axisChartDataDTO);
                 }
             }
         }
-        map.put("datas", datas);
+        map.put("data", dataList);
         return map;
     }
 
@@ -277,7 +277,7 @@ public class ChartDataBuild {
     public static Map<String, Object> transScatterDataAntV(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extBubble, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
-        List<AxisChartDataAntVDTO> datas = new ArrayList<>();
+        List<AxisChartDataAntVDTO> dataList = new ArrayList<>();
         for (int i1 = 0; i1 < data.size(); i1++) {
             String[] row = data.get(i1);
 
@@ -329,10 +329,10 @@ public class ChartDataBuild {
                         axisChartDataDTO.setPopSize(new BigDecimal(0));
                     }
                 }
-                datas.add(axisChartDataDTO);
+                dataList.add(axisChartDataDTO);
             }
         }
-        map.put("datas", datas);
+        map.put("data", dataList);
         return map;
     }
 
@@ -340,7 +340,7 @@ public class ChartDataBuild {
     public static Map<String, Object> transRadarChartDataAntV(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
-        List<AxisChartDataAntVDTO> datas = new ArrayList<>();
+        List<AxisChartDataAntVDTO> dataList = new ArrayList<>();
         for (int i1 = 0; i1 < data.size(); i1++) {
             String[] row = data.get(i1);
 
@@ -384,10 +384,10 @@ public class ChartDataBuild {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
                 axisChartDataDTO.setCategory(yAxis.get(j).getName());
-                datas.add(axisChartDataDTO);
+                dataList.add(axisChartDataDTO);
             }
         }
-        map.put("datas", datas);
+        map.put("data", dataList);
         return map;
     }
 
@@ -450,7 +450,7 @@ public class ChartDataBuild {
             }
         }
 
-        map.put("datas", series);
+        map.put("data", series);
         return map;
     }
 

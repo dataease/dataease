@@ -333,11 +333,11 @@
       </div>
 
       <div
-        v-if="attrShow('titlePostion')"
+        v-if="attrShow('titlePosition')"
         style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
       >
         <el-tooltip :content="$t('panel.title_position')">
-          <title-postion
+          <title-position
             :element-type="elementType"
             :show-vertical="showVertical"
             :style-info="styleInfo"
@@ -506,7 +506,7 @@ export default {
         'fontWeight',
         'letterSpacing',
         'color',
-        'titlePostion'
+        'titlePosition'
       ],
       // tab组件显示的属性
       'de-tabs': [

@@ -39,7 +39,7 @@ public class BaseGridRequest implements Serializable {
         GridExample gridExample = new GridExample();
         if (CollectionUtils.isNotEmpty(conditions)) {
             GridExample.Criteria criteria = gridExample.createCriteria();
-            conditions.forEach(criteria::addCondtion);
+            conditions.forEach(criteria::addCondition);
         }
 
         if (CollectionUtils.isNotEmpty(orders)){

@@ -11,7 +11,7 @@
     >
       <map-setting-left
         ref="map_setting_tree"
-        :tree-datas="treeDatas"
+        :tree-data="treeData"
         @emit-add="emitAdd"
         @refresh-tree="refreshTree"
         @show-node-info="loadForm"
@@ -21,7 +21,7 @@
     <de-main-container style="height: 100%;">
       <map-setting-right
         ref="map_setting_form"
-        :tree-datas="treeDatas"
+        :tree-data="treeData"
         :status="formStatus"
         @refresh-tree="refreshTree"
       />
@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       formStatus: 'empty',
-      treeDatas: []
+      treeData: []
     }
   },
   created() {
@@ -63,13 +63,13 @@ export default {
       this.formStatus = status
     },
     loadTreeData() {
-      !Object.keys(this.treeDatas).length && areaMapping().then(res => {
-        this.treeDatas = res.data
+      !Object.keys(this.treeData).length && areaMapping().then(res => {
+        this.treeData = res.data
       })
     },
     refreshTree(node) {
       areaMapping().then(res => {
-        this.treeDatas = res.data
+        this.treeData = res.data
         if (!node?.code) return
         this.$refs['map_setting_tree']?.showNewNode(node.code)
       })

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  **/
 public class ExcelXlsReader implements HSSFListener {
 
-    private int minColums = -1;
+    private int minColumns = -1;
 
     public Integer getObtainedNum() {
         return obtainedNum;
@@ -211,8 +211,8 @@ public class ExcelXlsReader implements HSSFListener {
                 thisRow = frec.getRow();
                 thisColumn = frec.getColumn();
                 thisStr = String.valueOf(frec.getValue());
-                String feildType = checkType(thisStr, thisColumn);
-                if(feildType.equalsIgnoreCase("LONG") && thisStr.endsWith(".0")){
+                String fieldType = checkType(thisStr, thisColumn);
+                if(fieldType.equalsIgnoreCase("LONG") && thisStr.endsWith(".0")){
                     thisStr = thisStr.substring(0, thisStr.length() -2);
                 }
                 cellList.add(thisColumn, thisStr);
@@ -300,7 +300,7 @@ public class ExcelXlsReader implements HSSFListener {
 
         //行结束时的操作
         if (record instanceof LastCellOfRowDummyRecord) {
-            if (minColums > 0) {
+            if (minColumns > 0) {
                 //列值重新置空
                 if (lastColumnNumber == -1) {
                     lastColumnNumber = 0;
@@ -308,9 +308,9 @@ public class ExcelXlsReader implements HSSFListener {
             }
             lastColumnNumber = -1;
 
-            if(!totalSheets.stream().map(ExcelSheetData::getExcelLable).collect(Collectors.toList()).contains(sheetName)){
+            if(!totalSheets.stream().map(ExcelSheetData::getExcelLabel).collect(Collectors.toList()).contains(sheetName)){
                 ExcelSheetData excelSheetData = new ExcelSheetData();
-                excelSheetData.setExcelLable(sheetName);
+                excelSheetData.setExcelLabel(sheetName);
                 excelSheetData.setData(new ArrayList<>());
                 excelSheetData.setFields(new ArrayList<>());
                 totalSheets.add(excelSheetData);
@@ -330,10 +330,10 @@ public class ExcelXlsReader implements HSSFListener {
 
 
             if (flag && curRow != 0) { //该行不为空行且该行不是第一行，发送（第一行为列名，不需要）
-                if(!totalSheets.stream().map(ExcelSheetData::getExcelLable).collect(Collectors.toList()).contains(sheetName)){
+                if(!totalSheets.stream().map(ExcelSheetData::getExcelLabel).collect(Collectors.toList()).contains(sheetName)){
                     ExcelSheetData excelSheetData = new ExcelSheetData();
                     excelSheetData.setData(new ArrayList<>(data));
-                    excelSheetData.setExcelLable(sheetName);
+                    excelSheetData.setExcelLabel(sheetName);
                     excelSheetData.setFields(new ArrayList<>(fields));
                     List<String> tmp = new ArrayList<>(cellList);
                     excelSheetData.getData().add(tmp);
@@ -341,11 +341,11 @@ public class ExcelXlsReader implements HSSFListener {
                     totalSheets.add(excelSheetData);
                 }else {
                     List<String> tmp = new ArrayList<>(cellList);
-                    if(obtainedNum != null && totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().size() < obtainedNum){
-                        totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
+                    if(obtainedNum != null && totalSheets.stream().filter(s->s.getExcelLabel().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().size() < obtainedNum){
+                        totalSheets.stream().filter(s->s.getExcelLabel().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
                     }
                     if(obtainedNum == null){
-                        totalSheets.stream().filter(s->s.getExcelLable().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
+                        totalSheets.stream().filter(s->s.getExcelLabel().equalsIgnoreCase(sheetName)).collect(Collectors.toList()).get(0).getData().add(tmp);
                     }
                     totalRows++;
                 }

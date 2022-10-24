@@ -187,7 +187,7 @@ export default {
     },
     initData() {
       const that = this
-      let datas = []
+      let data = []
       this.showPage = false
       if (this.chart.data) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
@@ -203,28 +203,28 @@ export default {
           this.columnWidth = columnWidth
         }
 
-        datas = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && datas.length > this.currentPage.pageSize) {
+        data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
+        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && data.length > this.currentPage.pageSize) {
           // 计算分页
-          this.currentPage.show = datas.length
+          this.currentPage.show = data.length
           const pageStart = (this.currentPage.page - 1) * this.currentPage.pageSize
           const pageEnd = pageStart + this.currentPage.pageSize
-          datas = datas.slice(pageStart, pageEnd)
+          data = data.slice(pageStart, pageEnd)
           this.showPage = true
         }
       } else {
         this.fields = []
-        datas = []
+        data = []
         this.resetPage()
       }
-      datas.forEach(item => {
+      data.forEach(item => {
         Object.keys(item).forEach(key => {
           if (typeof item[key] === 'object') {
             item[key] = ''
           }
         })
       })
-      this.$refs.plxTable.reloadData(datas)
+      this.$refs.plxTable.reloadData(data)
       this.$nextTick(() => {
         this.initStyle()
       })

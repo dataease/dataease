@@ -11,7 +11,7 @@ export function baseRadarOptionAntV(plot, container, chart, action) {
   // style
   const legend = getLegend(chart)
   // data
-  const data = chart.data.datas
+  const data = chart.data.data
 
   const xAxis = {
     tickLine: null,

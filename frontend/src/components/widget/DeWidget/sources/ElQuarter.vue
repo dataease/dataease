@@ -86,7 +86,7 @@
  * @author: v_zhuchun
  * @date: 2019-05-23
  * @description: UI组件  可选择季节
- * @api: valueArr : 季度value defalut['01-03', '04-06', '07-09', '10-12'] 默认值待设置
+ * @api: valueArr : 季度value default['01-03', '04-06', '07-09', '10-12'] 默认值待设置
  */
 export default {
   props: {

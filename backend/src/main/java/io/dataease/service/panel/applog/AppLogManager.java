@@ -48,18 +48,18 @@ public class AppLogManager {
 
     public String detailInfo(SysLogWithBLOBs vo) {
         String sourceName = vo.getSourceName();
-        String postion = null;
+        String position = null;
         String operateTypeName = SysLogConstants.operateTypeName(vo.getOperateType());
         operateTypeName = Translator.get(operateTypeName);
         String sourceTypeName = SysLogConstants.sourceTypeName(vo.getSourceType());
         sourceTypeName = Translator.get(sourceTypeName);
         String result = operateTypeName + sourceTypeName + String.format(contentFormat, sourceName) + remarkInfo(vo);
 
-        if ((postion = vo.getPosition()) != null) {
-            List<FolderItem> folderItems = gson.fromJson(postion, type);
+        if ((position = vo.getPosition()) != null) {
+            List<FolderItem> folderItems = gson.fromJson(position, type);
             String template = folderItems.stream().map(folderItem -> folderItem.getName()).collect(Collectors.joining("/"));
-            String postionResult = String.format(positionFormat, template);
-            return postionResult + result;
+            String positionResult = String.format(positionFormat, template);
+            return positionResult + result;
         }
         return result;
     }

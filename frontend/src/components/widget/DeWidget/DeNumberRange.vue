@@ -116,7 +116,7 @@ export default {
     },
     form: {
       handler(value) {
-        this.destryTimeMachine()
+        this.destroyTimeMachine()
         this.changeIndex++
         this.searchWithKey(this.changeIndex)
       },
@@ -161,10 +161,10 @@ export default {
         if (index === this.changeIndex) {
           this.search()
         }
-        this.destryTimeMachine()
+        this.destroyTimeMachine()
       }, 1000)
     },
-    destryTimeMachine() {
+    destroyTimeMachine() {
       this.timeMachine && clearTimeout(this.timeMachine)
       this.timeMachine = null
     },

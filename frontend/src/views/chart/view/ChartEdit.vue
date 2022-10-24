@@ -1637,7 +1637,7 @@ export default {
       required: false,
       default: 'view'
     },
-    editStatue: {
+    editStatus: {
       type: Boolean,
       required: false,
       default: false
@@ -1792,7 +1792,7 @@ export default {
     } */
   },
   watch: {
-    'editStatue': function(val) {
+    'editStatus': function(val) {
       if (val && this.param.id !== this.preChartId) {
         this.preChartId = this.param.id
         this.chartInit()
@@ -1801,7 +1801,7 @@ export default {
     'param': function(val) {
       if (this.param.optType === 'new') {
         //
-      } else if (this.param.id !== this.preChartId && this.editStatue) {
+      } else if (this.param.id !== this.preChartId && this.editStatus) {
         this.preChartId = this.param.id
         this.chartInit()
       }
@@ -1881,9 +1881,7 @@ export default {
     initFromPanel() {
       this.hasEdit = (this.panelViewEditInfo[this.param.id] || false)
     },
-    // v1.16.0 需求，拆分环形图
     convertChart(chart) {
-      // v1.16.0，将有内径的饼图和玫瑰图转换成环形图和玫瑰环形图
       if (equalsAny(chart.type, 'pie', 'pie-rose')) {
         let customAttr = chart.customAttr
         if (typeof chart.customAttr === 'string') {
@@ -2359,7 +2357,7 @@ export default {
           return true
         }).then(() => {
           // 视图为编辑状态才进行转换
-          if (this.editStatue) {
+          if (this.editStatus) {
             this.convertChart(this.chart)
             this.convertChart(this.view)
           }
@@ -3088,12 +3086,14 @@ export default {
           customAttr.label.show = true
           customAttr.label.position = 'outer'
         }
-        // 环形图默认内径，玫瑰图为 外径 * 0.5，饼图为 外径 * 0.7
         if (type === 'pie-donut') {
           customAttr.size.pieInnerRadius = Math.round(customAttr.size.pieOuterRadius * 0.7)
         }
         if (type === 'pie-donut-rose') {
           customAttr.size.pieInnerRadius = Math.round(customAttr.size.pieOuterRadius * 0.5)
+        }
+        if (equalsAny(type, 'pie', 'pie-rose')) {
+          customAttr.size.pieInnerRadius = 0
         }
       } else if (type.includes('line')) {
         this.view.customAttr.label.position = 'top'
@@ -3434,8 +3434,8 @@ span {
 }
 
 .chart-icon {
-  width: 20px;
-  height: 20px;
+  width: 20px !important;
+  height: 20px !important;
 }
 
 .el-radio {

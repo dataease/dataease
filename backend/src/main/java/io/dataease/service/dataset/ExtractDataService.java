@@ -99,7 +99,7 @@ public class ExtractDataService {
     private static final String lastUpdateTime = "${__last_update_time__}";
     private static final String currentUpdateTime = "${__current_update_time__}";
     private static final String separator = "|DE|";
-    private static final String extention = "txt";
+    private static final String extension = "txt";
     private static final String root_path = "/opt/dataease/data/kettle/";
 
     @Value("${kettle.files.keep:false}")
@@ -471,11 +471,11 @@ public class ExtractDataService {
         }
         switch (extractType) {
             case "all_scope":
-                dataFile = root_path + TableUtils.tmpName(TableUtils.tableName(datasetTable.getId())) + "." + extention;
+                dataFile = root_path + TableUtils.tmpName(TableUtils.tableName(datasetTable.getId())) + "." + extension;
                 script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), System.currentTimeMillis(), separator, columns, "APPEND", dataFile, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tmpName(TableUtils.tableName(datasetTable.getId())), dataFile);
                 break;
             default:
-                dataFile = root_path + TableUtils.addName(TableUtils.tableName(datasetTable.getId())) + "." + extention;
+                dataFile = root_path + TableUtils.addName(TableUtils.tableName(datasetTable.getId())) + "." + extension;
                 script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), System.currentTimeMillis(), separator, columns, "APPEND", dataFile, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()), dataFile);
                 break;
         }
@@ -722,7 +722,7 @@ public class ExtractDataService {
             }
 
             for (ExcelSheetData sheet : totalSheets) {
-                if (sheet.getExcelLable().equalsIgnoreCase(excelSheetData.getExcelLable())) {
+                if (sheet.getExcelLabel().equalsIgnoreCase(excelSheetData.getExcelLabel())) {
                     for (List<String> dataItem : sheet.getData()) {
                         if (dataItem.size() > 0) {
                             data.add(dataItem.toArray(new String[dataItem.size()]));
@@ -820,16 +820,16 @@ public class ExtractDataService {
             case "all_scope":
                 outFile = TableUtils.tmpName(TableUtils.tableName(datasetTable.getId()));
                 jobName = "job_" + TableUtils.tableName(datasetTable.getId());
-                script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), datasetTable.getId() + System.currentTimeMillis(), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tmpName(TableUtils.tableName(datasetTable.getId())), root_path + outFile + "." + extention);
+                script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), datasetTable.getId() + System.currentTimeMillis(), separator, columns, "APPEND", root_path + outFile + "." + extension, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tmpName(TableUtils.tableName(datasetTable.getId())), root_path + outFile + "." + extension);
                 break;
             case "incremental_add":
                 outFile = TableUtils.addName(datasetTable.getId());
                 jobName = "job_add_" + TableUtils.tableName(datasetTable.getId());
-                script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), datasetTable.getId() + System.currentTimeMillis(), separator, columns, "APPEND", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()), root_path + outFile + "." + extention);
+                script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), datasetTable.getId() + System.currentTimeMillis(), separator, columns, "APPEND", root_path + outFile + "." + extension, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()), root_path + outFile + "." + extension);
                 break;
             case "incremental_delete":
                 outFile = TableUtils.deleteName(TableUtils.tableName(datasetTable.getId()));
-                script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), datasetTable.getId() + System.currentTimeMillis(), separator, columns, "DELETE", root_path + outFile + "." + extention, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()), root_path + outFile + "." + extention);
+                script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), datasetTable.getId() + System.currentTimeMillis(), separator, columns, "DELETE", root_path + outFile + "." + extension, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()), root_path + outFile + "." + extension);
                 jobName = "job_delete_" + TableUtils.tableName(datasetTable.getId());
                 break;
             default:
@@ -1098,7 +1098,7 @@ public class ExtractDataService {
                 filesRequired.add("Y");
 
                 ExcelInputMeta excelInputMeta = new ExcelInputMeta();
-                sheetNames.add(excelSheetData.getExcelLable());
+                sheetNames.add(excelSheetData.getExcelLabel());
                 if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
                     excelInputMeta.setSpreadSheetType(SpreadSheetType.SAX_POI);
                     excelInputMeta.setSheetName(sheetNames.toArray(new String[sheetNames.size()]));
@@ -1141,7 +1141,7 @@ public class ExtractDataService {
         textFileOutputMeta.setHeaderEnabled(false);
         textFileOutputMeta.setFilename(root_path + dorisOutputTable);
         textFileOutputMeta.setSeparator(separator);
-        textFileOutputMeta.setExtension(extention);
+        textFileOutputMeta.setExtension(extension);
 
         if (datasource.getType().equalsIgnoreCase(DatasourceTypes.oracle.name())) {
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
@@ -1295,7 +1295,7 @@ public class ExtractDataService {
             default:
                 break;
         }
-        deleteFile(root_path + fileName + "." + extention);
+        deleteFile(root_path + fileName + "." + extension);
         deleteFile(root_path + jobName + ".kjb");
         deleteFile(root_path + transName + ".ktr");
     }
@@ -1388,8 +1388,8 @@ public class ExtractDataService {
             "  r = createOutputRow(r, data.outputRowMeta.size());\n" +
             "  String str = \"\";\n" +
             "\n" +
-            "    List<String> fileds = Arrays.asList(\"Column_Fields\".split(\",\"));\n" +
-            "    for (String filed : fileds) {\n" +
+            "    List<String> fields = Arrays.asList(\"Column_Fields\".split(\",\"));\n" +
+            "    for (String filed : fields) {\n" +
             "        String tmp = get(Fields.In, filed).getString(r);\n" +
             "handleCharset \n" +
             "handleWraps \n" +

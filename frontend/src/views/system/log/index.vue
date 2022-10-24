@@ -1,6 +1,6 @@
 <template>
   <de-layout-content
-    class="de-serach-table"
+    class="de-search-table"
     :header="$t('log.title')"
   >
     <el-row class="top-operate">

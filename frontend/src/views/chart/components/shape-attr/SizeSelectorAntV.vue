@@ -592,37 +592,37 @@
             @change="changeQuotaField('min')"
           >
             <el-option
-              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              v-if="validMinField"
               key="sum"
               value="sum"
               :label="$t('chart.sum')"
             />
             <el-option
-              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              v-if="validMinField"
               key="avg"
               value="avg"
               :label="$t('chart.avg')"
             />
             <el-option
-              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              v-if="validMinField"
               key="max"
               value="max"
               :label="$t('chart.max')"
             />
             <el-option
-              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              v-if="validMinField"
               key="min"
               value="min"
               :label="$t('chart.min')"
             />
             <el-option
-              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              v-if="validMinField"
               key="stddev_pop"
               value="stddev_pop"
               :label="$t('chart.stddev_pop')"
             />
             <el-option
-              v-if="minField.id !== 'count' && minField.deType !== 0 && minField.deType !== 1 && minField.deType !== 5"
+              v-if="validMinField"
               key="var_pop"
               value="var_pop"
               :label="$t('chart.var_pop')"
@@ -711,37 +711,37 @@
             @change="changeQuotaField('max')"
           >
             <el-option
-              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              v-if="validMaxField"
               key="sum"
               value="sum"
               :label="$t('chart.sum')"
             />
             <el-option
-              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              v-if="validMaxField"
               key="avg"
               value="avg"
               :label="$t('chart.avg')"
             />
             <el-option
-              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              v-if="validMaxField"
               key="max"
               value="max"
               :label="$t('chart.max')"
             />
             <el-option
-              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              v-if="validMaxField"
               key="min"
               value="min"
               :label="$t('chart.min')"
             />
             <el-option
-              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              v-if="validMaxField"
               key="stddev_pop"
               value="stddev_pop"
               :label="$t('chart.stddev_pop')"
             />
             <el-option
-              v-if="maxField.id !== 'count' && maxField.deType !== 0 && maxField.deType !== 1 && maxField.deType !== 5"
+              v-if="validMaxField"
               key="var_pop"
               value="var_pop"
               :label="$t('chart.var_pop')"
@@ -1041,6 +1041,19 @@
         <el-form-item
           v-show="showProperty('liquidMax')"
           :label="$t('chart.liquid_max')"
+          class="form-item"
+        >
+          <el-radio-group
+            v-model="sizeForm.liquidMaxType"
+            size="mini"
+            @change="changeQuotaField('max')"
+          >
+            <el-radio-button label="fix">{{ $t('chart.fix') }}</el-radio-button>
+            <el-radio-button label="dynamic">{{ $t('chart.dynamic') }}</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item
+          v-if="showProperty('liquidMax') && sizeForm.liquidMaxType === 'fix'"
           class="form-item form-item-slider"
         >
           <el-input-number
@@ -1050,6 +1063,101 @@
             @change="changeBarSizeCase('liquidMax')"
           />
         </el-form-item>
+        <el-form-item
+          v-if="showProperty('liquidMax') && sizeForm.liquidMaxType === 'dynamic'"
+          class="form-item form-flex"
+        >
+          <el-select
+            v-model="sizeForm.liquidMaxField.id"
+            :placeholder="$t('chart.field')"
+            @change="changeQuotaField('max',true)"
+          >
+            <el-option
+              v-for="item in quotaData"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+              <span style="float: left">
+                <svg-icon
+                  v-if="item.deType === 0"
+                  icon-class="field_text"
+                  class="field-icon-text"
+                />
+                <svg-icon
+                  v-if="item.deType === 1"
+                  icon-class="field_time"
+                  class="field-icon-time"
+                />
+                <svg-icon
+                  v-if="item.deType === 2 || item.deType === 3"
+                  icon-class="field_value"
+                  class="field-icon-value"
+                />
+                <svg-icon
+                  v-if="item.deType === 5"
+                  icon-class="field_location"
+                  class="field-icon-location"
+                />
+              </span>
+              <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
+            </el-option>
+          </el-select>
+          <el-select
+            v-model="sizeForm.liquidMaxField.summary"
+            :placeholder="$t('chart.summary')"
+            @change="changeQuotaField('max')"
+          >
+            <el-option
+              v-if="validLiquidMaxField"
+              key="sum"
+              value="sum"
+              :label="$t('chart.sum')"
+            />
+            <el-option
+              v-if="validLiquidMaxField"
+              key="avg"
+              value="avg"
+              :label="$t('chart.avg')"
+            />
+            <el-option
+              v-if="validLiquidMaxField"
+              key="max"
+              value="max"
+              :label="$t('chart.max')"
+            />
+            <el-option
+              v-if="validLiquidMaxField"
+              key="min"
+              value="min"
+              :label="$t('chart.min')"
+            />
+            <el-option
+              v-if="validLiquidMaxField"
+              key="stddev_pop"
+              value="stddev_pop"
+              :label="$t('chart.stddev_pop')"
+            />
+            <el-option
+              v-if="validLiquidMaxField"
+              key="var_pop"
+              value="var_pop"
+              :label="$t('chart.var_pop')"
+            />
+            <el-option
+              key="count"
+              value="count"
+              :label="$t('chart.count')"
+            />
+            <el-option
+              v-if="liquidMaxField.id !== 'count'"
+              key="count_distinct"
+              value="count_distinct"
+              :label="$t('chart.count_distinct')"
+            />
+          </el-select>
+        </el-form-item>
+
         <el-form-item
           v-show="showProperty('liquidSize')"
           :label="$t('chart.radar_size')"
@@ -1162,7 +1270,19 @@ export default {
       fontLetterSpace: CHART_FONT_LETTER_SPACE,
       minField: {},
       maxField: {},
+      liquidMaxField: {},
       quotaData: []
+    }
+  },
+  computed: {
+    validLiquidMaxField() {
+      return this.isValidField(this.liquidMaxField)
+    },
+    validMinField() {
+      return this.isValidField(this.minField)
+    },
+    validMaxField() {
+      return this.isValidField(this.maxField)
     }
   },
   watch: {
@@ -1190,6 +1310,9 @@ export default {
       if (this.sizeForm.gaugeMaxField.id) {
         this.maxField = this.getQuotaField(this.sizeForm.gaugeMaxField.id)
       }
+      if (this.sizeForm.liquidMaxField.id) {
+        this.liquidMaxField = this.getQuotaField(this.sizeForm.liquidMaxField.id)
+      }
     },
     initData() {
       const chart = JSON.parse(JSON.stringify(this.chart))
@@ -1213,6 +1336,12 @@ export default {
           this.sizeForm.liquidOutlineDistance = (this.sizeForm.liquidOutlineDistance || this.sizeForm.liquidOutlineDistance === 0) ? this.sizeForm.liquidOutlineDistance : DEFAULT_SIZE.liquidOutlineDistance
           this.sizeForm.liquidWaveLength = this.sizeForm.liquidWaveLength ? this.sizeForm.liquidWaveLength : DEFAULT_SIZE.liquidWaveLength
           this.sizeForm.liquidWaveCount = this.sizeForm.liquidWaveCount ? this.sizeForm.liquidWaveCount : DEFAULT_SIZE.liquidWaveCount
+          this.sizeForm.liquidMaxType = this.sizeForm.liquidMaxType ? this.sizeForm.liquidMaxType : DEFAULT_SIZE.liquidMaxType
+          if (!this.sizeForm.liquidMaxField) {
+            this.sizeForm.liquidMaxField = DEFAULT_SIZE.liquidMaxField
+            this.sizeForm.liquidMaxField.id = this.quotaData[0]?.id
+            this.sizeForm.liquidMaxField.summary = 'count'
+          }
 
           this.sizeForm.tablePageMode = this.sizeForm.tablePageMode ? this.sizeForm.tablePageMode : DEFAULT_SIZE.tablePageMode
           this.sizeForm.tablePageSize = this.sizeForm.tablePageSize ? this.sizeForm.tablePageSize : DEFAULT_SIZE.tablePageSize
@@ -1302,27 +1431,43 @@ export default {
           }
         }
       } else if (type === 'max') {
-        if (this.sizeForm.gaugeMaxType === 'dynamic') {
-          if (!this.sizeForm.gaugeMaxField.id) {
-            this.sizeForm.gaugeMaxField.id = this.quotaData[0]?.id
+        if (this.chart.type === 'liquid') {
+          if (!this.sizeForm.liquidMaxField.id) {
+            this.sizeForm.liquidMaxField.id = this.quotaData[0]?.id
           }
-          if (!this.sizeForm.gaugeMaxField.summary) {
-            this.sizeForm.gaugeMaxField.summary = 'count'
+          if (!this.sizeForm.liquidMaxField.summary) {
+            this.sizeForm.liquidMaxField.summary = 'count'
           }
           if (resetSummary) {
-            this.sizeForm.gaugeMaxField.summary = 'count'
+            this.sizeForm.liquidMaxField.summary = 'count'
           }
-          if (this.sizeForm.gaugeMaxField.id && this.sizeForm.gaugeMaxField.summary) {
-            this.maxField = this.getQuotaField(this.sizeForm.gaugeMaxField.id)
-            this.changeBarSizeCase('gaugeMaxField')
+          if (this.sizeForm.liquidMaxField.id && this.sizeForm.liquidMaxField.summary) {
+            this.maxField = this.getQuotaField(this.sizeForm.liquidMaxField.id)
+            this.changeBarSizeCase('liquidMaxField')
           }
         } else {
-          if (this.sizeForm.gaugeMinType === 'dynamic') {
-            if (this.sizeForm.gaugeMinField.id && this.sizeForm.gaugeMinField.summary) {
+          if (this.sizeForm.gaugeMaxType === 'dynamic') {
+            if (!this.sizeForm.gaugeMaxField.id) {
+              this.sizeForm.gaugeMaxField.id = this.quotaData[0]?.id
+            }
+            if (!this.sizeForm.gaugeMaxField.summary) {
+              this.sizeForm.gaugeMaxField.summary = 'count'
+            }
+            if (resetSummary) {
+              this.sizeForm.gaugeMaxField.summary = 'count'
+            }
+            if (this.sizeForm.gaugeMaxField.id && this.sizeForm.gaugeMaxField.summary) {
+              this.maxField = this.getQuotaField(this.sizeForm.gaugeMaxField.id)
               this.changeBarSizeCase('gaugeMaxField')
             }
           } else {
-            this.changeBarSizeCase('gaugeMaxField')
+            if (this.sizeForm.gaugeMinType === 'dynamic') {
+              if (this.sizeForm.gaugeMinField.id && this.sizeForm.gaugeMinField.summary) {
+                this.changeBarSizeCase('gaugeMaxField')
+              }
+            } else {
+              this.changeBarSizeCase('gaugeMaxField')
+            }
           }
         }
       }
@@ -1339,6 +1484,12 @@ export default {
       } else {
         return fields[0]
       }
+    },
+    isValidField(field) {
+      return field.id !== 'count' &&
+        field.deType !== 0 &&
+        field.deType !== 1 &&
+        field.deType !== 5
     }
   }
 }

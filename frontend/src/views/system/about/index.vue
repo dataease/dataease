@@ -74,7 +74,7 @@
           <a
             class="md-primary pointer"
             @click="support"
-          >{{ $t('about.suport') }}</a>
+          >{{ $t('about.support') }}</a>
 
         </div>
       </div>

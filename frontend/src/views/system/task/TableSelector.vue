@@ -91,8 +91,8 @@
           >
             <template slot="header">
               <svg-icon
-                :icon-class="iconFormate(field.deType).iconClass"
-                :class="iconFormate(field.deType).class"
+                :icon-class="iconFormat(field.deType).iconClass"
+                :class="iconFormat(field.deType).class"
               />
               <span>{{ field.name }}</span>
             </template>
@@ -174,7 +174,7 @@ export default {
     this.treeNode()
   },
   methods: {
-    iconFormate(deType) {
+    iconFormat(deType) {
       const val = ['text', 'time', 'value', 'value', 'location'][deType]
       return {
         class: `field-icon-${val}`,

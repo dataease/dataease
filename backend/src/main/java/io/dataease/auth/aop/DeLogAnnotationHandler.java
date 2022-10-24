@@ -37,13 +37,13 @@ public class DeLogAnnotationHandler {
     @Resource
     private LogService logService;
 
-    private static List<Integer> befores = new ArrayList<>();
+    private static List<Integer> before = new ArrayList<>();
 
     @PostConstruct
     public void init() {
-        befores.add(SysLogConstants.OPERATE_TYPE.DELETE.getValue());
-        befores.add(SysLogConstants.OPERATE_TYPE.UNSHARE.getValue());
-        befores.add(SysLogConstants.OPERATE_TYPE.UNAUTHORIZE.getValue());
+        before.add(SysLogConstants.OPERATE_TYPE.DELETE.getValue());
+        before.add(SysLogConstants.OPERATE_TYPE.UNSHARE.getValue());
+        before.add(SysLogConstants.OPERATE_TYPE.UNAUTHORIZE.getValue());
     }
 
     private SysLogDTO exec(JoinPoint point, DeLog deLog) throws Exception{
@@ -110,7 +110,7 @@ public class DeLogAnnotationHandler {
         SysLogDTO logDTO = null;
         Object result = null;
         DeLog log = getLog(point);
-        if(befores.contains(log.operatetype().getValue())) {
+        if(before.contains(log.operatetype().getValue())) {
             // 前置处理 比如删除操作 需要在数据删除之前查询
             logDTO = exec(point, log);
             result = point.proceed(point.getArgs());

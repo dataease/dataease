@@ -3091,7 +3091,7 @@ export function getColors(chart, colors, reset) {
   let series
   if (chart.type.includes('stack')) {
     if (chart.data) {
-      const data = chart.data.datas
+      const data = chart.data.data
       const stackData = []
       for (let i = 0; i < data.length; i++) {
         const s = data[i]
@@ -3128,7 +3128,7 @@ export function getColors(chart, colors, reset) {
     }
   } else if (chart.type === 'bar-group') {
     // 拿到data中的category，并去重，然后构建seriesColor
-    const data = chart.data.datas
+    const data = chart.data.data
     const s = []
     data.forEach((cur) => {
       if (s.indexOf(cur.category) < 0) {
@@ -3144,7 +3144,7 @@ export function getColors(chart, colors, reset) {
     }
   } else {
     if (chart.data) {
-      const data = chart.data.datas
+      const data = chart.data.data
       // data 的维度值，需要根据自定义顺序排序
       // let customSortData
       // if (Object.prototype.toString.call(chart.customSort) === '[object Array]') {

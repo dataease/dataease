@@ -50,7 +50,7 @@
       style="min-width: 1200px;"
     >
       <api-variable
-        :with-mor-setting="true"
+        :with-more-setting="true"
         :is-read-only="isReadOnly"
         :parameters="body.kvs"
         :is-show-enable="isShowEnable"

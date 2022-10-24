@@ -53,7 +53,7 @@
                   v-if="showDomType === 'tree'"
                   :default-expanded-keys="expandedArray"
                   node-key="id"
-                  :data="tempTreeDatas || datas"
+                  :data="tempTreeData || data"
                   :props="defaultProps"
 
                   @node-click="handleNodeClick"
@@ -116,7 +116,7 @@
 
                 <div v-if="showDomType === 'field'">
                   <draggable
-                    v-model="fieldDatas"
+                    v-model="fieldData"
                     :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
                     animation="300"
                     :move="onMove"
@@ -125,7 +125,7 @@
                   >
                     <transition-group>
                       <div
-                        v-for="item in fieldDatas"
+                        v-for="item in fieldData"
                         :key="item.id"
                         :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
                         class="filter-db-row"
@@ -207,7 +207,7 @@
                     >
                       <div
                         class="filter-db-row"
-                        @click="comShowFieldDatas(scope.row)"
+                        @click="comShowFieldData(scope.row)"
                       >
                         <span style="display: flex;flex: 1;">
                           <span>
@@ -226,7 +226,7 @@
 
                 <div v-else-if="comShowDomType === 'field'">
                   <draggable
-                    v-model="comFieldDatas"
+                    v-model="comFieldData"
                     :options="{group:{name: 'dimension',pull:'clone'},sort: true}"
                     animation="300"
                     :move="onMove"
@@ -235,7 +235,7 @@
                   >
                     <transition-group>
                       <div
-                        v-for="item in comFieldDatas"
+                        v-for="item in comFieldData"
                         :key="item.id"
                         :class="myAttrs && myAttrs.fieldId && myAttrs.fieldId.includes(item.id) ? 'filter-db-row-checked' : 'filter-db-row'"
                         class="filter-db-row"
@@ -347,13 +347,12 @@ export default {
         link: false,
         type: 'root'
       }],
-      datas: [],
-      sceneDatas: [],
-      //   viewDatas: [],
-      fieldDatas: [],
-      originFieldDatas: [],
-      comFieldDatas: [],
-      originComFieldDatas: [],
+      data: [],
+      sceneData: [],
+      fieldData: [],
+      originFieldData: [],
+      comFieldData: [],
+      originComFieldData: [],
       defaultProps: {
         label: 'name',
         children: 'children',
@@ -374,7 +373,7 @@ export default {
         sort: 'type desc,name asc'
       },
       isTreeSearch: false,
-      defaultDatas: [],
+      defaultData: [],
       keyWord: '',
       timer: null,
       expandedArray: [],
@@ -389,7 +388,7 @@ export default {
         datasetParams: []
       },
       currentElement: null,
-      tempTreeDatas: null,
+      tempTreeData: null,
       showTips: false
     }
   },
@@ -420,11 +419,11 @@ export default {
     keyWord(val) {
       this.expandedArray = []
       if (this.showDomType === 'field') {
-        let results = this.originFieldDatas
+        let results = this.originFieldData
         if (val) {
-          results = this.originFieldDatas.filter(item => item.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+          results = this.originFieldData.filter(item => item.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
         }
-        this.fieldDatas = JSON.parse(JSON.stringify(results))
+        this.fieldData = JSON.parse(JSON.stringify(results))
         return
       }
       if (this.timer) {
@@ -437,11 +436,11 @@ export default {
 
     viewKeyWord(val) {
       if (this.comShowDomType === 'field') {
-        let results = this.originComFieldDatas
+        let results = this.originComFieldData
         if (val) {
-          results = this.originComFieldDatas.filter(item => item.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
+          results = this.originComFieldData.filter(item => item.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))
         }
-        this.comFieldDatas = JSON.parse(JSON.stringify(results))
+        this.comFieldData = JSON.parse(JSON.stringify(results))
       }
     }
   },
@@ -472,16 +471,16 @@ export default {
       if (userCache) {
         this.tData = JSON.parse(modelInfo)
         const results = this.buildTree(this.tData)
-        this.defaultDatas = JSON.parse(JSON.stringify(results))
-        this.datas = JSON.parse(JSON.stringify(results))
+        this.defaultData = JSON.parse(JSON.stringify(results))
+        this.data = JSON.parse(JSON.stringify(results))
       }
       queryAuthModel({ modelType: 'dataset' }, !userCache).then(res => {
         localStorage.setItem('dataset-tree', JSON.stringify(res.data))
         if (!userCache) {
           this.tData = res.data
           const results = this.buildTree(this.tData)
-          this.defaultDatas = JSON.parse(JSON.stringify(results))
-          this.datas = JSON.parse(JSON.stringify(results))
+          this.defaultData = JSON.parse(JSON.stringify(results))
+          this.data = JSON.parse(JSON.stringify(results))
         }
       })
     },
@@ -491,8 +490,8 @@ export default {
         if (this.myAttrs.fieldsParent) {
           this.fieldsParent = this.myAttrs.fieldsParent
           this.$nextTick(() => {
-            this.activeName === 'dataset' && this.showFieldDatas(this.fieldsParent)
-            this.activeName !== 'dataset' && this.comShowFieldDatas(this.fieldsParent)
+            this.activeName === 'dataset' && this.showFieldData(this.fieldsParent)
+            this.activeName !== 'dataset' && this.comShowFieldData(this.fieldsParent)
           })
         }
       }
@@ -514,7 +513,7 @@ export default {
         name: val
       }
       authModel(queryCondition).then(res => {
-        this.datas = this.buildTree(res.data)
+        this.data = this.buildTree(res.data)
       })
     },
     buildTree(arrs) {
@@ -567,10 +566,10 @@ export default {
         viewIds = [...viewIds, ...tabViewIds]
       }
       viewIds && viewIds.length > 0 && viewsWithIds(viewIds).then(res => {
-        const datas = res.data
+        const data = res.data
 
-        this.viewInfos = datas
-        this.childViews.viewInfos = datas
+        this.viewInfos = data
+        this.childViews.viewInfos = data
       })
       var type = 'TEXT'
       if (this.widgetInfo.name.indexOf('time') !== -1) {
@@ -580,14 +579,14 @@ export default {
         type = 'NUM'
       }
       viewIds && viewIds.length > 0 && paramsWithIds(type, viewIds).then(res => {
-        const datas = res.data
+        const data = res.data
 
-        this.childViews.datasetParams = datas
+        this.childViews.datasetParams = data
       })
     },
     handleNodeClick(data) {
       if (data.modelInnerType !== 'group') {
-        this.showFieldDatas(data)
+        this.showFieldData(data)
       } else {
         if (!data.children || !data.children.length) {
           const name = data.name
@@ -601,9 +600,9 @@ export default {
 
     loadDataSetTree() {
       groupTree({}).then(res => {
-        const datas = res.data
+        const data = res.data
 
-        this.data = datas
+        this.data = data
       })
     },
 
@@ -630,7 +629,7 @@ export default {
       this.dataSetBreads = this.dataSetBreads.slice(0, 1)
       const root = {
         id: null,
-        children: JSON.parse(JSON.stringify(this.datas))
+        children: JSON.parse(JSON.stringify(this.data))
       }
       this.getPathById(node.id, root, res => {
         if (res.length > 1) {
@@ -710,15 +709,15 @@ export default {
         this.keyWord = ''
         this.isTreeSearch = false
         if (bread.id) {
-          const node = this.getNode(bread.id, this.datas)
+          const node = this.getNode(bread.id, this.data)
           if (node) {
-            this.tempTreeDatas = node.children
+            this.tempTreeData = node.children
           }
         } else {
-          this.tempTreeDatas = null
+          this.tempTreeData = null
         }
 
-        this.datas = JSON.parse(JSON.stringify(this.defaultDatas))
+        this.data = JSON.parse(JSON.stringify(this.defaultData))
       })
     },
     comBackLink(bread) {
@@ -729,25 +728,25 @@ export default {
 
     loadField(tableId) {
       fieldListWithPermission(tableId).then(res => {
-        let datas = res.data
+        let data = res.data
         if (this.widget && this.widget.filterFieldMethod) {
-          datas = this.widget.filterFieldMethod(datas)
+          data = this.widget.filterFieldMethod(data)
         }
-        this.originFieldDatas = datas
-        this.fieldDatas = JSON.parse(JSON.stringify(datas))
+        this.originFieldData = data
+        this.fieldData = JSON.parse(JSON.stringify(data))
       })
     },
     comLoadField(tableId) {
       fieldListWithPermission(tableId).then(res => {
-        let datas = res.data
+        let data = res.data
         if (this.widget && this.widget.filterFieldMethod) {
-          datas = this.widget.filterFieldMethod(datas)
+          data = this.widget.filterFieldMethod(data)
         }
-        this.originComFieldDatas = datas
-        this.comFieldDatas = JSON.parse(JSON.stringify(datas))
+        this.originComFieldData = data
+        this.comFieldData = JSON.parse(JSON.stringify(data))
       })
     },
-    showFieldDatas(row) {
+    showFieldData(row) {
       this.keyWord = ''
       this.showDomType = 'field'
       this.addQueue(row)
@@ -755,12 +754,12 @@ export default {
       this.loadField(row.id)
     },
     showNextGroup(row) {
-      this.tempTreeDatas = JSON.parse(JSON.stringify(row.children))
+      this.tempTreeData = JSON.parse(JSON.stringify(row.children))
       this.keyWord = ''
       this.showDomType = 'tree'
       this.addQueue(row)
     },
-    comShowFieldDatas(row) {
+    comShowFieldData(row) {
       this.viewKeyWord = ''
       this.comShowDomType = 'field'
       this.comSetTailLink(row)
@@ -772,8 +771,8 @@ export default {
       this.showTips = false
       this.moveId = e.draggedContext.element.id
       if (this.isTree) return true
-      const tabelId = e.draggedContext.element.tableId
-      const prohibit = this.currentElement.options.attrs.dragItems.some(item => item.tableId === tabelId)
+      const tableId = e.draggedContext.element.tableId
+      const prohibit = this.currentElement.options.attrs.dragItems.some(item => item.tableId === tableId)
       if (prohibit) {
         this.showTips = true
       }
@@ -781,22 +780,22 @@ export default {
     },
 
     endDs(e) {
-      this.refuseMove(e, this.fieldDatas)
+      this.refuseMove(e, this.fieldData)
       this.removeCheckedKey(e)
     },
     endVw(e) {
-      this.refuseMove(e, this.comFieldDatas)
+      this.refuseMove(e, this.comFieldData)
       this.removeCheckedKey(e)
     },
 
-    refuseMove(e, datas) {
+    refuseMove(e, data) {
       const that = this
-      const xItems = datas.filter(function(m) {
+      const xItems = data.filter(function(m) {
         return m.id === that.moveId
       })
 
       if (xItems && xItems.length > 1) {
-        this.datas.splice(e.newDraggableIndex, 1)
+        this.data.splice(e.newDraggableIndex, 1)
       }
     },
     removeCheckedKey(e) {

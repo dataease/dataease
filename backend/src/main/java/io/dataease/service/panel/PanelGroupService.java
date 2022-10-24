@@ -401,12 +401,12 @@ public class PanelGroupService {
         return newPanelId;
     }
     @Transactional(rollbackFor = Exception.class)
-    public String newPanelFromApp(PanelGroupRequest request,Map<String,String> chartViewsRelaMap){
+    public String newPanelFromApp(PanelGroupRequest request,Map<String,String> chartViewsRealMap){
         String newPanelId = request.getId();
         String templateData = request.getPanelData();
         String staticResource = request.getStaticResource();
-        Boolean mobileLayout = panelViewService.havaMobileLayout(templateData);
-        for(Map.Entry<String,String> entry:chartViewsRelaMap.entrySet()){
+        Boolean mobileLayout = panelViewService.haveMobileLayout(templateData);
+        for(Map.Entry<String,String> entry:chartViewsRealMap.entrySet()){
             templateData =  templateData.replaceAll(entry.getKey(),entry.getValue());
         }
         request.setMobileLayout(mobileLayout);
@@ -439,13 +439,13 @@ public class PanelGroupService {
                 templateStyle = panelTemplate.getTemplateStyle();
                 templateData = panelTemplate.getTemplateData();
                 dynamicData = panelTemplate.getDynamicData();
-                mobileLayout = panelViewService.havaMobileLayout(templateData);
+                mobileLayout = panelViewService.haveMobileLayout(templateData);
             } else if (PanelConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)) {
                 templateStyle = request.getPanelStyle();
                 templateData = request.getPanelData();
                 dynamicData = request.getDynamicData();
                 staticResource = request.getStaticResource();
-                mobileLayout = panelViewService.havaMobileLayout(templateData);
+                mobileLayout = panelViewService.haveMobileLayout(templateData);
             } else if (PanelConstants.NEW_PANEL_FROM.NEW_MARKET_TEMPLATE.equals(newFrom)) {
                 PanelTemplateFileDTO templateFileInfo = getTemplateFromMarket(request.getTemplateUrl());
                 if (templateFileInfo == null) {
@@ -455,7 +455,7 @@ public class PanelGroupService {
                 templateData = templateFileInfo.getPanelData();
                 dynamicData = templateFileInfo.getDynamicData();
                 staticResource = templateFileInfo.getStaticResource();
-                mobileLayout = panelViewService.havaMobileLayout(templateData);
+                mobileLayout = panelViewService.haveMobileLayout(templateData);
             }
             Map<String, String> dynamicDataMap = gson.fromJson(dynamicData, Map.class);
             if (dynamicDataMap == null) {
@@ -803,7 +803,7 @@ public class PanelGroupService {
         if (CollectionUtils.isEmpty(datasourceDTOS)) {
             return new PanelExport2App("this panel don't have datasource");
         } else if (datasourceDTOS.size() > 1) {
-            return new PanelExport2App("this panel should hava only one dataset");
+            return new PanelExport2App("this panel should have only one dataset");
         }
         return new PanelExport2App(chartViewsInfo, chartViewFieldsInfo, datasetTablesInfo, datasetTableFieldsInfo, dataSetTasksInfo, datasourceDTOS,panelViews);
     }
@@ -841,23 +841,23 @@ public class PanelGroupService {
         //获取仪表板视图信息
         List<PanelView> panelViewsInfo = gson.fromJson(appInfo.getPanelViewsInfo(), new TypeToken<List<PanelView>>(){}.getType());
 
-        Map<String,String> datasourceRelaMap = panelAppTemplateService.applyDatasource(oldDatasourceInfo,request.getDatasourceList());
+        Map<String,String> datasourceRealMap = panelAppTemplateService.applyDatasource(oldDatasourceInfo,request.getDatasourceList());
 
-        Map<String,String> datasetsRelaMap = panelAppTemplateService.applyDataset(datasetTablesInfo,datasourceRelaMap,asideDatasetGroupId);
+        Map<String,String> datasetsRealMap = panelAppTemplateService.applyDataset(datasetTablesInfo,datasourceRealMap,asideDatasetGroupId);
 
-        Map<String,String> datasetFieldsRelaMap = panelAppTemplateService.applyDatasetField(datasetTableFieldsInfo,datasetsRelaMap);
+        Map<String,String> datasetFieldsRealMap = panelAppTemplateService.applyDatasetField(datasetTableFieldsInfo,datasetsRealMap);
 
-        panelAppTemplateService.resetCustomAndUnionDataset(datasetTablesInfo,datasetsRelaMap,datasetFieldsRelaMap);
+        panelAppTemplateService.resetCustomAndUnionDataset(datasetTablesInfo,datasetsRealMap,datasetFieldsRealMap);
 
-        Map<String,String> chartViewsRelaMap = panelAppTemplateService.applyViews(chartViewsInfo,datasetsRelaMap,datasetFieldsRelaMap,newPanelId);
+        Map<String,String> chartViewsRealMap = panelAppTemplateService.applyViews(chartViewsInfo,datasetsRealMap,datasetFieldsRealMap,newPanelId);
 
-        panelAppTemplateService.applyViewsField(chartViewFieldsInfo,chartViewsRelaMap,datasetsRelaMap,datasetFieldsRelaMap);
+        panelAppTemplateService.applyViewsField(chartViewFieldsInfo,chartViewsRealMap,datasetsRealMap,datasetFieldsRealMap);
 
-        panelAppTemplateService.applyPanel(panelInfo,chartViewsRelaMap,newPanelId, request.getPanelName(), request.getPanelId());
+        panelAppTemplateService.applyPanel(panelInfo,chartViewsRealMap,newPanelId, request.getPanelName(), request.getPanelId());
 
-        panelAppTemplateService.applyPanelView(panelViewsInfo,chartViewsRelaMap,newPanelId);
+        panelAppTemplateService.applyPanelView(panelViewsInfo,chartViewsRealMap,newPanelId);
 
-        String newDatasourceId =datasourceRelaMap.entrySet().stream().findFirst().get().getValue();
+        String newDatasourceId =datasourceRealMap.entrySet().stream().findFirst().get().getValue();
 
         String newDatasourceName = request.getDatasourceList().get(0).getName();
 

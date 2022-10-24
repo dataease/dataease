@@ -19,7 +19,7 @@
           <el-tree
             ref="tree"
             class="filter-tree"
-            :data="treeDatas"
+            :data="treeData"
             :props="defaultProps"
             :filter-node-method="filterNode"
             :expand-on-click-node="false"
@@ -87,7 +87,7 @@ export default {
   name: 'MapSettingLeft',
   mixins: [msgCfm],
   props: {
-    treeDatas: {
+    treeData: {
       type: Array,
       default: () => []
     }

@@ -15,7 +15,7 @@
     :filter-method="filterMethod"
     :key-word="keyWord"
     popper-class="coustom-de-select"
-    :list="datas"
+    :list="data"
     :custom-style="customStyle"
     @change="changeValue"
     @focus="setOptionWidth"
@@ -24,7 +24,7 @@
     @handleShowNumber="handleShowNumber"
   >
     <el-option
-      v-for="item in templateDatas || datas"
+      v-for="item in templateData || data"
       :key="item[element.options.attrs.key]"
       :style="{width:selectOptionWidth}"
       :label="item[element.options.attrs.label]"
@@ -77,7 +77,7 @@ export default {
       selectOptionWidth: 0,
       show: true,
       value: null,
-      datas: [],
+      data: [],
       onFocus: false,
       keyWord: ''
     }
@@ -90,7 +90,7 @@ export default {
       }
       return result
     },
-    templateDatas() {
+    templateData() {
       return this.mode === 'el-visual-select' ? [] : null
     },
     operator() {
@@ -133,7 +133,7 @@ export default {
     },
     'element.options.attrs.fieldId': function(value, old) {
       if (value === null || typeof value === 'undefined' || value === old) return
-      this.datas = []
+      this.data = []
 
       let method = multFieldValues
       const token = this.$store.getters.token || getToken()
@@ -148,7 +148,7 @@ export default {
       this.element.options.attrs.fieldId &&
       this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
-        this.datas = this.optionDatas(res.data)
+        this.data = this.optionData(res.data)
         bus.$emit('valid-values-change', true)
       }).catch(e => {
         bus.$emit('valid-values-change', false)
@@ -171,7 +171,7 @@ export default {
       if (value === null || typeof value === 'undefined' || value === old || isSameVueObj(value, old)) return
       this.show = false
 
-      this.datas = []
+      this.data = []
 
       let method = multFieldValues
       const token = this.$store.getters.token || getToken()
@@ -186,7 +186,7 @@ export default {
       this.element.options.attrs.fieldId &&
       this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
-        this.datas = this.optionDatas(res.data)
+        this.data = this.optionData(res.data)
         this.$nextTick(() => {
           this.show = true
           this.handleCoustomStyle()
@@ -248,7 +248,7 @@ export default {
     },
     initLoad() {
       this.value = this.fillValueDerfault()
-      this.datas = []
+      this.data = []
       if (this.element.options.attrs.fieldId) {
         let method = multFieldValues
         const token = this.$store.getters.token || getToken()
@@ -257,7 +257,7 @@ export default {
           method = linkMultFieldValues
         }
         method({ fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }).then(res => {
-          this.datas = this.optionDatas(res.data)
+          this.data = this.optionData(res.data)
           bus.$emit('valid-values-change', true)
         }).catch(e => {
           bus.$emit('valid-values-change', false)
@@ -336,9 +336,9 @@ export default {
         return defaultV.split(',')[0]
       }
     },
-    optionDatas(datas) {
-      if (!datas) return null
-      return datas.filter(item => !!item).map(item => {
+    optionData(data) {
+      if (!data) return null
+      return data.filter(item => !!item).map(item => {
         return {
           id: item,
           text: item

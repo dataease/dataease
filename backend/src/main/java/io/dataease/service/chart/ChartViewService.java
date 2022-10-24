@@ -351,7 +351,7 @@ public class ChartViewService {
 
         //列权限
         List<String> desensitizationList = new ArrayList<>();
-        List<DatasetTableField> columnPermissionFields = permissionService.filterColumnPermissons(fields, desensitizationList, table.getId(), requestList.getUser());
+        List<DatasetTableField> columnPermissionFields = permissionService.filterColumnPermissions(fields, desensitizationList, table.getId(), requestList.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
         dataeaseNames.add("*");
@@ -580,7 +580,7 @@ public class ChartViewService {
             List<ChartViewFieldDTO> yAxisExt = gson.fromJson(view.getYAxisExt(), tokenType);
             yAxis.addAll(yAxisExt);
         }
-        if (StringUtils.equalsIgnoreCase(view.getRender(), "antv") && StringUtils.equalsIgnoreCase(view.getType(), "gauge")) {
+        if (StringUtils.equalsIgnoreCase(view.getRender(), "antv") && StringUtils.equalsAnyIgnoreCase(view.getType(), "gauge","liquid")) {
             List<ChartViewFieldDTO> sizeField = getSizeField(view);
             yAxis.addAll(sizeField);
         }
@@ -598,7 +598,7 @@ public class ChartViewService {
 
         List<String> desensitizationList = new ArrayList<>();
         //列权限
-        List<DatasetTableField> columnPermissionFields = permissionService.filterColumnPermissons(fields, desensitizationList, table.getId(), requestList.getUser());
+        List<DatasetTableField> columnPermissionFields = permissionService.filterColumnPermissions(fields, desensitizationList, table.getId(), requestList.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
         dataeaseNames.add("*");
@@ -670,7 +670,8 @@ public class ChartViewService {
                 }
                 boolean hasParameters = false;
                 if (StringUtils.isNotEmpty(table.getSqlVariableDetails())) {
-                    List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
+                    List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
+                    }.getType());
                     for (String parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>())) {
                         if (sqlVariables.stream().map(SqlVariableDetails::getVariableName).collect(Collectors.toList()).contains(parameter)) {
                             hasParameters = true;
@@ -994,20 +995,6 @@ public class ChartViewService {
             if (StringUtils.isNotEmpty(compareCalc.getType())
                     && !StringUtils.equalsIgnoreCase(compareCalc.getType(), "none")) {
                 String compareFieldId = compareCalc.getField();// 选中字段
-                String resultData = compareCalc.getResultData();// 数据设置
-                // 获取选中字段以及下标
-                List<ChartViewFieldDTO> checkedField = new ArrayList<>(xAxis);
-                if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
-                    checkedField.addAll(extStack);
-                }
-                int timeIndex = 0;// 时间字段下标
-                ChartViewFieldDTO timeField = null;
-                for (int j = 0; j < checkedField.size(); j++) {
-                    if (StringUtils.equalsIgnoreCase(checkedField.get(j).getId(), compareFieldId)) {
-                        timeIndex = j;
-                        timeField = checkedField.get(j);
-                    }
-                }
                 // 计算指标对应的下标
                 int dataIndex = 0;// 数据字段下标
                 if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
@@ -1015,49 +1002,87 @@ public class ChartViewService {
                 } else {
                     dataIndex = xAxis.size() + i;
                 }
-                // 无选中字段，或者选中字段已经不在维度list中，或者选中字段日期格式不符合对比类型的，直接将对应数据置为null
-                if (ObjectUtils.isEmpty(timeField) || !checkCalcType(timeField.getDateStyle(), compareCalc.getType())) {
-                    // set null
-                    for (String[] item : data) {
-                        item[dataIndex] = null;
+                if (Arrays.asList(ChartConstants.M_Y).contains(compareCalc.getType())) {
+                    String resultData = compareCalc.getResultData();// 数据设置
+                    // 获取选中字段以及下标
+                    List<ChartViewFieldDTO> checkedField = new ArrayList<>(xAxis);
+                    if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                        checkedField.addAll(extStack);
                     }
-                } else {
-                    // 计算 同比/环比
-                    // 1，处理当期数据；2，根据type计算上一期数据；3，根据resultData计算结果
-                    Map<String, String> currentMap = new LinkedHashMap<>();
-                    for (String[] item : data) {
-                        String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
-                        currentMap.put(StringUtils.join(dimension, "-"), item[dataIndex]);
+                    int timeIndex = 0;// 时间字段下标
+                    ChartViewFieldDTO timeField = null;
+                    for (int j = 0; j < checkedField.size(); j++) {
+                        if (StringUtils.equalsIgnoreCase(checkedField.get(j).getId(), compareFieldId)) {
+                            timeIndex = j;
+                            timeField = checkedField.get(j);
+                        }
                     }
-
-                    for (int index = 0; index < data.size(); index++) {
-                        String[] item = data.get(index);
-                        String cTime = item[timeIndex];
-                        String cValue = item[dataIndex];
-
-                        // 获取计算后的时间，并且与所有维度拼接
-                        String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern());
-                        String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
-                        dimension[timeIndex] = lastTime;
-
-                        String lastValue = currentMap.get(StringUtils.join(dimension, "-"));
-                        if (StringUtils.isEmpty(cValue) || StringUtils.isEmpty(lastValue)) {
+                    // 无选中字段，或者选中字段已经不在维度list中，或者选中字段日期格式不符合对比类型的，直接将对应数据置为null
+                    if (ObjectUtils.isEmpty(timeField) || !checkCalcType(timeField.getDateStyle(), compareCalc.getType())) {
+                        // set null
+                        for (String[] item : data) {
                             item[dataIndex] = null;
-                        } else {
-                            if (StringUtils.equalsIgnoreCase(resultData, "sub")) {
-                                item[dataIndex] = new BigDecimal(cValue).subtract(new BigDecimal(lastValue)).toString();
-                            } else if (StringUtils.equalsIgnoreCase(resultData, "percent")) {
-                                if (new BigDecimal(lastValue).compareTo(BigDecimal.ZERO) == 0) {
-                                    item[dataIndex] = null;
-                                } else {
-                                    item[dataIndex] = new BigDecimal(cValue)
-                                            .divide(new BigDecimal(lastValue), 8, RoundingMode.HALF_UP)
-                                            .subtract(new BigDecimal(1))
-                                            .setScale(8, RoundingMode.HALF_UP)
-                                            .toString();
+                        }
+                    } else {
+                        // 计算 同比/环比
+                        // 1，处理当期数据；2，根据type计算上一期数据；3，根据resultData计算结果
+                        Map<String, String> currentMap = new LinkedHashMap<>();
+                        for (String[] item : data) {
+                            String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
+                            currentMap.put(StringUtils.join(dimension, "-"), item[dataIndex]);
+                        }
+
+                        for (int index = 0; index < data.size(); index++) {
+                            String[] item = data.get(index);
+                            String cTime = item[timeIndex];
+                            String cValue = item[dataIndex];
+
+                            // 获取计算后的时间，并且与所有维度拼接
+                            String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern());
+                            String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
+                            dimension[timeIndex] = lastTime;
+
+                            String lastValue = currentMap.get(StringUtils.join(dimension, "-"));
+                            if (StringUtils.isEmpty(cValue) || StringUtils.isEmpty(lastValue)) {
+                                item[dataIndex] = null;
+                            } else {
+                                if (StringUtils.equalsIgnoreCase(resultData, "sub")) {
+                                    item[dataIndex] = new BigDecimal(cValue).subtract(new BigDecimal(lastValue)).toString();
+                                } else if (StringUtils.equalsIgnoreCase(resultData, "percent")) {
+                                    if (new BigDecimal(lastValue).compareTo(BigDecimal.ZERO) == 0) {
+                                        item[dataIndex] = null;
+                                    } else {
+                                        item[dataIndex] = new BigDecimal(cValue)
+                                                .divide(new BigDecimal(lastValue), 8, RoundingMode.HALF_UP)
+                                                .subtract(new BigDecimal(1))
+                                                .setScale(8, RoundingMode.HALF_UP)
+                                                .toString();
+                                    }
                                 }
                             }
                         }
+                    }
+                } else if (StringUtils.equalsIgnoreCase(compareCalc.getType(), "percent")) {
+                    // 求和
+                    BigDecimal sum = new BigDecimal(0);
+                    for (int index = 0; index < data.size(); index++) {
+                        String[] item = data.get(index);
+                        String cValue = item[dataIndex];
+                        if (StringUtils.isEmpty(cValue)) {
+                            continue;
+                        }
+                        sum = sum.add(new BigDecimal(cValue));
+                    }
+                    // 计算占比
+                    for (int index = 0; index < data.size(); index++) {
+                        String[] item = data.get(index);
+                        String cValue = item[dataIndex];
+                        if (StringUtils.isEmpty(cValue)) {
+                            continue;
+                        }
+                        item[dataIndex] = new BigDecimal(cValue)
+                                .divide(sum, 8, RoundingMode.HALF_UP)
+                                .toString();
                     }
                 }
             }
@@ -1168,11 +1193,11 @@ public class ChartViewService {
         return "SELECT " + stringBuilder + " FROM (" + sql + ") tmp";
     }
 
-    public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tabelData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterRequest> drillFilters, List<ChartSeniorAssistDTO> dynamicAssistFields, List<String[]> assistData) {
+    public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tableData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterRequest> drillFilters, List<ChartSeniorAssistDTO> dynamicAssistFields, List<String[]> assistData) {
 
         Map<String, Object> map = new HashMap<>();
         map.putAll(chartData);
-        map.putAll(tabelData);
+        map.putAll(tableData);
 
         List<DatasetTableField> sourceFields = dataSetTableFieldsService.getFieldsByTableId(view.getTableId());
         map.put("sourceFields", sourceFields);
@@ -1193,7 +1218,7 @@ public class ChartViewService {
         PluginViewParam pluginViewParam = new PluginViewParam();
         PluginViewSetImpl pluginViewSet = BeanUtils.copyBean(new PluginViewSetImpl(), table);
         pluginViewSet.setDsType(ds.getType());
-        pluginViewSet.setTabelId(table.getId());
+        pluginViewSet.setTableId(table.getId());
         pluginViewSet.setDs(ds);
         PluginViewLimit pluginViewLimit = BeanUtils.copyBean(new PluginViewLimit(), view);
 
@@ -1599,7 +1624,8 @@ public class ChartViewService {
     }
 
     private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table, Datasource ds) throws Exception {
-        List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
+        List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
+        }.getType());
         if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
                 if (CollectionUtils.isEmpty(chartExtFilterRequest.getValue())) {
@@ -1610,8 +1636,8 @@ public class ChartViewService {
                 }
 
                 for (String parameter : chartExtFilterRequest.getParameters()) {
-                    if(parameter.contains("|DE|")){
-                        if(!parameter.split("\\|DE\\|")[0].equals(table.getId())){
+                    if (parameter.contains("|DE|")) {
+                        if (!parameter.split("\\|DE\\|")[0].equals(table.getId())) {
                             continue;
                         }
                         List<SqlVariableDetails> parameters = sqlVariables.stream().filter(item -> item.getVariableName().equalsIgnoreCase(parameter.split("\\|DE\\|")[1])).collect(Collectors.toList());
@@ -1619,7 +1645,7 @@ public class ChartViewService {
                             String filter = qp.transFilter(chartExtFilterRequest, parameters.get(0));
                             sql = sql.replace("${" + parameter.split("\\|DE\\|")[1] + "}", filter);
                         }
-                    }else {
+                    } else {
                         List<SqlVariableDetails> parameters = sqlVariables.stream().filter(item -> item.getVariableName().equalsIgnoreCase(parameter)).collect(Collectors.toList());
                         if (CollectionUtils.isNotEmpty(parameters)) {
                             String filter = qp.transFilter(chartExtFilterRequest, parameters.get(0));
@@ -1656,47 +1682,44 @@ public class ChartViewService {
         JSONObject jsonObject = JSONObject.parseObject(customAttr);
         JSONObject size = jsonObject.getJSONObject("size");
 
-        String gaugeMinType = size.getString("gaugeMinType");
-        if (StringUtils.equalsIgnoreCase("dynamic", gaugeMinType)) {
-            JSONObject gaugeMinField = size.getJSONObject("gaugeMinField");
-            String id = gaugeMinField.getString("id");
-            String summary = gaugeMinField.getString("summary");
-            DatasetTableField datasetTableField = dataSetTableFieldsService.get(id);
-            if (ObjectUtils.isNotEmpty(datasetTableField)) {
-                if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
-                    if (!StringUtils.containsIgnoreCase(summary, "count")) {
-                        DEException.throwException(Translator.get("i18n_gauge_field_change"));
-                    }
-                }
-                ChartViewFieldDTO dto = new ChartViewFieldDTO();
-                BeanUtils.copyBean(dto, datasetTableField);
-                dto.setSummary(summary);
-                list.add(dto);
-            } else {
-                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
-            }
+        ChartViewFieldDTO gaugeMinViewField = getDynamicField(size, "gaugeMinType", "gaugeMinField");
+        if (gaugeMinViewField != null) {
+            list.add(gaugeMinViewField);
         }
-        String gaugeMaxType = size.getString("gaugeMaxType");
-        if (StringUtils.equalsIgnoreCase("dynamic", gaugeMaxType)) {
-            JSONObject gaugeMaxField = size.getJSONObject("gaugeMaxField");
-            String id = gaugeMaxField.getString("id");
-            String summary = gaugeMaxField.getString("summary");
-            DatasetTableField datasetTableField = dataSetTableFieldsService.get(id);
-            if (ObjectUtils.isNotEmpty(datasetTableField)) {
-                if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
-                    if (!StringUtils.containsIgnoreCase(summary, "count")) {
-                        DEException.throwException(Translator.get("i18n_gauge_field_change"));
-                    }
-                }
-                ChartViewFieldDTO dto = new ChartViewFieldDTO();
-                BeanUtils.copyBean(dto, datasetTableField);
-                dto.setSummary(summary);
-                list.add(dto);
-            } else {
-                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
-            }
+        ChartViewFieldDTO gaugeMaxViewField = getDynamicField(size, "gaugeMaxType", "gaugeMaxField");
+        if (gaugeMaxViewField != null) {
+            list.add(gaugeMaxViewField);
         }
+        ChartViewFieldDTO liquidMaxViewField = getDynamicField(size, "liquidMaxType", "liquidMaxField");
+        if (liquidMaxViewField != null) {
+            list.add(liquidMaxViewField);
+        }
+
         return list;
+    }
+
+    private ChartViewFieldDTO getDynamicField(JSONObject sizeObj, String type, String field) {
+        String maxType = sizeObj.getString(type);
+        if (StringUtils.equalsIgnoreCase("dynamic", maxType)) {
+            JSONObject maxField = sizeObj.getJSONObject(field);
+            String id = maxField.getString("id");
+            String summary = maxField.getString("summary");
+            DatasetTableField datasetTableField = dataSetTableFieldsService.get(id);
+            if (ObjectUtils.isNotEmpty(datasetTableField)) {
+                if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
+                    if (!StringUtils.containsIgnoreCase(summary, "count")) {
+                        DEException.throwException(Translator.get("i18n_gauge_field_change"));
+                    }
+                }
+                ChartViewFieldDTO dto = new ChartViewFieldDTO();
+                BeanUtils.copyBean(dto, datasetTableField);
+                dto.setSummary(summary);
+                return dto;
+            } else {
+                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
+            }
+        }
+        return null;
     }
 
     private List<ChartSeniorAssistDTO> getDynamicAssistFields(ChartViewDTO view) {

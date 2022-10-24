@@ -105,7 +105,7 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         String tableName = null;
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(pluginViewSet.getInfo(), DataTableInfoDTO.class);
         if (ObjectUtils.isNotEmpty(pluginViewSet.getMode()) && 1 == pluginViewSet.getMode()) {
-            tableName = TableUtils.tableName(pluginViewSet.getTabelId());
+            tableName = TableUtils.tableName(pluginViewSet.getTableId());
         }else {
             switch (DatasetType.getEnumObjByKey(pluginViewSet.getType())) {
                 case DB:
@@ -134,11 +134,11 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
             }
         }
         String keyword = ConstantsUtil.constantsValue(pluginViewSet.getDsType(), "KEYWORD_TABLE");
-        String tabelName = (tableName.startsWith("(") && tableName.endsWith(")")) ? tableName : String.format(keyword, tableName);
-        String tabelAlias = String.format(TABLE_ALIAS_PREFIX, 0);
-        PluginViewSQL tableObj = PluginViewSQL.builder().tableName(tabelName).tableAlias(tabelAlias).build();
+        String realTableName = (tableName.startsWith("(") && tableName.endsWith(")")) ? tableName : String.format(keyword, tableName);
+        String tableAlias = String.format(TABLE_ALIAS_PREFIX, 0);
+        PluginViewSQL tableObj = PluginViewSQL.builder().tableName(realTableName).tableAlias(tableAlias).build();
         QueryProvider queryProvider = ProviderFactory.getQueryProvider(pluginViewSet.getDsType());
-        SQLObj sqlObj = SQLObj.builder().tableName(tabelName).tableAlias(tabelAlias).build();
+        SQLObj sqlObj = SQLObj.builder().tableName(realTableName).tableAlias(tableAlias).build();
         PluginViewSetImpl child = (PluginViewSetImpl)pluginViewSet;
         queryProvider.setSchema(sqlObj, child.getDs());
         tableObj.setTableName(sqlObj.getTableName());
