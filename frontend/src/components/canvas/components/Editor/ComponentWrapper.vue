@@ -41,12 +41,14 @@
         :in-screen="inScreen"
         :edit-mode="'preview'"
         :h="config.style.height"
+        :canvas-id="canvasId"
       />
       <component
         :is="config.component"
         v-else
         ref="wrapperChild"
         class="component"
+        :canvas-id="canvasId"
         :out-style="config.style"
         :style="getComponentStyleDefault(config.style)"
         :prop-value="config.propValue"
@@ -83,6 +85,10 @@ export default {
   components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
   mixins: [mixins],
   props: {
+    canvasId: {
+      type: String,
+      required: true
+    },
     sourceConfig: {
       type: Object,
       require: true,
