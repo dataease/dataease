@@ -2362,7 +2362,8 @@ export default {
     channel_email_msg: '郵件提醒',
     channel_wecom_msg: '企業微信',
     channel_dingtalk_msg: '釘釘提醒',
-    channel_lark_msg: '飛書提醒'
+    channel_lark_msg: '飛書提醒',
+    channel_larksuite_msg: '國際飛書'
   },
   denumberrange: {
     label: '數值區間',
@@ -2478,6 +2479,7 @@ export default {
     wecom: '企業微信',
     dingtalk: '釘釘',
     lark: '飛書',
+    larksuite: '國際飛書',
     pixel: '分辨率',
     default: '默認',
     custom: '自定義',

@@ -2361,7 +2361,8 @@ export default {
     channel_email_msg: 'Email',
     channel_wecom_msg: 'Wecom',
     channel_dingtalk_msg: 'Dingtalk',
-    channel_lark_msg: 'Lark'
+    channel_lark_msg: 'Lark',
+    channel_larksuite_msg: 'Larksuite'
   },
   denumberrange: {
     label: 'Number range',
@@ -2477,6 +2478,7 @@ export default {
     wecom: 'Wecom',
     dingtalk: 'Dingtalk',
     lark: 'Lark',
+    larksuite: 'Larksuite',
     pixel: 'Pixel',
     default: 'Default',
     custom: 'Custom',

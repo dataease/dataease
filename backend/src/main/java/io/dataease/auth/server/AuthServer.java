@@ -338,6 +338,14 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    public boolean isOpenLarksuite() {
+        Boolean licValid = PluginUtils.licValid();
+        if (!licValid)
+            return false;
+        return authUserService.supportLarksuite();
+    }
+
+    @Override
     public boolean isPluginLoaded() {
         Boolean licValid = PluginUtils.licValid();
         if (!licValid)
