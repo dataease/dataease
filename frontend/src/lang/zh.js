@@ -910,6 +910,7 @@ export default {
     chart_loop_progress: '进度环图',
     chart_line: '基础折线图',
     chart_line_stack: '堆叠折线图',
+    chart_candlestick: '基础K线图',
     chart_pie: '饼图',
     chart_3Dpie: '3D饼图',
     chart_arcgis_map: '地图',

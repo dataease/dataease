@@ -43,7 +43,8 @@ import {
   BASE_MIX,
   BASE_GRAPH,
   BASE_WORD_CLOUD,
-  BASE_LIQUID
+  BASE_LIQUID,
+  BASE_CANDLESTICK
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -68,6 +69,9 @@ import {
   polarLineOption,
   heatMapOption
 } from '../chart/line/line'
+import {
+  candlestickOption,
+} from '../chart/candlestick/candlestick'
 import {
   basePieOption,
   rosePieOption,
@@ -264,6 +268,8 @@ export default {
         chart_option = polarLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line-stack') {
         chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'candlestick') {
+        chart_option = candlestickOption(JSON.parse(JSON.stringify(BASE_CANDLESTICK)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie') {
         chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie-rose') {
