@@ -39,6 +39,7 @@
                 :is="element.component"
                 v-if="element.type==='custom'"
                 :id="'component' + element.id"
+                :canvas-id="canvasId"
                 ref="deOutWidget"
                 class="component-custom"
                 :out-style="element.style"
@@ -64,6 +65,10 @@ export default {
   name: 'DeOutWidget',
   mixins: [inputStyleMixin],
   props: {
+    canvasId: {
+      type: String,
+      required: true
+    },
     element: {
       type: Object,
       default: () => {}

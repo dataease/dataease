@@ -101,7 +101,7 @@ public class XLarksuiteServer {
                 String email = StringUtils.isNotBlank(larkUserInfo.getEmail()) ? larkUserInfo.getEmail() : (username + "@larksuite.work");
                 sysUserService.validateExistUser(username, larkUserInfo.getName(), email);
                 sysUserService.saveLarksuiteCUser(larkUserInfo, email);
-                sysUserEntity = authUserService.getUserByLarkId(username);
+                sysUserEntity = authUserService.getUserByLarksuiteId(username);
             }
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
             String realPwd = sysUserEntity.getPassword();

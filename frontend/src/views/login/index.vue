@@ -379,6 +379,11 @@ export default {
       this.switchCodeIndex(6)
     }
     this.clearLarkMsg()
+
+    if (Cookies.get('LarksuiteError')) {
+      this.$error(Cookies.get('LarksuiteError'))
+    }
+    this.clearLarksuiteMsg()
   },
 
   methods: {
