@@ -248,16 +248,16 @@ public class SysUserController {
         AuthBindDTO dto = new AuthBindDTO();
         if (ObjectUtils.isEmpty(sysUserAssist)) return dto;
         if (authUserService.supportWecom() && StringUtils.isNotBlank(sysUserAssist.getWecomId())) {
-            dto.setWecomBinded(true);
+            dto.setWecomBound(true);
         }
         if (authUserService.supportDingtalk() && StringUtils.isNotBlank(sysUserAssist.getDingtalkId())) {
-            dto.setDingtalkBinded(true);
+            dto.setDingtalkBound(true);
         }
         if (authUserService.supportLark() && StringUtils.isNotBlank(sysUserAssist.getLarkId())) {
-            dto.setLarkBinded(true);
+            dto.setLarkBound(true);
         }
         if (authUserService.supportLarksuite() && StringUtils.isNotBlank(sysUserAssist.getLarksuiteId())) {
-            dto.setLarksuiteBinded(true);
+            dto.setLarksuiteBound(true);
         }
         return dto;
     }
