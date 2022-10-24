@@ -99,8 +99,8 @@
               />
               <span class="label">{{ showTableNameWithComment(t) }}</span>
               <span
-                v-if="t.nameExsit"
-                class="error-name-exsit"
+                v-if="t.nameExist"
+                class="error-name-exist"
               >
                 <svg-icon
                   icon-class="exclamationmark"
@@ -159,7 +159,7 @@
             @change="validateName"
           />
           <div
-            v-if="activeTable.nameExsit"
+            v-if="activeTable.nameExist"
             style="left: 107px; top: 52px"
             class="el-form-item__error"
           >
@@ -284,7 +284,7 @@ export default {
           this.tables = response.data
           this.tables.forEach((ele) => {
             this.$set(ele, 'datasetName', dsName + '_' + ele.name)
-            this.$set(ele, 'nameExsit', false)
+            this.$set(ele, 'nameExist', false)
           })
           this.tableData = [...this.tables]
           this.avilibelTable = !this.tableData.some((ele) => ele.enableCheck)
@@ -349,8 +349,8 @@ export default {
       }
       this.LeftWidth = e.pageX
     },
-    nameExsitValidator(ele) {
-      ele.nameExsit =
+    nameExistValidator(ele) {
+      ele.nameExist =
         this.nameList
           .concat(this.checkDatasetName)
           .filter((name) => name === ele.datasetName)
@@ -359,9 +359,9 @@ export default {
     validateName() {
       this.tables.forEach((ele, index) => {
         if (this.checkTableList.includes(ele.name)) {
-          this.nameExsitValidator(ele)
+          this.nameExistValidator(ele)
         } else {
-          ele.nameExsit = false
+          ele.nameExist = false
         }
       })
     },
@@ -412,7 +412,7 @@ export default {
       }
     },
     save() {
-      if (this.tableData.some((ele) => ele.nameExsit)) {
+      if (this.tableData.some((ele) => ele.nameExist)) {
         this.openMessageSuccess('deDataset.cannot_be_duplicate', 'error')
         return
       }
@@ -553,7 +553,7 @@ export default {
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-        .error-name-exsit {
+        .error-name-exist {
           position: absolute;
           top: 10px;
           right: 10px;

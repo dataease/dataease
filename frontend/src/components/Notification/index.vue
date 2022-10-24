@@ -152,11 +152,11 @@ export default {
       if (this.$route && this.$route.name && this.$route.name === row.router) {
         // 如果当前路由就是目标路由 那么使用router.push页面不会刷新 这时候要使用事件方式
         row.callback && bus.$emit(row.callback, param)
-        row.status || this.setReaded(row.msgId)
+        row.status || this.setRead(row.msgId)
       } else {
         if (this.hasPermissionRoute(row.router)) {
           this.$router.push({ name: row.router, params: param })
-          row.status || this.setReaded(row.msgId)
+          row.status || this.setRead(row.msgId)
           return
         }
         this.$warning(this.$t('commons.no_target_permission'))
@@ -247,7 +247,7 @@ export default {
       this.visible = true
     },
     // 设置已读
-    setReaded(msgId) {
+    setRead(msgId) {
       updateStatus(msgId).then(res => {
         this.search()
       })
