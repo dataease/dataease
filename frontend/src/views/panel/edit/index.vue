@@ -161,32 +161,22 @@
           :modal-append-to-body="true"
         >
           <div style="width: 295px">
-            <filter-group v-show=" show &&showIndex===1" />
-            <subject-setting v-show=" show &&showIndex===2" />
-            <assist-component v-show=" show &&showIndex===3" />
+            <filter-group :canvas-id="canvasId" v-show=" show &&showIndex===1"/>
+            <subject-setting v-show=" show &&showIndex===2"/>
+            <assist-component v-show=" show &&showIndex===3"/>
           </div>
         </el-drawer>
         <!--PC端画布区域-->
-        <div
-          v-if="!previewVisible&&!mobileLayoutStatus"
-          id="canvasInfo"
-          class="this_canvas"
-          :style="customCanvasStyle"
-          @drop="handleDrop"
-          @dragover="handleDragOver"
-          @mousedown="handleMouseDown"
-          @mouseup="deselectCurComponent"
-          @scroll="canvasScroll"
+        <de-canvas v-if="!previewVisible&&!mobileLayoutStatus"
+                   class="canvas_main_content"
+                   ref="canvasMainRef"
+                   :canvas-style-data="canvasStyleData"
+                   :component-data="mainCanvasComponentData"
+                   :canvas-id="canvasId"
+                   :canvas-pid="'0'"
         >
-          <!-- 仪表板联动清除按钮-->
-          <canvas-opt-bar />
-          <Editor
-            ref="canvasEditor"
-            :matrix-count="pcMatrixCountBase"
-            :out-style="outStyle"
-            :scroll-top="scrollTop"
-          />
-        </div>
+          <canvas-opt-bar slot="optBar"/>
+        </de-canvas>
         <!--移动端画布区域 保持宽高比2.5-->
         <el-row
           v-if="mobileLayoutStatus"
@@ -200,13 +190,8 @@
               v-proportion="2.1"
               :style="customCanvasMobileStyle"
               class="this_mobile_canvas"
-              @drop="handleDrop"
-              @dragover="handleDragOver"
-              @mousedown="handleMouseDown"
-              @mouseup="deselectCurComponent"
-              @scroll="canvasScroll"
             >
-              <el-row class="this_mobile_canvas_top" />
+              <el-row class="this_mobile_canvas_top"/>
               <el-row class="this_mobile_canvas_inner_top">
                 {{ panelInfo.name }}
               </el-row>
@@ -215,15 +200,16 @@
                 class="this_mobile_canvas_main"
                 :style="mobileCanvasStyle"
               >
-                <Editor
-                  v-if="mobileEditorShow"
-                  id="editorMobile"
-                  ref="editorMobile"
-                  :matrix-count="mobileMatrixCount"
-                  :out-style="outStyle"
-                  :scroll-top="scrollTop"
-                  @canvasDragging="canvasDragging"
-                />
+                <de-canvas v-if="!previewVisible&&mobileLayoutStatus"
+                           ref="canvasMainRef"
+                           :canvas-style-data="canvasStyleData"
+                           :component-data="mainCanvasComponentData"
+                           :canvas-id="canvasId"
+                           :canvas-pid="'0'"
+                           :mobile-layout-status="true"
+                >
+                  <canvas-opt-bar slot="optBar"/>
+                </de-canvas>
               </el-row>
               <el-row class="this_mobile_canvas_inner_bottom">
                 <el-col :span="12">
@@ -252,7 +238,7 @@
                   />
                 </el-col>
               </el-row>
-              <el-row class="this_mobile_canvas_bottom" />
+              <el-row class="this_mobile_canvas_bottom"/>
             </div>
           </el-col>
           <el-col
@@ -260,7 +246,7 @@
             class="this_mobile_canvas_cell this_mobile_canvas_wait_cell"
             :style="mobileCanvasStyle"
           >
-            <component-wait />
+            <component-wait/>
           </el-col>
         </el-row>
       </de-main-container>
@@ -278,7 +264,7 @@
           />
         </div>
         <div v-if="showBatchViewToolsAside">
-          <chart-style-batch-set />
+          <chart-style-batch-set/>
         </div>
         <div v-if="!showViewToolsAside&&!showBatchViewToolsAside">
           <el-row style="height: 40px">
@@ -294,7 +280,8 @@
           </el-row>
           <el-row>
             <div class="view-selected-message-class">
-              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.select_view') }}</span>
+              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px"
+              >{{ $t('panel.select_view') }}</span>
             </div>
           </el-row>
         </div>
@@ -382,13 +369,6 @@
       @click="e => {e.target.value = '';}"
       @change="handleFileChange"
     >
-
-    <!--矩形样式组件-->
-    <TextAttr
-      v-if="showAttr"
-      :scroll-left="scrollLeft"
-      :scroll-top="scrollTop"
-    />
     <!--复用ChartGroup组件 不做显示-->
     <ChartGroup
       ref="chartGroup"
@@ -461,7 +441,8 @@
           />
         </el-col>
         <el-col :span="21">
-          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.panel_cache_use_tips') }}</span>
+          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px"
+          >{{ $t('panel.panel_cache_use_tips') }}</span>
         </el-col>
       </el-row>
       <div
@@ -471,12 +452,14 @@
         <el-button
           size="mini"
           @click="useCache(false)"
-        >{{ $t('panel.no') }}</el-button>
+        >{{ $t('panel.no') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="useCache(true)"
-        >{{ $t('panel.yes') }}</el-button>
+        >{{ $t('panel.yes') }}
+        </el-button>
       </div>
     </el-dialog>
 
@@ -492,7 +475,7 @@ import FilterGroup from '../filter'
 import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
 import Editor from '@/components/canvas/components/Editor/index'
-import { deepCopy, imgUrlTrans, matrixBaseChange } from '@/components/canvas/utils/utils'
+import { deepCopy, getNowCanvasComponentData, imgUrlTrans, matrixBaseChange } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
   COMMON_BACKGROUND,
@@ -534,9 +517,14 @@ import Multiplexing from '@/views/panel/ViewSelect/multiplexing'
 import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
 import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
 import eventBus from '@/components/canvas/utils/eventBus'
+import DeEditor from '@/components/canvas/components/Editor/DeEditor'
+import DeCanvas from '@/components/canvas/DeCanvas'
+
 export default {
   name: 'PanelEdit',
   components: {
+    DeCanvas,
+    DeEditor,
     Multiplexing,
     ChartStyleBatchSet,
     OuterParamsSet,
@@ -560,6 +548,7 @@ export default {
   },
   data() {
     return {
+      canvasId: 'canvas-main',
       panelCacheExist: false,
       viewData: [],
       multiplexingShow: false,
@@ -627,6 +616,9 @@ export default {
   },
 
   computed: {
+    mainCanvasComponentData() {
+      return getNowCanvasComponentData(this.canvasId)
+    },
     // 侧边显示控制
     chartEditParam() {
       if (this.curComponent) {
@@ -736,9 +728,12 @@ export default {
     multiplexingDisabled() {
       return Object.keys(this.curMultiplexingComponents) === 0
     },
+    curCanvasScaleSelf() {
+      return this.curCanvasScaleMap[this.canvasId]
+    },
     ...mapState([
       'curComponent',
-      'curCanvasScale',
+      'curCanvasScaleMap',
       'isClickComponent',
       'canvasStyleData',
       'curComponentIndex',
@@ -796,8 +791,8 @@ export default {
   },
   beforeDestroy() {
     bus.$off('component-on-drag', this.componentOnDrag)
-    bus.$off('component-dialog-edit', this.editDialog)
-    bus.$off('button-dialog-edit', this.editButtonDialog)
+    // bus.$off('component-dialog-edit', this.editDialog)
+    // bus.$off('button-dialog-edit', this.editButtonDialog)
     bus.$off('component-dialog-style', this.componentDialogStyle)
     bus.$off('previewFullScreenClose', this.previewFullScreenClose)
     bus.$off('change_panel_right_draw', this.changeRightDrawOpen)
@@ -818,8 +813,8 @@ export default {
     },
     initEvents() {
       bus.$on('component-on-drag', this.componentOnDrag)
-      bus.$on('component-dialog-edit', this.editDialog)
-      bus.$on('button-dialog-edit', this.editButtonDialog)
+      // bus.$on('component-dialog-edit', this.editDialog)
+      // bus.$on('button-dialog-edit', this.editButtonDialog)
       bus.$on('component-dialog-style', this.componentDialogStyle)
       bus.$on('previewFullScreenClose', this.previewFullScreenClose)
       bus.$on('change_panel_right_draw', this.changeRightDrawOpen)
@@ -837,7 +832,9 @@ export default {
           const filterIds = com.options.attrs.filterIds
           let len = filterIds.length
           while (len--) {
-            if (param.componentId === filterIds[len]) { filterIds.splice(len, 1) }
+            if (param.componentId === filterIds[len]) {
+              filterIds.splice(len, 1)
+            }
           }
           com.options.attrs.filterIds = filterIds
         }
@@ -857,9 +854,7 @@ export default {
       }
       this.rightDrawOpen = param
       if (this.rightDrawOpen) {
-        setTimeout(() => {
-          this.outStyle.width = this.outStyle.width + 0.000001
-        }, 0)
+        this.$refs['canvasMainRef'].restore()
       }
     },
     init(panelId) {
@@ -933,11 +928,11 @@ export default {
     showPanel(type) {
       if (this.showIndex === -1 || this.showIndex === type) {
         this.$nextTick(() => {
-          if (this.show) {
-            this.showIndex === -1
+            if (this.show) {
+              this.showIndex === -1
+            }
+            this.show = !this.show
           }
-          this.show = !this.show
-        }
         )
       }
       this.showIndex = type
@@ -1007,15 +1002,17 @@ export default {
       } else {
         this.currentWidget = ApplicationContext.getService(componentInfo.id)
         this.currentFilterCom = this.currentWidget.getDrawPanel()
+        this.currentFilterCom['canvasId'] = 'canvas-main'
+        this.currentFilterCom['canvasPid'] = '0'
         if (this.canvasStyleData.auxiliaryMatrix) {
           this.currentFilterCom.x = this.dropComponentInfo.x
           this.currentFilterCom.y = this.dropComponentInfo.y
           this.currentFilterCom.sizex = this.dropComponentInfo.sizex
           this.currentFilterCom.sizey = this.dropComponentInfo.sizey
-          this.currentFilterCom.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
-          this.currentFilterCom.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
-          this.currentFilterCom.style.width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleOriginWidth
-          this.currentFilterCom.style.height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleOriginHeight
+          this.currentFilterCom.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScaleSelf.matrixStyleOriginWidth
+          this.currentFilterCom.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScaleSelf.matrixStyleOriginHeight
+          this.currentFilterCom.style.width = this.dragComponentInfo.sizex * this.curCanvasScaleSelf.matrixStyleOriginWidth
+          this.currentFilterCom.style.height = this.dragComponentInfo.sizey * this.curCanvasScaleSelf.matrixStyleOriginHeight
         } else {
           this.currentFilterCom.style.left = this.dragComponentInfo.shadowStyle.x
           this.currentFilterCom.style.top = this.dragComponentInfo.shadowStyle.y
@@ -1046,10 +1043,10 @@ export default {
         component.sizex = this.dropComponentInfo.sizex
         component.sizey = this.dropComponentInfo.sizey
 
-        component.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
-        component.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
-        component.style.width = this.dragComponentInfo.sizex * this.curCanvasScale.matrixStyleOriginWidth
-        component.style.height = this.dragComponentInfo.sizey * this.curCanvasScale.matrixStyleOriginHeight
+        component.style.left = (this.dragComponentInfo.x - 1) * this.curCanvasScaleSelf.matrixStyleOriginWidth
+        component.style.top = (this.dragComponentInfo.y - 1) * this.curCanvasScaleSelf.matrixStyleOriginHeight
+        component.style.width = this.dragComponentInfo.sizex * this.curCanvasScaleSelf.matrixStyleOriginWidth
+        component.style.height = this.dragComponentInfo.sizey * this.curCanvasScaleSelf.matrixStyleOriginHeight
       } else {
         component.style.top = this.dropComponentInfo.shadowStyle.y
         component.style.left = this.dropComponentInfo.shadowStyle.x
@@ -1058,6 +1055,8 @@ export default {
       }
 
       component.id = newComponentId
+      component['canvasId'] = 'canvas-main'
+      component['canvasPid'] = '0'
       // 新拖入的组件矩阵状态 和仪表板当前的矩阵状态 保持一致
       component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
       // 统一设置背景信息
@@ -1243,14 +1242,14 @@ export default {
     },
     getPositionX(x) {
       if (this.canvasStyleData.selfAdaption) {
-        return x * 100 / this.curCanvasScale.scaleWidth
+        return x * 100 / this.curCanvasScaleSelf.scaleWidth
       } else {
         return x
       }
     },
     getPositionY(y) {
       if (this.canvasStyleData.selfAdaption) {
-        return y * 100 / this.curCanvasScale.scaleHeight
+        return y * 100 / this.curCanvasScaleSelf.scaleHeight
       } else {
         return y
       }
@@ -1281,10 +1280,10 @@ export default {
       component.auxiliaryMatrix = this.canvasStyleData.auxiliaryMatrix
       // position = absolution 或导致有偏移 这里中和一下偏移量
       if (this.canvasStyleData.auxiliaryMatrix) {
-        component.style.left = (component.x - 1) * this.curCanvasScale.matrixStyleOriginWidth
-        component.style.top = (component.y - 1) * this.curCanvasScale.matrixStyleOriginHeight
-        component.style.width = component.sizex * this.curCanvasScale.matrixStyleOriginWidth
-        component.style.height = component.sizey * this.curCanvasScale.matrixStyleOriginHeight
+        component.style.left = (component.x - 1) * this.curCanvasScaleSelf.matrixStyleOriginWidth
+        component.style.top = (component.y - 1) * this.curCanvasScaleSelf.matrixStyleOriginHeight
+        component.style.width = component.sizex * this.curCanvasScaleSelf.matrixStyleOriginWidth
+        component.style.height = component.sizey * this.curCanvasScaleSelf.matrixStyleOriginHeight
       } else {
         component.style.left = 0
         component.style.top = 0
@@ -1352,7 +1351,6 @@ export default {
         const touchOffset = 100
         const canvasInfoMobile = document.getElementById('canvasInfoMobile')
         // 获取子盒子（高度肯定比父盒子大）
-        // const editorMobile = document.getElementById('editorMobile')
         // 画布区顶部到浏览器顶部距离
         const canvasTop = canvasInfoMobile.offsetTop + 75
         // 画布区有高度
@@ -1387,266 +1385,271 @@ export default {
 </script>
 
 <style scoped>
-  .ms-aside-container {
-    height: calc(100vh - 56px);
-    max-width: 60px;
-    border: none;
-    width: 60px;
-  }
+.ms-aside-container {
+  height: calc(100vh - 56px);
+  max-width: 60px;
+  border: none;
+  width: 60px;
+}
 
-  .ms-main-container {
-    height: calc(100vh - 56px);
-  }
+.ms-main-container {
+  height: calc(100vh - 56px);
+}
 
-  .de-header {
-    height: 56px !important;
-    padding: 0px!important;
-    border-bottom: 1px solid #E6E6E6;
-    background-color: var(--SiderBG, white);
-  }
+.de-header {
+  height: 56px !important;
+  padding: 0px !important;
+  border-bottom: 1px solid #E6E6E6;
+  background-color: var(--SiderBG, white);
+}
 
-  .blackTheme .de-header {
-    background-color: var(--SiderBG, white) !important;
-    color: var(--TextActive);
-  }
+.blackTheme .de-header {
+  background-color: var(--SiderBG, white) !important;
+  color: var(--TextActive);
+}
 
-  .showLeftPanel {
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-  }
+.showLeftPanel {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
 </style>
 
 <style lang="scss" scoped>
+.leftPanel-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity .3s cubic-bezier(.7, .3, .1, 1);
+  background: rgba(0, 0, 0, .2);
+  z-index: -1;
+}
+
+.leftPanel {
+  width: 100%;
+  max-width: 300px;
+  height: calc(100vh - 56px);
+  position: fixed;
+  top: 91px;
+  left: 60px;
+  box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, .05);
+  transition: all .25s cubic-bezier(.7, .3, .1, 1);
+  transform: translate(100%);
+  background: var(--SiderBG, #fff);
+  z-index: 1003;
+}
+
+.show {
+  transition: all .3s cubic-bezier(.7, .3, .1, 1);
+
   .leftPanel-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    transition: opacity .3s cubic-bezier(.7, .3, .1, 1);
-    background: rgba(0, 0, 0, .2);
-    z-index: -1;
+    z-index: 1002;
+    opacity: 1;
+    width: 100%;
+    height: 100%;
   }
 
   .leftPanel {
-    width: 100%;
-    max-width: 300px;
-    height: calc(100vh - 56px);
-    position: fixed;
-    top: 91px;
-    left: 60px;
-    box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, .05);
-    transition: all .25s cubic-bezier(.7, .3, .1, 1);
-    transform: translate(100%);
-    background: var(--SiderBG, #fff);
-    z-index: 1003;
+    transform: translate(0);
   }
+}
 
-  .show {
-    transition: all .3s cubic-bezier(.7, .3, .1, 1);
+.mobile_canvas_main {
+  width: 80%;
+  height: 90%;
+  margin-left: 10%;
+  margin-top: 3%;
+}
 
-    .leftPanel-background {
-      z-index: 1002;
-      opacity: 1;
-      width: 100%;
-      height: 100%;
-    }
+.this_mobile_canvas {
+  border-radius: 30px;
+  min-width: 300px;
+  max-width: 350px;
+  min-height: 600px;
+  max-height: 700px;
+  overflow: hidden;
+  background-color: #000000;
+  background-size: 100% 100% !important;
+}
 
-    .leftPanel {
-      transform: translate(0);
-    }
-  }
+.this_mobile_canvas_inner_top {
+  vertical-align: middle;
+  text-align: center;
+  background-color: #f7f8fa;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+  width: 100%;
+}
 
-  .mobile_canvas_main {
-    width: 80%;
-    height: 90%;
-    margin-left: 10%;
-    margin-top: 3%;
-  }
+.this_mobile_canvas_top {
+  height: 30px;
+  width: 100%;
+}
 
-  .this_mobile_canvas {
-    border-radius: 30px;
-    min-width: 300px;
-    max-width: 350px;
-    min-height: 600px;
-    max-height: 700px;
-    overflow: hidden;
-    background-color: #000000;
-    background-size: 100% 100% !important;
-  }
+.this_mobile_canvas_inner_bottom {
+  background-color: #f7f8fa;
+  line-height: 30px;
+  vertical-align: middle;
+  color: gray;
+  height: 30px;
+  width: 100%;
+}
 
-  .this_mobile_canvas_inner_top {
-    vertical-align: middle;
-    text-align: center;
-    background-color: #f7f8fa;
-    height: 30px;
-    line-height: 30px;
-    font-size: 14px;
-    width: 100%;
-  }
+.this_mobile_canvas_bottom {
+  height: 30px;
+  width: 100%;
+}
 
-  .this_mobile_canvas_top {
-    height: 30px;
-    width: 100%;
-  }
+.this_mobile_canvas_main {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: calc(100% - 120px);;
+  background-color: #d7d9e3;
+  background-size: 100% 100% !important;
+}
 
-  .this_mobile_canvas_inner_bottom {
-    background-color: #f7f8fa;
-    line-height: 30px;
-    vertical-align: middle;
-    color: gray;
-    height: 30px;
-    width: 100%;
-  }
+.this_mobile_canvas_cell {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .this_mobile_canvas_bottom {
-    height: 30px;
-    width: 100%;
-  }
+.this_mobile_canvas_wait_cell {
+  background-size: 100% 100% !important;
+  border: 2px solid #9ea6b2
+}
 
-  .this_mobile_canvas_main {
-    overflow-x: hidden;
-    overflow-y: auto;
-    height: calc(100% - 120px);;
-    background-color: #d7d9e3;
-    background-size: 100% 100% !important;
-  }
+.canvas_main_content {
+  height: calc(100vh - 56px);
+}
 
-  .this_mobile_canvas_cell {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.this_canvas {
+  width: 100%;
+  height: calc(100vh - 56px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-size: 100% 100% !important;
+}
 
-  .this_mobile_canvas_wait_cell {
-    background-size: 100% 100% !important;
-    border: 2px solid #9ea6b2
-  }
+.el-main {
+  height: calc(100vh - 56px);
+  padding: 0 !important;
+  overflow: auto;
+  position: relative;
+}
 
-  .this_canvas {
-    width: 100%;
-    height: calc(100vh - 56px);
-    overflow-x: hidden;
-    overflow-y: auto;
-    background-size: 100% 100% !important;
-  }
+.el-main ::v-deep .el-drawer__wrapper {
+  width: 310px !important;
+}
 
-  .el-main {
-    height: calc(100vh - 56px);
-    padding: 0 !important;
-    overflow: auto;
-    position: relative;
-  }
+.el-main ::v-deep .el-drawer__body {
+  overflow-y: auto;
+}
 
-  .el-main ::v-deep .el-drawer__wrapper {
-    width: 310px !important;
-  }
+.button-show {
+  background-color: var(--ContentBG, #ebf2fe) !important;
+}
 
-  .el-main ::v-deep .el-drawer__body {
-    overflow-y: auto;
-  }
+.button-closed {
+  background-color: var(--SiderBG, #ffffff) !important;
+}
 
-  .button-show {
-    background-color: var(--ContentBG, #ebf2fe) !important;
-  }
+.style-aside {
+  width: 250px;
+  max-width: 250px !important;
+  border: 1px solid var(--TableBorderColor, #E6E6E6);
+  padding: 10px;
+  transition: all 0.3s;
 
-  .button-closed {
-    background-color: var(--SiderBG, #ffffff) !important;
-  }
+}
 
-  .style-aside {
-    width: 250px;
-    max-width: 250px !important;
-    border: 1px solid var(--TableBorderColor, #E6E6E6);
-    padding: 10px;
-    transition: all 0.3s;
+.placeholder {
+  font-size: 14px;
+  color: gray;
+}
 
-  }
+.show {
+  transform: translateX(0);
+}
 
-  .placeholder {
-    font-size: 14px;
-    color: gray;
-  }
+.hidden {
+  transform: translateX(100%);
+}
 
-  .show {
-    transform: translateX(0);
-  }
+.style-edit-dialog {
+  width: 300px !important;
+  height: 400px !important;
 
-  .hidden {
-    transform: translateX(100%);
-  }
+  .el-dialog__header {
+    padding: 10px 20px !important;
 
-  .style-edit-dialog {
-    width: 300px !important;
-    height: 400px !important;
-
-    .el-dialog__header {
-      padding: 10px 20px !important;
-
-      .el-dialog__headerbtn {
-        top: 15px !important;
-      }
-    }
-
-    .el-dialog__body {
-      padding: 1px 15px !important;
+    .el-dialog__headerbtn {
+      top: 15px !important;
     }
   }
 
-  .style-hidden {
-    overflow-x: hidden;
+  .el-dialog__body {
+    padding: 1px 15px !important;
   }
+}
 
-  .button-text {
-    color: var(--TextActive);
-  }
+.style-hidden {
+  overflow-x: hidden;
+}
 
-  .mobile-canvas {
-    width: 300px;
-    height: 600px;
-  }
+.button-text {
+  color: var(--TextActive);
+}
 
-  ::-webkit-scrollbar {
-    width: 2px !important;
-    height: 2px !important;
-  }
+.mobile-canvas {
+  width: 300px;
+  height: 600px;
+}
 
-  .tools-window-main {
-    width: 350px;
-    background-color: #FFFFFF;
-    transition: 1s;
-  }
+::-webkit-scrollbar {
+  width: 2px !important;
+  height: 2px !important;
+}
 
-  .tools-window-tabs {
-    height: calc(100vh - 100px);
-    overflow: hidden;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+.tools-window-main {
+  width: 350px;
+  background-color: #FFFFFF;
+  transition: 1s;
+}
 
-  ::v-deep .el-tabs__item {
-    padding: 0 15px;
-  }
-  .view-selected-message-class {
-    font-size: 12px;
-    color: #9ea6b2;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: calc(100vh - 100px);
-  }
+.tools-window-tabs {
+  height: calc(100vh - 100px);
+  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 
-  .dialog-css ::v-deep .el-dialog__title {
-    font-size: 14px;
-  }
+::v-deep .el-tabs__item {
+  padding: 0 15px;
+}
 
-  .dialog-css ::v-deep .el-dialog__header {
-    padding: 20px 20px 0;
-  }
+.view-selected-message-class {
+  font-size: 12px;
+  color: #9ea6b2;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 100px);
+}
 
-  .dialog-css ::v-deep .el-dialog__body {
-    padding: 10px 20px 20px;
-  }
+.dialog-css ::v-deep .el-dialog__title {
+  font-size: 14px;
+}
+
+.dialog-css ::v-deep .el-dialog__header {
+  padding: 20px 20px 0;
+}
+
+.dialog-css ::v-deep .el-dialog__body {
+  padding: 10px 20px 20px;
+}
 </style>

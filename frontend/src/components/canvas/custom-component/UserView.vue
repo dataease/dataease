@@ -120,6 +120,66 @@
         @onDrillJump="drillJump"
       />
     </div>
+
+    <!--dialog-->
+    <!--视图详情-->
+    <el-dialog
+      :visible.sync="chartDetailsVisible"
+      width="80%"
+      class="dialog-css"
+      :destroy-on-close="true"
+      :show-close="true"
+      :append-to-body="true"
+      top="5vh"
+    >
+      <span
+        v-if="chartDetailsVisible"
+        style="position: absolute;right: 70px;top:15px"
+      >
+        <el-button
+          v-if="showChartInfoType==='enlarge' && showChartInfo && showChartInfo.type !== 'symbol-map'"
+          class="el-icon-picture-outline"
+          size="mini"
+          @click="exportViewImg"
+        >
+          {{ $t('chart.export_img') }}
+        </el-button>
+        <el-button
+          v-if="showChartInfoType==='details'"
+          size="mini"
+          @click="exportExcel"
+        >
+          <svg-icon
+            icon-class="ds-excel"
+            class="ds-icon-excel"
+          />{{ $t('chart.export') }}Excel
+        </el-button>
+      </span>
+      <user-view-dialog
+        v-if="chartDetailsVisible"
+        ref="userViewDialog"
+        :chart="showChartInfo"
+        :chart-table="showChartTableInfo"
+        :canvas-style-data="canvasStyleData"
+        :open-type="showChartInfoType"
+      />
+    </el-dialog>
+
+    <!--手机视图详情-->
+    <el-dialog
+      class="mobile-dialog-css"
+      :visible.sync="mobileChartDetailsVisible"
+      :fullscreen="true"
+      :append-to-body="true"
+      :destroy-on-close="true"
+    >
+      <UserViewMobileDialog
+        v-if="mobileChartDetailsVisible"
+        :canvas-style-data="canvasStyleData"
+        :chart="showChartInfo"
+        :chart-table="showChartTableInfo"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -135,7 +195,6 @@ import bus from '@/utils/bus'
 import { mapState } from 'vuex'
 import { isChange } from '@/utils/conditionUtil'
 import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
-import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { getToken, getLinkToken } from '@/utils/auth'
 import DrillPath from '@/views/chart/view/DrillPath'
@@ -151,10 +210,11 @@ import { checkAddHttp } from '@/utils/urlUtils'
 import DeRichTextView from '@/components/canvas/custom-component/DeRichTextView'
 import Vue from 'vue'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
+import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 
 export default {
   name: 'UserView',
-  components: { DeRichTextView, LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
+  components: { UserViewDialog, DeRichTextView, LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
   props: {
     element: {
       type: Object,
@@ -219,6 +279,11 @@ export default {
   },
   data() {
     return {
+      mobileChartDetailsVisible: false,
+      chartDetailsVisible: false,
+      showChartInfo: {},
+      showChartTableInfo: {},
+      showChartInfoType: 'details',
       dataRowNameSelect: {},
       dataRowSelect: {},
       curFields: [],
@@ -461,6 +526,12 @@ export default {
     }
   },
   methods: {
+    exportExcel() {
+      this.$refs['userViewDialog'].exportExcel()
+    },
+    exportViewImg() {
+      this.$refs['userViewDialog'].exportViewImg()
+    },
     pluginEditHandler(e) {
       this.$emit('trigger-plugin-edit', { e, id: this.element.id })
     },
@@ -728,7 +799,16 @@ export default {
       tableChart.customStyle.text.show = false
       tableChart.customAttr = JSON.stringify(tableChart.customAttr)
       tableChart.customStyle = JSON.stringify(tableChart.customStyle)
-      eventBus.$emit('openChartDetailsDialog', { chart: this.chart, tableChart: tableChart, openType: params.openType })
+
+      this.showChartInfo = this.chart
+      this.showChartTableInfo = tableChart
+      this.showChartInfoType = params.openType
+      this.chartDetailsVisible = true
+      if (this.terminal === 'pc') {
+        this.chartDetailsVisible = true
+      } else {
+        this.mobileChartDetailsVisible = true
+      }
     },
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.chart.drillFields.length - 1) {

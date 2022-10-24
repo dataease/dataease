@@ -35,7 +35,7 @@ export default {
         }
       })
       const canvasStyleData = state.canvasStyleData
-      const curCanvasScale = state.curCanvasScale
+      const curCanvasScaleSelf = state.curCanvasScaleMap['canvas-main']
       const componentGap = state.componentGap
       Object.keys(state.curMultiplexingComponents).forEach(function(componentId, index) {
         const component =
@@ -53,15 +53,15 @@ export default {
         const tilePosition = index % 3
         const divisiblePosition = parseInt(index / 3)
         if (canvasStyleData.auxiliaryMatrix) {
-          const width = component.sizex * curCanvasScale.matrixStyleOriginWidth
+          const width = component.sizex * curCanvasScaleSelf.matrixStyleOriginWidth
           // 取余 平铺4个 此处x 位置偏移
           component.x = component.x + component.sizex * tilePosition
           // Y 方向根据当前应该放置的最大值 加上50矩阵余量
           component.y = pYMax + 50 + state.viewBase.sizex * divisiblePosition
-          component.style.left = (component.x - 1) * curCanvasScale.matrixStyleOriginWidth
-          component.style.top = (component.y - 1) * curCanvasScale.matrixStyleOriginHeight
+          component.style.left = (component.x - 1) * curCanvasScaleSelf.matrixStyleOriginWidth
+          component.style.top = (component.y - 1) * curCanvasScaleSelf.matrixStyleOriginHeight
           component.style.width = width
-          component.style.height = component.sizey * curCanvasScale.matrixStyleOriginHeight
+          component.style.height = component.sizey * curCanvasScaleSelf.matrixStyleOriginHeight
         } else {
           const width = component.style.width
           const height = component.style.height

@@ -408,6 +408,7 @@ import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   components: { codemirror, draggable },
+  name: 'LinkJumpSet',
   props: {
     viewId: {
       type: String,
