@@ -121,6 +121,13 @@ export function larkStatus() {
   })
 }
 
+export function larksuiteStatus() {
+  return request({
+    url: '/api/auth/isOpenLarksuite',
+    method: 'post'
+  })
+}
+
 export function pluginLoaded() {
   return request({
     url: '/api/auth/isPluginLoaded',

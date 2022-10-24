@@ -53,7 +53,7 @@
                   v-if="showDomType === 'tree'"
                   :default-expanded-keys="expandedArray"
                   node-key="id"
-                  :data="tempTreeData || data"
+                  :data="tempTreeData || treeData"
                   :props="defaultProps"
 
                   @node-click="handleNodeClick"
@@ -347,7 +347,7 @@ export default {
         link: false,
         type: 'root'
       }],
-      data: [],
+      treeData: [],
       sceneData: [],
       fieldData: [],
       originFieldData: [],
@@ -472,7 +472,7 @@ export default {
         this.tData = JSON.parse(modelInfo)
         const results = this.buildTree(this.tData)
         this.defaultData = JSON.parse(JSON.stringify(results))
-        this.data = JSON.parse(JSON.stringify(results))
+        this.treeData = JSON.parse(JSON.stringify(results))
       }
       queryAuthModel({ modelType: 'dataset' }, !userCache).then(res => {
         localStorage.setItem('dataset-tree', JSON.stringify(res.data))
@@ -480,7 +480,7 @@ export default {
           this.tData = res.data
           const results = this.buildTree(this.tData)
           this.defaultData = JSON.parse(JSON.stringify(results))
-          this.data = JSON.parse(JSON.stringify(results))
+          this.treeData = JSON.parse(JSON.stringify(results))
         }
       })
     },
@@ -513,7 +513,7 @@ export default {
         name: val
       }
       authModel(queryCondition).then(res => {
-        this.data = this.buildTree(res.data)
+        this.treeData = this.buildTree(res.data)
       })
     },
     buildTree(arrs) {
@@ -602,7 +602,7 @@ export default {
       groupTree({}).then(res => {
         const data = res.data
 
-        this.data = data
+        this.treeData = data
       })
     },
 
@@ -629,7 +629,7 @@ export default {
       this.dataSetBreads = this.dataSetBreads.slice(0, 1)
       const root = {
         id: null,
-        children: JSON.parse(JSON.stringify(this.data))
+        children: JSON.parse(JSON.stringify(this.treeData))
       }
       this.getPathById(node.id, root, res => {
         if (res.length > 1) {
@@ -709,7 +709,7 @@ export default {
         this.keyWord = ''
         this.isTreeSearch = false
         if (bread.id) {
-          const node = this.getNode(bread.id, this.data)
+          const node = this.getNode(bread.id, this.treeData)
           if (node) {
             this.tempTreeData = node.children
           }
@@ -717,7 +717,7 @@ export default {
           this.tempTreeData = null
         }
 
-        this.data = JSON.parse(JSON.stringify(this.defaultData))
+        this.treeData = JSON.parse(JSON.stringify(this.defaultData))
       })
     },
     comBackLink(bread) {
@@ -795,7 +795,7 @@ export default {
       })
 
       if (xItems && xItems.length > 1) {
-        this.data.splice(e.newDraggableIndex, 1)
+        this.treeData.splice(e.newDraggableIndex, 1)
       }
     },
     removeCheckedKey(e) {

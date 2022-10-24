@@ -229,7 +229,6 @@ const data = {
         if (height || height === 0) curComponent.style.height = (height / curCanvasScaleSelf.scalePointHeight) + 0.0000001
         if (rotate || rotate === 0) curComponent.style.rotate = rotate
       }
-      // console.log("setShapeStyle==="+curComponent.style.width)
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
@@ -764,7 +763,6 @@ const data = {
       state.mousePointShadowMap.mouseY = mousePoint.mouseY
       state.mousePointShadowMap.width = mousePoint.width
       state.mousePointShadowMap.height = mousePoint.height
-      // console.log("mousePointMap:"+JSON.stringify(state.mousePointMap))
     }
   },
   modules: {

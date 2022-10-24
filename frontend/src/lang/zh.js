@@ -1437,7 +1437,7 @@ export default {
     params_work: '仅在编辑sql时生效',
     select_year: '选择年',
     sql_variable_limit_1: '1、SQL 变量只能在 WHERE 条件中使用',
-    sql_variable_limit_2: "2、示例：select * from table_name where column_name1='${parm_name1}' and column_name2 in '${parm_name2}'",
+    sql_variable_limit_2: "2、示例：select * from table_name where column_name1='${param_name1}' and column_name2 in '${param_name2}'",
     select_month: '选择月',
     select_date: '选择日期',
     select_time: '选择时间',
@@ -2362,7 +2362,8 @@ export default {
     channel_email_msg: '邮件提醒',
     channel_wecom_msg: '企业微信',
     channel_dingtalk_msg: '钉钉提醒',
-    channel_lark_msg: '飞书提醒'
+    channel_lark_msg: '飞书提醒',
+    channel_larksuite_msg: '国际飞书'
   },
   denumberrange: {
     label: '数值区间',
@@ -2478,6 +2479,7 @@ export default {
     wecom: '企业微信',
     dingtalk: '钉钉',
     lark: '飞书',
+    larksuite: '国际飞书',
     pixel: '分辨率',
     default: '默认',
     custom: '自定义',

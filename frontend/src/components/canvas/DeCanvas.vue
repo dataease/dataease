@@ -268,7 +268,6 @@ export default {
       })
     },
     handleDragOver(e) {
-      // console.log("handleDragOver-"+this.canvasId)
       e.preventDefault()
       e.dataTransfer.dropEffect = 'copy'
       this.$refs[this.editorRefName].handleDragOver(e)

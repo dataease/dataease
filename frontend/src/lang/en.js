@@ -1437,7 +1437,7 @@ export default {
     field_rename: 'Rename Field',
     params_work: 'Effective only when editing SQL',
     sql_variable_limit_1: '1、SQL variables can only be used in where conditions',
-    sql_variable_limit_2: "2、Example：select * from table_name where column_name1='${parm_name1}' and column_name2 in '${parm_name2}'",
+    sql_variable_limit_2: "2、Example：select * from table_name where column_name1='${param_name1}' and column_name2 in '${param_name2}'",
     select_year: 'Select Year',
     select_month: 'Select Month',
     select_date: 'Select Date',
@@ -2361,7 +2361,8 @@ export default {
     channel_email_msg: 'Email',
     channel_wecom_msg: 'Wecom',
     channel_dingtalk_msg: 'Dingtalk',
-    channel_lark_msg: 'Lark'
+    channel_lark_msg: 'Lark',
+    channel_larksuite_msg: 'Larksuite'
   },
   denumberrange: {
     label: 'Number range',
@@ -2477,6 +2478,7 @@ export default {
     wecom: 'Wecom',
     dingtalk: 'Dingtalk',
     lark: 'Lark',
+    larksuite: 'Larksuite',
     pixel: 'Pixel',
     default: 'Default',
     custom: 'Custom',

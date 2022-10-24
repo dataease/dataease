@@ -1437,7 +1437,7 @@ export default {
     field_rename: '字段重命名',
     params_work: '僅在編輯 sql 時生效',
     sql_variable_limit_1: '1、SQL變數只能在WHERE條件中使用',
-    sql_variable_limit_2: "2、示例：select * from table_name where column_name1='${parm_name1}' and column_name2 in '${parm_name2}'",
+    sql_variable_limit_2: "2、示例：select * from table_name where column_name1='${param_name1}' and column_name2 in '${param_name2}'",
     selesql_variable_limit_2ct_year: '選擇年',
     select_month: '選擇月',
     select_date: '選擇日期',
@@ -2362,7 +2362,8 @@ export default {
     channel_email_msg: '郵件提醒',
     channel_wecom_msg: '企業微信',
     channel_dingtalk_msg: '釘釘提醒',
-    channel_lark_msg: '飛書提醒'
+    channel_lark_msg: '飛書提醒',
+    channel_larksuite_msg: '國際飛書'
   },
   denumberrange: {
     label: '數值區間',
@@ -2478,6 +2479,7 @@ export default {
     wecom: '企業微信',
     dingtalk: '釘釘',
     lark: '飛書',
+    larksuite: '國際飛書',
     pixel: '分辨率',
     default: '默認',
     custom: '自定義',

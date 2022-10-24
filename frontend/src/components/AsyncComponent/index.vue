@@ -52,7 +52,8 @@ export default {
         if (res) {
           const Fn = Function
           const dynamicCode = res.data || res
-          this.mode = new Fn(`return ${dynamicCode}`)()
+          const component = new Fn(`return ${dynamicCode}`)()
+          this.mode = component.default || component
         }
       }
     }

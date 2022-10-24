@@ -21,6 +21,7 @@ import io.dataease.plugins.common.base.mapper.SysUsersRolesMapper;
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
 import io.dataease.plugins.xpack.dingtalk.dto.response.DingUserEntity;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkUserInfo;
+import io.dataease.plugins.xpack.larksuite.dto.entity.UserData;
 import io.dataease.plugins.xpack.oidc.dto.SSOUserInfo;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -107,7 +108,7 @@ public class SysUserService {
 
         SysUserAssist sysUserAssist = request.getSysUserAssist();
         if (ObjectUtils.isNotEmpty(sysUserAssist) && (StringUtils.isNotBlank(sysUserAssist.getWecomId()) || StringUtils.isNotBlank(sysUserAssist.getDingtalkId()) || StringUtils.isNotBlank(sysUserAssist.getLarkId()))) {
-            saveAssist(userId, sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
+            saveAssist(userId, sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId(), sysUserAssist.getLarksuiteId());
         }
 
         return insert;
@@ -157,7 +158,7 @@ public class SysUserService {
         sysUser.setIsAdmin(false);
         sysUser.setSub(userId);
         sysUserMapper.insert(sysUser);
-        Optional.ofNullable(findOne(sysUser)).ifPresent(u -> saveAssist(u.getUserId(), u.getUsername(), null, null));
+        Optional.ofNullable(findOne(sysUser)).ifPresent(u -> saveAssist(u.getUserId(), u.getUsername(), null, null, null));
 
     }
 
@@ -180,7 +181,7 @@ public class SysUserService {
         sysUser.setSub(dingUserEntity.getUnionid());
         sysUser.setPhone(dingUserEntity.getMobile());
         sysUserMapper.insert(sysUser);
-        Optional.ofNullable(findOne(sysUser)).ifPresent(u -> saveAssist(u.getUserId(), null, u.getUsername(), null));
+        Optional.ofNullable(findOne(sysUser)).ifPresent(u -> saveAssist(u.getUserId(), null, u.getUsername(), null, null));
     }
 
     @Transactional
@@ -202,7 +203,29 @@ public class SysUserService {
         sysUser.setSub(larkUserInfo.getSub());
         sysUser.setPhone(larkUserInfo.getMobile());
         sysUserMapper.insert(sysUser);
-        Optional.ofNullable(findOne(sysUser)).ifPresent(u -> saveAssist(u.getUserId(), null, null, u.getUsername()));
+        Optional.ofNullable(findOne(sysUser)).ifPresent(u -> saveAssist(u.getUserId(), null, null, u.getUsername(), null));
+    }
+
+    @Transactional
+    public void saveLarksuiteCUser(UserData larkUserInfo, String email) {
+        long now = System.currentTimeMillis();
+        SysUser sysUser = new SysUser();
+
+        sysUser.setUsername(larkUserInfo.getUser_id());
+        sysUser.setNickName(larkUserInfo.getName());
+        sysUser.setEmail(email);
+        sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        sysUser.setCreateTime(now);
+        sysUser.setUpdateTime(now);
+
+        sysUser.setEnabled(1L);
+        sysUser.setLanguage("zh_CN");
+        sysUser.setFrom(7);
+        sysUser.setIsAdmin(false);
+        sysUser.setSub(larkUserInfo.getUnion_id());
+        sysUser.setPhone(larkUserInfo.getMobile());
+        sysUserMapper.insert(sysUser);
+        Optional.ofNullable(findOne(sysUser)).ifPresent(u -> saveAssist(u.getUserId(), null, null, null, u.getUsername()));
     }
 
     @Transactional
@@ -299,7 +322,7 @@ public class SysUserService {
 
         SysUserAssist sysUserAssist = request.getSysUserAssist();
         if (ObjectUtils.isNotEmpty(sysUserAssist) && (StringUtils.isNotBlank(sysUserAssist.getWecomId()) || StringUtils.isNotBlank(sysUserAssist.getDingtalkId()) || StringUtils.isNotBlank(sysUserAssist.getLarkId()))) {
-            saveAssist(user.getUserId(), sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
+            saveAssist(user.getUserId(), sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId(), sysUserAssist.getLarksuiteId());
         }
         return result;
     }
@@ -550,12 +573,13 @@ public class SysUserService {
         sysUserAssistMapper.insertSelective(sysUserAssist);
     }
 
-    public void saveAssist(Long userId, String wecomId, String dingtlkId, String larkId) {
+    public void saveAssist(Long userId, String wecomId, String dingtlkId, String larkId, String larksuiteId) {
         SysUserAssist existAssist = sysUserAssistMapper.selectByPrimaryKey(userId);
         if (ObjectUtils.isNotEmpty(existAssist)) {
             existAssist.setWecomId(wecomId);
             existAssist.setDingtalkId(dingtlkId);
             existAssist.setLarkId(larkId);
+            existAssist.setLarksuiteId(larksuiteId);
             sysUserAssistMapper.updateByPrimaryKey(existAssist);
             return;
         }
@@ -564,6 +588,7 @@ public class SysUserService {
         sysUserAssist.setWecomId(wecomId);
         sysUserAssist.setDingtalkId(dingtlkId);
         sysUserAssist.setLarkId(larkId);
+        sysUserAssist.setLarksuiteId(larksuiteId);
         sysUserAssistMapper.insert(sysUserAssist);
     }
 
