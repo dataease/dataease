@@ -7,12 +7,12 @@
           <span class="title_class" :style="{color:heightlight(item)}" @mousedown="baseMoseDownEven" @click.stop="toggleNav(item)">{{ item.name }}</span>
         </div>
       </div>
-      <div v-show="element.options.isFloat" style="width: 100%;">
+      <div v-show="element.options.isFloat" style="width: 100%;position: relative;" @mouseover="popOver" >
         <el-popover
           placement="bottom"
           trigger="hover"
-          style="padding: 0px;"
           popper-class="float_pop"
+          v-model="isVisible"
         > 
           <div class="nav_calss">
             <div v-for="(item,index) in navList" :key="index" class="nav_info" :style="boxStyle1">
@@ -24,11 +24,9 @@
               </div>
             </div>
           </div>
-          <div slot="reference">
-            <p :style="floatStyle" style="width: 100%;margin: 0px;">{{element.options.floatName}}</p>
-          </div>
+          <div slot="reference" class="nav_pop_pos" :style="floatPosition"></div>
         </el-popover>
-        
+        <p :style="floatStyle" style="width: 100%;margin: 0px;">{{element.options.floatName}}</p>
       </div>
     
     
@@ -90,7 +88,8 @@ export default {
           modifier: 2, // 覆盖叠加层数
           slideShadows: true // 开启slide阴影。默认 true。
         }
-      }
+      },
+      isVisible: false,
     }
   },
   computed: {
@@ -223,6 +222,13 @@ export default {
         console.log('floatStyle,,,,',style)
         return style
       }
+    },
+    floatPosition() {
+      const style = {}
+      style.left = (this.element.options.floatLevel? this.element.options.floatLevel : 0) + 'px'
+      style.top = (this.element.options.floatVertical? this.element.options.floatVertical : 0) + 'px'
+      console.log('修改后会进吗？',this.element.options)
+      return style
     },
     floatSize() {
       return (this.element.options.floatSize? this.element.options.floatSize : 12) + 'px'
@@ -433,11 +439,26 @@ export default {
           console.log('网页插件', ele)
         })
       }
+    },
+    popOver() {
+      console.log('over')
+      this.isVisible = true
+    },
+    popOut() {
+      console.log('out')
+      this.isVisible = false
     }
   }
 }
 </script>
 <style lang="less">
+.nav_pop_pos {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+
 .float_box {
   position: absolute;
   bottom: 0px;

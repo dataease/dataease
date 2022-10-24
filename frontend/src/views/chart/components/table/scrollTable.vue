@@ -723,8 +723,8 @@ export default {
 }
 
 .pop_position {
-  width: 3%;
-  height: 3%;
+  width: 10px;
+  height: 10px;
   position: absolute;
   pointer-events: none;
   z-index: 0;

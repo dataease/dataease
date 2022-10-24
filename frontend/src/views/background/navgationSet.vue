@@ -274,7 +274,7 @@
         <el-col :span="8">
           <el-input-number v-model="curComponent.options.floatSize" :min="1" />
         </el-col>
-        <el-col>
+        <el-col style="margin-top: 10px;">
           <el-col :span="4">
             <span class="params-title">悬浮展示宽度</span>
           </el-col>
@@ -286,6 +286,20 @@
           </el-col>
           <el-col :span="8">
             <el-input-number v-model="curComponent.options.floatHeight" :min="1"></el-input-number>
+          </el-col>
+        </el-col>
+        <el-col style="margin-top: 10px;">
+          <el-col :span="4">
+            <span class="params-title">浮窗水平偏移</span>
+          </el-col>
+          <el-col :span="8">
+            <el-input-number v-model="curComponent.options.floatLevel" :min="0"></el-input-number>
+          </el-col>
+          <el-col :span="4">
+            <span class="params-title">浮窗垂直偏移</span>
+          </el-col>
+          <el-col :span="8">
+            <el-input-number v-model="curComponent.options.floatVertical" :min="0"></el-input-number>
           </el-col>
         </el-col>
 

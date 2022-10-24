@@ -491,6 +491,8 @@ const list = [
       floatSize: 12,
       floatWidth: 100,
       floatHeight: 30,
+      floatLevel: 0,
+      floatVertical: 0,
       fontSize: 12,
       color: '#333',
       vertical: 'directory',
