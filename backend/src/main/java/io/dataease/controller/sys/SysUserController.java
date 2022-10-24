@@ -56,6 +56,8 @@ public class SysUserController {
     private static final String DINGTALK = "dingtalk";
     private static final String LARK = "lark";
 
+    private static final String LARKSUITE = "larksuite";
+
     @Resource
     private SysUserService sysUserService;
 
@@ -254,15 +256,18 @@ public class SysUserController {
         if (authUserService.supportLark() && StringUtils.isNotBlank(sysUserAssist.getLarkId())) {
             dto.setLarkBinded(true);
         }
+        if (authUserService.supportLarksuite() && StringUtils.isNotBlank(sysUserAssist.getLarksuiteId())) {
+            dto.setLarksuiteBinded(true);
+        }
         return dto;
     }
 
     @PostMapping("/unbindAssist/{type}")
     public void unbindAssist(@PathVariable("type") String type) {
 
-        Boolean valid = StringUtils.equals(WECOM, type) || StringUtils.equals(DINGTALK, type) || StringUtils.equals(LARK, type);
+        Boolean valid = StringUtils.equals(WECOM, type) || StringUtils.equals(DINGTALK, type) || StringUtils.equals(LARK, type) || StringUtils.equals(LARKSUITE, type);
         if (!valid) {
-            DEException.throwException("only [wecom, dingtalk, lark] is valid");
+            DEException.throwException("only [wecom, dingtalk, lark, larksuite] is valid");
         }
         Long userId = AuthUtils.getUser().getUserId();
         SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
@@ -275,10 +280,13 @@ public class SysUserController {
         if (StringUtils.equals(LARK, type)) {
             sysUserAssist.setLarkId(null);
         }
-        if (StringUtils.isBlank(sysUserAssist.getWecomId()) && StringUtils.isBlank(sysUserAssist.getDingtalkId()) && StringUtils.isBlank(sysUserAssist.getLarkId())) {
+        if (StringUtils.equals(LARKSUITE, type)) {
+            sysUserAssist.setLarksuiteId(null);
+        }
+        if (StringUtils.isBlank(sysUserAssist.getWecomId()) && StringUtils.isBlank(sysUserAssist.getDingtalkId()) && StringUtils.isBlank(sysUserAssist.getLarkId()) && StringUtils.isBlank(sysUserAssist.getLarksuiteId())) {
             sysUserService.changeUserFrom(userId, 0);
         }
-        sysUserService.saveAssist(userId, sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
+        sysUserService.saveAssist(userId, sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId(), sysUserAssist.getLarksuiteId());
 
     }
 

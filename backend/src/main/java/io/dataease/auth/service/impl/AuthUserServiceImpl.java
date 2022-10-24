@@ -21,6 +21,7 @@ import io.dataease.plugins.util.PluginUtils;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.dingtalk.service.DingtalkXpackService;
 import io.dataease.plugins.xpack.lark.service.LarkXpackService;
+import io.dataease.plugins.xpack.larksuite.service.LarksuiteXpackService;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.loginlimit.dto.response.LoginLimitInfo;
 import io.dataease.plugins.xpack.loginlimit.service.LoginLimitXpackService;
@@ -106,6 +107,11 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public SysUserEntity getUserByLarkId(String larkId) {
         return authMapper.findLarkUser(larkId);
+    }
+
+    @Override
+    public SysUserEntity getUserByLarksuiteId(String larksuiteId) {
+        return authMapper.findLarksuiteUser(larksuiteId);
     }
 
     @Override
@@ -217,6 +223,15 @@ public class AuthUserServiceImpl implements AuthUserService {
         Map<String, LarkXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LarkXpackService.class));
         if (beansOfType.keySet().size() == 0) return false;
         LarkXpackService larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
+        if (ObjectUtils.isEmpty(larkXpackService)) return false;
+        return larkXpackService.isOpen();
+    }
+
+    @Override
+    public Boolean supportLarksuite() {
+        Map<String, LarksuiteXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LarksuiteXpackService.class));
+        if (beansOfType.keySet().size() == 0) return false;
+        LarksuiteXpackService larkXpackService = SpringContextUtil.getBean(LarksuiteXpackService.class);
         if (ObjectUtils.isEmpty(larkXpackService)) return false;
         return larkXpackService.isOpen();
     }

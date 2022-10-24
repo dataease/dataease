@@ -14,3 +14,6 @@ ALTER TABLE `sys_task_email` ADD COLUMN `view_data_range` VARCHAR(255) NULL DEFA
 
 
 UPDATE `sys_msg_type` set `type_name` = 'i18n_msg_type_dataset_sync_failed' WHERE (`msg_type_id` = 6);
+
+ALTER TABLE `sys_user_assist`
+ADD COLUMN `larksuite_id` VARCHAR(255) NULL DEFAULT NULL AFTER `lark_id`;

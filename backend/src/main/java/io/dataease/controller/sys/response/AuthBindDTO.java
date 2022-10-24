@@ -12,4 +12,6 @@ public class AuthBindDTO implements Serializable {
     private Boolean dingtalkBinded = false;
 
     private Boolean larkBinded = false;
+
+    private Boolean larksuiteBinded = false;
 }

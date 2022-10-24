@@ -137,4 +137,14 @@
         where a.lark_id = #{larkId}
     </select>
 
+    <select id="findLarksuiteUser" resultMap="baseMap">
+        select
+            u.user_id, username,nick_name, dept_id, password, enabled,email, phone, language ,is_admin, `from`
+        from
+            sys_user_assist a
+            left join
+            sys_user u on u.user_id = a.user_id
+        where a.larksuite_id = #{larksuiteId}
+    </select>
+
 </mapper>
