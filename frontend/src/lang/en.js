@@ -912,6 +912,9 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    solid_color: 'Solid color',
+    split_gradient: 'Split gradient',
+    continuous_gradient: 'Continuous gradient',
     map_center_lost: 'The graph is missing the centroid or center attribute, please complete it and try again',
     margin_model: 'Model',
     margin_model_auto: 'Auto',
