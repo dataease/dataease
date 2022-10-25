@@ -13,8 +13,15 @@
     @scroll="canvasScroll"
   >
     <!-- 网格线 -->
-    <Grid v-if="showGrid" :matrix-style="matrixStyle"/>
-    <PGrid v-if="psDebug" :position-box="positionBoxInfoArray" :matrix-style="matrixStyle"/>
+    <Grid
+      v-if="showGrid"
+      :matrix-style="matrixStyle"
+    />
+    <PGrid
+      v-if="psDebug"
+      :position-box="positionBoxInfoArray"
+      :matrix-style="matrixStyle"
+    />
     <!--页面组件列表展示-->
     <de-drag
       v-for="(item, index) in componentData"
@@ -100,11 +107,17 @@
       />
     </de-drag>
     <!--拖拽阴影部分-->
-    <drag-shadow :canvas-id="canvasId" v-if="shadowShow && dragShadowShow"/>
+    <drag-shadow
+      v-if="shadowShow && dragShadowShow"
+      :canvas-id="canvasId"
+    />
     <!--切换canvas 拖拽阴影部分-->
-    <point-shadow :canvas-id="canvasId" v-if="pointShadowShow"></point-shadow>
+    <point-shadow
+      v-if="pointShadowShow"
+      :canvas-id="canvasId"
+    />
     <!-- 右击菜单 -->
-    <ContextMenu/>
+    <ContextMenu />
 
     <!-- 对齐标线 -->
     <span
@@ -435,6 +448,7 @@ function removeItem(index) {
       }
     })
     this.yourList.splice(index, 1, {})
+    // eslint-disable-next-line
   } catch (e) {
   }
 }
@@ -737,6 +751,7 @@ export default {
     Shape,
     ContextMenu,
     MarkLine,
+    // eslint-disable-next-line
     Area,
     Grid,
     PGrid,
@@ -759,7 +774,7 @@ export default {
     componentData: {
       type: Array,
       require: false,
-      default: []
+      default: () => []
     },
     canvasId: {
       type: String,
@@ -890,18 +905,18 @@ export default {
     moveTabCollisionActive() {
       return this.tabCollisionActiveId
     },
-    pointShadowShow(){
-      return this.canvasId==='canvas-main'
-        && this.curComponent
-        && this.curComponent.canvasId !== 'canvas-main'
-        && this.tabMoveOutComponentId
+    pointShadowShow() {
+      return this.canvasId === 'canvas-main' &&
+        this.curComponent &&
+        this.curComponent.canvasId !== 'canvas-main' &&
+        this.tabMoveOutComponentId
     },
     shadowShow() {
-      return ((this.curComponent
-          && this.curComponent.auxiliaryMatrix
-          && this.curComponent.canvasId === this.canvasId
-          && (this.curComponent.optStatus.dragging || this.curComponent.optStatus.resizing))
-        || (this.dragComponentInfo && this.dragComponentInfo.canvasId ===this.canvasId )) && !this.tabMoveInActive
+      return ((this.curComponent &&
+          this.curComponent.auxiliaryMatrix &&
+          this.curComponent.canvasId === this.canvasId &&
+          (this.curComponent.optStatus.dragging || this.curComponent.optStatus.resizing)) ||
+        (this.dragComponentInfo && this.dragComponentInfo.canvasId === this.canvasId)) && !this.tabMoveInActive
     },
     tabMoveInActive() {
       return this.tabMoveInActiveId
@@ -925,7 +940,9 @@ export default {
       }
     },
     // 挤占式画布设计
+    // eslint-disable-next-line
     coordinates() {
+      // eslint-disable-next-line
       return this.coordinates
     },
     customStyle() {
@@ -1482,7 +1499,7 @@ export default {
       }
     },
     handleDragOver(e) {
-      console.log('handleDragOver--x='+e.pageX+';y='+e.pageY)
+      console.log('handleDragOver--x=' + e.pageX + ';y=' + e.pageY)
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth
@@ -1628,7 +1645,7 @@ export default {
       let newY = Math.round((item.style.top * this.scalePointHeight) / this.matrixStyle.height) + 1
       newX = newX > 0 ? newX : 1
       newY = newY > 0 ? newY : 1
-      console.log("moveTabCollisionActive="+this.moveTabCollisionActive)
+      console.log('moveTabCollisionActive=' + this.moveTabCollisionActive)
       if (this.moveTabCollisionActive) {
         return
       }

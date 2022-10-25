@@ -58,7 +58,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import inputStyleMixin from '@/components/widget/DeWidget/inputStyleMixin'
 export default {
   name: 'DeOutWidget',

@@ -144,7 +144,7 @@ export default {
   flex-wrap: nowrap;
   box-sizing: border-box;
   .el-empty {
-    height: 100%;
+    padding-top: 202px;
   }
 }
 .ms-aside-container {

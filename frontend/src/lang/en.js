@@ -1485,6 +1485,7 @@ export default {
     field_origin_name: 'Field Origin Name',
     field_check: 'Selected',
     update_info: 'Update Info',
+    update_records: 'Update Records',
     join_view: 'Data Associated',
     text: 'Text',
     time: 'Time',

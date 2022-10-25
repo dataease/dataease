@@ -63,16 +63,16 @@
             </el-dropdown-menu>
           </el-dropdown>
         </span>
-        <de-canvas-tab v-if="item.content && item.content.type==='canvas' && isEdit"
-                       :ref="'canvasTabRef-'+item.name"
-                       :parent-forbid="true"
-                       :canvas-style-data="canvasStyleData"
-                       :component-data="tabCanvasComponentData(item.name)"
-                       :canvas-id="element.id+'-'+item.name"
-                       class="tab_canvas"
-                       :class="moveActive ? 'canvas_move_in':''"
-        >
-        </de-canvas-tab>
+        <de-canvas-tab
+          v-if="item.content && item.content.type==='canvas' && isEdit"
+          :ref="'canvasTabRef-'+item.name"
+          :parent-forbid="true"
+          :canvas-style-data="canvasStyleData"
+          :component-data="tabCanvasComponentData(item.name)"
+          :canvas-id="element.id+'-'+item.name"
+          class="tab_canvas"
+          :class="moveActive ? 'canvas_move_in':''"
+        />
         <div style="width: 100%;height:100%">
           <Preview
             v-if="item.content && item.content.type==='canvas' && !isEdit"
@@ -529,7 +529,7 @@ export default {
         name: curName,
         content: { type: 'canvas' }
       }
-      //的Tab都是画布
+      // 的Tab都是画布
 
       this.element.options.tabList.push(tab)
 

@@ -64,7 +64,7 @@
         @mousedown.stop.prevent="handleDown(handlei, $event)"
         @touchstart.stop.prevent="handleTouchDown(handlei, $event)"
       >
-        <slot :name="handlei"/>
+        <slot :name="handlei" />
       </div>
       <div
         :id="componentCanvasId"
@@ -77,7 +77,7 @@
           class="svg-background"
           :icon-class="mainSlotSvgInner"
         />
-        <slot/>
+        <slot />
       </div>
     </div>
   </div>
@@ -386,7 +386,7 @@ export default {
   data: function() {
     return {
       contentDisplay: true,
-      //当画布在tab中是 宽度左右拓展的余量
+      // 当画布在tab中是 宽度左右拓展的余量
       parentWidthTabOffset: 40,
       canvasChangeTips: 'none',
       tabMoveInYOffset: 70,
@@ -434,10 +434,10 @@ export default {
     }
   },
   computed: {
-    parentWidthOffset(){
-      if(this.canvasId==='canvas-main'){
+    parentWidthOffset() {
+      if (this.canvasId === 'canvas-main') {
         return 0
-      }else{
+      } else {
         return this.parentWidthTabOffset
       }
     },
@@ -1425,7 +1425,6 @@ export default {
 
       // 如果辅助设计 需要最后调整矩阵
       if (this.element.auxiliaryMatrix) {
-        const _this = this
         const historyTabMoveInActiveId = this.tabMoveInActiveId
         const historyTabMoveOutComponentId = this.tabMoveOutComponentId
         setTimeout(() => {
@@ -1462,10 +1461,10 @@ export default {
     componentCanvasChange() {
       // 主画布移入Tab画布
       if (this.tabMoveInActiveId) {
-        //从当前画布移除
+        // 从当前画布移除
         this.$emit('amRemoveItem')
         this.element.canvasPid = this.element.canvasId
-        //Tab内部的画布ID 为 tab组件id + '-' + tabActiveName
+        // Tab内部的画布ID 为 tab组件id + '-' + tabActiveName
         const targetCanvasId = this.tabMoveInActiveId + '-' + this.tabActiveTabNameMap[this.tabMoveInActiveId]
         const targetCanvasScale = this.curCanvasScaleMap[targetCanvasId]
         if (this.element.auxiliaryMatrix) {
@@ -1487,27 +1486,26 @@ export default {
       }
       // Tab 画布 移入主画布
       if (this.tabMoveOutComponentId) {
-        //从当前画布移除
+        // 从当前画布移除
         this.$emit('amRemoveItem')
         this.element.canvasPid = 0
         this.element.canvasId = 'canvas-main'
-        //Tab内部的画布ID 为 tab组件id + '-' + tabActiveName
+        // Tab内部的画布ID 为 tab组件id + '-' + tabActiveName
         const targetCanvasScale = this.curCanvasScaleMap['canvas-main']
         // 按照阴影位置定位
         this.element.style.left = (this.mousePointShadowMap.mouseX - (this.mousePointShadowMap.width)) / targetCanvasScale.scalePointWidth
-        this.element.style.top = (this.mousePointShadowMap.mouseY - (this.mousePointShadowMap.height / 2))/ targetCanvasScale.scalePointHeight
-        this.element.style.width = this.mousePointShadowMap.width/ targetCanvasScale.scalePointWidth
-        this.element.style.height = this.mousePointShadowMap.height/ targetCanvasScale.scalePointHeight
+        this.element.style.top = (this.mousePointShadowMap.mouseY - (this.mousePointShadowMap.height / 2)) / targetCanvasScale.scalePointHeight
+        this.element.style.width = this.mousePointShadowMap.width / targetCanvasScale.scalePointWidth
+        this.element.style.height = this.mousePointShadowMap.height / targetCanvasScale.scalePointHeight
 
         if (this.element.auxiliaryMatrix) {
           this.element.x = Math.round(this.element.style.left / targetCanvasScale.matrixStyleOriginWidth) + 1
           this.element.y = Math.round(this.element.style.top / targetCanvasScale.matrixStyleOriginHeight) + 1
-          this.element.sizex = Math.round(this.element.style.width /targetCanvasScale.matrixStyleOriginWidth)
+          this.element.sizex = Math.round(this.element.style.width / targetCanvasScale.matrixStyleOriginWidth)
           this.element.sizey = Math.round(this.element.style.height / targetCanvasScale.matrixStyleOriginHeight)
           this.recordMatrixCurShadowStyle(targetCanvasScale)
         }
       }
-
     },
 
     // 设置属性(属性跟随所属canvas component类型 要做出改变)
@@ -1977,7 +1975,6 @@ export default {
             } else {
               this.$store.commit('setTabMoveInActiveId', null)
             }
-
           }
         }
       }

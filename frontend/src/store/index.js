@@ -164,7 +164,7 @@ const data = {
     ...snapshot.mutations,
     ...lock.mutations,
 
-    setTabActiveTabNameMap(state, tabActiveInfo){
+    setTabActiveTabNameMap(state, tabActiveInfo) {
       state.tabActiveTabNameMap[tabActiveInfo.tabId] = tabActiveInfo.activeTabName
     },
 
@@ -753,13 +753,13 @@ const data = {
     setTabMoveOutComponentId(state, componentId) {
       state.tabMoveOutComponentId = componentId
     },
-    clearTabMoveInfo(state){
+    clearTabMoveInfo(state) {
       state.tabMoveInActiveId = null
       state.tabCollisionActiveId = null
       state.tabMoveOutActiveId = null
       state.tabMoveOutComponentId = null
     },
-    setMousePointShadowMap(state,mousePoint){
+    setMousePointShadowMap(state, mousePoint) {
       state.mousePointShadowMap.mouseX = mousePoint.mouseX
       state.mousePointShadowMap.mouseY = mousePoint.mouseY
       state.mousePointShadowMap.width = mousePoint.width
