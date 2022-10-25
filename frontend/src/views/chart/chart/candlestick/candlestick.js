@@ -31,13 +31,16 @@ export function candlestickOption(chart_option, chart, cstyle = {}) {
     let arr = []
     for(let i = 0; i< chart.data.series.length; i++) {
       const y = chart.data.series[i]
-      arr.push(y.data)
+      let arr1 = []
+      y.data.map(item => {
+        arr1.push(item.value)
+      })
+      arr.push(arr1)
     }
-    console.log('k数据',arr)
+    // console.log('k数据',arr)
 
 		let map = new Array(Math.max(... arr.map(item => item.length)));
 		for(let index = 0;index < map.length;index ++) {
-			console.log(map);
 			for(let key in arr) {
 				if(!map[index]) {
 					map[index] = [arr[key][index]]
@@ -46,11 +49,22 @@ export function candlestickOption(chart_option, chart, cstyle = {}) {
 				}
 			} 
 		}
-    console.log(map)
-
+    console.log('k数据',map)
+    
+    chart_option.series[0] = {
+      type: 'candlestick',
+      data: map
+      // data: [
+      //   [22, 24, 21, 32],
+      //   [40, 35, 30, 50],
+      //   [31, 38, 33, 44],
+      //   [38, 15, 5, 42]
+      // ]
+    } 
   }
 
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
+  console.log('kkkkkkkk',chart_option)
   return chart_option
 }

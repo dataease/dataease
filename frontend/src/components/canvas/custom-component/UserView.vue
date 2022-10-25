@@ -765,11 +765,11 @@ export default {
         if (JSON.stringify(requestInfo.filter) === '[]') {
         // requestInfo.filter.value = ['公司1']
         // requestInfo.filter.operator = 'eq'
-          const obj = {
-            value: ['公司1'],
-            operator: 'eq'
-          }
-          requestInfo.filter.push(obj)
+          // const obj = {
+          //   value: ['公司1'],
+          //   operator: 'eq'
+          // }
+          // requestInfo.filter.push(obj)
         }
 
         if (this.panelInfo.proxy) {
