@@ -86,7 +86,7 @@ export const colorCases = [
 export const gradientColorCases = [
   {
     name: '渐变色1',
-    value: 'gradient1',
+    value: 'gradient1_continuous_gradient',
     colors: [
       ['rgba(144,202,249,0.5)', 'rgba(1,87,155,0.9)'],
       ['rgba(127,222,234,1)', 'rgba(0,77,65,1)'],
@@ -101,3 +101,72 @@ export const gradientColorCases = [
 export const isGradientValue = value => {
   return value && gradientColorCases.some(item => item.value === value)
 }
+
+export const getColorType = value => {
+  if (value.endsWith('_split_gradient')) {
+    return 'split_gradient'
+  }
+  const cloneColorCases = JSON.parse(JSON.stringify(colorCases))
+  if (cloneColorCases.some(item => item.value === value)) {
+    return 'simple'
+  }
+  return 'gradient'
+}
+
+export const getMapColorCases = () => {
+  const cloneColorCases = JSON.parse(JSON.stringify(colorCases))
+  return cloneColorCases.map(colorItem => {
+    const curColors = colorItem.colors
+    const len = curColors.length
+    const start = curColors[0]
+    const end = curColors[len - 1]
+    const itemResult = {
+      name: colorItem.name,
+      value: colorItem.value + '_split_gradient',
+      baseColors: [start, end],
+      colors: stepsColor(start, end, 9, 1)
+    }
+    return itemResult
+  })
+}
+
+export function stepsColor(start, end, steps, gamma) {
+  var i; var j; var ms; var me; var output = []; var so = []
+  gamma = gamma || 1
+  var normalize = function(channel) {
+    return Math.pow(channel / 255, gamma)
+  }
+  start = parseColor(start).map(normalize)
+  end = parseColor(end).map(normalize)
+  for (i = 0; i < steps; i++) {
+    ms = (steps - 1) === 0 ? 0 : (i / (steps - 1))
+    me = 1 - ms
+    for (j = 0; j < 3; j++) {
+      so[j] = pad(
+        Math.round(
+          Math.pow(start[j] * me + end[j] * ms, 1 / gamma) * 255
+        ).toString(16)
+      )
+    }
+    output.push('#' + so.join(''))
+  }
+  function parseColor(hexStr) {
+    return hexStr.length === 4
+      ? hexStr
+        .substr(1)
+        .split('')
+        .map(function(s) {
+          return 0x11 * parseInt(s, 16)
+        })
+      : [hexStr.substr(1, 2), hexStr.substr(3, 2), hexStr.substr(5, 2)].map(
+        function(s) {
+          return parseInt(s, 16)
+        }
+      )
+  }
+  function pad(s) {
+    return s.length === 1 ? '0' + s : s
+  }
+  return output
+}
+
