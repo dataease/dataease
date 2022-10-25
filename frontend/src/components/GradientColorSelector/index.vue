@@ -38,7 +38,7 @@
       <div class="custom-switch-div">
         <el-switch
           v-model="enableCustom"
-          :active-text="$t('commons.reset')"
+          :active-text="$t('commons.custom')"
           inactive-text=""
         />
       </div>
