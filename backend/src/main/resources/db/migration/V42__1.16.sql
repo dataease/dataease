@@ -31,3 +31,5 @@ WHERE (`msg_type_id` = 6);
 
 ALTER TABLE `sys_user_assist`
     ADD COLUMN `larksuite_id` VARCHAR(255) NULL DEFAULT NULL AFTER `lark_id`;
+
+ALTER TABLE `dataset_table_field` CHANGE COLUMN `type` `type` VARCHAR(255) NOT NULL COMMENT '原始字段类型' ;
