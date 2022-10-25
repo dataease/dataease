@@ -1294,6 +1294,8 @@ export default {
         component.x = 1
         component.y = 1
       }
+      component['canvasId'] = 'canvas-main'
+      component['canvasPid'] = '0'
       component.id = newComponentId
       // 统一设置背景信息
       component.commonBackground = deepCopy(COMMON_BACKGROUND)

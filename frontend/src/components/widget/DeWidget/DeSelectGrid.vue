@@ -73,6 +73,10 @@ import { attrsMap, styleAttrs, textSelectGridWidget } from '@/components/widget/
 
 export default {
   props: {
+    canvasId: {
+      type: String,
+      required: true
+    },
     element: {
       type: Object,
       default: null
@@ -312,6 +316,7 @@ export default {
     },
     getCondition() {
       const param = {
+        canvasId: this.canvasId,
         component: this.element,
         value: this.formatFilterValue(),
         operator: this.operator

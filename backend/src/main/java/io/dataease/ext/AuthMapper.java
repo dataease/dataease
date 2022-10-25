@@ -37,5 +37,6 @@ public interface AuthMapper {
     SysUserEntity findWecomUser(@Param("wecomId") String wecomId);
     SysUserEntity findDingtalkUser(@Param("dingtalkId") String dingtalkId);
     SysUserEntity findLarkUser(@Param("larkId") String larkId);
+    SysUserEntity findLarksuiteUser(@Param("larksuiteId") String larksuiteId);
 
 }

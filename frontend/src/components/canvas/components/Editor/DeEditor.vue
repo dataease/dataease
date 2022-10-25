@@ -65,6 +65,7 @@
       <de-out-widget
         v-if="renderOk && item.type==='custom'"
         :id="'component' + item.id"
+        :canvas-id="canvasId"
         ref="wrapperChild"
         class="component"
         :style="getComponentStyleDefault(item.style)"
@@ -79,6 +80,7 @@
         :is="item.component"
         v-else-if="renderOk && item.type==='other'"
         :id="'component' + item.id"
+        :canvas-id="canvasId"
         ref="wrapperChild"
         class="component"
         :style="getComponentStyle(item.style)"
@@ -91,6 +93,7 @@
         :is="item.component"
         v-else-if="renderOk"
         :id="'component' + item.id"
+        :canvas-id="canvasId"
         ref="wrapperChild"
         class="component"
         :filters="filterMap[item.propValue && item.propValue.viewId]"
@@ -1433,10 +1436,12 @@ export default {
             matrixStyleOriginWidth: this.matrixStyle.originWidth,
             matrixStyleOriginHeight: this.matrixStyle.originHeight
           })
-        this.$store.commit('setPreviewCanvasScale', {
-          scaleWidth: this.scalePointWidth,
-          scaleHeight: this.scalePointHeight
-        })
+        if(this.canvasId === 'canvas-main'){
+          this.$store.commit('setPreviewCanvasScale', {
+            scaleWidth: this.scalePointWidth,
+            scaleHeight: this.scalePointHeight
+          })
+        }
       }
     },
     getShapeStyleIntDeDrag(style, prop, item) {
@@ -1499,7 +1504,6 @@ export default {
       }
     },
     handleDragOver(e) {
-      console.log('handleDragOver--x=' + e.pageX + ';y=' + e.pageY)
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth
@@ -1645,7 +1649,6 @@ export default {
       let newY = Math.round((item.style.top * this.scalePointHeight) / this.matrixStyle.height) + 1
       newX = newX > 0 ? newX : 1
       newY = newY > 0 ? newY : 1
-      console.log('moveTabCollisionActive=' + this.moveTabCollisionActive)
       if (this.moveTabCollisionActive) {
         return
       }

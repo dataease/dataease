@@ -216,6 +216,10 @@ export default {
   name: 'UserView',
   components: { UserViewDialog, DeRichTextView, LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
   props: {
+    canvasId: {
+      type: String,
+      required: true
+    },
     element: {
       type: Object,
       default: null

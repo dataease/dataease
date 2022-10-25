@@ -43,6 +43,7 @@
           :key="index"
           ref="viewWrapperChild"
           :config="item"
+          :canvas-id="canvasId"
           :source-config="componentData[index]"
           :search-count="searchCount"
           :in-screen="inScreen"
@@ -438,7 +439,9 @@ export default {
       } else {
         this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
       }
-      this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
+      if(this.canvasId === 'canvas-main'){
+        this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
+      }
       this.handleScaleChange()
     },
     resetID(data) {

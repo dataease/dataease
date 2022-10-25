@@ -185,7 +185,7 @@ public class XDingtalkServer {
                 sysUserAssist.setUserId(Long.parseLong(state));
             }
             sysUserAssist.setDingtalkId(userId);
-            sysUserService.saveAssist(sysUserAssist.getUserId(), sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
+            sysUserService.saveAssist(sysUserAssist.getUserId(), sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId(), sysUserAssist.getLarksuiteId());
             response.sendRedirect(url);
         } catch (Exception e) {
 

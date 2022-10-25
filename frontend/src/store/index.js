@@ -229,7 +229,6 @@ const data = {
         if (height || height === 0) curComponent.style.height = (height / curCanvasScaleSelf.scalePointHeight) + 0.0000001
         if (rotate || rotate === 0) curComponent.style.rotate = rotate
       }
-      // console.log("setShapeStyle==="+curComponent.style.width)
     },
 
     setShapeSingleStyle({ curComponent }, { key, value }) {
@@ -289,6 +288,13 @@ const data = {
       const vValid = valueValid(condition)
       //   1.根据componentId过滤
       const filterComponentId = condition.componentId
+      const canvasId = data.canvasId
+
+      //过滤时 主画布的过滤组件可以过滤所有的视图
+      const canvasViewIds = state.componentData.filter(item => item.type === 'view' && (canvasId === 'canvas-main' || item.canvasId === canvasId)).map((itemView) => {
+        return itemView.propValue.viewId
+      })
+      const canvasViewIdMatch = (viewId) => canvasViewIds && canvasViewIds.length > 0 && canvasViewIds.includes(viewId)
 
       //   2.循环每个Component 得到 三种情况 a增加b删除c无操作
       const viewIdMatch = (viewIds, viewId) => !viewIds || viewIds.length === 0 || viewIds.includes(viewId)
@@ -318,7 +324,7 @@ const data = {
         }
         if (!element.type || element.type !== 'view') continue
         const currentFilters = element.filters || []
-        const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId)
+        const vidMatch = viewIdMatch(condition.viewIds, element.propValue.viewId) && canvasViewIdMatch(element.propValue.viewId)
         let j = currentFilters.length
         while (j--) {
           const filter = currentFilters[j]
@@ -485,12 +491,8 @@ const data = {
         }
       }
     },
-
-    deleteComponent(state, index) {
-      if (index === undefined) {
-        index = state.curComponentIndex
-      }
-      state.componentData.splice(index, 1)
+    deleteComponent(state) {
+      this.commit('deleteComponentWithId',state.curComponent.id)
     },
     setLinkageInfo(state, targetLinkageInfo) {
       state.linkageSettingStatus = true
@@ -764,7 +766,6 @@ const data = {
       state.mousePointShadowMap.mouseY = mousePoint.mouseY
       state.mousePointShadowMap.width = mousePoint.width
       state.mousePointShadowMap.height = mousePoint.height
-      // console.log("mousePointMap:"+JSON.stringify(state.mousePointMap))
     }
   },
   modules: {

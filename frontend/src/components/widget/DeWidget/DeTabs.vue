@@ -45,14 +45,6 @@
                 {{ $t('detabs.eidttitle') }}
               </el-dropdown-item>
 
-              <el-dropdown-item :command="beforeHandleCommand('selectView', item)">
-                {{ $t('detabs.selectview') }}
-              </el-dropdown-item>
-
-              <el-dropdown-item :command="beforeHandleCommand('selectOthers', item)">
-                {{ $t('detabs.selectOthers') }}
-              </el-dropdown-item>
-
               <el-dropdown-item
                 v-if=" element.options.tabList.length > 1"
                 :command="beforeHandleCommand('deleteCur', item)"

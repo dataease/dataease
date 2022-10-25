@@ -677,7 +677,9 @@ export default {
       'tabMoveInActiveId',
       'tabActiveTabNameMap',
       'mousePointShadowMap',
-      'tabMoveOutComponentId'
+      'tabMoveOutComponentId',
+      'tabCollisionActiveId',
+      'tabMoveInActiveId'
     ])
   },
   watch: {
@@ -1920,8 +1922,8 @@ export default {
       const left = this.left
       const width = this.width
       const height = this.height
-      // tab 移入检测开启
-      if (this.isTabMoveCheck) {
+      // tab 移入检测开启 tab组件不能相互移入另一个tab组件
+      if (this.isTabMoveCheck && this.element.type !== 'de-tabs') {
         const nodes = this.$el.parentNode.childNodes // 获取当前父节点下所有子节点
         for (const item of nodes) {
           if (
@@ -1951,7 +1953,7 @@ export default {
             const brAndBr = (collisionT + collisionH) >= (top + height) && (collisionL + collisionW) >= (left + width)
             if (tfAndTf && bfAndBf && trAndTr && brAndBr) {
               this.$store.commit('setTabCollisionActiveId', item.getAttribute('component-id'))
-            } else {
+            } else if (this.tabCollisionActiveId === item.getAttribute('component-id')) {
               this.$store.commit('setTabCollisionActiveId', null)
             }
 
@@ -1972,7 +1974,7 @@ export default {
             const activeBrAndBr = (activeT + activeH) >= (top + height) && (activeL + activeW) >= (left + width)
             if (activeTfAndTf && activeBfAndBf && activeTrAndTr && activeBrAndBr) {
               this.$store.commit('setTabMoveInActiveId', item.getAttribute('component-id'))
-            } else {
+            } else if (this.tabMoveInActiveId === item.getAttribute('component-id')) {
               this.$store.commit('setTabMoveInActiveId', null)
             }
           }

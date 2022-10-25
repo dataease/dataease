@@ -75,6 +75,10 @@ public interface AuthApi {
     @PostMapping("/isOpenLark")
     boolean isOpenLark();
 
+    @ApiOperation("是否开启国际飞书")
+    @PostMapping("/isOpenLarksuite")
+    boolean isOpenLarksuite();
+
     @ApiIgnore
     @PostMapping("/isPluginLoaded")
     boolean isPluginLoaded();

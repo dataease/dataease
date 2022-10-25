@@ -912,6 +912,9 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    solid_color: 'Solid color',
+    split_gradient: 'Split gradient',
+    continuous_gradient: 'Continuous gradient',
     map_center_lost: 'The graph is missing the centroid or center attribute, please complete it and try again',
     margin_model: 'Model',
     margin_model_auto: 'Auto',
@@ -2362,7 +2365,8 @@ export default {
     channel_email_msg: 'Email',
     channel_wecom_msg: 'Wecom',
     channel_dingtalk_msg: 'Dingtalk',
-    channel_lark_msg: 'Lark'
+    channel_lark_msg: 'Lark',
+    channel_larksuite_msg: 'Larksuite'
   },
   denumberrange: {
     label: 'Number range',
@@ -2478,6 +2482,7 @@ export default {
     wecom: 'Wecom',
     dingtalk: 'Dingtalk',
     lark: 'Lark',
+    larksuite: 'Larksuite',
     pixel: 'Pixel',
     default: 'Default',
     custom: 'Custom',
