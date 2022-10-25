@@ -27,17 +27,22 @@ export function candlestickOption(chart_option, chart, cstyle = {}) {
   if (chart.data) {
     chart_option.title.text = chart.title
     chart_option.xAxis.data = chart.data.x
+    chart_option.dataset.dimensions = chart.data.x
 
     let arr = []
+    let arr2 = []
     for(let i = 0; i< chart.data.series.length; i++) {
       const y = chart.data.series[i]
       let arr1 = []
-      y.data.map(item => {
+      arr2.push(y.name)
+      y.data.map((item,index) => {
+        
         arr1.push(item.value)
       })
       arr.push(arr1)
     }
-    // console.log('k数据',arr)
+    arr.unshift(arr2)
+    console.log('karr',arr)
 
 		let map = new Array(Math.max(... arr.map(item => item.length)));
 		for(let index = 0;index < map.length;index ++) {
@@ -50,10 +55,13 @@ export function candlestickOption(chart_option, chart, cstyle = {}) {
 			} 
 		}
     console.log('k数据',map)
-    
+    chart_option.dataset.source = map
     chart_option.series[0] = {
       type: 'candlestick',
-      data: map
+      encode: {
+        tooltip: [1,2,3,4],
+      }
+      // data: map
       // data: [
       //   [22, 24, 21, 32],
       //   [40, 35, 30, 50],

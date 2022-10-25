@@ -813,6 +813,10 @@ export const BASE_CANDLESTICK = {
     type: 'value'
   },
   series: [],
+  dataset: {
+    dimensions: [],
+    source: [],
+  },
   dataZoom: [
     {
       type: 'slider',
