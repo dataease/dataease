@@ -2627,5 +2627,9 @@ export default {
     apply_logs: '應用記錄',
     app_group_delete_tips: '確定刪除該應用分類嗎?',
     app_group_delete_content: '刪除後，該分類中所有的應用模闆也將被刪除。'
+  },
+  logout: {
+    oidc_logout_error: 'OIDC退出失敗，是否繼續退出DataEase？',
+    cas_logout_error: 'CAS服務異常，請聯系管理員！'
   }
 }

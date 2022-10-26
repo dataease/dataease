@@ -6,6 +6,7 @@ import { getLanguage } from '@/lang/index'
 import Cookies from 'js-cookie'
 import router from '@/router'
 import i18n from '@/lang'
+import { $alert, $confirm } from '@/utils/message'
 const getDefaultState = () => {
   return {
     token: getToken(),
@@ -146,6 +147,28 @@ const actions = {
         resolve(res.data)
       }).catch(error => {
         reject(error)
+        if (error?.response?.data?.message) {
+          if (error.response.data.message === ('oidc_logout_error')) {
+            const message = i18n.t('logout.' + error.response.data.message)
+            $confirm(message, () => {
+              removeToken() // must remove  token  first
+              resetRouter()
+              commit('RESET_STATE')
+              window.location.href = '/'
+            }, {
+              confirmButtonText: i18n.t('commons.confirm')
+            })
+          }
+          if (error.response.data.message === ('cas_logout_error')) {
+            const message = i18n.t('logout.' + error.response.data.message)
+            $alert(message, () => {
+
+            }, {
+              confirmButtonText: i18n.t('commons.confirm'),
+              showClose: false
+            })
+          }
+        }
       })
     })
   },

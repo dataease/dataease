@@ -2626,5 +2626,9 @@ export default {
     apply_logs: 'Apply logs',
     app_group_delete_tips: 'Are you sure to delete this application category?',
     app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.'
+  },
+  logout: {
+    oidc_logout_error: 'OIDC failed to exit, do you continue to exit DataEase?',
+    cas_logout_error: 'CAS服务异常，请联系管理员！'
   }
 }

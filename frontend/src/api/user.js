@@ -18,14 +18,16 @@ export function getInfo(token) {
 export function logout() {
   return request({
     url: '/api/auth/logout',
-    method: 'post'
+    method: 'post',
+    hideMsg: true
   })
 }
 
 export function deLogout() {
   return request({
     url: '/api/auth/deLogout',
-    method: 'post'
+    method: 'post',
+    hideMsg: true
   })
 }
 
