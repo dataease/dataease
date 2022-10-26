@@ -439,7 +439,7 @@ export default {
       } else {
         this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
       }
-      if(this.canvasId === 'canvas-main'){
+      if (this.canvasId === 'canvas-main') {
         this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
       }
       this.handleScaleChange()

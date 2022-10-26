@@ -65,8 +65,8 @@
       <de-out-widget
         v-if="renderOk && item.type==='custom'"
         :id="'component' + item.id"
-        :canvas-id="canvasId"
         ref="wrapperChild"
+        :canvas-id="canvasId"
         class="component"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
@@ -80,8 +80,8 @@
         :is="item.component"
         v-else-if="renderOk && item.type==='other'"
         :id="'component' + item.id"
-        :canvas-id="canvasId"
         ref="wrapperChild"
+        :canvas-id="canvasId"
         class="component"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
@@ -93,8 +93,8 @@
         :is="item.component"
         v-else-if="renderOk"
         :id="'component' + item.id"
-        :canvas-id="canvasId"
         ref="wrapperChild"
+        :canvas-id="canvasId"
         class="component"
         :filters="filterMap[item.propValue && item.propValue.viewId]"
         :style="getComponentStyleDefault(item.style)"
@@ -1436,7 +1436,7 @@ export default {
             matrixStyleOriginWidth: this.matrixStyle.originWidth,
             matrixStyleOriginHeight: this.matrixStyle.originHeight
           })
-        if(this.canvasId === 'canvas-main'){
+        if (this.canvasId === 'canvas-main') {
           this.$store.commit('setPreviewCanvasScale', {
             scaleWidth: this.scalePointWidth,
             scaleHeight: this.scalePointHeight
