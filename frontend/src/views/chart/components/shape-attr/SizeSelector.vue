@@ -541,97 +541,99 @@
             @change="changeBarSizeCase('dimensionShow')"
           >{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
-        <el-form-item
-          v-show="showProperty('dimensionFontSize')"
-          :label="$t('chart.dimension_font_size')"
-          class="form-item"
-        >
-          <el-select
-            v-model="sizeForm.dimensionFontSize"
-            :placeholder="$t('chart.dimension_font_size')"
-            @change="changeBarSizeCase('dimensionFontSize')"
+        <div v-show="sizeForm.dimensionShow">
+          <el-form-item
+            v-show="showProperty('dimensionFontSize')"
+            :label="$t('chart.dimension_font_size')"
+            class="form-item"
           >
-            <el-option
-              v-for="option in fontSize"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('dimensionFontFamily')"
-          :label="$t('chart.dimension_font_family')"
-          class="form-item"
-        >
-          <el-select
-            v-model="sizeForm.dimensionFontFamily"
-            :placeholder="$t('chart.dimension_font_family')"
-            @change="changeBarSizeCase('dimensionFontFamily')"
+            <el-select
+              v-model="sizeForm.dimensionFontSize"
+              :placeholder="$t('chart.dimension_font_size')"
+              @change="changeBarSizeCase('dimensionFontSize')"
+            >
+              <el-option
+                v-for="option in fontSize"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('dimensionFontFamily')"
+            :label="$t('chart.dimension_font_family')"
+            class="form-item"
           >
-            <el-option
-              v-for="option in fontFamily"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('dimensionFontStyle')"
-          :label="$t('chart.dimension_text_style')"
-          class="form-item"
-        >
-          <el-checkbox
-            v-model="sizeForm.dimensionFontIsItalic"
-            @change="changeBarSizeCase('dimensionFontIsItalic')"
-          >{{ $t('chart.italic') }}</el-checkbox>
-          <el-checkbox
-            v-model="sizeForm.dimensionFontIsBolder"
-            @change="changeBarSizeCase('dimensionFontIsBolder')"
-          >{{ $t('chart.bolder') }}</el-checkbox>
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('dimensionLetterSpace')"
-          :label="$t('chart.dimension_letter_space')"
-          class="form-item"
-        >
-          <el-select
-            v-model="sizeForm.dimensionLetterSpace"
-            :placeholder="$t('chart.dimension_letter_space')"
-            @change="changeBarSizeCase('dimensionLetterSpace')"
+            <el-select
+              v-model="sizeForm.dimensionFontFamily"
+              :placeholder="$t('chart.dimension_font_family')"
+              @change="changeBarSizeCase('dimensionFontFamily')"
+            >
+              <el-option
+                v-for="option in fontFamily"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('dimensionFontStyle')"
+            :label="$t('chart.dimension_text_style')"
+            class="form-item"
           >
-            <el-option
-              v-for="option in fontLetterSpace"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
+            <el-checkbox
+              v-model="sizeForm.dimensionFontIsItalic"
+              @change="changeBarSizeCase('dimensionFontIsItalic')"
+            >{{ $t('chart.italic') }}</el-checkbox>
+            <el-checkbox
+              v-model="sizeForm.dimensionFontIsBolder"
+              @change="changeBarSizeCase('dimensionFontIsBolder')"
+            >{{ $t('chart.bolder') }}</el-checkbox>
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('dimensionLetterSpace')"
+            :label="$t('chart.dimension_letter_space')"
+            class="form-item"
+          >
+            <el-select
+              v-model="sizeForm.dimensionLetterSpace"
+              :placeholder="$t('chart.dimension_letter_space')"
+              @change="changeBarSizeCase('dimensionLetterSpace')"
+            >
+              <el-option
+                v-for="option in fontLetterSpace"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('dimensionFontShadow')"
+            :label="$t('chart.font_shadow')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="sizeForm.dimensionFontShadow"
+              @change="changeBarSizeCase('dimensionFontShadow')"
+            >{{ $t('chart.font_shadow') }}</el-checkbox>
+          </el-form-item>
+          <el-divider v-if="showProperty('spaceSplit')" />
+          <el-form-item
+            v-show="showProperty('spaceSplit')"
+            :label="$t('chart.space_split')"
+            class="form-item"
+          >
+            <el-input-number
+              v-model="sizeForm.spaceSplit"
+              :min="0"
+              size="mini"
+              @change="changeBarSizeCase('spaceSplit')"
             />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('dimensionFontShadow')"
-          :label="$t('chart.font_shadow')"
-          class="form-item"
-        >
-          <el-checkbox
-            v-model="sizeForm.dimensionFontShadow"
-            @change="changeBarSizeCase('dimensionFontShadow')"
-          >{{ $t('chart.font_shadow') }}</el-checkbox>
-        </el-form-item>
-        <el-divider v-if="showProperty('spaceSplit')" />
-        <el-form-item
-          v-show="showProperty('spaceSplit')"
-          :label="$t('chart.space_split')"
-          class="form-item"
-        >
-          <el-input-number
-            v-model="sizeForm.spaceSplit"
-            :min="0"
-            size="mini"
-            @change="changeBarSizeCase('spaceSplit')"
-          />
-        </el-form-item>
+          </el-form-item>
+        </div>
         <!--text&label-end-->
         <!--scatter-begin-->
         <el-form-item
