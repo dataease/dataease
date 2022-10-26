@@ -805,8 +805,8 @@ export default {
                   if (response.data.render === 'antv') {
                     if (response.data.data) {
                       if (response.data.xaxis) {
-                        const axisList = JSON.parse(response.data.xaxis).filter(item => item.type === 'DATETIME' && item.dateStyle === 'M')
-                        // console.log('antv,xaxis',axisList)
+                        const axisList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'M')
+                        console.log('antv,axisList',axisList)
                         if (axisList.length > 0) {
                           const arr = []
                           const list = deepCopy(response.data.data.datas)
@@ -878,14 +878,65 @@ export default {
                           console.log('这个。。。', arr)
                           response.data.data.datas = arr
                         }
+
+                        const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'y_Q')
+                        console.log('antv,qList',qList)
+                        if (qList.length > 0) {
+                          const arr = []
+                          const list = deepCopy(response.data.data.datas)
+                          list.forEach(item => {
+                            const obj = item
+                            if(
+                              (new Date(item.field).getMonth() + 1) === 1 ||
+                              (new Date(item.field).getMonth() + 1) === 2 ||
+                              (new Date(item.field).getMonth() + 1) === 3
+                            ) {
+                              if (obj.name) {
+                                obj.name = '第一季度'
+                              }
+                              obj.field = '第一季度'
+                            } else if (
+                              (new Date(item.field).getMonth() + 1) === 4 ||
+                              (new Date(item.field).getMonth() + 1) === 5 ||
+                              (new Date(item.field).getMonth() + 1) === 6
+                            ) {
+                              if (obj.name) {
+                                obj.name = '第二季度'
+                              }
+                              obj.field = '第二季度'
+                            } else if (
+                              (new Date(item.field).getMonth() + 1) === 7 ||
+                              (new Date(item.field).getMonth() + 1) === 8 ||
+                              (new Date(item.field).getMonth() + 1) === 9
+                            ) {
+                              if (obj.name) {
+                                obj.name = '第三季度'
+                              }
+                              obj.field = '第三季度'
+                            } else if (
+                              (new Date(item.field).getMonth() + 1) === 10 ||
+                              (new Date(item.field).getMonth() + 1) === 11 ||
+                              (new Date(item.field).getMonth() + 1) === 12
+                            ) {
+                              if (obj.name) {
+                                obj.name = '第四季度'
+                              }
+                              obj.field = '第四季度'
+                            }
+
+                            arr.push(obj)
+                          })
+                          console.log('这个。。。',arr)
+                          response.data.data.datas = arr
+                        }
                       }
                     }
                     this.chart = response.data
                   } else if (response.data.render === 'echarts' || response.data.render === 'highcharts') {
                     if (response.data.data) {
                       if (response.data.xaxis) {
-                        const axisList = JSON.parse(response.data.xaxis).filter(item => item.type === 'DATETIME' && item.dateStyle === 'M')
-                        // console.log('echarts,xaxis',axisList)
+                        const axisList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'M')
+                        console.log('echarts,axisList',axisList)
                         if (axisList.length > 0) {
                           const arr = []
                           const list = deepCopy(response.data.data.x)
@@ -919,6 +970,47 @@ export default {
                             arr.push(obj)
                           })
                           console.log('这个。。。', arr)
+                          response.data.data.x = arr
+                        }
+
+                        const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'y_Q')
+                        console.log('echarts,qList',qList)
+                        if (qList.length > 0) {
+                          const arr = []
+                          const list = deepCopy(response.data.data.x)
+                          list.forEach(item => {
+                            let obj = item
+                            if(
+                              (new Date(item).getMonth() + 1) === 1 ||
+                              (new Date(item).getMonth() + 1) === 2 ||
+                              (new Date(item).getMonth() + 1) === 3
+                            ) {
+                              obj = '第一季度'
+                            } else if (
+                              (new Date(item).getMonth() + 1) === 4 ||
+                              (new Date(item).getMonth() + 1) === 5 ||
+                              (new Date(item).getMonth() + 1) === 6
+                            ) {
+                              obj = '第二季度'
+                            } else if (
+                              (new Date(item).getMonth() + 1) === 7 ||
+                              (new Date(item).getMonth() + 1) === 8 ||
+                              (new Date(item).getMonth() + 1) === 9
+                            ) {
+                              obj = '第三季度'
+                            }  else if (
+                              (new Date(item).getMonth() + 1) === 10 ||
+                              (new Date(item).getMonth() + 1) === 11 ||
+                              (new Date(item).getMonth() + 1) === 12
+                            ) {
+                              obj = '第四季度'
+                            }
+
+                            arr.push(obj)
+                          })
+                          
+                          console.log('ec,,,,',arr)
+
                           response.data.data.x = arr
                         }
                       }
