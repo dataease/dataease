@@ -2167,9 +2167,6 @@ export default {
       if (view.type === 'line' && trigger === 'chart') {
         view.customAttr.size.lineArea = false
       }
-      if (view.type === 'treemap' && trigger === 'chart') {
-        view.customAttr.label.show = true
-      }
       if (view.type === 'liquid' ||
         (view.type.includes('table') && view.render === 'echarts') ||
         view.type.includes('text') ||
