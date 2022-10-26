@@ -29,12 +29,17 @@
         :class="[{ select: activeTemplate === ele.id }]"
         @click="nodeClick(ele)"
       >
-        <img :src="iconImgRul(ele.icon)" style="margin-right: 8px;border-radius: 4px" width="24" height="24"/>
+        <img
+          :src="iconImgRul(ele.icon)"
+          style="margin-right: 8px;border-radius: 4px"
+          width="24"
+          height="24"
+        >
         <span>{{ ele.name }}</span>
         <span
+          v-if="showPositionCheck('system-setting')"
           class="more"
           @click.stop
-          v-if="showPositionCheck('system-setting')"
         >
           <el-dropdown
             trigger="click"
@@ -87,7 +92,6 @@
 import msgCfm from '@/components/msgCfm/index'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
-
 export default {
   name: 'TemplateList',
   components: {},
@@ -126,10 +130,10 @@ export default {
     }
   },
   methods: {
-    showPositionCheck(requiredPosition){
+    showPositionCheck(requiredPosition) {
       return this.showPosition === requiredPosition
     },
-    iconImgRul(iconUrl){
+    iconImgRul(iconUrl) {
       return imgUrlTrans(iconUrl)
     },
     clickMore(type, data) {

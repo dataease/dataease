@@ -31,13 +31,19 @@
         </el-tabs>
       </el-row>
       <el-row v-show="marketActiveTab==='apps'">
-        <app-template-content :ref="'appTemplateContent'" class="template-main-content"  :show-position="'market-manage'" @previewApp="previewApp" @applyNew="applyNew"></app-template-content>
+        <app-template-content
+          :ref="'appTemplateContent'"
+          class="template-main-content"
+          :show-position="'market-manage'"
+          @previewApp="previewApp"
+          @applyNew="applyNew"
+        />
       </el-row>
       <el-row
         v-show="marketActiveTab==='apply_logs'"
         class="main-log-area template-main"
       >
-        <app-template-log class="log-area"/>
+        <app-template-log class="log-area" />
       </el-row>
     </el-row>
 
@@ -114,18 +120,15 @@
 import { searchAppTemplate } from '@/api/appTemplateMarket'
 import { groupTree, panelSave } from '@/api/panel/panel'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
-import MarketPreview from '@/views/panel/appTemplateMarket/component/MarketPreview'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import AppTemplateItem from '@/views/panel/appTemplateMarket/component/AppTemplateItem'
 import AppTemplateLog from '@/views/panel/appTemplateMarket/log'
-import AppTemplate from '@/views/panel/appTemplate'
 import AppTemplateContent from '@/views/panel/appTemplate/AppTemplateContent'
 import AppMarketPreview from '@/views/panel/appTemplateMarket/component/AppMarketPreview'
 import AppTemplateApply from '@/views/panel/appTemplate/component/AppTemplateApply'
 
 export default {
   name: 'AppTemplateMarket',
-  components: { AppTemplateApply, AppMarketPreview, AppTemplateContent, AppTemplate, AppTemplateLog, AppTemplateItem, MarketPreview },
+  components: { AppTemplateApply, AppMarketPreview, AppTemplateContent, AppTemplateLog },
   data() {
     return {
       previewItem: null,
@@ -203,10 +206,10 @@ export default {
       }
       this.$refs.templateApply.init(param)
     },
-    appApply(){
+    appApply() {
       this.applyNew(this.previewItem)
     },
-    previewApp(item){
+    previewApp(item) {
       this.previewModel = true
       this.previewItem = item
     },

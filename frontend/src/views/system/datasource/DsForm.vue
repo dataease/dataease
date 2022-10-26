@@ -3,7 +3,10 @@
     v-loading="formLoading"
     :class="positionCheck('datasource')?'de-ds-form':'de-ds-form-app'"
   >
-    <div v-if="positionCheck('datasource')" class="de-ds-top">
+    <div
+      v-if="positionCheck('datasource')"
+      class="de-ds-top"
+    >
       <span class="name">
         <i
           class="el-icon-arrow-left"
@@ -11,10 +14,10 @@
         />
         {{
           params &&
-          params.id &&
-          params.showModel &&
-          params.showModel === 'show' &&
-          !canEdit
+            params.id &&
+            params.showModel &&
+            params.showModel === 'show' &&
+            !canEdit
             ? $t('datasource.show_info')
             : formType == 'add'
               ? `${$t('commons.create') + typeMap}${$t('commons.datasource')}`
@@ -64,15 +67,18 @@
       <div class="de-ds-inner">
         <div class="w600">
           <el-form
-            ref="attachParamsForm"
             v-if="positionCheck('appMarket')"
+            ref="attachParamsForm"
             :model="attachForm"
             :rules="attachRule"
             class="de-form-item"
             label-width="180px"
             label-position="right"
           >
-            <div class="de-row-rules" style="margin: 0 0 16px 0;">
+            <div
+              class="de-row-rules"
+              style="margin: 0 0 16px 0;"
+            >
               <span>{{ $t('datasource.basic_info') }}</span>
             </div>
             <el-form-item
@@ -94,7 +100,7 @@
               :label="$t('app_template.panel_name')"
               prop="panelName"
             >
-              <el-input v-model="attachForm.panelName"/>
+              <el-input v-model="attachForm.panelName" />
             </el-form-item>
             <el-form-item
               :label="$t('app_template.dataset_group_position')"
@@ -115,7 +121,7 @@
               :label="$t('app_template.dataset_group_name')"
               prop="datasetGroupName"
             >
-              <el-input v-model="attachForm.datasetGroupName"/>
+              <el-input v-model="attachForm.datasetGroupName" />
             </el-form-item>
           </el-form>
 
@@ -137,8 +143,8 @@
           >
             <div class="de-row-rules">
               <span>{{
-                  positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
-                }}</span>
+                positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
+              }}</span>
             </div>
             <el-form-item
               :label="$t('datasource.display_name')"
@@ -222,8 +228,14 @@
         </div>
       </div>
     </div>
-    <div v-if="positionCheck('appMarket')" class="de-ds-bottom">
-      <div class="apply" style="width: 100%">
+    <div
+      v-if="positionCheck('appMarket')"
+      class="de-ds-bottom"
+    >
+      <div
+        class="apply"
+        style="width: 100%"
+      >
         <template v-if="canEdit">
           <deBtn
             secondary
@@ -871,10 +883,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-            if (!valid) {
-              return false
-            }
+          if (!valid) {
+            return false
           }
+        }
         )
       }
       this.$refs.dsForm.validate((valid) => {
@@ -1016,10 +1028,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-            if (!valid) {
-              return false
-            }
+          if (!valid) {
+            return false
           }
+        }
         )
       }
       this.$refs.dsForm.validate((valid) => {

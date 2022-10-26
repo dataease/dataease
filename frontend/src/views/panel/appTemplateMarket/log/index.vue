@@ -35,8 +35,8 @@
           icon="iconfont icon-icon-filter"
           @click="filterShow"
         >{{
-            $t('user.filter')
-          }}
+           $t('user.filter')
+         }}
           <template v-if="filterTexts.length">
             ({{ cacheCondition.length }})
           </template>
@@ -49,7 +49,7 @@
     >
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t('user.result_one') }}</span>
-      <el-divider direction="vertical"/>
+      <el-divider direction="vertical" />
       <i
         v-if="showScroll"
         class="el-icon-arrow-left arrow-filter"
@@ -62,9 +62,9 @@
           class="text"
         >
           {{ ele }} <i
-          class="el-icon-close"
-          @click="clearOneFilter(index)"
-        />
+            class="el-icon-close"
+            @click="clearOneFilter(index)"
+          />
         </p>
       </div>
       <i
@@ -100,7 +100,11 @@
           :label="$t('app_template.datasource')"
         >
           <template #default="{ row }">
-            <span v-if="row.datasourceId" class="link-span" @click="goToDatasource(row)">{{ row.datasourceName }}</span>
+            <span
+              v-if="row.datasourceId"
+              class="link-span"
+              @click="goToDatasource(row)"
+            >{{ row.datasourceName }}</span>
             <span v-else>{{ row.datasourceName }}</span>
           </template>
         </el-table-column>
@@ -115,7 +119,11 @@
           :label="$t('app_template.panel')"
         >
           <template #default="{ row }">
-            <span v-if="row.panelId"  class="link-span" @click="goPanel(row)">{{ row.panelName }}</span>
+            <span
+              v-if="row.panelId"
+              class="link-span"
+              @click="goPanel(row)"
+            >{{ row.panelName }}</span>
             <span v-else>{{ row.panelName }}</span>
           </template>
         </el-table-column>
@@ -181,20 +189,20 @@
       width="420px"
     >
       <el-row>
-        <el-checkbox v-model="deleteItemInfo.deleteResource"></el-checkbox>
-        {{$t('app_template.log_resource_delete_tips')}}
+        <el-checkbox v-model="deleteItemInfo.deleteResource" />
+        {{ $t('app_template.log_resource_delete_tips') }}
       </el-row>
       <span slot="footer">
-          <el-button
-            size="mini"
-            @click="closeDel"
-          >{{ $t('commons.cancel') }}</el-button>
-          <el-button
-            type="danger"
-            size="mini"
-            @click="confirmDel"
-          >{{ $t('commons.confirm') }}</el-button>
-        </span>
+        <el-button
+          size="mini"
+          @click="closeDel"
+        >{{ $t('commons.cancel') }}</el-button>
+        <el-button
+          type="danger"
+          size="mini"
+          @click="confirmDel"
+        >{{ $t('commons.confirm') }}</el-button>
+      </span>
     </el-dialog>
   </el-row>
 </template>
@@ -211,7 +219,6 @@ import {
 import { deleteLogAndResource, logGrid } from '@/api/appTemplateMarket/log'
 import { findOneWithParent } from '@/api/panel/panel'
 import AppTemplateApply from '@/views/panel/appTemplate/component/AppTemplateApply'
-import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'AppTemplateLog',
@@ -274,7 +281,7 @@ export default {
       this.deleteConfirmDialog = false
     },
     confirmDel() {
-      deleteLogAndResource(this.deleteItemInfo).then(()=>{
+      deleteLogAndResource(this.deleteItemInfo).then(() => {
         this.closeDel()
         this.search()
       })

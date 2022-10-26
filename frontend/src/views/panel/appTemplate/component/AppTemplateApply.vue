@@ -7,19 +7,22 @@
     size="600px"
     direction="rtl"
   >
-    <ds-form v-if="applyDrawer" :reference-position="'appMarket'" :outer-params="outerParams" @closeDraw="close"></ds-form>
+    <ds-form
+      v-if="applyDrawer"
+      :reference-position="'appMarket'"
+      :outer-params="outerParams"
+      @closeDraw="close"
+    />
   </el-drawer>
 </template>
 
 <script>
-import DeDatePick from '@/components/deCustomCm/deDatePick.vue'
 import DsForm from '@/views/system/datasource/DsForm'
 export default {
-  components: {
-    DsForm,
-    DeDatePick
-  },
   name: 'AppTemplateApply',
+  components: {
+    DsForm
+  },
   data() {
     return {
       outerParams: {},
@@ -40,7 +43,7 @@ export default {
       this.outerParams = params
     },
     close() {
-      this.$emit("closeDraw")
+      this.$emit('closeDraw')
       this.applyDrawer = false
     }
   }

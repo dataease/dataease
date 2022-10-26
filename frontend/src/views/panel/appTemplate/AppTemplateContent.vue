@@ -27,8 +27,8 @@
               currentTemplateShowList.length
             }})
             <deBtn
-              type="primary"
               v-if="showPositionCheck('system-setting')"
+              type="primary"
               icon="el-icon-upload2"
               @click="templateImport(currentTemplateId)"
             >
@@ -77,7 +77,7 @@
           :label="dialogTitleLabel"
           prop="name"
         >
-          <el-input v-model="templateEditForm.name"/>
+          <el-input v-model="templateEditForm.name" />
         </el-form-item>
         <el-form-item
           :label="$t('app_template.app_group_icon')"
@@ -95,7 +95,7 @@
               :http-request="upload"
               :file-list="fileList"
             >
-              <i class="el-icon-plus"/>
+              <i class="el-icon-plus" />
             </el-upload>
             <el-dialog
               top="25vh"
@@ -151,7 +151,6 @@
 </template>
 
 <script>
-import DeLayoutContent from '@/components/business/DeLayoutContent'
 import TemplateList from './component/TemplateList'
 import TemplateItem from './component/TemplateItem'
 import TemplateImport from './component/TemplateImport'
@@ -163,7 +162,7 @@ import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'AppTemplateContent',
-  components: { DeLayoutContent, TemplateList, TemplateItem, TemplateImport },
+  components: { TemplateList, TemplateItem, TemplateImport },
   mixins: [msgCfm],
   props: {
     showPosition: {

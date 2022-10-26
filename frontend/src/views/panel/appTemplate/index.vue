@@ -1,6 +1,6 @@
 <template>
   <de-layout-content>
-    <app-template-content :show-position="'system-setting'"></app-template-content>
+    <app-template-content :show-position="'system-setting'" />
   </de-layout-content>
 </template>
 
@@ -9,7 +9,7 @@ import AppTemplateContent from '@/views/panel/appTemplate/AppTemplateContent'
 import DeLayoutContent from '@/components/business/DeLayoutContent'
 export default {
   name: 'AppTemplate',
-  components: { DeLayoutContent, AppTemplateContent  }
+  components: { DeLayoutContent, AppTemplateContent }
 }
 </script>
 

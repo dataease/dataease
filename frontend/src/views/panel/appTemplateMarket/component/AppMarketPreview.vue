@@ -1,17 +1,23 @@
 <template>
   <el-row>
     <el-row style="height: 56px">
-      <el-col :span="12" style="text-align: left;line-height: 56px">
+      <el-col
+        :span="12"
+        style="text-align: left;line-height: 56px"
+      >
         <svg-icon
           icon-class="icon_left_outlined"
           class="toolbar-icon-active icon20 margin-left20"
           @click="closePreview"
         />
         <span class="text16 margin-left12">
-          {{templateInfo.name}}
+          {{ templateInfo.name }}
         </span>
       </el-col>
-      <el-col :span="12"  style="text-align: right;line-height: 56px;padding-right: 24px">
+      <el-col
+        :span="12"
+        style="text-align: right;line-height: 56px;padding-right: 24px"
+      >
         <el-button
           size="small"
           type="primary"
@@ -32,13 +38,9 @@
 </template>
 
 <script>
-import TemplateMarketPreviewItem from '@/views/panel/appTemplateMarket/component/TemplateMarketPreviewItem'
-import AppTemplateLog from '@/views/panel/appTemplateMarket/log'
-import DsAppForm from '@/views/system/datasource/DsAppForm'
-
 export default {
   name: 'AppMarketPreview',
-  components: { DsAppForm, AppTemplateLog, TemplateMarketPreviewItem },
+  components: { },
   props: {
     templateInfo: {
       type: Object,
@@ -60,11 +62,11 @@ export default {
 
   },
   methods: {
-    appApply(){
-      this.$emit("appApply")
+    appApply() {
+      this.$emit('appApply')
     },
-    closePreview(){
-      this.$emit("closePreview")
+    closePreview() {
+      this.$emit('closePreview')
     }
   }
 }
@@ -101,7 +103,6 @@ export default {
   font-size: 20px;
   color: var(--TextPrimary, #1F2329);
 }
-
 
 .icon16 {
   font-size: 16px!important;

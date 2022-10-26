@@ -336,10 +336,9 @@ export function editApply(data) {
   })
 }
 
-
 export function findOneWithParent(panelId) {
   return request({
-    url: 'panel/group/findOneWithParent/'+panelId,
+    url: 'panel/group/findOneWithParent/' + panelId,
     method: 'get',
     loading: false
   })
