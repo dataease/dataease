@@ -16,4 +16,12 @@ public class AppLogGridDTO extends PanelAppTemplateLog implements Serializable {
 
     private String panelName;
 
+    private String panelGroupPid;
+
+    private String datasourceType;
+
+    private String datasetGroupPid;
+
+    private Boolean deleteResource;
+
 }

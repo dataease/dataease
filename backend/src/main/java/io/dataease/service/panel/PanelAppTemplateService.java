@@ -5,6 +5,7 @@ import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.controller.datasource.request.UpdataDsRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.panel.PanelAppTemplateApplyRequest;
 import io.dataease.controller.request.panel.PanelAppTemplateRequest;
@@ -270,15 +271,36 @@ public class PanelAppTemplateService {
         return chartViewFieldsRealMap;
     }
 
-    public void nameCheck(PanelAppTemplateApplyRequest request) {
-        panelGroupService.checkPanelName(request.getPanelName(), request.getPanelId(), PanelConstants.OPT_TYPE_INSERT, null, "panel");
-        DatasetGroup datasetGroup = new DatasetGroup();
-        datasetGroup.setPid(request.getDatasetGroupId());
-        datasetGroup.setName(request.getDatasetGroupName());
-        dataSetGroupService.checkName(datasetGroup);
-        request.getDatasourceList().stream().forEach(datasource -> {
-            datasourceService.checkName(datasource.getName(), datasource.getType(), null);
-        });
+    public void nameCheck(PanelAppTemplateApplyRequest request, String optType) {
+        if ("add".equals(optType)) {
+            panelGroupService.checkPanelName(request.getPanelName(), request.getPanelGroupPid(), PanelConstants.OPT_TYPE_INSERT, null, "panel");
+            DatasetGroup datasetGroup = new DatasetGroup();
+            datasetGroup.setPid(request.getDatasetGroupPid());
+            datasetGroup.setName(request.getDatasetGroupName());
+            dataSetGroupService.checkName(datasetGroup);
+            request.getDatasourceList().stream().forEach(datasource -> {
+                datasourceService.checkName(datasource.getName(), datasource.getType(), null);
+            });
+        } else {
+            DatasetGroup datasetGroup = new DatasetGroup();
+            datasetGroup.setPid(request.getDatasetGroupPid());
+            datasetGroup.setName(request.getDatasetGroupName());
+            datasetGroup.setId(request.getDatasetGroupId());
+            dataSetGroupService.checkName(datasetGroup);
+            request.getDatasourceList().stream().forEach(datasource -> {
+                datasourceService.checkName(datasource.getName(), datasource.getType(), datasource.getId());
+            });
+        }
 
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void editDatasource(List<Datasource> updateDatasourceList) throws Exception {
+        for (int i = 0; i < updateDatasourceList.size(); i++) {
+            UpdataDsRequest updataDsRequest = new UpdataDsRequest();
+            BeanUtils.copyBean(updataDsRequest, updateDatasourceList.get(i));
+            datasourceService.updateDatasource(updataDsRequest);
+
+        }
     }
 }

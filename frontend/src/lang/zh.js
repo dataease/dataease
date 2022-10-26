@@ -2622,6 +2622,16 @@ export default {
     search_by_keyword: '通过关键字搜索',
     apply_logs: '应用记录',
     app_group_delete_tips: '确定删除该应用分类吗?',
-    app_group_delete_content: '删除后，该分类中所有的应用模板也将被删除。'
+    app_group_delete_content: '删除后，该分类中所有的应用模板也将被删除。',
+    panel_position: '仪表板位置',
+    panel_name: '仪表板名称',
+    dataset_group_position: '数据集分组位置',
+    dataset_group_name: '数据集分组名称',
+    datasource_info: '数据源信息',
+    datasource: '数据源',
+    dataset_group: '数据集分组',
+    panel: '仪表板',
+    log_delete_tips: '确定删除该条应用记录吗？',
+    log_resource_delete_tips: '删除相关资源（删除后不可恢复）'
   }
 }

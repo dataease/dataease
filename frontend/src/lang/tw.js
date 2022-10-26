@@ -2622,6 +2622,16 @@ export default {
     search_by_keyword: '通過關鍵字搜索',
     apply_logs: '應用記錄',
     app_group_delete_tips: '確定刪除該應用分類嗎?',
-    app_group_delete_content: '刪除後，該分類中所有的應用模闆也將被刪除。'
+    app_group_delete_content: '刪除後，該分類中所有的應用模板也將被刪除。',
+    panel_position: '儀表板位置',
+    panel_name: '儀表板名稱',
+    dataset_group_position: '數據集分組位置',
+    dataset_group_name: '數據集分組名稱',
+    datasource_info: '數據源信息',
+    datasource: '數據源',
+    dataset_group: '數據集分組',
+    panel: '儀表板',
+    log_delete_tips: '確定刪除該條應用記錄嗎？',
+    log_resource_delete_tips: '刪除相關資源（刪除後不可恢復）'
   }
 }

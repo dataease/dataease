@@ -17,7 +17,7 @@
         style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;"
       >
         <div style="height: 100%;">
-          <share-head />
+          <share-head/>
         </div>
       </el-row>
       <el-row
@@ -45,7 +45,7 @@
               width="400"
               trigger="click"
             >
-              <panel-detail-info />
+              <panel-detail-info/>
               <i
                 slot="reference"
                 class="el-icon-warning icon-class"
@@ -118,6 +118,10 @@
                     icon="el-icon-picture-outline"
                     @click.native="downloadAsImage"
                   >{{ $t('panel.export_to_img') }}</el-dropdown-item>
+                  <el-dropdown-item
+                    icon="el-icon-s-data"
+                    @click.native="downLoadToApp"
+                  >{{ $t('panel.export_to_app') }}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
@@ -304,6 +308,7 @@ export default {
   },
   data() {
     return {
+      canvasInfoTemp: 'preview-temp-canvas-main',
       canvasId: 'canvas-main',
       showMain: true,
       pdfTemplateSelectedIndex: 0,
@@ -405,7 +410,7 @@ export default {
     saveToTemplate() {
       this.dataLoading = true
       setTimeout(() => {
-        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+        html2canvas(document.getElementById(this.canvasInfoTemp)).then(canvas => {
           this.templateSaveShow = true
           this.dataLoading = false
           const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
@@ -430,7 +435,7 @@ export default {
       _this.dataLoading = true
       try {
         _this.findStaticSource(function(staticResource) {
-          html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          html2canvas(document.getElementById(_this.canvasInfoTemp)).then(canvas => {
             _this.dataLoading = false
             const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
             if (snapshot !== '') {
@@ -458,9 +463,9 @@ export default {
       _this.dataLoading = true
       try {
         _this.findStaticSource(function(staticResource) {
-          html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          html2canvas(document.getElementById(_this.canvasInfoTemp)).then(canvas => {
             _this.dataLoading = false
-            const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+            const snapshot = canvas.toDataURL('image/jpeg', 1) // 0.1是图片质量
             if (snapshot !== '') {
               const panelInfo = {
                 name: _this.$store.state.panel.panelInfo.name,
@@ -528,7 +533,7 @@ export default {
       setTimeout(() => {
         this.exporting = true
         setTimeout(() => {
-          const canvasID = document.getElementById('canvasInfoTemp')
+          const canvasID = document.getElementById(this.canvasInfoTemp)
           const a = document.createElement('a')
           html2canvas(canvasID).then(canvas => {
             this.exporting = false
@@ -559,7 +564,7 @@ export default {
       setTimeout(() => {
         this.exporting = true
         setTimeout(() => {
-          html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          html2canvas(document.getElementById(this.canvasInfoTemp)).then(canvas => {
             const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
             this.dataLoading = false
             this.exporting = false
@@ -573,7 +578,7 @@ export default {
     },
     refreshTemplateInfo() {
       this.templateInfo = {}
-      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+      html2canvas(document.getElementById(this.canvasInfoTemp)).then(canvas => {
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
         if (snapshot !== '') {
           this.templateInfo = {
@@ -623,7 +628,9 @@ export default {
       if (this.showType === 1 && this.shareUserId !== null) {
         const param = { userId: this.shareUserId }
         proxyInitPanelData(this.panelInfo.id, param, null)
-      } else { initPanelData(this.panelInfo.id, false) }
+      } else {
+        initPanelData(this.panelInfo.id, false)
+      }
     },
     changePublishState() {
       if (this.panelInfo.status === 'publish') {
@@ -642,72 +649,76 @@ export default {
 </script>
 
 <style>
-  .view-list {
-    height: 100%;
-    width: 20%;
-    min-width: 180px;
-    max-width: 220px;
-    border: 1px solid #E6E6E6;
-    border-left: 0 solid;
-    overflow-y: auto;
-  }
+.view-list {
+  height: 100%;
+  width: 20%;
+  min-width: 180px;
+  max-width: 220px;
+  border: 1px solid #E6E6E6;
+  border-left: 0 solid;
+  overflow-y: auto;
+}
 
-  .view-list-thumbnails-outline {
-    height: 100%;
-    overflow-y: auto;
-  }
+.view-list-thumbnails-outline {
+  height: 100%;
+  overflow-y: auto;
+}
 
-  .view-list-thumbnails {
-    width: 100%;
-    padding: 0px 15px 15px 0px;
-  }
+.view-list-thumbnails {
+  width: 100%;
+  padding: 0px 15px 15px 0px;
+}
 
-  .panel-design {
-    min-height: 400px;
-    height: 100%;
-    min-width: 500px;
-    overflow-y: hidden;
-    border-top: 1px solid #E6E6E6;
-  }
+.panel-design {
+  min-height: 400px;
+  height: 100%;
+  min-width: 500px;
+  overflow-y: hidden;
+  border-top: 1px solid #E6E6E6;
+}
 
-  .panel-design-head {
-    height: 40px;
-    background-color: var(--SiderBG, white);
-    padding: 0 10px;
-    line-height: 40px;
-  }
-  .panel-share-head {
-      height: auto !important;
-  }
-  .blackTheme .panel-design-head  {
-      color: var(--TextActive);
-  }
+.panel-design-head {
+  height: 40px;
+  background-color: var(--SiderBG, white);
+  padding: 0 10px;
+  line-height: 40px;
+}
 
-  .panel-design-preview {
-    width: 100%;
-    height: calc(100% - 40px);
-    overflow-x: hidden;
-    overflow-y: auto;
-    /*padding: 5px;*/
-  }
+.panel-share-head {
+  height: auto !important;
+}
 
-  .custom-position {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    flex-flow: row nowrap;
-    color: #9ea6b2;
-  }
+.blackTheme .panel-design-head {
+  color: var(--TextActive);
+}
 
-  .dialog-css2 ::v-deep .el-dialog__title {
-    font-size: 14px!important;
-  }
-  .dialog-css2 ::v-deep .el-dialog__header {
-    padding: 20px 20px 0!important;
-  }
-  .dialog-css2 ::v-deep .el-dialog__body {
-    padding: 0px 20px!important;
-  }
+.panel-design-preview {
+  width: 100%;
+  height: calc(100% - 40px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  /*padding: 5px;*/
+}
+
+.custom-position {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-flow: row nowrap;
+  color: #9ea6b2;
+}
+
+.dialog-css2 ::v-deep .el-dialog__title {
+  font-size: 14px !important;
+}
+
+.dialog-css2 ::v-deep .el-dialog__header {
+  padding: 20px 20px 0 !important;
+}
+
+.dialog-css2 ::v-deep .el-dialog__body {
+  padding: 0px 20px !important;
+}
 </style>

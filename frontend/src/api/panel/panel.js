@@ -313,7 +313,34 @@ export function appApply(data) {
   return request({
     url: 'panel/group/appApply',
     method: 'post',
-    loading: true,
+    loading: false,
     data
+  })
+}
+
+export function appEdit(data) {
+  return request({
+    url: 'panel/group/appEdit',
+    method: 'post',
+    loading: false,
+    data
+  })
+}
+
+export function editApply(data) {
+  return request({
+    url: 'panel/group/appApply',
+    method: 'post',
+    loading: false,
+    data
+  })
+}
+
+
+export function findOneWithParent(panelId) {
+  return request({
+    url: 'panel/group/findOneWithParent/'+panelId,
+    method: 'get',
+    loading: false
   })
 }

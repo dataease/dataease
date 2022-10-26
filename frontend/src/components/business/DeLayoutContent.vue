@@ -42,7 +42,7 @@ export default {
       return backPath || backName || backTo
     },
     needInnerPadding() {
-      return ['sys-identification', 'sys-abutment', 'sys-task-email', 'system-dept', 'system-dept-form', 'system-auth', 'sys-appearance', 'system-param', 'system-template', 'sys-task-dataset', 'sys-msg-web-all', 'system-plugin'].includes(this.$route.name)
+      return ['system-app-template','sys-identification', 'sys-abutment', 'sys-task-email', 'system-dept', 'system-dept-form', 'system-auth', 'sys-appearance', 'system-param', 'system-template', 'sys-task-dataset', 'sys-msg-web-all', 'system-plugin'].includes(this.$route.name)
     }
   }
 }
