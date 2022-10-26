@@ -20,7 +20,7 @@
         <el-tooltip
           class="item"
           effect="dark"
-          content="重置"
+          :content="$t('commons.reset')"
           placement="top"
         >
           <i class="el-icon-refresh" />
@@ -38,7 +38,7 @@
       <div class="custom-switch-div">
         <el-switch
           v-model="enableCustom"
-          active-text="自定义"
+          :active-text="$t('commons.custom')"
           inactive-text=""
         />
       </div>
@@ -47,7 +47,7 @@
         @tab-click="handleClick"
       >
         <el-tab-pane
-          v-for="(pane, i) in tabPanes"
+          v-for="(pane, i) in tabPanes.filter(item => item.name === 'simple' || (showIndex === 1 && item.name === 'split_gradient') || (showIndex === 2 && item.name === 'gradient'))"
           :key="i"
           :label="pane.label"
           :name="pane.name"
@@ -84,22 +84,29 @@
                 v-for="(co,index) in option.colors"
                 v-else
                 :key="index"
-                class="color-span-base is-editor"
+                class="color-span-base"
+                :class="option.value.endsWith('_split_gradient') && index % 8 !== 0 ? 'static-editor' : 'is-editor'"
               >
-                <el-color-picker
-                  v-if="i === 0"
-                  v-model="option.colors[index]"
-                  @change="switchColorItem(option.colors, index)"
+                <span
+                  v-if="option.value.endsWith('_split_gradient') && index % 8 !== 0"
+                  class="color-span-base-split"
+                  :style="{background: formatBgColor(co)}"
                 />
+
                 <de-color-picker
-                  v-else
+                  v-else-if="option.value.endsWith('_continuous_gradient')"
                   :id="option.value + index"
                   ref="de-color-picker"
                   v-model="option.colors[index]"
                   :base-id="option.value + index"
                   show-alpha
                   color-format="rgb"
-                  @change="switchColorItem(option.colors, index)"
+                  @change="switchColorItem(option.colors, option.value)"
+                />
+                <el-color-picker
+                  v-else
+                  v-model="option.colors[index]"
+                  @change="switchColorItem(option.colors, option.value)"
                 />
               </span>
 
@@ -132,7 +139,7 @@
 </template>
 
 <script>
-import { colorCases, gradientColorCases } from './base'
+import { colorCases, gradientColorCases, getMapColorCases, getColorType, stepsColor } from './base'
 import DeColorPicker from './DeColorPicker'
 export default {
   name: 'GradientColorSelector',
@@ -148,6 +155,10 @@ export default {
           colors: []
         }
       }
+    },
+    showIndex: {
+      type: Number,
+      default: 1
     }
   },
   data() {
@@ -161,12 +172,17 @@ export default {
       activeName: 'simple',
       tabPanes: [
         {
-          label: '纯色',
+          label: this.$t('chart.solid_color'),
           name: 'simple',
           data: JSON.parse(JSON.stringify(colorCases))
         },
         {
-          label: '渐变',
+          label: this.$t('chart.split_gradient'),
+          name: 'split_gradient',
+          data: JSON.parse(JSON.stringify(getMapColorCases()))
+        },
+        {
+          label: this.$t('chart.continuous_gradient'),
           name: 'gradient',
           data: JSON.parse(JSON.stringify(gradientColorCases))
         }
@@ -200,9 +216,26 @@ export default {
         parents.scrollTo(0, top)
       }
     },
-    switchColorItem(colors, index) {
-      this.colorDto.colors = JSON.parse(JSON.stringify(colors))
+    switchColorItem(colors, value) {
+      const activeName = getColorType(value)
+      if (activeName === 'split_gradient') {
+        const start = colors[0]
+        const end = colors[colors.length - 1]
+        const targetColors = stepsColor(start, end, 9, 1)
+        this.colorDto.colors = JSON.parse(JSON.stringify(targetColors))
+        this.fillSplitGradientPanel()
+      } else {
+        this.colorDto.colors = JSON.parse(JSON.stringify(colors))
+      }
+
       this.$emit('color-change', JSON.parse(JSON.stringify(this.colorDto)))
+    },
+    fillSplitGradientPanel() {
+      this.tabPanes[1].data.forEach(item => {
+        if (item.value === this.colorDto.value) {
+          item.colors = this.colorDto.colors
+        }
+      })
     },
     initcolorDto() {
       let haspPropValue = true
@@ -211,9 +244,9 @@ export default {
         this.colorDto.colors = this.colorCases[0].colors
         haspPropValue = false
       }
-      this.activeName = this.colorCases.some(item => item.value === this.colorDto.value) ? 'simple' : 'gradient'
+      this.activeName = getColorType(this.colorDto.value)
       if (haspPropValue) {
-        this.tabPanes[this.activeName === 'simple' ? 0 : 1].data.forEach(item => {
+        this.tabPanes[this.activeName === 'simple' ? 0 : this.activeName === 'split_gradient' ? 1 : 2].data.forEach(item => {
           if (item.value === this.colorDto.value) {
             item.colors = JSON.parse(JSON.stringify(this.colorDto.colors))
           }
@@ -270,14 +303,15 @@ export default {
           return str
         })
       })
-      this.tabPanes[1].data = JSON.parse(JSON.stringify(this.gradientColorCases))
+      const len = this.tabPanes.length
+      this.tabPanes[len - 1].data = JSON.parse(JSON.stringify(this.gradientColorCases))
     },
     formatBgColor(color, useValue) {
       let activeName = this.activeName
       if (useValue) {
-        activeName = this.colorCases.some(item => item.value === this.colorDto.value) ? 'simple' : 'gradient'
+        activeName = getColorType(this.colorDto.value)
       }
-      if (activeName === 'simple') {
+      if (activeName === 'simple' || activeName === 'split_gradient') {
         return color
       }
       return 'linear-gradient(0.0deg,' + color[0] + ' 0.0,' + color[1] + ' 100.0%)'
@@ -296,11 +330,8 @@ export default {
     },
     reset() {
       if (this.colorDto.value) {
-        let activeName = 'simple'
-        if (this.gradientColorCases.some(item => item.value === this.colorDto.value)) {
-          activeName = 'gradient'
-        }
-        (activeName === 'simple' ? colorCases : gradientColorCases).forEach(curcase => {
+        const activeName = getColorType(this.colorDto.value);
+        (activeName === 'simple' ? colorCases : activeName === 'split_gradient' ? getMapColorCases() : gradientColorCases).forEach(curcase => {
           if (curcase.value === this.colorDto.value) {
             this.colorDto.colors = JSON.parse(JSON.stringify(curcase.colors))
             this.$emit('color-change', JSON.parse(JSON.stringify(this.colorDto)))
@@ -318,7 +349,7 @@ export default {
 }
 .gradient-popper {
   background: #fff;
-  padding: 0 10px;
+  padding: 0 10px !important;
   margin-top: 1px !important;
   border-top: none;
   height: 300px;
@@ -340,7 +371,8 @@ export default {
 .color-span-base {
   width: 20px;
   height: 20px;
-  display:inline-block;
+  display:flex;
+  align-items: center;
 }
 .is-editor {
   width:23px !important;
@@ -352,7 +384,11 @@ export default {
   align-items: center !important;
   cursor: pointer;
   padding-left: 5px !important;
+  .static-editor:nth-child(2) {
+    margin-left: 5px !important;
+  }
 }
+
 .custom-switch-div {
   position: absolute;
   top: 8px;
@@ -379,5 +415,12 @@ export default {
       color: var(--primary,#3370ff);
     }
   }
+}
+.is-split {
+  width: 28px !important;
+}
+.color-span-base-split {
+  width: 20px;
+  height: 20px;
 }
 </style>

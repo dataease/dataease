@@ -912,6 +912,9 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    solid_color: '純色',
+    split_gradient: '分離漸變',
+    continuous_gradient: '連續漸變',
     map_center_lost: '圖形缺失中心點centroid或center屬性，請補全後再試',
     margin_model: '模式',
     margin_model_auto: '自動',
@@ -1485,6 +1488,7 @@ export default {
     field_origin_name: '原始名稱',
     field_check: '選中',
     update_info: '更新信息',
+    update_records: '更新記錄',
     join_view: '數據關聯',
     text: '文本',
     time: '時間',

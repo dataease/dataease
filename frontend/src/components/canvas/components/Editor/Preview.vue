@@ -68,16 +68,14 @@ import { uuid } from 'vue-uuid'
 import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
-import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
 import bus from '@/utils/bus'
 import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
 import { hasDataPermission } from '@/utils/permission'
 const erd = elementResizeDetectorMaker()
 
 export default {
-  components: { UserViewMobileDialog, ComponentWrapper, UserViewDialog, CanvasOptBar },
+  components: { ComponentWrapper, CanvasOptBar },
   model: {
     prop: 'show',
     event: 'change'
@@ -142,10 +140,10 @@ export default {
   },
   data() {
     return {
-      previewDomId: 'preview-'+this.canvasId,
-      previewRefId: 'preview-ref-'+this.canvasId,
-      previewTempDomId: 'preview-temp-'+this.canvasId,
-      previewTempRefId: 'preview-temp-ref-'+this.canvasId,
+      previewDomId: 'preview-' + this.canvasId,
+      previewRefId: 'preview-ref-' + this.canvasId,
+      previewTempDomId: 'preview-temp-' + this.canvasId,
+      previewTempRefId: 'preview-temp-ref-' + this.canvasId,
       isShowPreview: false,
       panelId: '',
       needToChangeHeight: [
@@ -441,7 +439,7 @@ export default {
       } else {
         this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
       }
-      if(this.canvasId === 'canvas-main'){
+      if (this.canvasId === 'canvas-main') {
         this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
       }
       this.handleScaleChange()

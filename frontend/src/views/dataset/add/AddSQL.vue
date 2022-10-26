@@ -73,7 +73,6 @@
             {{ $t('deDataset.data_reference') }}
           </el-button>
           <el-button
-            v-if="mode === '1'"
             type="text"
             size="small"
             style="color: #1f2329"
@@ -703,6 +702,7 @@ export default {
       post('/dataset/table/sqlPreview', {
         dataSourceId: this.dataSource,
         type: 'sql',
+        mode: parseInt(this.mode),
         sqlVariableDetails: JSON.stringify(this.variables),
         info: JSON.stringify({
           sql: Base64.encode(this.sql.trim()),
@@ -1048,7 +1048,7 @@ export default {
     }
 
     .table-sql {
-      height: calc(100% - 64px);
+      height: calc(100% - 54px);
       padding: 18px 25px;
       overflow-y: auto;
       box-sizing: border-box;

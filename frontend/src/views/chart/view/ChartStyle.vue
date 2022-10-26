@@ -18,7 +18,7 @@
       style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;padding-right: 6px"
       class="attr-style theme-border-class"
     >
-      <el-row>
+      <el-row class="de-collapse-style">
         <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
         <el-collapse
           v-model="attrActiveNames"
@@ -475,6 +475,15 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+.de-collapse-style {
+  .el-collapse-item__header {
+    height: 34px !important;
+    line-height: 34px !important;
+    padding: 0 0 0 6px !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+  }
+}
   .padding-lr {
     padding: 0 6px;
   }
