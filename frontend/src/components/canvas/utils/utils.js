@@ -136,7 +136,6 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
     // 增加所属画布ID（canvasId）当前所在画布的父ID（canvasPid） 主画布ID为main-canvas, PID = 0 表示当前所属canvas为最顶层
     item.canvasId = (item.canvasId || 'canvas-main')
     item.canvasPid = (item.canvasPid || '0')
-
   })
   // 初始化密度为最高密度
   componentStyle.aidedDesign.matrixBase = 4
@@ -149,7 +148,7 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
 export function resetID(data) {
   if (data) {
     data.forEach(item => {
-      item.type !== 'custom' && item.type !== 'de-tabs'&& (item.id = uuid.v1())
+      item.type !== 'custom' && item.type !== 'de-tabs' && (item.id = uuid.v1())
     })
   }
   return data
@@ -229,6 +228,6 @@ export function imgUrlTrans(url) {
   }
 }
 
-export function getNowCanvasComponentData(canvasId){
-  return store.state.componentData.filter(item => item.canvasId===canvasId)
+export function getNowCanvasComponentData(canvasId) {
+  return store.state.componentData.filter(item => item.canvasId === canvasId)
 }

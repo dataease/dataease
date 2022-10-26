@@ -38,3 +38,7 @@ INSERT INTO `my_plugin` (`name`, `store`, `free`, `cost`, `category`, `descript`
                          `install_time`, `module_name`, `ds_type`)
 VALUES ('Apache Kylin 数据源插件', 'default', '0', '0', 'datasource', 'Apache Kylin 数据源插件', '1.0-SNAPSHOT', 'DATAEASE', '0',
         '1650765903630', 'kylin-backend', 'kylin');
+
+
+
+INSERT INTO `sys_msg_channel` (`msg_channel_id`, `channel_name`, `service_name`) VALUES ('6', 'webmsg.channel_larksuite_msg', 'sendLarksuite');

@@ -13,8 +13,15 @@
     @scroll="canvasScroll"
   >
     <!-- 网格线 -->
-    <Grid v-if="showGrid" :matrix-style="matrixStyle"/>
-    <PGrid v-if="psDebug" :position-box="positionBoxInfoArray" :matrix-style="matrixStyle"/>
+    <Grid
+      v-if="showGrid"
+      :matrix-style="matrixStyle"
+    />
+    <PGrid
+      v-if="psDebug"
+      :position-box="positionBoxInfoArray"
+      :matrix-style="matrixStyle"
+    />
     <!--页面组件列表展示-->
     <de-drag
       v-for="(item, index) in componentData"
@@ -58,8 +65,8 @@
       <de-out-widget
         v-if="renderOk && item.type==='custom'"
         :id="'component' + item.id"
-        :canvas-id="canvasId"
         ref="wrapperChild"
+        :canvas-id="canvasId"
         class="component"
         :style="getComponentStyleDefault(item.style)"
         :prop-value="item.propValue"
@@ -73,8 +80,8 @@
         :is="item.component"
         v-else-if="renderOk && item.type==='other'"
         :id="'component' + item.id"
-        :canvas-id="canvasId"
         ref="wrapperChild"
+        :canvas-id="canvasId"
         class="component"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
@@ -86,8 +93,8 @@
         :is="item.component"
         v-else-if="renderOk"
         :id="'component' + item.id"
-        :canvas-id="canvasId"
         ref="wrapperChild"
+        :canvas-id="canvasId"
         class="component"
         :filters="filterMap[item.propValue && item.propValue.viewId]"
         :style="getComponentStyleDefault(item.style)"
@@ -103,11 +110,17 @@
       />
     </de-drag>
     <!--拖拽阴影部分-->
-    <drag-shadow :canvas-id="canvasId" v-if="shadowShow && dragShadowShow"/>
+    <drag-shadow
+      v-if="shadowShow && dragShadowShow"
+      :canvas-id="canvasId"
+    />
     <!--切换canvas 拖拽阴影部分-->
-    <point-shadow :canvas-id="canvasId" v-if="pointShadowShow"></point-shadow>
+    <point-shadow
+      v-if="pointShadowShow"
+      :canvas-id="canvasId"
+    />
     <!-- 右击菜单 -->
-    <ContextMenu/>
+    <ContextMenu />
 
     <!-- 对齐标线 -->
     <span
@@ -438,6 +451,7 @@ function removeItem(index) {
       }
     })
     this.yourList.splice(index, 1, {})
+    // eslint-disable-next-line
   } catch (e) {
   }
 }
@@ -740,6 +754,7 @@ export default {
     Shape,
     ContextMenu,
     MarkLine,
+    // eslint-disable-next-line
     Area,
     Grid,
     PGrid,
@@ -762,7 +777,7 @@ export default {
     componentData: {
       type: Array,
       require: false,
-      default: []
+      default: () => []
     },
     canvasId: {
       type: String,
@@ -893,18 +908,18 @@ export default {
     moveTabCollisionActive() {
       return this.tabCollisionActiveId
     },
-    pointShadowShow(){
-      return this.canvasId==='canvas-main'
-        && this.curComponent
-        && this.curComponent.canvasId !== 'canvas-main'
-        && this.tabMoveOutComponentId
+    pointShadowShow() {
+      return this.canvasId === 'canvas-main' &&
+        this.curComponent &&
+        this.curComponent.canvasId !== 'canvas-main' &&
+        this.tabMoveOutComponentId
     },
     shadowShow() {
-      return ((this.curComponent
-          && this.curComponent.auxiliaryMatrix
-          && this.curComponent.canvasId === this.canvasId
-          && (this.curComponent.optStatus.dragging || this.curComponent.optStatus.resizing))
-        || (this.dragComponentInfo && this.dragComponentInfo.canvasId ===this.canvasId )) && !this.tabMoveInActive
+      return ((this.curComponent &&
+          this.curComponent.auxiliaryMatrix &&
+          this.curComponent.canvasId === this.canvasId &&
+          (this.curComponent.optStatus.dragging || this.curComponent.optStatus.resizing)) ||
+        (this.dragComponentInfo && this.dragComponentInfo.canvasId === this.canvasId)) && !this.tabMoveInActive
     },
     tabMoveInActive() {
       return this.tabMoveInActiveId
@@ -928,7 +943,9 @@ export default {
       }
     },
     // 挤占式画布设计
+    // eslint-disable-next-line
     coordinates() {
+      // eslint-disable-next-line
       return this.coordinates
     },
     customStyle() {
@@ -1419,7 +1436,7 @@ export default {
             matrixStyleOriginWidth: this.matrixStyle.originWidth,
             matrixStyleOriginHeight: this.matrixStyle.originHeight
           })
-        if(this.canvasId === 'canvas-main'){
+        if (this.canvasId === 'canvas-main') {
           this.$store.commit('setPreviewCanvasScale', {
             scaleWidth: this.scalePointWidth,
             scaleHeight: this.scalePointHeight

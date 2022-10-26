@@ -161,7 +161,7 @@
                   />
                 </span>
                 <span v-if="data.nodeType === 'folder'">
-                  <i class="el-icon-folder" />
+                  <svg-icon icon-class="scene" />
                 </span>
                 <span
                   :class="data.status"
@@ -198,7 +198,7 @@
                       <el-dropdown-item
                         :command="beforeClickEdit('folder', 'new', data, node)"
                       >
-                        <i class="el-icon-folder" />
+                        <svg-icon icon-class="scene" />
                         <span>{{ $t('panel.groupAdd') }}</span>
                       </el-dropdown-item>
                       <el-dropdown-item

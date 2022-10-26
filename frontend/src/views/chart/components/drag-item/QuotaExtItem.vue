@@ -385,6 +385,10 @@ export default {
           this.editCompare()
           break
         case 'percent':
+          // 选择占比，自动将数值格式设置为百分比并保留2位小数
+          this.item.formatterCfg.type = 'percent'
+          this.item.formatterCfg.decimalCount = 2
+
           this.item.compareCalc.type = 'percent'
           this.$emit('onQuotaItemChange', this.item)
           break

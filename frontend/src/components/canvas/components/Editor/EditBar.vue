@@ -319,7 +319,7 @@ export default {
     miniWidth() {
       return this.mobileLayoutStatus ? 1 : 4
     },
-    curCanvasScaleSelf(){
+    curCanvasScaleSelf() {
       return this.curCanvasScaleMap[this.canvasId]
     },
     ...mapState([
