@@ -224,10 +224,11 @@
             <version>1.15.0</version>
         </dependency>
         <!-- kettle及数据源依赖 -->
+        <!-- maven远程库已删除，可从此地址下载：https://gitee.com/dtl/kettle-core/tree/master/lib -->
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
-            <version>8.3.0.18-1112</version>
+            <version>8.3.0.0-371</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -246,7 +247,7 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
-            <version>8.3.0.18-1112</version>
+            <version>8.3.0.0-371</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -269,7 +270,7 @@
         <dependency>
             <groupId>pentaho</groupId>
             <artifactId>metastore</artifactId>
-            <version>8.3.0.18-1112</version>
+            <version>8.3.0.0-371</version>
             <exclusions>
                 <exclusion>
                     <artifactId>guava</artifactId>
