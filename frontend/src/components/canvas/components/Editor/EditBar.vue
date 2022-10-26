@@ -200,7 +200,7 @@ export default {
     },
     sourceElement: {
       type: Object,
-      required: true
+      default: () => {}
     },
     element: {
       type: Object,

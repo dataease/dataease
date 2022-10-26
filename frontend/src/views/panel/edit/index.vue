@@ -811,8 +811,8 @@ export default {
     },
     initEvents() {
       bus.$on('component-on-drag', this.componentOnDrag)
-      // bus.$on('component-dialog-edit', this.editDialog)
-      // bus.$on('button-dialog-edit', this.editButtonDialog)
+      bus.$on('component-dialog-edit', this.editDialog)
+      bus.$on('button-dialog-edit', this.editButtonDialog)
       bus.$on('component-dialog-style', this.componentDialogStyle)
       bus.$on('previewFullScreenClose', this.previewFullScreenClose)
       bus.$on('change_panel_right_draw', this.changeRightDrawOpen)
