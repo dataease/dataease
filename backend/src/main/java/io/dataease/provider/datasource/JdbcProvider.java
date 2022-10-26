@@ -380,7 +380,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 username = mysqlConfiguration.getUsername();
                 password = mysqlConfiguration.getPassword();
-                defaultDriver = "com.mysql.jdbc.Driver";
+                defaultDriver = "com.mysql.cj.jdbc.Driver";
                 jdbcurl = mysqlConfiguration.getJdbc();
                 customDriver = mysqlConfiguration.getCustomDriver();
                 break;
@@ -533,7 +533,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
             case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 dataSource.setUrl(mysqlConfiguration.getJdbc());
-                dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+                dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
                 dataSource.setValidationQuery("select 1");
                 jdbcConfiguration = mysqlConfiguration;
                 break;
