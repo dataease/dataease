@@ -1054,24 +1054,25 @@ public class DataSetTableService {
         return sql;
     }
 
-    public String removeVariables(String sql, String dsType) throws Exception {
+    public String removeVariables(final String sql, String dsType) throws Exception {
+        String tmpSql = sql;
         Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(sql);
+        Matcher matcher = pattern.matcher(tmpSql);
         boolean hasVariables = false;
         while (matcher.find()) {
             hasVariables = true;
-            sql = sql.replace(matcher.group(), SubstitutedParams);
+            tmpSql = tmpSql.replace(matcher.group(), SubstitutedParams);
         }
-        if (!hasVariables && !sql.contains(SubstitutedParams)) {
-            return sql;
+        if (!hasVariables && !tmpSql.contains(SubstitutedParams)) {
+            return tmpSql;
         }
-        CCJSqlParserUtil.parse(sql, parser -> parser.withSquareBracketQuotation(true));
-        Statement statement = CCJSqlParserUtil.parse(sql);
+        CCJSqlParserUtil.parse(tmpSql, parser -> parser.withSquareBracketQuotation(true));
+        Statement statement = CCJSqlParserUtil.parse(tmpSql);
         Select select = (Select) statement;
 
         if (select.getSelectBody() instanceof PlainSelect) {
             return handlePlainSelect((PlainSelect) select.getSelectBody(), select, dsType);
-        }else {
+        } else {
             String result = "";
             SetOperationList setOperationList = (SetOperationList) select.getSelectBody();
             for (int i = 0; i < setOperationList.getSelects().size(); i++) {
@@ -1175,15 +1176,24 @@ public class DataSetTableService {
     }
 
     public Map<String, Object> getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
+        DataTableInfoDTO dataTableInfo = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
+        String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
         Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
         if (ds == null) {
             throw new Exception(Translator.get("i18n_invalid_ds"));
         }
+        String tmpSql = removeVariables(sql, ds.getType());
+        if (dataSetTableRequest.getMode() == 1 && (tmpSql.contains(SubstitutedParams) || tmpSql.contains(SubstitutedSql.trim()))) {
+            throw new Exception(Translator.get("I18N_SQL_variable_direct_limit"));
+        }
+        if (tmpSql.contains(SubstitutedParams)) {
+            throw new Exception(Translator.get("I18N_SQL_variable_limit"));
+        }
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
-        DataTableInfoDTO dataTableInfo = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
-        String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
+
+
         sql = handleVariableDefaultValue(sql, dataSetTableRequest.getSqlVariableDetails(), ds.getType());
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
