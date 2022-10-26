@@ -46,11 +46,10 @@ import { uuid } from 'vue-uuid'
 import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 
 export default {
-  components: { ComponentWrapper, UserViewDialog, CanvasOptBar },
+  components: { ComponentWrapper, CanvasOptBar },
   model: {
     prop: 'show',
     event: 'change'

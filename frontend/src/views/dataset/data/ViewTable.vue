@@ -125,18 +125,26 @@
       </el-tab-pane>
       <el-tab-pane
         v-if="
-          table.mode === 1 && ['api', 'sql', 'db', 'excel'].includes(table.type)
+          table.mode === 1 && ['api', 'sql', 'db'].includes(table.type)
         "
         :label="$t('dataset.update_info')"
         name="updateInfo"
       >
         <update-info
-          v-if="tabActive == 'updateInfo' && table.type !== 'excel'"
+          v-if="tabActive == 'updateInfo'"
           :param="param"
           :table="table"
         />
+      </el-tab-pane>
+      <el-tab-pane
+        v-if="
+          table.mode === 1 && ['excel'].includes(table.type)
+        "
+        :label="$t('dataset.update_records')"
+        name="updateInfo"
+      >
         <update-records
-          v-if="tabActive == 'updateInfo' && table.type === 'excel'"
+          v-if="tabActive == 'updateInfo'"
           :param="param"
           :table="table"
         />

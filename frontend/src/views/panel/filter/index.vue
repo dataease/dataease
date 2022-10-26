@@ -82,7 +82,7 @@ export default {
       'curCanvasScaleMap',
       'componentData'
     ]),
-    curCanvasScaleSelf(){
+    curCanvasScaleSelf() {
       return this.curCanvasScaleMap[this.canvasId]
     },
     searchButtonExist() {

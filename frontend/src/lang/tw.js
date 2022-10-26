@@ -1488,6 +1488,7 @@ export default {
     field_origin_name: '原始名稱',
     field_check: '選中',
     update_info: '更新信息',
+    update_records: '更新記錄',
     join_view: '數據關聯',
     text: '文本',
     time: '時間',
