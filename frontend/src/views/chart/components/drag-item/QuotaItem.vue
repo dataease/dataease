@@ -175,7 +175,10 @@
                   :disabled="disableEditCompare"
                   :command="beforeQuickCalc('setting')"
                 >{{ $t('chart.yoy_label') }}...</el-dropdown-item>
-                <el-dropdown-item :command="beforeQuickCalc('percent')">{{ $t('chart.percent') }}</el-dropdown-item>
+                <el-dropdown-item
+                  :disabled="quotaViews.indexOf(chart.type) > -1"
+                  :command="beforeQuickCalc('percent')"
+                >{{ $t('chart.percent') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -242,6 +245,7 @@ import { getItemType, getOriginFieldName } from '@/views/chart/components/drag-i
 import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
 import bus from '@/utils/bus'
 import { formatterItem } from '@/views/chart/chart/formatter'
+import { quotaViews } from '@/views/chart/chart/util'
 
 export default {
   name: 'QuotaItem',
@@ -277,7 +281,8 @@ export default {
       compareItem: compareItem,
       disableEditCompare: false,
       tagType: 'success',
-      formatterItem: formatterItem
+      formatterItem: formatterItem,
+      quotaViews: quotaViews
     }
   },
   watch: {
