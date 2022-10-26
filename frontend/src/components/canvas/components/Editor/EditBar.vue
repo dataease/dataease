@@ -433,7 +433,6 @@ export default {
       this.$emit('resizeView')
     },
     edit() {
-      console.log('this.curComponent.type', this.curComponent.type)
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit', 'update')
       } else if (this.curComponent.type === 'custom-button') {
