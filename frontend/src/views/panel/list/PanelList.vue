@@ -199,7 +199,7 @@
                         :command="beforeClickEdit('folder', 'new', data, node)"
                       >
                         <svg-icon icon-class="scene" />
-                        <span>{{ $t('panel.groupAdd') }}</span>
+                        <span style="margin-left: 5px">{{ $t('panel.groupAdd') }}</span>
                       </el-dropdown-item>
                       <el-dropdown-item
                         :command="beforeClickEdit('panel', 'new', data, node)"
