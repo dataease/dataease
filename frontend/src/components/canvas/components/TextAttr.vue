@@ -319,7 +319,10 @@
         style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
       >
         <el-tooltip :content="$t('panel.data_format')">
-          <date-format :canvas-id="canvasId" :format-info="curComponent.formatInfo" />
+          <date-format
+            :canvas-id="canvasId"
+            :format-info="curComponent.formatInfo"
+          />
         </el-tooltip>
       </div>
 
@@ -601,7 +604,7 @@ export default {
     showVertical() {
       return !['textSelectGridWidget', 'numberSelectGridWidget'].includes(this.curComponent.serviceName)
     },
-    curCanvasScaleSelf(){
+    curCanvasScaleSelf() {
       return this.curCanvasScaleMap[this.canvasId]
     },
     ...mapState([

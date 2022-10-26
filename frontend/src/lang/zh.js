@@ -1487,6 +1487,7 @@ export default {
     field_origin_name: '原始名称',
     field_check: '选中',
     update_info: '更新信息',
+    update_records: '更新记录',
     join_view: '数据关联',
     text: '文本',
     time: '时间',

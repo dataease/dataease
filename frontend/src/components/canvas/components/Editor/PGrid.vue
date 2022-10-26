@@ -6,8 +6,8 @@
       class="outer-class"
     >
       <div
-        v-for="(xItem, index) in yItem"
-        :key="index+'x'"
+        v-for="(xItem, idx) in yItem"
+        :key="idx+'x'"
         :style="classInfo"
         class="inner-class"
       >

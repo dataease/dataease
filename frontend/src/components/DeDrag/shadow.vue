@@ -10,6 +10,7 @@
 import { mapState } from 'vuex'
 export default {
   replace: true,
+  // eslint-disable-next-line
   name: 'Shadow',
   props: {
     canvasId: {
@@ -18,7 +19,7 @@ export default {
     }
   },
   computed: {
-    curCanvasScaleSelf(){
+    curCanvasScaleSelf() {
       return this.curCanvasScaleMap[this.canvasId]
     },
     styleInfo() {

@@ -39,8 +39,8 @@
                 :is="element.component"
                 v-if="element.type==='custom'"
                 :id="'component' + element.id"
-                :canvas-id="canvasId"
                 ref="deOutWidget"
+                :canvas-id="canvasId"
                 class="component-custom"
                 :out-style="element.style"
                 :is-relation="isRelation"
@@ -59,7 +59,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import inputStyleMixin from '@/components/widget/DeWidget/inputStyleMixin'
 export default {
   name: 'DeOutWidget',

@@ -290,7 +290,7 @@ const data = {
       const filterComponentId = condition.componentId
       const canvasId = data.canvasId
 
-      //过滤时 主画布的过滤组件可以过滤所有的视图
+      // 过滤时 主画布的过滤组件可以过滤所有的视图
       const canvasViewIds = state.componentData.filter(item => item.type === 'view' && (canvasId === 'canvas-main' || item.canvasId === canvasId)).map((itemView) => {
         return itemView.propValue.viewId
       })
@@ -492,7 +492,7 @@ const data = {
       }
     },
     deleteComponent(state) {
-      this.commit('deleteComponentWithId',state.curComponent.id)
+      this.commit('deleteComponentWithId', state.curComponent.id)
     },
     setLinkageInfo(state, targetLinkageInfo) {
       state.linkageSettingStatus = true

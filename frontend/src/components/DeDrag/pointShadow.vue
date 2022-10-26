@@ -4,8 +4,14 @@
     :style="styleInfo"
   >
     <div class="point-shadow-content">
-      <div id="point-shadow-component" class="point-shadow-component"></div>
-      <div class="point-shadow-tips" :style="tipsStyleInfo">
+      <div
+        id="point-shadow-component"
+        class="point-shadow-component"
+      />
+      <div
+        class="point-shadow-tips"
+        :style="tipsStyleInfo"
+      >
         <div style="width: 100%;text-align: center">组件将被移出Tab</div>
       </div>
     </div>
@@ -93,7 +99,6 @@ export default {
   opacity: 0.6;
   background-color: rgba(179, 212, 252);
 }
-
 
 .point-shadow-tips {
   left: 0px;

@@ -1,7 +1,7 @@
 <template>
   <div
-    class="canvas_content"
     :id="canvasDomId"
+    class="canvas_content"
     @drop="handleDrop"
     @dragover="handleDragOver"
     @mousedown="handleMouseDown"
@@ -9,17 +9,26 @@
     @scroll="canvasScroll"
   >
     <slot name="optBar" />
-    <de-editor :canvas-style-data="canvasStyleData"
-               :component-data="componentData"
-               :canvas-id="canvasId"
-               :parent-forbid="parentForbid"
-               :ref="editorRefName"
-               :matrix-count="matrixCountBase"
-               :out-style="outStyle"
-               :scroll-top="scrollTop"
-               @canvasDragging="canvasDragging"
+    <de-editor
+      :ref="editorRefName"
+      :canvas-style-data="canvasStyleData"
+      :component-data="componentData"
+      :canvas-id="canvasId"
+      :parent-forbid="parentForbid"
+      :matrix-count="matrixCountBase"
+      :out-style="outStyle"
+      :scroll-top="scrollTop"
+      @canvasDragging="canvasDragging"
     />
-    <input id="input" ref="files" type="file" accept="image/*" hidden @click="e => {e.target.value = '';}" @change="handleFileChange" >
+    <input
+      id="input"
+      ref="files"
+      type="file"
+      accept="image/*"
+      hidden
+      @click="e => {e.target.value = '';}"
+      @change="handleFileChange"
+    >
     <el-dialog
       v-if="buttonVisible && panelInfo.id"
       :title="(currentWidget && currentWidget.getLeftPanel && currentWidget.getLeftPanel().label ? $t(currentWidget.getLeftPanel().label) : '') + $t('panel.module')"
@@ -80,7 +89,12 @@
       </div>
     </el-dialog>
     <!--矩形样式组件-->
-    <TextAttr v-if="showAttr" :canvas-id="canvasId" :scroll-left="scrollLeft" :scroll-top="scrollTop"/>
+    <TextAttr
+      v-if="showAttr"
+      :canvas-id="canvasId"
+      :scroll-left="scrollLeft"
+      :scroll-top="scrollTop"
+    />
   </div>
 </template>
 
@@ -107,6 +121,35 @@ import FilterDialog from '@/views/panel/filter/filterDialog'
 
 export default {
   components: { FilterDialog, ButtonResetDialog, ButtonDialog, DeEditor },
+  props: {
+    parentForbid: {
+      type: Boolean,
+      require: false,
+      default: true
+    },
+    canvasStyleData: {
+      type: Object,
+      require: true
+    },
+    componentData: {
+      type: Array,
+      require: false,
+      default: () => []
+    },
+    canvasId: {
+      type: String,
+      require: true
+    },
+    canvasPid: {
+      type: String,
+      require: true
+    },
+    mobileLayoutStatus: {
+      type: Boolean,
+      require: false,
+      default: false
+    }
+  },
   data() {
     return {
       // 需要展示属性设置的组件类型
@@ -140,44 +183,15 @@ export default {
       }
     }
   },
-  props: {
-    parentForbid:{
-      type: Boolean,
-      require: false,
-      default: true
-    },
-    canvasStyleData: {
-      type: Object,
-      require: true
-    },
-    componentData: {
-      type: Array,
-      require: false,
-      default: []
-    },
-    canvasId: {
-      type: String,
-      require: true
-    },
-    canvasPid: {
-      type: String,
-      require: true
-    },
-    mobileLayoutStatus: {
-      type: Boolean,
-      require: false,
-      default: false
-    }
-  },
   computed: {
-    matrixCountBase(){
-      if(this.isMainCanvas && this.mobileLayoutStatus){
+    matrixCountBase() {
+      if (this.isMainCanvas && this.mobileLayoutStatus) {
         return this.mobileMatrixCount
-      }else{
+      } else {
         return this.pcMatrixCountBase
       }
     },
-    isMainCanvas(){
+    isMainCanvas() {
       return this.canvasId === 'canvas-main'
     },
     panelInfo() {
@@ -224,7 +238,7 @@ export default {
   watch: {
     mobileLayoutStatus() {
       this.restore()
-    },
+    }
     // //监控当前组件移动 检查是否靠近tab
     // curComponent: {
     //   handler(newVal, oldVla) {
@@ -263,7 +277,7 @@ export default {
         if (domInfo) {
           this.outStyle.height = domInfo.offsetHeight - this.getGap()
           // 临时处理 确保每次restore 有会更新
-          this.outStyle.width = domInfo.offsetWidth  + (Math.random() * 0.000001)
+          this.outStyle.width = domInfo.offsetWidth + (Math.random() * 0.000001)
         }
       })
     },
@@ -570,7 +584,7 @@ export default {
       // const canvasInfoMobile = document.getElementById(this.canvasDomId)
       // canvasInfoMobile.scrollTop = canvasInfoMobile.scrollTop + offset
       // this.$store.commit('setScrollAutoMove', this.scrollAutoMove + offset)
-    },
+    }
   }
 }
 </script>

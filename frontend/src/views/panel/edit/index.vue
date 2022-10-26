@@ -161,21 +161,25 @@
           :modal-append-to-body="true"
         >
           <div style="width: 295px">
-            <filter-group :canvas-id="canvasId" v-show=" show &&showIndex===1"/>
-            <subject-setting v-show=" show &&showIndex===2"/>
-            <assist-component v-show=" show &&showIndex===3"/>
+            <filter-group
+              v-show=" show &&showIndex===1"
+              :canvas-id="canvasId"
+            />
+            <subject-setting v-show=" show &&showIndex===2" />
+            <assist-component v-show=" show &&showIndex===3" />
           </div>
         </el-drawer>
         <!--PC端画布区域-->
-        <de-canvas v-if="!previewVisible&&!mobileLayoutStatus"
-                   class="canvas_main_content"
-                   ref="canvasMainRef"
-                   :canvas-style-data="canvasStyleData"
-                   :component-data="mainCanvasComponentData"
-                   :canvas-id="canvasId"
-                   :canvas-pid="'0'"
+        <de-canvas
+          v-if="!previewVisible&&!mobileLayoutStatus"
+          ref="canvasMainRef"
+          class="canvas_main_content"
+          :canvas-style-data="canvasStyleData"
+          :component-data="mainCanvasComponentData"
+          :canvas-id="canvasId"
+          :canvas-pid="'0'"
         >
-          <canvas-opt-bar slot="optBar"/>
+          <canvas-opt-bar slot="optBar" />
         </de-canvas>
         <!--移动端画布区域 保持宽高比2.5-->
         <el-row
@@ -191,7 +195,7 @@
               :style="customCanvasMobileStyle"
               class="this_mobile_canvas"
             >
-              <el-row class="this_mobile_canvas_top"/>
+              <el-row class="this_mobile_canvas_top" />
               <el-row class="this_mobile_canvas_inner_top">
                 {{ panelInfo.name }}
               </el-row>
@@ -200,15 +204,16 @@
                 class="this_mobile_canvas_main"
                 :style="mobileCanvasStyle"
               >
-                <de-canvas v-if="!previewVisible&&mobileLayoutStatus"
-                           ref="canvasMainRef"
-                           :canvas-style-data="canvasStyleData"
-                           :component-data="mainCanvasComponentData"
-                           :canvas-id="canvasId"
-                           :canvas-pid="'0'"
-                           :mobile-layout-status="true"
+                <de-canvas
+                  v-if="!previewVisible&&mobileLayoutStatus"
+                  ref="canvasMainRef"
+                  :canvas-style-data="canvasStyleData"
+                  :component-data="mainCanvasComponentData"
+                  :canvas-id="canvasId"
+                  :canvas-pid="'0'"
+                  :mobile-layout-status="true"
                 >
-                  <canvas-opt-bar slot="optBar"/>
+                  <canvas-opt-bar slot="optBar" />
                 </de-canvas>
               </el-row>
               <el-row class="this_mobile_canvas_inner_bottom">
@@ -238,7 +243,7 @@
                   />
                 </el-col>
               </el-row>
-              <el-row class="this_mobile_canvas_bottom"/>
+              <el-row class="this_mobile_canvas_bottom" />
             </div>
           </el-col>
           <el-col
@@ -246,7 +251,7 @@
             class="this_mobile_canvas_cell this_mobile_canvas_wait_cell"
             :style="mobileCanvasStyle"
           >
-            <component-wait/>
+            <component-wait />
           </el-col>
         </el-row>
       </de-main-container>
@@ -264,7 +269,7 @@
           />
         </div>
         <div v-if="showBatchViewToolsAside">
-          <chart-style-batch-set/>
+          <chart-style-batch-set />
         </div>
         <div v-if="!showViewToolsAside&&!showBatchViewToolsAside">
           <el-row style="height: 40px">
@@ -280,8 +285,7 @@
           </el-row>
           <el-row>
             <div class="view-selected-message-class">
-              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px"
-              >{{ $t('panel.select_view') }}</span>
+              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.select_view') }}</span>
             </div>
           </el-row>
         </div>
@@ -441,8 +445,7 @@
           />
         </el-col>
         <el-col :span="21">
-          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px"
-          >{{ $t('panel.panel_cache_use_tips') }}</span>
+          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.panel_cache_use_tips') }}</span>
         </el-col>
       </el-row>
       <div
@@ -474,7 +477,6 @@ import { addClass, removeClass } from '@/utils'
 import FilterGroup from '../filter'
 import SubjectSetting from '../SubjectSetting'
 import bus from '@/utils/bus'
-import Editor from '@/components/canvas/components/Editor/index'
 import { deepCopy, getNowCanvasComponentData, imgUrlTrans, matrixBaseChange } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
@@ -507,7 +509,6 @@ import ButtonResetDialog from '../filter/ButtonResetDialog'
 import toast from '@/components/canvas/utils/toast'
 import { commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
-import TextAttr from '@/components/canvas/components/TextAttr'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 import ChartEdit from '@/views/chart/view/ChartEdit'
@@ -517,14 +518,12 @@ import Multiplexing from '@/views/panel/ViewSelect/multiplexing'
 import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
 import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
 import eventBus from '@/components/canvas/utils/eventBus'
-import DeEditor from '@/components/canvas/components/Editor/DeEditor'
 import DeCanvas from '@/components/canvas/DeCanvas'
 
 export default {
   name: 'PanelEdit',
   components: {
     DeCanvas,
-    DeEditor,
     Multiplexing,
     ChartStyleBatchSet,
     OuterParamsSet,
@@ -533,7 +532,6 @@ export default {
     DeContainer,
     DeAsideContainer,
     FilterGroup,
-    Editor,
     Toolbar,
     FilterDialog,
     ButtonDialog,
@@ -541,7 +539,6 @@ export default {
     SubjectSetting,
     Preview,
     AssistComponent,
-    TextAttr,
     ChartGroup,
     ChartEdit,
     CanvasOptBar
@@ -935,11 +932,11 @@ export default {
     showPanel(type) {
       if (this.showIndex === -1 || this.showIndex === type) {
         this.$nextTick(() => {
-            if (this.show) {
-              this.showIndex === -1
-            }
-            this.show = !this.show
+          if (this.show) {
+            this.showIndex === -1
           }
+          this.show = !this.show
+        }
         )
       }
       this.showIndex = type
