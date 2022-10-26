@@ -689,7 +689,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 if (StringUtils.isEmpty(sqlServerConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.VIEWS WHERE  TABLE_SCHEMA = 'DS_SCHEMA' ;"
+                return "SELECT TABLE_NAME FROM \"DATABASE\".INFORMATION_SCHEMA.VIEWS WHERE  TABLE_SCHEMA = 'DS_SCHEMA' ;"
                         .replace("DATABASE", sqlServerConfiguration.getDataBase())
                         .replace("DS_SCHEMA", sqlServerConfiguration.getSchema());
             case oracle:

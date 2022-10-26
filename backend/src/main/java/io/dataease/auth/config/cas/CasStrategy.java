@@ -2,6 +2,7 @@ package io.dataease.auth.config.cas;
 
 import io.dataease.auth.service.impl.ShiroServiceImpl;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.ServletUtils;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.util.AntPathMatcher;
@@ -17,7 +18,7 @@ import java.util.Set;
 public class CasStrategy implements UrlPatternMatcherStrategy {
 
 
-    private static Set<String>  releaseTypes = new HashSet<>();
+    private static Set<String> releaseTypes = new HashSet<>();
 
     @PostConstruct
     public void init() {
@@ -25,6 +26,7 @@ public class CasStrategy implements UrlPatternMatcherStrategy {
         releaseTypes.add("link");
         releaseTypes.add("doc");
     }
+
     @Override
     public boolean matches(String s) {
         SystemParameterService service = CommonBeanFactory.getBean(SystemParameterService.class);
@@ -35,10 +37,14 @@ public class CasStrategy implements UrlPatternMatcherStrategy {
         if ((beginIndex = s.indexOf(serverName)) != -1) {
             s = s.substring(beginIndex + serverName.length());
         }
-        if (StringUtils.equals("/", s)) return false;
+        if (StringUtils.equals("/", s)) {
+            if (fromLink(serverName)) return true;
+            return false;
+        }
         if (StringUtils.equals("/login", s)) return false;
         if (StringUtils.startsWith(s, "/cas/callBack")) return false;
         if (StringUtils.equals("/api/auth/deLogout", s)) return true;
+        if (s.startsWith("/link.html")) return true;
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         ShiroServiceImpl shiroService = CommonBeanFactory.getBean(ShiroServiceImpl.class);
         Map<String, String> stringStringMap = shiroService.loadFilterChainDefinitionMap();
@@ -56,5 +62,16 @@ public class CasStrategy implements UrlPatternMatcherStrategy {
     @Override
     public void setPattern(String s) {
 
+    }
+
+    private Boolean fromLink(String serverName) {
+        String referrer = ServletUtils.request().getHeader("referer");
+        if (StringUtils.isBlank(referrer)) return false;
+        int beginIndex = -1;
+        if ((beginIndex = referrer.indexOf(serverName)) != -1) {
+            referrer = referrer.substring(beginIndex + serverName.length());
+            return referrer.startsWith("/link.html");
+        }
+        return false;
     }
 }
