@@ -1300,6 +1300,11 @@ export default {
       background: rgba(31, 35, 41, 0.1);
       color: var(--deTextPrimary, #1f2329);
     }
+
+    &.is-disabled {
+      background: #BBBFC4;
+      color: #fff;
+    }
   }
   .de-top-border {
     border-top: 1px solid rgba(31, 35, 41, 0.15);
