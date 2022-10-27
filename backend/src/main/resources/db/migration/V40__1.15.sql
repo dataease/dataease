@@ -213,7 +213,7 @@ delimiter ;
 DROP FUNCTION IF EXISTS `GET_CHART_VIEW_COPY_NAME`;
 delimiter ;;
 CREATE FUNCTION `GET_CHART_VIEW_COPY_NAME`(chartId varchar(255),pid varchar(255))
-    RETURNS varchar(255) CHARSET utf8mb4
+    RETURNS varchar(255) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
   READS SQL DATA
 BEGIN
 
