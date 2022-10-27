@@ -61,8 +61,8 @@
       v-if="filterVisible && panelInfo.id"
       :title="(currentWidget && currentWidget.getLeftPanel && currentWidget.getLeftPanel().label ? $t(currentWidget.getLeftPanel().label) : '') + $t('panel.module')"
       :visible.sync="filterVisible"
-      custom-class="de-filter-dialog"
-      :append-to-body="true"
+      custom-class="de-filter-dialog min-width-730"
+      append-to-body
       @close="cancelFilter"
     >
       <filter-dialog
@@ -88,13 +88,6 @@
         </span>
       </div>
     </el-dialog>
-    <!--矩形样式组件-->
-    <TextAttr
-      v-if="showAttr"
-      :canvas-id="canvasId"
-      :scroll-left="scrollLeft"
-      :scroll-top="scrollTop"
-    />
   </div>
 </template>
 
@@ -239,13 +232,6 @@ export default {
     mobileLayoutStatus() {
       this.restore()
     }
-    // //监控当前组件移动 检查是否靠近tab
-    // curComponent: {
-    //   handler(newVal, oldVla) {
-    //     // this.restore()
-    //   },
-    //   deep: true
-    // },
   },
   created() {
   },
@@ -301,8 +287,7 @@ export default {
       }
     },
     canvasScroll(e) {
-      this.scrollLeft = e.target.scrollLeft
-      this.scrollTop = e.target.scrollTop
+      this.$emit('canvasScroll', { scrollLeft: e.target.scrollLeft, scrollTop: e.target.scrollTop })
       bus.$emit('onScroll')
     },
     // handleDrop(e) {
@@ -596,5 +581,8 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
   background-size: 100% 100% !important;
+}
+.min-width-730 {
+  min-width: 730px !important;
 }
 </style>

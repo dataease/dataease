@@ -1,12 +1,11 @@
 <template>
   <el-row class="outer-body">
     <!--预览模式-->
-    <MarketPreview
+    <AppMarketPreview
       v-if="previewModel"
-      :preview-id="templatePreviewId"
-      :current-app="currentApp"
+      :template-info="previewItem"
       @closePreview="previewModel=false"
-      @templateApply="templateApply"
+      @appApply="appApply"
     />
     <!--列表模式-->
     <el-row
@@ -32,42 +31,16 @@
         </el-tabs>
       </el-row>
       <el-row v-show="marketActiveTab==='apps'">
-        <el-row
-          v-show="hasResult"
-          id="template-main"
-          v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
-          class="template-main"
-        >
-          <el-col
-            v-for="(templateItem) in currentAppShowList"
-            :key="templateItem.id"
-            style="text-align: center;padding: 24px 12px 0 12px"
-            :style="{width: templateSpan}"
-          >
-            <app-template-item
-              :template="templateItem"
-              :base-url="baseUrl"
-              :width="templateCurWidth"
-              @appPreview="appPreview"
-            />
-          </el-col>
-        </el-row>
-        <el-row
-          v-show="!hasResult"
-          class="custom-position template-main"
-        >
-          <div style="text-align: center">
-            <svg-icon
-              icon-class="no_result"
-              style="font-size: 75px;margin-bottom: 16px"
-            />
-            <br>
-            <span>{{ $t('commons.no_result') }}</span>
-          </div>
-        </el-row>
+        <app-template-content
+          :ref="'appTemplateContent'"
+          class="template-main-content"
+          :show-position="'market-manage'"
+          @previewApp="previewApp"
+          @applyNew="applyNew"
+        />
       </el-row>
       <el-row
-        v-show="marketActiveTab==='apply_logs'"
+        v-if="marketActiveTab==='apply_logs'"
         class="main-log-area template-main"
       >
         <app-template-log class="log-area" />
@@ -123,15 +96,23 @@
         <el-button
           size="mini"
           @click="folderSelectShow=false"
-        >{{ $t('commons.cancel') }}</el-button>
+        >{{ $t('commons.cancel') }}
+        </el-button>
         <el-button
           size="mini"
           type="primary"
           :disabled="!panelForm.name || !panelForm.pid"
           @click="apply"
-        >{{ $t('commons.confirm') }}</el-button>
+        >{{ $t('commons.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
+
+    <keep-alive>
+      <app-template-apply
+        ref="templateApply"
+      />
+    </keep-alive>
   </el-row>
 </template>
 
@@ -139,16 +120,18 @@
 import { searchAppTemplate } from '@/api/appTemplateMarket'
 import { groupTree, panelSave } from '@/api/panel/panel'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
-import MarketPreview from '@/views/panel/appTemplateMarket/component/MarketPreview'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import AppTemplateItem from '@/views/panel/appTemplateMarket/component/AppTemplateItem'
 import AppTemplateLog from '@/views/panel/appTemplateMarket/log'
+import AppTemplateContent from '@/views/panel/appTemplate/AppTemplateContent'
+import AppMarketPreview from '@/views/panel/appTemplateMarket/component/AppMarketPreview'
+import AppTemplateApply from '@/views/panel/appTemplate/component/AppTemplateApply'
 
 export default {
   name: 'AppTemplateMarket',
-  components: { AppTemplateLog, AppTemplateItem, MarketPreview },
+  components: { AppTemplateApply, AppMarketPreview, AppTemplateContent, AppTemplateLog },
   data() {
     return {
+      previewItem: null,
       hasResult: true,
       templateMiniWidth: 330,
       templateCurWidth: 310,
@@ -194,11 +177,8 @@ export default {
       }
     }
   },
-  computed: {
-
-  },
-  watch: {
-  },
+  computed: {},
+  watch: {},
   mounted() {
     this.initMarketTemplate()
     this.getGroupTree()
@@ -215,6 +195,24 @@ export default {
     })
   },
   methods: {
+    applyNew(item) {
+      const datasourceInfo = JSON.parse(item.datasourceInfo)[0]
+      const param = {
+        datasourceType: datasourceInfo.type,
+        appTemplateId: item.id,
+        appTemplateName: item.name,
+        panelName: item.name,
+        datasetGroupName: item.name
+      }
+      this.$refs.templateApply.init(param)
+    },
+    appApply() {
+      this.applyNew(this.previewItem)
+    },
+    previewApp(item) {
+      this.previewModel = true
+      this.previewItem = item
+    },
     initMarketTemplate() {
       searchAppTemplate({ nodeType: 'folder' }).then(rsp => {
         this.currentAppShowList = rsp.data
@@ -280,109 +278,120 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .template-main{
-    text-align: center;
-    border-radius: 4px;
-    padding: 0 12px 24px 12px;
-    height: calc(100vh - 190px)!important;
-    overflow-x: hidden;
-    overflow-y: auto;
-    background-color: var(--ContentBG,#ffffff);
-  }
-  .market-main{
-    padding:24px
-  }
-  .title-left{
-    float: left;
-    font-size: 20px;
-    font-weight: 500;
-    line-height: 28px;
-    color: var(--TextPrimary, #1F2329);
-  }
-  .title-right{
-    float: right;
-    width: 320px;
-  }
-  .dialog-footer-self{
-    text-align: right;
-  }
-  .search-button-self{
-    text-align: left;
-    padding-left: 10px;
-  }
+.template-main-content {
+  height: calc(100vh - 190px) !important;
+}
 
-  .topbar-icon-active {
-    cursor: pointer;
-    transition: .1s;
-    border-radius: 3px;
-    font-size: 22px;
-    background-color: rgb(245, 245, 245);
+.template-main {
+  text-align: center;
+  border-radius: 4px;
+  padding: 0 12px 24px 12px;
+  height: calc(100vh - 190px) !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: var(--ContentBG, #ffffff);
+}
+
+.market-main {
+  padding: 24px
+}
+
+.title-left {
+  float: left;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  color: var(--TextPrimary, #1F2329);
+}
+
+.title-right {
+  float: right;
+  width: 320px;
+}
+
+.dialog-footer-self {
+  text-align: right;
+}
+
+.search-button-self {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.topbar-icon-active {
+  cursor: pointer;
+  transition: .1s;
+  border-radius: 3px;
+  font-size: 22px;
+  background-color: rgb(245, 245, 245);
 
   &:active {
-     color: #000;
-     border-color: #3a8ee6;
-     background-color: red;
-     outline: 0;
-   }
+    color: #000;
+    border-color: #3a8ee6;
+    background-color: red;
+    outline: 0;
+  }
 
   &:hover {
-     background-color: rgba(31, 35, 41, 0.1);
-     color: #3a8ee6;
-   }
+    background-color: rgba(31, 35, 41, 0.1);
+    color: #3a8ee6;
   }
-  .custom-position {
-    height: 80vh;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    flex-flow: row nowrap;
-    color: #646A73;
-    font-weight: 400;
-  }
-  .outer-body{
-    width: 100%;
-    height: calc(100vh - 56px);
-    background-color: var(--MainBG,#f5f6f7);
-  }
+}
 
-  .market-dialog-css{
-    ::v-deep .el-form-item__label {
-      width: 100% !important;
-      text-align: left;
-    }
+.custom-position {
+  height: 80vh;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-flow: row nowrap;
+  color: #646A73;
+  font-weight: 400;
+}
 
-    ::v-deep
-    .el-form-item.is-required:not(.is-no-asterisk)
-    > .el-form-item__label:before {
-      display: none;
-    }
+.outer-body {
+  width: 100%;
+  height: calc(100vh - 56px);
+  background-color: var(--MainBG, #f5f6f7);
+}
 
-    ::v-deep
-    .el-form-item.is-required:not(.is-no-asterisk)
-    > .el-form-item__label::after {
-      content: "*";
-      color: #f54a45;
-      margin-left: 2px;
-    }
-
-    ::v-deep .el-form-item__content {
-      margin-left: 0 !important;
-    }
-
-    ::v-deep .vue-treeselect__input{
-      vertical-align:middle;
-    }
+.market-dialog-css {
+  ::v-deep .el-form-item__label {
+    width: 100% !important;
+    text-align: left;
   }
 
-.main-log-area{
+  ::v-deep
+  .el-form-item.is-required:not(.is-no-asterisk)
+  > .el-form-item__label:before {
+    display: none;
+  }
+
+  ::v-deep
+  .el-form-item.is-required:not(.is-no-asterisk)
+  > .el-form-item__label::after {
+    content: "*";
+    color: #f54a45;
+    margin-left: 2px;
+  }
+
+  ::v-deep .el-form-item__content {
+    margin-left: 0 !important;
+  }
+
+  ::v-deep .vue-treeselect__input {
+    vertical-align: middle;
+  }
+}
+
+.main-log-area {
   position: relative;
   padding: 24px;
 }
 
-  .log-area{
-    height: calc(100vh - 240px);
-  }
+.log-area {
+  height: calc(100vh - 240px);
+}
 
 </style>

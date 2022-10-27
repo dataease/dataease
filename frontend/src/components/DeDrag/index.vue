@@ -44,7 +44,6 @@
         @resizeView="resizeView"
         @linkJumpSet="linkJumpSet"
         @boardSet="boardSet"
-        @fieldSelect="fieldSelect"
       />
       <mobile-check-bar
         v-if="mobileCheckBarShow"

@@ -127,9 +127,9 @@ public class PanelGroupService {
     @Resource
     private PanelAppTemplateLogService appTemplateLogService;
     @Resource
-    private ChartGroupService chartGroupService;
-    @Resource
     private DataSetGroupService dataSetGroupService;
+    @Resource
+    private DatasetGroupMapper datasetGroupMapper;
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
@@ -230,6 +230,25 @@ public class PanelGroupService {
         }
         this.removePanelAllCache(panelId);
         return panelId;
+    }
+
+    public void move(PanelGroupRequest request){
+        PanelGroupWithBLOBs panelInfo = panelGroupMapper.selectByPrimaryKey(request.getId());
+        if (panelInfo.getPid().equalsIgnoreCase(request.getPid())) {
+            DataEaseException.throwException(Translator.get("i18n_select_diff_folder"));
+        }
+        // 移动校验
+        if (StringUtils.isNotEmpty(request.getName())) {
+            checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_INSERT, request.getId(), panelInfo.getNodeType());
+        }
+        PanelGroupWithBLOBs record = new PanelGroupWithBLOBs();
+        record.setName(request.getName());
+        record.setId(request.getId());
+        record.setPid(request.getPid());
+        record.setUpdateTime(request.getUpdateTime());
+        record.setUpdateBy(request.getUpdateBy());
+        panelGroupMapper.updateByPrimaryKeySelective(record);
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, sourceType, request.getId(), panelInfo.getPid(), request.getPid(), sourceType);
     }
 
 
@@ -811,12 +830,12 @@ public class PanelGroupService {
     @Transactional(rollbackFor = Exception.class)
     public String appApply(PanelAppTemplateApplyRequest request) throws Exception{
         //仪表板名称校验，数据集分组名称校验，数据源名称校验
-        panelAppTemplateService.nameCheck(request);
+        panelAppTemplateService.nameCheck(request,"add");
 
         String newPanelId = UUIDUtil.getUUIDAsString();
         // 新建数据集分组
         DatasetGroup newDatasetGroup = new DatasetGroup();
-        newDatasetGroup.setPid(request.getDatasetGroupId());
+        newDatasetGroup.setPid(request.getDatasetGroupPid());
         newDatasetGroup.setName(request.getDatasetGroupName());
         newDatasetGroup.setType("group");
         DataSetGroupDTO resultDatasetGroup = dataSetGroupService.save(newDatasetGroup);
@@ -853,7 +872,7 @@ public class PanelGroupService {
 
         panelAppTemplateService.applyViewsField(chartViewFieldsInfo,chartViewsRealMap,datasetsRealMap,datasetFieldsRealMap);
 
-        panelAppTemplateService.applyPanel(panelInfo,chartViewsRealMap,newPanelId, request.getPanelName(), request.getPanelId());
+        panelAppTemplateService.applyPanel(panelInfo,chartViewsRealMap,newPanelId, request.getPanelName(), request.getPanelGroupPid());
 
         panelAppTemplateService.applyPanelView(panelViewsInfo,chartViewsRealMap,newPanelId);
 
@@ -872,5 +891,43 @@ public class PanelGroupService {
         templateLog.setAppTemplateName(appInfo.getName());
         appTemplateLogService.newAppApplyLog(templateLog);
         return newPanelId;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void appEdit(PanelAppTemplateApplyRequest request) throws Exception{
+        long currentTime = System.currentTimeMillis();
+        String userName = AuthUtils.getUser().getUsername();
+        //名称校验，数据集分组名称校验，数据源名称校验
+        panelAppTemplateService.nameCheck(request,"update");
+        //仪表板移动更新名称
+        PanelGroup panelHistoryInfo = panelGroupMapper.selectByPrimaryKey(request.getPanelId());
+        String panelHistoryPid = panelHistoryInfo.getPid();
+        if(panelHistoryPid.equals(request.getPanelGroupPid())){
+            // 未移动
+            checkPanelName(request.getPanelName(), request.getPanelGroupPid(), PanelConstants.OPT_TYPE_UPDATE, request.getPanelId(), "panel");
+        }else{
+            checkPanelName(request.getPanelName(), request.getPanelGroupPid(), PanelConstants.OPT_TYPE_INSERT, null, "panel");
+        }
+        panelHistoryInfo.setName(request.getPanelName());
+        panelHistoryInfo.setPid(request.getPanelGroupPid());
+        panelHistoryInfo.setUpdateBy(userName);
+        panelHistoryInfo.setUpdateTime(currentTime);
+        panelGroupMapper.updateByPrimaryKey(panelHistoryInfo);
+
+        //数据集分组移动,变更
+        DatasetGroup datasetGroupHistoryInfo = datasetGroupMapper.selectByPrimaryKey(request.getDatasetGroupId());
+        DatasetGroup datasetGroup = new DatasetGroup();
+        datasetGroup.setName(request.getDatasetGroupName());
+        datasetGroup.setId(request.getDatasetGroupId());
+        if(datasetGroupHistoryInfo.getPid().equals(request.getDatasetGroupPid())){
+            datasetGroup.setPid(request.getDatasetGroupPid());
+        }
+        dataSetGroupService.checkName(datasetGroup);
+        datasetGroupHistoryInfo.setName(request.getDatasetGroupName());
+        datasetGroupHistoryInfo.setPid(request.getDatasetGroupPid());
+        datasetGroupMapper.updateByPrimaryKey(datasetGroupHistoryInfo);
+
+        //数据源变更
+        panelAppTemplateService.editDatasource(request.getDatasourceList());
     }
 }

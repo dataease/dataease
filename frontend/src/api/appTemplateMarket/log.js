@@ -11,7 +11,7 @@ export function logGrid(page, size, data) {
 
 export function opTypes() {
   return request({
-    url: '/api/log/opTypes',
+    url: '/app/log/opTypes',
     method: 'post',
     loading: true
   })
@@ -19,10 +19,19 @@ export function opTypes() {
 
 export function exportExcel(data) {
   return request({
-    url: '/api/log/export',
+    url: '/app/log/export',
     method: 'post',
     loading: true,
     responseType: 'blob',
     data
+  })
+}
+
+export function deleteLogAndResource(data) {
+  return request({
+    url: '/app/log/deleteLog',
+    method: 'post',
+    data,
+    loading: true
   })
 }

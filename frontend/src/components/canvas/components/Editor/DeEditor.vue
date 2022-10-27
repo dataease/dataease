@@ -942,12 +942,6 @@ export default {
         height: this.outStyle.height + this.scrollTop + 'px !important'
       }
     },
-    // 挤占式画布设计
-    // eslint-disable-next-line
-    coordinates() {
-      // eslint-disable-next-line
-      return this.coordinates
-    },
     customStyle() {
       let style = {
         width: '100%',

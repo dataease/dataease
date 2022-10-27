@@ -10,7 +10,8 @@
           type="primary"
           icon="el-icon-plus"
           @click="applyNew()"
-        >{{ $t('commons.create') }}</deBtn>
+        >{{ $t('commons.create') }}
+        </deBtn>
         <span>&nbsp;</span>
       </el-col>
       <el-col
@@ -33,10 +34,12 @@
           :plain="!!cacheCondition.length"
           icon="iconfont icon-icon-filter"
           @click="filterShow"
-        >{{ $t("user.filter")
-        }}<template v-if="filterTexts.length">
-          ({{ cacheCondition.length }})
-        </template>
+        >{{
+           $t('user.filter')
+         }}
+          <template v-if="filterTexts.length">
+            ({{ cacheCondition.length }})
+          </template>
         </deBtn>
       </el-col>
     </el-row>
@@ -45,7 +48,7 @@
       class="filter-texts"
     >
       <span class="sum">{{ paginationConfig.total }}</span>
-      <span class="title">{{ $t("user.result_one") }}</span>
+      <span class="title">{{ $t('user.result_one') }}</span>
       <el-divider direction="vertical" />
       <i
         v-if="showScroll"
@@ -74,7 +77,8 @@
         class="clear-btn"
         icon="el-icon-delete"
         @click="clearFilter"
-      >{{ $t("user.clear_filter") }}</el-button>
+      >{{ $t('user.clear_filter') }}
+      </el-button>
     </div>
     <div
       id="resize-for-filter"
@@ -82,6 +86,7 @@
       :class="[filterTexts.length ? 'table-container-filter' : '']"
     >
       <grid-table
+        :ref="'grid-table'"
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
         :table-data="data"
         :columns="[]"
@@ -92,23 +97,37 @@
       >
         <el-table-column
           show-overflow-tooltip
-          prop="opType"
-          :label="'数据源'"
+          prop="datasourceName"
+          :label="$t('app_template.datasource')"
         >
           <template #default="{ row }">
-            <span>{{ row.datasourceName }}</span>
+            <span
+              v-if="row.datasourceId && hasDataPermission('use',row.datasourcePrivileges)"
+              class="link-span"
+              @click="goToDatasource(row)"
+            >{{ row.datasourceName }}</span>
+            <span v-else>{{ row.datasourceName }}</span>
           </template>
         </el-table-column>
         <el-table-column
           show-overflow-tooltip
           prop="datasetGroupName"
-          :label="'数据集分组'"
+          :label="$t('app_template.dataset_group')"
         />
         <el-table-column
           show-overflow-tooltip
           prop="panelName"
-          :label="'仪表板'"
-        />
+          :label="$t('app_template.panel')"
+        >
+          <template #default="{ row }">
+            <span
+              v-if="row.panelId && hasDataPermission('use',row.panelPrivileges)"
+              class="link-span"
+              @click="goPanel(row)"
+            >{{ row.panelName }}</span>
+            <span v-else>{{ row.panelName }}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           show-overflow-tooltip
           prop="appName"
@@ -124,6 +143,31 @@
             <span>{{ scope.row.applyTime | timestampFormatDate }}</span>
           </template>
         </el-table-column>
+        <el-table-column
+          v-if="optShow"
+          slot="__operation"
+          :label="$t('commons.operating')"
+          fixed="right"
+          :width="operateWidth"
+        >
+          <template slot-scope="scope">
+            <el-button
+              v-permission="['appLog:edit']"
+              class="de-text-btn mr2"
+              type="text"
+              @click="editApply(scope.row)"
+            >{{ $t('commons.edit') }}
+            </el-button>
+            <el-button
+              v-if="scope.row.id !== 1"
+              v-permission="['appLog:del']"
+              class="de-text-btn"
+              type="text"
+              @click="del(scope.row)"
+            >{{ $t('commons.delete') }}
+            </el-button>
+          </template>
+        </el-table-column>
       </grid-table>
     </div>
     <keep-alive>
@@ -132,6 +176,39 @@
         @search="filterDraw"
       />
     </keep-alive>
+    <keep-alive>
+      <app-template-apply
+        ref="templateEditApply"
+        @closeDraw="closeDraw"
+      />
+    </keep-alive>
+
+    <!--导入templatedialog-->
+    <el-dialog
+      :title="$t('app_template.log_delete_tips')"
+      :visible.sync="deleteConfirmDialog"
+      :show-close="true"
+      width="420px"
+    >
+      <el-row>
+        <el-checkbox
+          v-model="deleteItemInfo.deleteResource"
+          :disabled="!(hasDataPermission('manage',deleteItemInfo.panelPrivileges) &&hasDataPermission('manage',deleteItemInfo.datasetPrivileges) &&hasDataPermission('manage',deleteItemInfo.datasourcePrivileges))"
+        />
+        {{ $t('app_template.log_resource_delete_tips') }}
+      </el-row>
+      <span slot="footer">
+        <el-button
+          size="mini"
+          @click="closeDel"
+        >{{ $t('commons.cancel') }}</el-button>
+        <el-button
+          type="danger"
+          size="mini"
+          @click="confirmDel"
+        >{{ $t('commons.confirm') }}</el-button>
+      </span>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -144,10 +221,13 @@ import {
   addOrder,
   formatOrders
 } from '@/utils/index'
-import { logGrid } from '@/api/appTemplateMarket/log'
+import { deleteLogAndResource, logGrid } from '@/api/appTemplateMarket/log'
+import { findOneWithParent } from '@/api/panel/panel'
+import AppTemplateApply from '@/views/panel/appTemplate/component/AppTemplateApply'
+
 export default {
   name: 'AppTemplateLog',
-  components: { GridTable, filterUser },
+  components: { AppTemplateApply, GridTable, filterUser },
   mixins: [keyEnter],
   props: {
     appTemplateId: {
@@ -162,6 +242,12 @@ export default {
   },
   data() {
     return {
+      optShow: false,
+      deleteConfirmDialog: false,
+      deleteItemInfo: {
+        deleteResource: false
+      },
+      operateWidth: 168,
       columns: [],
       paginationConfig: {
         currentPage: 1,
@@ -194,6 +280,56 @@ export default {
     this.resizeObserver()
   },
   methods: {
+    closeDel() {
+      this.deleteItemInfo = {
+        deleteResource: false
+      }
+      this.deleteConfirmDialog = false
+    },
+    confirmDel() {
+      deleteLogAndResource(this.deleteItemInfo).then(() => {
+        this.closeDel()
+        this.search()
+      })
+    },
+    closeDraw() {
+      this.search()
+    },
+    editApply(item) {
+      const param = {
+        datasourceType: item.datasourceType,
+        logId: item.id,
+        panelId: item.panelId,
+        panelGroupPid: item.panelGroupPid,
+        datasourceId: item.datasourceId,
+        datasetGroupPid: item.datasetGroupPid,
+        datasetGroupId: item.datasetGroupId,
+        datasetGroupName: item.datasetGroupName,
+        panelName: item.panelName,
+        datasourcePrivileges: item.datasourcePrivileges,
+        panelPrivileges: item.panelPrivileges,
+        datasetPrivileges: item.datasetPrivileges
+      }
+      this.$refs.templateEditApply.init(param)
+    },
+    goToDatasource(row) {
+
+    },
+    goPanel(row) {
+      findOneWithParent(row.panelId).then(rsp => {
+        this.$router.push({ name: 'panel', params: rsp.data })
+      })
+    },
+    edit() {
+
+    },
+    del(item) {
+      this.deleteItemInfo = {
+        ...item,
+        deleteResource: false
+      }
+      this.deleteConfirmDialog = true
+    },
     applyNew() {
       this.$emit('applyNew')
     },
@@ -289,6 +425,11 @@ export default {
       logGrid(currentPage, pageSize, param).then((response) => {
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
+        const _this = this
+        _this.optShow = false
+        this.$nextTick(() => {
+          _this.optShow = true
+        })
       })
     }
   }
@@ -301,5 +442,14 @@ export default {
 
 .table-container-filter {
   height: calc(100% - 110px);
+}
+
+.link-span {
+  color: #3370FF;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 </style>
