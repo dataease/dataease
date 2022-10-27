@@ -102,6 +102,13 @@ export function casStatus() {
   })
 }
 
+export function casLoginPage() {
+  return request({
+    url: '/cas/loginPage',
+    method: 'get'
+  })
+}
+
 export function wecomStatus() {
   return request({
     url: '/api/auth/isOpenWecom',
