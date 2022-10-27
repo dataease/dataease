@@ -2571,7 +2571,10 @@ export default {
     tel: '電話：',
     web: '網址：',
     apply: '免费试用申请',
-    more: '更多'
+    more: '更多',
+    weChat_official_account: '微信公眾號',
+    technical_group: '技術交流群',
+    f2c_train: '飛致雲認證'
   },
   kettle: {
     add: '添加 Kettle 服務',
