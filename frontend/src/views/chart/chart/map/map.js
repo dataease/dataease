@@ -95,6 +95,7 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
           chart_option.series[0].label.shadowBlur = 2
           chart_option.series[0].label.showdowColor = customAttr.label.shadowColor
         }
+        chart_option.series[0].itemStyle.emphasis.label.show = customAttr.label.show
       }
       const valueArr = chart.data.series[0].data
       // visualMap

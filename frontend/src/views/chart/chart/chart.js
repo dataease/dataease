@@ -889,7 +889,9 @@ export const BASE_MAP = {
 
         },
         emphasis: {
-
+          label: {
+            show: false
+          }
         }
       }
     }
