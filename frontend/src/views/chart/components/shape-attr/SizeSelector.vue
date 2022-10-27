@@ -17,6 +17,13 @@
         <el-form-item v-show="chart.type==='bar'" :label="'柱边框'" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barBorderValue" show-input :show-input-controls="false" input-size="mini" :min="0" :max="20" @change="changeBarSizeCase" />
         </el-form-item>
+        <el-form-item v-show="chart.type === 'bar'" :label="'边框类型'" class="form-item">
+          <el-select v-model="sizeForm.borderType" @change="changeBarSizeCase">
+            <el-option label="实线" value="solid"></el-option>
+            <el-option label="虚线" value="dashed"></el-option>
+            <el-option label="点" value="dotted"></el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <!-- {{ sizeForm }} -->
       <el-form v-show="chart.type &&(chart.type.includes('bar')||chart.type.includes('line')) " ref="spaceSize" :model="sizeForm" label-width="100px" size="mini">

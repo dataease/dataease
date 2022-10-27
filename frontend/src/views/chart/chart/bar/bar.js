@@ -53,14 +53,16 @@ export function baseBarOption(chart_option, chart, cstyle = {}) {
           },
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-          barBorderRadius: barBorderRadiusArr
+          barBorderRadius: barBorderRadiusArr,
+          borderType: customAttr.size.borderType,
         }
       } else {
         y.itemStyle = {
           color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha),
           barBorderWidth: customAttr.size.barBorderValue,
           barBorderColor: hexColorToRGBA(customAttr.color.borderColors[i % customAttr.color.borderColors.length], customAttr.color.alpha),
-          barBorderRadius: barBorderRadiusArr
+          barBorderRadius: barBorderRadiusArr,
+          borderType: customAttr.size.borderType,
         }
       }
 

@@ -119,6 +119,12 @@
           <el-form-item :label="$t('chart.content_formatter')" class="form-item">
             <el-input v-model="axisForm.axisLabel.formatter" type="textarea" :autosize="{ minRows: 4, maxRows: 4}" @blur="changeXAxisStyle" />
           </el-form-item>
+          <!-- <el-form-item label="区域缩放" class="form-item">
+            <el-radio-group v-model="axisForm.dataZoomType">
+              <el-radio label="inside">内置缩放</el-radio>
+              <el-radio label="slider">滑动缩放</el-radio>
+            </el-radio-group>
+          </el-form-item> -->
         </div>
       </el-form>
     </el-col>

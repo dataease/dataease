@@ -46,6 +46,7 @@ import {
   BASE_LIQUID,
   BASE_CANDLESTICK,
   BASE_BOXPLOT,
+  BASE_SANKEY,
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -76,6 +77,9 @@ import {
 import {
   baseBoxPlotOption,
 } from '../chart/other/boxPlot'
+import {
+  baseSankeyOption
+} from '../chart/other/sankey'
 import {
   basePieOption,
   rosePieOption,
@@ -307,6 +311,9 @@ export default {
         chart_option = baseLiquidOption(JSON.parse(JSON.stringify(BASE_LIQUID)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'boxplot') {
         chart_option = baseBoxPlotOption(JSON.parse(JSON.stringify(BASE_BOXPLOT)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'sankey') {
+        chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
+        // chart_option = BASE_SANKEY
       }
       // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {

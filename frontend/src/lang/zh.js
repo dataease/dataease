@@ -912,6 +912,7 @@ export default {
     chart_line_stack: '堆叠折线图',
     chart_candlestick: '基础K线图',
     chart_boxplot: '基础盒须图',
+    chart_sankey: '基础桑葚图',
     chart_pie: '饼图',
     chart_3Dpie: '3D饼图',
     chart_arcgis_map: '地图',

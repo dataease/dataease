@@ -287,6 +287,13 @@ export const TYPE_CONFIGS = [
   //   title: 'chart.chart_boxplot',
   //   icon: 'boxplot'
   // },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_trend',
+  //   value: 'sankey',
+  //   title: 'chart.chart_sankey',
+  //   icon: 'sankey'
+  // },
 
   {
     render: 'echarts',
