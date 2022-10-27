@@ -2639,9 +2639,7 @@ export default {
     log_resource_delete_tips: 'Delete related resources (irrecoverable after deletion)'
 
   },
-  <<<<<<< pr@dev@fix_oidc_exit_error
-    app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.'
-  },
+
   logout: {
     oidc_logout_error: 'OIDC failed to exit, do you continue to exit DataEase?',
     cas_logout_error: 'The CAS service is abnormal, please contact the administrator!'

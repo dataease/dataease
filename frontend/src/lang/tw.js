@@ -2640,7 +2640,7 @@ export default {
     log_resource_delete_tips: '刪除相關資源（刪除後不可恢復）'
 
   },
- 
+
   logout: {
     oidc_logout_error: 'OIDC退出失敗，是否繼續退出DataEase？',
     cas_logout_error: 'CAS服務異常，請聯系管理員！'
