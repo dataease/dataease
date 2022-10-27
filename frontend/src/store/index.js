@@ -259,6 +259,7 @@ const data = {
       } else {
         state.componentData.push(component)
       }
+      this.commit('setCurComponent', { component: component, index: index ? index : state.componentData.length - 1 })
     },
     removeViewFilter(state, componentId) {
       state.componentData = state.componentData.map(item => {
