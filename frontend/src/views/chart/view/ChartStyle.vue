@@ -123,7 +123,7 @@
           </el-collapse-item>
         </el-collapse>
       </el-row>
-      <el-row>
+      <el-row class="de-collapse-style">
         <span class="padding-lr">{{ $t('chart.module_style') }}</span>
         <el-collapse
           v-model="styleActiveNames"
@@ -476,7 +476,7 @@ export default {
 
 <style lang='scss' scoped>
 .de-collapse-style {
-  .el-collapse-item__header {
+  ::v-deep.el-collapse-item__header {
     height: 34px !important;
     line-height: 34px !important;
     padding: 0 0 0 6px !important;
