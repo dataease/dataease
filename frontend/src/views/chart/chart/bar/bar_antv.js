@@ -93,6 +93,12 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   } else {
     delete options.isStack
   }
+
+  if (chart.type === 'bar-group-stack') {
+    options.groupField = 'group'
+  } else {
+    delete options.groupField
+  }
   // 目前只有百分比堆叠柱状图需要这个属性，先直接在这边判断而不作为参数传过来
   options.isPercent = chart.type === 'percentage-bar-stack'
   // custom color

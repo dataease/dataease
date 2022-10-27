@@ -549,7 +549,7 @@
                     </el-row>
                     <!--group field,use xaxisExt-->
                     <el-row
-                      v-if="view.type === 'bar-group'"
+                      v-if="view.type === 'bar-group' || view.type === 'bar-group-stack'"
                       class="padding-lr"
                     >
                       <span style="width: 80px;text-align: right;">

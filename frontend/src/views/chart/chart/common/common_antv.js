@@ -195,7 +195,7 @@ export function getLabel(chart) {
                 f.formatterCfg.thousandSeparator = false
               }
               res = valueFormatter(param.value, f.formatterCfg)
-            } else if (chart.type === 'bar-group') {
+            } else if (equalsAny(chart.type, 'bar-group', 'bar-group-stack')) {
               const f = yAxis[0]
               if (f.formatterCfg) {
                 res = valueFormatter(param.value, f.formatterCfg)
@@ -350,7 +350,11 @@ export function getTooltip(chart) {
                 }
               }
             } else if (chart.type.includes('group')) {
-              obj = { name: param.category, value: param.value }
+              if (chart.type === 'bar-group') {
+                obj = { name: param.category, value: param.value }
+              } else {
+                obj = { name: param.group, value: param.value }
+              }
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
                 if (f.formatterCfg) {
