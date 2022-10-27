@@ -64,6 +64,7 @@
           :canvas-id="element.id+'-'+item.name"
           class="tab_canvas"
           :class="moveActive ? 'canvas_move_in':''"
+          @canvasScroll="canvasScroll"
         />
         <div style="width: 100%;height:100%">
           <Preview
@@ -193,6 +194,13 @@
       </span>
     </el-dialog>
 
+    <text-attr
+      v-if="showAttr && curComponent.canvasId !== 'canvas-main'"
+      :canvas-id="curComponent.canvasId"
+      :scroll-left="scrollLeft"
+      :scroll-top="scrollTop"
+    />
+
   </div>
 
 </template>
@@ -211,11 +219,16 @@ import { findPanelElementInfo } from '@/api/panel/panel'
 import { getNowCanvasComponentData } from '@/components/canvas/utils/utils'
 import DeCanvasTab from '@/components/canvas/DeCanvas'
 import Preview from '@/components/canvas/components/Editor/Preview'
+import TextAttr from '@/components/canvas/components/TextAttr'
 
 export default {
   name: 'DeTabs',
-  components: { Preview, DeCanvasTab, TabUseList, ViewSelect, DataeaseTabs },
+  components: { TextAttr, Preview, DeCanvasTab, TabUseList, ViewSelect, DataeaseTabs },
   props: {
+    canvasId: {
+      type: String,
+      default: 'canvas-main'
+    },
     element: {
       type: Object,
       default: null
@@ -252,6 +265,20 @@ export default {
   },
   data() {
     return {
+      scrollLeft: 50,
+      scrollTop: 10,
+      // 需要展示属性设置的组件类型
+      showAttrComponent: [
+        'custom',
+        'v-text',
+        'picture-add',
+        'de-tabs',
+        'rect-shape',
+        'de-show-date',
+        'de-video',
+        'de-stream-media',
+        'de-frame'
+      ],
       activeTabName: null,
       tabIndex: 1,
       dialogVisible: false,
@@ -264,6 +291,23 @@ export default {
     }
   },
   computed: {
+    curCanvasScaleSelf() {
+      return this.curCanvasScaleMap[this.canvasId]
+    },
+    showAttr() {
+      if (this.mobileLayoutStatus) {
+        return false
+      } else if (this.curComponent && this.showAttrComponent.includes(this.curComponent.type)) {
+        // 过滤组件有标题才显示
+        if (this.curComponent.type === 'custom' && (!this.curComponent.options.attrs.showTitle || !this.curComponent.options.attrs.title)) {
+          return false
+        } else {
+          return true
+        }
+      } else {
+        return false
+      }
+    },
     moveActive() {
       return this.tabMoveInActiveId && this.tabMoveInActiveId === this.element.id
     },
@@ -285,7 +329,8 @@ export default {
       'curComponent',
       'mobileLayoutStatus',
       'canvasStyleData',
-      'tabMoveInActiveId'
+      'tabMoveInActiveId',
+      'curCanvasScaleMap'
     ]),
     fontColor() {
       return this.element && this.element.style && this.element.style.headFontColor || 'none'
@@ -360,6 +405,16 @@ export default {
     bus.$off('add-new-tab', this.addNewTab)
   },
   methods: {
+    initScroll() {
+      this.scrollLeft = 50
+      this.scrollTop = 10
+    },
+    canvasScroll(scrollInfo) {
+      this.scrollLeft = scrollInfo.scrollLeft + 50
+      this.scrollTop = scrollInfo.scrollTop + 10
+      console.log('scrollInfo=' + JSON.stringify(scrollInfo))
+      bus.$emit('onScroll')
+    },
     tabCanvasComponentData(tabName) {
       const result = getNowCanvasComponentData(this.element.id + '-' + tabName)
       return result
