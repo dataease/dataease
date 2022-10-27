@@ -27,7 +27,7 @@
         v-else-if="componentDataShow && componentDataShow.length===0"
         class="custom-position"
       >
-        {{ $t('panel.panelNull') }}
+        <span v-show="isMainCanvas()">{{ $t('panel.panelNull') }}</span>
       </el-row>
       <div
         v-else
@@ -214,7 +214,7 @@ export default {
       let style = {
         width: '100%'
       }
-      if (this.canvasStyleData.openCommonStyle) {
+      if (this.canvasStyleData.openCommonStyle && this.isMainCanvas()) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
             background: `url(${imgUrlTrans(this.canvasStyleData.panel.imageUrl)}) no-repeat`,
@@ -308,6 +308,9 @@ export default {
     bus.$off('trigger-reset-button', this.triggerResetButton)
   },
   methods: {
+    isMainCanvas() {
+      return this.canvasId === 'canvas-main'
+    },
     triggerResetButton() {
       this.triggerSearchButton(true)
     },
@@ -439,7 +442,7 @@ export default {
       } else {
         this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
       }
-      if (this.canvasId === 'canvas-main') {
+      if (this.isMainCanvas()) {
         this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
       }
       this.handleScaleChange()
