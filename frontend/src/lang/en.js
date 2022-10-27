@@ -1423,6 +1423,7 @@ export default {
     gauge_size_field_delete: 'Dynamic field changed，please edit again',
     chart_group: 'Sub Type',
     chart_bar_group: 'Bar Group',
+    chart_bar_group_stack: 'Group Stack Bar',
     field_dynamic: 'Dynamic',
     aggregation: 'Aggregation',
     filter_between: 'Between',

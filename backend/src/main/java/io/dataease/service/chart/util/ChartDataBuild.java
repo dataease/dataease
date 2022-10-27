@@ -994,4 +994,89 @@ public class ChartDataBuild {
         map.put("tableRow", tableRow);
         return map;
     }
+
+    public static Map<String, Object> transGroupStackDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, List<ChartViewFieldDTO> extStack, List<String[]> data, ChartViewWithBLOBs view, boolean isDrill) {
+        // 堆叠柱状图
+        if (CollectionUtils.isEmpty(xAxisExt)) {
+            return transStackChartDataAntV(xAxis, yAxis, view, data, extStack, isDrill);
+        //  分组柱状图
+        } else if (CollectionUtils.isNotEmpty(xAxisExt) && CollectionUtils.isEmpty(extStack)) {
+            return transBaseGroupDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill);
+        // 分组堆叠柱状图
+        }else {
+            Map<String, Object> map = new HashMap<>();
+
+            List<AxisChartDataAntVDTO> dataList = new ArrayList<>();
+            for (int i1 = 0; i1 < data.size(); i1++) {
+                String[] row = data.get(i1);
+
+                StringBuilder xField = new StringBuilder();
+                if (isDrill) {
+                    xField.append(row[xAxis.size() - 1]);
+                } else {
+                    for (int i = 0; i < xAxisBase.size(); i++) {
+                        if (i == xAxisBase.size() - 1) {
+                            xField.append(row[i]);
+                        } else {
+                            xField.append(row[i]).append("\n");
+                        }
+                    }
+                }
+
+                StringBuilder groupField = new StringBuilder();
+                for (int i = xAxisBase.size(); i < xAxisBase.size() + xAxisExt.size(); i++) {
+                    if (i == xAxisBase.size() + xAxisExt.size() - 1) {
+                        groupField.append(row[i]);
+                    } else {
+                        groupField.append(row[i]).append("\n");
+                    }
+                }
+
+                StringBuilder stackField = new StringBuilder();
+                for (int i = xAxis.size(); i < xAxis.size() + extStack.size(); i++) {
+                    if (i == xAxis.size() + extStack.size() - 1) {
+                        stackField.append(row[i]);
+                    } else {
+                        stackField.append(row[i]).append("\n");
+                    }
+                }
+
+                AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
+                axisChartDataDTO.setField(xField.toString());
+                axisChartDataDTO.setName(xField.toString());
+
+                List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+                List<ChartQuotaDTO> quotaList = new ArrayList<>();
+
+                for (int j = 0; j < xAxis.size(); j++) {
+                    ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                    chartDimensionDTO.setId(xAxis.get(j).getId());
+                    chartDimensionDTO.setValue(row[j]);
+                    dimensionList.add(chartDimensionDTO);
+                }
+                axisChartDataDTO.setDimensionList(dimensionList);
+
+                if (CollectionUtils.isNotEmpty(yAxis)) {
+                    int valueIndex = xAxis.size() + extStack.size();
+                    ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                    chartQuotaDTO.setId(yAxis.get(0).getId());
+                    quotaList.add(chartQuotaDTO);
+                    axisChartDataDTO.setQuotaList(quotaList);
+                    try {
+                        axisChartDataDTO.setValue(StringUtils.isEmpty(row[valueIndex]) ? null : new BigDecimal(row[valueIndex]));
+                    } catch (Exception e) {
+                        axisChartDataDTO.setValue(new BigDecimal(0));
+                    }
+                } else {
+                    axisChartDataDTO.setQuotaList(quotaList);
+                    axisChartDataDTO.setValue(new BigDecimal(0));
+                }
+                axisChartDataDTO.setGroup(groupField.toString());
+                axisChartDataDTO.setCategory(stackField.toString());
+                dataList.add(axisChartDataDTO);
+            }
+            map.put("data", dataList);
+            return map;
+        }
+    }
 }
