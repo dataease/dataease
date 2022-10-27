@@ -4,7 +4,7 @@
       <el-col :span="10">
         <deBtn
           type="primary"
-          icon="el-icon-circle-plus-outline"
+          icon="el-icon-plus"
           @click="() => selectDataset()"
         >{{ $t("dataset.add_task") }}</deBtn>
         <deBtn
