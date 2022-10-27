@@ -157,6 +157,9 @@ export default {
     loadOptions() {
       this.panelId && viewOptions(this.panelId).then(res => {
         this.selectOptions = res.data
+        this.innerValues?.length && this.selectOptions?.length && this.innerValues.filter(viewId => !this.selectOptions.some(option => option.id === viewId)).forEach(item => {
+          this._selectRemoveTag(item)
+        })
         this.init()
       })
     },
@@ -185,7 +188,10 @@ export default {
     },
     _selectClearFun() {
       this.$store.dispatch('task/delPanelViews', this.panelId)
-      const viewIds = JSON.parse(JSON.stringify(this.$store.getters.panelViews[this.panelId]))
+      let viewIds = []
+      if (this.$store.getters.panelViews?.[this.panelId]) {
+        viewIds = JSON.parse(JSON.stringify(this.$store.getters.panelViews[this.panelId]))
+      }
       this.$emit('input', viewIds)
     },
 
