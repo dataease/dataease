@@ -27,7 +27,7 @@ ADD COLUMN `mobile_layout` tinyint(1) NULL DEFAULT 0 COMMENT '启用移动端布
 DROP FUNCTION IF EXISTS `GET_PANEL_WITH_PRIVILEGE_AND_MOBILE`;
 delimiter ;;
 CREATE FUNCTION `GET_PANEL_WITH_PRIVILEGE_AND_MOBILE`(userId longtext,modelType varchar(255),privilegeType varchar(255))
- RETURNS longtext CHARSET utf8
+ RETURNS longtext CHARSET utf8mb4 COLLATE utf8mb4_general_ci
   READS SQL DATA
 BEGIN
 
@@ -73,7 +73,7 @@ delimiter ;
 DROP FUNCTION IF EXISTS `GET_V_AUTH_MODEL_ID_P_USE_MOBILE`;
 delimiter ;;
 CREATE FUNCTION `GET_V_AUTH_MODEL_ID_P_USE_MOBILE`(userId longtext,modelType varchar(255))
- RETURNS longtext CHARSET utf8
+ RETURNS longtext CHARSET utf8mb4 COLLATE utf8mb4_general_ci
   READS SQL DATA
 BEGIN
 
