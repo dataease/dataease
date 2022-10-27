@@ -1511,6 +1511,7 @@ export default {
   color: gray;
   height: 30px;
   width: 100%;
+  text-align: center;
 }
 
 .this_mobile_canvas_bottom {

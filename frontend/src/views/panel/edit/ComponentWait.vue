@@ -6,7 +6,7 @@
     <el-row class="component-wait-main">
       <el-col
         v-for="(config) in pcComponentData"
-        v-if="!config.mobileSelected"
+        v-if="!config.mobileSelected && config.canvasId === 'canvas-main'"
         :id="'wait' + config.id"
         :key="config.id"
         :span="8"
