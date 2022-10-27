@@ -645,6 +645,9 @@ export default {
       if (panelInfo) {
         this.defaultTree()
         this.tree()
+        if (this.editPanel.optType === 'rename' && panelInfo.id === this.$store.state.panel.panelInfo.id) {
+          this.$store.state.panel.panelInfo.name = panelInfo.name
+        }
         // 默认展开 同时点击 新增的节点
         if (
           panelInfo &&
