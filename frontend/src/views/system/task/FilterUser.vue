@@ -127,8 +127,8 @@
     </div>
     <div class="de-foot">
       <deBtn
-        @click="reset"
         secondary
+        @click="reset"
       >{{
         $t("commons.reset")
       }}</deBtn>
