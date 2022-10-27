@@ -10,6 +10,7 @@
       :source-element="sourceConfig"
       :terminal="terminal"
       :element="config"
+      :canvas-id="canvasId"
       :show-position="showPosition"
       @showViewDetails="showViewDetails"
     />
