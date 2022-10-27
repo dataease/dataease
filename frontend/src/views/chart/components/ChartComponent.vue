@@ -44,7 +44,8 @@ import {
   BASE_GRAPH,
   BASE_WORD_CLOUD,
   BASE_LIQUID,
-  BASE_CANDLESTICK
+  BASE_CANDLESTICK,
+  BASE_BOXPLOT,
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -71,7 +72,10 @@ import {
 } from '../chart/line/line'
 import {
   candlestickOption,
-} from '../chart/candlestick/candlestick'
+} from '../chart/other/candlestick'
+import {
+  baseBoxPlotOption,
+} from '../chart/other/boxPlot'
 import {
   basePieOption,
   rosePieOption,
@@ -301,6 +305,8 @@ export default {
         chart_option = basePictorialBarOption(JSON.parse(JSON.stringify(BASE_PICTORIAL_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'liquid') {
         chart_option = baseLiquidOption(JSON.parse(JSON.stringify(BASE_LIQUID)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'boxplot') {
+        chart_option = baseBoxPlotOption(JSON.parse(JSON.stringify(BASE_BOXPLOT)), chart, this.$store.state.canvasStyleData)
       }
       // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {
