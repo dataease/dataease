@@ -134,12 +134,12 @@ export default {
     linkJumpSetShow() {
       return this.curComponent.type === 'view' &&
         !this.jumpExcludeViewType.includes(this.curComponent.propValue.innerType) &&
-        !(this.curComponent.propValue.innerType.includes('table') && this.curComponent.propValue.render === 'echarts')
+        !(this.curComponent.propValue.innerType && this.curComponent.propValue.innerType.includes('table') && this.curComponent.propValue.render === 'echarts')
     },
     linkageSettingShow() {
       return this.curComponent.type === 'view' &&
         !this.linkageExcludeViewType.includes(this.curComponent.propValue.innerType) &&
-        !(this.curComponent.propValue.innerType.includes('table') && this.curComponent.propValue.render === 'echarts')
+        !(this.curComponent.propValue.innerType && this.curComponent.propValue.innerType.includes('table') && this.curComponent.propValue.render === 'echarts')
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
