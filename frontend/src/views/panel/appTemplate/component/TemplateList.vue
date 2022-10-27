@@ -29,12 +29,15 @@
         :class="[{ select: activeTemplate === ele.id }]"
         @click="nodeClick(ele)"
       >
-        <svg-icon
-          style="margin-right: 9px"
-          icon-class="scene"
-        />
+        <img
+          :src="iconImgRul(ele.icon)"
+          style="margin-right: 8px;border-radius: 4px"
+          width="24"
+          height="24"
+        >
         <span>{{ ele.name }}</span>
         <span
+          v-if="showPositionCheck('system-setting')"
           class="more"
           @click.stop
         >
@@ -74,7 +77,7 @@
       </li>
     </ul>
     <deBtn
-      v-if="templateFilterText === ''"
+      v-if="templateFilterText === '' && showPositionCheck('system-setting')"
       style="width: 100%"
       icon="el-icon-plus"
       secondary
@@ -87,12 +90,18 @@
 
 <script>
 import msgCfm from '@/components/msgCfm/index'
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'TemplateList',
   components: {},
   mixins: [msgCfm],
   props: {
+    showPosition: {
+      type: String,
+      required: false,
+      default: 'system-setting'
+    },
     templateType: {
       type: String,
       default: ''
@@ -114,13 +123,6 @@ export default {
   },
   computed: {
     templateListComputed() {
-      // if (!this.templateFilterText)
-      //   return [
-      //     ...this.templateList,
-      //     ...this.templateList,
-      //     ...this.templateList,
-      //     ...this.templateList,
-      //   ];
       if (!this.templateFilterText) return [...this.templateList]
       return this.templateList.filter((ele) =>
         ele.name.includes(this.templateFilterText)
@@ -128,6 +130,12 @@ export default {
     }
   },
   methods: {
+    showPositionCheck(requiredPosition) {
+      return this.showPosition === requiredPosition
+    },
+    iconImgRul(iconUrl) {
+      return imgUrlTrans(iconUrl)
+    },
     clickMore(type, data) {
       switch (type) {
         case 'edit':

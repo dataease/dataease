@@ -105,7 +105,7 @@ ADD COLUMN `copy_id` varchar(255) NULL COMMENT '复制ID' AFTER `copy_from`;
 DROP FUNCTION IF EXISTS `copy_auth`;
 delimiter ;;
 CREATE FUNCTION `copy_auth`(authSource varchar(255),authSourceType varchar(255),authUser varchar(255))
- RETURNS varchar(255) CHARSET utf8mb4
+ RETURNS varchar(255) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
   READS SQL DATA
 BEGIN
 
@@ -256,7 +256,7 @@ delimiter ;
 DROP FUNCTION IF EXISTS `delete_auth_source`;
 delimiter ;;
 CREATE FUNCTION `delete_auth_source`(authSource varchar(255),authSourceType varchar(255))
- RETURNS varchar(255) CHARSET utf8mb4
+ RETURNS varchar(255) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
   READS SQL DATA
 BEGIN
 
@@ -285,7 +285,7 @@ INSERT INTO `sys_menu` VALUES (101, 1, 4, 1, '插件管理', 'system-plugin', 's
 DROP FUNCTION IF EXISTS `GET_CHART_VIEW_COPY_NAME`;
 delimiter ;;
 CREATE FUNCTION `GET_CHART_VIEW_COPY_NAME`(chartId varchar(255),pid varchar(255))
- RETURNS varchar(255) CHARSET utf8mb4
+ RETURNS varchar(255) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
   READS SQL DATA
 BEGIN
 

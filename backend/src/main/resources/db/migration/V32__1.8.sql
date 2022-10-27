@@ -344,7 +344,7 @@ CREATE TABLE `sys_background_image` (
   `base_url` varchar(255) DEFAULT NULL,
   `url` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of sys_background_image
@@ -404,7 +404,7 @@ CREATE TABLE `dataease_code_version` (
   `success` tinyint(1) NOT NULL,
   PRIMARY KEY (`installed_rank`),
   KEY `dataease_version_s_idx` (`success`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of dataease_code_version
@@ -429,7 +429,7 @@ CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `v_history_chart_view` AS
 DROP FUNCTION IF EXISTS `GET_CHART_GROUP_WITH_CHILDREN`;
 delimiter ;;
 CREATE FUNCTION `GET_CHART_GROUP_WITH_CHILDREN`(parentId varchar(8000))
- RETURNS LONGTEXT CHARSET utf8
+ RETURNS LONGTEXT CHARSET utf8mb4 COLLATE utf8mb4_general_ci
   READS SQL DATA
 BEGIN
 

@@ -2625,6 +2625,16 @@ export default {
     search_by_keyword: 'Search by keyword',
     apply_logs: 'Apply logs',
     app_group_delete_tips: 'Are you sure to delete this application category?',
-    app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.'
+    app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.',
+    panel_position: 'Panel position',
+    panel_name: 'Panel name',
+    dataset_group_position: 'Dataset group position',
+    dataset_group_name: 'Dataset name',
+    datasource_info: 'Datasource info',
+    datasource: 'Datasource',
+    dataset_group: 'Dataset group',
+    panel: 'Panel',
+    log_delete_tips: 'Are you sure to delete this application record?',
+    log_resource_delete_tips: 'Delete related resources (irrecoverable after deletion)'
   }
 }

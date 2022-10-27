@@ -2382,7 +2382,7 @@ public class DataSetTableService {
             if (CollectionUtils.isNotEmpty(data)) {
                 jsonArray = data.stream().map(ele -> {
                     Map<String, Object> map = new HashMap<>();
-                    for (int i = 0; i < ele.size(); i++) {
+                    for (int i = 0; i < fieldArray.length; i++) {
                         map.put(fieldArray[i], ele.get(i));
                     }
                     return map;
