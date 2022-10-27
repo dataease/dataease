@@ -7,5 +7,6 @@ import java.util.List;
 
 @Data
 public class AppLogQueryParam extends GridExample {
+    private String userId;
 
 }

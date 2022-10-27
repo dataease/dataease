@@ -21,24 +21,31 @@ import java.util.List;
 @RestController
 @Api(tags = "应用市场：应用日志")
 @ApiSupport(order = 220)
-@RequestMapping("/app/log")
+@RequestMapping("app/log")
 public class AppLogController {
 
     @Resource
-    private AppLogService applogService;
+    private AppLogService appLogService;
 
     @I18n
     @ApiOperation("查询日志")
     @PostMapping("/logGrid/{goPage}/{pageSize}")
     @ApiImplicitParams({
-        @ApiImplicitParam(paramType = "path", name = "goPage", value = "页码", required = true, dataType = "Integer"),
-        @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
-        @ApiImplicitParam(name = "request", value = "查询条件", required = true)
+            @ApiImplicitParam(paramType = "path", name = "goPage", value = "页码", required = true, dataType = "Integer"),
+            @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
     public Pager<List<AppLogGridDTO>> logGrid(@PathVariable int goPage, @PathVariable int pageSize,
                                               @RequestBody KeyGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        return PageUtils.setPageInfo(page, applogService.query(request));
+        return PageUtils.setPageInfo(page, appLogService.query(request));
+    }
+
+
+    @ApiOperation("删除日志和资源")
+    @PostMapping("/deleteLog")
+    public void deleteLogAndResource(@RequestBody AppLogGridDTO request) throws Exception {
+        appLogService.deleteLogAndResource(request);
     }
 
 }

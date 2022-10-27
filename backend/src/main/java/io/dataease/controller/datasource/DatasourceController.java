@@ -86,7 +86,7 @@ public class DatasourceController {
     @PostMapping("/get/{id}")
     public DatasourceDTO getDatasource(@PathVariable String id) throws Exception {
         DatasourceUnionRequest request = new DatasourceUnionRequest();
-        request.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
+        request.setUserId("1");
         request.setId(id);
         List<DatasourceDTO> datasourceList = datasourceService.getDatasourceList(request);
         return CollectionUtils.isNotEmpty(datasourceList) ? datasourceList.get(0) : null;
