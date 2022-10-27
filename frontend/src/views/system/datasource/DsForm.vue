@@ -87,6 +87,7 @@
             >
               <treeselect
                 v-model="attachForm.panelGroupPid"
+                :disabled="!(formType === 'add' ? true : hasDataPermission('manage', outerParams.panelPrivileges))"
                 :clearable="false"
                 :options="panelGroupList"
                 :normalizer="normalizer"
@@ -100,7 +101,10 @@
               :label="$t('app_template.panel_name')"
               prop="panelName"
             >
-              <el-input v-model="attachForm.panelName" />
+              <el-input
+                v-model="attachForm.panelName"
+                :disabled="!(formType === 'add' ? true : hasDataPermission('manage', outerParams.panelPrivileges))"
+              />
             </el-form-item>
             <el-form-item
               :label="$t('app_template.dataset_group_position')"
@@ -108,6 +112,7 @@
             >
               <treeselect
                 v-model="attachForm.datasetGroupPid"
+                :disabled="!(formType === 'add' ? true : hasDataPermission('manage', outerParams.datasetPrivileges))"
                 :clearable="false"
                 :options="datasetGroupList"
                 :normalizer="normalizer"
@@ -121,7 +126,10 @@
               :label="$t('app_template.dataset_group_name')"
               prop="datasetGroupName"
             >
-              <el-input v-model="attachForm.datasetGroupName" />
+              <el-input
+                v-model="attachForm.datasetGroupName"
+                :disabled="!(formType === 'add' ? true : hasDataPermission('manage', outerParams.panelPrivileges))"
+              />
             </el-form-item>
           </el-form>
 
@@ -319,6 +327,7 @@ export default {
   },
   data() {
     return {
+      appMarketEdit: true,
       attachRule: {
         panelName: [
           {
@@ -594,7 +603,8 @@ export default {
         id: this.outerParams.datasourceId,
         showModel: this.outerParams.showModel,
         type: this.outerParams.datasourceType,
-        name: this.outerParams.name
+        name: this.outerParams.name,
+        privileges: this.outerParams.datasourcePrivileges
       }
       this.getPanelGroupTree()
       this.getDatasetGroupTree()

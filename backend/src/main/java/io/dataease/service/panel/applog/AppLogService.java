@@ -1,6 +1,7 @@
 package io.dataease.service.panel.applog;
 
 import com.google.gson.Gson;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.sys.request.KeyGridRequest;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.appTemplateMarket.AppLogGridDTO;
@@ -13,7 +14,6 @@ import io.dataease.service.panel.PanelGroupService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -38,6 +38,7 @@ public class AppLogService {
         GridExample gridExample = request.convertExample();
         gridExample.setExtendCondition(request.getKeyWord());
         AppLogQueryParam logQueryParam = gson.fromJson(gson.toJson(gridExample), AppLogQueryParam.class);
+        logQueryParam.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         List<AppLogGridDTO> voLogs = extAppLogMapper.query(logQueryParam);
         return voLogs;
     }

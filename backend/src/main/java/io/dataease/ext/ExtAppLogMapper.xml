@@ -10,9 +10,17 @@
         <result column="panel_group_pid" property="panelGroupPid"/>
         <result column="dataset_group_pid" property="datasetGroupPid"/>
         <result column="datasource_type" property="datasourceType"/>
+        <result column="dataset_privileges" property="datasetPrivileges"/>
+        <result column="panel_privileges" property="panelPrivileges"/>
+        <result column="datasource_privileges" property="datasourcePrivileges"/>
     </resultMap>
     <select id="query" parameterType="io.dataease.service.panel.applog.AppLogQueryParam" resultMap="BaseResultMapDTO">
-        select * from
+        select
+            logInfo.*,
+            get_auths(logInfo.dataset_group_id,'dataset',#{userId}) as `dataset_privileges`,
+            get_auths(logInfo.panel_id,'panel',#{userId}) as `panel_privileges`,
+            get_auths(logInfo.datasource_id,'link',#{userId}) as `datasource_privileges`
+               from
         (select * from
             (SELECT
             panel_app_template_log.id,

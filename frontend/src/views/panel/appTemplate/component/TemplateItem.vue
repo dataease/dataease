@@ -66,13 +66,13 @@
         <el-row class="market-button-area">
           <el-button
             size="small"
-            style="width: 48%"
+            style="width: 45%"
             @click="templatePreview"
           >{{ $t('panel.preview') }}
           </el-button>
           <el-button
             size="small"
-            style="width: 48%"
+            style="width: 45%"
             type="primary"
             @click="apply"
           >{{ $t('panel.apply') }}

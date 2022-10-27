@@ -40,7 +40,7 @@
         />
       </el-row>
       <el-row
-        v-show="marketActiveTab==='apply_logs'"
+        v-if="marketActiveTab==='apply_logs'"
         class="main-log-area template-main"
       >
         <app-template-log class="log-area" />

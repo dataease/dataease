@@ -86,6 +86,7 @@
       :class="[filterTexts.length ? 'table-container-filter' : '']"
     >
       <grid-table
+        :ref="'grid-table'"
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
         :table-data="data"
         :columns="[]"
@@ -101,7 +102,7 @@
         >
           <template #default="{ row }">
             <span
-              v-if="row.datasourceId"
+              v-if="row.datasourceId && hasDataPermission('use',row.datasourcePrivileges)"
               class="link-span"
               @click="goToDatasource(row)"
             >{{ row.datasourceName }}</span>
@@ -120,7 +121,7 @@
         >
           <template #default="{ row }">
             <span
-              v-if="row.panelId"
+              v-if="row.panelId && hasDataPermission('use',row.panelPrivileges)"
               class="link-span"
               @click="goPanel(row)"
             >{{ row.panelName }}</span>
@@ -143,6 +144,7 @@
           </template>
         </el-table-column>
         <el-table-column
+          v-if="optShow"
           slot="__operation"
           :label="$t('commons.operating')"
           fixed="right"
@@ -150,7 +152,7 @@
         >
           <template slot-scope="scope">
             <el-button
-              v-permission="['user:edit']"
+              v-permission="['appLog:edit']"
               class="de-text-btn mr2"
               type="text"
               @click="editApply(scope.row)"
@@ -158,7 +160,7 @@
             </el-button>
             <el-button
               v-if="scope.row.id !== 1"
-              v-permission="['user:del']"
+              v-permission="['appLog:del']"
               class="de-text-btn"
               type="text"
               @click="del(scope.row)"
@@ -189,7 +191,10 @@
       width="420px"
     >
       <el-row>
-        <el-checkbox v-model="deleteItemInfo.deleteResource" />
+        <el-checkbox
+          v-model="deleteItemInfo.deleteResource"
+          :disabled="!(hasDataPermission('manage',deleteItemInfo.panelPrivileges) &&hasDataPermission('manage',deleteItemInfo.datasetPrivileges) &&hasDataPermission('manage',deleteItemInfo.datasourcePrivileges))"
+        />
         {{ $t('app_template.log_resource_delete_tips') }}
       </el-row>
       <span slot="footer">
@@ -237,6 +242,7 @@ export default {
   },
   data() {
     return {
+      optShow: false,
       deleteConfirmDialog: false,
       deleteItemInfo: {
         deleteResource: false
@@ -299,7 +305,10 @@ export default {
         datasetGroupPid: item.datasetGroupPid,
         datasetGroupId: item.datasetGroupId,
         datasetGroupName: item.datasetGroupName,
-        panelName: item.panelName
+        panelName: item.panelName,
+        datasourcePrivileges: item.datasourcePrivileges,
+        panelPrivileges: item.panelPrivileges,
+        datasetPrivileges: item.datasetPrivileges
       }
       this.$refs.templateEditApply.init(param)
     },
@@ -416,6 +425,11 @@ export default {
       logGrid(currentPage, pageSize, param).then((response) => {
         this.data = response.data.listObject
         this.paginationConfig.total = response.data.itemCount
+        const _this = this
+        _this.optShow = false
+        this.$nextTick(() => {
+          _this.optShow = true
+        })
       })
     }
   }
