@@ -2570,7 +2570,10 @@ export default {
     tel: '电话：',
     web: '网址：',
     apply: '免费试用申请',
-    more: '更多'
+    more: '更多',
+    weChat_official_account: '微信公众号',
+    technical_group: '技术交流群',
+    f2c_train: '飞致云认证'
   },
   kettle: {
     add: '添加 Kettle 服务',

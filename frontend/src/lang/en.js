@@ -2569,7 +2569,10 @@ export default {
     tel: 'Tel:',
     web: 'Web:',
     apply: 'Free Trial Application',
-    more: 'More'
+    more: 'More',
+    weChat_official_account: 'WeChat official account',
+    technical_group: 'Technical exchange group',
+    f2c_train: 'FIT2CLOUD Certification'
   },
   kettle: {
     add: 'Add Kettle',
