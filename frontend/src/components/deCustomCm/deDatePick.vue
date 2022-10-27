@@ -45,7 +45,7 @@ export default {
 
   .el-date-editor {
     padding-left: 12px;
-    width: 100%;
+    width: 100% !important;
   }
 
   .calendar-outlined {
