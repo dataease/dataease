@@ -10,6 +10,8 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
+import io.dataease.exception.DataEaseException;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
@@ -106,6 +108,8 @@ public class XWecomServer {
                 sysUserService.validateExistUser(userId, userMap.get("name").toString(), email);
                 sysUserService.saveWecomCUser(userMap, userId, email);
                 sysUserEntity = authUserService.getUserByWecomId(userId);
+            } else if (sysUserEntity.getEnabled() == 0) {
+                DataEaseException.throwException(Translator.get("i18n_user_is_disable"));
             }
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
             String realPwd = sysUserEntity.getPassword();
