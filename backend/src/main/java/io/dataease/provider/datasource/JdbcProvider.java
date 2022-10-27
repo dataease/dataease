@@ -90,7 +90,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             String tableNamePattern = datasourceRequest.getTable();
             if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mysql.name())){
-                tableNamePattern = String.format(MySQLConstants.KEYWORD_TABLE, tableNamePattern);
+                if(databaseMetaData.getDriverMajorVersion() < 8){
+                    tableNamePattern = String.format(MySQLConstants.KEYWORD_TABLE, tableNamePattern);
+                }
             }
             ResultSet resultSet = databaseMetaData.getColumns(null, "%", tableNamePattern, "%");
             while (resultSet.next()) {
