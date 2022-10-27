@@ -2,11 +2,6 @@
   <div
     :id="canvasDomId"
     class="canvas_content"
-    @drop="handleDrop"
-    @dragover="handleDragOver"
-    @mousedown="handleMouseDown"
-    @mouseup="deselectCurComponent"
-    @scroll="canvasScroll"
   >
     <slot name="optBar" />
     <de-editor

@@ -32,7 +32,7 @@
       </el-col>
       <el-col
         v-show="panel.backgroundType==='image'"
-        span="10"
+        :span="10"
       >
         <el-upload
           action=""

@@ -16,10 +16,6 @@
       },
       className
     ]"
-    @mousedown="elementMouseDown"
-    @touchstart="elementTouchDown"
-    @mouseenter="enter"
-    @mouseleave="leave"
   >
     <div
       v-show="contentDisplay"

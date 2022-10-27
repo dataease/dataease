@@ -781,7 +781,7 @@ export default {
   },
   created() {
     // Global listening for key events
-    listenGlobalKeyDown()
+    // listenGlobalKeyDown()
   },
   mounted() {
     this.initEvents()

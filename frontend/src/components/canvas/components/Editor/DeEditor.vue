@@ -9,8 +9,6 @@
       }
     ]"
     :style="editStyle"
-    @mousedown="handleMouseDown"
-    @scroll="canvasScroll"
   >
     <!-- 网格线 -->
     <Grid

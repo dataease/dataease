@@ -29,20 +29,6 @@
 <script>
 export default {
   name: 'PanelDetailInfo',
-  props: {
-    type: {
-      type: String,
-      required: true
-    },
-    data: {
-      type: Object,
-      required: true
-    },
-    tabStatus: {
-      type: Boolean,
-      required: true
-    }
-  },
   data() {
     return {
       tabActive: 'chart',
