@@ -56,7 +56,7 @@
           </el-dropdown>
         </span>
         <de-canvas-tab
-          v-if="item.content && item.content.type==='canvas' && isEdit"
+          v-if="item.content && item.content.type==='canvas' && isEdit && !mobileLayoutStatus"
           :ref="'canvasTabRef-'+item.name"
           :parent-forbid="true"
           :canvas-style-data="canvasStyleData"
@@ -66,9 +66,11 @@
           :class="moveActive ? 'canvas_move_in':''"
           @canvasScroll="canvasScroll"
         />
-        <div style="width: 100%;height:100%">
+        <div
+          v-if="item.content && item.content.type==='canvas' && (!isEdit || mobileLayoutStatus)"
+          style="width: 100%;height:100%"
+        >
           <Preview
-            v-if="item.content && item.content.type==='canvas' && !isEdit"
             :component-data="tabCanvasComponentData(item.name)"
             :canvas-style-data="canvasStyleData"
             :canvas-id="element.id+'-'+item.name"
@@ -330,7 +332,8 @@ export default {
       'mobileLayoutStatus',
       'canvasStyleData',
       'tabMoveInActiveId',
-      'curCanvasScaleMap'
+      'curCanvasScaleMap',
+      'pcComponentData'
     ]),
     fontColor() {
       return this.element && this.element.style && this.element.style.headFontColor || 'none'
@@ -416,8 +419,12 @@ export default {
       bus.$emit('onScroll')
     },
     tabCanvasComponentData(tabName) {
-      const result = getNowCanvasComponentData(this.element.id + '-' + tabName)
-      return result
+      const tabCanvasId = this.element.id + '-' + tabName
+      if (this.mobileLayoutStatus) {
+        return this.pcComponentData.filter(item => item.canvasId === tabCanvasId)
+      } else {
+        return getNowCanvasComponentData(tabCanvasId)
+      }
     },
     setContentThemeStyle() {
       this.element.options.tabList.forEach(tab => {

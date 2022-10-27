@@ -2625,6 +2625,7 @@ export default {
     search_by_keyword: 'Search by keyword',
     apply_logs: 'Apply logs',
     app_group_delete_tips: 'Are you sure to delete this application category?',
+
     app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.',
     panel_position: 'Panel position',
     panel_name: 'Panel name',
@@ -2636,5 +2637,11 @@ export default {
     panel: 'Panel',
     log_delete_tips: 'Are you sure to delete this application record?',
     log_resource_delete_tips: 'Delete related resources (irrecoverable after deletion)'
+
+  },
+
+  logout: {
+    oidc_logout_error: 'OIDC failed to exit, do you continue to exit DataEase?',
+    cas_logout_error: 'The CAS service is abnormal, please contact the administrator!'
   }
 }
