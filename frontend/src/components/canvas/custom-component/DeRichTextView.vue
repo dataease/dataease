@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="rich-main-class"
-    @dblclick="setEdit"
-  >
+  <div class="rich-main-class" :style="autoStyle" @dblclick="setEdit">
     <Editor
       v-if="editShow"
       :id="tinymceId"
@@ -114,7 +111,7 @@ export default {
       return {
         height: (100 / this.scale) + '%!important',
         width: (100 / this.scale) + '%!important',
-        left: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
+        left: 50 * (1 - 1 / this.scale) + '%', //放大余量 除以 2
         top: 50 * (1 - 1 / this.scale) + '%',
         transform: 'scale(' + this.scale + ')'
       }
@@ -184,6 +181,7 @@ export default {
       ed.insertContent(attachValue)
     },
     onClick(e) {
+      const edInner = tinymce.get(this.tinymceId)
       const node = tinymce.activeEditor.selection.getNode()
       this.resetSelect(node)
     },

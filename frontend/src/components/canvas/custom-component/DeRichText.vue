@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="rich-main-class"
-    @dblclick="setEdit"
-  >
+  <div class="rich-main-class" :style="autoStyle" @dblclick="setEdit">
     <Editor
       v-if="editShow"
       :id="tinymceId"
@@ -86,9 +83,9 @@ export default {
         plugins: 'advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
         // 工具栏
         toolbar: 'undo redo |fontselect fontsizeselect |forecolor backcolor bold italic |underline strikethrough link| formatselect |' +
-            'alignleft aligncenter alignright | bullist numlist |' +
-            ' blockquote subscript superscript removeformat | table image media | fullscreen ' +
-            '| bdmap indent2em lineheight formatpainter axupimgs',
+          'alignleft aligncenter alignright | bullist numlist |' +
+          ' blockquote subscript superscript removeformat | table image media | fullscreen ' +
+          '| bdmap indent2em lineheight formatpainter axupimgs',
         toolbar_location: '/',
         font_formats: '微软雅黑=Microsoft YaHei;宋体=SimSun;黑体=SimHei;仿宋=FangSong;华文黑体=STHeiti;华文楷体=STKaiti;华文宋体=STSong;华文仿宋=STFangsong;Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings',
         fontsize_formats: '12px 14px 16px 18px 20px 22px 24px 28px 32px 36px 48px 56px 72px', // 字体大小
@@ -100,7 +97,7 @@ export default {
     }
   },
   computed: {
-    scale() {
+    scale(){
       return Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight) * this.scaleCoefficient
     },
     editStatus() {
@@ -110,7 +107,7 @@ export default {
       return {
         height: (100 / this.scale) + '%!important',
         width: (100 / this.scale) + '%!important',
-        left: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
+        left: 50 * (1 - 1 / this.scale) + '%', //放大余量 除以 2
         top: 50 * (1 - 1 / this.scale) + '%',
         transform: 'scale(' + this.scale + ')'
       }
@@ -169,37 +166,37 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .rich-main-class {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto!important;
-    position: relative;
-  }
-  ::-webkit-scrollbar {
-    width: 0px!important;
-    height: 0px!important;
-  }
-  ::v-deep ol {
-    display: block!important;
-    list-style-type: decimal;
-    margin-block-start: 1em!important;
-    margin-block-end: 1em!important;
-    margin-inline-start: 0px!important;
-    margin-inline-end: 0px!important;
-    padding-inline-start: 40px!important;
-  }
-  ::v-deep ul {
-    display: block!important;
-    list-style-type: disc;
-    margin-block-start: 1em!important;
-    margin-block-end: 1em!important;
-    margin-inline-start: 0px!important;
-    margin-inline-end: 0px!important;
-    padding-inline-start: 40px!important;
-  }
-  ::v-deep li {
-    display: list-item!important;
-    text-align: -webkit-match-parent!important;
-  }
+.rich-main-class {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto!important;
+  position: relative;
+}
+::-webkit-scrollbar {
+  width: 0px!important;
+  height: 0px!important;
+}
+::v-deep ol {
+  display: block!important;
+  list-style-type: decimal;
+  margin-block-start: 1em!important;
+  margin-block-end: 1em!important;
+  margin-inline-start: 0px!important;
+  margin-inline-end: 0px!important;
+  padding-inline-start: 40px!important;
+}
+::v-deep ul {
+  display: block!important;
+  list-style-type: disc;
+  margin-block-start: 1em!important;
+  margin-block-end: 1em!important;
+  margin-inline-start: 0px!important;
+  margin-inline-end: 0px!important;
+  padding-inline-start: 40px!important;
+}
+::v-deep li {
+  display: list-item!important;
+  text-align: -webkit-match-parent!important;
+}
 </style>
 
