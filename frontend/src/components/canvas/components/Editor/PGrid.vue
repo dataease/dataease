@@ -1,20 +1,17 @@
 <template>
   <div class="grid">
-    <!--    positionBox:{{ positionBox.length }}-->
-    <!--    <div v-for="(yItem, index) in positionBox" v-if="index<positionBox.length-5" :key="index+'y'" style="float: left; width: 105%">-->
     <div
       v-for="(yItem, index) in positionBox"
       :key="index+'y'"
-      style="float: left; width: 105%"
+      class="outer-class"
     >
-      <!--      <div v-for="(xItem, index) in yItem" :key="index+'x'" :style="classInfo" style="float: left; border: 0.2px solid #b3d4fc ;color: #00feff">-->
       <div
-        v-for="(xItem, indx) in yItem"
-        :key="indx+'x'"
+        v-for="(xItem, idx) in yItem"
+        :key="idx+'x'"
         :style="classInfo"
-        style="float: left; border: 0.2px solid #b3d4fc ;"
+        class="inner-class"
       >
-        {{ xItem.el?1:0 }}
+        {{ xItem.el?'.':'' }}
       </div>
     </div>
   </div>
@@ -54,5 +51,12 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
+}
+.outer-class{
+  float: left; width: 105%
+}
+
+.inner-class{
+  float: left; border: 1px solid #b3d4fc ;
 }
 </style>

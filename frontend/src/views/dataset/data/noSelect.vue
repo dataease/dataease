@@ -1,7 +1,7 @@
 <template>
   <el-col style="height: 100%">
     <el-empty
-      style="padding-top: 212px"
+      style="padding-top: 202px"
       :image-size="125"
       :image="errImg"
       :description="$t('deDataset.on_the_left')"

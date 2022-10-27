@@ -125,20 +125,19 @@
         </div>
       </div>
     </div>
-    <div class="foot">
-      <el-button
-        class="btn normal"
+    <div class="de-foot">
+      <deBtn
+        secondary
         @click="reset"
       >{{
         $t("commons.reset")
-      }}</el-button>
-      <el-button
+      }}</deBtn>
+      <deBtn
         type="primary"
-        class="btn"
         @click="search"
       >{{
         $t("commons.adv_search.search")
-      }}</el-button>
+      }}</deBtn>
     </div>
   </el-drawer>
 </template>

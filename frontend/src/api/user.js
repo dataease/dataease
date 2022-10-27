@@ -18,14 +18,16 @@ export function getInfo(token) {
 export function logout() {
   return request({
     url: '/api/auth/logout',
-    method: 'post'
+    method: 'post',
+    hideMsg: true
   })
 }
 
 export function deLogout() {
   return request({
     url: '/api/auth/deLogout',
-    method: 'post'
+    method: 'post',
+    hideMsg: true
   })
 }
 
@@ -100,6 +102,13 @@ export function casStatus() {
   })
 }
 
+export function casLoginPage() {
+  return request({
+    url: '/cas/loginPage',
+    method: 'get'
+  })
+}
+
 export function wecomStatus() {
   return request({
     url: '/api/auth/isOpenWecom',
@@ -117,6 +126,13 @@ export function dingtalkStatus() {
 export function larkStatus() {
   return request({
     url: '/api/auth/isOpenLark',
+    method: 'post'
+  })
+}
+
+export function larksuiteStatus() {
+  return request({
+    url: '/api/auth/isOpenLarksuite',
     method: 'post'
   })
 }

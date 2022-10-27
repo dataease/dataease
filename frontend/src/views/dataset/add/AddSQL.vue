@@ -73,7 +73,6 @@
             {{ $t('deDataset.data_reference') }}
           </el-button>
           <el-button
-            v-if="mode === '1'"
             type="text"
             size="small"
             style="color: #1f2329"
@@ -263,7 +262,7 @@
             :title="dialogTitle"
             :visible.sync="showVariableMgm"
             custom-class="de-user-drawer sql-dataset-drawer"
-            size="840px"
+            size="870px"
             direction="rtl"
           >
             <div class="content">
@@ -703,6 +702,7 @@ export default {
       post('/dataset/table/sqlPreview', {
         dataSourceId: this.dataSource,
         type: 'sql',
+        mode: parseInt(this.mode),
         sqlVariableDetails: JSON.stringify(this.variables),
         info: JSON.stringify({
           sql: Base64.encode(this.sql.trim()),
@@ -868,11 +868,11 @@ export default {
   }
   .content {
     height: 62px;
-    width: 792px;
+    width: 822px;
     border-radius: 4px;
     background: #e1eaff;
     position: relative;
-    padding: 9px 19px 9px 40px;
+    padding: 9px 0 9px 40px;
     font-family: PingFang SC;
     font-size: 14px;
     font-weight: 400;
@@ -1048,7 +1048,7 @@ export default {
     }
 
     .table-sql {
-      height: calc(100% - 64px);
+      height: calc(100% - 54px);
       padding: 18px 25px;
       overflow-y: auto;
       box-sizing: border-box;

@@ -911,6 +911,9 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    solid_color: '纯色',
+    split_gradient: '分离渐变',
+    continuous_gradient: '连续渐变',
     map_center_lost: '图形缺失中心点centroid或center属性，请补全后再试',
     margin_model: '模式',
     margin_model_auto: '自动',
@@ -1438,7 +1441,7 @@ export default {
     params_work: '仅在编辑sql时生效',
     select_year: '选择年',
     sql_variable_limit_1: '1、SQL 变量只能在 WHERE 条件中使用',
-    sql_variable_limit_2: '2、示例：select * from table_name where column_name1=${param_name1} and column_name2 in ${param_name2} ',
+    sql_variable_limit_2: "2、示例：select * from table_name where column_name1='${param_name1}' and column_name2 in '${param_name2}'",
     select_month: '选择月',
     select_date: '选择日期',
     select_time: '选择时间',
@@ -1485,6 +1488,7 @@ export default {
     field_origin_name: '原始名称',
     field_check: '选中',
     update_info: '更新信息',
+    update_records: '更新记录',
     join_view: '数据关联',
     text: '文本',
     time: '时间',
@@ -2363,7 +2367,8 @@ export default {
     channel_email_msg: '邮件提醒',
     channel_wecom_msg: '企业微信',
     channel_dingtalk_msg: '钉钉提醒',
-    channel_lark_msg: '飞书提醒'
+    channel_lark_msg: '飞书提醒',
+    channel_larksuite_msg: '国际飞书'
   },
   denumberrange: {
     label: '数值区间',
@@ -2479,6 +2484,7 @@ export default {
     wecom: '企业微信',
     dingtalk: '钉钉',
     lark: '飞书',
+    larksuite: '国际飞书',
     pixel: '分辨率',
     default: '默认',
     custom: '自定义',
@@ -2621,6 +2627,23 @@ export default {
     search_by_keyword: '通过关键字搜索',
     apply_logs: '应用记录',
     app_group_delete_tips: '确定删除该应用分类吗?',
-    app_group_delete_content: '删除后，该分类中所有的应用模板也将被删除。'
+
+    app_group_delete_content: '删除后，该分类中所有的应用模板也将被删除。',
+    panel_position: '仪表板位置',
+    panel_name: '仪表板名称',
+    dataset_group_position: '数据集分组位置',
+    dataset_group_name: '数据集分组名称',
+    datasource_info: '数据源信息',
+    datasource: '数据源',
+    dataset_group: '数据集分组',
+    panel: '仪表板',
+    log_delete_tips: '确定删除该条应用记录吗？',
+    log_resource_delete_tips: '删除相关资源（删除后不可恢复）'
+
+  },
+
+  logout: {
+    oidc_logout_error: 'OIDC退出失败，是否继续退出DataEase？',
+    cas_logout_error: 'CAS服务异常，请联系管理员！'
   }
 }

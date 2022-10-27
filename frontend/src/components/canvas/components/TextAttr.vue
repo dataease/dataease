@@ -319,7 +319,10 @@
         style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
       >
         <el-tooltip :content="$t('panel.data_format')">
-          <date-format :format-info="curComponent.formatInfo" />
+          <date-format
+            :canvas-id="canvasId"
+            :format-info="curComponent.formatInfo"
+          />
         </el-tooltip>
       </div>
 
@@ -415,6 +418,10 @@ import FrameLinks from '@/components/canvas/components/Editor/FrameLinks'
 export default {
   components: { FrameLinks, DateFormat, VideoLinks, StreamMediaLinks },
   props: {
+    canvasId: {
+      type: String,
+      default: 'canvas-main'
+    },
     scrollLeft: {
       type: Number,
       default: 0
@@ -581,7 +588,7 @@ export default {
     mainStyle() {
       const style = {
         left: (this.getPositionX(this.curComponent.style.left) - this.scrollLeft) + 'px',
-        top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop + 25) + 'px'
+        top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop + 20) + 'px'
       }
       return style
     },
@@ -592,14 +599,17 @@ export default {
       return this.$store.state.curComponent.component
     },
     canvasWidth() {
-      return this.canvasStyleData.width * this.curCanvasScale.scalePointWidth
+      return this.canvasStyleData.width * this.curCanvasScaleSelf.scalePointWidth
     },
     showVertical() {
       return !['textSelectGridWidget', 'numberSelectGridWidget'].includes(this.curComponent.serviceName)
     },
+    curCanvasScaleSelf() {
+      return this.curCanvasScaleMap[this.canvasId]
+    },
     ...mapState([
       'curComponent',
-      'curCanvasScale',
+      'curCanvasScaleMap',
       'canvasStyleData',
       'curActiveTabInner'
     ])
@@ -675,7 +685,7 @@ export default {
     },
     getPositionX(x) {
       let ps = 0
-      ps = (x * this.curCanvasScale.scalePointWidth) + 60
+      ps = (x * this.curCanvasScaleSelf.scalePointWidth) + 60
       // 防止toolbar超出边界
       const xGap = ps + this.mainWidthOffset - this.canvasWidth
       if (xGap > 0) {
@@ -685,7 +695,7 @@ export default {
       }
     },
     getPositionY(y) {
-      return y * this.curCanvasScale.scalePointHeight
+      return y * this.curCanvasScaleSelf.scalePointHeight
     },
     styleChange() {
       this.$store.commit('canvasChange')

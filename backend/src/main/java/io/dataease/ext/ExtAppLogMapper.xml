@@ -7,12 +7,38 @@
         <result column="panel_name" property="panelName"/>
         <result column="dataset_group_name" property="datasetGroupName"/>
         <result column="datasource_name" property="datasourceName"/>
+        <result column="panel_group_pid" property="panelGroupPid"/>
+        <result column="dataset_group_pid" property="datasetGroupPid"/>
+        <result column="datasource_type" property="datasourceType"/>
+        <result column="dataset_privileges" property="datasetPrivileges"/>
+        <result column="panel_privileges" property="panelPrivileges"/>
+        <result column="datasource_privileges" property="datasourcePrivileges"/>
     </resultMap>
     <select id="query" parameterType="io.dataease.service.panel.applog.AppLogQueryParam" resultMap="BaseResultMapDTO">
-        select * from
+        select
+            logInfo.*,
+            get_auths(logInfo.dataset_group_id,'dataset',#{userId}) as `dataset_privileges`,
+            get_auths(logInfo.panel_id,'panel',#{userId}) as `panel_privileges`,
+            get_auths(logInfo.datasource_id,'link',#{userId}) as `datasource_privileges`
+               from
         (select * from
             (SELECT
-            panel_app_template_log.*,
+            panel_app_template_log.id,
+            panel_app_template_log.app_template_id,
+            panel_app_template_log.app_template_name,
+            datasource.id as datasource_id,
+            panel_app_template_log.source_datasource_name,
+            dataset_group.id as dataset_group_id,
+            panel_app_template_log.source_dataset_group_name,
+            panel_group.id as panel_id,
+            panel_app_template_log.source_panel_name,
+            panel_app_template_log.apply_time,
+            panel_app_template_log.apply_persion,
+            panel_app_template_log.is_success,
+            panel_app_template_log.remark,
+            panel_group.pid as panel_group_pid,
+            datasource.type as datasource_type,
+            dataset_group.pid as dataset_group_pid,
             IFNULL(panel_app_template.name,CONCAT(panel_app_template_log.app_template_name,'(Deleted)')) as app_name,
             IFNULL(panel_group.name,CONCAT(panel_app_template_log.source_panel_name,'(Deleted)')) as panel_name,
             IFNULL(dataset_group.name,CONCAT(panel_app_template_log.source_dataset_group_name,'(Deleted)')) as dataset_group_name,

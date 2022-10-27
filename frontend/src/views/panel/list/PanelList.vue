@@ -33,9 +33,9 @@
         <div class="block">
           <el-tree
             ref="default_panel_tree"
-            :data="defaultData"
+            :data="expandedData"
             node-key="id"
-            :highlight-current="activeTree==='system'"
+            :highlight-current="activeTree === 'system'"
             :expand-on-click-node="true"
             :filter-node-method="filterNode"
             @node-click="nodeClick"
@@ -44,31 +44,36 @@
               slot-scope="{ node, data }"
               class="custom-tree-node father"
             >
-              <span style="display: flex; flex: 1 1 0%; width: 0px;">
+              <span style="display: flex; flex: 1 1 0%; width: 0px">
                 <span>
                   <svg-icon
                     v-if="!data.mobileLayout"
-                    :icon-class="'panel-'+data.status"
+                    :icon-class="'panel-' + data.status"
                     class="ds-icon-scene"
                   />
                   <svg-icon
                     v-if="data.mobileLayout"
-                    :icon-class="'panel-mobile-'+data.status"
+                    :icon-class="'panel-mobile-' + data.status"
                     class="ds-icon-scene"
                   />
                 </span>
                 <span
-                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  style="
+                    margin-left: 6px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  "
                   :title="data.name"
                 >{{ data.name }}</span>
               </span>
               <span
-                style="margin-left: 12px;"
+                style="margin-left: 12px"
                 class="child"
                 @click.stop
               >
                 <el-dropdown
-                  v-if="hasDataPermission('manage',data.privileges)"
+                  v-if="hasDataPermission('manage', data.privileges)"
                   trigger="click"
                   size="small"
                   @command="clickMore"
@@ -83,13 +88,13 @@
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
                       icon="el-icon-edit-outline"
-                      :command="beforeClickMore('rename',data,node)"
+                      :command="beforeClickMore('rename', data, node)"
                     >
                       {{ $t('panel.rename') }}
                     </el-dropdown-item>
                     <el-dropdown-item
                       icon="el-icon-delete"
-                      :command="beforeClickMore('delete',data,node)"
+                      :command="beforeClickMore('delete', data, node)"
                     >
                       {{ $t('panel.delete') }}
                     </el-dropdown-item>
@@ -98,6 +103,18 @@
               </span>
             </span>
           </el-tree>
+          <p
+            v-if="defaultData.length > 3"
+            class="default-expansion"
+            @click="defaultExpansion = !defaultExpansion"
+          >
+            {{ defaultExpansion ? '收起' : '展开' }}
+            <i
+              :class="[
+                defaultExpansion ? 'el-icon-arrow-up' : 'el-icon-arrow-down'
+              ]"
+            />
+          </p>
         </div>
       </el-row>
 
@@ -105,7 +122,7 @@
         <span class="header-title">
           {{ $t('panel.panel_list') }}
           <el-button
-            style="float: right;padding-right: 7px;margin-top: -8px"
+            style="float: right; padding-right: 7px; margin-top: -8px"
             icon="el-icon-plus"
             type="text"
             @click="showEditPanel(newFolder)"
@@ -119,7 +136,7 @@
             :default-expanded-keys="expandedArray"
             :data="tData"
             node-key="id"
-            :highlight-current="activeTree==='self'"
+            :highlight-current="activeTree === 'self'"
             :expand-on-click-node="true"
             :filter-node-method="filterNode"
             @node-expand="nodeExpand"
@@ -130,34 +147,39 @@
               slot-scope="{ node, data }"
               class="custom-tree-node-list father"
             >
-              <span style="display: flex; flex: 1 1 0%; width: 0px;">
+              <span style="display: flex; flex: 1 1 0%; width: 0px">
                 <span v-if="data.nodeType === 'panel'">
                   <svg-icon
                     v-if="!data.mobileLayout"
-                    :icon-class="'panel-'+data.status"
+                    :icon-class="'panel-' + data.status"
                     class="ds-icon-scene"
                   />
                   <svg-icon
                     v-if="data.mobileLayout"
-                    :icon-class="'panel-mobile-'+data.status"
+                    :icon-class="'panel-mobile-' + data.status"
                     class="ds-icon-scene"
                   />
                 </span>
                 <span v-if="data.nodeType === 'folder'">
-                  <i class="el-icon-folder" />
+                  <svg-icon icon-class="scene" />
                 </span>
                 <span
                   :class="data.status"
-                  style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
+                  style="
+                    margin-left: 6px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  "
                   :title="data.name"
                 >{{ data.name }}</span>
               </span>
               <span
-                v-if="hasDataPermission('manage',data.privileges)"
+                v-if="hasDataPermission('manage', data.privileges)"
                 class="child"
               >
                 <span
-                  v-if="data.nodeType ==='folder'"
+                  v-if="data.nodeType === 'folder'"
                   @click.stop
                 >
                   <el-dropdown
@@ -173,11 +195,15 @@
                       />
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item :command="beforeClickEdit('folder','new',data,node)">
-                        <i class="el-icon-folder" />
-                        <span>{{ $t('panel.groupAdd') }}</span>
+                      <el-dropdown-item
+                        :command="beforeClickEdit('folder', 'new', data, node)"
+                      >
+                        <svg-icon icon-class="scene" />
+                        <span style="margin-left: 5px">{{ $t('panel.groupAdd') }}</span>
                       </el-dropdown-item>
-                      <el-dropdown-item :command="beforeClickEdit('panel','new',data,node)">
+                      <el-dropdown-item
+                        :command="beforeClickEdit('panel', 'new', data, node)"
+                      >
                         <svg-icon
                           icon-class="panel"
                           class="ds-icon-scene"
@@ -188,7 +214,7 @@
                   </el-dropdown>
                 </span>
                 <span
-                  v-if="data.nodeType==='panel'"
+                  v-if="data.nodeType === 'panel'"
                   @click.stop
                 >
                   <el-button
@@ -199,7 +225,7 @@
                   />
                 </span>
                 <span
-                  style="margin-left: 12px;"
+                  style="margin-left: 12px"
                   @click.stop
                 >
                   <el-dropdown
@@ -216,56 +242,56 @@
                     </span>
                     <el-dropdown-menu slot="dropdown">
                       <el-dropdown-item
-                        v-if="data.nodeType==='panel'"
+                        v-if="data.nodeType === 'panel'"
                         icon="el-icon-edit"
-                        :command="beforeClickMore('edit',data,node)"
+                        :command="beforeClickMore('edit', data, node)"
                       >
                         {{ $t('panel.edit') }}
                       </el-dropdown-item>
                       <el-dropdown-item
-                        v-if="data.nodeType==='panel'"
+                        v-if="data.nodeType === 'panel'"
                         icon="el-icon-share"
-                        :command="beforeClickMore('share',data,node)"
+                        :command="beforeClickMore('share', data, node)"
                       >
                         {{ $t('panel.share') }}
                       </el-dropdown-item>
                       <el-dropdown-item
-                        v-if="data.nodeType==='panel'"
+                        v-if="data.nodeType === 'panel'"
                         icon="el-icon-document-copy"
-                        :command="beforeClickMore('copy',data,node)"
+                        :command="beforeClickMore('copy', data, node)"
                       >
                         {{ $t('panel.copy') }}
                       </el-dropdown-item>
                       <el-dropdown-item
                         icon="el-icon-right"
-                        :command="beforeClickMore('move',data,node)"
+                        :command="beforeClickMore('move', data, node)"
                       >
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
                       <el-dropdown-item
-                        v-if="data.nodeType==='panel'"
+                        v-if="data.nodeType === 'panel'"
                         icon="el-icon-paperclip"
-                        :command="beforeClickMore('link',data,node)"
+                        :command="beforeClickMore('link', data, node)"
                       >
                         {{ $t('panel.create_public_links') }}
                       </el-dropdown-item>
                       <el-dropdown-item
-                        v-if="data.nodeType==='panel'"
+                        v-if="data.nodeType === 'panel'"
                         :disabled="data.isDefault"
                         icon="el-icon-copy-document"
-                        :command="beforeClickMore('toDefaultPanel',data,node)"
+                        :command="beforeClickMore('toDefaultPanel', data, node)"
                       >
                         {{ $t('panel.to_default_panel') }}
                       </el-dropdown-item>
                       <el-dropdown-item
                         icon="el-icon-edit-outline"
-                        :command="beforeClickMore('rename',data,node)"
+                        :command="beforeClickMore('rename', data, node)"
                       >
                         {{ $t('panel.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item
                         icon="el-icon-delete"
-                        :command="beforeClickMore('delete',data,node)"
+                        :command="beforeClickMore('delete', data, node)"
                       >
                         {{ $t('panel.delete') }}
                       </el-dropdown-item>
@@ -305,7 +331,9 @@
           <el-button
             size="mini"
             @click="close()"
-          >{{ $t('panel.cancel') }}</el-button>
+          >{{
+            $t('panel.cancel')
+          }}</el-button>
           <el-button
             type="primary"
             size="mini"
@@ -379,7 +407,9 @@
           <el-button
             size="mini"
             @click="closeMoveGroup()"
-          >{{ $t('dataset.cancel') }}</el-button>
+          >{{
+            $t('dataset.cancel')
+          }}</el-button>
           <el-button
             :disabled="groupMoveConfirmDisabled"
             type="primary"
@@ -399,11 +429,17 @@ import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
-import { addGroup, delGroup, groupTree, defaultTree, initPanelData, panelUpdate, viewPanelLog } from '@/api/panel/panel'
-import { mapState } from 'vuex'
 import {
-  DEFAULT_COMMON_CANVAS_STYLE_STRING
-} from '@/views/panel/panel'
+  addGroup,
+  delGroup,
+  groupTree,
+  defaultTree,
+  initPanelData,
+  panelUpdate,
+  viewPanelLog
+} from '@/api/panel/panel'
+import { mapState } from 'vuex'
+import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
 import TreeSelector from '@/components/TreeSelector'
 import { queryAuthModel } from '@/api/authModel/authModel'
 
@@ -413,10 +449,8 @@ export default {
   data() {
     return {
       responseSource: 'panelQuery',
-      clearLocalStorage: [
-        'chart-tree',
-        'dataset-tree'
-      ],
+      defaultExpansion: false,
+      clearLocalStorage: ['chart-tree', 'dataset-tree'],
       historyRequestId: null,
       lastActiveNode: null, // 激活的节点 在这个节点下面动态放置子节点
       lastActiveNodeData: null,
@@ -490,15 +524,27 @@ export default {
       },
       groupFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'blur' }
+          {
+            required: true,
+            message: this.$t('commons.input_content'),
+            trigger: 'blur'
+          }
         ]
       },
       tableFormRules: {
         name: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'blur' }
+          {
+            required: true,
+            message: this.$t('commons.input_content'),
+            trigger: 'blur'
+          }
         ],
         mode: [
-          { required: true, message: this.$t('commons.input_content'), trigger: 'blur' }
+          {
+            required: true,
+            message: this.$t('commons.input_content'),
+            trigger: 'blur'
+          }
         ]
       },
       moveGroup: false,
@@ -514,19 +560,19 @@ export default {
         all: this.$t('commons.all'),
         folder: this.$t('commons.folder')
       },
-      initLocalStorage: [
-        'chart',
-        'dataset'
-      ]
+      initLocalStorage: ['chart', 'dataset']
     }
   },
   computed: {
     panelDialogTitle() {
       return this.editPanel.titlePre + this.editPanel.titleSuf
     },
-    ...mapState([
-      'nowPanelTrackInfo'
-    ])
+    expandedData() {
+      return this.defaultExpansion
+        ? this.defaultData
+        : this.defaultData.slice(0, 3)
+    },
+    ...mapState(['nowPanelTrackInfo'])
   },
   watch: {
     // 切换展示页面后 重新点击一下当前节点
@@ -558,7 +604,11 @@ export default {
       this.responseSource = routerParam.responseSource
       this.lastActiveNode = routerParam
       this.tree()
-    } else if (routerParam && routerParam.nodeType === 'panel' && this.historyRequestId !== routerParam.requestId) {
+    } else if (
+      routerParam &&
+      routerParam.nodeType === 'panel' &&
+      this.historyRequestId !== routerParam.requestId
+    ) {
       this.historyRequestId = routerParam.requestId
       this.tree()
       this.edit(routerParam, null)
@@ -569,7 +619,7 @@ export default {
   methods: {
     fromAppActive() {
       this.activeNodeAndClickOnly(this.lastActiveNode)
-      this.clearLocalStorage.forEach(item => {
+      this.clearLocalStorage.forEach((item) => {
         localStorage.removeItem(item)
       })
       this.responseSource = 'panelQuery'
@@ -582,9 +632,9 @@ export default {
     },
     initCache() {
       // 初始化时提前加载视图和数据集的缓存
-      this.initLocalStorage.forEach(item => {
+      this.initLocalStorage.forEach((item) => {
         if (!localStorage.getItem(item + '-tree')) {
-          queryAuthModel({ modelType: item }, false).then(res => {
+          queryAuthModel({ modelType: item }, false).then((res) => {
             localStorage.setItem(item + '-tree', JSON.stringify(res.data))
           })
         }
@@ -596,7 +646,11 @@ export default {
         this.defaultTree()
         this.tree()
         // 默认展开 同时点击 新增的节点
-        if (panelInfo && panelInfo.panelType === 'self' && this.lastActiveNodeData.id) {
+        if (
+          panelInfo &&
+          panelInfo.panelType === 'self' &&
+          this.lastActiveNodeData.id
+        ) {
           if (this.editPanel.optType === 'rename') {
             this.lastActiveNodeData.name = panelInfo.name
             return
@@ -692,10 +746,10 @@ export default {
     },
     beforeClickEdit(type, optType, data, node) {
       return {
-        'type': type,
-        'data': data,
-        'node': node,
-        'optType': optType
+        type: type,
+        data: data,
+        node: node,
+        optType: optType
       }
     },
 
@@ -726,10 +780,10 @@ export default {
 
     beforeClickMore(optType, data, node) {
       return {
-        'type': data.nodeType,
-        'data': data,
-        'node': node,
-        'optType': optType
+        type: data.nodeType,
+        data: data,
+        node: node,
+        optType: optType
       }
     },
 
@@ -750,7 +804,7 @@ export default {
     saveGroup(group) {
       this.$refs['groupForm'].validate((valid) => {
         if (valid) {
-          addGroup(group).then(res => {
+          addGroup(group).then((res) => {
             this.close()
             this.$message({
               message: this.$t('commons.save_success'),
@@ -776,19 +830,20 @@ export default {
         confirmButtonText: this.$t('panel.confirm'),
         cancelButtonText: this.$t('panel.cancel'),
         type: 'warning'
-      }).then(() => {
-        delGroup(data.id).then(response => {
-          this.$message({
-            type: 'success',
-            message: this.$t('panel.delete_success'),
-            showClose: true
-          })
-          this.clearCanvas()
-          this.tree()
-          this.defaultTree()
-        })
-      }).catch(() => {
       })
+        .then(() => {
+          delGroup(data.id).then((response) => {
+            this.$message({
+              type: 'success',
+              message: this.$t('panel.delete_success'),
+              showClose: true
+            })
+            this.clearCanvas()
+            this.tree()
+            this.defaultTree()
+          })
+        })
+        .catch(() => {})
     },
 
     clearCanvas() {
@@ -815,11 +870,11 @@ export default {
     },
     tree(cache = false) {
       const modelInfo = localStorage.getItem('panel-main-tree')
-      const userCache = (modelInfo && cache)
+      const userCache = modelInfo && cache
       if (userCache) {
         this.tData = JSON.parse(modelInfo)
       }
-      groupTree(this.groupForm, !userCache).then(res => {
+      groupTree(this.groupForm, !userCache).then((res) => {
         localStorage.setItem('panel-main-tree', JSON.stringify(res.data))
         if (!userCache) {
           this.tData = res.data
@@ -839,12 +894,12 @@ export default {
         panelType: 'system'
       }
       const modelInfo = localStorage.getItem('panel-default-tree')
-      const userCache = (modelInfo && cache)
+      const userCache = modelInfo && cache
 
       if (userCache) {
         this.defaultData = JSON.parse(modelInfo)
       }
-      defaultTree(requestInfo, false).then(res => {
+      defaultTree(requestInfo, false).then((res) => {
         localStorage.setItem('panel-default-tree', JSON.stringify(res.data))
         if (!userCache) {
           this.defaultData = res.data
@@ -865,7 +920,7 @@ export default {
         // 清理pc布局缓存
         this.$store.commit('setComponentDataCache', null)
         initPanelData(data.id, false, function(response) {
-          viewPanelLog({ panelId: data.id }).then(res => {
+          viewPanelLog({ panelId: data.id }).then((res) => {
             bus.$emit('set-panel-show-type', 0)
             data.mobileLayout = response.data.mobileLayout
           })
@@ -889,7 +944,7 @@ export default {
     },
     beforeClickAddData(type) {
       return {
-        'type': type
+        type: type
       }
     },
 
@@ -930,15 +985,13 @@ export default {
     },
     resetID(data) {
       if (data) {
-        data.forEach(item => {
+        data.forEach((item) => {
           item.type !== 'custom' && (item.id = uuid.v1())
         })
       }
       return data
     },
-    newPanelSave(id) {
-
-    },
+    newPanelSave(id) {},
     // 激活并点击当前节点
     activeNodeAndClick(panelInfo) {
       if (panelInfo) {
@@ -979,10 +1032,13 @@ export default {
     moveTo(data) {
       const _this = this
       this.moveInfo = data
-      this.moveDialogTitle = this.$t('dataset.m1') + (data.name.length > 10 ? (data.name.substr(0, 10) + '...') : data.name) + this.$t('dataset.m2')
+      this.moveDialogTitle =
+        this.$t('dataset.m1') +
+        (data.name.length > 10 ? data.name.substr(0, 10) + '...' : data.name) +
+        this.$t('dataset.m2')
       const queryInfo = JSON.parse(JSON.stringify(this.groupForm))
       queryInfo['nodeType'] = 'folder'
-      groupTree(queryInfo).then(res => {
+      groupTree(queryInfo).then((res) => {
         if (data.nodeType === 'folder') {
           _this.tGroupData = [
             {
@@ -1005,7 +1061,7 @@ export default {
     saveMoveGroup() {
       this.moveInfo.pid = this.tGroup.id
       this.moveInfo['optType'] = 'move'
-      panelUpdate(this.moveInfo).then(response => {
+      panelUpdate(this.moveInfo).then((response) => {
         this.tree()
         this.closeMoveGroup()
       })
@@ -1050,6 +1106,22 @@ export default {
 </script>
 
 <style lang='scss' scoped>
+.default-expansion {
+  height: 40px;
+  width: 232px;
+  cursor: pointer;
+  margin: 0;
+  font-family: PingFang SC;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--deTextSecondary, #646a73);
+  padding-left: 22px;
+  display: flex;
+  align-items: center;
+  i {
+    margin-left: 5px;
+  }
+}
 .main-area-input {
   ::v-deep.el-input-group__append {
     width: 70px;
@@ -1059,47 +1131,47 @@ export default {
     }
   }
 }
-  .header-title {
-    font-size: 14px;
-    flex: 1;
-    color: var(--TextPrimary, #606266);
-    font-weight: bold;
-    display: block;
-    height: 100%;
-    /*line-height: 36px;*/
-  }
+.header-title {
+  font-size: 14px;
+  flex: 1;
+  color: var(--TextPrimary, #606266);
+  font-weight: bold;
+  display: block;
+  height: 100%;
+  /*line-height: 36px;*/
+}
 
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right:8px;
-  }
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
 
-  .custom-tree-node-list {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding:0 8px;
-  }
+.custom-tree-node-list {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 0 8px;
+}
 
-  .dialog-css ::v-deep .el-dialog__body {
-    padding: 15px 20px;
-  }
-  .dialog-css ::v-deep .el-dialog__body {
-    padding: 10px 20px 20px;
-  }
+.dialog-css ::v-deep .el-dialog__body {
+  padding: 15px 20px;
+}
+.dialog-css ::v-deep .el-dialog__body {
+  padding: 10px 20px 20px;
+}
 
-  .father .child {
-    /*display: none;*/
-    visibility: hidden;
-  }
-  .father:hover .child {
-    /*display: inline;*/
-    visibility: visible;
-  }
+.father .child {
+  /*display: none;*/
+  visibility: hidden;
+}
+.father:hover .child {
+  /*display: inline;*/
+  visibility: visible;
+}
 </style>

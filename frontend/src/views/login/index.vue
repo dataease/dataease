@@ -75,6 +75,11 @@
                       :label="2"
                       size="mini"
                     >OIDC</el-radio>
+                    <el-radio
+                      v-if="loginTypes.includes(7)"
+                      :label="7"
+                      size="mini"
+                    >Larksuite</el-radio>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item prop="username">
@@ -125,17 +130,17 @@
             >
               <el-row class="code-contaniner">
                 <plugin-com
-                  v-if="loginTypes.includes(4) && codeIndex === 4"
+                  v-if="codeShow && loginTypes.includes(4) && codeIndex === 4"
                   ref="WecomQr"
                   component-name="WecomQr"
                 />
                 <plugin-com
-                  v-if="loginTypes.includes(5) && codeIndex === 5"
+                  v-if="codeShow && loginTypes.includes(5) && codeIndex === 5"
                   ref="DingtalkQr"
                   component-name="DingtalkQr"
                 />
                 <plugin-com
-                  v-if="loginTypes.includes(6) && codeIndex === 6"
+                  v-if="codeShow && loginTypes.includes(6) && codeIndex === 6"
                   ref="LarkQr"
                   component-name="LarkQr"
                 />
@@ -187,6 +192,12 @@
         component-name="SSOComponent"
       />
 
+      <plugin-com
+        v-if="loginTypes.includes(7) && loginForm.loginType === 7"
+        ref="LarksuiteQr"
+        component-name="LarksuiteQr"
+      />
+
     </div>
     <div
       v-if="showFoot"
@@ -199,7 +210,7 @@
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType, wecomStatus, dingtalkStatus, larkStatus } from '@/api/user'
+import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType, wecomStatus, dingtalkStatus, larkStatus, larksuiteStatus, casStatus, casLoginPage } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 import { changeFavicon } from '@/utils/index'
 import { initTheme } from '@/utils/ThemeUtil'
@@ -248,10 +259,10 @@ export default {
       return this.$store.state.user.loginMsg
     },
     qrTypes() {
-      return this.loginTypes && this.loginTypes.filter(item => item > 3) || []
+      return this.loginTypes && this.loginTypes.filter(item => item > 3 && item < 7) || []
     },
     radioTypes() {
-      return this.loginTypes && this.loginTypes.filter(item => item < 4) || []
+      return this.loginTypes && this.loginTypes.filter(item => item < 4 || item > 6) || []
     }
   },
   watch: {
@@ -269,6 +280,12 @@ export default {
       this.contentShow = true
     }).catch(() => {
       this.contentShow = true
+    })
+
+    casStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(3)
+      }
     })
 
     ldapStatus().then(res => {
@@ -312,6 +329,13 @@ export default {
       this.setDefaultType()
     })
 
+    larksuiteStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(7)
+      }
+      this.setDefaultType()
+    })
+
     getPublicKey().then(res => {
       if (res.success && res.data) {
         // 保存公钥
@@ -321,6 +345,12 @@ export default {
     defaultLoginType().then(res => {
       if (res && res.success) {
         this.defaultType = res.data
+      }
+      if (this.loginTypes.includes(3) && this.defaultType === 3) {
+        casLoginPage().then(res => {
+          debugger
+          window.location.href = res.data
+        })
       }
       this.setDefaultType()
     })
@@ -361,6 +391,11 @@ export default {
       this.switchCodeIndex(6)
     }
     this.clearLarkMsg()
+
+    if (Cookies.get('LarksuiteError')) {
+      this.$error(Cookies.get('LarksuiteError'))
+    }
+    this.clearLarksuiteMsg()
   },
 
   methods: {
@@ -390,6 +425,9 @@ export default {
     },
     clearLarkMsg() {
       Cookies.remove('LarkError')
+    },
+    clearLarksuiteMsg() {
+      Cookies.remove('LarksuiteError')
     },
     showLoginImage(uiInfo) {
       this.uiInfo = getSysUI()
@@ -427,6 +465,7 @@ export default {
       this.clearWecomMsg()
       this.clearDingtalkMsg()
       this.clearLarkMsg()
+      this.clearLarksuiteMsg()
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
@@ -447,8 +486,9 @@ export default {
       })
     },
     changeLoginType(val) {
-      if (val !== 2) return
+      if (val !== 2 && val !== 7) return
       this.clearOidcMsg()
+      this.clearLarksuiteMsg()
       this.$nextTick(() => {
 
       })

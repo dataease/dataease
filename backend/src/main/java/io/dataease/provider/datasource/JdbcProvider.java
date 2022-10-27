@@ -90,7 +90,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             String tableNamePattern = datasourceRequest.getTable();
             if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mysql.name())){
-                tableNamePattern = String.format(MySQLConstants.KEYWORD_TABLE, tableNamePattern);
+                if(databaseMetaData.getDriverMajorVersion() < 8){
+                    tableNamePattern = String.format(MySQLConstants.KEYWORD_TABLE, tableNamePattern);
+                }
             }
             ResultSet resultSet = databaseMetaData.getColumns(null, "%", tableNamePattern, "%");
             while (resultSet.next()) {
@@ -689,7 +691,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 if (StringUtils.isEmpty(sqlServerConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "SELECT TABLE_NAME FROM DATABASE.INFORMATION_SCHEMA.VIEWS WHERE  TABLE_SCHEMA = 'DS_SCHEMA' ;"
+                return "SELECT TABLE_NAME FROM \"DATABASE\".INFORMATION_SCHEMA.VIEWS WHERE  TABLE_SCHEMA = 'DS_SCHEMA' ;"
                         .replace("DATABASE", sqlServerConfiguration.getDataBase())
                         .replace("DS_SCHEMA", sqlServerConfiguration.getSchema());
             case oracle:

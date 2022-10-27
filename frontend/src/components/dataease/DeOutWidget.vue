@@ -40,6 +40,7 @@
                 v-if="element.type==='custom'"
                 :id="'component' + element.id"
                 ref="deOutWidget"
+                :canvas-id="canvasId"
                 class="component-custom"
                 :out-style="element.style"
                 :is-relation="isRelation"
@@ -58,12 +59,15 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import inputStyleMixin from '@/components/widget/DeWidget/inputStyleMixin'
 export default {
   name: 'DeOutWidget',
   mixins: [inputStyleMixin],
   props: {
+    canvasId: {
+      type: String,
+      required: true
+    },
     element: {
       type: Object,
       default: () => {}
@@ -118,9 +122,6 @@ export default {
       }
       return size
     },
-    ...mapState([
-      'curCanvasScale'
-    ]),
     deSelectGridBg() {
       if (this.element.component !== 'de-select-grid') return null
       const { backgroundColorSelect, color } = this.element.commonBackground

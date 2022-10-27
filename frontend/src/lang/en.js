@@ -912,6 +912,9 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    solid_color: 'Solid color',
+    split_gradient: 'Split gradient',
+    continuous_gradient: 'Continuous gradient',
     map_center_lost: 'The graph is missing the centroid or center attribute, please complete it and try again',
     margin_model: 'Model',
     margin_model_auto: 'Auto',
@@ -1438,7 +1441,7 @@ export default {
     field_rename: 'Rename Field',
     params_work: 'Effective only when editing SQL',
     sql_variable_limit_1: '1、SQL variables can only be used in where conditions',
-    sql_variable_limit_2: '2、Example：select * from table_name where column_name1=${param_name1} and column_name2 in ${param_name2}',
+    sql_variable_limit_2: "2、Example：select * from table_name where column_name1='${param_name1}' and column_name2 in '${param_name2}'",
     select_year: 'Select Year',
     select_month: 'Select Month',
     select_date: 'Select Date',
@@ -1486,6 +1489,7 @@ export default {
     field_origin_name: 'Field Origin Name',
     field_check: 'Selected',
     update_info: 'Update Info',
+    update_records: 'Update Records',
     join_view: 'Data Associated',
     text: 'Text',
     time: 'Time',
@@ -2362,7 +2366,8 @@ export default {
     channel_email_msg: 'Email',
     channel_wecom_msg: 'Wecom',
     channel_dingtalk_msg: 'Dingtalk',
-    channel_lark_msg: 'Lark'
+    channel_lark_msg: 'Lark',
+    channel_larksuite_msg: 'Larksuite'
   },
   denumberrange: {
     label: 'Number range',
@@ -2478,6 +2483,7 @@ export default {
     wecom: 'Wecom',
     dingtalk: 'Dingtalk',
     lark: 'Lark',
+    larksuite: 'Larksuite',
     pixel: 'Pixel',
     default: 'Default',
     custom: 'Custom',
@@ -2620,6 +2626,23 @@ export default {
     search_by_keyword: 'Search by keyword',
     apply_logs: 'Apply logs',
     app_group_delete_tips: 'Are you sure to delete this application category?',
-    app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.'
+
+    app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.',
+    panel_position: 'Panel position',
+    panel_name: 'Panel name',
+    dataset_group_position: 'Dataset group position',
+    dataset_group_name: 'Dataset name',
+    datasource_info: 'Datasource info',
+    datasource: 'Datasource',
+    dataset_group: 'Dataset group',
+    panel: 'Panel',
+    log_delete_tips: 'Are you sure to delete this application record?',
+    log_resource_delete_tips: 'Delete related resources (irrecoverable after deletion)'
+
+  },
+
+  logout: {
+    oidc_logout_error: 'OIDC failed to exit, do you continue to exit DataEase?',
+    cas_logout_error: 'The CAS service is abnormal, please contact the administrator!'
   }
 }

@@ -9,6 +9,8 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
+import io.dataease.exception.DataEaseException;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.dingtalk.dto.response.DingQrResult;
@@ -101,6 +103,8 @@ public class XDingtalkServer {
                 sysUserService.validateExistUser(username, dingUserEntity.getName(), email);
                 sysUserService.saveDingtalkCUser(dingUserEntity, email);
                 sysUserEntity = authUserService.getUserByDingtalkId(username);
+            } else if (sysUserEntity.getEnabled() == 0) {
+                DataEaseException.throwException(Translator.get("i18n_user_is_disable"));
             }
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
             String realPwd = sysUserEntity.getPassword();
@@ -185,7 +189,7 @@ public class XDingtalkServer {
                 sysUserAssist.setUserId(Long.parseLong(state));
             }
             sysUserAssist.setDingtalkId(userId);
-            sysUserService.saveAssist(sysUserAssist.getUserId(), sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId());
+            sysUserService.saveAssist(sysUserAssist.getUserId(), sysUserAssist.getWecomId(), sysUserAssist.getDingtalkId(), sysUserAssist.getLarkId(), sysUserAssist.getLarksuiteId());
             response.sendRedirect(url);
         } catch (Exception e) {
 

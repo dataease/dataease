@@ -3297,3 +3297,5 @@ export function getRemark(chart) {
   }
   return remark
 }
+
+export const quotaViews = ['label', 'richTextView', 'text', 'gauge', 'liquid']

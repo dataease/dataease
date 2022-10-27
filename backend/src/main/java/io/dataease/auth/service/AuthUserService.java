@@ -23,6 +23,8 @@ public interface AuthUserService {
     SysUserEntity getUserByDingtalkId(String dingtalkId);
     SysUserEntity getUserByLarkId(String larkId);
 
+    SysUserEntity getUserByLarksuiteId(String larksuiteId);
+
     List<String> roles(Long userId);
 
     List<String> permissions(Long userId);
@@ -42,6 +44,8 @@ public interface AuthUserService {
     Boolean supportDingtalk();
 
     Boolean supportLark();
+
+    Boolean supportLarksuite();
 
     Boolean supportLoginLimit();
 

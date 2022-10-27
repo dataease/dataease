@@ -912,6 +912,9 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    solid_color: '純色',
+    split_gradient: '分離漸變',
+    continuous_gradient: '連續漸變',
     map_center_lost: '圖形缺失中心點centroid或center屬性，請補全後再試',
     margin_model: '模式',
     margin_model_auto: '自動',
@@ -1438,7 +1441,7 @@ export default {
     field_rename: '字段重命名',
     params_work: '僅在編輯 sql 時生效',
     sql_variable_limit_1: '1、SQL變數只能在WHERE條件中使用',
-    sql_variable_limit_2: '2、示例：select * from table_name where column_name1=${param_name1} and column_name2 in ${param_name2}',
+    sql_variable_limit_2: "2、示例：select * from table_name where column_name1='${param_name1}' and column_name2 in '${param_name2}'",
     selesql_variable_limit_2ct_year: '選擇年',
     select_month: '選擇月',
     select_date: '選擇日期',
@@ -1486,6 +1489,7 @@ export default {
     field_origin_name: '原始名稱',
     field_check: '選中',
     update_info: '更新信息',
+    update_records: '更新記錄',
     join_view: '數據關聯',
     text: '文本',
     time: '時間',
@@ -2363,7 +2367,8 @@ export default {
     channel_email_msg: '郵件提醒',
     channel_wecom_msg: '企業微信',
     channel_dingtalk_msg: '釘釘提醒',
-    channel_lark_msg: '飛書提醒'
+    channel_lark_msg: '飛書提醒',
+    channel_larksuite_msg: '國際飛書'
   },
   denumberrange: {
     label: '數值區間',
@@ -2479,6 +2484,7 @@ export default {
     wecom: '企業微信',
     dingtalk: '釘釘',
     lark: '飛書',
+    larksuite: '國際飛書',
     pixel: '分辨率',
     default: '默認',
     custom: '自定義',
@@ -2621,6 +2627,23 @@ export default {
     search_by_keyword: '通過關鍵字搜索',
     apply_logs: '應用記錄',
     app_group_delete_tips: '確定刪除該應用分類嗎?',
-    app_group_delete_content: '刪除後，該分類中所有的應用模闆也將被刪除。'
+
+    app_group_delete_content: '刪除後，該分類中所有的應用模板也將被刪除。',
+    panel_position: '儀表板位置',
+    panel_name: '儀表板名稱',
+    dataset_group_position: '數據集分組位置',
+    dataset_group_name: '數據集分組名稱',
+    datasource_info: '數據源信息',
+    datasource: '數據源',
+    dataset_group: '數據集分組',
+    panel: '儀表板',
+    log_delete_tips: '確定刪除該條應用記錄嗎？',
+    log_resource_delete_tips: '刪除相關資源（刪除後不可恢復）'
+
+  },
+
+  logout: {
+    oidc_logout_error: 'OIDC退出失敗，是否繼續退出DataEase？',
+    cas_logout_error: 'CAS服務異常，請聯系管理員！'
   }
 }

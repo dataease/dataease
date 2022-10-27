@@ -25,6 +25,8 @@ import io.dataease.plugins.xpack.email.dto.response.XpackEmailTemplateDTO;
 import io.dataease.plugins.xpack.email.service.EmailXpackService;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkMsgResult;
 import io.dataease.plugins.xpack.lark.service.LarkXpackService;
+import io.dataease.plugins.xpack.larksuite.dto.response.LarksuiteMsgResult;
+import io.dataease.plugins.xpack.larksuite.service.LarksuiteXpackService;
 import io.dataease.plugins.xpack.wecom.dto.entity.WecomMsgResult;
 import io.dataease.plugins.xpack.wecom.service.WecomXpackService;
 import io.dataease.service.chart.ViewExportExcel;
@@ -294,6 +296,30 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                                 LarkMsgResult larkMsgResult = larkXpackService.pushOaMsg(larkUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 if (larkMsgResult.getCode() != 0) {
                                     errorMsgs.add("lark: " + larkMsgResult.getMsg());
+                                }
+                            }
+
+                        }
+                        break;
+                    case "larksuite":
+                        if (SpringContextUtil.getBean(AuthUserService.class).supportLarksuite()) {
+                            List<String> larksuiteUsers = new ArrayList<>();
+                            for (int j = 0; j < reciLists.size(); j++) {
+                                String reci = reciLists.get(j);
+                                SysUserEntity userBySub = userService.getUserByName(reci);
+                                if (ObjectUtils.isEmpty(userBySub)) continue;
+                                Long userId = userBySub.getUserId();
+                                SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
+                                if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getLarksuiteId()))
+                                    continue;
+                                larksuiteUsers.add(sysUserAssist.getLarksuiteId());
+                            }
+
+                            if (CollectionUtils.isNotEmpty(larksuiteUsers)) {
+                                LarksuiteXpackService larksuiteXpackService = SpringContextUtil.getBean(LarksuiteXpackService.class);
+                                LarksuiteMsgResult larksuiteMsgResult = larksuiteXpackService.pushOaMsg(larksuiteUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
+                                if (larksuiteMsgResult.getCode() != 0) {
+                                    errorMsgs.add("larksuite: " + larksuiteMsgResult.getMsg());
                                 }
                             }
 

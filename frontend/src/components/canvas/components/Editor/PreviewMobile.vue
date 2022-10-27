@@ -32,32 +32,6 @@
           :canvas-style-data="canvasStyleData"
           :in-screen="inScreen"
         />
-        <!--视图详情-->
-        <el-dialog
-          :visible.sync="chartDetailsVisible"
-          width="70%"
-          class="dialog-css"
-          :destroy-on-close="true"
-        >
-          <span style="position: absolute;right: 70px;top:15px">
-            <el-button
-              size="mini"
-              @click="exportExcel"
-            >
-              <svg-icon
-                icon-class="ds-excel"
-                class="ds-icon-excel"
-              />
-              {{ $t('chart.export_details') }}
-            </el-button>
-          </span>
-          <UserViewDialog
-            ref="userViewDialog"
-            :canvas-style-data="canvasStyleData"
-            :chart="showChartInfo"
-            :chart-table="showChartTableInfo"
-          />
-        </el-dialog>
       </div>
     </div>
   </div>
@@ -72,11 +46,10 @@ import { uuid } from 'vue-uuid'
 import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
 import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
 
 export default {
-  components: { ComponentWrapper, UserViewDialog, CanvasOptBar },
+  components: { ComponentWrapper, CanvasOptBar },
   model: {
     prop: 'show',
     event: 'change'
@@ -122,10 +95,7 @@ export default {
       componentDataShow: [],
       mainWidth: '100%',
       mainHeight: '100%',
-      searchCount: 0,
-      chartDetailsVisible: false,
-      showChartInfo: {},
-      showChartTableInfo: {}
+      searchCount: 0
     }
   },
   computed: {
@@ -256,14 +226,6 @@ export default {
         this.componentDataShow = componentData
         this.$nextTick(() => (eventBus.$emit('resizing', '')))
       }
-    },
-    openChartDetailsDialog(chartInfo) {
-      this.showChartInfo = chartInfo.chart
-      this.showChartTableInfo = chartInfo.tableChart
-      this.chartDetailsVisible = true
-    },
-    exportExcel() {
-      this.$refs['userViewDialog'].exportExcel()
     },
     deselectCurComponent(e) {
       if (!this.isClickComponent) {

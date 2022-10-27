@@ -1,6 +1,7 @@
 <template>
   <div
     class="rich-main-class"
+    :style="autoStyle"
     @dblclick="setEdit"
   >
     <Editor

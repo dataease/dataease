@@ -203,4 +203,18 @@ public class PanelGroupController {
         result.setResponseSource("appApply");
         return result;
     }
+
+    @PostMapping("/appEdit")
+    public void appEdit(@RequestBody PanelAppTemplateApplyRequest request) throws Exception{
+        panelGroupService.appEdit(request);
+    }
+
+    @GetMapping("/findOneWithParent/{panelId}")
+    public PanelGroupDTO findOneWithParent(@PathVariable String panelId) throws Exception{
+        PanelGroupDTO result = findOne(panelId);
+        result.setParents(authService.parentResource(panelId,"panel"));
+        result.setRequestId(UUIDUtil.getUUIDAsString());
+        result.setResponseSource("appApply");
+        return result;
+    }
 }

@@ -141,6 +141,38 @@
         </a>
       </span>
     </div>
+
+    <!--跳转设置-->
+    <el-dialog
+      :visible.sync="linkJumpSetVisible"
+      width="900px"
+      class="dialog-css"
+      :show-close="true"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <link-jump-set
+        v-if="linkJumpSetVisible"
+        :view-id="linkJumpSetViewId"
+        @closeJumpSetDialog="closeJumpSetDialog"
+      />
+    </el-dialog>
+
+    <!--背景设置-->
+    <el-dialog
+      :visible.sync="boardSetVisible"
+      width="750px"
+      class="dialog-css"
+      :close-on-click-modal="false"
+      :show-close="false"
+      :destroy-on-close="true"
+      :append-to-body="true"
+    >
+      <background
+        v-if="boardSetVisible"
+        @backgroundSetClose="backgroundSetClose"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -151,18 +183,24 @@ import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
 import LinkageField from '@/components/canvas/components/Editor/LinkageField'
 import toast from '@/components/canvas/utils/toast'
 import FieldsList from '@/components/canvas/components/Editor/fieldsList'
+import LinkJumpSet from '@/views/panel/LinkJumpSet'
+import Background from '@/views/background/index'
 
 export default {
-  components: { FieldsList, SettingMenu, LinkageField },
+  components: { Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField },
 
   props: {
+    canvasId: {
+      type: String,
+      required: true
+    },
     terminal: {
       type: String,
       default: 'pc'
     },
     sourceElement: {
       type: Object,
-      required: true
+      default: () => {}
     },
     element: {
       type: Object,
@@ -191,6 +229,9 @@ export default {
   },
   data() {
     return {
+      boardSetVisible: false,
+      linkJumpSetVisible: false,
+      linkJumpSetViewId: null,
       curFields: [],
       multiplexingCheckModel: false,
       barWidth: 24,
@@ -228,8 +269,8 @@ export default {
     },
     showEditPosition() {
       if (this.activeModel === 'edit' && !this.linkageAreaShow && !this.batchOptAreaShow) {
-        const toRight = (this.canvasStyleData.width - this.element.style.left - this.element.style.width) * this.curCanvasScale.scalePointWidth
-        const toLeft = this.element.style.left * this.curCanvasScale.scalePointWidth
+        const toRight = (this.canvasStyleData.width - this.element.style.left - this.element.style.width) * this.curCanvasScaleSelf.scalePointWidth
+        const toLeft = this.element.style.left * this.curCanvasScaleSelf.scalePointWidth
         if (this.barWidth < toRight) {
           return 'bar-main-right'
         } else if (this.barWidth > toRight && this.barWidth > toLeft) {
@@ -278,6 +319,9 @@ export default {
     miniWidth() {
       return this.mobileLayoutStatus ? 1 : 4
     },
+    curCanvasScaleSelf() {
+      return this.curCanvasScaleMap[this.canvasId]
+    },
     ...mapState([
       'menuTop',
       'menuLeft',
@@ -288,7 +332,7 @@ export default {
       'linkageSettingStatus',
       'targetLinkageInfo',
       'curLinkageView',
-      'curCanvasScale',
+      'curCanvasScaleMap',
       'batchOptStatus',
       'mobileLayoutStatus',
       'curBatchOptComponents',
@@ -302,6 +346,16 @@ export default {
     }
   },
   methods: {
+    backgroundSetClose() {
+      this.boardSetVisible = false
+    },
+    linkJumpSet() {
+      this.linkJumpSetViewId = this.element.propValue.viewId
+      this.linkJumpSetVisible = true
+    },
+    closeJumpSetDialog() {
+      this.linkJumpSetVisible = false
+    },
     fieldsAreaDown(e) {
       // ignore
       e.preventDefault()
@@ -347,10 +401,10 @@ export default {
         this.curComponent.auxiliaryMatrix = false
         this.$emit('amRemoveItem')
       } else {
-        this.curComponent.x = Math.round(this.curComponent.style.left / this.curCanvasScale.matrixStyleOriginWidth) + 1
-        this.curComponent.y = Math.round(this.curComponent.style.top / this.curCanvasScale.matrixStyleOriginHeight) + 1
-        this.curComponent.sizex = Math.round(this.curComponent.style.width / this.curCanvasScale.matrixStyleOriginWidth)
-        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScale.matrixStyleOriginHeight)
+        this.curComponent.x = Math.round(this.curComponent.style.left / this.curCanvasScaleSelf.matrixStyleOriginWidth) + 1
+        this.curComponent.y = Math.round(this.curComponent.style.top / this.curCanvasScaleSelf.matrixStyleOriginHeight) + 1
+        this.curComponent.sizex = Math.round(this.curComponent.style.width / this.curCanvasScaleSelf.matrixStyleOriginWidth)
+        this.curComponent.sizey = Math.round(this.curComponent.style.height / this.curCanvasScaleSelf.matrixStyleOriginHeight)
         this.curComponent.sizey = this.curComponent.sizey > this.miniHeight ? this.curComponent.sizey : this.miniHeight
         this.curComponent.sizex = this.curComponent.sizex > this.miniWidth ? this.curComponent.sizex : this.miniWidth
         this.curComponent.auxiliaryMatrix = true
@@ -364,10 +418,10 @@ export default {
     },
     // 记录当前样式 跟随阴影位置 矩阵处理
     recordMatrixCurShadowStyle() {
-      const left = (this.curComponent.x - 1) * this.curCanvasScale.matrixStyleWidth
-      const top = (this.curComponent.y - 1) * this.curCanvasScale.matrixStyleHeight
-      const width = this.curComponent.sizex * this.curCanvasScale.matrixStyleWidth
-      const height = this.curComponent.sizey * this.curCanvasScale.matrixStyleHeight
+      const left = (this.curComponent.x - 1) * this.curCanvasScaleSelf.matrixStyleWidth
+      const top = (this.curComponent.y - 1) * this.curCanvasScaleSelf.matrixStyleHeight
+      const width = this.curComponent.sizex * this.curCanvasScaleSelf.matrixStyleWidth
+      const height = this.curComponent.sizey * this.curCanvasScaleSelf.matrixStyleHeight
       const style = {
         left: left,
         top: top,
@@ -409,9 +463,6 @@ export default {
       })
       bus.$emit('clear_panel_linkage', { viewId: this.element.propValue.viewId })
     },
-    linkJumpSet() {
-      this.$emit('linkJumpSet')
-    },
     goFile() {
       this.$refs.files.click()
     },
@@ -435,7 +486,7 @@ export default {
       reader.readAsDataURL(file)
     },
     boardSet() {
-      this.$emit('boardSet')
+      this.boardSetVisible = true
     },
     batchOptChange(val) {
       if (val) {

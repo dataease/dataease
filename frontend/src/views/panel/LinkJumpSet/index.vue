@@ -407,6 +407,7 @@ import 'codemirror/addon/hint/show-hint'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
+  name: 'LinkJumpSet',
   components: { codemirror, draggable },
   props: {
     viewId: {
