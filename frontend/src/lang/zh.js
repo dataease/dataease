@@ -925,6 +925,7 @@ export default {
     chart_radar: '雷达图',
     chart_gauge: '仪表盘',
     chart_map: '地图',
+    chart_3d_map: '3D 地图',
     dateStyle: '日期显示',
     datePattern: '日期格式',
     y: '年',

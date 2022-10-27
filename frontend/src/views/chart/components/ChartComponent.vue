@@ -47,6 +47,7 @@ import {
   BASE_CANDLESTICK,
   BASE_BOXPLOT,
   BASE_SANKEY,
+  BASE_3DEARTH
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -80,6 +81,9 @@ import {
 import {
   baseSankeyOption
 } from '../chart/other/sankey'
+import {
+  base3dEarthOption
+} from '../chart/other/earth'
 import {
   basePieOption,
   rosePieOption,
@@ -276,8 +280,6 @@ export default {
         chart_option = polarLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'line-stack') {
         chart_option = stackLineOption(JSON.parse(JSON.stringify(BASE_LINE)), chart, this.$store.state.canvasStyleData)
-      } else if (chart.type === 'candlestick') {
-        chart_option = candlestickOption(JSON.parse(JSON.stringify(BASE_CANDLESTICK)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie') {
         chart_option = basePieOption(JSON.parse(JSON.stringify(BASE_PIE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'pie-rose') {
@@ -309,12 +311,18 @@ export default {
         chart_option = basePictorialBarOption(JSON.parse(JSON.stringify(BASE_PICTORIAL_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'liquid') {
         chart_option = baseLiquidOption(JSON.parse(JSON.stringify(BASE_LIQUID)), chart, this.$store.state.canvasStyleData)
-      } else if (chart.type === 'boxplot') {
-        chart_option = baseBoxPlotOption(JSON.parse(JSON.stringify(BASE_BOXPLOT)), chart, this.$store.state.canvasStyleData)
-      } else if (chart.type === 'sankey') {
-        chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
-        // chart_option = BASE_SANKEY
       }
+      
+      // else if (chart.type === 'candlestick') {
+      //   chart_option = candlestickOption(JSON.parse(JSON.stringify(BASE_CANDLESTICK)), chart, this.$store.state.canvasStyleData)
+      // } else if (chart.type === 'boxplot') {
+      //   chart_option = baseBoxPlotOption(JSON.parse(JSON.stringify(BASE_BOXPLOT)), chart, this.$store.state.canvasStyleData)
+      // } else if (chart.type === 'sankey') {
+      //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
+      //   // chart_option = BASE_SANKEY
+      // } else if (chart.type === '3dearth') {
+      //   chart_option = base3dEarthOption(JSON.parse(JSON.stringify(BASE_3DEARTH)))
+      // }
       // console.log(JSON.stringify(chart_option))
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false

@@ -983,6 +983,32 @@ export const BASE_SANKEY = {
     ]
   }
 }
+export const BASE_3DEARTH = {
+  background: "#000",
+  globe: {
+    baseTexture: '',
+    heightTexture: '',
+    displacementScale: 0.04,
+    shading: 'realistic',
+    environment: '',
+    realisticMaterial: {
+      roughness: 0.9
+    },
+    postEffect: {
+      enable: true
+    },
+    light: {
+      main: {
+        intensity: 5,
+        shadow: true
+      },
+      ambientCubemap: {
+        texture: '',
+        diffuseIntensity: 0.2
+      }
+    }
+  }
+}
 
 export const BASE_PICTORIAL_BAR = {
   animation: false, // 去除加载时缓动动画
