@@ -2629,6 +2629,6 @@ export default {
   },
   logout: {
     oidc_logout_error: 'OIDC failed to exit, do you continue to exit DataEase?',
-    cas_logout_error: 'CAS服务异常，请联系管理员！'
+    cas_logout_error: 'The CAS service is abnormal, please contact the administrator!'
   }
 }
