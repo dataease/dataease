@@ -61,8 +61,8 @@
       v-if="filterVisible && panelInfo.id"
       :title="(currentWidget && currentWidget.getLeftPanel && currentWidget.getLeftPanel().label ? $t(currentWidget.getLeftPanel().label) : '') + $t('panel.module')"
       :visible.sync="filterVisible"
-      custom-class="de-filter-dialog"
-      :append-to-body="true"
+      custom-class="de-filter-dialog min-width-730"
+      append-to-body
       @close="cancelFilter"
     >
       <filter-dialog
@@ -581,5 +581,8 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
   background-size: 100% 100% !important;
+}
+.min-width-730 {
+  min-width: 730px !important;
 }
 </style>

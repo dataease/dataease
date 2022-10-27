@@ -177,6 +177,7 @@
           style="width: 100%"
           :disabled="formType !== 'add' && form.isAdmin"
           multiple
+          filterable
           :placeholder="$t('user.input_roles')"
           @remove-tag="deleteTag"
           @change="changeRole"
