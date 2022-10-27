@@ -51,7 +51,7 @@
       :title="$t('chart.assist_line')"
       :visible="editLineDialog"
       :show-close="false"
-      width="70%"
+      width="1000px"
       class="dialog-css"
     >
       <assist-line-edit

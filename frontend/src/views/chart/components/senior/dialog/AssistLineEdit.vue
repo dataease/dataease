@@ -17,6 +17,7 @@
           <el-input
             v-model="item.name"
             class="value-item"
+            style="width: 90% !important;"
             :placeholder="$t('chart.name')"
             size="mini"
             clearable
@@ -97,6 +98,7 @@
             v-model="item.summary"
             size="mini"
             class="select-item"
+            style="margin-left: 10px;"
             :placeholder="$t('chart.aggregation')"
             @change="changeAssistLine"
           >
