@@ -1423,6 +1423,7 @@ export default {
     gauge_size_field_delete: 'Dynamic field changed，please edit again',
     chart_group: 'Sub Type',
     chart_bar_group: 'Bar Group',
+    chart_bar_group_stack: 'Group Stack Bar',
     field_dynamic: 'Dynamic',
     aggregation: 'Aggregation',
     filter_between: 'Between',
@@ -2569,7 +2570,10 @@ export default {
     tel: 'Tel:',
     web: 'Web:',
     apply: 'Free Trial Application',
-    more: 'More'
+    more: 'More',
+    weChat_official_account: 'WeChat official account',
+    technical_group: 'Technical exchange group',
+    f2c_train: 'FIT2CLOUD Certification'
   },
   kettle: {
     add: 'Add Kettle',

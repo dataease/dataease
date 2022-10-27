@@ -1422,6 +1422,7 @@ export default {
     gauge_size_field_delete: '动态值中字段发生变更，请重新编辑',
     chart_group: '子类别',
     chart_bar_group: '分组柱状图',
+    chart_bar_group_stack: '分组堆叠柱状图',
     field_dynamic: '动态值',
     aggregation: '聚合方式',
     filter_between: '介于',
@@ -2570,7 +2571,10 @@ export default {
     tel: '电话：',
     web: '网址：',
     apply: '免费试用申请',
-    more: '更多'
+    more: '更多',
+    weChat_official_account: '微信公众号',
+    technical_group: '技术交流群',
+    f2c_train: '飞致云认证'
   },
   kettle: {
     add: '添加 Kettle 服务',

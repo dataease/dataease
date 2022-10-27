@@ -1423,6 +1423,7 @@ export default {
     gauge_size_field_delete: '動態值中字段發生變更，請重新編輯',
     chart_group: '子類別',
     chart_bar_group: '分組柱狀圖',
+    chart_bar_group_stack: '分組堆疊柱狀圖',
     field_dynamic: '動態值',
     aggregation: '聚合方式',
     filter_between: '介於',
@@ -2570,7 +2571,10 @@ export default {
     tel: '電話：',
     web: '網址：',
     apply: '免费试用申请',
-    more: '更多'
+    more: '更多',
+    weChat_official_account: '微信公眾號',
+    technical_group: '技術交流群',
+    f2c_train: '飛致雲認證'
   },
   kettle: {
     add: '添加 Kettle 服務',

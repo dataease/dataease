@@ -101,15 +101,22 @@
           </div>
 
           <div class="content_bottom_qr_code">
+            <div class="contact_wechat_train">
+              <div class="contact_title_qr">{{ $t('wizard.f2c_train') }}</div>
+              <img
+                class="contact_wechat_train_img"
+                src="@/assets/wizard_wechat-train.png"
+              >
+            </div>
             <div class="contact_wechat_official">
-              <div class="contact_title_qr">微信公众号</div>
+              <div class="contact_title_qr">{{ $t('wizard.weChat_official_account') }}</div>
               <img
                 class="contact_wechat_official_img"
                 src="@/assets/wizard_wechat-official.jpeg"
               >
             </div>
             <div class="contact_wechat_group">
-              <div class="contact_title_qr">技术交流群</div>
+              <div class="contact_title_qr">{{ $t('wizard.technical_group') }}</div>
               <img
                 class="contact_wechat_group_img"
                 src="@/assets/wizard_wechat-group.png"
@@ -214,244 +221,267 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .main_outer{
-    background-color: var(--MainBG, #f5f6f7)
-  }
-  .main_container {
-    min-width: 1250px;
-    padding: 0 24px 0 24px;
-    overflow: auto;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-size: 100% 444px !important;
-    background: url('../../assets/wizard_main_bg.png') no-repeat;
-  }
-  .main_content {
-    width: 1200px;
-  }
-  .content_top_banner{
-    color: var(--ContentBG, #FFFFFF);
-    position: relative;
-    width: 100%;
-    height: 230px;
-  }
+.main_outer {
+  background-color: var(--MainBG, #f5f6f7)
+}
 
-  .top_banner_content{
-    position: absolute;
-    top: 62px;
-    height: 230px;
-  }
+.main_container {
+  min-width: 1250px;
+  padding: 0 24px 0 24px;
+  overflow: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: 100% 444px !important;
+  background: url('../../assets/wizard_main_bg.png') no-repeat;
+}
 
-  .top_banner_img{
-    position: absolute;
-    width: 520px;
-    height: 230px;
-    top: 0;
-    right: 50px;
-  }
+.main_content {
+  width: 1200px;
+}
 
-  .top_banner_card{
-    position: relative;
-    width: 100%;
-    height: 214px;
-  }
+.content_top_banner {
+  color: var(--ContentBG, #FFFFFF);
+  position: relative;
+  width: 100%;
+  height: 230px;
+}
 
-  .hint_head {
-    line-height: 48px;
-    font-weight: 600;
-    font-size: 48px;
-  }
-  .hint_content {
-    margin-top: 12px;
-    line-height: 26px;
-    font-weight: 400;
-    font-size: 18px;
-  }
+.top_banner_content {
+  position: absolute;
+  top: 62px;
+  height: 230px;
+}
 
-  .content_middle{
-    height: 290px;
-    width: 100%;
-    margin-top: 24px;
-  }
+.top_banner_img {
+  position: absolute;
+  width: 520px;
+  height: 230px;
+  top: 0;
+  right: 50px;
+}
 
-  .content_middle_left{
-    float: left;
-    width: 792px;
-    height: 290px;
-    padding: 24px;
-    border-radius: 4px;
-    background-color: var(--ContentBG, #FFFFFF);
+.top_banner_card {
+  position: relative;
+  width: 100%;
+  height: 214px;
+}
+
+.hint_head {
+  line-height: 48px;
+  font-weight: 600;
+  font-size: 48px;
+}
+
+.hint_content {
+  margin-top: 12px;
+  line-height: 26px;
+  font-weight: 400;
+  font-size: 18px;
+}
+
+.content_middle {
+  height: 290px;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.content_middle_left {
+  float: left;
+  width: 792px;
+  height: 290px;
+  padding: 24px;
+  border-radius: 4px;
+  background-color: var(--ContentBG, #FFFFFF);
+}
+
+.content_middle_title {
+  float: left;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 38px;
+  color: var(--TextPrimary, #1F2329);
+}
+
+.content_middle_more {
+  float: right;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: #646A73;
+  border-radius: 4px;
+  height: 26px;
+  padding: 2px;
+
+  &:hover {
+    background: rgba(31, 35, 41, 0.1);
+    cursor: pointer;
   }
-  .content_middle_title{
-    float: left;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 38px;
-    color: var(--TextPrimary, #1F2329);
-  }
-  .content_middle_more{
-    float: right;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 22px;
-    color: #646A73;
-    border-radius: 4px;
-    height: 26px;
-    padding: 2px;
-    &:hover {
-      background: rgba(31, 35, 41, 0.1);
-      cursor: pointer;
+}
+
+.content_middle_more i:hover {
+  background: none;
+}
+
+.content_middle_more a:hover {
+  background: none;
+}
+
+.content_middle_right {
+  float: left;
+  height: 290px;
+  width: 384px;
+  margin-left: 24px;
+  padding: 24px;
+  border-radius: 4px;
+  background-color: var(--ContentBG, #FFFFFF);
+}
+
+.content_middle_left {
+  float: left;
+  width: 792px;
+  height: 290px;
+  padding: 24px;
+  border-radius: 4px;
+  background-color: var(--ContentBG, #FFFFFF);
+}
+
+.li-custom {
+  margin-top: 16px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  list-style-type: disc;
+  list-style-position: inside;
+  border-radius: 4px;
+  padding-left: 12px;
+  margin-left: -12px;
+
+  &:hover {
+    background: rgba(31, 35, 41, 0.1);
+    cursor: pointer;
+    color: #3370FF !important;
+
+    .li-a {
+      color: #3370FF !important;
     }
   }
+}
 
-  .content_middle_more i:hover{
-    background: none;
-  }
+.li-custom a:hover {
+  background: none;
+}
 
-  .content_middle_more a:hover{
-    background: none;
-  }
+.li-a {
+  color: var(--TextPrimary, #1F2329);
+}
 
-  .content_middle_right {
-    float: left;
-    height: 290px;
-    width: 384px;
-    margin-left: 24px;
-    padding: 24px;
-    border-radius: 4px;
-    background-color: var(--ContentBG, #FFFFFF);
-  }
+.ul-custom {
+  padding-inline-start: 0px;
+  color: #8F959E;
+}
 
-  .content_middle_left{
-    float: left;
-    width: 792px;
-    height: 290px;
-    padding: 24px;
-    border-radius: 4px;
-    background-color: var(--ContentBG, #FFFFFF);
-  }
+.content_bottom {
+  width: 100%;
+  height: 208px;
+}
 
-  .li-custom {
-    margin-top: 16px;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 22px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    list-style-type : disc;
-    list-style-position: inside;
-    border-radius: 4px;
-    padding-left: 12px;
-    margin-left: -12px;
-    &:hover {
-      background: rgba(31, 35, 41, 0.1);
-      cursor: pointer;
-      color: #3370FF!important;
-      .li-a{
-        color: #3370FF!important;
-      }
-    }
-  }
+.content_bottom_contact {
+  float: left;
+  margin-left: 278px;
+  width: 300px;
+  margin-top: 40px;
+}
 
-  .li-custom a:hover {
-    background: none;
-  }
+.contact_title {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--TextPrimary, #1F2329);
+  margin-bottom: 16px;
+}
 
-  .li-a{
-    color: var(--TextPrimary, #1F2329);
-  }
+.contact_content {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
+  color: #646A73;
+  margin-top: 8px;
+}
 
-  .ul-custom {
-    padding-inline-start:0px;
-    color: #8F959E;
-  }
+.contact_content a:hover {
+  color: #3370FF;
+}
 
-  .content_bottom{
-    width: 100%;
-    height: 208px;
-  }
+.content_bottom_qr_code {
+  width: 400px;
+  float: right;
+  text-align: right;
+  margin-right: 180px;
+  margin-top: 40px;
+}
 
-  .content_bottom_contact{
-    float: left;
-    margin-left: 278px;
-    width: 300px;
-    margin-top: 40px;
-  }
+.contact_title_qr {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  color: #646A73;
+  margin-bottom: 8px;
+}
 
-  .contact_title{
-    font-style: normal;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 22px;
-    color: var(--TextPrimary, #1F2329);
-    margin-bottom: 16px;
-  }
+.contact_wechat_train {
+  width: 100px;
+  float: right;
+}
 
-  .contact_content{
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 22px;
-    color: #646A73;
-    margin-top: 8px;
-  }
-  .contact_content a:hover{
-    color: #3370FF;
-  }
+.contact_wechat_train_img {
+  box-sizing: border-box;
+  width: 100px;
+  height: 100px;
+  border: 2px solid #FFFFFF;
+}
 
-  .content_bottom_qr_code{
-    width: 300px;
-    float: right;
-    text-align: right;
-    margin-right: 280px;
-    margin-top: 40px;
-  }
+.contact_wechat_official {
+  width: 100px;
+  float: right;
+  margin-right: 40px;
+}
 
-  .contact_title_qr{
-    font-style: normal;
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 20px;
-    text-align: center;
-    color: #646A73;
-    margin-bottom: 8px;
-  }
+.contact_wechat_official_img {
+  box-sizing: border-box;
+  width: 100px;
+  height: 100px;
+  border: 2px solid #FFFFFF;
+}
 
-  .contact_wechat_official{
-    width: 100px;
-    float: right;
-  }
+.contact_wechat_group {
+  width: 100px;
+  float: right;
+  margin-right: 40px;
+}
 
-  .contact_wechat_official_img{
-    box-sizing: border-box;
-    width: 100px;
-    height: 100px;
-    border: 2px solid #FFFFFF;
-  }
+.contact_wechat_group_img {
+  box-sizing: border-box;
+  width: 100px;
+  height: 100px;
+  border: 2px solid #FFFFFF;
+}
 
-  .contact_wechat_group{
-    width: 100px;
-    float: right;
-    margin-right: 40px;
-  }
-
-  .contact_wechat_group_img{
-    box-sizing: border-box;
-    width: 100px;
-    height: 100px;
-    border: 2px solid #FFFFFF;
-  }
-
-  .main_container_outer{
-    width: 100%;
-    height: calc(100vh - 56px);
-    background-color: var(--MainBG, #f5f6f7);
-    overflow: auto;
-  }
+.main_container_outer {
+  width: 100%;
+  height: calc(100vh - 56px);
+  background-color: var(--MainBG, #f5f6f7);
+  overflow: auto;
+}
 
 </style>
