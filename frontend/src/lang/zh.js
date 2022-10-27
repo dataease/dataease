@@ -2626,6 +2626,7 @@ export default {
     search_by_keyword: '通过关键字搜索',
     apply_logs: '应用记录',
     app_group_delete_tips: '确定删除该应用分类吗?',
+
     app_group_delete_content: '删除后，该分类中所有的应用模板也将被删除。',
     panel_position: '仪表板位置',
     panel_name: '仪表板名称',
@@ -2637,5 +2638,11 @@ export default {
     panel: '仪表板',
     log_delete_tips: '确定删除该条应用记录吗？',
     log_resource_delete_tips: '删除相关资源（删除后不可恢复）'
+
+  },
+
+  logout: {
+    oidc_logout_error: 'OIDC退出失败，是否继续退出DataEase？',
+    cas_logout_error: 'CAS服务异常，请联系管理员！'
   }
 }
