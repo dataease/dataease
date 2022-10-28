@@ -1065,7 +1065,7 @@ export default {
                 } else {
                   this.openMessageSuccess(
                     res.message.substring(0, 2500) + '......',
-                    'danger'
+                    'error'
                   )
                 }
               }
@@ -1085,7 +1085,7 @@ export default {
                   } else {
                     this.openMessageSuccess(
                       res.message.substring(0, 2500) + '......',
-                      'danger'
+                      'error'
                     )
                   }
                 }
