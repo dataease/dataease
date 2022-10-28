@@ -2640,8 +2640,13 @@ export default {
     dataset_group: 'Dataset group',
     panel: 'Panel',
     log_delete_tips: 'Are you sure to delete this application record?',
-    log_resource_delete_tips: 'Delete related resources (irrecoverable after deletion)'
-
+    log_resource_delete_tips: 'Delete related resources (irrecoverable after deletion)',
+    file_error_tips: 'The relevant data file is not found. The current file may not be a DataEase application file, or the file may be damaged ',
+    app_export: 'Application export',
+    app_version: 'Application version',
+    program_version: 'DataEase minimum version',
+    creator: 'Author',
+    export: 'Export'
   },
 
   logout: {
