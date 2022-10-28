@@ -427,7 +427,7 @@ span {
 .between-item {
   position: relative;
   display: inline-block;
-  width: 80px !important;
+  width: 90px !important;
 }
 
 .select-item {
