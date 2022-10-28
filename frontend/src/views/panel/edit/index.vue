@@ -174,10 +174,12 @@
           v-if="!previewVisible&&!mobileLayoutStatus"
           ref="canvasMainRef"
           class="canvas_main_content"
+          :style="customCanvasStyle"
           :canvas-style-data="canvasStyleData"
           :component-data="mainCanvasComponentData"
           :canvas-id="canvasId"
           :canvas-pid="'0'"
+          @canvasScroll="canvasScroll"
         >
           <canvas-opt-bar slot="optBar" />
         </de-canvas>
@@ -466,6 +468,13 @@
       </div>
     </el-dialog>
 
+    <!--放在这个位置防止遮挡-->
+    <text-attr
+      v-if="showAttr && curComponent.canvasId === 'canvas-main'"
+      :canvas-id="canvasId"
+      :scroll-left="scrollLeft"
+      :scroll-top="scrollTop"
+    />
   </el-row>
 </template>
 
@@ -519,10 +528,12 @@ import { listenGlobalKeyDown } from '@/components/canvas/utils/shortcutKey'
 import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
 import eventBus from '@/components/canvas/utils/eventBus'
 import DeCanvas from '@/components/canvas/DeCanvas'
+import TextAttr from '@/components/canvas/components/TextAttr'
 
 export default {
   name: 'PanelEdit',
   components: {
+    TextAttr,
     DeCanvas,
     Multiplexing,
     ChartStyleBatchSet,
@@ -767,6 +778,9 @@ export default {
     },
     mobileLayoutStatus() {
       this.restore()
+    },
+    previewVisible(val) {
+      this.$store.commit('setPreviewVisible', val)
     }
   },
   created() {
@@ -1309,9 +1323,9 @@ export default {
       // 打开属性栏
       bus.$emit('change_panel_right_draw', true)
     },
-    canvasScroll(event) {
-      this.scrollLeft = event.target.scrollLeft
-      this.scrollTop = event.target.scrollTop
+    canvasScroll(scrollInfo) {
+      this.scrollLeft = scrollInfo.scrollLeft
+      this.scrollTop = scrollInfo.scrollTop
       bus.$emit('onScroll')
     },
     destroyTimeMachine() {
@@ -1501,6 +1515,7 @@ export default {
   color: gray;
   height: 30px;
   width: 100%;
+  text-align: center;
 }
 
 .this_mobile_canvas_bottom {

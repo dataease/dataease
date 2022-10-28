@@ -151,8 +151,8 @@ const data = {
       mouseY: 0,
       width: 0,
       height: 0
-    }
-
+    },
+    previewVisible: false
   },
   mutations: {
     ...animation.mutations,
@@ -170,6 +170,10 @@ const data = {
 
     setClickComponentStatus(state, status) {
       state.isClickComponent = status
+    },
+
+    setPreviewVisible(state, previewVisible) {
+      state.previewVisible = previewVisible
     },
 
     setEditMode(state, mode) {
@@ -259,6 +263,7 @@ const data = {
       } else {
         state.componentData.push(component)
       }
+      this.commit('setCurComponent', { component: component, index: index || state.componentData.length - 1 })
     },
     removeViewFilter(state, componentId) {
       state.componentData = state.componentData.map(item => {

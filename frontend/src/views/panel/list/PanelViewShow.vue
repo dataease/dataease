@@ -118,6 +118,10 @@
                     icon="el-icon-picture-outline"
                     @click.native="downloadAsImage"
                   >{{ $t('panel.export_to_img') }}</el-dropdown-item>
+                  <el-dropdown-item
+                    icon="el-icon-s-data"
+                    @click.native="downLoadToAppPre"
+                  >{{ $t('panel.export_to_app') }}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
@@ -274,6 +278,48 @@
         @closePreExport="closePreExport"
       />
     </el-dialog>
+
+    <el-dialog
+      v-if="appExportShow"
+      :title="'应用导出'"
+      :visible.sync="appExportShow"
+      width="80%"
+      :top="'8vh'"
+      :destroy-on-close="true"
+      class="dialog-css2"
+    >
+      <span style="position: absolute;right: 70px;top:15px">
+        <svg-icon
+          icon-class="PDF"
+          class="ds-icon-pdf"
+        />
+        <el-select
+          v-model="pdfTemplateSelectedIndex"
+          :placeholder="'切换PDF模板'"
+          @change="changePdfTemplate()"
+        >
+          <el-option
+            v-for="(item, index) in pdfTemplateAll"
+            :key="index"
+            :label="item.name"
+            :value="index"
+          />
+        </el-select>
+      </span>
+      <PDFPreExport
+        :snapshot="snapshotInfo"
+        :panel-name="panelInfo.name"
+        :template-content="pdfTemplateContent"
+        @closePreExport="closePreExport"
+      />
+    </el-dialog>
+
+    <keep-alive>
+      <app-export-form
+        ref="appExportForm"
+        @downLoadApp="downLoadApp"
+      />
+    </keep-alive>
   </el-row>
 </template>
 <script>
@@ -283,6 +329,7 @@ import SaveToTemplate from '@/views/panel/list/SaveToTemplate'
 import { mapState } from 'vuex'
 import html2canvas from 'html2canvasde'
 import FileSaver from 'file-saver'
+import JSZip from 'jszip'
 import { starStatus, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
@@ -292,10 +339,11 @@ import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import { dataURLToBlob, getNowCanvasComponentData } from '@/components/canvas/utils/utils'
 import { findResourceAsBase64 } from '@/api/staticResource/staticResource'
 import PanelDetailInfo from '@/views/panel/list/common/PanelDetailInfo'
+import AppExportForm from '@/views/panel/list/AppExportForm'
 
 export default {
   name: 'PanelViewShow',
-  components: { PanelDetailInfo, Preview, SaveToTemplate, PDFPreExport, ShareHead },
+  components: { AppExportForm, PanelDetailInfo, Preview, SaveToTemplate, PDFPreExport, ShareHead },
   props: {
     activeTab: {
       type: String,
@@ -304,6 +352,7 @@ export default {
   },
   data() {
     return {
+      canvasInfoTemp: 'preview-temp-canvas-main',
       canvasId: 'canvas-main',
       showMain: true,
       pdfTemplateSelectedIndex: 0,
@@ -315,6 +364,7 @@ export default {
       hasStar: false,
       fullscreen: false,
       pdfExportShow: false,
+      appExportShow: false,
       snapshotInfo: '',
       showType: 0,
       dataLoading: false,
@@ -380,6 +430,9 @@ export default {
     bus.$off('set-panel-share-user', this.setPanelShareUser)
   },
   methods: {
+    downLoadApp(appAttachInfo) {
+      this.downLoadToApp(appAttachInfo)
+    },
     setPanelShowType(type) {
       this.showType = type || 0
     },
@@ -405,7 +458,7 @@ export default {
     saveToTemplate() {
       this.dataLoading = true
       setTimeout(() => {
-        html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+        html2canvas(document.getElementById(this.canvasInfoTemp)).then(canvas => {
           this.templateSaveShow = true
           this.dataLoading = false
           const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
@@ -430,7 +483,7 @@ export default {
       _this.dataLoading = true
       try {
         _this.findStaticSource(function(staticResource) {
-          html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          html2canvas(document.getElementById(_this.canvasInfoTemp)).then(canvas => {
             _this.dataLoading = false
             const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
             if (snapshot !== '') {
@@ -453,14 +506,15 @@ export default {
         _this.dataLoading = false
       }
     },
-    saveAppFile(appAttachInfo) {
+    saveAppFile(appRelationInfo, appAttachInfo) {
       const _this = this
       _this.dataLoading = true
       try {
+        const jsZip = new JSZip()
         _this.findStaticSource(function(staticResource) {
-          html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          html2canvas(document.getElementById(_this.canvasInfoTemp)).then(canvas => {
             _this.dataLoading = false
-            const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
+            const snapshot = canvas.toDataURL('image/jpeg', 1) // 0.1是图片质量
             if (snapshot !== '') {
               const panelInfo = {
                 name: _this.$store.state.panel.panelInfo.name,
@@ -468,11 +522,19 @@ export default {
                 snapshot: snapshot,
                 panelStyle: JSON.stringify(_this.canvasStyleData),
                 panelData: JSON.stringify(_this.componentData),
+                dynamicData: JSON.stringify(_this.panelViewDetailsInfo),
                 staticResource: JSON.stringify(staticResource || {})
               }
-              appAttachInfo['panelInfo'] = JSON.stringify(panelInfo)
-              const blob = new Blob([JSON.stringify(appAttachInfo)], { type: '' })
-              FileSaver.saveAs(blob, _this.$store.state.panel.panelInfo.name + '-APP.DEAPP')
+              const blobTemplate = new Blob([JSON.stringify(panelInfo)], { type: '' })
+              const blobRelation = new Blob([JSON.stringify(appRelationInfo)], { type: '' })
+              const blobAppInfo = new Blob([JSON.stringify(appAttachInfo)], { type: '' })
+              jsZip.file('TEMPLATE.DET', blobTemplate, { binary: true })
+              jsZip.file('DATA_RELATION.DE', blobRelation, { binary: true })
+              jsZip.file('APP.json', blobAppInfo, { binary: true })
+              jsZip.generateAsync({ type: 'blob' }).then(content => {
+                // 生成二进制流
+                FileSaver.saveAs(content, appAttachInfo.appName + '.zip') // 利用file-saver保存文件  自定义文件名
+              })
             }
           })
         })
@@ -481,11 +543,21 @@ export default {
         _this.dataLoading = false
       }
     },
-    downLoadToApp() {
+    downLoadToAppPre() {
+      this.$refs.appExportForm.init({
+        appName: this.$store.state.panel.panelInfo.name,
+        icon: null,
+        version: '1.0',
+        creator: this.$store.getters.user.nickName,
+        required: '1.16.0',
+        description: null
+      })
+    },
+    downLoadToApp(appAttachInfo) {
       this.dataLoading = true
       export2AppCheck(this.$store.state.panel.panelInfo.id).then(rsp => {
         if (rsp.data.checkStatus) {
-          this.saveAppFile(rsp.data)
+          this.saveAppFile(rsp.data, appAttachInfo)
         } else {
           this.dataLoading = false
           this.$message({
@@ -528,7 +600,7 @@ export default {
       setTimeout(() => {
         this.exporting = true
         setTimeout(() => {
-          const canvasID = document.getElementById('canvasInfoTemp')
+          const canvasID = document.getElementById(this.canvasInfoTemp)
           const a = document.createElement('a')
           html2canvas(canvasID).then(canvas => {
             this.exporting = false
@@ -559,7 +631,7 @@ export default {
       setTimeout(() => {
         this.exporting = true
         setTimeout(() => {
-          html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+          html2canvas(document.getElementById(this.canvasInfoTemp)).then(canvas => {
             const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
             this.dataLoading = false
             this.exporting = false
@@ -573,7 +645,7 @@ export default {
     },
     refreshTemplateInfo() {
       this.templateInfo = {}
-      html2canvas(document.getElementById('canvasInfoTemp')).then(canvas => {
+      html2canvas(document.getElementById(this.canvasInfoTemp)).then(canvas => {
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
         if (snapshot !== '') {
           this.templateInfo = {
@@ -623,7 +695,9 @@ export default {
       if (this.showType === 1 && this.shareUserId !== null) {
         const param = { userId: this.shareUserId }
         proxyInitPanelData(this.panelInfo.id, param, null)
-      } else { initPanelData(this.panelInfo.id, false) }
+      } else {
+        initPanelData(this.panelInfo.id, false)
+      }
     },
     changePublishState() {
       if (this.panelInfo.status === 'publish') {
@@ -642,72 +716,76 @@ export default {
 </script>
 
 <style>
-  .view-list {
-    height: 100%;
-    width: 20%;
-    min-width: 180px;
-    max-width: 220px;
-    border: 1px solid #E6E6E6;
-    border-left: 0 solid;
-    overflow-y: auto;
-  }
+.view-list {
+  height: 100%;
+  width: 20%;
+  min-width: 180px;
+  max-width: 220px;
+  border: 1px solid #E6E6E6;
+  border-left: 0 solid;
+  overflow-y: auto;
+}
 
-  .view-list-thumbnails-outline {
-    height: 100%;
-    overflow-y: auto;
-  }
+.view-list-thumbnails-outline {
+  height: 100%;
+  overflow-y: auto;
+}
 
-  .view-list-thumbnails {
-    width: 100%;
-    padding: 0px 15px 15px 0px;
-  }
+.view-list-thumbnails {
+  width: 100%;
+  padding: 0px 15px 15px 0px;
+}
 
-  .panel-design {
-    min-height: 400px;
-    height: 100%;
-    min-width: 500px;
-    overflow-y: hidden;
-    border-top: 1px solid #E6E6E6;
-  }
+.panel-design {
+  min-height: 400px;
+  height: 100%;
+  min-width: 500px;
+  overflow-y: hidden;
+  border-top: 1px solid #E6E6E6;
+}
 
-  .panel-design-head {
-    height: 40px;
-    background-color: var(--SiderBG, white);
-    padding: 0 10px;
-    line-height: 40px;
-  }
-  .panel-share-head {
-      height: auto !important;
-  }
-  .blackTheme .panel-design-head  {
-      color: var(--TextActive);
-  }
+.panel-design-head {
+  height: 40px;
+  background-color: var(--SiderBG, white);
+  padding: 0 10px;
+  line-height: 40px;
+}
 
-  .panel-design-preview {
-    width: 100%;
-    height: calc(100% - 40px);
-    overflow-x: hidden;
-    overflow-y: auto;
-    /*padding: 5px;*/
-  }
+.panel-share-head {
+  height: auto !important;
+}
 
-  .custom-position {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    flex-flow: row nowrap;
-    color: #9ea6b2;
-  }
+.blackTheme .panel-design-head {
+  color: var(--TextActive);
+}
 
-  .dialog-css2 ::v-deep .el-dialog__title {
-    font-size: 14px!important;
-  }
-  .dialog-css2 ::v-deep .el-dialog__header {
-    padding: 20px 20px 0!important;
-  }
-  .dialog-css2 ::v-deep .el-dialog__body {
-    padding: 0px 20px!important;
-  }
+.panel-design-preview {
+  width: 100%;
+  height: calc(100% - 40px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  /*padding: 5px;*/
+}
+
+.custom-position {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-flow: row nowrap;
+  color: #9ea6b2;
+}
+
+.dialog-css2 ::v-deep .el-dialog__title {
+  font-size: 14px !important;
+}
+
+.dialog-css2 ::v-deep .el-dialog__header {
+  padding: 20px 20px 0 !important;
+}
+
+.dialog-css2 ::v-deep .el-dialog__body {
+  padding: 0px 20px !important;
+}
 </style>

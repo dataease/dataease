@@ -27,6 +27,7 @@
         <ComponentWrapper
           v-for="(item, index) in componentDataInfo"
           :key="index"
+          :canvas-id="canvasId"
           :config="item"
           :search-count="searchCount"
           :canvas-style-data="canvasStyleData"
@@ -55,6 +56,10 @@ export default {
     event: 'change'
   },
   props: {
+    canvasId: {
+      type: String,
+      required: true
+    },
     screenShot: {
       type: Boolean,
       default: false

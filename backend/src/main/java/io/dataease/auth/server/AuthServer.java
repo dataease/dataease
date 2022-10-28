@@ -12,6 +12,7 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.RsaUtil;
 import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.sys.request.LdapAddRequest;
 import io.dataease.exception.DataEaseException;
@@ -240,8 +241,13 @@ public class AuthServer implements AuthApi {
             HttpServletRequest request = ServletUtils.request();
             String idToken = request.getHeader("IdToken");
             if (StringUtils.isNotBlank(idToken)) {
-                OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
-                oidcXpackService.logout(idToken);
+                try {
+                    OidcXpackService oidcXpackService = SpringContextUtil.getBean(OidcXpackService.class);
+                    oidcXpackService.logout(idToken);
+                } catch (Exception e) {
+                    LogUtil.error(e.getMessage(), e);
+                    DEException.throwException("oidc_logout_error");
+                }
             }
         }
 
@@ -253,11 +259,16 @@ public class AuthServer implements AuthApi {
         String result = null;
         Integer defaultLoginType = systemParameterService.defaultLoginType();
         if (defaultLoginType == 3 && isOpenCas()) {
-            HttpServletRequest request = ServletUtils.request();
-            HttpSession session = request.getSession();
-            session.invalidate();
-            CasXpackService casXpackService = SpringContextUtil.getBean(CasXpackService.class);
-            result = casXpackService.logout();
+            try {
+                HttpServletRequest request = ServletUtils.request();
+                HttpSession session = request.getSession();
+                session.invalidate();
+                CasXpackService casXpackService = SpringContextUtil.getBean(CasXpackService.class);
+                result = casXpackService.logout();
+            } catch (Exception e) {
+                LogUtil.error(e.getMessage(), e);
+                DEException.throwException("cas_logout_error");
+            }
         }
         try {
             Long userId = JWTUtils.tokenInfoByToken(token).getUserId();

@@ -1423,6 +1423,7 @@ export default {
     gauge_size_field_delete: '動態值中字段發生變更，請重新編輯',
     chart_group: '子類別',
     chart_bar_group: '分組柱狀圖',
+    chart_bar_group_stack: '分組堆疊柱狀圖',
     field_dynamic: '動態值',
     aggregation: '聚合方式',
     filter_between: '介於',
@@ -2632,6 +2633,27 @@ export default {
     search_by_keyword: '通過關鍵字搜索',
     apply_logs: '應用記錄',
     app_group_delete_tips: '確定刪除該應用分類嗎?',
-    app_group_delete_content: '刪除後，該分類中所有的應用模闆也將被刪除。'
+    app_group_delete_content: '刪除後，該分類中所有的應用模板也將被刪除。',
+    panel_position: '儀表板位置',
+    panel_name: '儀表板名稱',
+    dataset_group_position: '數據集分組位置',
+    dataset_group_name: '數據集分組名稱',
+    datasource_info: '數據源信息',
+    datasource: '數據源',
+    dataset_group: '數據集分組',
+    panel: '儀表板',
+    log_delete_tips: '確定刪除該條應用記錄嗎？',
+    log_resource_delete_tips: '刪除相關資源（刪除後不可恢復）',
+    file_error_tips: '未找到相關數據文件，當前文件可能不是DataEase應用文件，或者文件已經損壞',
+    app_export: '应用导出',
+    app_version: '应用版本',
+    program_version: 'DataEase最低版本',
+    creator: '作者',
+    export: '导出'
+  },
+
+  logout: {
+    oidc_logout_error: 'OIDC退出失敗，是否繼續退出DataEase？',
+    cas_logout_error: 'CAS服務異常，請聯系管理員！'
   }
 }

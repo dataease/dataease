@@ -588,7 +588,7 @@ export default {
     mainStyle() {
       const style = {
         left: (this.getPositionX(this.curComponent.style.left) - this.scrollLeft) + 'px',
-        top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop + 25) + 'px'
+        top: (this.getPositionY(this.curComponent.style.top) - this.scrollTop + 20) + 'px'
       }
       return style
     },

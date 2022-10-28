@@ -8,16 +8,19 @@
         <el-radio
           v-model="inputType"
           label="new"
-        > {{ $t('panel.custom') }}</el-radio>
+        > {{ $t('panel.custom') }}
+        </el-radio>
         <el-radio
           v-model="inputType"
           label="new_outer_template"
-        >{{ $t('panel.import_template') }}  </el-radio>
+        >{{ $t('panel.import_template') }}
+        </el-radio>
         <el-radio
           v-model="inputType"
           label="new_inner_template"
           @click.native="getTree"
-        >{{ $t('panel.copy_template') }}  </el-radio>
+        >{{ $t('panel.copy_template') }}
+        </el-radio>
       </el-col>
       <el-col
         v-if="inputType==='new_outer_template'"
@@ -28,7 +31,8 @@
           size="small"
           type="primary"
           @click="goFile"
-        >{{ $t('panel.upload_template') }}</el-button>
+        >{{ $t('panel.upload_template') }}
+        </el-button>
         <input
           id="input"
           ref="files"
@@ -77,13 +81,15 @@
       <el-button
         size="mini"
         @click="cancel()"
-      >{{ $t('commons.cancel') }}</el-button>
+      >{{ $t('commons.cancel') }}
+      </el-button>
       <el-button
         type="primary"
         size="mini"
         :disabled="!saveStatus"
         @click="save()"
-      >{{ $t('commons.confirm') }}</el-button>
+      >{{ $t('commons.confirm') }}
+      </el-button>
     </el-row>
   </el-row>
 </template>
@@ -234,7 +240,7 @@ export default {
             showClose: true
           })
           this.loading = false
-          this.$emit('closeEditPanelDialog', response.data)
+          this.$emit('closeEditPanelDialog', { id: response.data, name: this.editPanel.panelInfo.name })
         }).catch(() => {
           this.loading = false
         })
@@ -265,34 +271,38 @@ export default {
 
 <style scoped>
 
-.my_table ::v-deep .el-table__row>td{
+.my_table ::v-deep .el-table__row > td {
   /* 去除表格线 */
   border: none;
   padding: 0 0;
 }
+
 .my_table ::v-deep .el-table th.is-leaf {
   /* 去除上边框 */
-    border: none;
+  border: none;
 }
-.my_table ::v-deep .el-table::before{
+
+.my_table ::v-deep .el-table::before {
   /* 去除下边框 */
   height: 0;
 }
 
-  .root-class {
-    margin: 15px 0px 5px;
-    text-align: center;
-  }
-  .preview {
-    margin-top: 5px;
-    border:1px solid #E6E6E6;
-    height:250px !important;
-    overflow:hidden;
-    background-size: 100% 100% !important;
-  }
-  .preview-show {
-    border-left:1px solid #E6E6E6;
-    height:250px;
-    background-size: 100% 100% !important;
-  }
+.root-class {
+  margin: 15px 0px 5px;
+  text-align: center;
+}
+
+.preview {
+  margin-top: 5px;
+  border: 1px solid #E6E6E6;
+  height: 250px !important;
+  overflow: hidden;
+  background-size: 100% 100% !important;
+}
+
+.preview-show {
+  border-left: 1px solid #E6E6E6;
+  height: 250px;
+  background-size: 100% 100% !important;
+}
 </style>

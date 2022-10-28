@@ -67,6 +67,7 @@ import TitleRemark from '@/views/chart/view/TitleRemark'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import { baseMixOptionAntV } from '@/views/chart/chart/mix/mix_antv'
 import { compareItem } from '@/views/chart/chart/compare'
+import { mapState } from 'vuex'
 
 import clickoutside from 'element-ui/src/utils/clickoutside.js'
 import bus from '@/utils/bus'
@@ -163,7 +164,11 @@ export default {
     },
     mainActiveName() {
       return this.$store.state.panel.mainActiveName
-    }
+    },
+    ...mapState([
+      'mobileLayoutStatus',
+      'previewVisible'
+    ])
   },
   watch: {
     chart: {
@@ -253,6 +258,8 @@ export default {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
       } else if (chart.type === 'bar-stack' || chart.type === 'percentage-bar-stack') {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
+      } else if (chart.type === 'bar-group-stack') {
+        this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, true)
       } else if (chart.type === 'bar-horizontal') {
         this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
       } else if (chart.type === 'bar-stack-horizontal') {
@@ -442,7 +449,7 @@ export default {
       })
     },
     handleTitleEditer() {
-      if (this.mainActiveName !== 'PanelEdit') return
+      if (this.mainActiveName !== 'PanelEdit' || this.mobileLayoutStatus || this.previewVisible) return
       this.chartTitleEditer = true
       this.chartTitleUpdate = this.chart.title
       this.$nextTick(() => {

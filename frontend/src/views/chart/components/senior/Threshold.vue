@@ -243,7 +243,7 @@
       :title="$t('chart.threshold')"
       :visible="editLabelThresholdDialog"
       :show-close="false"
-      width="50%"
+      width="800px"
       class="dialog-css"
       append-to-body
     >
@@ -274,7 +274,7 @@
       :title="$t('chart.threshold')"
       :visible="editTableThresholdDialog"
       :show-close="false"
-      width="50%"
+      width="800px"
       class="dialog-css"
       append-to-body
     >

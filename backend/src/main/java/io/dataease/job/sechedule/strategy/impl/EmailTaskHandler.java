@@ -6,6 +6,7 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.impl.AuthUserServiceImpl;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.dto.PermissionProxy;
+import io.dataease.dto.chart.ViewOption;
 import io.dataease.ext.ExtTaskMapper;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.CronUtils;
@@ -29,6 +30,7 @@ import io.dataease.plugins.xpack.larksuite.dto.response.LarksuiteMsgResult;
 import io.dataease.plugins.xpack.larksuite.service.LarksuiteXpackService;
 import io.dataease.plugins.xpack.wecom.dto.entity.WecomMsgResult;
 import io.dataease.plugins.xpack.wecom.service.WecomXpackService;
+import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.chart.ViewExportExcel;
 import io.dataease.service.sys.SysUserService;
 import io.dataease.service.system.EmailService;
@@ -199,10 +201,13 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
             List<File> files = null;
             String viewIds = emailTemplateDTO.getViewIds();
-            if (StringUtils.isNotBlank(viewIds)) {
+            ChartViewService chartViewService = SpringContextUtil.getBean(ChartViewService.class);
+            List<ViewOption> viewOptions = chartViewService.viewOptions(panelId);
+            if (StringUtils.isNotBlank(viewIds) && CollectionUtils.isNotEmpty(viewOptions)) {
+                List<String> viewOptionIdList = viewOptions.stream().map(ViewOption::getId).collect(Collectors.toList());
                 String viewDataRange = emailTemplateDTO.getViewDataRange();
                 Boolean justExportView = StringUtils.isBlank(viewDataRange) || StringUtils.equals("view", viewDataRange);
-                List<String> viewIdList = Arrays.asList(viewIds.split(",")).stream().filter(StringUtils::isNotBlank).map(s -> (s.trim())).collect(Collectors.toList());
+                List<String> viewIdList = Arrays.asList(viewIds.split(",")).stream().map(s -> s.trim()).filter(viewId -> StringUtils.isNotBlank(viewId) && viewOptionIdList.contains(viewId)).collect(Collectors.toList());
                 PermissionProxy proxy = new PermissionProxy();
                 proxy.setUserId(user.getUserId());
                 files = viewExportExcel.export(panelId, viewIdList, proxy, justExportView);

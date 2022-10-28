@@ -68,6 +68,10 @@
             <if test="createTime != null">
                 and dataset_group.create_time = #{createTime,jdbcType=BIGINT}
             </if>
+            <if test="excludedId != null">
+                and dataset_group.id != #{excludedId,jdbcType=VARCHAR}
+            </if>
+
             <if test="ids != null and ids.size() > 0">
                 and id in
                 <foreach collection="ids" item="item" separator="," open="(" close=")">
@@ -79,6 +83,6 @@
     </select>
 
     <select id="searchIds" resultType="java.util.Map">
-        select GET_V_AUTH_MODEL_WITH_CHILDREN(#{id},#{type}) ids
+        select GET_V_AUTH_MODEL_WITH_CHILDREN(#{id}, #{type}) ids
     </select>
 </mapper>

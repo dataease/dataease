@@ -115,4 +115,13 @@ public class CasServer {
             return error;
         }
     }
+
+    @GetMapping("/loginPage")
+    @ResponseBody
+    public String loginPage() {
+        String casServerUrlPrefix = systemParameterService.getValue("cas.login");
+        String callBack = systemParameterService.getValue("cas.callBack");
+        String result = casServerUrlPrefix + "?service=" + callBack;
+        return result;
+    }
 }

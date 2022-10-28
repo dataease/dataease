@@ -13,11 +13,17 @@ import java.util.List;
 @Data
 public class PanelAppTemplateApplyRequest {
 
+    private String logId;
+
     private String panelId;
+
+    private String panelGroupPid;
 
     private String panelName;
 
     private String datasetGroupId;
+
+    private String datasetGroupPid;
 
     private String datasetGroupName;
 

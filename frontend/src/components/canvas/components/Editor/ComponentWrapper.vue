@@ -10,6 +10,7 @@
       :source-element="sourceConfig"
       :terminal="terminal"
       :element="config"
+      :canvas-id="canvasId"
       :show-position="showPosition"
       @showViewDetails="showViewDetails"
     />
@@ -195,7 +196,7 @@ export default {
       return style
     },
     componentActiveFlag() {
-      return (this.curComponent && this.config === this.curComponent && !this.previewVisible && !this.showPosition.includes('email-task')) || this.showPosition.includes('multiplexing')
+      return !this.mobileLayoutStatus && ((this.curComponent && this.config === this.curComponent && !this.previewVisible && !this.showPosition.includes('email-task')) || this.showPosition.includes('multiplexing'))
     },
     curGap() {
       return (this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix) ? this.componentGap : 0

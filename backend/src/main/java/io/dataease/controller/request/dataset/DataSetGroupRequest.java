@@ -18,4 +18,6 @@ public class DataSetGroupRequest extends DatasetGroup {
     private String userId;
     @ApiModelProperty("ID集合")
     private Set<String> ids;
+    @ApiModelProperty("排除的ID")
+    private String excludedId;
 }

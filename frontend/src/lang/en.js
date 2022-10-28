@@ -1423,6 +1423,7 @@ export default {
     gauge_size_field_delete: 'Dynamic field changed，please edit again',
     chart_group: 'Sub Type',
     chart_bar_group: 'Bar Group',
+    chart_bar_group_stack: 'Group Stack Bar',
     field_dynamic: 'Dynamic',
     aggregation: 'Aggregation',
     filter_between: 'Between',
@@ -2631,6 +2632,28 @@ export default {
     search_by_keyword: 'Search by keyword',
     apply_logs: 'Apply logs',
     app_group_delete_tips: 'Are you sure to delete this application category?',
-    app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.'
+
+    app_group_delete_content: 'After deletion, all application templates in this category will also be deleted.',
+    panel_position: 'Panel position',
+    panel_name: 'Panel name',
+    dataset_group_position: 'Dataset group position',
+    dataset_group_name: 'Dataset name',
+    datasource_info: 'Datasource info',
+    datasource: 'Datasource',
+    dataset_group: 'Dataset group',
+    panel: 'Panel',
+    log_delete_tips: 'Are you sure to delete this application record?',
+    log_resource_delete_tips: 'Delete related resources (irrecoverable after deletion)',
+    file_error_tips: 'The relevant data file is not found. The current file may not be a DataEase application file, or the file may be damaged ',
+    app_export: 'Application export',
+    app_version: 'Application version',
+    program_version: 'DataEase minimum version',
+    creator: 'Author',
+    export: 'Export'
+  },
+
+  logout: {
+    oidc_logout_error: 'OIDC failed to exit, do you continue to exit DataEase?',
+    cas_logout_error: 'The CAS service is abnormal, please contact the administrator!'
   }
 }

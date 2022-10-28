@@ -79,7 +79,7 @@
                       v-if="loginTypes.includes(7)"
                       :label="7"
                       size="mini"
-                    >Larksuite</el-radio>
+                    >Lark</el-radio>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item prop="username">
@@ -130,17 +130,17 @@
             >
               <el-row class="code-contaniner">
                 <plugin-com
-                  v-if="loginTypes.includes(4) && codeIndex === 4"
+                  v-if="codeShow && loginTypes.includes(4) && codeIndex === 4"
                   ref="WecomQr"
                   component-name="WecomQr"
                 />
                 <plugin-com
-                  v-if="loginTypes.includes(5) && codeIndex === 5"
+                  v-if="codeShow && loginTypes.includes(5) && codeIndex === 5"
                   ref="DingtalkQr"
                   component-name="DingtalkQr"
                 />
                 <plugin-com
-                  v-if="loginTypes.includes(6) && codeIndex === 6"
+                  v-if="codeShow && loginTypes.includes(6) && codeIndex === 6"
                   ref="LarkQr"
                   component-name="LarkQr"
                 />
@@ -210,7 +210,7 @@
 <script>
 
 import { encrypt } from '@/utils/rsaEncrypt'
-import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType, wecomStatus, dingtalkStatus, larkStatus, larksuiteStatus } from '@/api/user'
+import { ldapStatus, oidcStatus, getPublicKey, pluginLoaded, defaultLoginType, wecomStatus, dingtalkStatus, larkStatus, larksuiteStatus, casStatus, casLoginPage } from '@/api/user'
 import { getSysUI } from '@/utils/auth'
 import { changeFavicon } from '@/utils/index'
 import { initTheme } from '@/utils/ThemeUtil'
@@ -282,6 +282,12 @@ export default {
       this.contentShow = true
     })
 
+    casStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(3)
+      }
+    })
+
     ldapStatus().then(res => {
       if (res.success && res.data) {
         this.loginTypes.push(1)
@@ -339,6 +345,12 @@ export default {
     defaultLoginType().then(res => {
       if (res && res.success) {
         this.defaultType = res.data
+      }
+      if (this.loginTypes.includes(3) && this.defaultType === 3) {
+        casLoginPage().then(res => {
+          debugger
+          window.location.href = res.data
+        })
       }
       this.setDefaultType()
     })

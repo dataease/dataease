@@ -39,7 +39,7 @@ export const colorCases = [
   {
     name: i18n.t('chart.color_gentle'),
     value: 'gentle',
-    colors: ['#5b9bd5', '#ed7d31', '#70ad47', '#ffc000', '#4472c4', '#91d024', '#b235e6', '#02ae75', '#5b9bd5']
+    colors: ['#5b9bd5', '#ed7d31', '#70ad47', '#ffc000', '#4472c4', '#91d024', '#b235e6', '#02ae75', '#003F78']
   },
   {
     name: i18n.t('chart.color_technology'),
@@ -59,7 +59,7 @@ export const colorCases = [
   {
     name: i18n.t('chart.color_fresh'),
     value: 'fresh',
-    colors: ['#5f9b3c', '#75c24b', '#83d65f', '#aacf53', '#c7dc68', '#d8e698', '#e0ebaf', '#bbc8e6', '#e5e5e5']
+    colors: ['#e5e5e5', '#bbc8e6', '#e0ebaf', '#d8e698', '#c7dc68', '#aacf53', '#83d65f', '#75c24b', '#5f9b3c']
   },
   {
     name: i18n.t('chart.color_energy'),
@@ -79,7 +79,7 @@ export const colorCases = [
   {
     name: i18n.t('chart.color_spiritual'),
     value: 'spiritual',
-    colors: ['#00a3af', '#4da798', '#57baaa', '#62d0bd', '#6ee4d0', '#86e7d6', '#aeede1', '#bde1e6', '#e5e5e5']
+    colors: ['#e5e5e5', '#bde1e6', '#aeede1', '#86e7d6', '#6ee4d0', '#62d0bd', '#57baaa', '#4da798', '#00a3af']
   }
 ]
 
