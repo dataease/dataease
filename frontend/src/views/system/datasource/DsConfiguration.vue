@@ -291,9 +291,10 @@
           ['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(form.type)
         "
         class="schema-label"
+        prop="configuration.schema"
       >
         <template slot="label">
-          {{ $t('datasource.schema') }}
+          <span class="name">{{ $t('datasource.schema') }}<i class="required" /></span>
           <el-button
             type="text"
             icon="el-icon-plus"
@@ -889,6 +890,13 @@ export default {
           }
         ],
         'configuration.connectTimeout': [
+          {
+            required: true,
+            message: i18n.t('datasource.please_input_connect_timeout'),
+            trigger: 'blur'
+          }
+        ],
+        'configuration.schema': [
           {
             required: true,
             message: i18n.t('datasource.please_input_connect_timeout'),
@@ -1614,6 +1622,22 @@ export default {
   ::v-deep.el-table__expand-icon {
     .el-icon-arrow-right::before {
       content: "\E791" !important;
+    }
+  }
+}
+.schema-label {
+  ::v-deep.el-form-item__label {
+    display: flex;
+    justify-content: space-between;
+    &::after {
+      display: none;
+    }
+    .name {
+      .required::after {
+        content: "*";
+        color: #f54a45;
+        margin-left: 2px;
+      }
     }
   }
 }

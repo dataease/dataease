@@ -661,8 +661,11 @@ export default {
       })
     },
     getDatasourceDetail(id, showModel) {
+      this.formLoading = true
       return getDatasourceDetail(id).then((res) => {
         this.params = { ...res.data, showModel }
+      }).finally(() => {
+        this.formLoading = false
       })
     },
     queryTreeData() {
@@ -1062,7 +1065,7 @@ export default {
                 } else {
                   this.openMessageSuccess(
                     res.message.substring(0, 2500) + '......',
-                    'danger'
+                    'error'
                   )
                 }
               }
@@ -1082,7 +1085,7 @@ export default {
                   } else {
                     this.openMessageSuccess(
                       res.message.substring(0, 2500) + '......',
-                      'danger'
+                      'error'
                     )
                   }
                 }
