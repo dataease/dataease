@@ -182,6 +182,7 @@ public class PanelAppTemplateService {
         for (DatasetTableField datasetTableField : datasetTableFieldsInfo) {
             String oldId = datasetTableField.getId();
             datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
+            datasetTableField.setId(null);
             DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
             datasetFieldsRealMap.put(oldId, newTableField.getId());
         }
