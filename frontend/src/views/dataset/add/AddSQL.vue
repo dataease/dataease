@@ -208,8 +208,149 @@
             @input="onCmCodeChange"
           />
         </div>
+        <el-tabs
+          v-model="tabActive"
+          @tab-click="changeTab"
+        >
+          <el-tab-pane
+            :label="$t('dataset.task.list')"
+            name="result"
+          />
+          <el-tab-pane
+            :label="$t('dataset.task.record')"
+            name="execLog"
+          />
+        </el-tabs>
 
-        <div class="sql-result">
+        <div
+          v-show="tabActive === 'execLog'"
+          class="table-container"
+        >
+          <grid-table
+            v-if="param.tableId"
+            v-loading="loading"
+            :table-data="data"
+            :columns="[]"
+            :pagination="paginationConfig"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          >
+            <el-table-column
+              key="startTime"
+              min-width="200px"
+              prop="startTime"
+              :label="$t('dataset.start_time')"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.startTime | timestampFormatDate }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              key="startTime"
+              min-width="200px"
+              prop="sql"
+              :label="$t('dataset.sql')"
+            />
+            <el-table-column
+              key="startTime"
+              min-width="200px"
+              prop="spend"
+              :label="$t('dataset.spend_time')"
+            />
+            <el-table-column
+              key="startTime"
+              min-width="200px"
+              prop="status"
+              :label="$t('dataset.sql_result')"
+            >
+              <template slot-scope="scope">
+                <span
+                  v-if="scope.row.status"
+                  :class="[`de-${scope.row.status}-pre`, 'de-status']"
+                >{{ $t(`dataset.${scope.row.status.toLocaleLowerCase()}`) }}
+                </span>
+                <span v-else>-</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              slot="__operation"
+              key="__operation"
+              :label="$t('commons.operating')"
+              fixed="right"
+              width="100"
+            >
+              <template slot-scope="scope">
+                <el-button
+                  class="de-text-btn mar3 mar6"
+                  type="text"
+                  @click="copy(scope.row.sql)"
+                >
+                  {{ $t("commons.copy") }}
+                </el-button>
+              </template>
+
+            </el-table-column>
+          </grid-table>
+
+          <ux-grid
+            v-else
+            ref="tableLog"
+            size="mini"
+            style="width: 100%"
+            :height="height"
+            :checkbox-config="{ highlight: true }"
+            :width-resize="true"
+          >
+            <ux-table-column
+              key="startTime"
+              min-width="200px"
+              field="startTime"
+              :title="$t('dataset.start_time')"
+              :resizable="true"
+            >
+              <template slot-scope="scope">
+                <span>{{ scope.row.startTime | timestampFormatDate }}</span>
+              </template>
+            </ux-table-column>
+            <ux-table-column
+              key="startTime"
+              min-width="200px"
+              field="sql"
+              :title="$t('dataset.sql')"
+              :resizable="true"
+            />
+            <ux-table-column
+              key="startTime"
+              min-width="200px"
+              field="spend"
+              :title="$t('dataset.spend_time')"
+              :resizable="true"
+            />
+            <ux-table-column
+              key="startTime"
+              min-width="200px"
+              field="status"
+              :title="$t('dataset.sql_result')"
+              :resizable="true"
+            >
+              <template slot-scope="scope">
+                <span
+                  v-if="scope.row.status"
+                  :class="[`de-${scope.row.status}-pre`, 'de-status']"
+                >{{ $t(`dataset.${scope.row.status.toLocaleLowerCase()}`) }}
+                </span>
+                <span v-else>-</span>
+              </template>
+            </ux-table-column>
+
+          </ux-grid>
+        </div>
+
+        <div
+          v-show="tabActive === 'result'"
+          class="sql-result"
+        >
           <div class="sql-title">
             {{ $t('deDataset.running_results') }}
             <span class="result-num">{{
@@ -456,9 +597,10 @@ import { engineMode } from '@/api/system/engine'
 import msgCfm from '@/components/msgCfm/index'
 import cancelMix from './cancelMix'
 import _ from 'lodash'
+import GridTable from '@/components/gridTable/index.vue'
 export default {
   name: 'AddSQL',
-  components: { codemirror },
+  components: { codemirror, GridTable },
   mixins: [msgCfm, cancelMix],
   props: {
     param: {
@@ -468,6 +610,13 @@ export default {
   },
   data() {
     return {
+      tabActive: 'result',
+      paginationConfig: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
+      data: [],
       dataSource: '',
       loading: false,
       dataTable: '',
@@ -586,12 +735,31 @@ export default {
     this.initTableInfo()
   },
   created() {
+    console.log(this.param)
     this.kettleState()
     engineMode().then((res) => {
       this.engineMode = res.data
     })
   },
   methods: {
+    copy(text) {
+      this.$copyText(text).then((e) => {
+        this.openMessageSuccess('commons.copy_success')
+      }, (e) => {
+        this.openMessageSuccess('commons.copy_success')
+      })
+    },
+    changeTab() {
+    },
+    handleSizeChange(pageSize) {
+      this.paginationConfig.currentPage = 1
+      this.paginationConfig.pageSize = pageSize
+      this.listSqlLog()
+    },
+    handleCurrentChange(currentPage) {
+      this.paginationConfig.currentPage = currentPage
+      this.listSqlLog()
+    },
     getField(name) {
       post('/dataset/table/getFields', {
         dataSourceId: this.dataSource,
@@ -687,7 +855,6 @@ export default {
         })
       }
     },
-
     getSQLPreview() {
       this.errMsg = false
       this.errMsgCont = ''
@@ -700,6 +867,7 @@ export default {
       this.fields = []
       this.$refs.plxTable?.reloadData([])
       post('/dataset/table/sqlPreview', {
+        id: this.param.tableId,
         dataSourceId: this.dataSource,
         type: 'sql',
         mode: parseInt(this.mode),
@@ -710,17 +878,49 @@ export default {
         })
       }, true, 60000, true)
         .then((response) => {
-          this.fields = response.data.fields
-          this.$nextTick(() => {
-            this.$refs.plxTable?.reloadData(response.data.data)
-          })
+          if (response.success) {
+            this.fields = response.data.fields
+            this.$nextTick(() => {
+              this.$refs.plxTable?.reloadData(response.data.data)
+            })
+            if (!this.param.tableId) {
+              this.data.unshift(response.data.log)
+              this.$refs.tableLog?.reloadData(this.data)
+            } else {
+              this.listSqlLog()
+            }
+          } else {
+            this.errMsgCont = response.message
+            this.errMsg = true
+            if (!this.param.tableId) {
+              this.data.unshift(response.data)
+              this.$refs.tableLog?.reloadData(this.data)
+            } else {
+              this.listSqlLog()
+            }
+          }
         })
-        .catch((err, msg) => {
+        .catch((err, msg, response) => {
           this.errMsgCont = err
           this.errMsg = true
+          if (!this.param.tableId) {
+            this.data.unshift(response.data)
+            this.$refs.tableLog?.reloadData(this.data)
+          } else {
+            this.listSqlLog()
+          }
         })
     },
+    listSqlLog() {
+      post('/dataset/table/sqlLog/' + this.paginationConfig.currentPage + '/' + this.paginationConfig.pageSize, { id: this.param.tableId, dataSourceId: this.dataSource })
+        .then((response) => {
+          this.data = response.data.listObject
+          this.paginationConfig.total = response.data.itemCount
+        })
+        .catch(() => {
 
+        })
+    },
     save() {
       if (!this.dataSource || this.datasource === '') {
         this.openMessageSuccess('dataset.pls_slc_data_source', 'error')
@@ -1061,6 +1261,18 @@ export default {
         color: var(--deTextSecondary, #646a73);
       }
     }
+  }
+  .table-container {
+    height: calc(100% - 50px);
+    .mar6 {
+      margin-right: 6px;
+    }
+    .mar3 {
+      margin-left: -3px;
+    }
+  }
+  .table-container-filter {
+    height: calc(100% - 110px);
   }
 }
 </style>

@@ -1435,6 +1435,9 @@ export default {
     percent: '占比'
   },
   dataset: {
+    spend_time: '耗时',
+    sql: 'SQL 语句',
+    sql_result: '运行结果',
     parse_filed: '解析字段',
     field_rename: '字段重命名',
     params_work: '仅在编辑sql时生效',

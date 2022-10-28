@@ -42,3 +42,14 @@ VALUES ('Apache Kylin 数据源插件', 'default', '0', '0', 'datasource', 'Apac
 
 
 INSERT INTO `sys_msg_channel` (`msg_channel_id`, `channel_name`, `service_name`) VALUES ('6', 'webmsg.channel_larksuite_msg', 'sendLarksuite');
+
+CREATE TABLE `dataset_sql_log` (
+       `id` varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
+       `dataset_id` varchar(50) NOT NULL DEFAULT '' COMMENT '数据集ID',
+       `start_time` bigint(13) DEFAULT NULL COMMENT '开始时间',
+       `end_time` bigint(13) DEFAULT NULL COMMENT '结束时间',
+       `spend` bigint(13) DEFAULT NULL COMMENT '耗时(毫秒)',
+       `sql` longtext NOT NULL COMMENT '详细信息',
+       `status` varchar(45) DEFAULT NULL COMMENT '状态',
+       PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
