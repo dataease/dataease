@@ -661,8 +661,11 @@ export default {
       })
     },
     getDatasourceDetail(id, showModel) {
+      this.formLoading = true
       return getDatasourceDetail(id).then((res) => {
         this.params = { ...res.data, showModel }
+      }).finally(() => {
+        this.formLoading = false
       })
     },
     queryTreeData() {
