@@ -778,6 +778,9 @@ export default {
     },
     mobileLayoutStatus() {
       this.restore()
+    },
+    previewVisible(val) {
+      this.$store.commit('setPreviewVisible', val)
     }
   },
   created() {
