@@ -98,6 +98,7 @@ import TitleRemark from '@/views/chart/view/TitleRemark'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import clickoutside from 'element-ui/src/utils/clickoutside.js'
 import bus from '@/utils/bus'
+import { mapState } from 'vuex'
 import { compareItem } from '@/views/chart/chart/compare'
 import {
   getChartDetails
@@ -197,7 +198,11 @@ export default {
     },
     mainActiveName() {
       return this.$store.state.panel.mainActiveName
-    }
+    },
+    ...mapState([
+      'mobileLayoutStatus',
+      'previewVisible'
+    ])
   },
   watch: {
     chart: {
@@ -479,7 +484,7 @@ export default {
       })
     },
     handleTitleEditer() {
-      if (this.mainActiveName !== 'PanelEdit') return
+      if (this.mainActiveName !== 'PanelEdit' || this.mobileLayoutStatus || this.previewVisible) return
       this.chartTitleEditer = true
       this.chartTitleUpdate = this.chart.title
       this.$nextTick(() => {
