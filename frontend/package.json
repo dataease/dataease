@@ -45,6 +45,7 @@
     "js-cookie": "2.2.0",
     "jsencrypt": "^3.0.0-rc.1",
     "jspdf": "^2.3.1",
+    "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "lodash.isboolean": "^3.0.3",
     "lodash.isempty": "^4.4.0",

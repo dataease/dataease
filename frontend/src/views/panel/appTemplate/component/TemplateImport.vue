@@ -31,7 +31,7 @@
             id="input"
             ref="files"
             type="file"
-            accept=".DEAPP"
+            accept=".zip"
             hidden
             @change="handleFileChange"
           >
@@ -47,14 +47,16 @@
         secondary
         @click="cancel()"
       >{{
-        $t("commons.cancel")
-      }}</deBtn>
+        $t('commons.cancel')
+      }}
+      </deBtn>
       <deBtn
         type="primary"
         @click="save()"
       >{{
-        $t("commons.confirm")
-      }}</deBtn>
+        $t('commons.confirm')
+      }}
+      </deBtn>
     </el-row>
   </div>
 </template>
@@ -64,6 +66,7 @@ import { save, update, nameCheck } from '@/api/system/appTemplate'
 import msgCfm from '@/components/msgCfm/index'
 import { find } from '@/api/system/template'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
+import JSZip from 'jszip'
 
 export default {
   mixins: [msgCfm],
@@ -186,22 +189,31 @@ export default {
       })
     },
     handleFileChange(e) {
+      const jsZip = new JSZip()
       const file = e.target.files[0]
-      const reader = new FileReader()
       const _this = this
-      reader.onload = (res) => {
-        _this.appResultInfo = JSON.parse(res.target.result)
-        _this.importTemplateInfo = JSON.parse(this.appResultInfo.panelInfo)
-        _this.templateInfo.name = this.importTemplateInfo.name
-        _this.templateInfo.templateStyle = this.importTemplateInfo.panelStyle
-        _this.templateInfo.templateData = this.importTemplateInfo.panelData
-        _this.templateInfo.snapshot = this.importTemplateInfo.snapshot
-        _this.templateInfo.dynamicData = this.importTemplateInfo.dynamicData
-        _this.templateInfo.staticResource =
-          _this.importTemplateInfo.staticResource
-        _this.templateInfo.nodeType = 'template'
-      }
-      reader.readAsText(file)
+      jsZip.loadAsync(file).then(function(file) {
+        jsZip.file('DATA_RELATION.DE').async('string').then(function(content) {
+          _this.appResultInfo = { ...JSON.parse(content), ..._this.appResultInfo }
+        })
+        jsZip.file('APP.json').async('string').then(function(content) {
+          _this.appResultInfo['applicationInfo'] = content
+          const appInfo = JSON.parse(content)
+          _this.templateInfo.name = appInfo.appName
+        })
+        jsZip.file('TEMPLATE.DET').async('string').then(function(content) {
+          _this.appResultInfo['panelInfo'] = content
+          _this.importTemplateInfo = JSON.parse(content)
+          _this.templateInfo.templateStyle = _this.importTemplateInfo.panelStyle
+          _this.templateInfo.templateData = _this.importTemplateInfo.panelData
+          _this.templateInfo.snapshot = _this.importTemplateInfo.snapshot
+          _this.templateInfo.dynamicData = _this.importTemplateInfo.dynamicData
+          _this.templateInfo.staticResource = _this.importTemplateInfo.staticResource
+          _this.templateInfo.nodeType = 'template'
+        })
+      }).catch(() => {
+        _this.$warning(this.$t('app_template.file_error_tips'))
+      })
     },
     goFile() {
       this.$refs.files.click()
@@ -216,10 +228,12 @@ export default {
   border: none;
   padding: 0 0;
 }
+
 .my_table ::v-deep .el-table th.is-leaf {
   /* 去除上边框 */
   border: none;
 }
+
 .my_table ::v-deep .el-table::before {
   /* 去除下边框 */
   height: 0;
@@ -229,6 +243,7 @@ export default {
   margin-top: 24px;
   text-align: right;
 }
+
 .preview {
   margin-top: -12px;
   border: 1px solid #e6e6e6;
@@ -237,6 +252,7 @@ export default {
   background-size: 100% 100% !important;
   border-radius: 4px;
 }
+
 .preview-show {
   border-left: 1px solid #e6e6e6;
   height: 300px;
@@ -250,6 +266,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   .el-input {
     margin-right: 2px;
     flex: 1;
