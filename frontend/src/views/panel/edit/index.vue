@@ -174,6 +174,7 @@
           v-if="!previewVisible&&!mobileLayoutStatus"
           ref="canvasMainRef"
           class="canvas_main_content"
+          :style="customCanvasStyle"
           :canvas-style-data="canvasStyleData"
           :component-data="mainCanvasComponentData"
           :canvas-id="canvasId"

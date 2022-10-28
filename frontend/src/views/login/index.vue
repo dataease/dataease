@@ -79,7 +79,7 @@
                       v-if="loginTypes.includes(7)"
                       :label="7"
                       size="mini"
-                    >Larksuite</el-radio>
+                    >Lark</el-radio>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item prop="username">
