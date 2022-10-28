@@ -795,29 +795,30 @@ export const BASE_CANDLESTICK = {
       fontWeight: 'normal'
     }
   },
-  grid: {
-    containLabel: true
-  },
+  // grid: {
+  //   containLabel: true
+  // },
   tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
+  // legend: {
+  //   show: true,
+  //   type: 'scroll',
+  //   itemWidth: 10,
+  //   itemHeight: 10,
+  //   icon: 'rect',
+  //   data: []
+  // },
+  xAxis: {
+    // type: 'value',
     data: []
   },
-  xAxis: {
-    type: 'value',
-  },
   yAxis: {
-    type: 'value'
+    // type: 'value'
   },
   series: [],
-  dataset: {
-    dimensions: [],
-    source: [],
-  },
+  // dataset: {
+  //   dimensions: [],
+  //   source: [],
+  // },
   dataZoom: [
     {
       type: 'slider',

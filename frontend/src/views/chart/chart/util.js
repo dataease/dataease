@@ -273,13 +273,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_mix',
     icon: 'chart-mix'
   },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_trend',
-  //   value: 'candlestick',
-  //   title: 'chart.chart_candlestick',
-  //   icon: 'candlestick'
-  // },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_trend',
+    value: 'candlestick',
+    title: 'chart.chart_candlestick',
+    icon: 'candlestick'
+  },
   // {
   //   render: 'echarts',
   //   category: 'chart.chart_type_trend',

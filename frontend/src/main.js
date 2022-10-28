@@ -40,6 +40,7 @@ Vue.component('draggable', draggable)
 Vue.prototype.$api = api
 
 import * as echarts from 'echarts'
+import 'echarts-gl'
 
 Vue.prototype.$echarts = echarts
 

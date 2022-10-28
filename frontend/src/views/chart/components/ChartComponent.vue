@@ -313,9 +313,10 @@ export default {
         chart_option = baseLiquidOption(JSON.parse(JSON.stringify(BASE_LIQUID)), chart, this.$store.state.canvasStyleData)
       }
       
-      // else if (chart.type === 'candlestick') {
-      //   chart_option = candlestickOption(JSON.parse(JSON.stringify(BASE_CANDLESTICK)), chart, this.$store.state.canvasStyleData)
-      // } else if (chart.type === 'boxplot') {
+      else if (chart.type === 'candlestick') {
+        chart_option = candlestickOption(JSON.parse(JSON.stringify(BASE_CANDLESTICK)), chart, this.$store.state.canvasStyleData)
+      } 
+      // else if (chart.type === 'boxplot') {
       //   chart_option = baseBoxPlotOption(JSON.parse(JSON.stringify(BASE_BOXPLOT)), chart, this.$store.state.canvasStyleData)
       // } else if (chart.type === 'sankey') {
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)

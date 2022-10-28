@@ -762,7 +762,7 @@
               <el-row>
                 <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
                 <el-collapse v-model="attrActiveNames" class="style-collapse">
-                  <el-collapse-item name="color" :title="$t('chart.color')">
+                  <el-collapse-item v-show="view.render && view.type !== 'candlestick'" name="color" :title="$t('chart.color')">
                     <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
                   </el-collapse-item>
                   <el-collapse-item
@@ -778,7 +778,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && view.type !== 'map' && !view.type.includes('progress') && view.type !== 'waterfall' && view.type !== 'graph'"
+                    v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick' && view.type !== 'map' && !view.type.includes('progress') && view.type !== 'waterfall' && view.type !== 'graph'"
                     name="size"
                     :title="$t('chart.size')"
                   >
@@ -838,7 +838,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table')&&!view.type.includes('vertical')&&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
+                    v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')&&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -1039,7 +1039,7 @@
                       && (view.type !== 'treemap' || view.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
                       && view.type !== 'gauge' && view.type !== 'word-cloud' && !view.type.includes('progress')
-                      && view.type !== 'graph'"
+                      && view.type !== 'graph' && view.type !== 'candlestick'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >
