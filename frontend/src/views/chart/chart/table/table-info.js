@@ -3,7 +3,6 @@ import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import Vue from 'vue'
 export function baseTableInfo(s2, container, chart, action, tableData) {
   const containerDom = document.getElementById(container)
 
@@ -12,7 +11,6 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
   if (!fields || fields.length === 0) {
     if (s2) {
       s2.destroy()
-      destroyS2()
     }
     return
   }
@@ -140,7 +138,6 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
   // 开始渲染
   if (s2) {
     s2.destroy()
-    destroyS2
   }
   s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
 
@@ -163,7 +160,6 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
   if (!fields || fields.length === 0) {
     if (s2) {
       s2.destroy()
-      destroyS2
     }
     return
   }
@@ -278,7 +274,6 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
   // 开始渲染
   if (s2) {
     s2.destroy()
-    destroyS2()
   }
   s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
 
@@ -315,7 +310,6 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
   if (!fields || fields.length === 0) {
     if (s2) {
       s2.destroy()
-      destroyS2()
     }
     return
   }
@@ -437,7 +431,6 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
   // 开始渲染
   if (s2) {
     s2.destroy()
-    destroyS2()
   }
   s2 = new PivotSheet(containerDom, s2DataConfig, s2Options)
 
@@ -449,13 +442,6 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
   s2.setThemeCfg({ theme: customTheme })
 
   return s2
-}
-
-function destroyS2(s2) {
-  for (const i in s2) {
-    Vue.$delete(s2, i)
-  }
-  s2 = null
 }
 
 function getCurrentField(valueFieldList, field) {
