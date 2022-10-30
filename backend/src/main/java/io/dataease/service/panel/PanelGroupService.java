@@ -814,8 +814,8 @@ public class PanelGroupService {
         // dataset check
         if (CollectionUtils.isEmpty(datasetTablesInfo)) {
             return new PanelExport2App("this panel don't have dataset");
-        } else if (datasetTablesInfo.stream().filter(datasetTable -> datasetTable.getType().equals("excel")).collect(Collectors.toList()).size() > 0) {
-            return new PanelExport2App("this panel have dataset witch type is excel");
+        } else if (datasetTablesInfo.stream().filter(datasetTable -> datasetTable.getType().equals("excel") || datasetTable.getType().equals("api")).collect(Collectors.toList()).size() > 0) {
+            return new PanelExport2App("this panel have dataset witch type is excel or api");
         }
 
         //datasource check

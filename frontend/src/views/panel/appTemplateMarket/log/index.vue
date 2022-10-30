@@ -224,6 +224,7 @@ import {
 import { deleteLogAndResource, logGrid } from '@/api/appTemplateMarket/log'
 import { findOneWithParent } from '@/api/panel/panel'
 import AppTemplateApply from '@/views/panel/appTemplate/component/AppTemplateApply'
+import { hasDataPermission } from '@/utils/permission'
 
 export default {
   name: 'AppTemplateLog',
@@ -308,7 +309,8 @@ export default {
         panelName: item.panelName,
         datasourcePrivileges: item.datasourcePrivileges,
         panelPrivileges: item.panelPrivileges,
-        datasetPrivileges: item.datasetPrivileges
+        datasetPrivileges: item.datasetPrivileges,
+        appMarketEdit: hasDataPermission('manage', item.datasourcePrivileges)
       }
       this.$refs.templateEditApply.init(param)
     },
