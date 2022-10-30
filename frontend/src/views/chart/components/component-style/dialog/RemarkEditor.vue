@@ -1,16 +1,25 @@
 <template>
-  <div style="max-height: 50vh;overflow-y: auto;">
-    <Editor
-      v-model="content"
-      style="width: 100%;height: 100%"
-      :init="init"
-    />
+  <div
+    style="max-height: 50vh;overflow-y: auto;"
+    :style="customStyle"
+  >
+    <div :style="commonStyle">
+      <Editor
+        v-model="content"
+        style="width: 100%;height: 100%"
+        :init="init"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
-import Editor from '@tinymce/tinymce-vue'// 编辑器引入
+import Editor from '@tinymce/tinymce-vue'
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
+import { mapState } from 'vuex'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
+// 编辑器引入
 export default {
   name: 'RemarkEditor',
   components: {
@@ -69,6 +78,43 @@ export default {
     }
   },
 
+  computed: {
+    customStyle() {
+      let style = {}
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
+          style = {
+            background: `url(${imgUrlTrans(this.canvasStyleData.panel.imageUrl)}) no-repeat`,
+            ...style
+          }
+        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          style = {
+            background: this.canvasStyleData.panel.color,
+            ...style
+          }
+        }
+      }
+      if (!style.background) {
+        style.background = '#FFFFFF'
+      }
+      return style
+    },
+    commonStyle() {
+      const style = {
+        width: '100%',
+        height: '100%'
+      }
+      if (this.curComponent.commonBackground && this.curComponent.commonBackground.backgroundColorSelect) {
+        style['background-color'] = hexColorToRGBA(this.curComponent.commonBackground.color, this.curComponent.commonBackground.alpha)
+      }
+      return style
+    },
+    ...
+    mapState([
+      'curComponent',
+      'canvasStyleData'
+    ])
+  },
   created() {
     if (!this.showTable) {
       this.init.plugins = this.init.plugins.replace(' table', '')
@@ -85,5 +131,9 @@ export default {
 </script>
 
 <style scoped>
+
+::v-deep .tox-edit-area__iframe {
+  background: rgba(255, 255, 255, 0) !important;
+}
 
 </style>
