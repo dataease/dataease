@@ -1,6 +1,6 @@
 <template>
   <div
-    v-loading="formLoading"
+    v-loading="positionCheck('datasource')?formLoading:false"
     :class="positionCheck('datasource')?'de-ds-form':'de-ds-form-app'"
   >
     <div

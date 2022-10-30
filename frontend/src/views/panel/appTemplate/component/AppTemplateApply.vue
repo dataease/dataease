@@ -1,6 +1,7 @@
 <template>
   <el-drawer
     v-closePress
+    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
     :title="'应用模板'"
     :visible.sync="applyDrawer"
     custom-class="de-user-drawer"

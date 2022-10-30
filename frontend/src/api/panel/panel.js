@@ -313,7 +313,7 @@ export function appApply(data) {
   return request({
     url: 'panel/group/appApply',
     method: 'post',
-    loading: false,
+    loading: true,
     data
   })
 }
@@ -322,7 +322,7 @@ export function appEdit(data) {
   return request({
     url: 'panel/group/appEdit',
     method: 'post',
-    loading: false,
+    loading: true,
     data
   })
 }
