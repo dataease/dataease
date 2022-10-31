@@ -735,7 +735,6 @@ export default {
     this.initTableInfo()
   },
   created() {
-    console.log(this.param)
     this.kettleState()
     engineMode().then((res) => {
       this.engineMode = res.data

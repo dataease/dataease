@@ -63,7 +63,7 @@ CREATE TABLE `dataset_sql_log` (
        `sql` longtext NOT NULL COMMENT '详细信息',
        `status` varchar(45) DEFAULT NULL COMMENT '状态',
        PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (204, 203, 0, 2, '删除记录', NULL, NULL, 999, NULL, NULL, 0, 0, 0, 'appLog:del', NULL, NULL, 1614930903502, 1614930903502);
 INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (205, 203, 0, 2, '编辑记录', NULL, NULL, 999, NULL, NULL, 0, 0, 0, 'appLog:edit', NULL, NULL, 1614930935529, 1614930935529);
