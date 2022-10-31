@@ -130,5 +130,12 @@
         WHERE panel_view.panel_id = #{panelId}
     </select>
 
+    <select id="queryDetails" resultMap="BaseResultMapDTO">
+        select datasource.*,
+               get_auths(id, 'link', #{userId}) as `privileges`
+        from datasource
+        where id = #{datasourceId}
+    </select>
+
 
 </mapper>

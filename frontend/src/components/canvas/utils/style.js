@@ -8,7 +8,7 @@ export const LIGHT_THEME_PANEL_BACKGROUND = '#F1F3F5'
 export const LIGHT_THEME_COMPONENT_BACKGROUND = '#FFFFFF'
 
 export const DARK_THEME_COLOR_MAIN = '#FFFFFF'
-export const DARK_THEME_COLOR_SLAVE1 = '#CCCCCC'
+export const DARK_THEME_COLOR_SLAVE1 = '#858383'
 export const DARK_THEME_PANEL_BACKGROUND = '#030B2E'
 export const DARK_THEME_COMPONENT_BACKGROUND = '#131E42'
 export const DARK_THEME_COMPONENT_BACKGROUND_BACK = '#5a5c62'
@@ -361,7 +361,7 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
     }
   }
   customAttr['color'] = { ...canvasStyle.chartInfo.chartColor }
-  customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'], show: customStyle['text']['show'] }
+  customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'], show: customStyle['text']['show'], remarkShow: customStyle['text']['remarkShow'], remark: customStyle['text']['remark'] }
   if (customStyle.background) {
     delete customStyle.background
   }

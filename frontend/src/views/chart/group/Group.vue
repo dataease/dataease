@@ -1043,7 +1043,7 @@ export default {
           attr.label.position = 'outer'
         }
         if (type === 'pie-donut') {
-          attr.size.pieInnerRadius = Math.round(attr.size.pieOuterRadius * 0.7)
+          attr.size.pieInnerRadius = Math.round(attr.size.pieOuterRadius * 0.75)
         }
         if (type === 'pie-donut-rose') {
           attr.size.pieInnerRadius = Math.round(attr.size.pieOuterRadius * 0.5)

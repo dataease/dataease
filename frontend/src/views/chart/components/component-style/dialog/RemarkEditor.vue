@@ -1,5 +1,8 @@
 <template>
-  <div style="max-height: 50vh;overflow-y: auto;">
+  <div
+    style="max-height: 50vh;overflow-y: auto;"
+    :style="commonStyle"
+  >
     <Editor
       v-model="content"
       style="width: 100%;height: 100%"
@@ -10,7 +13,11 @@
 
 <script>
 import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
-import Editor from '@tinymce/tinymce-vue'// 编辑器引入
+import Editor from '@tinymce/tinymce-vue'
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
+import { mapState } from 'vuex'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
+// 编辑器引入
 export default {
   name: 'RemarkEditor',
   components: {
@@ -20,6 +27,10 @@ export default {
     remark: {
       type: String,
       required: true
+    },
+    background: {
+      type: String,
+      required: false
     },
     showTable: {
       type: Boolean,
@@ -61,6 +72,38 @@ export default {
       }
     }
   },
+  computed: {
+    customStyle() {
+      let style = {}
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
+          style = {
+            background: `url(${imgUrlTrans(this.canvasStyleData.panel.imageUrl)}) no-repeat`,
+            ...style
+          }
+        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          style = {
+            background: this.canvasStyleData.panel.color,
+            ...style
+          }
+        }
+      }
+      if (!style.background) {
+        style.background = '#FFFFFF'
+      }
+      return style
+    },
+    commonStyle() {
+      return {
+        background: this.background
+      }
+    },
+    ...
+    mapState([
+      'curComponent',
+      'canvasStyleData'
+    ])
+  },
   watch: {
     content: {
       handler(newValue) {
@@ -68,7 +111,6 @@ export default {
       }
     }
   },
-
   created() {
     if (!this.showTable) {
       this.init.plugins = this.init.plugins.replace(' table', '')
@@ -85,5 +127,9 @@ export default {
 </script>
 
 <style scoped>
+
+::v-deep .tox-edit-area__iframe {
+  background: rgba(255, 255, 255, 0) !important;
+}
 
 </style>

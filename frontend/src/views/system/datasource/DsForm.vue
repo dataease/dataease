@@ -1,6 +1,6 @@
 <template>
   <div
-    v-loading="formLoading"
+    v-loading="positionCheck('datasource')?formLoading:false"
     :class="positionCheck('datasource')?'de-ds-form':'de-ds-form-app'"
   >
     <div
@@ -87,7 +87,7 @@
             >
               <treeselect
                 v-model="attachForm.panelGroupPid"
-                :disabled="!(formType === 'add' ? true : hasDataPermission('manage', outerParams.panelPrivileges))"
+                :disabled="baseInfoDisabledCheck(outerParams.panelPrivileges)"
                 :clearable="false"
                 :options="panelGroupList"
                 :normalizer="normalizer"
@@ -103,7 +103,7 @@
             >
               <el-input
                 v-model="attachForm.panelName"
-                :disabled="!(formType === 'add' ? true : hasDataPermission('manage', outerParams.panelPrivileges))"
+                :disabled="baseInfoDisabledCheck(outerParams.panelPrivileges)"
               />
             </el-form-item>
             <el-form-item
@@ -112,7 +112,7 @@
             >
               <treeselect
                 v-model="attachForm.datasetGroupPid"
-                :disabled="!(formType === 'add' ? true : hasDataPermission('manage', outerParams.datasetPrivileges))"
+                :disabled="baseInfoDisabledCheck(outerParams.datasetPrivileges)"
                 :clearable="false"
                 :options="datasetGroupList"
                 :normalizer="normalizer"
@@ -128,7 +128,7 @@
             >
               <el-input
                 v-model="attachForm.datasetGroupName"
-                :disabled="!(formType === 'add' ? true : hasDataPermission('manage', outerParams.panelPrivileges))"
+                :disabled="baseInfoDisabledCheck(outerParams.datasetPrivileges)"
               />
             </el-form-item>
           </el-form>
@@ -138,13 +138,7 @@
             :model="form"
             :rules="rule"
             size="small"
-            :disabled="
-              params &&
-                params.id &&
-                params.showModel &&
-                params.showModel === 'show' &&
-                !canEdit
-            "
+            :disabled="disabled"
             class="de-form-item"
             label-width="180px"
             label-position="right"
@@ -218,13 +212,7 @@
               ref="dsConfig"
               :datasource-type="datasourceType"
               :form="form"
-              :disabled="
-                params &&
-                  params.id &&
-                  params.showModel &&
-                  params.showModel === 'show' &&
-                  !canEdit
-              "
+              :disabled="disabled"
             />
             <plugin-com
               v-if="datasourceType.isPlugin"
@@ -306,6 +294,7 @@ import msgCfm from '@/components/msgCfm'
 import { dsGroupTree } from '@/api/dataset/dataset'
 import { appApply, appEdit, groupTree } from '@/api/panel/panel'
 import { deepCopy } from '@/components/canvas/utils/utils'
+import { hasDataPermission } from '@/utils/permission'
 
 export default {
   name: 'DsForm',
@@ -587,7 +576,9 @@ export default {
     this.queryTreeData()
     let { id, showModel, type, name } = this.$route.query
     this.params = this.$route.query
-    if (this.positionCheck('appMarket')) {
+    const appMarketCheck = this.positionCheck('appMarket')
+    if (appMarketCheck) {
+      this.appMarketEdit = this.outerParams.appMarketEdit === undefined ? true : this.outerParams.appMarketEdit
       id = this.outerParams.datasourceId
       showModel = this.outerParams.showModel
       type = this.outerParams.datasourceType
@@ -615,16 +606,18 @@ export default {
       this.changeType(true)
     } else {
       this.canEdit = true
-      this.disabled = false
       if (type) {
         this.typeMap = name
         this.setType()
         this.changeType()
       }
     }
-    this.disabled = Boolean(id) && showModel === 'show' && !this.canEdit
+    this.disabled = appMarketCheck ? !this.appMarketEdit : (Boolean(id) && showModel === 'show' && !this.canEdit)
   },
   methods: {
+    baseInfoDisabledCheck(privileges) {
+      return !(this.formType === 'add' ? true : hasDataPermission('manage', privileges))
+    },
     normalizer(node) {
       // 去掉children=null的属性
       if (node.children === null || node.children === 'null') {
@@ -720,12 +713,6 @@ export default {
     changeEdit() {
       this.canEdit = true
       this.formType = 'modify'
-      this.disabled =
-        this.params &&
-        this.params.id &&
-        this.params.showModel &&
-        this.params.showModel === 'show' &&
-        !this.canEdit
     },
     edit(row) {
       this.formType = 'modify'
@@ -742,12 +729,6 @@ export default {
         this.form.configuration = JSON.parse(this.form.configuration)
         this.originConfiguration = JSON.stringify(this.form.configuration)
       }
-      this.disabled =
-        this.params &&
-        this.params.id &&
-        this.params.showModel &&
-        this.params.showModel === 'show' &&
-        !this.canEdit
       this.changeEdit()
     },
     reset() {

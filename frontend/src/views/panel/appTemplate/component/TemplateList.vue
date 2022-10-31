@@ -158,8 +158,8 @@ export default {
     },
     templateDelete(template) {
       const options = {
-        title: this.$('app_template.app_group_delete_tips'),
-        content: this.$('app_template.app_group_delete_content'),
+        title: this.$t('app_template.app_group_delete_tips'),
+        content: this.$t('app_template.app_group_delete_content'),
         type: 'primary',
         cb: () => this.$emit('templateDelete', template.id)
       }

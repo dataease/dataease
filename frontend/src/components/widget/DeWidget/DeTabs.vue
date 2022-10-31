@@ -1,6 +1,8 @@
 <template>
-  <div class="de-tabs-div">
-
+  <div
+    class="de-tabs-div"
+    :class="headClass"
+  >
     <dataease-tabs
       v-model="activeTabName"
       type="card"
@@ -23,8 +25,7 @@
         :name="item.name"
       >
         <span slot="label">
-          <span>{{ item.title }}</span>
-
+          <span :style="titleStyle">{{ item.title }}</span>
           <el-dropdown
             v-if="dropdownShow"
             slot="label"
@@ -33,7 +34,6 @@
             @command="handleCommand"
           >
             <span class="el-dropdown-link">
-
               <i
                 v-if="isEdit"
                 class="de-tab-i el-icon-arrow-down el-icon--right"
@@ -293,6 +293,14 @@ export default {
     }
   },
   computed: {
+    titleStyle() {
+      return {
+        fontSize: (this.element.style.fontSize || 16) + 'px'
+      }
+    },
+    headClass() {
+      return 'tab-head-' + this.element.style.headPosition
+    },
     curCanvasScaleSelf() {
       return this.curCanvasScaleMap[this.canvasId]
     },
@@ -633,6 +641,21 @@ export default {
 
 .canvas_move_in {
   border-color: blueviolet;
+}
+::v-deep .el-tabs__nav{
+  width: 100%;
+}
+.tab-head-left ::v-deep .el-tabs__nav{
+  width: 100%;
+  text-align: left;
+}
+.tab-head-right ::v-deep .el-tabs__nav{
+  width: 100%;
+  text-align: right;
+}
+.tab-head-center ::v-deep .el-tabs__nav{
+  width: 100%;
+  text-align: center;
 }
 
 </style>

@@ -530,11 +530,13 @@ export default {
     the_running_results: 'You can view the running results'
   },
   detabs: {
+    custom_sort: 'Custom Sort',
     eidttitle: 'Edit Title',
     selectview: 'Select View',
     selectOthers: 'Select Others',
     availableComponents: 'Available Components',
-    please: 'Please'
+    please: 'Please',
+    head_position: 'Head Position'
   },
   example: {
     warning: 'Creating and editing pages cannot be cached by keep-alive because keep-alive include does not currently support caching based on routes, so it is currently cached based on component name. If you want to achieve a similar caching effect, you can use a browser caching scheme such as localStorage. Or do not use keep-alive include to cache all pages directly. See details'
@@ -912,6 +914,7 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    chart_background: 'Component background',
     solid_color: 'Solid color',
     split_gradient: 'Split gradient',
     continuous_gradient: 'Continuous gradient',
@@ -1434,7 +1437,8 @@ export default {
     reserve_two: '2',
     proportion: 'Proportion',
     label_content: 'Label Content',
-    percent: 'Percent'
+    percent: 'Percent',
+    table_index_desc: 'Index Header Name'
   },
   dataset: {
     spend_time: 'Spend',
@@ -2370,7 +2374,7 @@ export default {
     channel_wecom_msg: 'Wecom',
     channel_dingtalk_msg: 'Dingtalk',
     channel_lark_msg: 'Lark',
-    channel_larksuite_msg: 'Larksuite'
+    channel_larksuite_msg: 'INT Lark'
   },
   denumberrange: {
     label: 'Number range',
@@ -2486,7 +2490,7 @@ export default {
     wecom: 'Wecom',
     dingtalk: 'Dingtalk',
     lark: 'Lark',
-    larksuite: 'Larksuite',
+    larksuite: 'INT Lark',
     pixel: 'Pixel',
     default: 'Default',
     custom: 'Custom',

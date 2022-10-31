@@ -40,7 +40,7 @@ public class ViewExportExcel {
     }.getType();
 
     @DePermissionProxy(paramIndex = 2)
-    public List<File> export(String panelId, List<String> viewIds, PermissionProxy proxy, Boolean justView) throws Exception {
+    public List<File> export(String panelId, List<String> viewIds, PermissionProxy proxy, Boolean justView, String taskId) throws Exception {
         if (CollectionUtils.isEmpty(viewIds)) {
             return null;
         }
@@ -51,7 +51,7 @@ public class ViewExportExcel {
         Map<String, ChartExtRequest> stringChartExtRequestMap = buildViewRequest(panelDto, justView);
         List<File> results = new ArrayList<>();
         List<ExcelSheetModel> sheets = viewIds.stream().map(viewId -> viewFiles(viewId, stringChartExtRequestMap.get(viewId))).collect(Collectors.toList());
-        File excelFile = ExcelUtils.exportExcel(sheets, panelDto.getName());
+        File excelFile = ExcelUtils.exportExcel(sheets, panelDto.getName(), panelDto.getId() + "_" + taskId);
         results.add(excelFile);
         return results;
     }
@@ -62,9 +62,12 @@ public class ViewExportExcel {
         List<Map<String, Object>> components = gson.fromJson(componentsJson, tokenType);
         String panelStyle = panelDto.getPanelStyle();
         Map map = gson.fromJson(panelStyle, Map.class);
-        Map panelMap = (LinkedTreeMap)map.get("panel");
+        Map panelMap = (LinkedTreeMap) map.get("panel");
         double resultCount = Double.parseDouble(panelMap.get("resultCount").toString());
-        String resultMode = panelMap.get("resultMode").toString();
+        String resultMode = null;
+        if (ObjectUtils.isNotEmpty(panelMap.get("resultMode"))) {
+            resultMode = panelMap.get("resultMode").toString();
+        }
 
         Map<String, ChartExtRequest> result = new HashMap<>();
         Map<String, List<ChartExtFilterRequest>> panelFilters = justView ? FilterBuildTemplate.buildFilters(components) : FilterBuildTemplate.buildEmpty(components);
@@ -73,7 +76,7 @@ public class ViewExportExcel {
             ChartExtRequest chartExtRequest = new ChartExtRequest();
             chartExtRequest.setQueryFrom("panel");
             chartExtRequest.setFilter(chartExtFilterRequests);
-            chartExtRequest.setResultCount((int)resultCount);
+            chartExtRequest.setResultCount((int) resultCount);
             chartExtRequest.setResultMode(resultMode);
             result.put(entry.getKey(), chartExtRequest);
         }

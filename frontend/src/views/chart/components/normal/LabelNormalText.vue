@@ -17,8 +17,8 @@
       :style="title_class"
       style="cursor: default;display: block;"
     >
-      <div>
-        <p style="padding:6px 4px 0;margin: 0;overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;">{{ chart.title }}</p>
+      <div style="display: flex;">
+        <chart-title-update :chart-info="chartInfo" />
         <title-remark
           v-if="chart.render && chart.render === 'antv' && remarkCfg.show"
           style="text-shadow: none!important;"
@@ -59,10 +59,11 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
 import TitleRemark from '@/views/chart/view/TitleRemark'
 import { DEFAULT_SIZE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
+import ChartTitleUpdate from '../ChartTitleUpdate.vue'
 
 export default {
   name: 'LabelNormalText',
-  components: { TitleRemark, ViewTrackBar },
+  components: { TitleRemark, ViewTrackBar, ChartTitleUpdate },
   props: {
     chart: {
       type: Object,
@@ -137,13 +138,11 @@ export default {
   computed: {
     trackBarStyleTime() {
       return this.trackBarStyle
+    },
+    chartInfo() {
+      const { id, title } = this.chart
+      return { id, title }
     }
-    // bg_class() {
-    //   return {
-    //     background: hexColorToRGBA('#ffffff', 0),
-    //     borderRadius: this.borderRadius
-    //   }
-    // }
   },
   watch: {
     chart() {

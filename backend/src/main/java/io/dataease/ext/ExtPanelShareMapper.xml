@@ -61,11 +61,23 @@
     </select>
 
     <select id="queryOut" resultMap="treeNodeMap">
-        select distinct s.panel_group_id as id, g.name, g.status
-        from panel_share s
-        left join panel_group g on g.id = s.panel_group_id
-        where ( s.granter is not null and s.granter = #{userName} ) or ( s.granter is null and g.create_by = #{userName} )
-        order by s.create_time desc
+        select id, name, status
+        from (select distinct s.panel_group_id as id,
+                              g.name,
+                              g.status,
+                              (
+                                  CASE s.type
+                                      WHEN 0 THEN (select nick_name from sys_user where user_id = s.target_id)
+                                      WHEN 1 THEN (select name from sys_role where role_id = s.target_id)
+                                      WHEN 2 THEN (select name from sys_dept where dept_id = s.target_id)
+                                      END
+                                  )            as target_name
+              from panel_share s
+                       left join panel_group g on g.id = s.panel_group_id
+              where (s.granter is not null and s.granter = #{userName})
+                 or (s.granter is null and g.create_by = #{userName})
+              order by s.create_time desc) query_temp
+        where target_name is not null
 
     </select>
 

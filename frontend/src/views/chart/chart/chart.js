@@ -1,15 +1,17 @@
 export const DEFAULT_TAB_COLOR_CASE_DARK = {
   headFontColor: '#FFFFFF',
   headFontActiveColor: '#FFFFFF',
-  headBorderColor: '',
-  headBorderActiveColor: ''
+  headBorderColor: '#131E42',
+  headBorderActiveColor: '#131E42',
+  headPosition: 'left'
 }
 
 export const DEFAULT_TAB_COLOR_CASE_LIGHT = {
   headFontColor: '#OOOOOO',
   headFontActiveColor: '#OOOOOO',
-  headBorderColor: '',
-  headBorderActiveColor: ''
+  headBorderColor: '#OOOOOO',
+  headBorderActiveColor: '#OOOOOO',
+  headPosition: 'left'
 }
 
 export const DEFAULT_COLOR_CASE = {
@@ -22,25 +24,27 @@ export const DEFAULT_COLOR_CASE = {
   tableFontColor: '#000000',
   tableStripe: true,
   dimensionColor: '#000000',
-  quotaColor: '#4E81BB',
+  quotaColor: '#5470c6',
   tableBorderColor: '#E6E7E4',
   seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
-  areaBorderColor: '#303133'
+  areaBorderColor: '#303133',
+  areaBaseColor: '#FFFFFF'
 }
 
 export const DEFAULT_COLOR_CASE_DARK = {
   value: 'default',
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   alpha: 100,
-  tableHeaderBgColor: '#4E81BB',
+  tableHeaderBgColor: '#5470c6',
   tableItemBgColor: '#131E42',
   tableFontColor: '#ffffff',
   tableStripe: true,
   dimensionColor: '#ffffff',
-  quotaColor: '#4E81BB',
+  quotaColor: '#5470c6',
   tableBorderColor: '#CCCCCC',
   seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
-  areaBorderColor: '#EBEEF5'
+  areaBorderColor: '#EBEEF5',
+  areaBaseColor: '5470C6'
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -209,7 +213,7 @@ export const DEFAULT_TITLE_STYLE_DARK = {
   isBolder: true,
   remarkShow: false,
   remark: '',
-  remarkBackgroundColor: '#ffffffff',
+  remarkBackgroundColor: '#5A5C62',
   fontFamily: 'Microsoft YaHei',
   letterSpace: '0',
   fontShadow: false

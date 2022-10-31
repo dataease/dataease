@@ -529,11 +529,13 @@ export default {
     the_running_results: '即可查看运行结果'
   },
   detabs: {
+    custom_sort: '自定义排序',
     eidttitle: '编辑标题',
     selectview: '选择视图',
     selectOthers: '选择组件',
     availableComponents: '可选组件',
-    please: '未'
+    please: '未',
+    head_position: '头部位置'
   },
   example: {
     warning: '创建和编辑页面是不能被 keep-alive 缓存的，因为keep-alive 的 include 目前不支持根据路由来缓存，所以目前都是基于 component name 来进行缓存的。如果你想类似的实现缓存效果，可以使用 localStorage 等浏览器缓存方案。或者不要使用 keep-alive 的 include，直接缓存所有页面。详情见'
@@ -911,6 +913,7 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    chart_background: '组件背景',
     solid_color: '纯色',
     split_gradient: '分离渐变',
     continuous_gradient: '连续渐变',
@@ -1433,7 +1436,8 @@ export default {
     reserve_two: '两位',
     proportion: '占比',
     label_content: '标签展示',
-    percent: '占比'
+    percent: '占比',
+    table_index_desc: '表头名称'
   },
   dataset: {
     spend_time: '耗时',
@@ -2645,11 +2649,11 @@ export default {
     log_delete_tips: '确定删除该条应用记录吗？',
     log_resource_delete_tips: '删除相关资源（删除后不可恢复）',
     file_error_tips: '未找到相关数据文件，当前文件可能不是DataEase应用文件，或者文件已经损坏',
-    app_export: '應用導出',
-    app_version: '應用版本',
+    app_export: '应用导出',
+    app_version: '应用版本',
     program_version: 'DataEase最低版本',
     creator: '作者',
-    export: '導出'
+    export: '导出'
   },
 
   logout: {

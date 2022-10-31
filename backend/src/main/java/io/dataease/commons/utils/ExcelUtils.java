@@ -1,7 +1,9 @@
 package io.dataease.commons.utils;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 
+import cn.hutool.core.io.FileUtil;
 import io.dataease.commons.model.excel.ExcelSheetModel;
 
 import java.util.List;
@@ -9,29 +11,25 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 public class ExcelUtils {
-    private static final String suffix = ".xls";
+    private static final String suffix = ".xlsx";
+    private static final String BASE_ROOT = "/opt/dataease/data/";
 
-    public static File exportExcel(List<ExcelSheetModel> sheets, String fileName) throws Exception {
+    public static File exportExcel(List<ExcelSheetModel> sheets, String fileName, String folderId) throws Exception {
         AtomicReference<String> realFileName = new AtomicReference<>(fileName);
-        HSSFWorkbook wb = new HSSFWorkbook();
+        Workbook wb = new XSSFWorkbook();
 
         sheets.forEach(sheet -> {
 
             List<List<String>> details = sheet.getData();
             details.add(0, sheet.getHeads());
             String sheetName = sheet.getSheetName();
-            HSSFSheet curSheet = wb.createSheet(sheetName);
+            Sheet curSheet = wb.createSheet(sheetName);
             if (StringUtils.isBlank(fileName)) {
                 String cName = sheetName + suffix;
                 realFileName.set(cName);
@@ -47,11 +45,11 @@ public class ExcelUtils {
 
             if (CollectionUtils.isNotEmpty(details)) {
                 for (int i = 0; i < details.size(); i++) {
-                    HSSFRow row = curSheet.createRow(i);
+                    Row row = curSheet.createRow(i);
                     List<String> rowData = details.get(i);
                     if (rowData != null) {
                         for (int j = 0; j < rowData.size(); j++) {
-                            HSSFCell cell = row.createCell(j);
+                            Cell cell = row.createCell(j);
                             cell.setCellValue(rowData.get(j));
                             if (i == 0) {// 头部
                                 cell.setCellStyle(cellStyle);
@@ -66,8 +64,28 @@ public class ExcelUtils {
         if (!StringUtils.endsWith(fileName, suffix)) {
             realFileName.set(realFileName.get() + suffix);
         }
-        File result = new File("/opt/dataease/data/" + realFileName.get());
-        wb.write(result);
+        String folderPath = BASE_ROOT;
+        if (StringUtils.isNotBlank(folderId)) {
+            folderPath = BASE_ROOT + folderId + "/";
+        }
+
+        folderPath += Thread.currentThread().getId() + "/";
+
+        if (!FileUtil.exist(folderPath)) {
+            FileUtil.mkdir(folderPath);
+        }
+        File result = new File(folderPath + realFileName.get());
+        BufferedOutputStream outputStream = FileUtil.getOutputStream(result);
+        try {
+            wb.write(outputStream);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            throw e;
+        } finally {
+            wb.close();
+            outputStream.flush();
+            outputStream.close();
+        }
         return result;
     }
 

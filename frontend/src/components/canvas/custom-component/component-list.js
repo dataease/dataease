@@ -388,7 +388,8 @@ const list = [
       height: 200,
       borderStyle: 'solid',
       borderWidth: 0,
-      borderColor: '#000000'
+      borderColor: '#000000',
+      fontSize: 16
     },
     options: {
       tabList: [{
