@@ -46,7 +46,7 @@ public class PanelTemplateController {
         panelTemplateService.delete(id);
     }
 
-    @ApiOperation("详息")
+    @ApiOperation("详细信息")
     @GetMapping("/findOne/{id}")
     public PanelTemplateWithBLOBs findOne(@PathVariable String id) throws Exception {
         return panelTemplateService.findOne(id);

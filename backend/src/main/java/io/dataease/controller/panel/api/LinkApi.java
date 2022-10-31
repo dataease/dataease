@@ -51,11 +51,11 @@ public interface LinkApi {
     @PostMapping("/validatePwd")
     boolean validatePwd(PasswordRequest request) throws Exception;
 
-    @ApiOperation("资源详息")
+    @ApiOperation("资源详细信息")
     @GetMapping("/resourceDetail/{resourceId}")
     Object resourceDetail(@PathVariable String resourceId);
 
-    @ApiOperation("视图详息")
+    @ApiOperation("视图详细信息")
     @PostMapping("/viewDetail/{viewId}/{panelId}")
     Object viewDetail(@PathVariable("viewId") String viewId, @PathVariable("panelId") String panelId,
             @RequestBody ChartExtRequest requestList) throws Exception;
