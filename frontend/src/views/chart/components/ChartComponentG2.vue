@@ -18,7 +18,7 @@
       :style="title_class"
       style="cursor: default;display: block;"
     >
-      <div style="padding:6px 4px 0;margin: 0;">
+      <div style="padding:6px 4px 0;margin: 0;display: flex;">
         <chart-title-update :chart-info="chartInfo" />
         <title-remark
           v-if="remarkCfg.show"
