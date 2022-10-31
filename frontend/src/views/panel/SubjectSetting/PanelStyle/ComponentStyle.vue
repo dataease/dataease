@@ -7,7 +7,7 @@
           style="margin-right: 10px;float: right"
           @change="themeChange('backgroundColorSelect')"
         >
-          <span style="font-size: 12px">{{ $t('panel.color') }}</span>
+          <span style="font-size: 12px">{{ $t('chart.chart_background') }}</span>
         </el-checkbox>
       </el-col>
       <el-col :span="10">
@@ -100,10 +100,10 @@ export default {
   font-size: 12px;
 }
 .custom-item{
-  width: 70px;
+  width: 90px;
 }
 .custom-item-value{
-  width: calc(100% - 70px);;
+  width: calc(100% - 90px);;
 }
 
 </style>

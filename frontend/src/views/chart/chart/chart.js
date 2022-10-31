@@ -1,8 +1,8 @@
 export const DEFAULT_TAB_COLOR_CASE_DARK = {
   headFontColor: '#FFFFFF',
   headFontActiveColor: '#FFFFFF',
-  headBorderColor: '#FFFFFF',
-  headBorderActiveColor: '#FFFFFF',
+  headBorderColor: '#131E42',
+  headBorderActiveColor: '#131E42',
   headPosition: 'left'
 }
 

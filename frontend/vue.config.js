@@ -56,10 +56,10 @@ module.exports = {
           to: path.join(__dirname, 'dist/static')
         }
       ]),
-      new webpack.DllReferencePlugin({
-        context: process.cwd(),
-        manifest: require('./public/vendor/vendor-manifest.json')
-      }),
+      // new webpack.DllReferencePlugin({
+      //   context: process.cwd(),
+      //   manifest: require('./public/vendor/vendor-manifest.json')
+      // }),
       // 将 dll 注入到 生成的 html 模板中
       new AddAssetHtmlPlugin({
         // dll文件位置

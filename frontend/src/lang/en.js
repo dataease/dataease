@@ -913,6 +913,7 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    chart_background: 'Component background',
     solid_color: 'Solid color',
     split_gradient: 'Split gradient',
     continuous_gradient: 'Continuous gradient',
