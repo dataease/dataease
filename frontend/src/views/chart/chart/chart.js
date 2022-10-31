@@ -795,18 +795,7 @@ export const BASE_CANDLESTICK = {
       fontWeight: 'normal'
     }
   },
-  // grid: {
-  //   containLabel: true
-  // },
   tooltip: {},
-  // legend: {
-  //   show: true,
-  //   type: 'scroll',
-  //   itemWidth: 10,
-  //   itemHeight: 10,
-  //   icon: 'rect',
-  //   data: []
-  // },
   xAxis: {
     // type: 'value',
     data: []
@@ -851,69 +840,70 @@ export const BASE_CANDLESTICK = {
 }
 
 export const BASE_BOXPLOT = {
-  title: {
-    text: '',
-    textStyle: {
-      fontWeight: 'normal'
+  title: [
+    {
+      text: '',
+      textStyle: {
+        fontWeight: 'normal'
+      }
     }
-  },
-  grid: {
-    containLabel: true
-  },
-  tooltip: {},
-  legend: {
-    show: true,
-    type: 'scroll',
-    itemWidth: 10,
-    itemHeight: 10,
-    icon: 'rect',
-    data: []
-  },
-  xAxis: {
-    type: 'value',
-  },
-  yAxis: {
-    type: 'value'
-  },
-  series: [],
+  ],
   dataset: [
     {
-      // dimensions: [],
-      source: [],
+      // prettier-ignore
+      source: []
+    },
+    {
+      transform: {
+        type: 'boxplot',
+        // config: { itemNameFormatter: 'expr {value}' }
+      }
     },
     {
       fromDatasetIndex: 1,
       fromTransformResult: 1
     }
   ],
-  dataZoom: [
-    {
-      type: 'slider',
-      show: false,
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'slider',
-      show: false,
-      yAxisIndex: [0],
-      left: '93%',
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      xAxisIndex: [0],
-      start: 0,
-      end: 100
-    },
-    {
-      type: 'inside',
-      yAxisIndex: [0],
-      start: 0,
-      end: 100
+  tooltip: {
+    trigger: 'item',
+    axisPointer: {
+      type: 'shadow'
     }
+  },
+  grid: {
+    left: '10%',
+    right: '10%',
+    bottom: '15%'
+  },
+  xAxis: {
+    type: 'category',
+    boundaryGap: true,
+    nameGap: 30,
+    splitArea: {
+      show: false
+    },
+    splitLine: {
+      show: false
+    }
+  },
+  yAxis: {
+    type: 'value',
+    splitArea: {
+      show: true
+    }
+  },
+  series: [
+    {
+      type: 'boxplot',
+      datasetIndex: 1,
+      boxWidth: [1,50],
+      dimensions: [],
+    },
+    // {
+    //   name: 'outlier',
+    //   type: 'scatter',
+    //   datasetIndex: 2
+    // }
   ]
 }
 

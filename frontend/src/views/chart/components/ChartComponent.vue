@@ -311,14 +311,12 @@ export default {
         chart_option = basePictorialBarOption(JSON.parse(JSON.stringify(BASE_PICTORIAL_BAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'liquid') {
         chart_option = baseLiquidOption(JSON.parse(JSON.stringify(BASE_LIQUID)), chart, this.$store.state.canvasStyleData)
-      }
-      
-      else if (chart.type === 'candlestick') {
+      } else if (chart.type === 'candlestick') {
         chart_option = candlestickOption(JSON.parse(JSON.stringify(BASE_CANDLESTICK)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'boxplot') {
+        chart_option = baseBoxPlotOption(JSON.parse(JSON.stringify(BASE_BOXPLOT)), chart, this.$store.state.canvasStyleData)
       } 
-      // else if (chart.type === 'boxplot') {
-      //   chart_option = baseBoxPlotOption(JSON.parse(JSON.stringify(BASE_BOXPLOT)), chart, this.$store.state.canvasStyleData)
-      // } else if (chart.type === 'sankey') {
+      // else if (chart.type === 'sankey') {
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
       //   // chart_option = BASE_SANKEY
       // } else if (chart.type === '3dearth') {

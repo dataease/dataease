@@ -280,13 +280,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_candlestick',
     icon: 'candlestick'
   },
-  // {
-  //   render: 'echarts',
-  //   category: 'chart.chart_type_trend',
-  //   value: 'boxplot',
-  //   title: 'chart.chart_boxplot',
-  //   icon: 'boxplot'
-  // },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_trend',
+    value: 'boxplot',
+    title: 'chart.chart_boxplot',
+    icon: 'boxplot'
+  },
   // {
   //   render: 'echarts',
   //   category: 'chart.chart_type_trend',
