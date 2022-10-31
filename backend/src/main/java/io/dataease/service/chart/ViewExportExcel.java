@@ -40,7 +40,7 @@ public class ViewExportExcel {
     }.getType();
 
     @DePermissionProxy(paramIndex = 2)
-    public List<File> export(String panelId, List<String> viewIds, PermissionProxy proxy, Boolean justView) throws Exception {
+    public List<File> export(String panelId, List<String> viewIds, PermissionProxy proxy, Boolean justView, String taskId) throws Exception {
         if (CollectionUtils.isEmpty(viewIds)) {
             return null;
         }
@@ -51,7 +51,7 @@ public class ViewExportExcel {
         Map<String, ChartExtRequest> stringChartExtRequestMap = buildViewRequest(panelDto, justView);
         List<File> results = new ArrayList<>();
         List<ExcelSheetModel> sheets = viewIds.stream().map(viewId -> viewFiles(viewId, stringChartExtRequestMap.get(viewId))).collect(Collectors.toList());
-        File excelFile = ExcelUtils.exportExcel(sheets, panelDto.getName(), panelDto.getId());
+        File excelFile = ExcelUtils.exportExcel(sheets, panelDto.getName(), panelDto.getId() + "_" + taskId);
         results.add(excelFile);
         return results;
     }

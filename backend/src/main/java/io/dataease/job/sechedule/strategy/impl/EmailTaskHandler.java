@@ -212,7 +212,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                 List<String> viewIdList = Arrays.asList(viewIds.split(",")).stream().map(s -> s.trim()).filter(viewId -> StringUtils.isNotBlank(viewId) && viewOptionIdList.contains(viewId)).collect(Collectors.toList());
                 PermissionProxy proxy = new PermissionProxy();
                 proxy.setUserId(user.getUserId());
-                files = viewExportExcel.export(panelId, viewIdList, proxy, justExportView);
+                files = viewExportExcel.export(panelId, viewIdList, proxy, justExportView, taskInstance.getTaskId().toString());
             }
 
             List<String> channels = null;
