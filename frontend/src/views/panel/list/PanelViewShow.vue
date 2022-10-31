@@ -281,7 +281,7 @@
 
     <el-dialog
       v-if="appExportShow"
-      :title="'应用导出'"
+      :title="$t('app_template.app_export')"
       :visible.sync="appExportShow"
       width="80%"
       :top="'8vh'"
