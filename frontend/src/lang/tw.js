@@ -534,7 +534,8 @@ export default {
     selectview: '選擇視圖',
     selectOthers: '選擇組件',
     availableComponents: '可選組件',
-    please: '未'
+    please: '未',
+    head_position: '頭部位置'
   },
   example: {
     warning: '創建和編輯頁面是不能被 keep-alive 緩存的，因爲keep-alive 的 include 目前不支持根據路由來緩存，所以目前都是基於 component name 來進行緩存的。如果妳想類似的實現緩存效果，可以使用 localStorage 等瀏覽器緩存方案。或者不要使用 keep-alive 的 include，直接緩存所有頁面。詳情見'
@@ -1437,6 +1438,9 @@ export default {
     percent: '占比'
   },
   dataset: {
+    spend_time: '耗時',
+    sql: 'SQL 語句',
+    sql_result: '運行結果',
     parse_filed: '解析字段',
     field_rename: '字段重命名',
     params_work: '僅在編輯 sql 時生效',

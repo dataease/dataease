@@ -1,5 +1,6 @@
 package io.dataease.job.sechedule.strategy.impl;
 
+import cn.hutool.core.io.FileUtil;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
@@ -160,6 +161,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         AuthUserServiceImpl userService = SpringContextUtil.getBean(AuthUserServiceImpl.class);
         SysUserService sysUserService = SpringContextUtil.getBean(SysUserService.class);
+        List<File> files = null;
         try {
             XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskInstance.getTaskId());
             if (ObjectUtils.isEmpty(taskForm) || CronUtils.taskExpire(taskForm.getEndTime())) {
@@ -199,7 +201,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                 contentStr = new String(content, "UTF-8");
             }
 
-            List<File> files = null;
+
             String viewIds = emailTemplateDTO.getViewIds();
             ChartViewService chartViewService = SpringContextUtil.getBean(ChartViewService.class);
             List<ViewOption> viewOptions = chartViewService.viewOptions(panelId);
@@ -343,6 +345,14 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         } catch (Exception e) {
             error(taskInstance, e);
             LogUtil.error(e.getMessage(), e);
+        } finally {
+            if (CollectionUtils.isNotEmpty(files)) {
+                files.forEach(file -> {
+                    if (file.exists()) {
+                        FileUtil.del(file);
+                    }
+                });
+            }
         }
     }
 

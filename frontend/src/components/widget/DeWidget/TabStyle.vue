@@ -8,7 +8,7 @@
       ref="tabsStyleForm"
       :model="styleInfo"
       size="small"
-      class="demo-form-inline"
+      class="de-form-item"
     >
       <el-form-item
         label="头部字体颜色"
@@ -102,8 +102,17 @@
           </el-input>
         </div>
       </el-form-item>
+      <el-form-item :label="$t('detabs.head_position')">
+        <el-radio-group
+          v-model="styleInfo.headPosition"
+          size="mini"
+        >
+          <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
+          <el-radio-button label="center">{{ $t('chart.text_pos_center') }}</el-radio-button>
+          <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
+        </el-radio-group>
+      </el-form-item>
     </el-form>
-
     <i
       slot="reference"
       class="iconfont icon-tabs"
@@ -114,6 +123,7 @@
 
 <script>
 import { mapState } from 'vuex'
+
 export default {
   name: 'TabStyle',
   props: {
@@ -123,9 +133,7 @@ export default {
     }
   },
   data() {
-    return {
-
-    }
+    return {}
   },
   computed: {
 
