@@ -21,7 +21,7 @@
             style="left: 55px"
             class="el-form-item__error"
           >
-            {{ $t('deDataset.already_Exists') }}
+            {{ $t('deDataset.already_exists') }}
           </div>
         </template>
         <template v-else>

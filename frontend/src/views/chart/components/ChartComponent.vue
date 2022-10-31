@@ -47,6 +47,9 @@
       </div>
 
     </div>
+    <div
+      :class="loading ? 'symbol-map-loading' : 'symbol-map-loaded'"
+    />
   </div>
 </template>
 
@@ -167,7 +170,8 @@ export default {
       borderRadius: '0px',
       mapCenter: null,
       linkageActiveParam: null,
-      buttonTextColor: null
+      buttonTextColor: null,
+      loading: true
     }
   },
 
@@ -222,6 +226,7 @@ export default {
       }
     },
     preDraw() {
+      this.loading = true
       // 基于准备好的dom，初始化echarts实例
       // 渲染echart等待dom加载完毕,渲染之前先尝试销毁具有相同id的echart 放置多次切换仪表板有重复id情况
       const that = this
@@ -252,6 +257,10 @@ export default {
             that.trackBarStyle.top = (param.event.offsetY - 15) + 'px'
             that.$refs.viewTrack.trackButtonClick()
           }
+        })
+        this.myChart.off('finished')
+        this.myChart.on('finished', () => {
+          this.loading = false
         })
       })
     },

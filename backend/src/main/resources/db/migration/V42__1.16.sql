@@ -54,6 +54,17 @@ VALUES ('Apache Kylin 数据源插件', 'default', '0', '0', 'datasource', 'Apac
 
 INSERT INTO `sys_msg_channel` (`msg_channel_id`, `channel_name`, `service_name`) VALUES ('6', 'webmsg.channel_larksuite_msg', 'sendLarksuite');
 
+CREATE TABLE `dataset_sql_log` (
+       `id` varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
+       `dataset_id` varchar(50) NOT NULL DEFAULT '' COMMENT '数据集ID',
+       `start_time` bigint(13) DEFAULT NULL COMMENT '开始时间',
+       `end_time` bigint(13) DEFAULT NULL COMMENT '结束时间',
+       `spend` bigint(13) DEFAULT NULL COMMENT '耗时(毫秒)',
+       `sql` longtext NOT NULL COMMENT '详细信息',
+       `status` varchar(45) DEFAULT NULL COMMENT '状态',
+       PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
 INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (204, 203, 0, 2, '删除记录', NULL, NULL, 999, NULL, NULL, 0, 0, 0, 'appLog:del', NULL, NULL, 1614930903502, 1614930903502);
 INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`, `create_by`, `update_by`, `create_time`, `update_time`) VALUES (205, 203, 0, 2, '编辑记录', NULL, NULL, 999, NULL, NULL, 0, 0, 0, 'appLog:edit', NULL, NULL, 1614930935529, 1614930935529);
 
@@ -270,3 +281,7 @@ RETURN 'success';
 END
 ;;
 delimiter ;
+
+UPDATE `panel_subject`
+SET `details` = '{\"width\":1600,\"height\":900,\"scale\":100,\"scaleWidth\":100,\"scaleHeight\":100,\"selfAdaption\":true,\"auxiliaryMatrix\":true,\"openCommonStyle\":true,\"panel\":{\"themeColor\":\"dark\",\"color\":\"#030B2E\",\"imageUrl\":{},\"backgroundType\":\"color\",\"gap\":\"yes\",\"resultMode\":\"all\",\"resultCount\":1000},\"aidedDesign\":{\"showGrid\":false,\"matrixBase\":4},\"refreshViewLoading\":true,\"refreshUnit\":\"minute\",\"refreshTime\":5,\"themeId\":\"f9f46a50-58f5-11ed-889b-91ab7371e877\",\"chartInfo\":{\"chartTitle\":{\"show\":true,\"fontSize\":\"18\",\"color\":\"#FFFFFF\",\"hPosition\":\"left\",\"vPosition\":\"top\",\"isItalic\":false,\"isBolder\":true,\"remarkShow\":false,\"remark\":\"\",\"remarkBackgroundColor\":\"#5A5C62\",\"fontFamily\":\"Microsoft YaHei\",\"letterSpace\":\"0\",\"fontShadow\":false},\"chartColor\":{\"value\":\"default\",\"colors\":[\"#5470c6\",\"#91cc75\",\"#fac858\",\"#ee6666\",\"#73c0de\",\"#3ba272\",\"#fc8452\",\"#9a60b4\",\"#ea7ccc\"],\"alpha\":100,\"tableHeaderBgColor\":\"#5470C6\",\"tableItemBgColor\":\"#131E42\",\"tableFontColor\":\"#ffffff\",\"tableStripe\":true,\"dimensionColor\":\"#ffffff\",\"quotaColor\":\"#5470C6\",\"tableBorderColor\":\"#CCCCCC\",\"seriesColors\":[],\"areaBorderColor\":\"#EBEEF5\",\"tableHeaderFontColor\":\"#ffffff\",\"modifyName\":\"colors\"},\"chartCommonStyle\":{\"backgroundColorSelect\":true,\"color\":\"#131E42\",\"alpha\":100,\"borderRadius\":5,\"innerPadding\":0},\"filterStyle\":{\"horizontal\":\"left\",\"vertical\":\"top\",\"color\":\"#FFFFFF\",\"brColor\":\"#4E4B4B\",\"wordColor\":\"#FFFFFF\",\"innerBgColor\":\"#131E42\"},\"tabStyle\":{\"headFontColor\":\"#FFFFFF\",\"headFontActiveColor\":\"#FFFFFF\",\"headBorderColor\":\"#FFFFFF\",\"headBorderActiveColor\":\"#FFFFFF\",\"headPosition\":\"left\"}}}'
+WHERE `id` = 'system_2';

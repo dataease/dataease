@@ -11,10 +11,10 @@
           :label="$t('chart.show')"
           class="form-item"
         >
-          <el-checkbox
+          <el-switch
             v-model="titleForm.show"
             @change="changeTitleStyle('show')"
-          >{{ $t('chart.show') }}</el-checkbox>
+          />
         </el-form-item>
         <div v-show="titleForm.show">
           <el-form-item

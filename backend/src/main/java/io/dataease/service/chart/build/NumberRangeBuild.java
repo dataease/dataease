@@ -7,8 +7,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service("numberRangeWidget")
 public class NumberRangeBuild extends FilterBuildTemplate {
@@ -24,18 +26,22 @@ public class NumberRangeBuild extends FilterBuildTemplate {
 
         Map<String, Object> options = null;
         List<String> values = null;
-        if((optionObj = component.get("options")) != null && (valueObj = (options = (Map<String, Object>) optionObj).get("value")) != null && CollectionUtil.isNotEmpty((values = (List<String>) valueObj))) {
+        if ((optionObj = component.get("options")) != null && (valueObj = (options = (Map<String, Object>) optionObj).get("value")) != null) {
+            if (valueObj instanceof List) {
+                values = (List<String>) valueObj;
+            } else {
+                return result;
+            }
             String min = values.get(0);
             String max = null;
 
-            if(values.size() > 1) {
+            if (values.size() > 1) {
                 max = values.get(1);
             }
             result.setOperator("between");
-            result.getValue().set(0, min);
-            result.getValue().set(1, max);
 
             if (StringUtils.isNotBlank(min) && StringUtils.isNotBlank(max)) {
+                result.setValue(values);
                 return result;
             }
 

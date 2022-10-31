@@ -12,6 +12,7 @@
         [classNameActive]: enabled ,
         ['linkageSetting']:linkageActive,
         ['batchSetting']:batchOptActive,
+        ['drag-on-tab-collision']:dragCollision,
         ['positionChange']:!(dragging || resizing||rotating)
       },
       className
@@ -433,6 +434,9 @@ export default {
     }
   },
   computed: {
+    dragCollision() {
+      return this.dragging && Boolean(this.tabCollisionActiveId)
+    },
     parentWidthOffset() {
       if (this.canvasId === 'canvas-main') {
         return 0
@@ -2113,5 +2117,9 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.drag-on-tab-collision {
+  z-index: 1000!important;
 }
 </style>

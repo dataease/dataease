@@ -529,11 +529,13 @@ export default {
     the_running_results: '即可查看运行结果'
   },
   detabs: {
+    custom_sort: '自定义排序',
     eidttitle: '编辑标题',
     selectview: '选择视图',
     selectOthers: '选择组件',
     availableComponents: '可选组件',
-    please: '未'
+    please: '未',
+    head_position: '头部位置'
   },
   example: {
     warning: '创建和编辑页面是不能被 keep-alive 缓存的，因为keep-alive 的 include 目前不支持根据路由来缓存，所以目前都是基于 component name 来进行缓存的。如果你想类似的实现缓存效果，可以使用 localStorage 等浏览器缓存方案。或者不要使用 keep-alive 的 include，直接缓存所有页面。详情见'
@@ -911,6 +913,7 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    chart_background: '组件背景',
     solid_color: '纯色',
     split_gradient: '分离渐变',
     continuous_gradient: '连续渐变',
@@ -1437,6 +1440,9 @@ export default {
     table_index_desc: '表头名称'
   },
   dataset: {
+    spend_time: '耗时',
+    sql: 'SQL 语句',
+    sql_result: '运行结果',
     parse_filed: '解析字段',
     field_rename: '字段重命名',
     params_work: '仅在编辑sql时生效',
@@ -2631,7 +2637,6 @@ export default {
     search_by_keyword: '通过关键字搜索',
     apply_logs: '应用记录',
     app_group_delete_tips: '确定删除该应用分类吗?',
-
     app_group_delete_content: '删除后，该分类中所有的应用模板也将被删除。',
     panel_position: '仪表板位置',
     panel_name: '仪表板名称',
@@ -2642,8 +2647,13 @@ export default {
     dataset_group: '数据集分组',
     panel: '仪表板',
     log_delete_tips: '确定删除该条应用记录吗？',
-    log_resource_delete_tips: '删除相关资源（删除后不可恢复）'
-
+    log_resource_delete_tips: '删除相关资源（删除后不可恢复）',
+    file_error_tips: '未找到相关数据文件，当前文件可能不是DataEase应用文件，或者文件已经损坏',
+    app_export: '应用导出',
+    app_version: '应用版本',
+    program_version: 'DataEase最低版本',
+    creator: '作者',
+    export: '导出'
   },
 
   logout: {

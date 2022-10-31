@@ -99,6 +99,9 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
         item.options.attrs.accuracy = 'HH:mm'
       }
     }
+    if (item.type === 'de-tabs') {
+      item.style.fontSize = item.style.fontSize || 16
+    }
     if (item.type === 'custom') {
       item.options.manualModify = false
     }

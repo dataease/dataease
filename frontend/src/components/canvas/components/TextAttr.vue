@@ -414,9 +414,10 @@ import StreamMediaLinks from '@/components/canvas/components/Editor/StreamMediaL
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import FrameLinks from '@/components/canvas/components/Editor/FrameLinks'
+import TitlePosition from '@/components/widget/DeWidget/TitlePosition'
 
 export default {
-  components: { FrameLinks, DateFormat, VideoLinks, StreamMediaLinks },
+  components: { TitlePosition, FrameLinks, DateFormat, VideoLinks, StreamMediaLinks },
   props: {
     canvasId: {
       type: String,
@@ -517,6 +518,7 @@ export default {
       ],
       // tab组件显示的属性
       'de-tabs': [
+        'fontSize',
         'borderStyle',
         'borderWidth',
         'borderColor',
@@ -717,39 +719,42 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .attr-list {
-    overflow: auto;
-    padding: 20px;
-    padding-top: 0;
-    height: 100%;
-  }
-  .el-card-main {
-    height: 34px;
-    z-index: 10;
-    padding-right: 2px;
-    position: absolute;
+.attr-list {
+  overflow: auto;
+  padding: 20px;
+  padding-top: 0;
+  height: 100%;
+}
 
-  }
-  .el-card-main ::v-deep .el-card__body {
-    padding: 0px!important;
+.el-card-main {
+  height: 34px;
+  z-index: 10;
+  padding-right: 2px;
+  position: absolute;
 
-  }
+}
 
-  ::v-deep .el-radio-button__inner{
-    padding: 5px!important;
-    width: 30px!important;
-  }
+.el-card-main ::v-deep .el-card__body {
+  padding: 0px !important;
 
-  ::v-deep .el-color-dropdown__link-btn {
-    display: inline!important;
-  }
+}
 
-  ::v-deep input::-webkit-outer-spin-button,
-  ::v-deep input::-webkit-inner-spin-button {
-    -webkit-appearance: none !important;
-  }
-  ::v-deep input[type='number'] {
-    -moz-appearance: textfield !important;
-  }
+::v-deep .el-radio-button__inner {
+  padding: 5px !important;
+  width: 30px !important;
+}
+
+::v-deep .el-color-dropdown__link-btn {
+  display: inline !important;
+}
+
+::v-deep input::-webkit-outer-spin-button,
+::v-deep input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+}
+
+::v-deep input[type='number'] {
+  -moz-appearance: textfield !important;
+}
 
 </style>

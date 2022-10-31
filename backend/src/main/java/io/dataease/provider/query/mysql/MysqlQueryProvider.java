@@ -1312,4 +1312,8 @@ public class MysqlQueryProvider extends QueryProvider {
             return sql;
         }
     }
+
+    public String sqlForPreview(String table, Datasource ds) {
+        return "SELECT * FROM " + String.format(MySQLConstants.KEYWORD_TABLE, table);
+    }
 }

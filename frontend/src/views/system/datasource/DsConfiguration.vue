@@ -293,7 +293,7 @@
         class="schema-label"
       >
         <template slot="label">
-          {{ $t('datasource.schema') }}
+          <span class="name">{{ $t('datasource.schema') }}<i class="required" /></span>
           <el-button
             type="text"
             icon="el-icon-plus"
@@ -307,6 +307,8 @@
           filterable
           :placeholder="$t('fu.search_bar.please_select')"
           class="de-select"
+          @change="validatorSchema"
+          @blur="validatorSchema"
         >
           <el-option
             v-for="item in schemas"
@@ -315,6 +317,12 @@
             :value="item"
           />
         </el-select>
+        <div
+          v-if="configurationSchema"
+          class="el-form-item__error"
+        >
+          {{ $t('datasource.please_choose_schema') }}
+        </div>
       </el-form-item>
 
       <el-form-item
@@ -911,6 +919,7 @@ export default {
         ]
       },
       api_table_title: '',
+      configurationSchema: false,
       schemas: [],
       showEmpty: false,
       canEdit: false,
@@ -1005,9 +1014,10 @@ export default {
       certinKey: false
     }
   },
-  watch: {},
-  created() {},
   methods: {
+    validatorSchema() {
+      this.configurationSchema = !this.form.configuration.schema
+    },
     getSchema() {
       this.$refs.DsConfig.validate((valid) => {
         if (valid) {
@@ -1614,6 +1624,22 @@ export default {
   ::v-deep.el-table__expand-icon {
     .el-icon-arrow-right::before {
       content: "\E791" !important;
+    }
+  }
+}
+.schema-label {
+  ::v-deep.el-form-item__label {
+    display: flex;
+    justify-content: space-between;
+    &::after {
+      display: none;
+    }
+    .name {
+      .required::after {
+        content: "*";
+        color: #f54a45;
+        margin-left: 2px;
+      }
     }
   }
 }

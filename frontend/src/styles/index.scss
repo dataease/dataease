@@ -1633,3 +1633,28 @@ div:focus {
     height: 24px;
   }
 }
+
+.db-multiple-select-pop {
+  .selected::after {
+    content: '';
+    width: 6px;
+    height: 12px;
+    position: absolute;
+    right: 12px;
+    top: 9px;
+    border: 2px solid #3370ff;
+    border-top-color: rgba(0, 0, 0, 0);
+    border-left-color: rgba(0, 0, 0, 0);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+}
+
+.role-add-name {
+  .el-select-dropdown__item.selected::after {
+    content: '';
+    position: absolute;
+    right: 12px;
+    top: 9px;
+  }
+}

@@ -106,6 +106,7 @@
                 <el-color-picker
                   v-else
                   v-model="option.colors[index]"
+                  popper-class="gradient-picker-dropdown"
                   @change="switchColorItem(option.colors, option.value)"
                 />
               </span>
@@ -422,5 +423,8 @@ export default {
 .color-span-base-split {
   width: 20px;
   height: 20px;
+}
+.gradient-picker-dropdown .el-color-dropdown__link-btn {
+  display: none;
 }
 </style>

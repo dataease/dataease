@@ -190,6 +190,7 @@ public class PanelGroupController {
        return panelGroupService.findPanelElementInfo(viewId);
     }
     @GetMapping("/export2AppCheck/{panelId}")
+    @I18n
     public PanelExport2App export2AppCheck(@PathVariable String panelId){
        return  panelGroupService.panelExport2AppCheck(panelId);
     }

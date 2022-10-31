@@ -5,8 +5,9 @@ import { COMMON_BACKGROUND_BASE } from '@/components/canvas/custom-component/com
 export const TAB_COMMON_STYLE = {
   headFontColor: '#000000',
   headFontActiveColor: '#000000',
-  headBorderColor: null,
-  headBorderActiveColor: null
+  headBorderColor: '#ffffff',
+  headBorderActiveColor: '#ffffff',
+  headPosition: 'left'
 }
 
 export const FILTER_COMMON_STYLE = {

@@ -32,6 +32,7 @@
       <el-select
         v-model="dataSource"
         class="ds-list"
+        popper-class="db-multiple-select-pop"
         filterable
         :placeholder="$t('dataset.pls_slc_data_source')"
         size="small"
@@ -620,23 +621,6 @@ export default {
         width: 100%;
       }
     }
-  }
-}
-</style>
-<style lang="scss">
-.db-select-pop {
-  .selected::after {
-    content: '';
-    width: 6px;
-    height: 12px;
-    position: absolute;
-    right: 12px;
-    top: 9px;
-    border: 2px solid #3370ff;
-    border-top-color: rgba(0, 0, 0, 0);
-    border-left-color: rgba(0, 0, 0, 0);
-    -webkit-transform: rotate(45deg);
-    transform: rotate(45deg);
   }
 }
 </style>
