@@ -64,7 +64,10 @@ public class ViewExportExcel {
         Map map = gson.fromJson(panelStyle, Map.class);
         Map panelMap = (LinkedTreeMap) map.get("panel");
         double resultCount = Double.parseDouble(panelMap.get("resultCount").toString());
-        String resultMode = panelMap.get("resultMode").toString();
+        String resultMode = null;
+        if (ObjectUtils.isNotEmpty(panelMap.get("resultMode"))) {
+            resultMode = panelMap.get("resultMode").toString();
+        }
 
         Map<String, ChartExtRequest> result = new HashMap<>();
         Map<String, List<ChartExtFilterRequest>> panelFilters = justView ? FilterBuildTemplate.buildFilters(components) : FilterBuildTemplate.buildEmpty(components);
