@@ -10,6 +10,7 @@ import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.*;
+import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
@@ -131,6 +132,8 @@ public class DataSetTableService {
     private PermissionsTreeService permissionsTreeService;
     @Resource
     private DatasourceService datasourceService;
+    @Resource
+    private DatasetSqlLogMapper datasetSqlLogMapper;
 
     private static boolean isUpdatingDatasetTableStatus = false;
     private static final String lastUpdateTime = "${__last_update_time__}";
@@ -347,6 +350,7 @@ public class DataSetTableService {
                             || StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.UNION.name())) {
                         saveTableField(datasetTable);
                     }
+                    extractData(datasetTable);
                     DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
                 }
             }
@@ -1175,9 +1179,22 @@ public class DataSetTableService {
         return map;
     }
 
-    public Map<String, Object> getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
+    public List<DatasetSqlLog> getSQLLog(DataSetTableRequest dataSetTableRequest) {
+        if (StringUtils.isEmpty(dataSetTableRequest.getId())) {
+            return new ArrayList<>();
+        }
+        DatasetSqlLogExample example = new DatasetSqlLogExample();
+        example.createCriteria().andDatasetIdEqualTo(dataSetTableRequest.getId());
+        example.setOrderByClause(" start_time desc ");
+        return datasetSqlLogMapper.selectByExample(example);
+    }
+
+    public ResultHolder getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
+        DatasetSqlLog datasetSqlLog = new DatasetSqlLog();
+
         DataTableInfoDTO dataTableInfo = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
         String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
+        datasetSqlLog.setSql(sql);
         Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
         if (ds == null) {
             throw new Exception(Translator.get("i18n_invalid_ds"));
@@ -1202,7 +1219,25 @@ public class DataSetTableService {
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
         datasourceRequest.setQuery(sqlAsTable);
-        Map<String, List> result = datasourceProvider.fetchResultAndField(datasourceRequest);
+
+        Map<String, List> result = new HashMap<>();
+        try {
+            datasetSqlLog.setStartTime(System.currentTimeMillis());
+            result = datasourceProvider.fetchResultAndField(datasourceRequest);
+            datasetSqlLog.setEndTime(System.currentTimeMillis());
+            datasetSqlLog.setSpend(datasetSqlLog.getEndTime() - datasetSqlLog.getStartTime());
+            datasetSqlLog.setStatus("Completed");
+        } catch (Exception e) {
+            datasetSqlLog.setStatus("Error");
+            return ResultHolder.error(e.getMessage(), datasetSqlLog);
+        } finally {
+            if (StringUtils.isNotEmpty(dataSetTableRequest.getId())) {
+                datasetSqlLog.setDatasetId(dataSetTableRequest.getId());
+                datasetSqlLog.setId(UUID.randomUUID().toString());
+                datasetSqlLogMapper.insert(datasetSqlLog);
+            }
+        }
+
         List<String[]> data = result.get("dataList");
         List<TableField> fields = result.get("fieldList");
         String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
@@ -1223,8 +1258,9 @@ public class DataSetTableService {
         Map<String, Object> map = new HashMap<>();
         map.put("fields", fields);
         map.put("data", jsonArray);
+        map.put("log", datasetSqlLog);
 
-        return map;
+        return ResultHolder.success(map);
     }
 
     public Map<String, Object> getUnionPreview(DataSetTableRequest dataSetTableRequest) throws Exception {

@@ -11,16 +11,25 @@
             v-if="editFilter.includes(curComponent.type)"
             icon="el-icon-edit-outline"
             @click.native="edit"
-          >{{ $t('panel.edit') }}</el-dropdown-item>
+          >{{ $t('panel.edit') }}
+          </el-dropdown-item>
           <el-dropdown-item
             v-if="curComponent.type != 'custom-button'"
             icon="el-icon-document-copy"
             @click.native="copy"
-          >{{ $t('panel.copy') }}</el-dropdown-item>
+          >{{ $t('panel.copy') }}
+          </el-dropdown-item>
           <el-dropdown-item
             icon="el-icon-delete"
             @click.native="deleteComponent"
-          >{{ $t('panel.delete') }}</el-dropdown-item>
+          >{{ $t('panel.delete') }}
+          </el-dropdown-item>
+          <el-dropdown-item
+            v-if="curComponent.type ==='de-tabs'"
+            icon="el-icon-sort"
+            @click.native="openCustomSort"
+          >{{ $t('chart.sort') }}
+          </el-dropdown-item>
           <el-dropdown-item v-if="!curComponent.auxiliaryMatrix">
             <el-dropdown placement="right-start">
               <span class="el-icon-copy-document">
@@ -30,19 +39,23 @@
                 <el-dropdown-item
                   icon="el-icon-upload2"
                   @click.native="topComponent"
-                >{{ $t('panel.topComponent') }}</el-dropdown-item>
+                >{{ $t('panel.topComponent') }}
+                </el-dropdown-item>
                 <el-dropdown-item
                   icon="el-icon-download"
                   @click.native="bottomComponent"
-                >{{ $t('panel.bottomComponent') }}</el-dropdown-item>
+                >{{ $t('panel.bottomComponent') }}
+                </el-dropdown-item>
                 <el-dropdown-item
                   icon="el-icon-arrow-up"
                   @click.native="upComponent"
-                >{{ $t('panel.upComponent') }}</el-dropdown-item>
+                >{{ $t('panel.upComponent') }}
+                </el-dropdown-item>
                 <el-dropdown-item
                   icon="el-icon-arrow-down"
                   @click.native="downComponent"
-                >{{ $t('panel.downComponent') }}</el-dropdown-item>
+                >{{ $t('panel.downComponent') }}
+                </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -50,22 +63,26 @@
             v-if="linkageSettingShow"
             icon="el-icon-link"
             @click.native="linkageSetting"
-          >{{ $t('panel.linkage_setting') }}</el-dropdown-item>
+          >{{ $t('panel.linkage_setting') }}
+          </el-dropdown-item>
           <el-dropdown-item
             v-if="'de-tabs'===curComponent.type"
             icon="el-icon-plus"
             @click.native="addTab"
-          >{{ $t('panel.add_tab') }}</el-dropdown-item>
+          >{{ $t('panel.add_tab') }}
+          </el-dropdown-item>
           <el-dropdown-item
             v-if="linkJumpSetShow"
             icon="el-icon-connection"
             @click.native="linkJumpSet"
-          >{{ $t('panel.setting_jump') }}</el-dropdown-item>
+          >{{ $t('panel.setting_jump') }}
+          </el-dropdown-item>
           <el-dropdown-item
             v-if="curComponent.type != 'custom-button'"
             icon="el-icon-magic-stick"
             @click.native="boardSet"
-          >{{ $t('panel.component_style') }}</el-dropdown-item>
+          >{{ $t('panel.component_style') }}
+          </el-dropdown-item>
           <el-dropdown-item
             v-if="curComponent.type != 'custom-button'"
             @click.native="hyperlinksSet"
@@ -91,6 +108,38 @@
         @onClose="hyperlinksSetVisible = false"
       />
     </el-dialog>
+
+    <el-dialog
+      v-if="showCustomSort"
+      v-dialogDrag
+      :title="$t('chart.custom_sort')"
+      :visible="showCustomSort"
+      :show-close="false"
+      width="500px"
+      :append-to-body="true"
+      class="dialog-css"
+    >
+      <custom-tabs-sort
+        ref="customTabsSort"
+        :element="curComponent"
+      />
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="closeCustomSort"
+        >{{ $t('chart.cancel') }}
+        </el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          @click="saveCustomSort"
+        >{{ $t('chart.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 
 </template>
@@ -100,11 +149,13 @@ import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import { getViewLinkageGather } from '@/api/panel/linkage'
 import HyperlinksDialog from '@/components/canvas/components/Editor/HyperlinksDialog'
+import CustomTabsSort from '@/components/widget/DeWidget/CustomTabsSort'
 
 export default {
-  components: { HyperlinksDialog },
+  components: { CustomTabsSort, HyperlinksDialog },
   data() {
     return {
+      showCustomSort: false,
       jumpExcludeViewType: [
         'richTextView',
         'liquid',
@@ -150,6 +201,18 @@ export default {
     ])
   },
   methods: {
+    openCustomSort() {
+      this.showCustomSort = true
+    },
+    closeCustomSort() {
+      this.showCustomSort = false
+    },
+    saveCustomSort() {
+      this.$refs.customTabsSort.save()
+      this.$nextTick(() => {
+        this.showCustomSort = false
+      })
+    },
     edit() {
       if (this.curComponent.type === 'custom') {
         bus.$emit('component-dialog-edit', 'update')
@@ -157,7 +220,9 @@ export default {
         bus.$emit('button-dialog-edit')
       } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'de-rich-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')
-      } else { bus.$emit('change_panel_right_draw', true) }
+      } else {
+        bus.$emit('change_panel_right_draw', true)
+      }
     },
     lock() {
       this.$store.commit('lock')
@@ -266,36 +331,36 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .contextmenu {
-    position: absolute;
-    z-index: 1000;
+.contextmenu {
+  position: absolute;
+  z-index: 1000;
 
-    ul {
-      border: 1px solid #e4e7ed;
-      border-radius: 4px;
-      background-color: #fff;
-      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+  ul {
+    border: 1px solid #e4e7ed;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
+    box-sizing: border-box;
+    margin: 5px 0;
+    padding: 6px 0;
+
+    li {
+      font-size: 14px;
+      padding: 0 20px;
+      position: relative;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #606266;
+      height: 34px;
+      line-height: 34px;
       box-sizing: border-box;
-      margin: 5px 0;
-      padding: 6px 0;
+      cursor: pointer;
 
-      li {
-        font-size: 14px;
-        padding: 0 20px;
-        position: relative;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: #606266;
-        height: 34px;
-        line-height: 34px;
-        box-sizing: border-box;
-        cursor: pointer;
-
-        &:hover {
-          background-color: var(--background-color-base, #f5f7fa);
-        }
+      &:hover {
+        background-color: var(--background-color-base, #f5f7fa);
       }
     }
   }
+}
 </style>

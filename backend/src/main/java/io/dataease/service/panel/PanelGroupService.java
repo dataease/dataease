@@ -806,23 +806,23 @@ public class PanelGroupService {
         //校验标准 1.存在视图且所有视图的数据来源必须是dataset 2.存在数据集且没有excel数据集 3.存在数据源且是单数据源
         //1.view check
         if (CollectionUtils.isEmpty(chartViewsInfo)) {
-            return new PanelExport2App("this panel don't have views");
+            return new PanelExport2App(Translator.get("I18N_APP_NO_VIEW_ERROR"));
         } else if (chartViewsInfo.stream().filter(chartView -> chartView.getDataFrom().equals("template")).collect(Collectors.toList()).size() > 0) {
-            return new PanelExport2App("this panel have view from template");
+            return new PanelExport2App(Translator.get("I18N_APP_TEMPLATE_VIEW_ERROR"));
         }
 
         // dataset check
         if (CollectionUtils.isEmpty(datasetTablesInfo)) {
-            return new PanelExport2App("this panel don't have dataset");
-        } else if (datasetTablesInfo.stream().filter(datasetTable -> datasetTable.getType().equals("excel")).collect(Collectors.toList()).size() > 0) {
-            return new PanelExport2App("this panel have dataset witch type is excel");
+            return new PanelExport2App(Translator.get("I18N_APP_NO_DATASET_ERROR"));
+        } else if (datasetTablesInfo.stream().filter(datasetTable -> datasetTable.getType().equals("excel") || datasetTable.getType().equals("api")).collect(Collectors.toList()).size() > 0) {
+            return new PanelExport2App(Translator.get("I18N_APP_ERROR_DATASET"));
         }
 
         //datasource check
         if (CollectionUtils.isEmpty(datasourceDTOS)) {
-            return new PanelExport2App("this panel don't have datasource");
+            return new PanelExport2App(Translator.get("I18N_APP_NO_DATASOURCE"));
         } else if (datasourceDTOS.size() > 1) {
-            return new PanelExport2App("this panel should have only one dataset");
+            return new PanelExport2App(Translator.get("I18N_APP_ONE_DATASOURCE_TIPS"));
         }
         return new PanelExport2App(chartViewsInfo, chartViewFieldsInfo, datasetTablesInfo, datasetTableFieldsInfo, dataSetTasksInfo, datasourceDTOS,panelViews);
     }

@@ -24,18 +24,19 @@
           v-model="checkAll"
           :indeterminate="isIndeterminate"
           @change="handleCheckAllChange"
-        >
-          {{ $t('commons.all') }}</el-checkbox>
+        />{{ $t('commons.all') }}
 
         <el-checkbox-group
           v-model="value"
           @change="handleCheckedChange"
         >
-          <el-checkbox
-            v-for="item in data.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))"
-            :key="item.id"
-            :label="item.id"
-          >{{ item.id }}</el-checkbox>
+          <template v-for="item in data.filter(node => !keyWord || (node.id && node.id.includes(keyWord)))">
+            <el-checkbox
+              :key="item.id"
+              :label="item.id"
+            >{{ item.id }}</el-checkbox>
+            <br :key="item.id">
+          </template>
         </el-checkbox-group>
       </div>
 
@@ -407,13 +408,11 @@ export default {
 
   .checkbox-group-container {
     label.el-checkbox {
-      display: block !important;
-      margin: 10px !important;
+      margin: 10px 10px 0 10px !important;
     }
 
     .el-checkbox-group>label {
-      display: block !important;
-      margin: 10px !important;
+      margin: 10px 10px 0 10px !important;
     }
 
   }

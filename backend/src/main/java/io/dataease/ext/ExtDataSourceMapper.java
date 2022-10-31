@@ -15,7 +15,7 @@ public interface ExtDataSourceMapper {
 
     List<DatasourceDTO> findByPanelId(@Param("panelId") String panelId);
 
-
+    DatasourceDTO queryDetails(@Param("datasourceId") String datasourceId,@Param("userId") String userId);
 
 
 }

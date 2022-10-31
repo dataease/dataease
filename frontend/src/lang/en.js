@@ -530,11 +530,13 @@ export default {
     the_running_results: 'You can view the running results'
   },
   detabs: {
+    custom_sort: 'Custom Sort',
     eidttitle: 'Edit Title',
     selectview: 'Select View',
     selectOthers: 'Select Others',
     availableComponents: 'Available Components',
-    please: 'Please'
+    please: 'Please',
+    head_position: 'Head Position'
   },
   example: {
     warning: 'Creating and editing pages cannot be cached by keep-alive because keep-alive include does not currently support caching based on routes, so it is currently cached based on component name. If you want to achieve a similar caching effect, you can use a browser caching scheme such as localStorage. Or do not use keep-alive include to cache all pages directly. See details'
@@ -912,6 +914,7 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    chart_background: 'Component background',
     solid_color: 'Solid color',
     split_gradient: 'Split gradient',
     continuous_gradient: 'Continuous gradient',
@@ -1438,6 +1441,9 @@ export default {
     table_index_desc: 'Index Header Name'
   },
   dataset: {
+    spend_time: 'Spend',
+    sql: 'SQL',
+    sql_result: 'Result',
     parse_filed: 'Parse Field',
     field_rename: 'Rename Field',
     params_work: 'Effective only when editing SQL',
@@ -2641,8 +2647,13 @@ export default {
     dataset_group: 'Dataset group',
     panel: 'Panel',
     log_delete_tips: 'Are you sure to delete this application record?',
-    log_resource_delete_tips: 'Delete related resources (irrecoverable after deletion)'
-
+    log_resource_delete_tips: 'Delete related resources (irrecoverable after deletion)',
+    file_error_tips: 'The relevant data file is not found. The current file may not be a DataEase application file, or the file may be damaged ',
+    app_export: 'Application export',
+    app_version: 'Application version',
+    program_version: 'DataEase minimum version',
+    creator: 'Author',
+    export: 'Export'
   },
 
   logout: {
