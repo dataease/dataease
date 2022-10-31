@@ -18,8 +18,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelUtils {
     private static final String suffix = ".xlsx";
+    private static final String BASE_ROOT = "/opt/dataease/data/";
 
-    public static File exportExcel(List<ExcelSheetModel> sheets, String fileName) throws Exception {
+    public static File exportExcel(List<ExcelSheetModel> sheets, String fileName, String folderId) throws Exception {
         AtomicReference<String> realFileName = new AtomicReference<>(fileName);
         Workbook wb = new XSSFWorkbook();
 
@@ -63,7 +64,14 @@ public class ExcelUtils {
         if (!StringUtils.endsWith(fileName, suffix)) {
             realFileName.set(realFileName.get() + suffix);
         }
-        File result = new File("/opt/dataease/data/" + realFileName.get());
+        String folderPath = BASE_ROOT;
+        if (StringUtils.isNotBlank(folderId)) {
+            folderPath = BASE_ROOT + folderId + "/";
+        }
+        if (!FileUtil.exist(folderPath)) {
+            FileUtil.mkdir(folderPath);
+        }
+        File result = new File(folderPath + realFileName.get());
         BufferedOutputStream outputStream = FileUtil.getOutputStream(result);
         try {
             wb.write(outputStream);
