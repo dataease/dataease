@@ -17,7 +17,7 @@
       :style="title_class"
       style="cursor: default;display: block;"
     >
-      <div>
+      <div style="display: flex;">
         <chart-title-update :chart-info="chartInfo" />
         <title-remark
           v-if="chart.render && chart.render === 'antv' && remarkCfg.show"
