@@ -361,7 +361,7 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
     }
   }
   customAttr['color'] = { ...canvasStyle.chartInfo.chartColor }
-  customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'], show: customStyle['text']['show'] }
+  customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'], show: customStyle['text']['show'], remarkShow: customStyle['text']['remarkShow'], remark: customStyle['text']['remark'] }
   if (customStyle.background) {
     delete customStyle.background
   }
