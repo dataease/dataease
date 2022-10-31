@@ -55,7 +55,7 @@ INSERT INTO `sys_msg_type` VALUES (2, 1, 'i18n_msg_type_panel_share', 'panel', '
 INSERT INTO `sys_msg_type` VALUES (3, 1, 'i18n_msg_type_panel_share_cacnel', 'panel', 'to-msg-share');
 INSERT INTO `sys_msg_type` VALUES (4, 0, 'i18n_msg_type_dataset_sync', 'sys-task-dataset', 'to-msg-dataset');
 INSERT INTO `sys_msg_type` VALUES (5, 4, 'i18n_msg_type_dataset_sync_success', 'sys-task-dataset', 'to-msg-dataset');
-INSERT INTO `sys_msg_type` VALUES (6, 4, 'i18n_msg_type_dataset_sync_faild', 'sys-task-dataset', 'to-msg-dataset');
+INSERT INTO `sys_msg_type` VALUES (6, 4, 'i18n_msg_type_dataset_sync_failed', 'sys-task-dataset', 'to-msg-dataset');
 COMMIT;
 
 -- ----------------------------
@@ -74,7 +74,7 @@ BEGIN;
 INSERT INTO `sys_menu` VALUES (53, 1, 3, 1, '站内消息', 'sys-msg-web', 'msg/index', 1000, 'all-msg', 'system-msg-web', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (54, 53, 0, 1, '所有消息', 'sys-msg-web-all', 'msg/all', 1, 'web-msg', 'all', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (55, 53, 0, 1, '未读消息', 'sys-msg-web-unread', 'msg/unread', 2, 'unread-msg', 'unread', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
-INSERT INTO `sys_menu` VALUES (56, 53, 0, 1, '已读消息', 'sys-msg-web-readed', 'msg/readed', 3, 'readed-msg', 'readed', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_menu` VALUES (56, 53, 0, 1, '已读消息', 'sys-msg-web-read', 'msg/read', 3, 'read-msg', 'read', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO `sys_menu` VALUES (59, 53, 0, 1, '接收管理', 'sys-msg-setting', 'msg/setting', 4, 'msg-setting', 'setting', b'0', b'0', b'0', NULL, NULL, NULL, NULL, NULL);
 COMMIT;
 
