@@ -1,15 +1,17 @@
 export const DEFAULT_TAB_COLOR_CASE_DARK = {
   headFontColor: '#FFFFFF',
   headFontActiveColor: '#FFFFFF',
-  headBorderColor: '',
-  headBorderActiveColor: ''
+  headBorderColor: '#FFFFFF',
+  headBorderActiveColor: '#FFFFFF',
+  headPosition: 'left'
 }
 
 export const DEFAULT_TAB_COLOR_CASE_LIGHT = {
   headFontColor: '#OOOOOO',
   headFontActiveColor: '#OOOOOO',
-  headBorderColor: '',
-  headBorderActiveColor: ''
+  headBorderColor: '#OOOOOO',
+  headBorderActiveColor: '#OOOOOO',
+  headPosition: 'left'
 }
 
 export const DEFAULT_COLOR_CASE = {

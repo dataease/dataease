@@ -414,9 +414,10 @@ import StreamMediaLinks from '@/components/canvas/components/Editor/StreamMediaL
 import DateFormat from '@/components/canvas/components/Editor/DateFormat'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import FrameLinks from '@/components/canvas/components/Editor/FrameLinks'
+import TitlePosition from '@/components/widget/DeWidget/TitlePosition'
 
 export default {
-  components: { FrameLinks, DateFormat, VideoLinks, StreamMediaLinks },
+  components: { TitlePosition, FrameLinks, DateFormat, VideoLinks, StreamMediaLinks },
   props: {
     canvasId: {
       type: String,
