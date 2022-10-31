@@ -154,7 +154,7 @@ export function componentStyle(chart_option, chart) {
       chart_option.yAxis[0].axisLabel = customStyle.yAxis.axisLabel
       chart_option.yAxis[0].splitLine = customStyle.yAxis.splitLine
       chart_option.yAxis[0].nameTextStyle = customStyle.yAxis.nameTextStyle
-      const axisLine0 = customStyle.yAxis[0].axisLine ? customStyle.yAxis[0].axisLine : DEFAULT_YAXIS_STYLE.axisLine
+      const axisLine0 = customStyle.yAxis.axisLine ? customStyle.yAxis.axisLine : DEFAULT_YAXIS_STYLE.axisLine
       chart_option.yAxis[0].axisLine = axisLine0
       chart_option.yAxis[0].axisTick = axisLine0
 
@@ -187,7 +187,7 @@ export function componentStyle(chart_option, chart) {
       chart_option.yAxis[1].axisLabel = customStyle.yAxisExt.axisLabel
       chart_option.yAxis[1].splitLine = customStyle.yAxisExt.splitLine
       chart_option.yAxis[1].nameTextStyle = customStyle.yAxisExt.nameTextStyle
-      const axisLine1 = customStyle.yAxis[1].axisLine ? customStyle.yAxis[1].axisLine : DEFAULT_YAXIS_EXT_STYLE.axisLine
+      const axisLine1 = customStyle.yAxisExt.axisLine ? customStyle.yAxisExt.axisLine : DEFAULT_YAXIS_EXT_STYLE.axisLine
       chart_option.yAxis[1].axisLine = axisLine1
       chart_option.yAxis[1].axisTick = axisLine1
 
