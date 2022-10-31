@@ -1437,7 +1437,8 @@ export default {
     reserve_two: '两位',
     proportion: '佔比',
     label_content: '標籤展示',
-    percent: '占比'
+    percent: '占比',
+    table_index_desc: '表頭名稱'
   },
   dataset: {
     spend_time: '耗時',
