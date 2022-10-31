@@ -70,14 +70,6 @@ export default {
       }
     }
   },
-  watch: {
-    content: {
-      handler(newValue) {
-        this.$emit('onRemarkChange', newValue)
-      }
-    }
-  },
-
   computed: {
     customStyle() {
       let style = {}
@@ -114,6 +106,13 @@ export default {
       'curComponent',
       'canvasStyleData'
     ])
+  },
+  watch: {
+    content: {
+      handler(newValue) {
+        this.$emit('onRemarkChange', newValue)
+      }
+    }
   },
   created() {
     if (!this.showTable) {
