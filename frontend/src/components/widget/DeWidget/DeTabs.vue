@@ -1,7 +1,7 @@
 <template>
   <div
     class="de-tabs-div"
-    :class="heatClass"
+    :class="headClass"
   >
     <dataease-tabs
       v-model="activeTabName"
@@ -295,7 +295,7 @@ export default {
     }
   },
   computed: {
-    heatClass() {
+    headClass() {
       return 'tab-head-' + this.element.style.headPosition
     },
     curCanvasScaleSelf() {
