@@ -1,8 +1,8 @@
 export const DEFAULT_TAB_COLOR_CASE_DARK = {
   headFontColor: '#FFFFFF',
   headFontActiveColor: '#FFFFFF',
-  headBorderColor: '#FFFFFF',
-  headBorderActiveColor: '#FFFFFF',
+  headBorderColor: '#131E42',
+  headBorderActiveColor: '#131E42',
   headPosition: 'left'
 }
 
@@ -24,7 +24,7 @@ export const DEFAULT_COLOR_CASE = {
   tableFontColor: '#000000',
   tableStripe: true,
   dimensionColor: '#000000',
-  quotaColor: '#4E81BB',
+  quotaColor: '#5470c6',
   tableBorderColor: '#E6E7E4',
   seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
   areaBorderColor: '#303133'
@@ -34,12 +34,12 @@ export const DEFAULT_COLOR_CASE_DARK = {
   value: 'default',
   colors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
   alpha: 100,
-  tableHeaderBgColor: '#4E81BB',
+  tableHeaderBgColor: '#5470c6',
   tableItemBgColor: '#131E42',
   tableFontColor: '#ffffff',
   tableStripe: true,
   dimensionColor: '#ffffff',
-  quotaColor: '#4E81BB',
+  quotaColor: '#5470c6',
   tableBorderColor: '#CCCCCC',
   seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
   areaBorderColor: '#EBEEF5'

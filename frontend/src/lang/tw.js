@@ -913,6 +913,7 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    chart_background: '組件背景',
     solid_color: '純色',
     split_gradient: '分離漸變',
     continuous_gradient: '連續漸變',

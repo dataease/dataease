@@ -912,6 +912,7 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    chart_background: '组件背景',
     solid_color: '纯色',
     split_gradient: '分离渐变',
     continuous_gradient: '连续渐变',
