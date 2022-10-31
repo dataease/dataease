@@ -194,6 +194,7 @@
     >
       <remark-editor
         :remark="titleForm.remark"
+        :background="titleForm.remarkBackgroundColor"
         @onRemarkChange="onRemarkChange"
       />
       <div

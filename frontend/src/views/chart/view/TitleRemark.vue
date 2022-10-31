@@ -39,6 +39,7 @@ export default {
   max-height: 200px;
   overflow-y: auto;
   padding: 10px;
+  color: #000000;
   border-radius: 4px;
 }
 ::-webkit-scrollbar {
