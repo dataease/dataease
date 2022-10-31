@@ -2373,7 +2373,7 @@ export default {
     channel_wecom_msg: 'Wecom',
     channel_dingtalk_msg: 'Dingtalk',
     channel_lark_msg: 'Lark',
-    channel_larksuite_msg: 'Larksuite'
+    channel_larksuite_msg: 'INT Lark'
   },
   denumberrange: {
     label: 'Number range',
@@ -2489,7 +2489,7 @@ export default {
     wecom: 'Wecom',
     dingtalk: 'Dingtalk',
     lark: 'Lark',
-    larksuite: 'Larksuite',
+    larksuite: 'INT Lark',
     pixel: 'Pixel',
     default: 'Default',
     custom: 'Custom',

@@ -156,7 +156,9 @@
                           : scope.row.from === 5
                             ? "Dingtalk"
                             : scope.row.from === 6
-                              ? "Lark" : '-'
+                              ? "Lark"
+                              : scope.row.from === 7
+                                ? "INT Lark" : '-'
               }}
             </div>
           </template>
