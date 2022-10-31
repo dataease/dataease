@@ -3092,7 +3092,7 @@ export default {
           customAttr.label.position = 'outer'
         }
         if (type === 'pie-donut') {
-          customAttr.size.pieInnerRadius = Math.round(customAttr.size.pieOuterRadius * 0.7)
+          customAttr.size.pieInnerRadius = Math.round(customAttr.size.pieOuterRadius * 0.75)
         }
         if (type === 'pie-donut-rose') {
           customAttr.size.pieInnerRadius = Math.round(customAttr.size.pieOuterRadius * 0.5)

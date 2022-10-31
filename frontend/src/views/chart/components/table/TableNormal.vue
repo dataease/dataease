@@ -23,6 +23,7 @@
         :class="chart.id"
         :show-summary="showSummary"
         :summary-method="summaryMethod"
+        :index-config="{seqMethod}"
       >
         <ux-table-column
           type="index"
@@ -294,7 +295,11 @@ export default {
               break
             }
           }
-          this.indexLabel = customAttr.size.indexLabel
+          if (!customAttr.size.indexLabel) {
+            this.indexLabel = ' '
+          } else {
+            this.indexLabel = customAttr.size.indexLabel
+          }
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
         // 暂不支持斑马纹
@@ -380,7 +385,11 @@ export default {
       // 返回一个二维数组的表尾合计(不要平均值，就不要在数组中添加)
       return [means]
     },
-
+    seqMethod({ rowIndex, column }) {
+      if (column?.type === 'index') {
+        return (this.currentPage.pageSize * (this.currentPage.page - 1)) + rowIndex + 1
+      }
+    },
     chartResize() {
       // 指定图表的配置项和数据
       this.calcHeightDelay()

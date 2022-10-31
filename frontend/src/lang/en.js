@@ -1434,7 +1434,8 @@ export default {
     reserve_two: '2',
     proportion: 'Proportion',
     label_content: 'Label Content',
-    percent: 'Percent'
+    percent: 'Percent',
+    table_index_desc: 'Index Header Name'
   },
   dataset: {
     parse_filed: 'Parse Field',

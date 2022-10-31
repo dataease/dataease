@@ -1433,7 +1433,8 @@ export default {
     reserve_two: '两位',
     proportion: '占比',
     label_content: '标签展示',
-    percent: '占比'
+    percent: '占比',
+    table_index_desc: '表头名称'
   },
   dataset: {
     parse_filed: '解析字段',

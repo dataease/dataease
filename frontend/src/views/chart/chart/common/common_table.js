@@ -168,6 +168,7 @@ export function getCustomTheme(chart) {
       theme.rowCell.text.textAlign = i_a
       theme.rowCell.measureText.fontSize = parseInt(s.tableItemFontSize)
       theme.rowCell.measureText.textAlign = i_a
+      theme.rowCell.seriesNumberWidth = parseInt(s.tableColumnWidth)
 
       theme.colCell.bolderText.fontSize = parseInt(s.tableTitleFontSize)
       theme.colCell.bolderText.textAlign = h_a

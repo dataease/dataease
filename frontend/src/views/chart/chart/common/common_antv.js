@@ -230,6 +230,9 @@ export function getLabel(chart) {
                       }
                     }
                     res = contentItems.join(' ')
+                  } else if (equalsAny(chart.type, 'pie-rose', 'pie-donut-rose')) {
+                    const quotaValue = valueFormatter(param.value, formatterCfg)
+                    res = [param.field, quotaValue].join(' ')
                   } else {
                     res = valueFormatter(param.value, formatterCfg)
                   }

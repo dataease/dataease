@@ -1,10 +1,10 @@
-import { TableSheet, S2Event, PivotSheet } from '@antv/s2'
+import { TableSheet, S2Event, PivotSheet, DataCell } from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import Vue from 'vue'
-export function baseTableInfo(s2, container, chart, action, tableData) {
+export function baseTableInfo(s2, container, chart, action, tableData, pageInfo) {
   const containerDom = document.getElementById(container)
 
   // fields
@@ -132,8 +132,18 @@ export function baseTableInfo(s2, container, chart, action, tableData) {
   if (s2Options.showSeriesNumber) {
     s2Options.colCell = (node) => {
       if (node.colIndex === 0) {
-        node.label = customAttr.size.indexLabel
+        if (!customAttr.size.indexLabel) {
+          node.label = ' '
+        } else {
+          node.label = customAttr.size.indexLabel
+        }
       }
+    }
+    s2Options.dataCell = (viewMeta) => {
+      if (viewMeta.colIndex === 0) {
+        viewMeta.fieldValue = (pageInfo.pageSize * (pageInfo.page - 1)) + viewMeta.rowIndex + 1
+      }
+      return new DataCell(viewMeta, viewMeta?.spreadsheet)
     }
   }
 
@@ -270,7 +280,11 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
   if (s2Options.showSeriesNumber) {
     s2Options.colCell = (node) => {
       if (node.colIndex === 0) {
-        node.label = customAttr.size.indexLabel
+        if (!customAttr.size.indexLabel) {
+          node.label = ' '
+        } else {
+          node.label = customAttr.size.indexLabel
+        }
       }
     }
   }

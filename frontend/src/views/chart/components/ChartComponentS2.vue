@@ -291,7 +291,7 @@ export default {
         }
       }
       if (chart.type === 'table-info') {
-        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
+        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.currentPage)
       } else if (chart.type === 'table-normal') {
         this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else if (chart.type === 'table-pivot') {
@@ -522,7 +522,7 @@ export default {
           ele.filter = []
         }
       })
-      if (view.type === 'table-pivot' || view.type === 'bar-group') {
+      if (view.type === 'table-pivot' || view.type.includes('bar-group')) {
         view.xaxisExt.forEach(function(ele) {
           if (!ele.dateStyle || ele.dateStyle === '') {
             ele.dateStyle = 'y_M_d'

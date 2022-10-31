@@ -788,9 +788,7 @@ public class ChartViewService {
 
                         ChartExtFilterRequest drillFilter = new ChartExtFilterRequest();
                         drillFilter.setFieldId(dto.getId());
-                        drillFilter.setValue(new ArrayList<String>() {{
-                            add(dto.getValue());
-                        }});
+                        drillFilter.setValue(Collections.singletonList(dto.getValue()));
                         drillFilter.setOperator("in");
                         drillFilter.setDatasetTableField(datasetTableField);
                         extFilterList.add(drillFilter);
