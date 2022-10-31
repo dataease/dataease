@@ -2646,11 +2646,11 @@ export default {
     log_delete_tips: '確定刪除該條應用記錄嗎？',
     log_resource_delete_tips: '刪除相關資源（刪除後不可恢復）',
     file_error_tips: '未找到相關數據文件，當前文件可能不是DataEase應用文件，或者文件已經損壞',
-    app_export: '应用导出',
-    app_version: '应用版本',
+    app_export: '應用導出',
+    app_version: '應用版本',
     program_version: 'DataEase最低版本',
     creator: '作者',
-    export: '导出'
+    export: '導出'
   },
 
   logout: {
