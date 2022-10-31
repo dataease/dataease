@@ -68,6 +68,9 @@ public class ExcelUtils {
         if (StringUtils.isNotBlank(folderId)) {
             folderPath = BASE_ROOT + folderId + "/";
         }
+
+        folderPath += Thread.currentThread().getId() + "/";
+
         if (!FileUtil.exist(folderPath)) {
             FileUtil.mkdir(folderPath);
         }
