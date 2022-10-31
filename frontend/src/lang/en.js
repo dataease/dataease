@@ -1438,6 +1438,9 @@ export default {
     percent: 'Percent'
   },
   dataset: {
+    spend_time: 'Spend',
+    sql: 'SQL',
+    sql_result: 'Result',
     parse_filed: 'Parse Field',
     field_rename: 'Rename Field',
     params_work: 'Effective only when editing SQL',
