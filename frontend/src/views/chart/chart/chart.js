@@ -211,7 +211,7 @@ export const DEFAULT_TITLE_STYLE_DARK = {
   isBolder: true,
   remarkShow: false,
   remark: '',
-  remarkBackgroundColor: '#ffffffff',
+  remarkBackgroundColor: '#5A5C62',
   fontFamily: 'Microsoft YaHei',
   letterSpace: '0',
   fontShadow: false

@@ -1,15 +1,13 @@
 <template>
   <div
     style="max-height: 50vh;overflow-y: auto;"
-    :style="customStyle"
+    :style="commonStyle"
   >
-    <div :style="commonStyle">
-      <Editor
-        v-model="content"
-        style="width: 100%;height: 100%"
-        :init="init"
-      />
-    </div>
+    <Editor
+      v-model="content"
+      style="width: 100%;height: 100%"
+      :init="init"
+    />
   </div>
 </template>
 
@@ -29,6 +27,10 @@ export default {
     remark: {
       type: String,
       required: true
+    },
+    background: {
+      type: String,
+      required: false
     },
     showTable: {
       type: Boolean,
@@ -92,14 +94,9 @@ export default {
       return style
     },
     commonStyle() {
-      const style = {
-        width: '100%',
-        height: '100%'
+      return {
+        background: this.background
       }
-      if (this.curComponent.commonBackground && this.curComponent.commonBackground.backgroundColorSelect) {
-        style['background-color'] = hexColorToRGBA(this.curComponent.commonBackground.color, this.curComponent.commonBackground.alpha)
-      }
-      return style
     },
     ...
     mapState([
