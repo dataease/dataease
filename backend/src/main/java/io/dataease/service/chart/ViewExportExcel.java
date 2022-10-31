@@ -51,7 +51,7 @@ public class ViewExportExcel {
         Map<String, ChartExtRequest> stringChartExtRequestMap = buildViewRequest(panelDto, justView);
         List<File> results = new ArrayList<>();
         List<ExcelSheetModel> sheets = viewIds.stream().map(viewId -> viewFiles(viewId, stringChartExtRequestMap.get(viewId))).collect(Collectors.toList());
-        File excelFile = ExcelUtils.exportExcel(sheets, panelDto.getName());
+        File excelFile = ExcelUtils.exportExcel(sheets, panelDto.getName(), panelDto.getId());
         results.add(excelFile);
         return results;
     }
@@ -62,7 +62,7 @@ public class ViewExportExcel {
         List<Map<String, Object>> components = gson.fromJson(componentsJson, tokenType);
         String panelStyle = panelDto.getPanelStyle();
         Map map = gson.fromJson(panelStyle, Map.class);
-        Map panelMap = (LinkedTreeMap)map.get("panel");
+        Map panelMap = (LinkedTreeMap) map.get("panel");
         double resultCount = Double.parseDouble(panelMap.get("resultCount").toString());
         String resultMode = panelMap.get("resultMode").toString();
 
@@ -73,7 +73,7 @@ public class ViewExportExcel {
             ChartExtRequest chartExtRequest = new ChartExtRequest();
             chartExtRequest.setQueryFrom("panel");
             chartExtRequest.setFilter(chartExtFilterRequests);
-            chartExtRequest.setResultCount((int)resultCount);
+            chartExtRequest.setResultCount((int) resultCount);
             chartExtRequest.setResultMode(resultMode);
             result.put(entry.getKey(), chartExtRequest);
         }

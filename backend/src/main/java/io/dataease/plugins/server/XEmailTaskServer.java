@@ -233,7 +233,7 @@ public class XEmailTaskServer {
         ExcelSheetModel excelSheetModel = excelSheetModel(instanceDTOS);
         List<ExcelSheetModel> sheetModels = new ArrayList<>();
         sheetModels.add(excelSheetModel);
-        File file = ExcelUtils.exportExcel(sheetModels, null);
+        File file = ExcelUtils.exportExcel(sheetModels, null, null);
         InputStream inputStream = new FileInputStream(file);
         HttpServletResponse response = ServletUtils.response();
         try {
