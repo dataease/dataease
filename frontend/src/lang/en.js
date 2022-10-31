@@ -530,6 +530,7 @@ export default {
     the_running_results: 'You can view the running results'
   },
   detabs: {
+    custom_sort: 'Custom Sort',
     eidttitle: 'Edit Title',
     selectview: 'Select View',
     selectOthers: 'Select Others',

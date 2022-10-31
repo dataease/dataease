@@ -529,6 +529,7 @@ export default {
     the_running_results: '即可查看运行结果'
   },
   detabs: {
+    custom_sort: '自定义排序',
     eidttitle: '编辑标题',
     selectview: '选择视图',
     selectOthers: '选择组件',
