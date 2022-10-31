@@ -291,7 +291,6 @@
           ['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(form.type)
         "
         class="schema-label"
-        prop="configuration.schema"
       >
         <template slot="label">
           <span class="name">{{ $t('datasource.schema') }}<i class="required" /></span>
@@ -308,6 +307,8 @@
           filterable
           :placeholder="$t('fu.search_bar.please_select')"
           class="de-select"
+          @change="validatorSchema"
+          @blur="validatorSchema"
         >
           <el-option
             v-for="item in schemas"
@@ -316,6 +317,12 @@
             :value="item"
           />
         </el-select>
+        <div
+          v-if="configurationSchema"
+          class="el-form-item__error"
+        >
+          {{ $t('datasource.please_choose_schema') }}
+        </div>
       </el-form-item>
 
       <el-form-item
@@ -896,13 +903,6 @@ export default {
             trigger: 'blur'
           }
         ],
-        'configuration.schema': [
-          {
-            required: true,
-            message: i18n.t('datasource.please_input_connect_timeout'),
-            trigger: 'blur'
-          }
-        ],
         url: [
           {
             required: true,
@@ -919,6 +919,7 @@ export default {
         ]
       },
       api_table_title: '',
+      configurationSchema: false,
       schemas: [],
       showEmpty: false,
       canEdit: false,
@@ -1013,9 +1014,10 @@ export default {
       certinKey: false
     }
   },
-  watch: {},
-  created() {},
   methods: {
+    validatorSchema() {
+      this.configurationSchema = !this.form.configuration.schema
+    },
     getSchema() {
       this.$refs.DsConfig.validate((valid) => {
         if (valid) {
