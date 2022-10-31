@@ -534,7 +534,8 @@ export default {
     selectview: 'Select View',
     selectOthers: 'Select Others',
     availableComponents: 'Available Components',
-    please: 'Please'
+    please: 'Please',
+    head_position: 'Head Position'
   },
   example: {
     warning: 'Creating and editing pages cannot be cached by keep-alive because keep-alive include does not currently support caching based on routes, so it is currently cached based on component name. If you want to achieve a similar caching effect, you can use a browser caching scheme such as localStorage. Or do not use keep-alive include to cache all pages directly. See details'

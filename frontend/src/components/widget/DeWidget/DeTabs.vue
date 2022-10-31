@@ -1,6 +1,8 @@
 <template>
-  <div class="de-tabs-div">
-
+  <div
+    class="de-tabs-div"
+    :class="heatClass"
+  >
     <dataease-tabs
       v-model="activeTabName"
       type="card"
@@ -293,6 +295,9 @@ export default {
     }
   },
   computed: {
+    heatClass() {
+      return 'tab-head-' + this.element.style.headPosition
+    },
     curCanvasScaleSelf() {
       return this.curCanvasScaleMap[this.canvasId]
     },
@@ -633,6 +638,21 @@ export default {
 
 .canvas_move_in {
   border-color: blueviolet;
+}
+::v-deep .el-tabs__nav{
+  width: 100%;
+}
+.tab-head-left ::v-deep .el-tabs__nav{
+  width: 100%;
+  text-align: left;
+}
+.tab-head-right ::v-deep .el-tabs__nav{
+  width: 100%;
+  text-align: right;
+}
+.tab-head-center ::v-deep .el-tabs__nav{
+  width: 100%;
+  text-align: center;
 }
 
 </style>
