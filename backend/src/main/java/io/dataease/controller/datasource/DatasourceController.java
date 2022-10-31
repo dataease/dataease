@@ -85,11 +85,7 @@ public class DatasourceController {
     @ApiOperation("查询数据源详情")
     @PostMapping("/get/{id}")
     public DatasourceDTO getDatasource(@PathVariable String id) throws Exception {
-        DatasourceUnionRequest request = new DatasourceUnionRequest();
-        request.setUserId("1");
-        request.setId(id);
-        List<DatasourceDTO> datasourceList = datasourceService.getDatasourceList(request);
-        return CollectionUtils.isNotEmpty(datasourceList) ? datasourceList.get(0) : null;
+        return datasourceService.getDataSourceDetails(id);
     }
 
     @ApiOperation("查询当前用户数据源")
