@@ -126,7 +126,8 @@ public class MysqlQueryProvider extends QueryProvider {
                     } else if (f.getDeType() == 3) {
                         fieldName = String.format(MysqlConstants.CAST, originField, MysqlConstants.DEFAULT_FLOAT_FORMAT);
                     } else if (f.getDeType() == 1) {
-                        fieldName = String.format(MysqlConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
+                        fieldName = StringUtils.isEmpty(f.getDateFormat()) ? String.format(MysqlConstants.STR_TO_DATE, originField, MysqlConstants.DEFAULT_DATE_FORMAT) :
+                                String.format(MysqlConstants.DATE_FORMAT, String.format(MysqlConstants.STR_TO_DATE, originField, f.getDateFormat()), MysqlConstants.DEFAULT_DATE_FORMAT);
                     } else {
                         fieldName = originField;
                     }
@@ -201,7 +202,8 @@ public class MysqlQueryProvider extends QueryProvider {
             } else if (f.getDeType() == 3) {
                 fieldName = String.format(MysqlConstants.CAST, originField, MysqlConstants.DEFAULT_FLOAT_FORMAT);
             } else if (f.getDeType() == 1) {
-                fieldName = String.format(MysqlConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
+                fieldName = StringUtils.isEmpty(f.getDateFormat()) ? String.format(MysqlConstants.STR_TO_DATE, originField, MysqlConstants.DEFAULT_DATE_FORMAT) :
+                        String.format(MysqlConstants.DATE_FORMAT, String.format(MysqlConstants.STR_TO_DATE, originField, f.getDateFormat()), MysqlConstants.DEFAULT_DATE_FORMAT);
             } else {
                 fieldName = originField;
             }
@@ -979,9 +981,9 @@ public class MysqlQueryProvider extends QueryProvider {
                     } else {
                         // Doris field type test
                         /*if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                            whereValue = String.format(DorisConstants.WHERE_NUMBER_VALUE, value);
+                            whereValue = String.format(MysqlConstants.WHERE_NUMBER_VALUE, value);
                         } else {
-                            whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value);
+                            whereValue = String.format(MysqlConstants.WHERE_VALUE_VALUE, value);
                         }*/
                         whereValue = String.format(MysqlConstants.WHERE_VALUE_VALUE, value);
                     }
@@ -1089,9 +1091,9 @@ public class MysqlQueryProvider extends QueryProvider {
             } else {
                 // doris field type test
                 /*if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                    whereValue = String.format(DorisConstants.WHERE_NUMBER_VALUE, value.get(0));
+                    whereValue = String.format(MysqlConstants.WHERE_NUMBER_VALUE, value.get(0));
                 } else {
-                    whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value.get(0));
+                    whereValue = String.format(MysqlConstants.WHERE_VALUE_VALUE, value.get(0));
                 }*/
                 whereValue = String.format(MysqlConstants.WHERE_VALUE_VALUE, value.get(0));
             }
