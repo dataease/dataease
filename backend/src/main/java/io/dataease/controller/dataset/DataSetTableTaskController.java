@@ -67,7 +67,12 @@ public class DataSetTableTaskController {
     @PostMapping("list/{goPage}/{pageSize}")
     public Pager<List<DataSetTaskDTO>> list(@RequestBody DatasetTableTask datasetTableTask, @PathVariable int goPage, @PathVariable int pageSize) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
-        return PageUtils.setPageInfo(page, dataSetTableTaskService.list(datasetTableTask));
+        Pager<List<DataSetTaskDTO>> listPager = PageUtils.setPageInfo(page, dataSetTableTaskService.list(datasetTableTask));
+        List<DataSetTaskDTO> listObject = listPager.getListObject();
+        for (DataSetTaskDTO dto : listObject) {
+            dataSetTableTaskLogService.lastExecStatus(dto);
+        }
+        return listPager;
     }
 
     @ApiOperation("分页查询")
