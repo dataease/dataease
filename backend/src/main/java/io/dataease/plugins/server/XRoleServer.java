@@ -4,8 +4,11 @@ package io.dataease.plugins.server;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.auth.annotation.DeLog;
+import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.service.ExtAuthService;
 import io.dataease.commons.constants.AuthConstants;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.PageUtils;
@@ -118,6 +121,18 @@ public class XRoleServer {
         List<RoleUserItem> userItems = roleXpackService.userItems(request);
         Pager<List<RoleUserItem>> setPageInfo = PageUtils.setPageInfo(page, userItems);
         return setPageInfo;
+    }
+
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @ApiOperation("查询角色下用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "path", name = "goPage", value = "页码", required = true, dataType = "Integer"),
+            @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "request", value = "查询条件", required = true)
+    })
+    @PostMapping("/userGrid/{datasetId}")
+    public Pager<List<RoleUserItem>> userGrids(@PathVariable String datasetId, @RequestBody RoleUserRequest request) {
+        return userGrid(0,0, request);
     }
 
     @RequiresPermissions({"role:edit", "user:edit"})
