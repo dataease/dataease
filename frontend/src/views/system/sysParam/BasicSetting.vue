@@ -424,7 +424,7 @@ export default {
         return
       }
       if (this.formInline.dsCheckIntervalType === 'hour') {
-        const pattern = '^([1-9]|[1-2][0-3])$'
+        const pattern = '^([1-9]|[1][1-9]|[1-2][0-3])$'
         if (!new RegExp(pattern).test(this.formInline.dsCheckInterval)) {
           this.$message({ message: this.$t('cron.hour_limit'), type: 'warning', showClose: true })
           this.formInline.dsCheckInterval = 1
