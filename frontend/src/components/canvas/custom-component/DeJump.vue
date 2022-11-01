@@ -9,6 +9,7 @@
         :placeholder="getText"
         :popper-append-to-body="inScreen"
         :style="jumpStyle"
+        popper-class="jump_sel_pop"
       >
         <el-option v-for="(item,index) in jumpArr" 
           :key="index" :value="item.jumpLink" 
@@ -120,6 +121,11 @@ export default {
   height: 100%;
 }
 
+.jump_sel_pop {
+  background-color: transparent;
+  border-color: transparent;
+}
+
 .jump_sel /deep/ .el-input--medium .el-input__inner {
   background-color: transparent;
   border-color: transparent;
@@ -131,9 +137,9 @@ export default {
 /deep/ .el-select__caret::before {
   color: white;
 }
-/deep/ .el-popper,.el-select-dropdown{
-  background-color: transparent;
-  border-color: transparent;
+/deep/ .el-select-dropdown {
+  background-color: transparent !important;
+  border-color: transparent !important;
 }
 
 </style>
