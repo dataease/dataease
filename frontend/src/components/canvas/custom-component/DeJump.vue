@@ -6,6 +6,7 @@
         v-model="linkOpen" 
         @change="linkChange" 
         style="width: 100%;"
+        :placeholder="getText"
         :popper-append-to-body="inScreen"
         :style="jumpStyle"
       >
@@ -46,6 +47,9 @@ export default {
     ]),
     jumpArr() {
       return this.element.options.jumpList
+    },
+    getText() {
+      return this.element.options.placeholder !== undefined? this.element.options.placeholder : ''
     },
     fontColor() {
       return this.element.options.color
@@ -120,8 +124,16 @@ export default {
   background-color: transparent;
   border-color: transparent;
 }
-.jump_sel /deep/ .el-input__inner {
+.jump_sel /deep/ .el-input__inner::placeholder{
+  color: white;
+}
+
+/deep/ .el-select__caret::before {
+  color: white;
+}
+/deep/ .el-select-dropdown .el-popper {
   background-color: transparent;
   border-color: transparent;
 }
+
 </style>

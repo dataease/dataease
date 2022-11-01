@@ -3,58 +3,70 @@
     <p style="font-size: 18px;">跳转设置</p>
     <div style="margin-top: 10px;">
       <el-row class="jump_row">
-        <el-col :span="4" class="jump_col_4">
-          字体颜色:
-        </el-col>
-        <el-col :span="4">
-          <el-color-picker v-model="curComponent.options.color" class="color-picker-style" :predefine="predefineColors" />
-        </el-col>
-        <el-col :span="4" class="jump_col_4">
-          背景:
+        <el-col :span="12">
+          <el-col :span="6" class="jump_col_4">
+            字体颜色:
+          </el-col>
+          <el-col :span="18">
+            <el-color-picker v-model="curComponent.options.color" class="color-picker-style" :predefine="predefineColors" />
+          </el-col>
+          <el-col :span="6" class="jump_col_4">
+            展示内容:
+          </el-col>
+          <el-col :span="18">
+            <el-input v-model="curComponent.options.placeholder" size="small"></el-input>
+          </el-col>
         </el-col>
         <el-col :span="12">
-          <el-row>
-            <el-radio-group v-model="curComponent.options.bgType" style="width:100%;">
+          <el-col :span="6" class="jump_col_4">
+            背景:
+          </el-col>
+          <el-col :span="18">
+            <el-row>
+              <el-radio-group v-model="curComponent.options.bgType" style="width:100%;">
+                <el-col :span="12">
+                  <el-radio label="color">颜色</el-radio>
+                </el-col>
+                <el-col :span="12">
+                  <el-radio label="back">背景</el-radio>
+                </el-col>
+              </el-radio-group>
+            </el-row>
+            <el-row style="margin-top: 10px;">
               <el-col :span="12">
-                <el-radio label="color">颜色</el-radio>
+                <el-color-picker v-model="curComponent.options.jumpBgColor" class="color-picker-style" :predefine="predefineColors" />
               </el-col>
-              <el-col :span="12">
-                <el-radio label="back">背景</el-radio>
+              <el-col :span="12" v-if="updataUrl === ''">
+                <el-upload
+                  action=""
+                  accept=".jpeg,.jpg,.png,.gif,.svg"
+                  class="avatar-uploader"
+                  list-type="picture-card"
+                  :class="{disabled:uploadDisabled}"
+                  :on-preview="handlePictureCardPreview"
+                  :on-remove="handleRemove"
+                  :http-request="upload"
+                  :file-list="fileList"
+                  :on-change="onChange"
+                  :limit="1"
+                >
+                  <i class="el-icon-plus" />
+                </el-upload>
+                <span>
+                  <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+                </span>
               </el-col>
-            </el-radio-group>
-          </el-row>
-          <el-row style="margin-top: 10px;">
-            <el-col :span="12">
-              <el-color-picker v-model="curComponent.options.jumpBgColor" class="color-picker-style" :predefine="predefineColors" />
-            </el-col>
-            <el-col :span="12" v-if="updataUrl === ''">
-              <el-upload
-                action=""
-                accept=".jpeg,.jpg,.png,.gif,.svg"
-                class="avatar-uploader"
-                list-type="picture-card"
-                :class="{disabled:uploadDisabled}"
-                :on-preview="handlePictureCardPreview"
-                :on-remove="handleRemove"
-                :http-request="upload"
-                :file-list="fileList"
-                :on-change="onChange"
-                :limit="1"
-              >
-                <i class="el-icon-plus" />
-              </el-upload>
-              <span>
-                <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
-              </span>
-            </el-col>
-            <el-col :span="12" v-else>
-              <div style="width: 100%;overflow-y:scroll;position: relative;">
-                <img :src="updataUrl" alt="" style="width: 100%"/>
-                <i class="el-icon-delete del_img" @click="handleRemove"></i>
-              </div>
-            </el-col>
-          </el-row>
+              <el-col :span="12" v-else>
+                <div style="width: 100%;overflow-y:scroll;position: relative;">
+                  <img :src="updataUrl" alt="" style="width: 100%"/>
+                  <i class="el-icon-delete del_img" @click="handleRemove"></i>
+                </div>
+              </el-col>
+            </el-row>
+          </el-col>
         </el-col>
+        
+        
         
       </el-row>
       <el-row>

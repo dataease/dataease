@@ -498,8 +498,11 @@ const list = [
       vertical: 'directory',
       horizontal: 'center',
       heightTabs: '',
+      defaultType: 'color',
+      defaultColor: '#ffffff',
       defaultBg: '',
-      highlight: '#333',
+      highlightType: 'color',
+      highlight: '#333333',
       highlightBg: '',
       heightBgImg: '',
       spacing: 0,
@@ -613,7 +616,8 @@ const list = [
     options: {
       color: '#333333',
       bgType: 'color',
-      jumpBgColor: '#FFFFFF',
+      jumpBgColor: '#EEEEEE',
+      placeholder: '',
       jumpBgImg: '',
       jumpList: [
         {

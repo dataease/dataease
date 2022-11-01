@@ -105,17 +105,44 @@
           <el-color-picker v-model="curComponent.options.highlight" />
         </el-col>
       </el-row>
-      <el-row>
+      <!-- <el-row>
         <el-col :span="4">
           <span class="params-title">{{ '高亮背景颜色' }}</span>
         </el-col>
         <el-col :span="8">
           <el-color-picker v-model="curComponent.options.highlightBg" />
         </el-col>
-      </el-row>
-      <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+      </el-row> -->
+      <el-row style="height: 140px;margin-top:10px;margin-bottom:10px;overflow: hidden">
         <el-col :span="4">
-          <span class="params-title">{{ '高亮背景图片' }}</span>
+          <span class="params-title">{{ '高亮背景' }}</span>
+        </el-col>
+        <el-col :span="20">
+          <el-row>
+            <el-radio-group v-model="curComponent.options.highlightType" style="width: 100%;">
+              <el-col :span="8">
+                <el-radio label="color">颜色</el-radio>
+              </el-col>
+              <el-col :span="16">
+                <el-radio label="back">背景</el-radio>
+              </el-col>
+            </el-radio-group>
+          </el-row>
+          <el-row style="margin-top: 10px;">
+            <el-col :span="8">
+              <el-color-picker v-model="curComponent.options.highlightBg" />
+            </el-col>
+            <el-col :span="16">
+              <el-col :span="6">
+                <el-button size="mini" type="primary" @click="openNewImg()">选择</el-button>
+              </el-col>
+              <el-col v-show="changImg!==''" :span="18">
+                <div style="height:100px;width:120px;overflow-y:scroll;">
+                  <img :src="changImg" class="img_class">
+                </div>
+              </el-col>
+            </el-col>
+          </el-row>
         </el-col>
         <!-- <el-col :span="6">
           <el-radio-group v-model="updataType">
@@ -123,14 +150,7 @@
             <el-radio :label="false">图库</el-radio>
           </el-radio-group>
         </el-col> -->
-        <el-col :span="3">
-          <el-button size="mini" type="primary" @click="openNewImg()">选择</el-button>
-        </el-col>
-        <el-col v-show="changImg!==''" :span="7">
-          <div style="height:80px;width:120px;overflow-y:scroll;">
-            <img :src="changImg" class="img_class">
-          </div>
-        </el-col>
+        
         <!-- <el-col v-show="updataType" style="width: 130px!important;">
           <el-upload
             action=""
@@ -151,17 +171,36 @@
           <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
         </el-col> -->
       </el-row>
-      <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+      <el-row style="height: 140px;margin-top:10px;margin-bottom:20px;overflow: hidden">
         <el-col :span="4">
-          <span class="params-title">{{ '默认背景图片' }}</span>
+          <span class="params-title">{{ '默认背景' }}</span>
         </el-col>
-        <el-col :span="3">
-          <el-button size="mini" type="primary" @click="openNewBgImg()">选择</el-button>
-        </el-col>
-        <el-col v-show="navBgImg!==''" :span="7">
-          <div style="height:80px;width:120px;overflow-y:scroll;">
-            <img :src="navBgImg" class="img_class">
-          </div>
+        <el-col :span="20">
+          <el-row>
+            <el-radio-group v-model="curComponent.options.defaultType" style="width: 100%;">
+              <el-col :span="8">
+                <el-radio label="color">颜色</el-radio>
+              </el-col>
+              <el-col :span="16">
+                <el-radio label="back">背景</el-radio>
+              </el-col>
+            </el-radio-group>
+          </el-row>
+          <el-row style="margin-top: 10px;">
+            <el-col :span="8">
+              <el-color-picker v-model="curComponent.options.defaultColor" />
+            </el-col>
+            <el-col :span="16">
+              <el-col :span="6">
+                <el-button size="mini" type="primary" @click="openNewBgImg()">选择</el-button>
+              </el-col>
+              <el-col v-show="navBgImg!==''" :span="18">
+                <div style="height:100px;width:120px;overflow-y:scroll;">
+                  <img :src="navBgImg" class="img_class">
+                </div>
+              </el-col>
+            </el-col>
+          </el-row>
         </el-col>
       </el-row>
       <el-dialog

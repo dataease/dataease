@@ -96,7 +96,7 @@
               </div>
             </el-popover>
           </el-form-item>
-          <el-form-item v-show="chart.type ==='bar'" :label="'边框颜色'" class="form-item">
+          <el-form-item v-show="chart.type && chart.render === 'echarts' && chart.type ==='bar'" :label="'边框颜色'" class="form-item">
             <!-- <el-color-picker v-model="colorForm.borderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" /> -->
             <el-popover
               placement="bottom"

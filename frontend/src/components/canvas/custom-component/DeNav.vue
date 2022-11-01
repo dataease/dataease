@@ -148,29 +148,43 @@ export default {
         console.log('this.element.options', this.element.options)
         if (this.element.options.vertical !== 'elementKey') {
           if (this.canvasStyleData.navShowKey === value.name) {
-          // return this.element.options.highlight
-          // return this.element.options.color
-            style.backgroundColor = this.element.options.highlightBg
-            if (this.element.options.heightBgImg) {
-              style.backgroundImage = `url(${this.element.options.heightBgImg})`
+            // return this.element.options.highlight
+            // return this.element.options.color
+            if(this.element.options.highlightType === 'color') {
+              style.backgroundColor = this.element.options.highlightBg
+            } else {
+              if (this.element.options.heightBgImg) {
+                style.backgroundImage = `url(${this.element.options.heightBgImg})`
+              }
             }
+            
           } else {
           // return this.element.options.color
-            style.backgroundColor = ''
-            if (this.element.options.defaultBg) {
-              style.backgroundImage = `url(${this.element.options.defaultBg})`
+            if(this.element.options.defaultType === 'color') {
+              style.backgroundColor = this.element.options.defaultColor
+            } else {
+              if (this.element.options.defaultBg) {
+                style.backgroundImage = `url(${this.element.options.defaultBg})`
+              }
             }
           }
         } else {
           if (this.element.options.heightTabs === value.name) {
-            style.backgroundColor = this.element.options.highlightBg
-            if (this.element.options.heightBgImg) {
-              style.backgroundImage = `url(${this.element.options.heightBgImg})`
+            if (this.element.options.highlightType === 'color') {
+              style.backgroundColor = this.element.options.highlightBg
+            } else {
+              if (this.element.options.heightBgImg) {
+                style.backgroundImage = `url(${this.element.options.heightBgImg})`
+              }
             }
+            
           } else {
-            style.backgroundColor = ''
-            if (this.element.options.defaultBg) {
-              style.backgroundImage = `url(${this.element.options.defaultBg})`
+            if (this.element.options.defaultType === 'color') {
+              style.backgroundColor = this.element.options.defaultColor
+            } else {
+              if (this.element.options.defaultBg) {
+                style.backgroundImage = `url(${this.element.options.defaultBg})`
+              }
             }
           }
         }
@@ -188,29 +202,42 @@ export default {
         console.log('this.element.options', this.element.options)
         if (this.element.options.vertical !== 'elementKey') {
           if (this.canvasStyleData.navShowKey === value.name) {
-          // return this.element.options.highlight
-          // return this.element.options.color
-            style.backgroundColor = this.element.options.highlightBg
-            if (this.element.options.heightBgImg) {
-              style.backgroundImage = `url(${this.element.options.heightBgImg})`
+            // return this.element.options.highlight
+            // return this.element.options.color
+            if(this.element.options.highlightType === 'color') {
+              style.backgroundColor = this.element.options.highlightBg
+            } else {
+              if (this.element.options.heightBgImg) {
+                style.backgroundImage = `url(${this.element.options.heightBgImg})`
+              }
             }
+            
           } else {
           // return this.element.options.color
-            style.backgroundColor = ''
-            if (this.element.options.defaultBg) {
-              style.backgroundImage = `url(${this.element.options.defaultBg})`
+            if(this.element.options.defaultType === 'color') {
+              style.backgroundColor = this.element.options.defaultColor
+            } else {
+              if (this.element.options.defaultBg) {
+                style.backgroundImage = `url(${this.element.options.defaultBg})`
+              }
             }
           }
         } else {
           if (this.element.options.heightTabs === value.name) {
-            style.backgroundColor = this.element.options.highlightBg
-            if (this.element.options.heightBgImg) {
-              style.backgroundImage = `url(${this.element.options.heightBgImg})`
+            if (this.element.options.highlightType === 'color') {
+              style.backgroundColor = this.element.options.highlightBg
+            } else {
+              if (this.element.options.heightBgImg) {
+                style.backgroundImage = `url(${this.element.options.heightBgImg})`
+              }
             }
           } else {
-            style.backgroundColor = ''
-            if (this.element.options.defaultBg) {
-              style.backgroundImage = `url(${this.element.options.defaultBg})`
+            if (this.element.options.defaultType === 'color') {
+              style.backgroundColor = this.element.options.defaultColor
+            } else {
+              if (this.element.options.defaultBg) {
+                style.backgroundImage = `url(${this.element.options.defaultBg})`
+              }
             }
           }
         }
@@ -467,6 +494,8 @@ export default {
 
 .float_pop {
   padding: 0px;
+  background-color: transparent;
+  border: 0px;
 }
 
 .nav_calss{
