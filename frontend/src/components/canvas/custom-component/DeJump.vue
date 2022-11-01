@@ -131,7 +131,7 @@ export default {
 /deep/ .el-select__caret::before {
   color: white;
 }
-/deep/ .el-select-dropdown .el-popper {
+/deep/ .el-popper,.el-select-dropdown{
   background-color: transparent;
   border-color: transparent;
 }
