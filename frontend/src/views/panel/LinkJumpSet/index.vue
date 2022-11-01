@@ -503,9 +503,15 @@ export default {
   methods: {
     init() {
       const chartDetails = JSON.parse(this.panelViewDetailsInfo[this.viewId])
-      const checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
+      let checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
       let checkJumpStr
-      if (chartDetails.type === 'table-pivot') {
+      // 堆叠图的可选参数分两种情况 1.如果有堆叠项 则指标只有第一个可选 2.如果没有堆叠项泽所有指标都可以选
+      if (chartDetails.type.indexOf('stack') > -1 && chartDetails.extStack.length > 2) {
+        const yaxisArray = JSON.parse(chartDetails.yaxis)
+        const yaxisNew = yaxisArray.length > 0 ? JSON.stringify(yaxisArray[0]) : '[]'
+        checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + yaxisNew + chartDetails.yaxisExt + chartDetails.drillFields
+        checkJumpStr = checkAllAxisStr
+      } else if (chartDetails.type === 'table-pivot') {
         checkJumpStr = chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
       } else if (chartDetails.type === 'table-info') {
         checkJumpStr = chartDetails.xaxis + chartDetails.drillFields
