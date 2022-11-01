@@ -152,7 +152,8 @@ const data = {
       width: 0,
       height: 0
     },
-    previewVisible: false
+    previewVisible: false,
+    previewComponentData: []
   },
   mutations: {
     ...animation.mutations,
@@ -242,7 +243,9 @@ const data = {
     setComponentData(state, componentData = []) {
       Vue.set(state, 'componentData', componentData)
     },
-
+    setPreviewComponentData(state, previewComponentData = []) {
+      Vue.set(state, 'previewComponentData', previewComponentData)
+    },
     setComponentViewsData(state, componentViewsData = {}) {
       Vue.set(state, 'componentViewsData', componentViewsData)
     },

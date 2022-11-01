@@ -75,7 +75,7 @@ export default {
   },
   computed: {
     mainCanvasComponentData() {
-      return getNowCanvasComponentData(this.canvasId)
+      return this.componentData.filter(item => item.canvasId === this.canvasId)
     }
   },
   watch: {
@@ -105,6 +105,7 @@ export default {
             _this.componentData = rsp.componentData
             _this.canvasStyleData = rsp.componentStyle
             _this.selectedPanel = params
+            _this.$store.commit('setPreviewComponentData', _this.componentData)
           })
         })
       } else if (params.showType === 'view') {
