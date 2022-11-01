@@ -206,9 +206,6 @@ const data = {
       }
       state.styleChangeTimes = 0
       state.curComponent = component
-      if (index !== null && !isNaN(index)) {
-        state.componentData.splice(index, 1, component)
-      }
       state.curComponentIndex = index
     },
 
