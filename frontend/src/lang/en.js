@@ -1858,6 +1858,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    panel_get_data_error: 'Failed to obtain panel information. The panel may have been deleted. Please check the panel status',
     panel_no_save_tips: 'There are unsaved panel',
     panel_cache_use_tips: 'It was checked that the last dashboard could not be saved normally. Do you want to use the panel that was not saved last time?',
     template_name_tips: "Panel\'s name should not be null",

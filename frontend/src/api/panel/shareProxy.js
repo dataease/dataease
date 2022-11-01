@@ -1,32 +1,38 @@
 import request from '@/utils/request'
 import { panelInit } from '@/components/canvas/utils/utils'
 import store from '@/store'
+import { $error } from '@/utils/message'
+import i18n from '@/lang'
 
 export function proxyInitPanelData(panelId, proxy, callback) {
   // 加载视图数据
   findOne(panelId, proxy).then(response => {
-    // 初始化视图data和style 数据
-    panelInit(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle))
-    // 设置当前仪表板全局信息
-    store.dispatch('panel/setPanelInfo', {
-      id: response.data.id,
-      name: response.data.name,
-      privileges: response.data.privileges,
-      proxy: proxy.userId,
-      status: response.data.status,
-      createBy: response.data.createBy,
-      createTime: response.data.createTime,
-      updateBy: response.data.updateBy,
-      updateTime: response.data.updateTime
-    })
-    // 刷新联动信息
-    getPanelAllLinkageInfo(panelId, proxy).then(rsp => {
-      store.commit('setNowPanelTrackInfo', rsp.data)
-    })
-    // 刷新跳转信息
-    queryPanelJumpInfo(panelId, proxy).then(rsp => {
-      store.commit('setNowPanelJumpInfo', rsp.data)
-    })
+    if (response.data) {
+      // 初始化视图data和style 数据
+      panelInit(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle))
+      // 设置当前仪表板全局信息
+      store.dispatch('panel/setPanelInfo', {
+        id: response.data.id,
+        name: response.data.name,
+        privileges: response.data.privileges,
+        proxy: proxy.userId,
+        status: response.data.status,
+        createBy: response.data.createBy,
+        createTime: response.data.createTime,
+        updateBy: response.data.updateBy,
+        updateTime: response.data.updateTime
+      })
+      // 刷新联动信息
+      getPanelAllLinkageInfo(panelId, proxy).then(rsp => {
+        store.commit('setNowPanelTrackInfo', rsp.data)
+      })
+      // 刷新跳转信息
+      queryPanelJumpInfo(panelId, proxy).then(rsp => {
+        store.commit('setNowPanelJumpInfo', rsp.data)
+      })
+    } else {
+      $error(i18n.t('panel.panel_get_data_error'))
+    }
     callback && callback(response)
   })
 }
