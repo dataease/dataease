@@ -1858,6 +1858,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    panel_get_data_error: '获取仪表板信息失败，仪表板可能已经被删除，请检查仪表板状态',
     panel_no_save_tips: '存在未保存的仪表板',
     panel_cache_use_tips: '检查到上次有仪表板未能正常保存，是否使用上次未保存的仪表板？',
     template_name_tips: '仪表板名称必填',

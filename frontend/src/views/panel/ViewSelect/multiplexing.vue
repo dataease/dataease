@@ -16,7 +16,7 @@
     <de-main-container>
       <Preview
         v-if="selectedPanel"
-        :component-data="componentData"
+        :component-data="mainCanvasComponentData"
         :canvas-style-data="canvasStyleData"
         :panel-info="panelInfo"
         :show-position="showPosition"
@@ -41,7 +41,7 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import { findOne } from '@/api/panel/panel'
-import { deepCopy, panelDataPrepare } from '@/components/canvas/utils/utils'
+import { deepCopy, getNowCanvasComponentData, panelDataPrepare } from '@/components/canvas/utils/utils'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import MultiplexingView from '@/views/panel/ViewSelect/multiplexingView'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
@@ -59,6 +59,7 @@ export default {
   },
   data() {
     return {
+      canvasId: 'canvas-main',
       showPosition: 'multiplexing',
       activeName: 'PanelList',
       viewLoading: false,
@@ -70,6 +71,11 @@ export default {
       canvasStyleData: {},
       selectedPanel: null,
       panelInfo: {}
+    }
+  },
+  computed: {
+    mainCanvasComponentData() {
+      return getNowCanvasComponentData(this.canvasId)
     }
   },
   watch: {
