@@ -40,6 +40,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -621,9 +622,9 @@ public class PanelGroupService {
             List<String[]> details = request.getDetails();
             Integer[] excelTypes = request.getExcelTypes();
             details.add(0, request.getHeader());
-            HSSFWorkbook wb = new HSSFWorkbook();
+            Workbook wb = new XSSFWorkbook();
             //明细sheet
-            HSSFSheet detailsSheet = wb.createSheet("数据");
+            Sheet detailsSheet = wb.createSheet("数据");
 
             //给单元格设置样式
             CellStyle cellStyle = wb.createCellStyle();
@@ -641,11 +642,11 @@ public class PanelGroupService {
 
             if (CollectionUtils.isNotEmpty(details)) {
                 for (int i = 0; i < details.size(); i++) {
-                    HSSFRow row = detailsSheet.createRow(i);
+                    Row row = detailsSheet.createRow(i);
                     String[] rowData = details.get(i);
                     if (rowData != null) {
                         for (int j = 0; j < rowData.length; j++) {
-                            HSSFCell cell = row.createCell(j);
+                            Cell cell = row.createCell(j);
                             if (i == 0) {// 头部
                                 cell.setCellValue(rowData[j]);
                                 cell.setCellStyle(cellStyle);
@@ -669,14 +670,14 @@ public class PanelGroupService {
             }
             if (StringUtils.isNotEmpty(snapshot)) {
                 //截图sheet 1px ≈ 2.33dx ≈ 0.48 dy  8*24 个单元格
-                HSSFSheet snapshotSheet = wb.createSheet("图表");
+                Sheet snapshotSheet = wb.createSheet("图表");
                 short reDefaultRowHeight = (short) Math.round(request.getSnapshotHeight() * 3.5 / 8);
                 int reDefaultColumnWidth = (int) Math.round(request.getSnapshotWidth() * 0.25 / 24);
                 snapshotSheet.setDefaultColumnWidth(reDefaultColumnWidth);
                 snapshotSheet.setDefaultRowHeight(reDefaultRowHeight);
 
                 //画图的顶级管理器，一个sheet只能获取一个（一定要注意这点）i
-                HSSFPatriarch patriarch = snapshotSheet.createDrawingPatriarch();
+                Drawing patriarch = snapshotSheet.createDrawingPatriarch();
                 HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, reDefaultColumnWidth, reDefaultColumnWidth, (short) 0, 0, (short) 8, 24);
                 anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
                 patriarch.createPicture(anchor, wb.addPicture(Base64Utils.decodeFromString(snapshot.replace(DATA_URL_TITLE, "")), HSSFWorkbook.PICTURE_TYPE_JPEG));
