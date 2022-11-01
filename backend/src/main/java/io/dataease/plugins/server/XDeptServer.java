@@ -5,8 +5,11 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.auth.annotation.DeLog;
+import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.service.ExtAuthService;
 import io.dataease.commons.constants.AuthConstants;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.BeanUtils;
@@ -158,6 +161,18 @@ public class XDeptServer {
         List<DeptUserItemDTO> userItems = deptService.queryBinded(request, true);
         Pager<List<DeptUserItemDTO>> setPageInfo = PageUtils.setPageInfo(page, userItems);
         return setPageInfo;
+    }
+
+    @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @ApiOperation("查询用户")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "path", name = "goPage", value = "页码", required = true, dataType = "Integer"),
+            @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "request", value = "查询条件", required = true)
+    })
+    @PostMapping("/userGrid/{datasetId}")
+    public Pager<List<DeptUserItemDTO>> userGrids(@PathVariable String datasetId, @RequestBody XpackDeptUserRequest request) {
+        return userGrid(0,0,  request);
     }
 
     @RequiresPermissions({"dept:edit", "user:edit"})
