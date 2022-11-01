@@ -1856,7 +1856,9 @@ export default {
   methods: {
     setTitle(val) {
       this.chart.name = val
+      this.chart.title = val
       this.view.name = val
+      this.view.title = val
     },
     resetChartData() {
       this.getChart(this.param.id)
