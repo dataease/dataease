@@ -13,7 +13,10 @@
       </table-body>
       <slot name="__operation" />
     </el-table>
-    <div class="pagination-cont">
+    <div
+      v-if="showPagination"
+      class="pagination-cont"
+    >
       <el-pagination
         background
         v-bind="paginationDefault"
@@ -31,6 +34,10 @@ export default {
     columns: {
       type: Array,
       default: () => []
+    },
+    showPagination: {
+      type: Boolean,
+      default: true
     },
     multipleSelection: {
       type: Array,
@@ -178,6 +185,10 @@ export default {
     tr {
         background-color: var(--TableBG, #ffffff) !important;
     }
+  }
+
+  ::v-deep .el-table__fixed-right::before {
+    display: none;
   }
   .pagination-cont {
     text-align: right;
