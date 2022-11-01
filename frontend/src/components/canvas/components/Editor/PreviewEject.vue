@@ -6,7 +6,7 @@
   >
     <Preview
       v-if="!dataLoading"
-      :component-data="componentData"
+      :component-data="mainCanvasComponentData"
       :canvas-style-data="canvasStyleData"
       :back-screen-shot="backScreenShot"
       :panel-info="panelInfo"
@@ -22,11 +22,13 @@ import { queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
 import { getOuterParamsInfo } from '@/api/panel/outerParams'
 import { mapState } from 'vuex'
+import { getNowCanvasComponentData } from '@/components/canvas/utils/utils'
 
 export default {
   components: { Preview },
   data() {
     return {
+      canvasId: 'canvas-main',
       dataLoading: false,
       backScreenShot: false,
       mainHeight: '100vh!important',
@@ -34,6 +36,9 @@ export default {
     }
   },
   computed: {
+    mainCanvasComponentData() {
+      return getNowCanvasComponentData(this.canvasId)
+    },
     bgStyle() {
       if (this.backScreenShot) {
         return { height: this.mainHeight }

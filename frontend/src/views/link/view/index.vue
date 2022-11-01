@@ -2,7 +2,7 @@
   <div style="width: 100%;height: 100vh;background-color: #f7f8fa">
     <Preview
       v-if="show"
-      :component-data="componentData"
+      :component-data="mainCanvasComponentData"
       :canvas-style-data="canvasStyleData"
       :panel-info="panelInfo"
     />
@@ -15,7 +15,7 @@ import { uuid } from 'vue-uuid'
 import Preview from '@/components/canvas/components/Editor/Preview'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
-import { panelInit } from '@/components/canvas/utils/utils'
+import { getNowCanvasComponentData, panelInit } from '@/components/canvas/utils/utils'
 import { getOuterParamsInfo } from '@/api/panel/outerParams'
 import { mapState } from 'vuex'
 
@@ -34,14 +34,17 @@ export default {
   },
   data() {
     return {
+      canvasId: 'canvas-main',
       show: false,
       panelInfo: {}
     }
   },
   computed: {
+    mainCanvasComponentData() {
+      return getNowCanvasComponentData(this.canvasId)
+    },
     ...mapState([
-      'canvasStyleData',
-      'componentData'
+      'canvasStyleData'
     ])
   },
   created() {
