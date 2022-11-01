@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -171,8 +172,6 @@ public class ShareService {
         }
 
 
-
-
         // 以上是业务代码
         // 下面是消息发送
         Set<Long> addUserIdSet = AuthUtils.userIdsByURD(addAuthURD);
@@ -212,7 +211,6 @@ public class ShareService {
     }
 
     /**
-     *
      * @param newTargets 新的分享目标
      * @param shareNodes 已景分享目标
      * @return
@@ -349,7 +347,7 @@ public class ShareService {
         Map<String, Object> param = new HashMap<>();
         param.put("userId", userId);
         param.put("deptId", deptId);
-        param.put("roleIds", CollectionUtils.isNotEmpty(roleIds)? roleIds: null);
+        param.put("roleIds", CollectionUtils.isNotEmpty(roleIds) ? roleIds : null);
 
         List<PanelSharePo> data = extPanelShareMapper.query(param);
         List<PanelShareDto> dtoLists = data.stream().map(po -> BeanUtils.copyBean(new PanelShareDto(), po))
@@ -384,7 +382,7 @@ public class ShareService {
         if (CollectionUtils.isEmpty(targets))
             return new ArrayList<>();
         return targets.stream().filter(item -> StringUtils.isNotEmpty(item.getTargetName()))
-                .collect(Collectors.toList());
+                .collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(item -> item.getPanelId() + item.getType() + item.getTargetId()))), ArrayList::new));
     }
 
     public void removeSharesyPanel(String panelId) {
@@ -405,7 +403,7 @@ public class ShareService {
         AuthURD urd = new AuthURD();
         for (Map.Entry<Integer, List<PanelShareOutDTO>> entry : listMap.entrySet()) {
             List<PanelShareOutDTO> dtoList = entry.getValue();
-            if(CollectionUtils.isNotEmpty(dtoList)) {
+            if (CollectionUtils.isNotEmpty(dtoList)) {
                 List<Long> curTargetIds = dtoList.stream().map(dto -> Long.parseLong(dto.getTargetId())).collect(Collectors.toList());
                 buildRedAuthURD(entry.getKey(), curTargetIds, urd);
             }
@@ -429,7 +427,7 @@ public class ShareService {
         SysLogConstants.SOURCE_TYPE targetType = SysLogConstants.SOURCE_TYPE.USER;
         if (type == 1) {
             targetType = SysLogConstants.SOURCE_TYPE.ROLE;
-        }else if (type == 2) {
+        } else if (type == 2) {
             targetType = SysLogConstants.SOURCE_TYPE.DEPT;
         }
         return targetType;
@@ -447,7 +445,9 @@ public class ShareService {
         DeLogUtils.save(SysLogConstants.OPERATE_TYPE.UNSHARE, SysLogConstants.SOURCE_TYPE.PANEL, panelId, panelGroup.getPid(), removeRequest.getTargetId(), targetType);
 
         AuthURD sharedAuthURD = new AuthURD();
-        List<Long> removeIds = new ArrayList<Long>(){{add(removeRequest.getTargetId());}};
+        List<Long> removeIds = new ArrayList<Long>() {{
+            add(removeRequest.getTargetId());
+        }};
         buildRedAuthURD(removeRequest.getType(), removeIds, sharedAuthURD);
         CurrentUserDto user = AuthUtils.getUser();
         Gson gson = new Gson();
