@@ -800,7 +800,7 @@ export default {
     relate_top_organization: 'Associated parent organization',
     organization_name_exist: 'Organization name already exists',
     cannot_delete: 'Cannot delete',
-    remove_user_first: 'Please remove all users in the organization before deleting the organization',
+    remove_user_first: 'Please remove all users and child nodes in the organization before deleting the organization',
     sure_delete_organization: 'Are you sure to delete this organization?',
     add_child_org: 'Add sub organization',
     edite_organization: 'Edit organization'

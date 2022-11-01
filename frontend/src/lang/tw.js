@@ -799,7 +799,7 @@ export default {
     relate_top_organization: '關聯上級組織',
     organization_name_exist: '組織名稱已存在',
     cannot_delete: '無法刪除',
-    remove_user_first: '請先移除組織中所有用戶，再進行刪除組織操作。',
+    remove_user_first: '請先移除組織中所有用戶以及子組織，再進行刪除組織操作。',
     sure_delete_organization: '確定刪除該組織嗎？',
     delete: '刪除',
     add_child_org: '添加子組織',
