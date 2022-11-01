@@ -12,7 +12,7 @@ import { AIDED_DESIGN, PANEL_CHART_INFO, TAB_COMMON_STYLE } from '@/views/panel/
 import html2canvas from 'html2canvasde'
 
 export function deepCopy(target) {
-  if (typeof target === 'object') {
+  if (typeof target === 'object' && target !== null) {
     const result = Array.isArray(target) ? [] : {}
     for (const key in target) {
       if (typeof target[key] === 'object') {
