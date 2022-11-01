@@ -104,7 +104,7 @@
             </span>
           </el-tree>
           <p
-            v-if="defaultData.length > 3"
+            v-if="defaultData && defaultData.length > 3"
             class="default-expansion"
             @click="defaultExpansion = !defaultExpansion"
           >
@@ -333,7 +333,8 @@
             @click="close()"
           >{{
             $t('panel.cancel')
-          }}</el-button>
+          }}
+          </el-button>
           <el-button
             type="primary"
             size="mini"
@@ -409,7 +410,8 @@
             @click="closeMoveGroup()"
           >{{
             $t('dataset.cancel')
-          }}</el-button>
+          }}
+          </el-button>
           <el-button
             :disabled="groupMoveConfirmDisabled"
             type="primary"
@@ -568,9 +570,9 @@ export default {
       return this.editPanel.titlePre + this.editPanel.titleSuf
     },
     expandedData() {
-      return this.defaultExpansion
-        ? this.defaultData
-        : this.defaultData.slice(0, 3)
+      return (!this.defaultExpansion && this.defaultData && this.defaultData.length > 3)
+        ? this.defaultData.slice(0, 3)
+        : this.defaultData
     },
     ...mapState(['nowPanelTrackInfo'])
   },
@@ -846,7 +848,8 @@ export default {
             this.defaultTree()
           })
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
 
     clearCanvas() {
@@ -994,7 +997,8 @@ export default {
       }
       return data
     },
-    newPanelSave(id) {},
+    newPanelSave(id) {
+    },
     // 激活并点击当前节点
     activeNodeAndClick(panelInfo) {
       if (panelInfo) {
@@ -1108,7 +1112,7 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 .default-expansion {
   height: 40px;
   width: 232px;
@@ -1121,19 +1125,23 @@ export default {
   padding-left: 22px;
   display: flex;
   align-items: center;
+
   i {
     margin-left: 5px;
   }
 }
+
 .main-area-input {
   ::v-deep.el-input-group__append {
     width: 70px;
     background: transparent;
+
     .el-input__inner {
       padding-left: 12px;
     }
   }
 }
+
 .header-title {
   font-size: 14px;
   flex: 1;
@@ -1165,6 +1173,7 @@ export default {
 .dialog-css ::v-deep .el-dialog__body {
   padding: 15px 20px;
 }
+
 .dialog-css ::v-deep .el-dialog__body {
   padding: 10px 20px 20px;
 }
@@ -1173,6 +1182,7 @@ export default {
   /*display: none;*/
   visibility: hidden;
 }
+
 .father:hover .child {
   /*display: inline;*/
   visibility: visible;
