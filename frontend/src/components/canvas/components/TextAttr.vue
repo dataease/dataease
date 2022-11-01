@@ -6,6 +6,7 @@
     <div
       id="main-attr"
       style="position: relative;"
+      @mousedown="mouseDown"
     >
       <div
         v-if="attrShow('textAlign')"
@@ -658,6 +659,9 @@ export default {
   },
 
   methods: {
+    mouseDown(e) {
+      e.stopPropagation()
+    },
     init() {
       if (this.styleInfo['opacity']) {
         this.innerOpacity = this.styleInfo['opacity'] * 100
