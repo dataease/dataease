@@ -359,7 +359,7 @@
           />
         </el-form-item>
         <el-form-item
-          v-show="showProperty('tableShowIndex')"
+          v-show="showProperty('showIndex')"
           label-width="100px"
           :label="$t('chart.table_show_index')"
           class="form-item"
@@ -367,14 +367,14 @@
           <el-radio-group
             v-model="sizeForm.showIndex"
             input-size="mini"
-            @change="changeBarSizeCase('tableShowIndex')"
+            @change="changeBarSizeCase('showIndex')"
           >
             <el-radio :label="true">{{ $t('panel.yes') }}</el-radio>
             <el-radio :label="false">{{ $t('panel.no') }}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item
-          v-show="showProperty('tableIndexLabel') && sizeForm.showIndex"
+          v-show="showProperty('indexLabel') && sizeForm.showIndex"
           label-width="100px"
           :label="$t('chart.table_index_desc')"
           class="form-item"
@@ -382,7 +382,7 @@
           <el-input
             v-model="sizeForm.indexLabel"
             type="text"
-            @blur="changeBarSizeCase('tableIndexLabel')"
+            @blur="changeBarSizeCase('indexLabel')"
           />
         </el-form-item>
 
