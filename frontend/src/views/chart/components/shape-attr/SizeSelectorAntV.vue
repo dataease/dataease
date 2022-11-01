@@ -376,6 +376,7 @@
         <el-form-item
           v-show="showProperty('tableIndexLabel') && sizeForm.showIndex"
           label-width="100px"
+          :label="$t('chart.table_index_desc')"
           class="form-item"
         >
           <el-input
@@ -1355,7 +1356,9 @@ export default {
           this.sizeForm.tableItemAlign = this.sizeForm.tableItemAlign ? this.sizeForm.tableItemAlign : DEFAULT_SIZE.tableItemAlign
 
           this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
-          this.sizeForm.indexLabel = this.sizeForm.indexLabel ? this.sizeForm.indexLabel : DEFAULT_SIZE.indexLabel
+          if (this.sizeForm.indexLabel === null || this.sizeForm.indexLabel === undefined) {
+            this.sizeForm.indexLabel = DEFAULT_SIZE.indexLabel
+          }
 
           this.sizeForm.gaugeTickCount = this.sizeForm.gaugeTickCount ? this.sizeForm.gaugeTickCount : DEFAULT_SIZE.gaugeTickCount
 

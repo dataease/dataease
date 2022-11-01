@@ -387,6 +387,7 @@
         <el-form-item
           v-show="showProperty('tableIndexLabel') && sizeForm.showIndex"
           label-width="100px"
+          :label="$t('chart.table_index_desc')"
           class="form-item"
         >
           <el-input
@@ -1061,7 +1062,9 @@ export default {
           this.sizeForm.tablePageSize = this.sizeForm.tablePageSize ? this.sizeForm.tablePageSize : DEFAULT_SIZE.tablePageSize
 
           this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
-          this.sizeForm.indexLabel = this.sizeForm.indexLabel ? this.sizeForm.indexLabel : DEFAULT_SIZE.indexLabel
+          if (this.sizeForm.indexLabel === null || this.sizeForm.indexLabel === undefined) {
+            this.sizeForm.indexLabel = DEFAULT_SIZE.indexLabel
+          }
 
           this.sizeForm.quotaFontFamily = this.sizeForm.quotaFontFamily ? this.sizeForm.quotaFontFamily : DEFAULT_SIZE.quotaFontFamily
           this.sizeForm.quotaFontIsBolder = this.sizeForm.quotaFontIsBolder ? this.sizeForm.quotaFontIsBolder : DEFAULT_SIZE.quotaFontIsBolder

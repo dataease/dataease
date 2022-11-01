@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.ext.CleaningRebotMapper">
+
+    <delete id="delFloatingDept">
+        delete
+        from sys_dept
+        where pid not in (select * from (select dept_id from sys_dept) a)
+          and pid != 0;
+    </delete>
+
+    <update id="updateUserDept">
+        update sys_user
+        set dept_id = 0
+        where dept_id is not null
+          and dept_id not in (select * from (select dept_id from sys_dept) a)
+          and dept_id != 0;
+    </update>
+
+    <delete id="delFloatingRoleMapping">
+        delete
+        from sys_users_roles
+        where user_id not in (select * from (select u.user_id from sys_user u) a)
+           or role_id not in (select * from (select r.role_id from sys_role r) b);
+    </delete>
+
+    <delete id="delFloatingPanelShare">
+        delete
+        from panel_share
+        where share_id in (select *
+                           from (SELECT s.share_id
+                                 FROM panel_share s
+                                          left join panel_group p on s.panel_group_id = p.id
+                                 where p.id is null) a)
+    </delete>
+
+    <delete id="delFloatingTargetShare">
+        delete
+        from panel_share
+        where share_id in (select share_id
+                           from (select s.share_id,
+                                        (
+                                            CASE s.type
+                                                WHEN 0 THEN (select nick_name from sys_user where user_id = s.target_id)
+                                                WHEN 1 THEN (select name from sys_role where role_id = s.target_id)
+                                                WHEN 2 THEN (select name from sys_dept where dept_id = s.target_id)
+                                                END
+                                            ) as target_name
+                                 from panel_share s) query_temp
+                           where target_name is null)
+    </delete>
+
+    <delete id="delFloatingPanelStore">
+        delete
+        from panel_store
+        where store_id in (select *
+                           from (SELECT s.store_id
+                                 FROM panel_store s
+                                          left join panel_group p on s.panel_group_id = p.id
+                                 where p.id is null) a)
+    </delete>
+
+    <delete id="delFloatingTargetStore">
+        delete
+        from panel_store
+        where store_id in (select *
+                           from (SELECT s.store_id
+                                 FROM panel_store s
+                                          left join sys_user u on s.user_id = u.user_id
+                                 where u.user_id is null) a)
+    </delete>
+
+    <delete id="delFloatingPanelLink">
+        delete
+        from panel_link
+        where resource_id in (select *
+                              from (SELECT l.resource_id
+                                    FROM panel_link l
+                                             left join panel_group p on l.resource_id = p.id
+                                    where p.id is null) a);
+
+    </delete>
+
+    <delete id="delFloatingPanelLinkMapping">
+        delete
+        from panel_link_mapping
+        where id in (select *
+                     from (SELECT m.id
+                           FROM panel_link_mapping m
+                                    left join panel_group p on m.resource_id = p.id
+                           where p.id is null) a);
+    </delete>
+
+    <delete id="delFloatingCreatorLink">
+        delete
+        from panel_link
+        where resource_id in (select *
+                              from (SELECT l.resource_id
+                                    FROM panel_link l
+                                             left join sys_user u on l.user_id = u.user_id
+                                    where u.user_id is null) a);
+
+    </delete>
+
+    <delete id="delFloatingCreatorLinkMapping">
+        delete
+        from panel_link_mapping
+        where id in (select *
+                     from (SELECT m.resource_id
+                           FROM panel_link_mapping m
+                                    left join sys_user u on m.user_id = u.user_id
+                           where u.user_id is null) a);
+    </delete>
+</mapper>

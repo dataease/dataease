@@ -17,11 +17,11 @@
       :style="title_class"
       style="cursor: default;display: block;"
     >
-      <div style="display: flex;">
+      <div>
         <chart-title-update :chart-info="chartInfo" />
         <title-remark
           v-if="chart.render && chart.render === 'antv' && remarkCfg.show"
-          style="text-shadow: none!important;"
+          style="text-shadow: none!important;margin-left: 4px;"
           :remark-cfg="remarkCfg"
         />
       </div>

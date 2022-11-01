@@ -13,7 +13,7 @@ import lombok.Data;
 public class PanelTemplateRequest extends PanelTemplateWithBLOBs {
     @ApiModelProperty("排序")
     private String sort;
-    @ApiModelProperty("详息")
+    @ApiModelProperty("详细信息")
     private String withBlobs="Y";
     @ApiModelProperty("操作类型")
     private String optType;

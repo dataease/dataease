@@ -530,6 +530,7 @@ export default {
     the_running_results: 'You can view the running results'
   },
   detabs: {
+    custom_sort: 'Custom Sort',
     eidttitle: 'Edit Title',
     selectview: 'Select View',
     selectOthers: 'Select Others',
@@ -799,7 +800,7 @@ export default {
     relate_top_organization: 'Associated parent organization',
     organization_name_exist: 'Organization name already exists',
     cannot_delete: 'Cannot delete',
-    remove_user_first: 'Please remove all users in the organization before deleting the organization',
+    remove_user_first: 'Please remove all users and child nodes in the organization before deleting the organization',
     sure_delete_organization: 'Are you sure to delete this organization?',
     add_child_org: 'Add sub organization',
     edite_organization: 'Edit organization'
@@ -1436,7 +1437,8 @@ export default {
     reserve_two: '2',
     proportion: 'Proportion',
     label_content: 'Label Content',
-    percent: 'Percent'
+    percent: 'Percent',
+    table_index_desc: 'Index Header Name'
   },
   dataset: {
     spend_time: 'Spend',
@@ -2372,7 +2374,7 @@ export default {
     channel_wecom_msg: 'Wecom',
     channel_dingtalk_msg: 'Dingtalk',
     channel_lark_msg: 'Lark',
-    channel_larksuite_msg: 'Larksuite'
+    channel_larksuite_msg: 'INT Lark'
   },
   denumberrange: {
     label: 'Number range',
@@ -2488,7 +2490,7 @@ export default {
     wecom: 'Wecom',
     dingtalk: 'Dingtalk',
     lark: 'Lark',
-    larksuite: 'Larksuite',
+    larksuite: 'INT Lark',
     pixel: 'Pixel',
     default: 'Default',
     custom: 'Custom',

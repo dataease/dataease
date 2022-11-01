@@ -529,6 +529,7 @@ export default {
     the_running_results: '即可查看运行结果'
   },
   detabs: {
+    custom_sort: '自定义排序',
     eidttitle: '编辑标题',
     selectview: '选择视图',
     selectOthers: '选择组件',
@@ -797,7 +798,7 @@ export default {
     relate_top_organization: '关联上级组织',
     organization_name_exist: '组织名称已存在',
     cannot_delete: '无法删除',
-    remove_user_first: '请先移除组织中所有用户，再进行删除组织操作。',
+    remove_user_first: '请先移除组织中所有用户以及子组织，再进行删除组织操作。',
     sure_delete_organization: '确定删除该组织吗？',
     delete: '删除',
     add_child_org: '添加子组织',
@@ -1435,7 +1436,8 @@ export default {
     reserve_two: '两位',
     proportion: '占比',
     label_content: '标签展示',
-    percent: '占比'
+    percent: '占比',
+    table_index_desc: '表头名称'
   },
   dataset: {
     spend_time: '耗时',

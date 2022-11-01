@@ -3,20 +3,20 @@
 <mapper namespace="io.dataease.ext.ExtPanelShareMapper">
 
     <resultMap id="treeNodeMap" type="io.dataease.dto.panel.PanelSharePo">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="status" property="status" />
-        <result column="creator" property="creator" />
-        <result column="user_id"  jdbcType="BIGINT" property="userId" />
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="status" property="status"/>
+        <result column="creator" property="creator"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
     </resultMap>
 
     <resultMap id="targetMap" type="io.dataease.dto.panel.PanelShareOutDTO">
-        <result column="panel_id" property="panelId" />
-        <result column="share_id" property="shareId" />
-        <result column="type" property="type" />
-        <result column="target_Id" property="targetId" />
-        <result column="target_Name" property="targetName" />
-        <result column="create_time" property="createTime" />
+        <result column="panel_id" property="panelId"/>
+        <result column="share_id" property="shareId"/>
+        <result column="type" property="type"/>
+        <result column="target_Id" property="targetId"/>
+        <result column="target_Name" property="targetName"/>
+        <result column="create_time" property="createTime"/>
     </resultMap>
 
     <insert id="batchInsert" parameterType="io.dataease.plugins.common.base.domain.PanelShare">
@@ -27,10 +27,10 @@
         </foreach>
     </insert>
 
-    <delete id="batchDelete" parameterType="java.lang.Long" >
+    <delete id="batchDelete" parameterType="java.lang.Long">
         delete from panel_share
         where share_id in
-        <foreach collection="shareIds" item="shareId" open="(" separator="," close=")" >
+        <foreach collection="shareIds" item="shareId" open="(" separator="," close=")">
             #{shareId}
         </foreach>
     </delete>
@@ -61,51 +61,67 @@
     </select>
 
     <select id="queryOut" resultMap="treeNodeMap">
-        select distinct s.panel_group_id as id, g.name, g.status
-        from panel_share s
-        left join panel_group g on g.id = s.panel_group_id
-        where ( s.granter is not null and s.granter = #{userName} ) or ( s.granter is null and g.create_by = #{userName} )
-        order by s.create_time desc
+        select distinct id, name, status
+        from (select distinct s.panel_group_id as id,
+                              g.name,
+                              g.status,
+                              (
+                                  CASE s.type
+                                      WHEN 0 THEN (select nick_name from sys_user where user_id = s.target_id)
+                                      WHEN 1 THEN (select name from sys_role where role_id = s.target_id)
+                                      WHEN 2 THEN (select name from sys_dept where dept_id = s.target_id)
+                                      END
+                                  )            as target_name
+              from panel_share s
+                       left join panel_group g on g.id = s.panel_group_id
+              where (s.granter is not null and s.granter = #{userName})
+                 or (s.granter is null and g.create_by = #{userName})
+              order by s.create_time desc) query_temp
+        where target_name is not null
 
     </select>
 
-    <select id="queryWithResource" parameterType="io.dataease.controller.request.panel.PanelShareSearchRequest" resultMap="io.dataease.plugins.common.base.mapper.PanelShareMapper.BaseResultMap">
+    <select id="queryWithResource" parameterType="io.dataease.controller.request.panel.PanelShareSearchRequest"
+            resultMap="io.dataease.plugins.common.base.mapper.PanelShareMapper.BaseResultMap">
         select s.*
         from panel_share s
         left join panel_group g on g.id = s.panel_group_id
         where
         s.panel_group_id = #{resourceId}
-         <if test="type != null">
+        <if test="type != null">
             and s.type = #{type}
         </if>
-        and (( s.granter is not null and s.granter = #{currentUserName} ) or ( s.granter is null and g.create_by = #{currentUserName} ))
+        and (( s.granter is not null and s.granter = #{currentUserName} ) or ( s.granter is null and g.create_by =
+        #{currentUserName} ))
         order by s.create_time desc
 
 
     </select>
 
-    <select id="queryTargets"  resultMap="targetMap">
-        select
-            s.share_id,
-            s.panel_group_id as panel_id,
-            s.type,
-            s.target_id,
-            s.create_time,
-            (
-            CASE s.type
-            WHEN 0 THEN (select nick_name from sys_user where user_id = s.target_id)
-            WHEN 1 THEN (select name from sys_role where role_id = s.target_id)
-            WHEN 2 THEN (select name from sys_dept where dept_id = s.target_id)
-            END
-            ) as target_name
+    <select id="queryTargets" resultMap="targetMap">
+        select s.share_id,
+               s.panel_group_id as panel_id,
+               s.type,
+               s.target_id,
+               s.create_time,
+               (
+                   CASE s.type
+                       WHEN 0 THEN (select nick_name from sys_user where user_id = s.target_id)
+                       WHEN 1 THEN (select name from sys_role where role_id = s.target_id)
+                       WHEN 2 THEN (select name from sys_dept where dept_id = s.target_id)
+                       END
+                   )            as target_name
         from panel_share s
         where s.panel_group_id = #{panelId}
-        and s.granter = #{userName}
-
+          and (
+                (s.granter is not null and s.granter = #{userName})
+                or
+                (#{userName} = 'admin' and s.granter is null)
+            )
 
     </select>
 
-    <select id="queryUserIdWithRoleIds" resultType="java.lang.Long" >
+    <select id="queryUserIdWithRoleIds" resultType="java.lang.Long">
         select user_id
         from sys_users_roles
         where role_id in
@@ -115,7 +131,7 @@
     </select>
 
 
-    <select id="queryUserIdWithDeptIds" resultType="java.lang.Long" >
+    <select id="queryUserIdWithDeptIds" resultType="java.lang.Long">
         select user_id
         from sys_user
         where dept_id in
@@ -131,8 +147,6 @@
             and share_id = #{request.shareId}
         </if>
     </delete>
-
-
 
 
 </mapper>

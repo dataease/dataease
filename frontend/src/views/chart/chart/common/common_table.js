@@ -49,7 +49,7 @@ export function getCustomTheme(chart) {
         fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign,
-        textBaseline: chart.type === 'table-pivot' ? 'top' : 'middle' // 行头字体绘制基线设置为中心，不然序号列的内容会靠上
+        textBaseline: chart.type === 'table-pivot' ? 'top' : 'middle'
       },
       bolderText: {
         fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
@@ -186,6 +186,7 @@ export function getCustomTheme(chart) {
         theme.rowCell.measureText.fontSize = parseInt(s.tableItemFontSize)
         theme.rowCell.measureText.textAlign = i_a
       }
+      theme.rowCell.seriesNumberWidth = parseInt(s.tableColumnWidth)
 
       theme.colCell.bolderText.fontSize = parseInt(s.tableTitleFontSize)
       theme.colCell.bolderText.textAlign = h_a

@@ -11,7 +11,7 @@
   />
   <p
     v-else
-    style="overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline-block;min-width: 30px"
+    style="overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;min-width: 30px"
     @click.stop="handleTitleEditer"
   >{{ chart.title }}</p>
 </template>

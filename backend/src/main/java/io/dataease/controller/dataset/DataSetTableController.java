@@ -109,7 +109,7 @@ public class DataSetTableController {
     }
 
     @DePermission(type = DePermissionType.DATASET, level = ResourceAuthLevel.DATASET_LEVEL_USE)
-    @ApiOperation("详息")
+    @ApiOperation("详细信息")
     @PostMapping("get/{id}")
     public DatasetTable get(@ApiParam(name = "id", value = "数据集ID", required = true) @PathVariable String id) {
         return dataSetTableService.get(id);
@@ -194,7 +194,7 @@ public class DataSetTableController {
     }
 
     @DePermission(type = DePermissionType.DATASET)
-    @ApiOperation("数据集详息")
+    @ApiOperation("数据集详细信息")
     @PostMapping("datasetDetail/{id}")
     public DataSetDetail datasetDetail(@PathVariable String id) {
         return dataSetTableService.getDatasetDetail(id);

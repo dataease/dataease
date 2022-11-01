@@ -25,8 +25,7 @@
         :name="item.name"
       >
         <span slot="label">
-          <span>{{ item.title }}</span>
-
+          <span :style="titleStyle">{{ item.title }}</span>
           <el-dropdown
             v-if="dropdownShow"
             slot="label"
@@ -35,7 +34,6 @@
             @command="handleCommand"
           >
             <span class="el-dropdown-link">
-
               <i
                 v-if="isEdit"
                 class="de-tab-i el-icon-arrow-down el-icon--right"
@@ -295,6 +293,11 @@ export default {
     }
   },
   computed: {
+    titleStyle() {
+      return {
+        fontSize: (this.element.style.fontSize || 16) + 'px'
+      }
+    },
     headClass() {
       return 'tab-head-' + this.element.style.headPosition
     },

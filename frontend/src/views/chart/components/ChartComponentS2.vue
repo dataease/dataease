@@ -18,11 +18,11 @@
       :style="title_class"
       style="cursor: default;display: block;"
     >
-      <div style="padding:6px 4px 0;margin: 0;display: flex;">
+      <div style="padding:6px 4px 0;margin: 0;">
         <chart-title-update :chart-info="chartInfo" />
         <title-remark
           v-if="remarkCfg.show"
-          style="text-shadow: none!important;"
+          style="text-shadow: none!important;margin-left: 4px;"
           :remark-cfg="remarkCfg"
         />
       </div>
@@ -250,7 +250,7 @@ export default {
         }
       }
       if (chart.type === 'table-info') {
-        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
+        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.currentPage)
       } else if (chart.type === 'table-normal') {
         this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else if (chart.type === 'table-pivot') {
