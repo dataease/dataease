@@ -16,10 +16,13 @@ export function proxyInitPanelData(panelId, proxy, callback) {
         name: response.data.name,
         privileges: response.data.privileges,
         proxy: proxy.userId,
+        sourcePanelName: response.data.sourcePanelName,
         status: response.data.status,
         createBy: response.data.createBy,
         createTime: response.data.createTime,
+        creatorName: response.data.creatorName,
         updateBy: response.data.updateBy,
+        updateName: response.data.updateName,
         updateTime: response.data.updateTime
       })
       // 刷新联动信息
