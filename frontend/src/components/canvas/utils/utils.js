@@ -231,6 +231,10 @@ export function imgUrlTrans(url) {
   }
 }
 
-export function getNowCanvasComponentData(canvasId) {
-  return store.state.componentData.filter(item => item.canvasId === canvasId)
+export function getNowCanvasComponentData(canvasId, showPosition) {
+  if (showPosition && (showPosition.includes('email-task') || showPosition.includes('multiplexing'))) {
+    return store.state.previewComponentData.filter(item => item.canvasId === canvasId)
+  } else {
+    return store.state.componentData.filter(item => item.canvasId === canvasId)
+  }
 }

@@ -76,6 +76,7 @@
             :canvas-id="element.id+'-'+item.name"
             :panel-info="panelInfo"
             :in-screen="true"
+            :show-position="showPosition"
           />
         </div>
 
@@ -431,7 +432,7 @@ export default {
       if (this.mobileLayoutStatus) {
         return this.pcComponentData.filter(item => item.canvasId === tabCanvasId)
       } else {
-        return getNowCanvasComponentData(tabCanvasId)
+        return getNowCanvasComponentData(tabCanvasId, this.showPosition)
       }
     },
     setContentThemeStyle() {
