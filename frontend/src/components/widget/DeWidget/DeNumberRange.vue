@@ -24,7 +24,7 @@
       <span>{{ $t('denumberrange.split_placeholder') }}</span>
       <el-form-item
         prop="max"
-        style="padding-right: 0px;width: calc(50% - 6px) !important;"
+        style="padding-right: 0px;width: calc(50% - 4px) !important;"
       >
         <el-input
           ref="de-number-range-max"
