@@ -8,7 +8,7 @@
       :style="classImg"
     >
       <img
-        :src="model.snapshot"
+        :src="imgSrc"
         alt=""
       >
     </div>
@@ -82,8 +82,8 @@
     </div>
   </div>
 </template>
-
 <script>
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 export default {
   props: {
     showPosition: {
@@ -101,6 +101,9 @@ export default {
     }
   },
   computed: {
+    imgSrc() {
+      return imgUrlTrans(this.model.snapshot)
+    },
     classBackground() {
       return {
         width: this.width + 'px',

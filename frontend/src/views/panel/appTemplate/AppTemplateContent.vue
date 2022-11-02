@@ -65,7 +65,7 @@
       append-to-body
       class="de-dialog-form"
       width="600px"
-      destroy-on-close="true"
+      :destroy-on-close="true"
     >
       <el-form
         ref="templateEditForm"
