@@ -3,8 +3,10 @@
     class="de-tabs-div"
     :class="headClass"
   >
-    <div v-if="maskShow" class="frame-mask edit-mask" >
-    </div>
+    <div
+      v-if="maskShow"
+      class="frame-mask edit-mask"
+    />
     <dataease-tabs
       v-model="activeTabName"
       type="card"
@@ -296,7 +298,7 @@ export default {
     }
   },
   computed: {
-    maskShow(){
+    maskShow() {
       return Boolean(this.$store.state.dragComponentInfo)
     },
     titleStyle() {
