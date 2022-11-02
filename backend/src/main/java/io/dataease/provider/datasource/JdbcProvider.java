@@ -89,8 +89,8 @@ public class JdbcProvider extends DefaultJdbcProvider {
             }
             DatabaseMetaData databaseMetaData = connection.getMetaData();
             String tableNamePattern = datasourceRequest.getTable();
-            if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mysql.name())){
-                if(databaseMetaData.getDriverMajorVersion() < 8){
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mysql.name())) {
+                if (databaseMetaData.getDriverMajorVersion() < 8) {
                     tableNamePattern = String.format(MySQLConstants.KEYWORD_TABLE, tableNamePattern);
                 }
             }
@@ -98,29 +98,36 @@ public class JdbcProvider extends DefaultJdbcProvider {
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String database;
-                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name()) ||datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())) {
+                String schema = resultSet.getString("TABLE_SCHEM");
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())
+                        || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())) {
                     database = resultSet.getString("TABLE_SCHEM");
                 } else {
                     database = resultSet.getString("TABLE_CAT");
                 }
-               if(datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name())){
-                   if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
-                       TableField tableField = getTableFiled(resultSet, datasourceRequest);
-                       list.add(tableField);
-                   }
-               }else {
-                   if (database != null) {
-                       if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-                           TableField tableField = getTableFiled(resultSet, datasourceRequest);
-                           list.add(tableField);
-                       }
-                   } else {
-                       if (tableName.equals(datasourceRequest.getTable())) {
-                           TableField tableField = getTableFiled(resultSet, datasourceRequest);
-                           list.add(tableField);
-                       }
-                   }
-               }
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name())) {
+                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                        list.add(tableField);
+                    }
+                } else if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())) {
+                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest)) && schema.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                        list.add(tableField);
+                    }
+                } else {
+                    if (database != null) {
+                        if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
+                            TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                            list.add(tableField);
+                        }
+                    } else {
+                        if (tableName.equals(datasourceRequest.getTable())) {
+                            TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                            list.add(tableField);
+                        }
+                    }
+                }
 
             }
             resultSet.close();
@@ -165,9 +172,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
             } else {
                 String size = resultSet.getString("COLUMN_SIZE");
                 if (size == null) {
-                    if(dbType.equals("JSON") && datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mysql.name())){
+                    if (dbType.equals("JSON") && datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mysql.name())) {
                         tableField.setFieldSize(65535);
-                    }else {
+                    } else {
                         tableField.setFieldSize(1);
                     }
 
@@ -176,7 +183,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 }
             }
         }
-        if(StringUtils.isNotEmpty(tableField.getFieldType()) && tableField.getFieldType().equalsIgnoreCase("DECIMAL")){
+        if (StringUtils.isNotEmpty(tableField.getFieldType()) && tableField.getFieldType().equalsIgnoreCase("DECIMAL")) {
             tableField.setAccuracy(Integer.valueOf(resultSet.getString("DECIMAL_DIGITS")));
         }
         return tableField;
@@ -746,16 +753,16 @@ public class JdbcProvider extends DefaultJdbcProvider {
     }
 
     @Override
-    public void checkConfiguration(Datasource datasource)throws Exception{
-        if (StringUtils.isEmpty(datasource.getConfiguration())){
+    public void checkConfiguration(Datasource datasource) throws Exception {
+        if (StringUtils.isEmpty(datasource.getConfiguration())) {
             throw new Exception("Datasource configuration is empty");
         }
         try {
             JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasource.getConfiguration(), JdbcConfiguration.class);
-            if(jdbcConfiguration.getQueryTimeout() < 0){
-                throw new Exception("Querytimeout cannot be less than zero." );
+            if (jdbcConfiguration.getQueryTimeout() < 0) {
+                throw new Exception("Querytimeout cannot be less than zero.");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("Invalid configuration: " + e.getMessage());
         }
 
