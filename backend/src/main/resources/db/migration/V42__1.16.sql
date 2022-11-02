@@ -288,5 +288,3 @@ WHERE `id` = 'system_2';
 
 UPDATE `dataset_table_function` SET `func` = 'CASE expr WHEN v1 THEN r1 [WHEN v2 THEN r2] [ELSE rn] END' WHERE `id` = 47;
 UPDATE `dataset_table_function` SET `func` = 'CASE expr WHEN v1 THEN r1 [WHEN v2 THEN r2] [ELSE rn] END' WHERE `id` = 96;
-ALTER TABLE `panel_app_template`
-    MODIFY COLUMN `icon` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL AFTER `version`;
