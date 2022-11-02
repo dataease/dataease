@@ -13,7 +13,7 @@
       class="market-main"
     >
       <el-row>
-        <el-col span="12">
+        <el-col :span="12">
           <span class="title-left">{{ $t('app_template.app_manager') }}</span>
         </el-col>
       </el-row>
@@ -54,7 +54,7 @@
       width="80%"
       top="5vh"
       class="market-dialog-css"
-      append-to-body="true"
+      :append-to-body="true"
       :destroy-on-close="true"
     >
       <el-form
