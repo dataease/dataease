@@ -255,7 +255,7 @@ export default {
   },
   methods: {
     showError() {
-      const errKeys = ['WecomError', 'DingtalkError', 'LarkError']
+      const errKeys = ['WecomError', 'DingtalkError', 'LarkError', 'LarksuiteError']
       errKeys.forEach(key => {
         const msg = Cookies.get(key)
         if (msg) {
