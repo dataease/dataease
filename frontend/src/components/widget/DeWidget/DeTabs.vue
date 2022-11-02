@@ -202,7 +202,7 @@
     </el-dialog>
 
     <text-attr
-      v-if="showAttr && curComponent.canvasId !== 'canvas-main'"
+      v-if="showAttr && curComponent.canvasId === activeCanvasId"
       :canvas-id="curComponent.canvasId"
       :scroll-left="scrollLeft"
       :scroll-top="scrollTop"
@@ -298,6 +298,9 @@ export default {
     }
   },
   computed: {
+    activeCanvasId() {
+      return this.element.id + '-' + this.activeTabName
+    },
     maskShow() {
       return Boolean(this.$store.state.dragComponentInfo)
     },
