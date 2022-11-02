@@ -623,6 +623,13 @@ const data = {
     },
     addCurMultiplexingComponent(state, { component, componentId }) {
       if (componentId) {
+        if (component.type === 'custom-button' && component.serviceName === 'buttonSureWidget') {
+          const copyComponent = deepCopy(component)
+          copyComponent.options.attrs.customRange = false
+          copyComponent.options.attrs.filterIds = []
+          state.curMultiplexingComponents[componentId] = copyComponent
+          return
+        }
         state.curMultiplexingComponents[componentId] = component
       }
     },
