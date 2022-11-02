@@ -58,8 +58,8 @@ export const TYPE_CONFIGS = [
         'tableTitleHeight',
         'tableItemHeight',
         'tableColumnMode',
-        'tableShowIndex',
-        'tableIndexLabel'
+        'showIndex',
+        'indexLabel'
       ],
       'title-selector-ant-v': [
         'show',
@@ -106,8 +106,8 @@ export const TYPE_CONFIGS = [
         'tableTitleHeight',
         'tableItemHeight',
         'tableColumnMode',
-        'tableShowIndex',
-        'tableIndexLabel'
+        'showIndex',
+        'indexLabel'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1163,8 +1163,8 @@ export const TYPE_CONFIGS = [
         'fontSize',
         'color',
         'position-pie',
-        'label-content',
-        'reserve-decimal-count'
+        'labelContent',
+        'reserveDecimalCount'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -1223,8 +1223,8 @@ export const TYPE_CONFIGS = [
         'fontSize',
         'color',
         'position-pie',
-        'label-content',
-        'reserve-decimal-count'
+        'labelContent',
+        'reserveDecimalCount'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -1400,7 +1400,7 @@ export const TYPE_CONFIGS = [
         'fontSize',
         'color',
         'position-v',
-        'reserve-decimal-count'
+        'reserveDecimalCount'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -1757,8 +1757,8 @@ export const TYPE_CONFIGS = [
         'tableTitleHeight',
         'tableItemHeight',
         'tableColumnWidth',
-        'tableShowIndex',
-        'tableIndexLabel'
+        'showIndex',
+        'indexLabel'
       ],
       'title-selector': [
         'show',
@@ -1798,8 +1798,8 @@ export const TYPE_CONFIGS = [
         'tableTitleHeight',
         'tableItemHeight',
         'tableColumnWidth',
-        'tableShowIndex',
-        'tableIndexLabel'
+        'showIndex',
+        'indexLabel'
       ],
       'title-selector': [
         'show',

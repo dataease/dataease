@@ -19,7 +19,7 @@
         </el-form-item>
         <div v-show="labelForm.show">
           <el-form-item
-            v-show="showProperty('label-content')"
+            v-show="showProperty('labelContent')"
             :label="$t('chart.label_content')"
             class="form-item"
           >
@@ -123,7 +123,7 @@
             </el-select>
           </el-form-item>
           <el-form-item
-            v-show="showProperty('reserve-decimal-count') && (chart.type.includes('percentage') || labelForm.labelContent.includes('proportion'))"
+            v-show="showProperty('reserveDecimalCount') && (chart.type.includes('percentage') || labelForm.labelContent.includes('proportion'))"
             :label="$t('chart.label_reserve_decimal_count')"
             class="form-item"
           >

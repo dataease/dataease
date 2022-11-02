@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author: wangjiahao
@@ -20,19 +21,26 @@ import java.util.List;
 @Service
 public class PanelGroupExtendDataService {
 
+    private final static String transDataKey = "data" + "s";
+
     @Resource
     private PanelGroupExtendDataMapper panelGroupExtendDataMapper;
 
-    public ChartViewDTO getChartDataInfo(String viewId,ChartViewDTO view){
+    public ChartViewDTO getChartDataInfo(String viewId, ChartViewDTO view) {
         Gson gson = new Gson();
         PanelGroupExtendDataExample extendDataExample = new PanelGroupExtendDataExample();
         extendDataExample.createCriteria().andViewIdEqualTo(viewId);
-        List<PanelGroupExtendData>  extendDataList = panelGroupExtendDataMapper.selectByExampleWithBLOBs(extendDataExample);
-        if(CollectionUtils.isNotEmpty(extendDataList)){
-            ChartViewDTO chartViewTemplate = gson.fromJson(extendDataList.get(0).getViewDetails(),ChartViewDTO.class);
+        List<PanelGroupExtendData> extendDataList = panelGroupExtendDataMapper.selectByExampleWithBLOBs(extendDataExample);
+        if (CollectionUtils.isNotEmpty(extendDataList)) {
+            ChartViewDTO chartViewTemplate = gson.fromJson(extendDataList.get(0).getViewDetails(), ChartViewDTO.class);
+            Map<String, Object> dataInfo = chartViewTemplate.getData();
+            if (dataInfo.get(transDataKey) != null) {
+                dataInfo.put("data", dataInfo.get(transDataKey));
+                dataInfo.remove(transDataKey);
+            }
             view.setData(chartViewTemplate.getData());
-        }else{
-            DataEaseException.throwException("模板缓存数据中未获取指定视图数据："+viewId);
+        } else {
+            DataEaseException.throwException("模板缓存数据中未获取指定视图数据：" + viewId);
         }
         return view;
     }

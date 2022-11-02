@@ -26,6 +26,7 @@
       @onChangeSplitForm="onChangeSplitForm"
       @onTextChange="onTextChange"
       @onLegendChange="onLegendChange"
+      @onMarginChange="onMarginChange"
     />
     <el-row v-else>
       <div class="view-selected-message-class">
@@ -98,6 +99,9 @@ export default {
     },
     onLegendChange(val) {
       this.batchOptChange('customStyle', 'legend', val)
+    },
+    onMarginChange(val) {
+      this.batchOptChange('customStyle', 'margin', val)
     },
     batchOptChange(custom, property, value) {
       this.$store.commit('setChangeProperties', {
