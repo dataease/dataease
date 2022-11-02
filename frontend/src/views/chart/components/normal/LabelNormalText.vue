@@ -18,7 +18,10 @@
       style="cursor: default;display: block;"
     >
       <div>
-        <chart-title-update :chart-info="chartInfo" />
+        <chart-title-update
+          :title-class="title_class"
+          :chart-info="chartInfo"
+        />
         <title-remark
           v-if="chart.render && chart.render === 'antv' && remarkCfg.show"
           style="text-shadow: none!important;margin-left: 4px;"

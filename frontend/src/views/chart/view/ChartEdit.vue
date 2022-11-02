@@ -1854,11 +1854,11 @@ export default {
   },
 
   methods: {
-    setTitle(val) {
-      this.chart.name = val
-      this.chart.title = val
-      this.view.name = val
-      this.view.title = val
+    setTitle(title) {
+      this.view.customStyle.text = { ...this.view.customStyle.text, title }
+      this.view.title = title
+      this.view.name = title
+      this.calcStyle()
     },
     resetChartData() {
       this.getChart(this.param.id)
