@@ -190,6 +190,14 @@ const data = {
       state.canvasStyleData = style
     },
 
+    setComponentFromList(state, playload) {
+      state.componentData.some((ele, index) => {
+        if (ele.id !== playload.id) return false
+        state.componentData.splice(index, 1, playload)
+        return true
+      })
+    },
+
     setCurComponent(state, { component, index }) {
       // 当前视图操作状态置空
       if (component) {
