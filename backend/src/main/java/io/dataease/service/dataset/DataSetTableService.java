@@ -170,7 +170,7 @@ public class DataSetTableService {
             datasetTableTask.setTableId(datasetTable.getId());
             datasetTableTask.setRate(ScheduleType.SIMPLE.toString());
             datasetTableTask.setType("all_scope");
-            datasetTableTask.setName(datasetTable.getName() + " 更新设置");
+            datasetTableTask.setName(datasetTable.getName() + " 更新设置-" + System.currentTimeMillis());
             datasetTableTask.setEnd("0");
             datasetTableTask.setStatus(TaskStatus.Underway.name());
             datasetTableTask.setStartTime(System.currentTimeMillis());
