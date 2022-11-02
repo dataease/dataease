@@ -137,7 +137,7 @@
           show-overflow-tooltip
           prop="applyTime"
           sortable="custom"
-          :label="'应用时间'"
+          :label="$t('app_template.execution_time')"
         >
           <template #default="scope">
             <span>{{ scope.row.applyTime | timestampFormatDate }}</span>

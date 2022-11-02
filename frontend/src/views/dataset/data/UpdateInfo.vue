@@ -3,10 +3,12 @@
     <el-row style="margin: 6px 0 16px 0">
       <el-col :span="12">
         <deBtn
+          v-if="hasDataPermission('manage', param.privileges)"
           secondary
           icon="el-icon-plus"
           @click="() => addTask()"
         >{{ $t('dataset.add_task') }}</deBtn>
+        &nbsp;
       </el-col>
       <el-col
         style="text-align: right"
@@ -926,7 +928,7 @@ export default {
     getIncrementalConfig() {
       post('/dataset/table/incrementalConfig', { tableId: this.table.id }).then(response => {
         this.incrementalConfig = response.data
-        if (this.incrementalConfig.incrementalAdd.length === 0 && this.incrementalConfig.incrementalDelete.length === 0) {
+        if (this.incrementalConfig?.incrementalAdd?.length === 0 && this.incrementalConfig?.incrementalDelete?.length === 0) {
           this.incrementalUpdateType = 'incrementalAdd'
           this.sql = ''
           return
