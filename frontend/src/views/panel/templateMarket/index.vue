@@ -13,7 +13,7 @@
       class="market-main"
     >
       <el-row>
-        <el-col span="12">
+        <el-col :span="12">
           <span class="title-left">{{ $t('panel.template_market') }}</span>
         </el-col>
         <el-col span="12">
@@ -23,7 +23,7 @@
             size="small"
             class="title-right"
             :placeholder="$t('panel.enter_template_name_tips')"
-            clearable="true"
+            :clearable="true"
           />
         </el-col>
       </el-row>
@@ -88,7 +88,7 @@
       :visible.sync="folderSelectShow"
       width="600px"
       class="market-dialog-css"
-      append-to-body="true"
+      :append-to-body="true"
       :destroy-on-close="true"
     >
       <el-form
