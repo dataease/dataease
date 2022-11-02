@@ -211,16 +211,16 @@
                   />
                 </span>
               </span>
-              <el-input
-                v-if="scope.row.deType === 1"
-                v-model="scope.row.dateFormat"
-                :placeholder="$t('dataset.date_format')"
-                size="small"
-                class="input-type"
-                :disabled="!hasDataPermission('manage', param.privileges)"
-                @blur="saveEdit(scope.row)"
-                @keyup.enter.native="saveEdit(scope.row)"
-              />
+              <!--              <el-input-->
+              <!--                v-if="scope.row.deType === 1"-->
+              <!--                v-model="scope.row.dateFormat"-->
+              <!--                :placeholder="$t('dataset.date_format')"-->
+              <!--                size="small"-->
+              <!--                class="input-type"-->
+              <!--                :disabled="!hasDataPermission('manage', param.privileges)"-->
+              <!--                @blur="saveEdit(scope.row)"-->
+              <!--                @keyup.enter.native="saveEdit(scope.row)"-->
+              <!--              />-->
             </template>
           </el-table-column>
           <el-table-column
@@ -548,16 +548,16 @@
                   />
                 </span>
               </span>
-              <el-input
-                v-if="scope.row.deType === 1"
-                v-model="scope.row.dateFormat"
-                :placeholder="$t('dataset.date_format')"
-                size="small"
-                class="input-type"
-                :disabled="!hasDataPermission('manage', param.privileges)"
-                @blur="saveEdit(scope.row)"
-                @keyup.enter.native="saveEdit(scope.row)"
-              />
+              <!--              <el-input-->
+              <!--                v-if="scope.row.deType === 1"-->
+              <!--                v-model="scope.row.dateFormat"-->
+              <!--                :placeholder="$t('dataset.date_format')"-->
+              <!--                size="small"-->
+              <!--                class="input-type"-->
+              <!--                :disabled="!hasDataPermission('manage', param.privileges)"-->
+              <!--                @blur="saveEdit(scope.row)"-->
+              <!--                @keyup.enter.native="saveEdit(scope.row)"-->
+              <!--              />-->
             </template>
           </el-table-column>
           <el-table-column
