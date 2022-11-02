@@ -68,8 +68,15 @@
               v-if="scope.row.lastExecStatus"
               :class="[`de-${scope.row.lastExecStatus}-pre`, 'de-status']"
             >{{
-              $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
-            }}
+               $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
+             }}
+              <svg-icon
+                v-if="scope.row.lastExecStatus === 'Error'"
+                style="cursor: pointer;"
+                icon-class="icon-maybe"
+                class="field-icon-location"
+                @click="showErrorMassage(scope.row.msg)"
+              />
             </span>
             <span v-else>-</span>
           </template>

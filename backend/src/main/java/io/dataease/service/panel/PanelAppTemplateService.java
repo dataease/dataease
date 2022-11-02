@@ -81,11 +81,13 @@ public class PanelAppTemplateService {
         if (StringUtils.isEmpty(requestTemplate.getNodeType())) {
             requestTemplate.setNodeType("template");
         }
-        //Store static resource into the server
-        String snapshotName = "app-template-" + request.getId() + ".jpeg";
-        staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
-        requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
-        panelAppTemplateMapper.insertSelective(requestTemplate);
+        if(StringUtils.isNotEmpty(request.getSnapshot())){
+            //Store static resource into the server
+            String snapshotName = "app-template-" + request.getId() + ".jpeg";
+            staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
+            requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
+            panelAppTemplateMapper.insertSelective(requestTemplate);
+        }
     }
 
 
@@ -96,9 +98,11 @@ public class PanelAppTemplateService {
         PanelAppTemplateWithBLOBs requestTemplate = new PanelAppTemplateWithBLOBs();
         BeanUtils.copyBean(requestTemplate, request);
         //Store static resource into the server
-        String snapshotName = "app-template-" + request.getId() + ".jpeg";
-        staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
-        requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
+        if(StringUtils.isNotEmpty(request.getSnapshot())){
+            String snapshotName = "app-template-" + request.getId() + ".jpeg";
+            staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
+            requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
+        }
         panelAppTemplateMapper.updateByPrimaryKeySelective(requestTemplate);
     }
 
