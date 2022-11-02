@@ -1,6 +1,7 @@
 <template>
   <button
     class="de-button"
+    type="button"
     :disabled="buttonDisabled || loading"
     :class="[
       type ? 'de-button--' + type : '',

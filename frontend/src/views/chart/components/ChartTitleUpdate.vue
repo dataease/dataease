@@ -1,17 +1,33 @@
 <template>
-  <el-input
+  <div
     v-if="chartTitleEditer"
-    ref="chartTitle"
-    v-model.lazy="chartTitleUpdate"
     v-clickoutside="lostFocus"
-    clearable
-    type="text"
-    class="chart-input-title"
-    @blur="changeEditStatus"
-  />
+    class="ipnut-wrap"
+  >
+    <input
+      ref="chartTitle"
+      v-model="chartTitleUpdate"
+      type="text"
+      :style="inputStyle"
+      class="chart-input-title"
+      @blur="changeEditStatus"
+    >
+    <i
+      v-if="showClose"
+      class="el-icon-circle-close"
+      @mousedown.prevent
+      @click="chartTitleUpdate = ''"
+    />
+  </div>
   <p
     v-else
-    style="overflow: hidden;white-space: pre;text-overflow: ellipsis;display: inline;min-width: 30px"
+    style="
+      overflow: hidden;
+      white-space: pre;
+      text-overflow: ellipsis;
+      display: inline;
+      min-width: 30px;
+    "
     @click.stop="handleTitleEditer"
   >{{ chart.title }}</p>
 </template>
@@ -32,13 +48,18 @@ export default {
     chartInfo: {
       type: Object,
       default: () => {}
+    },
+    titleClass: {
+      type: Object,
+      default: () => {}
     }
   },
   data() {
     return {
       chartTitleEditer: false,
       chartTitleUpdate: '',
-      chart: {}
+      chart: {},
+      showClose: false
     }
   },
   computed: {
@@ -48,6 +69,10 @@ export default {
     ...mapState(['mobileLayoutStatus', 'previewVisible']),
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    inputStyle() {
+      const { fontSize, color, fontWeight, fontStyle, fontFamily } = this.titleClass
+      return { fontSize, color, fontWeight, fontStyle, fontFamily, height: fontSize }
     }
   },
   watch: {
@@ -58,6 +83,9 @@ export default {
       },
       immediate: true,
       deep: true
+    },
+    chartTitleUpdate(val) {
+      this.showClose = !!val
     }
   },
   methods: {
@@ -274,13 +302,17 @@ export default {
     },
     lostFocus() {
       this.chartTitleEditer = false
+      this.showClose = false
     },
     handleTitleEditer() {
       if (
         this.mainActiveName !== 'PanelEdit' ||
         this.mobileLayoutStatus ||
         this.previewVisible
-      ) { return }
+      ) {
+        return
+      }
+      this.showClose = true
       this.chartTitleEditer = true
       this.chartTitleUpdate = this.chart.title
       this.$nextTick(() => {
@@ -322,15 +354,38 @@ export default {
           ? JSON.parse(chartView.customFilter)
           : {}
         chartView.senior = chartView.senior ? JSON.parse(chartView.senior) : {}
+        chartView.customStyle.text.title = this.chartTitleUpdate
+
+        this.$store.commit('recordViewEdit', {
+          viewId: this.chart.id,
+          hasEdit: true
+        })
+        const view = JSON.parse(JSON.stringify(chartView))
+        view.xaxis = JSON.stringify(chartView.xaxis)
+        view.viewFields = JSON.stringify(chartView.viewFields)
+        view.xaxisExt = JSON.stringify(chartView.xaxisExt)
+        view.yaxis = JSON.stringify(chartView.yaxis)
+        view.yaxisExt = JSON.stringify(chartView.yaxisExt)
+        view.extStack = JSON.stringify(chartView.extStack)
+        view.drillFields = JSON.stringify(chartView.drillFields)
+        view.extBubble = JSON.stringify(chartView.extBubble)
+        view.customAttr = JSON.stringify(chartView.customAttr)
+        view.customStyle = JSON.stringify(chartView.customStyle)
+        view.customFilter = JSON.stringify(chartView.customFilter)
+        view.senior = JSON.stringify(chartView.senior)
+        view.title = this.chartTitleUpdate
+        view.name = this.chartTitleUpdate
+        view.stylePriority = chartView.stylePriority
         const viewSave = this.buildParam(chartView, true, 'chart', false, false)
         if (!viewSave) return
         viewEditSave(this.panelInfo.id, viewSave).then(() => {
           this.chart.title = this.chartTitleUpdate
           bus.$emit('aside-set-title', this.chart.title)
         })
-        this.$store.commit('recordViewEdit', {
-          viewId: this.chart.id,
-          hasEdit: true
+        bus.$emit('view-in-cache', {
+          type: 'styleChange',
+          viewId: chartView.id,
+          viewInfo: view
         })
       })
     }
@@ -339,7 +394,17 @@ export default {
 </script>
 
 <style scoped lang="scss">
-::v-deep.chart-input-title {
+.ipnut-wrap {
+  min-width: 20%;
+  max-width: 50%;
+  display: flex;
+  align-items: center;
+  i {
+    cursor: pointer;
+    font-size: 12px;
+  }
+}
+.chart-input-title {
   word-break: break-word;
   font: 12px / 1.231 -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial,
     'Microsoft YaHei', 'PingFang SC', sans-serif, 'Segoe UI Symbol';
@@ -352,31 +417,16 @@ export default {
   line-height: 26px;
   padding-left: 10px;
   padding-right: 10px;
-  background: transparent;
+  position: relative;
   outline: none;
+  z-index: 5;
+  color: #182b50;
+  font-weight: 400;
+  font-family: inherit;
+  border: none;
+  background: transparent;
   border-width: 0px 0px 1px;
   border-image: initial;
   border-bottom: 1px solid rgb(200, 203, 204);
-  z-index: 2;
-  height: 21px;
-  min-width: 20%;
-  max-width: 50%;
-  .el-input__inner {
-    height: 21px;
-    font-size: 12px;
-    color: #182b50;
-    font-weight: 400;
-    font-family: inherit;
-    border-radius: 0;
-    border: none;
-    line-height: 21px;
-    background: transparent;
-  }
-
-  .el-input__suffix {
-    .el-input__icon {
-      line-height: 21px;
-    }
-  }
 }
 </style>
