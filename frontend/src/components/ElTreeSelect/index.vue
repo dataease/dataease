@@ -262,12 +262,22 @@ export default {
     this._updateH()
     this.$nextTick(() => {
       on(document, 'mouseup', this._popoverHideFun)
+      this.bindScroll()
     })
   },
   beforeDestroy() {
     off(document, 'mouseup', this._popoverHideFun)
+    this.unbindScroll()
   },
   methods: {
+    bindScroll() {
+      window.onmousewheel = this._popoverHideFun
+      on(document, 'DOMMouseScroll', this._popoverHideFun)
+    },
+    unbindScroll() {
+      window.onmousewheel = null
+      off(document, 'DOMMouseScroll', this._popoverHideFun)
+    },
     showPopover() {
       this.$nextTick(() => {
         this.$refs.input.focus()
