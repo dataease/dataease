@@ -11,7 +11,9 @@ import io.dataease.mobile.dto.HomeItemDTO;
 import io.dataease.mobile.dto.HomeItemShareDTO;
 import io.dataease.ext.HomeMapper;
 import io.dataease.mobile.dto.HomeRequest;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +49,10 @@ public class HomeService {
         List<Long> roleIds = user.getRoles().stream().map(CurrentRoleDto::getId).collect(Collectors.toList());
 
         param.put("deptId", deptId);
-        param.put("roleIds", roleIds);
+        if (CollectionUtils.isNotEmpty(roleIds)) {
+            param.put("roleIds", roleIds);
+        }
+
         if (null != request.getLastTime()) {
             param.put("lastTime", request.getLastTime());
         }
