@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,7 +77,7 @@ public class TemplateMarketService {
         String resultStr = marketGet(basicInfo.getTemplateMarketUlr()+CATEGORIES_API,basicInfo.getTemplateAccessKey());
         List<TemplateCategory> categories = JSONObject.parseObject(resultStr).getJSONArray("data").toJavaList(TemplateCategory.class);
         if(CollectionUtils.isNotEmpty(categories)){
-            return categories.stream().map(TemplateCategory :: getName).collect(Collectors.toList());
+            return categories.stream().sorted(Comparator.comparing(TemplateCategory::getPriority)).map(TemplateCategory :: getName).collect(Collectors.toList());
         }else{
             return null;
         }
