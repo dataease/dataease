@@ -193,11 +193,26 @@ public class PanelAppTemplateService {
     public Map<String, String> applyDatasetField(List<DatasetTableField> datasetTableFieldsInfo, Map<String, String> datasetsRealMap) {
         Map<String, String> datasetFieldsRealMap = new HashMap<>();
         for (DatasetTableField datasetTableField : datasetTableFieldsInfo) {
-            String oldId = datasetTableField.getId();
-            datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
-            datasetTableField.setId(null);
-            DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
-            datasetFieldsRealMap.put(oldId, newTableField.getId());
+            if(datasetTableField.getExtField()!=2){
+                String oldId = datasetTableField.getId();
+                datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
+                datasetTableField.setId(null);
+                DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
+                datasetFieldsRealMap.put(oldId, newTableField.getId());
+            }
+        }
+        //数据集计算字段替换
+        for (DatasetTableField datasetTableField : datasetTableFieldsInfo) {
+            if(datasetTableField.getExtField()==2){
+                String oldId = datasetTableField.getId();
+                datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
+                datasetTableField.setId(null);
+                datasetFieldsRealMap.forEach((k, v) -> {
+                    datasetTableField.setOriginName(datasetTableField.getOriginName().replaceAll(k, v));
+                });
+                DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
+                datasetFieldsRealMap.put(oldId, newTableField.getId());
+            }
         }
         return datasetFieldsRealMap;
     }
