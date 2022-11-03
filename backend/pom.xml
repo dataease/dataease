@@ -378,7 +378,7 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <nonFilteredFileExtensions>
-                        <nonFilteredFileExtension>xls</nonFilteredFileExtension>
+                        <nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
                     </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
