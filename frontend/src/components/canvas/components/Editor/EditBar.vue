@@ -32,19 +32,19 @@
       <span :title="$t('panel.switch_picture')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='picture-add'" class="icon iconfont icon-genghuan" @click.stop="goFile" />
       </span>
-      <span :title="$t('panel.switch_picture')">
+      <span :title="$t('panel.banner_set')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-banner'" class="icon iconfont icon-genghuan" @click.stop="goBannerFile" />
       </span>
-      <span :title="$t('panel.switch_picture')">
+      <span :title="$t('panel.nav_set')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-nav'" class="icon iconfont icon-genghuan" @click.stop="setNavInfo" />
       </span>
-      <span :title="$t('panel.switch_picture')">
+      <span :title="$t('panel.icons_set')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-icons'" class="icon iconfont icon-genghuan" @click.stop="setFontIcon" />
       </span>
-      <span :title="$t('panel.switch_picture')">
+      <span :title="$t('panel.picture_set')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-picture'" class="icon iconfont icon-genghuan" @click.stop="setPicture" />
       </span>
-      <span :title="$t('panel.switch_picture')">
+      <span :title="$t('panel.weather_set')">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-weather'" class="icon iconfont icon-genghuan" @click.stop="setWeather" />
       </span>
       <span :title="$t('panel.switch_picture')">
@@ -53,6 +53,9 @@
       <span :title="'跳转配置'">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-jump'" class="icon iconfont icon-genghuan" @click.stop="setJump" />
       </span>
+      <!-- <span :title="$t('panel.text_pop_set')">
+        <i v-if="activeModel==='edit' && curComponent && curComponent.type === 'v-text'" class="icon iconfont icon-genghuan" @click.stop="setText"></i>
+      </span> -->
       <span :title="'锁定'">
         <svg-icon v-if="activeModel==='edit'&&curComponent&&lockValue" :icon-class="'locking'" class="icon" style="color:#fff" @click.stop="setLockout(false)" />
       </span>
@@ -351,6 +354,9 @@ export default {
     },
     setJump() {
       this.$emit('setJump')
+    },
+    setText() {
+      this.$emit('setText')
     },
     setCustom() {
       console.log('触发此处？？？？？')

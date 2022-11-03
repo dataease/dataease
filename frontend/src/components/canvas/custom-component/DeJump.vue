@@ -74,7 +74,7 @@ export default {
   },
   data() {
     return {
-      linkOpen: '',
+      linkOpen: null,
       isClick: false,
     }
   },
@@ -84,7 +84,7 @@ export default {
   methods: {
     linkChange(value) {
       // console.log('跳转',this.linkOpen)
-      if(value !== '') {
+      if(value !== '' && value !== null) {
         window.location.href = value
       }
     }
@@ -129,6 +129,7 @@ export default {
 .jump_sel /deep/ .el-input--medium .el-input__inner {
   background-color: transparent;
   border-color: transparent;
+  color: white;
 }
 .jump_sel /deep/ .el-input__inner::placeholder{
   color: white;
