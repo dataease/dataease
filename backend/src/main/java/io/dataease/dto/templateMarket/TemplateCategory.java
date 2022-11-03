@@ -14,4 +14,6 @@ public class TemplateCategory {
     private String name;
 
     private String slug;
+
+    private Integer priority;
 }
