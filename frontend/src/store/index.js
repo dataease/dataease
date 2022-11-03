@@ -317,6 +317,23 @@ const data = {
 
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
+
+        // 组件过滤更新到外部参数过滤
+        if (element.type && element.type === 'view') {
+          // 外部参数
+          const outerParamsFilters = element.outerParamsFilters || []
+          const outerParamsFiltersNew = []
+          outerParamsFilters.forEach(item => {
+            if (item.fieldId !== condition.fieldId) {
+              outerParamsFiltersNew.push({
+                value: vValid,
+                ...item
+              })
+            }
+          })
+          element.outerParamsFilters = outerParamsFiltersNew
+        }
+
         if (element.type && element.type === 'de-tabs') {
           for (let idx = 0; idx < element.options.tabList.length; idx++) {
             const ele = element.options.tabList[idx].content
@@ -445,8 +462,28 @@ const data = {
       if (params) {
         const trackInfo = state.nowPanelOuterParamsInfo
 
+        const fieldIdParams = {}
+        Object.keys(params).forEach(function(sourceInfo) {
+          // 获取所有目标联动信息
+          const targetInfoList = trackInfo[sourceInfo] || []
+          targetInfoList.forEach(targetInfo => {
+            const targetInfoArray = targetInfo.split('#')
+            const targetFieldId = targetInfoArray[1] // 目标视图列ID
+            fieldIdParams[targetFieldId] = params[sourceInfo]
+          })
+        })
+
         for (let index = 0; index < state.componentData.length; index++) {
           const element = state.componentData[index]
+
+          // 如果传递外部参数，则优先使用外部参数
+          if (element.type && element.type === 'custom') {
+            if (element.options.attrs && fieldIdParams[element.options.attrs.fieldId]) {
+              element.options.value = fieldIdParams[element.options.attrs.fieldId]
+              state.componentData[index] = element
+            }
+          }
+
           if (!element.type || element.type !== 'view') continue
           const currentFilters = element.outerParamsFilters || [] // 外部参数信息
 
