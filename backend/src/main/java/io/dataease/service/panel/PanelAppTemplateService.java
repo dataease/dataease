@@ -86,8 +86,8 @@ public class PanelAppTemplateService {
             String snapshotName = "app-template-" + request.getId() + ".jpeg";
             staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
             requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
-            panelAppTemplateMapper.insertSelective(requestTemplate);
         }
+        panelAppTemplateMapper.insertSelective(requestTemplate);
     }
 
 
