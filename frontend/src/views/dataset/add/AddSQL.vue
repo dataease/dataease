@@ -675,10 +675,11 @@ export default {
       }
     }
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.calHeight)
+  },
   async mounted() {
-    window.onresize = () => {
-      this.calHeight()
-    }
+    window.addEventListener('resize', this.calHeight)
     this.calHeight()
     await this.initDataSource()
     this.$refs.myCm.codemirror.on('keypress', () => {

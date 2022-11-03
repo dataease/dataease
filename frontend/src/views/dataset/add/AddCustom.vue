@@ -140,10 +140,11 @@ export default {
       this.getUnionData()
     }
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.calHeight)
+  },
   mounted() {
-    window.onresize = () => {
-      this.calHeight()
-    }
+    window.addEventListener('resize', this.calHeight)
     this.calHeight()
 
     if (this.param && this.param.id && this.param.tableId) {
