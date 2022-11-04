@@ -597,10 +597,22 @@ const data = {
         if (element === id) {
           delete state.batchOptViews[id]
           state.curBatchOptComponents.splice(index, 1)
-          this.commit('setBatchOptChartInfo')
           break
         }
       }
+      if (state.curBatchOptComponents.length === 1) {
+        const lastViewId = state.curBatchOptComponents[0]
+        const viewBaseInfo = state.componentViewsData[lastViewId]
+        state.changeProperties.customAttr = JSON.parse(viewBaseInfo.customAttr)
+        state.changeProperties.customStyle = JSON.parse(viewBaseInfo.customStyle)
+      }
+      if (state.curBatchOptComponents.length === 0) {
+        state.changeProperties = {
+          customStyle: {},
+          customAttr: {}
+        }
+      }
+      this.commit('setBatchOptChartInfo')
     },
     addCurBatchComponent(state, id) {
       if (id) {
@@ -610,10 +622,17 @@ const data = {
         // get properties
         const viewConfig = state.allViewRender.filter(item => item.render === viewBaseInfo.render && item.value === viewBaseInfo.type)
         if (viewConfig && viewConfig.length > 0) {
+          if (state.curBatchOptComponents.length === 1) {
+            state.changeProperties.customAttr = JSON.parse(viewBaseInfo.customAttr)
+            state.changeProperties.customStyle = JSON.parse(viewBaseInfo.customStyle)
+          }
           state.batchOptViews[id] = viewConfig[0]
           this.commit('setBatchOptChartInfo')
         }
       }
+    },
+    updateComponentViewsData(state, { viewId, propertyKey, propertyValue }) {
+      state.componentViewsData[viewId][propertyKey] = propertyValue
     },
     removeCurMultiplexingComponentWithId(state, id) {
       delete state.curMultiplexingComponents[id]

@@ -552,12 +552,22 @@ export default {
         sourceCustomAttr[param.property][param.value.modifyName] = param.value[param.value.modifyName]
         this.sourceCustomAttrStr = JSON.stringify(sourceCustomAttr)
         this.chart.customAttr = this.sourceCustomAttrStr
+        this.$store.commit('updateComponentViewsData', {
+          viewId: this.chart.id,
+          propertyKey: 'customAttr',
+          propertyValue: this.sourceCustomAttrStr
+        })
         updateParams['customAttr'] = this.sourceCustomAttrStr
       } else if (param.custom === 'customStyle') {
         const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
         sourceCustomStyle[param.property][param.value.modifyName] = param.value[param.value.modifyName]
         this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
         this.chart.customStyle = this.sourceCustomStyleStr
+        this.$store.commit('updateComponentViewsData', {
+          viewId: this.chart.id,
+          propertyKey: 'customStyle',
+          propertyValue: this.sourceCustomStyleStr
+        })
         updateParams['customStyle'] = this.sourceCustomStyleStr
       }
       viewPropsSave(this.panelInfo.id, updateParams).then(rsp => {
