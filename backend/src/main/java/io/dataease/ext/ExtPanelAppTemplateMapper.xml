@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.ext.ExtPanelAppTemplateMapper">
+  <select id="queryBaseInfo"  resultType="io.dataease.plugins.common.base.domain.PanelAppTemplateWithBLOBs">
+    select id, `name`, node_type, `level`, pid, version, icon, update_time, update_user, create_time,
+    create_user,snapshot,datasource_info from panel_app_template
+    where 1=1
+    <if test="pid != null">
+      and pid =  #{pid}
+    </if>
+    <if test="nodeType != null">
+      and node_type =  #{nodeType}
+    </if>
+  </select>
+</mapper>

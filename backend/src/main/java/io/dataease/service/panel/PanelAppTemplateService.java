@@ -10,6 +10,7 @@ import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.panel.PanelAppTemplateApplyRequest;
 import io.dataease.controller.request.panel.PanelAppTemplateRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
+import io.dataease.ext.ExtPanelAppTemplateMapper;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.PanelAppTemplateMapper;
 import io.dataease.plugins.common.constants.DatasetType;
@@ -19,6 +20,7 @@ import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.datasource.DatasourceService;
+import io.dataease.service.staticResource.StaticResourceService;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.context.annotation.Lazy;
@@ -31,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.dataease.commons.constants.StaticResourceConstants.UPLOAD_URL_PREFIX;
+
 /**
  * Author: wangjiahao
  * Date: 2022/9/8
@@ -40,6 +44,8 @@ import java.util.Map;
 public class PanelAppTemplateService {
     private static Gson gson = new Gson();
 
+    @Resource
+    private ExtPanelAppTemplateMapper extPanelAppTemplateMapper;
     @Resource
     private PanelAppTemplateMapper panelAppTemplateMapper;
     @Resource
@@ -59,16 +65,11 @@ public class PanelAppTemplateService {
     private PanelViewService panelViewService;
     @Resource
     private DataSetGroupService dataSetGroupService;
+    @Resource
+    private StaticResourceService staticResourceService;
 
     public List<PanelAppTemplateWithBLOBs> list(PanelAppTemplateRequest request) {
-        PanelAppTemplateExample example = new PanelAppTemplateExample();
-        if (StringUtils.isNotEmpty(request.getPid())) {
-            example.createCriteria().andPidEqualTo(request.getPid());
-        }
-        if (StringUtils.isNotEmpty(request.getNodeType())) {
-            example.createCriteria().andNodeTypeEqualTo(request.getNodeType());
-        }
-        return panelAppTemplateMapper.selectByExampleWithBLOBs(example);
+        return extPanelAppTemplateMapper.queryBaseInfo(request.getNodeType(),request.getPid());
     }
 
     public void save(PanelAppTemplateRequest request) {
@@ -80,6 +81,12 @@ public class PanelAppTemplateService {
         if (StringUtils.isEmpty(requestTemplate.getNodeType())) {
             requestTemplate.setNodeType("template");
         }
+        if(StringUtils.isNotEmpty(request.getSnapshot())){
+            //Store static resource into the server
+            String snapshotName = "app-template-" + request.getId() + ".jpeg";
+            staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
+            requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
+        }
         panelAppTemplateMapper.insertSelective(requestTemplate);
     }
 
@@ -90,6 +97,12 @@ public class PanelAppTemplateService {
         request.setUpdateTime(System.currentTimeMillis());
         PanelAppTemplateWithBLOBs requestTemplate = new PanelAppTemplateWithBLOBs();
         BeanUtils.copyBean(requestTemplate, request);
+        //Store static resource into the server
+        if(StringUtils.isNotEmpty(request.getSnapshot())){
+            String snapshotName = "app-template-" + request.getId() + ".jpeg";
+            staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
+            requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
+        }
         panelAppTemplateMapper.updateByPrimaryKeySelective(requestTemplate);
     }
 
@@ -180,11 +193,26 @@ public class PanelAppTemplateService {
     public Map<String, String> applyDatasetField(List<DatasetTableField> datasetTableFieldsInfo, Map<String, String> datasetsRealMap) {
         Map<String, String> datasetFieldsRealMap = new HashMap<>();
         for (DatasetTableField datasetTableField : datasetTableFieldsInfo) {
-            String oldId = datasetTableField.getId();
-            datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
-            datasetTableField.setId(null);
-            DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
-            datasetFieldsRealMap.put(oldId, newTableField.getId());
+            if(datasetTableField.getExtField()!=2){
+                String oldId = datasetTableField.getId();
+                datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
+                datasetTableField.setId(null);
+                DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
+                datasetFieldsRealMap.put(oldId, newTableField.getId());
+            }
+        }
+        //数据集计算字段替换
+        for (DatasetTableField datasetTableField : datasetTableFieldsInfo) {
+            if(datasetTableField.getExtField()==2){
+                String oldId = datasetTableField.getId();
+                datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
+                datasetTableField.setId(null);
+                datasetFieldsRealMap.forEach((k, v) -> {
+                    datasetTableField.setOriginName(datasetTableField.getOriginName().replaceAll(k, v));
+                });
+                DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
+                datasetFieldsRealMap.put(oldId, newTableField.getId());
+            }
         }
         return datasetFieldsRealMap;
     }

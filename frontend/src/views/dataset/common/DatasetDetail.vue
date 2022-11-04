@@ -270,12 +270,12 @@ export default {
     }
     .info-title {
       font-size: 12px;
-      color: var(--deTextPrimary, #1f2329);
       margin-bottom: 4px !important;
+      color: var(--deTextSecondary, #646a73);
     }
     .info-content {
       font-size: 14px;
-      color: var(--deTextSecondary, #646a73);
+      color: var(--deTextPrimary, #1f2329);
     }
   }
 

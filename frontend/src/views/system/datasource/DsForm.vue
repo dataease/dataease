@@ -692,7 +692,7 @@ export default {
       return newArr
     },
     setType() {
-      this.form.type = this.params.type
+      this.$set(this.form, 'type', this.params.type)
       this.form.configuration = {
         initialPoolSize: 5,
         extraParams: '',

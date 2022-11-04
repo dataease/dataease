@@ -136,7 +136,7 @@ INSERT INTO `sys_auth` (`id`, `auth_source`, `auth_source_type`, `auth_target`, 
 DROP FUNCTION IF EXISTS `GET_V_AUTH_MODEL_WITH_CHILDREN`;
 delimiter ;;
 CREATE FUNCTION `GET_V_AUTH_MODEL_WITH_CHILDREN`(parentId longtext,modelType varchar(255))
-    RETURNS longtext CHARSET utf8mb4
+    RETURNS longtext CHARSET utf8mb4 COLLATE utf8mb4_general_ci
   READS SQL DATA
 BEGIN
 
@@ -176,7 +176,7 @@ delimiter ;
 DROP FUNCTION IF EXISTS `GET_V_AUTH_MODEL_WITH_PARENT`;
 delimiter ;;
 CREATE FUNCTION `GET_V_AUTH_MODEL_WITH_PARENT`(childrenId longtext,modelType varchar(255))
-    RETURNS longtext CHARSET utf8mb4
+    RETURNS longtext CHARSET utf8mb4 COLLATE utf8mb4_general_ci
   READS SQL DATA
 BEGIN
 

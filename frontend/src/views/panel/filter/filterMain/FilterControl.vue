@@ -239,7 +239,7 @@ export default {
   watch: {
     'childViews.datasetParams': {
       handler(newName, oldName) {
-        if (this.attrs.parameters.length > 0 && this.attrs.parameters[0].indexOf('|DE|') === -1) {
+        if (this.attrs.parameters?.length && this.attrs.parameters[0].indexOf('|DE|') === -1) {
           const parameters = []
           for (var i = 0; i < this.attrs.parameters.length; i++) {
             if (this.attrs.parameters[i].indexOf('|DE|') === -1) {

@@ -172,6 +172,7 @@ export default {
       this.currentPage.show = parseInt(this.form.row)
       this.currentPage.pageSize = parseInt(this.form.row)
       this.currentPage.page = 1
+      this.$refs.setCount?.doClose()
       this.$emit('reSearch', { form: this.form, page: this.currentPage })
     },
     pageChange(val) {

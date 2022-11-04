@@ -3,6 +3,10 @@
     class="de-tabs-div"
     :class="headClass"
   >
+    <div
+      v-if="maskShow"
+      class="frame-mask edit-mask"
+    />
     <dataease-tabs
       v-model="activeTabName"
       type="card"
@@ -76,6 +80,7 @@
             :canvas-id="element.id+'-'+item.name"
             :panel-info="panelInfo"
             :in-screen="true"
+            :show-position="showPosition"
           />
         </div>
 
@@ -197,7 +202,7 @@
     </el-dialog>
 
     <text-attr
-      v-if="showAttr && curComponent.canvasId !== 'canvas-main'"
+      v-if="showAttr && curComponent.canvasId === activeCanvasId"
       :canvas-id="curComponent.canvasId"
       :scroll-left="scrollLeft"
       :scroll-top="scrollTop"
@@ -293,6 +298,12 @@ export default {
     }
   },
   computed: {
+    activeCanvasId() {
+      return this.element.id + '-' + this.activeTabName
+    },
+    maskShow() {
+      return Boolean(this.$store.state.dragComponentInfo)
+    },
     titleStyle() {
       return {
         fontSize: (this.element.style.fontSize || 16) + 'px'
@@ -344,16 +355,32 @@ export default {
       'pcComponentData'
     ]),
     fontColor() {
-      return this.element && this.element.style && this.element.style.headFontColor || 'none'
+      if (this.element && this.element.style && this.element.style.headFontColor && typeof this.element.style.headFontColor === 'string') {
+        return this.element.style.headFontColor
+      } else {
+        return 'none'
+      }
     },
     activeColor() {
-      return this.element && this.element.style && this.element.style.headFontActiveColor || 'none'
+      if (this.element && this.element.style && this.element.style.headFontActiveColor && typeof this.element.style.headFontActiveColor === 'string') {
+        return this.element.style.headFontActiveColor
+      } else {
+        return 'none'
+      }
     },
     borderColor() {
-      return this.element && this.element.style && this.element.style.headBorderColor || 'none'
+      if (this.element && this.element.style && this.element.style.headBorderColor && typeof this.element.style.headBorderColor === 'string') {
+        return this.element.style.headBorderColor
+      } else {
+        return 'none'
+      }
     },
     borderActiveColor() {
-      return this.element && this.element.style && this.element.style.headBorderActiveColor || 'none'
+      if (this.element && this.element.style && this.element.style.headBorderActiveColor && typeof this.element.style.headBorderActiveColor === 'string') {
+        return this.element.style.headBorderActiveColor
+      } else {
+        return 'none'
+      }
     },
     titleValid() {
       return !!this.textarea && !!this.textarea.trim()
@@ -431,7 +458,7 @@ export default {
       if (this.mobileLayoutStatus) {
         return this.pcComponentData.filter(item => item.canvasId === tabCanvasId)
       } else {
-        return getNowCanvasComponentData(tabCanvasId)
+        return getNowCanvasComponentData(tabCanvasId, this.showPosition)
       }
     },
     setContentThemeStyle() {
@@ -642,20 +669,40 @@ export default {
 .canvas_move_in {
   border-color: blueviolet;
 }
-::v-deep .el-tabs__nav{
+
+::v-deep .el-tabs__nav {
   width: 100%;
 }
-.tab-head-left ::v-deep .el-tabs__nav{
+
+.tab-head-left ::v-deep .el-tabs__nav {
   width: 100%;
   text-align: left;
 }
-.tab-head-right ::v-deep .el-tabs__nav{
+
+.tab-head-right ::v-deep .el-tabs__nav {
   width: 100%;
   text-align: right;
 }
-.tab-head-center ::v-deep .el-tabs__nav{
+
+.tab-head-center ::v-deep .el-tabs__nav {
   width: 100%;
   text-align: center;
+}
+
+.frame-mask {
+  display: flex;
+  opacity: 0;
+  position:absolute;
+  top:0px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edit-mask{
+  left: 0px;
+  height: 100%!important;
+  width: 100% !important;
 }
 
 </style>

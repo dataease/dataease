@@ -19,7 +19,10 @@
       style="cursor: default;display: block;"
     >
       <div style="padding:6px 4px 0;margin: 0;">
-        <chart-title-update :chart-info="chartInfo" />
+        <chart-title-update
+          :title-class="title_class"
+          :chart-info="chartInfo"
+        />
         <title-remark
           v-if="remarkCfg.show"
           style="text-shadow: none!important;margin-left: 4px;"
@@ -480,13 +483,13 @@ export default {
   height:100%;
 }
 .table-dom-info-drill{
-  height:calc(100% - 36px - 12px);
+  height:calc(100% - 36px - 24px);
 }
 .table-dom-info-drill-pull{
-  height:calc(100% - 12px);
+  height:calc(100% - 24px);
 }
 .table-dom-normal-drill{
-  height:calc(100% - 12px);
+  height:calc(100% - 24px);
 }
 .table-page{
   display: flex;
@@ -504,6 +507,7 @@ export default {
   font-size: 12px;
   color: #606266;
   white-space:nowrap;
+  padding-left: 8px;
 }
 .page-style ::v-deep .el-input__inner{
   height: 24px;

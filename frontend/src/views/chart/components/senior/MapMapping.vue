@@ -50,8 +50,10 @@
 
         <template
           slot="header"
+          slot-scope="scope"
         >
           <el-input
+            :id="scope.$index"
             v-model="keyWord"
             size="mini"
             placeholder="输入关键字搜索"

@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 @Service("apiProvider")
 public class ApiProvider extends Provider {
 
+    private static String path = "['%s']";
+
     @Resource
     private SystemParameterService systemParameterService;
 
@@ -198,10 +200,10 @@ public class ApiProvider extends Provider {
             handleStr(apiDefinition, response, fields, rootPath);
         }
         for (JSONObject field : fields) {
-            if(field.containsKey("children") && CollectionUtils.isNotEmpty(field.getJSONArray("children"))){
+            if (field.containsKey("children") && CollectionUtils.isNotEmpty(field.getJSONArray("children"))) {
                 field.put("disabled", false);
             }
-            if(field.containsKey("children") && CollectionUtils.isEmpty(field.getJSONArray("children"))){
+            if (field.containsKey("children") && CollectionUtils.isEmpty(field.getJSONArray("children"))) {
                 field.put("disabled", true);
             }
         }
@@ -238,14 +240,14 @@ public class ApiProvider extends Provider {
                         array.add(StringUtils.isNotEmpty(jsonObject.getString(s)) ? jsonObject.getString(s) : "");
                         o.put("value", array);
                     }
-                    o.put("jsonPath", rootPath + "." + s);
+                    o.put("jsonPath", rootPath + "." + String.format(path, s));
                     setProperty(apiDefinition, o, s);
                     if (!hasItem(apiDefinition, fields, o)) {
                         fields.add(o);
                     }
                 } else if (StringUtils.isNotEmpty(value) && value.startsWith("{")) {
                     List<JSONObject> children = new ArrayList<>();
-                    handleStr(apiDefinition, jsonObject.getString(s), children, rootPath + "." + s);
+                    handleStr(apiDefinition, jsonObject.getString(s), children, rootPath + "." + String.format(path, s));
                     JSONObject o = new JSONObject();
                     o.put("children", children);
                     o.put("childrenDataType", "OBJECT");
@@ -256,7 +258,7 @@ public class ApiProvider extends Provider {
                     }
                 } else {
                     JSONObject o = new JSONObject();
-                    o.put("jsonPath", rootPath + "." + s);
+                    o.put("jsonPath", rootPath + "." + String.format(path, s));
                     setProperty(apiDefinition, o, s);
                     JSONArray array = new JSONArray();
                     array.add(StringUtils.isNotEmpty(jsonObject.getString(s)) ? jsonObject.getString(s) : "");

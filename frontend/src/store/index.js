@@ -152,7 +152,8 @@ const data = {
       width: 0,
       height: 0
     },
-    previewVisible: false
+    previewVisible: false,
+    previewComponentData: []
   },
   mutations: {
     ...animation.mutations,
@@ -187,6 +188,14 @@ const data = {
         style['selfAdaption'] = true
       }
       state.canvasStyleData = style
+    },
+
+    setComponentFromList(state, playload) {
+      state.componentData.some((ele, index) => {
+        if (ele.id !== playload.id) return false
+        state.componentData.splice(index, 1, playload)
+        return true
+      })
     },
 
     setCurComponent(state, { component, index }) {
@@ -242,7 +251,9 @@ const data = {
     setComponentData(state, componentData = []) {
       Vue.set(state, 'componentData', componentData)
     },
-
+    setPreviewComponentData(state, previewComponentData = []) {
+      Vue.set(state, 'previewComponentData', previewComponentData)
+    },
     setComponentViewsData(state, componentViewsData = {}) {
       Vue.set(state, 'componentViewsData', componentViewsData)
     },
@@ -639,6 +650,13 @@ const data = {
     },
     addCurMultiplexingComponent(state, { component, componentId }) {
       if (componentId) {
+        if (component.type === 'custom-button' && component.serviceName === 'buttonSureWidget') {
+          const copyComponent = deepCopy(component)
+          copyComponent.options.attrs.customRange = false
+          copyComponent.options.attrs.filterIds = []
+          state.curMultiplexingComponents[componentId] = copyComponent
+          return
+        }
         state.curMultiplexingComponents[componentId] = component
       }
     },

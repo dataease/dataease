@@ -8,6 +8,7 @@
         <span
           class="title-text"
           style="line-height: 26px"
+          :title="table.name"
         >
           {{ table.name }}
         </span>
@@ -396,6 +397,11 @@ export default {
       font-weight: 500;
       margin-right: 8px;
       color: var(--deTextPrimary, #1f2329);
+      display: inline-block;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 50%;
     }
 
     .de-tag {

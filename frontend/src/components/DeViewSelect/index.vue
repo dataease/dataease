@@ -34,7 +34,7 @@
         :style="{'height': panelHeight + 'px'}"
       >
         <Preview
-          :component-data="componentData"
+          :component-data="mainCanvasComponentData"
           :canvas-style-data="canvasStyleData"
           :panel-info="panelInfo"
           :show-position="showPosition"
@@ -85,6 +85,8 @@ export default {
   },
   data() {
     return {
+      componentData: [],
+      canvasId: 'canvas-main',
       visible: false,
       placement: 'bottom',
       transition: 'el-zoom-in-top',
@@ -100,6 +102,9 @@ export default {
     }
   },
   computed: {
+    mainCanvasComponentData() {
+      return this.componentData.filter(item => item.canvasId === this.canvasId)
+    },
     popperClass() {
       const _c = 'el-view-select-popper ' + this.popoverClass
       return this.disabled ? _c + ' disabled ' : _c
@@ -148,6 +153,7 @@ export default {
         panelDataPrepare(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle), rsp => {
           this.viewLoaded = true
           this.componentData = rsp.componentData
+          this.$store.commit('setPreviewComponentData', this.componentData)
           this.canvasStyleData = rsp.componentStyle
           this.loadOptions()
         })

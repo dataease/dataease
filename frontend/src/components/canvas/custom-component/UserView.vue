@@ -173,7 +173,7 @@
       :append-to-body="true"
       :destroy-on-close="true"
     >
-      <UserViewMobileDialog
+      <user-view-mobile-dialog
         v-if="mobileChartDetailsVisible"
         :canvas-style-data="canvasStyleData"
         :chart="showChartInfo"
@@ -211,10 +211,11 @@ import DeRichTextView from '@/components/canvas/custom-component/DeRichTextView'
 import Vue from 'vue'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
+import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
 
 export default {
   name: 'UserView',
-  components: { UserViewDialog, DeRichTextView, LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
+  components: { UserViewMobileDialog, UserViewDialog, DeRichTextView, LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
   props: {
     canvasId: {
       type: String,
@@ -817,7 +818,6 @@ export default {
       this.showChartInfo = this.chart
       this.showChartTableInfo = tableChart
       this.showChartInfoType = params.openType
-      this.chartDetailsVisible = true
       if (this.terminal === 'pc') {
         this.chartDetailsVisible = true
       } else {
