@@ -155,7 +155,7 @@
         >
           <el-checkbox
             v-model="labelForm.show"
-            @change="changeLabelAttr"
+            @change="changeLabelAttr('show')"
           >{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="labelForm.show">
@@ -167,7 +167,7 @@
               v-model="labelForm.fontSize"
               :placeholder="$t('chart.text_fontsize')"
               size="mini"
-              @change="changeLabelAttr"
+              @change="changeLabelAttr('fontSize')"
             >
               <el-option
                 v-for="option in fontSize"
@@ -185,7 +185,7 @@
               v-model="labelForm.color"
               class="color-picker-style"
               :predefine="predefineColors"
-              @change="changeLabelAttr"
+              @change="changeLabelAttr('color')"
             />
           </el-form-item>
           <el-form-item
@@ -194,7 +194,7 @@
           >
             <el-select
               v-model="labelForm.gaugeLabelFormatter.type"
-              @change="changeLabelAttr"
+              @change="changeLabelAttr('gaugeLabelFormatter')"
             >
               <el-option
                 v-for="type in typeList"
@@ -215,7 +215,7 @@
               :min="0"
               :max="10"
               size="mini"
-              @change="changeLabelAttr"
+              @change="changeLabelAttr('gaugeLabelFormatter')"
             />
           </el-form-item>
           <el-form-item
@@ -227,7 +227,7 @@
               v-model="labelForm.gaugeLabelFormatter.unit"
               :placeholder="$t('chart.pls_select_field')"
               size="mini"
-              @change="changeLabelAttr"
+              @change="changeLabelAttr('gaugeLabelFormatter')"
             >
               <el-option
                 v-for="item in unitList"
@@ -246,7 +246,7 @@
               size="mini"
               clearable
               :placeholder="$t('commons.input_content')"
-              @change="changeLabelAttr"
+              @change="changeLabelAttr('gaugeLabelFormatter')"
             />
           </el-form-item>
           <el-form-item
@@ -255,7 +255,7 @@
           >
             <el-checkbox
               v-model="labelForm.gaugeLabelFormatter.thousandSeparator"
-              @change="changeLabelAttr"
+              @change="changeLabelAttr('gaugeLabelFormatter')"
             />
           </el-form-item>
         </div>
