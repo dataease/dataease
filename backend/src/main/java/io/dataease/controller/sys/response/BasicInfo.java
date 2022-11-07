@@ -13,6 +13,8 @@ public class BasicInfo extends LoginLimitInfo implements Serializable {
     private String frontTimeOut;
     @ApiModelProperty("消息保留时间")
     private String msgTimeOut;
+    @ApiModelProperty("日志保留时间")
+    private String logTimeOut;
     @ApiModelProperty("显示首页")
     private String openHomePage;
     @ApiModelProperty("默认登录方式")
