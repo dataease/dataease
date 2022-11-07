@@ -304,10 +304,11 @@ export default {
       return this.nameList.filter((ele) => ele !== this.originName)
     }
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.calHeight)
+  },
   mounted() {
-    window.onresize = () => {
-      this.calHeight()
-    }
+    window.addEventListener('resize', this.calHeight)
     this.calHeight()
   },
   created() {

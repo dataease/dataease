@@ -207,8 +207,10 @@ export default {
   mounted() {
     this.preDraw()
   },
-  destroyed() {
+  beforeDestroy() {
+    window.removeEventListener('resize', this.myChart.resize)
     this.myChart.dispose()
+    this.myChart = null
   },
   created() {
     this.loadThemeStyle()
@@ -403,9 +405,7 @@ export default {
       const chart = this.myChart
       this.setBackGroundBorder()
       setTimeout(chart.setOption(option, true), 500)
-      window.onresize = function() {
-        chart.resize()
-      }
+      window.removeEventListener('resize', chart.resize)
     },
     setBackGroundBorder() {
       if (this.chart.customStyle) {

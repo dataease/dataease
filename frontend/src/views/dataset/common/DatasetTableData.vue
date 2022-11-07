@@ -80,12 +80,6 @@ export default {
     }
   },
   mounted() {
-    // window.onresize = () => {
-    //   return (() => {
-    //     this.height = window.innerHeight / 3
-    //   })()
-    // }
-    // this.height = window.innerHeight / 3
     this.$nextTick(() => {
       this.height =
         document.getElementById('dsData').parentNode.offsetHeight - 16 - 14 - 5
