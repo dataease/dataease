@@ -213,11 +213,11 @@
 </template>
 
 <script>
-import DataeaseTabs from '@/components/dataease-tabs'
+import DataeaseTabs from '@/components/dataeaseTabs'
 import ViewSelect from '@/views/panel/ViewSelect'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
-import componentList from '@/components/canvas/custom-component/component-list'
+import componentList from '@/components/canvas/customComponent/component-list'
 import { mapState } from 'vuex'
 import { chartCopy } from '@/api/chart/chart'
 import { buildFilterMap } from '@/utils/conditionUtil'
@@ -225,7 +225,7 @@ import TabUseList from '@/views/panel/AssistComponent/tabUseList'
 import { findPanelElementInfo } from '@/api/panel/panel'
 import { getNowCanvasComponentData } from '@/components/canvas/utils/utils'
 import DeCanvasTab from '@/components/canvas/DeCanvas'
-import Preview from '@/components/canvas/components/Editor/Preview'
+import Preview from '@/components/canvas/components/editor/Preview'
 import TextAttr from '@/components/canvas/components/TextAttr'
 
 export default {
@@ -692,16 +692,17 @@ export default {
 .frame-mask {
   display: flex;
   opacity: 0;
-  position:absolute;
-  top:0px;
+  position: absolute;
+  top: 0px;
   z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.edit-mask{
+
+.edit-mask {
   left: 0px;
-  height: 100%!important;
+  height: 100% !important;
   width: 100% !important;
 }
 

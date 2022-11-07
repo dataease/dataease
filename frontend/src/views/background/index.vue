@@ -97,7 +97,8 @@
               v-model="curComponent.commonBackground.backgroundType"
               label="outerImage"
               @change="onChangeType"
-            >{{ $t('panel.photo') }}</el-radio>
+            >{{ $t('panel.photo') }}
+            </el-radio>
           </el-col>
           <el-col style="width: 130px!important;">
             <el-upload
@@ -136,7 +137,8 @@
               v-model="curComponent.commonBackground.backgroundType"
               label="innerImage"
               @change="onChangeType"
-            >边框</el-radio>
+            >边框
+            </el-radio>
             <el-color-picker
               v-model="curComponent.commonBackground.innerImageColor"
               :title="'边框配色'"
@@ -237,12 +239,14 @@
         <el-button
           size="mini"
           @click="cancel()"
-        >{{ $t('commons.cancel') }}</el-button>
+        >{{ $t('commons.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="save()"
-        >{{ $t('commons.confirm') }}</el-button>
+        >{{ $t('commons.confirm') }}
+        </el-button>
       </el-col>
     </el-row>
   </el-row>
@@ -255,7 +259,7 @@ import { mapState } from 'vuex'
 import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
-import { COMMON_BACKGROUND_NONE } from '@/components/canvas/custom-component/component-list'
+import { COMMON_BACKGROUND_NONE } from '@/components/canvas/customComponent/component-list'
 
 export default {
   name: 'Background',
@@ -341,73 +345,83 @@ export default {
 </script>
 
 <style scoped>
-  .el-card-template {
-    min-width: 260px;
-    min-width: 460px;
-    width: 100%;
-    height: 100%;
-  }
+.el-card-template {
+  min-width: 260px;
+  min-width: 460px;
+  width: 100%;
+  height: 100%;
+}
 
-  .main-row{
-    height: 140px;
-    overflow-y: auto;
-  }
+.main-row {
+  height: 140px;
+  overflow-y: auto;
+}
 
-  .root-class {
-    margin: 15px 0px 5px;
-    text-align: center;
-  }
-  .avatar-uploader ::v-deep .el-upload {
-    width: 120px;
-    height: 80px;
-    line-height: 90px;
-  }
-  .avatar-uploader ::v-deep .el-upload-list li{
-    width: 120px !important;
-    height: 80px !important;
-  }
-  .disabled ::v-deep .el-upload--picture-card {
-    display: none;
-  }
-  .shape-item{
-    padding: 6px;
-    border: none;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .form-item-slider ::v-deep .el-form-item__label{
-    font-size: 12px;
-    line-height: 38px;
-  }
-  .form-item ::v-deep .el-form-item__label{
-    font-size: 12px;
-  }
-  .el-select-dropdown__item{
-    padding: 0 20px;
-  }
-  span{
-    font-size: 12px
-  }
-  .el-form-item{
-    margin-bottom: 6px;
-  }
-  .main-content{
-    border:1px solid #E6E6E6;
-  }
+.root-class {
+  margin: 15px 0px 5px;
+  text-align: center;
+}
 
-  .params-title{
-    font-weight: bold;
-    line-height: 40px;
-    margin-left: 10px;
-    font-size: 14px;
-  }
+.avatar-uploader ::v-deep .el-upload {
+  width: 120px;
+  height: 80px;
+  line-height: 90px;
+}
 
-  .params-title-small{
-    font-weight: bold;
-    line-height: 40px;
-    margin-left: 10px;
-    font-size: 12px;
-  }
+.avatar-uploader ::v-deep .el-upload-list li {
+  width: 120px !important;
+  height: 80px !important;
+}
+
+.disabled ::v-deep .el-upload--picture-card {
+  display: none;
+}
+
+.shape-item {
+  padding: 6px;
+  border: none;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-item-slider ::v-deep .el-form-item__label {
+  font-size: 12px;
+  line-height: 38px;
+}
+
+.form-item ::v-deep .el-form-item__label {
+  font-size: 12px;
+}
+
+.el-select-dropdown__item {
+  padding: 0 20px;
+}
+
+span {
+  font-size: 12px
+}
+
+.el-form-item {
+  margin-bottom: 6px;
+}
+
+.main-content {
+  border: 1px solid #E6E6E6;
+}
+
+.params-title {
+  font-weight: bold;
+  line-height: 40px;
+  margin-left: 10px;
+  font-size: 14px;
+}
+
+.params-title-small {
+  font-weight: bold;
+  line-height: 40px;
+  margin-left: 10px;
+  font-size: 12px;
+}
 </style>

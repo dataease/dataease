@@ -59,7 +59,7 @@
       >
         <span class="total-style">
           {{ $t('chart.total') }}
-          <span>{{ (chart.data && chart.data.tableRow)?chart.data.tableRow.length:0 }}</span>
+          <span>{{ (chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0 }}</span>
           {{ $t('chart.items') }}
         </span>
         <el-pagination
@@ -81,12 +81,13 @@
 
 <script>
 import { uuid } from 'vue-uuid'
-import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
+import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import { getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
 import { baseTableInfo, baseTableNormal, baseTablePivot } from '@/views/chart/chart/table/table-info'
 import TitleRemark from '@/views/chart/view/TitleRemark'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
+
 export default {
   name: 'ChartComponentS2',
   components: { TitleRemark, ViewTrackBar, ChartTitleUpdate },
@@ -180,7 +181,9 @@ export default {
         this.initData()
         this.initTitle()
         this.calcHeightDelay()
-        new Promise((resolve) => { resolve() }).then(() => {
+        new Promise((resolve) => {
+          resolve()
+        }).then(() => {
           this.drawView()
         })
       },
@@ -231,7 +234,9 @@ export default {
       this.initData()
       this.initTitle()
       this.calcHeightDelay()
-      new Promise((resolve) => { resolve() }).then(() => {
+      new Promise((resolve) => {
+        resolve()
+      }).then(() => {
         this.drawView()
       })
     },
@@ -327,7 +332,9 @@ export default {
       this.initData()
       this.initTitle()
       this.calcHeightDelay()
-      new Promise((resolve) => { resolve() }).then(() => {
+      new Promise((resolve) => {
+        resolve()
+      }).then(() => {
         this.drawView()
       })
     },
@@ -471,25 +478,31 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.table-dom-info{
-  height:calc(100% - 36px);
+.table-dom-info {
+  height: calc(100% - 36px);
 }
-.table-dom-info-pull{
-  height:calc(100%);
+
+.table-dom-info-pull {
+  height: calc(100%);
 }
-.table-dom-normal{
-  height:100%;
+
+.table-dom-normal {
+  height: 100%;
 }
-.table-dom-info-drill{
-  height:calc(100% - 36px - 24px);
+
+.table-dom-info-drill {
+  height: calc(100% - 36px - 24px);
 }
-.table-dom-info-drill-pull{
-  height:calc(100% - 24px);
+
+.table-dom-info-drill-pull {
+  height: calc(100% - 24px);
 }
-.table-dom-normal-drill{
-  height:calc(100% - 24px);
+
+.table-dom-normal-drill {
+  height: calc(100% - 24px);
 }
-.table-page{
+
+.table-page {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -497,23 +510,28 @@ export default {
   overflow: hidden;
   margin-top: 8px;
 }
-.page-style{
+
+.page-style {
   margin-right: auto;
 }
-.total-style{
+
+.total-style {
   flex: 1;
   font-size: 12px;
   color: #606266;
-  white-space:nowrap;
+  white-space: nowrap;
   padding-left: 8px;
 }
-.page-style ::v-deep .el-input__inner{
+
+.page-style ::v-deep .el-input__inner {
   height: 24px;
 }
-.page-style ::v-deep button{
-  background: transparent!important;
+
+.page-style ::v-deep button {
+  background: transparent !important;
 }
-.page-style ::v-deep li{
-  background: transparent!important;
+
+.page-style ::v-deep li {
+  background: transparent !important;
 }
 </style>

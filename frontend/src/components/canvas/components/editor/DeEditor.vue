@@ -146,10 +146,10 @@
 <script>
 import { mapState } from 'vuex'
 import Shape from './Shape'
-import DeDrag from '@/components/DeDrag'
+import DeDrag from '@/components/deDrag'
 
 // eslint-disable-next-line no-unused-vars
-import { getStyle, getComponentRotatedStyle } from '@/components/canvas/utils/style'
+import { getComponentRotatedStyle, getStyle } from '@/components/canvas/utils/style'
 import { _$, imgUrlTrans } from '@/components/canvas/utils/utils'
 import ContextMenu from './ContextMenu'
 import MarkLine from './MarkLine'
@@ -158,9 +158,9 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import Grid from './Grid'
 import PGrid from './PGrid'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
-import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
+import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
-import DragShadow from '@/components/DeDrag/shadow'
+import DragShadow from '@/components/deDrag/shadow'
 import bus from '@/utils/bus'
 import LinkJumpSet from '@/views/panel/LinkJumpSet'
 import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
@@ -168,7 +168,7 @@ import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMat
 import _ from 'lodash'
 import _jq from 'jquery'
 import Background from '@/views/background/index'
-import PointShadow from '@/components/DeDrag/pointShadow'
+import PointShadow from '@/components/deDrag/pointShadow'
 
 // let positionBox = []
 // let coordinates = [] // 坐标点集合

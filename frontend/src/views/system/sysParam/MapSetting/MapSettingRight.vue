@@ -146,7 +146,7 @@
 <script>
 import jsonView from 'vue-json-views'
 import { geoJson, saveMap } from '@/api/map/map'
-import ElTreeSelect from '@/components/ElTreeSelect'
+import ElTreeSelect from '@/components/elTreeSelect'
 import msgCfm from '@/components/msgCfm'
 
 export default {
@@ -169,17 +169,33 @@ export default {
       loading: false,
       rules: {
         pCode: [
-          { required: true, message: this.$t('map_setting.parent_name') + this.$t('commons.cannot_be_null'), trigger: 'change' }
+          {
+            required: true,
+            message: this.$t('map_setting.parent_name') + this.$t('commons.cannot_be_null'),
+            trigger: 'change'
+          }
         ],
         code: [
-          { required: true, message: this.$t('map_setting.area_code') + this.$t('commons.cannot_be_null'), trigger: ['change', 'blur'] },
+          {
+            required: true,
+            message: this.$t('map_setting.area_code') + this.$t('commons.cannot_be_null'),
+            trigger: ['change', 'blur']
+          },
           { pattern: /^\d{9}$/, message: this.$t('map_setting.area_code_tip'), trigger: ['change', 'blur'] }
         ],
         name: [
-          { required: true, message: this.$t('map_setting.area_name') + this.$t('commons.cannot_be_null'), trigger: ['change', 'blur'] }
+          {
+            required: true,
+            message: this.$t('map_setting.area_name') + this.$t('commons.cannot_be_null'),
+            trigger: ['change', 'blur']
+          }
         ],
         fileName: [
-          { required: true, message: this.$t('map_setting.geo_json') + this.$t('commons.cannot_be_null'), trigger: 'change' }
+          {
+            required: true,
+            message: this.$t('map_setting.geo_json') + this.$t('commons.cannot_be_null'),
+            trigger: 'change'
+          }
         ]
       },
       levelOptions: [
@@ -351,7 +367,9 @@ export default {
     _renderFun(h, { node, data, store }) {
       const { props, clickParent } = this.treeParams
       return (
-        <span class={['custom-tree-node', !clickParent && data[props.children] && data[props.children].length ? 'disabled' : null]}>
+        <span
+          class={['custom-tree-node', !clickParent && data[props.children] && data[props.children].length ? 'disabled' : null]}
+        >
           <span>{node.label}</span>
         </span>
       )
@@ -370,7 +388,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.map-class-wrap{
+.map-class-wrap {
   top: 65px !important;
   left: 0px !important;
 }

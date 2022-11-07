@@ -20,12 +20,13 @@
 
 <script>
 import Editor from '@/components/Editor/index'
-import componentList from '@/components/canvas/custom-component/component-list' // 左侧列表数据
+import componentList from '@/components/canvas/customComponent/component-list' // 左侧列表数据
 import Toolbar from '@/components/Toolbar'
 import { deepCopy } from '@/utils/utils'
 import { mapState } from 'vuex'
 import generateID from '@/utils/generateID'
 import { uuid } from 'vue-uuid'
+
 export default {
   components: { Editor, Toolbar },
   data() {

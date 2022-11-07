@@ -12,7 +12,7 @@
 <script>
 import { loadResource } from '@/api/link'
 import { uuid } from 'vue-uuid'
-import Preview from '@/components/canvas/components/Editor/Preview'
+import Preview from '@/components/canvas/components/editor/Preview'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
 import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJump'
 import { getNowCanvasComponentData, panelInit } from '@/components/canvas/utils/utils'
@@ -157,8 +157,8 @@ export default {
 </script>
 
 <style scoped>
- *{
-     margin: 0;
-     padding: 0;
- }
+* {
+  margin: 0;
+  padding: 0;
+}
 </style>

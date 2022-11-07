@@ -40,8 +40,8 @@
 </template>
 
 <script>
-import ElVisualSelect from '@/components/ElVisualSelect'
-import { multFieldValues, linkMultFieldValues } from '@/api/dataset/dataset'
+import ElVisualSelect from '@/components/elVisualSelect'
+import { linkMultFieldValues, multFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { isSameVueObj } from '@/utils'
 import { getLinkToken, getToken } from '@/utils/auth'
@@ -58,7 +58,8 @@ export default {
     },
     element: {
       type: Object,
-      default: () => {}
+      default: () => {
+      }
     },
     inDraw: {
       type: Boolean,
@@ -260,7 +261,10 @@ export default {
         if (!token && linkToken) {
           method = linkMultFieldValues
         }
-        method({ fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }).then(res => {
+        method({
+          fieldIds: this.element.options.attrs.fieldId.split(','),
+          sort: this.element.options.attrs.sort
+        }).then(res => {
           this.data = this.optionData(res.data)
           bus.$emit('valid-values-change', true)
         }).catch(e => {
@@ -396,6 +400,7 @@ export default {
   .el-select-dropdown__item.selected {
     background-color: rgb(245, 247, 250, .5) !important;
   }
+
   .el-select-dropdown__item.hover {
     background-color: rgb(245, 247, 250, .5) !important;
   }

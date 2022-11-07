@@ -85,9 +85,10 @@
 </template>
 
 <script>
-import VText from '@/components/canvas/custom-component/VText'
-import RectShape from '@/components/canvas/custom-component/RectShape'
+import VText from '@/components/canvas/customComponent/VText'
+import RectShape from '@/components/canvas/customComponent/RectShape'
 import { getStyle } from '@/components/canvas/utils/style'
+
 export default {
   components: { VText, RectShape },
   data() {
@@ -194,10 +195,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .attr-list {
-    overflow: auto;
-    padding: 5px;
-    padding-top: 0;
-    height: 100%;
-  }
+.attr-list {
+  overflow: auto;
+  padding: 5px;
+  padding-top: 0;
+  height: 100%;
+}
 </style>

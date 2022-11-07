@@ -410,11 +410,11 @@
 
 <script>
 import { mapState } from 'vuex'
-import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
-import StreamMediaLinks from '@/components/canvas/components/Editor/StreamMediaLinks'
-import DateFormat from '@/components/canvas/components/Editor/DateFormat'
+import VideoLinks from '@/components/canvas/components/editor/VideoLinks'
+import StreamMediaLinks from '@/components/canvas/components/editor/StreamMediaLinks'
+import DateFormat from '@/components/canvas/components/editor/DateFormat'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
-import FrameLinks from '@/components/canvas/components/Editor/FrameLinks'
+import FrameLinks from '@/components/canvas/components/editor/FrameLinks'
 import TitlePosition from '@/components/widget/DeWidget/TitlePosition'
 
 export default {

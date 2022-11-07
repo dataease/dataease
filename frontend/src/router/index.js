@@ -79,17 +79,17 @@ export const constantRoutes = [
 
   {
     path: '/preview/:reportId',
-    component: () => import('@/components/canvas/components/Editor/PreviewEject'),
+    component: () => import('@/components/canvas/components/editor/PreviewEject'),
     hidden: true
   },
   {
     path: '/previewScreenShot/:reportId/:backScreenShot',
-    component: () => import('@/components/canvas/components/Editor/PreviewEject'),
+    component: () => import('@/components/canvas/components/editor/PreviewEject'),
     hidden: true
   },
   {
     path: '/previewFullScreen',
-    component: () => import('@/components/canvas/components/Editor/PreviewFullScreen'),
+    component: () => import('@/components/canvas/components/editor/PreviewFullScreen'),
     hidden: true
   }
 

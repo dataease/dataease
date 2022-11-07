@@ -59,7 +59,7 @@
 <script>
 import { getRemark, hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
-import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
+import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import TitleRemark from '@/views/chart/view/TitleRemark'
 import { DEFAULT_SIZE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import ChartTitleUpdate from '../ChartTitleUpdate.vue'
@@ -309,7 +309,7 @@ export default {
 </script>
 
 <style scoped>
-.table-class ::v-deep .body--wrapper{
-  background: rgba(1,1,1,0);
+.table-class ::v-deep .body--wrapper {
+  background: rgba(1, 1, 1, 0);
 }
 </style>

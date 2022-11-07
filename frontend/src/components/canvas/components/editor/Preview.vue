@@ -68,10 +68,11 @@ import { uuid } from 'vue-uuid'
 import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
+import CanvasOptBar from '@/components/canvas/components/editor/CanvasOptBar'
 import bus from '@/utils/bus'
 import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
 import { hasDataPermission } from '@/utils/permission'
+
 const erd = elementResizeDetectorMaker()
 
 export default {
@@ -338,9 +339,7 @@ export default {
         buttonExist: false,
         relationFilterIds: [],
         autoTrigger: true,
-        filterMap: {
-
-        }
+        filterMap: {}
       }
       if (!panelItems || !panelItems.length) return result
       let sureButtonItem = null
@@ -443,7 +442,10 @@ export default {
         this.scaleHeight = canvasHeight * 100 / this.canvasStyleData.height// 获取高度比
       }
       if (this.isMainCanvas()) {
-        this.$store.commit('setPreviewCanvasScale', { scaleWidth: (this.scaleWidth / 100), scaleHeight: (this.scaleHeight / 100) })
+        this.$store.commit('setPreviewCanvasScale', {
+          scaleWidth: (this.scaleWidth / 100),
+          scaleHeight: (this.scaleHeight / 100)
+        })
       }
       this.handleScaleChange()
     },
@@ -529,63 +531,64 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .bg {
-    min-width: 200px;
-    min-height: 300px;
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
-    background-size: 100% 100% !important;
-  }
+.bg {
+  min-width: 200px;
+  min-height: 300px;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-size: 100% 100% !important;
+}
 
-  .main-class {
-    width: 100%;
-    height: 100%;
-    background-size: 100% 100% !important;
-  }
+.main-class {
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100% !important;
+}
 
-  .custom-position {
-    line-height: 30px;
-    width: 100%;
-    z-index: 100;
-    height: 100%;
-    text-align: center;
-    cursor:not-allowed;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    flex-flow: row nowrap;
-    color: #9ea6b2;
-  }
+.custom-position {
+  line-height: 30px;
+  width: 100%;
+  z-index: 100;
+  height: 100%;
+  text-align: center;
+  cursor: not-allowed;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-flow: row nowrap;
+  color: #9ea6b2;
+}
 
-  .dialog-css ::v-deep .el-dialog__title {
-    font-size: 14px;
-  }
+.dialog-css ::v-deep .el-dialog__title {
+  font-size: 14px;
+}
 
-  .dialog-css ::v-deep .el-dialog__header {
-    padding: 40px 20px 0;
-  }
+.dialog-css ::v-deep .el-dialog__header {
+  padding: 40px 20px 0;
+}
 
-  .dialog-css ::v-deep  .el-dialog__body {
-    padding: 10px 20px 20px;
-  }
+.dialog-css ::v-deep .el-dialog__body {
+  padding: 10px 20px 20px;
+}
 
-  .mobile-dialog-css ::v-deep .el-dialog__headerbtn {
-    top: 7px
-  }
+.mobile-dialog-css ::v-deep .el-dialog__headerbtn {
+  top: 7px
+}
 
-  .mobile-dialog-css ::v-deep .el-dialog__body {
-    padding: 0px;
-  }
-  ::-webkit-scrollbar {
-    width: 0px!important;
-    height: 0px!important;
-  }
+.mobile-dialog-css ::v-deep .el-dialog__body {
+  padding: 0px;
+}
 
-  ::v-deep .el-tabs__nav{
-   z-index: 0;
-  }
+::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+}
+
+::v-deep .el-tabs__nav {
+  z-index: 0;
+}
 
 </style>

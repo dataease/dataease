@@ -48,10 +48,11 @@
 
 <script>
 import DeLayoutContent from '@/components/business/DeLayoutContent'
-import AsyncComponent from '@/components/AsyncComponent'
+import AsyncComponent from '@/components/asyncComponent'
 import i18n from '@/lang'
 import bus from '@/utils/bus'
 import { execute } from '@/api/system/dynamic'
+
 export default {
   name: 'Dynamic',
   components: {

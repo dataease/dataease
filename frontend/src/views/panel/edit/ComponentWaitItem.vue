@@ -43,7 +43,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
+import MobileCheckBar from '@/components/canvas/components/editor/MobileCheckBar'
 import { getStyle } from '@/components/canvas/utils/style'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
@@ -142,26 +142,28 @@ export default {
 </script>
 
 <style scoped>
-  .component-custom {
-    position: relative!important;
-    outline: none;
-    width: 100% !important;
-    height: 100%;
-  }
-  .component-item {
-    padding: 5px;
-    height: 200px!important;
-    position: relative;
-  }
+.component-custom {
+  position: relative !important;
+  outline: none;
+  width: 100% !important;
+  height: 100%;
+}
 
-  .inner-item {
-    position: relative;
-  }
-  .svg-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
+.component-item {
+  padding: 5px;
+  height: 200px !important;
+  position: relative;
+}
+
+.inner-item {
+  position: relative;
+}
+
+.svg-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 </style>

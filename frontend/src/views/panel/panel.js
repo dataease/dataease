@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import { DEFAULT_COLOR_CASE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import { deepCopy } from '@/components/canvas/utils/utils'
-import { COMMON_BACKGROUND_BASE } from '@/components/canvas/custom-component/component-list'
+import { COMMON_BACKGROUND_BASE } from '@/components/canvas/customComponent/component-list'
 export const TAB_COMMON_STYLE = {
   headFontColor: '#000000',
   headFontActiveColor: '#000000',
