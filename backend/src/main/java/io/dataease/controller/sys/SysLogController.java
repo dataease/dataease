@@ -32,12 +32,13 @@ public class SysLogController {
     @ApiOperation("查询日志")
     @PostMapping("/logGrid/{goPage}/{pageSize}")
     @ApiImplicitParams({
-        @ApiImplicitParam(paramType = "path", name = "goPage", value = "页码", required = true, dataType = "Integer"),
-        @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
-        @ApiImplicitParam(name = "request", value = "查询条件", required = true)
+            @ApiImplicitParam(paramType = "path", name = "goPage", value = "页码", required = true, dataType = "Integer"),
+            @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
     public Pager<List<SysLogGridDTO>> logGrid(@PathVariable int goPage, @PathVariable int pageSize,
                                               @RequestBody KeyGridRequest request) {
+        request = logService.logRetentionProxy(request);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, logService.query(request));
     }
@@ -51,7 +52,7 @@ public class SysLogController {
     @ApiOperation("导出操作日志")
     @PostMapping("/export")
     @ApiImplicitParam(name = "request", value = "查询条件", required = true)
-    public void export(@RequestBody KeyGridRequest request) throws Exception{
+    public void export(@RequestBody KeyGridRequest request) throws Exception {
         logService.exportExcel(request);
     }
 }

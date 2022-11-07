@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 
 import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
@@ -18,8 +19,10 @@ import io.dataease.exception.DataEaseException;
 import io.dataease.ext.ExtSysLogMapper;
 import io.dataease.ext.query.GridExample;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.SysLogExample;
 import io.dataease.plugins.common.base.domain.SysLogWithBLOBs;
 import io.dataease.plugins.common.base.mapper.SysLogMapper;
+import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,14 +34,13 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class LogService {
 
+    private static final String LOG_RETENTION = "30";
     private Gson gson = new Gson();
 
     // 仪表板的额外操作 分享以及公共链接
@@ -67,6 +69,69 @@ public class LogService {
 
     @Resource
     private LogManager logManager;
+
+    @Resource
+    private SystemParameterService systemParameterService;
+
+    public void cleanDisusedLog() {
+        String value = systemParameterService.getValue(ParamConstants.BASIC.LOG_TIME_OUT.getValue());
+        value = StringUtils.isBlank(value) ? LOG_RETENTION : value;
+        int logRetention = Integer.parseInt(value);
+        Calendar instance = Calendar.getInstance();
+
+        Calendar startInstance = (Calendar) instance.clone();
+        startInstance.add(Calendar.DATE, -logRetention);
+        startInstance.set(Calendar.HOUR_OF_DAY, 0);
+        startInstance.set(Calendar.MINUTE, 0);
+        startInstance.set(Calendar.SECOND, 0);
+        startInstance.set(Calendar.MILLISECOND, -1);
+        long timeInMillis = startInstance.getTimeInMillis();
+        SysLogExample example = new SysLogExample();
+        example.createCriteria().andTimeLessThan(timeInMillis);
+        sysLogMapper.deleteByExample(example);
+    }
+
+
+    public KeyGridRequest logRetentionProxy(KeyGridRequest request) {
+        String value = systemParameterService.getValue(ParamConstants.BASIC.LOG_TIME_OUT.getValue());
+        value = StringUtils.isBlank(value) ? LOG_RETENTION : value;
+        int logRetention = Integer.parseInt(value);
+        Calendar instance = Calendar.getInstance();
+
+        Calendar startInstance = (Calendar) instance.clone();
+        startInstance.add(Calendar.DATE, -logRetention);
+        startInstance.set(Calendar.HOUR_OF_DAY, 0);
+        startInstance.set(Calendar.MINUTE, 0);
+        startInstance.set(Calendar.SECOND, 0);
+        long startTime = startInstance.getTimeInMillis();
+
+        Calendar endInstance = (Calendar) instance.clone();
+        endInstance.add(Calendar.DATE, 1);
+        endInstance.set(Calendar.HOUR_OF_DAY, 0);
+        endInstance.set(Calendar.MINUTE, 0);
+        endInstance.set(Calendar.SECOND, 0);
+        long endTime = endInstance.getTimeInMillis();
+
+
+        List<ConditionEntity> conditions = request.getConditions();
+        if (CollectionUtils.isNotEmpty(conditions) && conditions.stream().anyMatch(condition -> StringUtils.equals("time", condition.getField()))) {
+            conditions.forEach(condition -> {
+                if (StringUtils.equals("time", condition.getField()) && startTime > ((List<Long>) condition.getValue()).get(0)) {
+                    ((List<Long>) condition.getValue()).set(0, startTime);
+                }
+            });
+        } else {
+            ConditionEntity conditionEntity = new ConditionEntity();
+            conditionEntity.setField("time");
+            conditionEntity.setOperator("between");
+            List<Long> times = new ArrayList<>();
+            times.add(startTime);
+            times.add(endTime);
+            conditionEntity.setValue(times);
+            conditions.add(conditionEntity);
+        }
+        return request;
+    }
 
 
     public List<SysLogGridDTO> query(KeyGridRequest request) {
@@ -223,7 +288,8 @@ public class LogService {
         }
         return results;
     }
-    private List<FolderItem> viewPanelTypes () {
+
+    private List<FolderItem> viewPanelTypes() {
         Integer[] opTypes = new Integer[]{13, 14};
         Integer[] sourceTypes = new Integer[]{3};
         return typesByArr(opTypes, sourceTypes);
@@ -340,7 +406,7 @@ public class LogService {
             //文件名称
             String fileName = "DataEase操作日志";
             String encodeFileName = URLEncoder.encode(fileName, "UTF-8");
-            response.setHeader("Content-disposition", "attachment;filename="+encodeFileName+".xls");
+            response.setHeader("Content-disposition", "attachment;filename=" + encodeFileName + ".xls");
             wb.write(outputStream);
             outputStream.flush();
             outputStream.close();
