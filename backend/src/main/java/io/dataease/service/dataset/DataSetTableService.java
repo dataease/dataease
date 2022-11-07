@@ -2866,7 +2866,7 @@ public class DataSetTableService {
         createDorisView(TableUtils.tableName(tableId), sql);
     }
 
-    public void updateDatasetInfo(DatasetTable datasetTable){
+    public void updateDatasetInfo(DatasetTable datasetTable) {
         datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
     }
 }

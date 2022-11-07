@@ -29,7 +29,6 @@ import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DeTypeConstants;
-import io.dataease.service.chart.ChartGroupService;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.dataset.DataSetTableService;
@@ -38,7 +37,8 @@ import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.core.util.UUIDUtil;
@@ -233,7 +233,7 @@ public class PanelGroupService {
         return panelId;
     }
 
-    public void move(PanelGroupRequest request){
+    public void move(PanelGroupRequest request) {
         PanelGroupWithBLOBs panelInfo = panelGroupMapper.selectByPrimaryKey(request.getId());
         if (panelInfo.getPid().equalsIgnoreCase(request.getPid())) {
             DataEaseException.throwException(Translator.get("i18n_select_diff_folder"));
@@ -420,14 +420,15 @@ public class PanelGroupService {
         panelGroupMapper.insertSelective(newPanel);
         return newPanelId;
     }
+
     @Transactional(rollbackFor = Exception.class)
-    public String newPanelFromApp(PanelGroupRequest request,Map<String,String> chartViewsRealMap){
+    public String newPanelFromApp(PanelGroupRequest request, Map<String, String> chartViewsRealMap) {
         String newPanelId = request.getId();
         String templateData = request.getPanelData();
         String staticResource = request.getStaticResource();
         Boolean mobileLayout = panelViewService.haveMobileLayout(templateData);
-        for(Map.Entry<String,String> entry:chartViewsRealMap.entrySet()){
-            templateData =  templateData.replaceAll(entry.getKey(),entry.getValue());
+        for (Map.Entry<String, String> entry : chartViewsRealMap.entrySet()) {
+            templateData = templateData.replaceAll(entry.getKey(), entry.getValue());
         }
         request.setMobileLayout(mobileLayout);
         request.setPanelData(templateData);
@@ -825,13 +826,13 @@ public class PanelGroupService {
         } else if (datasourceDTOS.size() > 1) {
             return new PanelExport2App(Translator.get("I18N_APP_ONE_DATASOURCE_TIPS"));
         }
-        return new PanelExport2App(chartViewsInfo, chartViewFieldsInfo, datasetTablesInfo, datasetTableFieldsInfo, dataSetTasksInfo, datasourceDTOS,panelViews);
+        return new PanelExport2App(chartViewsInfo, chartViewFieldsInfo, datasetTablesInfo, datasetTableFieldsInfo, dataSetTasksInfo, datasourceDTOS, panelViews);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String appApply(PanelAppTemplateApplyRequest request) throws Exception{
+    public String appApply(PanelAppTemplateApplyRequest request) throws Exception {
         //仪表板名称校验，数据集分组名称校验，数据源名称校验
-        panelAppTemplateService.nameCheck(request,"add");
+        panelAppTemplateService.nameCheck(request, "add");
 
         String newPanelId = UUIDUtil.getUUIDAsString();
         // 新建数据集分组
@@ -845,39 +846,46 @@ public class PanelGroupService {
         //查询应用信息
         PanelAppTemplateWithBLOBs appInfo = panelAppTemplateMapper.selectByPrimaryKey(request.getAppTemplateId());
         //1.获取所有视图信息
-        List<ChartViewWithBLOBs> chartViewsInfo = gson.fromJson(appInfo.getChartViewsInfo(), new TypeToken<List<ChartViewWithBLOBs>>(){}.getType());
+        List<ChartViewWithBLOBs> chartViewsInfo = gson.fromJson(appInfo.getChartViewsInfo(), new TypeToken<List<ChartViewWithBLOBs>>() {
+        }.getType());
         //2.获取视图扩展字段信息
-        List<ChartViewField> chartViewFieldsInfo = gson.fromJson(appInfo.getChartViewFieldsInfo(), new TypeToken<List<ChartViewField>>(){}.getType());
+        List<ChartViewField> chartViewFieldsInfo = gson.fromJson(appInfo.getChartViewFieldsInfo(), new TypeToken<List<ChartViewField>>() {
+        }.getType());
         //3.获取所有数据集信息
-        List<DatasetTable> datasetTablesInfo  = gson.fromJson(appInfo.getDatasetTablesInfo(), new TypeToken<List<DatasetTable>>(){}.getType());
+        List<DatasetTable> datasetTablesInfo = gson.fromJson(appInfo.getDatasetTablesInfo(), new TypeToken<List<DatasetTable>>() {
+        }.getType());
         //4.获取所有数据集字段信息
-        List<DatasetTableField> datasetTableFieldsInfo = gson.fromJson(appInfo.getDatasetTableFieldsInfo(), new TypeToken<List<DatasetTableField>>(){}.getType());
+        List<DatasetTableField> datasetTableFieldsInfo = gson.fromJson(appInfo.getDatasetTableFieldsInfo(), new TypeToken<List<DatasetTableField>>() {
+        }.getType());
         //5.获取所有任务信息
-        List<DataSetTaskDTO> dataSetTasksInfo = gson.fromJson(appInfo.getDatasetTasksInfo(), new TypeToken<List<DataSetTaskDTO>>(){}.getType());
+        List<DataSetTaskDTO> dataSetTasksInfo = gson.fromJson(appInfo.getDatasetTasksInfo(), new TypeToken<List<DataSetTaskDTO>>() {
+        }.getType());
         //6.获取所有数据源信息
-        List<Datasource> oldDatasourceInfo = gson.fromJson(appInfo.getDatasourceInfo(), new TypeToken<List<Datasource>>(){}.getType());
+        List<Datasource> oldDatasourceInfo = gson.fromJson(appInfo.getDatasourceInfo(), new TypeToken<List<Datasource>>() {
+        }.getType());
         //获取仪表板信息
-        PanelGroupRequest  panelInfo = gson.fromJson(appInfo.getPanelInfo(),PanelGroupRequest.class);
+        PanelGroupRequest panelInfo = gson.fromJson(appInfo.getPanelInfo(), PanelGroupRequest.class);
         //获取仪表板视图信息
-        List<PanelView> panelViewsInfo = gson.fromJson(appInfo.getPanelViewsInfo(), new TypeToken<List<PanelView>>(){}.getType());
+        List<PanelView> panelViewsInfo = gson.fromJson(appInfo.getPanelViewsInfo(), new TypeToken<List<PanelView>>() {
+        }.getType());
 
-        Map<String,String> datasourceRealMap = panelAppTemplateService.applyDatasource(oldDatasourceInfo,request.getDatasourceList());
+        Map<String, String> datasourceRealMap = panelAppTemplateService.applyDatasource(oldDatasourceInfo, request.getDatasourceList());
 
-        Map<String,String> datasetsRealMap = panelAppTemplateService.applyDataset(datasetTablesInfo,datasourceRealMap,asideDatasetGroupId);
+        Map<String, String> datasetsRealMap = panelAppTemplateService.applyDataset(datasetTablesInfo, datasourceRealMap, asideDatasetGroupId);
 
-        Map<String,String> datasetFieldsRealMap = panelAppTemplateService.applyDatasetField(datasetTableFieldsInfo,datasetsRealMap);
+        Map<String, String> datasetFieldsRealMap = panelAppTemplateService.applyDatasetField(datasetTableFieldsInfo, datasetsRealMap);
 
-        panelAppTemplateService.resetCustomAndUnionDataset(datasetTablesInfo,datasetsRealMap,datasetFieldsRealMap);
+        panelAppTemplateService.resetCustomAndUnionDataset(datasetTablesInfo, datasetsRealMap, datasetFieldsRealMap);
 
-        Map<String,String> chartViewsRealMap = panelAppTemplateService.applyViews(chartViewsInfo,datasetsRealMap,datasetFieldsRealMap,newPanelId);
+        Map<String, String> chartViewsRealMap = panelAppTemplateService.applyViews(chartViewsInfo, datasetsRealMap, datasetFieldsRealMap, newPanelId);
 
-        panelAppTemplateService.applyViewsField(chartViewFieldsInfo,chartViewsRealMap,datasetsRealMap,datasetFieldsRealMap);
+        panelAppTemplateService.applyViewsField(chartViewFieldsInfo, chartViewsRealMap, datasetsRealMap, datasetFieldsRealMap);
 
-        panelAppTemplateService.applyPanel(panelInfo,chartViewsRealMap,datasetsRealMap,datasetFieldsRealMap,newPanelId, request.getPanelName(), request.getPanelGroupPid());
+        panelAppTemplateService.applyPanel(panelInfo, chartViewsRealMap, datasetsRealMap, datasetFieldsRealMap, newPanelId, request.getPanelName(), request.getPanelGroupPid());
 
-        panelAppTemplateService.applyPanelView(panelViewsInfo,chartViewsRealMap,newPanelId);
+        panelAppTemplateService.applyPanelView(panelViewsInfo, chartViewsRealMap, newPanelId);
 
-        String newDatasourceId =datasourceRealMap.entrySet().stream().findFirst().get().getValue();
+        String newDatasourceId = datasourceRealMap.entrySet().stream().findFirst().get().getValue();
 
         String newDatasourceName = request.getDatasourceList().get(0).getName();
 
@@ -895,18 +903,18 @@ public class PanelGroupService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void appEdit(PanelAppTemplateApplyRequest request) throws Exception{
+    public void appEdit(PanelAppTemplateApplyRequest request) throws Exception {
         long currentTime = System.currentTimeMillis();
         String userName = AuthUtils.getUser().getUsername();
         //名称校验，数据集分组名称校验，数据源名称校验
-        panelAppTemplateService.nameCheck(request,"update");
+        panelAppTemplateService.nameCheck(request, "update");
         //仪表板移动更新名称
         PanelGroup panelHistoryInfo = panelGroupMapper.selectByPrimaryKey(request.getPanelId());
         String panelHistoryPid = panelHistoryInfo.getPid();
-        if(panelHistoryPid.equals(request.getPanelGroupPid())){
+        if (panelHistoryPid.equals(request.getPanelGroupPid())) {
             // 未移动
             checkPanelName(request.getPanelName(), request.getPanelGroupPid(), PanelConstants.OPT_TYPE_UPDATE, request.getPanelId(), "panel");
-        }else{
+        } else {
             checkPanelName(request.getPanelName(), request.getPanelGroupPid(), PanelConstants.OPT_TYPE_INSERT, null, "panel");
         }
         panelHistoryInfo.setName(request.getPanelName());
@@ -920,7 +928,7 @@ public class PanelGroupService {
         DatasetGroup datasetGroup = new DatasetGroup();
         datasetGroup.setName(request.getDatasetGroupName());
         datasetGroup.setId(request.getDatasetGroupId());
-        if(datasetGroupHistoryInfo.getPid().equals(request.getDatasetGroupPid())){
+        if (datasetGroupHistoryInfo.getPid().equals(request.getDatasetGroupPid())) {
             datasetGroup.setPid(request.getDatasetGroupPid());
         }
         dataSetGroupService.checkName(datasetGroup);
