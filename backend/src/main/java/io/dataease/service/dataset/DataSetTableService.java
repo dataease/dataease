@@ -2865,4 +2865,8 @@ public class DataSetTableService {
         // custom 创建doris视图
         createDorisView(TableUtils.tableName(tableId), sql);
     }
+
+    public void updateDatasetInfo(DatasetTable datasetTable) {
+        datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+    }
 }

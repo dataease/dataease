@@ -69,7 +69,7 @@ public class PanelAppTemplateService {
     private StaticResourceService staticResourceService;
 
     public List<PanelAppTemplateWithBLOBs> list(PanelAppTemplateRequest request) {
-        return extPanelAppTemplateMapper.queryBaseInfo(request.getNodeType(),request.getPid());
+        return extPanelAppTemplateMapper.queryBaseInfo(request.getNodeType(), request.getPid());
     }
 
     public void save(PanelAppTemplateRequest request) {
@@ -81,7 +81,7 @@ public class PanelAppTemplateService {
         if (StringUtils.isEmpty(requestTemplate.getNodeType())) {
             requestTemplate.setNodeType("template");
         }
-        if(StringUtils.isNotEmpty(request.getSnapshot())){
+        if (StringUtils.isNotEmpty(request.getSnapshot())) {
             //Store static resource into the server
             String snapshotName = "app-template-" + request.getId() + ".jpeg";
             staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
@@ -98,7 +98,7 @@ public class PanelAppTemplateService {
         PanelAppTemplateWithBLOBs requestTemplate = new PanelAppTemplateWithBLOBs();
         BeanUtils.copyBean(requestTemplate, request);
         //Store static resource into the server
-        if(StringUtils.isNotEmpty(request.getSnapshot())){
+        if (StringUtils.isNotEmpty(request.getSnapshot())) {
             String snapshotName = "app-template-" + request.getId() + ".jpeg";
             staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
             requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
@@ -159,7 +159,7 @@ public class PanelAppTemplateService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String applyPanel(PanelGroupRequest panelInfo, Map<String, String> chartViewsRealMap, String newPanelId, String panelName, String pid) {
+    public String applyPanel(PanelGroupRequest panelInfo, Map<String, String> chartViewsRealMap, Map<String, String> datasetsRealMap, Map<String, String> datasetFieldsRealMap, String newPanelId, String panelName, String pid) {
         panelInfo.setId(newPanelId);
         panelInfo.setPid(pid);
         panelInfo.setName(panelName);
@@ -167,6 +167,12 @@ public class PanelAppTemplateService {
         panelInfo.setPanelType("self");
         panelInfo.setCreateBy(AuthUtils.getUser().getUsername());
         panelInfo.setCreateTime(System.currentTimeMillis());
+        datasetsRealMap.forEach((k, v) -> {
+            panelInfo.setPanelData(panelInfo.getPanelData().replaceAll(k, v));
+        });
+        datasetFieldsRealMap.forEach((k, v) -> {
+            panelInfo.setPanelData(panelInfo.getPanelData().replaceAll(k, v));
+        });
         panelGroupService.newPanelFromApp(panelInfo, chartViewsRealMap);
         return newPanelId;
     }
@@ -184,6 +190,7 @@ public class PanelAppTemplateService {
             datasetRequest.setOptFrom("appApply");
             datasetRequest.setSyncType("sync_now");
             DatasetTable newDataset = dataSetTableService.save(datasetRequest);
+            datasetTable.setId(newDataset.getId());
             datasetsRealMap.put(oldId, newDataset.getId());
         }
         return datasetsRealMap;
@@ -193,7 +200,7 @@ public class PanelAppTemplateService {
     public Map<String, String> applyDatasetField(List<DatasetTableField> datasetTableFieldsInfo, Map<String, String> datasetsRealMap) {
         Map<String, String> datasetFieldsRealMap = new HashMap<>();
         for (DatasetTableField datasetTableField : datasetTableFieldsInfo) {
-            if(datasetTableField.getExtField()!=2){
+            if (datasetTableField.getExtField() != 2) {
                 String oldId = datasetTableField.getId();
                 datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
                 datasetTableField.setId(null);
@@ -203,7 +210,7 @@ public class PanelAppTemplateService {
         }
         //数据集计算字段替换
         for (DatasetTableField datasetTableField : datasetTableFieldsInfo) {
-            if(datasetTableField.getExtField()==2){
+            if (datasetTableField.getExtField() == 2) {
                 String oldId = datasetTableField.getId();
                 datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
                 datasetTableField.setId(null);
@@ -233,6 +240,8 @@ public class PanelAppTemplateService {
                     } else if (DatasetType.UNION.name().equalsIgnoreCase(datasetTable.getType())) {
                         dataSetTableService.createAppUnionDorisView(datasetTable.getInfo(), datasetTable.getId());
                     }
+                } else {
+                    dataSetTableService.updateDatasetInfo(datasetTable);
                 }
             }
         }
