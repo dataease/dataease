@@ -1,5 +1,5 @@
 // 通过控制css变量控制过滤组件弹框样式 de-select-grid除外
-import { attrsMap, styleAttrs } from '@/components/widget/DeWidget/serviceNameFn.js'
+import { attrsMap, styleAttrs } from '@/components/widget/deWidget/serviceNameFn.js'
 
 export default {
   data() {

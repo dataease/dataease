@@ -23,14 +23,10 @@
 </template>
 
 <script>
-import {
-  ApplicationContext
-} from '@/utils/ApplicationContext'
-import {
-  timeSection
-} from '@/utils'
+import { ApplicationContext } from '@/utils/ApplicationContext'
+import { timeSection } from '@/utils'
 import bus from '@/utils/bus'
-import customInput from '@/components/widget/DeWidget/customInput'
+import customInput from '@/components/widget/deWidget/customInput'
 
 export default {
   mixins: [customInput],
@@ -279,13 +275,13 @@ export default {
       const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
       if (this.element.options.attrs.type === 'daterange') {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV ===
-            '[object Object]') {
+          '[object Object]') {
           return []
         }
         return defaultV.split(',').map(item => parseFloat(item))
       } else {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV ===
-            '[object Object]') {
+          '[object Object]') {
           return null
         }
         return parseFloat(defaultV.split(',')[0])
@@ -298,7 +294,7 @@ export default {
 
 <style lang="scss">
 .coustom-date-picker {
-  border:1px solid var(--BrDateColor, #dfe4ed) !important;
+  border: 1px solid var(--BrDateColor, #dfe4ed) !important;
   background: var(--BgDateColor, #FFFFFF) !important;
 
   .el-picker-panel__sidebar {
@@ -323,7 +319,7 @@ export default {
   .el-date-range-picker__time-picker-wrap,
   .el-date-picker__time-header {
     .el-input__inner {
-      border:1px solid var(--BrDateColor, #dfe4ed) !important;
+      border: 1px solid var(--BrDateColor, #dfe4ed) !important;
       color: var(--DateColor, #606266);
       background: var(--BgDateColor, #FFFFFF) !important;
     }
@@ -332,7 +328,7 @@ export default {
   .el-picker-panel__link-btn:nth-child(2) {
     color: var(--DateColor, #409eff);
     background: var(--BgDateColor, #FFFFFF) !important;
-    border:1px solid var(--BrDateColor, #dfe4ed) !important;
+    border: 1px solid var(--BrDateColor, #dfe4ed) !important;
   }
 
   .popper__arrow,
@@ -340,13 +336,13 @@ export default {
     display: none !important;
   }
 
-  .el-date-range-picker__content.is-left{
-    border-right:1px solid var(--BrDateColor, #e6ebf5) !important;
+  .el-date-range-picker__content.is-left {
+    border-right: 1px solid var(--BrDateColor, #e6ebf5) !important;
   }
 
   .el-date-table th,
   .el-date-picker__header--bordered {
-    border-bottom:1px solid var(--BrDateColor, #e6ebf5) !important;
+    border-bottom: 1px solid var(--BrDateColor, #e6ebf5) !important;
   }
 
   .el-date-table td.in-range:not(.end-date):not(.start-date) div span {
@@ -359,7 +355,7 @@ export default {
   .el-month-table td .cell,
   .el-year-table td .cell,
   .el-picker-panel__icon-btn,
-  .el-date-picker__header-label{
+  .el-date-picker__header-label {
     color: var(--DateColor, #606266);
 
   }
@@ -376,6 +372,7 @@ export default {
   .el-time-spinner__wrapper {
     width: 100% !important;
   }
+
   .el-scrollbar:nth-of-type(2) {
     display: none;
   }

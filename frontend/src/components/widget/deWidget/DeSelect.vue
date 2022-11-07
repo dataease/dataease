@@ -45,8 +45,8 @@ import { linkMultFieldValues, multFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { isSameVueObj } from '@/utils'
 import { getLinkToken, getToken } from '@/utils/auth'
-import customInput from '@/components/widget/DeWidget/customInput'
-import { textSelectWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
+import customInput from '@/components/widget/deWidget/customInput'
+import { textSelectWidget } from '@/components/widget/deWidget/serviceNameFn.js'
 
 export default {
   components: { ElVisualSelect },

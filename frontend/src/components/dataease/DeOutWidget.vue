@@ -59,7 +59,8 @@
 </template>
 
 <script>
-import inputStyleMixin from '@/components/widget/DeWidget/inputStyleMixin'
+import inputStyleMixin from '@/components/widget/deWidget/inputStyleMixin'
+
 export default {
   name: 'DeOutWidget',
   mixins: [inputStyleMixin],
@@ -70,7 +71,8 @@ export default {
     },
     element: {
       type: Object,
-      default: () => {}
+      default: () => {
+      }
     },
     inDraw: {
       type: Boolean,
@@ -194,77 +196,90 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .my-container {
-    position: relative;
-    overflow: auto !important;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-  }
-  .ccondition-main {
-    position: absolute;
-    overflow: auto;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    display: flex;
-  }
-  .condition-title {
-    height: 2em;
-    cursor: -webkit-grab;
-    line-height: 2em;
-    white-space: nowrap;
-  }
-  .span-container {
-    overflow: hidden auto;
-    position: relative;
-    padding: 0 5px;
-  }
-  .condition-content {
-    overflow: auto hidden;
-    letter-spacing: 0px !important;
+.my-container {
+  position: relative;
+  overflow: auto !important;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+}
+
+.ccondition-main {
+  position: absolute;
+  overflow: auto;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  display: flex;
+}
+
+.condition-title {
+  height: 2em;
+  cursor: -webkit-grab;
+  line-height: 2em;
+  white-space: nowrap;
+}
+
+.span-container {
+  overflow: hidden auto;
+  position: relative;
+  padding: 0 5px;
+}
+
+.condition-content {
+  overflow: auto hidden;
+  letter-spacing: 0px !important;
+  width: 100%;
+}
+
+.condition-content-container {
+  position: relative;
+  display: table;
+  width: 100%;
+  height: 100%;
+  white-space: nowrap;
+}
+
+.first-element {
+  position: relative;
+  display: table-cell;
+  vertical-align: middle;
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+}
+
+.first-element-container {
+  width: calc(100% - 10px);
+  background: initial;
+  margin: 0 4px;
+
+  div {
     width: 100%;
   }
-  .condition-content-container {
-    position: relative;
-    display: table;
-    width: 100%;
-    height: 100%;
-    white-space: nowrap;
-  }
-  .first-element {
-    position: relative;
-    display: table-cell;
-    vertical-align: middle;
-    margin: 0px;
-    padding: 0px;
-    height: 100%;
-  }
-  .first-element-container {
-    width: calc(100% - 10px);
-    background: initial;
-    margin: 0 4px;
-    div {
-      width: 100%;
-    }
-    display: flex;
-    align-items: flex-end;
-  }
-  .first-element-grid-container {
-    background: #fff;
-    border: 1px solid #d7dae2;
-    top: 5px;
-  }
-  .condition-main-line {
-    height: 40px !important;
-  }
-  .condition-main {
-    display: flex;
-    padding-top: 5px;
-  }
-  .condition-content-default {
-    inset: 0px 0px 0px !important;
-  }
+
+  display: flex;
+  align-items: flex-end;
+}
+
+.first-element-grid-container {
+  background: #fff;
+  border: 1px solid #d7dae2;
+  top: 5px;
+}
+
+.condition-main-line {
+  height: 40px !important;
+}
+
+.condition-main {
+  display: flex;
+  padding-top: 5px;
+}
+
+.condition-content-default {
+  inset: 0px 0px 0px !important;
+}
 </style>
