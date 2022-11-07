@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import BackButton from '@/components/back-button'
+import BackButton from '@/components/backButton'
 
 export default {
   name: 'DeLayoutContent',
@@ -57,13 +57,14 @@ export default {
   border-radius: 4px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 14%);
   box-sizing: border-box;
-  background-color: var(--MainBG,#f5f6f7);
+  background-color: var(--MainBG, #f5f6f7);
   overflow: hidden;
   padding: 24px 24px 24px 24px;
   height: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
+
   .route-title {
     font-family: PingFang SC;
     font-size: 20px;
@@ -74,6 +75,7 @@ export default {
     width: 100%;
     margin: 0;
   }
+
   .container-wrapper {
     width: 100%;
     overflow: auto;

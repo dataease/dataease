@@ -24,7 +24,7 @@
           >
             <el-tooltip :content="item.tooltip">
               <span style="float: left;">
-                <i :class="item.icon" />
+                <i :class="item.icon"/>
               </span>
             </el-tooltip>
           </el-radio-button>
@@ -47,7 +47,7 @@
               :value="item.value"
             >
               <span style="float: left;">
-                <i :class="item.icon" />
+                <i :class="item.icon"/>
               </span>
               <span style="float: right; color: #8492a6; font-size: 12px">{{ item.label }}</span>
             </el-option>
@@ -233,7 +233,7 @@
               @click="goColor"
             />
           </el-tooltip>
-          <div :style="letterDivColor" />
+          <div :style="letterDivColor"/>
           <el-color-picker
             ref="colorPicker"
             v-model="styleInfo.color"
@@ -255,7 +255,7 @@
               @click="goBoardColor"
             />
           </el-tooltip>
-          <div :style="boardDivColor" />
+          <div :style="boardDivColor"/>
           <el-color-picker
             ref="boardColorPicker"
             v-model="styleInfo.borderColor"
@@ -278,7 +278,7 @@
               @click="goBackgroundColor"
             />
           </el-tooltip>
-          <div :style="backgroundDivColor" />
+          <div :style="backgroundDivColor"/>
           <el-color-picker
             ref="backgroundColorPicker"
             v-model="styleInfo.backgroundColor"
@@ -294,7 +294,7 @@
         style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;"
       >
         <el-tooltip :content="$t('panel.video_info')">
-          <VideoLinks :link-info="curComponent.videoLinks" />
+          <VideoLinks :link-info="curComponent.videoLinks"/>
         </el-tooltip>
       </div>
 
@@ -303,7 +303,7 @@
         style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;"
       >
         <el-tooltip :content="$t('panel.stream_media_info')">
-          <StreamMediaLinks :link-info="curComponent.streamMediaLinks" />
+          <StreamMediaLinks :link-info="curComponent.streamMediaLinks"/>
         </el-tooltip>
       </div>
 
@@ -312,7 +312,7 @@
         style="width: 20px;float: left;margin-top: 2px;margin-left: 2px;"
       >
         <el-tooltip :content="$t('panel.web_addr')">
-          <FrameLinks :link-info="curComponent.frameLinks" />
+          <FrameLinks :link-info="curComponent.frameLinks"/>
         </el-tooltip>
       </div>
       <div
@@ -332,7 +332,7 @@
         style="width: 20px;float: left;margin-top: 2px;margin-left: 10px;"
       >
         <el-tooltip :content="$t('panel.tab_inner_style')">
-          <tab-style :style-info="styleInfo" />
+          <tab-style :style-info="styleInfo"/>
         </el-tooltip>
       </div>
 
@@ -410,12 +410,12 @@
 
 <script>
 import { mapState } from 'vuex'
-import VideoLinks from '@/components/canvas/components/Editor/VideoLinks'
-import StreamMediaLinks from '@/components/canvas/components/Editor/StreamMediaLinks'
-import DateFormat from '@/components/canvas/components/Editor/DateFormat'
+import VideoLinks from '@/components/canvas/components/editor/VideoLinks'
+import StreamMediaLinks from '@/components/canvas/components/editor/StreamMediaLinks'
+import DateFormat from '@/components/canvas/components/editor/DateFormat'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
-import FrameLinks from '@/components/canvas/components/Editor/FrameLinks'
-import TitlePosition from '@/components/widget/DeWidget/TitlePosition'
+import FrameLinks from '@/components/canvas/components/editor/FrameLinks'
+import TitlePosition from '@/components/widget/deWidget/TitlePosition'
 
 export default {
   components: { TitlePosition, FrameLinks, DateFormat, VideoLinks, StreamMediaLinks },

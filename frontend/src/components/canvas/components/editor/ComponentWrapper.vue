@@ -76,9 +76,9 @@ import runAnimation from '@/components/canvas/utils/runAnimation'
 import { mixins } from '@/components/canvas/utils/events'
 import { mapState } from 'vuex'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
-import EditBar from '@/components/canvas/components/Editor/EditBar'
-import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
-import CloseBar from '@/components/canvas/components/Editor/CloseBar'
+import EditBar from '@/components/canvas/components/editor/EditBar'
+import MobileCheckBar from '@/components/canvas/components/editor/MobileCheckBar'
+import CloseBar from '@/components/canvas/components/editor/CloseBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
@@ -311,36 +311,38 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .component {
-    position: absolute;
-  }
+.component {
+  position: absolute;
+}
 
-  .component:hover {
-    box-shadow: 0px 0px 3px #0a7be0;
-  }
+.component:hover {
+  box-shadow: 0px 0px 3px #0a7be0;
+}
 
-  .gap_class {
-    padding: 5px;
-  }
+.gap_class {
+  padding: 5px;
+}
 
-  .component-custom {
-    outline: none;
-    width: 100% !important;
-    height: 100%;
-  }
-  .main_view{
-    position: relative;
-    background-size: 100% 100%!important;
-  }
-  .component{
-    //position: relative;
-  }
+.component-custom {
+  outline: none;
+  width: 100% !important;
+  height: 100%;
+}
 
-  .svg-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-  }
+.main_view {
+  position: relative;
+  background-size: 100% 100% !important;
+}
+
+.component {
+  //position: relative;
+}
+
+.svg-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
 </style>

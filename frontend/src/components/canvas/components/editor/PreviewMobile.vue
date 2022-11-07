@@ -47,7 +47,7 @@ import { uuid } from 'vue-uuid'
 import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
+import CanvasOptBar from '@/components/canvas/components/editor/CanvasOptBar'
 
 export default {
   components: { ComponentWrapper, CanvasOptBar },
@@ -245,51 +245,51 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .bg {
-    padding: 5px;
-    min-width: 600px;
-    min-height: 300px;
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
-    background-size: 100% 100% !important;
-  }
+.bg {
+  padding: 5px;
+  min-width: 600px;
+  min-height: 300px;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-size: 100% 100% !important;
+}
 
-  .main-class {
-    width: 100%;
-    height: 100%;
-    background-size: 100% 100% !important;
-  }
+.main-class {
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100% !important;
+}
 
-  .custom-position {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    flex-flow: row nowrap;
-    color: #9ea6b2;
-  }
+.custom-position {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-flow: row nowrap;
+  color: #9ea6b2;
+}
 
-  .gap_class {
-    padding: 5px;
-  }
+.gap_class {
+  padding: 5px;
+}
 
-  .dialog-css ::v-deep .el-dialog__title {
-    font-size: 14px;
-  }
+.dialog-css ::v-deep .el-dialog__title {
+  font-size: 14px;
+}
 
-  .dialog-css ::v-deep .el-dialog__header {
-    padding: 40px 20px 0;
-  }
+.dialog-css ::v-deep .el-dialog__header {
+  padding: 40px 20px 0;
+}
 
-  .dialog-css ::v-deep .el-dialog__body {
-    padding: 10px 20px 20px;
-  }
+.dialog-css ::v-deep .el-dialog__body {
+  padding: 10px 20px 20px;
+}
 
-  ::-webkit-scrollbar {
-    width: 0px!important;
-    height: 0px!important;
-  }
+::-webkit-scrollbar {
+  width: 0px !important;
+  height: 0px !important;
+}
 
 </style>

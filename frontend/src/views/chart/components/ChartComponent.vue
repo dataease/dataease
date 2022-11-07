@@ -56,61 +56,33 @@
 <script>
 import {
   BASE_BAR,
-  BASE_LINE,
-  HORIZONTAL_BAR,
-  BASE_PIE,
   BASE_FUNNEL,
-  BASE_RADAR,
   BASE_GAUGE,
+  BASE_LINE,
   BASE_MAP,
+  BASE_MIX,
+  BASE_PIE,
+  BASE_RADAR,
   BASE_SCATTER,
   BASE_TREEMAP,
-  BASE_MIX
+  HORIZONTAL_BAR
 } from '../chart/chart'
-import {
-  baseBarOption,
-  stackBarOption,
-  horizontalBarOption,
-  horizontalStackBarOption
-} from '../chart/bar/bar'
-import {
-  baseLineOption,
-  stackLineOption
-} from '../chart/line/line'
-import {
-  basePieOption,
-  rosePieOption
-} from '../chart/pie/pie'
-import {
-  baseMapOption
-} from '../chart/map/map'
-import {
-  baseFunnelOption
-} from '../chart/funnel/funnel'
-import {
-  baseRadarOption
-} from '../chart/radar/radar'
-import {
-  baseGaugeOption
-} from '../chart/gauge/gauge'
-import {
-  baseScatterOption
-} from '../chart/scatter/scatter'
-import {
-  baseTreemapOption
-} from '../chart/treemap/treemap'
-import {
-  baseMixOption
-} from '@/views/chart/chart/mix/mix'
-import {
-  uuid
-} from 'vue-uuid'
-import {
-  geoJson
-} from '@/api/map/map'
-import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
+import { baseBarOption, horizontalBarOption, horizontalStackBarOption, stackBarOption } from '../chart/bar/bar'
+import { baseLineOption, stackLineOption } from '../chart/line/line'
+import { basePieOption, rosePieOption } from '../chart/pie/pie'
+import { baseMapOption } from '../chart/map/map'
+import { baseFunnelOption } from '../chart/funnel/funnel'
+import { baseRadarOption } from '../chart/radar/radar'
+import { baseGaugeOption } from '../chart/gauge/gauge'
+import { baseScatterOption } from '../chart/scatter/scatter'
+import { baseTreemapOption } from '../chart/treemap/treemap'
+import { baseMixOption } from '@/views/chart/chart/mix/mix'
+import { uuid } from 'vue-uuid'
+import { geoJson } from '@/api/map/map'
+import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import { reverseColor } from '../chart/common/common'
 import { mapState } from 'vuex'
+
 export default {
   name: 'ChartComponent',
   components: {
@@ -217,14 +189,30 @@ export default {
   },
   methods: {
     reDrawView() {
-      this.myChart.dispatchAction({ type: 'unselect', seriesIndex: this.linkageActiveParam.seriesIndex, name: this.linkageActiveParam.name })
-      this.myChart.dispatchAction({ type: 'downplay', seriesIndex: this.linkageActiveParam.seriesIndex, name: this.linkageActiveParam.name })
+      this.myChart.dispatchAction({
+        type: 'unselect',
+        seriesIndex: this.linkageActiveParam.seriesIndex,
+        name: this.linkageActiveParam.name
+      })
+      this.myChart.dispatchAction({
+        type: 'downplay',
+        seriesIndex: this.linkageActiveParam.seriesIndex,
+        name: this.linkageActiveParam.name
+      })
       this.linkageActiveParam = null
     },
     linkageActive() {
       if (this.linkageActiveParam) {
-        this.myChart.dispatchAction({ type: 'select', seriesIndex: this.linkageActiveParam.seriesIndex, name: this.linkageActiveParam.name })
-        this.myChart.dispatchAction({ type: 'highlight', seriesIndex: this.linkageActiveParam.seriesIndex, name: this.linkageActiveParam.name })
+        this.myChart.dispatchAction({
+          type: 'select',
+          seriesIndex: this.linkageActiveParam.seriesIndex,
+          name: this.linkageActiveParam.name
+        })
+        this.myChart.dispatchAction({
+          type: 'highlight',
+          seriesIndex: this.linkageActiveParam.seriesIndex,
+          name: this.linkageActiveParam.name
+        })
       }
     },
     preDraw() {
@@ -492,15 +480,15 @@ export default {
 </script>
 
 <style scoped>
-  .map-zoom-box {
-    position: absolute;
-    z-index: 0;
-    left: 2%;
-    bottom: 30px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    text-align: center;
-    padding: 2px;
-    border-radius: 5px
-  }
+.map-zoom-box {
+  position: absolute;
+  z-index: 0;
+  left: 2%;
+  bottom: 30px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  text-align: center;
+  padding: 2px;
+  border-radius: 5px
+}
 
 </style>

@@ -179,10 +179,10 @@
 <script>
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
-import SettingMenu from '@/components/canvas/components/Editor/SettingMenu'
-import LinkageField from '@/components/canvas/components/Editor/LinkageField'
+import SettingMenu from '@/components/canvas/components/editor/SettingMenu'
+import LinkageField from '@/components/canvas/components/editor/LinkageField'
 import toast from '@/components/canvas/utils/toast'
-import FieldsList from '@/components/canvas/components/Editor/fieldsList'
+import FieldsList from '@/components/canvas/components/editor/fieldsList'
 import LinkJumpSet from '@/views/panel/LinkJumpSet'
 import Background from '@/views/background/index'
 
@@ -200,7 +200,8 @@ export default {
     },
     sourceElement: {
       type: Object,
-      default: () => {}
+      default: () => {
+      }
     },
     element: {
       type: Object,
@@ -378,7 +379,10 @@ export default {
     multiplexingCheck(val) {
       if (val) {
         // push
-        this.$store.commit('addCurMultiplexingComponent', { 'component': this.sourceElement, 'componentId': this.element.id })
+        this.$store.commit('addCurMultiplexingComponent', {
+          'component': this.sourceElement,
+          'componentId': this.element.id
+        })
       } else {
         // remove
         this.$store.commit('removeCurMultiplexingComponentWithId', this.element.id)
@@ -439,7 +443,9 @@ export default {
         bus.$emit('button-dialog-edit')
       } else if (this.curComponent.type === 'v-text' || this.curComponent.type === 'de-rich-text' || this.curComponent.type === 'rect-shape') {
         bus.$emit('component-dialog-style')
-      } else { bus.$emit('change_panel_right_draw', true) }
+      } else {
+        bus.$emit('change_panel_right_draw', true)
+      }
     },
     linkageEdit() {
 
@@ -502,46 +508,49 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .bar-main{
-    position: absolute;
-    float:right;
-    z-index: 2;
-    border-radius:2px;
-    padding-left: 3px;
-    padding-right: 0px;
-    cursor:pointer!important;
-    background-color: var(--primary,#3370ff);
-  }
-  .bar-main i{
-    color: white;
-    float: right;
-    margin-right: 3px;
-  }
+.bar-main {
+  position: absolute;
+  float: right;
+  z-index: 2;
+  border-radius: 2px;
+  padding-left: 3px;
+  padding-right: 0px;
+  cursor: pointer !important;
+  background-color: var(--primary, #3370ff);
+}
 
-  .bar-main ::v-deep .el-checkbox__inner{
-    width: 16px;
-    height: 16px;
-  }
+.bar-main i {
+  color: white;
+  float: right;
+  margin-right: 3px;
+}
 
-  .bar-main ::v-deep .el-checkbox__inner::after{
-    width: 4.5px;
-  }
-  .bar-main-right{
-    width: 22px;
-    right: -25px;
-  }
-  .bar-main-left-inner{
-    width: 22px;
-    left: 0px;
-  }
+.bar-main ::v-deep .el-checkbox__inner {
+  width: 16px;
+  height: 16px;
+}
 
-  .bar-main-left-outer{
-    width: 22px;
-    left: -25px;
-  }
+.bar-main ::v-deep .el-checkbox__inner::after {
+  width: 4.5px;
+}
 
-  .bar-main-preview{
-    right: 0px;
-  }
+.bar-main-right {
+  width: 22px;
+  right: -25px;
+}
+
+.bar-main-left-inner {
+  width: 22px;
+  left: 0px;
+}
+
+.bar-main-left-outer {
+  width: 22px;
+  left: -25px;
+}
+
+.bar-main-preview {
+  right: 0px;
+}
 
 </style>

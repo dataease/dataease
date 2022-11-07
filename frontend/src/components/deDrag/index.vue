@@ -84,19 +84,18 @@
 </template>
 
 <script>
-import { matchesSelectorToParentElements, getComputedSize, addEvent, removeEvent } from '../../utils/dom'
-import { computeWidth, computeHeight, restrictToBounds, snapToGrid, rotatedPoint, getAngle } from '../../utils/fns'
-import { events, userSelectNone, userSelectAuto } from './option.js'
-
-let eventsFor = events.mouse
-
+import { addEvent, getComputedSize, matchesSelectorToParentElements, removeEvent } from '../../utils/dom'
+import { computeHeight, computeWidth, getAngle, restrictToBounds, rotatedPoint, snapToGrid } from '../../utils/fns'
+import { events, userSelectAuto, userSelectNone } from './option.js'
 // private
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
-import EditBar from '@/components/canvas/components/Editor/EditBar'
-import MobileCheckBar from '@/components/canvas/components/Editor/MobileCheckBar'
+import EditBar from '@/components/canvas/components/editor/EditBar'
+import MobileCheckBar from '@/components/canvas/components/editor/MobileCheckBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
+
+let eventsFor = events.mouse
 
 export default {
   replace: true,
@@ -2120,6 +2119,6 @@ export default {
 }
 
 .drag-on-tab-collision {
-  z-index: 1000!important;
+  z-index: 1000 !important;
 }
 </style>

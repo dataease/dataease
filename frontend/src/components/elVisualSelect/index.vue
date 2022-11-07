@@ -15,12 +15,15 @@
     <p
       v-if="startIndex === 0 && $attrs.multiple"
       class="select-all"
-    ><el-checkbox
-      v-model="selectAll"
-      v-customStyle="customStyle"
-      :indeterminate="isIndeterminate"
-      @change="selectAllChange"
-    >{{ $t('dataset.check_all') }}</el-checkbox></p>
+    >
+      <el-checkbox
+        v-model="selectAll"
+        v-customStyle="customStyle"
+        :indeterminate="isIndeterminate"
+        @change="selectAllChange"
+      >{{ $t('dataset.check_all') }}
+      </el-checkbox>
+    </p>
     <el-option
       v-for="item in options"
       :key="item.id"
@@ -34,9 +37,10 @@
 </template>
 
 <script>
-import { handlerInputStyle } from '@/components/widget/DeWidget/serviceNameFn.js'
+import { handlerInputStyle } from '@/components/widget/deWidget/serviceNameFn.js'
 
 import { uuid } from 'vue-uuid'
+
 export default {
   name: 'ElVisualSelect',
   model: {
@@ -51,7 +55,8 @@ export default {
     },
     customStyle: {
       type: Object,
-      default: () => {}
+      default: () => {
+      }
     },
     list: {
       type: Array,
@@ -234,26 +239,31 @@ export default {
     overflow-x: hidden;
     content-visibility: auto;
   }
+
   ::-webkit-scrollbar {
     background: #ffffff !important;
   }
+
   .el-select-height {
     width: 1px;
     position: absolute;
     top: 0;
     left: 0;
   }
+
   .el-select-dropdown__list {
     width: 100%;
     position: absolute;
     top: 0;
     left: 0;
   }
+
   .el-select-dropdown__wrap {
     height: 0;
   }
 }
+
 .select-all {
-    padding: 10px 20px 0 20px;
-  }
+  padding: 10px 20px 0 20px;
+}
 </style>

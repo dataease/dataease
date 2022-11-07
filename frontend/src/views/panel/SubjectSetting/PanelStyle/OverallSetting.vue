@@ -145,14 +145,16 @@ import {
 } from '@/components/canvas/utils/style'
 import bus from '@/utils/bus'
 import {
-  DEFAULT_COLOR_CASE_DARK,
-  DEFAULT_TITLE_STYLE_DARK,
   DEFAULT_COLOR_CASE,
-  DEFAULT_TITLE_STYLE, DEFAULT_TAB_COLOR_CASE_LIGHT, DEFAULT_TAB_COLOR_CASE_DARK
+  DEFAULT_COLOR_CASE_DARK,
+  DEFAULT_TAB_COLOR_CASE_DARK,
+  DEFAULT_TAB_COLOR_CASE_LIGHT,
+  DEFAULT_TITLE_STYLE,
+  DEFAULT_TITLE_STYLE_DARK
 } from '@/views/chart/chart/chart'
 import { FILTER_COMMON_STYLE, FILTER_COMMON_STYLE_DARK } from '@/views/panel/panel'
 import { deepCopy } from '@/components/canvas/utils/utils'
-import ColorButton from '@/components/AssistButton/ColorButton'
+import ColorButton from '@/components/assistButton/ColorButton'
 
 export default {
   name: 'OverallSetting',
@@ -298,20 +300,21 @@ export default {
   justify-content: flex-end;
   display: flex;
 }
-.function-area{
+
+.function-area {
   margin-top: 8px;
 }
 
-.margin-top12{
-  margin-top: 12px!important;
+.margin-top12 {
+  margin-top: 12px !important;
 }
 
-.margin-top20{
-  margin-top: 20px!important;
+.margin-top20 {
+  margin-top: 20px !important;
 }
 
-.margin-bottom20{
-  margin-bottom: 20px!important;
+.margin-bottom20 {
+  margin-bottom: 20px !important;
 
 }
 </style>

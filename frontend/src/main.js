@@ -20,37 +20,41 @@ import widgets from '@/components/widget'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import './utils/dialog'
-import DeComplexInput from '@/components/business/condition-table/DeComplexInput'
-import DeComplexSelect from '@/components/business/condition-table/DeComplexSelect'
-import DeViewSelect from '@/components/DeViewSelect'
+import DeComplexInput from '@/components/business/conditionTable/DeComplexInput'
+import DeComplexSelect from '@/components/business/conditionTable/DeComplexSelect'
+import DeViewSelect from '@/components/deViewSelect'
 import RemarkEditor from '@/views/chart/components/component-style/dialog/RemarkEditor'
 import TitleRemark from '@/views/chart/view/TitleRemark'
-import '@/components/canvas/custom-component' // 注册自定义组件
+import '@/components/canvas/customComponent' // 注册自定义组件
 import deBtn from '@/components/deCustomCm/deBtn.vue'
 
 import '@/utils/DateUtil'
 import draggable from 'vuedraggable'
 import deWebsocket from '@/websocket'
 import { GaodeMap } from '@antv/l7-maps'
+import * as echarts from 'echarts'
+import UmyUi from 'umy-ui'
+// 全屏插件
+import fullscreen from 'vue-fullscreen'
+import VueFriendlyIframe from 'vue-friendly-iframe'
+import vueToPdf from 'vue-to-pdf'
+import VueVideoPlayer from 'vue-video-player'
+import 'video.js/dist/video-js.css'
+// 控制标签宽高成比例的指令
+import proportion from 'vue-proportion-directive'
+
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
 Vue.use(widgets)
 Vue.component('Draggable', draggable)
 Vue.prototype.$api = api
 
-import * as echarts from 'echarts'
-
 Vue.prototype.$echarts = echarts
 Vue.prototype.$gaodeMap = GaodeMap
 
-import UmyUi from 'umy-ui'
 Vue.use(UmyUi)
 
-// 全屏插件
-import fullscreen from 'vue-fullscreen'
 Vue.use(fullscreen)
-
-import VueFriendlyIframe from 'vue-friendly-iframe'
 
 Vue.use(VueFriendlyIframe)
 Vue.use(Vuetify)
@@ -96,15 +100,10 @@ Vue.component('DeBtn', deBtn)
 
 Vue.config.productionTip = false
 
-import vueToPdf from 'vue-to-pdf'
 Vue.use(vueToPdf)
 
-import VueVideoPlayer from 'vue-video-player'
-import 'video.js/dist/video-js.css'
 Vue.use(VueVideoPlayer)
 
-// 控制标签宽高成比例的指令
-import proportion from 'vue-proportion-directive'
 Vue.use(proportion)
 
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {

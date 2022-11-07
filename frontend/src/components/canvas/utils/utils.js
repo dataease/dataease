@@ -1,7 +1,7 @@
 import {
   BASE_MOBILE_STYLE, COMMON_BACKGROUND_NONE,
   HYPERLINKS
-} from '@/components/canvas/custom-component/component-list'
+} from '@/components/canvas/customComponent/component-list'
 
 import {
   ApplicationContext

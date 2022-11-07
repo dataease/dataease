@@ -114,7 +114,7 @@
       v-if="(curComponent&&curComponent.auxiliaryMatrix&&(curComponent.optStatus.dragging||curComponent.optStatus.resizing))||(dragComponentInfo)"
     />
     <!-- 右击菜单 -->
-    <ContextMenu />
+    <ContextMenu/>
     <!-- 标线 (临时去掉标线 吸附等功能)-->
     <!--    <MarkLine />-->
     <!-- 选中区域 -->
@@ -215,11 +215,11 @@
 <script>
 import { mapState } from 'vuex'
 import Shape from './Shape'
-import DeDrag from '@/components/DeDrag'
+import DeDrag from '@/components/deDrag'
 
 // eslint-disable-next-line no-unused-vars
-import { getStyle, getComponentRotatedStyle } from '@/components/canvas/utils/style'
-import { _$, imgUrlTrans } from '@/components/canvas/utils/utils'
+import { getComponentRotatedStyle, getStyle } from '@/components/canvas/utils/style'
+import { _$, deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import ContextMenu from './ContextMenu'
 import MarkLine from './MarkLine'
 import Area from './Area'
@@ -227,10 +227,9 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import Grid from './Grid'
 import PGrid from './PGrid'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
-import { deepCopy } from '@/components/canvas/utils/utils'
-import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
+import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
-import DragShadow from '@/components/DeDrag/shadow'
+import DragShadow from '@/components/deDrag/shadow'
 import bus from '@/utils/bus'
 import LinkJumpSet from '@/views/panel/LinkJumpSet'
 import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
@@ -280,9 +279,9 @@ function scrollScreen(e) {
 }
 
 /**
-   * 重置位置盒子
-   *
-   */
+ * 重置位置盒子
+ *
+ */
 function resetPositionBox() {
   // 根据当前容器的宽度来决定多少列
   itemMaxX = this.maxCell
@@ -299,10 +298,10 @@ function resetPositionBox() {
 }
 
 /**
-   * 填充位置盒子
-   *
-   * @param {any} item
-   */
+ * 填充位置盒子
+ *
+ * @param {any} item
+ */
 function addItemToPositionBox(item) {
   try {
     const pb = positionBox
@@ -350,9 +349,9 @@ function removeItemFromPositionBox(item) {
 }
 
 /**
-   * 重新计算宽度，使最小单元格能占满整个容器
-   *
-   */
+ * 重新计算宽度，使最小单元格能占满整个容器
+ *
+ */
 function recalcCellWidth() {
   this.maxCell = this.matrixCount.x
 }
@@ -429,11 +428,11 @@ function resizePlayer(item, newSize) {
 }
 
 /**
-   * 检查移动的位置，如果不合法，会自动修改
-   *
-   * @param {any} item
-   * @param {any} position
-   */
+ * 检查移动的位置，如果不合法，会自动修改
+ *
+ * @param {any} item
+ * @param {any} position
+ */
 function checkItemPosition(item, position) {
   position = position || {}
   position.x = position.x || item.x
@@ -474,11 +473,11 @@ function checkItemPosition(item, position) {
 }
 
 /**
-   * 移动正在拖动的元素
-   *
-   * @param {any} item
-   * @param {any} position
-   */
+ * 移动正在拖动的元素
+ *
+ * @param {any} item
+ * @param {any} position
+ */
 function movePlayer(item, position) {
   const vm = this
   removeItemFromPositionBox(item)
@@ -563,10 +562,10 @@ function changeToCoord(left, top, width, height) {
 }
 
 /**
-   * 检测有无碰撞，并作出处理
-   *
-   * @param {any} tCoord 比对对象的坐标
-   */
+ * 检测有无碰撞，并作出处理
+ *
+ * @param {any} tCoord 比对对象的坐标
+ */
 // eslint-disable-next-line no-unused-vars
 function findClosetCoords(item, tCoord) {
   if (isOverlay) return
@@ -607,10 +606,10 @@ function findClosetCoords(item, tCoord) {
 }
 
 /**
-   * 生成坐标点
-   *
-   * @param {any} item
-   */
+ * 生成坐标点
+ *
+ * @param {any} item
+ */
 // eslint-disable-next-line no-unused-vars
 function makeCoordinate(item) {
   const width = this.cellWidth * (item.sizex) - this.baseMarginLeft
@@ -656,10 +655,10 @@ function changeItemCoord(item) {
 }
 
 /**
-   * 清空目标位置的元素
-   *
-   * @param {any} item
-   */
+ * 清空目标位置的元素
+ *
+ * @param {any} item
+ */
 function emptyTargetCell(item) {
   const vm = this
   const belowItems = findBelowItems(item)
@@ -674,11 +673,11 @@ function emptyTargetCell(item) {
 }
 
 /**
-   * 当前位置的item能否上浮
-   *
-   * @param {any} item
-   * @returns
-   */
+ * 当前位置的item能否上浮
+ *
+ * @param {any} item
+ * @returns
+ */
 function canItemGoUp(item) {
   let upperRows = 0
   for (let row = item.y - 2; row >= 0; row--) {
@@ -694,11 +693,11 @@ function canItemGoUp(item) {
 }
 
 /**
-   * 在移动之前，找到当前下移的元素的下面的元素（递归）
-   *
-   * @param {any} items
-   * @param {any} size
-   */
+ * 在移动之前，找到当前下移的元素的下面的元素（递归）
+ *
+ * @param {any} items
+ * @param {any} size
+ */
 function moveItemDown(item, size) {
   const vm = this
   removeItemFromPositionBox(item)
@@ -736,12 +735,12 @@ function setPlayerPosition(item, position) {
 }
 
 /**
-   * 寻找子元素到父元素的最大距离
-   *
-   * @param {any} parent
-   * @param {any} son
-   * @param {any} size
-   */
+ * 寻找子元素到父元素的最大距离
+ *
+ * @param {any} parent
+ * @param {any} son
+ * @param {any} size
+ */
 function calcDiff(parent, son, size) {
   const diffs = []
 
@@ -1729,11 +1728,11 @@ export default {
 
     },
     /**
-       * 计算当前item的位置和大小
-       *
-       * @param {any} item
-       * @returns
-       */
+     * 计算当前item的位置和大小
+     *
+     * @param {any} item
+     * @returns
+     */
     nowItemStyle(item, index) {
       return {
         width: (this.cellWidth * (item.sizex) - this.baseMarginLeft) + 'px',
@@ -1756,18 +1755,18 @@ export default {
       return finalList
     },
     /**
-       * 获取x最大值
-       *
-       * @returns
-       */
+     * 获取x最大值
+     *
+     * @returns
+     */
     getMaxCell() {
       return this.maxCell
     },
     /**
-       * 获取渲染状态
-       *
-       * @returns
-       */
+     * 获取渲染状态
+     *
+     * @returns
+     */
     getRenderState() {
       return this.moveAnimate
     },
@@ -1835,64 +1834,63 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .editor {
+.editor {
+  width: 100%;
+  position: relative;
+  /*background: #fff;*/
+  margin: auto;
+  /*会影响设置组件不能出现在最高层*/
+  /*overflow-x: hidden;*/
+  background-size: 100% 100% !important;
+  /*transform-style:preserve-3d;*/
+  .lock {
+    opacity: .5;
+  }
+}
+
+.parent_transform {
+  //transform transform 会使z-index 失效；为了使编辑仪表板时 按钮一直在上面 采用transform-style 的方式
+  // transform-style 会导致 dialog 遮罩有问题 此处暂时用这个样式做控制
+  transform-style: preserve-3d;
+}
+
+.edit {
+  .component {
+    outline: none;
     width: 100%;
+    height: 100%;
     position: relative;
-    /*background: #fff;*/
-    margin: auto;
-    /*会影响设置组件不能出现在最高层*/
-    /*overflow-x: hidden;*/
-    background-size: 100% 100% !important;
-    /*transform-style:preserve-3d;*/
-    .lock {
-      opacity: .5;
-    }
   }
+}
 
-  .parent_transform {
-    //transform transform 会使z-index 失效；为了使编辑仪表板时 按钮一直在上面 采用transform-style 的方式
-    // transform-style 会导致 dialog 遮罩有问题 此处暂时用这个样式做控制
-    transform-style: preserve-3d;
-  }
+.gap_class {
+  padding: 3px;
+}
 
-  .edit {
-    /*outline: 1px solid gainsboro;*/
-    .component {
-      outline: none;
-      width: 100%;
-      height: 100%;
-      position: relative;
-    }
-  }
+.ref-line {
+  position: absolute;
+  background-color: #70c0ff;;
+  z-index: 9999;
+}
 
-  .gap_class {
-    padding: 3px;
-  }
+.v-line {
+  width: 1px;
+}
 
-  .ref-line {
-    position: absolute;
-    background-color: #70c0ff;;
-    z-index: 9999;
-  }
+.h-line {
+  height: 1px;
+}
 
-  .v-line {
-    width: 1px;
-  }
+.dialog-css ::v-deep .el-dialog__title {
+  font-size: 14px;
+}
 
-  .h-line {
-    height: 1px;
-  }
+.dialog-css ::v-deep .el-dialog__header {
+  padding: 40px 20px 0;
+}
 
-  .dialog-css ::v-deep .el-dialog__title {
-    font-size: 14px;
-  }
-
-  .dialog-css ::v-deep .el-dialog__header {
-    padding: 40px 20px 0;
-  }
-
-  .dialog-css ::v-deep .el-dialog__body {
-    padding: 10px 20px 20px;
-  }
+.dialog-css ::v-deep .el-dialog__body {
+  padding: 10px 20px 20px;
+}
 
 </style>

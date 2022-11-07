@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import BackButton from '@/components/back-button'
+import BackButton from '@/components/backButton'
 
 export default {
   name: 'LayoutContent',

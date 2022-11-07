@@ -93,16 +93,18 @@
 
 <script>
 import { mapState } from 'vuex'
-import DeEditor from '@/components/canvas/components/Editor/DeEditor'
+import DeEditor from '@/components/canvas/components/editor/DeEditor'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import bus from '@/utils/bus'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { uuid } from 'vue-uuid'
 import componentList, {
   BASE_MOBILE_STYLE,
-  COMMON_BACKGROUND, commonAttr,
-  HYPERLINKS, PIC_STYLE
-} from '@/components/canvas/custom-component/component-list'
+  COMMON_BACKGROUND,
+  commonAttr,
+  HYPERLINKS,
+  PIC_STYLE
+} from '@/components/canvas/customComponent/component-list'
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import { chartCopy } from '@/api/chart/chart'
 import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
@@ -582,6 +584,7 @@ export default {
   overflow-y: auto;
   background-size: 100% 100% !important;
 }
+
 .min-width-730 {
   min-width: 730px !important;
 }

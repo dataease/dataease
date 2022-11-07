@@ -490,23 +490,20 @@ import { deepCopy, getNowCanvasComponentData, imgUrlTrans, matrixBaseChange } fr
 import componentList, {
   BASE_MOBILE_STYLE,
   COMMON_BACKGROUND,
-  HYPERLINKS, PIC_STYLE
-} from '@/components/canvas/custom-component/component-list' // 左侧列表数据
+  commonAttr,
+  HYPERLINKS,
+  PIC_STYLE
+} from '@/components/canvas/customComponent/component-list' // 左侧列表数据
 import { mapState } from 'vuex'
 import { uuid } from 'vue-uuid'
 import Toolbar from '@/components/canvas/components/Toolbar'
-import {
-  checkUserCache,
-  initPanelData,
-  initViewCache,
-  queryPanelMultiplexingViewTree
-} from '@/api/panel/panel'
-import Preview from '@/components/canvas/components/Editor/Preview'
+import { checkUserCache, initPanelData, initViewCache, queryPanelMultiplexingViewTree } from '@/api/panel/panel'
+import Preview from '@/components/canvas/components/editor/Preview'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import AssistComponent from '@/views/panel/AssistComponent'
 import ChartGroup from '@/views/chart/group/Group'
 import { chartCopy } from '@/api/chart/chart'
-import CanvasOptBar from '@/components/canvas/components/Editor/CanvasOptBar'
+import CanvasOptBar from '@/components/canvas/components/editor/CanvasOptBar'
 
 // 引入样式
 import '@/components/canvas/assets/iconfont/iconfont.css'
@@ -516,7 +513,6 @@ import FilterDialog from '../filter/filterDialog'
 import ButtonDialog from '../filter/ButtonDialog'
 import ButtonResetDialog from '../filter/ButtonResetDialog'
 import toast from '@/components/canvas/utils/toast'
-import { commonAttr } from '@/components/canvas/custom-component/component-list'
 import generateID from '@/components/canvas/utils/generateID'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'

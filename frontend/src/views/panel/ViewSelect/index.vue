@@ -20,7 +20,8 @@
             size="mini"
             style="float: right"
             @click="newChart"
-          >新建 </el-button>
+          >新建
+          </el-button>
         </el-col>
 
       </el-row>
@@ -91,14 +92,12 @@
 </template>
 
 <script>
-import componentList from '@/components/canvas/custom-component/component-list'
-import { deepCopy } from '@/components/canvas/utils/utils'
+import componentList from '@/components/canvas/customComponent/component-list'
+import { deepCopy, matrixBaseChange } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'
 import { queryPanelViewTree } from '@/api/panel/panel'
-import { deleteCircle } from '@/api/chart/chart'
-import { pluginTypes } from '@/api/chart/chart'
-import { matrixBaseChange } from '@/components/canvas/utils/utils'
+import { deleteCircle, pluginTypes } from '@/api/chart/chart'
 
 export default {
   name: 'ViewSelect',
@@ -249,37 +248,40 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .top-div-class {
-    max-height: calc(100vh - 335px);
-    width: 100%;
-    position: fixed;
-    overflow-y : auto
-  }
-  .detail-class {
-    width: 300px;
-    position: fixed;
-    bottom: 0px;
-  }
-  .view-list-thumbnails {
-    width: 100%;
-    height: 100%;
-  }
+.top-div-class {
+  max-height: calc(100vh - 335px);
+  width: 100%;
+  position: fixed;
+  overflow-y: auto
+}
 
-  .father .child {
-    /*display: none;*/
-    visibility: hidden;
-  }
-  .father:hover .child {
-    /*display: inline;*/
-    visibility: visible;
-  }
+.detail-class {
+  width: 300px;
+  position: fixed;
+  bottom: 0px;
+}
 
-  .custom-tree-node-list {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding:0 8px;
-  }
+.view-list-thumbnails {
+  width: 100%;
+  height: 100%;
+}
+
+.father .child {
+  /*display: none;*/
+  visibility: hidden;
+}
+
+.father:hover .child {
+  /*display: inline;*/
+  visibility: visible;
+}
+
+.custom-tree-node-list {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 0 8px;
+}
 </style>

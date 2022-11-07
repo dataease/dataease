@@ -1,5 +1,11 @@
 // 通过控制 js 控制过滤组件输入框样式 如需额外处理 声明组件serviceName同名函数处理
-import { timeDateRangeWidget, textInputWidget, attrsMap, styleAttrs } from '@/components/widget/DeWidget/serviceNameFn.js'
+import {
+  attrsMap,
+  styleAttrs,
+  textInputWidget,
+  timeDateRangeWidget
+} from '@/components/widget/deWidget/serviceNameFn.js'
+
 export default {
   data() {
     return {

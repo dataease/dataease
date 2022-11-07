@@ -148,7 +148,7 @@
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import { getViewLinkageGather } from '@/api/panel/linkage'
-import HyperlinksDialog from '@/components/canvas/components/Editor/HyperlinksDialog'
+import HyperlinksDialog from '@/components/canvas/components/editor/HyperlinksDialog'
 import CustomTabsSort from '@/components/widget/DeWidget/CustomTabsSort'
 
 export default {
