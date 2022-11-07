@@ -873,7 +873,7 @@ public class PanelGroupService {
 
         panelAppTemplateService.applyViewsField(chartViewFieldsInfo,chartViewsRealMap,datasetsRealMap,datasetFieldsRealMap);
 
-        panelAppTemplateService.applyPanel(panelInfo,chartViewsRealMap,newPanelId, request.getPanelName(), request.getPanelGroupPid());
+        panelAppTemplateService.applyPanel(panelInfo,chartViewsRealMap,datasetsRealMap,datasetFieldsRealMap,newPanelId, request.getPanelName(), request.getPanelGroupPid());
 
         panelAppTemplateService.applyPanelView(panelViewsInfo,chartViewsRealMap,newPanelId);
 

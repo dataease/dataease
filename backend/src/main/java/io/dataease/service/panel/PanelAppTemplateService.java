@@ -159,7 +159,7 @@ public class PanelAppTemplateService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public String applyPanel(PanelGroupRequest panelInfo, Map<String, String> chartViewsRealMap, String newPanelId, String panelName, String pid) {
+    public String applyPanel(PanelGroupRequest panelInfo, Map<String, String> chartViewsRealMap,Map<String,String> datasetsRealMap ,Map<String,String> datasetFieldsRealMap, String newPanelId, String panelName, String pid) {
         panelInfo.setId(newPanelId);
         panelInfo.setPid(pid);
         panelInfo.setName(panelName);
@@ -167,6 +167,12 @@ public class PanelAppTemplateService {
         panelInfo.setPanelType("self");
         panelInfo.setCreateBy(AuthUtils.getUser().getUsername());
         panelInfo.setCreateTime(System.currentTimeMillis());
+        datasetsRealMap.forEach((k, v) -> {
+            panelInfo.setPanelData(panelInfo.getPanelData().replaceAll(k, v));
+        });
+        datasetFieldsRealMap.forEach((k, v) -> {
+            panelInfo.setPanelData(panelInfo.getPanelData().replaceAll(k, v));
+        });
         panelGroupService.newPanelFromApp(panelInfo, chartViewsRealMap);
         return newPanelId;
     }
@@ -184,6 +190,7 @@ public class PanelAppTemplateService {
             datasetRequest.setOptFrom("appApply");
             datasetRequest.setSyncType("sync_now");
             DatasetTable newDataset = dataSetTableService.save(datasetRequest);
+            datasetTable.setId(newDataset.getId());
             datasetsRealMap.put(oldId, newDataset.getId());
         }
         return datasetsRealMap;
@@ -233,6 +240,8 @@ public class PanelAppTemplateService {
                     } else if (DatasetType.UNION.name().equalsIgnoreCase(datasetTable.getType())) {
                         dataSetTableService.createAppUnionDorisView(datasetTable.getInfo(), datasetTable.getId());
                     }
+                }else{
+                    dataSetTableService.updateDatasetInfo(datasetTable);
                 }
             }
         }
