@@ -99,6 +99,8 @@ public class XDingtalkServer {
             String username = dingUserEntity.getUserid();
             SysUserEntity sysUserEntity = authUserService.getUserByDingtalkId(username);
             if (null == sysUserEntity) {
+                if (authUserService.checkScanCreateLimit())
+                    DEException.throwException(Translator.get("I18N_PROHIBIT_SCANNING_TO_CREATE_USER"));
                 String email = StringUtils.isNotBlank(dingUserEntity.getOrg_email()) ? dingUserEntity.getOrg_email() : StringUtils.isNotBlank(dingUserEntity.getEmail()) ? dingUserEntity.getEmail() : (username + "@dingtalk.work");
                 sysUserService.validateExistUser(username, dingUserEntity.getName(), email);
                 sysUserService.saveDingtalkCUser(dingUserEntity, email);

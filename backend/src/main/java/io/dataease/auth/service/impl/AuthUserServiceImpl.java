@@ -3,6 +3,7 @@ package io.dataease.auth.service.impl;
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.entity.AccountLockStatus;
 import io.dataease.auth.entity.SysUserEntity;
+import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.exception.DataEaseException;
 import io.dataease.ext.*;
@@ -28,6 +29,7 @@ import io.dataease.plugins.xpack.loginlimit.service.LoginLimitXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 
 import io.dataease.plugins.xpack.wecom.service.WecomXpackService;
+import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,6 +58,9 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Resource
     private SysLoginLimitMapper sysLoginLimitMapper;
+
+    @Resource
+    private SystemParameterService systemParameterService;
 
     /**
      * 此处需被F2CRealm登录认证调用 也就是说每次请求都会被调用 所以最好加上缓存
@@ -327,5 +332,11 @@ public class AuthUserServiceImpl implements AuthUserService {
     public void clearAllLock() {
         SysLoginLimitExample example = new SysLoginLimitExample();
         sysLoginLimitMapper.deleteByExample(example);
+    }
+
+    @Override
+    public Boolean checkScanCreateLimit() {
+        String value = systemParameterService.getValue(ParamConstants.BASIC.SCAN_CREATE_USER.getValue());
+        return StringUtils.isNotBlank(value) && StringUtils.equals("true", value);
     }
 }

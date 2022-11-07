@@ -20,7 +20,9 @@ public interface AuthUserService {
     SysUserEntity getUserBySub(String sub, Integer from);
 
     SysUserEntity getUserByWecomId(String weComId);
+
     SysUserEntity getUserByDingtalkId(String dingtalkId);
+
     SysUserEntity getUserByLarkId(String larkId);
 
     SysUserEntity getUserByLarksuiteId(String larksuiteId);
@@ -60,6 +62,8 @@ public interface AuthUserService {
     AccountLockStatus lockStatus(String username, Integer logintype);
 
     void clearAllLock();
+
+    Boolean checkScanCreateLimit();
 
 
 }

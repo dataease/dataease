@@ -259,10 +259,10 @@ export default {
       return this.$store.state.user.loginMsg
     },
     qrTypes() {
-      return this.loginTypes && this.loginTypes.filter(item => item > 3 && item < 7) || []
+      return this.loginTypes && this.loginTypes.filter(item => item > 3 && item < 8) || []
     },
     radioTypes() {
-      return this.loginTypes && this.loginTypes.filter(item => item < 4 || item > 6) || []
+      return this.loginTypes && this.loginTypes.filter(item => item < 4 || item > 7) || []
     }
   },
   watch: {
