@@ -195,6 +195,9 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.scrollTimer)
+    window.removeEventListener('resize', this.onResize)
+    this.myChart.destroy()
+    this.myChart = null
   },
   methods: {
     initData() {
@@ -221,21 +224,16 @@ export default {
       this.tableData = data
     },
     preDraw() {
+      this.onResize()
+      window.addEventListener('resize', this.onResize)
+    },
+    onResize() {
       this.initData()
       this.initTitle()
       this.calcHeightDelay()
       new Promise((resolve) => { resolve() }).then(() => {
         this.drawView()
       })
-      const that = this
-      window.onresize = function() {
-        that.initData()
-        that.initTitle()
-        that.calcHeightDelay()
-        new Promise((resolve) => { resolve() }).then(() => {
-          that.drawView()
-        })
-      }
     },
     drawView() {
       const chart = this.chart

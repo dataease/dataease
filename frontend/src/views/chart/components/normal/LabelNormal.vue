@@ -133,15 +133,13 @@ export default {
   },
   beforeDestroy() {
     eventBus.$off('resizing', this.chartResize)
+    window.removeEventListener('resize', this.calcHeight)
   },
   methods: {
     init() {
-      const that = this
       this.initStyle()
       this.resultFormat()
-      window.onresize = function() {
-        that.calcHeight()
-      }
+      window.addEventListener('resize', this.calcHeight)
       this.setBackGroundBorder()
       this.initRemark()
     },

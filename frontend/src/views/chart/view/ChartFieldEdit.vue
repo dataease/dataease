@@ -568,10 +568,11 @@ export default {
       this.filterField(val)
     }
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.calcHeight)
+  },
   mounted() {
-    window.onresize = () => {
-      this.calcHeight()
-    }
+    window.addEventListener('resize', this.calcHeight)
     this.calcHeight()
     this.initField()
   },

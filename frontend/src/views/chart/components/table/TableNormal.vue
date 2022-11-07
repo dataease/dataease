@@ -168,6 +168,7 @@ export default {
   beforeDestroy() {
     eventBus.$off('resizing', this.chartResize)
     clearInterval(this.scrollTimer)
+    window.removeEventListener('resize', this.calcHeightDelay)
   },
   methods: {
     init() {
@@ -187,7 +188,6 @@ export default {
       }
     },
     initData() {
-      const that = this
       let data = []
       this.showPage = false
       if (this.chart.data) {
@@ -229,9 +229,7 @@ export default {
       this.$nextTick(() => {
         this.initStyle()
       })
-      window.onresize = function() {
-        that.calcHeightDelay()
-      }
+      window.addEventListener('resize', this.calcHeightDelay)
     },
     calcHeightRightNow() {
       this.$nextTick(() => {

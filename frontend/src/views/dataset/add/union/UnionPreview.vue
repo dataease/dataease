@@ -57,12 +57,13 @@ export default {
       }
     }
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.calHeight)
+  },
   mounted() {
     this.initPreview()
     this.calHeight()
-    window.onresize = () => {
-      this.calHeight()
-    }
+    window.addEventListener('resize', this.calHeight)
   },
   methods: {
     calHeight: _.debounce(function() {
