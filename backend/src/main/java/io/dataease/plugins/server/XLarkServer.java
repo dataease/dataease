@@ -100,6 +100,8 @@ public class XLarkServer {
             String username = larkUserInfo.getUser_id();
             SysUserEntity sysUserEntity = authUserService.getUserByLarkId(username);
             if (null == sysUserEntity) {
+                if (authUserService.checkScanCreateLimit())
+                    DEException.throwException(Translator.get("I18N_PROHIBIT_SCANNING_TO_CREATE_USER"));
                 String email = StringUtils.isNotBlank(larkUserInfo.getEmail()) ? larkUserInfo.getEmail() : (username + "@lark.work");
                 sysUserService.validateExistUser(username, larkUserInfo.getName(), email);
                 sysUserService.saveLarkCUser(larkUserInfo, email);

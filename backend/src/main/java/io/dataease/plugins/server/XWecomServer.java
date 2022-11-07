@@ -103,6 +103,8 @@ public class XWecomServer {
 
             SysUserEntity sysUserEntity = authUserService.getUserByWecomId(userId);
             if (null == sysUserEntity) {
+                if (authUserService.checkScanCreateLimit())
+                    DEException.throwException(Translator.get("I18N_PROHIBIT_SCANNING_TO_CREATE_USER"));
                 Object emailObj = ObjectUtils.isEmpty(userMap.get("biz_mail")) ? userMap.get("email") : userMap.get("biz_mail");
                 String email = ObjectUtils.isEmpty(emailObj) ? (userId + "@wecom.work") : emailObj.toString();
                 sysUserService.validateExistUser(userId, userMap.get("name").toString(), email);

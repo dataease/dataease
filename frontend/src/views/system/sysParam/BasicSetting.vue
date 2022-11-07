@@ -159,6 +159,13 @@
         component-name="LoginLimitSetting"
       />
 
+      <plugin-com
+        v-if="isPluginLoaded && scanOpen"
+        ref="ScanLimitSetting"
+        :form="formInline"
+        component-name="ScanLimitSetting"
+      />
+
       <el-form-item
         :label="
           $t('commons.yes') + $t('commons.no') + $t('display.openMarketPage')
@@ -199,7 +206,7 @@
 
 <script>
 import { basicInfo, updateInfo } from '@/api/system/basic'
-import { ldapStatus, oidcStatus, casStatus } from '@/api/user'
+import { ldapStatus, oidcStatus, casStatus, wecomStatus, dingtalkStatus, larkStatus, larksuiteStatus } from '@/api/user'
 import bus from '@/utils/bus'
 import operator from './Operator'
 import msgCfm from '@/components/msgCfm'
@@ -260,6 +267,12 @@ export default {
       originLoginType: null
     }
   },
+  computed: {
+
+    scanOpen() {
+      return this.loginTypes && this.loginTypes.some(item => item > 3 && item < 8)
+    }
+  },
   beforeCreate() {
     ldapStatus().then((res) => {
       if (res.success && res.data) {
@@ -276,6 +289,29 @@ export default {
     casStatus().then((res) => {
       if (res.success && res.data) {
         this.loginTypes.push(3)
+      }
+    }),
+    wecomStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(4)
+      }
+    })
+
+    dingtalkStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(5)
+      }
+    })
+
+    larkStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(6)
+      }
+    })
+
+    larksuiteStatus().then(res => {
+      if (res.success && res.data) {
+        this.loginTypes.push(7)
       }
     })
   },
@@ -305,6 +341,7 @@ export default {
           this.originLoginType = this.formInline.loginType
         }
         this.formInline.open = (this.formInline.open && this.formInline.open === 'true')
+        this.formInline.scanCreateUser = (this.formInline.scanCreateUser && this.formInline.scanCreateUser === 'true')
 
         this.$nextTick(() => {
           this.$refs.formInline.clearValidate()
@@ -384,6 +421,12 @@ export default {
         {
           paramKey: 'loginlimit.open',
           paramValue: this.formInline.open,
+          type: 'text',
+          sort: 3
+        },
+        {
+          paramKey: 'loginlimit.scanCreateUser',
+          paramValue: this.formInline.scanCreateUser,
           type: 'text',
           sort: 3
         }

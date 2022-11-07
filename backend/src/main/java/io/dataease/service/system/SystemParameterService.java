@@ -121,6 +121,10 @@ public class SystemParameterService {
                         boolean open = StringUtils.equals("true", param.getParamValue());
                         result.setOpen(open ? "true" : "false");
                     }
+                    if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.SCAN_CREATE_USER.getValue())) {
+                        boolean open = StringUtils.equals("true", param.getParamValue());
+                        result.setScanCreateUser(open ? "true" : "false");
+                    }
                 }
 
             }
