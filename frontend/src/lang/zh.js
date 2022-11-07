@@ -2502,6 +2502,7 @@ export default {
     start_time: '开始时间',
     end_time: '结束时间',
     chart_data: '视图数据',
+    panel_preview: '预览仪表板',
     preview: '预览',
     emial_preview: '邮件预览',
     chart_data_range: '视图数据范围',
