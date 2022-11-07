@@ -1693,7 +1693,11 @@ export default {
     input_edit_name: 'Input field name',
     edit_search: 'Search by name',
     na: 'None',
-    date_format: 'Time format, default: year-month-day hour:minute:second'
+    date_format: 'Time format, default: year-month-day hour:minute:second',
+    export_dataset: 'Export',
+    filename: 'Filename',
+    export_filter: 'Filter',
+    pls_input_filename: 'Please input filename'
   },
   driver: {
     driver: 'Driver',

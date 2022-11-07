@@ -12,6 +12,8 @@ import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.ResultHolder;
+import io.dataease.controller.handler.annotation.I18n;
+import io.dataease.controller.request.dataset.DataSetExportRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.dataset.DataSetTableDTO;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +142,7 @@ public class DataSetTableController {
     @ApiOperation("查询预览数据")
     @PostMapping("getPreviewData/{page}/{pageSize}")
     public Map<String, Object> getPreviewData(@RequestBody DataSetTableRequest dataSetTableRequest, @PathVariable Integer page, @PathVariable Integer pageSize) throws Exception {
-        return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize, null);
+        return dataSetTableService.getPreviewData(dataSetTableRequest, page, pageSize, null, null);
     }
 
     @ApiOperation("db数据库表预览数据")
@@ -248,5 +251,12 @@ public class DataSetTableController {
     @PostMapping("/getDatasetNameFromGroup/{sceneId}")
     public List<String> getDatasetNameFromGroup(@PathVariable String sceneId) {
         return dataSetTableService.getDatasetNameFromGroup(sceneId);
+    }
+
+    @ApiOperation("数据集导出")
+    @PostMapping("/exportDataset")
+    @I18n
+    public void exportDataset(@RequestBody DataSetExportRequest request, HttpServletResponse response) throws Exception {
+        dataSetTableService.exportDataset(request, response);
     }
 }

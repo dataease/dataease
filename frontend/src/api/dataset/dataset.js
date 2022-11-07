@@ -249,4 +249,15 @@ export function dsTable(page, size, id) {
     method: 'post'
   })
 }
-export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs }
+
+export function exportDataset(data) {
+  // 初始化仪表板视图缓存
+  return request({
+    url: 'dataset/table/exportDataset',
+    method: 'post',
+    data: data,
+    loading: true,
+    responseType: 'blob'
+  })
+}
+export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs, exportDataset }

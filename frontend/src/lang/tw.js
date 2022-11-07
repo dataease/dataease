@@ -1693,7 +1693,11 @@ export default {
     input_edit_name: '請輸入字段名稱',
     edit_search: '通過名稱搜索',
     na: '暫無',
-    date_format: '時間格式，默認：年-月-日 時:分:秒'
+    date_format: '時間格式，默認：年-月-日 時:分:秒',
+    export_dataset: '數據集導出',
+    filename: '文件名稱',
+    export_filter: '篩選條件',
+    pls_input_filename: '請輸入文件名稱'
   },
   driver: {
     driver: '驅動',

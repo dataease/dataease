@@ -1692,7 +1692,11 @@ export default {
     input_edit_name: '请输入字段名称',
     edit_search: '通过名称搜索',
     na: '暂无',
-    date_format: '时间格式，默认: 年-月-日 时:分:秒'
+    date_format: '时间格式，默认: 年-月-日 时:分:秒',
+    export_dataset: '数据集导出',
+    filename: '文件名称',
+    export_filter: '筛选条件',
+    pls_input_filename: '请输入文件名称'
   },
   driver: {
     driver: '驱动',

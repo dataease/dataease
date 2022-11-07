@@ -125,7 +125,7 @@ public class DataSetTableFieldController {
             DatasetTable datasetTable = dataSetTableService.get(datasetTableField.getTableId());
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
             BeanUtils.copyProperties(datasetTable, dataSetTableRequest);
-            dataSetTableService.getPreviewData(dataSetTableRequest, 1, 1, Collections.singletonList(datasetTableField));
+            dataSetTableService.getPreviewData(dataSetTableRequest, 1, 1, Collections.singletonList(datasetTableField), null);
         } catch (Exception e) {
             DEException.throwException(Translator.get("i18n_calc_field_error"));
         }
@@ -177,7 +177,7 @@ public class DataSetTableFieldController {
         DecodedJWT jwt = JWT.decode(linkToken);
         Long userId = jwt.getClaim("userId").asLong();
         multFieldValuesRequest.setUserId(userId);
-        return dataSetFieldService.fieldValues(multFieldValuesRequest.getFieldIds(), multFieldValuesRequest.getSort(), multFieldValuesRequest.getUserId(), true, true,false);
+        return dataSetFieldService.fieldValues(multFieldValuesRequest.getFieldIds(), multFieldValuesRequest.getSort(), multFieldValuesRequest.getUserId(), true, true, false);
     }
 
     @ApiIgnore
