@@ -155,6 +155,11 @@ export default {
       this.drawEcharts()
     }
   },
+  beforeDestroy() {
+    this.myChart.destroy()
+    window.removeEventListener('resize', this.calcHeightDelay)
+    this.myChart = null
+  },
   mounted() {
     this.preDraw()
   },
@@ -202,10 +207,7 @@ export default {
       new Promise((resolve) => { resolve() }).then(() => {
         this.drawView()
       })
-      const that = this
-      window.onresize = function() {
-        that.calcHeightDelay()
-      }
+      window.addEventListener('resize', this.calcHeightDelay)
     },
     drawView() {
       const chart = this.chart

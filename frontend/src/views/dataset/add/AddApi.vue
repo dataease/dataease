@@ -312,11 +312,12 @@ export default {
       }
     }
   },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.calHeight)
+  },
   mounted() {
     this.initDataSource()
-    window.onresize = () => {
-      this.calHeight()
-    }
+    window.addEventListener('resize', this.calHeight)
     this.calHeight()
   },
   activated() {
