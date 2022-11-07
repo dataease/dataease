@@ -4,7 +4,7 @@ import Vue from 'vue'
 import upperFirst from 'lodash/upperFirst'
 import camelCase from 'lodash/camelCase'
 
-const requireComponent = require.context('./DeWidget', true, /\.vue$/)
+const requireComponent = require.context('./deWidget', true, /\.vue$/)
 
 requireComponent.keys().forEach(fileName => {
   // 获取组件配置
