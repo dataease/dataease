@@ -320,7 +320,7 @@
     >
       <jumpSet v-if="jumpVisible" :element="jumpElement" @backgroundSetClose="jumpSetClose" />
     </el-dialog>
-    <!-- 文本点击 -->
+    <!-- 文本设置点击 -->
     <el-dialog
       :visible.sync="textVisible"
       width="750px"
@@ -371,6 +371,7 @@ import weatherSet from '@/views/background/weatherSet'
 import setCustom from '@/views/background/setCustom'
 import jumpSet from '@/views/background/jumpSet'
 import textPopSet from '@/views/background/textPopSet'
+import textPopShow from '@/views/background/textPopShow'
 
 import { events } from '../../../DeDrag/option.js'
 import { addEvent, removeEvent } from '../../../../utils/dom.js'
@@ -941,7 +942,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, tabSet, pictureSet, setCustom, weatherSet, jumpSet, textPopSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, tabSet, pictureSet, setCustom, weatherSet, jumpSet, textPopSet, textPopShow, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
@@ -1397,7 +1398,7 @@ export default {
     setText(item) {
       this.textVisible = true
       this.textElement = item
-      console.log('文本弹窗')
+      console.log('文本图片设置弹窗')
     },
     changeStyleWithScale,
     setLine(e) {
@@ -1697,7 +1698,7 @@ export default {
       this.$refs['userViewDialog'].exportExcel()
     },
     showViewDetails(index) {
-      console.log('删除第几个？', index)
+      console.log('第几个？', index)
       this.$refs.wrapperChild[index].openChartDetailsDialog()
     },
 

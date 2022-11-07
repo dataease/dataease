@@ -136,6 +136,7 @@ export function delGroup(groupId) {
 
 export function initPanelData(panelId, callback) {
   // 加载视图数据
+  console.log('initPanelData,,,,,',panelId)
   findOne(panelId).then(response => {
     // 初始化视图data和style 数据
     console.log('初始化数据3333', response)

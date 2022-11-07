@@ -121,6 +121,7 @@ export default {
     },
 
     handleMousedown(e) {
+      console.log('点击',this.canEdit)
       if (this.canEdit) {
         e.stopPropagation()
       }

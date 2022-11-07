@@ -48,6 +48,7 @@
         @setPicture="setPicture"
         @setWeather="setWeather"
         @setJump="setJump"
+        @setText="setText"
         @setCustom="setCustom"
         @boardSet="boardSet"
         @tabRelation="tabRelation"
@@ -1988,6 +1989,10 @@ export default {
     // 下拉跳转
     setJump() {
       this.$emit('setJump')
+    },
+    // 文本弹窗
+    setText() {
+      this.$emit('setText')
     }
   }
 

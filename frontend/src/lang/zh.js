@@ -1716,6 +1716,7 @@ export default {
     remove_all_linkage: '清除所有联动',
     exit_un_march_linkage_field: '存在未匹配联动关系的字段',
     details: '详情',
+    text_pop: '预览',
     setting: '设置',
     no_drill_field: '缺少关联字段',
     matrix: '矩阵',

@@ -1,96 +1,47 @@
 <template>
   <div>
-    <p style="font-size: 18px;">跳转设置</p>
+    <p style="font-size: 18px;">弹窗设置</p>
     <div style="margin-top: 10px;">
-      <el-row class="jump_row">
-        <el-col :span="12">
-          <el-col :span="6" class="jump_col_4">
-            字体颜色:
-          </el-col>
-          <el-col :span="18">
-            <el-color-picker v-model="curComponent.options.color" class="color-picker-style" :predefine="predefineColors" />
-          </el-col>
-          <el-col :span="6" class="jump_col_4">
-            展示内容:
-          </el-col>
-          <el-col :span="18">
-            <el-input v-model="curComponent.options.placeholder" size="small"></el-input>
-          </el-col>
+      <el-row class="text_row">
+        <el-col :span="4" class="text_col_4">
+          <span>单击弹窗</span>
         </el-col>
-        <el-col :span="12">
-          <el-col :span="6" class="jump_col_4">
-            背景:
-          </el-col>
-          <el-col :span="18">
-            <el-row>
-              <el-radio-group v-model="curComponent.options.bgType" style="width:100%;">
-                <el-col :span="12">
-                  <el-radio label="color">颜色</el-radio>
-                </el-col>
-                <el-col :span="12">
-                  <el-radio label="back">背景</el-radio>
-                </el-col>
-              </el-radio-group>
-            </el-row>
-            <el-row style="margin-top: 10px;">
-              <el-col :span="12">
-                <el-color-picker v-model="curComponent.options.jumpBgColor" class="color-picker-style" :predefine="predefineColors" />
-              </el-col>
-              <el-col :span="12" v-if="updataUrl === ''">
-                <el-upload
-                  action=""
-                  accept=".jpeg,.jpg,.png,.gif,.svg"
-                  class="avatar-uploader"
-                  list-type="picture-card"
-                  :class="{disabled:uploadDisabled}"
-                  :on-preview="handlePictureCardPreview"
-                  :on-remove="handleRemove"
-                  :http-request="upload"
-                  :file-list="fileList"
-                  :on-change="onChange"
-                  :limit="1"
-                >
-                  <i class="el-icon-plus" />
-                </el-upload>
-                <span>
-                  <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
-                </span>
-              </el-col>
-              <el-col :span="12" v-else>
-                <div style="width: 100%;overflow-y:scroll;position: relative;">
-                  <img :src="updataUrl" alt="" style="width: 100%"/>
-                  <i class="el-icon-delete del_img" @click="handleRemove"></i>
-                </div>
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-col>
-        
-        
-        
-      </el-row>
-      <el-row>
-        <el-col>
-          <el-button type="primary" @click="addLink" size="small">新增</el-button>
+        <el-col :span="8">
+          <el-checkbox v-model="curComponent.options.isPopVisible">启用</el-checkbox>
         </el-col>
       </el-row>
-      <el-row>
-        <el-col v-for="(item,index) in curComponent.options.jumpList"  :key="index">
-          <el-row class="jump_row">
-            <el-col :span="4" class="jump_col_4">名称：</el-col>
-            <el-col :span="10">
-              <el-input v-model="item.jumpName" size="small"></el-input>
-            </el-col>
-            <el-col :span="4" v-if="curComponent.options.jumpList.length>1" style="padding-left: 5px;">
-              <el-button type="danger" size="small" @click="delLink(index)">删除</el-button>
-            </el-col>
-          </el-row>
-          <el-row class="jump_row">
-            <el-col :span="4" class="jump_col_4">链接：</el-col>
-            <el-col :span="10">
-              <el-input v-model="item.jumpLink" size="small"></el-input>
-            </el-col>
-          </el-row>
+      <el-row class="text_row">
+        <el-col :span="4" class="text_col_4">
+          <span>展示图片</span>
+        </el-col>
+        <el-col style="margin-top: 10px;padding-left: 20px;">
+          <el-col style="position:relative;text-align: center;" 
+            :span="6" v-show="fileList.length" 
+            v-for="(item,index) in fileList" :key="index"
+          >
+            <img :src="item.url" alt="" style="width: 90%;">
+            <i class="el-icon-delete del_img" @click="handleRemove(index)"></i>
+          </el-col>
+          <el-col :span="6">
+            <el-upload
+              action=""
+              accept=".jpeg,.jpg,.png,.gif,.svg"
+              class="avatar-uploader"
+              :multiple="true"
+              list-type="picture-card"
+              :http-request="upload"
+              :show-file-list="false"
+              :file-list="fileList"
+              :on-change="onChange"
+            >
+            <!-- :limit="1" -->
+              <i class="el-icon-plus" />
+            </el-upload>
+            <span>
+              <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+            </span>
+          </el-col>
+          
         </el-col>
       </el-row>
     </div>
@@ -118,7 +69,6 @@ export default {
   data() {
     return {
       predefineColors: COLOR_PANEL,
-      uploadDisabled: false,
       fileList: [],
       updataUrl: '',
     }
@@ -131,58 +81,49 @@ export default {
   },
   mounted() {
     console.log(this.curComponent)
-    this.updataUrl = this.curComponent.options.jumpBgImg? this.curComponent.options.jumpBgImg : ''
+    if (this.curComponent.options === undefined) {
+      this.curComponent.options = {
+        isPopVisible: false,
+        popImgList: []
+      }
+    }
+    this.fileList = this.curComponent.options.popImgList
   },
   methods: {
     save() {
-      console.log(this.updataUrl)
-      this.curComponent.options.jumpBgImg = this.updataUrl
+      console.log('保存',this.fileList)
+      this.curComponent.options.popImgList = this.fileList
       this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
     },
     cancel() {
-
       this.$emit('backgroundSetClose')
-    },
-    addLink() {
-      this.curComponent.options.jumpList.push({jumpName: '', jumpLink: ''})
-    },
-    delLink(index) {
-      console.log(index)
-      this.curComponent.options.jumpList.splice(index,1)
     },
     handlePictureCardPreview(file) {
       console.log('file---', file)
-      this.dialogImageUrl = file.url
-      this.dialogVisible = true
+      // this.dialogImageUrl = file.url
+      // this.dialogVisible = true
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList)
-      this.uploadDisabled = false
-      // this.panel.imageUrl = null
-      this.curComponent.options.jumpBgImg = ''
-      this.updataUrl = ""
-      this.fileList = []
-      // this.commitStyle()
+    handleRemove(index) {
+      console.log('remove',index)
+      this.fileList.splice(index,1)
     },
     upload(file) {
       console.log('this is upload', file)
     },
     onChange(file, fileList) {
+      console.log('change', fileList,this.fileList)
       if (file.size / 1024 / 1024 > 10) {
         this.$message.error('上传的文件大小不能超过 10MB!')
-        this.fileList = []
         return
       }
-      console.log('file, fileList', file, fileList)
       var _this = this
-      _this.uploadDisabled = true
       const reader = new FileReader()
       reader.onload = function() {
-        _this.updataUrl = reader.result
-        // _this.curComponent.options.heightBgImg = reader.result
-        // _this.commitStyle()
-        console.log('reader.result6666666', reader.result)
+        _this.fileList.push(
+          {url: reader.result}
+        )
+        console.log('reader.result6666666', reader.result,_this.fileList)
       }
       reader.readAsDataURL(file.raw)
       console.log('222222', file, fileList)
@@ -196,13 +137,20 @@ export default {
   text-align: center;
 }
 
-.jump_row {
+.text_row {
   margin: 10px 20px;
 
-  .jump_col_4 {
+  .text_col_4 {
     text-align: center;
     font-weight: bold;
   }
+}
+.del_img {
+  position: absolute;
+  top: 40%;
+  left: 46%;
+  color: #dfe4ed;
+  font-size: 16px;
 }
 
 .color-picker-style{

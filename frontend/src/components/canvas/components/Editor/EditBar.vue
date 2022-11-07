@@ -53,9 +53,9 @@
       <span :title="'跳转配置'">
         <i v-if="activeModel==='edit'&&curComponent&&curComponent.type==='de-jump'" class="icon iconfont icon-genghuan" @click.stop="setJump" />
       </span>
-      <!-- <span :title="$t('panel.text_pop_set')">
+      <span :title="$t('panel.text_pop_set')">
         <i v-if="activeModel==='edit' && curComponent && curComponent.type === 'v-text'" class="icon iconfont icon-genghuan" @click.stop="setText"></i>
-      </span> -->
+      </span>
       <span :title="'锁定'">
         <svg-icon v-if="activeModel==='edit'&&curComponent&&lockValue" :icon-class="'locking'" class="icon" style="color:#fff" @click.stop="setLockout(false)" />
       </span>
@@ -178,6 +178,9 @@ export default {
         style.right = '-40px'
       }
       return style
+    },
+    isPopVisible() {
+      return this.curComponent.options.isPopVisible !== undefined ? this.curComponent.options.isPopVisible : false
     },
     ...mapState([
       'menuTop',

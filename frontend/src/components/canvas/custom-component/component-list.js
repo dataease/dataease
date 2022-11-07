@@ -288,6 +288,10 @@ const list = [
       verticalAlign: 'middle',
       fontFamily: ''
     },
+    options: {
+      isPopVisible: false,
+      popImgList: [],
+    },
     hyperlinks: HYPERLINKS,
     x: 1,
     y: 1,
