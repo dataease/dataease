@@ -18,11 +18,12 @@
 </template>
 
 <script>
-import AsyncComponent from '@/components/AsyncComponent'
+import AsyncComponent from '@/components/asyncComponent'
 import i18n from '@/lang'
 import bus from '@/utils/bus'
 import { execute } from '@/api/system/dynamic'
 import { uuid } from 'vue-uuid'
+
 export default {
   name: 'PluginCom',
   components: {
@@ -36,7 +37,8 @@ export default {
     },
     obj: {
       type: Object,
-      default: () => {}
+      default: () => {
+      }
     }
   },
   data() {

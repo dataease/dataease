@@ -431,18 +431,10 @@ import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import EditPanel from './EditPanel'
-import {
-  addGroup,
-  delGroup,
-  groupTree,
-  defaultTree,
-  initPanelData,
-  panelUpdate,
-  viewPanelLog
-} from '@/api/panel/panel'
+import { addGroup, defaultTree, delGroup, groupTree, initPanelData, panelUpdate, viewPanelLog } from '@/api/panel/panel'
 import { mapState } from 'vuex'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
-import TreeSelector from '@/components/TreeSelector'
+import TreeSelector from '@/components/treeSelector'
 import { queryAuthModel } from '@/api/authModel/authModel'
 
 export default {

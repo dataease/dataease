@@ -196,26 +196,39 @@ import { mapState } from 'vuex'
 import { isChange } from '@/utils/conditionUtil'
 import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
 import { deepCopy } from '@/components/canvas/utils/utils'
-import { getToken, getLinkToken } from '@/utils/auth'
+import { getLinkToken, getToken } from '@/utils/auth'
 import DrillPath from '@/views/chart/view/DrillPath'
 import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
-import EditBarView from '@/components/canvas/components/Editor/EditBarView'
+import EditBarView from '@/components/canvas/components/editor/EditBarView'
 import { adaptCurTheme, customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import { viewEditSave, viewPropsSave } from '@/api/chart/chart'
 import { checkAddHttp } from '@/utils/urlUtils'
-import DeRichTextView from '@/components/canvas/custom-component/DeRichTextView'
+import DeRichTextView from '@/components/canvas/customComponent/DeRichTextView'
 import Vue from 'vue'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
-import UserViewDialog from '@/components/canvas/custom-component/UserViewDialog'
-import UserViewMobileDialog from '@/components/canvas/custom-component/UserViewMobileDialog'
+import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
+import UserViewMobileDialog from '@/components/canvas/customComponent/UserViewMobileDialog'
 
 export default {
   name: 'UserView',
-  components: { UserViewMobileDialog, UserViewDialog, DeRichTextView, LabelNormalText, PluginCom, ChartComponentS2, EditBarView, ChartComponent, TableNormal, LabelNormal, DrillPath, ChartComponentG2 },
+  components: {
+    UserViewMobileDialog,
+    UserViewDialog,
+    DeRichTextView,
+    LabelNormalText,
+    PluginCom,
+    ChartComponentS2,
+    EditBarView,
+    ChartComponent,
+    TableNormal,
+    LabelNormal,
+    DrillPath,
+    ChartComponentG2
+  },
   props: {
     canvasId: {
       type: String,
@@ -688,7 +701,11 @@ export default {
               adaptCurTheme(customStyleObj, customAttrObj)
               this.chart.customStyle = JSON.stringify(customStyleObj)
               this.chart.customAttr = JSON.stringify(customAttrObj)
-              viewEditSave(this.panelInfo.id, { id: this.chart.id, customStyle: this.chart.customStyle, customAttr: this.chart.customAttr })
+              viewEditSave(this.panelInfo.id, {
+                id: this.chart.id,
+                customStyle: this.chart.customStyle,
+                customAttr: this.chart.customAttr
+              })
               this.$store.commit('adaptorStatusDisable', this.element.id)
             }
             this.sourceCustomAttrStr = this.chart.customAttr
@@ -933,7 +950,10 @@ export default {
         const current = this.$refs[this.element.propValue.id]
 
         if (this.chart.isPlugin) {
-          current && current.callPluginInner && this.setDetailMapCode(null) && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
+          current && current.callPluginInner && this.setDetailMapCode(null) && current.callPluginInner({
+            methodName: 'registerDynamicMap',
+            methodParam: null
+          })
         } else {
           current && current.registerDynamicMap && this.setDetailMapCode(null) && current.registerDynamicMap(null)
         }
@@ -963,7 +983,10 @@ export default {
       this.currentAcreaNode = tempNode
       const current = this.$refs[this.element.propValue.id]
       if (this.chart.isPlugin) {
-        current && current.callPluginInner && this.setDetailMapCode(this.currentAcreaNode.code) && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: this.currentAcreaNode.code })
+        current && current.callPluginInner && this.setDetailMapCode(this.currentAcreaNode.code) && current.callPluginInner({
+          methodName: 'registerDynamicMap',
+          methodParam: this.currentAcreaNode.code
+        })
       } else {
         current && current.registerDynamicMap && this.setDetailMapCode(this.currentAcreaNode.code) && current.registerDynamicMap(this.currentAcreaNode.code)
       }
@@ -990,7 +1013,10 @@ export default {
         this.currentAcreaNode = nextNode
         const current = this.$refs[this.element.propValue.id]
         if (this.chart.isPlugin) {
-          nextNode && current && current.callPluginInner && this.setDetailMapCode(nextNode.code) && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: nextNode.code })
+          nextNode && current && current.callPluginInner && this.setDetailMapCode(nextNode.code) && current.callPluginInner({
+            methodName: 'registerDynamicMap',
+            methodParam: nextNode.code
+          })
         } else {
           nextNode && current && current.registerDynamicMap && this.setDetailMapCode(nextNode.code) && current.registerDynamicMap(nextNode.code)
         }
@@ -1024,7 +1050,10 @@ export default {
       const current = this.$refs[this.element.propValue.id]
 
       if (this.chart.isPlugin) {
-        current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: areaNode.code })
+        current && current.callPluginInner && current.callPluginInner({
+          methodName: 'registerDynamicMap',
+          methodParam: areaNode.code
+        })
       } else {
         current && current.registerDynamicMap && current.registerDynamicMap(areaNode.code)
       }
@@ -1126,45 +1155,45 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .rect-shape {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
+.rect-shape {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
-  .chart-class {
-    height: 100%;
-    padding: 0px!important;
-  }
+.chart-class {
+  height: 100%;
+  padding: 0px !important;
+}
 
-  .table-class {
-    height: 100%;
-  }
+.table-class {
+  height: 100%;
+}
 
-  .chart-error-class {
-    text-align: center;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #ece7e7;
-  }
+.chart-error-class {
+  text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ece7e7;
+}
 
-  .chart-error-message-class {
-    font-size: 12px;
-    color: #9ea6b2;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.chart-error-message-class {
+  font-size: 12px;
+  color: #9ea6b2;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .active {
+.active {
 
-  }
+}
 
-  .active ::v-deep .icon-fangda {
-    z-index: 2;
-    display: block !important;
-  }
+.active ::v-deep .icon-fangda {
+  z-index: 2;
+  display: block !important;
+}
 </style>

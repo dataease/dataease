@@ -1,7 +1,7 @@
 // import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
-import { isGradientValue } from '@/components/GradientColorSelector/base'
+import { isGradientValue } from '@/components/gradientColorSelector/base'
 const linearCOlor = (start, end) => {
   return {
     type: 'linear',

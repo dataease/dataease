@@ -324,13 +324,13 @@
 </template>
 <script>
 import PDFPreExport from '@/views/panel/export/PDFPreExport'
-import Preview from '@/components/canvas/components/Editor/Preview'
+import Preview from '@/components/canvas/components/editor/Preview'
 import SaveToTemplate from '@/views/panel/list/SaveToTemplate'
 import { mapState } from 'vuex'
 import html2canvas from 'html2canvasde'
 import FileSaver from 'file-saver'
 import JSZip from 'jszip'
-import { starStatus, saveEnshrine, deleteEnshrine } from '@/api/panel/enshrine'
+import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 import bus from '@/utils/bus'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/GrantAuth/ShareHead'

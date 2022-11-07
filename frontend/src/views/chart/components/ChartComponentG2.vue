@@ -41,7 +41,7 @@
 <script>
 import { baseLiquid } from '@/views/chart/chart/liquid/liquid'
 import { uuid } from 'vue-uuid'
-import ViewTrackBar from '@/components/canvas/components/Editor/ViewTrackBar'
+import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import { getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
 import { baseBarOptionAntV, hBaseBarOptionAntV } from '@/views/chart/chart/bar/bar_antv'
 import { baseAreaOptionAntV, baseLineOptionAntV } from '@/views/chart/chart/line/line_antv'
@@ -57,6 +57,7 @@ import TitleRemark from '@/views/chart/view/TitleRemark'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import { baseMixOptionAntV } from '@/views/chart/chart/mix/mix_antv'
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
+
 export default {
   name: 'ChartComponentG2',
   components: { TitleRemark, ViewTrackBar, ChartTitleUpdate },
@@ -145,7 +146,9 @@ export default {
       handler(newVal, oldVla) {
         this.initTitle()
         this.calcHeightDelay()
-        new Promise((resolve) => { resolve() }).then(() => {
+        new Promise((resolve) => {
+          resolve()
+        }).then(() => {
           this.drawView()
         })
       },
@@ -204,7 +207,9 @@ export default {
     preDraw() {
       this.initTitle()
       this.calcHeightDelay()
-      new Promise((resolve) => { resolve() }).then(() => {
+      new Promise((resolve) => {
+        resolve()
+      }).then(() => {
         this.drawView()
       })
       window.addEventListener('resize', this.calcHeightDelay)

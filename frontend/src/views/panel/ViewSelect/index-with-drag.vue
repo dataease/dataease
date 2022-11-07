@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import componentList from '@/components/canvas/custom-component/component-list'
+import componentList from '@/components/canvas/customComponent/component-list'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { mapState } from 'vuex'

@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import componentList from '@/components/canvas/custom-component/component-list'
+import componentList from '@/components/canvas/customComponent/component-list'
 
 export default {
   data() {

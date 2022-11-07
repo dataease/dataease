@@ -65,10 +65,11 @@
 </template>
 
 <script>
-import Preview from '@/components/canvas/components/Editor/Preview'
+import Preview from '@/components/canvas/components/editor/Preview'
 import { findOne } from '@/api/panel/panel'
 import { viewOptions } from '@/api/chart/chart'
 import { panelDataPrepare } from '@/components/canvas/utils/utils'
+
 export default {
   name: 'DeViewSelect',
   components: { Preview },
@@ -240,6 +241,7 @@ export default {
 .my-top-class {
   width: 100%;
 }
+
 .dialog-css ::v-deep .el-dialog__title {
   font-size: 14px;
 }

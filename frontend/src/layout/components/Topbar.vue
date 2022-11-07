@@ -35,7 +35,8 @@
             v-if="!item.hidden"
             :index="item.path"
           >
-            {{ item.meta ? item.meta.title : item.children[0].meta.title }}</el-menu-item>
+            {{ item.meta ? item.meta.title : item.children[0].meta.title }}
+          </el-menu-item>
         </app-link>
       </div>
     </el-menu>
@@ -120,28 +121,19 @@
 </template>
 
 <script>
-import {
-  mapGetters
-} from 'vuex'
+import { mapGetters } from 'vuex'
 import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
-import {
-  isExternal
-} from '@/utils/validate'
-import Notification from '@/components/Notification'
+import { isExternal } from '@/utils/validate'
+import Notification from '@/components/notification'
 import bus from '@/utils/bus'
-import LangSelect from '@/components/LangSelect'
-import {
-  getSysUI
-} from '@/utils/auth'
-import {
-  pluginLoaded
-} from '@/api/user'
-import {
-  initTheme
-} from '@/utils/ThemeUtil'
+import LangSelect from '@/components/langSelect'
+import { getSysUI } from '@/utils/auth'
+import { pluginLoaded } from '@/api/user'
+import { initTheme } from '@/utils/ThemeUtil'
 import TemplateMarket from '@/views/panel/templateMarket'
 import { changeFavicon } from '@/utils/index'
+
 export default {
   name: 'Topbar',
   components: {
@@ -307,9 +299,9 @@ export default {
       // 如果有子项，默认跳转第一个子项路由
       let path = ''
       /**
-         * item 路由子项
-         * parent 路由父项
-         */
+       * item 路由子项
+       * parent 路由父项
+       */
       const getDefaultPath = (item, parent) => {
         // 如果path是个外部链接（不建议），直接返回链接，存在个问题：如果是外部链接点击跳转后当前页内容还是上一个路由内容
         if (isExternal(item.path)) {
@@ -417,38 +409,39 @@ export default {
 
 </script>
 <style lang="scss" scoped>
-  .el-dropdown-link {
-    cursor: pointer;
-    color: #1e212a;
-  }
+.el-dropdown-link {
+  cursor: pointer;
+  color: #1e212a;
+}
 
-  .el-icon-arrow-down {
-    font-size: 12px;
-  }
+.el-icon-arrow-down {
+  font-size: 12px;
+}
 
-  .top-dropdown {
-    display: inline-block;
-    padding: 10px 8px;
-    height: 100%;
-    font-size: 16px;
-    color: #1e212a;
-    vertical-align: text-bottom;
-    margin-right: 10px;
-  }
+.top-dropdown {
+  display: inline-block;
+  padding: 10px 8px;
+  height: 100%;
+  font-size: 16px;
+  color: #1e212a;
+  vertical-align: text-bottom;
+  margin-right: 10px;
+}
 
-  .de-top-menu {
-    background-color: var(--MainBG);
+.de-top-menu {
+  background-color: var(--MainBG);
 
-  }
-  .template-market-item{
-    display: flex;
-    color: var(--MenuActiveBG, #409EFF);
-    font-size: 14px!important;
-    line-height: 38px!important;
-  }
+}
 
-  .dialog-css ::v-deep .el-dialog__header{
-    display: none;
-  }
+.template-market-item {
+  display: flex;
+  color: var(--MenuActiveBG, #409EFF);
+  font-size: 14px !important;
+  line-height: 38px !important;
+}
+
+.dialog-css ::v-deep .el-dialog__header {
+  display: none;
+}
 
 </style>

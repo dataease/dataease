@@ -24,13 +24,13 @@
 </template>
 
 <script>
-import { mappingFieldValues, linkMappingFieldValues } from '@/api/dataset/dataset'
+import { linkMappingFieldValues, mappingFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { isSameVueObj } from '@/utils'
 import { getLinkToken, getToken } from '@/utils/auth'
-import ElTreeSelect from '@/components/ElTreeSelect'
-import customInput from '@/components/widget/DeWidget/customInput'
-import { textSelectWidget } from '@/components/widget/DeWidget/serviceNameFn.js'
+import ElTreeSelect from '@/components/elTreeSelect'
+import customInput from '@/components/widget/deWidget/customInput'
+import { textSelectWidget } from '@/components/widget/deWidget/serviceNameFn.js'
 
 export default {
   components: { ElTreeSelect },
@@ -42,7 +42,8 @@ export default {
     },
     element: {
       type: Object,
-      default: () => {}
+      default: () => {
+      }
     },
     inDraw: {
       type: Boolean,
@@ -272,7 +273,10 @@ export default {
         if (!token && linkToken) {
           method = linkMappingFieldValues
         }
-        method({ fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }).then(res => {
+        method({
+          fieldIds: this.element.options.attrs.fieldId.split(','),
+          sort: this.element.options.attrs.sort
+        }).then(res => {
           this.data = this.optionData(res.data)
           this.$nextTick(() => {
             this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.data)
@@ -386,7 +390,9 @@ export default {
     _renderFun(h, { node, data, store }) {
       const { props, clickParent } = this.treeParams
       return (
-        <span class={['custom-tree-node', !clickParent && data[props.children] && data[props.children].length ? 'disabled' : null]}>
+        <span
+          class={['custom-tree-node', !clickParent && data[props.children] && data[props.children].length ? 'disabled' : null]}
+        >
           <span>{node.label}</span>
         </span>
       )
@@ -414,7 +420,8 @@ export default {
     .el-tree-node.is-current {
       background-color: rgb(245, 247, 250, .5) !important;
     }
-    .el-tree-node:focus>.el-tree-node__content {
+
+    .el-tree-node:focus > .el-tree-node__content {
       background-color: rgb(245, 247, 250, .5) !important;
     }
 

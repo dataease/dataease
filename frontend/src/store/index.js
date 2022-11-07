@@ -29,7 +29,7 @@ import {
   DEFAULT_COMMON_CANVAS_STYLE_STRING
 } from '@/views/panel/panel'
 import bus from '@/utils/bus'
-import { BASE_MOBILE_STYLE } from '@/components/canvas/custom-component/component-list'
+import { BASE_MOBILE_STYLE } from '@/components/canvas/customComponent/component-list'
 import { TYPE_CONFIGS } from '@/views/chart/chart/util'
 import { deepCopy } from '@/components/canvas/utils/utils'
 

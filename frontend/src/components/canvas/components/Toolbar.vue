@@ -194,11 +194,13 @@
           style="float: left"
           size="mini"
           @click="closeNotSave()"
-        >{{ $t('panel.do_not_save') }}</el-button>
+        >{{ $t('panel.do_not_save') }}
+        </el-button>
         <el-button
           size="mini"
           @click="closePanelVisible=false"
-        >{{ $t('panel.cancel') }}</el-button>
+        >{{ $t('panel.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
@@ -214,11 +216,11 @@
 import generateID from '@/components/canvas/utils/generateID'
 import toast from '@/components/canvas/utils/toast'
 import { mapState } from 'vuex'
-import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
+import { commonAttr, commonStyle } from '@/components/canvas/customComponent/component-list'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { deepCopy, mobile2MainCanvas } from '@/components/canvas/utils/utils'
-import { panelUpdate, saveCache, removePanelCache } from '@/api/panel/panel'
-import { saveLinkage, getPanelAllLinkageInfo } from '@/api/panel/linkage'
+import { panelUpdate, removePanelCache, saveCache } from '@/api/panel/panel'
+import { getPanelAllLinkageInfo, saveLinkage } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
 import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 
@@ -821,11 +823,11 @@ export default {
 }
 
 .icon16_only {
-  font-size: 16px!important;
+  font-size: 16px !important;
 }
 
 .icon16 {
-  font-size: 16px!important;
+  font-size: 16px !important;
   color: var(--TextPrimary, #1F2329);
 }
 
@@ -842,9 +844,11 @@ export default {
   line-height: 22px;
   color: var(--TextPrimary, #1F2329);
 }
+
 .margin-left52 {
   margin-left: 52px !important;
 }
+
 .margin-left12 {
   margin-left: 12px !important;
 }
@@ -852,11 +856,12 @@ export default {
 .el-divider--vertical {
   margin: 0 20px 0 20px
 }
-.el-dropdown-menu__item{
+
+.el-dropdown-menu__item {
   line-height: 32px;
 }
 
-::v-deep .el-radio-button__inner{
-padding:7px 7px
+::v-deep .el-radio-button__inner {
+  padding: 7px 7px
 }
 </style>

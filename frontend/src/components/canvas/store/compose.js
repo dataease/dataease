@@ -3,7 +3,7 @@ import generateID from '@/components/canvas/utils/generateID'
 import eventBus from '@/components/canvas/utils/eventBus'
 import decomposeComponent from '@/components/canvas/utils/decomposeComponent'
 import { $ } from '@/components/canvas/utils/utils'
-import { commonStyle, commonAttr } from '@/components/canvas/custom-component/component-list'
+import { commonStyle, commonAttr } from '@/components/canvas/customComponent/component-list'
 
 export default {
   state: {

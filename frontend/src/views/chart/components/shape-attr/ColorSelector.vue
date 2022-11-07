@@ -59,7 +59,8 @@
                     type="text"
                     style="margin-left: 2px;"
                     @click="resetCustomColor"
-                  >{{ $t('commons.reset') }}</el-button>
+                  >{{ $t('commons.reset') }}
+                  </el-button>
                 </div>
                 <!--自定义配色方案-->
                 <div
@@ -273,7 +274,7 @@
 import { COLOR_PANEL, DEFAULT_COLOR_CASE } from '../../chart/chart'
 import { getColors } from '@/views/chart/chart/util'
 import { mapState } from 'vuex'
-import GradientColorSelector from '@/components/GradientColorSelector'
+import GradientColorSelector from '@/components/gradientColorSelector'
 import bus from '@/utils/bus'
 
 export default {
@@ -515,7 +516,7 @@ export default {
 </script>
 
 <style scoped>
-.shape-item{
+.shape-item {
   padding: 6px;
   border: none;
   width: 100%;
@@ -523,45 +524,54 @@ export default {
   justify-content: space-between;
   align-items: center
 }
-.form-item-slider ::v-deep .el-form-item__label{
+
+.form-item-slider ::v-deep .el-form-item__label {
   font-size: 12px;
   line-height: 38px;
 }
-.form-item ::v-deep .el-form-item__label{
+
+.form-item ::v-deep .el-form-item__label {
   font-size: 12px;
 }
-.el-select-dropdown__item{
+
+.el-select-dropdown__item {
   padding: 0 20px;
 }
-  span{
-    font-size: 12px
-  }
-  .el-form-item{
-    margin-bottom: 6px;
-  }
-  .color-picker-style{
-    cursor: pointer;
-    z-index: 1003;
-  }
-  .color-label{
-    display: inline-block;
-    width: 60px;
-  }
 
-  .color-type ::v-deep .el-radio__input{
-    display: none;
-  }
-  .el-radio{
-    margin:0 2px 0 0!important;
-    border: 1px solid transparent;
-  }
-  .el-radio ::v-deep .el-radio__label{
-    padding-left: 0;
-  }
+span {
+  font-size: 12px
+}
 
-  .el-radio.is-checked{
-    border: 1px solid #0a7be0;
-  }
+.el-form-item {
+  margin-bottom: 6px;
+}
+
+.color-picker-style {
+  cursor: pointer;
+  z-index: 1003;
+}
+
+.color-label {
+  display: inline-block;
+  width: 60px;
+}
+
+.color-type ::v-deep .el-radio__input {
+  display: none;
+}
+
+.el-radio {
+  margin: 0 2px 0 0 !important;
+  border: 1px solid transparent;
+}
+
+.el-radio ::v-deep .el-radio__label {
+  padding-left: 0;
+}
+
+.el-radio.is-checked {
+  border: 1px solid #0a7be0;
+}
 
 .span-label {
   width: 300px;

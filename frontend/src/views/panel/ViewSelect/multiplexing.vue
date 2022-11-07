@@ -42,10 +42,10 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import { findOne } from '@/api/panel/panel'
 import { deepCopy, panelDataPrepare } from '@/components/canvas/utils/utils'
-import Preview from '@/components/canvas/components/Editor/Preview'
+import Preview from '@/components/canvas/components/editor/Preview'
 import MultiplexingView from '@/views/panel/ViewSelect/multiplexingView'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
-import { USER_VIEW } from '@/components/canvas/custom-component/component-list'
+import { USER_VIEW } from '@/components/canvas/customComponent/component-list'
 import { uuid } from 'vue-uuid'
 
 export default {
@@ -78,9 +78,7 @@ export default {
       return this.componentData.filter(item => item.canvasId === this.canvasId)
     }
   },
-  watch: {
-
-  },
+  watch: {},
   mounted() {
     this.$store.commit('initCurMultiplexingComponents')
   },
@@ -114,9 +112,10 @@ export default {
         const componentId = uuid.v1()
         _this.canvasStyleData = deepCopy(DEFAULT_COMMON_CANVAS_STYLE_STRING)
         const userView = {
-          ... deepCopy(USER_VIEW),
+          ...deepCopy(USER_VIEW),
           'id': componentId,
-          'auxiliaryMatrix': false }
+          'auxiliaryMatrix': false
+        }
         userView.style.width = _this.canvasStyleData.width
         userView.style.height = _this.canvasStyleData.height
         userView['propValue'] = {
@@ -137,45 +136,51 @@ export default {
 </script>
 
 <style scoped>
-  .ms-aside-container {
-    height: calc(100vh - 120px);
-    padding: 0px;
-    min-width: 260px;
-    max-width: 460px;
-  }
-  .ms-main-container {
-    height: calc(100vh - 120px);
-    padding: 0px;
-  }
-  .tab-panel{
-    height: 100%;
-    overflow-y: auto;
-  }
-  .tab-panel ::v-deep .el-tabs__nav-wrap{
-    padding: 0 10px;
-  }
-  .tab-panel ::v-deep .el-tabs__nav-wrap::after {
-    height: 1px;
-  }
-  .tab-panel ::v-deep .el-tabs__item{
-    /* width: 10px; */
-    padding: 0 10px;
-  }
-  .main-class {
-    border: 1px gainsboro solid;
-  }
+.ms-aside-container {
+  height: calc(100vh - 120px);
+  padding: 0px;
+  min-width: 260px;
+  max-width: 460px;
+}
 
-  ::v-deep .drag-bar{
-    height: calc(100vh - 120px)!important;
-  }
+.ms-main-container {
+  height: calc(100vh - 120px);
+  padding: 0px;
+}
 
-  .custom-position {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    flex-flow: row nowrap;
-    color: #9ea6b2;
-  }
+.tab-panel {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.tab-panel ::v-deep .el-tabs__nav-wrap {
+  padding: 0 10px;
+}
+
+.tab-panel ::v-deep .el-tabs__nav-wrap::after {
+  height: 1px;
+}
+
+.tab-panel ::v-deep .el-tabs__item {
+  /* width: 10px; */
+  padding: 0 10px;
+}
+
+.main-class {
+  border: 1px gainsboro solid;
+}
+
+::v-deep .drag-bar {
+  height: calc(100vh - 120px) !important;
+}
+
+.custom-position {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-flow: row nowrap;
+  color: #9ea6b2;
+}
 </style>
