@@ -114,7 +114,7 @@
       v-if="(curComponent&&curComponent.auxiliaryMatrix&&(curComponent.optStatus.dragging||curComponent.optStatus.resizing))||(dragComponentInfo)"
     />
     <!-- 右击菜单 -->
-    <ContextMenu/>
+    <ContextMenu />
     <!-- 标线 (临时去掉标线 吸附等功能)-->
     <!--    <MarkLine />-->
     <!-- 选中区域 -->

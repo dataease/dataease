@@ -120,7 +120,7 @@
       :canvas-id="canvasId"
     />
     <!-- 右击菜单 -->
-    <ContextMenu/>
+    <ContextMenu />
 
     <!-- 对齐标线 -->
     <span
@@ -160,7 +160,7 @@ import PGrid from './PGrid'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
-import DragShadow from '@/components/deDrag/shadow'
+import DragShadow from '@/components/deDrag/Shadow'
 import bus from '@/utils/bus'
 import LinkJumpSet from '@/views/panel/LinkJumpSet'
 import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
@@ -168,7 +168,7 @@ import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMat
 import _ from 'lodash'
 import _jq from 'jquery'
 import Background from '@/views/background/index'
-import PointShadow from '@/components/deDrag/pointShadow'
+import PointShadow from '@/components/deDrag/PointShadow'
 
 // let positionBox = []
 // let coordinates = [] // 坐标点集合
