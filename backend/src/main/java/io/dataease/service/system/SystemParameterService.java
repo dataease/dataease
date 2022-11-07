@@ -75,6 +75,9 @@ public class SystemParameterService {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.MSG_TIME_OUT.getValue())) {
                     result.setMsgTimeOut(param.getParamValue());
                 }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.LOG_TIME_OUT.getValue())) {
+                    result.setLogTimeOut(param.getParamValue());
+                }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.DEFAULT_LOGIN_TYPE.getValue())) {
                     String paramValue = param.getParamValue();
                     result.setLoginType(StringUtils.isNotBlank(paramValue) ? Integer.parseInt(paramValue) : 0);
