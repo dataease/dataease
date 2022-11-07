@@ -35,7 +35,7 @@
 
 <script>
 import { dateFormat } from '@/views/system/task/options.js'
-import DeDatePick from '@/components/deCustomCm/deDatePick.vue'
+import DeDatePick from '@/components/deCustomCm/DeDatePick.vue'
 export default {
   components: {
     DeDatePick

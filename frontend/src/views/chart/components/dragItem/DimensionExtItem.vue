@@ -54,11 +54,7 @@
           >{{ item.name }}</span>
           <field-error-tips v-if="tagType === 'danger'" />
           <span
-            v-if="item.summary"
-            class="summary-span"
-          >{{ $t('chart.'+item.summary) }}</span>
-          <span
-            v-if="item.deType === 1"
+            v-if="false && item.deType === 1"
             class="summary-span"
           >
             {{ $t('chart.' + item.dateStyle) }}
@@ -69,55 +65,33 @@
           />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-show="conf && conf.includes('summary')">
+          <el-dropdown-item>
             <el-dropdown
               placement="right-start"
               size="mini"
               style="width: 100%"
-              @command="summary"
+              @command="sort"
             >
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
-                  <i class="el-icon-notebook-2" />
-                  <span>{{ $t('chart.summary') }}</span>
-                  <span class="summary-span-item">({{ $t('chart.'+item.summary) }})</span>
+                  <i class="el-icon-sort" />
+                  <span>{{ $t('chart.sort') }}</span>
+                  <span class="summary-span-item">({{ $t('chart.'+item.sort) }})</span>
                 </span>
                 <i class="el-icon-arrow-right el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  v-if="item.id === 'count' || item.deType === 0 || item.deType === 1"
-                  :command="beforeSummary('count')"
-                >{{ $t('chart.count') }}</el-dropdown-item>
-                <el-dropdown-item
-                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1"
-                  :command="beforeSummary('sum')"
-                >{{ $t('chart.sum') }}</el-dropdown-item>
-                <el-dropdown-item
-                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1"
-                  :command="beforeSummary('avg')"
-                >{{ $t('chart.avg') }}</el-dropdown-item>
-                <el-dropdown-item
-                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1"
-                  :command="beforeSummary('max')"
-                >{{ $t('chart.max') }}</el-dropdown-item>
-                <el-dropdown-item
-                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1"
-                  :command="beforeSummary('min')"
-                >{{ $t('chart.min') }}</el-dropdown-item>
-                <el-dropdown-item
-                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1"
-                  :command="beforeSummary('stddev_pop')"
-                >{{ $t('chart.stddev_pop') }}</el-dropdown-item>
-                <el-dropdown-item
-                  v-if="item.id !== 'count' && item.deType !== 0 && item.deType !== 1"
-                  :command="beforeSummary('var_pop')"
-                >{{ $t('chart.var_pop') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
 
-          <el-dropdown-item v-show="item.deType === 1">
+          <el-dropdown-item
+            v-show="item.deType === 1"
+            divided
+          >
             <el-dropdown
               placement="right-start"
               size="mini"
@@ -136,7 +110,10 @@
                 <el-dropdown-item :command="beforeDateStyle('y')">{{ $t('chart.y') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M')">{{ $t('chart.y_M') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M_d')">{{ $t('chart.y_M_d') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeDateStyle('H_m_s')">{{ $t('chart.H_m_s') }}</el-dropdown-item>
+                <el-dropdown-item
+                  :command="beforeDateStyle('H_m_s')"
+                  divided
+                >{{ $t('chart.H_m_s') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m')">{{ $t('chart.y_M_d_H_m') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m_s')">{{ $t('chart.y_M_d_H_m_s') }}</el-dropdown-item>
               </el-dropdown-menu>
@@ -165,33 +142,11 @@
           </el-dropdown-item>
 
           <el-dropdown-item
-            v-show="conf && conf.includes('sort')"
-            :divided="item.deType === 1"
+            icon="el-icon-edit-outline"
+            divided
+            :command="beforeClickItem('rename')"
           >
-            <el-dropdown
-              placement="right-start"
-              size="mini"
-              style="width: 100%"
-              @command="sort"
-            >
-              <span class="el-dropdown-link inner-dropdown-menu">
-                <span>
-                  <i class="el-icon-sort" />
-                  <span>{{ $t('chart.sort') }}</span>
-                  <span class="summary-span-item">({{ $t('chart.'+item.sort) }})</span>
-                </span>
-                <i class="el-icon-arrow-right el-icon--right" />
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
-                <el-dropdown-item
-                  v-show="!item.chartId"
-                  :command="beforeSort('custom_sort')"
-                >{{ $t('chart.custom_sort') }}...</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <span>{{ $t('chart.show_name_set') }}</span>
           </el-dropdown-item>
           <el-dropdown-item
             icon="el-icon-delete"
@@ -207,12 +162,12 @@
 </template>
 
 <script>
-import { getItemType } from '@/views/chart/components/drag-item/utils'
-import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
+import { getItemType, getOriginFieldName } from '@/views/chart/components/dragItem/utils'
+import FieldErrorTips from '@/views/chart/components/dragItem/components/FieldErrorTips'
 import bus from '@/utils/bus'
 
 export default {
-  name: 'ChartDragItem',
+  name: 'DimensionExtItem',
   components: { FieldErrorTips },
   props: {
     param: {
@@ -227,10 +182,6 @@ export default {
       type: Number,
       required: true
     },
-    conf: {
-      type: String,
-      required: true
-    },
     dimensionData: {
       type: Array,
       required: true
@@ -242,14 +193,11 @@ export default {
   },
   data() {
     return {
-      tagType: 'success'
+      tagType: getItemType(this.dimensionData, this.quotaData, this.item)
     }
   },
   watch: {
     dimensionData: function() {
-      this.getItemTagType()
-    },
-    quotaData: function() {
       this.getItemTagType()
     },
     item: function() {
@@ -268,8 +216,14 @@ export default {
         return
       }
       switch (param.type) {
+        case 'rename':
+          this.showRename()
+          break
         case 'remove':
           this.removeItem()
+          break
+        case 'filter':
+          this.editFilter()
           break
         default:
           break
@@ -281,41 +235,17 @@ export default {
       }
     },
     sort(param) {
-      if (param.type === 'custom_sort') {
-        const item = {
-          index: this.index,
-          sort: param.type
-        }
-        this.$emit('onItemCustomSort', item)
-      } else {
-        this.item.index = this.index
-        this.item.sort = param.type
-        this.item.customSort = []
-        this.$emit('onItemChange', this.item)
-      }
+      this.item.sort = param.type
+      this.$emit('onDimensionItemChange', this.item)
     },
     beforeSort(type) {
       return {
         type: type
       }
     },
-    summary(param) {
-      this.item.summary = param.type
-      this.$emit('onItemChange', this.item)
-    },
-    beforeSummary(type) {
-      return {
-        type: type
-      }
-    },
-    removeItem() {
-      this.item.index = this.index
-      this.$emit('onItemRemove', this.item)
-    },
-
     dateStyle(param) {
       this.item.dateStyle = param.type
-      this.$emit('onItemChange', this.item)
+      this.$emit('onDimensionItemChange', this.item)
     },
     beforeDateStyle(type) {
       return {
@@ -324,12 +254,27 @@ export default {
     },
     datePattern(param) {
       this.item.datePattern = param.type
-      this.$emit('onItemChange', this.item)
+      this.$emit('onDimensionItemChange', this.item)
     },
     beforeDatePattern(type) {
       return {
         type: type
       }
+    },
+    editFilter() {
+      this.item.index = this.index
+      this.$emit('editItemFilter', this.item)
+    },
+    showRename() {
+      this.item.index = this.index
+      this.item.renameType = 'dimensionExt'
+      this.item.dsFieldName = getOriginFieldName(this.dimensionData, this.quotaData, this.item)
+      this.$emit('onNameEdit', this.item)
+    },
+    removeItem() {
+      this.item.index = this.index
+      this.item.removeType = 'dimensionExt'
+      this.$emit('onDimensionItemRemove', this.item)
     },
     getItemTagType() {
       this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
@@ -361,6 +306,13 @@ export default {
     font-size: 12px;
   }
 
+  .summary-span{
+    margin-left: 4px;
+    color: #878d9f;
+    position: absolute;
+    right: 25px;
+  }
+
   .inner-dropdown-menu{
     display: flex;
     justify-content: space-between;
@@ -370,7 +322,7 @@ export default {
 
   .item-span-style{
     display: inline-block;
-    width: 80px;
+    width: 100px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -379,12 +331,5 @@ export default {
   .summary-span-item{
     margin-left: 4px;
     color: #878d9f;
-  }
-
-  .summary-span{
-    margin-left: 4px;
-    color: #878d9f;
-    position: absolute;
-    right: 40px;
   }
 </style>

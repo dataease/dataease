@@ -131,7 +131,7 @@
 import { emailInfo, updateInfo, validate } from '@/api/system/email'
 import operator from './Operator'
 import msgCfm from '@/components/msgCfm'
-import dePwd from '@/components/deCustomCm/dePwd.vue'
+import dePwd from '@/components/deCustomCm/DePwd.vue'
 const list = ['host', 'port', 'account', 'password', 'ssl', 'tls', '', 'recipient']
 export default {
   name: 'EmailSetting',

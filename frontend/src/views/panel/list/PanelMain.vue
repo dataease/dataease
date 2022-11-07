@@ -51,7 +51,7 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import PanelList from '../list/PanelList'
 import PanelViewShow from '../list/PanelViewShow'
-import ShareTree from '../GrantAuth/shareTree'
+import ShareTree from '../grantAuth/ShareTree'
 import Enshrine from '../enshrine/index'
 import { pluginTypes } from '@/api/chart/chart'
 

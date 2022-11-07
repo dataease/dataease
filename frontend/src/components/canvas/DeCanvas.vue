@@ -112,7 +112,7 @@ import toast from '@/components/canvas/utils/toast'
 import generateID from '@/components/canvas/utils/generateID'
 import ButtonDialog from '@/views/panel/filter/ButtonDialog'
 import ButtonResetDialog from '@/views/panel/filter/ButtonResetDialog'
-import FilterDialog from '@/views/panel/filter/filterDialog'
+import FilterDialog from '@/views/panel/filter/FilterDialog'
 
 export default {
   components: { FilterDialog, ButtonResetDialog, ButtonDialog, DeEditor },

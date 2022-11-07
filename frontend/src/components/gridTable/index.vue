@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import tableBody from './tableBody'
+import tableBody from './TableBody'
 export default {
   components: { tableBody },
   props: {

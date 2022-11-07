@@ -37,16 +37,6 @@
               icon-class="field_location"
               class="field-icon-location"
             />
-            <svg-icon
-              v-if="item.sort === 'asc'"
-              icon-class="sort-asc"
-              class-name="field-icon-sort"
-            />
-            <svg-icon
-              v-if="item.sort === 'desc'"
-              icon-class="sort-desc"
-              class-name="field-icon-sort"
-            />
           </span>
           <span
             class="item-span-style"
@@ -60,7 +50,14 @@
         </el-tag>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item
+            icon="el-icon-files"
+            :command="beforeClickItem('filter')"
+          >
+            <span>{{ $t('chart.filter') }}...</span>
+          </el-dropdown-item>
+          <el-dropdown-item
             icon="el-icon-delete"
+            divided
             :command="beforeClickItem('remove')"
           >
             <span>{{ $t('chart.delete') }}</span>
@@ -72,12 +69,12 @@
 </template>
 
 <script>
-import { getItemType } from '@/views/chart/components/drag-item/utils'
-import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
+import { getItemType } from '@/views/chart/components/dragItem/utils'
+import FieldErrorTips from '@/views/chart/components/dragItem/components/FieldErrorTips'
 import bus from '@/utils/bus'
 
 export default {
-  name: 'DrillItem',
+  name: 'FilterItem',
   components: { FieldErrorTips },
   props: {
     param: {
@@ -132,6 +129,9 @@ export default {
         case 'remove':
           this.removeItem()
           break
+        case 'filter':
+          this.editFilter()
+          break
         default:
           break
       }
@@ -141,9 +141,13 @@ export default {
         type: type
       }
     },
+    editFilter() {
+      this.item.index = this.index
+      this.$emit('editItemFilter', this.item)
+    },
     removeItem() {
       this.item.index = this.index
-      this.$emit('onDimensionItemRemove', this.item)
+      this.$emit('onFilterItemRemove', this.item)
     },
     getItemTagType() {
       this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)

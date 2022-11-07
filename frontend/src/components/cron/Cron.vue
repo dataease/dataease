@@ -114,12 +114,12 @@
 </template>
 
 <script>
-import SecondAndMinute from './cron/secondAndMinute'
-import hour from './cron/hour'
-import day from './cron/day'
-import month from './cron/month'
-import week from './cron/week'
-import year from './cron/year'
+import SecondAndMinute from './cron/SecondAndMinute'
+import hour from './cron/Hour'
+import day from './cron/Day'
+import month from './cron/Month'
+import week from './cron/Week'
+import year from './cron/Year'
 export default {
   components: {
     SecondAndMinute, hour, day, month, week, year

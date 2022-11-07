@@ -231,7 +231,7 @@ import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import DragShadow from '@/components/deDrag/shadow'
 import bus from '@/utils/bus'
-import LinkJumpSet from '@/views/panel/LinkJumpSet'
+import LinkJumpSet from '@/views/panel/linkJumpSet'
 import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
 // 挤占式画布
 import _ from 'lodash'

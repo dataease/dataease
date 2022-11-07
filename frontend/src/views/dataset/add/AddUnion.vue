@@ -142,7 +142,7 @@
 <script>
 import UnionNode from '@/views/dataset/add/union/UnionNode'
 import NodeItem from '@/views/dataset/add/union/NodeItem'
-import datasetTree from '@/views/dataset/common/datasetTree'
+import datasetTree from '@/views/dataset/common/DatasetTree'
 import UnionEdit from '@/views/dataset/add/union/UnionEdit'
 import { post } from '@/api/dataset/dataset'
 import UnionPreview from '@/views/dataset/add/union/UnionPreview'

@@ -59,7 +59,7 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import DsTree from './DsTree'
 import DsForm from './DsForm'
-import dsTable from './dsTable'
+import dsTable from './DsTable'
 import DriverForm from './DriverFormDetail'
 export default {
   name: 'DsMain',

@@ -182,8 +182,8 @@ import bus from '@/utils/bus'
 import SettingMenu from '@/components/canvas/components/editor/SettingMenu'
 import LinkageField from '@/components/canvas/components/editor/LinkageField'
 import toast from '@/components/canvas/utils/toast'
-import FieldsList from '@/components/canvas/components/editor/fieldsList'
-import LinkJumpSet from '@/views/panel/LinkJumpSet'
+import FieldsList from '@/components/canvas/components/editor/FieldsList'
+import LinkJumpSet from '@/views/panel/linkJumpSet'
 import Background from '@/views/background/index'
 
 export default {

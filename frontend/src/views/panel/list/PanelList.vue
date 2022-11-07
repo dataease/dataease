@@ -426,11 +426,11 @@
 </template>
 
 <script>
-import GrantAuth from '../GrantAuth'
+import GrantAuth from '../grantAuth'
 import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
-import EditPanel from './EditPanel'
+import EditPanel from './editPanel'
 import { addGroup, defaultTree, delGroup, groupTree, initPanelData, panelUpdate, viewPanelLog } from '@/api/panel/panel'
 import { mapState } from 'vuex'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
