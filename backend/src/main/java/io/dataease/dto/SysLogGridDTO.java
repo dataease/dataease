@@ -22,4 +22,7 @@ public class SysLogGridDTO implements Serializable {
 
     @ApiModelProperty("操作时间")
     private Long time;
+
+    @ApiModelProperty("IP地址")
+    private String ip;
 }

@@ -9,6 +9,7 @@ import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.IPUtils;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.sys.base.ConditionEntity;
 import io.dataease.controller.sys.request.KeyGridRequest;
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -308,6 +310,7 @@ public class LogService {
         sysLogGridDTO.setTime(vo.getTime());
         sysLogGridDTO.setUser(vo.getNickName());
         sysLogGridDTO.setDetail(logManager.detailInfo(vo));
+        sysLogGridDTO.setIp(vo.getIp());
         return sysLogGridDTO;
     }
 
@@ -330,12 +333,14 @@ public class LogService {
             sysLogWithBLOBs.setLoginName(sysLogDTO.getSourceName());
             sysLogWithBLOBs.setNickName(sysLogDTO.getSourceName());
         }
+        sysLogWithBLOBs.setIp(IPUtils.get());
 
         sysLogMapper.insert(sysLogWithBLOBs);
     }
 
 
     public void exportExcel(KeyGridRequest request) throws Exception {
+        request = logRetentionProxy(request);
         request = detailRequest(request);
         String keyWord = request.getKeyWord();
         List<String> ids = null;
@@ -355,24 +360,25 @@ public class LogService {
             List<String[]> details = lists.stream().map(item -> {
                 String operateTypeName = SysLogConstants.operateTypeName(item.getOperateType());
                 String sourceTypeName = SysLogConstants.sourceTypeName(item.getSourceType());
-                String[] row = new String[4];
+                String[] row = new String[5];
                 row[0] = Translator.get(operateTypeName) + " " + Translator.get(sourceTypeName);
                 row[1] = logManager.detailInfo(item);
                 row[2] = item.getNickName();
-                row[3] = DateUtil.formatDateTime(new Date(item.getTime()));
+                row[3] = item.getIp();
+                row[4] = DateUtil.formatDateTime(new Date(item.getTime()));
                 return row;
             }).collect(Collectors.toList());
-            String[] headArr = {"操作类型", "详情", "用户", "时间"};
+            String[] headArr = {"操作类型", "详情", "用户", "IP地址", "时间"};
             details.add(0, headArr);
 
 
-            HSSFWorkbook wb = new HSSFWorkbook();
+            XSSFWorkbook wb = new XSSFWorkbook();
             //明细sheet
-            HSSFSheet detailsSheet = wb.createSheet("数据");
+            XSSFSheet detailsSheet = wb.createSheet("数据");
 
             //给单元格设置样式
-            CellStyle cellStyle = wb.createCellStyle();
-            Font font = wb.createFont();
+            XSSFCellStyle cellStyle = wb.createCellStyle();
+            XSSFFont font = wb.createFont();
             //设置字体大小
             font.setFontHeightInPoints((short) 12);
             //设置字体加粗
@@ -386,11 +392,11 @@ public class LogService {
 
             if (CollectionUtils.isNotEmpty(details)) {
                 for (int i = 0; i < details.size(); i++) {
-                    HSSFRow row = detailsSheet.createRow(i);
+                    XSSFRow row = detailsSheet.createRow(i);
                     String[] rowData = details.get(i);
                     if (rowData != null) {
                         for (int j = 0; j < rowData.length; j++) {
-                            HSSFCell cell = row.createCell(j);
+                            XSSFCell cell = row.createCell(j);
                             cell.setCellValue(rowData[j]);
                             if (i == 0) {// 头部
                                 cell.setCellStyle(cellStyle);
@@ -406,7 +412,7 @@ public class LogService {
             //文件名称
             String fileName = "DataEase操作日志";
             String encodeFileName = URLEncoder.encode(fileName, "UTF-8");
-            response.setHeader("Content-disposition", "attachment;filename=" + encodeFileName + ".xls");
+            response.setHeader("Content-disposition", "attachment;filename=" + encodeFileName + ".xlsx");
             wb.write(outputStream);
             outputStream.flush();
             outputStream.close();
