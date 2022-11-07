@@ -55,12 +55,19 @@
         </el-popover>
       </el-col>
       <el-col
-        v-if="hasDataPermission('manage', param.privileges)"
         style="text-align: right"
         :span="8"
       >
+        <deBtn
+          :disabled="!previewDataSuccess"
+          type="primary"
+          icon="el-icon-download"
+          @click="exportDataset"
+        >
+          {{ $t('dataset.export_dataset') }}
+        </deBtn>
         <el-dropdown
-          v-if="table.type === 'excel'"
+          v-if="table.type === 'excel' && hasDataPermission('manage', param.privileges)"
           size="small"
           trigger="click"
           placement="bottom-end"
@@ -81,7 +88,7 @@
           </el-dropdown-menu>
         </el-dropdown>
         <deBtn
-          v-if="['sql', 'union'].includes(table.type)"
+          v-if="['sql', 'union'].includes(table.type) && hasDataPermission('manage', param.privileges)"
           type="primary"
           @click="editDataset(table.type)"
         >
@@ -177,11 +184,66 @@
         />
       </el-tab-pane>
     </el-tabs>
+
+    <!--导出数据集弹框-->
+    <el-dialog
+      v-dialogDrag
+      :visible.sync="showExport"
+      width="600px"
+      class="de-dialog-form"
+      :title="$t('dataset.export_dataset')"
+      append-to-body
+    >
+      <el-form
+        ref="exportForm"
+        class="de-form-item"
+        :model="exportForm"
+        :rules="exportFormRules"
+        :before-close="closeExport"
+        @submit.native.prevent
+        @keypress.enter.native="exportDatasetRequest"
+      >
+        <el-form-item
+          :label="$t('dataset.filename')"
+          prop="name"
+        >
+          <el-input
+            v-model.trim="exportForm.name"
+            :placeholder="$t('dataset.pls_input_filename')"
+          />
+        </el-form-item>
+        <el-form-item
+          :label="$t('dataset.export_filter')"
+          prop="expressionTree"
+        >
+          <!--TODO 下面的input需用行权限的树形过滤组件替换-->
+          <el-input
+            v-model.trim="exportForm.expressionTree"
+            placeholder="请输入筛选条件"
+          />
+        </el-form-item>
+      </el-form>
+      <span class="tip">提示：最多支持导出10万条数据</span>
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <deBtn
+          secondary
+          @click="closeExport"
+        >{{ $t('dataset.cancel') }}</deBtn>
+        <deBtn
+          type="primary"
+          @click="exportDatasetRequest"
+        >{{ $t('dataset.confirm') }}
+        </deBtn>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { post } from '@/api/dataset/dataset'
+import { exportDataset, post } from '@/api/dataset/dataset'
 import TabDataPreview from './TabDataPreview'
 import UpdateInfo from './UpdateInfo'
 import DatasetDetail from '../common/DatasetDetail'
@@ -224,7 +286,27 @@ export default {
         row: 1000
       },
       tabStatus: false,
-      isPluginLoaded: false
+      isPluginLoaded: false,
+      showExport: false,
+      exportForm: {
+        name: '',
+        expressionTree: ''
+      },
+      exportFormRules: {
+        name: [
+          {
+            required: true,
+            message: this.$t('commons.input_content'),
+            trigger: 'change'
+          },
+          {
+            max: 50,
+            message: this.$t('commons.char_can_not_more_50'),
+            trigger: 'change'
+          }
+        ]
+      },
+      previewDataSuccess: false
     }
   },
   computed: {
@@ -294,11 +376,14 @@ export default {
             this.data = response.data.data
             this.page = response.data.page
             this.syncStatus = response.data.syncStatus
+            this.previewDataSuccess = true
             if (response.data.status === 'warnning') {
               this.$warning(response.data.msg, 3000)
+              this.previewDataSuccess = false
             }
             if (response.data.status === 'error') {
               this.$error(response.data.msg, 3000)
+              this.previewDataSuccess = false
             }
             this.lastRequestComplete = true
           })
@@ -311,6 +396,7 @@ export default {
               pageSize: 1000,
               show: 0
             }
+            this.previewDataSuccess = false
           })
       }
     },
@@ -365,6 +451,32 @@ export default {
           this.initTable(this.param.id)
         }
       }
+    },
+
+    exportDataset() {
+      this.showExport = true
+      this.exportForm.name = this.table.name
+      this.exportForm.expressionTree = ''
+    },
+    closeExport() {
+      this.showExport = false
+    },
+    exportDatasetRequest() {
+      if (this.table.id) {
+        this.table.row = 100000
+        this.table.filename = this.exportForm.name
+        this.table.expressionTree = this.exportForm.expressionTree
+        exportDataset(this.table).then((res) => {
+          const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+          const link = document.createElement('a')
+          link.style.display = 'none'
+          link.href = URL.createObjectURL(blob)
+          link.download = this.exportForm.name + '.xlsx' // 下载的文件名
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        })
+      }
     }
   }
 }
@@ -377,6 +489,11 @@ export default {
 
 .blackTheme .icon-class {
   color: #cccccc;
+}
+
+.tip {
+  color: #F56C6C;
+  font-size: 12px;
 }
 </style>
 <style lang="scss" scoped>

@@ -46,7 +46,7 @@ public class ChartViewFieldController {
             BeanUtils.copyProperties(datasetTable, dataSetTableRequest);
             DatasetTableField datasetTableField = new DatasetTableField();
             BeanUtils.copyProperties(chartViewField, datasetTableField);
-            dataSetTableService.getPreviewData(dataSetTableRequest, 1, 1, Collections.singletonList(datasetTableField));
+            dataSetTableService.getPreviewData(dataSetTableRequest, 1, 1, Collections.singletonList(datasetTableField), null);
         } catch (Exception e) {
             DEException.throwException(Translator.get("i18n_calc_field_error"));
         }

@@ -11,6 +11,7 @@ import io.dataease.commons.constants.*;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.ResultHolder;
+import io.dataease.controller.request.dataset.DataSetExportRequest;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.DataSetTaskRequest;
@@ -32,11 +33,13 @@ import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
+import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeObj;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.loader.ClassloaderResponsity;
@@ -61,8 +64,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,6 +75,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -558,7 +562,7 @@ public class DataSetTableService {
     }
 
     public Map<String, Object> getPreviewData(DataSetTableRequest dataSetTableRequest, Integer page, Integer pageSize,
-                                              List<DatasetTableField> extFields) throws Exception {
+                                              List<DatasetTableField> extFields, DatasetRowPermissionsTreeObj extTree) throws Exception {
         Map<String, Object> map = new HashMap<>();
         String syncStatus = "";
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(dataSetTableRequest.getId())
@@ -576,6 +580,12 @@ public class DataSetTableService {
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(dataSetTableRequest.getId());
         // 行权限
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionsTreeService.getRowPermissionsTree(fields, datasetTable, null);
+        // ext filter
+        if (extTree != null) {
+            DataSetRowPermissionsTreeDTO dto = new DataSetRowPermissionsTreeDTO();
+            dto.setTree(extTree);
+            rowPermissionsTree.add(dto);
+        }
         // 列权限
         List<String> desensitizationList = new ArrayList<>();
         fields = permissionService.filterColumnPermissions(fields, desensitizationList, datasetTable.getId(), null);
@@ -2868,5 +2878,86 @@ public class DataSetTableService {
 
     public void updateDatasetInfo(DatasetTable datasetTable) {
         datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+    }
+
+    public void exportDataset(DataSetExportRequest request, HttpServletResponse response) throws Exception {
+        try {
+            DatasetRowPermissionsTreeObj tree = null;
+            if (StringUtils.isNotEmpty(request.getExpressionTree())) {
+                Gson gson = new Gson();
+                tree = gson.fromJson(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
+            }
+            Map<String, Object> previewData = getPreviewData(request, 1, 100000, null, tree);
+            List<DatasetTableField> fields = (List<DatasetTableField>) previewData.get("fields");
+            List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
+            // 构建Excel数据格式
+            List<List<String>> details = new ArrayList<>();
+            List<String> header = new ArrayList<>();
+            for (DatasetTableField field : fields) {
+                header.add(field.getName());
+            }
+            details.add(header);
+            for (Map<String, Object> obj : data) {
+                List<String> row = new ArrayList<>();
+                for (DatasetTableField field : fields) {
+                    String string = (String) obj.get(field.getDataeaseName());
+                    row.add(string);
+                }
+                details.add(row);
+            }
+            // 操作Excel
+            Workbook wb = new XSSFWorkbook();
+            // Sheet
+            Sheet detailsSheet = wb.createSheet("数据");
+            //给单元格设置样式
+            CellStyle cellStyle = wb.createCellStyle();
+            Font font = wb.createFont();
+            //设置字体大小
+            font.setFontHeightInPoints((short) 12);
+            //设置字体加粗
+            font.setBold(true);
+            //给字体设置样式
+            cellStyle.setFont(font);
+            //设置单元格背景颜色
+            cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            //设置单元格填充样式(使用纯色背景颜色填充)
+            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            if (CollectionUtils.isNotEmpty(details)) {
+                for (int i = 0; i < details.size(); i++) {
+                    Row row = detailsSheet.createRow(i);
+                    List<String> rowData = details.get(i);
+                    if (rowData != null) {
+                        for (int j = 0; j < rowData.size(); j++) {
+                            Cell cell = row.createCell(j);
+                            if (i == 0) {// 头部
+                                cell.setCellValue(rowData.get(j));
+                                cell.setCellStyle(cellStyle);
+                                //设置列的宽度
+                                detailsSheet.setColumnWidth(j, 255 * 20);
+                            } else {
+                                if ((fields.get(j).getDeType() == DeTypeConstants.DE_INT || fields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
+                                    try {
+                                        cell.setCellValue(Double.valueOf(rowData.get(j)));
+                                    } catch (Exception e) {
+                                        LogUtil.warn("export excel data transform error");
+                                    }
+                                } else {
+                                    cell.setCellValue(rowData.get(j));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            OutputStream outputStream = response.getOutputStream();
+            response.setContentType("application/vnd.ms-excel");
+            //文件名称
+            response.setHeader("Content-disposition", "attachment;filename=" + request.getFilename() + ".xlsx");
+            wb.write(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        } catch (Exception e) {
+            DataEaseException.throwException(e);
+        }
     }
 }
