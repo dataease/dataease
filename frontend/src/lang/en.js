@@ -2501,6 +2501,7 @@ export default {
     start_time: 'Start time',
     end_time: 'End time',
     chart_data: 'View data',
+    panel_preview: 'Preview panel',
     preview: 'Preview',
     emial_preview: 'Emial preview',
     chart_data_range: 'View data range',
