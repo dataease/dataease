@@ -2605,7 +2605,8 @@ export default {
     time: 'Time',
     export: 'Export',
     confirm: 'Sure Export ?',
-    search_by_key: 'Search by key'
+    search_by_key: 'Search by key',
+    ip: 'IP'
   },
   plugin_style: {
     border: 'Border'

@@ -2606,7 +2606,8 @@ export default {
     time: '操作时间',
     export: '导出',
     confirm: '确定导出吗？',
-    search_by_key: '搜索详情'
+    search_by_key: '搜索详情',
+    ip: 'IP地址'
   },
   plugin_style: {
     border: '边框'
