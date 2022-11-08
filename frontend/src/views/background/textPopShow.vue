@@ -1,8 +1,13 @@
 <template>
   <div>
-    <p>预览</p>
     <div>
-      aaaaaaaaaaaaaaa
+      <el-carousel trigger="click" :interval="3000" height="340px">
+        <el-carousel-item v-for="(item,ind) in fileList" :key="ind">
+          <div style="width: 100%;height: 100%;overflow-y: scroll;">
+            <img :src="item.url" alt="" style="width: 100%;">
+          </div>
+        </el-carousel-item>
+      </el-carousel>
     </div>
   </div>
 </template>
@@ -24,16 +29,24 @@ export default {
     }
   },
   computed: {
+    fileList() {
+      if(this.curComponent && this.curComponent.options) {
+        return this.curComponent.options.popImgList
+      } else {
+        return []
+      }
+      
+    },
     ...mapState([
       'curComponent',
       'componentData'
     ])
   },
   mounted() {
-
+    console.log('数据1',this.curComponent)
   },
   methods: {
-
+    
   }
 }
 </script>

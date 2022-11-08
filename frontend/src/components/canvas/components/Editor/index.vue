@@ -371,7 +371,7 @@ import weatherSet from '@/views/background/weatherSet'
 import setCustom from '@/views/background/setCustom'
 import jumpSet from '@/views/background/jumpSet'
 import textPopSet from '@/views/background/textPopSet'
-import textPopShow from '@/views/background/textPopShow'
+
 
 import { events } from '../../../DeDrag/option.js'
 import { addEvent, removeEvent } from '../../../../utils/dom.js'
@@ -942,7 +942,7 @@ function getoPsitionBox() {
 }
 
 export default {
-  components: { Background, tabSet, pictureSet, setCustom, weatherSet, jumpSet, textPopSet, textPopShow, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
+  components: { Background, tabSet, pictureSet, setCustom, weatherSet, jumpSet, textPopSet, BannerSet, iconSet, navgationSet, Shape, ContextMenu, MarkLine, Area, Grid, PGrid, DeDrag, UserViewDialog, DeOutWidget, CanvasOptBar, DragShadow, LinkJumpSet },
   props: {
     isEdit: {
       type: Boolean,
