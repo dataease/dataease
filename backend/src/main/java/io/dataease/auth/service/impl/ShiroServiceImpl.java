@@ -118,6 +118,7 @@ public class ShiroServiceImpl implements ShiroService {
 
         filterChainDefinitionMap.put("/api/link/resourceDetail/**", "link");
         filterChainDefinitionMap.put("/api/link/viewDetail/**", "link");
+        filterChainDefinitionMap.put("/api/link/viewLog", "link");
         filterChainDefinitionMap.put("/panel/group/exportDetails", ANON);
         filterChainDefinitionMap.put("/dataset/field/linkMultFieldValues", "link");
         filterChainDefinitionMap.put("/dataset/field/linkMappingFieldValues", "link");

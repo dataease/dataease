@@ -3,6 +3,9 @@ package io.dataease.controller.panel.server;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import io.dataease.auth.filter.F2CLinkFilter;
+import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.commons.utils.DeLogUtils;
+import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
 import io.dataease.plugins.common.base.domain.PanelLink;
 import io.dataease.controller.panel.api.LinkApi;
 import io.dataease.controller.request.chart.ChartExtRequest;
@@ -110,5 +113,20 @@ public class LinkServer implements LinkApi {
     public String shortUrl(Map<String, String> param) {
         String resourceId = param.get("resourceId");
         return panelLinkService.getShortUrl(resourceId);
+    }
+
+    @Override
+    public void viewLinkLog(LinkViewLogRequest request) {
+        String panelId = request.getPanelId();
+        Boolean mobile = request.getMobile();
+        Long userId = request.getUserId();
+        SysLogConstants.OPERATE_TYPE operateType = SysLogConstants.OPERATE_TYPE.PC_VIEW;
+        if (ObjectUtils.isNotEmpty(mobile) && mobile) {
+            operateType = SysLogConstants.OPERATE_TYPE.MB_VIEW;
+        }
+        if (ObjectUtils.isEmpty(userId)) return;
+        PanelGroupWithBLOBs panelGroupWithBLOBs = panelLinkService.resourceInfo(panelId);
+        String pid = panelGroupWithBLOBs.getPid();
+        DeLogUtils.save(operateType, SysLogConstants.SOURCE_TYPE.LINK, panelId, pid, userId, SysLogConstants.SOURCE_TYPE.USER);
     }
 }

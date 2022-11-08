@@ -915,6 +915,7 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    suspension: 'Suspension',
     chart_background: 'Component background',
     solid_color: 'Solid color',
     split_gradient: 'Split gradient',
@@ -2605,7 +2606,8 @@ export default {
     time: 'Time',
     export: 'Export',
     confirm: 'Sure Export ?',
-    search_by_key: 'Search by key'
+    search_by_key: 'Search by key',
+    ip: 'IP'
   },
   plugin_style: {
     border: 'Border'

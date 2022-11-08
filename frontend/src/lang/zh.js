@@ -914,6 +914,7 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    suspension: '悬浮',
     chart_background: '组件背景',
     solid_color: '纯色',
     split_gradient: '分离渐变',
@@ -2606,7 +2607,8 @@ export default {
     time: '操作时间',
     export: '导出',
     confirm: '确定导出吗？',
-    search_by_key: '搜索详情'
+    search_by_key: '搜索详情',
+    ip: 'IP地址'
   },
   plugin_style: {
     border: '边框'

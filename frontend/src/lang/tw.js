@@ -915,6 +915,7 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    suspension: '懸浮',
     chart_background: '組件背景',
     solid_color: '純色',
     split_gradient: '分離漸變',
@@ -2606,7 +2607,8 @@ export default {
     time: '操作時間',
     export: '導出',
     confirm: '確定導出嗎？',
-    search_by_key: '搜索詳情'
+    search_by_key: '搜索詳情',
+    ip: 'IP地址'
   },
   plugin_style: {
     border: '邊框'

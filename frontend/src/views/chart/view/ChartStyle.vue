@@ -121,6 +121,19 @@
               @onTotalCfgChange="onTotalCfgChange($event,'total-cfg')"
             />
           </el-collapse-item>
+          <el-collapse-item
+            v-show="showPropertiesCollapse(['suspension-selector'])"
+            name="suspension"
+            :title="$t('chart.suspension')"
+          >
+            <suspension-selector
+              :param="param"
+              class="attr-selector"
+              :chart="chart"
+              :property-inner="propertyInnerAll['suspension-selector']"
+              @onSuspensionChange="onSuspensionChange($event,'suspension-selector')"
+            />
+          </el-collapse-item>
         </el-collapse>
       </el-row>
       <el-row class="de-collapse-style">
@@ -317,6 +330,7 @@ import LegendSelectorAntV from '@/views/chart/components/componentStyle/LegendSe
 import BackgroundColorSelector from '@/views/chart/components/componentStyle/BackgroundColorSelector'
 import SplitSelector from '@/views/chart/components/componentStyle/SplitSelector'
 import SplitSelectorAntV from '@/views/chart/components/componentStyle/SplitSelectorAntV'
+import SuspensionSelector from '@/components/suspensionSelector'
 import { mapState } from 'vuex'
 
 export default {
@@ -344,7 +358,8 @@ export default {
     SizeSelector,
     ColorSelector,
     MarginSelector,
-    PluginCom
+    PluginCom,
+    SuspensionSelector
   },
   props: {
     chart: {
@@ -421,6 +436,10 @@ export default {
     onColorChange(val, propertyName) {
       val['propertyName'] = propertyName
       this.$emit('onColorChange', val)
+    },
+    onSuspensionChange(val, propertyName) {
+      val['propertyName'] = propertyName
+      this.$emit('onSuspensionChange', val)
     },
     onSizeChange(val, propertyName) {
       val['propertyName'] = propertyName

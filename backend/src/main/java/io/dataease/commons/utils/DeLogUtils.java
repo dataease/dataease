@@ -34,14 +34,14 @@ public class DeLogUtils {
         DeLogUtils.logService = logService;
     }
 
-    public static SysLogDTO buildLog(OPERATE_TYPE operatetype, SOURCE_TYPE sourcetype, Object sourceIdValue, Object targetId, SOURCE_TYPE target_type ) {
+    public static SysLogDTO buildLog(OPERATE_TYPE operatetype, SOURCE_TYPE sourcetype, Object sourceIdValue, Object targetId, SOURCE_TYPE target_type) {
         SysLogDTO sysLogDTO = buildLog(operatetype, sourcetype, sourceIdValue, null, targetId, target_type);
         if (sourcetype == SysLogConstants.SOURCE_TYPE.DATASOURCE) {
             FolderItem folderItem = logManager.dsTypeInfoById(sourceIdValue.toString());
             List<FolderItem> items = new ArrayList<>();
             items.add(folderItem);
             sysLogDTO.setPositions(items);
-        }else {
+        } else {
             List<FolderItem> parentsAndSelf = logManager.justParents(sourceIdValue.toString(), sourcetype);
             sysLogDTO.setPositions(parentsAndSelf);
         }
@@ -66,7 +66,7 @@ public class DeLogUtils {
         return sysLogDTO;
     }
 
-    public static SysLogDTO buildLog(OPERATE_TYPE operatetype, SOURCE_TYPE sourcetype, Object sourceIdValue, Object positionId, Object targetId, SOURCE_TYPE target_type ) {
+    public static SysLogDTO buildLog(OPERATE_TYPE operatetype, SOURCE_TYPE sourcetype, Object sourceIdValue, Object positionId, Object targetId, SOURCE_TYPE target_type) {
         SysLogDTO sysLogDTO = new SysLogDTO();
         sysLogDTO.setOperateType(operatetype.getValue());
         sysLogDTO.setSourceType(sourcetype.getValue());
@@ -83,14 +83,14 @@ public class DeLogUtils {
                 List<FolderItem> items = new ArrayList<>();
                 items.add(folderItem);
                 sysLogDTO.setPositions(items);
-            }else {
-                if(sourcetype == SOURCE_TYPE.DRIVER_FILE){
+            } else {
+                if (sourcetype == SOURCE_TYPE.DRIVER_FILE) {
                     List<FolderItem> parentsAndSelf = logManager.parentsAndSelf(positionId.toString(), SOURCE_TYPE.DRIVER);
                     sysLogDTO.setPositions(parentsAndSelf);
-                }else if(sourcetype == SOURCE_TYPE.VIEW){
+                } else if (sourcetype == SOURCE_TYPE.VIEW || sourcetype == SOURCE_TYPE.LINK) {
                     List<FolderItem> parentsAndSelf = logManager.parentsAndSelf(positionId.toString(), SOURCE_TYPE.PANEL);
                     sysLogDTO.setPositions(parentsAndSelf);
-                }else {
+                } else {
                     List<FolderItem> parentsAndSelf = logManager.parentsAndSelf(positionId.toString(), sourcetype);
                     sysLogDTO.setPositions(parentsAndSelf);
                 }
