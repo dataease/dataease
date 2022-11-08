@@ -41,4 +41,6 @@ public class ChartViewDTO extends ChartViewWithBLOBs {
     private String yAxis;
     @SerializedName("yaxisExt")
     private String yAxisExt;
+
+    private long totalPage;
 }
