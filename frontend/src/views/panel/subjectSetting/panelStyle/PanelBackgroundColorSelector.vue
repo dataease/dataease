@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import BackgroundColorSelector from '@/views/chart/components/component-style/BackgroundColorSelector'
+import BackgroundColorSelector from '@/views/chart/components/componentStyle/BackgroundColorSelector'
 
 export default {
   components: { BackgroundColorSelector },

@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import Editor from '@/components/Editor/index'
+import Editor from '@/components/editor/index'
 import componentList from '@/components/canvas/customComponent/component-list' // 左侧列表数据
 import Toolbar from '@/components/Toolbar'
 import { deepCopy } from '@/utils/utils'

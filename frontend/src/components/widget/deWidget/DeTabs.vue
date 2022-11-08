@@ -214,14 +214,14 @@
 
 <script>
 import DataeaseTabs from '@/components/dataeaseTabs'
-import ViewSelect from '@/views/panel/ViewSelect'
+import ViewSelect from '@/views/panel/viewSelect'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import componentList from '@/components/canvas/customComponent/component-list'
 import { mapState } from 'vuex'
 import { chartCopy } from '@/api/chart/chart'
 import { buildFilterMap } from '@/utils/conditionUtil'
-import TabUseList from '@/views/panel/AssistComponent/tabUseList'
+import TabUseList from '@/views/panel/assistComponent/TabUseList'
 import { findPanelElementInfo } from '@/api/panel/panel'
 import { getNowCanvasComponentData } from '@/components/canvas/utils/utils'
 import DeCanvasTab from '@/components/canvas/DeCanvas'

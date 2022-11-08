@@ -315,7 +315,7 @@ import {
   listDriverByType,
   updateDriver
 } from '@/api/system/datasource'
-import deTextarea from '@/components/deCustomCm/deTextarea.vue'
+import deTextarea from '@/components/deCustomCm/DeTextarea.vue'
 import msgCfm from '@/components/msgCfm'
 export default {
   name: 'DsTree',

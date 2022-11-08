@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import dePwd from '@/components/deCustomCm/dePwd.vue'
+import dePwd from '@/components/deCustomCm/DePwd.vue'
 export default {
   name: 'ApiAuthConfig',
   components: { dePwd },

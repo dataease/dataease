@@ -241,14 +241,14 @@
 
 <script>
 import { compareItem } from '@/views/chart/chart/compare'
-import { getItemType, getOriginFieldName } from '@/views/chart/components/drag-item/utils'
-import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
+import { getItemType, getOriginFieldName } from '@/views/chart/components/dragItem/utils'
+import FieldErrorTips from '@/views/chart/components/dragItem/components/FieldErrorTips'
 import bus from '@/utils/bus'
 import { formatterItem } from '@/views/chart/chart/formatter'
 import { quotaViews } from '@/views/chart/chart/util'
 
 export default {
-  name: 'QuotaExtItem',
+  name: 'QuotaItem',
   components: { FieldErrorTips },
   props: {
     param: {
@@ -286,10 +286,7 @@ export default {
     }
   },
   watch: {
-    'chart.xaxis': function() {
-      this.isEnableCompare()
-    },
-    'chart.extStack': function() {
+    'chart': function() {
       this.isEnableCompare()
     },
     quotaData: function() {
@@ -418,24 +415,24 @@ export default {
     },
     showRename() {
       this.item.index = this.index
-      this.item.renameType = 'quotaExt'
+      this.item.renameType = 'quota'
       this.item.dsFieldName = getOriginFieldName(this.dimensionData, this.quotaData, this.item)
       this.$emit('onNameEdit', this.item)
     },
     removeItem() {
       this.item.index = this.index
-      this.item.removeType = 'quotaExt'
+      this.item.removeType = 'quota'
       this.$emit('onQuotaItemRemove', this.item)
     },
     editFilter() {
       this.item.index = this.index
-      this.item.filterType = 'quotaExt'
+      this.item.filterType = 'quota'
       this.$emit('editItemFilter', this.item)
     },
 
     editCompare() {
       this.item.index = this.index
-      this.item.calcType = 'quotaExt'
+      this.item.calcType = 'quota'
       this.$emit('editItemCompare', this.item)
     },
     getItemTagType() {

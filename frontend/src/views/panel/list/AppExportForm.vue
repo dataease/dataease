@@ -90,7 +90,7 @@
 
 <script>
 import i18n from '@/lang/index'
-import deTextarea from '@/components/deCustomCm/deTextarea.vue'
+import deTextarea from '@/components/deCustomCm/DeTextarea.vue'
 import msgCfm from '@/components/msgCfm'
 
 export default {

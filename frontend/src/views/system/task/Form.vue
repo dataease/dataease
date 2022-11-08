@@ -257,7 +257,7 @@ import DeLayoutContent from '@/components/business/DeLayoutContent'
 import { hasDataPermission } from '@/utils/permission'
 import msgCfm from '@/components/msgCfm/index'
 
-import cron from '@/components/cron/cron'
+import cron from '@/components/cron/Cron'
 import { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/eclipse.css'

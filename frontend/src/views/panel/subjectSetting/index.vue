@@ -65,16 +65,16 @@
 </template>
 
 <script>
-import slider from './PreSubject/Slider'
-import BackgroundSelector from './PanelStyle/BackgroundSelector'
-import PanelColorSelector from './PanelStyle/PanelColorSelector'
+import slider from './preSubject/Slider'
+import BackgroundSelector from './panelStyle/BackgroundSelector'
+import PanelColorSelector from './panelStyle/PanelColorSelector'
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
-import OverallSetting from '@/views/panel/SubjectSetting/PanelStyle/OverallSetting'
-import ViewTitle from '@/views/panel/SubjectSetting/PanelStyle/ViewTitle'
-import ComponentStyle from '@/views/panel/SubjectSetting/PanelStyle/ComponentStyle'
+import OverallSetting from '@/views/panel/subjectSetting/panelStyle/OverallSetting'
+import ViewTitle from '@/views/panel/subjectSetting/panelStyle/ViewTitle'
+import ComponentStyle from '@/views/panel/subjectSetting/panelStyle/ComponentStyle'
 import { adaptCurThemeCommonStyleAll } from '@/components/canvas/utils/style'
-import FilterStyleSelector from '@/views/panel/SubjectSetting/PanelStyle/FilterStyleSelector'
+import FilterStyleSelector from '@/views/panel/subjectSetting/panelStyle/FilterStyleSelector'
 
 export default {
   components: {

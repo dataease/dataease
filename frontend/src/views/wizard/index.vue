@@ -134,9 +134,9 @@
 <script>
 
 import { blogLastActive } from '@/api/wizard/wizard'
-import WizardCard from '@/views/wizard/wizardCard'
-import VideoCard from '@/views/wizard/videoCard'
-import WizardCardEnterprise from '@/views/wizard/wizardCardEnterprise'
+import WizardCard from '@/views/wizard/WizardCard'
+import VideoCard from '@/views/wizard/VideoCard'
+import WizardCardEnterprise from '@/views/wizard/WizardCardEnterprise'
 
 export default {
   name: 'Wizard',

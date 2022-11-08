@@ -23,10 +23,10 @@ import './utils/dialog'
 import DeComplexInput from '@/components/business/conditionTable/DeComplexInput'
 import DeComplexSelect from '@/components/business/conditionTable/DeComplexSelect'
 import DeViewSelect from '@/components/deViewSelect'
-import RemarkEditor from '@/views/chart/components/component-style/dialog/RemarkEditor'
+import RemarkEditor from '@/views/chart/components/componentStyle/dialog/RemarkEditor'
 import TitleRemark from '@/views/chart/view/TitleRemark'
 import '@/components/canvas/customComponent' // 注册自定义组件
-import deBtn from '@/components/deCustomCm/deBtn.vue'
+import deBtn from '@/components/deCustomCm/DeBtn.vue'
 
 import '@/utils/DateUtil'
 import draggable from 'vuedraggable'

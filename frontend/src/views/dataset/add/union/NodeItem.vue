@@ -162,7 +162,7 @@
 </template>
 
 <script>
-import datasetTree from '@/views/dataset/common/datasetTree'
+import datasetTree from '@/views/dataset/common/DatasetTree'
 import UnionFieldEdit from '@/views/dataset/add/union/UnionFieldEdit'
 export default {
   name: 'NodeItem',

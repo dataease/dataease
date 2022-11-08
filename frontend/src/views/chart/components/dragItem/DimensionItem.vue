@@ -47,6 +47,11 @@
               icon-class="sort-desc"
               class-name="field-icon-sort"
             />
+            <svg-icon
+              v-if="item.sort === 'custom_sort'"
+              icon-class="custom_sort"
+              class-name="field-icon-sort"
+            />
           </span>
           <span
             class="item-span-style"
@@ -84,10 +89,13 @@
                 <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-show="!item.chartId && (item.deType === 0 || item.deType === 5)"
+                  :command="beforeSort('custom_sort')"
+                >{{ $t('chart.custom_sort') }}...</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-
           <el-dropdown-item
             v-show="item.deType === 1"
             divided
@@ -142,6 +150,14 @@
           </el-dropdown-item>
 
           <el-dropdown-item
+            v-if="chart.render === 'antv' && chart.type.includes('table') && item.groupType === 'q'"
+            icon="el-icon-notebook-2"
+            divided
+            :command="beforeClickItem('formatter')"
+          >
+            <span>{{ $t('chart.value_formatter') }}...</span>
+          </el-dropdown-item>
+          <el-dropdown-item
             icon="el-icon-edit-outline"
             divided
             :command="beforeClickItem('rename')"
@@ -162,12 +178,13 @@
 </template>
 
 <script>
-import { getItemType, getOriginFieldName } from '@/views/chart/components/drag-item/utils'
-import FieldErrorTips from '@/views/chart/components/drag-item/components/FieldErrorTips'
+import { getItemType, getOriginFieldName } from '@/views/chart/components/dragItem/utils'
+import FieldErrorTips from '@/views/chart/components/dragItem/components/FieldErrorTips'
 import bus from '@/utils/bus'
+import { formatterItem } from '@/views/chart/chart/formatter'
 
 export default {
-  name: 'DimensionExtItem',
+  name: 'DimensionItem',
   components: { FieldErrorTips },
   props: {
     param: {
@@ -182,6 +199,10 @@ export default {
       type: Number,
       required: true
     },
+    chart: {
+      type: Object,
+      required: true
+    },
     dimensionData: {
       type: Array,
       required: true
@@ -193,7 +214,8 @@ export default {
   },
   data() {
     return {
-      tagType: getItemType(this.dimensionData, this.quotaData, this.item)
+      tagType: 'success',
+      formatterItem: formatterItem
     }
   },
   watch: {
@@ -206,11 +228,17 @@ export default {
   },
   mounted() {
     bus.$on('reset-change-table', this.getItemTagType)
+    this.init()
   },
   beforeDestroy() {
     bus.$off('reset-change-table', this.getItemTagType)
   },
   methods: {
+    init() {
+      if (!this.item.formatterCfg) {
+        this.item.formatterCfg = JSON.parse(JSON.stringify(this.formatterItem))
+      }
+    },
     clickItem(param) {
       if (!param) {
         return
@@ -225,6 +253,9 @@ export default {
         case 'filter':
           this.editFilter()
           break
+        case 'formatter':
+          this.valueFormatter()
+          break
         default:
           break
       }
@@ -235,8 +266,18 @@ export default {
       }
     },
     sort(param) {
-      this.item.sort = param.type
-      this.$emit('onDimensionItemChange', this.item)
+      if (param.type === 'custom_sort') {
+        const item = {
+          index: this.index,
+          sort: param.type
+        }
+        this.$emit('onCustomSort', item)
+      } else {
+        this.item.index = this.index
+        this.item.sort = param.type
+        this.item.customSort = []
+        this.$emit('onDimensionItemChange', this.item)
+      }
     },
     beforeSort(type) {
       return {
@@ -267,17 +308,23 @@ export default {
     },
     showRename() {
       this.item.index = this.index
-      this.item.renameType = 'dimensionExt'
+      this.item.renameType = 'dimension'
       this.item.dsFieldName = getOriginFieldName(this.dimensionData, this.quotaData, this.item)
       this.$emit('onNameEdit', this.item)
     },
     removeItem() {
       this.item.index = this.index
-      this.item.removeType = 'dimensionExt'
+      this.item.removeType = 'dimension'
       this.$emit('onDimensionItemRemove', this.item)
     },
     getItemTagType() {
       this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
+    },
+
+    valueFormatter() {
+      this.item.index = this.index
+      this.item.formatterType = 'dimension'
+      this.$emit('valueFormatter', this.item)
     }
   }
 }

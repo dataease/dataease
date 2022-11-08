@@ -27,7 +27,7 @@ import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import Group from './group/Group'
 
-import noSelect from './data/noSelect'
+import noSelect from './data/NoSelect'
 import ViewTable from './data/ViewTable'
 import FieldEdit from './data/FieldEdit'
 import { removeClass } from '@/utils'

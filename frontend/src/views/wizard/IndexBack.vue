@@ -37,14 +37,14 @@
 
 <script>
 
-import Card from '@/views/wizard/card'
+import Card from '@/views/wizard/Card'
 import DemoVideo from '@/views/wizard/details/DemoVideo'
 import OnlineDocument from '@/views/wizard/details/OnlineDocument'
 import LatestDevelopments from '@/views/wizard/details/LatestDevelopments'
 import TeachingVideo from '@/views/wizard/details/TeachingVideo'
 import EnterpriseEdition from '@/views/wizard/details/EnterpriseEdition'
 import ContactUs from '@/views/wizard/details/ContactUs'
-import InfoCard from '@/views/wizard/infoCard'
+import InfoCard from '@/views/wizard/InfoCard'
 import CardDetail from '@/views/wizard/details/CardDetail'
 import { blogLastActive } from '@/api/wizard/wizard'
 
