@@ -190,7 +190,7 @@
       v-dialogDrag
       :visible.sync="showExport"
       width="600px"
-      class="de-dialog-form"
+      class="de-dialog-form form-tree-cont"
       :title="$t('dataset.export_dataset')"
       append-to-body
     >
@@ -216,11 +216,9 @@
           :label="$t('dataset.export_filter')"
           prop="expressionTree"
         >
-          <!--TODO 下面的input需用行权限的树形过滤组件替换-->
-          <el-input
-            v-model.trim="exportForm.expressionTree"
-            placeholder="请输入筛选条件"
-          />
+          <div class="tree-cont">
+            <rowAuth ref="rowAuth" />
+          </div>
         </el-form-item>
       </el-form>
       <span class="tip">提示：最多支持导出10万条数据</span>
@@ -251,6 +249,8 @@ import FieldEdit from './FieldEdit'
 import { pluginLoaded } from '@/api/user'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import UpdateRecords from './UpdateRecords'
+import rowAuth from './components/rowAuth.vue'
+
 export default {
   name: 'ViewTable',
   components: {
@@ -259,7 +259,13 @@ export default {
     UpdateInfo,
     TabDataPreview,
     UpdateRecords,
+    rowAuth,
     PluginCom
+  },
+  provide() {
+    return {
+      filedList: () => this.filedList
+    }
   },
   props: {
     param: {
@@ -273,6 +279,7 @@ export default {
         name: ''
       },
       fields: [],
+      filedList: [],
       data: [],
       syncStatus: '',
       lastRequestComplete: true,
@@ -289,8 +296,7 @@ export default {
       isPluginLoaded: false,
       showExport: false,
       exportForm: {
-        name: '',
-        expressionTree: ''
+        name: ''
       },
       exportFormRules: {
         name: [
@@ -345,6 +351,13 @@ export default {
     this.initTable(this.param.id)
   },
   methods: {
+    fetchFiledList() {
+      this.filedList = []
+      post('dataset/field/listForPermissionSeting/' + this.param.id,
+        {}).then((res) => {
+        this.filedList = res.data
+      })
+    },
     initTable(id) {
       this.resetPage()
       this.tableViewRowForm.row = 1000
@@ -455,8 +468,8 @@ export default {
 
     exportDataset() {
       this.showExport = true
+      this.fetchFiledList()
       this.exportForm.name = this.table.name
-      this.exportForm.expressionTree = ''
     },
     closeExport() {
       this.showExport = false
@@ -467,7 +480,16 @@ export default {
           if (this.table.id) {
             this.table.row = 100000
             this.table.filename = this.exportForm.name
-            this.table.expressionTree = this.exportForm.expressionTree
+            const { logic, items, errorMessage } = this.$refs.rowAuth.submit()
+            if (errorMessage) {
+              this.$message({
+                message: errorMessage,
+                type: 'error',
+                showClose: true
+              })
+              return
+            }
+            this.table.expressionTree = JSON.stringify({ items, logic })
             exportDataset(this.table).then((res) => {
               const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
               const link = document.createElement('a')
@@ -488,7 +510,14 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss">
+.form-tree-cont {
+  .tree-cont {
+    height: 200px;
+    width: 100%;
+    overflow-x: auto;
+  }
+}
 .icon-class {
   color: #6c6c6c;
 }
