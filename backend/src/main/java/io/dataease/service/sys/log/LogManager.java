@@ -28,15 +28,12 @@ public class LogManager {
 
     protected static final String contentFormat = "【%s】";
 
-    protected static final String positionFormat = "在【%s】";
-
-    protected static final String format = "给%s【%s】";
 
     protected Gson gson = new Gson();
 
 
-    protected Type type = new TypeToken<List<FolderItem>>() {}.getType();
-
+    protected Type type = new TypeToken<List<FolderItem>>() {
+    }.getType();
 
 
     @Resource
@@ -47,26 +44,28 @@ public class LogManager {
 
 
     public String detailInfo(SysLogWithBLOBs vo) {
-        String sourceName = vo.getSourceName();
         String position = null;
         String operateTypeName = SysLogConstants.operateTypeName(vo.getOperateType());
         operateTypeName = Translator.get(operateTypeName);
         String sourceTypeName = SysLogConstants.sourceTypeName(vo.getSourceType());
         sourceTypeName = Translator.get(sourceTypeName);
-        String result = operateTypeName + sourceTypeName + String.format(contentFormat, sourceName) + remarkInfo(vo);
-
+        String result = operateTypeName + sourceTypeName + String.format(contentFormat, vo.getSourceName());
+        if (vo.getSourceType() != SysLogConstants.SOURCE_TYPE.LINK.getValue()) {
+            result += remarkInfo(vo, false);
+        }
         if ((position = vo.getPosition()) != null) {
             List<FolderItem> folderItems = gson.fromJson(position, type);
             String template = folderItems.stream().map(folderItem -> folderItem.getName()).collect(Collectors.joining("/"));
-            String positionResult = String.format(positionFormat, template);
-            return positionResult + result;
+            String positionResult = String.format(Translator.get("I18N_LOG_FORMAT_POSITION"), template);
+            result = positionResult + result;
+        }
+        if (vo.getSourceType() == SysLogConstants.SOURCE_TYPE.LINK.getValue()) {
+            result = remarkInfo(vo, true) + result;
         }
         return result;
     }
 
-
-
-    public String remarkInfo(SysLogWithBLOBs vo) {
+    public String remarkInfo(SysLogWithBLOBs vo, Boolean isPrefix) {
         String remakrk = null;
         if ((remakrk = vo.getRemark()) != null) {
             String targetTypeName = null;
@@ -77,12 +76,14 @@ public class LogManager {
                 Integer targetType = item.getType();
                 targetTypeName = SysLogConstants.sourceTypeName(targetType);
                 targetTypeName = Translator.get(targetTypeName);
-                return String.format(format, targetTypeName, template);
+                if (isPrefix) {
+                    return String.format(Translator.get("I18N_LOG_FORMAT_PREFIX"), targetTypeName, template);
+                }
+                return String.format(Translator.get("I18N_LOG_FORMAT"), targetTypeName, template);
             }
         }
         return "";
     }
-
 
 
     private LogTypeItem parentIds(String id, Integer value) {
@@ -119,7 +120,7 @@ public class LogManager {
     }
 
 
-    private List<FolderItem> parentInfos(List<String> ids, Integer value){
+    private List<FolderItem> parentInfos(List<String> ids, Integer value) {
         List<FolderItem> folderItems = extSysLogMapper.idAndName(ids, value);
         if (value == 3) {
             folderItems.forEach(item -> {
@@ -164,7 +165,7 @@ public class LogManager {
         ArrayList<DataSourceType> dataSourceTypes = new ArrayList<>(datasourceService.types());
         String name = null;
         for (int i = 0; i < dataSourceTypes.size(); i++) {
-            if (dataSourceTypes.get(i).getType().equals(typeId)){
+            if (dataSourceTypes.get(i).getType().equals(typeId)) {
                 name = dataSourceTypes.get(i).getName();
                 break;
             }

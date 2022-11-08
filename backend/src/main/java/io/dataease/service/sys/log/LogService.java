@@ -46,6 +46,8 @@ public class LogService {
     // 仪表板的额外操作 分享以及公共链接
     private static Integer[] panel_ext_ope = {4, 5, 8, 9, 10};
 
+    private static Integer[] link_ext_ope = {13, 14};
+
     // 驱动文件操作 上传， 删除
     private static Integer[] driver_file_ope = {11, 3};
 
@@ -242,6 +244,16 @@ public class LogService {
             FolderItem folderItem = new FolderItem();
             folderItem.setId(panel_ext_ope[i] + "-" + sourceType.getValue());
             String operateTypeName = SysLogConstants.operateTypeName(panel_ext_ope[i]);
+            String sourceTypeName = sourceType.getName();
+            folderItem.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
+            results.add(folderItem);
+        }
+
+        for (int i = 0; i < link_ext_ope.length; i++) {
+            SysLogConstants.SOURCE_TYPE sourceType = SysLogConstants.SOURCE_TYPE.LINK;
+            FolderItem folderItem = new FolderItem();
+            folderItem.setId(link_ext_ope[i] + "-" + sourceType.getValue());
+            String operateTypeName = SysLogConstants.operateTypeName(link_ext_ope[i]);
             String sourceTypeName = sourceType.getName();
             folderItem.setName(Translator.get(operateTypeName) + Translator.get(sourceTypeName));
             results.add(folderItem);
