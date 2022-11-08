@@ -939,8 +939,12 @@ public class ChartViewService {
                     querySql = qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view);
                 }
             }
-            datasourceRequest.setQuery(totalPageSql);
-            totalPage = Long.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]);
+            if (StringUtils.isNotEmpty(totalPageSql)) {
+                datasourceRequest.setQuery(totalPageSql);
+                totalPage = Long.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]);
+                totalPage = totalPage / pageInfo.getPageSize() + totalPage % pageInfo.getPageSize() > 0 ? 1 : 0;
+            }
+
             datasourceRequest.setQuery(querySql);
             data = datasourceProvider.getData(datasourceRequest);
             if (CollectionUtils.isNotEmpty(assistFields)) {
