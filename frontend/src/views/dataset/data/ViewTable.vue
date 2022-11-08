@@ -462,21 +462,27 @@ export default {
       this.showExport = false
     },
     exportDatasetRequest() {
-      if (this.table.id) {
-        this.table.row = 100000
-        this.table.filename = this.exportForm.name
-        this.table.expressionTree = this.exportForm.expressionTree
-        exportDataset(this.table).then((res) => {
-          const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-          const link = document.createElement('a')
-          link.style.display = 'none'
-          link.href = URL.createObjectURL(blob)
-          link.download = this.exportForm.name + '.xlsx' // 下载的文件名
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-        })
-      }
+      this.$refs['exportForm'].validate((valid) => {
+        if (valid) {
+          if (this.table.id) {
+            this.table.row = 100000
+            this.table.filename = this.exportForm.name
+            this.table.expressionTree = this.exportForm.expressionTree
+            exportDataset(this.table).then((res) => {
+              const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+              const link = document.createElement('a')
+              link.style.display = 'none'
+              link.href = URL.createObjectURL(blob)
+              link.download = this.exportForm.name + '.xlsx' // 下载的文件名
+              document.body.appendChild(link)
+              link.click()
+              document.body.removeChild(link)
+            })
+          }
+        } else {
+          return false
+        }
+      })
     }
   }
 }
