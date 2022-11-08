@@ -10,7 +10,8 @@
 </template>
 
 <script>
-import { loadResource } from '@/api/link'
+import { loadResource, viewLinkLog } from '@/api/link'
+import { isMobile } from '@/utils/index'
 import { uuid } from 'vue-uuid'
 import Preview from '@/components/canvas/components/editor/Preview'
 import { getPanelAllLinkageInfo } from '@/api/panel/linkage'
@@ -50,8 +51,19 @@ export default {
   created() {
     this.show = false
     this.setPanelInfo()
+    this.viewLog()
   },
   methods: {
+    viewLog() {
+      const param = {
+        panelId: this.resourceId,
+        userId: this.user,
+        mobile: !!isMobile()
+      }
+      viewLinkLog(param).then(res => {
+
+      })
+    },
     setPanelInfo() {
       loadResource(this.resourceId).then(res => {
         this.show = false

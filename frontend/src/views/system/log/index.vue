@@ -95,7 +95,7 @@
           show-overflow-tooltip
           prop="opType"
           :label="$t('log.optype')"
-          width="140"
+          width="160"
         >
           <template #default="{ row }">
             <span>{{ row.opType + row.sourceType }}</span>
