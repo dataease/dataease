@@ -951,6 +951,7 @@
             @onLegendChange="onLegendChange"
             @onMarginChange="onMarginChange"
             @onChangeBackgroundForm="onChangeBackgroundForm"
+            @onSuspensionChange="onSuspensionChange"
           />
         </el-tab-pane>
         <el-tab-pane
@@ -2414,6 +2415,10 @@ export default {
     onColorChange(val) {
       this.view.customAttr.color = val
       this.calcStyle('color')
+    },
+    onSuspensionChange(val) {
+      this.view.customAttr.suspension = val
+      this.calcStyle()
     },
 
     onSizeChange(val) {

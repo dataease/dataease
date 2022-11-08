@@ -3073,7 +3073,8 @@ export const TYPE_CONFIGS = [
       'color-selector',
       'label-selector',
       'tooltip-selector',
-      'title-selector'
+      'title-selector',
+      'suspension-selector'
     ],
     propertyInner: {
 
@@ -3107,6 +3108,9 @@ export const TYPE_CONFIGS = [
         'vPosition',
         'isItalic',
         'isBolder'
+      ],
+      'suspension-selector': [
+        'show'
       ]
     }
   }

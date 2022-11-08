@@ -125,6 +125,11 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
         if (themeStyle) {
           chart_option.visualMap.textStyle = { color: themeStyle }
         }
+        if (customAttr.suspension && !customAttr.suspension.show) {
+          chart_option.visualMap.show = false
+        } else if ('show' in chart_option.visualMap) {
+          delete chart_option.visualMap.show
+        }
       }
 
       for (let i = 0; i < valueArr.length; i++) {
