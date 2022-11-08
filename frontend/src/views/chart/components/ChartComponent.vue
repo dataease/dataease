@@ -13,7 +13,7 @@
       :style="{ borderRadius: borderRadius}"
     />
     <div
-      v-if="chart.type === 'map'"
+      v-if="chart.type === 'map' && showSuspension"
       class="map-zoom-box"
     >
       <div style="margin-bottom: 0.5em;">
@@ -143,7 +143,8 @@ export default {
       mapCenter: null,
       linkageActiveParam: null,
       buttonTextColor: null,
-      loading: true
+      loading: true,
+      showSuspension: true
     }
   },
 
@@ -318,6 +319,9 @@ export default {
       }
       if (chart.type === 'map') {
         const customAttr = JSON.parse(chart.customAttr)
+        if (customAttr.suspension) {
+          this.showSuspension = customAttr.suspension.show
+        }
         if (!customAttr.areaCode) {
           this.myChart.clear()
           return

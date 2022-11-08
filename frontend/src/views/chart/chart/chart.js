@@ -124,6 +124,9 @@ export const DEFAULT_SIZE = {
   showIndex: false,
   indexLabel: '序号'
 }
+export const DEFAULT_SUSPENSION = {
+  show: true
+}
 export const DEFAULT_LABEL = {
   show: false,
   position: 'top',
