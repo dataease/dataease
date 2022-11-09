@@ -242,7 +242,7 @@
         <el-form-item :label="$t('chart.adapt')" class="form-item">
           <el-checkbox v-model="sizeForm.barDefault" @change="changeBarSizeCase">{{ $t('chart.adapt') }}</el-checkbox>
         </el-form-item>
-        <el-form-item :label="$t('chart.bar_width')+'22'" class="form-item form-item-slider">
+        <el-form-item :label="$t('chart.bar_width')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.barWidth" :disabled="sizeForm.barDefault" show-input :show-input-controls="false" input-size="mini" :min="1" :max="80" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item :label="$t('chart.bar_gap')" class="form-item form-item-slider">
@@ -290,6 +290,20 @@
         </el-form-item>
         <el-form-item :label="$t('chart.bubble_size')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.scatterSymbolSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="40" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-divider content-position="center" class="divider-style">{{ $t('chart.chart_pie') }}</el-divider>
+        <el-form-item :label="$t('chart.pie_inner_radius')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.pieInnerRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.pie_outer_radius')" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.pieOuterRadius" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+
+        <el-form-item :label="$t('chart.pie_circle_center_left')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleLeft" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item :label="$t('chart.pie_circle_center_top')" class="form-item">
+          <el-slider v-model="sizeForm.pieCircleTop" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
       </el-form>
 
