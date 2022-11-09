@@ -279,8 +279,8 @@ class TimeDateRangeServiceImpl extends WidgetService {
     if (element.options.attrs.showTime && element.options.attrs.accuracy) {
       labelFormat = labelFormat + ' ' + element.options.attrs.accuracy
     }
-    let [ start, end ] = values
-    
+    let [start, end] = values
+
     const attrs = element.options.attrs
 
     if (attrs.default.sDynamicSuffixTime && attrs.default.isDynamic && attrs.default.dkey === 4 && attrs.showTime) {

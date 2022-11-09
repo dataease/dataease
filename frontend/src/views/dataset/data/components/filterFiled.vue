@@ -14,6 +14,7 @@
       >
         <el-input
           v-model="item.name"
+          class="w100"
           :placeholder="$t('auth.selct_filter_fields')"
           size="mini"
           @input="cancel"
@@ -55,6 +56,7 @@
         <el-select
           v-model="item.filterType"
           size="mini"
+          class="w100"
           :placeholder="$t('auth.select')"
           @change="filterTypeChange"
         >
@@ -69,7 +71,7 @@
         <template v-if="item.filterType === 'logic'">
           <el-select
             v-model="item.term"
-            class="w100"
+            class="w120"
             size="mini"
             :placeholder="$t('auth.default_method')"
             @change="onOptionsChange"
@@ -93,7 +95,7 @@
           <template v-else-if="!['null', 'empty', 'not_null', 'not_empty'].includes(item.term)">
             <el-input
               v-model="item.value"
-              class="w70 mar5"
+              class="w120 mar5"
               size="mini"
             />
             <div class="de-bottom-line" />
@@ -293,7 +295,7 @@ export default {
       const { term, fieldId, filterType } = this.item
       const isNull = ['null', 'empty', 'not_null', 'not_empty'].includes(term) && filterType === 'logic'
       return {
-        width: !fieldId ? '270px' : isNull ? '670px' : '750px'
+        width: !fieldId ? '240px' : isNull ? '540px' : '670px'
       }
     },
     operators() {
@@ -491,8 +493,12 @@ export default {
     width: 170px;
   }
 
-  .w100.el-select {
+  .w100 {
     width: 100px;
+  }
+
+  .w120 {
+    width: 120px;
   }
 
   .w70 {
@@ -543,7 +549,7 @@ export default {
     position: absolute;
     right: 5px;
     bottom: 9px;
-    width: 70px;
+    width: 100px;
     z-index: 10;
   }
 

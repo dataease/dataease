@@ -191,7 +191,7 @@
       v-if="showExport"
       v-dialogDrag
       :visible.sync="showExport"
-      width="600px"
+      width="800px"
       class="de-dialog-form form-tree-cont"
       :title="$t('dataset.export_dataset')"
       append-to-body
@@ -219,7 +219,9 @@
           prop="expressionTree"
         >
           <div class="tree-cont">
-            <rowAuth ref="rowAuth" />
+            <div class="content">
+              <rowAuth ref="rowAuth" />
+            </div>
           </div>
         </el-form-item>
       </el-form>
@@ -518,7 +520,14 @@ export default {
   .tree-cont {
     height: 200px;
     width: 100%;
-    overflow-x: auto;
+    padding: 16px;
+    border-radius: 4px;
+    border: 1px solid var(--deBorderBase, #DCDFE6);
+    overflow: auto;
+    .content {
+      height: 100%;
+      width: 100%;
+    }
   }
 }
 .icon-class {
