@@ -43,4 +43,5 @@ public class ChartViewDTO extends ChartViewWithBLOBs {
     private String yAxisExt;
 
     private long totalPage;
+    private long totalItems;
 }

@@ -860,6 +860,7 @@ public class ChartViewService {
 
         String querySql = null;
         long totalPage = 0l;
+        long totalItems = 0l;
         String totalPageSql = null;
         PageInfo pageInfo = new PageInfo();
         pageInfo.setGoPage(chartExtRequest.getGoPage() != null ? chartExtRequest.getGoPage() : 1);
@@ -941,8 +942,8 @@ public class ChartViewService {
             }
             if (StringUtils.isNotEmpty(totalPageSql)) {
                 datasourceRequest.setQuery(totalPageSql);
-                totalPage = Long.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]);
-                totalPage = totalPage / pageInfo.getPageSize() + totalPage % pageInfo.getPageSize() > 0 ? 1 : 0;
+                totalItems = Long.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]);
+                totalPage = totalItems / pageInfo.getPageSize() + totalItems % pageInfo.getPageSize() > 0 ? 1 : 0;
             }
 
             datasourceRequest.setQuery(querySql);
@@ -1158,6 +1159,7 @@ public class ChartViewService {
         Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
         chartViewDTO = uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData);
         chartViewDTO.setTotalPage(totalPage);
+        chartViewDTO.setTotalItems(totalItems);
         return chartViewDTO;
     }
 
