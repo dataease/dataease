@@ -270,7 +270,10 @@ export default {
     },
     showTimeChange(value) {
       this.attrs.accuracy = this.accuracyOptions[1].id
-      this.attrs.default.isDynamic = false
+      if (this.widget.name !== 'timeDateRangeWidget') {
+        this.attrs.default.isDynamic = false
+      }
+
       this.fillAttrs2Filter()
     },
     checkedViewsChange(values) {
