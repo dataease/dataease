@@ -271,16 +271,16 @@ class TimeDateRangeServiceImpl extends WidgetService {
   }
 
   formatDynamicTimes(values, element) {
-    if (!values || !values.length || !element.options.attrs.default.isDynamic) {
+    if (!values?.length || !element.options.attrs.default.isDynamic) {
       return values
     }
-    const baseTime = new Date('2022-11-09 00:00:00.000').getTime()
+    const baseTime = +new Date('2022-11-09 00:00:00.000')
     let labelFormat = 'yyyy-MM-dd'
     if (element.options.attrs.showTime && element.options.attrs.accuracy) {
       labelFormat = labelFormat + ' ' + element.options.attrs.accuracy
     }
-    let start = values[0]
-    let end = values[1]
+    let [ start, end ] = values
+    
     const attrs = element.options.attrs
 
     if (attrs.default.sDynamicSuffixTime && attrs.default.isDynamic && attrs.default.dkey === 4 && attrs.showTime) {
