@@ -1,7 +1,7 @@
 <template>
   <el-row class="view-panel">
     <div
-      v-if="properties.length===0"
+      v-if="!pluginShow && properties.length===0"
       class="no-properties"
     >
       {{ $t('chart.chart_no_properties') }}
@@ -376,7 +376,10 @@ export default {
     },
     properties: {
       type: Array,
-      required: true
+      required: true,
+      default: () => {
+        return []
+      }
     },
     dimensionData: {
       type: Array,

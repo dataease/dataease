@@ -10,18 +10,32 @@ export function getItemType(dimensionData, quotaData, item) {
   if (status === 'd') {
     for (let i = 0; i < dimensionData.length; i++) {
       const ele = dimensionData[i]
-      if (((item.chartId && item.extField === 2 && item.tableId === ele.tableId) || ele.id === item.id) && ele.deType === item.deType && ele.groupType === item.groupType) {
-        checked = true
-        break
+      if (item.chartId) {
+        if (ele.dataeaseName === item.dataeaseName && ele.deType === item.deType && ele.groupType === item.groupType) {
+          checked = true
+          break
+        }
+      } else {
+        if (ele.id === item.id && ele.deType === item.deType && ele.groupType === item.groupType) {
+          checked = true
+          break
+        }
       }
     }
   }
   if (status === 'q') {
     for (let i = 0; i < quotaData.length; i++) {
       const ele = quotaData[i]
-      if (((item.chartId && item.extField === 2 && item.tableId === ele.tableId) || ele.id === item.id) && ele.deType === item.deType && ele.groupType === item.groupType) {
-        checked = true
-        break
+      if (item.chartId) {
+        if (ele.dataeaseName === item.dataeaseName && ele.deType === item.deType && ele.groupType === item.groupType) {
+          checked = true
+          break
+        }
+      } else {
+        if (ele.id === item.id && ele.deType === item.deType && ele.groupType === item.groupType) {
+          checked = true
+          break
+        }
       }
     }
   }
