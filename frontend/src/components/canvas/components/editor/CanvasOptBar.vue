@@ -3,7 +3,16 @@
     v-show="existLinkage"
     class="bar-main"
   >
-    <div>
+    <div
+      v-show="isPublicLink && !isNewBlank"
+      class="bar-main-left"
+    >
+      <el-button
+        size="mini"
+        @click="back2Last"
+      ><i class="icon iconfont el-icon-back" />{{ $t('chart.back') }}</el-button>
+    </div>
+    <div class="bar-main-right">
       <el-button
         size="mini"
         type="warning"
@@ -28,6 +37,12 @@ export default {
       })
       return linkageFiltersCount
     },
+    isPublicLink() {
+      return this.$router.currentRoute.path === '/delink'
+    },
+    isNewBlank() {
+      return window.history.length === 1
+    },
     ...mapState([
       'componentData'
     ])
@@ -36,23 +51,39 @@ export default {
     clearAllLinkage() {
       this.$store.commit('clearPanelLinkageInfo')
       bus.$emit('clear_panel_linkage', { viewId: 'all' })
+    },
+    back2Last() {
+      this.$router.back(-1)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .bar-main{
-    position: absolute;
+  .bar-main {
+    display: flex;
+    div {
+      position: absolute;
+      z-index: 10;
+      height: 20px;
+      border-radius:2px;
+      padding-left: 3px;
+      padding-right: 0px;
+      cursor:pointer!important;
+    }
+  }
+  .bar-main-right{
     right: 0px;
-    z-index: 10;
-    height: 20px;
-    border-radius:2px;
-    padding-left: 3px;
-    padding-right: 0px;
-    cursor:pointer!important;
     opacity: 0.8;
-    /*background-color: #0a7be0;*/
+  }
+
+  .bar-main-left {
+    left: 0px;
+    opacity: 0;
+    height: fit-content;
+    &:hover {
+      opacity: 0.8;
+    }
   }
 
 </style>
