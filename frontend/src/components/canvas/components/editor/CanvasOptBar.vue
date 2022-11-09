@@ -53,7 +53,6 @@ export default {
       bus.$emit('clear_panel_linkage', { viewId: 'all' })
     },
     back2Last() {
-      debugger
       this.$router.back(-1)
     }
   }
