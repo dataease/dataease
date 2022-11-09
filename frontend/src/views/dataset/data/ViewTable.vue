@@ -68,6 +68,7 @@
         </deBtn>
         <el-dropdown
           v-if="table.type === 'excel' && hasDataPermission('manage', param.privileges)"
+          style="margin-left: 12px;"
           size="small"
           trigger="click"
           placement="bottom-end"
