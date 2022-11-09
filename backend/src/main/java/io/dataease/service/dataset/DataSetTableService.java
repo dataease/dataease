@@ -2886,6 +2886,7 @@ public class DataSetTableService {
             if (StringUtils.isNotEmpty(request.getExpressionTree())) {
                 Gson gson = new Gson();
                 tree = gson.fromJson(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
+                permissionsTreeService.getField(tree);
             }
             Map<String, Object> previewData = getPreviewData(request, 1, 100000, null, tree);
             List<DatasetTableField> fields = (List<DatasetTableField>) previewData.get("fields");

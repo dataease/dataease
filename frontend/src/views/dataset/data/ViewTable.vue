@@ -187,6 +187,7 @@
 
     <!--导出数据集弹框-->
     <el-dialog
+      v-if="showExport"
       v-dialogDrag
       :visible.sync="showExport"
       width="600px"
@@ -470,6 +471,7 @@ export default {
       this.showExport = true
       this.fetchFiledList()
       this.exportForm.name = this.table.name
+      this.exportForm.expressionTree = ''
     },
     closeExport() {
       this.showExport = false
