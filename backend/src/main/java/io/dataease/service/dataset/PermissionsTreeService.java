@@ -153,7 +153,7 @@ public class PermissionsTreeService {
         return result;
     }
 
-    private void getField(DatasetRowPermissionsTreeObj tree) {
+    public void getField(DatasetRowPermissionsTreeObj tree) {
         if (ObjectUtils.isNotEmpty(tree)) {
             if (ObjectUtils.isNotEmpty(tree.getItems())) {
                 for (DatasetRowPermissionsTreeItem item : tree.getItems()) {
