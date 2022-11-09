@@ -493,11 +493,9 @@
     </el-collapse>
 
     <el-dialog
-      v-if="editCalcField"
-      v-dialogDrag
-      :visible="editCalcField"
-      :show-close="false"
-      class="dialog-css"
+      :visible.sync="editCalcField"
+      class="de-dialog-form de-center-dialog"
+      width="980px"
       :title="currEditField.id?$t('dataset.edit_calc_field'):$t('dataset.add_calc_field')"
       append-to-body
     >

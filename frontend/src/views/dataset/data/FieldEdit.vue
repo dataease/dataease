@@ -61,7 +61,7 @@
             width="60"
           >
             <template
-              slot="header"
+              #header
             >
               <el-checkbox
                 v-model="dimensionChecked"
@@ -398,7 +398,7 @@
             width="60"
           >
             <template
-              slot="header"
+              #header
             >
               <el-checkbox
                 v-model="quotaChecked"
@@ -1147,16 +1147,5 @@ span {
 
 .style-collapse ::v-deep .el-collapse-item__wrap {
   border-bottom: 0 solid #e6ebf5 !important;
-}
-</style>
-
-<style lang="scss">
-.de-center-dialog {
-  .el-dialog {
-    margin: 0 !important;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
 }
 </style>
