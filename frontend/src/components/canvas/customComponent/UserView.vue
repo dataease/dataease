@@ -89,6 +89,7 @@
       :search-count="searchCount"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
+      @onPageChange="pageClick"
     />
     <table-normal
       v-else-if="tableShowFlag"
@@ -96,6 +97,7 @@
       :show-summary="chart.type === 'table-normal'"
       :chart="chart"
       class="table-class"
+      @onPageChange="pageClick"
     />
     <label-normal
       v-else-if="labelShowFlag"
@@ -331,7 +333,13 @@ export default {
       sourceCustomStyleStr: null,
       // obj
       sourceCustomStyle: null,
-      scale: 1
+      scale: 1,
+      currentPage: {
+        page: 1,
+        pageSize: 20,
+        show: 0
+      },
+      view: {}
     }
   },
 
@@ -628,6 +636,10 @@ export default {
       param.viewId && param.viewId === this.element.propValue.viewId && this.addViewTrackFilter(param)
     },
     viewInCache(param) {
+      this.view = param.view
+      if (this.view.customAttr) {
+        this.currentPage.pageSize = parseInt(JSON.parse(this.view.customAttr).size.tablePageSize)
+      }
       param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
     },
     clearPanelLinkage(param) {
@@ -686,6 +698,14 @@ export default {
         if (this.panelInfo.proxy) {
           // method = viewInfo
           requestInfo.proxy = { userId: this.panelInfo.proxy }
+        }
+        // table-info明细表增加分页
+        if (this.view.customAttr) {
+          const attrSize = JSON.parse(this.view.customAttr).size
+          if (this.chart.type === 'table-info' && this.view.datasetMode === 0 && (!attrSize.tablePageMode || attrSize.tablePageMode === 'page')) {
+            requestInfo.goPage = this.currentPage.page
+            requestInfo.pageSize = this.currentPage.pageSize
+          }
         }
         method(id, this.panelInfo.id, requestInfo).then(response => {
           // 将视图传入echart组件
@@ -1132,11 +1152,20 @@ export default {
     getDataOnly(sourceResponseData, dataBroadcast) {
       if (this.isEdit) {
         if ((this.filter.filter && this.filter.filter.length) || (this.filter.linkageFilters && this.filter.linkageFilters.length)) {
-          viewData(this.chart.id, this.panelInfo.id, {
+          const requestInfo = {
             filter: [],
             drill: [],
             queryFrom: 'panel'
-          }).then(response => {
+          }
+          // table-info明细表增加分页
+          if (this.view.customAttr) {
+            const attrSize = JSON.parse(this.view.customAttr).size
+            if (this.chart.type === 'table-info' && this.view.datasetMode === 0 && (!attrSize.tablePageMode || attrSize.tablePageMode === 'page')) {
+              requestInfo.goPage = this.currentPage.page
+              requestInfo.pageSize = this.currentPage.pageSize
+            }
+          }
+          viewData(this.chart.id, this.panelInfo.id, requestInfo).then(response => {
             this.componentViewsData[this.chart.id] = response.data
             if (dataBroadcast) {
               bus.$emit('prop-change-data')
@@ -1149,6 +1178,10 @@ export default {
           }
         }
       }
+    },
+    pageClick(page) {
+      this.currentPage = page
+      this.getData(this.element.propValue.viewId, false)
     }
   }
 }

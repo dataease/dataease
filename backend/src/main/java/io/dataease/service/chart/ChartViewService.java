@@ -298,6 +298,10 @@ public class ChartViewService {
     public ChartViewDTO getData(String id, ChartExtRequest request) throws Exception {
         try {
             ChartViewDTO view = this.getOne(id, request.getQueryFrom());
+            DatasetTable datasetTable = dataSetTableService.get(view.getTableId());
+            if (ObjectUtils.isNotEmpty(datasetTable)) {
+                view.setDatasetMode(datasetTable.getMode());
+            }
             // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
             if (CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
                 view.setResultMode(request.getResultMode());
@@ -570,7 +574,6 @@ public class ChartViewService {
             });
         }
 
-
         List<ChartViewFieldDTO> xAxisBase = gson.fromJson(view.getXAxis(), tokenType);
         List<ChartViewFieldDTO> xAxis = gson.fromJson(view.getXAxis(), tokenType);
         List<ChartViewFieldDTO> xAxisExt = gson.fromJson(view.getXAxisExt(), tokenType);
@@ -619,6 +622,22 @@ public class ChartViewService {
 
         if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
             return emptyChartViewDTO(view);
+        }
+
+        // 直连明细表分页
+        Map<String, Object> mapAttr = gson.fromJson(view.getCustomAttr(), Map.class);
+        Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("size");
+        if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0 && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+            if (chartExtRequest.getGoPage() == null) {
+                chartExtRequest.setGoPage(1L);
+            }
+            if (chartExtRequest.getPageSize() == null) {
+                String pageSize = (String) mapSize.get("tablePageSize");
+                chartExtRequest.setPageSize(Long.parseLong(pageSize));
+            }
+        } else {
+            chartExtRequest.setGoPage(null);
+            chartExtRequest.setPageSize(null);
         }
 
         switch (view.getType()) {
@@ -863,8 +882,8 @@ public class ChartViewService {
         long totalItems = 0l;
         String totalPageSql = null;
         PageInfo pageInfo = new PageInfo();
-        pageInfo.setGoPage(chartExtRequest.getGoPage() != null ? chartExtRequest.getGoPage() : 1);
-        pageInfo.setPageSize(chartExtRequest.getPageSize() != null ? chartExtRequest.getPageSize() : 20);
+        pageInfo.setGoPage(chartExtRequest.getGoPage());
+        pageInfo.setPageSize(chartExtRequest.getPageSize());
 
         //如果不是插件视图 走原生逻辑
         if (table.getMode() == 0) {// 直连
@@ -940,7 +959,7 @@ public class ChartViewService {
                     querySql = qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view);
                 }
             }
-            if (StringUtils.isNotEmpty(totalPageSql)) {
+            if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
                 datasourceRequest.setQuery(totalPageSql);
                 totalItems = Long.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]);
                 totalPage = totalItems / pageInfo.getPageSize() + totalItems % pageInfo.getPageSize() > 0 ? 1 : 0;
