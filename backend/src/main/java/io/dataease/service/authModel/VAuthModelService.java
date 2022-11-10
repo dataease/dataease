@@ -45,13 +45,10 @@ public class VAuthModelService {
             return result;
         }
         if (request.getPrivileges() != null) {
-            result = result.stream().filter(vAuthModelDTO -> {
-                if (vAuthModelDTO.getNodeType().equalsIgnoreCase("spine") || (vAuthModelDTO.getNodeType().equalsIgnoreCase("leaf") && vAuthModelDTO.getPrivileges() != null && vAuthModelDTO.getPrivileges().contains(request.getPrivileges()))) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }).collect(Collectors.toList());
+            result = result.stream().filter(vAuthModelDTO -> "spine".equalsIgnoreCase(vAuthModelDTO.getNodeType())
+                    || ("leaf".equalsIgnoreCase(vAuthModelDTO.getNodeType())
+                    && vAuthModelDTO.getPrivileges() != null
+                    && vAuthModelDTO.getPrivileges().contains(request.getPrivileges()))).collect(Collectors.toList());
         }
         return result;
     }
@@ -60,10 +57,10 @@ public class VAuthModelService {
         if (CollectionUtils.isEmpty(result)) {
             return;
         }
-        Iterator iterator = result.listIterator();
+        Iterator<VAuthModelDTO> iterator = result.listIterator();
         while (iterator.hasNext()) {
-            VAuthModelDTO tmp = (VAuthModelDTO) iterator.next();
-            if (tmp.getNodeType().equalsIgnoreCase("spine") && tmp.getAllLeafs() == 0) {
+            VAuthModelDTO tmp = iterator.next();
+            if ("spine".equalsIgnoreCase(tmp.getNodeType()) && tmp.getAllLeafs() == 0) {
                 iterator.remove();
             } else {
                 removeEmptyDir(tmp.getChildren());
@@ -77,9 +74,9 @@ public class VAuthModelService {
                 vAuthModelDTO.setAllLeafs(0);
                 continue;
             }
-            long leafs = 0l;
+            long leafs = 0L;
             for (VAuthModelDTO child : vAuthModelDTO.getChildren()) {
-                if (child.getNodeType().equalsIgnoreCase("leaf")) {
+                if ("leaf".equalsIgnoreCase(child.getNodeType())) {
                     leafs = leafs + 1;
                 } else {
                     leafs = +leafs + getLeafs(child);
@@ -90,13 +87,13 @@ public class VAuthModelService {
     }
 
     private long getLeafs(VAuthModelDTO child) {
-        long leafs = 0l;
+        long leafs = 0L;
         if (CollectionUtils.isEmpty(child.getChildren())) {
             child.setAllLeafs(0);
             return leafs;
         }
         for (VAuthModelDTO childChild : child.getChildren()) {
-            if (childChild.getNodeType().equalsIgnoreCase("leaf")) {
+            if ("leaf".equalsIgnoreCase(childChild.getNodeType())) {
                 leafs = leafs + 1;
             } else {
                 leafs = +leafs + getLeafs(childChild);
