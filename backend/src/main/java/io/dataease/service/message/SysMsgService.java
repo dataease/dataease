@@ -55,6 +55,13 @@ public class SysMsgService {
     @Autowired
     private SystemParameterService systemParameterService;
 
+    public void cleanDisusedMsg() {
+        Long overTime = overTime();
+        SysMsgExample example = new SysMsgExample();
+        example.createCriteria().andCreateTimeLessThan(overTime);
+        sysMsgMapper.deleteByExample(example);
+    }
+
     public List<MsgGridDto> queryGrid(Long userId, MsgRequest msgRequest, List<Long> typeIds, Long startTime) {
         String orderClause = " create_time desc";
         SysMsgExample example = new SysMsgExample();
