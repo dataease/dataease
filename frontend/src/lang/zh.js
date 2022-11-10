@@ -919,6 +919,7 @@ export default {
     chart_pie_rose: '玫瑰图',
     chart_pie_rose_gradient: '玫瑰环图',
     chart_funnel: '漏斗图',
+    chart_contrast_funnel: '对比漏斗图',
     chart_3dfunnel: '3D 漏斗图',
     chart_3dpyramid: '3D 金字塔图',
     chart_3dscatter: '3D散点图',

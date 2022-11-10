@@ -96,6 +96,7 @@ import {
   baseMapOption
 } from '../chart/map/map'
 import {
+  baseContrastFunnelOption,
   baseFunnelOption
 } from '../chart/funnel/funnel'
 import {
@@ -293,6 +294,8 @@ export default {
         // chart_option = heatMapOption(JSON.parse(JSON.stringify(THERMODYNAMIC_DIAGRAM)), chart)
       } else if (chart.type === 'funnel') {
         chart_option = baseFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'contrast-funnel') {
+        chart_option = baseContrastFunnelOption(JSON.parse(JSON.stringify(BASE_FUNNEL)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'radar') {
         chart_option = baseRadarOption(JSON.parse(JSON.stringify(BASE_RADAR)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'gauge') {

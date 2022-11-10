@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { componentStyle } from '../common/common'
 
-export function baseFunnelOption(chart_option, chart,cstyle = {}) {
+export function baseFunnelOption(chart_option, chart, cstyle = {}) {
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -48,6 +48,87 @@ export function baseFunnelOption(chart_option, chart,cstyle = {}) {
     }
   }
   // console.log(chart_option);
+  componentStyle(chart_option, chart,cstyle)
+  return chart_option
+}
+
+export function baseContrastFunnelOption(chart_option, chart, cstyle = {}) {
+  console.log('对比',chart)
+
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.color) {
+      chart_option.color = customAttr.color.colors
+    }
+    // tooltip
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+      chart_option.tooltip = tooltip
+    }
+  }
+
+  // 处理data
+  if(chart.data) {
+    chart_option.title.text = chart.title
+    chart_option.legend.data = chart.data.x
+    
+    if(chart.data.series.length > 0) {
+      console.log('series,,,',chart.data.series)
+      const valueArr = chart.data.series[0].data
+      let arr = []
+      for(let i=0;i<valueArr.length;i++) {
+        const y = valueArr[i]
+        y.name = chart.data.x[i]
+        // color
+        y.itemStyle = {
+          color: hexColorToRGBA(customAttr.color.colors[i % customAttr.color.colors.length], customAttr.color.alpha)
+        }
+        arr.push(y)
+      }
+      chart_option.series[0] = {
+        type: 'funnel',
+        width: '40%',
+        height: '45%',
+        left: '5%',
+        top: '50%',
+        funnelAlign: 'right',
+        data: arr
+      }
+      chart_option.series[1] = {
+        type: 'funnel',
+        width: '40%',
+        height: '45%',
+        left: '5%',
+        top: '5%',
+        sort: 'ascending',
+        funnelAlign: 'right',
+        data: arr
+      }
+      chart_option.series[2] = {
+        type: 'funnel',
+        width: '40%',
+        height: '45%',
+        left: '55%',
+        top: '5%',
+        funnelAlign: 'left',
+        data: arr
+      }
+      chart_option.series[3] = {
+        type: 'funnel',
+        width: '40%',
+        height: '45%',
+        left: '55%',
+        top: '50%',
+        sort: 'ascending',
+        funnelAlign: 'left',
+        data: arr
+      }
+    }
+  }
+
   componentStyle(chart_option, chart,cstyle)
   return chart_option
 }

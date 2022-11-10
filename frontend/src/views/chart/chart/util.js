@@ -461,6 +461,13 @@ export const TYPE_CONFIGS = [
   },
   {
     render: 'echarts',
+    category: 'chart.chart_type_relation',
+    value: 'contrast-funnel',
+    title: 'chart.chart_contrast_funnel',
+    icon: 'contrast-funnel'
+  },
+  {
+    render: 'echarts',
     category: 'chart.chart_type_distribute',
     value: 'clock-pie',
     title: '凸块饼图',

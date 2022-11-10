@@ -1880,11 +1880,17 @@ export default {
         view.type === 'treemap' ||
         view.type === 'liquid' ||
         view.type === 'word-cloud' ||
-        view.type === 'waterfall') {
+        view.type === 'waterfall' ||
+        view.type === 'contrast-funnel') {
         if (view.yaxis.length > 1) {
           view.yaxis.splice(1, view.yaxis.length)
         }
       }
+      // if( view.type === 'contrast-funnel') {
+      //   if (view.yaxis.length > 4) {
+      //     view.yaxis.splice(4,1)
+      //   }
+      // }
       if (view.type === 'line-stack' && trigger === 'chart') {
         view.customAttr.size.lineArea = true
       }
