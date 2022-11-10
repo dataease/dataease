@@ -41,9 +41,9 @@ public class EngineService {
     @Resource
     private DatasourceService datasource;
 
-    static private List<String> simple_engine = Arrays.asList("engine_mysql");
+    private static List<String> simple_engine = Collections.singletonList("engine_mysql");
 
-    static private List<String> cluster_engine = Arrays.asList("engine_doris");
+    private static List<String> cluster_engine = Collections.singletonList("engine_doris");
 
     public Boolean isLocalMode() {
         return env.getProperty("engine_mode", "local").equalsIgnoreCase("local");
@@ -88,7 +88,7 @@ public class EngineService {
             return ResultHolder.error("Engine is invalid: " + e.getMessage());
         }
 
-        if (datasource.getType().equalsIgnoreCase("engine_doris")) {
+        if ("engine_doris".equalsIgnoreCase(datasource.getType())) {
             DorisConfiguration dorisConfiguration = new Gson().fromJson(datasource.getConfiguration(), DorisConfiguration.class);
             HttpClientConfig httpClientConfig = new HttpClientConfig();
             String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((dorisConfiguration.getUsername()
@@ -165,7 +165,7 @@ public class EngineService {
         Datasource datasource = new Datasource();
 
         if (isLocalMode()) {
-            Map jsonObjectMap = new HashMap();
+            Map<String, String> jsonObjectMap = new HashMap<>();
             jsonObjectMap.put("dataSourceType", "jdbc");
             jsonObjectMap.put("dataBase", env.getProperty("doris.db", "doris"));
             jsonObjectMap.put("username", env.getProperty("doris.user", "root"));
@@ -222,7 +222,6 @@ public class EngineService {
         if (!matcher.find()) {
             return;
         }
-        ;
         mysqlConfiguration.setHost(matcher.group(1));
         mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
         mysqlConfiguration.setDataBase(matcher.group(3).split("\\?")[0]);

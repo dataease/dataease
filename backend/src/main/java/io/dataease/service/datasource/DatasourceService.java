@@ -94,11 +94,8 @@ public class DatasourceService {
     private ExtTaskInstanceMapper extTaskInstanceMapper;
 
     public Collection<DataSourceType> types() {
-        Collection<DataSourceType> types = new ArrayList<>();
-        types.addAll(SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values());
-        SpringContextUtil.getApplicationContext().getBeansOfType(io.dataease.plugins.datasource.service.DatasourceService.class).values().forEach(datasourceService -> {
-            types.add(datasourceService.getDataSourceType());
-        });
+        Collection<DataSourceType> types = new ArrayList<>(SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values());
+        SpringContextUtil.getApplicationContext().getBeansOfType(io.dataease.plugins.datasource.service.DatasourceService.class).values().forEach(datasourceService -> types.add(datasourceService.getDataSourceType()));
         return types;
     }
 
@@ -148,12 +145,10 @@ public class DatasourceService {
         });
     }
 
-    public List<DatasourceDTO> getDatasourceList(DatasourceUnionRequest request) throws Exception {
+    public List<DatasourceDTO> getDatasourceList(DatasourceUnionRequest request) {
         request.setSort("update_time desc");
         List<DatasourceDTO> datasourceDTOS = extDataSourceMapper.queryUnion(request);
-        datasourceDTOS.forEach(datasourceDTO -> {
-            datasourceTrans(datasourceDTO);
-        });
+        datasourceDTOS.forEach(this::datasourceTrans);
         return datasourceDTOS;
     }
 
@@ -434,15 +429,13 @@ public class DatasourceService {
 
     public void initAllDataSourceConnectionPool() {
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
-        datasources.forEach(datasource -> {
-            commonThreadPool.addTask(() -> {
-                try {
-                    handleConnectionPool(datasource, "add");
-                } catch (Exception e) {
-                    LogUtil.error("Failed to init datasource: " + datasource.getName(), e);
-                }
-            });
-        });
+        datasources.forEach(datasource -> commonThreadPool.addTask(() -> {
+            try {
+                handleConnectionPool(datasource, "add");
+            } catch (Exception e) {
+                LogUtil.error("Failed to init datasource: " + datasource.getName(), e);
+            }
+        }));
     }
 
     public void checkName(String datasourceName, String type, String id) {

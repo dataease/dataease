@@ -121,6 +121,7 @@ public class ExtAuthServiceImpl implements ExtAuthService {
         return extAuthMapper.panelIdByDept(deptId.toString());
     }
 
+    @Override
     @Caching(evict = {
             @CacheEvict(value = AuthConstants.USER_LINK_NAME, key = "'user' + #userId"),
             @CacheEvict(value = AuthConstants.USER_DATASET_NAME, key = "'user' + #userId"),
@@ -130,6 +131,7 @@ public class ExtAuthServiceImpl implements ExtAuthService {
         LogUtil.info("all permission resource of user {} is cleaning...", userId);
     }
 
+    @Override
     @Caching(evict = {
             @CacheEvict(value = AuthConstants.DEPT_LINK_NAME, key = "'dept' + #deptId"),
             @CacheEvict(value = AuthConstants.DEPT_DATASET_NAME, key = "'dept' + #deptId"),
@@ -139,6 +141,7 @@ public class ExtAuthServiceImpl implements ExtAuthService {
         LogUtil.info("all permission resource of dept {} is cleaning...", deptId);
     }
 
+    @Override
     @Caching(evict = {
             @CacheEvict(value = AuthConstants.ROLE_LINK_NAME, key = "'role' + #roleId"),
             @CacheEvict(value = AuthConstants.ROLE_DATASET_NAME, key = "'role' + #roleId"),
@@ -154,14 +157,13 @@ public class ExtAuthServiceImpl implements ExtAuthService {
         if (StringUtils.isNotBlank(s)) {
             String[] split = s.split(",");
             List<String> results = new ArrayList<>();
-            for (int i = 0; i < split.length; i++) {
-                String s1 = split[i];
+            for (String s1 : split) {
                 if (StringUtils.isNotBlank(s1)) {
                     results.add(s1);
                 }
             }
             return CollectionUtils.isEmpty(results) ? null : results;
         }
-        return null;
+        return Collections.emptyList();
     }
 }
