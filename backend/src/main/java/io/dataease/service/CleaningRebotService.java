@@ -1,6 +1,7 @@
 package io.dataease.service;
 
 import io.dataease.ext.CleaningRebotMapper;
+import io.dataease.service.message.SysMsgService;
 import io.dataease.service.sys.log.LogService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ public class CleaningRebotService {
     @Resource
     private LogService logService;
 
+    @Resource
+    private SysMsgService sysMsgService;
+
     public void execute() {
         int floatDept = 0;
         do {
@@ -38,5 +42,6 @@ public class CleaningRebotService {
             cleaningRebotMapper.delFloatingCreatorLinkMapping();
         }
         logService.cleanDisusedLog();
+        sysMsgService.cleanDisusedMsg();
     }
 }
