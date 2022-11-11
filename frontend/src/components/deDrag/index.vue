@@ -39,6 +39,7 @@
         :active-model="'edit'"
         :canvas-id="canvasId"
         :element="element"
+        :chart="chart"
         @showViewDetails="showViewDetails"
         @amRemoveItem="amRemoveItem"
         @amAddItem="amAddItem"
@@ -384,6 +385,7 @@ export default {
   },
   data: function() {
     return {
+      chart: null,
       contentDisplay: true,
       // 当画布在tab中是 宽度左右拓展的余量
       parentWidthTabOffset: 40,
@@ -802,6 +804,9 @@ export default {
     this.beforeDestroyFunction()
   },
   methods: {
+    setChartData(chart) {
+      this.chart = chart
+    },
     // 重置边界和鼠标状态
     resetBoundsAndMouseState() {
       this.mouseClickPosition = { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 }
