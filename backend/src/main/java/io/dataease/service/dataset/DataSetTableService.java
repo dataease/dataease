@@ -301,7 +301,7 @@ public class DataSetTableService {
         DataTableInfoDTO info = new DataTableInfoDTO();
         info.setExcelSheetDataList(excelSheetDataList);
         datasetTable.setInfo(new Gson().toJson(info));
-
+        datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
         // 替換時，先不刪除旧字段；同步成功后再删除
         if (datasetTable.getEditType() == 0) {
             commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "替换",
