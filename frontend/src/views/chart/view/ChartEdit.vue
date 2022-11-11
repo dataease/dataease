@@ -549,17 +549,23 @@
                     </el-row>
                     <!--group field,use xaxisExt-->
                     <el-row
-                      v-if="view.type === 'bar-group' || view.type === 'bar-group-stack'"
+                      v-if="view.type === 'bar-group'
+                        || view.type === 'bar-group-stack'
+                        || (view.render === 'antv' && view.type === 'line')"
                       class="padding-lr"
                     >
                       <span style="width: 80px;text-align: right;">
                         <span>
                           {{ $t('chart.chart_group') }}
-                          <span style="color:#F54A45;">*</span>
+                          <span
+                            v-show="view.type !== 'line'"
+                            style="color:#F54A45;"
+                          >*</span>
                         </span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
                         <el-tooltip
+                          v-show="view.type !== 'line'"
                           class="item"
                           effect="dark"
                           placement="bottom"
