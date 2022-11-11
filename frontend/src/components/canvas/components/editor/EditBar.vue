@@ -94,7 +94,7 @@
         >
           <i
             class="icon iconfont icon-shezhi"
-            style="margin-top:2px"
+            style="margin-top:2px; width: 16px;"
           />
         </span>
       </setting-menu>
@@ -140,6 +140,11 @@
           <i class="icon iconfont icon-com-jump" />
         </a>
       </span>
+
+      <map-layer-controller
+        v-if="chart && showMapLayerController"
+        :chart="chart"
+      />
     </div>
 
     <!--跳转设置-->
@@ -185,9 +190,10 @@ import toast from '@/components/canvas/utils/toast'
 import FieldsList from '@/components/canvas/components/editor/FieldsList'
 import LinkJumpSet from '@/views/panel/linkJumpSet'
 import Background from '@/views/background/index'
+import MapLayerController from '@/views/chart/components/map/MapLayerController'
 
 export default {
-  components: { Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField },
+  components: { Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField, MapLayerController },
 
   props: {
     canvasId: {
@@ -226,6 +232,10 @@ export default {
       type: String,
       required: false,
       default: 'NotProvided'
+    },
+    chart: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -249,6 +259,13 @@ export default {
   },
 
   computed: {
+    yaxis() {
+      if (!this.chart) return []
+      return JSON.parse(this.chart.yaxis)
+    },
+    showMapLayerController() {
+      return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType === 'map' && this.yaxis.length > 1
+    },
     detailsShow() {
       return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType !== 'richTextView'
     },
@@ -519,7 +536,7 @@ export default {
   background-color: var(--primary, #3370ff);
 }
 
-.bar-main i {
+.bar-main ::v-deep i {
   color: white;
   float: right;
   margin-right: 3px;

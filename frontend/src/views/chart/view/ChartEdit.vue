@@ -2069,9 +2069,7 @@ export default {
           }
         })
       }
-      if (view.type === 'map' && view.yaxis.length > 1) {
-        view.yaxis = [view.yaxis[0]]
-      }
+
       view.yaxis.forEach(function(ele) {
         if (!ele.chartType) {
           ele.chartType = 'bar'
@@ -2823,7 +2821,7 @@ export default {
     addYaxis(e) {
       this.dragCheckType(this.view.yaxis, 'q')
       this.dragMoveDuplicate(this.view.yaxis, e)
-      if ((this.view.type === 'map' || this.view.type === 'waterfall' || this.view.type === 'word-cloud' || this.view.type.includes('group')) && this.view.yaxis.length > 1) {
+      if ((this.view.type === 'waterfall' || this.view.type === 'word-cloud' || this.view.type.includes('group')) && this.view.yaxis.length > 1) {
         this.view.yaxis = [this.view.yaxis[0]]
       }
       this.calcData(true)
