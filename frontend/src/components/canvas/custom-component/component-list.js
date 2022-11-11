@@ -290,6 +290,7 @@ const list = [
     },
     options: {
       isPopVisible: false,
+      popTitle: '',
       popImgList: [],
     },
     hyperlinks: HYPERLINKS,

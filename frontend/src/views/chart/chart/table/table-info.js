@@ -309,7 +309,13 @@ export function baseTablePivot(s2, container, chart, action, tableData, fontFami
     width: containerDom.offsetWidth,
     height: containerDom.offsetHeight,
     style: getSize(chart),
-    totals: totalCfg
+    totals: totalCfg,
+    // rowCell: (node, s2, headConfig) => {
+    //   console.log('rowCell,,,',node, s2, headConfig)
+    // },
+    // colCell: (node, s2, headConfig) => {
+    //   console.log('colCell',node,s2,headConfig)
+    // }
   }
 
   // 开始渲染

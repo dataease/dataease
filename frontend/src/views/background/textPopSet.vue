@@ -12,6 +12,14 @@
       </el-row>
       <el-row class="text_row">
         <el-col :span="4" class="text_col_4">
+          <span>标题</span>
+        </el-col>
+        <el-col :span="8">
+          <el-input v-model="curComponent.options.popTitle" size="small"></el-input>
+        </el-col>
+      </el-row>
+      <el-row class="text_row">
+        <el-col :span="4" class="text_col_4">
           <span>展示图片</span>
         </el-col>
         <el-col style="margin-top: 10px;padding-left: 20px;">

@@ -30,12 +30,11 @@ export default {
   },
   computed: {
     fileList() {
-      if(this.curComponent && this.curComponent.options) {
-        return this.curComponent.options.popImgList
+      if(this.element && this.element.options) {
+        return this.element.options.popImgList
       } else {
         return []
       }
-      
     },
     ...mapState([
       'curComponent',
@@ -43,7 +42,7 @@ export default {
     ])
   },
   mounted() {
-    console.log('数据1',this.curComponent)
+    console.log('数据1',this.element)
   },
   methods: {
     

@@ -179,9 +179,6 @@ export default {
       }
       return style
     },
-    isPopVisible() {
-      return this.curComponent.options.isPopVisible !== undefined ? this.curComponent.options.isPopVisible : false
-    },
     ...mapState([
       'menuTop',
       'menuLeft',

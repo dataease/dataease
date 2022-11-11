@@ -54,7 +54,7 @@
     </div>
   </div>
   <el-dialog
-    title="预览"
+    :title="textTitle"
     :visible.sync="showVisible"
     width="38%"
     class="dialog-css"
@@ -62,7 +62,7 @@
     :append-to-body="inScreen"
     :destroy-on-close="true"
   >
-    <textPopShow />
+    <textPopShow :element="textElement" />
   </el-dialog>
 </div>
 </template>
@@ -120,6 +120,7 @@ export default {
     return {
       previewVisible: false,
       showVisible: false,
+      textElement: {},
     }
   },
   computed: {
@@ -156,19 +157,19 @@ export default {
     curGap() {
       return (this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix) ? this.componentGap : 0
     },
+    textTitle() {
+      if (this.textElement && this.textElement.options && this.textElement.options.popTitle) {
+        return this.textElement.options.popTitle
+      } else {
+        return ''
+      }
+    },
     ...mapState([
       'mobileLayoutStatus',
       'canvasStyleData',
       'curComponent',
       'componentGap'
     ])
-  },
-  watch: {
-    showVisible: {
-      handler(newVal,oldVal) {
-        
-      }
-    }
   },
   mounted() {
     runAnimation(this.$el, this.config.animations)
@@ -237,10 +238,10 @@ export default {
       Object.keys(events).forEach(event => {
         this[event](events[event])
       })
-      console.log(this.showVisible,this.curComponent)
+      console.log('click,,,,,',this.showVisible,this.curComponent)
       if(this.config.component === 'v-text' && this.curComponent && this.config.options && this.config.options.isPopVisible) {
         this.showVisible = true
-        console.log('show',this.config)
+        this.textElement = this.config
       }
 
     },
