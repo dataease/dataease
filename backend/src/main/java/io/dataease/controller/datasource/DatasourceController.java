@@ -1,13 +1,6 @@
 package io.dataease.controller.datasource;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.commons.constants.DePermissionType;
@@ -26,15 +19,16 @@ import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.service.datasource.DatasourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.annotation.Resource;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Api(tags = "数据源：数据源管理")
 @ApiSupport(order = 30)
@@ -62,7 +56,7 @@ public class DatasourceController {
     @RequiresPermissions("datasource:read")
     @ApiOperation("数据源类型")
     @GetMapping("/types")
-    public Collection types() {
+    public Collection types() throws Exception {
         return datasourceService.types();
     }
 
@@ -90,7 +84,7 @@ public class DatasourceController {
 
     @ApiOperation("查询数据源详情")
     @PostMapping("/get/{id}")
-    public DatasourceDTO getDatasource(@PathVariable String id) {
+    public DatasourceDTO getDatasource(@PathVariable String id) throws Exception {
         return datasourceService.getDataSourceDetails(id);
     }
 

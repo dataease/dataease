@@ -34,14 +34,14 @@ public class KettleController {
 
     @ApiIgnore
     @PostMapping("validate")
-    public  void validate(@RequestBody KettleDTO kettleDTO) {
+    public  void validate(@RequestBody KettleDTO kettleDTO) throws Exception{
         kettleService.validate(kettleDTO);
     }
 
     @RequiresPermissions("sysparam:read")
     @ApiOperation("校验")
     @PostMapping("validate/{id}")
-    public ResultHolder validate(@PathVariable String id){
+    public ResultHolder validate(@PathVariable String id) throws Exception{
         return kettleService.validate(id);
     }
 
@@ -56,7 +56,7 @@ public class KettleController {
     @RequiresPermissions("sysparam:read")
     @ApiOperation("删除")
     @DeleteMapping("delete/{id}")
-    public void delete(@PathVariable String id){
+    public void delete(@PathVariable String id) throws Exception{
         kettleService.delete(id);
     }
 }

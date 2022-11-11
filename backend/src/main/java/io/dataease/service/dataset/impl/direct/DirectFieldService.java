@@ -80,10 +80,10 @@ public class DirectFieldService implements DataSetFieldService {
     public List<Object> fieldValues(List<String> fieldIds, DeSortDTO sortDTO, Long userId, Boolean userPermissions, Boolean needMapping, Boolean rowAndColumnMgm) throws Exception {
         String fieldId = fieldIds.get(0);
         DatasetTableField field = dataSetTableFieldsService.selectByPrimaryKey(fieldId);
-        if (field == null || StringUtils.isEmpty(field.getTableId())) return Collections.emptyList();
+        if (field == null || StringUtils.isEmpty(field.getTableId())) return null;
 
         DatasetTable datasetTable = dataSetTableService.get(field.getTableId());
-        if (ObjectUtils.isEmpty(datasetTable) || StringUtils.isEmpty(datasetTable.getName())) return Collections.emptyList();
+        if (ObjectUtils.isEmpty(datasetTable) || StringUtils.isEmpty(datasetTable.getName())) return null;
 
         DatasetTableField datasetTableField = DatasetTableField.builder().tableId(field.getTableId()).checked(Boolean.TRUE).build();
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
@@ -174,7 +174,8 @@ public class DirectFieldService implements DataSetFieldService {
         LogUtil.info(datasourceRequest.getQuery());
         List<String[]> rows = datasourceProvider.getData(datasourceRequest);
         if (!needMapping) {
-            return rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
+            List<Object> results = rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
+            return results;
         }
         Set<String> pkSet = new HashSet<>();
 
@@ -191,9 +192,9 @@ public class DirectFieldService implements DataSetFieldService {
             String text = row[i];
 
             parentPkList.add(text);
-            String val = String.join(TreeUtils.SEPARATOR, parentPkList);
+            String val = parentPkList.stream().collect(Collectors.joining(TreeUtils.SEPARATOR));
             String parentVal = i == 0 ? TreeUtils.DEFAULT_ROOT : row[i - 1];
-            String pk = String.join(TreeUtils.SEPARATOR, parentPkList);
+            String pk = parentPkList.stream().collect(Collectors.joining(TreeUtils.SEPARATOR));
             if (pkSet.contains(pk)) continue;
             pkSet.add(pk);
             BaseTreeNode node = new BaseTreeNode(val, parentVal, text, pk + TreeUtils.SEPARATOR + i);

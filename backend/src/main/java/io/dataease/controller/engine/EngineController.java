@@ -21,14 +21,14 @@ public class EngineController {
 
     @ApiIgnore
     @GetMapping("/mode")
-    public String  runMode(){
+    public String  runMode() throws Exception{
         return engineService.mode();
     }
 
     @RequiresPermissions("sysparam:read")
     @ApiOperation("引擎信息")
     @GetMapping("/info")
-    public DeEngine info(){
+    public DeEngine info() throws Exception{
         return engineService.info();
     }
 

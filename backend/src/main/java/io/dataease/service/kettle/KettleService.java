@@ -32,7 +32,7 @@ public class KettleService {
     @Resource
     private EngineService engineService;
 
-    public ResultHolder save(DeEngine kettle) {
+    public ResultHolder save(DeEngine kettle) throws Exception {
         try {
             validate(new Gson().fromJson(kettle.getConfiguration(), KettleDTO.class));
             kettle.setStatus("Success");
@@ -54,12 +54,12 @@ public class KettleService {
         deEngineMapper.deleteByPrimaryKey(id);
     }
 
-    public void validate(KettleDTO kettleDTO) {
+    public void validate(KettleDTO kettleDTO) throws Exception {
         HttpClientConfig httpClientConfig = new HttpClientConfig();
         String authValue = "Basic " + Base64.getUrlEncoder().encodeToString((kettleDTO.getUser()
                 + ":" + kettleDTO.getPasswd()).getBytes());
         httpClientConfig.addHeader("Authorization", authValue);
-        HttpClientUtil.get("http://" + kettleDTO.getCarte() + ":" + kettleDTO.getPort() + "/kettle/status/", httpClientConfig);
+        String response = HttpClientUtil.get("http://" + kettleDTO.getCarte() + ":" + kettleDTO.getPort() + "/kettle/status/", httpClientConfig);
     }
 
     public ResultHolder validate(String id) {
@@ -87,7 +87,9 @@ public class KettleService {
             return;
         }
         List<DeEngine>kettles = pageList();
-        kettles.forEach(kettle -> validate(kettle.getId()));
+        kettles.forEach(kettle -> {
+            validate(kettle.getId());
+        });
     }
 
     public SlaveServer getSlaveServer() throws Exception{
@@ -130,7 +132,11 @@ public class KettleService {
         if(engineService.isClusterMode()){
             List<DeEngine> kettles = pageList().stream().filter(kettle -> kettle.getStatus() != null && kettle.getStatus().equalsIgnoreCase("Success"))
                     .collect(Collectors.toList());
-            return !CollectionUtils.isEmpty(kettles);
+            if(CollectionUtils.isEmpty(kettles)){
+               return false;
+            }else {
+                return true;
+            }
         }
         return false;
     }

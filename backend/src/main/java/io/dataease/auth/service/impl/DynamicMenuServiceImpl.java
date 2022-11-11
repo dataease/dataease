@@ -1,19 +1,12 @@
 package io.dataease.auth.service.impl;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
 import io.dataease.auth.api.dto.DynamicMenuDto;
 import io.dataease.auth.api.dto.MenuMeta;
 import io.dataease.auth.service.DynamicMenuService;
-import io.dataease.ext.ExtPluginSysMenuMapper;
-import io.dataease.ext.ExtSysMenuMapper;
 import io.dataease.plugins.common.base.domain.SysMenu;
 import io.dataease.plugins.common.base.mapper.SysMenuMapper;
+import io.dataease.ext.ExtPluginSysMenuMapper;
+import io.dataease.ext.ExtSysMenuMapper;
 import io.dataease.plugins.common.dto.PluginSysMenu;
 import io.dataease.plugins.util.PluginUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -21,6 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class DynamicMenuServiceImpl implements DynamicMenuService {
@@ -50,7 +50,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
             int sortIndex2 = null == s2.getMenuSort() ? 999 : s2.getMenuSort();
             return sortIndex1 - sortIndex2;
         }).collect(Collectors.toList());
-        dynamicMenuDtos.sort(Comparator.comparing(DynamicMenuDto::getHidden));
+        dynamicMenuDtos.sort((s1, s2) -> s1.getHidden().compareTo(s2.getHidden()));
         return buildTree(dynamicMenuDtos);
     }
 
@@ -91,7 +91,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         dynamicMenuDto.setMenuSort(sysMenu.getMenuSort());
         dynamicMenuDto.setHidden(sysMenu.getHidden());
         dynamicMenuDto.setIsPlugin(true);
-        dynamicMenuDto.setNoLayout(sysMenu.isNoLayout());
+        dynamicMenuDto.setNoLayout(!!sysMenu.isNoLayout());
         return dynamicMenuDto;
     }
 
@@ -104,7 +104,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
             lists.forEach(tNode -> {
                 if (tNode.getPid().equals(node.getId())) {
                     if (node.getChildren() == null) {
-                        node.setChildren(new ArrayList<>());
+                        node.setChildren(new ArrayList<DynamicMenuDto>());
                         node.setRedirect(node.getPath() + "/" + tNode.getPath());//第一个子节点的path
                     }
                     node.getChildren().add(tNode);
