@@ -19,6 +19,7 @@ public class SqlFilter implements Filter {
 
     @Override
     public void destroy() {
+
     }
 
     @Override
@@ -34,23 +35,19 @@ public class SqlFilter implements Filter {
             return;
         }
 
-        String method = "GET";
+        String method;
         String param;
-        XssAndSqlHttpServletRequestWrapper xssRequest = null;
-        if (request instanceof HttpServletRequest) {
-            method = ((HttpServletRequest) request).getMethod();
-            xssRequest = new XssAndSqlHttpServletRequestWrapper((HttpServletRequest) request);
-        }
+        XssAndSqlHttpServletRequestWrapper xssRequest;
+        method = ((HttpServletRequest) request).getMethod();
+        xssRequest = new XssAndSqlHttpServletRequestWrapper((HttpServletRequest) request);
         if ("POST".equalsIgnoreCase(method)) {
-            param = this.getBodyString(xssRequest.getReader());
-            if (StringUtils.isNotBlank(param)) {
-                if (xssRequest.checkXSSAndSql(param)) {
+            param = getBodyString(xssRequest.getReader());
+            if (StringUtils.isNotBlank(param) && XssAndSqlHttpServletRequestWrapper.checkXSSAndSql(param)) {
                     response.setCharacterEncoding("UTF-8");
                     response.setContentType("application/json;charset=UTF-8");
                     String msg = ThreadLocalContextHolder.getData().toString();
                     DEException.throwException(msg);
                     return;
-                }
             }
         }
         if (xssRequest.checkParameter()) {
@@ -71,17 +68,15 @@ public class SqlFilter implements Filter {
     // 获取request请求body中参数
     public static String getBodyString(BufferedReader br) {
         String inputLine;
-        String str = "";
+        StringBuilder bld = new StringBuilder();
         try {
             while ((inputLine = br.readLine()) != null) {
-                str += inputLine;
+                bld.append(inputLine);
             }
             br.close();
         } catch (IOException e) {
+            e.printStackTrace();
         }
-        return str;
-
+        return bld.toString();
     }
-
-
 }
