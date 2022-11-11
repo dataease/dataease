@@ -914,6 +914,7 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    layer_controller: '指标切换',
     suspension: '悬浮',
     chart_background: '组件背景',
     solid_color: '纯色',

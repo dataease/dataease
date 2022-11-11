@@ -18,12 +18,13 @@ public class VAuthModelDTO extends VAuthModelWithBLOBs implements ITreeBase<VAut
 
     private List<VAuthModelDTO> children;
 
-    private long allLeafs = 0l;
+    private long allLeafs = 0L;
 
     private String innerId;
 
     private Boolean isPlugin = false;
 
+    @Override
     public String toString(){
         return this.getName();
     }

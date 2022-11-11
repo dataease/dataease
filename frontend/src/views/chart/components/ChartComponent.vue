@@ -12,41 +12,14 @@
       style="width: 100%;height: 100%;overflow: hidden;"
       :style="{ borderRadius: borderRadius}"
     />
-    <div
+
+    <map-controller
       v-if="chart.type === 'map' && showSuspension"
-      class="map-zoom-box"
-    >
-      <div style="margin-bottom: 0.5em;">
-        <el-button
-          :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}"
-          size="mini"
-          icon="el-icon-plus"
-          circle
-          @click="roamMap(true)"
-        />
-      </div>
-
-      <div style="margin-bottom: 0.5em;">
-        <el-button
-          :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}"
-          size="mini"
-          icon="el-icon-refresh"
-          circle
-          @click="resetZoom()"
-        />
-      </div>
-
-      <div>
-        <el-button
-          :style="{'background': buttonTextColor ? 'none' : '', 'opacity': buttonTextColor ? '0.75': '', 'color': buttonTextColor, 'borderColor': buttonTextColor}"
-          size="mini"
-          icon="el-icon-minus"
-          circle
-          @click="roamMap(false)"
-        />
-      </div>
-
-    </div>
+      :chart="chart"
+      :button-text-color="buttonTextColor"
+      @roam-map="roamMap"
+      @reset-zoom="resetZoom"
+    />
     <div
       :class="loading ? 'symbol-map-loading' : 'symbol-map-loaded'"
     />
@@ -81,12 +54,14 @@ import { uuid } from 'vue-uuid'
 import { geoJson } from '@/api/map/map'
 import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import { reverseColor } from '../chart/common/common'
+import MapController from './map/MapController.vue'
 import { mapState } from 'vuex'
-
+import bus from '@/utils/bus'
 export default {
   name: 'ChartComponent',
   components: {
-    ViewTrackBar
+    ViewTrackBar,
+    MapController
   },
   props: {
     chart: {
@@ -178,9 +153,11 @@ export default {
     }
   },
   mounted() {
+    bus.$on('change-series-id', this.changeSeriesId)
     this.preDraw()
   },
   beforeDestroy() {
+    bus.$off('change-series-id', this.changeSeriesId)
     window.removeEventListener('resize', this.myChart.resize)
     this.myChart.dispose()
     this.myChart = null
@@ -189,6 +166,15 @@ export default {
     this.loadThemeStyle()
   },
   methods: {
+    changeSeriesId(param) {
+      const { id, seriesId } = param
+      if (id !== this.chart.id) {
+        return
+      }
+      const customAttr = JSON.parse(this.chart.customAttr)
+      customAttr.currentSeriesId = seriesId
+      this.chart.customAttr = JSON.stringify(customAttr)
+    },
     reDrawView() {
       this.myChart.dispatchAction({
         type: 'unselect',
