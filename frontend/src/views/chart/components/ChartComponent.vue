@@ -223,10 +223,6 @@ export default {
           if (that.linkageActiveParam) {
             that.reDrawView()
           }
-          that.linkageActiveParam = {
-            seriesIndex: that.pointParam.seriesIndex,
-            name: that.pointParam.name
-          }
           if (that.trackMenu.length < 2) { // 只有一个事件直接调用
             that.trackClick(that.trackMenu[0])
           } else { // 视图关联多个事件
@@ -436,6 +432,10 @@ export default {
           this.$emit('onChartClick', this.pointParam)
           break
         case 'linkage':
+          this.linkageActiveParam = {
+            seriesIndex: param.seriesIndex,
+            name: param.name
+          }
           this.linkageActive()
           this.$store.commit('addViewTrackFilter', linkageParam)
           break

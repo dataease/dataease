@@ -158,7 +158,11 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
-                axisChartDataDTO.setCategory(b.toString());
+                if ("line".equals(view.getType()) && CollectionUtils.isEmpty(xAxisExt)) {
+                    axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                } else {
+                    axisChartDataDTO.setCategory(b.toString());
+                }
                 dataList.add(axisChartDataDTO);
             }
         }
