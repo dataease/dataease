@@ -23,7 +23,9 @@ export function proxyInitPanelData(panelId, proxy, callback) {
         creatorName: response.data.creatorName,
         updateBy: response.data.updateBy,
         updateName: response.data.updateName,
-        updateTime: response.data.updateTime
+        updateTime: response.data.updateTime,
+        watermarkOpen: response.data.watermarkOpen,
+        watermarkInfo: response.data.watermarkInfo
       })
       // 刷新联动信息
       getPanelAllLinkageInfo(panelId, proxy).then(rsp => {

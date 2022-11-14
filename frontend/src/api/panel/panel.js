@@ -66,6 +66,7 @@ export function viewData(id, panelId, data) {
     data
   })
 }
+
 export function panelSave(data) {
   return request({
     url: 'panel/group/save',
@@ -174,7 +175,9 @@ export function initPanelData(panelId, useCache = false, callback) {
         creatorName: response.data.creatorName,
         updateBy: response.data.updateBy,
         updateName: response.data.updateName,
-        updateTime: response.data.updateTime
+        updateTime: response.data.updateTime,
+        watermarkOpen: response.data.watermarkOpen,
+        watermarkInfo: response.data.watermarkInfo
       })
       // 刷新联动信息
       getPanelAllLinkageInfo(panelId).then(rsp => {
@@ -230,6 +233,7 @@ export function initViewCache(panelId) {
     loading: false
   })
 }
+
 export function exportDetails(data) {
   // 初始化仪表板视图缓存
   return request({
@@ -268,6 +272,7 @@ export function saveCache(data) {
     data
   })
 }
+
 export function findUserCacheRequest(panelId) {
   return request({
     url: 'panel/group/findUserCache/' + panelId,

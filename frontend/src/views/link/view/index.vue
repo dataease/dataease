@@ -76,7 +76,9 @@ export default {
           createBy: res.data.createBy,
           createTime: res.data.createTime,
           updateBy: res.data.updateBy,
-          updateTime: res.data.updateTime
+          updateTime: res.data.updateTime,
+          watermarkOpen: res.data.watermarkOpen,
+          watermarkInfo: res.data.watermarkInfo
         }
         this.$store.dispatch('panel/setPanelInfo', this.panelInfo)
 

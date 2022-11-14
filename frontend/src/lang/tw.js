@@ -1451,7 +1451,7 @@ export default {
     field_rename: '字段重命名',
     params_work: '僅在編輯 sql 時生效',
     sql_variable_limit_1: '1、SQL變數只能在WHERE條件中使用',
-    sql_variable_limit_2: "2、示例：select * from table_name where column_name1='${param_name1}' and column_name2 in '${param_name2}'",
+    sql_variable_limit_2: '2、示例：select * from table_name where column_name1=\'${param_name1}\' and column_name2 in \'${param_name2}\'',
     selesql_variable_limit_2ct_year: '選擇年',
     select_month: '選擇月',
     select_date: '選擇日期',
@@ -1865,6 +1865,7 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    watermark: '水印',
     panel_get_data_error: '獲取儀表板信息失敗，儀表板可能已經被刪除，請檢查儀表板狀態',
     panel_no_save_tips: '存在未保存的儀表板',
     panel_cache_use_tips: '檢查到上次有儀表板未能正常保存，是否使用上次未保存的儀表板？',

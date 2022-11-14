@@ -1451,7 +1451,7 @@ export default {
     params_work: '仅在编辑sql时生效',
     select_year: '选择年',
     sql_variable_limit_1: '1、SQL 变量只能在 WHERE 条件中使用',
-    sql_variable_limit_2: "2、示例：select * from table_name where column_name1='${param_name1}' and column_name2 in '${param_name2}'",
+    sql_variable_limit_2: '2、示例：select * from table_name where column_name1=\'${param_name1}\' and column_name2 in \'${param_name2}\'',
     select_month: '选择月',
     select_date: '选择日期',
     select_time: '选择时间',
@@ -1865,6 +1865,7 @@ export default {
     sure_bt: '确定'
   },
   panel: {
+    watermark: '水印',
     panel_get_data_error: '获取仪表板信息失败，仪表板可能已经被删除，请检查仪表板状态',
     panel_no_save_tips: '存在未保存的仪表板',
     panel_cache_use_tips: '检查到上次有仪表板未能正常保存，是否使用上次未保存的仪表板？',

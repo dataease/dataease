@@ -2,9 +2,11 @@ package io.dataease.dto.panel;
 
 import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
+import io.dataease.plugins.common.base.domain.PanelWatermark;
 import io.dataease.plugins.common.model.ITreeBase;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
 import java.util.List;
 import java.util.Map;
 
@@ -43,4 +45,7 @@ public class PanelGroupDTO extends PanelGroupWithBLOBs implements ITreeBase<Pane
     private String requestId;
     @ApiModelProperty("数据返回来源")
     private String responseSource;
+    @ApiModelProperty("水印信息")
+    private PanelWatermark watermarkInfo;
+
 }
