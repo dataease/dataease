@@ -2521,7 +2521,8 @@ export default {
     pixel_tip: '可直接輸入分辨率(例如:2560 * 1600)或者選擇',
     task_type: '任務類型',
     range_view: '展示數據',
-    range_all: '全部數據'
+    range_all: '全部數據',
+    execute_now: '立即執行'
   },
   dynamic_time: {
     set_default: '設置默認值',
