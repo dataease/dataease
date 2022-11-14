@@ -7,10 +7,10 @@
         @change="openMobileLayout"
       >
         <el-radio-button :label="false">
-          <span class="icon iconfont icon-icon_pc_outlined icon16_only" />
+          <span class="icon iconfont icon-icon_pc_outlined icon16_only"/>
         </el-radio-button>
         <el-radio-button :label="true">
-          <span class="icon iconfont icon-icon_phone_outlined icon16_only" />
+          <span class="icon iconfont icon-icon_phone_outlined icon16_only"/>
         </el-radio-button>
       </el-radio-group>
     </div>
@@ -95,7 +95,7 @@
             <el-dropdown-item>
               <el-dropdown placement="right-start">
                 <span>
-                  <span class="icon iconfont icon-icon_moments-categories_outlined icon16" />
+                  <span class="icon iconfont icon-icon_moments-categories_outlined icon16"/>
                   <span class="text14 margin-left8">{{ $t('panel.new_element_distribution') }}</span>
                   <svg-icon
                     icon-class="icon_right_outlined"
@@ -121,7 +121,7 @@
               </el-dropdown>
             </el-dropdown-item>
             <el-dropdown-item>
-              <span class="icon iconfont icon-icon_dialpad_outlined icon16" />
+              <span class="icon iconfont icon-icon_dialpad_outlined icon16"/>
               <span class="text14 margin-left8">{{ $t('panel.aided_grid') }}</span>
               <el-switch
                 v-model="showGridSwitch"
@@ -131,12 +131,21 @@
               />
             </el-dropdown-item>
             <el-dropdown-item @click.native="openOuterParamsSet">
-              <span class="icon iconfont icon-icon-quicksetting icon16" />
+              <span class="icon iconfont icon-icon-quicksetting icon16"/>
               <span class="text14 margin-left8">{{ $t('panel.params_setting') }}</span>
             </el-dropdown-item>
             <el-dropdown-item @click.native="clearCanvas">
-              <span class="icon iconfont icon-icon_clear_outlined icon16" />
+              <span class="icon iconfont icon-icon_clear_outlined icon16"/>
               <span class="text14 margin-left8">{{ $t('panel.clean_canvas') }}</span>
+            </el-dropdown-item>
+             <el-dropdown-item>
+              <span class="icon iconfont icon-WATERMARK icon16"/>
+              <span class="text14 margin-left8">{{ $t('panel.watermark') }}</span>
+              <el-switch
+                v-model="panelInfo.watermarkOpen"
+                :class="[{['grid-active']: panelInfo.watermarkOpen},'margin-left8']"
+                size="mini"
+              />
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -182,8 +191,8 @@
         </el-col>
         <el-col :span="20">
           <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{
-            $t('panel.panel_save_warn_tips')
-          }}</span>
+              $t('panel.panel_save_warn_tips')
+            }}</span>
         </el-col>
       </el-row>
       <div

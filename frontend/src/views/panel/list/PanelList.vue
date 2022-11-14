@@ -161,7 +161,7 @@
                   />
                 </span>
                 <span v-if="data.nodeType === 'folder'">
-                  <svg-icon icon-class="scene" />
+                  <svg-icon icon-class="scene"/>
                 </span>
                 <span
                   :class="data.status"
@@ -198,7 +198,7 @@
                       <el-dropdown-item
                         :command="beforeClickEdit('folder', 'new', data, node)"
                       >
-                        <svg-icon icon-class="scene" />
+                        <svg-icon icon-class="scene"/>
                         <span style="margin-left: 5px">{{ $t('panel.groupAdd') }}</span>
                       </el-dropdown-item>
                       <el-dropdown-item
@@ -321,7 +321,7 @@
             :label="$t('commons.name')"
             prop="name"
           >
-            <el-input v-model="groupForm.name" />
+            <el-input v-model="groupForm.name"/>
           </el-form-item>
         </el-form>
         <div
@@ -332,8 +332,8 @@
             size="mini"
             @click="close()"
           >{{
-            $t('panel.cancel')
-          }}
+              $t('panel.cancel')
+            }}
           </el-button>
           <el-button
             type="primary"
@@ -409,8 +409,8 @@
             size="mini"
             @click="closeMoveGroup()"
           >{{
-            $t('dataset.cancel')
-          }}
+              $t('dataset.cancel')
+            }}
           </el-button>
           <el-button
             :disabled="groupMoveConfirmDisabled"
@@ -969,7 +969,9 @@ export default {
         createBy: data.createBy,
         createTime: data.createTime,
         updateBy: data.updateBy,
-        updateTime: data.updateTime
+        updateTime: data.updateTime,
+        watermarkOpen: data.watermarkOpen,
+        watermarkInfo: data.watermarkInfo
       })
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },

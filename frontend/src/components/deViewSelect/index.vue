@@ -148,7 +148,9 @@ export default {
           createBy: response.data.createBy,
           createTime: response.data.createTime,
           updateBy: response.data.updateBy,
-          updateTime: response.data.updateTime
+          updateTime: response.data.updateTime,
+          watermarkOpen: response.data.watermarkOpen,
+          watermarkInfo: response.data.watermarkInfo
         }
         this.$store.dispatch('panel/setPanelInfo', this.panelInfo)
         panelDataPrepare(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle), rsp => {
