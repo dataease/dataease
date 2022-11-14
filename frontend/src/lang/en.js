@@ -2520,7 +2520,8 @@ export default {
     pixel_tip: 'Please code custom pixel(such as 2560 * 1600) or select',
     task_type: 'Task type',
     range_view: 'Displayed data',
-    range_all: 'All data'
+    range_all: 'All data',
+    execute_now: 'Execute now'
   },
   dynamic_time: {
     set_default: 'Set Default',

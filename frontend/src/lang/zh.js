@@ -2521,7 +2521,8 @@ export default {
     pixel_tip: '可直接输入自定义分辨率(例如:2560 * 1600)或选择',
     task_type: '任务类型',
     range_view: '展示数据',
-    range_all: '全部数据'
+    range_all: '全部数据',
+    execute_now: '立即执行'
   },
   dynamic_time: {
     set_default: '设置默认值',
