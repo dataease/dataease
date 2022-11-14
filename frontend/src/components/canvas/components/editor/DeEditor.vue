@@ -121,7 +121,7 @@
       :canvas-id="canvasId"
     />
     <!-- 右击菜单 -->
-    <ContextMenu />
+    <ContextMenu/>
 
     <!-- 对齐标线 -->
     <span
@@ -932,7 +932,7 @@ export default {
       return !this.linkageSettingStatus && !this.batchOptStatus
     },
     showGrid() {
-      if (this.canvasStyleData && this.canvasStyleData.aidedDesign) {
+      if (this.canvasStyleData && this.canvasStyleData.aidedDesign && this.canvasId === 'canvas-main') {
         return this.canvasStyleData.aidedDesign.showGrid
       } else {
         return false
