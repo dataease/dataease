@@ -778,7 +778,7 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick' && view.type !== 'map' && !view.type.includes('progress') && view.type !== 'waterfall' && view.type !== 'graph'"
+                    v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick' && view.type !== 'contrast-funnel' && view.type !== 'map' && !view.type.includes('progress') && view.type !== 'waterfall' && view.type !== 'graph'"
                     name="size"
                     :title="$t('chart.size')"
                   >

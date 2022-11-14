@@ -68,6 +68,11 @@ export function baseContrastFunnelOption(chart_option, chart, cstyle = {}) {
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
       chart_option.tooltip = tooltip
     }
+
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
   }
 
   // 处理data
@@ -90,46 +95,51 @@ export function baseContrastFunnelOption(chart_option, chart, cstyle = {}) {
       }
       chart_option.series[0] = {
         type: 'funnel',
-        width: '40%',
-        height: '45%',
+        width: '38%',
+        height: '38%',
         left: '5%',
-        top: '50%',
+        top: '48%',
         funnelAlign: 'right',
+        label: customAttr.label,
         data: arr
       }
       chart_option.series[1] = {
         type: 'funnel',
-        width: '40%',
-        height: '45%',
+        width: '38%',
+        height: '38%',
         left: '5%',
-        top: '5%',
+        top: '10%',
         sort: 'ascending',
         funnelAlign: 'right',
+        label: customAttr.label,
         data: arr
       }
       chart_option.series[2] = {
         type: 'funnel',
-        width: '40%',
-        height: '45%',
+        width: '38%',
+        height: '38%',
         left: '55%',
-        top: '5%',
+        top: '10%',
         funnelAlign: 'left',
+        label: customAttr.label,
         data: arr
       }
       chart_option.series[3] = {
         type: 'funnel',
-        width: '40%',
-        height: '45%',
+        width: '38%',
+        height: '38%',
         left: '55%',
-        top: '50%',
+        top: '48%',
         sort: 'ascending',
         funnelAlign: 'left',
+        label: customAttr.label,
         data: arr
       }
     }
   }
 
   componentStyle(chart_option, chart,cstyle)
+  console.log('对比funner',chart_option)
   return chart_option
 }
 

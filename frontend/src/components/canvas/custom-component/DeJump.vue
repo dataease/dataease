@@ -13,7 +13,7 @@
       >
         <el-option v-for="(item,index) in jumpArr" 
           :key="index" :value="item.jumpLink" 
-          :label="item.jumpName" :style="{color: fontColor}">
+          :label="item.jumpName" :style="fontStyle">
         </el-option>
       </el-select>
     </div>
@@ -52,8 +52,19 @@ export default {
     getText() {
       return this.element.options.placeholder !== undefined? this.element.options.placeholder : ''
     },
-    fontColor() {
-      return this.element.options.color
+    fontStyle() {
+      let style= {}
+      if(this.element.options.nameType === 'back') {
+        if(this.element.options.nameBgImg !== '') {
+          style.backgroundImage = `url(${this.element.options.nameBgImg})`
+        }
+        style.backgroundRepeat = 'no-repeat'
+        style.backgroundSize = '100% 100%'
+      } else {
+        style.backgroundColor = this.element.options.nameBgColor
+      }
+      style.color = this.element.options.color
+      return style
     },
     jumpStyle() {
       const style = {}

@@ -5,16 +5,63 @@
       <el-row class="jump_row">
         <el-col :span="12">
           <el-col :span="6" class="jump_col_4">
-            字体颜色:
+            名称颜色:
           </el-col>
           <el-col :span="18">
             <el-color-picker v-model="curComponent.options.color" class="color-picker-style" :predefine="predefineColors" />
           </el-col>
+        </el-col>
+        <el-col :span="12" style="margin-bottom: 10px;">
           <el-col :span="6" class="jump_col_4">
             展示内容:
           </el-col>
           <el-col :span="18">
             <el-input v-model="curComponent.options.placeholder" size="small"></el-input>
+          </el-col>
+        </el-col>
+        <el-col :span="12">
+          <el-col :span="6" class="jump_col_4">
+            名称背景:
+          </el-col>
+          <el-col :span="18">
+            <el-row>
+              <el-radio-group v-model="curComponent.options.nameType" style="width:100%;">
+                <el-col :span="11">
+                  <el-radio label="color">颜色</el-radio>
+                </el-col>
+                <el-col :span="13">
+                  <el-radio label="back">图片</el-radio>
+                </el-col>
+              </el-radio-group>
+            </el-row>
+            <el-row style="margin-top: 10px;">
+              <el-col :span="11">
+                <el-color-picker v-model="curComponent.options.nameBgColor" class="color-picker-style" :predefine="predefineColors" />
+              </el-col>
+              <el-col :span="13" v-if="nameUrl === ''">
+                <el-upload
+                  action=""
+                  accept=".jpeg,.jpg,.png,.gif,.svg"
+                  class="avatar-uploader"
+                  list-type="picture-card"
+                  :http-request="upload"
+                  :file-list="nameList"
+                  :on-change="onNameChange"
+                  :limit="1"
+                >
+                  <i class="el-icon-plus" />
+                </el-upload>
+                <span>
+                  <i class="el-icon-warning" /> <span>上传的文件大小不能超过10MB!</span>
+                </span>
+              </el-col>
+              <el-col :span="12" v-else>
+                <div style="width: 100%;overflow-y:scroll;position: relative;">
+                  <img :src="nameUrl" alt="" style="width: 100%"/>
+                  <i class="el-icon-delete del_img" @click="handleNameRemove"></i>
+                </div>
+              </el-col>
+            </el-row>
           </el-col>
         </el-col>
         <el-col :span="12">
@@ -28,7 +75,7 @@
                   <el-radio label="color">颜色</el-radio>
                 </el-col>
                 <el-col :span="12">
-                  <el-radio label="back">背景</el-radio>
+                  <el-radio label="back">图片</el-radio>
                 </el-col>
               </el-radio-group>
             </el-row>
@@ -121,6 +168,8 @@ export default {
       uploadDisabled: false,
       fileList: [],
       updataUrl: '',
+      nameUrl: '',
+      nameList: [],
     }
   },
   computed: {
@@ -137,6 +186,7 @@ export default {
     save() {
       console.log(this.updataUrl)
       this.curComponent.options.jumpBgImg = this.updataUrl
+      this.curComponent.options.nameBgImg = this.nameUrl
       this.$store.commit('recordSnapshot')
       this.$emit('backgroundSetClose')
     },
@@ -165,6 +215,12 @@ export default {
       this.fileList = []
       // this.commitStyle()
     },
+    handleNameRemove(file,fileList) {
+      console.log(file,fileList)
+      this.curComponent.options.nameBgImg = ""
+      this.nameUrl = ""
+      this.nameList = []
+    },
     upload(file) {
       console.log('this is upload', file)
     },
@@ -187,6 +243,20 @@ export default {
       reader.readAsDataURL(file.raw)
       console.log('222222', file, fileList)
     },
+    onNameChange(file,fileList) {
+      if (file.size / 1024 / 1024 > 10) {
+        this.$message.error('上传的文件大小不能超过 10MB!')
+        this.nameList = []
+        return
+      }
+      var _this = this
+      const reader = new FileReader()
+      reader.onload = function() {
+        _this.nameUrl = reader.result
+        console.log('reader.result111111', reader.result)
+      }
+      reader.readAsDataURL(file.raw)
+    }
   }
 }
 </script>

@@ -620,10 +620,13 @@ const list = [
     },
     options: {
       color: '#333333',
+      nameType: 'color',
+      nameBgColor: '#EEEEEE',
+      nameBgImg: '',
       bgType: 'color',
       jumpBgColor: '#EEEEEE',
-      placeholder: '',
       jumpBgImg: '',
+      placeholder: '',
       jumpList: [
         {
           jumpName: '',

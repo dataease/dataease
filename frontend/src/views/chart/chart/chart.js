@@ -1109,7 +1109,11 @@ export const BASE_FUNNEL = {
     }
   },
   grid: {
-    containLabel: true
+    containLabel: true,
+    left: 10,
+    top: 10,
+    right: 10,
+    bottom: 10
   },
   tooltip: {
     trigger: 'item'
