@@ -907,6 +907,39 @@ export const BASE_BOXPLOT = {
   ]
 }
 
+export const BASE_3DSURFACE = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  tooltip: {},
+  xAxis3D: {
+    type: 'value'
+  },
+  yAxis3D: {
+    type: 'value'
+  },
+  zAxis3D: {
+    type: 'value'
+  },
+  grid3D: {
+    viewControl: {
+    }
+  },
+  series: [
+    {
+      type: 'surface',
+      wireframe: {
+        show: true,
+        lineStyle: {}
+      },
+      data: []
+    }
+  ]
+}
+
 export const BASE_SANKEY = {
   title: {
     text: '',

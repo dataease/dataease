@@ -47,7 +47,8 @@ import {
   BASE_CANDLESTICK,
   BASE_BOXPLOT,
   BASE_SANKEY,
-  BASE_3DEARTH
+  BASE_3DEARTH,
+  BASE_3DSURFACE
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -84,6 +85,9 @@ import {
 import {
   base3dEarthOption
 } from '../chart/other/earth'
+import {
+  base3DsurfaceOption
+} from '../chart/other/surface'
 import {
   basePieOption,
   rosePieOption,
@@ -318,7 +322,10 @@ export default {
         chart_option = candlestickOption(JSON.parse(JSON.stringify(BASE_CANDLESTICK)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'boxplot') {
         chart_option = baseBoxPlotOption(JSON.parse(JSON.stringify(BASE_BOXPLOT)), chart, this.$store.state.canvasStyleData)
-      } 
+      } else if (chart.type === '3dsurface') {
+        // chart_option = BASE_3DSURFACE
+        chart_option = base3DsurfaceOption(JSON.parse(JSON.stringify(BASE_3DSURFACE)), chart, this.$store.state.canvasStyleData)
+      }
       // else if (chart.type === 'sankey') {
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
       //   // chart_option = BASE_SANKEY

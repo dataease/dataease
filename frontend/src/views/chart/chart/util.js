@@ -481,6 +481,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_map',
     icon: 'map'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_space',
+    value: '3dsurface',
+    title: 'chart.chart_3d_surface',
+    icon: '3dsurface'
+  },
   // {
   //   render: 'echarts',
   //   category: 'chart.chart_type_space',
