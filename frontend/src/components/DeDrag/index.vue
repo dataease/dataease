@@ -64,7 +64,7 @@
         @mousedown.stop.prevent="handleDown(handlei, $event)"
         @touchstart.stop.prevent="handleTouchDown(handlei, $event)"
       >
-        <slot :name="handlei" />
+        <slot :name="handlei"/>
       </div>
       <div
         :id="componentCanvasId"
@@ -77,7 +77,7 @@
           class="svg-background"
           :icon-class="mainSlotSvgInner"
         />
-        <slot />
+        <slot/>
       </div>
     </div>
   </div>
@@ -1930,6 +1930,7 @@ export default {
         const nodes = this.$el.parentNode.childNodes // 获取当前父节点下所有子节点
         for (const item of nodes) {
           if (
+            item.tagName !== 'svg' &&
             item.className !== undefined &&
             !item.className.split(' ').includes(this.classNameActive) &&
             item.getAttribute('tab-is-check') !== null &&
