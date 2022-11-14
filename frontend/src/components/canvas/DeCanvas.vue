@@ -306,6 +306,7 @@ export default {
       }
     },
     canvasScroll(e) {
+      this.scrollTop = e.target.scrollTop
       this.$emit('canvasScroll', { scrollLeft: e.target.scrollLeft, scrollTop: e.target.scrollTop })
       bus.$emit('onScroll')
     },
