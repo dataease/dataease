@@ -48,7 +48,8 @@ import {
   BASE_BOXPLOT,
   BASE_SANKEY,
   BASE_3DEARTH,
-  BASE_3DSURFACE
+  BASE_3DSURFACE,
+  BASE_3DCOLUMN
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -64,7 +65,8 @@ import {
   stackBarPartOption,
   horizontalBarOption,
   horizontalStackBarOption,
-  basePictorialBarOption
+  basePictorialBarOption,
+  base3DColumnOption
   // clockcatterOption
 } from '../chart/bar/bar'
 import {
@@ -323,8 +325,9 @@ export default {
       } else if (chart.type === 'boxplot') {
         chart_option = baseBoxPlotOption(JSON.parse(JSON.stringify(BASE_BOXPLOT)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === '3dsurface') {
-        // chart_option = BASE_3DSURFACE
         chart_option = base3DsurfaceOption(JSON.parse(JSON.stringify(BASE_3DSURFACE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === '3d-column') {
+        chart_option = base3DColumnOption(JSON.parse(JSON.stringify(BASE_3DCOLUMN)), chart, this.$store.state.canvasStyleData)
       }
       // else if (chart.type === 'sankey') {
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)

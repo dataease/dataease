@@ -1886,6 +1886,11 @@ export default {
           view.yaxis.splice(1, view.yaxis.length)
         }
       }
+      if(view.type === '3d-column') {
+        if (view.yaxis.length > 3) {
+          view.yaxis.splice(3,1)
+        }
+      }
       // if( view.type === 'contrast-funnel') {
       //   if (view.yaxis.length > 4) {
       //     view.yaxis.splice(4,1)
