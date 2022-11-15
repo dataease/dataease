@@ -45,7 +45,7 @@
           :on-remove="handleRemove"
           :file-list="fileList"
         >
-          <i class="el-icon-plus" />
+          <i class="el-icon-plus"/>
         </el-upload>
         <el-dialog
           top="25vh"
@@ -87,10 +87,9 @@
 <script>
 
 import { mapState } from 'vuex'
-import { deepCopy } from '@/components/canvas/utils/utils'
+import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
-import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'BackgroundSelector',
@@ -163,13 +162,13 @@ export default {
       uploadFileResult(file, (fileUrl) => {
         _this.$store.commit('canvasChange')
         _this.panel.imageUrl = fileUrl
-        _this.fileList = [{ url: this.panel.imageUrl }]
+        _this.fileList = [{ url: imgUrlTrans(this.panel.imageUrl) }]
         _this.commitStyle()
       })
     },
     sizeMessage() {
       this.$notify({
-        message: '背景图片请不要大于15M',
+        message: this.$t('panel.image_size_tips'),
         position: 'top-left'
       })
     }
@@ -238,22 +237,22 @@ span {
   z-index: 1004;
 }
 
-.custom-item{
+.custom-item {
   width: 70px;
 }
 
-.re-update-span{
+.re-update-span {
   cursor: pointer;
   color: #3370FF;
   size: 14px;
-  line-height:22px;
+  line-height: 22px;
   font-weight: 400;
 }
 
 .image-hint {
   color: #8F959E;
   size: 14px;
-  line-height:22px;
+  line-height: 22px;
   font-weight: 400;
 }
 

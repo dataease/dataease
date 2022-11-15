@@ -1865,6 +1865,8 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    image_size_tips: 'Please do not exceed 15M in the picture',
+    image_add_tips: 'Only pictures can be inserted',
     watermark: 'Watermark',
     panel_get_data_error: 'Failed to obtain panel information. The panel may have been deleted. Please check the panel status',
     panel_no_save_tips: 'There are unsaved panel',
