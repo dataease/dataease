@@ -187,6 +187,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
             case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 return mysqlConfiguration.getDataBase();
+            case xugu:
+                XuGuConfiguration xuGuConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), XuGuConfiguration.class);
+                return xuGuConfiguration.getDataBase();
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
                 return sqlServerConfiguration.getDataBase();
@@ -380,6 +383,14 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 jdbcurl = mysqlConfiguration.getJdbc();
                 customDriver = mysqlConfiguration.getCustomDriver();
                 break;
+            case xugu:
+                XuGuConfiguration xuGuConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), XuGuConfiguration.class);
+                username = xuGuConfiguration.getUsername();
+                password = xuGuConfiguration.getPassword();
+                defaultDriver = xuGuConfiguration.getDriver();
+                jdbcurl = xuGuConfiguration.getJdbc();
+                customDriver = xuGuConfiguration.getCustomDriver();
+                break;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
                 username = sqlServerConfiguration.getUsername();
@@ -540,6 +551,13 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 dataSource.setValidationQuery("select 1");
                 jdbcConfiguration = sqlServerConfiguration;
                 break;
+            case xugu:
+                XuGuConfiguration xuGuConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), XuGuConfiguration.class);
+                dataSource.setDriverClassName(xuGuConfiguration.getDriver());
+                dataSource.setUrl(xuGuConfiguration.getJdbc());
+                dataSource.setValidationQuery("select 1 from dual");
+                jdbcConfiguration = xuGuConfiguration;
+                break;
             case oracle:
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
                 dataSource.setDriverClassName(oracleConfiguration.getDriver());
@@ -621,6 +639,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
             case TiDB:
                 JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
                 return String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", jdbcConfiguration.getDataBase());
+            case xugu:
+                XuGuConfiguration xuGuConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), XuGuConfiguration.class);
+                return String.format("select TABLE_NAME,COMMENTS FROM all_tables WHERE user_id IN (SELECT user_id FROM all_users WHERE user_name = '%s');",xuGuConfiguration.getUsername());
             case engine_doris:
             case ds_doris:
             case StarRocks:
@@ -679,6 +700,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
             case ck:
             case TiDB:
             case StarRocks:
+            case xugu:
                 return null;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
@@ -734,6 +756,8 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 return "SELECT nspname FROM pg_namespace;";
             case redshift:
                 return "SELECT nspname FROM pg_namespace;";
+            case xugu:
+                return "select user_name from all_users";
             default:
                 return "show tables;";
         }

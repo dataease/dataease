@@ -69,6 +69,8 @@ public class ProviderFactory implements ApplicationContextAware {
             case "TiDB":
             case "StarRocks":
                 return context.getBean("mysqlQueryProvider", QueryProvider.class);
+            case "xugu":
+                return context.getBean("xuguQueryProvider",QueryProvider.class);
             default:
                 return SpringContextUtil.getApplicationContext().getBean(type + "QueryProvider", QueryProvider.class);
         }

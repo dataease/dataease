@@ -331,7 +331,7 @@ export default {
       this.$refs.dsForm.resetFields()
     },
     save() {
-      if (!this.form.configuration.schema && (this.form.type === 'oracle' || this.form.type === 'sqlServer' || this.form.type === 'pg' || this.form.type === 'redshift' || this.form.type === 'db2')) {
+      if (!this.form.configuration.schema && (this.form.type === 'oracle' || this.form.type === 'sqlServer' || this.form.type === 'pg' || this.form.type === 'redshift' || this.form.type === 'db2' || this.form.type === 'xugu')) {
         this.$message.error(i18n.t('datasource.please_choose_schema'))
         return
       }
@@ -365,7 +365,6 @@ export default {
                 case 'ds_doris':
                 case 'ck':
                 case 'mongo':
-                case 'mariadb':
                 case 'impala':
                   if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port) {
                     repeat = true
@@ -377,6 +376,7 @@ export default {
                 case 'redshift':
                 case 'oracle':
                 case 'db2':
+                case 'xugu':
                   if (configuration.host == this.form.configuration.host && configuration.dataBase == this.form.configuration.dataBase && configuration.port == this.form.configuration.port && configuration.schema == this.form.configuration.schema) {
                     repeatDsName.push(child.name)
                     repeat = true

@@ -282,7 +282,8 @@
               form.type == 'sqlServer' ||
               form.type == 'pg' ||
               form.type == 'redshift' ||
-              form.type == 'db2'
+              form.type == 'db2' ||
+              form.type == 'xugu'
             "
           >
             <el-button icon="el-icon-plus" size="mini" @click="getSchema()"
@@ -296,7 +297,8 @@
               form.type == 'sqlServer' ||
               form.type == 'pg' ||
               form.type == 'redshift' ||
-              form.type == 'db2'
+              form.type == 'db2' ||
+              form.type == 'xugu'
             "
             :label="$t('datasource.schema')"
           >
