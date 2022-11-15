@@ -17,6 +17,7 @@ import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
+import io.dataease.plugins.datasource.entity.PageInfo;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.datasource.query.Utils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -150,7 +151,7 @@ public class RedshiftQueryProvider extends QueryProvider {
                     } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
                         fieldName = String.format(PgConstants.CAST, originField, PgConstants.DEFAULT_FLOAT_FORMAT);
                     } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                        fieldName = String.format(PgConstants.STR_TO_DATE, originField,  StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
+                        fieldName = String.format(PgConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
                     } else {
                         fieldName = originField;
                     }
@@ -225,7 +226,7 @@ public class RedshiftQueryProvider extends QueryProvider {
             } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
                 fieldName = String.format(PgConstants.CAST, originField, PgConstants.DEFAULT_FLOAT_FORMAT);
             } else if (f.getDeType() == DeTypeConstants.DE_TIME) {
-                fieldName = String.format(PgConstants.STR_TO_DATE, originField,  StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
+                fieldName = String.format(PgConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
             } else {
                 fieldName = originField;
             }
@@ -386,13 +387,98 @@ public class RedshiftQueryProvider extends QueryProvider {
     }
 
     @Override
+    public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
+        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " offset " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
+        if (isTable) {
+            return originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+        } else {
+            return originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+        }
+    }
+
+
+    @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-        return null;
+        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view), view);
+    }
+
+    private String originalTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+        SQLObj tableObj = SQLObj.builder()
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(RedshiftConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
+                .build();
+        List<SQLObj> xFields = new ArrayList<>();
+        List<SQLObj> xOrders = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(xAxis)) {
+            for (int i = 0; i < xAxis.size(); i++) {
+                ChartViewFieldDTO x = xAxis.get(i);
+                String originField;
+                if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(x.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
+                    originField = String.format(RedshiftConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                } else {
+                    if (x.getDeType() == 2 || x.getDeType() == 3) {
+                        originField = String.format(RedshiftConstants.CAST, String.format(RedshiftConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), RedshiftConstants.DEFAULT_FLOAT_FORMAT);
+                    } else {
+                        originField = String.format(RedshiftConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
+                }
+                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
+                // 处理横轴字段
+                xFields.add(getXFields(x, originField, fieldAlias));
+                // 处理横轴排序
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
+                    xOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(x.getSort())
+                            .build());
+                }
+            }
+        }
+        // 处理视图中字段过滤
+        String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
+        // 处理仪表板字段过滤
+        String extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        // row permissions tree
+        String whereTrees = transFilterTrees(tableObj, rowPermissionsTree);
+        // 构建sql所有参数
+        List<SQLObj> fields = new ArrayList<>();
+        fields.addAll(xFields);
+        List<String> wheres = new ArrayList<>();
+        if (customWheres != null) wheres.add(customWheres);
+        if (extWheres != null) wheres.add(extWheres);
+        if (whereTrees != null) wheres.add(whereTrees);
+        List<SQLObj> groups = new ArrayList<>();
+        groups.addAll(xFields);
+        // 外层再次套sql
+        List<SQLObj> orders = new ArrayList<>();
+        orders.addAll(xOrders);
+
+        STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
+        ST st_sql = stg.getInstanceOf("previewSql");
+        st_sql.add("isGroup", false);
+        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
+        if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+        String sql = st_sql.render();
+
+        ST st = stg.getInstanceOf("previewSql");
+        st.add("isGroup", false);
+        SQLObj tableSQL = SQLObj.builder()
+                .tableName(String.format(RedshiftConstants.BRACKETS, sql))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+                .build();
+        if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
+        if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
+        return st.render();
     }
 
     @Override
     public String getSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-        return null;
+        return getSQLTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, null, view);
     }
 
     @Override
@@ -759,7 +845,7 @@ public class RedshiftQueryProvider extends QueryProvider {
         }
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                whereName = String.format(PgConstants.STR_TO_DATE, originName,  StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
+                whereName = String.format(PgConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                 String cast = String.format(PgConstants.CAST, originName, "bigint");
@@ -1195,7 +1281,7 @@ public class RedshiftQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String sqlForPreview(String table, Datasource ds){
+    public String sqlForPreview(String table, Datasource ds) {
         String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
         schema = String.format(PgConstants.KEYWORD_TABLE, schema);
         return "SELECT * FROM " + schema + "." + String.format(PgConstants.KEYWORD_TABLE, table);

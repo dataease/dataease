@@ -19,6 +19,7 @@ import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
+import io.dataease.plugins.datasource.entity.PageInfo;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.datasource.query.Utils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -402,7 +403,42 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+    public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> orgXAxis, List<ChartFieldCustomFilterDTO> OrgFeldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
+        List<ChartViewFieldDTO> xAxis = new ArrayList<>();
+        orgXAxis.forEach(chartViewFieldDTO -> {
+            xAxis.add(chartViewFieldDTO);
+        });
+        ChartViewFieldDTO chartViewFieldDTO = new ChartViewFieldDTO();
+        chartViewFieldDTO.setOriginName("ROWNUM");
+        xAxis.add(chartViewFieldDTO);
+
+
+        List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<>();
+        for (ChartFieldCustomFilterDTO chartFieldCustomFilterDTO : OrgFeldCustomFilter) {
+            fieldCustomFilter.add(chartFieldCustomFilterDTO);
+        }
+        ChartFieldCustomFilterDTO chartFieldCustomFilterDTO = new ChartFieldCustomFilterDTO();
+        DatasetTableField datasetTableField = new DatasetTableField();
+        datasetTableField.setOriginName("ROWNUM");
+        datasetTableField.setDeType(0);
+        chartFieldCustomFilterDTO.setField(datasetTableField);
+
+        List<ChartCustomFilterItemDTO> filterItemDTOS = new ArrayList<>();
+        ChartCustomFilterItemDTO itemDTO = new ChartCustomFilterItemDTO();
+        itemDTO.setTerm("le");
+        itemDTO.setValue(String.valueOf(pageInfo.getGoPage() * pageInfo.getPageSize()));
+        filterItemDTOS.add(itemDTO);
+        chartFieldCustomFilterDTO.setFilter(filterItemDTOS);
+        fieldCustomFilter.add(chartFieldCustomFilterDTO);
+
+        if (isTable) {
+            return "SELECT * FROM (" + sqlFix(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM >= " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
+        } else {
+            return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM >= " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
+        }
+    }
+
+    private String originalTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
@@ -413,6 +449,13 @@ public class OracleQueryProvider extends QueryProvider {
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
+                if (x.getOriginName().equalsIgnoreCase("ROWNUM")) {
+                    xFields.add(SQLObj.builder()
+                            .fieldName(x.getOriginName())
+                            .fieldAlias("DE_ROWNUM")
+                            .build());
+                    continue;
+                }
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
@@ -474,7 +517,12 @@ public class OracleQueryProvider extends QueryProvider {
                 .build();
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+        return st.render();
+    }
+
+    @Override
+    public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view), view);
     }
 
     @Override
@@ -974,6 +1022,8 @@ public class OracleQueryProvider extends QueryProvider {
                 originName = calcFieldRegex(field.getOriginName(), tableObj);
             } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
                 originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
+            } else if (field.getOriginName().equalsIgnoreCase("ROWNUM")) {
+                originName = field.getOriginName();
             } else {
                 originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
             }

@@ -2237,7 +2237,10 @@ export default {
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
         // this.getData(this.param.id)
-        bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
+        bus.$emit('view-in-cache', { type: 'propChange',
+          viewId: this.param.id,
+          view: view
+        })
       })
     },
     calcStyle(modifyName) {
