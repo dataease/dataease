@@ -145,7 +145,7 @@
 <script>
 import { filterDataset, dateFormat } from './options'
 import { queryAuthModel } from '@/api/authModel/authModel'
-import DeDatePick from '@/components/deCustomCm/deDatePick.vue'
+import DeDatePick from '@/components/deCustomCm/DeDatePick.vue'
 
 export default {
   components: {

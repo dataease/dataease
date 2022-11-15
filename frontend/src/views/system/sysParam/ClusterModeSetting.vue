@@ -184,7 +184,7 @@ import { engineInfo, validate, save } from '@/api/system/engine'
 import i18n from '@/lang'
 import operator from './Operator'
 import msgCfm from '@/components/msgCfm'
-import dePwd from '@/components/deCustomCm/dePwd.vue'
+import dePwd from '@/components/deCustomCm/DePwd.vue'
 export default {
   name: 'ClusterMode',
   components: {

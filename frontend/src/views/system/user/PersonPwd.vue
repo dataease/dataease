@@ -52,7 +52,7 @@
 <script>
 import LayoutContent from '@/components/business/LayoutContent'
 import { updatePersonPwd } from '@/api/system/user'
-import dePwd from '@/components/deCustomCm/dePwd.vue'
+import dePwd from '@/components/deCustomCm/DePwd.vue'
 export default {
 
   components: { LayoutContent, dePwd },

@@ -60,7 +60,6 @@
 
 <script>
 import inputStyleMixin from '@/components/widget/deWidget/inputStyleMixin'
-
 export default {
   name: 'DeOutWidget',
   mixins: [inputStyleMixin],

@@ -1,5 +1,6 @@
 <template>
   <div
+    :id="previewMainDomId"
     class="bg"
     :style="customStyle"
     @scroll="canvasScroll"
@@ -72,6 +73,8 @@ import CanvasOptBar from '@/components/canvas/components/editor/CanvasOptBar'
 import bus from '@/utils/bus'
 import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
 import { hasDataPermission } from '@/utils/permission'
+import { activeWatermark } from '@/components/canvas/tools/watermark'
+import { userLoginInfo } from '@/api/systemInfo/userLogin'
 
 const erd = elementResizeDetectorMaker()
 
@@ -141,6 +144,7 @@ export default {
   },
   data() {
     return {
+      previewMainDomId: 'preview-main-' + this.canvasId,
       previewDomId: 'preview-' + this.canvasId,
       previewRefId: 'preview-ref-' + this.canvasId,
       previewTempDomId: 'preview-temp-' + this.canvasId,
@@ -291,6 +295,7 @@ export default {
     this.$cancelRequest('/static-resource/**')
   },
   mounted() {
+    this.initWatermark()
     this._isMobile()
     this.initListen()
     this.$store.commit('clearLinkageSettingInfo', false)
@@ -309,6 +314,14 @@ export default {
     bus.$off('trigger-reset-button', this.triggerResetButton)
   },
   methods: {
+    initWatermark() {
+      if (this.panelInfo.watermarkInfo) {
+        userLoginInfo().then(res => {
+          const userInfo = res.data
+          activeWatermark(this.panelInfo.watermarkInfo.settingContent, userInfo, 'preview-main-canvas-main', this.canvasId, this.panelInfo.watermarkOpen)
+        })
+      }
+    },
     isMainCanvas() {
       return this.canvasId === 'canvas-main'
     },

@@ -171,7 +171,7 @@ export default {
       this.options = this.newList.slice(0, this.maxLength)
     },
     customInputStyle() {
-      if (!this.$parent.$parent.handlerInputStyle) return
+      if (!this.$parent.$parent.handlerInputStyle || !this.$refs.visualSelect) return
       handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-input__inner'), this.$parent.element.style)
       handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-select__input'), { wordColor: this.$parent.element.style.wordColor })
     },

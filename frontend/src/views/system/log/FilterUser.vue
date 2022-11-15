@@ -88,7 +88,7 @@
 import { dateFormat } from '@/views/system/task/options.js'
 import { opTypes } from '@/api/system/log'
 import { post } from '@/api/dataset/dataset'
-import DeDatePick from '@/components/deCustomCm/deDatePick.vue'
+import DeDatePick from '@/components/deCustomCm/DeDatePick.vue'
 export default {
   components: {
     DeDatePick

@@ -161,7 +161,7 @@ import {
   validateById
 } from '@/api/system/kettle'
 import GridTable from '@/components/gridTable/index.vue'
-import dePwd from '@/components/deCustomCm/dePwd.vue'
+import dePwd from '@/components/deCustomCm/DePwd.vue'
 import msgCfm from '@/components/msgCfm'
 
 export default {

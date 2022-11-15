@@ -732,7 +732,7 @@
 import i18n from '@/lang'
 import { checkApiDatasource, getSchema } from '@/api/system/datasource'
 import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
-import dePwd from '@/components/deCustomCm/dePwd.vue'
+import dePwd from '@/components/deCustomCm/DePwd.vue'
 import msgCfm from '@/components/msgCfm'
 export default {
   name: 'DsConfiguration',

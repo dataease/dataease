@@ -915,6 +915,8 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    layer_controller: 'Quota switch',
+    suspension: 'Suspension',
     chart_background: 'Component background',
     solid_color: 'Solid color',
     split_gradient: 'Split gradient',
@@ -1449,7 +1451,7 @@ export default {
     field_rename: 'Rename Field',
     params_work: 'Effective only when editing SQL',
     sql_variable_limit_1: '1、SQL variables can only be used in where conditions',
-    sql_variable_limit_2: "2、Example：select * from table_name where column_name1='${param_name1}' and column_name2 in '${param_name2}'",
+    sql_variable_limit_2: '2、Example：select * from table_name where column_name1=\'${param_name1}\' and column_name2 in \'${param_name2}\'',
     select_year: 'Select Year',
     select_month: 'Select Month',
     select_date: 'Select Date',
@@ -1863,10 +1865,11 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    watermark: 'Watermark',
     panel_get_data_error: 'Failed to obtain panel information. The panel may have been deleted. Please check the panel status',
     panel_no_save_tips: 'There are unsaved panel',
     panel_cache_use_tips: 'It was checked that the last dashboard could not be saved normally. Do you want to use the panel that was not saved last time?',
-    template_name_tips: "Panel\'s name should not be null",
+    template_name_tips: 'Panel\'s name should not be null',
     panel_background_item: 'Customize panel background',
     panel_background_image_tips: 'Currently.Jpeg,.Jpg,.Png,.Gif files are supported, and the size should not exceed 15m',
     reUpload: 'reUpload',
@@ -1932,15 +1935,15 @@ export default {
     repeat_params: 'Repeat Params Exist',
     enable_outer_param_set: 'Enable Outer Param Set',
     select_param: 'Please Select Param...',
-    add_param_link_field: "Add Params' Linked Field",
+    add_param_link_field: 'Add Params\' Linked Field',
     add_param: 'Add Param',
     enable_param: 'Enable Param',
     param_name: 'Param Name',
     outer_param_set: 'Outer Param Set',
     outer_param_decode_error: 'External Parameter Parsing Error And Does Not Take Effect, Please Check',
-    input_param_name: "Please Input Param's Name",
+    input_param_name: 'Please Input Param\'s Name',
     params_setting: 'Outer Params Setting',
-    template_view_tips: "Template's Views. Please Change",
+    template_view_tips: 'Template\'s Views. Please Change',
     edit_web_tips: 'The Inner Event Can Be Used When Then Panel Not In Edit Status',
     no_auth_role: 'Unshared roles',
     auth_role: 'Shared roles',
@@ -2096,8 +2099,8 @@ export default {
     content_style: 'Content Style',
     canvas_self_adaption: 'Canvas Self Adaption',
     panel_save_tips: 'Do you want to save the changes you made to.',
-    panel_save_warn_tips: "Your changes will be lost if you don't save them！",
-    do_not_save: "Don't Save",
+    panel_save_warn_tips: 'Your changes will be lost if you don\'t save them！',
+    do_not_save: 'Don\'t Save',
     save_and_close: 'Save',
     drill: 'drill',
     linkage: 'linkage',
@@ -2518,7 +2521,8 @@ export default {
     pixel_tip: 'Please code custom pixel(such as 2560 * 1600) or select',
     task_type: 'Task type',
     range_view: 'Displayed data',
-    range_all: 'All data'
+    range_all: 'All data',
+    execute_now: 'Execute now'
   },
   dynamic_time: {
     set_default: 'Set Default',
@@ -2605,7 +2609,8 @@ export default {
     time: 'Time',
     export: 'Export',
     confirm: 'Sure Export ?',
-    search_by_key: 'Search by key'
+    search_by_key: 'Search by key',
+    ip: 'IP'
   },
   plugin_style: {
     border: 'Border'

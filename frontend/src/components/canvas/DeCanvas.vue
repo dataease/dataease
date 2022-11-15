@@ -112,7 +112,9 @@ import toast from '@/components/canvas/utils/toast'
 import generateID from '@/components/canvas/utils/generateID'
 import ButtonDialog from '@/views/panel/filter/ButtonDialog'
 import ButtonResetDialog from '@/views/panel/filter/ButtonResetDialog'
-import FilterDialog from '@/views/panel/filter/filterDialog'
+import FilterDialog from '@/views/panel/filter/FilterDialog'
+import { userLoginInfo } from '@/api/systemInfo/userLogin'
+import { activeWatermark } from '@/components/canvas/tools/watermark'
 
 export default {
   components: { FilterDialog, ButtonResetDialog, ButtonDialog, DeEditor },
@@ -233,12 +235,19 @@ export default {
   watch: {
     mobileLayoutStatus() {
       this.restore()
+    },
+    panelInfo: {
+      handler(newVal, oldVla) {
+        this.initWatermark()
+      },
+      deep: true
     }
   },
   created() {
   },
   mounted() {
     const _this = this
+    this.initWatermark()
     // 监听div变动事件
     const erd = elementResizeDetectorMaker()
     erd.listenTo(document.getElementById(this.canvasDomId), element => {
@@ -252,6 +261,14 @@ export default {
     bus.$off('button-dialog-edit', this.editButtonDialog)
   },
   methods: {
+    initWatermark() {
+      if (this.panelInfo.watermarkInfo) {
+        userLoginInfo().then(res => {
+          const userInfo = res.data
+          activeWatermark(this.panelInfo.watermarkInfo.settingContent, userInfo, this.canvasDomId, this.canvasId, this.panelInfo.watermarkOpen)
+        })
+      }
+    },
     initEvents() {
       bus.$on('component-dialog-edit', this.editDialog)
       bus.$on('button-dialog-edit', this.editButtonDialog)
@@ -289,6 +306,7 @@ export default {
       }
     },
     canvasScroll(e) {
+      this.scrollTop = e.target.scrollTop
       this.$emit('canvasScroll', { scrollLeft: e.target.scrollLeft, scrollTop: e.target.scrollTop })
       bus.$emit('onScroll')
     },

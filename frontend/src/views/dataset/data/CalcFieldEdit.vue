@@ -721,7 +721,7 @@ export default {
   background: var(--ContentBG);
 }
 .function-height {
-  height: calc(100% - 21px - 32px - 4px - 24px);
+  height: calc(100% - 81px);
   overflow: auto;
   margin-top: 4px;
 }
@@ -743,30 +743,5 @@ export default {
   text-align: center;
   font-size: 14px;
   color: var(--deTextDisable);
-}
-</style>
-
-<style lang="scss">
-.calcu-field {
-  .calcu-cont {
-    display: flex;
-    justify-content: space-between;
-  }
-  .codemirror {
-    height: 250px;
-    overflow-y: auto;
-    width: 100%;
-    border: 1px solid #bbbfc4;
-    border-radius: 4px;
-  }
-  .codemirror .CodeMirror-scroll {
-    height: 250px;
-    overflow-y: auto;
-  }
-
-  .mb8 {
-    margin-bottom: 8px;
-    display: inline-block;
-  }
 }
 </style>

@@ -58,7 +58,7 @@ export default {
   mounted() {
     if (!this.isFilterComponent) return
     this.typeTransform().forEach(item => {
-      const nodeCache = this.$refs.deOutWidget.$refs[item].$el.querySelector('.el-input__inner') || this.$refs.deOutWidget.$refs[item].$el
+      const nodeCache = this.$refs.deOutWidget?.$refs[item].$el.querySelector('.el-input__inner') || this.$refs.deOutWidget?.$refs[item].$el
       this.styleAttrs.forEach(ele => {
         nodeCache.style[this.attrsMap[ele]] = this.element.style[ele]
         this[this.element.serviceName] && this[this.element.serviceName](this.selectRange(item), ele, this.element.style[ele])
@@ -70,9 +70,11 @@ export default {
       let nodeCache = ''
       this.styleAttrs.forEach(ele => {
         if (!nodeCache) {
-          nodeCache = this.$refs.deOutWidget.$refs[type].$el.querySelector('.el-input__inner') || this.$refs.deOutWidget.$refs[type].$el
+          nodeCache = this.$refs.deOutWidget?.$refs[type].$el.querySelector('.el-input__inner') || this.$refs.deOutWidget?.$refs[type].$el
         }
-        nodeCache.style[this.attrsMap[ele]] = newValue[ele]
+        if (nodeCache) {
+          nodeCache.style[this.attrsMap[ele]] = newValue[ele]
+        }
         this[this.element.serviceName] && this[this.element.serviceName](this.selectRange(type), ele, newValue[ele])
       })
     },

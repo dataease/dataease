@@ -348,7 +348,6 @@ export default {
       }
       if (this.loginTypes.includes(3) && this.defaultType === 3) {
         casLoginPage().then(res => {
-          debugger
           window.location.href = res.data
         })
       }

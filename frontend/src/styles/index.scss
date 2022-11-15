@@ -770,7 +770,7 @@ div:focus {
 
 .no-label-item {
   .el-form-item__content {
-    margin-left: 10px !important;
+    margin-left: 5px !important;
   }
 }
 
@@ -1656,5 +1656,36 @@ div:focus {
     position: absolute;
     right: 12px;
     top: 9px;
+  }
+}
+
+.de-center-dialog {
+  .el-dialog {
+    margin: 0 !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+.calcu-field {
+  .calcu-cont {
+    display: flex;
+    justify-content: space-between;
+  }
+  .codemirror {
+    height: 250px;
+    overflow-y: auto;
+    width: 100%;
+    border: 1px solid #bbbfc4;
+    border-radius: 4px;
+  }
+  .codemirror .CodeMirror-scroll {
+    height: 250px;
+    overflow-y: auto;
+  }
+
+  .mb8 {
+    margin-bottom: 8px;
+    display: inline-block;
   }
 }

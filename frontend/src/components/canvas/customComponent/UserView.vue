@@ -526,6 +526,9 @@ export default {
         this.chartScale(this.changeScaleIndex)
       },
       deep: true
+    },
+    'chart.yaxis': function(newVal, oldVal) {
+      this.$emit('fill-chart-2-parent', this.chart)
     }
   },
   mounted() {
@@ -711,6 +714,7 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
+            this.$emit('fill-chart-2-parent', this.chart)
             this.getDataOnly(response.data, dataBroadcast)
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
             // 记录当前数据

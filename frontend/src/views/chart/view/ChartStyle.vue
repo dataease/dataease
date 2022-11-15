@@ -1,7 +1,7 @@
 <template>
   <el-row class="view-panel">
     <div
-      v-if="properties.length===0"
+      v-if="!pluginShow && properties.length===0"
       class="no-properties"
     >
       {{ $t('chart.chart_no_properties') }}
@@ -119,6 +119,19 @@
               :chart="chart"
               :property-inner="propertyInnerAll['total-cfg']"
               @onTotalCfgChange="onTotalCfgChange($event,'total-cfg')"
+            />
+          </el-collapse-item>
+          <el-collapse-item
+            v-show="showPropertiesCollapse(['suspension-selector'])"
+            name="suspension"
+            :title="$t('chart.suspension')"
+          >
+            <suspension-selector
+              :param="param"
+              class="attr-selector"
+              :chart="chart"
+              :property-inner="propertyInnerAll['suspension-selector']"
+              @onSuspensionChange="onSuspensionChange($event,'suspension-selector')"
             />
           </el-collapse-item>
         </el-collapse>
@@ -295,28 +308,29 @@
 </template>
 <script>
 import PluginCom from '@/views/system/plugin/PluginCom'
-import ColorSelector from '@/views/chart/components/shape-attr/ColorSelector'
-import SizeSelector from '@/views/chart/components/shape-attr/SizeSelector'
-import SizeSelectorAntV from '@/views/chart/components/shape-attr/SizeSelectorAntV'
-import LabelSelector from '@/views/chart/components/shape-attr/LabelSelector'
-import LabelSelectorAntV from '@/views/chart/components/shape-attr/LabelSelectorAntV'
-import TooltipSelector from '@/views/chart/components/shape-attr/TooltipSelector'
-import TooltipSelectorAntV from '@/views/chart/components/shape-attr/TooltipSelectorAntV'
-import TotalCfg from '@/views/chart/components/shape-attr/TotalCfg'
-import XAxisSelector from '@/views/chart/components/component-style/XAxisSelector'
-import XAxisSelectorAntV from '@/views/chart/components/component-style/XAxisSelectorAntV'
-import YAxisSelector from '@/views/chart/components/component-style/YAxisSelector'
-import YAxisSelectorAntV from '@/views/chart/components/component-style/YAxisSelectorAntV'
-import YAxisExtSelector from '@/views/chart/components/component-style/YAxisExtSelector'
-import YAxisExtSelectorAntV from '@/views/chart/components/component-style/YAxisExtSelectorAntV'
-import TitleSelector from '@/views/chart/components/component-style/TitleSelector'
-import TitleSelectorAntV from '@/views/chart/components/component-style/TitleSelectorAntV'
-import LegendSelector from '@/views/chart/components/component-style/LegendSelector'
-import MarginSelector from '@/views/chart/components/component-style/MarginSelector'
-import LegendSelectorAntV from '@/views/chart/components/component-style/LegendSelectorAntV'
-import BackgroundColorSelector from '@/views/chart/components/component-style/BackgroundColorSelector'
-import SplitSelector from '@/views/chart/components/component-style/SplitSelector'
-import SplitSelectorAntV from '@/views/chart/components/component-style/SplitSelectorAntV'
+import ColorSelector from '@/views/chart/components/shapeAttr/ColorSelector'
+import SizeSelector from '@/views/chart/components/shapeAttr/SizeSelector'
+import SizeSelectorAntV from '@/views/chart/components/shapeAttr/SizeSelectorAntV'
+import LabelSelector from '@/views/chart/components/shapeAttr/LabelSelector'
+import LabelSelectorAntV from '@/views/chart/components/shapeAttr/LabelSelectorAntV'
+import TooltipSelector from '@/views/chart/components/shapeAttr/TooltipSelector'
+import TooltipSelectorAntV from '@/views/chart/components/shapeAttr/TooltipSelectorAntV'
+import TotalCfg from '@/views/chart/components/shapeAttr/TotalCfg'
+import XAxisSelector from '@/views/chart/components/componentStyle/XAxisSelector'
+import XAxisSelectorAntV from '@/views/chart/components/componentStyle/XAxisSelectorAntV'
+import YAxisSelector from '@/views/chart/components/componentStyle/YAxisSelector'
+import YAxisSelectorAntV from '@/views/chart/components/componentStyle/YAxisSelectorAntV'
+import YAxisExtSelector from '@/views/chart/components/componentStyle/YAxisExtSelector'
+import YAxisExtSelectorAntV from '@/views/chart/components/componentStyle/YAxisExtSelectorAntV'
+import TitleSelector from '@/views/chart/components/componentStyle/TitleSelector'
+import TitleSelectorAntV from '@/views/chart/components/componentStyle/TitleSelectorAntV'
+import LegendSelector from '@/views/chart/components/componentStyle/LegendSelector'
+import MarginSelector from '@/views/chart/components/componentStyle/MarginSelector'
+import LegendSelectorAntV from '@/views/chart/components/componentStyle/LegendSelectorAntV'
+import BackgroundColorSelector from '@/views/chart/components/componentStyle/BackgroundColorSelector'
+import SplitSelector from '@/views/chart/components/componentStyle/SplitSelector'
+import SplitSelectorAntV from '@/views/chart/components/componentStyle/SplitSelectorAntV'
+import SuspensionSelector from '@/components/suspensionSelector'
 import { mapState } from 'vuex'
 
 export default {
@@ -344,7 +358,8 @@ export default {
     SizeSelector,
     ColorSelector,
     MarginSelector,
-    PluginCom
+    PluginCom,
+    SuspensionSelector
   },
   props: {
     chart: {
@@ -361,7 +376,10 @@ export default {
     },
     properties: {
       type: Array,
-      required: true
+      required: true,
+      default: () => {
+        return []
+      }
     },
     dimensionData: {
       type: Array,
@@ -421,6 +439,10 @@ export default {
     onColorChange(val, propertyName) {
       val['propertyName'] = propertyName
       this.$emit('onColorChange', val)
+    },
+    onSuspensionChange(val, propertyName) {
+      val['propertyName'] = propertyName
+      this.$emit('onSuspensionChange', val)
     },
     onSizeChange(val, propertyName) {
       val['propertyName'] = propertyName

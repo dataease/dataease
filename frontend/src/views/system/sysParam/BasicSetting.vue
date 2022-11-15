@@ -290,7 +290,7 @@ export default {
       if (res.success && res.data) {
         this.loginTypes.push(3)
       }
-    }),
+    })
     wecomStatus().then(res => {
       if (res.success && res.data) {
         this.loginTypes.push(4)

@@ -536,7 +536,7 @@ import 'codemirror/addon/hint/show-hint.css'
 import 'codemirror/addon/hint/sql-hint'
 import 'codemirror/addon/hint/show-hint'
 // vue-cron
-import cron from '@/components/cron/cron'
+import cron from '@/components/cron/Cron'
 import { hasDataPermission } from '@/utils/permission'
 import { engineMode } from '@/api/system/engine'
 import GridTable from '@/components/gridTable/index.vue'

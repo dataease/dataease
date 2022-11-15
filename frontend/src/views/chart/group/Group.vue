@@ -483,8 +483,8 @@
 import { post, chartGroupTree } from '@/api/chart/chart'
 import { queryAuthModel } from '@/api/authModel/authModel'
 import TableSelector from '../view/TableSelector'
-import GroupMoveSelector from '../components/TreeSelector/GroupMoveSelector'
-import ChartMoveSelector from '../components/TreeSelector/ChartMoveSelector'
+import GroupMoveSelector from '../components/treeSelector/GroupMoveSelector'
+import ChartMoveSelector from '../components/treeSelector/ChartMoveSelector'
 import ChartType from '@/views/chart/view/ChartType'
 import { pluginTypes } from '@/api/chart/chart'
 import {

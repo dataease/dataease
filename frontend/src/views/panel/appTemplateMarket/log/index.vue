@@ -214,7 +214,7 @@
 
 <script>
 import GridTable from '@/components/gridTable/index.vue'
-import filterUser from './filterUser'
+import filterUser from './FilterUser'
 import _ from 'lodash'
 import keyEnter from '@/components/msgCfm/keyEnter.js'
 import {

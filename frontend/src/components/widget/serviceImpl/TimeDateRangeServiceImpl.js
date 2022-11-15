@@ -222,6 +222,10 @@ class TimeDateRangeServiceImpl extends WidgetService {
     }
   }
   dynamicDateFormNow(element) {
+    const values = this.dynamicDateFormNowProxy(element)
+    return this.formatDynamicTimes(values, element)
+  }
+  dynamicDateFormNowProxy(element) {
     if (element.options.attrs.default === null || typeof element.options.attrs.default === 'undefined' || !element.options.attrs.default.isDynamic) return null
 
     if (element.options.attrs.default.dkey === 0) {
@@ -264,6 +268,34 @@ class TimeDateRangeServiceImpl extends WidgetService {
       const endTime = this.customTime(eDynamicPrefix, eDynamicInfill, eDynamicSuffix)
       return [startTime, endTime]
     }
+  }
+
+  formatDynamicTimes(values, element) {
+    if (!values?.length || !element.options.attrs.default.isDynamic) {
+      return values
+    }
+    const baseTime = +new Date('2022-11-09 00:00:00.000')
+    let labelFormat = 'yyyy-MM-dd'
+    if (element.options.attrs.showTime && element.options.attrs.accuracy) {
+      labelFormat = labelFormat + ' ' + element.options.attrs.accuracy
+    }
+    let [start, end] = values
+
+    const attrs = element.options.attrs
+
+    if (attrs.default.sDynamicSuffixTime && attrs.default.isDynamic && attrs.default.dkey === 4 && attrs.showTime) {
+      start = attrs.default.sDynamicSuffixTime - baseTime + timeSection(start, 'date')[0]
+    } else {
+      start = timeSection(start, 'date', labelFormat)[0]
+    }
+    if (attrs.default.eDynamicSuffixTime && attrs.default.isDynamic && attrs.default.dkey === 4 && attrs.showTime) {
+      end = attrs.default.eDynamicSuffixTime - baseTime + timeSection(end, 'date')[0]
+    } else {
+      end = timeSection(end, 'date', labelFormat)[1]
+    }
+
+    const results = [start, end]
+    return results
   }
   validDynamicValue(element) {
     if (!element.options.attrs.default.isDynamic) return true

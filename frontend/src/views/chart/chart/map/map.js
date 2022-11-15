@@ -41,8 +41,22 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
   // 处理shape attr
   let customAttr = {}
   let isGradient = false
+  let seriesIndex = 0
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
+    if (chart.yaxis && chart.yaxis.length > 1) {
+      let currentSeriesId = customAttr.currentSeriesId
+      const yAxis = JSON.parse(chart.yaxis)
+      if (!currentSeriesId || !yAxis.some(item => item.id === currentSeriesId)) {
+        currentSeriesId = yAxis[0].id
+      }
+      chart.data.series.forEach((item, index) => {
+        if (item.data[0].quotaList[0].id === currentSeriesId) {
+          seriesIndex = index
+          return false
+        }
+      })
+    }
 
     if (customAttr.color) {
       const colorValue = customAttr.color.value
@@ -57,7 +71,7 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
       const reg = new RegExp('\n', 'g')
       const text = tooltip.formatter.replace(reg, '<br/>')
-      tooltip.formatter = function(params) {
+      tooltip.formatter = params => {
         const a = params.seriesName
         const b = params.name
         const c = params.value ? params.value : ''
@@ -74,14 +88,14 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
   if (chart.data) {
     chart_option.title.text = chart.title
     if (chart.data.series && chart.data.series.length > 0) {
-      chart_option.series[0].name = chart.data.series[0].name
+      chart_option.series[0].name = chart.data.series[seriesIndex].name
       chart_option.series[0].selectedMode = true
       chart_option.series[0].select = BASE_ECHARTS_SELECT
       // label
       if (customAttr.label) {
         const text = customAttr.label.formatter
         chart_option.series[0].label = customAttr.label
-        chart_option.series[0].label.formatter = function(params) {
+        chart_option.series[0].label.formatter = params => {
           const a = params.seriesName
           const b = params.name
           const c = params.value ? params.value : ''
@@ -97,12 +111,12 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
         }
         chart_option.series[0].itemStyle.emphasis.label.show = customAttr.label.show
       }
-      const valueArr = chart.data.series[0].data
+      const valueArr = chart.data.series[seriesIndex].data
       // visualMap
       if (!isGradient) {
         if (valueArr && valueArr.length > 0) {
           const values = []
-          valueArr.forEach(function(ele) {
+          valueArr.forEach(ele => {
             values.push(ele.value)
           })
           chart_option.visualMap.min = Math.min(...values)
@@ -124,6 +138,11 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
         }
         if (themeStyle) {
           chart_option.visualMap.textStyle = { color: themeStyle }
+        }
+        if (customAttr.suspension && !customAttr.suspension.show) {
+          chart_option.visualMap.show = false
+        } else if ('show' in chart_option.visualMap) {
+          delete chart_option.visualMap.show
         }
       }
 

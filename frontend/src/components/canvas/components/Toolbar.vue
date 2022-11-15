@@ -138,6 +138,18 @@
               <span class="icon iconfont icon-icon_clear_outlined icon16" />
               <span class="text14 margin-left8">{{ $t('panel.clean_canvas') }}</span>
             </el-dropdown-item>
+            <el-dropdown-item
+              v-if="showWatermarkSetting"
+            >
+              <span class="icon iconfont icon-WATERMARK icon16" />
+              <span class="text14 margin-left8">{{ $t('panel.watermark') }}</span>
+              <el-switch
+                v-model="panelInfo.watermarkOpen"
+                :class="[{['grid-active']: panelInfo.watermarkOpen},'margin-left8']"
+                size="mini"
+                @change="styleChange"
+              />
+            </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </span>
@@ -250,6 +262,9 @@ export default {
     }
   },
   computed: {
+    showWatermarkSetting() {
+      return this.panelInfo.watermarkInfo && this.panelInfo.watermarkInfo.settingContent.enable && this.panelInfo.watermarkInfo.settingContent.enablePanelCustom
+    },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
@@ -428,9 +443,10 @@ export default {
         if (_this.$store.state.cacheStyleChangeTimes > 0) {
           const requestInfo = _this.savePrepare()
           const cacheRequest = {
-            ...this.panelInfo,
+            ...deepCopy(this.panelInfo),
             ...requestInfo
           }
+          cacheRequest.watermarkInfo.settingContent = JSON.stringify(this.panelInfo.watermarkInfo.settingContent)
           saveCache(cacheRequest)
           _this.$store.state.cacheStyleChangeTimes = 0
         }
@@ -440,6 +456,7 @@ export default {
       // 保存到数据库
       const requestInfo = {
         id: this.panelInfo.id,
+        watermarkOpen: this.panelInfo.watermarkOpen,
         panelStyle: JSON.stringify(this.canvasStyleData),
         panelData: JSON.stringify(this.componentData)
       }
@@ -610,6 +627,9 @@ export default {
         }
       })
       this.cancelMobileLayoutStatue(sourceComponentData)
+    },
+    styleChange() {
+      this.$store.commit('canvasChange')
     }
   }
 }
