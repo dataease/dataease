@@ -1,11 +1,11 @@
 <template>
   <div
-    class="bg"
     :id="previewMainDomId"
+    class="bg"
     :style="customStyle"
     @scroll="canvasScroll"
   >
-    <canvas-opt-bar/>
+    <canvas-opt-bar />
     <div
       :id="previewDomId"
       :ref="previewRefId"
@@ -315,10 +315,12 @@ export default {
   },
   methods: {
     initWatermark() {
-      userLoginInfo().then(res => {
-        const userInfo = res.data
-        activeWatermark(JSON.parse(this.panelInfo.watermarkInfo.settingContent), userInfo, 'preview-main-canvas-main', this.canvasId, this.panelInfo.watermarkOpen)
-      })
+      if (this.panelInfo.watermarkInfo) {
+        userLoginInfo().then(res => {
+          const userInfo = res.data
+          activeWatermark(this.panelInfo.watermarkInfo.settingContent, userInfo, 'preview-main-canvas-main', this.canvasId, this.panelInfo.watermarkOpen)
+        })
+      }
     },
     isMainCanvas() {
       return this.canvasId === 'canvas-main'

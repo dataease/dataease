@@ -8,7 +8,7 @@
     @mouseup="deselectCurComponent"
     @scroll="canvasScroll"
   >
-    <slot name="optBar"/>
+    <slot name="optBar" />
     <de-editor
       :ref="editorRefName"
       :canvas-style-data="canvasStyleData"
@@ -265,7 +265,7 @@ export default {
       if (this.panelInfo.watermarkInfo) {
         userLoginInfo().then(res => {
           const userInfo = res.data
-          activeWatermark(JSON.parse(this.panelInfo.watermarkInfo.settingContent), userInfo, this.canvasDomId, this.canvasId, this.panelInfo.watermarkOpen)
+          activeWatermark(this.panelInfo.watermarkInfo.settingContent, userInfo, this.canvasDomId, this.canvasId, this.panelInfo.watermarkOpen)
         })
       }
     },

@@ -4,10 +4,7 @@ import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.watermark.WatermarkService;
 import io.dataease.plugins.xpack.watermark.dto.PanelWatermarkDTO;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
@@ -29,7 +26,7 @@ public class XWatermarkServer {
 
     @ApiOperation("保存水印配置")
     @PostMapping("/save")
-    public void save(PanelWatermarkDTO panelWatermark) {
+    public void save(@RequestBody PanelWatermarkDTO panelWatermark) {
         WatermarkService userXpackService = SpringContextUtil.getBean(WatermarkService.class);
         userXpackService.saveWatermarkInfo(panelWatermark);
     }

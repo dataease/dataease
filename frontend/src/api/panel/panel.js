@@ -163,6 +163,10 @@ export function initPanelData(panelId, useCache = false, callback) {
     if (response.data) {
       // 初始化视图data和style 数据
       panelInit(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle))
+      const watermarkInfo = {
+        ...response.data.watermarkInfo,
+        settingContent: JSON.parse(response.data.watermarkInfo.settingContent)
+      }
       // 设置当前仪表板全局信息
       store.dispatch('panel/setPanelInfo', {
         id: response.data.id,
@@ -177,7 +181,7 @@ export function initPanelData(panelId, useCache = false, callback) {
         updateName: response.data.updateName,
         updateTime: response.data.updateTime,
         watermarkOpen: response.data.watermarkOpen,
-        watermarkInfo: response.data.watermarkInfo
+        watermarkInfo: watermarkInfo
       })
       // 刷新联动信息
       getPanelAllLinkageInfo(panelId).then(rsp => {

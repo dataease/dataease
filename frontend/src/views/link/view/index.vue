@@ -68,6 +68,10 @@ export default {
       loadResource(this.resourceId).then(res => {
         this.show = false
         let loadingCount = 0
+        const watermarkInfo = {
+          ...res.data.watermarkInfo,
+          settingContent: JSON.parse(res.data.watermarkInfo.settingContent)
+        }
         this.panelInfo = {
           id: res.data.id,
           name: res.data.name,
@@ -78,7 +82,7 @@ export default {
           updateBy: res.data.updateBy,
           updateTime: res.data.updateTime,
           watermarkOpen: res.data.watermarkOpen,
-          watermarkInfo: res.data.watermarkInfo
+          watermarkInfo: watermarkInfo
         }
         this.$store.dispatch('panel/setPanelInfo', this.panelInfo)
 
