@@ -31,12 +31,11 @@ public class SysMenuController {
     @Resource
     private MenuService menuService;
 
-    @ApiOperation("查询跟节点菜单")
+    @ApiOperation("查询根节点菜单")
     @I18n
     @PostMapping("/childNodes/{pid}")
     public List<MenuNodeResponse> childNodes(@PathVariable("pid") Long pid){
         List<SysMenu> nodes = menuService.nodesByPid(pid);
-        nodes = nodes.stream().filter(node -> !node.getHidden()).collect(Collectors.toList());
         return menuService.convert(nodes);
     }
 
@@ -45,13 +44,12 @@ public class SysMenuController {
     @PostMapping("/search")
     public List<MenuNodeResponse> search(@RequestBody BaseGridRequest request) {
         List<SysMenu> nodes = menuService.nodesTreeByCondition(request);
-        List<MenuNodeResponse> nodeResponses = nodes.stream().map(node -> {
+        return nodes.stream().map(node -> {
             MenuNodeResponse menuNodeResponse = BeanUtils.copyBean(new MenuNodeResponse(), node);
             menuNodeResponse.setHasChildren(node.getSubCount() > 0);
-            menuNodeResponse.setTop(node.getPid() == menuService.MENU_ROOT_PID);
+            menuNodeResponse.setTop(node.getPid().equals(MenuService.MENU_ROOT_PID));
             return menuNodeResponse;
         }).collect(Collectors.toList());
-        return nodeResponses;
     }
 
 

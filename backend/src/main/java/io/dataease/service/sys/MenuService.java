@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 @Service
 public class MenuService {
 
-    private final static Integer DEFAULT_SUBCOUNT = 0;
-    public final static Long MENU_ROOT_PID = 0L;
+    private static final Integer DEFAULT_SUBCOUNT = 0;
+    public static final Long MENU_ROOT_PID = 0L;
 
     @Resource
     private SysMenuMapper sysMenuMapper;
@@ -44,6 +44,7 @@ public class MenuService {
         } else {
             criteria.andPidEqualTo(pid);
         }
+        criteria.andHiddenEqualTo(Boolean.FALSE);
         example.setOrderByClause("menu_sort");
         return sysMenuMapper.selectByExample(example);
     }
@@ -62,8 +63,8 @@ public class MenuService {
         sysMenu.setSubCount(DEFAULT_SUBCOUNT);
         try {
             int insert = sysMenuMapper.insert(sysMenu);
-            Long pid;
-            if (!(pid = sysMenu.getPid()).equals(MENU_ROOT_PID)) {
+            Long pid = sysMenu.getPid();
+            if (!pid.equals(MENU_ROOT_PID)) {
                 //这里需要更新上级节点SubCount
                 extMenuMapper.incrementalSubcount(pid);
             }
@@ -82,9 +83,7 @@ public class MenuService {
         if (!pid.equals(MENU_ROOT_PID)) {
             extMenuMapper.decreasingSubcount(pid);
         }
-        Long menuId = request.getMenuId();
-
-        return sysMenuMapper.deleteByPrimaryKey(menuId);
+        return sysMenuMapper.deleteByPrimaryKey(request.getMenuId());
     }
 
     @Transactional
@@ -97,12 +96,12 @@ public class MenuService {
         sysMenu.setUpdateBy(null);
         sysMenu.setUpdateTime(System.currentTimeMillis());
         Long menuId = sysMenu.getMenuId();
-        SysMenu menu_old = sysMenuMapper.selectByPrimaryKey(menuId);
+        SysMenu menuOld = sysMenuMapper.selectByPrimaryKey(menuId);
         //如果PID发生了改变
         //判断oldPid是否是跟节点PID ？ nothing : parent.subcount-1
         //判断newPid是否是跟节点PID ？ nothing : parent.subcount+1
-        if (!menu_old.getPid().equals(sysMenu.getPid())) {
-            Long oldPid = menu_old.getPid();
+        if (!menuOld.getPid().equals(sysMenu.getPid())) {
+            Long oldPid = menuOld.getPid();
             if (!oldPid.equals(MENU_ROOT_PID)) {
                 extMenuMapper.decreasingSubcount(oldPid);
             }
@@ -114,17 +113,19 @@ public class MenuService {
     }
 
     public List<MenuNodeResponse> children(Long pid) {
-        Set<SysMenu> children = getChildren(nodesByPid(pid), new HashSet());
+        Set<SysMenu> children = getChildren(nodesByPid(pid), new HashSet<>());
         List<SysMenu> menus = new ArrayList<>(children);
         return convert(menus);
     }
 
     public List<MenuTreeNode> searchTree(Long menuId) {
         List<SysMenu> roots = nodesByPid(0L);
-        if (menuId.equals(MENU_ROOT_PID)) return roots.stream().map(this::format).collect(Collectors.toList());
         SysMenu sysMenu = sysMenuMapper.selectByPrimaryKey(menuId);
-        if (roots.stream().anyMatch(node -> node.getMenuId().equals(menuId)))
+        boolean isMenuRootPid = menuId.equals(MENU_ROOT_PID);
+        boolean isNodeMenuId = roots.stream().anyMatch(node -> node.getMenuId().equals(menuId));
+        if (isMenuRootPid || isNodeMenuId) {
             return roots.stream().map(this::format).collect(Collectors.toList());
+        }
         SysMenu current = sysMenu;
         MenuTreeNode currentNode = format(sysMenu);
         while (!current.getPid().equals(MENU_ROOT_PID)) {
