@@ -812,7 +812,7 @@ export default {
     front_time_out: '请求超时时间(单位:秒, 注意:保存后刷新浏览器生效)',
     msg_time_out: '消息保留时间(单位:天)',
     login_type: '默认登录方式',
-    empty_front: '为空则默认取10秒',
+    empty_front: '为空则默认取100秒',
     empty_msg: '为空则默认取30天',
     front_error: '请填写0-300正整数', // 修改了提示信息
     msg_error: '请填写1-365正整数',

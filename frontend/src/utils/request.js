@@ -15,7 +15,7 @@ const DownErrorKey = Config.DownErrorKey
 import Cookies from 'js-cookie'
 
 const getTimeOut = () => {
-  let time = 10
+  let time = 100
   const url = process.env.VUE_APP_BASE_API + 'system/requestTimeOut'
   const xhr = new XMLHttpRequest()
   xhr.onreadystatechange = () => {
