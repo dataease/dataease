@@ -1624,7 +1624,6 @@ import ScrollCfg from '@/views/chart/components/senior/ScrollCfg'
 import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny } from '@/utils/StringUtils'
-import { quotaViews } from '@/views/chart/chart/util'
 
 export default {
   name: 'ChartEdit',
@@ -2129,10 +2128,6 @@ export default {
         if (!ele.compareCalc) {
           ele.compareCalc = compareItem
         }
-        if (quotaViews.indexOf(view.type) > -1) {
-          ele.compareCalc = compareItem
-          ele.formatterCfg.type = 'auto'
-        }
       })
       if (view.type === 'chart-mix') {
         view.yaxisExt.forEach(function(ele) {
@@ -2159,10 +2154,6 @@ export default {
           }
           if (!ele.compareCalc) {
             ele.compareCalc = compareItem
-          }
-          if (quotaViews.indexOf(view.type) > -1) {
-            ele.compareCalc = compareItem
-            ele.formatterCfg.type = 'auto'
           }
         })
       }
