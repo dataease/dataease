@@ -150,6 +150,7 @@
           </el-col>
           <el-col
             :span="20"
+            :style="customStyle"
             class="main-row"
           >
             <el-row
@@ -163,6 +164,7 @@
                 :span="6"
               >
                 <background-item
+                  :style="itemStyle"
                   :template="item"
                 />
               </el-col>
@@ -278,8 +280,29 @@ export default {
     }
   },
   computed: {
+    customStyle() {
+      let style = {}
+      if (this.canvasStyleData.openCommonStyle) {
+        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
+          style = {
+            background: `url(${imgUrlTrans(this.canvasStyleData.panel.imageUrl)}) no-repeat`,
+            ...style
+          }
+        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+          style = {
+            background: this.canvasStyleData.panel.color,
+            ...style
+          }
+        }
+      }
+      if (!style.background) {
+        style.background = '#FFFFFF'
+      }
+      return style
+    },
     ...mapState([
       'curComponent',
+      'canvasStyleData',
       'componentData'
     ]),
     isFilterComponent() {
@@ -353,6 +376,7 @@ export default {
 }
 
 .main-row {
+  padding-left: 10px;
   height: 140px;
   overflow-y: auto;
 }
