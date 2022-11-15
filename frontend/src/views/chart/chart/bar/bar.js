@@ -1849,6 +1849,8 @@ export  function base3DColumnOption(chart_option, chart, cstyle = {}) {
       console.log('3dbar数据',s)
 
       chart_option.series[0].data = s
+
+      chart_option.series[0].label = customAttr.label
     }
   }
   componentStyle(chart_option,chart,cstyle)

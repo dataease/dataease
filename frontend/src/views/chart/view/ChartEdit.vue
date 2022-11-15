@@ -778,7 +778,11 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick' && view.type !== 'contrast-funnel' && view.type !== 'map' && !view.type.includes('progress') && view.type !== 'waterfall' && view.type !== 'graph'"
+                    v-show="view.render && view.render === 'echarts' && view.type !== 'candlestick' 
+                        && view.type !== 'contrast-funnel' && view.type !== 'map' 
+                        && !view.type.includes('progress') && view.type !== 'waterfall' 
+                        && view.type !== 'graph' && view.type !== '3d-column'
+                        && view.type !== '3dsurface'"
                     name="size"
                     :title="$t('chart.size')"
                   >
@@ -838,7 +842,9 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')&&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' && view.type !== 'label'"
+                    v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
+                        &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
+                        && view.type !== 'label' && view.type !== '3dsurface'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -1039,7 +1045,8 @@
                       && (view.type !== 'treemap' || view.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
                       && view.type !== 'gauge' && view.type !== 'word-cloud' && !view.type.includes('progress')
-                      && view.type !== 'graph' && view.type !== 'candlestick'"
+                      && view.type !== 'graph' && view.type !== 'candlestick'
+                      && view.type !== '3dsurface' && view.type !== '3d-column'"
                     name="legend"
                     :title="$t('chart.legend')"
                   >
