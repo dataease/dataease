@@ -1846,7 +1846,7 @@ export  function base3DColumnOption(chart_option, chart, cstyle = {}) {
           }
         } 
       }
-      console.log('b数据',s)
+      console.log('3dbar数据',s)
 
       chart_option.series[0].data = s
     }
