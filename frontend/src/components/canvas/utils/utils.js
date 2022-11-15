@@ -1,11 +1,10 @@
 import {
-  BASE_MOBILE_STYLE, COMMON_BACKGROUND_NONE,
+  BASE_MOBILE_STYLE,
+  COMMON_BACKGROUND_NONE,
   HYPERLINKS
 } from '@/components/canvas/customComponent/component-list'
 
-import {
-  ApplicationContext
-} from '@/utils/ApplicationContext'
+import { ApplicationContext } from '@/utils/ApplicationContext'
 import { uuid } from 'vue-uuid'
 import store from '@/store'
 import { AIDED_DESIGN, PANEL_CHART_INFO, TAB_COMMON_STYLE } from '@/views/panel/panel'
@@ -49,6 +48,7 @@ export function toTop(arr, i, j) {
 export function toBottom(arr, i) {
   arr.unshift(arr.splice(i, 1)[0])
 }
+
 export function $(selector) {
   return document.querySelector(selector)
 }
@@ -80,6 +80,7 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
   componentStyle.refreshTime = (componentStyle.refreshTime || 5)
   componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
   componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
+  componentStyle.refreshViewEnable = (componentStyle.refreshViewEnable === undefined ? true : componentStyle.refreshViewEnable)
   componentStyle.aidedDesign = (componentStyle.aidedDesign || deepCopy(AIDED_DESIGN))
   componentStyle.chartInfo = (componentStyle.chartInfo || deepCopy(PANEL_CHART_INFO))
   componentStyle.chartInfo.tabStyle = (componentStyle.chartInfo.tabStyle || deepCopy(TAB_COMMON_STYLE))
@@ -209,8 +210,11 @@ export function exportImg(imgName) {
 }
 
 export function dataURLToBlob(dataurl) { // ie 图片转格式
-  const arr = dataurl.split(','); const mime = arr[0].match(/:(.*?);/)[1]
-  const bstr = atob(arr[1]); let n = bstr.length; const u8arr = new Uint8Array(n)
+  const arr = dataurl.split(',')
+  const mime = arr[0].match(/:(.*?);/)[1]
+  const bstr = atob(arr[1])
+  let n = bstr.length
+  const u8arr = new Uint8Array(n)
   while (n--) {
     u8arr[n] = bstr.charCodeAt(n)
   }

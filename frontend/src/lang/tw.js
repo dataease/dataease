@@ -1865,6 +1865,18 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    board: '邊框',
+    text: '文字',
+    board_background: '背景',
+    title_color: '標題顏色',
+    input_style: '輸入框樣式(顏色)',
+    overall_setting: '整體配置',
+    panel_background: '儀表板背景',
+    component_color: '組件配色',
+    chart_title: '圖表標題',
+    filter_component: '過濾組件',
+    enable_refresh_view: '開啟刷新',
+    enable_view_loading: '視圖加載提示',
     image_size_tips: '圖片請不要大於15M',
     image_add_tips: '只能插入圖片',
     watermark: '水印',
