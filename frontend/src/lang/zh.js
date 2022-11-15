@@ -2522,7 +2522,8 @@ export default {
     task_type: '任务类型',
     range_view: '展示数据',
     range_all: '全部数据',
-    execute_now: '立即执行'
+    execute_now: '立即执行',
+    fire_now_success: '任务发起成功'
   },
   dynamic_time: {
     set_default: '设置默认值',

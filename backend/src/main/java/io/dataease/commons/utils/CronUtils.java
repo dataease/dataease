@@ -21,6 +21,7 @@ public class CronUtils {
 
     /**
      * 解析表达式，获取CronTrigger
+     *
      * @param cron
      * @return
      */
@@ -33,6 +34,7 @@ public class CronUtils {
 
     /**
      * 获取以指定时间为开始时间的下一次执行时间
+     *
      * @param cron
      * @param start
      * @return
@@ -40,7 +42,7 @@ public class CronUtils {
     public static Date getNextTriggerTime(String cron, Date start) {
         if (start == null) {
             return getNextTriggerTime(cron);
-        }else{
+        } else {
             CronTrigger trigger = getCronTrigger(cron);
             return trigger.getFireTimeAfter(start);
         }
@@ -48,19 +50,20 @@ public class CronUtils {
 
     /**
      * 获取以当前日期为准的下一次执行时间
+     *
      * @param cron
      * @return
      */
     public static Date getNextTriggerTime(String cron) {
         Date date = null;
-        try{
+        try {
             CronTrigger trigger = getCronTrigger(cron);
             Date startDate = trigger.getStartTime();
             date = trigger.getFireTimeAfter(startDate);
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
-        return  date;
+        return date;
     }
 
     public static String cron(GlobalTaskEntity taskEntity) {
@@ -98,6 +101,15 @@ public class CronUtils {
 
         return null;
     }
+
+    public static String cron() {
+        Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.SECOND, 5);
+        return instance.get(Calendar.SECOND) + " " +
+                instance.get(Calendar.MINUTE) + " " +
+                instance.get(Calendar.HOUR_OF_DAY) + " * * ?";
+    }
+
     private static String getDayOfWeek(Calendar instance) {
         int index = instance.get(Calendar.DAY_OF_WEEK);
         index = (index % 7) + 1;

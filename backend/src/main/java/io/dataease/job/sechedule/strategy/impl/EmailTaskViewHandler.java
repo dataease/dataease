@@ -16,9 +16,8 @@ import javax.annotation.Resource;
 public class EmailTaskViewHandler extends EmailTaskHandler {
 
 
-
     @Async("priorityExecutor")
-    public void sendReport(GlobalTaskInstance taskInstance, XpackEmailTemplateDTO emailTemplateDTO, SysUserEntity user) {
-        super.sendReport(taskInstance, emailTemplateDTO, user);
+    public void sendReport(GlobalTaskInstance taskInstance, XpackEmailTemplateDTO emailTemplateDTO, SysUserEntity user, Boolean isTempTask) {
+        super.sendReport(taskInstance, emailTemplateDTO, user, isTempTask);
     }
 }
