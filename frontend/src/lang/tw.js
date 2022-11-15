@@ -1865,6 +1865,8 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    image_size_tips: '圖片請不要大於15M',
+    image_add_tips: '只能插入圖片',
     watermark: '水印',
     panel_get_data_error: '獲取儀表板信息失敗，儀表板可能已經被刪除，請檢查儀表板狀態',
     panel_no_save_tips: '存在未保存的儀表板',
