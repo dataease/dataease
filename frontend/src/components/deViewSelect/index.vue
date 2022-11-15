@@ -139,6 +139,10 @@ export default {
       this.innerValues = this.value
       this.viewLoaded = false
       this.panelId && findOne(this.panelId).then(response => {
+        const watermarkInfo = {
+          ...response.data.watermarkInfo,
+          settingContent: JSON.parse(response.data.watermarkInfo.settingContent)
+        }
         this.panelInfo = {
           id: response.data.id,
           name: response.data.name,
@@ -150,7 +154,7 @@ export default {
           updateBy: response.data.updateBy,
           updateTime: response.data.updateTime,
           watermarkOpen: response.data.watermarkOpen,
-          watermarkInfo: response.data.watermarkInfo
+          watermarkInfo: watermarkInfo
         }
         this.$store.dispatch('panel/setPanelInfo', this.panelInfo)
         panelDataPrepare(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle), rsp => {

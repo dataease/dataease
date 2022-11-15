@@ -121,7 +121,7 @@
       :canvas-id="canvasId"
     />
     <!-- 右击菜单 -->
-    <ContextMenu/>
+    <ContextMenu />
 
     <!-- 对齐标线 -->
     <span
