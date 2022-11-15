@@ -8,7 +8,7 @@
     @mouseup="deselectCurComponent"
     @scroll="canvasScroll"
   >
-    <slot name="optBar"/>
+    <slot name="optBar" />
     <de-editor
       :ref="editorRefName"
       :canvas-style-data="canvasStyleData"

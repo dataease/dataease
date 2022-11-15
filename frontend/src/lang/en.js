@@ -1865,6 +1865,18 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    board: 'Border',
+    text: 'Text',
+    board_background: 'Background',
+    title_color: 'Title color',
+    input_style: 'Input box style (color)',
+    overall_setting: 'Overall setting',
+    panel_background: 'Panel background',
+    component_color: 'Component color',
+    chart_title: 'Chart title',
+    filter_component: 'Filter component',
+    enable_refresh_view: 'Enable refresh',
+    enable_view_loading: 'View loading prompt',
     image_size_tips: 'Please do not exceed 15M in the picture',
     image_add_tips: 'Only pictures can be inserted',
     watermark: 'Watermark',

@@ -45,7 +45,7 @@
           :on-remove="handleRemove"
           :file-list="fileList"
         >
-          <i class="el-icon-plus"/>
+          <i class="el-icon-plus" />
         </el-upload>
         <el-dialog
           top="25vh"

@@ -428,19 +428,21 @@ export default {
     },
     canvasStyleDataInit() {
       // 数据刷新计时器
-      this.searchCount = 0
-      this.timer && clearInterval(this.timer)
-      let refreshTime = 300000
-      if (this.canvasStyleData.refreshTime && this.canvasStyleData.refreshTime > 0) {
-        if (this.canvasStyleData.refreshUnit === 'second') {
-          refreshTime = this.canvasStyleData.refreshTime * 1000
-        } else {
-          refreshTime = this.canvasStyleData.refreshTime * 60000
+      if (this.canvasStyleData.refreshViewEnable) {
+        this.searchCount = 0
+        this.timer && clearInterval(this.timer)
+        let refreshTime = 300000
+        if (this.canvasStyleData.refreshTime && this.canvasStyleData.refreshTime > 0) {
+          if (this.canvasStyleData.refreshUnit === 'second') {
+            refreshTime = this.canvasStyleData.refreshTime * 1000
+          } else {
+            refreshTime = this.canvasStyleData.refreshTime * 60000
+          }
         }
+        this.timer = setInterval(() => {
+          this.searchCount++
+        }, refreshTime)
       }
-      this.timer = setInterval(() => {
-        this.searchCount++
-      }, refreshTime)
     },
     changeStyleWithScale,
     getStyle,
