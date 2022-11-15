@@ -893,6 +893,7 @@ public class ChartViewService {
             if (StringUtils.isNotEmpty(ds.getStatus()) && ds.getStatus().equalsIgnoreCase("Error")) {
                 throw new Exception(Translator.get("i18n_invalid_ds"));
             }
+            pageInfo.setDsVersion(datasourceProvider.dsVersion(ds));
             datasourceRequest.setDatasource(ds);
             DataTableInfoDTO dataTableInfoDTO = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
@@ -962,7 +963,7 @@ public class ChartViewService {
             if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
                 datasourceRequest.setQuery(totalPageSql);
                 totalItems = Long.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]);
-                totalPage = totalItems / pageInfo.getPageSize() + totalItems % pageInfo.getPageSize() > 0 ? 1 : 0;
+                totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
             }
 
             datasourceRequest.setQuery(querySql);
