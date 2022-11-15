@@ -55,46 +55,13 @@
           v-if="widget.isCustomSortWidget && widget.isCustomSortWidget()"
           style="padding-left: 10px;"
         >
-          <el-checkbox
-            v-model="enableCustomSort"
-            @change="enableCustomSortChange"
-          >
-            <span>{{ $t('chart.sort') }}</span>
-          </el-checkbox>
 
-          <el-popover
-            v-model="customSortPopovervisible"
-            placement="bottom-end"
-            :disabled="!enableCustomSort"
-            width="180"
-          >
-            <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
-              <filter-custom-sort
-                :field-id="fieldIds"
-                @on-filter-sort-change="customSortChange"
-              />
-              <div
-                slot="footer"
-                class="dialog-footer filter-custom-sort-footer"
-              >
-                <el-button
-                  size="mini"
-                  @click="cancelCustomSort"
-                >{{ $t('chart.cancel') }}</el-button>
-                <el-button
-                  type="primary"
-                  size="mini"
-                  @click="saveCustomSort"
-                >{{ $t('chart.confirm') }}</el-button>
-              </div>
-            </div>
+          <filter-sort
+            :widget="widget"
+            :element="element"
+            @sort-change="sortChange"
+          />
 
-            <i
-              slot="reference"
-              :class="{'i-filter-active': enableCustomSort, 'i-filter-inactive': !enableCustomSort}"
-              class="el-icon-sort i-filter"
-            />
-          </el-popover>
         </span>
 
       </div>
@@ -243,10 +210,10 @@
 </template>
 
 <script>
-import FilterCustomSort from './FilterCustomSort'
+import FilterSort from './FilterSort'
 export default {
   name: 'FilterControl',
-  components: { FilterCustomSort },
+  components: { FilterSort },
   props: {
     widget: {
       type: Object,
@@ -279,9 +246,7 @@ export default {
         { id: 'HH', name: 'HH' },
         { id: 'HH:mm', name: 'HH:mm' },
         { id: 'HH:mm:ss', name: 'HH:mm:ss' }
-      ],
-      enableCustomSort: false,
-      customSortPopovervisible: false
+      ]
     }
   },
   computed: {
@@ -318,24 +283,10 @@ export default {
     }
   },
   methods: {
-    enableCustomSortChange(val) {
-      this.enableCustomSort = val
-      this.element.options.attrs.sort = {
-        sort: 'custom'
-      }
+    sortChange(param) {
+      this.element.options.attrs.sort = param
     },
-    customSortChange(list) {
 
-    },
-    saveCustomSort() {
-
-    },
-    cancelCustomSort() {
-      this.customSortPopovervisible = false
-    },
-    initCustomParam() {
-      this.enableCustomSort = this.element.options.attrs.sort?.sort === 'custom'
-    },
     multipleChange(value) {
       this.fillAttrs2Filter()
     },
@@ -464,13 +415,6 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.filter-custom-sort-footer {
-  margin-top: 5px;
-  padding-top: 5px;
-  border-top: solid 1px #eee;
-  text-align: end;
 }
 
 </style>

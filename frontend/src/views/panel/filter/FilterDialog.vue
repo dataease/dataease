@@ -267,7 +267,6 @@
       <div v-if="currentElement.options && currentElement.options.attrs">
         <filter-head
           :element="currentElement"
-          :widget="widget"
         />
 
         <filter-control
@@ -412,6 +411,10 @@ export default {
       } else if (this.myAttrs && this.myAttrs.fieldId) {
         this.myAttrs.fieldId = null
         this.myAttrs.activeName = null
+      }
+
+      if (this.myAttrs.sort?.sort === 'custom') {
+        this.myAttrs.sort.list = []
       }
       this.enableSureButton()
     },
@@ -857,7 +860,6 @@ export default {
 
   .de-dialog-container {
     height: 50vh !important;
-
   }
 
   .ms-aside-container {

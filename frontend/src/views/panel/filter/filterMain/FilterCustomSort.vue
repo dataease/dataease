@@ -31,13 +31,18 @@
 <script>
 import { linkMultFieldValues, multFieldValues } from '@/api/dataset/dataset'
 import { getLinkToken, getToken } from '@/utils/auth'
+import { mergeCustomSortOption } from '@/utils'
 export default {
   name: 'FilterCustomSort',
   props: {
-
     fieldId: {
       type: String,
-      required: true
+      default: null
+    },
+
+    customSortList: {
+      type: Array,
+      default: null
     }
   },
   data() {
@@ -77,7 +82,7 @@ export default {
     },
     optionData(data) {
       if (!data) return null
-      return data.filter(item => !!item)
+      return mergeCustomSortOption(this.customSortList, data.filter(item => !!item))
     },
     onMove() {
     },
