@@ -51,6 +51,19 @@
           </el-popover>
         </span>
 
+        <span
+          v-if="widget.isCustomSortWidget && widget.isCustomSortWidget()"
+          style="padding-left: 10px;"
+        >
+
+          <filter-sort
+            :widget="widget"
+            :element="element"
+            @sort-change="sortChange"
+          />
+
+        </span>
+
       </div>
     </el-col>
 
@@ -197,9 +210,10 @@
 </template>
 
 <script>
-
+import FilterSort from './FilterSort'
 export default {
   name: 'FilterControl',
+  components: { FilterSort },
   props: {
     widget: {
       type: Object,
@@ -235,7 +249,11 @@ export default {
       ]
     }
   },
-  computed: {},
+  computed: {
+    fieldIds() {
+      return this.element.options.attrs.fieldId || []
+    }
+  },
   watch: {
     'childViews.datasetParams': {
       handler(newName, oldName) {
@@ -265,6 +283,10 @@ export default {
     }
   },
   methods: {
+    sortChange(param) {
+      this.element.options.attrs.sort = param
+    },
+
     multipleChange(value) {
       this.fillAttrs2Filter()
     },

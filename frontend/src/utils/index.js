@@ -325,3 +325,12 @@ export const changeFavicon = link => {
     document.head.appendChild($favicon)
   }
 }
+
+export const mergeCustomSortOption = (customSortList, sourceList) => {
+  if (!customSortList?.length) return sourceList?.length ? sourceList : []
+
+  if (!sourceList?.length) return customSortList?.length ? customSortList : []
+
+  const result = [...customSortList, ...sourceList]
+  return [...new Set(result)]
+}
