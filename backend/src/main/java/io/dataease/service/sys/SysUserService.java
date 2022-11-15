@@ -74,7 +74,7 @@ public class SysUserService {
         List<SysUserGridResponse> lists = extSysUserMapper.query(gridExample);
         lists.forEach(item -> {
             List<SysUserRole> roles = item.getRoles();
-            List<Long> roleIds = roles.stream().map(SysUserRole::getRoleId).collect(Collectors.toList());
+            List<Long> roleIds = roles.stream().filter(ObjectUtils::isNotEmpty).map(SysUserRole::getRoleId).collect(Collectors.toList());
             item.setRoleIds(roleIds);
         });
         return lists;
