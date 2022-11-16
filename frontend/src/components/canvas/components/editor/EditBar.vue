@@ -137,7 +137,7 @@
           :target="curComponent.hyperlinks.openMode "
           :href="curComponent.hyperlinks.content "
         >
-          <i class="icon iconfont icon-com-jump" />
+          <i class="icon iconfont icon-com-jump"/>
         </a>
       </span>
 
@@ -167,6 +167,7 @@
     <el-dialog
       :visible.sync="boardSetVisible"
       width="750px"
+      top="5vh"
       class="dialog-css"
       :close-on-click-modal="false"
       :show-close="false"
