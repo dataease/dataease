@@ -412,10 +412,6 @@ export default {
         this.myAttrs.fieldId = null
         this.myAttrs.activeName = null
       }
-
-      if (this.myAttrs.sort?.sort === 'custom') {
-        this.myAttrs.sort.list = []
-      }
       this.enableSureButton()
     },
 

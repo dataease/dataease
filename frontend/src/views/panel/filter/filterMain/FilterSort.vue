@@ -95,6 +95,7 @@
         </el-dropdown-item>
 
         <el-dropdown-item
+          v-if="isCustomSortWidget"
           :command="beforeClickItem('custom')"
         >
           <span
@@ -146,6 +147,7 @@
 <script>
 import { fieldListWithPermission } from '@/api/dataset/dataset'
 import FilterCustomSort from './FilterCustomSort'
+import { isSameArr } from '@/utils'
 export default {
   name: 'FilterSort',
   components: { FilterCustomSort },
@@ -175,7 +177,7 @@ export default {
   },
   computed: {
     fieldIds() {
-      return this.element.options.attrs.fieldId || []
+      return this.element.options.attrs.fieldId
     },
     isSortWidget() {
       return this.widget && this.widget.isSortWidget && this.widget.isSortWidget()
@@ -195,7 +197,23 @@ export default {
   watch: {
     firstTableId(val, old) {
       if (val !== old) {
+        if (this.isSortWidget && (this.sortNode?.sort === 'asc' || this.sortNode?.sort === 'desc')) {
+          this.sortNode = { sort: 'none' }
+          this.$emit('sort-change', this.sortNode)
+        }
         this.loadFields()
+      }
+    },
+    fieldIds(val, old) {
+      if (val !== old) {
+        if (this.isCustomSortWidget && this.sortNode.sort === 'custom') {
+          const valArr = val?.length ? val.split(',') : null
+          const oldArr = old?.length ? old.split(',') : null
+          if (!isSameArr(valArr, oldArr)) {
+            this.sortNode = { sort: 'none' }
+            this.$emit('sort-change', this.sortNode)
+          }
+        }
       }
     }
 
@@ -210,11 +228,11 @@ export default {
           this.customSortList = JSON.parse(JSON.stringify(this.sortNode.list))
         }
       }
-      if (!this.sortNode) {
-        this.sortNode = JSON.parse(JSON.stringify(this.defaultSortProp))
-      }
 
       this.loadFields()
+    }
+    if (!this.sortNode) {
+      this.sortNode = JSON.parse(JSON.stringify(this.defaultSortProp))
     }
   },
   methods: {
