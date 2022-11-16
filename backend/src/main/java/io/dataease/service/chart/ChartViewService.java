@@ -908,7 +908,7 @@ public class ChartViewService {
             if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.DB.name())) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
                 if (StringUtils.equalsAnyIgnoreCase(view.getType(), "text", "gauge", "liquid")) {
-                    datasourceRequest.setQuery(qp.getSQLSummary(dataTableInfoDTO.getTable(), yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view, ds));
+                    querySql = qp.getSQLSummary(dataTableInfoDTO.getTable(), yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view, ds);
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     querySql = qp.getSQLStack(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, ds, view);
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
