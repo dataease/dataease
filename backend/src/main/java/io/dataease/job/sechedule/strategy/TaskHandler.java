@@ -12,6 +12,8 @@ import java.util.Date;
 
 public abstract class TaskHandler implements InitializingBean {
 
+    protected static final String IS_TEMP_TASK = "isTempTask";
+
     public void addTask(ScheduleManager scheduleManager, GlobalTaskEntity taskEntity) throws Exception {
         // 1。首先看看是否过期
         Long endTime = taskEntity.getEndTime();
@@ -24,19 +26,29 @@ public abstract class TaskHandler implements InitializingBean {
         Date start = new Date(taskEntity.getStartTime());
         Date end = null;
         if (ObjectUtils.isNotEmpty(taskEntity.getEndTime())) {
-            new Date(taskEntity.getEndTime());
+            end = new Date(taskEntity.getEndTime());
         }
         Class<? extends TaskHandler> executor = this.getClass();
         String cron = CronUtils.cron(taskEntity);
         scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, executor, cron, start, end, jobDataMap(taskEntity));
     }
 
+    public void addTempTask(ScheduleManager scheduleManager, GlobalTaskEntity taskEntity) throws Exception {
+        removeTask(scheduleManager, taskEntity);
+        JobKey jobKey = new JobKey(taskEntity.getTaskId().toString());
+        TriggerKey triggerKey = new TriggerKey(taskEntity.getTaskId().toString());
+        Date start = new Date(taskEntity.getStartTime());
+        Class<? extends TaskHandler> executor = this.getClass();
+        String cron = CronUtils.cron();
+        JobDataMap jobDataMap = jobDataMap(taskEntity);
+        jobDataMap.put(IS_TEMP_TASK, true);
+        scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, executor, cron, start, null, jobDataMap);
+    }
+
     protected abstract JobDataMap jobDataMap(GlobalTaskEntity taskEntity);
 
 
-
     public abstract void resetRunningInstance(Long taskId);
-
 
 
     public void removeTask(ScheduleManager scheduleManager, GlobalTaskEntity taskEntity) {
@@ -49,7 +61,6 @@ public abstract class TaskHandler implements InitializingBean {
         JobKey jobKey = new JobKey(taskEntity.getTaskId().toString());
         scheduleManager.fireNow(jobKey);
     }
-
 
 
     protected abstract Boolean taskIsRunning(Long taskId);

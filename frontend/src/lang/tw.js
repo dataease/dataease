@@ -2537,7 +2537,8 @@ export default {
     task_type: '任務類型',
     range_view: '展示數據',
     range_all: '全部數據',
-    execute_now: '立即執行'
+    execute_now: '立即執行',
+    fire_now_success: '任務發起成功'
   },
   dynamic_time: {
     set_default: '設置默認值',

@@ -2536,7 +2536,8 @@ export default {
     task_type: 'Task type',
     range_view: 'Displayed data',
     range_all: 'All data',
-    execute_now: 'Execute now'
+    execute_now: 'Execute now',
+    fire_now_success: 'Task executing'
   },
   dynamic_time: {
     set_default: 'Set Default',
