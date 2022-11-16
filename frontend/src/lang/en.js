@@ -1865,6 +1865,8 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    mobile_style_setting: 'Style setting',
+    mobile_style_setting_tips: 'Customize the mobile background',
     board: 'Border',
     text: 'Text',
     board_background: 'Background',

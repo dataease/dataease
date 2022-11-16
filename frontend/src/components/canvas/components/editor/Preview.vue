@@ -224,15 +224,19 @@ export default {
         width: '100%'
       }
       if (this.canvasStyleData.openCommonStyle && this.isMainCanvas()) {
-        if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
+        const styleInfo = this.terminal === 'mobile' && this.canvasStyleData.panel.mobileSetting && this.canvasStyleData.panel.mobileSetting.customSetting
+          ? this.canvasStyleData.panel.mobileSetting : this.canvasStyleData.panel
+        if (styleInfo.backgroundType === 'image' && typeof (styleInfo.imageUrl) === 'string') {
           style = {
-            background: `url(${imgUrlTrans(this.canvasStyleData.panel.imageUrl)}) no-repeat`,
-            ...style
+            background: `url(${imgUrlTrans(styleInfo.imageUrl)}) no-repeat`
           }
-        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+        } else if (styleInfo.backgroundType === 'color') {
           style = {
-            background: this.canvasStyleData.panel.color,
-            ...style
+            background: styleInfo.color
+          }
+        } else {
+          style = {
+            background: '#f7f8fa'
           }
         }
       }

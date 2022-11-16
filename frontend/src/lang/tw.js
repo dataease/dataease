@@ -1865,6 +1865,8 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    mobile_style_setting: '樣式設置',
+    mobile_style_setting_tips: '自定義移動端背景',
     board: '邊框',
     text: '文字',
     board_background: '背景',
