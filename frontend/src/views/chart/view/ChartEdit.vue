@@ -604,7 +604,7 @@
                     </el-row>
                     <!--extBubble-->
                     <el-row
-                      v-if="view.type && view.type.includes('scatter') && view.type !== '3dscatter'"
+                      v-if="view.type && view.type.includes('scatter') && view.type !== '3d-scatter'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -782,7 +782,7 @@
                         && view.type !== 'contrast-funnel' && view.type !== 'map' 
                         && !view.type.includes('progress') && view.type !== 'waterfall' 
                         && view.type !== 'graph' && view.type !== '3d-column'
-                        && view.type !== '3dsurface'"
+                        && view.type !== '3dsurface' && view.type !== '3d-scatter'"
                     name="size"
                     :title="$t('chart.size')"
                   >
@@ -1893,7 +1893,7 @@ export default {
           view.yaxis.splice(1, view.yaxis.length)
         }
       }
-      if(view.type === '3d-column') {
+      if(view.type === '3d-column' || view.type === '3d-scatter') {
         if (view.yaxis.length > 3) {
           view.yaxis.splice(3,1)
         }

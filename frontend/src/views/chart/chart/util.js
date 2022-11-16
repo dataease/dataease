@@ -495,6 +495,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_3d_column',
     icon: '3d-column'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_space',
+    value: '3d-scatter',
+    title: 'chart.chart_3dscatter',
+    icon: '3d-scatter'
+  },
   // {
   //   render: 'echarts',
   //   category: 'chart.chart_type_space',

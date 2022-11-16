@@ -64,7 +64,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
         chart_option.legend.show = false
       }
     }
-    if (customStyle.xAxis && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type === 'chart-mix')) {
+    if (customStyle.xAxis && chart.type !== '3d-scatter' && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type === 'chart-mix')) {
       chart_option.xAxis.show = customStyle.xAxis.show
       chart_option.xAxis.position = customStyle.xAxis.position
       chart_option.xAxis.name = customStyle.xAxis.name
@@ -103,7 +103,7 @@ export function componentStyle(chart_option, chart,cstyle = {}) {
         }
       }
     }
-    if (customStyle.yAxis && ((chart.type.includes('bar') && chart.type !== 'bar-stack-part') || chart.type.includes('line') || chart.type.includes('scatter'))) {
+    if (customStyle.yAxis && chart.type !== '3d-scatter' && ((chart.type.includes('bar') && chart.type !== 'bar-stack-part') || chart.type.includes('line') || chart.type.includes('scatter'))) {
       chart_option.yAxis.show = customStyle.yAxis.show
       chart_option.yAxis.position = customStyle.yAxis.position
       chart_option.yAxis.name = customStyle.yAxis.name

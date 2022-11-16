@@ -1029,6 +1029,30 @@ export const BASE_3DCOLUMN = {
   ]
 }
 
+export const BASE_3DSCATTER = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid3D: {},
+  tooltip: {},
+  xAxis3D: {
+    type: 'category'
+  },
+  yAxis3D: {
+    type: 'category'
+  },
+  zAxis3D: {},
+  series: [
+    {
+      type: 'scatter3D',
+      data: []
+    }
+  ]
+}
+
 export const BASE_SANKEY = {
   title: {
     text: '',
@@ -1096,6 +1120,7 @@ export const BASE_SANKEY = {
     ]
   }
 }
+
 export const BASE_3DEARTH = {
   background: "#000",
   globe: {

@@ -49,7 +49,8 @@ import {
   BASE_SANKEY,
   BASE_3DEARTH,
   BASE_3DSURFACE,
-  BASE_3DCOLUMN
+  BASE_3DCOLUMN,
+  BASE_3DSCATTER
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -118,7 +119,8 @@ import {
   baseWordCloudOption
 } from '@/views/chart/chart/wordCloud/word_cloud_es'
 import {
-  baseScatterOption
+  baseScatterOption,
+  base3DScatterOption
   // clockcatterOption
 } from '../chart/scatter/scatter'
 import {
@@ -328,6 +330,8 @@ export default {
         chart_option = base3DsurfaceOption(JSON.parse(JSON.stringify(BASE_3DSURFACE)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === '3d-column') {
         chart_option = base3DColumnOption(JSON.parse(JSON.stringify(BASE_3DCOLUMN)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === '3d-scatter') {
+        chart_option = base3DScatterOption(JSON.parse(JSON.stringify(BASE_3DSCATTER)), chart, this.$store.state.canvasStyleData)
       }
       // else if (chart.type === 'sankey') {
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
