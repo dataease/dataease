@@ -88,7 +88,7 @@
         v-if="curComponent.commonBackground.enable"
         style="padding-left: 10px"
       >
-        <el-row style="height: 80px;margin-top:10px;margin-bottom:20px;overflow: hidden">
+        <el-row style="height: 80px;margin-top:0px;margin-bottom:20px;overflow: hidden">
           <el-col
             :span="4"
             style="padding-left: 10px"
@@ -112,7 +112,7 @@
               :http-request="upload"
               :file-list="fileList"
             >
-              <i class="el-icon-plus" />
+              <i class="el-icon-plus"/>
             </el-upload>
             <el-dialog
               top="25vh"
@@ -164,7 +164,6 @@
                 :span="6"
               >
                 <background-item
-                  :style="itemStyle"
                   :template="item"
                 />
               </el-col>
@@ -377,7 +376,7 @@ export default {
 
 .main-row {
   padding-left: 10px;
-  height: 140px;
+  height: 250px;
   overflow-y: auto;
 }
 
