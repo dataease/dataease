@@ -314,6 +314,16 @@ export const isSameVueObj = (source, target) => {
   return false
 }
 
+export const isSameArr = (source, target) => {
+  if (!source && !target) return true
+  if (source?.length && target?.length && source.length === target.length) {
+    const sortSource = source.sort()
+    const sortTarget = target.sort()
+    return JSON.stringify(sortSource) === JSON.stringify(sortTarget)
+  }
+  return false
+}
+
 export const changeFavicon = link => {
   let $favicon = document.querySelector('link[rel="icon"]')
   if ($favicon !== null) {
