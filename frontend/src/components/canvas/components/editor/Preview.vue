@@ -5,7 +5,7 @@
     :style="customStyle"
     @scroll="canvasScroll"
   >
-    <canvas-opt-bar />
+    <canvas-opt-bar/>
     <div
       :id="previewDomId"
       :ref="previewRefId"
@@ -74,7 +74,7 @@ import bus from '@/utils/bus'
 import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
 import { hasDataPermission } from '@/utils/permission'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
-import { userLoginInfo } from '@/api/systemInfo/userLogin'
+import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
 
 const erd = elementResizeDetectorMaker()
 
@@ -140,6 +140,10 @@ export default {
       type: String,
       require: false,
       default: 'canvas-main'
+    },
+    userId: {
+      type: String,
+      require: false
     }
   },
   data() {
@@ -316,7 +320,8 @@ export default {
   methods: {
     initWatermark() {
       if (this.panelInfo.watermarkInfo) {
-        userLoginInfo().then(res => {
+        const method = this.userId ? proxyUserLoginInfo : userLoginInfo
+        method(this.userId).then(res => {
           const userInfo = res.data
           activeWatermark(this.panelInfo.watermarkInfo.settingContent, userInfo, 'preview-main-canvas-main', this.canvasId, this.panelInfo.watermarkOpen)
         })
