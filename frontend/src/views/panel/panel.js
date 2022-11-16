@@ -29,7 +29,15 @@ export const FILTER_COMMON_STYLE_DARK = {
   innerBgColor: '#131E42'
 }
 
+export const MOBILE_SETTING = {
+  customSetting: false,
+  color: '#ffffff',
+  imageUrl: null,
+  backgroundType: 'image'
+}
+
 export const DEFAULT_PANEL_STYLE = {
+  mobileSetting: MOBILE_SETTING,
   themeColor: 'light',
   color: '#ffffff',
   imageUrl: null,
