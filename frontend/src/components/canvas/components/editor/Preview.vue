@@ -1,11 +1,15 @@
 <template>
   <div
     :id="previewMainDomId"
+    v-loading="dataLoading"
+    :element-loading-text="$t('panel.data_loading')"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(220,220,220,1)"
     class="bg"
     :style="customStyle"
     @scroll="canvasScroll"
   >
-    <canvas-opt-bar/>
+    <canvas-opt-bar @link-export-pdf="downloadAsPDF" />
     <div
       :id="previewDomId"
       :ref="previewRefId"
@@ -57,6 +61,40 @@
         />
       </div>
     </div>
+    <el-dialog
+      v-if="pdfExportShow"
+      :title="'['+panelInfo.name+']'+'PDF导出'"
+      :visible.sync="pdfExportShow"
+      width="80%"
+      :top="'8vh'"
+      :destroy-on-close="true"
+      class="dialog-css2"
+    >
+      <span style="position: absolute;right: 70px;top:15px">
+        <svg-icon
+          icon-class="PDF"
+          class="ds-icon-pdf"
+        />
+        <el-select
+          v-model="pdfTemplateSelectedIndex"
+          :placeholder="'切换PDF模板'"
+          @change="changePdfTemplate()"
+        >
+          <el-option
+            v-for="(item, index) in pdfTemplateAll"
+            :key="index"
+            :label="item.name"
+            :value="index"
+          />
+        </el-select>
+      </span>
+      <PDFPreExport
+        :snapshot="snapshotInfo"
+        :panel-name="panelInfo.name"
+        :template-content="pdfTemplateContent"
+        @closePreExport="closePreExport"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -75,11 +113,12 @@ import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMat
 import { hasDataPermission } from '@/utils/permission'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
 import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
-
+import html2canvas from 'html2canvasde'
+import { queryAll } from '@/api/panel/pdfTemplate'
 const erd = elementResizeDetectorMaker()
-
+import PDFPreExport from '@/views/panel/export/PDFPreExport'
 export default {
-  components: { ComponentWrapper, CanvasOptBar },
+  components: { ComponentWrapper, CanvasOptBar, PDFPreExport },
   model: {
     prop: 'show',
     event: 'change'
@@ -148,6 +187,7 @@ export default {
   },
   data() {
     return {
+      canvasInfoTemp: 'preview-temp-canvas-main',
       previewMainDomId: 'preview-main-' + this.canvasId,
       previewDomId: 'preview-' + this.canvasId,
       previewRefId: 'preview-ref-' + this.canvasId,
@@ -175,7 +215,15 @@ export default {
       searchCount: 0,
       // 布局展示 1.pc pc端布局 2.mobile 移动端布局
       terminal: 'pc',
-      buttonFilterMap: null
+      buttonFilterMap: null,
+      pdfExportShow: false,
+      dataLoading: false,
+      exporting: false,
+      snapshotInfo: '',
+      pdfTemplateSelectedIndex: 0,
+      pdfTemplateContent: '',
+      templateInfo: {},
+      pdfTemplateAll: []
     }
   },
   computed: {
@@ -309,6 +357,7 @@ export default {
     }
     bus.$on('trigger-search-button', this.triggerSearchButton)
     bus.$on('trigger-reset-button', this.triggerResetButton)
+    this.initPdfTemplate()
   },
   beforeDestroy() {
     erd.uninstall(this.$refs[this.previewTempRefId])
@@ -545,6 +594,36 @@ export default {
           })
         }
       }, 1500)
+    },
+    downloadAsPDF() {
+      this.dataLoading = true
+      const domId = this.canvasInfoTemp
+      setTimeout(() => {
+        this.exporting = true
+        setTimeout(() => {
+          html2canvas(document.getElementById(domId)).then(canvas => {
+            const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
+            this.dataLoading = false
+            this.exporting = false
+            if (snapshot !== '') {
+              this.snapshotInfo = snapshot
+              this.pdfExportShow = true
+            }
+          })
+        }, 1500)
+      }, 500)
+    },
+    closePreExport() {
+      this.pdfExportShow = false
+    },
+    changePdfTemplate() {
+      this.pdfTemplateContent = this.pdfTemplateAll[this.pdfTemplateSelectedIndex] ? this.pdfTemplateAll[this.pdfTemplateSelectedIndex].templateContent : ''
+    },
+    initPdfTemplate() {
+      queryAll().then(res => {
+        this.pdfTemplateAll = res.data
+        this.changePdfTemplate()
+      })
     }
   }
 }
