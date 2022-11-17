@@ -77,7 +77,7 @@ export default {
 
 .testcase-template {
   display: inline-block;
-  margin: 10px 0px;
+  margin: 5px 0px;
   width: 90px;
 }
 

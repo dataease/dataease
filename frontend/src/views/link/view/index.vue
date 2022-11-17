@@ -5,6 +5,7 @@
       :component-data="mainCanvasComponentData"
       :canvas-style-data="canvasStyleData"
       :panel-info="panelInfo"
+      :user-id="user"
     />
   </div>
 </template>

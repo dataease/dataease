@@ -8,6 +8,15 @@ export function userLoginInfo() {
   })
 }
 
+export function proxyUserLoginInfo(userId) {
+  return request({
+    url: '/systemInfo/proxyUserLoginInfo/' + userId,
+    method: 'get',
+    loading: false
+  })
+}
+
 export default {
-  userLoginInfo
+  userLoginInfo,
+  proxyUserLoginInfo
 }

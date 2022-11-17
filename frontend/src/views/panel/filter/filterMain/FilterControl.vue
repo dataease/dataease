@@ -52,7 +52,7 @@
         </span>
 
         <span
-          v-if="widget.isCustomSortWidget && widget.isCustomSortWidget()"
+          v-if="widget.isSortWidget && widget.isSortWidget()"
           style="padding-left: 10px;"
         >
 
