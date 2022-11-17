@@ -112,6 +112,8 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/plugin/larksuite/getQrParam", ANON);
         filterChainDefinitionMap.put("/cas/reset/**", ANON);
         filterChainDefinitionMap.put("/cas/loginPage", ANON);
+        filterChainDefinitionMap.put("/pdf-template/queryAll", ANON);
+
 
         filterChainDefinitionMap.put("/unauth", ANON);
         filterChainDefinitionMap.put("/display/**", ANON);
