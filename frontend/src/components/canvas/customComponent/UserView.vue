@@ -640,7 +640,7 @@ export default {
     },
     viewInCache(param) {
       this.view = param.view
-      if (this.view.customAttr) {
+      if (this.view && this.view.customAttr) {
         this.currentPage.pageSize = parseInt(JSON.parse(this.view.customAttr).size.tablePageSize)
       }
       param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
@@ -703,7 +703,7 @@ export default {
           requestInfo.proxy = { userId: this.panelInfo.proxy }
         }
         // table-info明细表增加分页
-        if (this.view.customAttr) {
+        if (this.view && this.view.customAttr) {
           const attrSize = JSON.parse(this.view.customAttr).size
           if (this.chart.type === 'table-info' && this.view.datasetMode === 0 && (!attrSize.tablePageMode || attrSize.tablePageMode === 'page')) {
             requestInfo.goPage = this.currentPage.page
@@ -1162,7 +1162,7 @@ export default {
             queryFrom: 'panel'
           }
           // table-info明细表增加分页
-          if (this.view.customAttr) {
+          if (this.view && this.view.customAttr) {
             const attrSize = JSON.parse(this.view.customAttr).size
             if (this.chart.type === 'table-info' && this.view.datasetMode === 0 && (!attrSize.tablePageMode || attrSize.tablePageMode === 'page')) {
               requestInfo.goPage = this.currentPage.page

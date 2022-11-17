@@ -7,7 +7,7 @@ import {
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import { uuid } from 'vue-uuid'
 import store from '@/store'
-import { AIDED_DESIGN, PANEL_CHART_INFO, TAB_COMMON_STYLE } from '@/views/panel/panel'
+import { AIDED_DESIGN, MOBILE_SETTING, PANEL_CHART_INFO, TAB_COMMON_STYLE } from '@/views/panel/panel'
 import html2canvas from 'html2canvasde'
 
 export function deepCopy(target) {
@@ -86,6 +86,7 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
   componentStyle.chartInfo.tabStyle = (componentStyle.chartInfo.tabStyle || deepCopy(TAB_COMMON_STYLE))
   componentStyle.themeId = (componentStyle.themeId || 'NO_THEME')
   componentStyle.panel.themeColor = (componentStyle.panel.themeColor || 'light')
+  componentStyle.panel.mobileSetting = (componentStyle.panel.mobileSetting || MOBILE_SETTING)
   componentData.forEach((item, index) => {
     if (item.component && item.component === 'de-date') {
       const widget = ApplicationContext.getService(item.serviceName)
