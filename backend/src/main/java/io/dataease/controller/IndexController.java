@@ -2,17 +2,16 @@ package io.dataease.controller;
 
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.license.DefaultLicenseService;
-import io.dataease.commons.license.F2CLicenseResponse;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.service.panel.PanelLinkService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -42,13 +41,7 @@ public class IndexController {
 
     @GetMapping("/deApi")
     public String deApi() {
-        F2CLicenseResponse f2CLicenseResponse = defaultLicenseService.validateLicense();
-        switch (f2CLicenseResponse.getStatus()) {
-            case valid:
-                return "doc.html";
-            default:
-                return "nolic.html";
-        }
+        return "doc.html";
     }
 
     @GetMapping("/link/{index}")
@@ -64,8 +57,8 @@ public class IndexController {
             // TODO 增加仪表板外部参数
             HttpServletRequest request = ServletUtils.request();
             String attachParams = request.getParameter("attachParams");
-            if(StringUtils.isNotEmpty(attachParams)){
-                url = url+"&attachParams="+attachParams;
+            if (StringUtils.isNotEmpty(attachParams)) {
+                url = url + "&attachParams=" + attachParams;
             }
             response.sendRedirect(url);
         } catch (IOException e) {
