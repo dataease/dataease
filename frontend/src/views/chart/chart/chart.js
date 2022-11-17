@@ -107,7 +107,9 @@ export const DEFAULT_SIZE = {
   liquidWaveCount: 3,
   liquidShape: 'circle',
 
+  caldWAdapt: false,
   caldWidth: 60,
+  caldHAdapt: false,
   caldHeight: 60,
   caldPieSize: 20,
   caldTimelevel: -20,

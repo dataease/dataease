@@ -195,7 +195,7 @@ export function base3DScatterOption(chart_option, chart, cstyle = {}) {
 }
 
 export function baseCalendarPieOption(chart_option, chart, cstyle = {}) {
-  console.log('chart数据',chart)
+  // console.log('chart数据',chart)
   // 处理shape attr
   let customAttr = {}
   if (chart.customAttr) {
@@ -218,8 +218,8 @@ export function baseCalendarPieOption(chart_option, chart, cstyle = {}) {
 
     if(customAttr.size) {
       chart_option.calendar.cellSize = [
-        customAttr.size.caldWidth? customAttr.size.caldWidth : 60,
-        customAttr.size.caldHeight? customAttr.size.caldHeight : 60,
+        customAttr.size.caldWAdapt? 'auto' : customAttr.size.caldWidth? customAttr.size.caldWidth : 60,
+        customAttr.size.caldHAdapt? 'auto' :customAttr.size.caldHeight? customAttr.size.caldHeight : 60,
       ]
     }
   }
@@ -238,7 +238,7 @@ export function baseCalendarPieOption(chart_option, chart, cstyle = {}) {
         // sarr.push([chart.data.x[i],chart.data.x[i]])
         sarr.push(chart.data.x[i])
       }
-      console.log('sarrrrrrrrrrrr：',sarr)
+      // console.log('sarrrrrrrrrrrr：',sarr)
     }
     if(chart.data.series.length > 0) {
       let larr = [] // legend
@@ -252,7 +252,7 @@ export function baseCalendarPieOption(chart_option, chart, cstyle = {}) {
         })
         parr.push(a)
       }
-      console.log('图例：',larr)
+      // console.log('图例：',larr)
       // console.log('饼数据：',parr)
       chart_option.legend.data = larr
       let s = new Array(Math.max(... parr.map(item => item.length)));
@@ -286,10 +286,11 @@ export function baseCalendarPieOption(chart_option, chart, cstyle = {}) {
             formatter: '{c}',
             position: 'inside'
           },
+          // labe: customAttr.label,
           data: p
         })
       }
-      console.log('piesssssssss',pies)
+      // console.log('piesssssssss',pies)
     }
 
     chart_option.series = [
@@ -317,6 +318,6 @@ export function baseCalendarPieOption(chart_option, chart, cstyle = {}) {
 
   
   componentStyle(chart_option, chart, cstyle)
-  console.log('日历饼图：',chart_option)
+  // console.log('日历饼图：',chart_option)
   return chart_option
 }

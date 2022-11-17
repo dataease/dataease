@@ -345,11 +345,17 @@
       </el-form>
 
       <el-form v-show="chart.type && chart.type === 'calendar'" ref="sizeFormLine" :model="sizeForm" label-width="90px" size="mini">
+        <el-form-item label="宽度自适应" class="form-item">
+          <el-checkbox v-model="sizeForm.caldWAdapt">自适应</el-checkbox>
+        </el-form-item>
         <el-form-item label="图表宽度" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.caldWidth" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
+          <el-slider :disabled="sizeForm.caldWAdapt" v-model="sizeForm.caldWidth" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item label="高度自适应" class="form-item">
+          <el-checkbox v-model="sizeForm.caldHAdapt">自适应</el-checkbox>
         </el-form-item>
         <el-form-item label="图表高度" class="form-item form-item-slider">
-          <el-slider v-model="sizeForm.caldHeight" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
+          <el-slider :disabled="sizeForm.caldHAdapt" v-model="sizeForm.caldHeight" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
         </el-form-item>
         <el-form-item label="饼图大小" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.caldPieSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="50" @change="changeBarSizeCase" />

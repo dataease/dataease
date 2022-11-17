@@ -844,7 +844,7 @@
                   <el-collapse-item
                     v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
                         &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
-                        && view.type !== 'label' && view.type !== '3dsurface'"
+                        && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -871,7 +871,11 @@
                     />
                   </el-collapse-item>
                   <el-collapse-item
-                    v-show="view.type &&!view.type.includes('vertical')&&!view.type.includes('dialog') && !view.type.includes('table') && !view.type.includes('progress') && !view.type.includes('text') && view.type !== 'liquid' && view.type !== 'gauge' && view.type !== 'label'"
+                    v-show="view.type &&!view.type.includes('vertical')
+                      &&!view.type.includes('dialog') && !view.type.includes('table') 
+                      && !view.type.includes('progress') && !view.type.includes('text') 
+                      && view.type !== 'liquid' && view.type !== 'gauge' 
+                      && view.type !== 'label' && view.type !== 'calendar'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
