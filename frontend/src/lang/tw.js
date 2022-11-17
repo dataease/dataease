@@ -1865,6 +1865,7 @@ export default {
     sure_bt: '確定'
   },
   panel: {
+    down: '下載',
     board: '邊框',
     text: '文字',
     board_background: '背景',

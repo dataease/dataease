@@ -22,19 +22,10 @@
         <el-button
           size="mini"
           @click="exportPDF"
-        ><i class="icon iconfont el-icon-download" />下载</el-button>
+        ><i class="icon iconfont el-icon-download" />{{ $t('panel.down') }}</el-button>
       </el-button-group>
     </div>
 
-    <!-- <div
-      v-show="isPublicLink && !isNewBlank"
-      class="bar-main-left"
-    >
-      <el-button
-        size="mini"
-        @click="back2Last"
-      ><i class="icon iconfont el-icon-back" />{{ $t('chart.back') }}</el-button>
-    </div> -->
     <div
       v-else-if="existLinkage"
       class="bar-main-right"

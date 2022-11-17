@@ -1865,6 +1865,7 @@ export default {
     sure_bt: 'Confirm'
   },
   panel: {
+    down: 'Down',
     board: 'Border',
     text: 'Text',
     board_background: 'Background',
