@@ -105,7 +105,13 @@ export const DEFAULT_SIZE = {
   liquidOutlineDistance: 8,
   liquidWaveLength: 128,
   liquidWaveCount: 3,
-  liquidShape: 'circle'
+  liquidShape: 'circle',
+
+  caldWidth: 60,
+  caldHeight: 60,
+  caldPieSize: 20,
+  caldTimelevel: -20,
+  caldTimevertical: -20,
 
 }
 export const DEFAULT_LABEL = {
@@ -1246,6 +1252,47 @@ export const BASE_PIE = {
       data: []
     }
   ]
+}
+
+export const BASE_CALENDAR_PIE = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  grid: {
+    containLabel: true
+  },
+  tooltip: {},
+  legend: {
+    show: true,
+    type: 'scroll',
+    itemWidth: 10,
+    itemHeight: 10,
+    icon: 'rect',
+    data: [],
+  },
+  calendar: {
+    top: 'middle',
+    left: 'center',
+    orient: 'vertical',
+    cellSize: [60,60],
+    yearLabel: {
+      show: false,
+      fontSize: 30
+    },
+    dayLabel: {
+      margin: 20,
+      firstDay: 1,
+      nameMap: ['日', '一', '二', '三', '四', '五', '六', '日']
+    },
+    monthLabel: {
+      show: false
+    },
+    range: []
+  },
+  series: []
 }
 
 export const BASE_FUNNEL = {

@@ -50,7 +50,8 @@ import {
   BASE_3DEARTH,
   BASE_3DSURFACE,
   BASE_3DCOLUMN,
-  BASE_3DSCATTER
+  BASE_3DSCATTER,
+  BASE_CALENDAR_PIE
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -120,7 +121,8 @@ import {
 } from '@/views/chart/chart/wordCloud/word_cloud_es'
 import {
   baseScatterOption,
-  base3DScatterOption
+  base3DScatterOption,
+  baseCalendarPieOption
   // clockcatterOption
 } from '../chart/scatter/scatter'
 import {
@@ -332,6 +334,8 @@ export default {
         chart_option = base3DColumnOption(JSON.parse(JSON.stringify(BASE_3DCOLUMN)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === '3d-scatter') {
         chart_option = base3DScatterOption(JSON.parse(JSON.stringify(BASE_3DSCATTER)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'calendar') {
+        chart_option = baseCalendarPieOption(JSON.parse(JSON.stringify(BASE_CALENDAR_PIE)), chart, this.$store.state.canvasStyleData)
       }
       // else if (chart.type === 'sankey') {
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)

@@ -343,6 +343,24 @@
           <el-slider v-model="sizeForm.liquidWaveCount" show-input :show-input-controls="false" input-size="mini" :min="2" :max="10" @change="changeBarSizeCase" />
         </el-form-item> -->
       </el-form>
+
+      <el-form v-show="chart.type && chart.type === 'calendar'" ref="sizeFormLine" :model="sizeForm" label-width="90px" size="mini">
+        <el-form-item label="图表宽度" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.caldWidth" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item label="图表高度" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.caldHeight" show-input :show-input-controls="false" input-size="mini" :min="1" :max="100" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item label="饼图大小" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.caldPieSize" show-input :show-input-controls="false" input-size="mini" :min="1" :max="50" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item label="日期水平偏移" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.caldTimelevel" show-input :show-input-controls="false" input-size="mini" :min="-50" :max="50" @change="changeBarSizeCase" />
+        </el-form-item>
+        <el-form-item label="日期垂直偏移" class="form-item form-item-slider">
+          <el-slider v-model="sizeForm.caldTimevertical" show-input :show-input-controls="false" input-size="mini" :min="-50" :max="50" @change="changeBarSizeCase" />
+        </el-form-item>
+      </el-form>
     </el-col>
   </div>
 </template>

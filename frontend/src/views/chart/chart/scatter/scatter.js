@@ -193,3 +193,130 @@ export function base3DScatterOption(chart_option, chart, cstyle = {}) {
   console.log('3d散点，，，',chart_option)
   return chart_option
 }
+
+export function baseCalendarPieOption(chart_option, chart, cstyle = {}) {
+  console.log('chart数据',chart)
+  // 处理shape attr
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.color) {
+      chart_option.color = customAttr.color.colors
+    }
+    chart_option.grid.left = customAttr.size.spaceleft
+    chart_option.grid.right = customAttr.size.spaceRight
+    chart_option.grid.top = customAttr.size.spaceTop
+    chart_option.grid.bottom = customAttr.size.spaceBottom
+    // tooltip
+    if (customAttr.tooltip) {
+      const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
+      const reg = new RegExp('\n', 'g')
+      tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
+
+      chart_option.tooltip = tooltip
+    }
+
+    if(customAttr.size) {
+      chart_option.calendar.cellSize = [
+        customAttr.size.caldWidth? customAttr.size.caldWidth : 60,
+        customAttr.size.caldHeight? customAttr.size.caldHeight : 60,
+      ]
+    }
+  }
+
+  if(chart.data) {
+    chart_option.title.text = chart.title
+
+    let sarr = [] // 日历数据
+    let pies = [] // 饼图数据
+
+    if(chart.data.x.length) {
+      let time = (new Date(chart.data.x[0]).getFullYear() +'-'+ (new Date(chart.data.x[0]).getMonth()+1)) // 日期
+      chart_option.calendar.range = [time]
+      
+      for(let i=0;i<chart.data.x.length;i++) {
+        // sarr.push([chart.data.x[i],chart.data.x[i]])
+        sarr.push(chart.data.x[i])
+      }
+      console.log('sarrrrrrrrrrrr：',sarr)
+    }
+    if(chart.data.series.length > 0) {
+      let larr = [] // legend
+      let parr = [] // pie 数据
+      for(let i=0;i<chart.data.series.length;i++) {
+        const obj = chart.data.series[i]
+        larr.push(obj.name)
+        let a = []
+        obj.data.map(item => {
+          a.push(item.value)
+        })
+        parr.push(a)
+      }
+      console.log('图例：',larr)
+      // console.log('饼数据：',parr)
+      chart_option.legend.data = larr
+      let s = new Array(Math.max(... parr.map(item => item.length)));
+      for(let index = 0;index < s.length;index ++) {
+        for(let key in parr) {
+          if(!s[index]) {
+            s[index] = [parr[key][index]]
+          }else {
+            s[index][key] = parr[key][index]
+          }
+        } 
+      }
+      // console.log('s数据',s)
+      
+      for(let j=0;j<s.length;j++) {
+        let p = []
+        s[j].map((item,index) => {
+          let obj = {
+            name: larr[index],
+            value: item
+          }
+          p.push(obj)
+        })
+        pies.push({
+          type: 'pie',
+          id: 'pie-'+j,
+          center: sarr[j],
+          radius: customAttr.size.caldPieSize? customAttr.size.caldPieSize : 25, // 可动态修改
+          coordinateSystem: 'calendar',
+          label: {
+            formatter: '{c}',
+            position: 'inside'
+          },
+          data: p
+        })
+      }
+      console.log('piesssssssss',pies)
+    }
+
+    chart_option.series = [
+      {
+        id: 'label',
+        type: 'scatter',
+        coordinateSystem: 'calendar',
+        symbolSize: 0,
+        label: {
+          show: true,
+          formatter: function(params) {
+            return new Date(params.value).getDate()
+          },
+          offset: [
+            customAttr.size.caldTimelevel !== undefined? customAttr.size.caldTimelevel : -20,
+            customAttr.size.caldTimevertical !== undefined? customAttr.size.caldTimevertical : -20,
+          ],
+          fontSize: 12,
+        },
+        data: sarr
+      },
+      ...pies
+    ]
+  }
+
+  
+  componentStyle(chart_option, chart, cstyle)
+  console.log('日历饼图：',chart_option)
+  return chart_option
+}

@@ -924,6 +924,7 @@ export default {
     chart_3dfunnel: '3D 漏斗图',
     chart_3dpyramid: '3D 金字塔图',
     chart_3dscatter: '3D散点图',
+    chart_calendar_pie: '日历饼图',
     chart_radar: '雷达图',
     chart_gauge: '仪表盘',
     chart_map: '地图',

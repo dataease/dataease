@@ -530,6 +530,14 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_graph',
     icon: 'graph'
   },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_distribute',
+    value: 'calendar',
+    title: 'chart.chart_calendar_pie',
+    icon: 'calendar'
+  },
+  
   // {
   //   render: 'echarts',
   //   category: 'chart.chart_type_distribute',
@@ -594,7 +602,7 @@ export const TYPE_CONFIGS = [
   //   category: 'chart.chart_type_relation',
   //   value: '3dscatter',
   //   title: 'chart.chart_3dscatter',
-  //   icon: '3dscatter'
+  //   icon: '3d-scatter'
   // },
 
   {
