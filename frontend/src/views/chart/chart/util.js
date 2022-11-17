@@ -354,8 +354,14 @@ export const TYPE_CONFIGS = [
     value: 'richTextView',
     title: 'chart.rich_text_view',
     icon: 'richTextView',
-    properties: [],
-    propertyInner: {}
+    properties: [
+      'title-selector-ant-v'
+    ],
+    propertyInner: {
+      'title-selector-ant-v': [
+        'title'
+      ]
+    }
   },
   {
     render: 'antv',
