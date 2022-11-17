@@ -15,9 +15,10 @@
           <el-checkbox
             v-model="titleForm.show"
             @change="changeTitleStyle('show')"
-          >{{ $t('chart.show') }}</el-checkbox>
+          >{{ $t('chart.show') }}
+          </el-checkbox>
         </el-form-item>
-        <div v-show="showProperty('show') && titleForm.show">
+        <div v-show="titleForm.show">
           <el-form-item
             v-show="showProperty('title')"
             v-if="!batchOptStatus"
@@ -105,11 +106,13 @@
             <el-checkbox
               v-model="titleForm.isItalic"
               @change="changeTitleStyle('isItalic')"
-            >{{ $t('chart.italic') }}</el-checkbox>
+            >{{ $t('chart.italic') }}
+            </el-checkbox>
             <el-checkbox
               v-model="titleForm.isBolder"
               @change="changeTitleStyle('isBolder')"
-            >{{ $t('chart.bolder') }}</el-checkbox>
+            >{{ $t('chart.bolder') }}
+            </el-checkbox>
           </el-form-item>
           <el-form-item
             v-show="showProperty('letterSpace')"
@@ -137,7 +140,8 @@
             <el-checkbox
               v-model="titleForm.fontShadow"
               @change="changeTitleStyle('fontShadow')"
-            >{{ $t('chart.font_shadow') }}</el-checkbox>
+            >{{ $t('chart.font_shadow') }}
+            </el-checkbox>
           </el-form-item>
 
           <el-form-item
@@ -148,7 +152,8 @@
             <el-checkbox
               v-model="titleForm.remarkShow"
               @change="changeTitleStyle('remarkShow')"
-            >{{ $t('chart.show') }}</el-checkbox>
+            >{{ $t('chart.show') }}
+            </el-checkbox>
           </el-form-item>
           <span v-show="titleForm.remarkShow">
             <el-form-item
@@ -204,12 +209,14 @@
         <el-button
           size="mini"
           @click="closeRemark"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="changeRemark"
-        >{{ $t('chart.confirm') }}</el-button>
+        >{{ $t('chart.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
   </div>
@@ -350,7 +357,7 @@ export default {
 </script>
 
 <style scoped>
-.shape-item{
+.shape-item {
   padding: 6px;
   border: none;
   width: 100%;
@@ -358,29 +365,35 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-.form-item-slider ::v-deep .el-form-item__label{
+
+.form-item-slider ::v-deep .el-form-item__label {
   font-size: 12px;
   line-height: 38px;
 }
-.form-item ::v-deep .el-form-item__label{
+
+.form-item ::v-deep .el-form-item__label {
   font-size: 12px;
 }
-.el-select-dropdown__item{
+
+.el-select-dropdown__item {
   padding: 0 20px;
 }
-span{
+
+span {
   font-size: 12px
 }
-.el-form-item{
+
+.el-form-item {
   margin-bottom: 6px;
 }
 
-.switch-style{
+.switch-style {
   position: absolute;
   right: 10px;
   margin-top: -4px;
 }
-.color-picker-style{
+
+.color-picker-style {
   cursor: pointer;
   z-index: 1003;
 }
