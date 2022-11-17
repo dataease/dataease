@@ -2790,6 +2790,8 @@ export default {
     closeEditChartField() {
       this.showEditChartField = false
       this.initTableField(this.table.id)
+      // 因动态计算较多，更新字段后重新计算视图数据
+      this.calcData()
     },
 
     // drag
@@ -2879,6 +2881,7 @@ export default {
           }
         }
       }
+      this.view.customFilter[e.newDraggableIndex].filter = []
       this.dragMoveDuplicate(this.view.customFilter, e)
       this.dragRemoveChartField(this.view.customFilter, e)
       this.calcData(true)
