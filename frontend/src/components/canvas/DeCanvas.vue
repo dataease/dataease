@@ -113,8 +113,6 @@ import generateID from '@/components/canvas/utils/generateID'
 import ButtonDialog from '@/views/panel/filter/ButtonDialog'
 import ButtonResetDialog from '@/views/panel/filter/ButtonResetDialog'
 import FilterDialog from '@/views/panel/filter/FilterDialog'
-import { userLoginInfo } from '@/api/systemInfo/userLogin'
-import { activeWatermark } from '@/components/canvas/tools/watermark'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
 
 export default {
@@ -237,19 +235,12 @@ export default {
   watch: {
     mobileLayoutStatus() {
       this.restore()
-    },
-    panelInfo: {
-      handler(newVal, oldVla) {
-        this.initWatermark()
-      },
-      deep: true
     }
   },
   created() {
   },
   mounted() {
     const _this = this
-    this.initWatermark()
     // 监听div变动事件
     const erd = elementResizeDetectorMaker()
     erd.listenTo(document.getElementById(this.canvasDomId), element => {
@@ -263,14 +254,6 @@ export default {
     bus.$off('button-dialog-edit', this.editButtonDialog)
   },
   methods: {
-    initWatermark() {
-      if (this.panelInfo.watermarkInfo) {
-        userLoginInfo().then(res => {
-          const userInfo = res.data
-          activeWatermark(this.panelInfo.watermarkInfo.settingContent, userInfo, this.canvasDomId, this.canvasId, this.panelInfo.watermarkOpen)
-        })
-      }
-    },
     initEvents() {
       bus.$on('component-dialog-edit', this.editDialog)
       bus.$on('button-dialog-edit', this.editButtonDialog)

@@ -524,6 +524,8 @@ import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
 import eventBus from '@/components/canvas/utils/eventBus'
 import DeCanvas from '@/components/canvas/DeCanvas'
 import TextAttr from '@/components/canvas/components/TextAttr'
+import { userLoginInfo } from '@/api/systemInfo/userLogin'
+import { activeWatermark } from '@/components/canvas/tools/watermark'
 
 export default {
   name: 'PanelEdit',
@@ -778,6 +780,12 @@ export default {
     },
     previewVisible(val) {
       this.$store.commit('setPreviewVisible', val)
+    },
+    panelInfo: {
+      handler(newVal, oldVla) {
+        this.initWatermark()
+      },
+      deep: true
     }
   },
   created() {
@@ -785,6 +793,7 @@ export default {
     listenGlobalKeyDown()
   },
   mounted() {
+    this.initWatermark()
     this.initEvents()
     const _this = this
     const erd = elementResizeDetectorMaker()
@@ -811,6 +820,14 @@ export default {
     elx && elx.remove()
   },
   methods: {
+    initWatermark() {
+      if (this.panelInfo.watermarkInfo) {
+        userLoginInfo().then(res => {
+          const userInfo = res.data
+          activeWatermark(this.panelInfo.watermarkInfo.settingContent, userInfo, 'canvasInfo-main', this.canvasId, this.panelInfo.watermarkOpen)
+        })
+      }
+    },
     componentOnDrag() {
       this.show = false
     },

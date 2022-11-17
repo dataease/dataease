@@ -319,7 +319,7 @@ export default {
   },
   methods: {
     initWatermark() {
-      if (this.panelInfo.watermarkInfo) {
+      if (this.panelInfo.watermarkInfo && this.canvasId === 'canvas-main') {
         userLoginInfo().then(res => {
           const userInfo = res.data
           activeWatermark(this.panelInfo.watermarkInfo.settingContent, userInfo, 'preview-main-canvas-main', this.canvasId, this.panelInfo.watermarkOpen)
