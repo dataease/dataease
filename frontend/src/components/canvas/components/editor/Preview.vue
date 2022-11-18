@@ -9,7 +9,10 @@
     :style="customStyle"
     @scroll="canvasScroll"
   >
-    <canvas-opt-bar @link-export-pdf="downloadAsPDF" />
+    <canvas-opt-bar
+      ref="canvas-opt-bar"
+      @link-export-pdf="downloadAsPDF"
+    />
     <div
       :id="previewDomId"
       :ref="previewRefId"
@@ -562,6 +565,9 @@ export default {
     deselectCurComponent(e) {
       if (!this.isClickComponent) {
         this.$store.commit('setCurComponent', { component: null, index: null })
+        if (this.$refs?.['canvas-opt-bar']) {
+          this.$refs['canvas-opt-bar'].setWidgetStatus()
+        }
       }
     },
     handleMouseDown() {
