@@ -1862,7 +1862,8 @@ export default {
     input_placeholder: 'Please enter the 4-digits-letters',
     pwd_error: 'Wrong password',
     pwd_format_error: 'Please enter the 4-digits-letters',
-    sure_bt: 'Confirm'
+    sure_bt: 'Confirm',
+    back_parent: 'Back to previous'
   },
   panel: {
 

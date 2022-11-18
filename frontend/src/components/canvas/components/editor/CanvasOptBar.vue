@@ -6,6 +6,7 @@
 
     <div
       v-if="isPublicLink"
+      ref="widget-div"
       class="function-div"
     >
       <el-button-group size="mini">
@@ -13,7 +14,10 @@
           v-if="!isNewBlank"
           size="mini"
           @click="back2Last"
-        ><i class="icon iconfont el-icon-back" />{{ $t('chart.back') }}</el-button>
+        ><span><svg-icon
+          style="width: 12px;height: 12px"
+          icon-class="link-back"
+        />{{ $t('pblink.back_parent') }}</span></el-button>
         <el-button
           v-if="existLinkage"
           size="mini"
@@ -22,7 +26,11 @@
         <el-button
           size="mini"
           @click="exportPDF"
-        ><i class="icon iconfont el-icon-download" />{{ $t('panel.down') }}</el-button>
+        >
+          <span><svg-icon
+            style="width: 12px;height: 12px"
+            icon-class="link-down"
+          />{{ $t('panel.down') }}</span></el-button>
       </el-button-group>
     </div>
 
@@ -77,6 +85,14 @@ export default {
     },
     exportPDF() {
       this.$emit('link-export-pdf')
+    },
+    setWidgetStatus() {
+      if (!this.isPublicLink || !this.$refs['widget-div']) {
+        return
+      }
+      const val = this.$refs['widget-div'].style.display
+
+      this.$refs['widget-div'].style.display = val ? '' : 'block'
     }
   }
 }
@@ -114,7 +130,7 @@ export default {
     width: 60px;
     right: 0;
     top: 0;
-    border-top: 60px solid rgba(245, 74, 69, 0.2);
+    border-top: 60px solid rgba(245, 74, 69, 0);
     border-left: 60px solid transparent;
     cursor: pointer;
     z-index: 999;
@@ -126,10 +142,16 @@ export default {
       width: max-content;
       text-align: end;
       z-index: 999;
+      ::v-deep button:hover {
+        background-color: rgba(31, 35, 41, 0.1);
+        color: #1F2329;
+        font-weight: bold;
+        border-color: rgba(31, 35, 41, 0.1)
+      }
 
     }
     &:hover {
-      border-top: 60px solid rgba(245, 74, 69, 0.8);;
+      border-top: 60px solid rgba(245, 74, 69, 0);;
       .function-div {
         display: block;
       }

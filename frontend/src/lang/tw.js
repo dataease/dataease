@@ -1862,7 +1862,8 @@ export default {
     input_placeholder: '請輸入4位數字或字母',
     pwd_error: '密碼錯誤',
     pwd_format_error: '請輸入4位數字或字母',
-    sure_bt: '確定'
+    sure_bt: '確定',
+    back_parent: '返回上一級'
   },
   panel: {
 
