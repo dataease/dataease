@@ -119,7 +119,8 @@ export default {
       linkageActiveParam: null,
       buttonTextColor: null,
       loading: true,
-      showSuspension: true
+      showSuspension: true,
+      currentSeriesId: null
     }
   },
 
@@ -132,6 +133,11 @@ export default {
     ])
   },
   watch: {
+    currentSeriesId(value, old) {
+      if (value !== old) {
+        this.preDraw()
+      }
+    },
     chart: {
       handler(newVal, oldVla) {
         this.preDraw()
@@ -171,9 +177,7 @@ export default {
       if (id !== this.chart.id) {
         return
       }
-      const customAttr = JSON.parse(this.chart.customAttr)
-      customAttr.currentSeriesId = seriesId
-      this.chart.customAttr = JSON.stringify(customAttr)
+      this.currentSeriesId = seriesId
     },
     reDrawView() {
       this.myChart.dispatchAction({
@@ -366,7 +370,7 @@ export default {
           this.buttonTextColor = null
         }
       }
-      const chart_option = baseMapOption(base_json, chart, this.buttonTextColor, curAreaCode)
+      const chart_option = baseMapOption(base_json, chart, this.buttonTextColor, curAreaCode, this.currentSeriesId)
       this.myEcharts(chart_option)
       const opt = this.myChart.getOption()
       if (opt && opt.series) {
