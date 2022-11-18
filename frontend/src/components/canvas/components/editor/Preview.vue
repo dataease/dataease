@@ -501,9 +501,14 @@ export default {
           }
         }
         this.timer = setInterval(() => {
+          this.clearAllLinkage()
           this.searchCount++
         }, refreshTime)
       }
+    },
+    clearAllLinkage() {
+      this.$store.commit('clearPanelLinkageInfo')
+      bus.$emit('clear_panel_linkage', { viewId: 'all' })
     },
     changeStyleWithScale,
     getStyle,
