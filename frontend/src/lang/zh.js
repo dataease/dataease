@@ -1445,7 +1445,11 @@ export default {
     total_sort_none: '无',
     total_sort_asc: '升序',
     total_sort_desc: '降序',
-    total_sort_field: '排序字段'
+    total_sort_field: '排序字段',
+    empty_data_strategy: '空值处理',
+    break_line: '线条断开',
+    set_zero: '置为0,线条不断开',
+    ignore_data: '跳过空值,不展示'
   },
   dataset: {
     spend_time: '耗时',

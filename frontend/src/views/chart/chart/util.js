@@ -3310,3 +3310,120 @@ export function getRemark(chart) {
 }
 
 export const quotaViews = ['label', 'richTextView', 'text', 'gauge', 'liquid']
+
+export function handleEmptyDataStrategy(strategy, chart, data, options) {
+  if (!data?.length) {
+    return
+  }
+  if (strategy === 'ignoreData') {
+    handleIgnoreData(chart, data)
+    return
+  }
+  const yaxis = JSON.parse(chart.yaxis)
+  const extAxis = JSON.parse(chart.xaxisExt)
+  const multiDimension = yaxis?.length >= 2 || extAxis?.length > 0
+  switch (strategy) {
+    case 'breakLine': {
+      if (multiDimension) {
+        // 多维度线条断开
+        handleBreakLineMultiDimension(chart, data, options)
+      } else {
+        // 单维度线条断开
+        options.connectNulls = false
+      }
+      break
+    }
+    case 'setZero': {
+      if (multiDimension > 0) {
+        // 多维度置0
+        handleSetZeroMultiDimension(chart, data, options)
+      } else {
+        // 单维度置0
+        handleSetZeroSingleDimension(chart, data, options)
+      }
+      break
+    }
+    default:
+      break
+  }
+}
+
+function handleBreakLineMultiDimension(chart, data, options) {
+  options.connectNulls = false
+  const dimensionInfoMap = new Map()
+  const subDimensionSet = new Set()
+  for (let i = 0; i < data.length; i++) {
+    const item = data[i]
+    const dimensionInfo = dimensionInfoMap.get(item.field)
+    if (dimensionInfo) {
+      dimensionInfo.set.add(item.category)
+    } else {
+      dimensionInfoMap.set(item.field, { set: new Set([item.category]), index: i })
+    }
+    subDimensionSet.add(item.category)
+  }
+  // Map 是按照插入顺序排序的，所以插入索引往后推
+  let insertCount = 0
+  dimensionInfoMap.forEach((dimensionInfo, field) => {
+    if (dimensionInfo.set.size < subDimensionSet.size) {
+      const toBeFillDimension = [...subDimensionSet].filter(item => !dimensionInfo.set.has(item))
+      toBeFillDimension.forEach(dimension => {
+        data.splice(dimensionInfo.index + insertCount, 0, {
+          field,
+          value: null,
+          category: dimension
+        })
+      })
+      insertCount += toBeFillDimension.size
+    }
+  })
+}
+
+function handleSetZeroMultiDimension(chart, data) {
+  const dimensionInfoMap = new Map()
+  const subDimensionSet = new Set()
+  for (let i = 0; i < data.length; i++) {
+    const item = data[i]
+    if (item.value === null) {
+      item.value = 0
+    }
+    const dimensionInfo = dimensionInfoMap.get(item.field)
+    if (dimensionInfo) {
+      dimensionInfo.set.add(item.category)
+    } else {
+      dimensionInfoMap.set(item.field, { set: new Set([item.category]), index: i })
+    }
+    subDimensionSet.add(item.category)
+  }
+  let insertCount = 0
+  dimensionInfoMap.forEach((dimensionInfo, field) => {
+    if (dimensionInfo.set.size < subDimensionSet.size) {
+      const toBeFillDimension = [...subDimensionSet].filter(item => !dimensionInfo.set.has(item))
+      toBeFillDimension.forEach(dimension => {
+        data.splice(dimensionInfo.index + insertCount, 0, {
+          field,
+          value: 0,
+          category: dimension
+        })
+      })
+      insertCount += toBeFillDimension.size
+    }
+  })
+}
+
+function handleSetZeroSingleDimension(chart, data) {
+  data.forEach(item => {
+    if (item.value === null) {
+      item.value = 0
+    }
+  })
+}
+
+function handleIgnoreData(chart, data) {
+  for (let i = data.length - 1; i >= 0; i--) {
+    const item = data[i]
+    if (item.value === null) {
+      data.splice(i, 1)
+    }
+  }
+}

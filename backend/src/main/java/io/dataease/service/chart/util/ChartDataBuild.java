@@ -158,12 +158,17 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
-                if ("line".equals(view.getType()) && CollectionUtils.isEmpty(xAxisExt)) {
-                    axisChartDataDTO.setCategory(yAxis.get(j).getName());
-                } else {
-                    axisChartDataDTO.setCategory(b.toString());
-                }
+                axisChartDataDTO.setCategory(b.toString());
                 dataList.add(axisChartDataDTO);
+
+                if ("line".equals(view.getType())) {
+                    if (CollectionUtils.isEmpty(xAxisExt)){
+                        axisChartDataDTO.setCategory(yAxis.get(j).getName());
+                    } else {
+                        // 多指标只取第一个
+                        break;
+                    }
+                }
             }
         }
         map.put("data", dataList);
