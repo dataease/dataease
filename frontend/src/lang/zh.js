@@ -1440,7 +1440,12 @@ export default {
     proportion: '占比',
     label_content: '标签展示',
     percent: '占比',
-    table_index_desc: '表头名称'
+    table_index_desc: '表头名称',
+    total_sort: '总计排序',
+    total_sort_none: '无',
+    total_sort_asc: '升序',
+    total_sort_desc: '降序',
+    total_sort_field: '排序字段'
   },
   dataset: {
     spend_time: '耗时',

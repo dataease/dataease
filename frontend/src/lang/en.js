@@ -1441,7 +1441,12 @@ export default {
     proportion: 'Proportion',
     label_content: 'Label Content',
     percent: 'Percent',
-    table_index_desc: 'Index Header Name'
+    table_index_desc: 'Index Header Name',
+    total_sort: 'Total Sort',
+    total_sort_none: 'None',
+    total_sort_asc: 'ASC',
+    total_sort_desc: 'DESC',
+    total_sort_field: 'Sort Field'
   },
   dataset: {
     spend_time: 'Spend',
