@@ -2059,7 +2059,7 @@ export default {
           ele.filter = []
         }
       })
-      if (view.type === 'table-pivot' || view.type === 'bar-group') {
+      if (view.type === 'table-pivot' || view.type === 'bar-group' || (view.render === 'antv' && view.type === 'line')) {
         view.xaxisExt.forEach(function(ele) {
           if (!ele.dateStyle || ele.dateStyle === '') {
             ele.dateStyle = 'y_M_d'

@@ -1441,7 +1441,11 @@ export default {
     proportion: 'Proportion',
     label_content: 'Label Content',
     percent: 'Percent',
-    table_index_desc: 'Index Header Name'
+    table_index_desc: 'Index Header Name',
+    empty_data_strategy: 'Empty Data Strategy',
+    break_line: 'Disconnection',
+    set_zero: 'Set Zero',
+    ignore_data: 'Ignore Data'
   },
   dataset: {
     spend_time: 'Spend',

@@ -67,6 +67,20 @@
             @change="changeFunctionCfg"
           />
         </el-form-item>
+        <el-form-item
+          v-show="chart.render === 'antv' && chart.type === 'line'"
+          :label="$t('chart.empty_data_strategy')"
+          class="form-item"
+        >
+          <el-radio-group
+            v-model="functionForm.emptyDataStrategy"
+            @change="changeFunctionCfg"
+          >
+            <el-radio :label="'breakLine'">{{ $t('chart.break_line') }}</el-radio>
+            <el-radio :label="'setZero'">{{ $t('chart.set_zero') }}</el-radio>
+            <el-radio :label="'ignoreData'">{{ $t('chart.ignore_data') }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
       </el-form>
     </el-col>
   </div>
@@ -110,7 +124,7 @@ export default {
           senior = JSON.parse(chart.senior)
         }
         if (senior.functionCfg) {
-          this.functionForm = senior.functionCfg
+          this.functionForm = { ...DEFAULT_FUNCTION_CFG, ...senior.functionCfg }
         } else {
           this.functionForm = JSON.parse(JSON.stringify(DEFAULT_FUNCTION_CFG))
         }
@@ -123,7 +137,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .shape-item{
   padding: 6px;
   border: none;
@@ -157,5 +171,13 @@ span{
 .color-picker-style{
   cursor: pointer;
   z-index: 1003;
+}
+.form-item ::v-deep .el-radio-group{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  label {
+    line-height: 28px;
+  }
 }
 </style>

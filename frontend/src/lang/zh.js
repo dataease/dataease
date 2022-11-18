@@ -1440,7 +1440,11 @@ export default {
     proportion: '占比',
     label_content: '标签展示',
     percent: '占比',
-    table_index_desc: '表头名称'
+    table_index_desc: '表头名称',
+    empty_data_strategy: '空值处理',
+    break_line: '线条断开',
+    set_zero: '置为0,线条不断开',
+    ignore_data: '跳过空值,不展示'
   },
   dataset: {
     spend_time: '耗时',
