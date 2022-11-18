@@ -136,7 +136,7 @@ export default {
     unbind: '解綁',
     unlock: '解鎖',
     unlock_success: '解鎖成功',
-
+    parameter_effect: '參數值僅在數据集編輯時生效',
     uninstall: '卸載',
 
     no_result: '沒有找到相關內容',

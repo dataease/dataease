@@ -22,10 +22,12 @@
       </el-col>
     </el-row>
     <div class="table-container">
-      <el-table
+      <grid-table
         v-loading="loading"
-        :data="filterTable"
-        :style="{ width: '100%' }"
+        :table-data="pagingTable"
+        :pagination="paginationConfig"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
       >
         <el-table-column
           key="name"
@@ -33,6 +35,8 @@
           :label="$t('datasource.table_name')"
         />
         <el-table-column
+          slot="__operation"
+          key="__operation"
           :label="$t('commons.operating')"
           fixed="right"
           width="108"
@@ -46,7 +50,7 @@
             </el-button>
           </template>
         </el-table-column>
-      </el-table>
+      </grid-table>
     </div>
     <el-dialog
       :title="$t('dataset.detail')"
@@ -115,8 +119,10 @@
 <script>
 import keyEnter from '@/components/msgCfm/keyEnter.js'
 import { post } from '@/api/dataset/dataset'
+import GridTable from '@/components/gridTable/index.vue'
 
 export default {
+  components: { GridTable },
   mixins: [keyEnter],
   props: {
     params: {
@@ -128,6 +134,11 @@ export default {
   data() {
     return {
       userDrawer: false,
+      paginationConfig: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0
+      },
       dsTableDetail: {},
       nickName: '',
       loading: false,
@@ -136,12 +147,27 @@ export default {
       filterTable: []
     }
   },
+  computed: {
+    pagingTable() {
+      const { currentPage, pageSize } = this.paginationConfig
+      return this.filterTable.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+    }
+  },
   created() {
     this.search()
   },
   methods: {
+    handleSizeChange(pageSize) {
+      this.paginationConfig.currentPage = 1
+      this.paginationConfig.pageSize = pageSize
+    },
+    handleCurrentChange(currentPage) {
+      this.paginationConfig.currentPage = currentPage
+    },
     initSearch() {
+      this.handleCurrentChange(1)
       this.filterTable = this.tableData.filter(ele => ele.name.includes(this.nickName))
+      this.paginationConfig.total = this.filterTable.length
     },
     selectDataset(row) {
       this.dsTableDetail = row

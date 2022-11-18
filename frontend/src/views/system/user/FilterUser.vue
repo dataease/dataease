@@ -43,30 +43,22 @@
               trigger="click"
             >
               <el-tree
+                ref="tree"
                 :load="loadNode"
                 :lazy="true"
                 :expand-on-click-node="false"
                 :data="deptsComputed"
                 :props="defaultProps"
+                :filter-node-method="filterNode"
                 @node-click="handleNodeClick"
               />
 
-              <el-select
-                ref="roleSelect"
+              <el-input
                 slot="reference"
                 v-model="selectDepts"
-                popper-class="tree-select"
-                multiple
                 :placeholder="$t('commons.please_select')"
-                value-key="id"
-              >
-                <el-option
-                  v-for="item in selectDepts"
-                  :key="item.label"
-                  :label="item.label"
-                  :value="item"
-                />
-              </el-select>
+                clearable
+              />
             </el-popover>
             <span
               slot="reference"
@@ -81,8 +73,7 @@
           <span
             v-for="ele in rolesValueCopy"
             :key="ele.id"
-            class="item"
-            :class="[activeRole.includes(ele.id) ? 'active' : '']"
+            class="item active"
             @click="activeRoleChange(ele.id)"
           >{{ ele.name }}</span>
           <el-popover
@@ -92,13 +83,13 @@
             trigger="click"
           >
             <el-select
-              ref="roleSelect"
+              ref="select"
               v-model="rolesValue"
-              multiple
               :placeholder="$t('commons.please_select')"
               value-key="id"
+              filterable
+              multiple
               @change="changeRole"
-              @remove-tag="changeRole"
             >
               <el-option
                 v-for="item in rolesComputed"
@@ -139,10 +130,6 @@ import { getDeptTree, treeByDeptId } from '@/api/system/dept'
 export default {
   data() {
     return {
-      roleCache: [],
-      deptCache: [],
-      roles: [],
-      filterTextMap: [],
       status: [
         {
           id: 1,
@@ -153,11 +140,13 @@ export default {
           label: 'commons.disable'
         }
       ],
+      roles: [],
+      filterTextMap: [],
       activeStatus: [],
       rolesValue: [],
       activeRole: [],
       depts: [],
-      selectDepts: [],
+      selectDepts: '',
       selectDeptsCache: [],
       activeDept: [],
       defaultProps: {
@@ -173,27 +162,40 @@ export default {
       return this.roles.filter((ele) => !this.activeRole.includes(ele.id))
     },
     rolesValueCopy() {
-      return this.roleCache.filter((ele) => this.activeRole.includes(ele.id))
+      return this.roles.filter((ele) => this.activeRole.includes(ele.id))
     },
     deptsComputed() {
-      return this.depts.filter((ele) => !this.activeDept.includes(ele.id))
+      return this.dfs(this.depts)
+    }
+  },
+  watch: {
+    selectDepts(val) {
+      this.$refs.tree.filter(val)
     }
   },
   mounted() {
     this.initRoles()
   },
   methods: {
+    filterNode(value, data) {
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
+    },
     clearFilter() {
       Array(3)
         .fill(1)
         .forEach((_, index) => {
           this.clearOneFilter(index)
         })
+      this.$refs.tree.filter()
       this.$emit('search', [], [])
     },
     clearOneFilter(index) {
       (this.filterTextMap[index] || []).forEach((ele) => {
         this[ele] = []
+        if (ele === 'activeDept') {
+          this.$refs.tree.filter()
+        }
       })
     },
     // 获取弹窗内部门数据
@@ -207,63 +209,40 @@ export default {
         })
       })
     },
-    changeRole() {
-      if (
-        this.roleCache.length >
-        this.rolesValue.length + this.activeRole.length
-      ) {
-        this.roleCache = this.roleCache.filter((ele) =>
-          this.rolesValue
-            .map((ele) => ele.id)
-            .concat(this.activeRole)
-            .includes(ele.id)
-        )
-        return
-      }
-      const roleIdx = this.rolesValue.findIndex(
-        (ele) =>
-          !this.roleCache
-            .map((ele) => ele.id)
-            .concat(this.activeRole)
-            .includes(ele.id)
-      )
-      if (roleIdx === -1) return
-      this.activeRole.push(this.rolesValue[roleIdx].id)
-      this.roleCache.push(this.rolesValue[roleIdx])
-      this.rolesValue.splice(roleIdx, 1)
+    dfs(arr) {
+      return arr.reduce((pre, ele) => {
+        if (!this.activeDept.includes(ele.id)) {
+          if (ele.children?.length) {
+            ele.children = this.dfs(ele.children)
+          }
+          pre.push(ele)
+        }
+        return pre
+      }, [])
+    },
+    changeRole(list) {
+      const [val] = list
+      this.activeRole.push(val.id)
+      this.rolesValue = []
+      const { query } = this.$refs.select
+      this.$nextTick(() => {
+        this.$refs.select.query = query
+        this.$refs.select.handleQueryChange(query)
+      })
     },
     activeRoleChange(id) {
-      const roleIndex = this.activeRole.findIndex((ele) => ele === id)
-      if (roleIndex === -1) {
-        this.activeRole.push(id)
-        this.rolesValue = this.rolesValue.filter((ele) => ele.id !== id)
-      } else {
-        this.activeRole.splice(roleIndex, 1)
-        const role = this.roleCache.find((ele) => ele.id === id)
-        this.rolesValue.push(role)
-      }
+      this.activeRole = this.activeRole.filter((ele) => ele !== id)
     },
     handleNodeClick({ id, label }) {
-      const deptIdx = this.selectDepts.findIndex((ele) => ele.id === id)
-      if (deptIdx !== -1) {
-        this.selectDepts.splice(deptIdx, 1)
-        this.selectDeptsCache = this.selectDeptsCache.filter(
-          (ele) => ele.id !== id
-        )
-        this.deptCache = this.deptCache.filter((ele) => ele.id !== id)
-        return
-      }
       this.activeDept.push(id)
       this.selectDeptsCache.push({ id, label })
-      this.deptCache.push({ id, label })
+      this.$nextTick(() => {
+        this.$refs.tree.filter(this.selectDatasets)
+      })
     },
     activeDeptChange(id) {
-      const dept = this.deptCache.find((ele) => ele.id === id)
-      this.selectDepts.push(dept)
       this.activeDept = this.activeDept.filter((ele) => ele !== id)
-      this.selectDeptsCache = this.selectDeptsCache.filter(
-        (ele) => ele.id !== id
-      )
+      this.selectDeptsCache = this.selectDeptsCache.filter((ele) => ele.id !== id)
     },
     statusChange(id) {
       const statusIndex = this.activeStatus.findIndex((ele) => ele === id)
@@ -272,10 +251,6 @@ export default {
       } else {
         this.activeStatus.splice(statusIndex, 1)
       }
-    },
-    changeDepts() {
-      const depts = this.selectDepts.map((item) => item.id)
-      this.activeDept = this.activeDept.filter((ele) => depts.includes(ele))
     },
     loadNode(node, resolve) {
       if (!this.depts.length) {
@@ -310,6 +285,7 @@ export default {
       this.$emit('search', this.formatCondition(), this.formatText())
     },
     formatText() {
+      this.selectDepts = ''
       this.filterTextMap = []
       const params = []
       if (this.activeStatus.length) {
@@ -331,9 +307,7 @@ export default {
         )
         this.filterTextMap.push([
           'activeDept',
-          'selectDepts',
-          'selectDeptsCache',
-          'deptCache'
+          'selectDeptsCache'
         ])
       }
       if (this.activeRole.length) {
@@ -342,7 +316,7 @@ export default {
             .map((ele) => ele.name)
             .join('、')}`
         )
-        this.filterTextMap.push(['rolesValue', 'activeRole', 'roleCache'])
+        this.filterTextMap.push(['activeRole', 'rolesValue'])
       }
       return params
     },

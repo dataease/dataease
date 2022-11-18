@@ -34,7 +34,7 @@
               <el-tree
                 ref="datasetTreeRef"
                 current-node-key="id"
-                :data="treeData"
+                :data="datasetComputed"
                 node-key="id"
                 highlight-current
                 :filter-node-method="filterNode"
@@ -77,22 +77,12 @@
                 </span>
               </el-tree>
 
-              <el-select
-                ref="datasetSelect"
+              <el-input
                 slot="reference"
                 v-model="selectDatasets"
-                popper-class="tree-select"
-                multiple
                 :placeholder="$t('commons.please_select')"
-                value-key="id"
-              >
-                <el-option
-                  v-for="item in selectDatasets"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item"
-                />
-              </el-select>
+                clearable
+              />
             </el-popover>
             <span
               slot="reference"
@@ -159,8 +149,7 @@ export default {
       treeLoading: false,
       filterTextMap: [],
       dataRange: [],
-      selectDatasets: [],
-      datasetCache: [],
+      selectDatasets: '',
       activeDataset: [],
       selectDatasetsCache: [],
       treeData: [],
@@ -169,6 +158,16 @@ export default {
         execStatus: []
       },
       userDrawer: false
+    }
+  },
+  computed: {
+    datasetComputed() {
+      return this.dfs(this.treeData)
+    }
+  },
+  watch: {
+    selectDatasets(val) {
+      this.$refs.selectDatasets.filter(val)
     }
   },
   mounted() {
@@ -195,6 +194,18 @@ export default {
           this.treeLoading = false
         })
     },
+    dfs(arr) {
+      return arr.reduce((pre, ele) => {
+        if (!this.activeDataset.includes(ele.id)) {
+          if (ele.children?.length) {
+            pre.push(this.dfs(ele.children))
+          } else {
+            pre.push(ele)
+          }
+        }
+        return pre
+      }, [])
+    },
     nodeClick(data) {
       const { id, name, modelInnerType: type } = data
       if (type === 'group') return
@@ -202,7 +213,7 @@ export default {
     },
     filterNode(value, data) {
       if (!value) return true
-      return !this.activeDataset.includes(data.id)
+      return data.label.indexOf(value) !== -1
     },
     clearFilter() {
       this.active = {
@@ -210,7 +221,7 @@ export default {
       }
       this.dataRange = []
       this.activeDataset = []
-      this.selectDatasets = []
+      this.selectDatasets = ''
       this.datasetCache = []
       this.selectDatasetsCache = []
       this.$refs.datasetTreeRef.filter()
@@ -239,32 +250,22 @@ export default {
       }
     },
     handleNodeClick(id, name) {
-      const datasetIdx = this.selectDatasets.findIndex((ele) => ele.id === id)
-      if (datasetIdx !== -1) {
-        this.selectDatasets.splice(datasetIdx, 1)
-      }
       this.activeDataset.push(id)
       this.selectDatasetsCache.push({ id, name })
-      this.datasetCache.push({ id, name })
-      this.$refs.datasetTreeRef.filter(id)
+      this.selectDatasets = ''
     },
     activeDatasetChange(id) {
-      const dataset = this.datasetCache.find((ele) => ele.id === id)
-      this.selectDatasets.push(dataset)
       this.activeDataset = this.activeDataset.filter((ele) => ele !== id)
-      this.datasetCache = this.datasetCache.filter(
-        (ele) => ele.id !== id
-      )
       this.selectDatasetsCache = this.selectDatasetsCache.filter(
         (ele) => ele.id !== id
       )
-      this.$refs.datasetTreeRef.filter(true)
     },
     search() {
       this.userDrawer = false
       this.$emit('search', this.formatCondition(), this.formatText())
     },
     formatText() {
+      this.selectDatasets = ''
       this.filterTextMap = []
       const params = []
       if (this.activeDataset.length) {
@@ -278,9 +279,7 @@ export default {
         params.push(str.slice(0, str.length - 1))
         this.filterTextMap.push([
           'activeDataset',
-          'selectDatasets',
-          'selectDatasetsCache',
-          'datasetCache'
+          'selectDatasetsCache'
         ])
       }
       ['dataset.task.last_exec_status'].forEach((ele, index) => {

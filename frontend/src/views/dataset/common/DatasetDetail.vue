@@ -141,7 +141,7 @@
       </div>
       <div class="info-item">
         <p class="info-title">{{ $t('commons.description') }}</p>
-        <p class="info-content">{{ detail.datasource.desc || 'N/A' }}</p>
+        <p class="info-content">{{ detail.datasource.desc || '-' }}</p>
       </div>
       <div class="info-item">
         <p class="info-title">{{ $t('datasource.type') }}</p>

@@ -515,8 +515,8 @@ export default {
       datasetTaskList(currentPage, pageSize, param, showLoading).then(
         (response) => {
           const multipleSelection = this.multipleSelection.map(ele => ele.id)
-          this.data = response.data.listObject
-          this.paginationConfig.total = response.data.itemCount
+          this.data = response.data?.listObject
+          this.paginationConfig.total = response.data?.itemCount
           if (multipleSelection.length) {
             this.$nextTick(() => {
               this.data.forEach(row => {

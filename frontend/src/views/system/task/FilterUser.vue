@@ -14,8 +14,7 @@
           <span
             v-for="ele in selectDatasetsCache"
             :key="ele.id"
-            class="item"
-            :class="[activeDataset.includes(ele.id) ? 'active' : '']"
+            class="item active"
             @click="activeDatasetChange(ele.id)"
           >{{ ele.name }}</span>
           <el-popover
@@ -34,7 +33,7 @@
               <el-tree
                 ref="datasetTreeRef"
                 current-node-key="id"
-                :data="treeData"
+                :data="deptsComputed"
                 node-key="id"
                 highlight-current
                 :filter-node-method="filterNode"
@@ -77,22 +76,12 @@
                 </span>
               </el-tree>
 
-              <el-select
-                ref="datasetSelect"
+              <el-input
                 slot="reference"
                 v-model="selectDatasets"
-                popper-class="tree-select"
-                multiple
                 :placeholder="$t('commons.please_select')"
-                value-key="id"
-              >
-                <el-option
-                  v-for="item in selectDatasets"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item"
-                />
-              </el-select>
+                clearable
+              />
             </el-popover>
             <span
               slot="reference"
@@ -155,8 +144,7 @@ export default {
     return {
       treeLoading: false,
       dataRange: [],
-      selectDatasets: [],
-      datasetCache: [],
+      selectDatasets: '',
       activeDataset: [],
       selectDatasetsCache: [],
       treeData: [],
@@ -169,10 +157,31 @@ export default {
       userDrawer: false
     }
   },
+  computed: {
+    deptsComputed() {
+      return this.dfs(this.treeData)
+    }
+  },
+  watch: {
+    selectDatasets(val) {
+      this.$refs.datasetTreeRef.filter(val)
+    }
+  },
   mounted() {
     this.treeNode()
   },
   methods: {
+    dfs(arr) {
+      return arr.reduce((pre, ele) => {
+        if (!this.activeDataset.includes(ele.id)) {
+          if (ele.children?.length) {
+            ele.children = this.dfs(ele.children)
+          }
+          pre.push(ele)
+        }
+        return pre
+      }, [])
+    },
     treeNode() {
       this.treeLoading = true
       queryAuthModel(
@@ -200,7 +209,7 @@ export default {
     },
     filterNode(value, data) {
       if (!value) return true
-      return !this.activeDataset.includes(data.id)
+      return data.label.indexOf(value) !== -1
     },
     clearFilter() {
       this.active = {
@@ -210,7 +219,7 @@ export default {
       }
       this.dataRange = []
       this.activeDataset = []
-      this.selectDatasets = []
+      this.selectDatasets = ''
       this.datasetCache = []
       this.selectDatasetsCache = []
       this.$refs.datasetTreeRef.filter()
@@ -239,22 +248,14 @@ export default {
       }
     },
     handleNodeClick(id, name) {
-      const datasetIdx = this.selectDatasets.findIndex((ele) => ele.id === id)
-      if (datasetIdx !== -1) {
-        this.selectDatasets.splice(datasetIdx, 1)
-      }
       this.activeDataset.push(id)
       this.selectDatasetsCache.push({ id, name })
-      this.datasetCache.push({ id, name })
-      this.$refs.datasetTreeRef.filter(id)
+      this.$nextTick(() => {
+        this.$refs.datasetTreeRef.filter(this.selectDatasets)
+      })
     },
     activeDatasetChange(id) {
-      const dataset = this.datasetCache.find((ele) => ele.id === id)
-      this.selectDatasets.push(dataset)
       this.activeDataset = this.activeDataset.filter((ele) => ele !== id)
-      this.datasetCache = this.datasetCache.filter(
-        (ele) => ele.id !== id
-      )
       this.selectDatasetsCache = this.selectDatasetsCache.filter(
         (ele) => ele.id !== id
       )
@@ -266,6 +267,7 @@ export default {
     },
     formatText() {
       this.filterTextMap = []
+      this.selectDatasets = ''
       const params = []
       if (this.activeDataset.length) {
         const str = `${this.$t('dataset.datalist')}:${this.activeDataset.reduce(
@@ -278,9 +280,7 @@ export default {
         params.push(str.slice(0, str.length - 1))
         this.filterTextMap.push([
           'activeDataset',
-          'selectDatasets',
-          'selectDatasetsCache',
-          'datasetCache'
+          'selectDatasetsCache'
         ])
       }
       [

@@ -136,7 +136,7 @@ export default {
     unbind: 'Unbind',
     unlock: 'Unlock',
     unlock_success: 'Unlock success',
-
+    parameter_effect: 'Parameter values only take effect when editing a dataset',
     uninstall: 'Uninstall',
 
     no_result: 'No Result',
