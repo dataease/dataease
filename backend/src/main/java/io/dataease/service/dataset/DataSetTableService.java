@@ -2242,6 +2242,13 @@ public class DataSetTableService {
         if (ObjectUtils.isNotEmpty(table)) {
             Datasource datasource = datasourceMapper.selectByPrimaryKey(table.getDataSourceId());
             Optional.ofNullable(datasource).orElse(new Datasource()).setConfiguration(null);
+            Collection<DataSourceType> types = datasourceService.types();
+            for (DataSourceType type : types) {
+                if (ObjectUtils.isNotEmpty(datasource) && StringUtils.equalsIgnoreCase(datasource.getType(), type.getType())) {
+                    datasource.setType(type.getName());
+                    break;
+                }
+            }
             dataSetDetail.setDatasource(datasource);
         }
         return dataSetDetail;
