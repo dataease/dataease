@@ -22,12 +22,10 @@ import layer from '@/components/canvas/store/layer'
 import snapshot from '@/components/canvas/store/snapshot'
 import lock from '@/components/canvas/store/lock'
 import task from './modules/task'
-import { valueValid, formatCondition } from '@/utils/conditionUtil'
+import { formatCondition, valueValid } from '@/utils/conditionUtil'
 import { Condition } from '@/components/widget/bean/Condition'
 
-import {
-  DEFAULT_COMMON_CANVAS_STYLE_STRING
-} from '@/views/panel/panel'
+import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
 import bus from '@/utils/bus'
 import { BASE_MOBILE_STYLE } from '@/components/canvas/customComponent/component-list'
 import { TYPE_CONFIGS } from '@/views/chart/chart/util'
@@ -236,10 +234,10 @@ const data = {
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScaleMap }, { top, left, width, height, rotate }) {
       const curCanvasScaleSelf = curCanvasScaleMap[curComponent.canvasId]
       if (curComponent) {
-        if (top || top === 0) curComponent.style.top = (top / curCanvasScaleSelf.scalePointHeight) + 0.0000001
-        if (left || left === 0) curComponent.style.left = (left / curCanvasScaleSelf.scalePointWidth) + 0.0000001
-        if (width || width === 0) curComponent.style.width = (width / curCanvasScaleSelf.scalePointWidth + 0.0000001)
-        if (height || height === 0) curComponent.style.height = (height / curCanvasScaleSelf.scalePointHeight) + 0.0000001
+        if (top || top === 0) curComponent.style.top = Math.round((top / curCanvasScaleSelf.scalePointHeight))
+        if (left || left === 0) curComponent.style.left = Math.round((left / curCanvasScaleSelf.scalePointWidth))
+        if (width || width === 0) curComponent.style.width = Math.round((width / curCanvasScaleSelf.scalePointWidth))
+        if (height || height === 0) curComponent.style.height = Math.round((height / curCanvasScaleSelf.scalePointHeight))
         if (rotate || rotate === 0) curComponent.style.rotate = rotate
       }
     },

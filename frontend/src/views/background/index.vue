@@ -38,6 +38,62 @@
         </el-col>
       </el-row>
 
+      <el-row
+        v-if="!curComponent.auxiliaryMatrix"
+        style="height: 50px;overflow: hidden"
+      >
+        <el-col :span="3">
+          <span class="params-title">{{ $t('panel.position_adjust') }}</span>
+        </el-col>
+        <el-col :span="15">
+          <el-col :span="8">
+            <el-input
+              v-model="styleInfo.top"
+              type="number"
+              size="mini"
+              :min="0"
+              class="hide-icon-number"
+            >
+              <template slot="append">px</template>
+            </el-input>
+          </el-col>
+          <el-col :span="8">
+            <el-input
+              v-model="styleInfo.left"
+              type="number"
+              size="mini"
+              :min="0"
+              class="hide-icon-number"
+            >
+              <template slot="append">px</template>
+            </el-input>
+          </el-col>
+          <el-col :span="8">
+            <el-input
+              v-model="styleInfo.width"
+              type="number"
+              size="mini"
+              :min="0"
+              class="hide-icon-number"
+            >
+              <template slot="append">px</template>
+            </el-input>
+          </el-col>
+          <el-col :span="8">
+            <el-input
+              v-model="styleInfo.height"
+              type="number"
+              size="mini"
+              :min="0"
+              class="hide-icon-number"
+            >
+              <template slot="append">px</template>
+            </el-input>
+          </el-col>
+
+        </el-col>
+      </el-row>
+
       <el-row style="height: 40px;overflow: hidden;">
         <el-col
           :span="3"
@@ -279,6 +335,9 @@ export default {
     }
   },
   computed: {
+    styleInfo() {
+      return this.$store.state.curComponent.style
+    },
     customStyle() {
       let style = {}
       if (this.canvasStyleData.openCommonStyle) {

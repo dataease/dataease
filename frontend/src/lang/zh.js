@@ -1875,6 +1875,11 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    position_adjust: '位置',
+    space_top: '上',
+    space_left: '左',
+    space_width: '宽',
+    space_height: '高',
     to_top: '置顶',
     down: '下载',
     mobile_style_setting: '样式设置',

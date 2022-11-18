@@ -283,11 +283,10 @@
                 @click="changeRightDrawOpen(false)"
               />
             </el-tooltip>
+            <span style="font-weight: bold;font-size: 14px;margin-left: 40px;line-height:40px">{{ $t('panel.position_adjust') }}</span>
           </el-row>
           <el-row>
-            <div class="view-selected-message-class">
-              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.select_view') }}</span>
-            </div>
+            <position-adjust v-if="curComponent&&!curComponent.auxiliaryMatrix" />
           </el-row>
         </div>
       </div>
@@ -526,10 +525,12 @@ import DeCanvas from '@/components/canvas/DeCanvas'
 import TextAttr from '@/components/canvas/components/TextAttr'
 import { userLoginInfo } from '@/api/systemInfo/userLogin'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
+import PositionAdjust from '@/views/chart/view/PositionAdjust'
 
 export default {
   name: 'PanelEdit',
   components: {
+    PositionAdjust,
     TextAttr,
     DeCanvas,
     Multiplexing,
