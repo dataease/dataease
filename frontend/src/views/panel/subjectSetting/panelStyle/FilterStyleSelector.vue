@@ -21,7 +21,8 @@
               <el-radio-button
                 :disabled="filterForm.vertical === 'center'"
                 label="center"
-              >{{ $t('chart.text_pos_center') }}</el-radio-button>
+              >{{ $t('chart.text_pos_center') }}
+              </el-radio-button>
               <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
             </el-radio-group>
           </el-form-item>
@@ -38,11 +39,12 @@
               <el-radio-button
                 :disabled="filterForm.horizontal === 'center'"
                 label="center"
-              >{{ $t('chart.text_pos_center') }}</el-radio-button>
+              >{{ $t('chart.text_pos_center') }}
+              </el-radio-button>
             </el-radio-group>
           </el-form-item>
           <el-form-item
-            :label="'标题颜色'"
+            :label="$t('panel.title_color')"
             class="form-item"
           >
             <el-color-picker
@@ -52,13 +54,13 @@
               @change="themeChange('color')"
             />
           </el-form-item>
-          <el-divider>输入框样式(颜色)</el-divider>
+          <el-divider>{{ $t('panel.input_style') }}</el-divider>
           <el-row style="height: 40px;overflow: hidden;">
             <el-col
               :span="4"
               style="padding-left: 10px;padding-top: 8px"
             >
-              边框
+              {{ $t('panel.board') }}
             </el-col>
             <el-col
               :span="4"
@@ -76,7 +78,7 @@
               :span="4"
               style="padding-left: 10px;padding-top: 8px"
             >
-              文字
+              {{ $t('panel.text') }}
             </el-col>
             <el-col
               :span="4"
@@ -94,7 +96,7 @@
               :span="4"
               style="padding-left: 10px;padding-top: 8px"
             >
-              背景
+              {{ $t('panel.board_background') }}
             </el-col>
             <el-col
               :span="4"
@@ -123,8 +125,7 @@ import bus from '@/utils/bus'
 
 export default {
   name: 'FilterStyleSelector',
-  props: {
-  },
+  props: {},
   data() {
     return {
       filterForm: {},
@@ -159,7 +160,7 @@ export default {
 </script>
 
 <style scoped>
-.shape-item{
+.shape-item {
   padding: 6px;
   border: none;
   width: 100%;
@@ -167,33 +168,40 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-.form-item-slider ::v-deep .el-form-item__label{
+
+.form-item-slider ::v-deep .el-form-item__label {
   font-size: 12px;
   line-height: 38px;
 }
-.form-item ::v-deep .el-form-item__label{
+
+.form-item ::v-deep .el-form-item__label {
   font-size: 12px;
 }
-.el-select-dropdown__item{
+
+.el-select-dropdown__item {
   padding: 0 20px;
 }
-span{
+
+span {
   font-size: 12px
 }
-.el-form-item{
+
+.el-form-item {
   margin-bottom: 6px;
 }
 
-.switch-style{
+.switch-style {
   position: absolute;
   right: 10px;
   margin-top: -4px;
 }
-.color-picker-style{
+
+.color-picker-style {
   cursor: pointer;
   z-index: 1003;
 }
-.el-divider__text{
+
+.el-divider__text {
   font-size: 8px;
   font-weight: 400;
   color: rgb(144, 147, 153);

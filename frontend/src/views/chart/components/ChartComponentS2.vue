@@ -59,7 +59,7 @@
       >
         <span class="total-style">
           {{ $t('chart.total') }}
-          <span>{{ (chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0 }}</span>
+          <span>{{ chart.datasetMode === 0 ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0) }}</span>
           {{ $t('chart.items') }}
         </span>
         <el-pagination
@@ -211,13 +211,20 @@ export default {
         const attr = JSON.parse(this.chart.customAttr)
         this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && data.length > this.currentPage.pageSize) {
-          // 计算分页
-          this.currentPage.show = data.length
-          const pageStart = (this.currentPage.page - 1) * this.currentPage.pageSize
-          const pageEnd = pageStart + this.currentPage.pageSize
-          data = data.slice(pageStart, pageEnd)
-          this.showPage = true
+        if (this.chart.datasetMode === 0) {
+          if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
+            this.currentPage.show = this.chart.totalItems
+            this.showPage = true
+          }
+        } else {
+          if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && data.length > this.currentPage.pageSize) {
+            // 计算分页
+            this.currentPage.show = data.length
+            const pageStart = (this.currentPage.page - 1) * this.currentPage.pageSize
+            const pageEnd = pageStart + this.currentPage.pageSize
+            data = data.slice(pageStart, pageEnd)
+            this.showPage = true
+          }
         }
       } else {
         this.fields = []
@@ -425,14 +432,22 @@ export default {
     },
     pageChange(val) {
       this.currentPage.pageSize = val
-      this.initData()
-      this.drawView()
+      if (this.chart.datasetMode === 0) {
+        this.$emit('onPageChange', this.currentPage)
+      } else {
+        this.initData()
+        this.drawView()
+      }
     },
 
     pageClick(val) {
       this.currentPage.page = val
-      this.initData()
-      this.drawView()
+      if (this.chart.datasetMode === 0) {
+        this.$emit('onPageChange', this.currentPage)
+      } else {
+        this.initData()
+        this.drawView()
+      }
     },
 
     resetPage() {

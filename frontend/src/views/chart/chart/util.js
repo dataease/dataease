@@ -1,4 +1,5 @@
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
+import { equalsAny, includesAny } from '@/utils/StringUtils'
 
 export function hexColorToRGBA(hex, alpha) {
   const rgb = [] // 定义rgb数组
@@ -353,8 +354,14 @@ export const TYPE_CONFIGS = [
     value: 'richTextView',
     title: 'chart.rich_text_view',
     icon: 'richTextView',
-    properties: [],
-    propertyInner: {}
+    properties: [
+      'title-selector-ant-v'
+    ],
+    propertyInner: {
+      'title-selector-ant-v': [
+        'title'
+      ]
+    }
   },
   {
     render: 'antv',
@@ -3193,7 +3200,7 @@ export function getColors(chart, colors, reset) {
         })
       }
     }
-  } else if ((chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type.includes('radar') || chart.type.includes('area')) && !chart.type.includes('group')) {
+  } else if (includesAny(chart.type, 'bar', 'scatter', 'radar', 'area') && !chart.type.includes('group')) {
     if (Object.prototype.toString.call(chart.yaxis) === '[object Array]') {
       series = JSON.parse(JSON.stringify(chart.yaxis))
     } else {
@@ -3209,7 +3216,7 @@ export function getColors(chart, colors, reset) {
         })
       }
     }
-  } else if (chart.type === 'bar-group') {
+  } else if (equalsAny(chart.type, 'bar-group', 'line')) {
     // 拿到data中的category，并去重，然后构建seriesColor
     const data = chart.data.data
     const s = []

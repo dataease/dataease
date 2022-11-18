@@ -107,6 +107,7 @@
         :canvas-style-data="canvasStyleData"
         @input="handleInput"
         @trigger-plugin-edit="pluginEditHandler"
+        @fill-chart-2-parent="setChartData"
       />
     </de-drag>
     <!--拖拽阴影部分-->
@@ -931,7 +932,7 @@ export default {
       return !this.linkageSettingStatus && !this.batchOptStatus
     },
     showGrid() {
-      if (this.canvasStyleData && this.canvasStyleData.aidedDesign) {
+      if (this.canvasStyleData && this.canvasStyleData.aidedDesign && this.canvasId === 'canvas-main') {
         return this.canvasStyleData.aidedDesign.showGrid
       } else {
         return false
@@ -1096,6 +1097,13 @@ export default {
   created() {
   },
   methods: {
+    setChartData(chart) {
+      this.componentData.forEach((item, index) => {
+        if (item.type === 'view' && item.component === 'user-view' && item.propValue.viewId === chart.id) {
+          this.$refs['deDragRef'][index].setChartData(chart)
+        }
+      })
+    },
     triggerResetButton() {
       this.triggerSearchButton(true)
     },

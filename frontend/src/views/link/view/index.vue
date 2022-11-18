@@ -5,6 +5,7 @@
       :component-data="mainCanvasComponentData"
       :canvas-style-data="canvasStyleData"
       :panel-info="panelInfo"
+      :user-id="user"
     />
   </div>
 </template>
@@ -68,6 +69,10 @@ export default {
       loadResource(this.resourceId).then(res => {
         this.show = false
         let loadingCount = 0
+        const watermarkInfo = {
+          ...res.data.watermarkInfo,
+          settingContent: JSON.parse(res.data.watermarkInfo.settingContent)
+        }
         this.panelInfo = {
           id: res.data.id,
           name: res.data.name,
@@ -76,7 +81,9 @@ export default {
           createBy: res.data.createBy,
           createTime: res.data.createTime,
           updateBy: res.data.updateBy,
-          updateTime: res.data.updateTime
+          updateTime: res.data.updateTime,
+          watermarkOpen: res.data.watermarkOpen,
+          watermarkInfo: watermarkInfo
         }
         this.$store.dispatch('panel/setPanelInfo', this.panelInfo)
 

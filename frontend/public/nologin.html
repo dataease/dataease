@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>DataEase</title>
+  <style>
+    html,
+    body {
+      margin: 0 !important;
+      height: 100%;
+    }
+
+    .no-login-dynamic {
+      height: 100%;
+      background: url(./dynamic.gif) no-repeat;
+
+      background-size: cover;
+      text-align: center;
+    }
+
+    span {
+      color: #fff;
+      font-size: 25px;
+      font-weight: 500;
+      position: relative;
+      top: 30px;
+    }
+  </style>
+</head>
+
+
+<body style="height: 100%;">
+
+  <div id="de-nologin-div" class="no-login-dynamic">
+    <span>请先登录，即将跳转！</span>
+  </div>
+
+</body>
+<script>
+  const timer = setTimeout(() => {
+    window.location.href = "/";
+  }, 3500)
+
+</script>
+
+
+</html>

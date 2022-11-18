@@ -29,6 +29,7 @@ import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DeTypeConstants;
+import io.dataease.service.SystemInfoService;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.dataset.DataSetTableService;
@@ -131,6 +132,10 @@ public class PanelGroupService {
     private DataSetGroupService dataSetGroupService;
     @Resource
     private DatasetGroupMapper datasetGroupMapper;
+    @Resource
+    private PanelWatermarkMapper panelWatermarkMapper;
+    @Resource
+    private SystemInfoService systemInfoService;
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
@@ -304,6 +309,7 @@ public class PanelGroupService {
             panelGroup.setPanelStyle(sourcePanel.getPanelStyle());
             panelGroup.setSourcePanelName(sourcePanel.getName());
         }
+        panelGroup.setWatermarkInfo(panelWatermarkMapper.selectByPrimaryKey("system_default"));
         return panelGroup;
     }
 
@@ -750,7 +756,9 @@ public class PanelGroupService {
         if (cache == null) {
             return null;
         } else {
-            return (PanelGroupRequest) cache;
+            PanelGroupDTO result = (PanelGroupRequest) cache;
+            result.setWatermarkInfo(panelWatermarkMapper.selectByPrimaryKey("system_default"));
+            return result;
         }
     }
 
@@ -938,5 +946,16 @@ public class PanelGroupService {
 
         //数据源变更
         panelAppTemplateService.editDatasource(request.getDatasourceList());
+    }
+
+    public void toTop(String panelId) {
+        Long time = System.currentTimeMillis();
+        PanelGroupWithBLOBs request = new PanelGroupWithBLOBs();
+        request.setId(panelId);
+        request.setPanelSort(time);
+        request.setUpdateTime(time);
+        request.setUpdateBy(AuthUtils.getUser().getUsername());
+        panelGroupMapper.updateByPrimaryKeySelective(request);
+
     }
 }

@@ -96,7 +96,7 @@ import { mapState } from 'vuex'
 import DeEditor from '@/components/canvas/components/editor/DeEditor'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import bus from '@/utils/bus'
-import { deepCopy } from '@/components/canvas/utils/utils'
+import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { uuid } from 'vue-uuid'
 import componentList, {
   BASE_MOBILE_STYLE,
@@ -113,6 +113,7 @@ import generateID from '@/components/canvas/utils/generateID'
 import ButtonDialog from '@/views/panel/filter/ButtonDialog'
 import ButtonResetDialog from '@/views/panel/filter/ButtonResetDialog'
 import FilterDialog from '@/views/panel/filter/FilterDialog'
+import { uploadFileResult } from '@/api/staticResource/staticResource'
 
 export default {
   components: { FilterDialog, ButtonResetDialog, ButtonDialog, DeEditor },
@@ -147,6 +148,7 @@ export default {
   },
   data() {
     return {
+      maxImageSize: 15000000,
       // 需要展示属性设置的组件类型
       showAttrComponent: [
         'custom',
@@ -289,6 +291,7 @@ export default {
       }
     },
     canvasScroll(e) {
+      this.scrollTop = e.target.scrollTop
       this.$emit('canvasScroll', { scrollLeft: e.target.scrollLeft, scrollTop: e.target.scrollTop })
       bus.$emit('onScroll')
     },
@@ -411,50 +414,50 @@ export default {
     goFile() {
       this.$refs.files.click()
     },
+    sizeMessage() {
+      this.$notify({
+        message: this.$t('panel.image_size_tips'),
+        position: 'top-left'
+      })
+    },
     handleFileChange(e) {
       const _this = this
       const file = e.target.files[0]
       if (!file.type.includes('image')) {
-        toast('只能插入图片')
+        toast(this.$t('panel.image_size_tips'))
         return
       }
-      const reader = new FileReader()
-      reader.onload = (res) => {
-        const fileResult = res.target.result
-        const img = new Image()
-        img.onload = () => {
-          const component = {
-            ...commonAttr,
-            id: generateID(),
-            component: 'Picture',
-            type: 'picture-add',
-            label: '图片',
-            icon: '',
-            hyperlinks: HYPERLINKS,
-            mobileStyle: BASE_MOBILE_STYLE,
-            propValue: fileResult,
-            commonBackground: deepCopy(COMMON_BACKGROUND),
-            style: {
-              ...PIC_STYLE
-            }
-          }
-          component.auxiliaryMatrix = false
-          component.style.top = _this.dropComponentInfo.shadowStyle.y
-          component.style.left = _this.dropComponentInfo.shadowStyle.x
-          component.style.width = _this.dropComponentInfo.shadowStyle.width
-          component.style.height = _this.dropComponentInfo.shadowStyle.height
-          component['canvasId'] = this.canvasId
-          component['canvasPid'] = this.canvasPid
-          this.$store.commit('addComponent', {
-            component: component
-          })
-          this.$store.commit('recordSnapshot', 'handleFileChange')
-        }
-
-        img.src = fileResult
+      if (file.size > this.maxImageSize) {
+        this.sizeMessage()
       }
-
-      reader.readAsDataURL(file)
+      uploadFileResult(file, (fileUrl) => {
+        const component = {
+          ...commonAttr,
+          id: generateID(),
+          component: 'Picture',
+          type: 'picture-add',
+          label: '图片',
+          icon: '',
+          hyperlinks: HYPERLINKS,
+          mobileStyle: BASE_MOBILE_STYLE,
+          propValue: imgUrlTrans(fileUrl),
+          commonBackground: deepCopy(COMMON_BACKGROUND),
+          style: {
+            ...PIC_STYLE
+          }
+        }
+        component.auxiliaryMatrix = false
+        component.style.top = _this.dropComponentInfo.shadowStyle.y
+        component.style.left = _this.dropComponentInfo.shadowStyle.x
+        component.style.width = _this.dropComponentInfo.shadowStyle.width
+        component.style.height = _this.dropComponentInfo.shadowStyle.height
+        component['canvasId'] = this.canvasId
+        component['canvasPid'] = this.canvasPid
+        this.$store.commit('addComponent', {
+          component: component
+        })
+        this.$store.commit('recordSnapshot', 'handleFileChange')
+      })
     },
     clearCurrentInfo() {
       this.currentWidget = null

@@ -11,6 +11,7 @@
       :terminal="terminal"
       :element="config"
       :canvas-id="canvasId"
+      :chart="chart"
       :show-position="showPosition"
       @showViewDetails="showViewDetails"
     />
@@ -65,6 +66,7 @@
         :screen-shot="screenShot"
         :canvas-style-data="canvasStyleData"
         :show-position="showPosition"
+        @fill-chart-2-parent="setChartData"
       />
     </div>
   </div>
@@ -146,7 +148,8 @@ export default {
   },
   data() {
     return {
-      previewVisible: false
+      previewVisible: false,
+      chart: null
     }
   },
   computed: {
@@ -211,6 +214,9 @@ export default {
     runAnimation(this.$el, this.config.animations)
   },
   methods: {
+    setChartData(chart) {
+      this.chart = chart
+    },
     getStyle,
     getShapeStyleIntDeDrag(style, prop) {
       if (prop === 'rotate') {
@@ -342,7 +348,7 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>

@@ -39,6 +39,7 @@
         :active-model="'edit'"
         :canvas-id="canvasId"
         :element="element"
+        :chart="chart"
         @showViewDetails="showViewDetails"
         @amRemoveItem="amRemoveItem"
         @amAddItem="amAddItem"
@@ -384,6 +385,7 @@ export default {
   },
   data: function() {
     return {
+      chart: null,
       contentDisplay: true,
       // 当画布在tab中是 宽度左右拓展的余量
       parentWidthTabOffset: 40,
@@ -802,6 +804,9 @@ export default {
     this.beforeDestroyFunction()
   },
   methods: {
+    setChartData(chart) {
+      this.chart = chart
+    },
     // 重置边界和鼠标状态
     resetBoundsAndMouseState() {
       this.mouseClickPosition = { mouseX: 0, mouseY: 0, x: 0, y: 0, w: 0, h: 0 }
@@ -1929,6 +1934,7 @@ export default {
         const nodes = this.$el.parentNode.childNodes // 获取当前父节点下所有子节点
         for (const item of nodes) {
           if (
+            item.tagName !== 'svg' &&
             item.className !== undefined &&
             !item.className.split(' ').includes(this.classNameActive) &&
             item.getAttribute('tab-is-check') !== null &&
@@ -2114,8 +2120,8 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .drag-on-tab-collision {

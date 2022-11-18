@@ -94,7 +94,7 @@
         >
           <i
             class="icon iconfont icon-shezhi"
-            style="margin-top:2px"
+            style="margin-top:2px; width: 16px;"
           />
         </span>
       </setting-menu>
@@ -140,6 +140,11 @@
           <i class="icon iconfont icon-com-jump" />
         </a>
       </span>
+
+      <map-layer-controller
+        v-if="chart && showMapLayerController"
+        :chart="chart"
+      />
     </div>
 
     <!--跳转设置-->
@@ -162,6 +167,7 @@
     <el-dialog
       :visible.sync="boardSetVisible"
       width="750px"
+      top="5vh"
       class="dialog-css"
       :close-on-click-modal="false"
       :show-close="false"
@@ -185,9 +191,11 @@ import toast from '@/components/canvas/utils/toast'
 import FieldsList from '@/components/canvas/components/editor/FieldsList'
 import LinkJumpSet from '@/views/panel/linkJumpSet'
 import Background from '@/views/background/index'
+import MapLayerController from '@/views/chart/components/map/MapLayerController'
+import { uploadFileResult } from '@/api/staticResource/staticResource'
 
 export default {
-  components: { Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField },
+  components: { Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField, MapLayerController },
 
   props: {
     canvasId: {
@@ -226,10 +234,15 @@ export default {
       type: String,
       required: false,
       default: 'NotProvided'
+    },
+    chart: {
+      type: Object,
+      default: null
     }
   },
   data() {
     return {
+      maxImageSize: 15000000,
       boardSetVisible: false,
       linkJumpSetVisible: false,
       linkJumpSetViewId: null,
@@ -249,6 +262,13 @@ export default {
   },
 
   computed: {
+    yaxis() {
+      if (!this.chart) return []
+      return JSON.parse(this.chart.yaxis)
+    },
+    showMapLayerController() {
+      return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType === 'map' && this.yaxis.length > 1
+    },
     detailsShow() {
       return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType !== 'richTextView'
     },
@@ -476,20 +496,25 @@ export default {
       // ignore
       e.preventDefault()
     },
+    sizeMessage() {
+      this.$notify({
+        message: this.$t('panel.image_size_tips'),
+        position: 'top-left'
+      })
+    },
     handleFileChange(e) {
       const file = e.target.files[0]
       if (!file.type.includes('image')) {
-        toast('只能插入图片')
+        toast(this.$t('panel.image_size_tips'))
         return
       }
-      const reader = new FileReader()
-      reader.onload = (res) => {
-        const fileResult = res.target.result
-        this.curComponent.propValue = fileResult
-        this.$store.commit('recordSnapshot', 'handleFileChange')
+      if (file.size > this.maxImageSize) {
+        this.sizeMessage()
       }
-
-      reader.readAsDataURL(file)
+      uploadFileResult(file, (fileUrl) => {
+        this.curComponent.propValue = fileUrl
+        this.$store.commit('recordSnapshot', 'handleFileChange')
+      })
     },
     boardSet() {
       this.boardSetVisible = true
@@ -519,7 +544,7 @@ export default {
   background-color: var(--primary, #3370ff);
 }
 
-.bar-main i {
+.bar-main ::v-deep i {
   color: white;
   float: right;
   margin-right: 3px;

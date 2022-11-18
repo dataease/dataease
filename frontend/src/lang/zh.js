@@ -812,7 +812,7 @@ export default {
     front_time_out: '请求超时时间(单位:秒, 注意:保存后刷新浏览器生效)',
     msg_time_out: '消息保留时间(单位:天)',
     login_type: '默认登录方式',
-    empty_front: '为空则默认取10秒',
+    empty_front: '为空则默认取100秒',
     empty_msg: '为空则默认取30天',
     front_error: '请填写0-300正整数', // 修改了提示信息
     msg_error: '请填写1-365正整数',
@@ -914,6 +914,7 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    layer_controller: '指标切换',
     suspension: '悬浮',
     chart_background: '组件背景',
     solid_color: '纯色',
@@ -1439,7 +1440,12 @@ export default {
     proportion: '占比',
     label_content: '标签展示',
     percent: '占比',
-    table_index_desc: '表头名称'
+    table_index_desc: '表头名称',
+    total_sort: '总计排序',
+    total_sort_none: '无',
+    total_sort_asc: '升序',
+    total_sort_desc: '降序',
+    total_sort_field: '排序字段'
   },
   dataset: {
     spend_time: '耗时',
@@ -1450,7 +1456,7 @@ export default {
     params_work: '仅在编辑sql时生效',
     select_year: '选择年',
     sql_variable_limit_1: '1、SQL 变量只能在 WHERE 条件中使用',
-    sql_variable_limit_2: "2、示例：select * from table_name where column_name1='${param_name1}' and column_name2 in '${param_name2}'",
+    sql_variable_limit_2: '2、示例：select * from table_name where column_name1=\'${param_name1}\' and column_name2 in \'${param_name2}\'',
     select_month: '选择月',
     select_date: '选择日期',
     select_time: '选择时间',
@@ -1861,9 +1867,29 @@ export default {
     input_placeholder: '请输入4位数字或字母',
     pwd_error: '密码错误',
     pwd_format_error: '请输入4位数字或字母',
-    sure_bt: '确定'
+    sure_bt: '确定',
+    back_parent: '返回上一级'
   },
   panel: {
+    to_top: '置顶',
+    down: '下载',
+    mobile_style_setting: '样式设置',
+    mobile_style_setting_tips: '自定义移动端背景',
+    board: '边框',
+    text: '文字',
+    board_background: '背景',
+    title_color: '标题颜色',
+    input_style: '输入框样式(颜色)',
+    overall_setting: '整体配置',
+    panel_background: '仪表板背景',
+    component_color: '组件配色',
+    chart_title: '图表标题',
+    filter_component: '过滤组件',
+    enable_refresh_view: '开启刷新',
+    enable_view_loading: '视图加载提示',
+    image_size_tips: '图片请不要大于15M',
+    image_add_tips: '只能插入图片',
+    watermark: '水印',
     panel_get_data_error: '获取仪表板信息失败，仪表板可能已经被删除，请检查仪表板状态',
     panel_no_save_tips: '存在未保存的仪表板',
     panel_cache_use_tips: '检查到上次有仪表板未能正常保存，是否使用上次未保存的仪表板？',
@@ -2520,7 +2546,9 @@ export default {
     pixel_tip: '可直接输入自定义分辨率(例如:2560 * 1600)或选择',
     task_type: '任务类型',
     range_view: '展示数据',
-    range_all: '全部数据'
+    range_all: '全部数据',
+    execute_now: '立即执行',
+    fire_now_success: '任务发起成功'
   },
   dynamic_time: {
     set_default: '设置默认值',

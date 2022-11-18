@@ -27,7 +27,7 @@
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('chart.title') }}</p>
-            <p class="info-content">{{ detail.chart.title || 'N/A' }}</p>
+            <p class="info-content">{{ detail.chart.title || '-' }}</p>
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('dataset.create_by') }}</p>
@@ -113,54 +113,11 @@
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('commons.description') }}</p>
-            <p class="info-content">{{ detail.datasource.desc || 'N/A' }}</p>
+            <p class="info-content">{{ detail.datasource.desc || '-' }}</p>
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('datasource.type') }}</p>
-            <p
-              v-if="detail.datasource.type === 'mysql'"
-              class="info-content"
-            >MySQL</p>
-            <p
-              v-if="detail.datasource.type === 'sqlServer'"
-              class="info-content"
-            >SQL Server</p>
-            <p
-              v-if="detail.datasource.type === 'oracle'"
-              class="info-content"
-            >Oracle</p>
-            <p
-              v-if="detail.datasource.type === 'hive'"
-              class="info-content"
-            >Apache Hive</p>
-            <p
-              v-if="detail.datasource.type === 'pg'"
-              class="info-content"
-            >PostgreSQL</p>
-            <p
-              v-if="detail.datasource.type === 'es'"
-              class="info-content"
-            >Elasticsearch</p>
-            <p
-              v-if="detail.datasource.type === 'mariadb'"
-              class="info-content"
-            >MariaDB</p>
-            <p
-              v-if="detail.datasource.type === 'ds_doris'"
-              class="info-content"
-            >Doris</p>
-            <p
-              v-if="detail.datasource.type === 'ck'"
-              class="info-content"
-            >ClickHouse</p>
-            <p
-              v-if="detail.datasource.type === 'redshift'"
-              class="info-content"
-            >AWS Redshift</p>
-            <p
-              v-if="detail.datasource.type === 'mongo'"
-              class="info-content"
-            >MongoDB</p>
+            <p class="info-content">{{ detail.datasource.type }}</p>
           </el-col>
           <el-col class="info-item">
             <p class="info-title">{{ $t('dataset.create_time') }}</p>

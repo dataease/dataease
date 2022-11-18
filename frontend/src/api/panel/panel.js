@@ -66,6 +66,7 @@ export function viewData(id, panelId, data) {
     data
   })
 }
+
 export function panelSave(data) {
   return request({
     url: 'panel/group/save',
@@ -162,6 +163,10 @@ export function initPanelData(panelId, useCache = false, callback) {
     if (response.data) {
       // 初始化视图data和style 数据
       panelInit(JSON.parse(response.data.panelData), JSON.parse(response.data.panelStyle))
+      const watermarkInfo = {
+        ...response.data.watermarkInfo,
+        settingContent: JSON.parse(response.data.watermarkInfo.settingContent)
+      }
       // 设置当前仪表板全局信息
       store.dispatch('panel/setPanelInfo', {
         id: response.data.id,
@@ -174,7 +179,9 @@ export function initPanelData(panelId, useCache = false, callback) {
         creatorName: response.data.creatorName,
         updateBy: response.data.updateBy,
         updateName: response.data.updateName,
-        updateTime: response.data.updateTime
+        updateTime: response.data.updateTime,
+        watermarkOpen: response.data.watermarkOpen,
+        watermarkInfo: watermarkInfo
       })
       // 刷新联动信息
       getPanelAllLinkageInfo(panelId).then(rsp => {
@@ -230,6 +237,7 @@ export function initViewCache(panelId) {
     loading: false
   })
 }
+
 export function exportDetails(data) {
   // 初始化仪表板视图缓存
   return request({
@@ -268,6 +276,7 @@ export function saveCache(data) {
     data
   })
 }
+
 export function findUserCacheRequest(panelId) {
   return request({
     url: 'panel/group/findUserCache/' + panelId,
@@ -346,6 +355,14 @@ export function findOneWithParent(panelId) {
   return request({
     url: 'panel/group/findOneWithParent/' + panelId,
     method: 'get',
+    loading: false
+  })
+}
+
+export function panelToTop(panelId) {
+  return request({
+    url: 'panel/group/toTop/' + panelId,
+    method: 'post',
     loading: false
   })
 }

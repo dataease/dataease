@@ -1,4 +1,4 @@
-import { TableSheet, S2Event, PivotSheet, DataCell } from '@antv/s2'
+import { TableSheet, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE } from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
@@ -403,17 +403,6 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
     })
   }
 
-  // data config
-  const s2DataConfig = {
-    fields: {
-      rows: r,
-      columns: c,
-      values: v
-    },
-    meta: meta,
-    data: tableData
-  }
-
   // total config
   let totalCfg = {}
   const chartObj = JSON.parse(JSON.stringify(chart))
@@ -432,6 +421,43 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
   }
   totalCfg.row.subTotalsDimensions = r
   totalCfg.col.subTotalsDimensions = c
+
+  // 解析合计、小计排序
+  const sortParams = []
+  if (totalCfg.row.totalSort && totalCfg.row.totalSort !== 'none' && c.length > 0) {
+    const sort = {
+      sortFieldId: c[0],
+      sortMethod: totalCfg.row.totalSort.toUpperCase(),
+      sortByMeasure: TOTAL_VALUE,
+      query: {
+        [EXTRA_FIELD]: totalCfg.row.totalSortField
+      }
+    }
+    sortParams.push(sort)
+  }
+  if (totalCfg.col.totalSort && totalCfg.col.totalSort !== 'none' && r.length > 0) {
+    const sort = {
+      sortFieldId: r[0],
+      sortMethod: totalCfg.col.totalSort.toUpperCase(),
+      sortByMeasure: TOTAL_VALUE,
+      query: {
+        [EXTRA_FIELD]: totalCfg.col.totalSortField
+      }
+    }
+    sortParams.push(sort)
+  }
+
+  // data config
+  const s2DataConfig = {
+    fields: {
+      rows: r,
+      columns: c,
+      values: v
+    },
+    meta: meta,
+    data: tableData,
+    sortParams: sortParams
+  }
 
   // options
   const s2Options = {

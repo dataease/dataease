@@ -67,6 +67,40 @@
               />
             </el-select>
           </el-form-item>
+          <el-form-item
+            v-if="chart.type === 'table-pivot'"
+            :label="$t('chart.total_sort')"
+            class="form-item"
+          >
+            <el-radio-group
+              v-model="totalForm.row.totalSort"
+              @change="changeTotalCfg('row')"
+            >
+              <el-radio label="none">{{ $t('chart.total_sort_none') }}</el-radio>
+              <el-radio label="asc">{{ $t('chart.total_sort_asc') }}</el-radio>
+              <el-radio label="desc">{{ $t('chart.total_sort_desc') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
+            v-if="chart.type === 'table-pivot' && totalForm.row.totalSort !== 'none'"
+            :label="$t('chart.total_sort_field')"
+            class="form-item"
+          >
+            <el-select
+              v-model="totalForm.row.totalSortField"
+              class="form-item-select"
+              :placeholder="$t('chart.total_sort_field')"
+              size="mini"
+              @change="changeTotalCfg('row')"
+            >
+              <el-option
+                v-for="option in totalSortFields"
+                :key="option.dataeaseName"
+                :label="option.name"
+                :value="option.dataeaseName"
+              />
+            </el-select>
+          </el-form-item>
         </div>
 
         <el-form-item
@@ -190,6 +224,40 @@
               />
             </el-select>
           </el-form-item>
+          <el-form-item
+            v-if="chart.type === 'table-pivot'"
+            :label="$t('chart.total_sort')"
+            class="form-item"
+          >
+            <el-radio-group
+              v-model="totalForm.col.totalSort"
+              @change="changeTotalCfg('col')"
+            >
+              <el-radio label="none">{{ $t('chart.total_sort_none') }}</el-radio>
+              <el-radio label="asc">{{ $t('chart.total_sort_asc') }}</el-radio>
+              <el-radio label="desc">{{ $t('chart.total_sort_desc') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
+            v-if="chart.type === 'table-pivot' && totalForm.col.totalSort !== 'none'"
+            :label="$t('chart.total_sort_field')"
+            class="form-item"
+          >
+            <el-select
+              v-model="totalForm.col.totalSortField"
+              class="form-item-select"
+              :placeholder="$t('chart.total_sort_field')"
+              size="mini"
+              @change="changeTotalCfg('col')"
+            >
+              <el-option
+                v-for="option in totalSortFields"
+                :key="option.dataeaseName"
+                :label="option.name"
+                :value="option.dataeaseName"
+              />
+            </el-select>
+          </el-form-item>
         </div>
 
         <el-form-item
@@ -283,7 +351,8 @@ export default {
         { name: this.$t('chart.avg'), value: 'AVG' },
         { name: this.$t('chart.max'), value: 'MAX' },
         { name: this.$t('chart.min'), value: 'MIN' }
-      ]
+      ],
+      totalSortFields: []
     }
   },
   computed: {
@@ -338,6 +407,27 @@ export default {
           this.totalForm = customAttr.totalCfg
         } else {
           this.totalForm = JSON.parse(JSON.stringify(DEFAULT_TOTAL))
+        }
+
+        this.totalForm.row.totalSort = this.totalForm.row.totalSort ? this.totalForm.row.totalSort : DEFAULT_TOTAL.row.totalSort
+        this.totalForm.row.totalSortField = this.totalForm.row.totalSortField ? this.totalForm.row.totalSortField : DEFAULT_TOTAL.row.totalSortField
+        this.totalForm.col.totalSort = this.totalForm.col.totalSort ? this.totalForm.col.totalSort : DEFAULT_TOTAL.col.totalSort
+        this.totalForm.col.totalSortField = this.totalForm.col.totalSortField ? this.totalForm.col.totalSortField : DEFAULT_TOTAL.col.totalSortField
+      }
+      // 解析表格的指标
+      if (chart.yaxis) {
+        if (Object.prototype.toString.call(chart.yaxis) === '[object Array]') {
+          this.totalSortFields = JSON.parse(JSON.stringify(chart.yaxis))
+        } else {
+          this.totalSortFields = JSON.parse(chart.yaxis)
+        }
+        if (this.totalSortFields.length > 0) {
+          if (this.totalForm.row.totalSortField === '') {
+            this.totalForm.row.totalSortField = this.totalSortFields[0].dataeaseName
+          }
+          if (this.totalForm.col.totalSortField === '') {
+            this.totalForm.col.totalSortField = this.totalSortFields[0].dataeaseName
+          }
         }
       }
     },

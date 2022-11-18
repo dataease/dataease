@@ -813,7 +813,7 @@ export default {
     front_time_out: '請求超時時間(單位:秒, 註意:保存後刷新瀏覽器生效)',
     msg_time_out: '消息保留時間(單位:天)',
     login_type: '默認登錄方式',
-    empty_front: '為空則默認取值10秒',
+    empty_front: '為空則默認取值100秒',
     empty_msg: '為空則默認取值30天',
     front_error: '請填寫0-300正整數', // 修改了提示信息
     msg_error: '請填寫1-365正整數',
@@ -915,6 +915,7 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    layer_controller: '指標切換',
     suspension: '懸浮',
     chart_background: '組件背景',
     solid_color: '純色',
@@ -1440,7 +1441,12 @@ export default {
     proportion: '佔比',
     label_content: '標籤展示',
     percent: '占比',
-    table_index_desc: '表頭名稱'
+    table_index_desc: '表頭名稱',
+    total_sort: '總計排序',
+    total_sort_none: '無',
+    total_sort_asc: '升序',
+    total_sort_desc: '降序',
+    total_sort_field: '排序字段'
   },
   dataset: {
     spend_time: '耗時',
@@ -1450,7 +1456,7 @@ export default {
     field_rename: '字段重命名',
     params_work: '僅在編輯 sql 時生效',
     sql_variable_limit_1: '1、SQL變數只能在WHERE條件中使用',
-    sql_variable_limit_2: "2、示例：select * from table_name where column_name1='${param_name1}' and column_name2 in '${param_name2}'",
+    sql_variable_limit_2: '2、示例：select * from table_name where column_name1=\'${param_name1}\' and column_name2 in \'${param_name2}\'',
     selesql_variable_limit_2ct_year: '選擇年',
     select_month: '選擇月',
     select_date: '選擇日期',
@@ -1861,9 +1867,29 @@ export default {
     input_placeholder: '請輸入4位數字或字母',
     pwd_error: '密碼錯誤',
     pwd_format_error: '請輸入4位數字或字母',
-    sure_bt: '確定'
+    sure_bt: '確定',
+    back_parent: '返回上一級'
   },
   panel: {
+    to_top: '置頂',
+    down: '下載',
+    mobile_style_setting: '樣式設置',
+    mobile_style_setting_tips: '自定義移動端背景',
+    board: '邊框',
+    text: '文字',
+    board_background: '背景',
+    title_color: '標題顏色',
+    input_style: '輸入框樣式(顏色)',
+    overall_setting: '整體配置',
+    panel_background: '儀表板背景',
+    component_color: '組件配色',
+    chart_title: '圖表標題',
+    filter_component: '過濾組件',
+    enable_refresh_view: '開啟刷新',
+    enable_view_loading: '視圖加載提示',
+    image_size_tips: '圖片請不要大於15M',
+    image_add_tips: '只能插入圖片',
+    watermark: '水印',
     panel_get_data_error: '獲取儀表板信息失敗，儀表板可能已經被刪除，請檢查儀表板狀態',
     panel_no_save_tips: '存在未保存的儀表板',
     panel_cache_use_tips: '檢查到上次有儀表板未能正常保存，是否使用上次未保存的儀表板？',
@@ -2520,7 +2546,9 @@ export default {
     pixel_tip: '可直接輸入分辨率(例如:2560 * 1600)或者選擇',
     task_type: '任務類型',
     range_view: '展示數據',
-    range_all: '全部數據'
+    range_all: '全部數據',
+    execute_now: '立即執行',
+    fire_now_success: '任務發起成功'
   },
   dynamic_time: {
     set_default: '設置默認值',

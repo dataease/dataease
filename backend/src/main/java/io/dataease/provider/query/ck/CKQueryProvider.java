@@ -17,6 +17,7 @@ import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
+import io.dataease.plugins.datasource.entity.PageInfo;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.datasource.query.Utils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -394,7 +395,21 @@ public class CKQueryProvider extends QueryProvider {
     }
 
     @Override
+    public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
+        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + "," + pageInfo.getPageSize() : "");
+        if (isTable) {
+            return originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+        } else {
+            return originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+        }
+    }
+
+    @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view), view);
+    }
+
+    private String originalTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(CKConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -466,7 +481,7 @@ public class CKQueryProvider extends QueryProvider {
                 .build();
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
-        return sqlLimit(st.render(), view);
+        return st.render();
     }
 
     @Override
@@ -1072,10 +1087,14 @@ public class CKQueryProvider extends QueryProvider {
             if (ObjectUtils.isNotEmpty(datasetTableField) && datasetTableField.getDeType() == DeTypeConstants.DE_TIME && StringUtils.equalsIgnoreCase(request.getOperator(), "between")) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 request.setOperator("ge");
-                request.setValue(new ArrayList<String>(){{add(String.format(toDateTime64, "'" + simpleDateFormat.format(new Date(Long.parseLong(requestValue.get(0)))) + "'"));}});
+                request.setValue(new ArrayList<String>() {{
+                    add(String.format(toDateTime64, "'" + simpleDateFormat.format(new Date(Long.parseLong(requestValue.get(0)))) + "'"));
+                }});
                 ChartExtFilterRequest requestCopy = BeanUtils.copyBean(new ChartExtFilterRequest(), request);
                 requestCopy.setOperator("le");
-                requestCopy.setValue(new ArrayList<String>(){{add(String.format(toDateTime64, "'" + simpleDateFormat.format(new Date(Long.parseLong(requestValue.get(1)))) + "'"));}});
+                requestCopy.setValue(new ArrayList<String>() {{
+                    add(String.format(toDateTime64, "'" + simpleDateFormat.format(new Date(Long.parseLong(requestValue.get(1)))) + "'"));
+                }});
                 atomicReference.set(requestCopy);
             }
         });

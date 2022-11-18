@@ -16,10 +16,16 @@ import io.dataease.controller.response.DatasetTableField4Type;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DatasetTable;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.base.domain.Datasource;
+import io.dataease.plugins.datasource.entity.Dateformat;
+import io.dataease.plugins.datasource.query.QueryProvider;
+import io.dataease.provider.ProviderFactory;
 import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.PermissionService;
+import io.dataease.service.datasource.DatasourceService;
+import io.dataease.service.engine.EngineService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
@@ -46,14 +52,16 @@ import java.util.stream.Collectors;
 public class DataSetTableFieldController {
     @Resource
     private DataSetTableFieldsService dataSetTableFieldsService;
-
     @Autowired
     private DataSetFieldService dataSetFieldService;
-
     @Resource
     private DataSetTableService dataSetTableService;
     @Resource
     private PermissionService permissionService;
+    @Resource
+    private EngineService engineService;
+    @Resource
+    private DatasourceService datasourceService;
 
     @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("查询表下属字段")
@@ -207,5 +215,15 @@ public class DataSetTableFieldController {
                                 }))),
                         ArrayList::new));
         return list;
+    }
+
+    @DePermission(type = DePermissionType.DATASET)
+    @ApiOperation("时间格式")
+    @PostMapping("dateformats/{tableId}")
+    public List<Dateformat> dateformats(@PathVariable String tableId) throws Exception{
+        DatasetTable datasetTable = dataSetTableService.get(tableId);
+        Datasource ds = datasetTable.getMode() == 0 ? datasourceService.get(datasetTable.getDataSourceId()) : engineService.getDeEngine();
+        QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+        return qp.dateformat();
     }
 }

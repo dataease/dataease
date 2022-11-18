@@ -440,10 +440,14 @@
                       v-if="view.type === 'table-pivot'"
                       class="padding-lr"
                     >
-                      <span style="width: 80px;text-align: right;">
+                      <span class="data-area-label">
                         <span>{{ $t('chart.table_pivot_row') }}</span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
+                        <i
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                          @click="clearData('xaxisExt')"
+                        />
                       </span>
                       <draggable
                         v-model="view.xaxisExt"
@@ -482,7 +486,7 @@
                       v-if="view.type !=='text' && view.type !== 'gauge' && view.type !== 'liquid'"
                       class="padding-lr"
                     >
-                      <span style="width: 80px;text-align: right;">
+                      <span class="data-area-label">
                         <span v-if="view.type && view.type.includes('table')">{{
                           $t('chart.drag_block_table_data_column')
                         }}</span>
@@ -511,6 +515,10 @@
                         <span
                           v-else-if="view.type && view.type === 'table-info'"
                         >{{ $t('chart.dimension_or_quota') }}</span>
+                        <i
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                          @click="clearData('xaxis')"
+                        />
                       </span>
                       <draggable
                         v-model="view.xaxis"
@@ -549,17 +557,23 @@
                     </el-row>
                     <!--group field,use xaxisExt-->
                     <el-row
-                      v-if="view.type === 'bar-group' || view.type === 'bar-group-stack'"
+                      v-if="view.type === 'bar-group'
+                        || view.type === 'bar-group-stack'
+                        || (view.render === 'antv' && view.type === 'line')"
                       class="padding-lr"
                     >
-                      <span style="width: 80px;text-align: right;">
+                      <span class="data-area-label">
                         <span>
                           {{ $t('chart.chart_group') }}
-                          <span style="color:#F54A45;">*</span>
+                          <span
+                            v-show="view.type !== 'line'"
+                            style="color:#F54A45;"
+                          >*</span>
                         </span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
                         <el-tooltip
+                          v-show="view.type !== 'line'"
                           class="item"
                           effect="dark"
                           placement="bottom"
@@ -572,6 +586,10 @@
                             style="cursor: pointer;color: #606266;"
                           />
                         </el-tooltip>
+                        <i
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                          @click="clearData('xaxisExt')"
+                        />
                       </span>
                       <draggable
                         v-model="view.xaxisExt"
@@ -611,7 +629,7 @@
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span style="width: 80px;text-align: right;">
+                      <span class="data-area-label">
                         <span v-if="view.type && view.type.includes('table')">{{
                           $t('chart.drag_block_table_data_column')
                         }}</span>
@@ -648,6 +666,10 @@
                         }}</span>
                         <span v-show="view.type !== 'richTextView'"> / </span>
                         <span>{{ $t('chart.quota') }}</span>
+                        <i
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                          @click="clearData('yaxis')"
+                        />
                       </span>
                       <draggable
                         v-model="view.yaxis"
@@ -690,10 +712,14 @@
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span style="width: 80px;text-align: right;">
+                      <span class="data-area-label">
                         <span>{{ $t('chart.drag_block_value_axis_ext') }}</span>
                         /
                         <span>{{ $t('chart.quota') }}</span>
+                        <i
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                          @click="clearData('yaxisExt')"
+                        />
                       </span>
                       <draggable
                         v-model="view.yaxisExt"
@@ -735,10 +761,14 @@
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span style="width: 80px;text-align: right;">
+                      <span class="data-area-label">
                         <span>{{ $t('chart.stack_item') }}</span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
+                        <i
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                          @click="clearData('extStack')"
+                        />
                       </span>
                       <draggable
                         v-model="view.extStack"
@@ -778,7 +808,7 @@
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span style="width: 80px;text-align: right;">
+                      <span class="data-area-label">
                         <span>{{ $t('chart.bubble_size') }}</span>
                         /
                         <span>{{ $t('chart.quota') }}</span>
@@ -795,6 +825,10 @@
                             style="cursor: pointer;color: #606266;"
                           />
                         </el-tooltip>
+                        <i
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                          @click="clearData('extBubble')"
+                        />
                       </span>
                       <draggable
                         v-model="view.extBubble"
@@ -1590,7 +1624,6 @@ import ScrollCfg from '@/views/chart/components/senior/ScrollCfg'
 import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny } from '@/utils/StringUtils'
-import { quotaViews } from '@/views/chart/chart/util'
 
 export default {
   name: 'ChartEdit',
@@ -2069,9 +2102,7 @@ export default {
           }
         })
       }
-      if (view.type === 'map' && view.yaxis.length > 1) {
-        view.yaxis = [view.yaxis[0]]
-      }
+
       view.yaxis.forEach(function(ele) {
         if (!ele.chartType) {
           ele.chartType = 'bar'
@@ -2096,10 +2127,6 @@ export default {
         }
         if (!ele.compareCalc) {
           ele.compareCalc = compareItem
-        }
-        if (quotaViews.indexOf(view.type) > -1) {
-          ele.compareCalc = compareItem
-          ele.formatterCfg.type = 'auto'
         }
       })
       if (view.type === 'chart-mix') {
@@ -2127,10 +2154,6 @@ export default {
           }
           if (!ele.compareCalc) {
             ele.compareCalc = compareItem
-          }
-          if (quotaViews.indexOf(view.type) > -1) {
-            ele.compareCalc = compareItem
-            ele.formatterCfg.type = 'auto'
           }
         })
       }
@@ -2214,7 +2237,10 @@ export default {
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
         // this.getData(this.param.id)
-        bus.$emit('view-in-cache', { type: 'propChange', viewId: this.param.id })
+        bus.$emit('view-in-cache', { type: 'propChange',
+          viewId: this.param.id,
+          view: view
+        })
       })
     },
     calcStyle(modifyName) {
@@ -2550,7 +2576,7 @@ export default {
           })
           return
         }
-        if (parseFloat(f.value).toString() === 'NaN') {
+        if (isNaN(f.value)) {
           this.$message({
             message: this.$t('chart.filter_value_can_not_str'),
             type: 'error',
@@ -2607,7 +2633,7 @@ export default {
             return
           }
           if (this.filterItem.deType === 2 || this.filterItem.deType === 3) {
-            if (parseFloat(f.value).toString() === 'NaN') {
+            if (isNaN(f.value)) {
               this.$message({
                 message: this.$t('chart.filter_value_can_not_str'),
                 type: 'error',
@@ -2764,6 +2790,8 @@ export default {
     closeEditChartField() {
       this.showEditChartField = false
       this.initTableField(this.table.id)
+      // 因动态计算较多，更新字段后重新计算视图数据
+      this.calcData()
     },
 
     // drag
@@ -2823,7 +2851,7 @@ export default {
     addYaxis(e) {
       this.dragCheckType(this.view.yaxis, 'q')
       this.dragMoveDuplicate(this.view.yaxis, e)
-      if ((this.view.type === 'map' || this.view.type === 'waterfall' || this.view.type === 'word-cloud' || this.view.type.includes('group')) && this.view.yaxis.length > 1) {
+      if ((this.view.type === 'waterfall' || this.view.type === 'word-cloud' || this.view.type.includes('group')) && this.view.yaxis.length > 1) {
         this.view.yaxis = [this.view.yaxis[0]]
       }
       this.calcData(true)
@@ -2853,6 +2881,7 @@ export default {
           }
         }
       }
+      this.view.customFilter[e.newDraggableIndex].filter = []
       this.dragMoveDuplicate(this.view.customFilter, e)
       this.dragRemoveChartField(this.view.customFilter, e)
       this.calcData(true)
@@ -3261,6 +3290,10 @@ export default {
         })
       }).catch(() => {
       })
+    },
+    clearData(data) {
+      this.view[data] = []
+      this.calcData(true)
     }
   }
 }
@@ -3709,4 +3742,19 @@ span {
   font-weight: 400 !important;
 }
 
+.data-area-label{
+  text-align: left;
+  position: relative;
+  width: 100%;
+  display: inline-block;
+}
+
+.data-area-clear{
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  color: rgb(135, 141, 159);
+  cursor: pointer;
+  z-index: 1;
+}
 </style>

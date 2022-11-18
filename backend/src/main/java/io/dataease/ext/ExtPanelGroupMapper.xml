@@ -16,16 +16,19 @@
 
     <select id="findOneWithPrivileges" resultMap="BaseResultMapDTO">
         select panel_group.*,
-               panel_group.name as label,
+               panel_group.name                                                        as label,
                (select nick_name from sys_user where username = panel_group.create_by) as creator_name,
                (select nick_name from sys_user where username = panel_group.update_by) as update_name,
-               get_auths(panel_group.id, 'panel', #{userId}) as `privileges`
+               get_auths(panel_group.id, 'panel', #{userId})                           as `privileges`
         from panel_group
         where id = #{panelId}
     </select>
 
     <select id="panelGroupInit" resultMap="BaseResultMapDTO">
-        select id, name,panel_data from panel_group where node_type = 'panel' and panel_type ='self'
+        select id, name, panel_data
+        from panel_group
+        where node_type = 'panel'
+          and panel_type = 'self'
     </select>
 
     <select id="panelGroupListDefault" resultMap="BaseResultMapDTO">
@@ -49,34 +52,34 @@
         LEFT JOIN panel_group sourcePanelGroup
         on sourcePanelGroup.id=panel_group.source
         left join (
-            SELECT
-            auth_source,
-            group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
-            FROM
-            (
-            `sys_auth`
-            LEFT JOIN `sys_auth_detail` ON ((
-            `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
-            )))
-            WHERE
-            sys_auth_detail.privilege_value = 1
-            AND sys_auth.auth_source_type = 'panel'
-            AND (
-            (
-            sys_auth.auth_target_type = 'dept'
-            AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{userId} )
-            )
-            OR (
-            sys_auth.auth_target_type = 'user'
-            AND sys_auth.auth_target = #{userId}
-            )
-            OR (
-            sys_auth.auth_target_type = 'role'
-            AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId} )
-            )
-            )
-            GROUP BY
-            `sys_auth`.`auth_source`
+        SELECT
+        auth_source,
+        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+        FROM
+        (
+        `sys_auth`
+        LEFT JOIN `sys_auth_detail` ON ((
+        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+        )))
+        WHERE
+        sys_auth_detail.privilege_value = 1
+        AND sys_auth.auth_source_type = 'panel'
+        AND (
+        (
+        sys_auth.auth_target_type = 'dept'
+        AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{userId} )
+        )
+        OR (
+        sys_auth.auth_target_type = 'user'
+        AND sys_auth.auth_target = #{userId}
+        )
+        OR (
+        sys_auth.auth_target_type = 'role'
+        AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId} )
+        )
+        )
+        GROUP BY
+        `sys_auth`.`auth_source`
         ) authInfo
         on panel_group.id = authInfo.auth_source
         <where>
@@ -100,7 +103,7 @@
                 and panel_group.level = #{level}
             </if>
         </where>
-        ORDER BY CONVERT(panel_group.name using gbk)
+        ORDER BY panel_group.panel_sort desc, CONVERT(panel_group.name using gbk)
     </select>
 
     <select id="panelGroupList" resultMap="BaseResultMapDTO">
@@ -125,34 +128,34 @@
         LEFT JOIN panel_group defaultPanelGroup
         on defaultPanelGroup.source=panel_group.id and defaultPanelGroup.source is not null
         left join (
-            SELECT
-            auth_source,
-            group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
-            FROM
-            (
-            `sys_auth`
-            LEFT JOIN `sys_auth_detail` ON ((
-            `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
-            )))
-            WHERE
-            sys_auth_detail.privilege_value = 1
-            AND sys_auth.auth_source_type = 'panel'
-            AND (
-            (
-            sys_auth.auth_target_type = 'dept'
-            AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{userId} )
-            )
-            OR (
-            sys_auth.auth_target_type = 'user'
-            AND sys_auth.auth_target = #{userId}
-            )
-            OR (
-            sys_auth.auth_target_type = 'role'
-            AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId} )
-            )
-            )
-            GROUP BY
-            `sys_auth`.`auth_source`
+        SELECT
+        auth_source,
+        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+        FROM
+        (
+        `sys_auth`
+        LEFT JOIN `sys_auth_detail` ON ((
+        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+        )))
+        WHERE
+        sys_auth_detail.privilege_value = 1
+        AND sys_auth.auth_source_type = 'panel'
+        AND (
+        (
+        sys_auth.auth_target_type = 'dept'
+        AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{userId} )
+        )
+        OR (
+        sys_auth.auth_target_type = 'user'
+        AND sys_auth.auth_target = #{userId}
+        )
+        OR (
+        sys_auth.auth_target_type = 'role'
+        AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId} )
+        )
+        )
+        GROUP BY
+        `sys_auth`.`auth_source`
         ) authInfo
         on panel_group.id = authInfo.auth_source
         <where>
@@ -176,42 +179,47 @@
                 and panel_group.level = #{level}
             </if>
         </where>
-     ORDER BY panel_group.node_type desc, CONVERT(panel_group.name using gbk)
+        ORDER BY panel_group.node_type desc, CONVERT(panel_group.name using gbk)
     </select>
 
     <delete id="deleteCircle">
-        delete from panel_group where FIND_IN_SET(panel_group.id,GET_PANEL_GROUP_WITH_CHILDREN(#{pid})) or FIND_IN_SET(panel_group.source,GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+        delete
+        from panel_group
+        where FIND_IN_SET(panel_group.id, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+           or FIND_IN_SET(panel_group.source, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
     </delete>
 
     <delete id="deleteCircleView">
-        delete from chart_view where FIND_IN_SET(chart_view.scene_id,GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+        delete
+        from chart_view
+        where FIND_IN_SET(chart_view.scene_id, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
     </delete>
 
     <delete id="deleteCircleViewCache">
-        delete from chart_view_cache where FIND_IN_SET(chart_view_cache.scene_id,GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+        delete
+        from chart_view_cache
+        where FIND_IN_SET(chart_view_cache.scene_id, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
     </delete>
 
     <insert id="copyPanelView">
-    INSERT INTO panel_view ( id, panel_id, chart_view_id ) SELECT
-    uuid(),
-    #{panelId},
-    chart_view_id
-    FROM
-        panel_view
-    WHERE
-        panel_id = #{panelId}
+        INSERT INTO panel_view (id, panel_id, chart_view_id)
+        SELECT uuid(),
+               #{panelId},
+               chart_view_id
+        FROM panel_view
+        WHERE panel_id = #{panelId}
     </insert>
 
     <delete id="removeUselessViews">
         DELETE
         FROM
-            chart_view
+        chart_view
         WHERE
-            chart_view.chart_type = 'private'
-            AND chart_view.scene_id = #{panelId}
+        chart_view.chart_type = 'private'
+        AND chart_view.scene_id = #{panelId}
         <if test="viewIds != null and viewIds.size>0">
             AND id NOT IN
-            <foreach collection="viewIds" item="viewId" open="(" separator="," close=")" >
+            <foreach collection="viewIds" item="viewId" open="(" separator="," close=")">
                 #{viewId}
             </foreach>
         </if>

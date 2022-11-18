@@ -149,7 +149,7 @@ public class DataSetTableService {
     @Value("${upload.file.path}")
     private String path;
 
-    private static Logger logger = LoggerFactory.getLogger(ClassloaderResponsity.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClassloaderResponsity.class);
 
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
     public List<DatasetTable> batchInsert(List<DataSetTableRequest> datasetTable) throws Exception {
@@ -185,7 +185,7 @@ public class DataSetTableService {
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
-    public List<DatasetTable> saveExcel(DataSetTableRequest datasetTable) throws Exception {
+    public List<DatasetTable> saveExcel(DataSetTableRequest datasetTable) {
         List<String> datasetIdList = new ArrayList<>();
 
         if (StringUtils.isEmpty(datasetTable.getId())) {
@@ -234,10 +234,9 @@ public class DataSetTableService {
                     list.add(sheetTable);
                     DeLogUtils.save(SysLogConstants.OPERATE_TYPE.CREATE, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
                 }
-                datasetIdList.forEach(datasetId -> {
-                    commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetId, "all_scope", "初始导入",
-                            null, datasetIdList));
-                });
+                datasetIdList.forEach(datasetId -> commonThreadPool.addTask(() ->
+                        extractDataService.extractExcelData(datasetId, "all_scope", "初始导入",
+                                null, datasetIdList)));
             } else {
                 for (ExcelSheetData sheet : datasetTable.getSheets()) {
                     String[] fieldArray = sheet.getFields().stream().map(TableField::getFieldName)
@@ -269,10 +268,9 @@ public class DataSetTableService {
                     list.add(sheetTable);
                     DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
                 }
-                datasetIdList.forEach(datasetId -> {
-                    commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetId, "all_scope", "初始导入",
-                            null, datasetIdList));
-                });
+                datasetIdList.forEach(datasetId -> commonThreadPool.addTask(() ->
+                        extractDataService.extractExcelData(datasetId, "all_scope", "初始导入",
+                                null, datasetIdList)));
             }
 
             return list;
@@ -303,15 +301,15 @@ public class DataSetTableService {
         DataTableInfoDTO info = new DataTableInfoDTO();
         info.setExcelSheetDataList(excelSheetDataList);
         datasetTable.setInfo(new Gson().toJson(info));
-        int update = datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
+        datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
         // 替換時，先不刪除旧字段；同步成功后再删除
         if (datasetTable.getEditType() == 0) {
             commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetTable.getId(), "all_scope", "替换",
                     saveExcelTableField(datasetTable.getId(), datasetTable.getSheets().get(0).getFields(), false),
-                    Arrays.asList(datasetTable.getId())));
+                    Collections.singletonList(datasetTable.getId())));
         } else if (datasetTable.getEditType() == 1) {
             commonThreadPool.addTask(() -> extractDataService.extractExcelData(datasetTable.getId(), "add_scope", "追加",
-                    null, Arrays.asList(datasetTable.getId())));
+                    null, Collections.singletonList(datasetTable.getId())));
         }
         DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATASET, datasetTable.getId(), datasetTable.getSceneId(), null, null);
         return Collections.singletonList(datasetTable);
@@ -362,12 +360,12 @@ public class DataSetTableService {
         return datasetTable;
     }
 
-    public void alter(DataSetTableRequest request) throws Exception {
+    public void alter(DataSetTableRequest request) {
         checkName(request);
         datasetTableMapper.updateByPrimaryKeySelective(request);
     }
 
-    public void delete(String id) throws Exception {
+    public void delete(String id) {
         DatasetTable table = datasetTableMapper.selectByPrimaryKey(id);
         SysLogDTO sysLogDTO = DeLogUtils.buildLog(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DATASET, table.getId(), table.getSceneId(), null, null);
         datasetTableMapper.deleteByPrimaryKey(id);
@@ -489,9 +487,8 @@ public class DataSetTableService {
         List<DataSetTableDTO> res = new ArrayList<>();
         Map<String, DataSetTableDTO> map = new TreeMap<>();
         group.forEach(ele -> map.put(ele.getId(), ele));
-        Iterator<Map.Entry<String, DataSetTableDTO>> iterator = map.entrySet().iterator();
-        while (iterator.hasNext()) {
-            res.add(iterator.next().getValue());
+        for (Map.Entry<String, DataSetTableDTO> stringDataSetTableDTOEntry : map.entrySet()) {
+            res.add(stringDataSetTableDTOEntry.getValue());
         }
         res.sort(Comparator.comparing(DatasetTable::getName));
         res.addAll(ds);
@@ -521,8 +518,7 @@ public class DataSetTableService {
         return datasourceProvider.getTableFields(datasourceRequest);
     }
 
-    public Map<String, List<DatasetTableField>> getFieldsFromDE(DataSetTableRequest dataSetTableRequest)
-            throws Exception {
+    public Map<String, List<DatasetTableField>> getFieldsFromDE(DataSetTableRequest dataSetTableRequest) {
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
@@ -1015,15 +1011,11 @@ public class DataSetTableService {
                 break;
             case "TEXT":
                 sqlVariableDetails = sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("TEXT")).collect(Collectors.toList());
-                sqlVariableDetails.forEach(item -> {
-                    item.setAlias(item.getVariableName());
-                });
+                sqlVariableDetails.forEach(item -> item.setAlias(item.getVariableName()));
                 break;
             case "NUM":
                 sqlVariableDetails = sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("LONG") || item.getType().get(0).contains("DOUBLE")).collect(Collectors.toList());
-                sqlVariableDetails.forEach(item -> {
-                    item.setAlias(item.getVariableName());
-                });
+                sqlVariableDetails.forEach(item -> item.setAlias(item.getVariableName()));
                 break;
         }
         return sqlVariableDetails;
@@ -1087,15 +1079,15 @@ public class DataSetTableService {
         if (select.getSelectBody() instanceof PlainSelect) {
             return handlePlainSelect((PlainSelect) select.getSelectBody(), select, dsType);
         } else {
-            String result = "";
+            StringBuilder result = new StringBuilder();
             SetOperationList setOperationList = (SetOperationList) select.getSelectBody();
             for (int i = 0; i < setOperationList.getSelects().size(); i++) {
-                result = result + handlePlainSelect((PlainSelect) setOperationList.getSelects().get(i), null, dsType);
+                result.append(handlePlainSelect((PlainSelect) setOperationList.getSelects().get(i), null, dsType));
                 if (i < setOperationList.getSelects().size() - 1) {
-                    result = result + " " + setOperationList.getOperations().get(i).toString() + " ";
+                    result.append(" ").append(setOperationList.getOperations().get(i).toString()).append(" ");
                 }
             }
-            return result;
+            return result.toString();
         }
     }
 
@@ -1140,14 +1132,14 @@ public class DataSetTableService {
             builder.append(" ");
             for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext(); ) {
                 WithItem withItem = iter.next();
-                builder.append(withItem.getName() + " AS ( " + removeVariables(withItem.getSubSelect().toString(), dsType) + " ) ");
+                builder.append(withItem.getName()).append(" AS ( ").append(removeVariables(withItem.getSubSelect().toString(), dsType)).append(" ) ");
                 if (iter.hasNext()) {
                     builder.append(",");
                 }
             }
         }
 
-        builder.append(" " + plainSelect);
+        builder.append(" ").append(plainSelect);
         return builder.toString();
     }
 
@@ -1230,7 +1222,7 @@ public class DataSetTableService {
         String sqlAsTable = qp.createSQLPreview(sql, null);
         datasourceRequest.setQuery(sqlAsTable);
 
-        Map<String, List> result = new HashMap<>();
+        Map<String, List> result;
         try {
             datasetSqlLog.setStartTime(System.currentTimeMillis());
             result = datasourceProvider.fetchResultAndField(datasourceRequest);
@@ -1275,7 +1267,7 @@ public class DataSetTableService {
 
     public Map<String, Object> getUnionPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
-        Map<String, Object> sqlMap = new HashMap<>();
+        Map<String, Object> sqlMap;
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         Datasource ds;
         if (dataSetTableRequest.getMode() == 0) {
@@ -1289,7 +1281,6 @@ public class DataSetTableService {
         }
         String sql = (String) sqlMap.get("sql");
         List<DatasetTableField> fieldList = (List<DatasetTableField>) sqlMap.get("field");
-        List<UnionParamDTO> join = (List<UnionParamDTO>) sqlMap.get("join");
 
         Map<String, Object> res = new HashMap<>();
         // 处理结果
@@ -1423,9 +1414,7 @@ public class DataSetTableService {
         DataTableInfoCustomUnion first = dataTableInfoDTO.getList().get(0);
         if (CollectionUtils.isNotEmpty(list)) {
             StringBuilder field = new StringBuilder();
-            Iterator<Map.Entry<String, String[]>> iterator = customInfo.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, String[]> next = iterator.next();
+            for (Map.Entry<String, String[]> next : customInfo.entrySet()) {
                 field.append(StringUtils.join(next.getValue(), ",")).append(",");
             }
             String f = field.substring(0, field.length() - 1);
@@ -1493,9 +1482,7 @@ public class DataSetTableService {
         String tableName = new Gson().fromJson(table.getInfo(), DataTableInfoDTO.class).getTable();
         if (CollectionUtils.isNotEmpty(list)) {
             StringBuilder field = new StringBuilder();
-            Iterator<Map.Entry<String, String[]>> iterator = customInfo.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, String[]> next = iterator.next();
+            for (Map.Entry<String, String[]> next : customInfo.entrySet()) {
                 field.append(StringUtils.join(next.getValue(), ",")).append(",");
             }
             String f = field.substring(0, field.length() - 1);
@@ -1601,9 +1588,7 @@ public class DataSetTableService {
         if (CollectionUtils.isNotEmpty(unionList)) {
             // field
             StringBuilder field = new StringBuilder();
-            Iterator<Map.Entry<String, String[]>> iterator = checkedInfo.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, String[]> next = iterator.next();
+            for (Map.Entry<String, String[]> next : checkedInfo.entrySet()) {
                 field.append(StringUtils.join(next.getValue(), ",")).append(",");
             }
             String f = subPrefixSuffixChar(field.toString());
@@ -1664,8 +1649,7 @@ public class DataSetTableService {
     // 递归计算出所有子级的checkedFields和unionParam
     private void getUnionSQLDorisJoin(List<UnionDTO> childrenDs, Map<String, String[]> checkedInfo,
                                       List<UnionParamDTO> unionList, List<DatasetTableField> checkedFields) {
-        for (int i = 0; i < childrenDs.size(); i++) {
-            UnionDTO unionDTO = childrenDs.get(i);
+        for (UnionDTO unionDTO : childrenDs) {
             String tableId = unionDTO.getCurrentDs().getId();
             String table = TableUtils.tableName(tableId);
             DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(tableId);
@@ -1752,9 +1736,7 @@ public class DataSetTableService {
         if (CollectionUtils.isNotEmpty(unionList)) {
             // field
             StringBuilder field = new StringBuilder();
-            Iterator<Map.Entry<String, String[]>> iterator = checkedInfo.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, String[]> next = iterator.next();
+            for (Map.Entry<String, String[]> next : checkedInfo.entrySet()) {
                 field.append(StringUtils.join(next.getValue(), ",")).append(",");
             }
             String f = subPrefixSuffixChar(field.toString());
@@ -1825,9 +1807,7 @@ public class DataSetTableService {
     // 递归计算出所有子级的checkedFields和unionParam
     private void getUnionSQLDatasourceJoin(List<UnionDTO> childrenDs, Map<String, String[]> checkedInfo,
                                            List<UnionParamDTO> unionList, String keyword, List<DatasetTableField> checkedFields) {
-        for (int i = 0; i < childrenDs.size(); i++) {
-            UnionDTO unionDTO = childrenDs.get(i);
-
+        for (UnionDTO unionDTO : childrenDs) {
             DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(unionDTO.getCurrentDs().getId());
             String tableId = unionDTO.getCurrentDs().getId();
             if (ObjectUtils.isEmpty(datasetTable)) {
@@ -1976,7 +1956,7 @@ public class DataSetTableService {
                 Map<String, Object> sqlMap = getUnionSQLDoris(dataTableInfoDTO);
                 String sql = (String) sqlMap.get("sql");
                 List<DatasetTableField> fieldList = (List<DatasetTableField>) sqlMap.get("field");
-                List<UnionParamDTO> join = (List<UnionParamDTO>) sqlMap.get("join");
+
 
                 // custom 创建doris视图
                 createDorisView(TableUtils.tableName(datasetTable.getId()), sql);
@@ -2003,7 +1983,7 @@ public class DataSetTableService {
                 Map<String, Object> sqlMap = getUnionSQLDatasource(dt, ds);
                 String sql = (String) sqlMap.get("sql");
                 List<DatasetTableField> fieldList = (List<DatasetTableField>) sqlMap.get("field");
-                List<UnionParamDTO> join = (List<UnionParamDTO>) sqlMap.get("join");
+
 
                 datasourceRequest.setQuery(sql);
                 fields = datasourceProvider.fetchResultField(datasourceRequest);
@@ -2157,16 +2137,15 @@ public class DataSetTableService {
     private void checkColumes(DatasetTableIncrementalConfig datasetTableIncrementalConfig) throws Exception {
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(datasetTableIncrementalConfig.getTableId());
         List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.getFieldsByTableId(datasetTable.getId())
-                .stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
-        datasetTableFields.sort((o1, o2) -> {
-            if (o1.getColumnIndex() == null) {
-                return -1;
-            }
-            if (o2.getColumnIndex() == null) {
-                return 1;
-            }
-            return o1.getColumnIndex().compareTo(o2.getColumnIndex());
-        });
+                .stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).sorted((o1, o2) -> {
+                    if (o1.getColumnIndex() == null) {
+                        return -1;
+                    }
+                    if (o2.getColumnIndex() == null) {
+                        return 1;
+                    }
+                    return o1.getColumnIndex().compareTo(o2.getColumnIndex());
+                }).collect(Collectors.toList());
 
         List<String> originNameFields = datasetTableFields.stream().map(DatasetTableField::getOriginName)
                 .collect(Collectors.toList());
@@ -2184,9 +2163,7 @@ public class DataSetTableService {
             List<String> sqlFields = new ArrayList<>();
             try {
                 datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableField::getFieldName)
-                        .forEach(field -> {
-                            sqlFields.add(field);
-                        });
+                        .forEach(sqlFields::add);
             } catch (Exception e) {
                 DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
             }
@@ -2204,7 +2181,7 @@ public class DataSetTableService {
             List<String> sqlFields = new ArrayList<>();
             try {
                 datasourceProvider.fetchResultField(datasourceRequest).stream().map(TableField::getFieldName)
-                        .forEach(field -> sqlFields.add(field));
+                        .forEach(sqlFields::add);
             } catch (Exception e) {
                 DataEaseException.throwException(Translator.get("i18n_check_sql_error") + e.getMessage());
             }
@@ -2228,7 +2205,7 @@ public class DataSetTableService {
             criteria.andNameEqualTo(datasetTable.getName());
         }
         List<DatasetTable> list = datasetTableMapper.selectByExample(datasetTableExample);
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
         }
     }
@@ -2253,7 +2230,7 @@ public class DataSetTableService {
             criteria.andNameIn(new ArrayList<>(nameSet));
         }
         List<DatasetTable> list = datasetTableMapper.selectByExample(datasetTableExample);
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             throw new RuntimeException(Translator.get("i18n_name_cant_repeat_same_group"));
         }
     }
@@ -2265,6 +2242,13 @@ public class DataSetTableService {
         if (ObjectUtils.isNotEmpty(table)) {
             Datasource datasource = datasourceMapper.selectByPrimaryKey(table.getDataSourceId());
             Optional.ofNullable(datasource).orElse(new Datasource()).setConfiguration(null);
+            Collection<DataSourceType> types = datasourceService.types();
+            for (DataSourceType type : types) {
+                if (ObjectUtils.isNotEmpty(datasource) && StringUtils.equalsIgnoreCase(datasource.getType(), type.getType())) {
+                    datasource.setType(type.getName());
+                    break;
+                }
+            }
             dataSetDetail.setDatasource(datasource);
         }
         return dataSetDetail;
@@ -2278,8 +2262,7 @@ public class DataSetTableService {
 
         if (StringUtils.isNotEmpty(tableId)) {
             List<DatasetTableField> fields = dataSetTableFieldsService.getFieldsByTableId(tableId);
-            List<DatasetTableField> datasetTableFields = fields.stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
-            datasetTableFields.sort((o1, o2) -> {
+            List<DatasetTableField> datasetTableFields = fields.stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).sorted((o1, o2) -> {
                 if (o1.getColumnIndex() == null) {
                     return -1;
                 }
@@ -2287,7 +2270,7 @@ public class DataSetTableService {
                     return 1;
                 }
                 return o1.getColumnIndex().compareTo(o2.getColumnIndex());
-            });
+            }).collect(Collectors.toList());
 
             List<String> oldFields = datasetTableFields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
 
@@ -2299,7 +2282,7 @@ public class DataSetTableService {
                         returnSheetDataList.add(excelSheetData);
                     }
                 }
-                if (returnSheetDataList.size() == 0) {
+                if (returnSheetDataList.isEmpty()) {
                     DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
                 }
             } else {
@@ -2321,22 +2304,19 @@ public class DataSetTableService {
                 for (ExcelSheetData excelSheetData : excelSheetDataList) {
                     List<TableField> tableFields = excelSheetData.getFields();
                     List<String> newFields = tableFields.stream().map(TableField::getRemarks).collect(Collectors.toList());
-                    if (oldFields.equals(newFields)) {
-                        excelSheetData.setChangeFiled(false);
-                    } else {
-                        excelSheetData.setChangeFiled(true);
-                    }
+                    excelSheetData.setChangeFiled(!oldFields.equals(newFields));
                     boolean effectExtField = false;
                     for (String extFieldsRefName : extFieldsRefNames) {
                         if (!newFields.contains(extFieldsRefName)) {
                             effectExtField = true;
+                            break;
                         }
                     }
                     excelSheetData.setEffectExtField(effectExtField);
 
                     returnSheetDataList.add(excelSheetData);
                 }
-                if (returnSheetDataList.size() == 0) {
+                if (returnSheetDataList.isEmpty()) {
                     DataEaseException.throwException(Translator.get("i18n_excel_column_change"));
                 }
             }
@@ -2403,7 +2383,7 @@ public class DataSetTableService {
             }
             List<List<String>> data = new ArrayList<>();
             int num = 1;
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
                 if (num > 100) {
                     break;
@@ -2450,7 +2430,7 @@ public class DataSetTableService {
             try {
                 double d = cell.getNumericCellValue();
                 try {
-                    Double value = new Double(d);
+                    Double value = d;
                     double eps = 1e-10;
                     if (value - Math.floor(value) < eps) {
                         if (cellType) {
@@ -2469,7 +2449,7 @@ public class DataSetTableService {
                         return nf.format(value);
                     }
                 } catch (Exception e) {
-                    BigDecimal b = new BigDecimal(d);
+                    BigDecimal b = BigDecimal.valueOf(d);
                     return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
                 }
             } catch (IllegalStateException e) {
@@ -2502,7 +2482,7 @@ public class DataSetTableService {
             } else {
                 double d = cell.getNumericCellValue();
                 try {
-                    Double value = new Double(d);
+                    Double value = d;
                     double eps = 1e-10;
                     if (value - Math.floor(value) < eps) {
                         if (cellType) {
@@ -2521,7 +2501,7 @@ public class DataSetTableService {
                         return nf.format(value);
                     }
                 } catch (Exception e) {
-                    BigDecimal b = new BigDecimal(d);
+                    BigDecimal b = BigDecimal.valueOf(d);
                     return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() + "";
                 }
             }
@@ -2655,18 +2635,14 @@ public class DataSetTableService {
      * 判断数组中是否有重复的值
      */
     public static boolean checkIsRepeat(String[] array) {
-        HashSet<String> hashSet = new HashSet<String>();
-        for (int i = 0; i < array.length; i++) {
-            if (StringUtils.isEmpty(array[i])) {
+        HashSet<String> hashSet = new HashSet<>();
+        for (String s : array) {
+            if (StringUtils.isEmpty(s)) {
                 throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
             }
-            hashSet.add(array[i]);
+            hashSet.add(s);
         }
-        if (hashSet.size() == array.length) {
-            return false;
-        } else {
-            return true;
-        }
+        return hashSet.size() != array.length;
     }
 
     public DatasetTable syncDatasetTableField(String id) throws Exception {
@@ -2857,7 +2833,7 @@ public class DataSetTableService {
         return expressionDeParser;
     }
 
-    static private boolean hasVariable(String sql) {
+    private static boolean hasVariable(String sql) {
         return sql.contains(SubstitutedParams);
     }
 
@@ -2936,7 +2912,7 @@ public class DataSetTableService {
                                 //设置列的宽度
                                 detailsSheet.setColumnWidth(j, 255 * 20);
                             } else {
-                                if ((fields.get(j).getDeType() == DeTypeConstants.DE_INT || fields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
+                                if ((fields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || fields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
                                     try {
                                         cell.setCellValue(Double.valueOf(rowData.get(j)));
                                     } catch (Exception e) {
