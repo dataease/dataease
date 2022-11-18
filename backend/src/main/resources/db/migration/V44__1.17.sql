@@ -36,3 +36,6 @@ WHERE (`component` = 'msg/all');
 UPDATE `sys_menu`
 SET `component` = 'msg/Setting'
 WHERE (`component` = 'msg/setting');
+
+ALTER TABLE `panel_group`
+    ADD COLUMN `panel_sort` bigint(13) NULL COMMENT '排序' AFTER `watermark_open`;
