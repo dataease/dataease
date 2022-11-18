@@ -37,7 +37,7 @@ const fillGradientColor = (data, colors) => {
   })
   return data
 }
-export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
+export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seriesId) {
   // 处理shape attr
   let customAttr = {}
   let isGradient = false
@@ -45,7 +45,7 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode) {
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
     if (chart.yaxis && chart.yaxis.length > 1) {
-      let currentSeriesId = customAttr.currentSeriesId
+      let currentSeriesId = seriesId
       const yAxis = JSON.parse(chart.yaxis)
       if (!currentSeriesId || !yAxis.some(item => item.id === currentSeriesId)) {
         currentSeriesId = yAxis[0].id
