@@ -823,8 +823,15 @@ div:focus {
   display: none !important;
 }
 
+
 .el-checkbox__input.is-checked:not(.is-disabled)+.el-checkbox__label {
   color: #1F2329 !important;
+}
+
+.de-select-grid-class {
+  .el-checkbox__input.is-checked:not(.is-disabled)+.el-checkbox__label {
+    color: #3370ff !important;
+  }
 }
 
 .el-dialog__title {
@@ -1317,11 +1324,11 @@ div:focus {
 }
 
 .user-popper {
-  padding: 0;
-  background: #fff;
+  padding: 0 !important;
+  background: #fff !important;
 
   .popper__arrow {
-    display: none;
+    display: none !important;
   }
 }
 

@@ -26,8 +26,7 @@
           <span
             v-for="ele in usersValueCopy"
             :key="ele.id"
-            class="item"
-            :class="[activeUser.includes(ele.id) ? 'active' : '']"
+            class="item active"
             @click="activeUserChange(ele.id)"
           >{{ ele.username }}</span>
           <el-popover
@@ -37,14 +36,13 @@
             trigger="click"
           >
             <el-select
-              ref="userSelect"
+              ref="select"
               v-model="usersValue"
-              multiple
               filterable
+              multiple
               :placeholder="$t('commons.please_select')"
               value-key="id"
               @change="changeUser"
-              @remove-tag="changeUser"
             >
               <el-option
                 v-for="item in usersComputed"
@@ -102,7 +100,6 @@ export default {
       usersValue: [],
       activeUser: [],
       users: [],
-      userCache: [],
       activeType: [],
       userDrawer: false
     }
@@ -112,7 +109,7 @@ export default {
       return this.users.filter((ele) => !this.activeUser.includes(ele.id))
     },
     usersValueCopy() {
-      return this.userCache.filter((ele) => this.activeUser.includes(ele.id))
+      return this.users.filter((ele) => this.activeUser.includes(ele.id))
     }
   },
   mounted() {
@@ -132,48 +129,24 @@ export default {
         this.users = res.data
       })
     },
-    changeUser() {
-      if (
-        this.userCache.length >
-        this.usersValue.length + this.activeUser.length
-      ) {
-        this.userCache = this.userCache.filter((ele) =>
-          this.usersValue
-            .map((ele) => ele.id)
-            .concat(this.activeUser)
-            .includes(ele.id)
-        )
-        return
-      }
-      const userIdx = this.usersValue.findIndex(
-        (ele) =>
-          !this.userCache
-            .map((ele) => ele.id)
-            .concat(this.activeUser)
-            .includes(ele.id)
-      )
-      if (userIdx === -1) return
-      this.activeUser.push(this.usersValue[userIdx].id)
-      this.userCache.push(this.usersValue[userIdx])
-      this.usersValue.splice(userIdx, 1)
+    changeUser(list) {
+      const [val] = list
+      this.activeUser.push(val.id)
+      this.usersValue = []
+      const { query } = this.$refs.select
+      this.$nextTick(() => {
+        this.$refs.select.query = query
+        this.$refs.select.handleQueryChange(query)
+      })
     },
     activeUserChange(id) {
-      const userIndex = this.activeUser.findIndex((ele) => ele === id)
-      if (userIndex === -1) {
-        this.activeUser.push(id)
-        this.usersValue = this.usersValue.filter((ele) => ele.id !== id)
-      } else {
-        this.activeUser.splice(userIndex, 1)
-        const user = this.userCache.find((ele) => ele.id === id)
-        this.usersValue.push(user)
-      }
+      this.activeUser = this.activeUser.filter((ele) => ele !== id)
     },
     clearFilter() {
       this.dataRange = []
       this.usersValue = []
       this.activeUser = []
       this.activeType = []
-      this.userCache = []
       this.$emit('search', [], [])
     },
     clearOneFilter(index) {
@@ -217,8 +190,7 @@ export default {
         params.push(str.slice(0, str.length - 1))
         this.filterTextMap.push([
           'usersValue',
-          'activeUser',
-          'userCache'
+          'activeUser'
         ])
       }
 

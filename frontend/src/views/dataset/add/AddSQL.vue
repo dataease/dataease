@@ -436,6 +436,17 @@
                 prop="defaultValue"
                 :label="$t('commons.params_value')"
               >
+                <template #header>
+                  {{ $t('commons.params_value') }}
+                  <el-tooltip
+                    class="item"
+                    effect="dark"
+                    :content="$t('commons.parameter_effect')"
+                    placement="top"
+                  >
+                    <i class="el-icon-warning" />
+                  </el-tooltip>
+                </template>
                 <template slot-scope="scope">
                   <el-input
                     v-if="scope.row.type[0] === 'TEXT'"

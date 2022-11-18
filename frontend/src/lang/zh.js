@@ -137,7 +137,7 @@ export default {
     unlock: '解锁',
     unlock_success: '解锁成功',
     uninstall: '卸载',
-
+    parameter_effect: '参数值仅在数据集编辑时生效',
     no_result: '没有找到相关内容',
     manage_member: '管理成员',
     confirm_remove_cancel: '确定删除该角色吗?',
