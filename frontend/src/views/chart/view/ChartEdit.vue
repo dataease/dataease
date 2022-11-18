@@ -74,7 +74,9 @@
                 round
                 @click="changeDs"
               >
-                <span style="font-weight: bold">{{ $t('panel.template_view_tips') }}<i class="el-icon-refresh el-icon--right" /></span>
+                <span style="font-weight: bold">{{ $t('panel.template_view_tips') }}<i
+                  class="el-icon-refresh el-icon--right"
+                /></span>
               </el-button>
             </span>
           </div>
@@ -1107,6 +1109,16 @@
             </div>
           </el-row>
         </el-tab-pane>
+        <el-tab-pane
+          v-if="!curComponent.auxiliaryMatrix"
+          name="position"
+          :label="$t('panel.position_adjust')"
+          class="padding-tab"
+          style="width: 350px;"
+        >
+          <position-adjust />
+        </el-tab-pane>
+
       </el-tabs>
 
       <el-col
@@ -1235,12 +1247,14 @@
         <el-button
           size="mini"
           @click="closeRename()"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="saveRename"
-        >{{ $t('chart.confirm') }}</el-button>
+        >{{ $t('chart.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
 
@@ -1262,12 +1276,14 @@
         <el-button
           size="mini"
           @click="closeQuotaFilter"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="saveQuotaFilter"
-        >{{ $t('chart.confirm') }}</el-button>
+        >{{ $t('chart.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -1287,12 +1303,14 @@
         <el-button
           size="mini"
           @click="closeDimensionFilter"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="saveDimensionFilter"
-        >{{ $t('chart.confirm') }}</el-button>
+        >{{ $t('chart.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
     <el-dialog
@@ -1315,12 +1333,14 @@
         <el-button
           size="mini"
           @click="closeResultFilter"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="saveResultFilter"
-        >{{ $t('chart.confirm') }}</el-button>
+        >{{ $t('chart.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
 
@@ -1346,7 +1366,8 @@
         <el-button
           size="mini"
           @click="closeChangeChart"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
@@ -1382,7 +1403,8 @@
           size="mini"
           style="float: right;"
           @click="closeEditDsField"
-        >{{ $t('chart.close') }}</el-button>
+        >{{ $t('chart.close') }}
+        </el-button>
       </div>
     </el-dialog>
 
@@ -1411,7 +1433,8 @@
           size="mini"
           style="float: right;"
           @click="closeEditChartField"
-        >{{ $t('chart.close') }}</el-button>
+        >{{ $t('chart.close') }}
+        </el-button>
       </div>
     </el-dialog>
 
@@ -1436,12 +1459,14 @@
         <el-button
           size="mini"
           @click="closeQuotaEditCompare"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="saveQuotaEditCompare"
-        >{{ $t('chart.confirm') }}</el-button>
+        >{{ $t('chart.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
 
@@ -1466,12 +1491,14 @@
         <el-button
           size="mini"
           @click="closeValueFormatter"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="saveValueFormatter"
-        >{{ $t('chart.confirm') }}</el-button>
+        >{{ $t('chart.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
 
@@ -1498,12 +1525,14 @@
         <el-button
           size="mini"
           @click="closeCustomSort"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="saveCustomSort"
-        >{{ $t('chart.confirm') }}</el-button>
+        >{{ $t('chart.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
 
@@ -1530,12 +1559,14 @@
         <el-button
           size="mini"
           @click="closeStackCustomSort"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="saveStackCustomSort"
-        >{{ $t('chart.confirm') }}</el-button>
+        >{{ $t('chart.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
 
@@ -1562,10 +1593,11 @@
 <script>
 import {
   ajaxGetDataOnly,
-  post,
   getChartDetails,
-  viewEditSave,
-  resetViewCacheCallBack
+  pluginTypes,
+  post,
+  resetViewCacheCallBack,
+  viewEditSave
 } from '@/api/chart/chart'
 import DimensionItem from '../components/dragItem/DimensionItem'
 import QuotaItem from '../components/dragItem/QuotaItem'
@@ -1616,7 +1648,6 @@ import MapMapping from '@/views/chart/components/senior/MapMapping'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
 import Threshold from '@/views/chart/components/senior/Threshold'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
-import { pluginTypes } from '@/api/chart/chart'
 import ValueFormatterEdit from '@/views/chart/components/valueFormatter/ValueFormatterEdit'
 import ChartStyle from '@/views/chart/view/ChartStyle'
 import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
@@ -1624,10 +1655,14 @@ import ScrollCfg from '@/views/chart/components/senior/ScrollCfg'
 import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny } from '@/utils/StringUtils'
+import MarginSelector from '@/views/chart/components/componentStyle/MarginSelector'
+import PositionAdjust from '@/views/chart/view/PositionAdjust'
 
 export default {
   name: 'ChartEdit',
   components: {
+    PositionAdjust,
+    MarginSelector,
     ScrollCfg,
     CalcChartFieldEdit,
     ChartFieldEdit,
@@ -1817,15 +1852,13 @@ export default {
       'allViewRender'
 
     ])
-    /* pluginRenderOptions() {
-      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
-      const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
-        return { name: plugin.render, value: plugin.render }
-      })
-      return [...this.renderOptions, ...pluginOptions]
-    } */
   },
   watch: {
+    'curComponent.auxiliaryMatrix': function(val) {
+      if (val && this.tabActive === 'position') {
+        this.tabActive = 'data'
+      }
+    },
     'editStatus': function(val) {
       if (val && this.param.id !== this.preChartId) {
         this.preChartId = this.param.id
@@ -2237,7 +2270,8 @@ export default {
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
         // this.getData(this.param.id)
-        bus.$emit('view-in-cache', { type: 'propChange',
+        bus.$emit('view-in-cache', {
+          type: 'propChange',
           viewId: this.param.id,
           view: view
         })
@@ -2270,7 +2304,12 @@ export default {
       viewEditSave(this.panelInfo.id, viewSave)
 
       if (modifyName === 'color') {
-        bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.view.id, viewInfo: view, refreshProp: 'customAttr' })
+        bus.$emit('view-in-cache', {
+          type: 'styleChange',
+          viewId: this.view.id,
+          viewInfo: view,
+          refreshProp: 'customAttr'
+        })
       } else {
         bus.$emit('view-in-cache', { type: 'styleChange', viewId: this.view.id, viewInfo: view })
       }
@@ -2993,7 +3032,10 @@ export default {
         const current = this.$refs.dynamicChart
         this.setDetailMapCode(null)
         if (this.view.isPlugin) {
-          current && current.callPluginInner && current.callPluginInner({ methodName: 'registerDynamicMap', methodParam: null })
+          current && current.callPluginInner && current.callPluginInner({
+            methodName: 'registerDynamicMap',
+            methodParam: null
+          })
         } else {
           current && current.registerDynamicMap && current.registerDynamicMap(null)
         }
@@ -3299,7 +3341,7 @@ export default {
 }
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 .padding-lr {
   padding: 0 6px;
 }
@@ -3333,13 +3375,13 @@ export default {
 .view-panel-Mask {
   display: flex;
   height: calc(100vh - 80px);
-  background-color: rgba(92,94,97, 0.7);
-  position:absolute;
-  top:0px;
+  background-color: rgba(92, 94, 97, 0.7);
+  position: absolute;
+  top: 0px;
   left: 0px;
   width: 350px;
   z-index: 2;
-  cursor:not-allowed;
+  cursor: not-allowed;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3676,8 +3718,8 @@ span {
   width: 100px !important;
 }
 
-::v-deep .el-slider__runway.show-input{
-  width: 80px!important;
+::v-deep .el-slider__runway.show-input {
+  width: 80px !important;
 }
 
 .no-senior {
@@ -3690,15 +3732,16 @@ span {
   height: 100%;
 }
 
-.form-item-slider::v-deep.el-form-item__label{
+.form-item-slider::v-deep.el-form-item__label {
   font-size: 12px;
   line-height: 38px;
 }
-.form-item::v-deep.el-form-item__label{
+
+.form-item::v-deep.el-form-item__label {
   font-size: 12px;
 }
 
-.field-name{
+.field-name {
   display: inline-block;
   width: 90px;
   word-break: break-all;
@@ -3709,7 +3752,7 @@ span {
   top: 2px;
 }
 
-.field-setting{
+.field-setting {
   position: absolute;
   right: 8px;
 }
@@ -3722,19 +3765,19 @@ span {
   visibility: visible;
 }
 
-.field-split{
+.field-split {
   height: calc(100% - 40px);
 }
 
-.field-split ::v-deep .fu-split-pane__left{
-  padding-right: 0!important;
+.field-split ::v-deep .fu-split-pane__left {
+  padding-right: 0 !important;
 }
 
-.field-split ::v-deep .fu-split-pane__right{
-  padding-left: 0!important;
+.field-split ::v-deep .fu-split-pane__right {
+  padding-left: 0 !important;
 }
 
-.view-panel-row ::v-deep .el-collapse-item__header{
+.view-panel-row ::v-deep .el-collapse-item__header {
   height: 34px !important;
   line-height: 34px !important;
   padding: 0 0 0 6px !important;
@@ -3742,14 +3785,14 @@ span {
   font-weight: 400 !important;
 }
 
-.data-area-label{
+.data-area-label {
   text-align: left;
   position: relative;
   width: 100%;
   display: inline-block;
 }
 
-.data-area-clear{
+.data-area-clear {
   position: absolute;
   top: 4px;
   right: 6px;
