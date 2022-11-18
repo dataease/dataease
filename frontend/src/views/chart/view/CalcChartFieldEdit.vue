@@ -71,7 +71,7 @@
                     </div>
                     <i
                       class="el-icon-info"
-                      style="cursor: pointer;"
+                      style="cursor: pointer;z-index: 5;position: relative"
                     />
                   </el-tooltip>
                 </template>
