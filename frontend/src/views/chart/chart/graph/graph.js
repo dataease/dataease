@@ -42,6 +42,8 @@ export function baseGraphOption(chart_option, chart,cstyle = {}) {
           chart_option.series[0].scaleLimit.min = customAttr.label.scaleLimitMin? customAttr.label.scaleLimitMin : 0
         }
         const valueArr = chart.data.series[0].data
+        const Max = Math.max(...valueArr.map(item => {return item.value}))
+        // console.log('maxxxxxx',Max)
         for (let i = 0; i < valueArr.length; i++) {
           const y = valueArr[i]
           y.name = chart.data.x[i]
@@ -79,9 +81,9 @@ export function baseGraphOption(chart_option, chart,cstyle = {}) {
           y.type = 'graph'
           // 气泡大小
           if(customAttr.label && customAttr.label.reductionRate) {
-            y.symbolSize = parseInt(valueArr[i].value * (customAttr.label.reductionRate/100))
+            y.symbolSize = parseInt((40*(1+valueArr[i].value/Max)) * (customAttr.label.reductionRate/100))
           } else {
-            y.symbolSize = parseInt(valueArr[i].value)
+            y.symbolSize = parseInt((40*(1+valueArr[i].value/Max)))
           }
           y.draggable = true
 

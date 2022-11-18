@@ -1181,6 +1181,57 @@ export default {
                               console.log('这个。。。', arr)
                               response.data.data.datas = arr
                             }
+
+                            const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'y_Q')
+                            console.log('antv,qList',qList)
+                            if (qList.length > 0) {
+                              const arr = []
+                              const list = deepCopy(response.data.data.datas)
+                              list.forEach(item => {
+                                const obj = item
+                                if(
+                                  (new Date(item.field).getMonth() + 1) === 1 ||
+                                  (new Date(item.field).getMonth() + 1) === 2 ||
+                                  (new Date(item.field).getMonth() + 1) === 3
+                                ) {
+                                  if (obj.name) {
+                                    obj.name = '第一季度'
+                                  }
+                                  obj.field = '第一季度'
+                                } else if (
+                                  (new Date(item.field).getMonth() + 1) === 4 ||
+                                  (new Date(item.field).getMonth() + 1) === 5 ||
+                                  (new Date(item.field).getMonth() + 1) === 6
+                                ) {
+                                  if (obj.name) {
+                                    obj.name = '第二季度'
+                                  }
+                                  obj.field = '第二季度'
+                                } else if (
+                                  (new Date(item.field).getMonth() + 1) === 7 ||
+                                  (new Date(item.field).getMonth() + 1) === 8 ||
+                                  (new Date(item.field).getMonth() + 1) === 9
+                                ) {
+                                  if (obj.name) {
+                                    obj.name = '第三季度'
+                                  }
+                                  obj.field = '第三季度'
+                                } else if (
+                                  (new Date(item.field).getMonth() + 1) === 10 ||
+                                  (new Date(item.field).getMonth() + 1) === 11 ||
+                                  (new Date(item.field).getMonth() + 1) === 12
+                                ) {
+                                  if (obj.name) {
+                                    obj.name = '第四季度'
+                                  }
+                                  obj.field = '第四季度'
+                                }
+
+                                arr.push(obj)
+                              })
+                              console.log('这个。。。',arr)
+                              response.data.data.datas = arr
+                            }
                           }
                         }
                         this.chart = response.data
@@ -1222,6 +1273,47 @@ export default {
                                 arr.push(obj)
                               })
                               console.log('这个。。。', arr)
+                              response.data.data.x = arr
+                            }
+
+                            const qList = JSON.parse(response.data.xaxis).filter(item => (item.type === 'DATETIME' || item.type === 'DATE') && item.dateStyle === 'y_Q')
+                            console.log('echarts,qList',qList)
+                            if (qList.length > 0) {
+                              const arr = []
+                              const list = deepCopy(response.data.data.x)
+                              list.forEach(item => {
+                                let obj = item
+                                if(
+                                  (new Date(item).getMonth() + 1) === 1 ||
+                                  (new Date(item).getMonth() + 1) === 2 ||
+                                  (new Date(item).getMonth() + 1) === 3
+                                ) {
+                                  obj = '第一季度'
+                                } else if (
+                                  (new Date(item).getMonth() + 1) === 4 ||
+                                  (new Date(item).getMonth() + 1) === 5 ||
+                                  (new Date(item).getMonth() + 1) === 6
+                                ) {
+                                  obj = '第二季度'
+                                } else if (
+                                  (new Date(item).getMonth() + 1) === 7 ||
+                                  (new Date(item).getMonth() + 1) === 8 ||
+                                  (new Date(item).getMonth() + 1) === 9
+                                ) {
+                                  obj = '第三季度'
+                                }  else if (
+                                  (new Date(item).getMonth() + 1) === 10 ||
+                                  (new Date(item).getMonth() + 1) === 11 ||
+                                  (new Date(item).getMonth() + 1) === 12
+                                ) {
+                                  obj = '第四季度'
+                                }
+
+                                arr.push(obj)
+                              })
+                              
+                              console.log('ec,,,,',arr)
+
                               response.data.data.x = arr
                             }
                           }
@@ -1295,190 +1387,6 @@ export default {
                 })
               }
             }
-            // 将视图传入echart组件
-            // if (response.success) {
-            //   console.log('查出的数据', response.data)
-            //   if (response.data.render === 'antv') {
-            //     if (response.data.data) {
-            //       if (response.data.xaxis) {
-            //         const axisList = JSON.parse(response.data.xaxis).filter(item => item.type === 'DATETIME' && item.dateStyle === 'M')
-            //         // console.log('antv,xaxis',axisList)
-            //         if (axisList.length > 0) {
-            //           const arr = []
-            //           const list = deepCopy(response.data.data.datas)
-            //           list.forEach(item => {
-            //             const obj = item
-            //             if ((new Date(item.field).getMonth() + 1) === 1) {
-            //               if (obj.name) {
-            //                 obj.name = '一月'
-            //               }
-            //               obj.field = '一月'
-            //             } else if ((new Date(item.field).getMonth() + 1) === 2) {
-            //               if (obj.name) {
-            //                 obj.name = '二月'
-            //               }
-            //               obj.field = '二月'
-            //             } else if ((new Date(item.field).getMonth() + 1) === 3) {
-            //               if (obj.name) {
-            //                 obj.name = '三月'
-            //               }
-            //               obj.field = '三月'
-            //             } else if ((new Date(item.field).getMonth() + 1) === 4) {
-            //               if (obj.name) {
-            //                 obj.name = '四月'
-            //               }
-            //               obj.field = '四月'
-            //             } else if ((new Date(item.field).getMonth() + 1) === 5) {
-            //               if (obj.name) {
-            //                 obj.name = '五月'
-            //               }
-            //               obj.field = '五月'
-            //             } else if ((new Date(item.field).getMonth() + 1) === 6) {
-            //               if (obj.name) {
-            //                 obj.name = '六月'
-            //               }
-            //               obj.field = '六月'
-            //             } else if ((new Date(item.field).getMonth() + 1) === 7) {
-            //               if (obj.name) {
-            //                 obj.name = '七月'
-            //               }
-            //               obj.field = '七月'
-            //             } else if ((new Date(item.field).getMonth() + 1) === 8) {
-            //               if (obj.name) {
-            //                 obj.name = '八月'
-            //               }
-            //               obj.field = '八月'
-            //             } else if ((new Date(item.field).getMonth() + 1) === 9) {
-            //               if (obj.name) {
-            //                 obj.name = '九月'
-            //               }
-            //               obj.field = '九月'
-            //             } else if ((new Date(item.field).getMonth() + 1) === 10) {
-            //               if (obj.name) {
-            //                 obj.name = '十月'
-            //               }
-            //               obj.field = '十月'
-            //             } else if ((new Date(item.field).getMonth() + 1) === 11) {
-            //               if (obj.name) {
-            //                 obj.name = '十一月'
-            //               }
-            //               obj.field = '十一月'
-            //             } else if ((new Date(item.field).getMonth() + 1) === 12) {
-            //               if (obj.name) {
-            //                 obj.name = '十二月'
-            //               }
-            //               obj.field = '十二月'
-            //             }
-            //             arr.push(obj)
-            //           })
-            //           console.log('这个。。。', arr)
-            //           response.data.data.datas = arr
-            //         }
-            //       }
-            //     }
-            //     this.chart = response.data
-            //   } else if (response.data.render === 'echarts' || response.data.render === 'highcharts') {
-            //     if (response.data.data) {
-            //       if (response.data.xaxis) {
-            //         const axisList = JSON.parse(response.data.xaxis).filter(item => item.type === 'DATETIME' && item.dateStyle === 'M')
-            //         // console.log('echarts,xaxis',axisList)
-            //         if (axisList.length > 0) {
-            //           const arr = []
-            //           const list = deepCopy(response.data.data.x)
-            //           list.forEach(item => {
-            //             let obj = item
-            //             if ((new Date(item).getMonth() + 1) === 1) {
-            //               obj = '一月'
-            //             } else if ((new Date(item).getMonth() + 1) === 2) {
-            //               obj = '二月'
-            //             } else if ((new Date(item).getMonth() + 1) === 3) {
-            //               obj = '三月'
-            //             } else if ((new Date(item).getMonth() + 1) === 4) {
-            //               obj = '四月'
-            //             } else if ((new Date(item).getMonth() + 1) === 5) {
-            //               obj = '五月'
-            //             } else if ((new Date(item).getMonth() + 1) === 6) {
-            //               obj = '六月'
-            //             } else if ((new Date(item).getMonth() + 1) === 7) {
-            //               obj = '七月'
-            //             } else if ((new Date(item).getMonth() + 1) === 8) {
-            //               obj = '八月'
-            //             } else if ((new Date(item).getMonth() + 1) === 9) {
-            //               obj = '九月'
-            //             } else if ((new Date(item).getMonth() + 1) === 10) {
-            //               obj = '十月'
-            //             } else if ((new Date(item).getMonth() + 1) === 11) {
-            //               obj = '十一月'
-            //             } else if ((new Date(item).getMonth() + 1) === 12) {
-            //               obj = '十二月'
-            //             }
-            //             arr.push(obj)
-            //           })
-            //           console.log('这个。。。', arr)
-            //           response.data.data.x = arr
-            //         }
-            //       }
-            //     }
-            //     this.chart = response.data
-            //   } else {
-            //     this.chart = response.data
-            //   }
-
-            //   // 主题切换
-            //   if (this.templateStatus) {
-            //     console.log('主题值：', this.canvasStyleData.chart, this.chart)
-            //     this.chart.customAttr = this.canvasStyleData.chart.customAttr
-            //     this.chart.customStyle = this.canvasStyleData.chart.customStyle
-            //     const deepCacheInfo = deepCopy(this.chart)
-
-            //     deepCacheInfo.xaxis = JSON.parse(this.chart.xaxis)
-            //     deepCacheInfo.xaxisExt = JSON.parse(this.chart.xaxisExt)
-            //     deepCacheInfo.yaxis = JSON.parse(this.chart.yaxis)
-            //     deepCacheInfo.yaxisExt = JSON.parse(this.chart.yaxisExt)
-            //     deepCacheInfo.customAttr = JSON.parse(this.chart.customAttr)
-            //     deepCacheInfo.customStyle = JSON.parse(this.chart.customStyle)
-            //     console.log('----------------------过滤的值--------------22222', this.chart.customFilter)
-            //     deepCacheInfo.customFilter = JSON.parse(this.chart.customFilter)
-            //     deepCacheInfo.extStack = JSON.parse(this.chart.extStack)
-            //     deepCacheInfo.drillFields = JSON.parse(this.chart.drillFields)
-            //     deepCacheInfo.extBubble = JSON.parse(this.chart.extBubble)
-            //     deepCacheInfo.senior = JSON.parse(this.chart.senior)
-
-            //     // console.log('dddddddddddd',deepCacheInfo)
-            //     this.saveThemeInfo(deepCacheInfo, 'chart', false, false)
-            //   }
-            //   console.log('userView,,,,this.chart: ', this.chart)
-            //   this.chart['position'] = this.inTab ? 'tab' : 'panel'
-            //   // 记录当前数据
-            //   this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
-            //   this.sourceCustomAttrStr = this.chart.customAttr
-            //   this.sourceCustomStyleStr = this.chart.customStyle
-            //   this.chart.drillFields = this.chart.drillFields
-            //     ? JSON.parse(this.chart.drillFields)
-            //     : []
-            //   if (!response.data.drill) {
-            //     this.drillClickDimensionList.splice(
-            //       this.drillClickDimensionList.length - 1,
-            //       1
-            //     )
-            //     this.resetDrill()
-            //   }
-            //   console.log('执行此处问题-----')
-            //   this.drillFilters = JSON.parse(
-            //     JSON.stringify(
-            //       response.data.drillFilters ? response.data.drillFilters : []
-            //     )
-            //   )
-            //   this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
-            //   // this.requestStatus = 'merging'
-            //   this.mergeScale()
-            //   // this.requestStatus = 'success'
-            //   this.httpRequest.status = true
-            //   console.log('thissssss', this.chart)
-            // } else {
-            //   // this.requestStatus = 'error'
-            //   this.message = response.message
-            // }
             this.isFirstLoad = false
             return true
           })
