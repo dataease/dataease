@@ -1871,12 +1871,10 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
-
+    to_top: '置頂',
     down: '下載',
-
     mobile_style_setting: '樣式設置',
     mobile_style_setting_tips: '自定義移動端背景',
-
     board: '邊框',
     text: '文字',
     board_background: '背景',

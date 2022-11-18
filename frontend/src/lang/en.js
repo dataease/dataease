@@ -1871,12 +1871,10 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
-
+    to_top: 'To Top',
     down: 'Down',
-
     mobile_style_setting: 'Style setting',
     mobile_style_setting_tips: 'Customize the mobile background',
-
     board: 'Border',
     text: 'Text',
     board_background: 'Background',

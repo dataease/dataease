@@ -947,4 +947,15 @@ public class PanelGroupService {
         //数据源变更
         panelAppTemplateService.editDatasource(request.getDatasourceList());
     }
+
+    public void toTop(String panelId) {
+        Long time = System.currentTimeMillis();
+        PanelGroupWithBLOBs request = new PanelGroupWithBLOBs();
+        request.setId(panelId);
+        request.setPanelSort(time);
+        request.setUpdateTime(time);
+        request.setUpdateBy(AuthUtils.getUser().getUsername());
+        panelGroupMapper.updateByPrimaryKeySelective(request);
+
+    }
 }

@@ -358,3 +358,11 @@ export function findOneWithParent(panelId) {
     loading: false
   })
 }
+
+export function panelToTop(panelId) {
+  return request({
+    url: 'panel/group/toTop/' + panelId,
+    method: 'post',
+    loading: false
+  })
+}

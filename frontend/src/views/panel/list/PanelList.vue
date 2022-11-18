@@ -68,6 +68,19 @@
                 >{{ data.name }}</span>
               </span>
               <span
+                v-if="hasDataPermission('manage', data.privileges)"
+                :title="'置顶'"
+                class="child"
+                @click.stop
+              >
+                <el-button
+                  icon="el-icon-upload2"
+                  type="text"
+                  size="small"
+                  @click="toTop(data, node)"
+                />
+              </span>
+              <span
                 style="margin-left: 12px"
                 class="child"
                 @click.stop
@@ -431,7 +444,16 @@ import LinkGenerate from '@/views/link/generate'
 import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
 import EditPanel from './editPanel'
-import { addGroup, defaultTree, delGroup, groupTree, initPanelData, panelUpdate, viewPanelLog } from '@/api/panel/panel'
+import {
+  addGroup,
+  defaultTree,
+  delGroup,
+  groupTree,
+  initPanelData,
+  panelToTop,
+  panelUpdate,
+  viewPanelLog
+} from '@/api/panel/panel'
 import { mapState } from 'vuex'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
 import TreeSelector from '@/components/treeSelector'
@@ -442,6 +464,7 @@ export default {
   components: { GrantAuth, LinkGenerate, EditPanel, TreeSelector },
   data() {
     return {
+      lastActiveDefaultPanelId: null, // 激活的节点 在这个节点下面动态放置子节点
       responseSource: 'panelQuery',
       defaultExpansion: false,
       clearLocalStorage: ['chart-tree', 'dataset-tree'],
@@ -591,13 +614,13 @@ export default {
   },
   mounted() {
     this.clearCanvas()
-    this.defaultTree(true)
     this.initCache()
     const routerParam = this.$router.currentRoute.params
     if (routerParam && routerParam.responseSource === 'appApply') {
       this.responseSource = routerParam.responseSource
       this.lastActiveNode = routerParam
       this.tree()
+      this.defaultTree(true, false)
     } else if (
       routerParam &&
       routerParam.nodeType === 'panel' &&
@@ -605,12 +628,19 @@ export default {
     ) {
       this.historyRequestId = routerParam.requestId
       this.tree()
+      this.defaultTree(true, false)
       this.edit(routerParam, null)
     } else {
+      this.defaultTree(true, true)
       this.tree(true)
     }
   },
   methods: {
+    toTop(data, node) {
+      panelToTop(data.id).then(() => {
+        this.defaultTree()
+      })
+    },
     fromAppActive() {
       this.activeNodeAndClickOnly(this.lastActiveNode)
       this.clearLocalStorage.forEach((item) => {
@@ -637,7 +667,7 @@ export default {
     closeEditPanelDialog(panelInfo) {
       this.editPanel.visible = false
       if (panelInfo) {
-        this.defaultTree()
+        this.defaultTree(false)
         this.tree()
         if (this.editPanel.optType === 'rename' && panelInfo.id === this.$store.state.panel.panelInfo.id) {
           this.$store.state.panel.panelInfo.name = panelInfo.name
@@ -809,7 +839,7 @@ export default {
               showClose: true
             })
             this.tree()
-            this.defaultTree()
+            this.defaultTree(false)
           })
         } else {
           this.$message({
@@ -837,7 +867,7 @@ export default {
             })
             this.clearCanvas()
             this.tree()
-            this.defaultTree()
+            this.defaultTree(false)
           })
         })
         .catch(() => {
@@ -887,7 +917,7 @@ export default {
         }
       })
     },
-    defaultTree(cache = false) {
+    defaultTree(cache = false, showFirst = false) {
       const requestInfo = {
         panelType: 'system'
       }
@@ -896,21 +926,38 @@ export default {
 
       if (userCache) {
         this.defaultData = JSON.parse(modelInfo)
+        if (showFirst && this.defaultData.length > 0) {
+          this.activeDefaultNodeAndClickOnly(this.defaultData[0].id)
+        }
       }
+      const currentKey = this.$refs.default_panel_tree.getCurrentKey()
       defaultTree(requestInfo, false).then((res) => {
         localStorage.setItem('panel-default-tree', JSON.stringify(res.data))
         if (!userCache) {
           this.defaultData = res.data
+          if (showFirst && this.defaultData.length > 0) {
+            this.activeDefaultNodeAndClickOnly(this.defaultData[0].id)
+          }
         }
         if (this.filterText) {
           this.$nextTick(() => {
             this.$refs.default_panel_tree.filter(this.filterText)
           })
         }
+        if (currentKey) {
+          this.$nextTick(() => {
+            this.$refs.default_panel_tree.setCurrentKey(currentKey)
+          })
+        }
       })
     },
 
     nodeClick(data, node) {
+      if (data.panelType === 'self') {
+        this.$refs.default_panel_tree.setCurrentKey(null)
+      } else {
+        this.$refs.panel_list_tree.setCurrentKey(null)
+      }
       this.lastActiveNode = node
       this.lastActiveNodeData = data
       this.activeTree = data.panelType
@@ -1023,6 +1070,20 @@ export default {
           if (panelInfo.parents) {
             _this.expandedArray = panelInfo.parents
           }
+          _this.$nextTick(() => {
+            document.querySelector('.is-current').firstChild.click()
+          })
+        })
+      }
+    },
+    // 激活当前默认仪表板节点节点
+    activeDefaultNodeAndClickOnly(panelId) {
+      if (panelId) {
+        const _this = this
+        _this.$nextTick(() => {
+          _this.$refs.panel_list_tree.setCurrentKey(null)
+          // 延迟设置CurrentKey
+          _this.$refs.default_panel_tree.setCurrentKey(panelId)
           _this.$nextTick(() => {
             document.querySelector('.is-current').firstChild.click()
           })

@@ -115,11 +115,12 @@ import bus from '@/utils/bus'
 import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
 import { hasDataPermission } from '@/utils/permission'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
-import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
+import { userLoginInfo } from '@/api/systemInfo/userLogin'
 import html2canvas from 'html2canvasde'
 import { queryAll } from '@/api/panel/pdfTemplate'
-const erd = elementResizeDetectorMaker()
 import PDFPreExport from '@/views/panel/export/PDFPreExport'
+
+const erd = elementResizeDetectorMaker()
 export default {
   components: { ComponentWrapper, CanvasOptBar, PDFPreExport },
   model: {
