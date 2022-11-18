@@ -736,7 +736,7 @@
 </template>
 
 <script>
-import { post, fieldListDQ, batchEdit } from '@/api/dataset/dataset'
+import { post, fieldListDQ, batchEdit, dateformats } from '@/api/dataset/dataset'
 import CalcFieldEdit from './CalcFieldEdit'
 import { getFieldName } from '@/views/dataset/data/utils'
 import msgCfm from '@/components/msgCfm/index'
@@ -757,6 +757,7 @@ export default {
   },
   data() {
     return {
+      dateFormats: [],
       maxHeight: 'auto',
       tableFields: {
         dimensionList: [],
@@ -822,6 +823,9 @@ export default {
         this.filterField(this.searchField)
         this.dimensionChange()
         this.quotaChange()
+      })
+      dateformats(this.param.id).then((response) => {
+        this.dateFormats = response.data
       })
     },
     saveEdit(item) {

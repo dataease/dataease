@@ -168,13 +168,14 @@ public class AuthServer implements AuthApi {
             String token = ServletUtils.getToken();
             Long userId = JWTUtils.tokenInfoByToken(token).getUserId();
             SysUserEntity user = authUserService.getUserById(userId);
-            CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user);
+            CurrentUserDto currentUserDto = BeanUtils.copyBean(new CurrentUserDto(), user, "password");
             List<CurrentRoleDto> currentRoleDtos = authUserService.roleInfos(user.getUserId());
             List<String> permissions = authUserService.permissions(user.getUserId());
             currentUserDto.setRoles(currentRoleDtos);
             currentUserDto.setPermissions(permissions);
             return currentUserDto;
         }
+        userDto.setPassword(null);
         return userDto;
     }
 

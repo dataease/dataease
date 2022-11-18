@@ -1934,6 +1934,7 @@ export default {
         const nodes = this.$el.parentNode.childNodes // 获取当前父节点下所有子节点
         for (const item of nodes) {
           if (
+            item.tagName !== 'svg' &&
             item.className !== undefined &&
             !item.className.split(' ').includes(this.classNameActive) &&
             item.getAttribute('tab-is-check') !== null &&
@@ -2119,8 +2120,8 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .drag-on-tab-collision {

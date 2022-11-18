@@ -56,7 +56,7 @@ public class XEmailTaskServer {
     @RequiresPermissions("task-email:read")
     @PostMapping("/queryTasks/{goPage}/{pageSize}")
     public Pager<List<XpackTaskGridDTO>> queryTask(@PathVariable int goPage, @PathVariable int pageSize,
-            @RequestBody XpackGridRequest request) {
+                                                   @RequestBody XpackGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         CurrentUserDto user = AuthUtils.getUser();
@@ -76,17 +76,17 @@ public class XEmailTaskServer {
             tasks.forEach(item -> {
                 if (CronUtils.taskExpire(item.getEndTime())) {
                     item.setNextExecTime(null);
-                }else {
+                } else {
                     GlobalTaskEntity globalTaskEntity = new GlobalTaskEntity();
                     globalTaskEntity.setRateType(item.getRateType());
                     globalTaskEntity.setRateVal(item.getRateVal());
-                    try{
+                    try {
                         String cron = CronUtils.cron(globalTaskEntity);
                         if (StringUtils.isNotBlank(cron)) {
                             Long nextTime = CronUtils.getNextTriggerTime(cron).getTime();
                             item.setNextExecTime(nextTime);
                         }
-                    }catch (Exception e) {
+                    } catch (Exception e) {
                         item.setNextExecTime(null);
                     }
                 }
@@ -96,6 +96,20 @@ public class XEmailTaskServer {
 
         Pager<List<XpackTaskGridDTO>> listPager = PageUtils.setPageInfo(page, tasks);
         return listPager;
+    }
+
+    @RequiresPermissions("task-email:edit")
+    @PostMapping("/fireNow/{taskId}")
+    public void fireNow(@PathVariable("taskId") Long taskId) throws Exception {
+        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
+        XpackEmailTaskRequest request = emailXpackService.taskForm(taskId);
+        GlobalTaskEntity globalTaskEntity = BeanUtils.copyBean(new GlobalTaskEntity(), request);
+        if (CronUtils.taskExpire(globalTaskEntity.getEndTime())) {
+            globalTaskEntity.setEndTime(null);
+            scheduleService.addTempSchedule(globalTaskEntity);
+            return;
+        }
+        scheduleService.fireNow(globalTaskEntity);
     }
 
     @RequiresPermissions("task-email:add")
@@ -210,7 +224,7 @@ public class XEmailTaskServer {
 
     @PostMapping("/queryInstancies/{goPage}/{pageSize}")
     public Pager<List<XpackTaskInstanceDTO>> instancesGrid(@PathVariable int goPage, @PathVariable int pageSize,
-            @RequestBody XpackGridRequest request) {
+                                                           @RequestBody XpackGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         List<XpackTaskInstanceDTO> instances = emailXpackService.taskInstanceGrid(request);
@@ -227,7 +241,7 @@ public class XEmailTaskServer {
 
     @RequiresPermissions("task-email:read")
     @PostMapping("/export")
-    public void export(@RequestBody XpackGridRequest request) throws Exception{
+    public void export(@RequestBody XpackGridRequest request) throws Exception {
         Pager<List<XpackTaskInstanceDTO>> listPager = instancesGrid(0, 0, request);
         List<XpackTaskInstanceDTO> instanceDTOS = listPager.getListObject();
         ExcelSheetModel excelSheetModel = excelSheetModel(instanceDTOS);
@@ -257,7 +271,7 @@ public class XEmailTaskServer {
             inputStream.close();
         } catch (IOException ex) {
             ex.printStackTrace();
-        }finally {
+        } finally {
             if (file.exists())
                 FileUtil.del(file);
         }
@@ -267,7 +281,7 @@ public class XEmailTaskServer {
     private ExcelSheetModel excelSheetModel(List<XpackTaskInstanceDTO> instanceDTOS) {
         ExcelSheetModel excelSheetModel = new ExcelSheetModel();
         excelSheetModel.setSheetName(Translator.get("I18N_XPACKTASK_FILE_NAME"));
-        String[] headArr = new String[] {Translator.get("I18N_XPACKTASK_NAME"), Translator.get("I18N_XPACKTASK_EXEC_TIME"), Translator.get("I18N_XPACKTASK_STATUS")};
+        String[] headArr = new String[]{Translator.get("I18N_XPACKTASK_NAME"), Translator.get("I18N_XPACKTASK_EXEC_TIME"), Translator.get("I18N_XPACKTASK_STATUS")};
         List<String> head = Arrays.asList(headArr);
         excelSheetModel.setHeads(head);
         List<List<String>> data = instanceDTOS.stream().map(this::formatExcelData).collect(Collectors.toList());

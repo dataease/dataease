@@ -38,12 +38,20 @@
       <el-row class="margin-top20">
         <el-row class="custom-item-text-row">
           <span class="custom-item-text bl"> {{ $t('panel.refresh_frequency') }}</span>
+          <span class="custom-item-text bl">
+            <el-checkbox
+              v-model="overallSettingForm.refreshViewEnable"
+              class="el-input-refresh-loading"
+              @change="themeChange"
+            >{{ $t('panel.enable_refresh_view') }}</el-checkbox>
+          </span>
           <span class="custom-item-text br">
             <el-checkbox
               v-model="overallSettingForm.refreshViewLoading"
               class="el-input-refresh-loading"
+              :disabled="!overallSettingForm.refreshViewEnable"
               @change="themeChange"
-            >视图加载提示</el-checkbox>
+            >{{ $t('panel.enable_view_loading') }}</el-checkbox>
           </span>
         </el-row>
         <el-row class="function-area">
@@ -55,12 +63,14 @@
             controls-position="right"
             :min="1"
             :max="3600"
+            :disabled="!overallSettingForm.refreshViewEnable"
             @change="themeChange"
           />
           <el-select
             v-model="overallSettingForm.refreshUnit"
             class="el-input-refresh-unit margin-left8"
             size="mini"
+            :disabled="!overallSettingForm.refreshViewEnable"
             @change="themeChange"
           >
             <el-option

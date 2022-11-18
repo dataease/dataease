@@ -2,6 +2,7 @@
 import { DEFAULT_COLOR_CASE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { COMMON_BACKGROUND_BASE } from '@/components/canvas/customComponent/component-list'
+
 export const TAB_COMMON_STYLE = {
   headFontColor: '#000000',
   headFontActiveColor: '#000000',
@@ -28,7 +29,15 @@ export const FILTER_COMMON_STYLE_DARK = {
   innerBgColor: '#131E42'
 }
 
+export const MOBILE_SETTING = {
+  customSetting: false,
+  color: '#ffffff',
+  imageUrl: null,
+  backgroundType: 'image'
+}
+
 export const DEFAULT_PANEL_STYLE = {
+  mobileSetting: MOBILE_SETTING,
   themeColor: 'light',
   color: '#ffffff',
   imageUrl: null,
@@ -60,6 +69,7 @@ export const CANVAS_STYLE = {
     showGrid: false,
     matrixBase: 4 // 当前matrix的基数 （是pcMatrixCount的几倍）
   }, // 辅助设计
+  refreshViewEnable: true, // 开启视图刷新（默认开启）
   refreshViewLoading: true, // 仪表板视图loading提示
   refreshUnit: 'minute', // 仪表板刷新时间带外 默认 分钟
   refreshTime: 5, // 仪表板刷新时间 默认5分钟

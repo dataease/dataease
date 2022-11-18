@@ -932,7 +932,7 @@ export default {
       return !this.linkageSettingStatus && !this.batchOptStatus
     },
     showGrid() {
-      if (this.canvasStyleData && this.canvasStyleData.aidedDesign) {
+      if (this.canvasStyleData && this.canvasStyleData.aidedDesign && this.canvasId === 'canvas-main') {
         return this.canvasStyleData.aidedDesign.showGrid
       } else {
         return false

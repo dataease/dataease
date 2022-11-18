@@ -167,6 +167,7 @@
     <el-dialog
       :visible.sync="boardSetVisible"
       width="750px"
+      top="5vh"
       class="dialog-css"
       :close-on-click-modal="false"
       :show-close="false"
@@ -191,6 +192,7 @@ import FieldsList from '@/components/canvas/components/editor/FieldsList'
 import LinkJumpSet from '@/views/panel/linkJumpSet'
 import Background from '@/views/background/index'
 import MapLayerController from '@/views/chart/components/map/MapLayerController'
+import { uploadFileResult } from '@/api/staticResource/staticResource'
 
 export default {
   components: { Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField, MapLayerController },
@@ -240,6 +242,7 @@ export default {
   },
   data() {
     return {
+      maxImageSize: 15000000,
       boardSetVisible: false,
       linkJumpSetVisible: false,
       linkJumpSetViewId: null,
@@ -493,20 +496,25 @@ export default {
       // ignore
       e.preventDefault()
     },
+    sizeMessage() {
+      this.$notify({
+        message: this.$t('panel.image_size_tips'),
+        position: 'top-left'
+      })
+    },
     handleFileChange(e) {
       const file = e.target.files[0]
       if (!file.type.includes('image')) {
-        toast('只能插入图片')
+        toast(this.$t('panel.image_size_tips'))
         return
       }
-      const reader = new FileReader()
-      reader.onload = (res) => {
-        const fileResult = res.target.result
-        this.curComponent.propValue = fileResult
-        this.$store.commit('recordSnapshot', 'handleFileChange')
+      if (file.size > this.maxImageSize) {
+        this.sizeMessage()
       }
-
-      reader.readAsDataURL(file)
+      uploadFileResult(file, (fileUrl) => {
+        this.curComponent.propValue = fileUrl
+        this.$store.commit('recordSnapshot', 'handleFileChange')
+      })
     },
     boardSet() {
       this.boardSetVisible = true

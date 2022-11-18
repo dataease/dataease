@@ -267,7 +267,6 @@
       <div v-if="currentElement.options && currentElement.options.attrs">
         <filter-head
           :element="currentElement"
-          :widget="widget"
         />
 
         <filter-control
@@ -857,7 +856,6 @@ export default {
 
   .de-dialog-container {
     height: 50vh !important;
-
   }
 
   .ms-aside-container {

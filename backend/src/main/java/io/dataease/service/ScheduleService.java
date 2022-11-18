@@ -68,6 +68,11 @@ public class ScheduleService {
         taskHandler.addTask(scheduleManager, task);
     }
 
+    public void addTempSchedule(GlobalTaskEntity task) throws Exception {
+        TaskHandler taskHandler = TaskStrategyFactory.getInvokeStrategy(task.getTaskType());
+        taskHandler.addTempTask(scheduleManager, task);
+    }
+
     public void deleteSchedule(GlobalTaskEntity task) {
         TaskHandler taskHandler = TaskStrategyFactory.getInvokeStrategy(task.getTaskType());
         taskHandler.removeTask(scheduleManager, task);

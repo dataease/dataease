@@ -969,7 +969,8 @@ export default {
         createBy: data.createBy,
         createTime: data.createTime,
         updateBy: data.updateBy,
-        updateTime: data.updateTime
+        updateTime: data.updateTime,
+        watermarkOpen: data.watermarkOpen
       })
       bus.$emit('PanelSwitchComponent', { name: 'PanelEdit' })
     },

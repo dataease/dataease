@@ -43,11 +43,10 @@
 import ElVisualSelect from '@/components/elVisualSelect'
 import { linkMultFieldValues, multFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
-import { isSameVueObj } from '@/utils'
+import { isSameVueObj, mergeCustomSortOption } from '@/utils'
 import { getLinkToken, getToken } from '@/utils/auth'
 import customInput from '@/components/widget/deWidget/customInput'
 import { textSelectWidget } from '@/components/widget/deWidget/serviceNameFn.js'
-
 export default {
   components: { ElVisualSelect },
   mixins: [customInput],
@@ -123,6 +122,9 @@ export default {
       const i18nKey = this.element.options.attrs.multiple ? 'panel.multiple_choice' : 'panel.single_choice'
       const i18nValue = this.$t(i18nKey)
       return '(' + i18nValue + ')'
+    },
+    isCustomSortWidget() {
+      return this.element.serviceName === 'textSelectWidget'
     }
   },
 
@@ -347,7 +349,11 @@ export default {
     },
     optionData(data) {
       if (!data) return null
-      return data.filter(item => !!item).map(item => {
+      let tempData = data.filter(item => !!item)
+      if (this.isCustomSortWidget && this.element.options.attrs?.sort?.sort === 'custom') {
+        tempData = mergeCustomSortOption(this.element.options.attrs.sort.list, tempData)
+      }
+      return tempData.map(item => {
         return {
           id: item,
           text: item

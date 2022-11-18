@@ -172,7 +172,9 @@ export const DEFAULT_TOTAL = {
     },
     calcSubTotals: {
       aggregation: 'SUM'
-    }
+    },
+    totalSort: 'none', // asc,desc
+    totalSortField: ''
   },
   col: {
     showGrandTotals: true,
@@ -187,7 +189,9 @@ export const DEFAULT_TOTAL = {
     },
     calcSubTotals: {
       aggregation: 'SUM'
-    }
+    },
+    totalSort: 'none', // asc,desc
+    totalSortField: ''
   }
 }
 export const DEFAULT_TITLE_STYLE = {

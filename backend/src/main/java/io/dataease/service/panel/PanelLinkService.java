@@ -4,26 +4,26 @@ import io.dataease.auth.config.RsaProperties;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.RsaUtil;
 import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.commons.utils.AuthUtils;
-import io.dataease.commons.utils.CodingUtil;
-import io.dataease.commons.utils.DeLogUtils;
-import io.dataease.commons.utils.ServletUtils;
+import io.dataease.commons.utils.*;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
 import io.dataease.controller.request.panel.link.OverTimeRequest;
 import io.dataease.controller.request.panel.link.PasswordRequest;
+import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.dto.panel.link.GenerateDto;
+import io.dataease.ext.ExtPanelLinkMapper;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.PanelGroupMapper;
 import io.dataease.plugins.common.base.mapper.PanelLinkMapper;
 import io.dataease.plugins.common.base.mapper.PanelLinkMappingMapper;
+import io.dataease.plugins.common.base.mapper.PanelWatermarkMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import io.dataease.ext.ExtPanelLinkMapper;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +47,8 @@ public class PanelLinkService {
     private ExtPanelLinkMapper extPanelLinkMapper;
     @Resource
     private PanelLinkMappingMapper panelLinkMappingMapper;
+    @Resource
+    private PanelWatermarkMapper panelWatermarkMapper;
 
     @Transactional
     public void changeValid(LinkRequest request) {
@@ -67,7 +69,7 @@ public class PanelLinkService {
         if (!request.isValid()) {
             operateType = SysLogConstants.OPERATE_TYPE.DELETELINK;
         }
-        DeLogUtils.save(operateType, SysLogConstants.SOURCE_TYPE.PANEL, panel.getId(), panel.getPid(), null, null) ;
+        DeLogUtils.save(operateType, SysLogConstants.SOURCE_TYPE.PANEL, panel.getId(), panel.getPid(), null, null);
     }
 
     private PanelLinkExample example(String panelLinkId, Long userId) {
@@ -82,7 +84,7 @@ public class PanelLinkService {
         po.setEnablePwd(request.isEnablePwd());
         mapper.updateByExampleSelective(po, example(request.getResourceId(), AuthUtils.getUser().getUserId()));
         PanelGroupWithBLOBs panel = panelGroupMapper.selectByPrimaryKey(request.getResourceId());
-        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFYLINK, SysLogConstants.SOURCE_TYPE.PANEL, panel.getId(), panel.getPid(), null, null) ;
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFYLINK, SysLogConstants.SOURCE_TYPE.PANEL, panel.getId(), panel.getPid(), null, null);
     }
 
     public void password(PasswordRequest request) {
@@ -93,14 +95,14 @@ public class PanelLinkService {
 
 
         PanelGroupWithBLOBs panel = panelGroupMapper.selectByPrimaryKey(request.getResourceId());
-        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFYLINK, SysLogConstants.SOURCE_TYPE.PANEL, panel.getId(), panel.getPid(), null, null) ;
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFYLINK, SysLogConstants.SOURCE_TYPE.PANEL, panel.getId(), panel.getPid(), null, null);
     }
 
     public void overTime(OverTimeRequest request) {
         request.setUserId(AuthUtils.getUser().getUserId());
         extPanelLinkMapper.updateOverTime(request);
         PanelGroupWithBLOBs panel = panelGroupMapper.selectByPrimaryKey(request.getResourceId());
-        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFYLINK, SysLogConstants.SOURCE_TYPE.PANEL, panel.getId(), panel.getPid(), null, null) ;
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFYLINK, SysLogConstants.SOURCE_TYPE.PANEL, panel.getId(), panel.getPid(), null, null);
     }
 
     private PanelLink findOne(String resourceId) {
@@ -232,8 +234,12 @@ public class PanelLinkService {
         return pass;
     }
 
-    public PanelGroupWithBLOBs resourceInfo(String resourceId) {
-        return panelGroupMapper.selectByPrimaryKey(resourceId);
+    public PanelGroupDTO resourceInfo(String resourceId) {
+        PanelGroupWithBLOBs result = panelGroupMapper.selectByPrimaryKey(resourceId);
+        PanelGroupDTO panelGroupDTO = new PanelGroupDTO();
+        BeanUtils.copyBean(panelGroupDTO, result);
+        panelGroupDTO.setWatermarkInfo(panelWatermarkMapper.selectByPrimaryKey("system_default"));
+        return panelGroupDTO;
     }
 
     public String getShortUrl(String resourceId) {

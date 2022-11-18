@@ -92,13 +92,14 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             return;
 
         JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+        Boolean isTempTask = (Boolean) jobDataMap.getOrDefault(IS_TEMP_TASK, false);
         GlobalTaskEntity taskEntity = (GlobalTaskEntity) jobDataMap.get("taskEntity");
         ScheduleManager scheduleManager = SpringContextUtil.getBean(ScheduleManager.class);
-        if (CronUtils.taskExpire(taskEntity.getEndTime())) {
+        if (!isTempTask && CronUtils.taskExpire(taskEntity.getEndTime())) {
             removeTask(scheduleManager, taskEntity);
             return;
         }
-        if (taskIsRunning(taskEntity.getTaskId())) {
+        if (!isTempTask && taskIsRunning(taskEntity.getTaskId())) {
             LogUtil.info("Skip synchronization task: {} ,due to task status is {}",
                     taskEntity.getTaskId(), "running");
             return;
@@ -111,7 +112,10 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         XpackEmailTemplateDTO emailTemplate = (XpackEmailTemplateDTO) jobDataMap.get("emailTemplate");
         SysUserEntity creator = (SysUserEntity) jobDataMap.get("creator");
         LogUtil.info("start execute send panel report task...");
-        proxy(taskEntity.getTaskType()).sendReport(taskInstance, emailTemplate, creator);
+        proxy(taskEntity.getTaskType()).sendReport(taskInstance, emailTemplate, creator, isTempTask);
+        if (isTempTask) {
+            removeTask(scheduleManager, taskEntity);
+        }
 
     }
 
@@ -156,7 +160,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
     }
 
     @Async("priorityExecutor")
-    public void sendReport(GlobalTaskInstance taskInstance, XpackEmailTemplateDTO emailTemplateDTO, SysUserEntity user) {
+    public void sendReport(GlobalTaskInstance taskInstance, XpackEmailTemplateDTO emailTemplateDTO, SysUserEntity user, Boolean isTempTask) {
 
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         AuthUserServiceImpl userService = SpringContextUtil.getBean(AuthUserServiceImpl.class);
@@ -164,7 +168,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         List<File> files = null;
         try {
             XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskInstance.getTaskId());
-            if (ObjectUtils.isEmpty(taskForm) || CronUtils.taskExpire(taskForm.getEndTime())) {
+            if (ObjectUtils.isEmpty(taskForm) || (!isTempTask && CronUtils.taskExpire(taskForm.getEndTime()))) {
                 removeInstance(taskInstance);
                 return;
             }

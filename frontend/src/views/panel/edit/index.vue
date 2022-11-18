@@ -251,7 +251,6 @@
           <el-col
             :span="16"
             class="this_mobile_canvas_cell this_mobile_canvas_wait_cell"
-            :style="mobileCanvasStyle"
           >
             <component-wait />
           </el-col>
@@ -525,6 +524,8 @@ import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
 import eventBus from '@/components/canvas/utils/eventBus'
 import DeCanvas from '@/components/canvas/DeCanvas'
 import TextAttr from '@/components/canvas/components/TextAttr'
+import { userLoginInfo } from '@/api/systemInfo/userLogin'
+import { activeWatermark } from '@/components/canvas/tools/watermark'
 
 export default {
   name: 'PanelEdit',
@@ -680,13 +681,15 @@ export default {
     mobileCanvasStyle() {
       let style
       if (this.canvasStyleData.openCommonStyle) {
-        if (this.canvasStyleData.panel.backgroundType === 'image' && typeof (this.canvasStyleData.panel.imageUrl) === 'string') {
+        const styleInfo = this.canvasStyleData.panel.mobileSetting && this.canvasStyleData.panel.mobileSetting.customSetting
+          ? this.canvasStyleData.panel.mobileSetting : this.canvasStyleData.panel
+        if (styleInfo.backgroundType === 'image' && typeof (styleInfo.imageUrl) === 'string') {
           style = {
-            background: `url(${imgUrlTrans(this.canvasStyleData.panel.imageUrl)}) no-repeat`
+            background: `url(${imgUrlTrans(styleInfo.imageUrl)}) no-repeat`
           }
-        } else if (this.canvasStyleData.panel.backgroundType === 'color') {
+        } else if (styleInfo.backgroundType === 'color') {
           style = {
-            background: this.canvasStyleData.panel.color
+            background: styleInfo.color
           }
         } else {
           style = {
@@ -777,6 +780,12 @@ export default {
     },
     previewVisible(val) {
       this.$store.commit('setPreviewVisible', val)
+    },
+    panelInfo: {
+      handler(newVal, oldVla) {
+        this.initWatermark()
+      },
+      deep: true
     }
   },
   created() {
@@ -784,6 +793,7 @@ export default {
     listenGlobalKeyDown()
   },
   mounted() {
+    this.initWatermark()
     this.initEvents()
     const _this = this
     const erd = elementResizeDetectorMaker()
@@ -810,6 +820,14 @@ export default {
     elx && elx.remove()
   },
   methods: {
+    initWatermark() {
+      if (this.panelInfo.watermarkInfo) {
+        userLoginInfo().then(res => {
+          const userInfo = res.data
+          activeWatermark(this.panelInfo.watermarkInfo.settingContent, userInfo, 'canvasInfo-main', this.canvasId, this.panelInfo.watermarkOpen)
+        })
+      }
+    },
     componentOnDrag() {
       this.show = false
     },
@@ -1537,7 +1555,7 @@ export default {
 
 .this_mobile_canvas_wait_cell {
   background-size: 100% 100% !important;
-  border: 2px solid #9ea6b2
+  border: 1px solid #9ea6b2
 }
 
 .canvas_main_content {

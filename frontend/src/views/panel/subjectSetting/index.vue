@@ -21,7 +21,7 @@
           @change="handleChange"
         >
           <el-collapse-item
-            :title="'整体配置'"
+            :title="$t('panel.overall_setting')"
             name="panel"
           >
             <el-row class="selector-div">
@@ -29,31 +29,31 @@
             </el-row>
           </el-collapse-item>
           <el-collapse-item
-            :title="'仪表板背景'"
+            :title="$t('panel.panel_background')"
             name="panelBackground"
           >
             <background-selector />
           </el-collapse-item>
           <el-collapse-item
-            :title="'组件样式'"
+            :title="$t('panel.component_style')"
             name="componentStyle"
           >
             <component-style />
           </el-collapse-item>
           <el-collapse-item
-            :title="'组件配色'"
+            :title="$t('panel.component_color')"
             name="graphical"
           >
             <panel-color-selector @onColorChange="onColorChange" />
           </el-collapse-item>
           <el-collapse-item
-            :title="'图表标题'"
+            :title="$t('panel.chart_title')"
             name="table"
           >
             <view-title @onTextChange="onTextChange" />
           </el-collapse-item>
           <el-collapse-item
-            :title="'过滤组件'"
+            :title="$t('panel.filter_component')"
             name="filterComponent"
           >
             <FilterStyleSelector />
@@ -204,21 +204,21 @@ export default {
   font-weight: 700
 }
 
-.theme-slider-position{
+.theme-slider-position {
   height: 1px;
   position: absolute;
   left: 15px;
   right: 15px;
   top: 40px;
-  box-sizing:border-box;
+  box-sizing: border-box;
   border-bottom: 1px solid #e8eaed
 }
 
-::v-deep .el-collapse-item__header{
-  font-weight: 500!important;
-  font-size: 14px!important;
+::v-deep .el-collapse-item__header {
+  font-weight: 500 !important;
+  font-size: 14px !important;
   color: var(--TextPrimary, #1F2329);
-  padding: 0!important;
+  padding: 0 !important;
 }
 
 </style>
