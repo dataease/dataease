@@ -136,6 +136,14 @@ export function fieldListDQ(id, showLoading = true) {
   })
 }
 
+export function dateformats(id, showLoading = true) {
+  return request({
+    url: '/dataset/field/dateformats/' + id,
+    loading: showLoading,
+    method: 'post'
+  })
+}
+
 export function batchEdit(data) {
   return request({
     url: '/dataset/field/batchEdit',

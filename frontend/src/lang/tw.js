@@ -1441,7 +1441,12 @@ export default {
     proportion: '佔比',
     label_content: '標籤展示',
     percent: '占比',
-    table_index_desc: '表頭名稱'
+    table_index_desc: '表頭名稱',
+    total_sort: '總計排序',
+    total_sort_none: '無',
+    total_sort_asc: '升序',
+    total_sort_desc: '降序',
+    total_sort_field: '排序字段'
   },
   dataset: {
     spend_time: '耗時',
@@ -1862,7 +1867,8 @@ export default {
     input_placeholder: '請輸入4位數字或字母',
     pwd_error: '密碼錯誤',
     pwd_format_error: '請輸入4位數字或字母',
-    sure_bt: '確定'
+    sure_bt: '確定',
+    back_parent: '返回上一級'
   },
   panel: {
     to_top: '置頂',

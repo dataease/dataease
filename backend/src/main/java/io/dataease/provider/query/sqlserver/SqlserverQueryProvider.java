@@ -1,5 +1,7 @@
 package io.dataease.provider.query.sqlserver;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
@@ -17,6 +19,7 @@ import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
+import io.dataease.plugins.datasource.entity.Dateformat;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.datasource.query.Utils;
@@ -1330,5 +1333,14 @@ public class SqlserverQueryProvider extends QueryProvider {
         String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
         schema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema);
         return "SELECT * FROM " + schema + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table);
+    }
+
+    public List<Dateformat> dateformat() {
+        return JSONArray.parseArray("[\n" +
+                "{\"dateformat\": \"102\", \"desc\": \"yyyy.mm.dd\"},\n" +
+                "{\"dateformat\": \"23\", \"desc\": \"yyyy-mm-dd\"},\n" +
+                "{\"dateformat\": \"111\", \"desc\": \"yyyy/mm/dd\"},\n" +
+                "{\"dateformat\": \"120\", \"desc\": \"yyyy-mm-dd hh:mi:ss\"}\n" +
+                "]", Dateformat.class);
     }
 }

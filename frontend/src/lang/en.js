@@ -1441,7 +1441,12 @@ export default {
     proportion: 'Proportion',
     label_content: 'Label Content',
     percent: 'Percent',
-    table_index_desc: 'Index Header Name'
+    table_index_desc: 'Index Header Name',
+    total_sort: 'Total Sort',
+    total_sort_none: 'None',
+    total_sort_asc: 'ASC',
+    total_sort_desc: 'DESC',
+    total_sort_field: 'Sort Field'
   },
   dataset: {
     spend_time: 'Spend',
@@ -1862,7 +1867,8 @@ export default {
     input_placeholder: 'Please enter the 4-digits-letters',
     pwd_error: 'Wrong password',
     pwd_format_error: 'Please enter the 4-digits-letters',
-    sure_bt: 'Confirm'
+    sure_bt: 'Confirm',
+    back_parent: 'Back to previous'
   },
   panel: {
     to_top: 'To Top',
