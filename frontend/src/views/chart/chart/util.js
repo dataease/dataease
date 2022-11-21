@@ -3398,15 +3398,18 @@ function handleSetZeroMultiDimension(chart, data) {
   let insertCount = 0
   dimensionInfoMap.forEach((dimensionInfo, field) => {
     if (dimensionInfo.set.size < subDimensionSet.size) {
-      const toBeFillDimension = [...subDimensionSet].filter(item => !dimensionInfo.set.has(item))
-      toBeFillDimension.forEach(dimension => {
-        data.splice(dimensionInfo.index + insertCount, 0, {
-          field,
-          value: 0,
-          category: dimension
-        })
+      let subInsertIndex = 0
+      subDimensionSet.forEach(dimension => {
+        if (!dimensionInfo.set.has(dimension)) {
+          data.splice(dimensionInfo.index + insertCount + subInsertIndex, 0, {
+            field,
+            value: 0,
+            category: dimension
+          })
+        }
+        subInsertIndex++
       })
-      insertCount += toBeFillDimension.size
+      insertCount += subDimensionSet.size - dimensionInfo.set.size
     }
   })
 }
