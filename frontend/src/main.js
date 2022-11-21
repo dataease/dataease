@@ -26,6 +26,8 @@ import '@/components/canvas/custom-component' // 注册自定义组件
 import { loadModules } from 'esri-loader'
 Vue.prototype.$loadModules = loadModules
 
+import 'echarts/extension/bmap/bmap';
+
 // Vue.prototype.$option = { url: '../public/arcgisapi/init.js' }
 
 // import '../public/api/esri/themes/light/main.css'

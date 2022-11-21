@@ -51,7 +51,8 @@ import {
   BASE_3DSURFACE,
   BASE_3DCOLUMN,
   BASE_3DSCATTER,
-  BASE_CALENDAR_PIE
+  BASE_CALENDAR_PIE,
+  BASE_AREA_MAP
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -337,6 +338,9 @@ export default {
       } else if (chart.type === 'calendar') {
         chart_option = baseCalendarPieOption(JSON.parse(JSON.stringify(BASE_CALENDAR_PIE)), chart, this.$store.state.canvasStyleData)
       }
+      //  else if (chart.type === 'map_area') {
+      //   chart_option = baseMapAreaOption(JSON.parse(JSON.stringify(BASE_AREA_MAP)), chart, this.$store.state.canvasStyleData)
+      // }
       // else if (chart.type === 'sankey') {
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
       //   // chart_option = BASE_SANKEY

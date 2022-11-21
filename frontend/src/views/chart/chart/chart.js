@@ -1555,6 +1555,10 @@ export const BASE_MAP = {
   ]
 }
 
+export const BASE_AREA_MAP = {
+  
+}
+
 export const BASE_SCATTER = {
   title: {
     text: '',
