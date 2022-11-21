@@ -312,13 +312,6 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
-    value: 'bar-ranking',
-    title: '极坐标柱状图',
-    icon: 'bar-ranking'
-  },
-  {
-    render: 'echarts',
-    category: 'chart.chart_type_compare',
     value: 'bar-contrast',
     title: '对比柱状图',
     icon: 'bar-contrast'
@@ -363,8 +356,15 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_compare',
+    value: 'bar-ranking',
+    title: '极坐标扇形图',
+    icon: 'bar-ranking'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_compare',
     value: 'bar-polarStack',
-    title: '极坐标堆叠柱状图',
+    title: '极坐标堆叠扇形图',
     icon: 'bar-polarStack'
   },
   {
@@ -481,13 +481,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_map',
     icon: 'map'
   },
-  {
-    render: 'echarts',
-    category: 'chart.chart_type_space',
-    value: 'map_area',
-    title: 'chart.chart_map_area',
-    icon: 'map_area'
-  },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_space',
+  //   value: 'map_area',
+  //   title: 'chart.chart_map_area',
+  //   icon: 'map_area'
+  // },
   {
     render: 'echarts',
     category: 'chart.chart_type_space',
