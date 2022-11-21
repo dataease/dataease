@@ -585,6 +585,9 @@ export default {
         updateParams['customAttr'] = this.sourceCustomAttrStr
       } else if (param.custom === 'customStyle') {
         const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
+        if (param.property === 'margin') {
+          sourceCustomStyle[param.property] = param.value
+        }
         sourceCustomStyle[param.property][param.value.modifyName] = param.value[param.value.modifyName]
         this.sourceCustomStyleStr = JSON.stringify(sourceCustomStyle)
         this.chart.customStyle = this.sourceCustomStyleStr
