@@ -193,6 +193,7 @@ import LinkJumpSet from '@/views/panel/linkJumpSet'
 import Background from '@/views/background/index'
 import MapLayerController from '@/views/chart/components/map/MapLayerController'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
+import eventBus from '@/components/canvas/utils/eventBus'
 
 export default {
   components: { Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField, MapLayerController },
@@ -364,9 +365,16 @@ export default {
     this.initCurFields()
     if (this.element.type === 'view') {
       bus.$on('initCurFields-' + this.element.id, this.initCurFields)
+      eventBus.$on('viewEnlarge', this.viewEnlarge)
     }
   },
+  beforeDestroy() {
+    eventBus.$off('preview', this.showViewDetails)
+  },
   methods: {
+    viewEnlarge() {
+      this.showViewDetails('enlarge')
+    },
     backgroundSetClose() {
       this.boardSetVisible = false
     },
