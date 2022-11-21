@@ -1875,6 +1875,11 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    position_adjust: 'Position',
+    space_top: 'Top',
+    space_left: 'Left',
+    space_width: 'Widht',
+    space_height: 'Height',
     to_top: 'To Top',
     down: 'Down',
     mobile_style_setting: 'Style setting',
