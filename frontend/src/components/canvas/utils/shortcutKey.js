@@ -1,4 +1,5 @@
 import store from '@/store'
+import eventBus from '@/components/canvas/utils/eventBus'
 
 const ctrlKey = 17
 const commandKey = 91 // mac command
@@ -15,7 +16,12 @@ const bKey = 66 // 拆分
 const lKey = 76 // 锁定
 
 const dKey = 68 // 删除
+
 const deleteKey = 46 // 删除
+
+const sKey = 83 // 保存
+
+const enlargeKey = 190 // command + .
 
 export const keycodes = [66, 67, 68, 69, 71, 76, 80, 83, 85, 86, 88, 89, 90]
 
@@ -35,10 +41,13 @@ const unlockMap = {
   [bKey]: decompose,
   [dKey]: deleteComponent,
   [deleteKey]: deleteComponent,
-  [lKey]: lock
+  [lKey]: lock,
+  [sKey]: save,
+  [enlargeKey]: viewEnlarge
 }
 
 let isCtrlOrCommandDown = false
+
 // Monitor key operations globally and execute corresponding commands
 export function listenGlobalKeyDown() {
   window.onkeydown = (e) => {
@@ -47,7 +56,7 @@ export function listenGlobalKeyDown() {
     if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
     } else if (isCtrlOrCommandDown) {
-      if (keyCode === zKey || keyCode === yKey) {
+      if (keyCode === zKey || keyCode === yKey || keyCode === vKey || keyCode === cKey || keyCode === sKey || keyCode === enlargeKey) {
         e.preventDefault()
         unlockMap[keyCode]()
       }
@@ -106,4 +115,12 @@ function deleteComponent() {
 
 function lock() {
   store.commit('lock')
+}
+
+function save() {
+  eventBus.$emit('checkAndSave')
+}
+
+function viewEnlarge() {
+  eventBus.$emit('viewEnlarge')
 }
