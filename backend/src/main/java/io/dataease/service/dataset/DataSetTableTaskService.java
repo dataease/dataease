@@ -335,6 +335,10 @@ public class DataSetTableTaskService {
 
     public void execTask(DatasetTableTask datasetTableTask) throws Exception {
         execNow(datasetTableTask);
+        if(datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())){
+            //TODO add
+            scheduleService.addSchedule(datasetTableTask);
+        }
         if (!datasetTableTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.toString())) {
             scheduleService.fireNow(datasetTableTask);
         }
