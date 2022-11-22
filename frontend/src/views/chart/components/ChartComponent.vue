@@ -52,7 +52,7 @@ import {
   BASE_3DCOLUMN,
   BASE_3DSCATTER,
   BASE_CALENDAR_PIE,
-  BASE_AREA_MAP
+  BASE_BUBBLE_MAP
 } from '../chart/chart'
 import {
   baseBarOption,
@@ -126,6 +126,9 @@ import {
   baseCalendarPieOption
   // clockcatterOption
 } from '../chart/scatter/scatter'
+import {
+  baseMapBubbleOption
+} from '../chart/map/bmap.js'
 import {
   baseTreemapOption
 } from '../chart/treemap/treemap'
@@ -337,10 +340,9 @@ export default {
         chart_option = base3DScatterOption(JSON.parse(JSON.stringify(BASE_3DSCATTER)), chart, this.$store.state.canvasStyleData)
       } else if (chart.type === 'calendar') {
         chart_option = baseCalendarPieOption(JSON.parse(JSON.stringify(BASE_CALENDAR_PIE)), chart, this.$store.state.canvasStyleData)
+      } else if (chart.type === 'map_bubble') {
+        chart_option = baseMapBubbleOption(JSON.parse(JSON.stringify(BASE_BUBBLE_MAP)), chart)
       }
-      //  else if (chart.type === 'map_area') {
-      //   chart_option = baseMapAreaOption(JSON.parse(JSON.stringify(BASE_AREA_MAP)), chart, this.$store.state.canvasStyleData)
-      // }
       // else if (chart.type === 'sankey') {
       //   chart_option = baseSankeyOption(JSON.parse(JSON.stringify(BASE_SANKEY)), chart, this.$store.state.canvasStyleData)
       //   // chart_option = BASE_SANKEY
@@ -509,6 +511,11 @@ export default {
     text-align: center;
     padding: 2px;
     border-radius: 5px
+  }
+  
+  /* 去掉百度地图的logo */
+  .anchorBL {
+    display: none !important;
   }
 
 </style>

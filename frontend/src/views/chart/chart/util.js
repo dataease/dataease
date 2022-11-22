@@ -491,6 +491,13 @@ export const TYPE_CONFIGS = [
   {
     render: 'echarts',
     category: 'chart.chart_type_space',
+    value: 'map_bubble',
+    title: 'chart.chart_map_bubble',
+    icon: 'map_bubble'
+  },
+  {
+    render: 'echarts',
+    category: 'chart.chart_type_space',
     value: '3dsurface',
     title: 'chart.chart_3d_surface',
     icon: '3dsurface'

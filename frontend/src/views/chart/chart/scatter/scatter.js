@@ -5,6 +5,7 @@ let bubbleArray = []
 let terminalType = 'pc'
 
 export function baseScatterOption(chart_option, chart, terminal = 'pc', cstyle = {}) {
+  console.log('散点,,', chart)
   terminalType = terminal
   // 处理shape attr
   let customAttr = {}
@@ -132,7 +133,7 @@ export function clockcatterOption(chart_option, chart, terminal = 'pc', cstyle =
 const funcSize = function(data) {
   const k = terminalType === 'pc' ? 80 : 30
   const max = Math.max(...bubbleArray)
-  console.log('data????????', data)
+  // console.log('data????????', data)
   return (data[2] / max) * k
 }
 

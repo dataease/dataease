@@ -228,6 +228,19 @@
         </el-form-item>
       </el-form>
 
+      <el-form v-show="chart.type && chart.type.includes('map_bubble')" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
+        <el-form-item :label="$t('chart.bubble_symbol')" class="form-item">
+          <el-select v-model="sizeForm.scatterSymbol" :placeholder="$t('chart.line_symbol')" @change="changeBarSizeCase">
+            <el-option
+              v-for="item in lineSymbolOptions"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+
       <el-form v-show="chart.type && chart.type === 'treemap'" ref="sizeFormLine" :model="sizeForm" label-width="80px" size="mini">
         <el-form-item :label="$t('chart.width')" class="form-item form-item-slider">
           <el-slider v-model="sizeForm.treemapWidth" show-input :show-input-controls="false" input-size="mini" :min="0" :max="100" @change="changeBarSizeCase" />

@@ -26,7 +26,6 @@ import '@/components/canvas/custom-component' // 注册自定义组件
 import { loadModules } from 'esri-loader'
 Vue.prototype.$loadModules = loadModules
 
-import 'echarts/extension/bmap/bmap';
 
 // Vue.prototype.$option = { url: '../public/arcgisapi/init.js' }
 
@@ -48,6 +47,8 @@ Vue.prototype.$echarts = echarts
 
 import 'echarts-liquidfill'
 import 'echarts-wordcloud'
+
+import 'echarts/extension/bmap/bmap';
 
 import UmyUi from 'umy-ui'
 Vue.use(UmyUi)

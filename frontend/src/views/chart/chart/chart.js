@@ -1555,8 +1555,60 @@ export const BASE_MAP = {
   ]
 }
 
-export const BASE_AREA_MAP = {
-  
+export const BASE_BUBBLE_MAP = {
+  title: {
+    text: '',
+    textStyle: {
+      fontWeight: 'normal'
+    }
+  },
+  tooltip: {
+    trigger: 'item'
+  },
+  bmap: {
+    center: [104.114129, 37.550339],
+    zoom: 5,
+    roam: true,
+  },
+  series: [
+    {
+      name: '',
+      type: 'effectScatter',
+      coordinateSystem: 'bmap',
+      data: [
+        // {
+        //   "name": "招远",
+        //   "value": [
+        //     120.38,
+        //     37.35,
+        //     12
+        //   ]
+        // }
+      ],
+      symbol: 'circle',
+      symbolSize: 10,
+      encode: {
+        value: 2
+      },
+      showEffectOn: 'render',
+      rippleEffect: {
+        brushType: 'stroke'
+      },
+      label: {
+        formatter: '{b}',
+        position: 'right',
+        show: true
+      },
+      itemStyle: {
+        shadowBlur: 10,
+        shadowColor: '#333'
+      },
+      emphasis: {
+        scale: true
+      },
+      zlevel: 1
+    }
+  ]
 }
 
 export const BASE_SCATTER = {

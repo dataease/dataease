@@ -604,7 +604,7 @@
                     </el-row>
                     <!--extBubble-->
                     <el-row
-                      v-if="view.type && view.type.includes('scatter') && view.type !== '3d-scatter'"
+                      v-if="view.type && (view.type.includes('scatter')) && view.type !== '3d-scatter'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -844,7 +844,8 @@
                   <el-collapse-item
                     v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
                         &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
-                        && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'"
+                        && view.type !== 'label' && view.type !== '3dsurface' && view.type !== 'calendar'
+                        && view.type !== 'map_bubble'"
                     name="label"
                     :title="$t('chart.label')"
                   >
@@ -875,7 +876,8 @@
                       &&!view.type.includes('dialog') && !view.type.includes('table') 
                       && !view.type.includes('progress') && !view.type.includes('text') 
                       && view.type !== 'liquid' && view.type !== 'gauge' 
-                      && view.type !== 'label' && view.type !== 'calendar'"
+                      && view.type !== 'label' && view.type !== 'calendar'
+                      && view.type !== 'map_bubble'"
                     name="tooltip"
                     :title="$t('chart.tooltip')"
                   >
@@ -1043,12 +1045,14 @@
                   </el-collapse-item>
                   <el-collapse-item
                     v-show="view.type && view.type !== 'map'
-                      && view.type !== 'arc_map' && !view.type.includes('table')&& !view.type.includes('vertical')&&!view.type.includes('dialog')
+                      && view.type !== 'arc_map' && !view.type.includes('table')
+                      && !view.type.includes('vertical')&&!view.type.includes('dialog')
                       && view.type !== '3dfunnel' && view.type !== '3dpyramid'
                       && !view.type.includes('text') && view.type !== 'label'
                       && (view.type !== 'treemap' || view.render === 'antv')
                       && view.type !== 'liquid' && view.type !== 'waterfall'
-                      && view.type !== 'gauge' && view.type !== 'word-cloud' && !view.type.includes('progress')
+                      && view.type !== 'gauge' && view.type !== 'word-cloud' 
+                      && !view.type.includes('progress') && view.type !== 'map_bubble'
                       && view.type !== 'graph' && view.type !== 'candlestick'
                       && view.type !== '3dsurface' && view.type !== '3d-column'"
                     name="legend"
@@ -1897,7 +1901,7 @@ export default {
           view.yaxis.splice(1, view.yaxis.length)
         }
       }
-      if(view.type === '3d-column' || view.type === '3d-scatter') {
+      if(view.type === '3d-column' || view.type === '3d-scatter' || view.type === 'map_bubble') {
         if (view.yaxis.length > 3) {
           view.yaxis.splice(3,1)
         }
