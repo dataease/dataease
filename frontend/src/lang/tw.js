@@ -915,6 +915,7 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    gradient: '漸變',
     layer_controller: '指標切換',
     suspension: '懸浮',
     chart_background: '組件背景',

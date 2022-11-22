@@ -124,6 +124,7 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
       }
     }
   }
+
   if (hasThreshold) {
     options.range = {
       color: theme.styleSheet.paletteQualitative10,
@@ -149,6 +150,17 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
           r: getScaleValue(10, scale)
         }
       }
+    }
+  }
+
+  if (customAttr.color.gradient) {
+    const colorList = (theme.styleSheet?.paletteQualitative10 || []).map((ele) => `l(0) 0:#ffffff00 1:${ele}`)
+    if (!options.range) {
+      options.range = {
+        color: colorList
+      }
+    } else {
+      options.range.color = colorList
     }
   }
 

@@ -180,6 +180,17 @@ export function baseAreaOptionAntV(plot, container, chart, action, isStack) {
   }
   // custom color
   options.color = antVCustomColor(chart)
+  const areaColors = [...options.color, ...options.color]
+  if (customAttr.color.gradient) {
+    options.areaStyle = () => {
+      const cr = areaColors.shift()
+      if (cr) {
+        return {
+          fill: `l(270) 0:#ffffff00 1:${cr}`
+        }
+      }
+    }
+  }
 
   // 开始渲染
   if (plot) {
