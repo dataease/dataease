@@ -471,7 +471,7 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_distribute',
     value: 'clock-pie',
     title: '凸块饼图',
-    icon: 'pie'
+    icon: 'clock-pie'
   },
 
   {
@@ -495,6 +495,13 @@ export const TYPE_CONFIGS = [
     title: 'chart.chart_map_bubble',
     icon: 'map_bubble'
   },
+  // {
+  //   render: 'echarts',
+  //   category: 'chart.chart_type_space',
+  //   value: 'map_column',
+  //   title: 'chart.chart_map_column',
+  //   icon: 'map_column'
+  // },
   {
     render: 'echarts',
     category: 'chart.chart_type_space',

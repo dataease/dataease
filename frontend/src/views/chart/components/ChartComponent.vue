@@ -361,6 +361,7 @@ export default {
           return
         }
         const cCode = this.dynamicAreaCode || customAttr.areaCode
+        console.log('选择区域，',cCode)
         if (this.$store.getters.geoMap[cCode]) {
           const json = this.$store.getters.geoMap[cCode]
           this.initMapChart(json, chart)
