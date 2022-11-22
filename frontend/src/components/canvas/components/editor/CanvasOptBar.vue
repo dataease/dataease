@@ -8,6 +8,7 @@
       v-if="isPublicLink"
       ref="widget-div"
       class="function-div"
+      :class="functionClass"
     >
       <el-button-group size="mini">
         <el-button
@@ -22,7 +23,10 @@
           v-if="existLinkage"
           size="mini"
           @click="clearAllLinkage"
-        ><i class="icon iconfont icon-quxiaoliandong" />{{ $t('panel.remove_all_linkage') }}</el-button>
+        ><i
+          style="width: 12px;height: 12px"
+          class="icon iconfont icon-quxiaoliandong"
+        />{{ $t('panel.remove_all_linkage') }}</el-button>
         <el-button
           size="mini"
           @click="exportPDF"
@@ -52,7 +56,25 @@ import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 
 export default {
+  props: {
+    canvasStyleData: {
+      type: Object,
+      default: null
+    }
+  },
+  data() {
+    return {
+
+    }
+  },
   computed: {
+    functionClass() {
+      let result = 'function-light'
+      if (this.canvasStyleData?.panel?.themeColor === 'dark') {
+        result = 'function-dark'
+      }
+      return result
+    },
     existLinkage() {
       let linkageFiltersCount = 0
       this.componentData.forEach(item => {
@@ -142,13 +164,43 @@ export default {
       width: max-content;
       text-align: end;
       z-index: 999;
-      ::v-deep button:hover {
-        background-color: rgba(31, 35, 41, 0.1);
-        color: #1F2329;
-        font-weight: bold;
-        border-color: rgba(31, 35, 41, 0.1)
+      border-radius: 4px;
+      ::v-deep button {
+        border-radius: 0px;
       }
-
+    }
+    .function-light {
+      background: #FFFFFF;
+      border: 1px solid #DEE0E3;
+      box-shadow: 0px 4px 8px rgb(31 35 41 / 10%);
+      ::v-deep button {
+        background-color: #FFFFFF;
+        box-shadow: 0px 4px 8px rgba(31, 35, 41, 0.1);
+        border: 1px solid #DEE0E3;
+        &:hover {
+          background-color: rgba(31, 35, 41, 0.1);
+          color: #1F2329;
+          font-weight: bold;
+          border-color: rgba(31, 35, 41, 0.1)
+        }
+      }
+    }
+    .function-dark {
+      background: #1A1A1A;
+      border: 1px solid #434343;
+      box-shadow: 0px 4px 8px rgba(26, 26, 26, 0.1);
+      ::v-deep button {
+        background-color: #1A1A1A;
+        border: 1px solid #434343;
+        box-shadow: 0px 4px 8px rgba(26, 26, 26, 0.1);
+        color: #FFFFFF;
+        &:hover {
+          background-color: rgba(235, 235, 235, 0.1);
+          color: #EBEBEB;
+          font-weight: bold;
+          border-color: rgba(235, 235, 235, 0.1);
+        }
+      }
     }
     &:hover {
       border-top: 60px solid rgba(245, 74, 69, 0);;

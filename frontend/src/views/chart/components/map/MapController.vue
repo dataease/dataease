@@ -79,10 +79,19 @@ export default {
       this.chart.customAttr = JSON.stringify(this.customAttr)
     },
     callParent(methodName, param) {
-      this.$emit(methodName, param)
+      this.$emit(this.toLowerLine(methodName), param)
     },
     init() {
 
+    },
+    toLowerLine(str) {
+      var temp = str.replace(/[A-Z]/g, function(match) {
+        return '-' + match.toLowerCase()
+      })
+      if (temp.slice(0, 1) === '-') {
+        temp = temp.slice(1)
+      }
+      return temp
     }
   }
 }

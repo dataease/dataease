@@ -294,7 +294,7 @@ export default {
   created() {
     eventBus.$on('editPanelInitReady', this.editPanelInit)
     eventBus.$on('preview', this.preview)
-    eventBus.$on('save', this.save)
+    eventBus.$on('checkAndSave', this.checkAndSave)
     eventBus.$on('clearCanvas', this.clearCanvas)
     this.scale = this.canvasStyleData.scale
     this.mobileLayoutInitStatus = this.mobileLayoutStatus
@@ -303,13 +303,18 @@ export default {
   },
   beforeDestroy() {
     eventBus.$off('preview', this.preview)
-    eventBus.$off('save', this.save)
+    eventBus.$off('checkAndSave', this.checkAndSave)
     eventBus.$off('clearCanvas', this.clearCanvas)
     eventBus.$off('editPanelInitReady', this.editPanelInit)
     clearInterval(this.timer)
     this.timer = null
   },
   methods: {
+    checkAndSave() {
+      if (!this.saveButtonDisabled) {
+        this.save(false)
+      }
+    },
     editPanelInit() {
       this.showGridSwitch = this.canvasStyleData.aidedDesign.showGrid
     },

@@ -1447,7 +1447,11 @@ export default {
     total_sort_none: '無',
     total_sort_asc: '升序',
     total_sort_desc: '降序',
-    total_sort_field: '排序字段'
+    total_sort_field: '排序字段',
+    empty_data_strategy: '空值處理',
+    break_line: '線條斷開',
+    set_zero: '置為0，線條不斷開',
+    ignore_data: '跳過空值，不展示'
   },
   dataset: {
     spend_time: '耗時',
@@ -1872,6 +1876,11 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    position_adjust: '位置',
+    space_top: '上',
+    space_left: '左',
+    space_width: '寬',
+    space_height: '高',
     to_top: '置頂',
     down: '下載',
     mobile_style_setting: '樣式設置',

@@ -1447,7 +1447,11 @@ export default {
     total_sort_none: 'None',
     total_sort_asc: 'ASC',
     total_sort_desc: 'DESC',
-    total_sort_field: 'Sort Field'
+    total_sort_field: 'Sort Field',
+    empty_data_strategy: 'Empty Data Strategy',
+    break_line: 'Disconnection',
+    set_zero: 'Set Zero',
+    ignore_data: 'Ignore Data'
   },
   dataset: {
     spend_time: 'Spend',
@@ -1872,6 +1876,11 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    position_adjust: 'Position',
+    space_top: 'Top',
+    space_left: 'Left',
+    space_width: 'Widht',
+    space_height: 'Height',
     to_top: 'To Top',
     down: 'Down',
     mobile_style_setting: 'Style setting',

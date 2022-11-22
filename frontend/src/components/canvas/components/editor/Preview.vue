@@ -11,6 +11,7 @@
   >
     <canvas-opt-bar
       ref="canvas-opt-bar"
+      :canvas-style-data="canvasStyleData"
       @link-export-pdf="downloadAsPDF"
     />
     <div
@@ -501,9 +502,14 @@ export default {
           }
         }
         this.timer = setInterval(() => {
+          this.clearAllLinkage()
           this.searchCount++
         }, refreshTime)
       }
+    },
+    clearAllLinkage() {
+      this.$store.commit('clearPanelLinkageInfo')
+      bus.$emit('clear_panel_linkage', { viewId: 'all' })
     },
     changeStyleWithScale,
     getStyle,
@@ -610,11 +616,16 @@ export default {
       const domId = this.canvasInfoTemp
       setTimeout(() => {
         this.exporting = true
+        this.backScreenShot = true
+        const scrollHeight = document.getElementById('preview-temp-canvas-main').scrollHeight
+
+        document.getElementById('preview-canvas-main').style.height = (scrollHeight + 'px')
         setTimeout(() => {
           html2canvas(document.getElementById(domId)).then(canvas => {
             const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
             this.dataLoading = false
             this.exporting = false
+            this.backScreenShot = false
             if (snapshot !== '') {
               this.snapshotInfo = snapshot
               this.pdfExportShow = true

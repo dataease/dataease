@@ -117,7 +117,7 @@ export default {
     initContent() {
       this.templateContentChange = this.templateContent
       for (const [key, value] of Object.entries(this.varsInfo)) {
-        this.templateContentChange = pdfTemplateReplaceAll(this.templateContentChange, key, value)
+        this.templateContentChange = pdfTemplateReplaceAll(this.templateContentChange, key, value || '')
       }
     },
 

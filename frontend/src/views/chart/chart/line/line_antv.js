@@ -10,7 +10,8 @@ import {
   getSlider,
   getAnalyse
 } from '@/views/chart/chart/common/common_antv'
-import { antVCustomColor } from '@/views/chart/chart/util'
+import { antVCustomColor, handleEmptyDataStrategy } from '@/views/chart/chart/util'
+import _ from 'lodash'
 
 export function baseLineOptionAntV(plot, container, chart, action) {
   // theme
@@ -23,7 +24,7 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // data
-  const data = chart.data.data
+  const data = _.cloneDeep(chart.data.data)
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
@@ -87,7 +88,8 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   }
   // custom color
   options.color = antVCustomColor(chart)
-
+  const emptyDataStrategy = chart.senior ? JSON.parse(chart.senior)?.functionCfg.emptyDataStrategy : 'breakLine'
+  handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
   // 开始渲染
   if (plot) {
     plot.destroy()

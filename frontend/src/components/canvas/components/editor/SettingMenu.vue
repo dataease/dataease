@@ -90,6 +90,13 @@
             <i class="icon iconfont icon-font icon-chaolianjie1" />
             {{ $t('panel.hyperlinks') }}
           </el-dropdown-item>
+          <el-dropdown-item
+            v-if="curComponent.type !== 'user-view' && !curComponent.auxiliaryMatrix"
+            @click.native="positionAdjust"
+          >
+            <i class="el-icon-map-location" />
+            {{ $t('panel.position_adjust') }}
+          </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -212,6 +219,9 @@ export default {
       this.$nextTick(() => {
         this.showCustomSort = false
       })
+    },
+    positionAdjust() {
+      bus.$emit('change_panel_right_draw', true)
     },
     edit() {
       if (this.curComponent.type === 'custom') {
