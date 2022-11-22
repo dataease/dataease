@@ -915,6 +915,7 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    gradient: 'Gradient',
     layer_controller: 'Quota switch',
     suspension: 'Suspension',
     chart_background: 'Component background',

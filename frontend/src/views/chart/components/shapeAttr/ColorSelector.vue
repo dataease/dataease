@@ -152,6 +152,17 @@
           </el-form-item>
 
           <el-form-item
+            v-show="showProperty('gradient')"
+            :label="$t('chart.gradient')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="colorForm.gradient"
+              @change="changeColorCase('gradient')"
+            />
+          </el-form-item>
+
+          <el-form-item
             v-show="showProperty('quotaColor')"
             :label="$t('chart.quota_color')"
             class="form-item"
@@ -420,6 +431,7 @@ export default {
   },
   methods: {
     gradientColorChange(colorDto) {
+      console.log('gradientColorChange')
       const modifyNames = ['value', 'colors', 'seriesColors']
       modifyNames.forEach(item => {
         this.colorForm['modifyName'] = item
