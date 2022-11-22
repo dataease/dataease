@@ -919,6 +919,7 @@ export default {
     layer_controller: 'Quota switch',
     suspension: 'Suspension',
     chart_background: 'Component background',
+    date_format: 'Select date resolution format',
     solid_color: 'Solid color',
     split_gradient: 'Split gradient',
     continuous_gradient: 'Continuous gradient',
