@@ -29,7 +29,7 @@
         :name="item.name"
       >
         <span slot="label">
-          <span :style="titleStyle">{{ item.title }}</span>
+          <span :style="titleStyle(item.name)">{{ item.title }}</span>
           <el-dropdown
             v-if="dropdownShow"
             slot="label"
@@ -305,11 +305,6 @@ export default {
     maskShow() {
       return Boolean(this.$store.state.dragComponentInfo)
     },
-    titleStyle() {
-      return {
-        fontSize: (this.element.style.fontSize || 16) + 'px'
-      }
-    },
     headClass() {
       return 'tab-head-' + this.element.style.headPosition
     },
@@ -457,6 +452,17 @@ export default {
     bus.$off('add-new-tab', this.addNewTab)
   },
   methods: {
+    titleStyle(itemName) {
+      if (this.activeTabName === itemName) {
+        return {
+          fontSize: (this.element.style.activeFontSize || 18) + 'px'
+        }
+      } else {
+        return {
+          fontSize: (this.element.style.fontSize || 16) + 'px'
+        }
+      }
+    },
     initCarousel() {
       this.timer && clearInterval(this.timer)
       if (this.element.style.carouselEnable) {

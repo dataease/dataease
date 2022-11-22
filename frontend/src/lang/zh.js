@@ -1875,6 +1875,7 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    active_font_size: '激活字体大小',
     carousel: '轮播',
     switch_time: '切换时间',
     position_adjust: '位置',
