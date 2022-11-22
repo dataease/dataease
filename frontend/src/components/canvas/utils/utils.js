@@ -103,6 +103,7 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
     }
     if (item.type === 'de-tabs') {
       item.style.fontSize = item.style.fontSize || 16
+      item.style.activeFontSize = item.style.activeFontSize || 18
       item.style.carouselEnable = item.style.carouselEnable || false
       item.style.switchTime = item.style.switchTime || 5
     }

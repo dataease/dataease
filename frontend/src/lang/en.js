@@ -1875,6 +1875,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    active_font_size: 'Active font size',
     carousel: 'Carousel',
     switch_time: 'Switch time',
     position_adjust: 'Position',

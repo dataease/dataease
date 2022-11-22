@@ -118,14 +118,15 @@
             <el-checkbox
               v-model="styleInfo.carouselEnable"
               size="mini"
-            >{{ $('common.enable') }}
+              @change="styleChange"
+            >{{ $t('commons.enable') }}
             </el-checkbox>
           </el-col>
           <el-col
             :span="8"
             style="text-align: right;padding-right: 10px"
           >
-            {{ $('panel.switch_time') }}
+            {{ $t('panel.switch_time') }}
           </el-col>
           <el-col :span="10">
             <el-input
@@ -135,6 +136,7 @@
               size="mini"
               :min="2"
               class="hide-icon-number"
+              @change="styleChange"
             >
               <template slot="append">S</template>
             </el-input>

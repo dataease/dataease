@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "109745",
+      "name": "font",
+      "font_class": "font",
+      "unicode": "e63d",
+      "unicode_decimal": 58941
+    },
+    {
       "icon_id": "23072499",
       "name": "WATERMARK",
       "font_class": "WATERMARK",

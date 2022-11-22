@@ -207,6 +207,7 @@ export default {
         'left',
         'width',
         'fontSize',
+        'activeFontSize',
         'borderWidth',
         'letterSpacing'
       ],
