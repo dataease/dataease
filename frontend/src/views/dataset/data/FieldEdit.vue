@@ -136,24 +136,24 @@
             </template>
           </el-table-column>
           <el-table-column
-            property="deType"
+            property="deTypeCascader"
             :label="$t('dataset.field_type')"
             min-width="200"
           >
             <template slot-scope="scope">
               <el-cascader
-                v-model="scope.row.deType"
+                v-model="scope.row.deTypeCascader"
                 size="small"
                 popper-class="select-date-resolution-format"
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 class="select-type"
-                :options="fields"
+                :options="getFields(scope.row)"
                 @visible-change="getPopPosition"
                 @change="saveEdit(scope.row)"
               >
                 <template slot-scope="{ node, data }">
                   <span
-                    v-if="node.level === 2 && node.label === '%Y-%m-%d'"
+                    v-if="node.level === 2"
                     class="format-title"
                     :style="popPosition"
                   >{{ $t('chart.date_format') }}</span>
@@ -214,16 +214,16 @@
                   />
                 </span>
               </span>
-              <!--              <el-input-->
-              <!--                v-if="scope.row.deType === 1"-->
-              <!--                v-model="scope.row.dateFormat"-->
-              <!--                :placeholder="$t('dataset.date_format')"-->
-              <!--                size="small"-->
-              <!--                class="input-type"-->
-              <!--                :disabled="!hasDataPermission('manage', param.privileges)"-->
-              <!--                @blur="saveEdit(scope.row)"-->
-              <!--                @keyup.enter.native="saveEdit(scope.row)"-->
-              <!--              />-->
+              <el-input
+                v-if="scope.row.deType === 1 && scope.row.deExtractType === 0"
+                v-model="scope.row.dateFormat"
+                :placeholder="$t('dataset.date_format')"
+                size="small"
+                class="input-type"
+                :disabled="!hasDataPermission('manage', param.privileges)"
+                @blur="saveEdit(scope.row)"
+                @keyup.enter.native="saveEdit(scope.row)"
+              />
             </template>
           </el-table-column>
           <el-table-column
@@ -476,24 +476,24 @@
             </template>
           </el-table-column>
           <el-table-column
-            property="deType"
+            property="deTypeCascader"
             :label="$t('dataset.field_type')"
             min-width="200"
           >
             <template slot-scope="scope">
               <el-cascader
-                v-model="scope.row.deType"
+                v-model="scope.row.deTypeCascader"
                 size="small"
                 popper-class="select-date-resolution-format"
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 class="select-type"
-                :options="fields"
+                :options="getFields(scope.row)"
                 @visible-change="getPopPosition"
                 @change="saveEdit(scope.row)"
               >
                 <template slot-scope="{ node, data }">
                   <span
-                    v-if="node.level === 2 && node.label === '%Y-%m-%d'"
+                    v-if="node.level === 2"
                     class="format-title"
                     :style="popPosition"
                   >{{ $t('chart.date_format') }}</span>
@@ -554,16 +554,16 @@
                   />
                 </span>
               </span>
-              <!--              <el-input-->
-              <!--                v-if="scope.row.deType === 1"-->
-              <!--                v-model="scope.row.dateFormat"-->
-              <!--                :placeholder="$t('dataset.date_format')"-->
-              <!--                size="small"-->
-              <!--                class="input-type"-->
-              <!--                :disabled="!hasDataPermission('manage', param.privileges)"-->
-              <!--                @blur="saveEdit(scope.row)"-->
-              <!--                @keyup.enter.native="saveEdit(scope.row)"-->
-              <!--              />-->
+              <el-input
+                v-if="scope.row.deType === 1 && scope.row.deExtractType === 0"
+                v-model="scope.row.dateFormat"
+                :placeholder="$t('dataset.date_format')"
+                size="small"
+                class="input-type"
+                :disabled="!hasDataPermission('manage', param.privileges)"
+                @blur="saveEdit(scope.row)"
+                @keyup.enter.native="saveEdit(scope.row)"
+              />
             </template>
           </el-table-column>
           <el-table-column
@@ -771,7 +771,7 @@ export default {
         quotaListData: []
       },
       popPosition: {},
-      fields: [],
+      dateformats: [],
       fieldActiveNames: ['d', 'q'],
       searchField: '',
       editCalcField: false,
@@ -835,23 +835,44 @@ export default {
       dateformats(this.param.id).then((response) => {
         const children = (response?.data || []).map(ele => ({ label: ele.dateformat, value: ele.dateformat }))
         children.push({ label: '自定义', value: 'custom' })
-        this.fields = [
+        this.dateformats = children
+      })
+    },
+    getFields(item) {
+      if(item.deExtractType == 0){
+        const children = this.dateformats
+        return [
           { label: this.$t('dataset.text'), value: 0 },
           { label: this.$t('dataset.time'), value: 1, children },
           { label: this.$t('dataset.value'), value: 2 },
           {
             label:
-            this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')',
+              this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')',
             value: 3
           },
           { label: this.$t('dataset.location'), value: 5 }
         ]
-      })
+      }else {
+        return [
+          { label: this.$t('dataset.text'), value: 0 },
+          { label: this.$t('dataset.time'), value: 1 },
+          { label: this.$t('dataset.value'), value: 2 },
+          { label: this.$t('dataset.value') + '(' + this.$t('dataset.float') + ')', value: 3 },
+          { label: this.$t('dataset.location'), value: 5 }
+        ]
+      }
     },
     saveEdit(item) {
       if (item.name && item.name.length > 50) {
         this.$message.error(this.$t('dataset.field_name_less_50'))
         return
+      }
+      item.deType = item.deTypeCascader[0]
+      if (item.deTypeCascader.length === 2) { // 时间
+        item.dateFormatType = item.deTypeCascader[1]
+        if(item.dateFormatType !== 'custom'){
+          item.dateFormat = item.dateFormatType
+        }
       }
 
       post('/dataset/field/save', item)
