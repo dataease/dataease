@@ -1875,6 +1875,8 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    carousel: '輪播',
+    switch_time: '切換時間',
     position_adjust: '位置',
     space_top: '上',
     space_left: '左',
