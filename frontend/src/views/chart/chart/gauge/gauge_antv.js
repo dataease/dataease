@@ -124,7 +124,6 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
       }
     }
   }
-  console.log('hasThreshold', hasThreshold)
 
   if (hasThreshold) {
     options.range = {

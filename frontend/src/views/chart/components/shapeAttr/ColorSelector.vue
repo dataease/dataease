@@ -431,7 +431,6 @@ export default {
   },
   methods: {
     gradientColorChange(colorDto) {
-      console.log('gradientColorChange')
       const modifyNames = ['value', 'colors', 'seriesColors']
       modifyNames.forEach(item => {
         this.colorForm['modifyName'] = item
