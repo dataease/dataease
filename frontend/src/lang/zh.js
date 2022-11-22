@@ -917,6 +917,7 @@ export default {
     layer_controller: '指标切换',
     suspension: '悬浮',
     chart_background: '组件背景',
+    date_format: '请选择日期解析格式',
     solid_color: '纯色',
     split_gradient: '分离渐变',
     continuous_gradient: '连续渐变',
