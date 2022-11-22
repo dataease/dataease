@@ -1875,10 +1875,12 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    carousel: 'Carousel',
+    switch_time: 'Switch time',
     position_adjust: 'Position',
     space_top: 'Top',
     space_left: 'Left',
-    space_width: 'Widht',
+    space_width: 'Width',
     space_height: 'Height',
     to_top: 'To Top',
     down: 'Down',
