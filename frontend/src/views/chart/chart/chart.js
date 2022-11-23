@@ -28,6 +28,7 @@ export const DEFAULT_COLOR_CASE = {
   tableBorderColor: '#E6E7E4',
   seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
   areaBorderColor: '#303133',
+  gradient: false,
   areaBaseColor: '#FFFFFF'
 }
 

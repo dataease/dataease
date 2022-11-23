@@ -1,5 +1,6 @@
 package io.dataease.provider.query.db2;
 
+import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
 import io.dataease.dto.datasource.Db2Configuration;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
@@ -18,6 +19,7 @@ import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
+import io.dataease.plugins.datasource.entity.Dateformat;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.entity.PageInfo;
 import io.dataease.plugins.datasource.query.QueryProvider;
@@ -1377,5 +1379,16 @@ public class Db2QueryProvider extends QueryProvider {
         String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
         schema = String.format(Db2Constants.KEYWORD_TABLE, schema);
         return "SELECT * FROM " + schema + "." + String.format(Db2Constants.KEYWORD_TABLE, table);
+    }
+
+    public List<Dateformat> dateformat() {
+        return JSONArray.parseArray("[\n" +
+                "{\"dateformat\": \"YYYYMMDD\"},\n" +
+                "{\"dateformat\": \"YYYY/MM/DD\"},\n" +
+                "{\"dateformat\": \"YYYY-MM-DD\"},\n" +
+                "{\"dateformat\": \"YYYYMMDD HH24:MI:SS\"},\n" +
+                "{\"dateformat\": \"YYYY/MM/DD HH24:MI:SS\"},\n" +
+                "{\"dateformat\": \"YYYY-MM-DD HH24:MI:SS\"}\n" +
+                "]", Dateformat.class);
     }
 }

@@ -40,9 +40,8 @@ WHERE (`component` = 'msg/setting');
 ALTER TABLE `panel_group`
     ADD COLUMN `panel_sort` bigint(13) NULL COMMENT '排序' AFTER `watermark_open`;
 
-
-
-
 ALTER TABLE `sys_task_email`
     CHANGE COLUMN `content` `content` MEDIUMBLOB NULL DEFAULT NULL COMMENT '内容' ;
 
+ALTER TABLE `dataset_table_field`
+    ADD COLUMN `date_format_type` VARCHAR(255) NULL COMMENT '时间格式类型' AFTER `date_format`;

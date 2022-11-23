@@ -915,9 +915,11 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    gradient: '漸變',
     layer_controller: '指標切換',
     suspension: '懸浮',
     chart_background: '組件背景',
+    date_format: '選擇日期解析格式',
     solid_color: '純色',
     split_gradient: '分離漸變',
     continuous_gradient: '連續漸變',
@@ -1875,6 +1877,9 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    active_font_size: '激活字體大小',
+    carousel: '輪播',
+    switch_time: '切換時間',
     position_adjust: '位置',
     space_top: '上',
     space_left: '左',
