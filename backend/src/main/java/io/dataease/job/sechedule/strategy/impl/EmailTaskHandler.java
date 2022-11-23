@@ -41,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -67,9 +68,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
     protected JobDataMap jobDataMap(GlobalTaskEntity taskEntity) {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put("taskEntity", taskEntity);
-        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
-        XpackEmailTemplateDTO emailTemplateDTO = emailXpackService.emailTemplate(taskEntity.getTaskId());
-        jobDataMap.put("emailTemplate", emailTemplateDTO);
+
         SysUserEntity creator = authUserServiceImpl.getUserByIdNoCache(taskEntity.getCreator());
         jobDataMap.put("creator", creator);
         return jobDataMap;
@@ -109,10 +108,9 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         Long instanceId = saveInstance(taskInstance);
         taskInstance.setInstanceId(instanceId);
 
-        XpackEmailTemplateDTO emailTemplate = (XpackEmailTemplateDTO) jobDataMap.get("emailTemplate");
         SysUserEntity creator = (SysUserEntity) jobDataMap.get("creator");
         LogUtil.info("start execute send panel report task...");
-        proxy(taskEntity.getTaskType()).sendReport(taskInstance, emailTemplate, creator, isTempTask);
+        proxy(taskEntity.getTaskType()).sendReport(taskInstance, creator, isTempTask);
         if (isTempTask) {
             removeTask(scheduleManager, taskEntity);
         }
@@ -160,13 +158,14 @@ public class EmailTaskHandler extends TaskHandler implements Job {
     }
 
     @Async("priorityExecutor")
-    public void sendReport(GlobalTaskInstance taskInstance, XpackEmailTemplateDTO emailTemplateDTO, SysUserEntity user, Boolean isTempTask) {
+    public void sendReport(GlobalTaskInstance taskInstance, SysUserEntity user, Boolean isTempTask) {
 
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         AuthUserServiceImpl userService = SpringContextUtil.getBean(AuthUserServiceImpl.class);
         SysUserService sysUserService = SpringContextUtil.getBean(SysUserService.class);
         List<File> files = null;
         try {
+            XpackEmailTemplateDTO emailTemplateDTO = emailXpackService.emailTemplate(taskInstance.getTaskId());
             XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskInstance.getTaskId());
             if (ObjectUtils.isEmpty(taskForm) || (!isTempTask && CronUtils.taskExpire(taskForm.getEndTime()))) {
                 removeInstance(taskInstance);
@@ -202,7 +201,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
             String contentStr = "";
             if (ObjectUtils.isNotEmpty(content)) {
-                contentStr = new String(content, "UTF-8");
+                contentStr = HtmlUtils.htmlUnescape(new String(content, "UTF-8"));
             }
 
 

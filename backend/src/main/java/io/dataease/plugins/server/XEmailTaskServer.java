@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.io.*;
@@ -136,6 +137,9 @@ public class XEmailTaskServer {
             String emailContent;
             try {
                 emailContent = new String(bytes, "UTF-8");
+                if (StringUtils.isNotBlank(emailContent)) {
+                    emailContent = HtmlUtils.htmlUnescape(emailContent);
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -176,7 +180,7 @@ public class XEmailTaskServer {
         }
         String imageUrl = "/system/ui/image/" + fileId;
         String html = "<div>" +
-                "<h2>" + content + "</h2>" +
+                content +
                 "<img style='width: 100%;' id='" + panelId + "' src='" + imageUrl + "' />" +
                 "</div>";
 
