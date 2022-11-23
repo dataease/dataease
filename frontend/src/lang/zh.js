@@ -914,9 +914,11 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    gradient: '渐变',
     layer_controller: '指标切换',
     suspension: '悬浮',
     chart_background: '组件背景',
+    date_format: '请选择日期解析格式',
     solid_color: '纯色',
     split_gradient: '分离渐变',
     continuous_gradient: '连续渐变',
@@ -1876,6 +1878,9 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    active_font_size: '激活字体大小',
+    carousel: '轮播',
+    switch_time: '切换时间',
     position_adjust: '位置',
     space_top: '上',
     space_left: '左',
@@ -2544,9 +2549,9 @@ export default {
     start_time: '开始时间',
     end_time: '结束时间',
     chart_data: '视图数据',
-    panel_preview: '预览仪表板',
+    panel_preview: '预览报告',
     preview: '预览',
-    emial_preview: '邮件预览',
+    emial_preview: '报告预览',
     chart_data_range: '视图数据范围',
     simple_repeat: '简单重复',
     once_a_day: '每天一次',

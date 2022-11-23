@@ -915,9 +915,11 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    gradient: '漸變',
     layer_controller: '指標切換',
     suspension: '懸浮',
     chart_background: '組件背景',
+    date_format: '選擇日期解析格式',
     solid_color: '純色',
     split_gradient: '分離漸變',
     continuous_gradient: '連續漸變',
@@ -1876,6 +1878,9 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    active_font_size: '激活字體大小',
+    carousel: '輪播',
+    switch_time: '切換時間',
     position_adjust: '位置',
     space_top: '上',
     space_left: '左',
@@ -2544,9 +2549,9 @@ export default {
     start_time: '開始時間',
     end_time: '結束時間',
     chart_data: '視圖數據',
-    panel_preview: '預覽儀表板',
+    panel_preview: '預覽報告',
     preview: '預覽',
-    emial_preview: '郵件預覽',
+    emial_preview: '報告預覽',
     chart_data_range: '視圖數據範圍',
     simple_repeat: '簡單重複',
     once_a_day: '每天一次',

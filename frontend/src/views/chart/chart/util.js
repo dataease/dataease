@@ -284,6 +284,7 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'value',
         'custom',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -468,7 +469,8 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
-        'alpha'
+        'alpha',
+        'gradient'
       ],
       'size-selector-ant-v': [
         'lineWidth',
@@ -628,6 +630,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -707,6 +710,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -786,6 +790,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -865,6 +870,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -1008,6 +1014,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -1087,6 +1094,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -1164,6 +1172,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -1223,6 +1232,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -1283,6 +1293,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -1340,6 +1351,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -1400,6 +1412,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [

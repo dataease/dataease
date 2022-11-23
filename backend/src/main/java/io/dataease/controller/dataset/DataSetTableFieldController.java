@@ -13,6 +13,7 @@ import io.dataease.commons.exception.DEException;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.MultFieldValuesRequest;
 import io.dataease.controller.response.DatasetTableField4Type;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DatasetTable;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
@@ -106,9 +107,33 @@ public class DataSetTableFieldController {
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(tableId);
         datasetTableField.setGroupType("d");
-        List<DatasetTableField> dimensionList = dataSetTableFieldsService.list(datasetTableField);
+        List<DatasetTableFieldDTO> dimensionList = new ArrayList<>();
+        dataSetTableFieldsService.list(datasetTableField).forEach(o -> {
+            DatasetTableFieldDTO datasetTableFieldDTO = new DatasetTableFieldDTO();
+            BeanUtils.copyProperties(o, datasetTableFieldDTO);
+            List<Object> deTypeCascader = new ArrayList<>();
+            deTypeCascader.add(datasetTableFieldDTO.getDeType());
+            if (datasetTableFieldDTO.getDeExtractType() == 0 && datasetTableFieldDTO.getDeType() == 1) {
+                deTypeCascader.add(datasetTableFieldDTO.getDateFormatType());
+            }
+            datasetTableFieldDTO.setDeTypeCascader(deTypeCascader);
+            dimensionList.add(datasetTableFieldDTO);
+        });
+
+
         datasetTableField.setGroupType("q");
-        List<DatasetTableField> quotaList = dataSetTableFieldsService.list(datasetTableField);
+        List<DatasetTableFieldDTO> quotaList = new ArrayList<>();
+        dataSetTableFieldsService.list(datasetTableField).forEach(o -> {
+            DatasetTableFieldDTO datasetTableFieldDTO = new DatasetTableFieldDTO();
+            BeanUtils.copyProperties(o, datasetTableFieldDTO);
+            List<Object> deTypeCascader = new ArrayList<>();
+            deTypeCascader.add(datasetTableFieldDTO.getDeType());
+            if (datasetTableFieldDTO.getDeExtractType() == 0 && datasetTableFieldDTO.getDeType() == 1) {
+                deTypeCascader.add(datasetTableFieldDTO.getDateFormatType());
+            }
+            datasetTableFieldDTO.setDeTypeCascader(deTypeCascader);
+            quotaList.add(datasetTableFieldDTO);
+        });
 
         DatasetTableField4Type datasetTableField4Type = new DatasetTableField4Type();
         datasetTableField4Type.setDimensionList(dimensionList);

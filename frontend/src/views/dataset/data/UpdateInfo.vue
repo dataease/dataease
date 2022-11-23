@@ -162,7 +162,7 @@
                 class="de-card-dropdown"
               >
                 <template
-                  v-if="!['Stopped', 'Exec'].includes(scope.row.status)"
+                  v-if="!['Exec'].includes(scope.row.status)"
                 >
                   <el-dropdown-item
                     :disabled="disableExec(scope.row)"
@@ -858,9 +858,7 @@ export default {
     },
     disableExec(task) {
       return (
-        task.status === 'Stopped' ||
         task.status === 'Pending' ||
-        task.rate === 'SIMPLE' ||
         !hasDataPermission('manage', task.privileges)
       )
     },

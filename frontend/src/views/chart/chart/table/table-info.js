@@ -424,7 +424,7 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
 
   // 解析合计、小计排序
   const sortParams = []
-  if (totalCfg.row.totalSort && totalCfg.row.totalSort !== 'none' && c.length > 0) {
+  if (totalCfg.row.totalSort && totalCfg.row.totalSort !== 'none' && c.length > 0 && totalCfg.row.showGrandTotals && v.indexOf(totalCfg.row.totalSortField) > -1) {
     const sort = {
       sortFieldId: c[0],
       sortMethod: totalCfg.row.totalSort.toUpperCase(),
@@ -435,7 +435,8 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
     }
     sortParams.push(sort)
   }
-  if (totalCfg.col.totalSort && totalCfg.col.totalSort !== 'none' && r.length > 0) {
+  totalCfg.col.totalSort = false
+  if (totalCfg.col.totalSort && totalCfg.col.totalSort !== 'none' && r.length > 0 && totalCfg.col.showGrandTotals && v.indexOf(totalCfg.col.totalSortField) > -1) {
     const sort = {
       sortFieldId: r[0],
       sortMethod: totalCfg.col.totalSort.toUpperCase(),

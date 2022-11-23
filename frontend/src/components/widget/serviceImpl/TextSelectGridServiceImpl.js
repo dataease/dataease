@@ -96,6 +96,9 @@ class TextSelectGridServiceImpl extends WidgetService {
   isSortWidget() {
     return true
   }
+  isCustomSortWidget() {
+    return true
+  }
   fillValueDerfault(element) {
     const defaultV = element.options.value === null ? '' : element.options.value.toString()
     if (element.options.attrs.multiple) {

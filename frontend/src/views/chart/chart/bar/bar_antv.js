@@ -103,6 +103,11 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   options.isPercent = chart.type === 'percentage-bar-stack'
   // custom color
   options.color = antVCustomColor(chart)
+  if (customAttr.color.gradient) {
+    options.color = options.color.map((ele) => {
+      return `l(270) 0:#ffffff00 1:${ele}`
+    })
+  }
 
   // 开始渲染
   if (plot) {
@@ -199,6 +204,11 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   }
   // custom color
   options.color = antVCustomColor(chart)
+  if (customAttr.color.gradient) {
+    options.color = options.color.map((ele) => {
+      return `l(0) 0:#ffffff00 1:${ele}`
+    })
+  }
 
   // 开始渲染
   if (plot) {

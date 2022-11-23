@@ -915,9 +915,11 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    gradient: 'Gradient',
     layer_controller: 'Quota switch',
     suspension: 'Suspension',
     chart_background: 'Component background',
+    date_format: 'Select date resolution format',
     solid_color: 'Solid color',
     split_gradient: 'Split gradient',
     continuous_gradient: 'Continuous gradient',
@@ -1876,10 +1878,13 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    active_font_size: 'Active font size',
+    carousel: 'Carousel',
+    switch_time: 'Switch time',
     position_adjust: 'Position',
     space_top: 'Top',
     space_left: 'Left',
-    space_width: 'Widht',
+    space_width: 'Width',
     space_height: 'Height',
     to_top: 'To Top',
     down: 'Down',
@@ -2543,9 +2548,9 @@ export default {
     start_time: 'Start time',
     end_time: 'End time',
     chart_data: 'View data',
-    panel_preview: 'Preview panel',
+    panel_preview: 'Preview report',
     preview: 'Preview',
-    emial_preview: 'Emial preview',
+    emial_preview: 'Report preview',
     chart_data_range: 'View data range',
     simple_repeat: 'Simple repeat',
     once_a_day: 'Once a day',

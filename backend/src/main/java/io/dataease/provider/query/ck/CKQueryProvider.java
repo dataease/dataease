@@ -1,5 +1,6 @@
 package io.dataease.provider.query.ck;
 
+import com.alibaba.fastjson.JSONArray;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
@@ -17,6 +18,7 @@ import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
+import io.dataease.plugins.datasource.entity.Dateformat;
 import io.dataease.plugins.datasource.entity.PageInfo;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.datasource.query.Utils;
@@ -1399,5 +1401,16 @@ public class CKQueryProvider extends QueryProvider {
         } else {
             return sql;
         }
+    }
+
+    public List<Dateformat> dateformat() {
+        return JSONArray.parseArray("[\n" +
+                "{\"dateformat\": \"%Y%m%d\"},\n" +
+                "{\"dateformat\": \"%Y/%m/%d\"},\n" +
+                "{\"dateformat\": \"%Y-%m-%d\"},\n" +
+                "{\"dateformat\": \"%Y%m%d %H:%M:%S\"},\n" +
+                "{\"dateformat\": \"%Y/%m/%d %H:%M:%S\"},\n" +
+                "{\"dateformat\": \"%Y-%m-%d %H:%M:%S\"}\n" +
+                "]", Dateformat.class);
     }
 }
