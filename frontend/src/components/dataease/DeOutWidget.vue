@@ -2,6 +2,7 @@
   <div
     ref="myContainer"
     class="my-container"
+    :style="autoStyle"
   >
     <div
       ref="conditionMain"
@@ -60,6 +61,8 @@
 
 <script>
 import inputStyleMixin from '@/components/widget/deWidget/inputStyleMixin'
+import { mapState } from 'vuex'
+
 export default {
   name: 'DeOutWidget',
   mixins: [inputStyleMixin],
@@ -112,6 +115,18 @@ export default {
     }
   },
   computed: {
+    scale() {
+      return this.previewCanvasScale.scalePointHeight
+    },
+    autoStyle() {
+      return {
+        height: (100 / this.scale) + '%!important',
+        width: (100 / this.scale) + '%!important',
+        left: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
+        top: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
+        transform: 'scale(' + this.scale + ')'
+      }
+    },
     sizeInfo() {
       let size
       if (this.duHeight > this.inputLargeSize) {
@@ -133,7 +148,10 @@ export default {
     },
     isFilterComponent() {
       return ['de-select', 'de-select-grid', 'de-date', 'de-input-search', 'de-number-range', 'de-select-tree'].includes(this.element.component)
-    }
+    },
+    ...mapState([
+      'previewCanvasScale'
+    ])
   },
   watch: {
     'element.style': {
