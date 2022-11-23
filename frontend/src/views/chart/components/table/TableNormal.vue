@@ -13,7 +13,7 @@
       <ux-grid
         ref="plxTable"
         size="mini"
-        style="width: 100%;"
+        :style="tableStyle"
         :height="height"
         :checkbox-config="{highlight: true}"
         :width-resize="true"
@@ -79,7 +79,7 @@
 <script>
 import { hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
-import { DEFAULT_SIZE } from '@/views/chart/chart/chart'
+import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '@/views/chart/chart/chart'
 import { mapState } from 'vuex'
 
 export default {
@@ -154,7 +154,9 @@ export default {
       scrollTimer: null,
       scrollTop: 0,
       showIndex: false,
-      indexLabel: '序号'
+      indexLabel: '序号',
+      scrollBarColor: DEFAULT_COLOR_CASE.tableScrollBarColor,
+      scrollBarHoverColor: DEFAULT_COLOR_CASE.tableScrollBarHoverColor
     }
   },
   computed: {
@@ -174,6 +176,12 @@ export default {
       return {
         background: hexColorToRGBA('#ffffff', 0),
         borderRadius: this.borderRadius
+      }
+    },
+    tableStyle() {
+      return {
+        width: '100%',
+        '--scroll-bar-color': this.scrollBarColor
       }
     },
     ...mapState([
@@ -309,6 +317,7 @@ export default {
           this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
           this.table_item_class.color = customAttr.color.tableFontColor
           this.table_item_class.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha)
+          this.scrollBarColor = customAttr.color.tableScrollBarColor ? customAttr.color.tableScrollBarColor : DEFAULT_COLOR_CASE.tableScrollBarColor
         }
         if (customAttr.size) {
           this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
@@ -498,7 +507,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .table-class ::v-deep .body--wrapper {
   background: rgba(1, 1, 1, 0);
 }
@@ -547,5 +556,13 @@ export default {
 
 .page-style ::v-deep li {
   background: transparent !important;
+}
+.table-class{
+  ::-webkit-scrollbar-thumb {
+    background: var(--scroll-bar-color);
+  }
+}
+.table-class{
+  scrollbar-color: var(--scroll-bar-color) transparent;
 }
 </style>
