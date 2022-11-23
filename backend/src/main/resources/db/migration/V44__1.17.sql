@@ -39,3 +39,10 @@ WHERE (`component` = 'msg/setting');
 
 ALTER TABLE `panel_group`
     ADD COLUMN `panel_sort` bigint(13) NULL COMMENT '排序' AFTER `watermark_open`;
+
+
+
+
+ALTER TABLE `sys_task_email`
+    CHANGE COLUMN `content` `content` MEDIUMBLOB NULL DEFAULT NULL COMMENT '内容' ;
+
