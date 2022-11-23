@@ -33,7 +33,11 @@
             <div slot="reference" class="pop_position" :style="{left: popOpen.left,top: popOpen.top}" />
           </el-popover>
 
-          <li v-for="(items,inde) in dataInfo" v-show="inde<=tableRowsNumber-1" :key="inde" :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) ? scrollId:newHeight" class="table_bode_li" @click.stop="showDialogInfo(items,inde)">
+          <li v-for="(items,inde) in dataInfo" v-show="inde<=tableRowsNumber-1" :key="inde" 
+            :style="(numberLine === ''? inde === (highlight-1) : numberLine === inde) 
+              ? scrollId:newHeight" class="table_bode_li" 
+            @click.stop="showDialogInfo(items,inde)"
+          >
             <div v-for="(item,index) in fields" :key="index" class="body_info">
               <!-- {{ inde }} -->
               {{ items[item.datainsName] }}

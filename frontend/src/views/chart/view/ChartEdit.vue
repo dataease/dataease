@@ -841,6 +841,17 @@
                       @onLabelChange="onLabelChange"
                     />
                   </el-collapse-item>
+                  <!-- <el-collapse-item
+                    v-show="view.render && view.render === 'antv' && view.type.includes('roll')"
+                    :title="$t('chart.pop_config')"
+                  >
+                    <roll-selector 
+                      :param="param"
+                      class="attr-selector"
+                      :chart="chart"
+                      @onLabelChange="onLabelChange"
+                    />
+                  </el-collapse-item> -->
                   <el-collapse-item
                     v-show="!view.type.includes('table')&&view.type !== 'candlestick'&&!view.type.includes('vertical')
                         &&!view.type.includes('dialog') && !view.type.includes('text') && view.type !== 'word-cloud' 
