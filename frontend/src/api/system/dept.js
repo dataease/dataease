@@ -13,7 +13,7 @@ export function loadTable(data) {
     url: 'api/dept/search',
     method: 'post',
     data,
-    loading: true
+    loading: false
   })
 }
 
