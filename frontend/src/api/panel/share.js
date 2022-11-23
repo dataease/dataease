@@ -38,7 +38,7 @@ export function loadShares(data) {
   return request({
     url: '/api/share/queryWithResourceId',
     method: 'post',
-    loading: true,
+    loading: false,
     data
   })
 }
