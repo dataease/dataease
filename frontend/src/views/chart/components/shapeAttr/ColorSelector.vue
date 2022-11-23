@@ -237,6 +237,20 @@
               @change="changeColorCase('tableBorderColor')"
             />
           </el-form-item>
+          <el-form-item
+            v-show="showProperty('tableScrollBarColor')"
+            :label="$t('chart.table_scroll_bar_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.tableScrollBarColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              color-format="rgb"
+              show-alpha
+              @change="changeColorCase('tableScrollBarColor')"
+            />
+          </el-form-item>
         </div>
 
         <el-form-item
@@ -466,6 +480,7 @@ export default {
 
           this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
           this.colorForm.tableHeaderFontColor = this.colorForm.tableHeaderFontColor ? this.colorForm.tableHeaderFontColor : this.colorForm.tableFontColor
+          this.colorForm.tableScrollBarColor = this.colorForm.tableScrollBarColor ? this.colorForm.tableScrollBarColor : DEFAULT_COLOR_CASE.tableScrollBarColor
 
           this.initCustomColor()
         }

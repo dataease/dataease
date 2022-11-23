@@ -1336,6 +1336,7 @@ export default {
     table_align_left: 'Left',
     table_align_center: 'Center',
     table_align_right: 'Right',
+    table_scroll_bar_color: 'Scroll Bar Color',
     draw_back: 'Draw Back',
     senior: 'Senior',
     senior_cfg: 'Senior Config',

@@ -1,5 +1,6 @@
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import { equalsAny, includesAny } from '@/utils/StringUtils'
+import _ from 'lodash'
 
 export function hexColorToRGBA(hex, alpha) {
   const rgb = [] // 定义rgb数组
@@ -49,6 +50,7 @@ export const TYPE_CONFIGS = [
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
+        'tableScrollBarColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -95,6 +97,7 @@ export const TYPE_CONFIGS = [
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
+        'tableScrollBarColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -144,6 +147,7 @@ export const TYPE_CONFIGS = [
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
+        'tableScrollBarColor',
         'alpha'
       ],
       'size-selector-ant-v': [
@@ -1756,6 +1760,7 @@ export const TYPE_CONFIGS = [
         'tableItemBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
+        'tableScrollBarColor',
         'alpha'
       ],
       'size-selector': [
@@ -1795,6 +1800,7 @@ export const TYPE_CONFIGS = [
         'tableItemBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
+        'tableScrollBarColor',
         'alpha'
       ],
       'size-selector': [
@@ -3429,4 +3435,22 @@ function handleIgnoreData(chart, data) {
       data.splice(i, 1)
     }
   }
+}
+
+export function resetRgbOpacity(sourceColor, times) {
+  if (sourceColor?.startsWith('rgb')) {
+    const numbers = sourceColor.match(/(\d(\.\d+)?)+/g)
+    if (numbers?.length === 4) {
+      const opacity = parseFloat(numbers[3])
+      if (_.isNumber(opacity)) {
+        let resultOpacity = (opacity * times).toFixed(2)
+        if (resultOpacity > 1) {
+          resultOpacity = 1
+        }
+        const colorArr = numbers.slice(0, 3).concat(resultOpacity)
+        return `rgba(${colorArr.join(',')})`
+      }
+    }
+  }
+  return sourceColor
 }

@@ -1,4 +1,4 @@
-import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { hexColorToRGBA, resetRgbOpacity } from '@/views/chart/chart/util'
 import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '@/views/chart/chart/chart'
 
 export function getCustomTheme(chart) {
@@ -7,6 +7,8 @@ export function getCustomTheme(chart) {
   const borderColor = hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, DEFAULT_COLOR_CASE.alpha)
   const headerAlign = DEFAULT_SIZE.tableHeaderAlign
   const itemAlign = DEFAULT_SIZE.tableItemAlign
+  const scrollBarColor = DEFAULT_COLOR_CASE.tableScrollBarColor
+  const scrollBarHoverColor = DEFAULT_COLOR_CASE.tableScrollBarHoverColor
 
   const theme = {
     background: {
@@ -105,6 +107,10 @@ export function getCustomTheme(chart) {
         fontSize: DEFAULT_SIZE.tableItemFontSize,
         textAlign: headerAlign
       }
+    },
+    scrollBar: {
+      thumbColor: scrollBarColor,
+      thumbHoverColor: scrollBarHoverColor
     }
   }
 
@@ -156,6 +162,9 @@ export function getCustomTheme(chart) {
       theme.dataCell.bolderText.fill = c.tableFontColor
       theme.dataCell.text.fill = c.tableFontColor
       theme.dataCell.measureText.fill = c.tableFontColor
+
+      theme.scrollBar.thumbColor = c.tableScrollBarColor
+      theme.scrollBar.thumbHoverColor = resetRgbOpacity(c.tableScrollBarColor, 1.5)
     }
     // size
     if (customAttr.size) {
