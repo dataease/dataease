@@ -201,12 +201,16 @@ export default {
     componentActiveFlag() {
       return !this.mobileLayoutStatus && ((this.curComponent && this.config === this.curComponent && !this.previewVisible && !this.showPosition.includes('email-task')) || this.showPosition.includes('multiplexing'))
     },
+    scale() {
+      return Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight)
+    },
     curGap() {
-      return (this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix) ? this.componentGap : 0
+      return ((this.canvasStyleData.panel.gap === 'yes' && this.config.auxiliaryMatrix) ? this.componentGap : 0) * this.scale
     },
     ...mapState([
       'mobileLayoutStatus',
       'curComponent',
+      'previewCanvasScale',
       'componentGap'
     ])
   },
