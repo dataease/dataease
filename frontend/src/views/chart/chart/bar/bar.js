@@ -1522,7 +1522,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
       tooltip.formatter = tooltip.formatter.replace(reg, '<br/>')
       chart_option.tooltip = tooltip
     }
-    console.log('customAttr____________', chart_option, chart)
+    // console.log('customAttr____________', chart_option, chart)
     chart_option.grid.left = customAttr.size.spaceleft
     chart_option.grid.right = customAttr.size.spaceRight
     chart_option.grid.top = customAttr.size.spaceTop
@@ -1577,7 +1577,7 @@ export function horizontalBarOption(chart_option, chart, cstyle = {}) {
       chart_option.series.push(y)
     }
   }
-  // console.log(chart_option);
+  // console.log('横向柱：',chart_option);
   componentStyle(chart_option, chart, cstyle)
   seniorCfg(chart_option, chart)
   return chart_option

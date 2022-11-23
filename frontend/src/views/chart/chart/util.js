@@ -40,7 +40,7 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_table',
     value: 'roll-elemnt',
     title: '滚动表格',
-    icon: 'vertical-ele'
+    icon: 'roll-elemnt'
   },
   // {
   //   render: 'antv',

@@ -244,7 +244,10 @@ export const DEFAULT_XAXIS_STYLE = {
     color: '#333333',
     fontSize: '12',
     rotate: 0,
-    formatter: '{value}'
+    formatter: '{value}',
+    width: 100,
+    overflow: 'none',
+    hideOverlap: false,
   },
   splitLine: {
     show: true,
@@ -318,7 +321,10 @@ export const DEFAULT_YAXIS_STYLE = {
     fontSize: '12',
     rotate: 0,
     formatter: '{value}',
-    fontFamily: ''
+    fontFamily: '',
+    width: 100,
+    overflow: 'none',
+    hideOverlap: false,
   },
   splitLine: {
     show: true,
