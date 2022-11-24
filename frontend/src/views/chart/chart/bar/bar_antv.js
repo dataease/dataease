@@ -203,6 +203,7 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   } else {
     delete options.isStack
   }
+  options.isPercent = chart.type.includes('percentage')
   // custom color
   options.color = antVCustomColor(chart)
   if (customAttr.color.gradient) {

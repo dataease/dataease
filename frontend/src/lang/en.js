@@ -1135,6 +1135,7 @@ export default {
     chart_percentage_bar_stack: 'Percentage Stack Bar',
     chart_bar_horizontal: 'Horizontal Bar',
     chart_bar_stack_horizontal: 'Stack Horizontal Bar',
+    chart_percentage_bar_stack_horizontal: 'Horizontal Percentage Stack Bar',
     chart_line: 'Base Line',
     chart_line_stack: 'Stack Line',
     chart_pie: 'Pie',
