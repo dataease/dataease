@@ -985,7 +985,6 @@ public class ChartDataBuild {
 
     public static String desensitizationValue(ColumnPermissionItem columnPermissionItem, String originStr) {
         String desensitizationStr = "";
-        System.out.println(columnPermissionItem.getDesensitizationRule().getBuiltInRule().toString());
         if (!columnPermissionItem.getDesensitizationRule().getBuiltInRule().toString().equalsIgnoreCase("custom")) {
             switch (columnPermissionItem.getDesensitizationRule().getBuiltInRule()) {
                 case CompleteDesensitization:
