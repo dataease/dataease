@@ -102,6 +102,9 @@ class TextSelectServiceImpl extends WidgetService {
   isCustomSortWidget() {
     return true
   }
+  isParamWidget() {
+    return true
+  }
 
   fillValueDerfault(element) {
     const defaultV = element.options.value === null ? '' : element.options.value.toString()
