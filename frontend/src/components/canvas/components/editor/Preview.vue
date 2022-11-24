@@ -1,10 +1,6 @@
 <template>
   <div
     :id="previewMainDomId"
-    v-loading="dataLoading"
-    :element-loading-text="$t('panel.data_loading')"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(220,220,220,1)"
     class="bg"
     :style="customStyle"
     @scroll="canvasScroll"
@@ -614,7 +610,8 @@ export default {
     },
     downloadAsPDF() {
       this.dataLoading = true
-      const domId = this.canvasInfoTemp
+      this.$emit('change-load-status', true)
+      const domId = this.previewMainDomId
       setTimeout(() => {
         this.exporting = true
         this.backScreenShot = true
@@ -625,6 +622,7 @@ export default {
           html2canvas(document.getElementById(domId)).then(canvas => {
             const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
             this.dataLoading = false
+            this.$emit('change-load-status', false)
             this.exporting = false
             this.backScreenShot = false
             if (snapshot !== '') {
@@ -632,7 +630,7 @@ export default {
               this.pdfExportShow = true
             }
           })
-        }, 1500)
+        }, 2500)
       }, 500)
     },
     closePreExport() {
