@@ -56,7 +56,27 @@ export function listenGlobalKeyDown() {
     if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
     } else if (isCtrlOrCommandDown) {
-      if (keyCode === zKey || keyCode === yKey || keyCode === vKey || keyCode === cKey || keyCode === sKey || keyCode === enlargeKey) {
+      if (keyCode === zKey || keyCode === yKey || keyCode === cKey || keyCode === sKey || keyCode === enlargeKey) {
+        e.preventDefault()
+        unlockMap[keyCode]()
+      }
+    }
+  }
+
+  window.onkeyup = (e) => {
+    if (e.keyCode === ctrlKey || e.keyCode === commandKey) {
+      isCtrlOrCommandDown = false
+    }
+  }
+}
+
+export function listenGlobalKeyDownPreview() {
+  window.onkeydown = (e) => {
+    const { keyCode } = e
+    if (keyCode === ctrlKey || keyCode === commandKey) {
+      isCtrlOrCommandDown = true
+    } else if (isCtrlOrCommandDown) {
+      if (keyCode === enlargeKey) {
         e.preventDefault()
         unlockMap[keyCode]()
       }
@@ -71,12 +91,11 @@ export function listenGlobalKeyDown() {
 }
 
 function copy() {
-  store.commit('copy')
+  store.commit('copyToClipboard')
 }
 
 function paste() {
-  store.commit('paste')
-  store.commit('recordSnapshot')
+
 }
 
 function cut() {

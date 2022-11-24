@@ -422,12 +422,15 @@ export default {
           this.totalSortFields = JSON.parse(chart.yaxis)
         }
         if (this.totalSortFields.length > 0) {
-          if (this.totalForm.row.totalSortField === '') {
+          if (this.resetTotalSort(this.totalForm.row.totalSortField)) {
             this.totalForm.row.totalSortField = this.totalSortFields[0].dataeaseName
           }
-          if (this.totalForm.col.totalSortField === '') {
+          if (this.resetTotalSort(this.totalForm.col.totalSortField)) {
             this.totalForm.col.totalSortField = this.totalSortFields[0].dataeaseName
           }
+        } else {
+          this.totalForm.row.totalSortField = ''
+          this.totalForm.col.totalSortField = ''
         }
       }
     },
@@ -437,6 +440,16 @@ export default {
     },
     showProperty(property) {
       return this.propertyInner.includes(property)
+    },
+    resetTotalSort(field) {
+      if (field === '') {
+        return true
+      }
+      const sortFieldList = []
+      this.totalSortFields.forEach(ele => {
+        sortFieldList.push(ele.dataeaseName)
+      })
+      return sortFieldList.indexOf(field) === -1
     }
   }
 }

@@ -790,8 +790,8 @@ export default {
     }
   },
   created() {
-    // Global listening for key events
     listenGlobalKeyDown()
+    document.addEventListener('paste', this.passFromClipboard)
   },
   mounted() {
     this.initWatermark()
@@ -808,6 +808,7 @@ export default {
     this.init(this.$store.state.panel.panelInfo.id)
   },
   beforeDestroy() {
+    document.removeEventListener('paste', this.passFromClipboard)
     bus.$off('component-on-drag', this.componentOnDrag)
     // bus.$off('component-dialog-edit', this.editDialog)
     // bus.$off('button-dialog-edit', this.editButtonDialog)
@@ -821,6 +822,14 @@ export default {
     elx && elx.remove()
   },
   methods: {
+    passFromClipboard(event) {
+      // 获取解析 粘贴的文本
+      const text = (event.clipboardData || window.clipboardData).getData('text')
+      if (text && text.includes('datease-component-')) {
+        event.preventDefault()
+        this.$store.commit('passFromClipboard', text.replace('datease-component-', ''))
+      }
+    },
     initWatermark() {
       if (this.panelInfo.watermarkInfo) {
         userLoginInfo().then(res => {

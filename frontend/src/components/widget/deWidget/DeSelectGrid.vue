@@ -71,7 +71,7 @@
 import { linkMultFieldValues, multFieldValues } from '@/api/dataset/dataset'
 import { getLinkToken, getToken } from '@/utils/auth'
 import bus from '@/utils/bus'
-import { isSameVueObj } from '@/utils'
+import { isSameVueObj, mergeCustomSortOption } from '@/utils'
 import { attrsMap, styleAttrs, textSelectGridWidget } from '@/components/widget/deWidget/serviceNameFn.js'
 
 export default {
@@ -142,6 +142,9 @@ export default {
     cssArr() {
       const { brColor, wordColor, innerBgColor } = this.element.style
       return { brColor, wordColor, innerBgColor }
+    },
+    isCustomSortWidget() {
+      return this.element.serviceName === 'textSelectGridWidget'
     }
   },
   watch: {
@@ -354,7 +357,11 @@ export default {
     },
     optionData(data) {
       if (!data) return null
-      return data.filter(item => !!item).map(item => {
+      let tempData = data.filter(item => !!item)
+      if (this.isCustomSortWidget && this.element.options.attrs?.sort?.sort === 'custom') {
+        tempData = mergeCustomSortOption(this.element.options.attrs.sort.list, tempData)
+      }
+      return tempData.map(item => {
         return {
           id: item,
           text: item

@@ -107,6 +107,9 @@ class NumberSelectServiceImpl extends WidgetService {
       return defaultV.split(',')[0]
     }
   }
+  isParamWidget() {
+    return true
+  }
 }
 const numberSelectServiceImpl = new NumberSelectServiceImpl()
 export default numberSelectServiceImpl

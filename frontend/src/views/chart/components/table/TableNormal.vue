@@ -13,7 +13,7 @@
       <ux-grid
         ref="plxTable"
         size="mini"
-        style="width: 100%;"
+        :style="tableStyle"
         :height="height"
         :checkbox-config="{highlight: true}"
         :width-resize="true"
@@ -44,23 +44,33 @@
         v-show="showPage"
         class="table-page"
       >
-        <span class="total-style">
-          {{ $t('chart.total') }}
-          <span>{{ chart.datasetMode === 0 ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0) }}</span>
-          {{ $t('chart.items') }}
-        </span>
-        <el-pagination
-          small
-          :current-page="currentPage.page"
-          :page-sizes="[10,20,50,100]"
-          :page-size="currentPage.pageSize"
-          :pager-count="5"
-          layout="prev, pager, next"
-          :total="currentPage.show"
-          class="page-style"
-          @current-change="pageClick"
-          @size-change="pageChange"
-        />
+        <el-row style="position: relative;width:100% ">
+          <el-row
+            class="table-page-inner"
+            :style="autoStyle"
+          >
+            <span class="total-style">
+              {{ $t('chart.total') }}
+              <span>{{
+                chart.datasetMode === 0 ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
+              }}</span>
+              {{ $t('chart.items') }}
+            </span>
+            <el-pagination
+              small
+              :current-page="currentPage.page"
+              :page-sizes="[10,20,50,100]"
+              :page-size="currentPage.pageSize"
+              :pager-count="5"
+              layout="prev, pager, next"
+              :total="currentPage.show"
+              class="page-style"
+              @current-change="pageClick"
+              @size-change="pageChange"
+            />
+          </el-row>
+        </el-row>
+
       </el-row>
     </el-row>
   </div>
@@ -69,7 +79,8 @@
 <script>
 import { hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
-import { DEFAULT_SIZE } from '@/views/chart/chart/chart'
+import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '@/views/chart/chart/chart'
+import { mapState } from 'vuex'
 
 export default {
   name: 'TableNormal',
@@ -143,16 +154,39 @@ export default {
       scrollTimer: null,
       scrollTop: 0,
       showIndex: false,
-      indexLabel: '序号'
+      indexLabel: '序号',
+      scrollBarColor: DEFAULT_COLOR_CASE.tableScrollBarColor,
+      scrollBarHoverColor: DEFAULT_COLOR_CASE.tableScrollBarHoverColor
     }
   },
   computed: {
+    scale() {
+      return this.previewCanvasScale.scalePointWidth
+    },
+    autoStyle() {
+      return {
+        height: (100 / this.scale) + '%!important',
+        width: (100 / this.scale) + '%!important',
+        left: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
+        top: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
+        transform: 'scale(' + this.scale + ')'
+      }
+    },
     bg_class() {
       return {
         background: hexColorToRGBA('#ffffff', 0),
         borderRadius: this.borderRadius
       }
-    }
+    },
+    tableStyle() {
+      return {
+        width: '100%',
+        '--scroll-bar-color': this.scrollBarColor
+      }
+    },
+    ...mapState([
+      'previewCanvasScale'
+    ])
   },
   watch: {
     chart: function() {
@@ -283,6 +317,7 @@ export default {
           this.table_header_class.background = hexColorToRGBA(customAttr.color.tableHeaderBgColor, customAttr.color.alpha)
           this.table_item_class.color = customAttr.color.tableFontColor
           this.table_item_class.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha)
+          this.scrollBarColor = customAttr.color.tableScrollBarColor ? customAttr.color.tableScrollBarColor : DEFAULT_COLOR_CASE.tableScrollBarColor
         }
         if (customAttr.size) {
           this.table_header_class.fontSize = customAttr.size.tableTitleFontSize + 'px'
@@ -472,39 +507,62 @@ export default {
 }
 </script>
 
-<style scoped>
-  .table-class ::v-deep .body--wrapper{
-    background: rgba(1,1,1,0);
+<style scoped lang="scss">
+.table-class ::v-deep .body--wrapper {
+  background: rgba(1, 1, 1, 0);
+}
+
+.table-class ::v-deep .elx-cell {
+  max-height: none !important;
+  line-height: normal !important;
+}
+
+.table-page-inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  overflow: hidden;
+}
+
+.table-page {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  overflow: hidden;
+}
+
+.page-style {
+  margin-right: auto;
+}
+
+.total-style {
+  flex: 1;
+  font-size: 12px;
+  color: #606266;
+  white-space: nowrap;
+}
+
+.page-style ::v-deep .el-input__inner {
+  height: 24px;
+}
+
+.page-style ::v-deep button {
+  background: transparent !important;
+}
+
+.page-style ::v-deep li {
+  background: transparent !important;
+}
+.table-class{
+  ::-webkit-scrollbar-thumb {
+    background: var(--scroll-bar-color);
   }
-  .table-class ::v-deep .elx-cell{
-    max-height: none!important;
-    line-height: normal!important;
-  }
-  .table-page{
-    position: absolute;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    width: 100%;
-    overflow: hidden;
-  }
-  .page-style{
-    margin-right: auto;
-  }
-  .total-style{
-    flex: 1;
-    font-size: 12px;
-    color: #606266;
-    white-space:nowrap;
-  }
-  .page-style ::v-deep .el-input__inner{
-    height: 24px;
-  }
-  .page-style ::v-deep button{
-    background: transparent!important;
-  }
-  .page-style ::v-deep li{
-    background: transparent!important;
-  }
+}
+.table-class{
+  scrollbar-color: var(--scroll-bar-color) transparent;
+}
 </style>

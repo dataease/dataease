@@ -93,7 +93,7 @@ div:focus {
 }
 
 .de-filter-dialog {
-  min-width: 500px !important;
+  min-width: 785px !important;
   width: 55% !important;
 
   .el-dialog__header {
@@ -322,12 +322,12 @@ div:focus {
   margin: 0 2px 1px 0;
 }
 
-.field-icon-dimension{
-  color: #3370FF!important;
+.field-icon-dimension {
+  color: #3370FF !important;
 }
 
-.field-icon-quota{
-  color: #04B49C!important;
+.field-icon-quota {
+  color: #04B49C !important;
 }
 
 .ds-icon-pdf {
@@ -1509,6 +1509,7 @@ div:focus {
 .de-status {
   position: relative;
   margin-left: 15px;
+
   &::before {
     content: '';
     position: absolute;
@@ -1546,6 +1547,7 @@ div:focus {
   &::before {
     background: var(--deDanger, #F54A45);
   }
+
   .el-icon-s-order {
     color: var(--primary, #3370ff);
     cursor: pointer;
@@ -1590,6 +1592,7 @@ div:focus {
     margin: 0;
     margin-right: 8px;
     position: relative;
+
     i {
       position: absolute;
       right: 2px;
@@ -1621,6 +1624,7 @@ div:focus {
     justify-content: center;
     align-items: center;
   }
+
   .arrow-filter:hover {
     background: rgba(31, 35, 41, 0.1);
     border-radius: 4px;
@@ -1633,6 +1637,7 @@ div:focus {
   .el-icon-arrow-left.arrow-filter {
     margin-right: 5px;
   }
+
   .filter-texts-container {
     flex: 1;
     overflow-x: auto;
@@ -1674,11 +1679,13 @@ div:focus {
     transform: translate(-50%, -50%);
   }
 }
+
 .calcu-field {
   .calcu-cont {
     display: flex;
     justify-content: space-between;
   }
+
   .codemirror {
     height: 250px;
     overflow-y: auto;
@@ -1686,6 +1693,7 @@ div:focus {
     border: 1px solid #bbbfc4;
     border-radius: 4px;
   }
+
   .codemirror .CodeMirror-scroll {
     height: 250px;
     overflow-y: auto;

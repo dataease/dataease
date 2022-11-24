@@ -8,7 +8,8 @@ import {
   getYAxis,
   getPadding,
   getSlider,
-  getAnalyse
+  getAnalyse,
+  setGradientColor
 } from '@/views/chart/chart/common/common_antv'
 import { antVCustomColor } from '@/views/chart/chart/util'
 
@@ -105,7 +106,7 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   options.color = antVCustomColor(chart)
   if (customAttr.color.gradient) {
     options.color = options.color.map((ele) => {
-      return `l(270) 0:#ffffff00 1:${ele}`
+      return setGradientColor(ele, customAttr.color.gradient, 270)
     })
   }
 
@@ -202,11 +203,12 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   } else {
     delete options.isStack
   }
+  options.isPercent = chart.type.includes('percentage')
   // custom color
   options.color = antVCustomColor(chart)
   if (customAttr.color.gradient) {
     options.color = options.color.map((ele) => {
-      return `l(0) 0:#ffffff00 1:${ele}`
+      return setGradientColor(ele, customAttr.color.gradient)
     })
   }
 

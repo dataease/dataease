@@ -1695,15 +1695,34 @@ public class ChartViewService {
                     continue;
                 }
 
+                Boolean isEndParam = false;
                 for (String parameter : chartExtFilterRequest.getParameters()) {
                     if (parameter.contains("|DE|")) {
-                        if (!parameter.split("\\|DE\\|")[0].equals(table.getId())) {
+                        String[] parameterArray = parameter.split("\\|DE\\|");
+                        if (!parameterArray[0].equals(table.getId())) {
                             continue;
                         }
-                        List<SqlVariableDetails> parameters = sqlVariables.stream().filter(item -> item.getVariableName().equalsIgnoreCase(parameter.split("\\|DE\\|")[1])).collect(Collectors.toList());
+                        String paramName = null;
+                        if (parameterArray.length > 1) {
+                            paramName = parameterArray[1];
+                            if (paramName.contains("_START_END_SPLIT")) {
+                                String[] paramNameArray = paramName.split("_START_END_SPLIT");
+                                paramName = paramNameArray[0];
+                                isEndParam = true;
+                            }
+                        } else {
+                            continue;
+                        }
+                        final String finalParamName = paramName;
+                        List<SqlVariableDetails> parameters = sqlVariables.stream().filter(item -> item.getVariableName().equalsIgnoreCase(finalParamName)).collect(Collectors.toList());
                         if (CollectionUtils.isNotEmpty(parameters)) {
-                            String filter = qp.transFilter(chartExtFilterRequest, parameters.get(0));
-                            sql = sql.replace("${" + parameter.split("\\|DE\\|")[1] + "}", filter);
+                            String filter = null;
+                            if (isEndParam) {
+                                filter = transEndParamSql(chartExtFilterRequest, parameters.get(0));
+                            } else {
+                                filter = qp.transFilter(chartExtFilterRequest, parameters.get(0));
+                            }
+                            sql = sql.replace("${" + finalParamName + "}", filter);
                         }
                     } else {
                         List<SqlVariableDetails> parameters = sqlVariables.stream().filter(item -> item.getVariableName().equalsIgnoreCase(parameter)).collect(Collectors.toList());
@@ -1717,6 +1736,11 @@ public class ChartViewService {
         }
         sql = dataSetTableService.removeVariables(sql, ds.getType());
         return sql;
+    }
+
+    public String transEndParamSql(ChartExtFilterRequest chartExtFilterRequest, SqlVariableDetails sqlVariableDetails) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? sqlVariableDetails.getType().get(1) : "YYYY");
+        return simpleDateFormat.format(new Date(Long.parseLong(chartExtFilterRequest.getValue().get(1))));
     }
 
     private String getDrillSort(List<ChartViewFieldDTO> xAxis, ChartViewFieldDTO field) {

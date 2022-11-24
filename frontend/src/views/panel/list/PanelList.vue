@@ -926,7 +926,7 @@ export default {
 
       if (userCache) {
         this.defaultData = JSON.parse(modelInfo)
-        if (showFirst && this.defaultData.length > 0) {
+        if (showFirst && this.defaultData && this.defaultData.length > 0) {
           this.activeDefaultNodeAndClickOnly(this.defaultData[0].id)
         }
       }
@@ -935,7 +935,7 @@ export default {
         localStorage.setItem('panel-default-tree', JSON.stringify(res.data))
         if (!userCache) {
           this.defaultData = res.data
-          if (showFirst && this.defaultData.length > 0) {
+          if (showFirst && this.defaultData && this.defaultData.length > 0) {
             this.activeDefaultNodeAndClickOnly(this.defaultData[0].id)
           }
         }

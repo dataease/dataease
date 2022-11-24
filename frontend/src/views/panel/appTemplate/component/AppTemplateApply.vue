@@ -2,10 +2,11 @@
   <el-drawer
     v-closePress
     v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
-    :title="'应用模板'"
+    :title="$t('app_template.apply_template')"
     :visible.sync="applyDrawer"
     custom-class="de-user-drawer"
     size="600px"
+    :wrapper-closable="false"
     direction="rtl"
   >
     <ds-form
@@ -19,6 +20,7 @@
 
 <script>
 import DsForm from '@/views/system/datasource/DsForm'
+
 export default {
   name: 'AppTemplateApply',
   components: {
@@ -30,8 +32,7 @@ export default {
       applyDrawer: false
     }
   },
-  computed: {
-  },
+  computed: {},
   mounted() {
   },
   methods: {
@@ -52,7 +53,7 @@ export default {
 </script>
 
 <style scoped>
-::v-deep .el-drawer__body{
-  padding: 0px 0px!important;
+::v-deep .el-drawer__body {
+  padding: 0px 0px !important;
 }
 </style>

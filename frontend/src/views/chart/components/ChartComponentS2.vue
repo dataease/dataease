@@ -55,25 +55,32 @@
       />
       <el-row
         v-show="showPage"
-        class="table-page"
+        style="position: relative;"
       >
-        <span class="total-style">
-          {{ $t('chart.total') }}
-          <span>{{ chart.datasetMode === 0 ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0) }}</span>
-          {{ $t('chart.items') }}
-        </span>
-        <el-pagination
-          small
-          :current-page="currentPage.page"
-          :page-sizes="[10,20,50,100]"
-          :page-size="currentPage.pageSize"
-          :pager-count="5"
-          layout="prev, pager, next"
-          :total="currentPage.show"
-          class="page-style"
-          @current-change="pageClick"
-          @size-change="pageChange"
-        />
+        <el-row
+          class="table-page"
+          :style="autoStyle"
+        >
+          <span class="total-style">
+            {{ $t('chart.total') }}
+            <span>{{
+              chart.datasetMode === 0 ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
+            }}</span>
+            {{ $t('chart.items') }}
+          </span>
+          <el-pagination
+            small
+            :current-page="currentPage.page"
+            :page-sizes="[10,20,50,100]"
+            :page-size="currentPage.pageSize"
+            :pager-count="5"
+            layout="prev, pager, next"
+            :total="currentPage.show"
+            class="page-style"
+            @current-change="pageClick"
+            @size-change="pageChange"
+          />
+        </el-row>
       </el-row>
     </div>
   </div>
@@ -87,6 +94,7 @@ import { baseTableInfo, baseTableNormal, baseTablePivot } from '@/views/chart/ch
 import TitleRemark from '@/views/chart/view/TitleRemark'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ChartComponentS2',
@@ -162,6 +170,18 @@ export default {
   },
 
   computed: {
+    scale() {
+      return this.previewCanvasScale.scalePointWidth
+    },
+    autoStyle() {
+      return {
+        height: (100 / this.scale) + '%!important',
+        width: (100 / this.scale) + '%!important',
+        left: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
+        top: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
+        transform: 'scale(' + this.scale + ')'
+      }
+    },
     trackBarStyleTime() {
       return this.trackBarStyle
     },
@@ -173,7 +193,10 @@ export default {
     chartInfo() {
       const { id, title } = this.chart
       return { id, title }
-    }
+    },
+    ...mapState([
+      'previewCanvasScale'
+    ])
   },
   watch: {
     chart: {

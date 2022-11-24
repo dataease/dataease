@@ -27,6 +27,7 @@
       @onTextChange="onTextChange"
       @onLegendChange="onLegendChange"
       @onMarginChange="onMarginChange"
+      @onSuspensionChange="onSuspensionChange"
     />
     <el-row v-else>
       <div class="view-selected-message-class">
@@ -102,6 +103,9 @@ export default {
     },
     onMarginChange(val) {
       this.batchOptChange('customStyle', 'margin', val)
+    },
+    onSuspensionChange(val) {
+      this.batchOptChange('customAttr', 'suspension', val)
     },
     batchOptChange(custom, property, value) {
       this.$store.commit('setChangeProperties', {

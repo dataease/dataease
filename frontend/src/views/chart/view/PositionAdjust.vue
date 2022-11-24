@@ -29,7 +29,9 @@
             v-model="styleInfo.left"
             type="number"
             :min="0"
+            :max="maxLeft"
             class="hide-icon-number"
+            @change="leftOnChange"
           >
             <template slot="append">px</template>
           </el-input>
@@ -69,6 +71,8 @@
 
 <script>
 
+import { mapState } from 'vuex'
+
 export default {
   name: 'PositionAdjust',
   props: {},
@@ -76,14 +80,26 @@ export default {
     return {}
   },
   computed: {
+    maxLeft() {
+      return 1600 - this.styleInfo.width - this.componentGap
+    },
     styleInfo() {
       return this.$store.state.curComponent.style
-    }
+    },
+    ...mapState([
+      'componentGap'
+    ])
   },
   watch: {},
   mounted() {
   },
-  methods: {}
+  methods: {
+    leftOnChange() {
+      if (this.styleInfo.left > this.maxLeft) {
+        this.styleInfo.left = this.maxLeft
+      }
+    }
+  }
 }
 </script>
 

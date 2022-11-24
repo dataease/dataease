@@ -1,10 +1,6 @@
 <template>
   <div
     :id="previewMainDomId"
-    v-loading="dataLoading"
-    :element-loading-text="$t('panel.data_loading')"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(220,220,220,1)"
     class="bg"
     :style="customStyle"
     @scroll="canvasScroll"
@@ -120,6 +116,7 @@ import { userLoginInfo } from '@/api/systemInfo/userLogin'
 import html2canvas from 'html2canvasde'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import PDFPreExport from '@/views/panel/export/PDFPreExport'
+import { listenGlobalKeyDownPreview } from '@/components/canvas/utils/shortcutKey'
 
 const erd = elementResizeDetectorMaker()
 export default {
@@ -351,6 +348,9 @@ export default {
     }
   },
   created() {
+    if (this.canvasId === 'canvas-main') {
+      listenGlobalKeyDownPreview()
+    }
     // 取消视图请求
     this.$cancelRequest('/chart/view/getData/**')
     this.$cancelRequest('/api/link/viewDetail/**')
@@ -552,7 +552,7 @@ export default {
               component.style[key] = this.format(component.style[key], this.scaleHeight)
             }
             if (this.needToChangeWidth.includes(key)) {
-              if (key === 'fontSize' && this.terminal === 'mobile') {
+              if (key === 'fontSize' && (this.terminal === 'mobile' || component.type === 'custom')) {
                 // do nothing 移动端字符大小无需按照比例缩放，当前保持不变(包括 v-text 和 过滤组件)
               } else {
                 component.style[key] = this.format(component.style[key], this.scaleWidth)
@@ -614,7 +614,8 @@ export default {
     },
     downloadAsPDF() {
       this.dataLoading = true
-      const domId = this.canvasInfoTemp
+      this.$emit('change-load-status', true)
+      const domId = this.previewMainDomId
       setTimeout(() => {
         this.exporting = true
         this.backScreenShot = true
@@ -625,6 +626,7 @@ export default {
           html2canvas(document.getElementById(domId)).then(canvas => {
             const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
             this.dataLoading = false
+            this.$emit('change-load-status', false)
             this.exporting = false
             this.backScreenShot = false
             if (snapshot !== '') {
@@ -632,7 +634,7 @@ export default {
               this.pdfExportShow = true
             }
           })
-        }, 1500)
+        }, 2500)
       }, 500)
     },
     closePreExport() {

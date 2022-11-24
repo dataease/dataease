@@ -1,4 +1,4 @@
-import { getPadding, getTheme } from '@/views/chart/chart/common/common_antv'
+import { getPadding, getTheme, setGradientColor } from '@/views/chart/chart/common/common_antv'
 import { Gauge } from '@antv/g2plot'
 import { DEFAULT_LABEL, DEFAULT_SIZE, DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
 import { getScaleValue } from '@/components/canvas/utils/style'
@@ -154,7 +154,9 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
   }
 
   if (customAttr.color.gradient) {
-    const colorList = (theme.styleSheet?.paletteQualitative10 || []).map((ele) => `l(0) 0:#ffffff00 1:${ele}`)
+    const colorList = (theme.styleSheet?.paletteQualitative10 || []).map((ele) => {
+      return setGradientColor(ele, customAttr.color.gradient)
+    })
     if (!options.range) {
       options.range = {
         color: colorList
