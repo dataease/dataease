@@ -470,8 +470,8 @@ export default {
         let switchCount = 1
         // 轮播定时器
         this.timer = setInterval(() => {
-          switchCount++
           const nowIndex = switchCount % this.element.options.tabList.length
+          switchCount++
           this.activeTabName = this.element.options.tabList[nowIndex].name
         }, switchTime)
       }
