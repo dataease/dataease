@@ -135,8 +135,9 @@
               type="number"
               size="mini"
               :min="2"
+              :max="3600"
               class="hide-icon-number"
-              @change="styleChange"
+              @change="switchTimeChange"
             >
               <template slot="append">S</template>
             </el-input>
@@ -179,6 +180,14 @@ export default {
       const pickKey = key + 'Picker'
       const current = this.$refs[pickKey]
       current && (current.showPicker = true)
+    },
+    switchTimeChange() {
+      if (!this.styleInfo.switchTime || this.styleInfo.switchTime < 2) {
+        this.styleInfo.switchTime = 2
+      } else if (this.styleInfo.switchTime && this.styleInfo.switchTime > 3600) {
+        this.styleInfo.switchTime = 3600
+      }
+      this.styleChange()
     },
     styleChange() {
       this.$store.commit('canvasChange')
