@@ -1,9 +1,9 @@
 package io.dataease.service.chart.util;
 
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
-import io.dataease.commons.constants.ColumnPermissionConstants;
 import io.dataease.dto.chart.*;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
+import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -162,7 +162,7 @@ public class ChartDataBuild {
                 dataList.add(axisChartDataDTO);
 
                 if ("line".equals(view.getType())) {
-                    if (CollectionUtils.isEmpty(xAxisExt)){
+                    if (CollectionUtils.isEmpty(xAxisExt)) {
                         axisChartDataDTO.setCategory(yAxis.get(j).getName());
                     } else {
                         // 多指标只取第一个
@@ -938,7 +938,7 @@ public class ChartDataBuild {
     }
 
     // 表格
-    public static Map<String, Object> transTableNormal(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extStack, List<String> desensitizationList) {
+    public static Map<String, Object> transTableNormal(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, List<ChartViewFieldDTO> extStack, Map<String, ColumnPermissionItem> desensitizationList) {
         List<ChartViewFieldDTO> fields = new ArrayList<>();
         if (ObjectUtils.isNotEmpty(xAxis)) {
             fields.addAll(xAxis);
@@ -953,7 +953,7 @@ public class ChartDataBuild {
     }
 
     // 表格
-    public static Map<String, Object> transTableNormal(Map<String, List<ChartViewFieldDTO>> fieldMap, ChartViewWithBLOBs view, List<String[]> data, List<String> desensitizationList) {
+    public static Map<String, Object> transTableNormal(Map<String, List<ChartViewFieldDTO>> fieldMap, ChartViewWithBLOBs view, List<String[]> data, Map<String, ColumnPermissionItem> desensitizationList) {
 
         List<ChartViewFieldDTO> fields = new ArrayList<>();
         List<ChartViewFieldDTO> yfields = new ArrayList<>();
@@ -983,14 +983,73 @@ public class ChartDataBuild {
         return transTableNormal(fields, view, data, desensitizationList);
     }
 
-    private static Map<String, Object> transTableNormal(List<ChartViewFieldDTO> fields, ChartViewWithBLOBs view, List<String[]> data, List<String> desensitizationList) {
+    public static String desensitizationValue(ColumnPermissionItem columnPermissionItem, String originStr) {
+        String desensitizationStr = "";
+        if (!columnPermissionItem.getDesensitizationRule().getBuiltInRule().toString().equalsIgnoreCase("custom")) {
+            switch (columnPermissionItem.getDesensitizationRule().getBuiltInRule()) {
+                case CompleteDesensitization:
+                    desensitizationStr = ColumnPermissionItem.CompleteDesensitization;
+                    break;
+                case KeepMiddleThreeCharacters:
+                    if (StringUtils.isEmpty(originStr) || originStr.length() < 4) {
+                        desensitizationStr = ColumnPermissionItem.KeepMiddleThreeCharacters;
+                    } else {
+                        desensitizationStr = "***" + StringUtils.substring(originStr, originStr.length() / 2 - 1, originStr.length() / 2 + 2) + "***";
+                    }
+                    break;
+                case KeepFirstAndLastThreeCharacters:
+                    if (StringUtils.isEmpty(originStr) || originStr.length() < 7) {
+                        desensitizationStr = ColumnPermissionItem.KeepFirstAndLastThreeCharacters;
+                    } else {
+                        desensitizationStr = StringUtils.substring(originStr, 0, 3) + "***" + StringUtils.substring(originStr, originStr.length() - 3, originStr.length());
+                    }
+                    break;
+                default:
+                    break;
+
+            }
+        } else {
+            switch (columnPermissionItem.getDesensitizationRule().getCustomBuiltInRule()) {
+                case RetainBeforeMAndAfterN:
+                    if (StringUtils.isEmpty(originStr) || originStr.length() < columnPermissionItem.getDesensitizationRule().getM() + columnPermissionItem.getDesensitizationRule().getN() + 1) {
+                        desensitizationStr = String.join("", Collections.nCopies(columnPermissionItem.getDesensitizationRule().getM(), "X")) + "***" + Collections.nCopies(columnPermissionItem.getDesensitizationRule().getN(), "X");
+                    } else {
+                        desensitizationStr = StringUtils.substring(originStr, 0, columnPermissionItem.getDesensitizationRule().getM() - 1) + "***" + StringUtils.substring(originStr, originStr.length() - columnPermissionItem.getDesensitizationRule().getN(), originStr.length() - 1);
+                    }
+                    break;
+                case RetainMToN:
+                    if (columnPermissionItem.getDesensitizationRule().getM() > columnPermissionItem.getDesensitizationRule().getN()) {
+                        desensitizationStr = "*** ***";
+                        break;
+                    }
+                    if (StringUtils.isEmpty(originStr) || originStr.length() < columnPermissionItem.getDesensitizationRule().getM()) {
+                        desensitizationStr = "*** ***";
+                        break;
+                    }
+                    if (originStr.length() >= columnPermissionItem.getDesensitizationRule().getM() && originStr.length() >= columnPermissionItem.getDesensitizationRule().getN()) {
+                        desensitizationStr = "***" + StringUtils.substring(originStr, columnPermissionItem.getDesensitizationRule().getM() - 1, columnPermissionItem.getDesensitizationRule().getN()) + "***";
+                        break;
+                    }
+                    if (originStr.length() >= columnPermissionItem.getDesensitizationRule().getN() && originStr.length() < columnPermissionItem.getDesensitizationRule().getN()) {
+                        desensitizationStr = "***" + StringUtils.substring(originStr, columnPermissionItem.getDesensitizationRule().getM() - 1, originStr.length());
+                    }
+                    break;
+                default:
+                    break;
+
+            }
+        }
+        return desensitizationStr;
+    }
+
+    private static Map<String, Object> transTableNormal(List<ChartViewFieldDTO> fields, ChartViewWithBLOBs view, List<String[]> data, Map<String, ColumnPermissionItem> desensitizationList) {
         Map<String, Object> map = new TreeMap<>();
         List<Map<String, Object>> tableRow = new ArrayList<>();
         data.forEach(ele -> {
             Map<String, Object> d = new HashMap<>();
             for (int i = 0; i < fields.size(); i++) {
-                if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(fields.get(i).getDataeaseName())) {
-                    d.put(fields.get(i).getDataeaseName(), ColumnPermissionConstants.Desensitization_desc);
+                if (CollectionUtils.isNotEmpty(desensitizationList.keySet()) && desensitizationList.keySet().contains(fields.get(i).getDataeaseName())) {
+                    d.put(fields.get(i).getDataeaseName(), desensitizationValue(desensitizationList.get(fields.get(i).getDataeaseName()), String.valueOf(ele[i])));
                     continue;
                 }
                 if (i == ele.length) break;
@@ -1012,11 +1071,11 @@ public class ChartDataBuild {
         // 堆叠柱状图
         if (CollectionUtils.isEmpty(xAxisExt)) {
             return transStackChartDataAntV(xAxis, yAxis, view, data, extStack, isDrill);
-        //  分组柱状图
+            //  分组柱状图
         } else if (CollectionUtils.isNotEmpty(xAxisExt) && CollectionUtils.isEmpty(extStack)) {
             return transBaseGroupDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill);
-        // 分组堆叠柱状图
-        }else {
+            // 分组堆叠柱状图
+        } else {
             Map<String, Object> map = new HashMap<>();
 
             List<AxisChartDataAntVDTO> dataList = new ArrayList<>();

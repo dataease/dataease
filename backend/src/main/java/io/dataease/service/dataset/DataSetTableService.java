@@ -43,9 +43,11 @@ import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeOb
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.loader.ClassloaderResponsity;
+import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import io.dataease.provider.DDLProvider;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.datasource.JdbcProvider;
+import io.dataease.service.chart.util.ChartDataBuild;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.sys.SysAuthService;
@@ -87,7 +89,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static io.dataease.commons.constants.ColumnPermissionConstants.Desensitization_desc;
 
 /**
  * @Author gin
@@ -523,7 +524,7 @@ public class DataSetTableService {
         datasetTableField.setTableId(dataSetTableRequest.getId());
         datasetTableField.setChecked(Boolean.TRUE);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-        fields = permissionService.filterColumnPermissions(fields, new ArrayList<>(), dataSetTableRequest.getId(), null);
+        fields = permissionService.filterColumnPermissions(fields, new HashMap<>(), dataSetTableRequest.getId(), null);
         List<DatasetTableField> dimension = new ArrayList<>();
         List<DatasetTableField> quota = new ArrayList<>();
 
@@ -583,7 +584,7 @@ public class DataSetTableService {
             rowPermissionsTree.add(dto);
         }
         // 列权限
-        List<String> desensitizationList = new ArrayList<>();
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         fields = permissionService.filterColumnPermissions(fields, desensitizationList, datasetTable.getId(), null);
         if (CollectionUtils.isEmpty(fields)) {
             map.put("fields", fields);
@@ -945,8 +946,8 @@ public class DataSetTableService {
             jsonArray = data.stream().map(ele -> {
                 Map<String, Object> tmpMap = new HashMap<>();
                 for (int i = 0; i < ele.length; i++) {
-                    if (desensitizationList.contains(fieldArray[i])) {
-                        tmpMap.put(fieldArray[i], Desensitization_desc);
+                    if (desensitizationList.keySet().contains(fieldArray[i])) {
+                        tmpMap.put(fieldArray[i], ChartDataBuild.desensitizationValue(desensitizationList.get(fieldArray[i]), String.valueOf(ele[i])));
                     } else {
                         tmpMap.put(fieldArray[i], ele[i]);
                     }
