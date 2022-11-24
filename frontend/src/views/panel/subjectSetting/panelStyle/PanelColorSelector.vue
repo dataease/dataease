@@ -190,6 +190,19 @@
               @change="changeColorCase('tableBorderColor')"
             />
           </el-form-item>
+          <el-form-item
+            :label="$t('chart.table_scroll_bar_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.tableScrollBarColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              color-format="rgb"
+              show-alpha
+              @change="changeColorCase('tableScrollBarColor')"
+            />
+          </el-form-item>
         </div>
       </el-form>
     </el-col>

@@ -29,7 +29,7 @@
         :name="item.name"
       >
         <span slot="label">
-          <span :style="titleStyle">{{ item.title }}</span>
+          <span :style="titleStyle(item.name)">{{ item.title }}</span>
           <el-dropdown
             v-if="dropdownShow"
             slot="label"
@@ -272,6 +272,7 @@ export default {
   },
   data() {
     return {
+      timer: null,
       scrollLeft: 50,
       scrollTop: 10,
       // 需要展示属性设置的组件类型
@@ -303,11 +304,6 @@ export default {
     },
     maskShow() {
       return Boolean(this.$store.state.dragComponentInfo)
-    },
-    titleStyle() {
-      return {
-        fontSize: (this.element.style.fontSize || 16) + 'px'
-      }
     },
     headClass() {
       return 'tab-head-' + this.element.style.headPosition
@@ -393,6 +389,16 @@ export default {
     }
   },
   watch: {
+    'element.style.carouselEnable': {
+      handler(newVal, oldVla) {
+        this.initCarousel()
+      }
+    },
+    'element.style.switchTime': {
+      handler(newVal, oldVla) {
+        this.initCarousel()
+      }
+    },
     activeTabName: {
       handler(newVal, oldVla) {
         this.$store.commit('setTabActiveTabNameMap', { tabId: this.element.id, activeTabName: this.activeTabName })
@@ -439,10 +445,37 @@ export default {
     this.$store.commit('setTabActiveTabNameMap', { tabId: this.element.id, activeTabName: this.activeTabName })
     this.setContentThemeStyle()
   },
+  mounted() {
+    this.initCarousel()
+  },
   beforeDestroy() {
     bus.$off('add-new-tab', this.addNewTab)
   },
   methods: {
+    titleStyle(itemName) {
+      if (this.activeTabName === itemName) {
+        return {
+          fontSize: (this.element.style.activeFontSize || 18) + 'px'
+        }
+      } else {
+        return {
+          fontSize: (this.element.style.fontSize || 16) + 'px'
+        }
+      }
+    },
+    initCarousel() {
+      this.timer && clearInterval(this.timer)
+      if (this.element.style.carouselEnable) {
+        const switchTime = (this.element.style.switchTime || 5) * 1000
+        let switchCount = 1
+        // 轮播定时器
+        this.timer = setInterval(() => {
+          switchCount++
+          const nowIndex = switchCount % this.element.options.tabList.length
+          this.activeTabName = this.element.options.tabList[nowIndex].name
+        }, switchTime)
+      }
+    },
     initScroll() {
       this.scrollLeft = 50
       this.scrollTop = 10

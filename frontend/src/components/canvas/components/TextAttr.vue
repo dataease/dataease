@@ -100,6 +100,30 @@
       </div>
 
       <el-tooltip
+        v-if="attrShow('fontSize')"
+        :content="$t('panel.active_font_size')"
+      >
+        <i
+          style="float: left;margin-top: 3px;margin-left: 2px;"
+          class="iconfont icon-font"
+        />
+      </el-tooltip>
+
+      <div
+        v-if="attrShow('activeFontSize')"
+        style="width: 70px;float: left;margin-top: 2px;margin-left: 2px;"
+      >
+        <el-input
+          v-model="initActiveFontSize"
+          type="number"
+          size="mini"
+          :min="miniFontSize"
+          :max="maxFontSize"
+          @change="styleChange"
+        />
+      </div>
+
+      <el-tooltip
         v-if="attrShow('fontWeight')"
         :content="$t('panel.fontWeight')"
       >
@@ -440,6 +464,7 @@ export default {
       innerOpacity: 0,
       mainWidthOffset: 600,
       initFontSize: 12,
+      initActiveFontSize: 18,
       miniFontSize: 0,
       maxFontSize: 128,
       textAlignOptions: [
@@ -520,6 +545,7 @@ export default {
       // tab组件显示的属性
       'de-tabs': [
         'fontSize',
+        'activeFontSize',
         'borderStyle',
         'borderWidth',
         'borderColor',
@@ -623,6 +649,7 @@ export default {
       handler(newVal, oldVla) {
         if (newVal.fontSize) {
           this.initFontSize = newVal.fontSize
+          this.initActiveFontSize = newVal.activeFontSize
         }
       },
       deep: true
@@ -630,6 +657,17 @@ export default {
     innerOpacity: {
       handler(oldVal, newVal) {
         this.styleInfo['opacity'] = this.innerOpacity / 100
+      }
+    },
+    initActiveFontSize: {
+      handler(newVal) {
+        if (newVal < this.miniFontSize) {
+          this.styleInfo.activeFontSize = this.miniFontSize
+        } else if (newVal > this.maxFontSize) {
+          this.styleInfo.activeFontSize = this.maxFontSize
+        } else {
+          this.styleInfo.activeFontSize = newVal
+        }
       }
     },
     initFontSize: {
@@ -655,6 +693,9 @@ export default {
     this.init()
     if (this.attrShow('fontSize')) {
       this.initFontSize = this.styleInfo.fontSize
+    }
+    if (this.attrShow('activeFontSize')) {
+      this.initActiveFontSize = this.styleInfo.activeFontSize
     }
   },
 

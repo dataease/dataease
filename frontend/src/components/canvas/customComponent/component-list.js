@@ -94,8 +94,7 @@ export const VIDEOLINKS = {
       fullscreenToggle: false,
       pause: false
     },
-    sources: [{
-    }]
+    sources: [{}]
   },
   rtmp: {
     sources: [{
@@ -389,7 +388,10 @@ const list = [
       borderStyle: 'solid',
       borderWidth: 0,
       borderColor: '#000000',
-      fontSize: 16
+      fontSize: 16,
+      activeFontSize: 18,
+      carouselEnable: false,
+      switchTime: 5
     },
     options: {
       tabList: [{

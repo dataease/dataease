@@ -1655,7 +1655,6 @@ import ScrollCfg from '@/views/chart/components/senior/ScrollCfg'
 import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny } from '@/utils/StringUtils'
-import MarginSelector from '@/views/chart/components/componentStyle/MarginSelector'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 
 export default {

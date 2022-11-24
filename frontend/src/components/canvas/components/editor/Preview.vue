@@ -208,6 +208,7 @@ export default {
         'left',
         'width',
         'fontSize',
+        'activeFontSize',
         'borderWidth',
         'letterSpacing'
       ],
@@ -551,7 +552,7 @@ export default {
               component.style[key] = this.format(component.style[key], this.scaleHeight)
             }
             if (this.needToChangeWidth.includes(key)) {
-              if (key === 'fontSize' && this.terminal === 'mobile') {
+              if (key === 'fontSize' && (this.terminal === 'mobile' || component.type === 'custom')) {
                 // do nothing 移动端字符大小无需按照比例缩放，当前保持不变(包括 v-text 和 过滤组件)
               } else {
                 component.style[key] = this.format(component.style[key], this.scaleWidth)
