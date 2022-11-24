@@ -199,7 +199,7 @@ export default {
       return style
     },
     componentActiveFlag() {
-      return !this.mobileLayoutStatus && ((this.curComponent && this.config === this.curComponent && !this.previewVisible && !this.showPosition.includes('email-task')) || this.showPosition.includes('multiplexing'))
+      return !this.mobileLayoutStatus && ((this.curComponent && this.config.id === this.curComponent.id && !this.previewVisible && !this.showPosition.includes('email-task')) || this.showPosition.includes('multiplexing'))
     },
     scale() {
       return Math.min(this.previewCanvasScale.scalePointWidth, this.previewCanvasScale.scalePointHeight)
@@ -274,7 +274,7 @@ export default {
       } else {
         return {
           ...
-          getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
+            getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
           position: 'relative'
         }
       }

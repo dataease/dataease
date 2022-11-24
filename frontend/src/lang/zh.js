@@ -1338,6 +1338,7 @@ export default {
     table_align_left: '左对齐',
     table_align_center: '居中',
     table_align_right: '右对齐',
+    table_scroll_bar_color: '滚动条颜色',
     draw_back: '收回',
     senior: '高级',
     senior_cfg: '高级设置',

@@ -169,7 +169,51 @@
             width="200"
           >
             <div class="view-container-class">
-              <el-checkbox-group v-model="attrs.parameters">
+              <el-tabs
+                v-if="isRangeParamWidget"
+                v-model="activeName"
+              >
+                <el-tab-pane
+                  v-for="(item, index) in tabsOption"
+                  :key="item.name + index"
+                  :label="item.label"
+                  :name="item.name"
+                >
+                  <el-checkbox-group
+                    v-model="attrs[item.name + 'Parameters']"
+                    @change="val => {changeDynamicParams(val, item.name)}"
+                  >
+                    <el-checkbox
+                      v-for="(item ) in childViews.datasetParams"
+                      :key="item.id"
+                      :label="item.id"
+                      :disabled="attrs[tabsOption[(index + 1)%2].name + 'Parameters'] && attrs[tabsOption[(index + 1)%2].name + 'Parameters'].includes(item.id)"
+                      class="de-checkbox"
+                    >
+                      <div class="span-div">
+                        <span
+                          v-if="item.alias && item.alias.length <= 7"
+                          style="margin-left: 6px"
+                        >{{ item.alias }}</span>
+                        <el-tooltip
+                          v-else
+                          class="item"
+                          effect="dark"
+                          :content="item.alias"
+                          placement="left"
+                        >
+                          <span style="margin-left: 6px">{{ item.alias }}</span>
+                        </el-tooltip>
+                      </div>
+
+                    </el-checkbox>
+                  </el-checkbox-group>
+                </el-tab-pane>
+              </el-tabs>
+              <el-checkbox-group
+                v-else
+                v-model="attrs.parameters"
+              >
                 <el-checkbox
                   v-for="(item ) in childViews.datasetParams"
                   :key="item.id"
@@ -236,7 +280,13 @@ export default {
   },
   data() {
     return {
+      activeName: 'start',
+      tabsOption: [
+        { label: this.$t('dataset.start_time'), name: 'start' },
+        { label: this.$t('dataset.end_time'), name: 'end' }
+      ],
       showParams: false,
+      isRangeParamWidget: false,
       attrs: null,
       titlePopovervisible: false,
       popovervisible: false,
@@ -278,11 +328,21 @@ export default {
 
   created() {
     this.attrs = this.controlAttrs
-    if ('timeYearWidget,timeMonthWidget,timeDateWidget,textSelectWidget,numberSelectWidget'.indexOf(this.widget.name) !== -1) {
+    if (this.widget.isTimeWidget && this.widget.isTimeWidget()) {
       this.showParams = true
+      this.isRangeParamWidget = this.widget.isRangeParamWidget && this.widget.isRangeParamWidget()
     }
   },
   methods: {
+    changeDynamicParams(val, name) {
+      const start = this.attrs.startParameters ? JSON.parse(JSON.stringify(this.attrs.startParameters)) : []
+
+      const end = this.attrs.endParameters ? JSON.parse(JSON.stringify(this.attrs.endParameters)) : []
+      if (end?.length) {
+        end[0] += '_START_END_SPLIT'
+      }
+      this.attrs.parameters = [...new Set([...start, ...end])]
+    },
     sortChange(param) {
       this.element.options.attrs.sort = param
     },

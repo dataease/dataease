@@ -8,7 +8,8 @@ import {
   getYAxis,
   getPadding,
   getSlider,
-  getAnalyse
+  getAnalyse,
+  setGradientColor
 } from '@/views/chart/chart/common/common_antv'
 import { antVCustomColor, handleEmptyDataStrategy } from '@/views/chart/chart/util'
 import _ from 'lodash'
@@ -183,10 +184,10 @@ export function baseAreaOptionAntV(plot, container, chart, action, isStack) {
   const areaColors = [...options.color, ...options.color]
   if (customAttr.color.gradient) {
     options.areaStyle = () => {
-      const cr = areaColors.shift()
-      if (cr) {
+      const ele = areaColors.shift()
+      if (ele) {
         return {
-          fill: `l(270) 0:#ffffff00 1:${cr}`
+          fill: setGradientColor(ele, customAttr.color.gradient, 270)
         }
       }
     }

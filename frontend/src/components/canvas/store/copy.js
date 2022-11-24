@@ -12,8 +12,8 @@ export default {
     copyData: null, // 复制粘贴剪切
     isCut: false,
     baseStyle: {
-      width: 300,
-      height: 200,
+      width: 533,
+      height: 300,
       top: 0,
       left: 0
     },

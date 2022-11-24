@@ -1339,6 +1339,7 @@ export default {
     table_align_left: '左對齊',
     table_align_center: '居中',
     table_align_right: '右對齊',
+    table_scroll_bar_color: '滾動條顏色',
     draw_back: '收回',
     senior: '高級',
     senior_cfg: '高級設置',

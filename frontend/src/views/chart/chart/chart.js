@@ -29,7 +29,9 @@ export const DEFAULT_COLOR_CASE = {
   seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
   areaBorderColor: '#303133',
   gradient: false,
-  areaBaseColor: '#FFFFFF'
+  areaBaseColor: '#FFFFFF',
+  tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
+  tableScrollBarHoverColor: 'rgba(0, 0, 0, 0.4)'
 }
 
 export const DEFAULT_COLOR_CASE_DARK = {
@@ -45,7 +47,9 @@ export const DEFAULT_COLOR_CASE_DARK = {
   tableBorderColor: '#CCCCCC',
   seriesColors: [], // 格式：{"name":"s1","color":"","isCustom":false}
   areaBorderColor: '#EBEEF5',
-  areaBaseColor: '5470C6'
+  areaBaseColor: '5470C6',
+  tableScrollBarColor: 'rgba(255, 255, 255, 0.5)',
+  tableScrollBarHoverColor: 'rgba(255, 255, 255, 0.8)'
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
