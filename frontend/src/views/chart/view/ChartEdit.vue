@@ -1662,6 +1662,7 @@ export default {
   name: 'ChartEdit',
   components: {
     PositionAdjust,
+    // eslint-disable-next-line
     MarginSelector,
     ScrollCfg,
     CalcChartFieldEdit,

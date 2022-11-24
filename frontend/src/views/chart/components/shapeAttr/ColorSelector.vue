@@ -477,7 +477,7 @@ export default {
 
           this.colorForm.tableBorderColor = this.colorForm.tableBorderColor ? this.colorForm.tableBorderColor : DEFAULT_COLOR_CASE.tableBorderColor
           this.colorForm.tableHeaderFontColor = this.colorForm.tableHeaderFontColor ? this.colorForm.tableHeaderFontColor : this.colorForm.tableFontColor
-
+          this.$set(this.colorForm, 'gradient', this.colorForm.gradient || false)
           this.initCustomColor()
         }
       }
