@@ -4,7 +4,8 @@ import {
   getTheme,
   getTooltip,
   getXAxis,
-  getYAxis
+  getYAxis,
+  setGradientColor
 } from '@/views/chart/chart/common/common_antv'
 import { Waterfall } from '@antv/g2plot'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
@@ -28,11 +29,17 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
   }
   // data
   const data = chart.data.data
+  const [risingColorRgba, fallingColorRgba, totalColorRgba] = theme.styleSheet.paletteQualitative10
+
+  let customAttrCopy = {}
+  if (chart.customAttr) {
+    customAttrCopy = JSON.parse(chart.customAttr)
+  }
   // total
   const total = {
     label: '合计',
     style: {
-      fill: theme.styleSheet.paletteQualitative10[2]
+      fill: setGradientColor(totalColorRgba, customAttrCopy.color.gradient, 270)
     }
   }
   // options
@@ -50,25 +57,25 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
       items: [
         { name: '增加', marker: {
           style: {
-            fill: theme.styleSheet.paletteQualitative10[0]
+            fill: setGradientColor(risingColorRgba, customAttrCopy.color.gradient, 270)
           }
         }},
         { name: '减少', marker: {
           style: {
-            fill: theme.styleSheet.paletteQualitative10[1]
+            fill: setGradientColor(fallingColorRgba, customAttrCopy.color.gradient, 270)
           }
         }},
         { name: '合计', marker: {
           style: {
-            fill: theme.styleSheet.paletteQualitative10[2]
+            fill: setGradientColor(totalColorRgba, customAttrCopy.color.gradient, 270)
           }
         }}
       ]
     },
     xAxis: xAxis,
     yAxis: yAxis,
-    risingFill: theme.styleSheet.paletteQualitative10[0],
-    fallingFill: theme.styleSheet.paletteQualitative10[1],
+    risingFill: setGradientColor(risingColorRgba, customAttrCopy.color.gradient, 270),
+    fallingFill: setGradientColor(fallingColorRgba, customAttrCopy.color.gradient, 270),
     total: total,
     interactions: [
       {
@@ -79,7 +86,7 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
       }
     ]
   }
-  // size
+
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)

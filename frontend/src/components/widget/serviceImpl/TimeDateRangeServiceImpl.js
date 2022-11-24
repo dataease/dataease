@@ -31,7 +31,10 @@ const dialogPanel = {
         eDynamicSuffix: 'after'
       },
       showTime: false,
-      accuracy: 'HH:mm'
+      accuracy: 'HH:mm',
+      parameters: [],
+      startParameters: [],
+      endParameters: []
     },
     value: '',
     manualModify: false
@@ -329,13 +332,13 @@ class TimeDateRangeServiceImpl extends WidgetService {
     const defaultV = element.options.value === null ? '' : element.options.value.toString()
     if (element.options.attrs.type === 'daterange') {
       if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV ===
-          '[object Object]') {
+        '[object Object]') {
         return []
       }
       return defaultV.split(',').map(item => parseFloat(item))
     } else {
       if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV ===
-          '[object Object]') {
+        '[object Object]') {
         return null
       }
       return parseFloat(defaultV.split(',')[0])
@@ -399,6 +402,12 @@ class TimeDateRangeServiceImpl extends WidgetService {
       { 'text': 'dynamic_time.lquarter', 'callBack': () => this.formatShortValues([this.getStartQuarter(-1).getTime(), this.getEndQuarter(-1).getTime()]) },
       { 'text': 'dynamic_year.last', 'callBack': () => this.formatShortValues([this.getStartYear(-1).getTime(), this.getEndYear(-1).getTime()]) }
     ]
+  }
+  isParamWidget() {
+    return true
+  }
+  isRangeParamWidget() {
+    return true
   }
 }
 const timeDateRangeServiceImpl = new TimeDateRangeServiceImpl()

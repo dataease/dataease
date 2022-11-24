@@ -189,13 +189,13 @@ class TimeDateServiceImpl extends WidgetService {
     const defaultV = element.options.value === null ? '' : element.options.value.toString()
     if (element.options.attrs.type === 'daterange') {
       if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV ===
-          '[object Object]') {
+        '[object Object]') {
         return []
       }
       return defaultV.split(',').map(item => parseFloat(item))
     } else {
       if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV ===
-          '[object Object]') {
+        '[object Object]') {
         return null
       }
       return parseFloat(defaultV.split(',')[0])
@@ -232,6 +232,9 @@ class TimeDateServiceImpl extends WidgetService {
     }
   }
   isTimeWidget() {
+    return true
+  }
+  isParamWidget() {
     return true
   }
 }

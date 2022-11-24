@@ -137,13 +137,13 @@ class TimeYearServiceImpl extends WidgetService {
     const defaultV = element.options.value === null ? '' : element.options.value.toString()
     if (element.options.attrs.type === 'daterange') {
       if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV ===
-          '[object Object]') {
+        '[object Object]') {
         return []
       }
       return defaultV.split(',').map(item => parseFloat(item))
     } else {
       if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV ===
-          '[object Object]') {
+        '[object Object]') {
         return null
       }
       return parseFloat(defaultV.split(',')[0])
@@ -172,6 +172,9 @@ class TimeYearServiceImpl extends WidgetService {
       const value = values[0]
       return timeSection(parseFloat(value), element.options.attrs.type)
     }
+  }
+  isParamWidget() {
+    return true
   }
 }
 const timeYearServiceImpl = new TimeYearServiceImpl()
