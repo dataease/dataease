@@ -2681,6 +2681,7 @@ export default {
   'I18N_USER_TEMPLATE_ERROR': '模版錯誤',
   'i18n_max_user_import_size': '文件最大不能超過10M',
   app_template: {
+    apply_template: '應用模版',
     execution_time: '执行时间',
     app_manager: '應用管理',
     app_upload: '上傳應用',

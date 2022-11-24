@@ -2680,6 +2680,7 @@ export default {
   'I18N_USER_TEMPLATE_ERROR': 'Template file error',
   'i18n_max_user_import_size': 'File size exceeds 10M',
   app_template: {
+    apply_template: 'Apply template',
     execution_time: 'Execution time',
     app_manager: 'Application management',
     app_upload: 'Upload app',

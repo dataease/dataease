@@ -839,7 +839,7 @@ export default {
       })
     },
     getFields(item) {
-      if(item.deExtractType == 0){
+      if (item.deExtractType == 0) {
         const children = this.dateformats
         return [
           { label: this.$t('dataset.text'), value: 0 },
@@ -852,7 +852,7 @@ export default {
           },
           { label: this.$t('dataset.location'), value: 5 }
         ]
-      }else {
+      } else {
         return [
           { label: this.$t('dataset.text'), value: 0 },
           { label: this.$t('dataset.time'), value: 1 },
@@ -870,7 +870,7 @@ export default {
       item.deType = item.deTypeCascader[0]
       if (item.deTypeCascader.length === 2) { // 时间
         item.dateFormatType = item.deTypeCascader[1]
-        if(item.dateFormatType !== 'custom'){
+        if (item.dateFormatType !== 'custom') {
           item.dateFormat = item.dateFormatType
         }
       }

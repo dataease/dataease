@@ -30,8 +30,8 @@
             type="number"
             :min="0"
             :max="maxLeft"
-            @change="leftOnChange"
             class="hide-icon-number"
+            @change="leftOnChange"
           >
             <template slot="append">px</template>
           </el-input>
