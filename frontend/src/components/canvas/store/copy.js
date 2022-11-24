@@ -25,6 +25,24 @@ export default {
     }
   },
   mutations: {
+    // 复制到粘贴板
+    copyToClipboard(state) {
+      if (state.curComponent) {
+        Vue.prototype.$copyText('datease-component-' + state.curComponent.id)
+      }
+    },
+    passFromClipboard(state, componentId) {
+      state.componentData.forEach(item => {
+        if (item.id === componentId) {
+          state.copyData = {
+            data: deepCopy(item),
+            index: state.componentData.length
+          }
+        }
+      })
+      state.isCut = false
+      this.commit('paste')
+    },
     copyMultiplexingComponents(state) {
       let pYMax = 0
       const _this = this
@@ -89,10 +107,8 @@ export default {
 
     paste(state, needAdaptor) {
       if (!state.copyData) {
-        toast('请选择组件')
         return
       }
-
       const data = state.copyData.data
       // 仪表板复制的组件默认不在移动端部署中mobileSelected = false
       data.mobileSelected = false

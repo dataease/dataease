@@ -112,7 +112,7 @@
               :http-request="upload"
               :file-list="fileList"
             >
-              <i class="el-icon-plus" />
+              <i class="el-icon-plus"/>
             </el-upload>
             <el-dialog
               top="25vh"
@@ -375,6 +375,7 @@ export default {
 }
 
 .main-row {
+  background-size: 100% 100% !important;
   padding-left: 10px;
   height: 250px;
   overflow-y: auto;

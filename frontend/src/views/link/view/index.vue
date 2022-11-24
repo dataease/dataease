@@ -1,11 +1,18 @@
 <template>
-  <div style="width: 100%;height: 100vh;background-color: #f7f8fa">
+  <div
+    v-loading="dataLoading"
+    style="width: 100%;height: 100vh;background-color: #f7f8fa"
+    :element-loading-text="$t('panel.data_loading')"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(220,220,220,1)"
+  >
     <Preview
       v-if="show"
       :component-data="mainCanvasComponentData"
       :canvas-style-data="canvasStyleData"
       :panel-info="panelInfo"
       :user-id="user"
+      @change-load-status="setLoading"
     />
   </div>
 </template>
@@ -38,7 +45,8 @@ export default {
     return {
       canvasId: 'canvas-main',
       show: false,
-      panelInfo: {}
+      panelInfo: {},
+      dataLoading: false
     }
   },
   computed: {
@@ -55,6 +63,9 @@ export default {
     this.viewLog()
   },
   methods: {
+    setLoading(status) {
+      this.dataLoading = !!status
+    },
     viewLog() {
       const param = {
         panelId: this.resourceId,
