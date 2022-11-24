@@ -57,6 +57,7 @@ import TitleRemark from '@/views/chart/view/TitleRemark'
 import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import { baseMixOptionAntV } from '@/views/chart/chart/mix/mix_antv'
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
+import { equalsAny } from '@/utils/StringUtils'
 
 export default {
   name: 'ChartComponentG2',
@@ -233,13 +234,13 @@ export default {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
       } else if (chart.type === 'bar-group') {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
-      } else if (chart.type === 'bar-stack' || chart.type === 'percentage-bar-stack') {
+      } else if (equalsAny(chart.type, 'bar-stack', 'percentage-bar-stack')) {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
       } else if (chart.type === 'bar-group-stack') {
         this.myChart = baseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, true)
       } else if (chart.type === 'bar-horizontal') {
         this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
-      } else if (chart.type === 'bar-stack-horizontal') {
+      } else if (equalsAny(chart.type, 'bar-stack-horizontal', 'percentage-bar-stack-horizontal.svg')) {
         this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
       } else if (chart.type === 'line') {
         this.myChart = baseLineOptionAntV(this.myChart, this.chartId, chart, this.antVAction)

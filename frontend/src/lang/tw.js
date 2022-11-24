@@ -1135,6 +1135,7 @@ export default {
     chart_percentage_bar_stack: '百分比柱狀圖',
     chart_bar_horizontal: '橫嚮柱狀圖',
     chart_bar_stack_horizontal: '橫嚮堆疊柱狀圖',
+    chart_percentage_bar_stack_horizontal: '橫嚮百分比柱狀圖',
     chart_line: '基礎摺線圖',
     chart_line_stack: '堆疊摺線圖',
     chart_pie: '餅圖',

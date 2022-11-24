@@ -1,7 +1,7 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_EXT_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
-import { equalsAny } from '@/utils/StringUtils'
+import { equalsAny, includesAny } from '@/utils/StringUtils'
 
 export function getPadding(chart) {
   if (chart.drill) {
@@ -166,11 +166,8 @@ export function getLabel(chart) {
               extStack = JSON.parse(JSON.stringify(chart.extStack))
             }
 
-            if (chart.type === 'bar-stack' ||
-              chart.type === 'line-stack' ||
-              chart.type === 'bar-stack-horizontal' ||
-              chart.type === 'percentage-bar-stack'
-            ) {
+            if (equalsAny(chart.type, 'bar-stack', 'line-stack',
+              'bar-stack-horizontal', 'percentage-bar-stack', 'percentage-bar-stack-horizontal.svg')) {
               let f
               if (extStack && extStack.length > 0) {
                 f = yAxis[0]
@@ -189,7 +186,10 @@ export function getLabel(chart) {
                 f.formatterCfg = formatterItem
               }
               // 百分比堆叠柱状图保留小数处理
-              if (chart.type === 'percentage-bar-stack') {
+              if (chart.type.includes('percentage')) {
+                if (!param.value) {
+                  return
+                }
                 f.formatterCfg.type = 'percent'
                 f.formatterCfg.decimalCount = l.reserveDecimalCount
                 f.formatterCfg.thousandSeparator = false
@@ -278,10 +278,8 @@ export function getTooltip(chart) {
             }
 
             let obj
-            if (chart.type === 'bar-stack' ||
-              chart.type === 'line-stack' ||
-              chart.type === 'bar-stack-horizontal' ||
-              chart.type === 'percentage-bar-stack') {
+            if (equalsAny(chart.type, 'bar-stack', 'line-stack',
+              'bar-stack-horizontal', 'percentage-bar-stack', 'percentage-bar-stack-horizontal.svg')) {
               let f
               if (extStack && extStack.length > 0) {
                 obj = { name: param.category, value: param.value }
@@ -301,7 +299,11 @@ export function getTooltip(chart) {
               if (!f.formatterCfg) {
                 f.formatterCfg = formatterItem
               }
-              if (chart.type === 'percentage-bar-stack') {
+              if (chart.type.includes('percentage')) {
+                if (!param.value) {
+                  obj.value = 0
+                  return obj
+                }
                 // 保留小数位数和标签保持一致，这边拿一下标签的配置
                 const l = JSON.parse(JSON.stringify(customAttr.label))
                 f.formatterCfg.type = 'percent'
@@ -329,7 +331,7 @@ export function getTooltip(chart) {
                   res = valueFormatter(param.value, formatterItem)
                 }
               }
-            } else if (chart.type.includes('pie') || chart.type.includes('funnel')) {
+            } else if (includesAny(chart.type, 'pie', 'funnel')) {
               obj = { name: param.field, value: param.value }
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
@@ -339,7 +341,7 @@ export function getTooltip(chart) {
                   res = valueFormatter(param.value, formatterItem)
                 }
               }
-            } else if ((chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('scatter') || chart.type.includes('radar') || chart.type.includes('area')) && !chart.type.includes('group')) {
+            } else if (includesAny(chart.type, 'bar', 'line', 'scatter', 'radar', 'area') && !chart.type.includes('group')) {
               obj = { name: param.category, value: param.value }
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
