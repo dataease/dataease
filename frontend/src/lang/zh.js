@@ -1681,7 +1681,11 @@ export default {
       enable: '启用',
       disable: '禁用',
       prohibit: '禁用',
-      desensitization: '脱敏'
+      desensitization: '脱敏',
+      desensitization_rule: '脱敏规则',
+      m: 'M等于',
+      n: 'N等于',
+      mgtn: 'M 不能大于 N'
     },
     row_permissions: '行权限',
     column_permissions: '列权限',

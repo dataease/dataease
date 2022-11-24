@@ -19,6 +19,7 @@ import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
+import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.service.dataset.*;
 import io.dataease.service.datasource.DatasourceService;
@@ -103,16 +104,16 @@ public class DirectFieldService implements DataSetFieldService {
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
         if (userPermissions) {
             //列权限
-            List<String> desensitizationList = new ArrayList<>();
+            Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
             fields = permissionService.filterColumnPermissions(fields, desensitizationList, datasetTable.getId(), userId);
             Map<String, DatasetTableField> fieldMap = fields.stream().collect(Collectors.toMap(DatasetTableField::getId, node -> node));
             permissionFields = fieldIds.stream().map(fieldMap::get).collect(Collectors.toList());
             if (CollectionUtils.isEmpty(permissionFields) || permissionFields.get(0) == null) {
                 return new ArrayList<>();
             }
-            if (CollectionUtils.isNotEmpty(desensitizationList) && desensitizationList.contains(field.getDataeaseName())) {
+            if (CollectionUtils.isNotEmpty(desensitizationList.keySet()) && desensitizationList.keySet().contains(field.getDataeaseName())) {
                 List<Object> results = new ArrayList<>();
-                results.add(ColumnPermissionConstants.Desensitization_desc);
+                results.add(ColumnPermissionItem.CompleteDesensitization);
                 return results;
             }
             //行权限

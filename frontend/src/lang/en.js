@@ -1682,7 +1682,11 @@ export default {
       enable: 'Enable',
       disable: 'Disable',
       prohibit: 'Prohibit',
-      desensitization: 'Desensitization'
+      desensitization: 'Desensitization',
+      desensitization_rule: 'Desensitization rule',
+      m: 'M ',
+      n: 'N ',
+      mgtn: 'M Cannot be greater than N'
     },
     row_permissions: 'Row Permissions',
     column_permissions: 'Column Permissions',

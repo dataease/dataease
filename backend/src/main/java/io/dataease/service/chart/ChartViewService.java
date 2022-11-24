@@ -47,6 +47,7 @@ import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.view.entity.*;
 import io.dataease.plugins.view.service.ViewPluginService;
+import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.service.chart.util.ChartDataBuild;
 import io.dataease.service.dataset.*;
@@ -355,15 +356,15 @@ public class ChartViewService {
         checkPermission("use", table, requestList.getUser());
 
         //列权限
-        List<String> desensitizationList = new ArrayList<>();
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         List<DatasetTableField> columnPermissionFields = permissionService.filterColumnPermissions(fields, desensitizationList, table.getId(), requestList.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
         dataeaseNames.add("*");
-        fieldCustomFilter = fieldCustomFilter.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-        extStack = extStack.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-        extBubble = extBubble.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-        drill = drill.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+        fieldCustomFilter = fieldCustomFilter.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+        extStack = extStack.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+        extBubble = extBubble.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+        drill = drill.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
 
 
         //行权限
@@ -379,7 +380,7 @@ public class ChartViewService {
 
         switch (view.getType()) {
             case "label":
-                xAxis = xAxis.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 yAxis = new ArrayList<>();
                 if (CollectionUtils.isEmpty(xAxis)) {
                     return new ArrayList<String[]>();
@@ -389,7 +390,7 @@ public class ChartViewService {
             case "gauge":
             case "liquid":
                 xAxis = new ArrayList<>();
-                yAxis = yAxis.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                yAxis = yAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 if (CollectionUtils.isEmpty(yAxis)) {
                     return new ArrayList<String[]>();
                 }
@@ -406,8 +407,8 @@ public class ChartViewService {
                 yAxis = yAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 break;
             default:
-                xAxis = xAxis.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                yAxis = yAxis.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                yAxis = yAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         }
 
         List<ChartExtFilterRequest> extFilterList = new ArrayList<>();
@@ -609,16 +610,16 @@ public class ChartViewService {
         DataSetTableDTO table = dataSetTableService.getWithPermission(view.getTableId(), chartExtRequest.getUser());
         checkPermission("use", table, chartExtRequest.getUser());
 
-        List<String> desensitizationList = new ArrayList<>();
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         //列权限
         List<DatasetTableField> columnPermissionFields = permissionService.filterColumnPermissions(fields, desensitizationList, table.getId(), chartExtRequest.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
         dataeaseNames.add("*");
-        fieldCustomFilter = fieldCustomFilter.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
-        extStack = extStack.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
-        extBubble = extBubble.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
-        drill = drill.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+        fieldCustomFilter = fieldCustomFilter.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+        extStack = extStack.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+        extBubble = extBubble.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+        drill = drill.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
 
         //行权限
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionsTreeService.getRowPermissionsTree(fields, table, chartExtRequest.getUser());
@@ -649,7 +650,7 @@ public class ChartViewService {
 
         switch (view.getType()) {
             case "label":
-                xAxis = xAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                xAxis = xAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
                 yAxis = new ArrayList<>();
                 if (CollectionUtils.isEmpty(xAxis)) {
                     return emptyChartViewDTO(view);
@@ -659,7 +660,7 @@ public class ChartViewService {
             case "gauge":
             case "liquid":
                 xAxis = new ArrayList<>();
-                yAxis = yAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                yAxis = yAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
                 if (CollectionUtils.isEmpty(yAxis)) {
                     return emptyChartViewDTO(view);
                 }
@@ -677,14 +678,14 @@ public class ChartViewService {
                 break;
             case "bar-group":
             case "bar-group-stack":
-                xAxis = xAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
-                yAxis = yAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
-                xAxisBase = xAxisBase.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
-                xAxisExt = xAxisExt.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                xAxis = xAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                yAxis = yAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                xAxisBase = xAxisBase.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                xAxisExt = xAxisExt.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
                 break;
             default:
-                xAxis = xAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
-                yAxis = yAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                xAxis = xAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
+                yAxis = yAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
         }
 
         // 过滤来自仪表板的条件
@@ -731,7 +732,7 @@ public class ChartViewService {
                             if (datasetTableField == null) {
                                 continue;
                             }
-                            if (!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
+                            if (!desensitizationList.keySet().contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
                                 if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
                                     if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
                                         if (filterRequest.getViewIds().contains(view.getId())) {
@@ -756,7 +757,7 @@ public class ChartViewService {
                             if (datasetTableField == null) {
                                 continue;
                             }
-                            if (!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
+                            if (!desensitizationList.keySet().contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
                                 filterRequest.setDatasetTableField(datasetTableField);
                                 if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
                                     if (CollectionUtils.isNotEmpty(filterRequest.getViewIds())) {
@@ -789,7 +790,7 @@ public class ChartViewService {
         if (ObjectUtils.isNotEmpty(filters)) {
             for (ChartExtFilterRequest request : filters) {
                 DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
-                if (!desensitizationList.contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
+                if (!desensitizationList.keySet().contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
                     request.setDatasetTableField(datasetTableField);
                     if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
                         if (CollectionUtils.isNotEmpty(request.getViewIds())) {

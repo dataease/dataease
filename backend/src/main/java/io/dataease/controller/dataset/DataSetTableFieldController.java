@@ -19,6 +19,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.datasource.entity.Dateformat;
 import io.dataease.plugins.datasource.query.QueryProvider;
+import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.service.dataset.DataSetFieldService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
@@ -70,7 +71,7 @@ public class DataSetTableFieldController {
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(tableId);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-        fields = permissionService.filterColumnPermissions(fields, new ArrayList<>(), tableId, null);
+        fields = permissionService.filterColumnPermissions(fields, new HashMap<>(), tableId, null);
         return fields;
     }
 
@@ -81,9 +82,9 @@ public class DataSetTableFieldController {
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(tableId);
         List<DatasetTableField> fields = dataSetTableFieldsService.list(datasetTableField);
-        List<String> desensitizationList = new ArrayList<>();
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         fields = permissionService.filterColumnPermissions(fields, desensitizationList, tableId, null);
-        fields = fields.stream().filter(item -> !desensitizationList.contains(item.getDataeaseName())).collect(Collectors.toList());
+        fields = fields.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName())).collect(Collectors.toList());
         return fields;
     }
 

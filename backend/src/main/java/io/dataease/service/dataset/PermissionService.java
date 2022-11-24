@@ -47,10 +47,11 @@ public class PermissionService {
                 if (StringUtils.isEmpty(datasetRowPermissions.getFilter())) {
                     continue;
                 }
-                List<ChartCustomFilterItemDTO> lists = new Gson().fromJson(datasetRowPermissions.getFilter(), new TypeToken<ArrayList<ChartCustomFilterItemDTO>>(){}.getType());
+                List<ChartCustomFilterItemDTO> lists = new Gson().fromJson(datasetRowPermissions.getFilter(), new TypeToken<ArrayList<ChartCustomFilterItemDTO>>() {
+                }.getType());
                 lists.forEach(chartCustomFilterDTO -> {
                     chartCustomFilterDTO.setFieldId(field.getId());
-                    if(datasetRowPermissions.getAuthTargetType().equalsIgnoreCase("sysParams")){
+                    if (datasetRowPermissions.getAuthTargetType().equalsIgnoreCase("sysParams")) {
                         chartCustomFilterDTO.setValue(values.get(chartCustomFilterDTO.getValue()).toString());
                     }
                 });
@@ -62,9 +63,9 @@ public class PermissionService {
                 if (StringUtils.isEmpty(datasetRowPermissions.getEnumCheckField())) {
                     continue;
                 }
-                if(datasetRowPermissions.getAuthTargetType().equalsIgnoreCase("sysParams")){
+                if (datasetRowPermissions.getAuthTargetType().equalsIgnoreCase("sysParams")) {
                     dto.setEnumCheckField(Arrays.asList(values.get(datasetRowPermissions.getEnumCheckField()).toString().split(",").clone()));
-                }else {
+                } else {
                     dto.setEnumCheckField(Arrays.asList(datasetRowPermissions.getEnumCheckField().split(",").clone()));
                 }
                 customFilter.add(dto);
@@ -73,24 +74,57 @@ public class PermissionService {
         return customFilter;
     }
 
-    public List<DatasetTableField> filterColumnPermissions(List<DatasetTableField> fields, List<String> desensitizationList, String datasetTableId, Long user){
+    //优先级依次为：user role dept
+    public List<DatasetTableField> filterColumnPermissions(List<DatasetTableField> fields, Map<String, ColumnPermissionItem> desensitizationList, String datasetTableId, Long user) {
         List<DatasetTableField> result = new ArrayList<>();
-        List<ColumnPermissionItem> allColumnPermissionItems = new ArrayList<>();
+
+        List<ColumnPermissionItem> userColumnPermissionItems = new ArrayList<>();
+        List<ColumnPermissionItem> roleColumnPermissionItems = new ArrayList<>();
+        List<ColumnPermissionItem> deptColumnPermissionItems = new ArrayList<>();
+
         for (DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO : columnPermissions(datasetTableId, user)) {
             ColumnPermissions columnPermissions = new Gson().fromJson(dataSetColumnPermissionsDTO.getPermissions(), ColumnPermissions.class);
-            if(!columnPermissions.getEnable()){continue;}
-            allColumnPermissionItems.addAll(columnPermissions.getColumns().stream().filter(columnPermissionItem -> columnPermissionItem.getSelected()).collect(Collectors.toList()));
+            if (!columnPermissions.getEnable()) {
+                continue;
+            }
+            if (dataSetColumnPermissionsDTO.getAuthTargetType().equalsIgnoreCase("user")) {
+                userColumnPermissionItems.addAll(columnPermissions.getColumns().stream().filter(columnPermissionItem -> columnPermissionItem.getSelected()).collect(Collectors.toList()));
+            }
+            if (dataSetColumnPermissionsDTO.getAuthTargetType().equalsIgnoreCase("role")) {
+                roleColumnPermissionItems.addAll(columnPermissions.getColumns().stream().filter(columnPermissionItem -> columnPermissionItem.getSelected()).collect(Collectors.toList()));
+            }
+            if (dataSetColumnPermissionsDTO.getAuthTargetType().equalsIgnoreCase("dept")) {
+                deptColumnPermissionItems.addAll(columnPermissions.getColumns().stream().filter(columnPermissionItem -> columnPermissionItem.getSelected()).collect(Collectors.toList()));
+            }
         }
-        fields.forEach(field ->{
-            List<String> permissions = allColumnPermissionItems.stream().filter(columnPermissionItem -> columnPermissionItem.getId().equalsIgnoreCase(field.getId())).map(ColumnPermissionItem::getOpt).collect(Collectors.toList());
-            if(CollectionUtils.isEmpty(permissions)){
-                result.add(field);
-            }else {
-                if(!permissions.contains(ColumnPermissionConstants.Prohibit)){
-                    desensitizationList.add(field.getDataeaseName());
+
+        fields.forEach(field -> {
+            List<ColumnPermissionItem> fieldUserColumnPermissionItems = userColumnPermissionItems.stream().filter(columnPermissionItem -> columnPermissionItem.getId().equalsIgnoreCase(field.getId())).collect(Collectors.toList());
+            List<ColumnPermissionItem> fieldRoleColumnPermissionItems = roleColumnPermissionItems.stream().filter(columnPermissionItem -> columnPermissionItem.getId().equalsIgnoreCase(field.getId())).collect(Collectors.toList());
+            List<ColumnPermissionItem> fieldDeptColumnPermissionItems = deptColumnPermissionItems.stream().filter(columnPermissionItem -> columnPermissionItem.getId().equalsIgnoreCase(field.getId())).collect(Collectors.toList());
+
+            if (CollectionUtils.isNotEmpty(fieldUserColumnPermissionItems)) {
+                if (fieldUserColumnPermissionItems.stream().map(ColumnPermissionItem::getOpt).collect(Collectors.toList()).contains(ColumnPermissionConstants.Desensitization)) {
+                    desensitizationList.put(field.getDataeaseName(), fieldUserColumnPermissionItems.get(0));
                     result.add(field);
                 }
+                return;
             }
+            if (CollectionUtils.isNotEmpty(fieldRoleColumnPermissionItems)) {
+                if (fieldRoleColumnPermissionItems.stream().map(ColumnPermissionItem::getOpt).collect(Collectors.toList()).contains(ColumnPermissionConstants.Desensitization)) {
+                    desensitizationList.put(field.getDataeaseName(), fieldUserColumnPermissionItems.get(0));
+                    result.add(field);
+                }
+                return;
+            }
+            if (CollectionUtils.isNotEmpty(fieldDeptColumnPermissionItems)) {
+                if (fieldDeptColumnPermissionItems.stream().map(ColumnPermissionItem::getOpt).collect(Collectors.toList()).contains(ColumnPermissionConstants.Desensitization)) {
+                    desensitizationList.put(field.getDataeaseName(), fieldUserColumnPermissionItems.get(0));
+                    result.add(field);
+                }
+                return;
+            }
+            result.add(field);
         });
         return result;
     }
@@ -107,7 +141,7 @@ public class PermissionService {
         List<Long> roleIds = new ArrayList<>();
         Long deptId = null;
 
-        if (userEntity == null ) {
+        if (userEntity == null) {
             return datasetRowPermissions;
         }
         if (userEntity.getIsAdmin()) {
@@ -123,14 +157,14 @@ public class PermissionService {
         dataSetRowPermissionsDTO.setAuthTargetType("user");
         datasetRowPermissions.addAll(rowPermissionService.searchRowPermissions(dataSetRowPermissionsDTO));
 
-        if(CollectionUtils.isNotEmpty(roleIds)){
+        if (CollectionUtils.isNotEmpty(roleIds)) {
             dataSetRowPermissionsDTO.setAuthTargetIds(roleIds);
             dataSetRowPermissionsDTO.setAuthTargetType("role");
             datasetRowPermissions.addAll(rowPermissionService.searchRowPermissions(dataSetRowPermissionsDTO));
 
         }
 
-        if(deptId != null){
+        if (deptId != null) {
             dataSetRowPermissionsDTO.setAuthTargetIds(Collections.singletonList(deptId));
             dataSetRowPermissionsDTO.setAuthTargetType("dept");
             datasetRowPermissions.addAll(rowPermissionService.searchRowPermissions(dataSetRowPermissionsDTO));
@@ -160,7 +194,7 @@ public class PermissionService {
         List<Long> roleIds = new ArrayList<>();
         Long deptId = null;
 
-        if (userEntity == null ) {
+        if (userEntity == null) {
             return datasetColumnPermissions;
         }
         if (userEntity.getIsAdmin()) {
@@ -174,27 +208,29 @@ public class PermissionService {
         dataSetColumnPermissionsDTO.setAuthTargetIds(Collections.singletonList(userId));
         dataSetColumnPermissionsDTO.setAuthTargetType("user");
         datasetColumnPermissions.addAll(columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO));
-        if(CollectionUtils.isNotEmpty(roleIds)){
+        if (CollectionUtils.isNotEmpty(roleIds)) {
             dataSetColumnPermissionsDTO.setAuthTargetIds(roleIds);
             dataSetColumnPermissionsDTO.setAuthTargetType("role");
             List<DataSetColumnPermissionsDTO> roleColumnPermissionsDTOS = new ArrayList<>();
             for (DataSetColumnPermissionsDTO columnPermissionsDTO : columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO)) {
                 columnPermissionsDTO.getWhiteListUser();
-                List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {}.getType());
-                if(CollectionUtils.isEmpty(userIdList) || !userIdList.contains(userId)){
+                List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {
+                }.getType());
+                if (CollectionUtils.isEmpty(userIdList) || !userIdList.contains(userId)) {
                     roleColumnPermissionsDTOS.add(columnPermissionsDTO);
                 }
             }
             datasetColumnPermissions.addAll(roleColumnPermissionsDTOS);
         }
 
-        if(deptId != null){
+        if (deptId != null) {
             dataSetColumnPermissionsDTO.setAuthTargetIds(Collections.singletonList(deptId));
             dataSetColumnPermissionsDTO.setAuthTargetType("dept");
             List<DataSetColumnPermissionsDTO> deptColumnPermissionsDTOS = new ArrayList<>();
             for (DataSetColumnPermissionsDTO columnPermissionsDTO : columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO)) {
-                List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {}.getType());
-                if(CollectionUtils.isEmpty(userIdList) || !userIdList.contains(userId)){
+                List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {
+                }.getType());
+                if (CollectionUtils.isEmpty(userIdList) || !userIdList.contains(userId)) {
                     deptColumnPermissionsDTOS.add(columnPermissionsDTO);
                 }
             }

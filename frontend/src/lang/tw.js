@@ -1682,7 +1682,11 @@ export default {
       enable: '啟用',
       disable: '禁用',
       prohibit: '禁用',
-      desensitization: '脫敏'
+      desensitization: '脫敏',
+      desensitization_rule: '脱敏規則',
+      m: 'M等於',
+      n: 'N等於',
+      mgtn: 'M 不能大於 N'
     },
     row_permissions: '行權限',
     column_permissions: '列權限',
