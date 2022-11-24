@@ -120,6 +120,7 @@ import { userLoginInfo } from '@/api/systemInfo/userLogin'
 import html2canvas from 'html2canvasde'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import PDFPreExport from '@/views/panel/export/PDFPreExport'
+import { listenGlobalKeyDownPreview } from '@/components/canvas/utils/shortcutKey'
 
 const erd = elementResizeDetectorMaker()
 export default {
@@ -351,6 +352,9 @@ export default {
     }
   },
   created() {
+    if (this.canvasId === 'canvas-main') {
+      listenGlobalKeyDownPreview()
+    }
     // 取消视图请求
     this.$cancelRequest('/chart/view/getData/**')
     this.$cancelRequest('/api/link/viewDetail/**')
