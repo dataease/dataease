@@ -82,12 +82,6 @@ export function basePieOptionAntV(plot, container, chart, action) {
   // custom color
   options.color = antVCustomColor(chart)
 
-  if (customAttr.color.gradient) {
-    options.color = options.color.map((ele) => {
-      return `l(270) 0:#ffffff00 1:${ele}`
-    })
-  }
-
   // 开始渲染
   if (plot) {
     plot.destroy()
@@ -164,12 +158,6 @@ export function basePieRoseOptionAntV(plot, container, chart, action) {
   }
   // custom color
   options.color = antVCustomColor(chart)
-
-  if (customAttr.color.gradient) {
-    options.color = options.color.map((ele) => {
-      return `l(270) 0:#ffffff00 1:${ele}`
-    })
-  }
 
   // 开始渲染
   if (plot) {
