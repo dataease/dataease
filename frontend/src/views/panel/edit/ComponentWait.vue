@@ -1,6 +1,7 @@
 <template>
   <el-row class="component-wait">
     <el-tabs
+      style="padding-left: 10px"
       v-model="activeName"
     >
       <el-tab-pane
@@ -35,7 +36,7 @@
       class="component-wait-main"
       style="padding:10px"
     >
-      <mobile-background-selector />
+      <mobile-background-selector/>
     </el-row>
   </el-row>
 </template>
