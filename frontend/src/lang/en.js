@@ -1883,6 +1883,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    position_adjust_component: 'Position adjust',
     active_font_size: 'Active font size',
     carousel: 'Carousel',
     switch_time: 'Switch time',

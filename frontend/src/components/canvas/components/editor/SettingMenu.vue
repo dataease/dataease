@@ -5,7 +5,7 @@
         trigger="click"
         @mouseup="handleMouseUp"
       >
-        <slot name="icon" />
+        <slot name="icon"/>
         <el-dropdown-menu v-if="curComponent">
           <el-dropdown-item
             v-if="editFilter.includes(curComponent.type)"
@@ -33,7 +33,7 @@
           <el-dropdown-item v-if="!curComponent.auxiliaryMatrix">
             <el-dropdown placement="right-start">
               <span class="el-icon-copy-document">
-                {{ $t('panel.level') }} <i class="el-icon-arrow-right el-icon--right" />
+                {{ $t('panel.level') }} <i class="el-icon-arrow-right el-icon--right"/>
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
@@ -87,14 +87,14 @@
             v-if="curComponent.type != 'custom-button'"
             @click.native="hyperlinksSet"
           >
-            <i class="icon iconfont icon-font icon-chaolianjie1" />
+            <i class="icon iconfont icon-font icon-chaolianjie1"/>
             {{ $t('panel.hyperlinks') }}
           </el-dropdown-item>
           <el-dropdown-item
-            v-if="curComponent.type !== 'user-view' && !curComponent.auxiliaryMatrix"
+            v-if="curComponent.type !== 'view' && !curComponent.auxiliaryMatrix"
             @click.native="positionAdjust"
           >
-            <i class="el-icon-map-location" />
+            <i class="el-icon-map-location"/>
             {{ $t('panel.position_adjust') }}
           </el-dropdown-item>
         </el-dropdown-menu>
