@@ -89,8 +89,13 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   }
   // custom color
   options.color = antVCustomColor(chart)
-  const emptyDataStrategy = chart.senior ? JSON.parse(chart.senior)?.functionCfg.emptyDataStrategy : 'breakLine'
-  handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
+  if (chart.senior) {
+    let emptyDataStrategy = JSON.parse(chart.senior)?.functionCfg?.emptyDataStrategy;
+    if (!emptyDataStrategy) {
+      emptyDataStrategy = 'breakLine'
+    }
+    handleEmptyDataStrategy(emptyDataStrategy, chart, data, options);
+  }
   // 开始渲染
   if (plot) {
     plot.destroy()
