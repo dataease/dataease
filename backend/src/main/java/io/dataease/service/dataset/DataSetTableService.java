@@ -2865,7 +2865,10 @@ public class DataSetTableService {
                 tree = gson.fromJson(request.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
                 permissionsTreeService.getField(tree);
             }
-            Map<String, Object> previewData = getPreviewData(request, 1, 100000, null, tree);
+            Datasource datasource = datasourceService.get(request.getDataSourceId());
+            int pageSize = (datasource != null && StringUtils.equalsIgnoreCase(datasource.getType(), "es")) ? 10000 : 100000;
+            request.setRow(String.valueOf(pageSize));
+            Map<String, Object> previewData = getPreviewData(request, 1, pageSize, null, tree);
             List<DatasetTableField> fields = (List<DatasetTableField>) previewData.get("fields");
             List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
             // 构建Excel数据格式
