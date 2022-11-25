@@ -623,17 +623,28 @@ export default {
 
         document.getElementById('preview-canvas-main').style.height = (scrollHeight + 'px')
         setTimeout(() => {
-          html2canvas(document.getElementById(domId)).then(canvas => {
-            const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
-            this.dataLoading = false
-            this.$emit('change-load-status', false)
-            this.exporting = false
-            this.backScreenShot = false
-            if (snapshot !== '') {
-              this.snapshotInfo = snapshot
-              this.pdfExportShow = true
+          const timer = setInterval(() => {
+            const containerDom = document.getElementById(domId)
+            const masks = containerDom.getElementsByClassName('el-loading-mask')
+            const mapLoadingArr = containerDom.getElementsByClassName('.symbol-map-loading')
+            if (masks?.length) {
+              const hideMasks = [...masks].filter(item => item.style?.display === 'none')
+              if (masks.length === hideMasks.length && !mapLoadingArr?.length) {
+                html2canvas(containerDom).then(canvas => {
+                  const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
+                  this.dataLoading = false
+                  this.$emit('change-load-status', false)
+                  this.exporting = false
+                  this.backScreenShot = false
+                  if (snapshot !== '') {
+                    this.snapshotInfo = snapshot
+                    this.pdfExportShow = true
+                  }
+                })
+                clearInterval(timer)
+              }
             }
-          })
+          }, 1000)
         }, 2500)
       }, 500)
     },
