@@ -45,4 +45,5 @@ public class ChartViewDTO extends ChartViewWithBLOBs {
     private long totalPage;
     private long totalItems;
     private int datasetMode;
+    private String datasetType;
 }

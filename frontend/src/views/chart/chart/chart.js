@@ -1107,3 +1107,5 @@ export const CHART_FONT_LETTER_SPACE = [
   { name: '9px', value: '9' },
   { name: '10px', value: '10' }
 ]
+
+export const NOT_SUPPORT_PAGE_DATASET = ['kylin', 'sqlServer', 'es', 'presto']
