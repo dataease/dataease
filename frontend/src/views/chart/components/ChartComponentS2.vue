@@ -92,7 +92,7 @@ import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import { getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
 import { baseTableInfo, baseTableNormal, baseTablePivot } from '@/views/chart/chart/table/table-info'
 import TitleRemark from '@/views/chart/view/TitleRemark'
-import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
+import { DEFAULT_TITLE_STYLE, NOT_SUPPORT_PAGE_DATASET } from '@/views/chart/chart/chart'
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
 import { mapState } from 'vuex'
 
@@ -234,7 +234,7 @@ export default {
         const attr = JSON.parse(this.chart.customAttr)
         this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        if (this.chart.datasetMode === 0) {
+        if (this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) {
           if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
             this.currentPage.show = this.chart.totalItems
             this.showPage = true
