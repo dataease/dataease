@@ -574,6 +574,9 @@ export default {
       const updateParams = { 'id': this.chart.id }
       if (param.custom === 'customAttr') {
         const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
+        if (!sourceCustomAttr[param.property]) {
+          this.$set(sourceCustomAttr, param.property, {})
+        }
         sourceCustomAttr[param.property][param.value.modifyName] = param.value[param.value.modifyName]
         this.sourceCustomAttrStr = JSON.stringify(sourceCustomAttr)
         this.chart.customAttr = this.sourceCustomAttrStr
