@@ -189,7 +189,8 @@ export default {
   },
   data() {
     return {
-      canvasInfoTemp: 'preview-temp-canvas-main',
+      mainHeightCount: null,
+      userInfo: null,
       previewMainDomId: 'preview-main-' + this.canvasId,
       previewDomId: 'preview-' + this.canvasId,
       previewRefId: 'preview-ref-' + this.canvasId,
@@ -230,6 +231,9 @@ export default {
     }
   },
   computed: {
+    screenShotStatues() {
+      return this.exporting || this.screenShot || this.backScreenShot
+    },
     mainActiveName() {
       return this.$store.state.panel.mainActiveName
     },
@@ -345,6 +349,18 @@ export default {
         this.canvasStyleDataInit()
       },
       deep: true
+    },
+    mainHeight: {
+      handler(newVal, oldVla) {
+        const _this = this
+        _this.$nextTick(() => {
+          if (_this.screenShotStatues) {
+            _this.initWatermark('preview-temp-canvas-main')
+          } else {
+            _this.initWatermark()
+          }
+        })
+      }
     }
   },
   created() {
@@ -377,12 +393,16 @@ export default {
     bus.$off('trigger-reset-button', this.triggerResetButton)
   },
   methods: {
-    initWatermark() {
+    initWatermark(waterDomId = 'preview-main-canvas-main') {
       if (this.panelInfo.watermarkInfo && this.canvasId === 'canvas-main') {
-        userLoginInfo().then(res => {
-          const userInfo = res.data
-          activeWatermark(this.panelInfo.watermarkInfo.settingContent, userInfo, 'preview-main-canvas-main', this.canvasId, this.panelInfo.watermarkOpen)
-        })
+        if (this.userInfo) {
+          activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, waterDomId, this.canvasId, this.panelInfo.watermarkOpen)
+        } else {
+          userLoginInfo().then(res => {
+            this.userInfo = res.data
+            activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, waterDomId, this.canvasId, this.panelInfo.watermarkOpen)
+          })
+        }
       }
     },
     isMainCanvas() {
@@ -606,6 +626,7 @@ export default {
             _this.$nextTick(() => {
               // 将mainHeight 修改为px 临时解决html2canvas 截图不全的问题
               _this.mainHeight = tempCanvas.scrollHeight + 'px!important'
+              _this.mainHeightCount = tempCanvas.scrollHeight
               this.$emit('mainHeightChange', _this.mainHeight)
             })
           })
@@ -623,28 +644,17 @@ export default {
 
         document.getElementById('preview-canvas-main').style.height = (scrollHeight + 'px')
         setTimeout(() => {
-          const timer = setInterval(() => {
-            const containerDom = document.getElementById(domId)
-            const masks = containerDom.getElementsByClassName('el-loading-mask')
-            const mapLoadingArr = containerDom.getElementsByClassName('.symbol-map-loading')
-            if (masks?.length) {
-              const hideMasks = [...masks].filter(item => item.style?.display === 'none')
-              if (masks.length === hideMasks.length && !mapLoadingArr?.length) {
-                html2canvas(containerDom).then(canvas => {
-                  const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
-                  this.dataLoading = false
-                  this.$emit('change-load-status', false)
-                  this.exporting = false
-                  this.backScreenShot = false
-                  if (snapshot !== '') {
-                    this.snapshotInfo = snapshot
-                    this.pdfExportShow = true
-                  }
-                })
-                clearInterval(timer)
-              }
+          html2canvas(document.getElementById(domId)).then(canvas => {
+            const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
+            this.dataLoading = false
+            this.$emit('change-load-status', false)
+            this.exporting = false
+            this.backScreenShot = false
+            if (snapshot !== '') {
+              this.snapshotInfo = snapshot
+              this.pdfExportShow = true
             }
-          }, 1000)
+          })
         }, 2500)
       }, 500)
     },
