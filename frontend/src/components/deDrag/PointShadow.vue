@@ -64,10 +64,6 @@ export default {
     this.init()
   },
   beforeDestroy() {
-    // const targetComponent = document.getElementById(this.componentCanvasId)
-    // const domId = 'dragContent-' + this.curComponent.id
-    // console.log('domId='+domId)
-    // document.getElementById(domId).appendChild(targetComponent)
   },
   methods: {
     init() {
