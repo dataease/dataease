@@ -121,7 +121,7 @@
       :canvas-id="canvasId"
     />
     <!-- 右击菜单 -->
-    <ContextMenu />
+    <ContextMenu/>
 
     <!-- 对齐标线 -->
     <span
@@ -1567,8 +1567,8 @@ export default {
       infoBox.moveItem = item
       infoBox.moveItemIndex = index
 
-      infoBox.orignX = 0 // 克隆对象原始X位置
-      infoBox.orignY = 0
+      infoBox.originX = 0 // 克隆对象原始X位置
+      infoBox.originY = 0
       infoBox.startX = 0
       infoBox.startY = 0
 

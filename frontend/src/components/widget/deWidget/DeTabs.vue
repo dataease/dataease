@@ -483,7 +483,6 @@ export default {
     canvasScroll(scrollInfo) {
       this.scrollLeft = scrollInfo.scrollLeft + 50
       this.scrollTop = scrollInfo.scrollTop + 10
-      console.log('scrollInfo=' + JSON.stringify(scrollInfo))
       bus.$emit('onScroll')
     },
     tabCanvasComponentData(tabName) {
