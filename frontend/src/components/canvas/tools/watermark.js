@@ -124,7 +124,7 @@ export function activeWatermark(watermarkForm, userLoginInfo, domId, canvasId, w
   if (watermarkForm.type === 'custom') {
     watermark_txt = watermarkForm.content
     watermark_txt = watermark_txt.replaceAll('${ip}', userLoginInfo.ip)
-    watermark_txt = watermark_txt.replaceAll('${userName}', userLoginInfo.userInfo.userName)
+    watermark_txt = watermark_txt.replaceAll('${username}', userLoginInfo.userInfo.username)
     watermark_txt = watermark_txt.replaceAll('${nickName}', userLoginInfo.userInfo.nickName)
     watermark_txt = watermark_txt.replaceAll('${time}', getNow())
     watermark_width = watermark_txt.length * watermarkForm.watermark_fontsize * 0.75
@@ -138,7 +138,7 @@ export function activeWatermark(watermarkForm, userLoginInfo, domId, canvasId, w
     watermark_txt = getNow()
     watermark_width = 200
   } else {
-    watermark_txt = userLoginInfo.userInfo.userName
+    watermark_txt = userLoginInfo.userInfo.username
   }
   const settings = {
     watermark_txt: watermark_txt,
