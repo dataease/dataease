@@ -302,6 +302,8 @@ public class ChartViewService {
             DatasetTable datasetTable = dataSetTableService.get(view.getTableId());
             if (ObjectUtils.isNotEmpty(datasetTable)) {
                 view.setDatasetMode(datasetTable.getMode());
+                Datasource datasource = datasourceService.get(datasetTable.getDataSourceId());
+                view.setDatasourceType(datasource != null ? datasource.getType() : null);
             }
             // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
             if (CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
