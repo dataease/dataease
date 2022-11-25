@@ -455,7 +455,7 @@ export default {
     },
     pageChange(val) {
       this.currentPage.pageSize = val
-      if (this.chart.datasetMode === 0) {
+      if (this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) {
         this.$emit('onPageChange', this.currentPage)
       } else {
         this.initData()
@@ -465,7 +465,7 @@ export default {
 
     pageClick(val) {
       this.currentPage.page = val
-      if (this.chart.datasetMode === 0) {
+      if (this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) {
         this.$emit('onPageChange', this.currentPage)
       } else {
         this.initData()
