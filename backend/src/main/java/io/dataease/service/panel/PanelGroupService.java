@@ -222,6 +222,10 @@ public class PanelGroupService {
 
         } else {
             // 更新
+            if (StringUtils.isBlank(request.getPid())) {
+                PanelGroupWithBLOBs panel = panelGroupMapper.selectByPrimaryKey(request.getId());
+                request.setPid(panel.getPid());
+            }
             if (StringUtils.isNotEmpty(request.getName())) {
                 checkPanelName(request.getName(), request.getPid(), PanelConstants.OPT_TYPE_UPDATE, request.getId(), request.getNodeType());
             }

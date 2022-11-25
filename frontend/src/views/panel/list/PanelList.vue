@@ -730,7 +730,6 @@ export default {
             titlePre: this.$t('commons.edit'),
             panelInfo: {
               id: param.data.id,
-              pid: param.data.pid,
               name: param.data.name,
               nodeType: param.type
             }
