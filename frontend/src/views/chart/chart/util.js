@@ -550,6 +550,7 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
+        'gradient',
         'alpha'
       ],
       'size-selector-ant-v': [
