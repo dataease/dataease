@@ -3422,12 +3422,10 @@ export function handleEmptyDataStrategy(strategy, chart, data, options) {
   const multiDimension = yaxis?.length >= 2 || extAxis?.length > 0
   switch (strategy) {
     case 'breakLine': {
+      options.connectNulls = false
       if (multiDimension) {
         // 多维度线条断开
-        handleBreakLineMultiDimension(chart, data, options)
-      } else {
-        // 单维度线条断开
-        options.connectNulls = false
+        handleBreakLineMultiDimension(chart, data)
       }
       break
     }
@@ -3446,8 +3444,7 @@ export function handleEmptyDataStrategy(strategy, chart, data, options) {
   }
 }
 
-function handleBreakLineMultiDimension(chart, data, options) {
-  options.connectNulls = false
+function handleBreakLineMultiDimension(chart, data) {
   const dimensionInfoMap = new Map()
   const subDimensionSet = new Set()
   for (let i = 0; i < data.length; i++) {
@@ -3464,15 +3461,18 @@ function handleBreakLineMultiDimension(chart, data, options) {
   let insertCount = 0
   dimensionInfoMap.forEach((dimensionInfo, field) => {
     if (dimensionInfo.set.size < subDimensionSet.size) {
-      const toBeFillDimension = [...subDimensionSet].filter(item => !dimensionInfo.set.has(item))
-      toBeFillDimension.forEach(dimension => {
-        data.splice(dimensionInfo.index + insertCount, 0, {
-          field,
-          value: null,
-          category: dimension
-        })
+      let subInsertIndex = 0
+      subDimensionSet.forEach(dimension => {
+        if (!dimensionInfo.set.has(dimension)) {
+          data.splice(dimensionInfo.index + insertCount + subInsertIndex, 0, {
+            field,
+            value: null,
+            category: dimension
+          })
+        }
+        subInsertIndex++
       })
-      insertCount += toBeFillDimension.size
+      insertCount += subDimensionSet.size - dimensionInfo.set.size
     }
   })
 }
