@@ -651,6 +651,7 @@ export default {
     input_password: 'Please input a password',
     input_phone: 'Please enter the phone number',
     input_roles: 'Please select role',
+    user_name_pattern_error: 'IDs can only contain alphanumeric underscores and - and start with a letter!',
     special_characters_are_not_supported: 'Special characters are not supported',
     mobile_number_format_is_incorrect: 'Incorrect format of mobile phone number',
     email_format_is_incorrect: 'The mailbox format is incorrect',
