@@ -264,8 +264,8 @@ export default {
           },
           {
             required: true,
-            pattern: '^[a-zA-Z][a-zA-Z0-9_-]*$',
-            message: this.$t('user.special_characters_are_not_supported'),
+            pattern: '^[a-zA-Z][a-zA-Z0-9\._-]*$',
+            message: this.$t('user.user_name_pattern_error'),
             trigger: 'blur'
           }
         ],
@@ -409,7 +409,7 @@ export default {
       }
     },
     validateNickname(rule, value, callback) {
-      const pattern = "[\\u00A0\\s\"`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“'。，、？]"
+      const pattern = "[\\u00A0\\s\"`~!@#$%^&*()+=|{}':;',\\[\\]<>/?~！@#￥%……&*（）——+|{}【】‘；：”“'。，、？]"
       const regep = new RegExp(pattern)
 
       if (regep.test(value)) {
