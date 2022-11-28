@@ -653,7 +653,12 @@ export default {
     },
     clearPanelLinkage(param) {
       if (param.viewId === 'all' || param.viewId === this.element.propValue.viewId) {
-        this.$refs[this.element.propValue.id].reDrawView()
+        try {
+          this.$refs[this.element.propValue.id].reDrawView()
+        } catch (e) {
+          console.error('reDrawView-error：', this.element.propValue.id)
+        }
+
       }
     },
     bindPluginEvent() {

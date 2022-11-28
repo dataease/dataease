@@ -63,14 +63,14 @@
                 <img :src="imgDefault">
               </div>
             </el-image>
-            <p class="title">{{ ele.descript }}</p>
+            <p class="title">{{ ele.name }}</p>
             <el-tooltip
               class="item"
               effect="dark"
               :content="ele.descript"
               placement="top"
             >
-              <p class="tips">{{ ele.name }}</p>
+              <p class="tips">{{ ele.descript }}</p>
             </el-tooltip>
           </div>
           <div class="info-left">

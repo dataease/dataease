@@ -264,8 +264,8 @@ export default {
           },
           {
             required: true,
-            pattern: '^[^\u4e00-\u9fa5]+$',
-            message: this.$t('user.special_characters_are_not_supported'),
+            pattern: '^[a-zA-Z][a-zA-Z0-9\._-]*$',
+            message: this.$t('user.user_name_pattern_error'),
             trigger: 'blur'
           }
         ],
@@ -281,11 +281,8 @@ export default {
             message: this.$t('commons.input_limit', [2, 50]),
             trigger: 'blur'
           },
-          {
-            required: true,
-            message: this.$t('user.special_characters_are_not_supported'),
-            trigger: 'blur'
-          }
+          { required: true, validator: this.validateNickname, trigger: 'blur' }
+
         ],
         phone: [
           {
@@ -407,6 +404,17 @@ export default {
     repeatValidator(rule, value, callback) {
       if (value !== this.form.password) {
         callback(new Error(this.$t('member.inconsistent_passwords')))
+      } else {
+        callback()
+      }
+    },
+    validateNickname(rule, value, callback) {
+      const pattern = "[\\u00A0\\s\"`~!@#$%^&*()+=|{}':;',\\[\\]<>/?~！@#￥%……&*（）——+|{}【】‘；：”“'。，、？]"
+      const regep = new RegExp(pattern)
+
+      if (regep.test(value)) {
+        const msg = this.$t('user.special_characters_are_not_supported')
+        callback(new Error(msg))
       } else {
         callback()
       }

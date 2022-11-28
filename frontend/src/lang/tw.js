@@ -652,6 +652,7 @@ export default {
     input_roles: '請選擇角色',
     select_users: '請選擇用戶',
     select_gender: '請選擇性別',
+    user_name_pattern_error: 'ID只能包含字母数字以及._-并以字母开头！',
     special_characters_are_not_supported: '不支持特殊字符',
     mobile_number_format_is_incorrect: '手機號碼格式不正確',
     email_format_is_incorrect: '郵箱格式不正確',
@@ -806,6 +807,7 @@ export default {
     edite_organization: '編輯組織'
   },
   system_parameter_setting: {
+    edit_success: '編輯成功',
     mailbox_service_settings: '郵件設置',
     test_connection: '測試連接',
     SMTP_host: 'SMTP主機',
