@@ -806,6 +806,7 @@ export default {
     edite_organization: '编辑组织'
   },
   system_parameter_setting: {
+    edit_success: '编辑成功',
     mailbox_service_settings: '邮件设置',
     test_connection: '测试连接',
     SMTP_host: 'SMTP主机',

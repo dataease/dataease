@@ -130,20 +130,22 @@
         <el-button
           size="mini"
           @click="folderSelectShow=false"
-        >{{ $t('commons.cancel') }}</el-button>
+        >{{ $t('commons.cancel') }}
+        </el-button>
         <el-button
           size="mini"
           type="primary"
           :disabled="!panelForm.name || !panelForm.pid"
           @click="apply"
-        >{{ $t('commons.confirm') }}</el-button>
+        >{{ $t('commons.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
   </el-row>
 </template>
 
 <script>
-import { searchMarket, getCategories } from '@/api/templateMarket'
+import { getCategories, searchMarket } from '@/api/templateMarket'
 import TemplateMarketItem from '@/views/panel/templateMarket/component/TemplateMarketItem'
 import { groupTree, panelSave } from '@/api/panel/panel'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
@@ -199,9 +201,7 @@ export default {
       }
     }
   },
-  computed: {
-
-  },
+  computed: {},
   watch: {
     marketActiveTab() {
       this.initTemplateShow()
@@ -217,13 +217,15 @@ export default {
     const erd = elementResizeDetectorMaker()
     const templateMainDom = document.getElementById('template-main')
     // 监听div变动事件
-    erd.listenTo(templateMainDom, element => {
-      _this.$nextTick(() => {
-        const curSeparator = Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)
-        _this.templateSpan = (100 / Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)) + '%'
-        _this.templateCurWidth = Math.trunc(templateMainDom.offsetWidth / curSeparator) - 33
+    if (templateMainDom) {
+      erd.listenTo(templateMainDom, element => {
+        _this.$nextTick(() => {
+          const curSeparator = Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)
+          _this.templateSpan = (100 / Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)) + '%'
+          _this.templateCurWidth = Math.trunc(templateMainDom.offsetWidth / curSeparator) - 33
+        })
       })
-    })
+    }
   },
   methods: {
     initMarketTemplate() {
@@ -322,100 +324,107 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .template-main{
-    text-align: center;
-    border-radius: 4px;
-    padding: 0 12px 24px 12px;
-    height: calc(100vh - 190px)!important;
-    overflow-x: hidden;
-    overflow-y: auto;
-    background-color: var(--ContentBG,#ffffff);
-  }
-  .market-main{
-    padding:24px
-  }
-  .title-left{
-    float: left;
-    font-size: 20px;
-    font-weight: 500;
-    line-height: 28px;
-    color: var(--TextPrimary, #1F2329);
-  }
-  .title-right{
-    float: right;
-    width: 320px;
-  }
-  .dialog-footer-self{
-    text-align: right;
-  }
-  .search-button-self{
-    text-align: left;
-    padding-left: 10px;
-  }
+.template-main {
+  text-align: center;
+  border-radius: 4px;
+  padding: 0 12px 24px 12px;
+  height: calc(100vh - 190px) !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: var(--ContentBG, #ffffff);
+}
 
-  .topbar-icon-active {
-    cursor: pointer;
-    transition: .1s;
-    border-radius: 3px;
-    font-size: 22px;
-    background-color: rgb(245, 245, 245);
+.market-main {
+  padding: 24px
+}
+
+.title-left {
+  float: left;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  color: var(--TextPrimary, #1F2329);
+}
+
+.title-right {
+  float: right;
+  width: 320px;
+}
+
+.dialog-footer-self {
+  text-align: right;
+}
+
+.search-button-self {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.topbar-icon-active {
+  cursor: pointer;
+  transition: .1s;
+  border-radius: 3px;
+  font-size: 22px;
+  background-color: rgb(245, 245, 245);
 
   &:active {
-     color: #000;
-     border-color: #3a8ee6;
-     background-color: red;
-     outline: 0;
-   }
+    color: #000;
+    border-color: #3a8ee6;
+    background-color: red;
+    outline: 0;
+  }
 
   &:hover {
-     background-color: rgba(31, 35, 41, 0.1);
-     color: #3a8ee6;
-   }
+    background-color: rgba(31, 35, 41, 0.1);
+    color: #3a8ee6;
   }
-  .custom-position {
-    height: 80vh;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    flex-flow: row nowrap;
-    color: #646A73;
-    font-weight: 400;
+}
+
+.custom-position {
+  height: 80vh;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-flow: row nowrap;
+  color: #646A73;
+  font-weight: 400;
+}
+
+.outer-body {
+  width: 100%;
+  height: calc(100vh - 56px);
+  background-color: var(--MainBG, #f5f6f7);
+}
+
+.market-dialog-css {
+  ::v-deep .el-form-item__label {
+    width: 100% !important;
+    text-align: left;
   }
-  .outer-body{
-    width: 100%;
-    height: calc(100vh - 56px);
-    background-color: var(--MainBG,#f5f6f7);
+
+  ::v-deep
+  .el-form-item.is-required:not(.is-no-asterisk)
+  > .el-form-item__label:before {
+    display: none;
   }
 
-  .market-dialog-css{
-    ::v-deep .el-form-item__label {
-      width: 100% !important;
-      text-align: left;
-    }
-
-    ::v-deep
-    .el-form-item.is-required:not(.is-no-asterisk)
-    > .el-form-item__label:before {
-      display: none;
-    }
-
-    ::v-deep
-    .el-form-item.is-required:not(.is-no-asterisk)
-    > .el-form-item__label::after {
-      content: "*";
-      color: #f54a45;
-      margin-left: 2px;
-    }
-
-    ::v-deep .el-form-item__content {
-      margin-left: 0 !important;
-    }
-
-    ::v-deep .vue-treeselect__input{
-      vertical-align:middle;
-    }
+  ::v-deep
+  .el-form-item.is-required:not(.is-no-asterisk)
+  > .el-form-item__label::after {
+    content: "*";
+    color: #f54a45;
+    margin-left: 2px;
   }
+
+  ::v-deep .el-form-item__content {
+    margin-left: 0 !important;
+  }
+
+  ::v-deep .vue-treeselect__input {
+    vertical-align: middle;
+  }
+}
 
 </style>

@@ -41,9 +41,14 @@ ALTER TABLE `panel_group`
     ADD COLUMN `panel_sort` bigint(13) NULL COMMENT '排序' AFTER `watermark_open`;
 
 ALTER TABLE `sys_task_email`
-    CHANGE COLUMN `content` `content` MEDIUMBLOB NULL DEFAULT NULL COMMENT '内容' ;
+    CHANGE COLUMN `content` `content` MEDIUMBLOB NULL DEFAULT NULL COMMENT '内容';
 
 ALTER TABLE `dataset_table_field`
     ADD COLUMN `date_format_type` VARCHAR(255) NULL COMMENT '时间格式类型' AFTER `date_format`;
+
+update panel_app_template
+set name ='JumpServer 运维安全审计大屏'
+where id = '3986ba4c-5a8e-11ed-bc5b-cf4a43b3b40c';
+
 
 update `my_plugin` set `name` = '气泡地图插件' where `plugin_id` = 2;
