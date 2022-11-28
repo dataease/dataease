@@ -121,6 +121,8 @@ public class ChartViewService {
 
     private static final Logger logger = LoggerFactory.getLogger(ChartViewService.class);
 
+    private static final String START_END_SEPARATOR = "_START_END_SPLIT";
+
 
     //默认使用非公平
     private ReentrantLock lock = new ReentrantLock();
@@ -705,6 +707,9 @@ public class ChartViewService {
                     List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
                     }.getType());
                     for (String parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>())) {
+                        if (StringUtils.endsWith(parameter, START_END_SEPARATOR)) {
+                            parameter = parameter.split(START_END_SEPARATOR)[0];
+                        }
                         if (sqlVariables.stream().map(SqlVariableDetails::getVariableName).collect(Collectors.toList()).contains(parameter)) {
                             hasParameters = true;
                         }
@@ -1707,8 +1712,8 @@ public class ChartViewService {
                         String paramName = null;
                         if (parameterArray.length > 1) {
                             paramName = parameterArray[1];
-                            if (paramName.contains("_START_END_SPLIT")) {
-                                String[] paramNameArray = paramName.split("_START_END_SPLIT");
+                            if (paramName.contains(START_END_SEPARATOR)) {
+                                String[] paramNameArray = paramName.split(START_END_SEPARATOR);
                                 paramName = paramNameArray[0];
                                 isEndParam = true;
                             }
