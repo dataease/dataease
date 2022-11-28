@@ -807,6 +807,7 @@ export default {
     edite_organization: 'Edit organization'
   },
   system_parameter_setting: {
+    edit_success: 'Edit success',
     mailbox_service_settings: 'Mail Setting',
     test_connection: 'Test connection',
     SMTP_host: 'SMTP Host',

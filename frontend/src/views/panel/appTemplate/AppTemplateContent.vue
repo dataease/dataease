@@ -77,7 +77,7 @@
           :label="dialogTitleLabel"
           prop="name"
         >
-          <el-input v-model="templateEditForm.name" />
+          <el-input v-model="templateEditForm.name"/>
         </el-form-item>
         <el-form-item
           :label="$t('app_template.app_group_icon')"
@@ -95,7 +95,7 @@
               :http-request="upload"
               :file-list="fileList"
             >
-              <i class="el-icon-plus" />
+              <i class="el-icon-plus"/>
             </el-upload>
             <el-dialog
               top="25vh"
@@ -154,7 +154,7 @@
 import TemplateList from './component/TemplateList'
 import TemplateItem from './component/TemplateItem'
 import TemplateImport from './component/TemplateImport'
-import { save, update, templateDelete, find } from '@/api/system/appTemplate'
+import { find, save, templateDelete, update } from '@/api/system/appTemplate'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import msgCfm from '@/components/msgCfm/index'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
@@ -364,7 +364,7 @@ export default {
               : 'edit_template'
           }`
         )
-        this.originName = this.templateEditForm.label
+        this.originName = this.templateEditForm.name
       } else {
         this.fileList = []
         this.dialogTitle = this.$t('panel.add_app_category')
@@ -398,7 +398,7 @@ export default {
             this.openMessageSuccess(
               `system_parameter_setting.${
                 this.templateEditForm.id
-                  ? 'rename_succeeded'
+                  ? 'edit_success'
                   : 'added_successfully'
               }`
             )

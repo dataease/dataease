@@ -807,6 +807,7 @@ export default {
     edite_organization: '編輯組織'
   },
   system_parameter_setting: {
+    edit_success: '編輯成功',
     mailbox_service_settings: '郵件設置',
     test_connection: '測試連接',
     SMTP_host: 'SMTP主機',

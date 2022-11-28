@@ -43,7 +43,7 @@
         v-if="marketActiveTab==='apply_logs'"
         class="main-log-area template-main"
       >
-        <app-template-log class="log-area" />
+        <app-template-log class="log-area"/>
       </el-row>
     </el-row>
 
@@ -186,13 +186,15 @@ export default {
     const erd = elementResizeDetectorMaker()
     const templateMainDom = document.getElementById('template-main')
     // 监听div变动事件
-    erd.listenTo(templateMainDom, element => {
-      _this.$nextTick(() => {
-        const curSeparator = Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)
-        _this.templateSpan = (100 / Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)) + '%'
-        _this.templateCurWidth = Math.trunc(templateMainDom.offsetWidth / curSeparator) - 33
+    if (templateMainDom) {
+      erd.listenTo(templateMainDom, element => {
+        _this.$nextTick(() => {
+          const curSeparator = Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)
+          _this.templateSpan = (100 / Math.trunc(templateMainDom.offsetWidth / _this.templateMiniWidth)) + '%'
+          _this.templateCurWidth = Math.trunc(templateMainDom.offsetWidth / curSeparator) - 33
+        })
       })
-    })
+    }
   },
   methods: {
     applyNew(item) {
