@@ -81,8 +81,8 @@ public class AuthServer implements AuthApi {
             ValidateResult<XpackLdapUserEntity> validateResult = ldapXpackService.login(request);
 
             if (!validateResult.isSuccess()) {
-                authUserService.recordLoginFail(username, 1);
-                DataEaseException.throwException(validateResult.getMsg());
+                AccountLockStatus lockStatus = authUserService.recordLoginFail(username, 1);
+                DataEaseException.throwException(appendLoginErrorMsg(validateResult.getMsg(), lockStatus));
             }
             XpackLdapUserEntity ldapUserEntity = validateResult.getData();
             if (StringUtils.isBlank(ldapUserEntity.getEmail())) {
@@ -120,19 +120,19 @@ public class AuthServer implements AuthApi {
         SysUserEntity user = authUserService.getUserByName(username);
 
         if (ObjectUtils.isEmpty(user)) {
-            authUserService.recordLoginFail(username, 0);
-            DataEaseException.throwException(Translator.get("i18n_user_do_not_exist"));
+            AccountLockStatus lockStatus = authUserService.recordLoginFail(username, 0);
+            DataEaseException.throwException(appendLoginErrorMsg(Translator.get("i18n_id_or_pwd_error"), lockStatus));
         }
 
         // 验证登录类型是否与用户类型相同
         if (!sysUserService.validateLoginType(user.getFrom(), loginType)) {
-            authUserService.recordLoginFail(username, 0);
-            DataEaseException.throwException(Translator.get("i18n_login_type_error"));
+            AccountLockStatus lockStatus = authUserService.recordLoginFail(username, 0);
+            DataEaseException.throwException(appendLoginErrorMsg(Translator.get("i18n_login_type_error"), lockStatus));
         }
 
         if (user.getEnabled() == 0) {
-            authUserService.recordLoginFail(username, 0);
-            DataEaseException.throwException(Translator.get("i18n_user_is_disable"));
+            AccountLockStatus lockStatus = authUserService.recordLoginFail(username, 0);
+            DataEaseException.throwException(appendLoginErrorMsg(Translator.get("i18n_user_is_disable"), lockStatus));
         }
         String realPwd = user.getPassword();
 
@@ -144,8 +144,8 @@ public class AuthServer implements AuthApi {
             pwd = CodingUtil.md5(pwd);
 
             if (!StringUtils.equals(pwd, realPwd)) {
-                authUserService.recordLoginFail(username, 0);
-                DataEaseException.throwException(Translator.get("i18n_id_or_pwd_error"));
+                AccountLockStatus lockStatus = authUserService.recordLoginFail(username, 0);
+                DataEaseException.throwException(appendLoginErrorMsg(Translator.get("i18n_id_or_pwd_error"), lockStatus));
             }
         }
 
@@ -159,6 +159,15 @@ public class AuthServer implements AuthApi {
         authUserService.unlockAccount(username, ObjectUtils.isEmpty(loginType) ? 0 : loginType);
         authUserService.clearCache(user.getUserId());
         return result;
+    }
+
+    private String appendLoginErrorMsg(String msg, AccountLockStatus lockStatus) {
+        if (ObjectUtils.isEmpty(lockStatus)) return msg;
+        if (ObjectUtils.isNotEmpty(lockStatus.getRemainderTimes())) {
+            String i18n = Translator.get("i18n_login_remainder_times");
+            msg += String.format(i18n, lockStatus.getRemainderTimes());
+        }
+        return msg;
     }
 
     @Override
