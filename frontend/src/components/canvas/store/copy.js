@@ -88,6 +88,8 @@ export default {
           component.style.width = width
           component.style.height = height
         }
+        component['canvasId'] = 'canvas-main'
+        component['canvasPid'] = '0'
         state.copyData = {
           data: component,
           index: index

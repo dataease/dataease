@@ -1883,6 +1883,7 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    position_adjust_component: '位置调整',
     active_font_size: '激活字体大小',
     carousel: '轮播',
     switch_time: '切换时间',
