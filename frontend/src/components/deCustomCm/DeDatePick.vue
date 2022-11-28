@@ -26,7 +26,8 @@ export default {
   },
   methods: {
     handleChange(val) {
-      this.$emit('input', val)
+      const [ pre, next ] = val
+      this.$emit('input', [pre, next ? new Date(+new Date(next) + (23 * 3600 + 59 * 61) * 1000) : ''])
     }
   }
 }
