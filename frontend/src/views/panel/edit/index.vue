@@ -284,11 +284,16 @@
                 @click="changeRightDrawOpen(false)"
               />
             </el-tooltip>
-            <span style="font-weight: bold;font-size: 14px;margin-left: 40px;line-height:40px"
+            <span v-if="curComponent&&!curComponent.auxiliaryMatrix"
+                  style="font-weight: bold;font-size: 14px;margin-left: 40px;line-height:40px"
             >{{ $t('panel.position_adjust') }}</span>
           </el-row>
           <el-row>
             <position-adjust v-if="curComponent&&!curComponent.auxiliaryMatrix"/>
+            <div v-else class="view-selected-message-class">
+              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px"
+              >{{ $t('panel.select_view') }}</span>
+            </div>
           </el-row>
         </div>
       </div>
