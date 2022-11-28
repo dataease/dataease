@@ -116,4 +116,8 @@ public class DataSetTableFieldsService {
     public void delete(String id) {
         datasetTableFieldMapper.deleteByPrimaryKey(id);
     }
+
+    public void updateByPrimaryKeySelective(DatasetTableField request) {
+        datasetTableFieldMapper.updateByPrimaryKeySelective(request);
+    }
 }

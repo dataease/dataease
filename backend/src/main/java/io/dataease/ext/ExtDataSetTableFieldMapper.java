@@ -8,4 +8,6 @@ import java.util.List;
 public interface ExtDataSetTableFieldMapper {
     List<DatasetTableField> findByPanelId(@Param("panelId") String panelId);
 
+    List<DatasetTableField> findByTableIds(@Param("tableIds") List<String> tableIds);
+
 }
