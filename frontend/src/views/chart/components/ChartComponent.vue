@@ -57,6 +57,7 @@ import { reverseColor } from '../chart/common/common'
 import MapController from './map/MapController.vue'
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
+
 export default {
   name: 'ChartComponent',
   components: {
@@ -180,16 +181,18 @@ export default {
       this.currentSeriesId = seriesId
     },
     reDrawView() {
-      this.myChart.dispatchAction({
-        type: 'unselect',
-        seriesIndex: this.linkageActiveParam.seriesIndex,
-        name: this.linkageActiveParam.name
-      })
-      this.myChart.dispatchAction({
-        type: 'downplay',
-        seriesIndex: this.linkageActiveParam.seriesIndex,
-        name: this.linkageActiveParam.name
-      })
+      if (this.linkageActiveParam) {
+        this.myChart.dispatchAction({
+          type: 'unselect',
+          seriesIndex: this.linkageActiveParam.seriesIndex,
+          name: this.linkageActiveParam.name
+        })
+        this.myChart.dispatchAction({
+          type: 'downplay',
+          seriesIndex: this.linkageActiveParam.seriesIndex,
+          name: this.linkageActiveParam.name
+        })
+      }
       this.linkageActiveParam = null
     },
     linkageActive() {
