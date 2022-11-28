@@ -136,7 +136,7 @@
           key="__operation"
           :label="$t('commons.operating')"
           fixed="right"
-          min-width="100"
+          min-width="180"
         >
           <template slot-scope="scope">
             <el-button
@@ -147,6 +147,15 @@
             >{{
               $t(disableEdit(scope.row) ? 'auth.view' : 'commons.edit')
             }}</el-button>
+
+            <el-button
+              class="de-text-btn mar3 mar6"
+              :disabled="disableExec(scope.row)"
+              type="text"
+              @click="execTask(scope.row)"
+            >{{ $t("emailtask.execute_now") }}
+            </el-button>
+
             <el-dropdown
               size="medium"
               trigger="click"
@@ -164,12 +173,6 @@
                 <template
                   v-if="!['Exec'].includes(scope.row.status)"
                 >
-                  <el-dropdown-item
-                    :disabled="disableExec(scope.row)"
-                    command="exec"
-                  >
-                    {{ $t('components.run_once') }}
-                  </el-dropdown-item>
                   <el-dropdown-item
                     v-if="scope.row.status === 'Pending'"
                     command="continue"
@@ -858,8 +861,7 @@ export default {
     },
     disableExec(task) {
       return (
-        task.status === 'Pending' ||
-        !hasDataPermission('manage', task.privileges)
+        task.status === 'Pending' || task.status ==='Exec' || !hasDataPermission('manage', task.privileges)
       )
     },
     disableDelete(task) {
