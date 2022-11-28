@@ -13,7 +13,10 @@
       style="margin-left: 4px;cursor: pointer;font-size: 14px;"
     />
     <div>
-      <ul class="de-ul">
+      <ul
+        class="de-ul"
+        style="padding: 0px !important;"
+      >
         <li
           v-for="(node, i) in layerOption"
           :key="node.id"
