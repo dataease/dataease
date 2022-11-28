@@ -462,11 +462,7 @@ export default {
 
     tabClick() {
       if (this.tabActive === 'dataPreview') {
-        const reload = localStorage.getItem('reloadDsData')
-        if (reload === 'true') {
-          localStorage.setItem('reloadDsData', 'false')
-          this.initTable(this.param.id)
-        }
+        this.initTable(this.param.id)
       }
     },
 

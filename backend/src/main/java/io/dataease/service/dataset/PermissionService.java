@@ -13,6 +13,7 @@ import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.dto.request.*;
+import io.dataease.plugins.xpack.auth.dto.response.Item;
 import io.dataease.plugins.xpack.auth.service.ColumnPermissionService;
 import io.dataease.plugins.xpack.auth.service.RowPermissionService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -112,14 +113,14 @@ public class PermissionService {
             }
             if (CollectionUtils.isNotEmpty(fieldRoleColumnPermissionItems)) {
                 if (fieldRoleColumnPermissionItems.stream().map(ColumnPermissionItem::getOpt).collect(Collectors.toList()).contains(ColumnPermissionConstants.Desensitization)) {
-                    desensitizationList.put(field.getDataeaseName(), fieldUserColumnPermissionItems.get(0));
+                    desensitizationList.put(field.getDataeaseName(), fieldRoleColumnPermissionItems.get(0));
                     result.add(field);
                 }
                 return;
             }
             if (CollectionUtils.isNotEmpty(fieldDeptColumnPermissionItems)) {
                 if (fieldDeptColumnPermissionItems.stream().map(ColumnPermissionItem::getOpt).collect(Collectors.toList()).contains(ColumnPermissionConstants.Desensitization)) {
-                    desensitizationList.put(field.getDataeaseName(), fieldUserColumnPermissionItems.get(0));
+                    desensitizationList.put(field.getDataeaseName(), fieldDeptColumnPermissionItems.get(0));
                     result.add(field);
                 }
                 return;
@@ -209,34 +210,46 @@ public class PermissionService {
         dataSetColumnPermissionsDTO.setAuthTargetType("user");
         datasetColumnPermissions.addAll(columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO));
         if (CollectionUtils.isNotEmpty(roleIds)) {
-            dataSetColumnPermissionsDTO.setAuthTargetIds(roleIds);
-            dataSetColumnPermissionsDTO.setAuthTargetType("role");
-            List<DataSetColumnPermissionsDTO> roleColumnPermissionsDTOS = new ArrayList<>();
-            for (DataSetColumnPermissionsDTO columnPermissionsDTO : columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO)) {
-                columnPermissionsDTO.getWhiteListUser();
-                List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {
-                }.getType());
-                if (CollectionUtils.isEmpty(userIdList) || !userIdList.contains(userId)) {
-                    roleColumnPermissionsDTOS.add(columnPermissionsDTO);
+            DataSetColumnPermissionsDTO request = new DataSetColumnPermissionsDTO();
+            request.setDatasetId(datasetId);
+            request.setAuthTargetType("role");
+            List<Item> items = (List<Item>)columnPermissionService.authObjs(request);
+            roleIds = roleIds.stream().filter(id -> {return items.stream().map(Item::getId).collect(Collectors.toList()).contains(id);}).collect(Collectors.toList());
+            if(CollectionUtils.isNotEmpty(roleIds)){
+                dataSetColumnPermissionsDTO.setAuthTargetIds(roleIds);
+                dataSetColumnPermissionsDTO.setAuthTargetType("role");
+                List<DataSetColumnPermissionsDTO> roleColumnPermissionsDTOS = new ArrayList<>();
+                for (DataSetColumnPermissionsDTO columnPermissionsDTO : columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO)) {
+                    columnPermissionsDTO.getWhiteListUser();
+                    List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {
+                    }.getType());
+                    if (CollectionUtils.isEmpty(userIdList) || !userIdList.contains(userId)) {
+                        roleColumnPermissionsDTOS.add(columnPermissionsDTO);
+                    }
                 }
+                datasetColumnPermissions.addAll(roleColumnPermissionsDTOS);
             }
-            datasetColumnPermissions.addAll(roleColumnPermissionsDTOS);
         }
 
         if (deptId != null) {
-            dataSetColumnPermissionsDTO.setAuthTargetIds(Collections.singletonList(deptId));
-            dataSetColumnPermissionsDTO.setAuthTargetType("dept");
-            List<DataSetColumnPermissionsDTO> deptColumnPermissionsDTOS = new ArrayList<>();
-            for (DataSetColumnPermissionsDTO columnPermissionsDTO : columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO)) {
-                List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {
-                }.getType());
-                if (CollectionUtils.isEmpty(userIdList) || !userIdList.contains(userId)) {
-                    deptColumnPermissionsDTOS.add(columnPermissionsDTO);
+            DataSetColumnPermissionsDTO request = new DataSetColumnPermissionsDTO();
+            request.setDatasetId(datasetId);
+            request.setAuthTargetType("dept");
+            List<Item> items = (List<Item>)columnPermissionService.authObjs(request);
+            if(items.stream().map(Item::getId).collect(Collectors.toList()).contains(deptId)){
+                dataSetColumnPermissionsDTO.setAuthTargetIds(Collections.singletonList(deptId));
+                dataSetColumnPermissionsDTO.setAuthTargetType("dept");
+                List<DataSetColumnPermissionsDTO> deptColumnPermissionsDTOS = new ArrayList<>();
+                for (DataSetColumnPermissionsDTO columnPermissionsDTO : columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO)) {
+                    List<Long> userIdList = new Gson().fromJson(columnPermissionsDTO.getWhiteListUser(), new TypeToken<List<Long>>() {
+                    }.getType());
+                    if (CollectionUtils.isEmpty(userIdList) || !userIdList.contains(userId)) {
+                        deptColumnPermissionsDTOS.add(columnPermissionsDTO);
+                    }
                 }
+                datasetColumnPermissions.addAll(deptColumnPermissionsDTOS);
             }
-            datasetColumnPermissions.addAll(deptColumnPermissionsDTOS);
         }
-
         return datasetColumnPermissions;
     }
 
