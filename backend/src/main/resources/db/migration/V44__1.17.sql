@@ -45,3 +45,5 @@ ALTER TABLE `sys_task_email`
 
 ALTER TABLE `dataset_table_field`
     ADD COLUMN `date_format_type` VARCHAR(255) NULL COMMENT '时间格式类型' AFTER `date_format`;
+
+update `my_plugin` set `name` = '气泡地图插件' where `plugin_id` = 2;
