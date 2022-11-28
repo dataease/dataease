@@ -1681,6 +1681,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'value',
+        'custom',
         'alpha'
       ],
       'tooltip-selector-ant-v': [
