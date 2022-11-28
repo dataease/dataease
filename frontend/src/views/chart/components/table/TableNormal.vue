@@ -79,7 +79,7 @@
 <script>
 import { hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
-import { DEFAULT_COLOR_CASE, DEFAULT_SIZE } from '@/views/chart/chart/chart'
+import { DEFAULT_COLOR_CASE, DEFAULT_SIZE, NOT_SUPPORT_PAGE_DATASET } from '@/views/chart/chart/chart'
 import { mapState } from 'vuex'
 
 export default {
@@ -238,7 +238,7 @@ export default {
         }
 
         data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        if (this.chart.datasetMode === 0) {
+        if (this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) {
           if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
             this.currentPage.show = this.chart.totalItems
             this.showPage = true
@@ -444,7 +444,7 @@ export default {
 
     pageChange(val) {
       this.currentPage.pageSize = val
-      if (this.chart.datasetMode === 0) {
+      if (this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) {
         this.$emit('onPageChange', this.currentPage)
       } else {
         this.init()
@@ -453,7 +453,7 @@ export default {
 
     pageClick(val) {
       this.currentPage.page = val
-      if (this.chart.datasetMode === 0) {
+      if (this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) {
         this.$emit('onPageChange', this.currentPage)
       } else {
         this.init()

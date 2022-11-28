@@ -405,7 +405,7 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> orgXAxis, List<ChartFieldCustomFilterDTO> OrgFeldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
+    public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> orgXAxis, List<ChartFieldCustomFilterDTO> OrgFieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
         List<ChartViewFieldDTO> xAxis = new ArrayList<>();
         orgXAxis.forEach(chartViewFieldDTO -> {
             xAxis.add(chartViewFieldDTO);
@@ -416,7 +416,7 @@ public class OracleQueryProvider extends QueryProvider {
 
 
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<>();
-        for (ChartFieldCustomFilterDTO chartFieldCustomFilterDTO : OrgFeldCustomFilter) {
+        for (ChartFieldCustomFilterDTO chartFieldCustomFilterDTO : OrgFieldCustomFilter) {
             fieldCustomFilter.add(chartFieldCustomFilterDTO);
         }
         ChartFieldCustomFilterDTO chartFieldCustomFilterDTO = new ChartFieldCustomFilterDTO();

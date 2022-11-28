@@ -202,7 +202,7 @@
     </el-dialog>
 
     <text-attr
-      v-if="showAttr && curComponent.canvasId === activeCanvasId"
+      v-if="showAttr && curComponent.canvasId === activeCanvasId" && isEdit
       :canvas-id="curComponent.canvasId"
       :scroll-left="scrollLeft"
       :scroll-top="scrollTop"
@@ -483,7 +483,6 @@ export default {
     canvasScroll(scrollInfo) {
       this.scrollLeft = scrollInfo.scrollLeft + 50
       this.scrollTop = scrollInfo.scrollTop + 10
-      console.log('scrollInfo=' + JSON.stringify(scrollInfo))
       bus.$emit('onScroll')
     },
     tabCanvasComponentData(tabName) {
