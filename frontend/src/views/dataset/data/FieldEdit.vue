@@ -809,9 +809,6 @@ export default {
     },
     getPopPosition(val) {
       if (!val) return
-      // setTimeout(() => {
-
-      // }, 50)
       this.$nextTick(() => {
         const list = document.querySelectorAll('body > .select-date-resolution-format')
         const ele = list[list.length - 1]
@@ -1203,7 +1200,7 @@ span {
     display: inline-block;
     height: 30px;
     background: #dfe6ec;
-    width: 192px;
+    width: 180px;
     padding-left: 30px;
   }
 }

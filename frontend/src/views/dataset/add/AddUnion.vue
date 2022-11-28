@@ -218,7 +218,6 @@ export default {
   },
   watch: {
     'param.tableId': function() {
-      this.resetComponent()
       this.initTableData()
     }
   },
@@ -389,11 +388,6 @@ export default {
         mode: this.dataset[0].currentDs.mode,
         info: '{"union":' + JSON.stringify(this.dataset) + '}'
       }
-    },
-
-    resetComponent() {
-      this.dataset = []
-      this.param.name = '关联数据集'
     }
   }
 }

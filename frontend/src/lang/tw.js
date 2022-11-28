@@ -41,6 +41,10 @@ export default {
       finish: '完成'
     }
   },
+  track: {
+    upload_limit_format: '圖片格式錯誤，支持JPG，PNG',
+    upload_limit_size: '圖片大小不超過',
+  },
   route: {
     dashboard: '首頁',
     documentation: '文檔',
