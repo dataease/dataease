@@ -90,7 +90,7 @@
               size="mini"
               controls-position="right"
             />
-            <div class="de-bottom-line" />
+            <div class="de-bottom-line short" />
           </template>
           <template v-else-if="!['null', 'empty', 'not_null', 'not_empty'].includes(item.term)">
             <el-input
@@ -334,12 +334,12 @@ export default {
     initNameEnumName() {
       const { name, enumValue, fieldId } = this.item
       if (!name && fieldId) {
-        this.checklist = enumValue.split(',')
+        this.checklist = [...new Set(enumValue.split(',') || [])]
       }
       if (!name && !fieldId) return
       this.initEnumOptions()
       this.activeName = this.item.name
-      this.checklist = enumValue.split(',')
+      this.checklist = [...new Set(enumValue.split(',') || [])]
     },
     cancelKeyDow() {
       if (!this.showTextArea && !this.keydownCanceled) {
@@ -420,14 +420,17 @@ export default {
       })
     },
     addFields() {
-      const list = this.textareaValue.split('\n').reduce((pre, next) => {
+      let list = this.textareaValue.split('\n').reduce((pre, next) => {
         const str = next.trim()
         if (!str) return pre
-        pre.add(str)
+        pre.push(str)
         return pre
-      }, new Set([]))
-      if (list.size) {
-        this.checklist = [...this.checklist, ...list]
+      }, [])
+      if (list.length) {
+        if (list.length > 500) {
+          list = list.slice(0, 500)
+        }
+        this.checklist = [...new Set([...this.checklist, ...list])]
       }
       this.showTextArea = false
     },
@@ -438,6 +441,7 @@ export default {
       } else {
         this.delChecks(index)
       }
+      this.checklist = [...new Set(this.checklist)]
     },
     handleClickOutside() {
       this.showTextArea = false
@@ -551,6 +555,11 @@ export default {
     bottom: 9px;
     width: 100px;
     z-index: 10;
+  }
+
+  .short {
+    width: 83px;
+    right: 22px;
   }
 
   ::v-deep.el-input-number.is-controls-right .el-input__inner {
