@@ -391,7 +391,6 @@ export default {
         width: 40px;
         height: 40px;
         background: #ffffff;
-        border: 1px solid #dee0e3;
         border-radius: 4px;
         display: flex;
 
