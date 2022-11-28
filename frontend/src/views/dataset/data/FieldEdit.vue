@@ -833,8 +833,9 @@ export default {
         this.quotaChange()
       })
       dateformats(this.param.id).then((response) => {
-        const children = (response?.data || []).map(ele => ({ label: ele.dateformat, value: ele.dateformat }))
-        children.push({ label: '自定义', value: 'custom' })
+
+        const children = (response?.data || []).map(ele => ({ label: ele.dateformat + ( ele.desc !== null ? ('(' + ele.desc) + ')' : ""), value: ele.dateformat }))
+        children.push({ label: this.$t('commons.custom'), value: 'custom' })
         this.dateformats = children
       })
     },
