@@ -708,6 +708,7 @@ export default {
       if (this.form.type === 'oracle') {
         this.$set(this.form.configuration, 'charset', 'Default')
         this.$set(this.form.configuration, 'targetCharset', 'Default')
+        this.$set(this.form.configuration, 'connectionType', 'sid')
       }
     },
     changeEdit() {
