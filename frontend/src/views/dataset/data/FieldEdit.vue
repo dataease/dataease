@@ -148,12 +148,11 @@
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 class="select-type"
                 :options="getFields(scope.row)"
-                @visible-change="getPopPosition"
                 @change="saveEdit(scope.row)"
               >
                 <template slot-scope="{ node, data }">
                   <span
-                    v-if="node.level === 2"
+                    v-if="node.level === 2 && data.label === 'yyyy-MM-dd'"
                     class="format-title"
                     :style="popPosition"
                   >{{ $t('chart.date_format') }}</span>
@@ -488,12 +487,11 @@
                 :disabled="!hasDataPermission('manage', param.privileges)"
                 class="select-type"
                 :options="getFields(scope.row)"
-                @visible-change="getPopPosition"
                 @change="saveEdit(scope.row)"
               >
                 <template slot-scope="{ node, data }">
                   <span
-                    v-if="node.level === 2"
+                    v-if="node.level === 2 && data.label === 'yyyy-MM-dd'"
                     class="format-title"
                     :style="popPosition"
                   >{{ $t('chart.date_format') }}</span>
@@ -806,15 +804,6 @@ export default {
         const currentHeight = document.documentElement.clientHeight
         that.maxHeight = currentHeight - 56 - 30 - 35 - 26 - 10 - 10 + 'px'
       }, 10)
-    },
-    getPopPosition(val) {
-      if (!val) return
-      this.$nextTick(() => {
-        const list = document.querySelectorAll('body > .select-date-resolution-format')
-        const ele = list[list.length - 1]
-        const { top, left } = ele?.style
-        this.popPosition = { top: parseInt(top) - 18 + 'px', left: parseInt(left) + 181 + 'px', position: 'fixed' }
-      })
     },
     initField() {
       fieldListDQ(this.param.id).then((response) => {
@@ -1198,6 +1187,7 @@ span {
     position: fixed;
     display: inline-block;
     height: 30px;
+    transform: translate(-30px, -37px);
     background: #dfe6ec;
     width: 180px;
     padding-left: 30px;
