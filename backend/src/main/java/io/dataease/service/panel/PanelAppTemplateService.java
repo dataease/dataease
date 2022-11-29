@@ -209,7 +209,6 @@ public class PanelAppTemplateService {
                 DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
                 datasetFieldsRealMap.put(oldId, newTableField.getId());
                 datasetFieldsMd5FormatRealMap.put(TableUtils.fieldNameShort(oldTableId + "_" + datasetTableField.getOriginName()), TableUtils.fieldNameShort(newTableField.getTableId() + "_" + datasetTableField.getOriginName()));
-                System.out.println();
             }
         }
         //数据集计算字段替换
