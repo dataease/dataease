@@ -410,6 +410,11 @@ export default {
     },
     triggerResetButton() {
       this.triggerSearchButton(true)
+      this.$refs['viewWrapperChild']?.forEach(item => {
+        if (item?.responseResetButton) {
+          item.responseResetButton()
+        }
+      })
     },
     triggerSearchButton(isClear = false) {
       const result = this.buildButtonFilterMap(this.componentData, isClear)
