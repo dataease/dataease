@@ -1610,7 +1610,8 @@ import {
   pluginTypes,
   post,
   resetViewCacheCallBack,
-  viewEditSave
+  viewEditSave,
+  tableField
 } from '@/api/chart/chart'
 import DimensionItem from '../components/dragItem/DimensionItem'
 import QuotaItem from '../components/dragItem/QuotaItem'
@@ -2000,7 +2001,7 @@ export default {
     },
     initTableData(id, optType) {
       if (id != null) {
-        post('/dataset/table/getWithPermission/' + id, null).then(response => {
+        tableField(id).then(response => {
           // If click too fast on the panel, the data here may be inconsistent, so make a verification
           if (this.view.tableId === id) {
             this.table = response.data

@@ -55,7 +55,7 @@ public interface AuthUserService {
 
     void checkAdmin(String uname, String pwd);
 
-    void recordLoginFail(String username, Integer logintype);
+    AccountLockStatus recordLoginFail(String username, Integer logintype);
 
     void unlockAccount(String username, Integer logintype);
 

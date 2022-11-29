@@ -130,6 +130,19 @@
         WHERE panel_view.panel_id = #{panelId}
     </select>
 
+    <select id="findByTableIds" resultMap="BaseResultMapDTO">
+        SELECT DISTINCT datasource.id,
+        datasource.`name`,
+        datasource.DESC,
+        datasource.type
+        FROM dataset_table
+        INNER JOIN datasource ON dataset_table.data_source_id = datasource.id
+        WHERE dataset_table.id in
+        <foreach collection="tableIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
     <select id="queryDetails" resultMap="BaseResultMapDTO">
         select datasource.*,
                get_auths(id, 'link', #{userId}) as `privileges`

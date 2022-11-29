@@ -12,4 +12,6 @@ public class AccountLockStatus {
     private Long unlockTime;
 
     private Integer relieveTimes;
+
+    private Integer remainderTimes;
 }

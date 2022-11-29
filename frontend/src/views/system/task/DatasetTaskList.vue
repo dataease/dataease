@@ -6,12 +6,14 @@
           type="primary"
           icon="el-icon-plus"
           @click="() => selectDataset()"
-        >{{ $t("dataset.add_task") }}</deBtn>
+        >{{ $t("dataset.add_task") }}
+        </deBtn>
         <deBtn
           :disabled="!multipleSelection.length"
           secondary
           @click="confirmDelete"
-        >{{ $t("organization.delete") }}</deBtn>
+        >{{ $t("organization.delete") }}
+        </deBtn>
       </el-col>
       <el-col
         :span="14"
@@ -33,10 +35,12 @@
           :plain="!!filterTexts.length"
           icon="iconfont icon-icon-filter"
           @click="filterShow"
-        >{{ $t("user.filter")
-        }}<template v-if="filterTexts.length">
-          ({{ filterTexts.length }})
-        </template>
+        >{{
+            $t("user.filter")
+          }}
+          <template v-if="filterTexts.length">
+            ({{ filterTexts.length }})
+          </template>
         </deBtn>
         <el-dropdown
           trigger="click"
@@ -45,7 +49,8 @@
           <deBtn
             secondary
             icon="el-icon-setting"
-          >{{ $t("user.list") }}</deBtn>
+          >{{ $t("user.list") }}
+          </deBtn>
           <el-dropdown-menu
             slot="dropdown"
             class="list-columns-select"
@@ -55,7 +60,8 @@
               v-model="checkAll"
               :indeterminate="isIndeterminate"
               @change="handleCheckAllChange"
-            >{{ $t("dataset.check_all") }}</el-checkbox>
+            >{{ $t("dataset.check_all") }}
+            </el-checkbox>
             <el-checkbox-group
               v-model="checkedColumnNames"
               @change="handleCheckedColumnNamesChange"
@@ -64,7 +70,8 @@
                 v-for="column in columnNames"
                 :key="column.props"
                 :label="column.props"
-              >{{ $t(column.label) }}</el-checkbox>
+              >{{ $t(column.label) }}
+              </el-checkbox>
             </el-checkbox-group>
           </el-dropdown-menu>
         </el-dropdown>
@@ -76,7 +83,7 @@
     >
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t("user.result_one") }}</span>
-      <el-divider direction="vertical" />
+      <el-divider direction="vertical"/>
       <i
         v-if="showScroll"
         class="el-icon-arrow-left arrow-filter"
@@ -89,9 +96,9 @@
           class="text"
         >
           {{ ele }} <i
-            class="el-icon-close"
-            @click="clearOneFilter(index)"
-          />
+          class="el-icon-close"
+          @click="clearOneFilter(index)"
+        />
         </p>
       </div>
       <i
@@ -104,7 +111,8 @@
         class="clear-btn"
         icon="el-icon-delete"
         @click="clearFilter"
-      >{{ $t("user.clear_filter") }}</el-button>
+      >{{ $t("user.clear_filter") }}
+      </el-button>
     </div>
     <div
       id="resize-for-filter"
@@ -154,14 +162,14 @@
         >
           <template slot-scope="scope">
             <span v-if="scope.row.rate === 'SIMPLE'">{{
-              $t("dataset.execute_once")
-            }}</span>
+                $t("dataset.execute_once")
+              }}</span>
             <span v-if="scope.row.rate === 'CRON'">{{
-              $t("dataset.cron_config")
-            }}</span>
+                $t("dataset.cron_config")
+              }}</span>
             <span v-if="scope.row.rate === 'SIMPLE_CRON'">{{
-              $t("dataset.simple_cron")
-            }}</span>
+                $t("dataset.simple_cron")
+              }}</span>
           </template>
         </el-table-column>
 
@@ -189,8 +197,8 @@
               v-if="scope.row.lastExecStatus"
               :class="[`de-${scope.row.lastExecStatus}-pre`, 'de-status']"
             >{{
-               $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
-             }}
+                $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
+              }}
               <svg-icon
                 v-if="scope.row.lastExecStatus === 'Error'"
                 style="cursor: pointer;"
@@ -244,16 +252,22 @@
           key="__operation"
           :label="$t('commons.operating')"
           fixed="right"
-          width="100"
+          width="160"
         >
           <template slot-scope="scope">
             <el-button
               class="de-text-btn mar3 mar6"
               type="text"
               @click="selectDataset(scope.row)"
-            >{{
-              $t(disableEdit(scope.row) ? "auth.view" : "commons.edit")
-            }}</el-button>
+            >{{ $t(disableEdit(scope.row) ? "auth.view" : "commons.edit") }}
+            </el-button>
+            <el-button
+              class="de-text-btn mar3 mar6"
+              :disabled="disableExec(scope.row)"
+              type="text"
+              @click="execTask(scope.row)"
+            >{{ $t("emailtask.execute_now") }}
+            </el-button>
             <el-dropdown
               size="medium"
               trigger="click"
@@ -270,12 +284,6 @@
                 <template
                   v-if="!['Exec'].includes(scope.row.status)"
                 >
-                  <el-dropdown-item
-                    :disabled="disableExec(scope.row)"
-                    command="exec"
-                  >
-                    {{ $t("components.run_once") }}
-                  </el-dropdown-item>
                   <el-dropdown-item
                     v-if="scope.row.status === 'Pending'"
                     command="continue"
@@ -325,18 +333,18 @@
           secondary
           @click="show_error_massage = false"
         >{{
-          $t("dataset.close")
-        }}</deBtn>
+            $t("dataset.close")
+          }}</deBtn>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { columnOptions } from './options'
-import { formatOrders } from '@/utils/index'
-import { datasetTaskList, post } from '@/api/dataset/dataset'
-import { hasDataPermission } from '@/utils/permission'
+import {columnOptions} from './options'
+import {formatOrders} from '@/utils/index'
+import {datasetTaskList, post} from '@/api/dataset/dataset'
+import {hasDataPermission} from '@/utils/permission'
 import GridTable from '@/components/gridTable/index.vue'
 import filterUser from './FilterUser.vue'
 import msgCfm from '@/components/msgCfm/index'
@@ -345,12 +353,13 @@ import keyEnter from '@/components/msgCfm/keyEnter.js'
 
 export default {
   name: 'DatasetTaskList',
-  components: { GridTable, filterUser },
+  components: {GridTable, filterUser},
   mixins: [msgCfm, keyEnter],
   props: {
     transCondition: {
       type: Object,
-      default: () => {}
+      default: () => {
+      }
     }
   },
   data() {
@@ -387,7 +396,7 @@ export default {
     }
   },
   created() {
-    const { taskId, name } = this.transCondition
+    const {taskId, name} = this.transCondition
     if (taskId) {
       this.nickName = name
     }
@@ -418,7 +427,7 @@ export default {
         document.querySelector('#resize-for-filter')
       )
     },
-    layoutResize: _.debounce(function() {
+    layoutResize: _.debounce(function () {
       this.getScrollStatus()
     }, 200),
     scrollPre() {
@@ -492,7 +501,7 @@ export default {
       this.handleCurrentChange(1)
     },
     search(showLoading = true) {
-      const { taskId, name } = this.transCondition
+      const {taskId, name} = this.transCondition
       const param = {
         orders: formatOrders(this.orderConditions),
         conditions: [...this.cacheCondition]
@@ -511,7 +520,7 @@ export default {
           field: 'dataset_table_task.id'
         })
       }
-      const { currentPage, pageSize } = this.paginationConfig
+      const {currentPage, pageSize} = this.paginationConfig
       datasetTaskList(currentPage, pageSize, param, showLoading).then(
         (response) => {
           const multipleSelection = this.multipleSelection.map(ele => ele.id)
@@ -559,7 +568,7 @@ export default {
       })
     },
     changeTaskStatus(task) {
-      const { status } = task
+      const {status} = task
       if (!['Pending', 'Underway'].includes(status)) {
         return
       }
@@ -599,11 +608,12 @@ export default {
             this.initSearch(true)
           })
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
     selectDataset(row) {
       if (row) {
-        const { datasetName, id, tableId } = row
+        const {datasetName, id, tableId} = row
         this.$router.push({
           path: '/task-ds-form',
           query: {
@@ -624,9 +634,7 @@ export default {
       )
     },
     disableExec(task) {
-      return (task.status === 'Pending' ||
-        !hasDataPermission('manage', task.privileges)
-      )
+      return (task.status === 'Pending' || task.status ==='Exec' || !hasDataPermission('manage', task.privileges))
     },
     disableDelete(task) {
       return false
@@ -661,6 +669,7 @@ export default {
   height: 100px;
   overflow-y: auto;
 }
+
 .codemirror ::v-deep .CodeMirror-scroll {
   height: 100px;
   overflow-y: auto;
@@ -708,6 +717,7 @@ export default {
     border-radius: 4px;
   }
 }
+
 .table-container {
   height: calc(100% - 50px);
 
@@ -744,8 +754,10 @@ export default {
     width: 100%;
   }
 }
+
 .de-card-dropdown {
   margin-top: 0 !important;
+
   .popper__arrow {
     display: none !important;
   }

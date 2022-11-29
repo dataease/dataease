@@ -277,14 +277,16 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
-    public void recordLoginFail(String username, Integer logintype) {
-        if (!supportLoginLimit()) return;
+    public AccountLockStatus recordLoginFail(String username, Integer logintype) {
+        if (!supportLoginLimit()) return null;
         long now = System.currentTimeMillis();
         SysLoginLimit sysLoginLimit = new SysLoginLimit();
         sysLoginLimit.setUsername(username);
         sysLoginLimit.setLoginType(logintype);
         sysLoginLimit.setRecordTime(now);
         sysLoginLimitMapper.insert(sysLoginLimit);
+        return lockStatus(username, logintype);
+
     }
 
     @Override
@@ -312,13 +314,16 @@ public class AuthUserServiceImpl implements AuthUserService {
         SysLoginLimitExample example = new SysLoginLimitExample();
         example.createCriteria().andUsernameEqualTo(username).andLoginTypeEqualTo(logintype).andRecordTimeGreaterThan(dividingPointTime);
         List<SysLoginLimit> sysLoginLimits = sysLoginLimitMapper.selectByExample(example);
+        accountLockStatus.setRemainderTimes(limitTimes);
         if (CollectionUtils.isNotEmpty(sysLoginLimits)) {
             boolean needLock = sysLoginLimits.size() >= limitTimes;
+            accountLockStatus.setRemainderTimes(limitTimes - sysLoginLimits.size());
             accountLockStatus.setLocked(needLock);
             if (needLock) {
                 long unlockTime = now + (longRelieveTimes * 60L * 1000L);
                 accountLockStatus.setUnlockTime(unlockTime);
                 accountLockStatus.setRelieveTimes(relieveTimes);
+                accountLockStatus.setRemainderTimes(0);
             }
 
         }

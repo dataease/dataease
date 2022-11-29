@@ -7,23 +7,22 @@
     </resultMap>
 
     <select id="findByPanelId" resultMap="BaseResultMapDTO">
-        select
-            dataset_table_field.*
+        select dataset_table_field.*
         from dataset_table_field
-        where table_id in (
-            SELECT
-                table_id
-            FROM
-                chart_view
-            WHERE
-                    id IN (
-                    SELECT
-                        chart_view_id
-                    FROM
-                        panel_view
-                    WHERE
-                        panel_id = #{panelId}
-                )
-        )
+        where table_id in (SELECT table_id
+                           FROM chart_view
+                           WHERE id IN (SELECT chart_view_id
+                                        FROM panel_view
+                                        WHERE panel_id = #{panelId}))
+    </select>
+
+    <select id="findByTableIds" resultMap="BaseResultMapDTO">
+        select
+        dataset_table_field.*
+        from dataset_table_field
+        where dataset_table_field.table_id in
+        <foreach collection="tableIds" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
     </select>
 </mapper>

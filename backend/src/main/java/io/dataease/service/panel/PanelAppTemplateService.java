@@ -5,6 +5,7 @@ import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.TableUtils;
 import io.dataease.controller.datasource.request.UpdataDsRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.panel.PanelAppTemplateApplyRequest;
@@ -197,28 +198,44 @@ public class PanelAppTemplateService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> applyDatasetField(List<DatasetTableField> datasetTableFieldsInfo, Map<String, String> datasetsRealMap) {
+    public Map<String, String> applyDatasetField(List<DatasetTableField> datasetTableFieldsInfo, Map<String, String> datasetsRealMap, Map<String, String> datasetTypeRealMap, Map<String, String> datasetFieldsMd5FormatRealMap) {
         Map<String, String> datasetFieldsRealMap = new HashMap<>();
         for (DatasetTableField datasetTableField : datasetTableFieldsInfo) {
             if (datasetTableField.getExtField() != 2) {
                 String oldId = datasetTableField.getId();
-                datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
+                String oldTableId = datasetTableField.getTableId();
+                datasetTableField.setTableId(datasetsRealMap.get(oldTableId));
                 datasetTableField.setId(null);
                 DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
                 datasetFieldsRealMap.put(oldId, newTableField.getId());
+                datasetFieldsMd5FormatRealMap.put(TableUtils.fieldNameShort(oldTableId + "_" + datasetTableField.getOriginName()), TableUtils.fieldNameShort(newTableField.getTableId() + "_" + datasetTableField.getOriginName()));
+                System.out.println();
             }
         }
         //数据集计算字段替换
         for (DatasetTableField datasetTableField : datasetTableFieldsInfo) {
             if (datasetTableField.getExtField() == 2) {
                 String oldId = datasetTableField.getId();
-                datasetTableField.setTableId(datasetsRealMap.get(datasetTableField.getTableId()));
+                String oldTableId = datasetTableField.getTableId();
+                String oldOriginName = datasetTableField.getOriginName();
+                datasetTableField.setTableId(datasetsRealMap.get(oldTableId));
                 datasetTableField.setId(null);
                 datasetFieldsRealMap.forEach((k, v) -> {
                     datasetTableField.setOriginName(datasetTableField.getOriginName().replaceAll(k, v));
                 });
                 DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
                 datasetFieldsRealMap.put(oldId, newTableField.getId());
+                datasetFieldsMd5FormatRealMap.put(TableUtils.fieldNameShort(oldTableId + "_" + oldOriginName), TableUtils.fieldNameShort(newTableField.getTableId() + "_" + datasetTableField.getOriginName()));
+            }
+        }
+
+        //custom 和 union originName替换
+        for (DatasetTableField datasetTableField : datasetTableFieldsInfo) {
+            if (DatasetType.UNION.name().equalsIgnoreCase(datasetTypeRealMap.get(datasetTableField.getTableId())) || DatasetType.CUSTOM.name().equalsIgnoreCase(datasetTypeRealMap.get(datasetTableField.getTableId()))) {
+                DatasetTableField updateField = new DatasetTableField();
+                updateField.setId(datasetTableField.getId());
+                updateField.setOriginName(datasetFieldsMd5FormatRealMap.get(datasetTableField.getOriginName()));
+                dataSetTableFieldsService.updateByPrimaryKeySelective(updateField);
             }
         }
         return datasetFieldsRealMap;
@@ -248,7 +265,7 @@ public class PanelAppTemplateService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> applyViews(List<ChartViewWithBLOBs> chartViewsInfo, Map<String, String> datasetsRealMap, Map<String, String> datasetFieldsRealMap, String sceneId) throws Exception {
+    public Map<String, String> applyViews(List<ChartViewWithBLOBs> chartViewsInfo, Map<String, String> datasetsRealMap, Map<String, String> datasetFieldsRealMap, Map<String, String> datasetFieldsMd5FormatRealMap, String sceneId) throws Exception {
         Map<String, String> chartViewsRealMap = new HashMap<>();
         for (ChartViewWithBLOBs chartView : chartViewsInfo) {
             String oldViewId = chartView.getId();
@@ -268,6 +285,19 @@ public class PanelAppTemplateService {
             });
             //替换datasetFieldId
             datasetFieldsRealMap.forEach((k, v) -> {
+                chartView.setXAxis(chartView.getXAxis().replaceAll(k, v));
+                chartView.setXAxisExt(chartView.getXAxisExt().replaceAll(k, v));
+                chartView.setYAxis(chartView.getYAxis().replaceAll(k, v));
+                chartView.setYAxisExt(chartView.getYAxisExt().replaceAll(k, v));
+                chartView.setExtStack(chartView.getExtStack().replaceAll(k, v));
+                chartView.setExtBubble(chartView.getExtBubble().replaceAll(k, v));
+                chartView.setCustomAttr(chartView.getCustomAttr().replaceAll(k, v));
+                chartView.setCustomStyle(chartView.getCustomStyle().replaceAll(k, v));
+                chartView.setCustomFilter(chartView.getCustomFilter().replaceAll(k, v));
+                chartView.setDrillFields(chartView.getDrillFields().replaceAll(k, v));
+            });
+            //替换originName
+            datasetFieldsMd5FormatRealMap.forEach((k, v) -> {
                 chartView.setXAxis(chartView.getXAxis().replaceAll(k, v));
                 chartView.setXAxisExt(chartView.getXAxisExt().replaceAll(k, v));
                 chartView.setYAxis(chartView.getYAxis().replaceAll(k, v));

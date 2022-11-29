@@ -724,6 +724,7 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
+            this.view = response.data
             this.$emit('fill-chart-2-parent', this.chart)
             this.getDataOnly(response.data, dataBroadcast)
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
@@ -1181,6 +1182,7 @@ export default {
           }
           viewData(this.chart.id, this.panelInfo.id, requestInfo).then(response => {
             this.componentViewsData[this.chart.id] = response.data
+            this.view = response.data
             if (dataBroadcast) {
               bus.$emit('prop-change-data')
             }
