@@ -202,7 +202,7 @@ export default {
       })
     },
     checkSelected(param) {
-      return (this.linkageActiveParam.name === param.name) &&
+      return (this.linkageActiveParam.name === param.name || (this.linkageActiveParam.name === 'NO_DATA' && !param.name)) &&
         (this.linkageActiveParam.category === param.category)
     },
     preDraw() {

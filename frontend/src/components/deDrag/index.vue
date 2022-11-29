@@ -602,7 +602,7 @@ export default {
           return 'auto'
         }
       }
-      if (this.element.auxiliaryMatrix) {
+      if (this.element.auxiliaryMatrix && this.curCanvasScaleSelf) {
         const height = Math.round(this.height / this.curCanvasScaleSelf.matrixStyleHeight) * this.curCanvasScaleSelf.matrixStyleHeight
         return (height - this.curGap * 2) + 'px'
       } else {
