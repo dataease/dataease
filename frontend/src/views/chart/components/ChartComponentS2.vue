@@ -61,7 +61,10 @@
           class="table-page"
           :style="autoStyle"
         >
-          <span class="total-style">
+          <span
+            class="total-style"
+            :style="totalStyle"
+          >
             {{ $t('chart.total') }}
             <span>{{
               chart.datasetMode === 0 ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
@@ -165,6 +168,9 @@ export default {
       remarkCfg: {
         show: false,
         content: ''
+      },
+      totalStyle: {
+        color: '#606266'
       }
     }
   },
@@ -424,6 +430,8 @@ export default {
           this.title_class.fontFamily = customStyle.text.fontFamily ? customStyle.text.fontFamily : DEFAULT_TITLE_STYLE.fontFamily
           this.title_class.letterSpacing = (customStyle.text.letterSpace ? customStyle.text.letterSpace : DEFAULT_TITLE_STYLE.letterSpace) + 'px'
           this.title_class.textShadow = customStyle.text.fontShadow ? '2px 2px 4px' : 'none'
+          // 表格总计与分页颜色，取标题颜色
+          this.totalStyle.color = customStyle.text.color
         }
         if (customStyle.background) {
           this.title_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
