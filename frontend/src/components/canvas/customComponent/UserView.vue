@@ -861,6 +861,7 @@ export default {
       tableChart.customStyle = JSON.parse(this.chart.customStyle)
       tableChart.customAttr.color.tableHeaderBgColor = '#f8f8f9'
       tableChart.customAttr.color.tableItemBgColor = '#ffffff'
+      tableChart.customAttr.color.tableHeaderFontColor = '#7c7e81'
       tableChart.customAttr.color.tableFontColor = '#7c7e81'
       tableChart.customAttr.color.tableStripe = true
       tableChart.customStyle.text.show = false
