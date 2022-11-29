@@ -1144,7 +1144,7 @@ public class HiveQueryProvider extends QueryProvider {
             if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
-                    fieldName = String.format(HiveConstants.DATE_FORMAT, originField, format);
+                    fieldName = String.format(HiveConstants.DATE_FORMAT, String.format(HiveConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : HiveConstants.DEFAULT_DATE_FORMAT), format);
                 } else {
                     String cast = String.format(HiveConstants.CAST, originField, HiveConstants.DEFAULT_INT_FORMAT) + "/1000";
                     String from_unixtime = String.format(HiveConstants.FROM_UNIXTIME, cast, HiveConstants.DEFAULT_DATE_FORMAT);
