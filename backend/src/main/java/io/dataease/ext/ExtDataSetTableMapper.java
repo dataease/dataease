@@ -11,8 +11,13 @@ public interface ExtDataSetTableMapper {
     List<DataSetTableDTO> search(DataSetTableRequest request);
 
     DataSetTableDTO searchOne(DataSetTableRequest request);
+
     DataSetTableDTO findOneDetails(@Param("datasetTableId") String datasetTableId);
+
     List<DataSetTableDTO> searchDataSetTableWithPanelId(@Param("panelId") String panelId, @Param("userId") String userId);
+
     List<DatasetTable> findByPanelId(@Param("panelId") String panelId);
+
+    List<DatasetTable> findByTableIds(@Param("tableIds") List<String> tableIds);
 
 }
