@@ -314,7 +314,9 @@ public class PanelGroupService {
             panelGroup.setPanelStyle(sourcePanel.getPanelStyle());
             panelGroup.setSourcePanelName(sourcePanel.getName());
         }
-        panelGroup.setWatermarkInfo(panelWatermarkMapper.selectByPrimaryKey("system_default"));
+        if (panelGroup != null) {
+            panelGroup.setWatermarkInfo(panelWatermarkMapper.selectByPrimaryKey("system_default"));
+        }
         return panelGroup;
     }
 
