@@ -895,7 +895,7 @@ export default {
       if (val && val !== '') {
         this.tableFields.dimensionListData = JSON.parse(
           JSON.stringify(
-            this.tableFields.dimensionListData.filter((ele) => {
+            this.tableFields.dimensionList.filter((ele) => {
               return ele.name
                 .toLocaleLowerCase()
                 .includes(val.toLocaleLowerCase())
