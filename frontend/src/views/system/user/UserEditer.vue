@@ -105,7 +105,7 @@
           >
             <el-select
               v-model="form.gender"
-              class="form-gender-select"
+              class="de-form-gender-select"
               :placeholder="$t('user.select_gender')"
             >
               <el-option
@@ -146,11 +146,10 @@
               />
 
               <el-select
-                ref="roleSelect"
                 slot="reference"
                 v-model="form.deptId"
                 clearable
-                class="form-gender-select"
+                class="de-form-gender-select"
                 popper-class="tree-select"
                 :placeholder="$t('commons.please_select')"
               >
@@ -636,7 +635,7 @@ export default {
     }
   }
 
-  .form-gender-select {
+  .de-form-gender-select {
     width: 100%;
   }
 }

@@ -165,12 +165,12 @@
               v-show=" show &&showIndex===1"
               :canvas-id="canvasId"
             />
-            <subject-setting v-show=" show &&showIndex===2"/>
-            <assist-component v-show=" show &&showIndex===3"/>
+            <subject-setting v-show=" show &&showIndex===2" />
+            <assist-component v-show=" show &&showIndex===3" />
           </div>
         </el-drawer>
         <!--PC端画布区域-->
-        <canvas-opt-bar v-if="!previewVisible&&!mobileLayoutStatus"/>
+        <canvas-opt-bar v-if="!previewVisible&&!mobileLayoutStatus" />
         <de-canvas
           v-if="!previewVisible&&!mobileLayoutStatus"
           ref="canvasMainRef"
@@ -181,9 +181,7 @@
           :canvas-id="canvasId"
           :canvas-pid="'0'"
           @canvasScroll="canvasScroll"
-        >
-
-        </de-canvas>
+        />
         <!--移动端画布区域 保持宽高比2.5-->
         <el-row
           v-if="mobileLayoutStatus"
@@ -198,7 +196,7 @@
               :style="customCanvasMobileStyle"
               class="this_mobile_canvas"
             >
-              <el-row class="this_mobile_canvas_top"/>
+              <el-row class="this_mobile_canvas_top" />
               <el-row class="this_mobile_canvas_inner_top">
                 {{ panelInfo.name }}
               </el-row>
@@ -207,7 +205,7 @@
                 class="this_mobile_canvas_main"
                 :style="mobileCanvasStyle"
               >
-                <canvas-opt-bar v-if="!previewVisible&&mobileLayoutStatus"/>
+                <canvas-opt-bar v-if="!previewVisible&&mobileLayoutStatus" />
                 <de-canvas
                   v-if="!previewVisible&&mobileLayoutStatus"
                   ref="canvasMainRef"
@@ -216,8 +214,7 @@
                   :canvas-id="canvasId"
                   :canvas-pid="'0'"
                   :mobile-layout-status="true"
-                >
-                </de-canvas>
+                />
               </el-row>
               <el-row class="this_mobile_canvas_inner_bottom">
                 <el-col :span="12">
@@ -246,14 +243,14 @@
                   />
                 </el-col>
               </el-row>
-              <el-row class="this_mobile_canvas_bottom"/>
+              <el-row class="this_mobile_canvas_bottom" />
             </div>
           </el-col>
           <el-col
             :span="16"
             class="this_mobile_canvas_cell this_mobile_canvas_wait_cell"
           >
-            <component-wait/>
+            <component-wait />
           </el-col>
         </el-row>
       </de-main-container>
@@ -271,7 +268,7 @@
           />
         </div>
         <div v-if="showBatchViewToolsAside">
-          <chart-style-batch-set/>
+          <chart-style-batch-set />
         </div>
         <div v-if="!showViewToolsAside&&!showBatchViewToolsAside">
           <el-row style="height: 40px">
@@ -284,15 +281,18 @@
                 @click="changeRightDrawOpen(false)"
               />
             </el-tooltip>
-            <span v-if="curComponent&&!curComponent.auxiliaryMatrix"
-                  style="font-weight: bold;font-size: 14px;margin-left: 40px;line-height:40px"
+            <span
+              v-if="curComponent&&!curComponent.auxiliaryMatrix"
+              style="font-weight: bold;font-size: 14px;margin-left: 40px;line-height:40px"
             >{{ $t('panel.position_adjust') }}</span>
           </el-row>
           <el-row>
-            <position-adjust v-if="curComponent&&!curComponent.auxiliaryMatrix"/>
-            <div v-else class="view-selected-message-class">
-              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px"
-              >{{ $t('panel.select_view') }}</span>
+            <position-adjust v-if="curComponent&&!curComponent.auxiliaryMatrix" />
+            <div
+              v-else
+              class="view-selected-message-class"
+            >
+              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.select_view') }}</span>
             </div>
           </el-row>
         </div>
@@ -452,8 +452,7 @@
           />
         </el-col>
         <el-col :span="21">
-          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px"
-          >{{ $t('panel.panel_cache_use_tips') }}</span>
+          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.panel_cache_use_tips') }}</span>
         </el-col>
       </el-row>
       <div
@@ -978,11 +977,11 @@ export default {
     showPanel(type) {
       if (this.showIndex === -1 || this.showIndex === type) {
         this.$nextTick(() => {
-            if (this.show) {
-              this.showIndex === -1
-            }
-            this.show = !this.show
+          if (this.show) {
+            this.showIndex === -1
           }
+          this.show = !this.show
+        }
         )
       }
       this.showIndex = type

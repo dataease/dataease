@@ -130,8 +130,8 @@
                 "
               >
                 <span style="font-size: 12px; color: #c0c0c0">{{
-                    $t('dataset.calc_field')
-                  }}</span>
+                  $t('dataset.calc_field')
+                }}</span>
               </span>
             </template>
           </el-table-column>
@@ -180,8 +180,8 @@
                     />
                   </span>
                   <span style="color: #8492a6; font-size: 12px">{{
-                      data.label
-                    }}</span>
+                    data.label
+                  }}</span>
                 </template>
               </el-cascader>
               <span class="select-svg-icon">
@@ -284,8 +284,8 @@
                     v-if="scope.row.deExtractType === 3"
                     class="field-class"
                   >{{
-                      $t('dataset.value') + '(' + $t('dataset.float') + ')'
-                    }}</span>
+                    $t('dataset.value') + '(' + $t('dataset.float') + ')'
+                  }}</span>
                 </span>
                 <span v-if="scope.row.deExtractType === 5">
                   <svg-icon
@@ -308,8 +308,8 @@
                 "
               >
                 <span style="font-size: 12px; color: #c0c0c0">{{
-                    $t('dataset.calc_field')
-                  }}</span>
+                  $t('dataset.calc_field')
+                }}</span>
               </span>
             </template>
           </el-table-column>
@@ -356,7 +356,7 @@
                         "
                         command="copy"
                       >
-                        <i class="el-icon-document-copy"/>
+                        <i class="el-icon-document-copy" />
                         {{ $t('dataset.copy') }}
                       </el-dropdown-item>
                       <el-dropdown-item
@@ -365,7 +365,7 @@
                         "
                         command="delete"
                       >
-                        <i class="el-icon-delete"/>
+                        <i class="el-icon-delete" />
                         {{ $t('chart.delete') }}
                       </el-dropdown-item>
                     </slot>
@@ -470,8 +470,8 @@
                 "
               >
                 <span style="font-size: 12px; color: #c0c0c0">{{
-                    $t('dataset.calc_field')
-                  }}</span>
+                  $t('dataset.calc_field')
+                }}</span>
               </span>
             </template>
           </el-table-column>
@@ -520,8 +520,8 @@
                     />
                   </span>
                   <span style="color: #8492a6; font-size: 12px">{{
-                      data.label
-                    }}</span>
+                    data.label
+                  }}</span>
                 </template>
               </el-cascader>
               <span class="select-svg-icon">
@@ -616,8 +616,8 @@
                     v-if="scope.row.deExtractType === 3"
                     class="field-class"
                   >{{
-                      $t('dataset.value') + '(' + $t('dataset.float') + ')'
-                    }}</span>
+                    $t('dataset.value') + '(' + $t('dataset.float') + ')'
+                  }}</span>
                 </span>
                 <span v-if="scope.row.deExtractType === 5">
                   <svg-icon
@@ -640,8 +640,8 @@
                 "
               >
                 <span style="font-size: 12px; color: #c0c0c0">{{
-                    $t('dataset.calc_field')
-                  }}</span>
+                  $t('dataset.calc_field')
+                }}</span>
               </span>
             </template>
           </el-table-column>
@@ -689,7 +689,7 @@
                         "
                         command="copy"
                       >
-                        <i class="el-icon-document-copy"/>
+                        <i class="el-icon-document-copy" />
                         {{ $t('dataset.copy') }}
                       </el-dropdown-item>
                       <el-dropdown-item
@@ -698,7 +698,7 @@
                         "
                         command="delete"
                       >
-                        <i class="el-icon-delete"/>
+                        <i class="el-icon-delete" />
                         {{ $t('chart.delete') }}
                       </el-dropdown-item>
                     </slot>
@@ -830,8 +830,7 @@ export default {
         this.quotaChange()
       })
       dateformats(this.param.id).then((response) => {
-
-        const children = (response?.data || []).map(ele => ({ label: ele.dateformat + ( ele.desc !== null ? ('(' + ele.desc) + ')' : ""), value: ele.dateformat }))
+        const children = (response?.data || []).map(ele => ({ label: ele.dateformat + (ele.desc !== null ? ('(' + ele.desc) + ')' : ''), value: ele.dateformat }))
         children.push({ label: this.$t('commons.custom'), value: 'custom' })
         this.dateformats = children
       })

@@ -136,7 +136,7 @@
               size="mini"
               :min="2"
               :max="3600"
-              class="hide-icon-number"
+              class="hide-icon-number number-padding"
               @change="switchTimeChange"
             >
               <template slot="append">S</template>
@@ -198,5 +198,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+::v-deep.number-padding {
+  .el-input__inner {
+    padding-right: 0;
+  }
+  .el-input-group__append {
+    padding: 0 10px;
+  }
+}
 </style>
