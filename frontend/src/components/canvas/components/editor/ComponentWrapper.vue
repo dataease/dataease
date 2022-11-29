@@ -312,8 +312,13 @@ export default {
       }
     },
     clearHandler() {
-      if (this.$refs.deOutWidget && this.$refs.deOutWidget.clearHandler) {
+      if (this.$refs.deOutWidget?.clearHandler) {
         this.$refs.deOutWidget.clearHandler()
+      }
+    },
+    responseResetButton() {
+      if (this.$refs.wrapperChild?.responseResetButton) {
+        this.$refs.wrapperChild.responseResetButton()
       }
     }
   }
