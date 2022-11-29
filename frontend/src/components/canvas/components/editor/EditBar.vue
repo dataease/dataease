@@ -137,7 +137,7 @@
           :target="curComponent.hyperlinks.openMode "
           :href="curComponent.hyperlinks.content "
         >
-          <i class="icon iconfont icon-com-jump" />
+          <i class="icon iconfont icon-com-jump"/>
         </a>
       </span>
 
@@ -243,6 +243,7 @@ export default {
   },
   data() {
     return {
+      systemOS: 'Mac',
       maxImageSize: 15000000,
       boardSetVisible: false,
       linkJumpSetVisible: false,
@@ -362,6 +363,9 @@ export default {
     ])
   },
   mounted() {
+    if (navigator.platform.indexOf('Mac') == -1) {
+      this.systemOS = 'Other'
+    }
     this.initCurFields()
     if (this.element.type === 'view') {
       bus.$on('initCurFields-' + this.element.id, this.initCurFields)

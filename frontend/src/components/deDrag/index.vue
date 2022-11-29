@@ -65,7 +65,7 @@
         @mousedown.stop.prevent="handleDown(handlei, $event)"
         @touchstart.stop.prevent="handleTouchDown(handlei, $event)"
       >
-        <slot :name="handlei" />
+        <slot :name="handlei"/>
       </div>
       <div
         :id="componentCanvasId"
@@ -78,7 +78,7 @@
           class="svg-background"
           :icon-class="mainSlotSvgInner"
         />
-        <slot />
+        <slot/>
       </div>
     </div>
   </div>
@@ -588,7 +588,7 @@ export default {
           return 'auto'
         }
       }
-      if (this.element.auxiliaryMatrix) {
+      if (this.element.auxiliaryMatrix && this.curCanvasScaleSelf) {
         const width = Math.round(this.width / this.curCanvasScaleSelf.matrixStyleWidth) * this.curCanvasScaleSelf.matrixStyleWidth
         return (width - this.curGap * 2) + 'px'
       } else {
@@ -602,7 +602,7 @@ export default {
           return 'auto'
         }
       }
-      if (this.element.auxiliaryMatrix) {
+      if (this.element.auxiliaryMatrix && this.curCanvasScaleSelf) {
         const height = Math.round(this.height / this.curCanvasScaleSelf.matrixStyleHeight) * this.curCanvasScaleSelf.matrixStyleHeight
         return (height - this.curGap * 2) + 'px'
       } else {
