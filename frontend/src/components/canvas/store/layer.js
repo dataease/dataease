@@ -1,9 +1,11 @@
-import { toBottom, toTop, moveUp, moveDown } from '@/components/canvas/utils/utils'
+import { findCurComponentIndex, moveDown, moveUp, toBottom, toTop } from '@/components/canvas/utils/utils'
 import toast from '@/components/canvas/utils/toast'
 
 export default {
   mutations: {
-    upComponent({ componentData, curComponentIndex }) {
+
+    upComponent({ componentData, curComponent }) {
+      const curComponentIndex = findCurComponentIndex(componentData, curComponent)
       // 上移图层 index，表示元素在数组中越往后
       if (curComponentIndex < componentData.length - 1) {
         moveUp(componentData, curComponentIndex)
@@ -12,7 +14,8 @@ export default {
       }
     },
 
-    downComponent({ componentData, curComponentIndex }) {
+    downComponent({ componentData, curComponent }) {
+      const curComponentIndex = findCurComponentIndex(componentData, curComponent)
       // 下移图层 index，表示元素在数组中越往前
       if (curComponentIndex > 0) {
         moveDown(componentData, curComponentIndex)
@@ -21,14 +24,16 @@ export default {
       }
     },
 
-    topComponent({ componentData, curComponentIndex }) {
+    topComponent({ componentData, curComponent }) {
+      const curComponentIndex = findCurComponentIndex(componentData, curComponent)
       // 置顶
       if (curComponentIndex < componentData.length - 1) {
         toTop(componentData, curComponentIndex)
       }
     },
 
-    bottomComponent({ componentData, curComponentIndex }) {
+    bottomComponent({ componentData, curComponent }) {
+      const curComponentIndex = findCurComponentIndex(componentData, curComponent)
       // 置底
       if (curComponentIndex > 0) {
         toBottom(componentData, curComponentIndex)

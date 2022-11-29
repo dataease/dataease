@@ -232,6 +232,11 @@ export default {
     ChartComponentG2
   },
   props: {
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     canvasId: {
       type: String,
       required: true
@@ -469,7 +474,7 @@ export default {
     },
     'cfilters': {
       handler: function(val1, val2) {
-        if ((isChange(val1, val2) || isChange(val1, this.filters)) && !this.isFirstLoad) {
+        if (isChange(val1, val2) && !this.isFirstLoad) {
           this.getData(this.element.propValue.viewId)
         }
       },
@@ -555,6 +560,11 @@ export default {
     }
   },
   methods: {
+    responseResetButton() {
+      if (!this.cfilters?.length) {
+        this.getData(this.element.propValue.viewId, false)
+      }
+    },
     exportExcel() {
       this.$refs['userViewDialog'].exportExcel()
     },
@@ -724,6 +734,7 @@ export default {
           // 将视图传入echart组件
           if (response.success) {
             this.chart = response.data
+            this.view = response.data
             this.$emit('fill-chart-2-parent', this.chart)
             this.getDataOnly(response.data, dataBroadcast)
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
@@ -860,6 +871,7 @@ export default {
       tableChart.customStyle = JSON.parse(this.chart.customStyle)
       tableChart.customAttr.color.tableHeaderBgColor = '#f8f8f9'
       tableChart.customAttr.color.tableItemBgColor = '#ffffff'
+      tableChart.customAttr.color.tableHeaderFontColor = '#7c7e81'
       tableChart.customAttr.color.tableFontColor = '#7c7e81'
       tableChart.customAttr.color.tableStripe = true
       tableChart.customStyle.text.show = false
@@ -869,7 +881,13 @@ export default {
       this.showChartInfo = this.chart
       this.showChartTableInfo = tableChart
       this.showChartInfoType = params.openType
-      if (this.terminal === 'pc') {
+      if (!this.inScreen) {
+        bus.$emit('pcChartDetailsDialog', {
+          showChartInfo: this.showChartInfo,
+          showChartTableInfo: this.showChartTableInfo,
+          showChartInfoType: this.showChartInfoType
+        })
+      } else if (this.terminal === 'pc') {
         this.chartDetailsVisible = true
       } else {
         this.mobileChartDetailsVisible = true
@@ -1181,6 +1199,7 @@ export default {
           }
           viewData(this.chart.id, this.panelInfo.id, requestInfo).then(response => {
             this.componentViewsData[this.chart.id] = response.data
+            this.view = response.data
             if (dataBroadcast) {
               bus.$emit('prop-change-data')
             }

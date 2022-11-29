@@ -274,7 +274,7 @@ export default {
       } else {
         return {
           ...
-          getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
+            getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
           position: 'relative'
         }
       }
@@ -312,8 +312,13 @@ export default {
       }
     },
     clearHandler() {
-      if (this.$refs.deOutWidget && this.$refs.deOutWidget.clearHandler) {
+      if (this.$refs.deOutWidget?.clearHandler) {
         this.$refs.deOutWidget.clearHandler()
+      }
+    },
+    responseResetButton() {
+      if (this.$refs.wrapperChild?.responseResetButton) {
+        this.$refs.wrapperChild.responseResetButton()
       }
     }
   }

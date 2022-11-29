@@ -1,8 +1,8 @@
 package io.dataease.ext;
 
-import io.dataease.ext.query.GridExample;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.dto.dataset.DataSetTaskLogDTO;
+import io.dataease.ext.query.GridExample;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -25,4 +25,6 @@ public interface ExtDataSetTaskMapper {
     List<DataSetTaskDTO> taskWithTriggers(GridExample example);
 
     List<DataSetTaskDTO> findByPanelId(@Param("panelId") String panelId);
+
+    List<DataSetTaskDTO> findByTableIds(@Param("tableIds") List tableIds);
 }

@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1567487",
+      "name": "command",
+      "font_class": "command",
+      "unicode": "e644",
+      "unicode_decimal": 58948
+    },
+    {
       "icon_id": "109745",
       "name": "font",
       "font_class": "font",

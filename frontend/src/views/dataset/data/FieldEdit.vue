@@ -860,7 +860,9 @@ export default {
           item.dateFormat = item.dateFormatType
         }
       }
-
+      if(item.dateFormatType === 'custom' && !item.dateFormat){
+        return;
+      }
       post('/dataset/field/save', item)
         .then((response) => {
           this.initField()
@@ -895,7 +897,7 @@ export default {
       if (val && val !== '') {
         this.tableFields.dimensionListData = JSON.parse(
           JSON.stringify(
-            this.tableFields.dimensionListData.filter((ele) => {
+            this.tableFields.dimensionList.filter((ele) => {
               return ele.name
                 .toLocaleLowerCase()
                 .includes(val.toLocaleLowerCase())

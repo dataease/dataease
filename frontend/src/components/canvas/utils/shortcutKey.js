@@ -15,7 +15,7 @@ const bKey = 66 // 拆分
 
 const lKey = 76 // 锁定
 
-const dKey = 68 // 删除
+const dKey = 68 // 复制并粘贴
 
 const deleteKey = 46 // 删除
 
@@ -39,7 +39,7 @@ const unlockMap = {
   [xKey]: cut,
   [gKey]: compose,
   [bKey]: decompose,
-  [dKey]: deleteComponent,
+  [dKey]: copyAndPast,
   [deleteKey]: deleteComponent,
   [lKey]: lock,
   [sKey]: save,
@@ -56,7 +56,7 @@ export function listenGlobalKeyDown() {
     if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
     } else if (isCtrlOrCommandDown) {
-      if (keyCode === zKey || keyCode === yKey || keyCode === cKey || keyCode === sKey || keyCode === enlargeKey) {
+      if (keyCode === zKey || keyCode === yKey || keyCode === dKey || keyCode === sKey || keyCode === enlargeKey) {
         e.preventDefault()
         unlockMap[keyCode]()
       }
@@ -122,6 +122,14 @@ function decompose() {
   if (curComponent && !curComponent.isLock && curComponent.component === 'Group') {
     store.commit('decompose')
     store.commit('recordSnapshot')
+  }
+}
+
+function copyAndPast() {
+  if (store.state.curComponent) {
+    store.commit('copy')
+    store.commit('paste', false)
+    store.commit('recordSnapshot', 'copyAndPast')
   }
 }
 

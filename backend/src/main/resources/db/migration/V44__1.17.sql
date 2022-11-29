@@ -52,3 +52,7 @@ where id = '3986ba4c-5a8e-11ed-bc5b-cf4a43b3b40c';
 
 
 update `my_plugin` set `name` = '气泡地图插件' where `plugin_id` = 2;
+
+ALTER TABLE `dataset_table_field`
+    CHANGE COLUMN `origin_name` `origin_name` LONGTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_bin' NOT NULL ;
+

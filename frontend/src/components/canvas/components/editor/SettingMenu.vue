@@ -17,7 +17,8 @@
             v-if="curComponent.type != 'custom-button'"
             icon="el-icon-document-copy"
             @click.native="copy"
-          >{{ $t('panel.copy') }}
+          ><span>{{ $t('panel.copy') }}(<span v-show="systemOS==='Mac'"><i class="icon iconfont icon-command"
+          />+ D</span> <span v-show="systemOS!=='Mac'">Control + D</span>)</span>
           </el-dropdown-item>
           <el-dropdown-item
             icon="el-icon-delete"
@@ -162,6 +163,7 @@ export default {
   components: { CustomTabsSort, HyperlinksDialog },
   data() {
     return {
+      systemOS: 'Mac',
       showCustomSort: false,
       jumpExcludeViewType: [
         'richTextView',
@@ -206,6 +208,11 @@ export default {
       'curComponent',
       'componentData'
     ])
+  },
+  mounted() {
+    if (navigator.platform.indexOf('Mac') == -1) {
+      this.systemOS = 'Other'
+    }
   },
   methods: {
     openCustomSort() {

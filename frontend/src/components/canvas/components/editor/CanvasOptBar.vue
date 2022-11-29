@@ -106,6 +106,7 @@ export default {
       this.$router.back(-1)
     },
     exportPDF() {
+      this.$refs['widget-div'].style.display = ''
       this.$emit('link-export-pdf')
     },
     setWidgetStatus() {

@@ -1,0 +1,12 @@
+[default.extend-words]
+Rela = "Rela"
+eles = "eles"
+delink = "delink"
+testng = "testng"
+ba = "ba"
+referer = "referer"
+keynode = "keynode"
+
+[files]
+extend-exclude = ["public/", "amap-wx/", "m-icon/", "uni-card/", "uni-col/", "uni-link/", "uni-list/", "uni-list-item/", "uni-row/", "migration/", "mapFiles/"]
+

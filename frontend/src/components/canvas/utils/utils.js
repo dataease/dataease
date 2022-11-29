@@ -246,3 +246,15 @@ export function getNowCanvasComponentData(canvasId, showPosition) {
     return store.state.componentData.filter(item => item.canvasId === canvasId)
   }
 }
+
+export function findCurComponentIndex(componentData, curComponent) {
+  let curIndex = 0
+  for (let index = 0; index < componentData.length; index++) {
+    const element = componentData[index]
+    if (element.id && element.id === curComponent.id) {
+      curIndex = index
+      break
+    }
+  }
+  return curIndex
+}
