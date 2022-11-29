@@ -109,7 +109,7 @@
                       icon="el-icon-delete"
                       :command="beforeClickMore('delete', data, node)"
                     >
-                      {{ $t('emailtask.default') + $t('commons.cancel') }}
+                      {{ $t('commons.cancel') + $t('emailtask.default') }}
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
