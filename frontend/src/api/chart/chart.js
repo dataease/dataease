@@ -8,6 +8,15 @@ export function post(url, data, loading = false) {
     data
   })
 }
+export function tableField(id) {
+  return request({
+    url: '/dataset/table/getWithPermission/' + id,
+    method: 'post',
+    loading: true,
+    hideMsg: true,
+    timeout: 60000
+  })
+}
 
 export function getChartTree(data) {
   return request({
