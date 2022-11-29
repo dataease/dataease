@@ -1343,4 +1343,8 @@ public class SqlserverQueryProvider extends QueryProvider {
                 "{\"dateformat\": \"120\", \"desc\": \"yyyy-mm-dd hh:mi:ss\"}\n" +
                 "]", Dateformat.class);
     }
+
+    public String getResultCount(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+        return null;
+    }
 }
