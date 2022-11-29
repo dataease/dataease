@@ -232,6 +232,11 @@ export default {
     ChartComponentG2
   },
   props: {
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     canvasId: {
       type: String,
       required: true
@@ -871,7 +876,13 @@ export default {
       this.showChartInfo = this.chart
       this.showChartTableInfo = tableChart
       this.showChartInfoType = params.openType
-      if (this.terminal === 'pc') {
+      if (!this.inScreen) {
+        bus.$emit('pcChartDetailsDialog', {
+          showChartInfo: this.showChartInfo,
+          showChartTableInfo: this.showChartTableInfo,
+          showChartInfoType: this.showChartInfoType
+        })
+      } else if (this.terminal === 'pc') {
         this.chartDetailsVisible = true
       } else {
         this.mobileChartDetailsVisible = true
