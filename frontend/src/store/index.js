@@ -569,7 +569,7 @@ const data = {
       // 移动端布局转换
       state.componentData.forEach(item => {
         item.mobileStyle = (item.mobileStyle || BASE_MOBILE_STYLE)
-        if (item.mobileSelected) {
+        if (item.mobileSelected || item.canvasId !== 'canvas-main') {
           item.style.width = item.mobileStyle.style.width
           item.style.height = item.mobileStyle.style.height
           item.style.top = item.mobileStyle.style.top
