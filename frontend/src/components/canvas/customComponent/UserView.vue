@@ -658,7 +658,6 @@ export default {
         } catch (e) {
           console.error('reDrawView-error：', this.element.propValue.id)
         }
-
       }
     },
     bindPluginEvent() {

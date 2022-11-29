@@ -202,7 +202,9 @@
     </el-dialog>
 
     <text-attr
-      v-if="showAttr && curComponent.canvasId === activeCanvasId" && isEdit
+      v-if="showAttr && curComponent.canvasId === activeCanvasId"
+      &&
+      is-edit
       :canvas-id="curComponent.canvasId"
       :scroll-left="scrollLeft"
       :scroll-top="scrollTop"

@@ -184,25 +184,25 @@
                     @change="val => {changeDynamicParams(val, item.name)}"
                   >
                     <el-checkbox
-                      v-for="(item ) in childViews.datasetParams"
-                      :key="item.id"
-                      :label="item.id"
-                      :disabled="attrs[tabsOption[(index + 1)%2].name + 'Parameters'] && attrs[tabsOption[(index + 1)%2].name + 'Parameters'].includes(item.id)"
+                      v-for="(ele ) in childViews.datasetParams"
+                      :key="ele.id"
+                      :label="ele.id"
+                      :disabled="attrs[tabsOption[(index + 1)%2].name + 'Parameters'] && attrs[tabsOption[(index + 1)%2].name + 'Parameters'].includes(ele.id)"
                       class="de-checkbox"
                     >
                       <div class="span-div">
                         <span
-                          v-if="item.alias && item.alias.length <= 7"
+                          v-if="ele.alias && ele.alias.length <= 7"
                           style="margin-left: 6px"
-                        >{{ item.alias }}</span>
+                        >{{ ele.alias }}</span>
                         <el-tooltip
                           v-else
                           class="item"
                           effect="dark"
-                          :content="item.alias"
+                          :content="ele.alias"
                           placement="left"
                         >
-                          <span style="margin-left: 6px">{{ item.alias }}</span>
+                          <span style="margin-left: 6px">{{ ele.alias }}</span>
                         </el-tooltip>
                       </div>
 

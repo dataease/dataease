@@ -43,7 +43,7 @@ export default {
   },
   track: {
     upload_limit_format: '圖片格式錯誤，支持JPG，PNG',
-    upload_limit_size: '圖片大小不超過',
+    upload_limit_size: '圖片大小不超過'
   },
   route: {
     dashboard: '首頁',

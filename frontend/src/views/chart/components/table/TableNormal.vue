@@ -56,12 +56,14 @@
               }}</span>
               {{ $t('chart.items') }}
             </span>
-            <el-pagination
+            <de-pagination
               small
               :current-page="currentPage.page"
-              :page-sizes="[10,20,50,100]"
               :page-size="currentPage.pageSize"
               :pager-count="5"
+              :custom-style="{
+                color: title_class.color
+              }"
               layout="prev, pager, next"
               :total="currentPage.show"
               class="page-style"
@@ -81,9 +83,11 @@ import { hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { DEFAULT_COLOR_CASE, DEFAULT_SIZE, NOT_SUPPORT_PAGE_DATASET } from '@/views/chart/chart/chart'
 import { mapState } from 'vuex'
+import DePagination from '@/components/deCustomCm/pagination.js'
 
 export default {
   name: 'TableNormal',
+  components: { DePagination },
   props: {
     chart: {
       type: Object,

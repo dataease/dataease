@@ -77,7 +77,7 @@
           :label="dialogTitleLabel"
           prop="name"
         >
-          <el-input v-model="templateEditForm.name"/>
+          <el-input v-model="templateEditForm.name" />
         </el-form-item>
         <el-form-item
           :label="$t('app_template.app_group_icon')"
@@ -95,7 +95,7 @@
               :http-request="upload"
               :file-list="fileList"
             >
-              <i class="el-icon-plus"/>
+              <i class="el-icon-plus" />
             </el-upload>
             <el-dialog
               top="25vh"

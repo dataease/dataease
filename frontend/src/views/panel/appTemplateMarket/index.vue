@@ -43,7 +43,7 @@
         v-if="marketActiveTab==='apply_logs'"
         class="main-log-area template-main"
       >
-        <app-template-log class="log-area"/>
+        <app-template-log class="log-area" />
       </el-row>
     </el-row>
 

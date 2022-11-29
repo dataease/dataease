@@ -43,7 +43,7 @@ export default {
   },
   track: {
     upload_limit_format: 'The image format is incorrect. It supports JPG and PNG',
-    upload_limit_size: 'Picture size shall not exceed',
+    upload_limit_size: 'Picture size shall not exceed'
   },
   route: {
     dashboard: 'Dashboard',
