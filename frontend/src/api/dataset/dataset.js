@@ -185,7 +185,7 @@ export function multFieldValues(data) {
   return request({
     url: '/dataset/field/multFieldValues',
     method: 'post',
-    loading: true,
+    loading: false,
     data
   })
 }
@@ -241,6 +241,7 @@ export function checkCustomDs() {
     loading: true
   })
 }
+
 export function exportExcel(data) {
   return request({
     url: '/dataset/taskLog/export',
@@ -268,4 +269,5 @@ export function exportDataset(data) {
     responseType: 'blob'
   })
 }
+
 export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs, exportDataset }
