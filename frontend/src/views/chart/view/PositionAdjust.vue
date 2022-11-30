@@ -14,7 +14,9 @@
             v-model="styleInfo.top"
             type="number"
             :min="0"
+            :max="maxTop"
             class="hide-icon-number"
+            @change="topOnChange"
           >
             <template slot="append">px</template>
           </el-input>
@@ -44,8 +46,11 @@
         >
           <el-input
             v-model="styleInfo.width"
+            :min="0"
+            :max="maxWidth"
             type="number"
             class="hide-icon-number"
+            @change="widthOnChange"
           >
             <template slot="append">px</template>
           </el-input>
@@ -59,7 +64,10 @@
           <el-input
             v-model="styleInfo.height"
             type="number"
+            :min="0"
+            :max="maxHeight"
             class="hide-icon-number"
+            @change="heightOnChange"
           >
             <template slot="append">px</template>
           </el-input>
@@ -77,11 +85,17 @@ export default {
   name: 'PositionAdjust',
   props: {},
   data() {
-    return {}
+    return {
+      maxHeight: 2000,
+      maxTop: 40000
+    }
   },
   computed: {
     maxLeft() {
       return 1600 - this.styleInfo.width - this.componentGap
+    },
+    maxWidth() {
+      return 1600 - this.styleInfo.left - this.componentGap
     },
     styleInfo() {
       return this.$store.state.curComponent.style
@@ -97,7 +111,34 @@ export default {
     leftOnChange() {
       if (this.styleInfo.left > this.maxLeft) {
         this.styleInfo.left = this.maxLeft
+      } else if (this.styleInfo.left < 0) {
+        this.styleInfo.left = 0
       }
+      this.$store.commit('canvasChange')
+    },
+    widthOnChange() {
+      if (this.styleInfo.width > this.maxWidth) {
+        this.styleInfo.width = this.maxWidth
+      } else if (this.styleInfo.width < 0) {
+        this.styleInfo.left = 0
+      }
+      this.$store.commit('canvasChange')
+    },
+    heightOnChange() {
+      if (this.styleInfo.height > this.maxHeight) {
+        this.styleInfo.height = this.maxHeight
+      } else if (this.styleInfo.height < 0) {
+        this.styleInfo.height = 0
+      }
+      this.$store.commit('canvasChange')
+    },
+    topOnChange() {
+      if (this.styleInfo.top > this.maxTop) {
+        this.styleInfo.top = this.maxTop
+      } else if (this.styleInfo.top < 0) {
+        this.styleInfo.top = 0
+      }
+      this.$store.commit('canvasChange')
     }
   }
 }
