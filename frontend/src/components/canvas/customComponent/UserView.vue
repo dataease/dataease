@@ -232,6 +232,11 @@ export default {
     ChartComponentG2
   },
   props: {
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     canvasId: {
       type: String,
       required: true
@@ -469,7 +474,7 @@ export default {
     },
     'cfilters': {
       handler: function(val1, val2) {
-        if ((isChange(val1, val2) || isChange(val1, this.filters)) && !this.isFirstLoad) {
+        if (isChange(val1, val2) && !this.isFirstLoad) {
           this.getData(this.element.propValue.viewId)
         }
       },
@@ -555,6 +560,11 @@ export default {
     }
   },
   methods: {
+    responseResetButton() {
+      if (!this.cfilters?.length) {
+        this.getData(this.element.propValue.viewId, false)
+      }
+    },
     exportExcel() {
       this.$refs['userViewDialog'].exportExcel()
     },
@@ -871,7 +881,13 @@ export default {
       this.showChartInfo = this.chart
       this.showChartTableInfo = tableChart
       this.showChartInfoType = params.openType
-      if (this.terminal === 'pc') {
+      if (!this.inScreen) {
+        bus.$emit('pcChartDetailsDialog', {
+          showChartInfo: this.showChartInfo,
+          showChartTableInfo: this.showChartTableInfo,
+          showChartInfoType: this.showChartInfoType
+        })
+      } else if (this.terminal === 'pc') {
         this.chartDetailsVisible = true
       } else {
         this.mobileChartDetailsVisible = true

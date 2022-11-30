@@ -66,10 +66,11 @@ public class ProviderFactory implements ApplicationContextAware {
         switch (type) {
             case "mysql":
             case "mariadb":
+                return context.getBean("mysqlQueryProvider", QueryProvider.class);
             case "ds_doris":
             case "TiDB":
             case "StarRocks":
-                return context.getBean("mysqlQueryProvider", QueryProvider.class);
+                return context.getBean("dorisQueryProvider", QueryProvider.class);
             default:
                 return SpringContextUtil.getApplicationContext().getBean(type + "QueryProvider", QueryProvider.class);
         }

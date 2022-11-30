@@ -2,7 +2,7 @@
   <div
     ref="myContainer"
     class="my-container"
-    :style="autoStyle"
+    :style="inScreen?autoStyle:''"
   >
     <div
       ref="conditionMain"

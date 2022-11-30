@@ -20,8 +20,8 @@ class DeWebsocket {
   initialize() {
     this.connection()
     const _this = this
-    this.timer = this.isLoginStatu() && setInterval(() => {
-      this.isLoginStatu() || this.destroy()
+    this.timer = this.isLoginStatus() && setInterval(() => {
+      this.isLoginStatus() || this.destroy()
       try {
         _this.client && _this.client.send('heart detection')
       } catch (error) {
@@ -41,12 +41,12 @@ class DeWebsocket {
     this.initialize()
   }
 
-  isLoginStatu() {
+  isLoginStatus() {
     return store.state && store.state.user && store.state.user.user && store.state.user.user.userId
   }
 
   connection() {
-    if (!this.isLoginStatu()) {
+    if (!this.isLoginStatus()) {
       return
     }
     const socket = new SockJS(this.ws_url + '?userId=' + store.state.user.user.userId)
@@ -70,6 +70,7 @@ class DeWebsocket {
       }
     ).bind(this)
   }
+
   subscribe() {
     this.channels.forEach(channel => {
       this.client.subscribe('/user/' + store.state.user.user.userId + channel.topic, res => {
@@ -77,6 +78,7 @@ class DeWebsocket {
       })
     })
   }
+
   disconnect() {
     this.client && this.client.disconnect()
   }

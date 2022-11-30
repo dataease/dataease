@@ -155,7 +155,7 @@
               <el-input
                 v-model="form.name"
                 autocomplete="off"
-                :placeholder="$t('commons.input_name')"
+                :placeholder="$t('datasource.input_name')"
               />
             </el-form-item>
             <el-form-item

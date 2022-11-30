@@ -95,6 +95,49 @@
         @closePreExport="closePreExport"
       />
     </el-dialog>
+
+    <!--视图详情-->
+    <el-dialog
+      :visible.sync="chartDetailsVisible"
+      width="80%"
+      class="dialog-css"
+      :destroy-on-close="true"
+      :show-close="true"
+      :append-to-body="false"
+      top="5vh"
+    >
+      <span
+        v-if="chartDetailsVisible"
+        style="position: absolute;right: 70px;top:15px"
+      >
+        <el-button
+          v-if="showChartInfoType==='enlarge' && showChartInfo && showChartInfo.type !== 'symbol-map'"
+          class="el-icon-picture-outline"
+          size="mini"
+          @click="exportViewImg"
+        >
+          {{ $t('chart.export_img') }}
+        </el-button>
+        <el-button
+          v-if="showChartInfoType==='details'"
+          size="mini"
+          @click="exportExcel"
+        >
+          <svg-icon
+            icon-class="ds-excel"
+            class="ds-icon-excel"
+          />{{ $t('chart.export') }}Excel
+        </el-button>
+      </span>
+      <user-view-dialog
+        v-if="chartDetailsVisible"
+        ref="userViewDialog-canvas-main"
+        :chart="showChartInfo"
+        :chart-table="showChartTableInfo"
+        :canvas-style-data="canvasStyleData"
+        :open-type="showChartInfoType"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -117,10 +160,11 @@ import html2canvas from 'html2canvasde'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import PDFPreExport from '@/views/panel/export/PDFPreExport'
 import { listenGlobalKeyDownPreview } from '@/components/canvas/utils/shortcutKey'
+import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 
 const erd = elementResizeDetectorMaker()
 export default {
-  components: { ComponentWrapper, CanvasOptBar, PDFPreExport },
+  components: { UserViewDialog, ComponentWrapper, CanvasOptBar, PDFPreExport },
   model: {
     prop: 'show',
     event: 'change'
@@ -189,6 +233,10 @@ export default {
   },
   data() {
     return {
+      chartDetailsVisible: false,
+      showChartInfo: {},
+      showChartTableInfo: {},
+      showChartInfoType: 'details',
       mainHeightCount: null,
       userInfo: null,
       previewMainDomId: 'preview-main-' + this.canvasId,
@@ -381,6 +429,7 @@ export default {
     if (this.terminal === 'mobile') {
       this.initMobileCanvas()
     }
+    this.canvasId === 'canvas-main' && bus.$on('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('trigger-search-button', this.triggerSearchButton)
     bus.$on('trigger-reset-button', this.triggerResetButton)
     this.initPdfTemplate()
@@ -389,10 +438,19 @@ export default {
     erd.uninstall(this.$refs[this.previewTempRefId])
     erd.uninstall(this.$refs[this.previewRefId])
     clearInterval(this.timer)
+    this.canvasId === 'canvas-main' && bus.$off('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('trigger-reset-button', this.triggerResetButton)
   },
   methods: {
+    openChartDetailsDialog(paramInfo) {
+      if (this.canvasId === 'canvas-main') {
+        this.showChartInfo = paramInfo.showChartInfo
+        this.showChartTableInfo = paramInfo.showChartTableInfo
+        this.showChartInfoType = paramInfo.showChartInfoType
+        this.chartDetailsVisible = true
+      }
+    },
     initWatermark(waterDomId = 'preview-main-canvas-main') {
       if (this.panelInfo.watermarkInfo && this.canvasId === 'canvas-main') {
         if (this.userInfo) {
@@ -410,6 +468,11 @@ export default {
     },
     triggerResetButton() {
       this.triggerSearchButton(true)
+      this.$refs['viewWrapperChild']?.forEach(item => {
+        if (item?.responseResetButton) {
+          item.responseResetButton()
+        }
+      })
     },
     triggerSearchButton(isClear = false) {
       const result = this.buildButtonFilterMap(this.componentData, isClear)
@@ -585,10 +648,10 @@ export default {
       }
     },
     exportExcel() {
-      this.$refs['userViewDialog'].exportExcel()
+      this.$refs['userViewDialog-canvas-main'].exportExcel()
     },
     exportViewImg() {
-      this.$refs['userViewDialog'].exportViewImg()
+      this.$refs['userViewDialog-canvas-main'].exportViewImg()
     },
     deselectCurComponent(e) {
       if (!this.isClickComponent) {

@@ -1174,7 +1174,7 @@ public class MysqlQueryProvider extends QueryProvider {
             if (x.getDeType() == 1) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == 0) {
-                    fieldName = String.format(MySQLConstants.DATE_FORMAT, originField, format);
+                    fieldName = String.format(MySQLConstants.DATE_FORMAT, String.format(MySQLConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT), format);
                 } else {
                     String cast = String.format(MySQLConstants.CAST, originField, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
                     String from_unixtime = String.format(MySQLConstants.FROM_UNIXTIME, cast, MySQLConstants.DEFAULT_DATE_FORMAT);
