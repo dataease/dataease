@@ -81,7 +81,7 @@
           :placeholder="$t('system_parameter_setting.SMTP_password')"
         />
       </el-form-item>
-      <el-form-item :label="$t('system_parameter_setting.test_recipients')">
+      <el-form-item :label="$t('ç.test_recipients')">
         <template slot="label">
           {{ $t("system_parameter_setting.test_recipients") }}
           <el-tooltip
@@ -98,7 +98,7 @@
           :placeholder="$t('system_parameter_setting.test_recipients')"
         />
       </el-form-item>
-      <el-form-item label="邮箱服务器配置">
+      <el-form-item :label="$t('system_parameter_setting.email_server_config')">
         <el-checkbox v-model="formInline.ssl">{{ $t('chart.open') }}SSL
           <el-tooltip
             class="item"

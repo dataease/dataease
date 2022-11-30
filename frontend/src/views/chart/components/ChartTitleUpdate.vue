@@ -380,8 +380,8 @@ export default {
         if (!viewSave) return
         viewEditSave(this.panelInfo.id, viewSave).then(() => {
           this.chart.title = this.chartTitleUpdate
-          bus.$emit('aside-set-title', this.chart.title)
         })
+        bus.$emit('title-name', this.chart.title, chartView.id)
         bus.$emit('view-in-cache', {
           type: 'styleChange',
           viewId: chartView.id,

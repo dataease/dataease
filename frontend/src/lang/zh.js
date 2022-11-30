@@ -135,6 +135,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    collapse_navigation: '收起导航',
     operate_cancelled: '已取消操作',
     bind: '绑定',
     unbind: '解绑',
@@ -813,6 +814,7 @@ export default {
     edite_organization: '编辑组织'
   },
   system_parameter_setting: {
+    email_server_config: '邮箱服务器配置',
     edit_success: '编辑成功',
     mailbox_service_settings: '邮件设置',
     test_connection: '测试连接',
@@ -1903,7 +1905,7 @@ export default {
   },
   panel: {
     position_adjust_component: '位置调整',
-    active_font_size: '激活字体大小',
+    active_font_size: '选中字体大小',
     carousel: '轮播',
     switch_time: '切换时间',
     position_adjust: '位置',
@@ -2555,6 +2557,14 @@ export default {
 
   },
   emailtask: {
+    week_mon: '周一',
+    week_tue: '周二',
+    week_wed: '周三',
+    week_thu: '周四',
+    week_fri: '周五',
+    week_sat: '周六',
+    week_sun: '周日',
+    send_config: '发送设置',
     title: '报告主题',
     panel: '仪表板',
     content: '报告正文',
@@ -2579,9 +2589,9 @@ export default {
     emial_preview: '报告预览',
     chart_data_range: '视图数据范围',
     simple_repeat: '简单重复',
-    once_a_day: '每天一次',
-    once_a_week: '每周一次',
-    once_a_month: '每月一次',
+    once_a_day: '每天',
+    once_a_week: '每周',
+    once_a_month: '每月',
     complex_repeat: '复杂重复',
     pixel_tip: '可直接输入自定义分辨率(例如:2560 * 1600)或选择',
     task_type: '任务类型',

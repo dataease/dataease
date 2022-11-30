@@ -390,7 +390,11 @@ public class DorisQueryProvider extends QueryProvider {
                     originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
                 } else {
                     if (x.getDeType() == 2 || x.getDeType() == 3) {
-                        originField = String.format(DorisConstants.CAST, String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName()), DorisConstants.DEFAULT_FLOAT_FORMAT);
+                        if (x.getDeExtractType() == 1) {
+                            originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
+                        } else {
+                            originField = String.format(DorisConstants.CAST, String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName()), DorisConstants.DEFAULT_FLOAT_FORMAT);
+                        }
                     } else {
                         originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
                     }
