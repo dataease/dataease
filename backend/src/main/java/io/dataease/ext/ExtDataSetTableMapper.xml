@@ -149,7 +149,7 @@
     </select>
 
     <select id="findByTableIds" resultMap="BaseResultMapDTO">
-        select dataset_table.*
+        select distinct dataset_table.*
         from dataset_table
         where dataset_table.id in
         <foreach collection="tableIds" item="item" open="(" separator="," close=")">

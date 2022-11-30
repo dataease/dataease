@@ -2,11 +2,16 @@ package io.dataease.service.dataset;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import io.dataease.ext.ExtChartViewMapper;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.datasource.ApiDefinition;
+import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.dto.dataset.ExcelSheetData;
+import io.dataease.dto.datasource.*;
+import io.dataease.exception.DataEaseException;
+import io.dataease.ext.ExtChartViewMapper;
+import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceTypes;
@@ -17,14 +22,9 @@ import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.provider.DDLProvider;
-import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.provider.ProviderFactory;
-import io.dataease.dto.datasource.*;
+import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.service.datasource.DatasourceService;
-import io.dataease.dto.dataset.DataTableInfoDTO;
-import io.dataease.dto.dataset.ExcelSheetData;
-import io.dataease.exception.DataEaseException;
-import io.dataease.listener.util.CacheUtils;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.kettle.KettleService;
 import io.dataease.service.message.DeMsgutil;
@@ -413,7 +413,7 @@ public class ExtractDataService {
 
     }
 
-    private List<DatasetTableField> getDatasetTableFields(String datasetTableId) {
+    public List<DatasetTableField> getDatasetTableFields(String datasetTableId) {
         List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTableId).build());
         datasetTableFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
         datasetTableFields.sort((o1, o2) -> {
@@ -617,7 +617,7 @@ public class ExtractDataService {
         dataSetTableTaskLogService.save(datasetTableTaskLog, hasTask);
     }
 
-    private void createEngineTable(String tableName, List<DatasetTableField> datasetTableFields) throws Exception {
+    public void createEngineTable(String tableName, List<DatasetTableField> datasetTableFields) throws Exception {
         Datasource engine = engineService.getDeEngine();
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -793,7 +793,7 @@ public class ExtractDataService {
             Thread.sleep(1000);
         }
         if (jobStatus.getStatusDescription().equals("Finished")) {
-            LogUtil.info(datasetTable.getId()+ ": " + jobStatus.getLoggingString());
+            LogUtil.info(datasetTable.getId() + ": " + jobStatus.getLoggingString());
             return;
         } else {
             DataEaseException.throwException(jobStatus.getLoggingString());
@@ -1029,7 +1029,7 @@ public class ExtractDataService {
         if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase(DatasetType.SQL.name())) {
             DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
             selectSQL = dataTableInfoDTO.getSql();
-            if(dataTableInfoDTO.isBase64Encryption()){
+            if (dataTableInfoDTO.isBase64Encryption()) {
                 selectSQL = new String(java.util.Base64.getDecoder().decode(selectSQL));
             }
             QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
@@ -1056,13 +1056,13 @@ public class ExtractDataService {
     }
 
     private List<StepMeta> excelInputStep(String Info, List<DatasetTableField> datasetTableFields) {
-        List<StepMeta>inputSteps = new ArrayList<>();
+        List<StepMeta> inputSteps = new ArrayList<>();
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(Info, DataTableInfoDTO.class);
         List<ExcelSheetData> excelSheetDataList = dataTableInfoDTO.getExcelSheetDataList();
 
         List<String> sheetNames = new ArrayList<>();
 
-        int size =1;
+        int size = 1;
         for (ExcelSheetData excelSheetData : excelSheetDataList) {
             StepMeta fromStep = null;
             String suffix = excelSheetData.getPath().substring(excelSheetDataList.get(0).getPath().lastIndexOf(".") + 1);
@@ -1090,7 +1090,7 @@ public class ExtractDataService {
                 fromStep.setDraw(true);
                 fromStep.setLocation(100, 100 * size);
                 inputSteps.add(fromStep);
-            }else {
+            } else {
                 List<String> files = new ArrayList<>();
                 files.add(excelSheetData.getPath());
 
@@ -1240,7 +1240,7 @@ public class ExtractDataService {
             if (StringUtils.isNotEmpty(charset)) {
                 String varcharFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getDeExtractType() == 0).map(DatasetTableField::getOriginName).collect(Collectors.joining(","));
                 tmp_code = tmp_code.replace("handleCharset", handleCharset.replace("Datasource_Charset", charset).replace("Target_Charset", targetCharset).replace("varcharFields", varcharFields));
-            }else {
+            } else {
                 tmp_code = tmp_code.replace("handleCharset", "");
             }
         } else {
