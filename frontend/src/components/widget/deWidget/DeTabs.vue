@@ -708,21 +708,27 @@ export default {
 }
 
 ::v-deep .el-tabs__nav {
-  width: 100%;
+  display: flex;
+}
+::v-deep .el-tabs__nav-prev {
+  line-height: 25px;
+}
+::v-deep .el-tabs__nav-next {
+  line-height: 25px;
 }
 
 .tab-head-left ::v-deep .el-tabs__nav {
-  width: 100%;
+  display: flex;
   text-align: left;
 }
 
 .tab-head-right ::v-deep .el-tabs__nav {
-  width: 100%;
+  display: flex;
   text-align: right;
 }
 
 .tab-head-center ::v-deep .el-tabs__nav {
-  width: 100%;
+  display: flex;
   text-align: center;
 }
 
