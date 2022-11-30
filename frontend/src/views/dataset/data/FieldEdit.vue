@@ -860,8 +860,8 @@ export default {
           item.dateFormat = item.dateFormatType
         }
       }
-      if(item.dateFormatType === 'custom' && !item.dateFormat){
-        return;
+      if (item.dateFormatType === 'custom' && !item.dateFormat) {
+        return
       }
       post('/dataset/field/save', item)
         .then((response) => {

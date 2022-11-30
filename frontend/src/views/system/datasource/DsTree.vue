@@ -255,15 +255,15 @@
         v-dialogDrag
         :title="$t('datasource.create')"
         :visible.sync="dsTypeRelate"
-        width="1200px"
+        width="1005px"
         class="de-dialog-form none-scroll-bar"
         append-to-body
       >
-        <el-tabs v-model="tabActive">
-          <el-tab-pane
-            :label="$t('datasource.all')"
-            name="all"
-          />
+        <el-tabs
+          v-model="tabActive"
+          class="de-tabs"
+          @tab-click="handleClick"
+        >
           <el-tab-pane
             :label="$t('datasource.relational_database')"
             name="RDBMS"
@@ -278,24 +278,36 @@
           />
         </el-tabs>
         <div class="db-container">
-          <div
-            v-for="(db, index) in databaseList"
-            :key="db.type"
-            class="db-card"
-            :class="[{ marLeft: index % 4 === 0 }]"
-            @click="addDb(db)"
-          >
-            <img
-              v-if="!db.isPlugin"
-              :src="require('../../../assets/datasource/' + db.type + '.jpg')"
-              alt=""
+          <template v-for="(list, idx) in databaseList">
+            <div
+              :key="nameMap[idx]"
+              :class="typeList[idx]"
+              class="name"
+            >{{ $t(`datasource.${nameMap[idx]}`) }}</div>
+            <div
+              :key="nameMap[idx] + 'cont'"
+              class="item-container"
             >
-            <img
-              v-if="db.isPlugin"
-              :src="`/api/pluginCommon/staticInfo/${db.type}/jpg`"
-            >
-            <p class="db-name">{{ db.name }}</p>
-          </div>
+              <div
+                v-for="(db, index) in list"
+                :key="db.type"
+                class="db-card"
+                :class="[{ marLeft: index % 5 === 0 }]"
+                @click="addDb(db)"
+              >
+                <img
+                  v-if="!db.isPlugin"
+                  :src="require('../../../assets/datasource/' + db.type + '.jpg')"
+                  alt=""
+                >
+                <img
+                  v-if="db.isPlugin"
+                  :src="`/api/pluginCommon/staticInfo/${db.type}/jpg`"
+                >
+                <p class="db-name">{{ db.name }}</p>
+              </div>
+            </div>
+          </template>
         </div>
       </el-dialog>
     </el-col>
@@ -329,11 +341,14 @@ export default {
   },
   data() {
     return {
-      tabActive: 'all',
+      tabActive: 'RDBMS',
+      databaseList: [],
       currentNodeId: '',
       dsTypeRelate: false,
       expandedArray: [],
       tData: [],
+      nameMap: ['relational_database', 'non_relational_database', 'other'],
+      typeList: ['RDBMS', 'NORDBMS', 'OTHER'],
       treeLoading: false,
       dsTypes: [],
       dsTypesForDriver: [],
@@ -386,15 +401,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['user']),
-    databaseList() {
-      if (this.tabActive === 'all') {
-        return this.dsTypes
-      }
-      return this.dsTypes.filter(
-        (ele) => ele.databaseClassification === this.tabActive
-      )
-    }
+    ...mapGetters(['user'])
   },
   watch: {
     key(val) {
@@ -406,6 +413,9 @@ export default {
     this.datasourceTypes()
   },
   methods: {
+    handleClick() {
+      document.querySelector(`.${this.tabActive}`).scrollIntoView()
+    },
     createDriveOrDs() {
       if (this.showView === 'Driver') {
         this.addDriver()
@@ -478,11 +488,17 @@ export default {
     datasourceTypes() {
       listDatasourceType().then((res) => {
         this.dsTypes = res.data
+        const databaseList = [[], [], []]
         this.dsTypes.forEach((item) => {
+          const index = this.typeList.findIndex(ele => ele === item.databaseClassification)
+          if (index !== -1) {
+            databaseList[index].push(item)
+          }
           if (item.isJdbc) {
             this.dsTypesForDriver.push(item)
           }
         })
+        this.databaseList = databaseList
       })
     },
     refreshType(datasource) {
@@ -802,24 +818,38 @@ export default {
   width: 100%;
   max-height: 65vh;
   overflow-y: auto;
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: -3px;
+  margin-top: 3px;
   position: relative;
   z-index: 10;
+
+  .name {
+    margin: 16px 0;
+    font-family: PingFang SC;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    color: var(--deTextPrimary, #1F2329);
+  }
+
+  .item-container {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
   .db-card {
-    height: 193px;
-    width: 270px;
+    height: 141px;
+    width: 177.6px;
     display: flex;
     flex-wrap: wrap;
     background: #ffffff;
     border: 1px solid #dee0e3;
     border-radius: 4px;
-    margin-bottom: 24px;
-    margin-left: 22px;
+    margin-bottom: 16px;
+    margin-left: 16px;
     img {
       width: 100%;
-      height: 154.58px;
+      height: 102px;
       border-top-left-radius: 4px;
       border-top-right-radius: 4px;
     }

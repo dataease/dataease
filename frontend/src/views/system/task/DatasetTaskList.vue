@@ -634,7 +634,7 @@ export default {
       )
     },
     disableExec(task) {
-      return (task.status === 'Pending' || task.status === 'Exec' || !hasDataPermission('manage', task.privileges))
+      return ((task.status === 'Stopped' && task.rate !== 'SIMPLE') || task.status === 'Pending' || task.status === 'Exec' || !hasDataPermission('manage', task.privileges))
     },
     disableDelete(task) {
       return false
