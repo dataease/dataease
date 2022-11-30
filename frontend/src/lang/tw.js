@@ -1890,7 +1890,7 @@ export default {
   },
   panel: {
     position_adjust_component: '位置調整',
-    active_font_size: '激活字體大小',
+    active_font_size: '选中字體大小',
     carousel: '輪播',
     switch_time: '切換時間',
     position_adjust: '位置',
