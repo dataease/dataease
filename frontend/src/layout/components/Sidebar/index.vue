@@ -33,7 +33,7 @@
         :style="{ transform: isCollapse ? 'rotate(90deg)' : 'rotate(-90deg)' }"
         class="el-icon-upload2"
       />
-      {{ isCollapse ? "" : "收起导航" }}
+      {{ isCollapse ? "" : $t('commons.collapse_navigation') }}
     </div>
   </div>
 </template>
