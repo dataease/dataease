@@ -135,6 +135,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    collapse_navigation: 'Collapse navigation',
     operate_cancelled: 'Operation cancelled',
     bind: 'Bind',
     unbind: 'Unbind',
@@ -531,7 +532,10 @@ export default {
     set_saved_successfully: 'Data set saved successfully',
     to_start_using: 'Browse the contents of your database, tables and columns. Choose a database to get started.',
     to_run_query: 'Click to run query',
-    the_running_results: 'You can view the running results'
+    the_running_results: 'You can view the running results',
+    item: 'item',
+    logic_filter: 'Condition Filter',
+    enum_filter: 'Enum Filter'
   },
   detabs: {
     custom_sort: 'Custom Sort',
@@ -655,6 +659,7 @@ export default {
     input_password: 'Please input a password',
     input_phone: 'Please enter the phone number',
     input_roles: 'Please select role',
+    select_users: 'Please select user',
     user_name_pattern_error: 'IDs can only contain alphanumeric and ._- and start with a letter!',
     special_characters_are_not_supported: 'Special characters are not supported',
     mobile_number_format_is_incorrect: 'Incorrect format of mobile phone number',
@@ -811,6 +816,7 @@ export default {
     edite_organization: 'Edit organization'
   },
   system_parameter_setting: {
+    email_server_config: 'Mailbox server configuration',
     edit_success: 'Edit success',
     mailbox_service_settings: 'Mail Setting',
     test_connection: 'Test connection',
@@ -1722,7 +1728,17 @@ export default {
     export_dataset: 'Export',
     filename: 'Filename',
     export_filter: 'Filter',
-    pls_input_filename: 'Please input filename'
+    pls_input_filename: 'Please input filename',
+    calc_tips: {
+      tip1: 'The expression syntax should follow the database syntax corresponding to the data source.',
+      tip2: 'Aggregation operation is not supported in the dataset.',
+      tip3: 'The reference field starts with "[" and ends with "]"',
+      tip4: 'Do not modify the reference content, otherwise the reference will fail',
+      tip5: 'If you enter content in the same format as the reference field, it will be treated as a reference field',
+      tip6: 'Use the functions supported by the database type corresponding to the dataset. The syntax is the same as that of the corresponding database',
+      tip7: 'For example, date format: MySQL uses DATE_ FORMAT(date,format)； Oracle uses TO_ DATE(X,[,fmt])',
+      tip8: 'Non direct connection mode data set, use Doris database functions, refer to Doris official website'
+    }
   },
   driver: {
     driver: 'Driver',
@@ -1890,7 +1906,7 @@ export default {
   },
   panel: {
     position_adjust_component: 'Position adjust',
-    active_font_size: 'Active font size',
+    active_font_size: 'Selected font size',
     carousel: 'Carousel',
     switch_time: 'Switch time',
     position_adjust: 'Position',
@@ -2541,6 +2557,14 @@ export default {
 
   },
   emailtask: {
+    week_mon: 'Mon',
+    week_tue: 'Tue',
+    week_wed: 'Wed',
+    week_thu: 'Thu',
+    week_fri: 'Fri',
+    week_sat: 'Sat',
+    week_sun: 'Sun',
+    send_config: 'Send configuration',
     title: 'Title',
     panel: 'Panel',
     content: 'Content',

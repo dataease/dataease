@@ -135,6 +135,7 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    collapse_navigation: '收起導航',
     operate_cancelled: '已取消操作',
     bind: '綁定',
     unbind: '解綁',
@@ -531,7 +532,10 @@ export default {
     set_saved_successfully: '數據集保存成功',
     to_start_using: '瀏覽您的數據庫，表和列的內容。 選擇一個數據庫即可開始使用。',
     to_run_query: '點擊運行査詢',
-    the_running_results: '即可查看運行結果'
+    the_running_results: '即可查看運行結果',
+    item: '項',
+    logic_filter: '條件篩選',
+    enum_filter: '枚舉篩選'
   },
   detabs: {
     custom_sort: '自定義排序',
@@ -811,6 +815,7 @@ export default {
     edite_organization: '編輯組織'
   },
   system_parameter_setting: {
+    email_server_config: '郵箱服務器配置',
     edit_success: '編輯成功',
     mailbox_service_settings: '郵件設置',
     test_connection: '測試連接',
@@ -1722,7 +1727,17 @@ export default {
     export_dataset: '數據集導出',
     filename: '文件名稱',
     export_filter: '篩選條件',
-    pls_input_filename: '請輸入文件名稱'
+    pls_input_filename: '請輸入文件名稱',
+    calc_tips: {
+      tip1: '表達式語法請遵循該數據源對應的數據庫語法。',
+      tip2: '數據集中不支持聚合運算。',
+      tip3: '引用字段以 "[" 開始， "]" 結束',
+      tip4: '請勿修改引用內容，否則將引用失敗',
+      tip5: '若輸入與引用字段相同格式的內容，將被當作引用字段處理',
+      tip6: '使用數據集對應數據庫類型所支持的函數，語法同對應數據庫',
+      tip7: '如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])',
+      tip8: '非直連模式數據集，使用Doris數據庫函數，可參考Doris官網'
+    }
   },
   driver: {
     driver: '驅動',
@@ -1890,7 +1905,7 @@ export default {
   },
   panel: {
     position_adjust_component: '位置調整',
-    active_font_size: '激活字體大小',
+    active_font_size: '选中字體大小',
     carousel: '輪播',
     switch_time: '切換時間',
     position_adjust: '位置',
@@ -2542,6 +2557,14 @@ export default {
 
   },
   emailtask: {
+    week_mon: '周一',
+    week_tue: '周二',
+    week_wed: '周三',
+    week_thu: '周四',
+    week_fri: '周五',
+    week_sat: '周六',
+    week_sun: '周日',
+    send_config: '發送設置',
     title: '報告主題',
     panel: '儀表闆',
     content: '報告正文',
@@ -2566,9 +2589,9 @@ export default {
     emial_preview: '報告預覽',
     chart_data_range: '視圖數據範圍',
     simple_repeat: '簡單重複',
-    once_a_day: '每天一次',
-    once_a_week: '每周一次',
-    once_a_month: '每月一次',
+    once_a_day: '每天',
+    once_a_week: '每周',
+    once_a_month: '每月',
     complex_repeat: '複雜重複',
     pixel_tip: '可直接輸入分辨率(例如:2560 * 1600)或者選擇',
     task_type: '任務類型',
