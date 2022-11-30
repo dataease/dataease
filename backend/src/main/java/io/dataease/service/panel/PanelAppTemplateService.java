@@ -20,6 +20,7 @@ import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.dataset.DataSetTableFieldsService;
 import io.dataease.service.dataset.DataSetTableService;
+import io.dataease.service.dataset.ExtractDataService;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.staticResource.StaticResourceService;
 import org.apache.commons.lang3.StringUtils;
@@ -68,6 +69,8 @@ public class PanelAppTemplateService {
     private DataSetGroupService dataSetGroupService;
     @Resource
     private StaticResourceService staticResourceService;
+    @Resource
+    private ExtractDataService extractDataService;
 
     public List<PanelAppTemplateWithBLOBs> list(PanelAppTemplateRequest request) {
         return extPanelAppTemplateMapper.queryBaseInfo(request.getNodeType(), request.getPid());
@@ -209,6 +212,7 @@ public class PanelAppTemplateService {
                 DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
                 datasetFieldsRealMap.put(oldId, newTableField.getId());
                 datasetFieldsMd5FormatRealMap.put(TableUtils.fieldNameShort(oldTableId + "_" + datasetTableField.getOriginName()), TableUtils.fieldNameShort(newTableField.getTableId() + "_" + datasetTableField.getOriginName()));
+                datasetFieldsMd5FormatRealMap.put(TableUtils.fieldName(oldTableId + "_" + datasetTableField.getDataeaseName()), TableUtils.fieldName(newTableField.getTableId() + "_" + datasetTableField.getDataeaseName()));
             }
         }
         //数据集计算字段替换
@@ -225,6 +229,8 @@ public class PanelAppTemplateService {
                 DatasetTableField newTableField = dataSetTableFieldsService.save(datasetTableField);
                 datasetFieldsRealMap.put(oldId, newTableField.getId());
                 datasetFieldsMd5FormatRealMap.put(TableUtils.fieldNameShort(oldTableId + "_" + oldOriginName), TableUtils.fieldNameShort(newTableField.getTableId() + "_" + datasetTableField.getOriginName()));
+                datasetFieldsMd5FormatRealMap.put(TableUtils.fieldName(oldTableId + "_" + datasetTableField.getDataeaseName()), TableUtils.fieldName(newTableField.getTableId() + "_" + datasetTableField.getDataeaseName()));
+
             }
         }
 
@@ -233,11 +239,26 @@ public class PanelAppTemplateService {
             if (DatasetType.UNION.name().equalsIgnoreCase(datasetTypeRealMap.get(datasetTableField.getTableId())) || DatasetType.CUSTOM.name().equalsIgnoreCase(datasetTypeRealMap.get(datasetTableField.getTableId()))) {
                 DatasetTableField updateField = new DatasetTableField();
                 updateField.setId(datasetTableField.getId());
-                updateField.setOriginName(datasetFieldsMd5FormatRealMap.get(datasetTableField.getOriginName()));
-                dataSetTableFieldsService.updateByPrimaryKeySelective(updateField);
+                String newOriginName = datasetFieldsMd5FormatRealMap.get(datasetTableField.getOriginName());
+                String dataeaseName = datasetFieldsMd5FormatRealMap.get(datasetTableField.getDataeaseName());
+                if (StringUtils.isNotEmpty(newOriginName) || StringUtils.isNotEmpty(dataeaseName)) {
+                    updateField.setOriginName(datasetFieldsMd5FormatRealMap.get(datasetTableField.getOriginName()));
+                    updateField.setDataeaseName(datasetFieldsMd5FormatRealMap.get(datasetTableField.getDataeaseName()));
+                    dataSetTableFieldsService.updateByPrimaryKeySelective(updateField);
+                }
             }
         }
         return datasetFieldsRealMap;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void createDorisTable(List<DatasetTable> datasetTablesInfo) throws Exception {
+        for (DatasetTable datasetTable : datasetTablesInfo) {
+            if (1 == datasetTable.getMode() && !(DatasetType.CUSTOM.name().equalsIgnoreCase(datasetTable.getType()) || DatasetType.UNION.name().equalsIgnoreCase(datasetTable.getType()))) {
+                List<DatasetTableField> fields = extractDataService.getDatasetTableFields(datasetTable.getId());
+                extractDataService.createEngineTable(TableUtils.tableName(datasetTable.getId()), fields);
+            }
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)

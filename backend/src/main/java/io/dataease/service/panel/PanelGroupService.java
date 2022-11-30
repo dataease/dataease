@@ -30,7 +30,6 @@ import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DeTypeConstants;
-import io.dataease.service.SystemInfoService;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.dataset.DataSetTableService;
@@ -135,8 +134,6 @@ public class PanelGroupService {
     private DatasetGroupMapper datasetGroupMapper;
     @Resource
     private PanelWatermarkMapper panelWatermarkMapper;
-    @Resource
-    private SystemInfoService systemInfoService;
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
@@ -811,29 +808,6 @@ public class PanelGroupService {
         List<ChartViewField> chartViewFieldsInfo = extChartViewFieldMapper.findByPanelId(panelId);
         //3.获取所有数据集信息
         List<DatasetTable> datasetTablesInfo = extDataSetTableMapper.findByPanelId(panelId);
-        List<String> attachTableIds = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(datasetTablesInfo)) {
-            for (DatasetTable datasetTable : datasetTablesInfo) {
-                if ("union".equals(datasetTable.getType()) && StringUtils.isNotEmpty(datasetTable.getInfo())) {
-                    DataTableInfoDTO dt = gson.fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
-                    DatasetUtils.getUnionTable(attachTableIds, dt.getUnion());
-                } else if ("custom".equals(datasetTable.getType()) && StringUtils.isNotEmpty(datasetTable.getInfo())) {
-                    Map result = gson.fromJson(datasetTable.getInfo(), Map.class);
-                    List<Map> list = (List<Map>) result.get("list");
-                    if (CollectionUtils.isNotEmpty(list)) {
-                        for (Map details : list) {
-                            attachTableIds.add(String.valueOf(details.get("tableId")));
-                        }
-                    }
-                }
-            }
-            if (CollectionUtils.isNotEmpty(attachTableIds)) {
-                List<DatasetTable> attachDatasetTables = extDataSetTableMapper.findByTableIds(attachTableIds);
-                if (CollectionUtils.isNotEmpty(attachDatasetTables)) {
-                    datasetTablesInfo.addAll(attachDatasetTables);
-                }
-            }
-        }
         // dataset check
         if (CollectionUtils.isEmpty(datasetTablesInfo)) {
             return new PanelExport2App(Translator.get("I18N_APP_NO_DATASET_ERROR"));
@@ -841,6 +815,23 @@ public class PanelGroupService {
             return new PanelExport2App(Translator.get("I18N_APP_ERROR_DATASET"));
         }
         List<String> allTableIds = datasetTablesInfo.stream().map(DatasetTable::getId).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(datasetTablesInfo)) {
+            for (DatasetTable datasetTable : datasetTablesInfo) {
+                if ("union".equals(datasetTable.getType()) && StringUtils.isNotEmpty(datasetTable.getInfo())) {
+                    DataTableInfoDTO dt = gson.fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+                    DatasetUtils.getUnionTable(allTableIds, dt.getUnion());
+                } else if ("custom".equals(datasetTable.getType()) && StringUtils.isNotEmpty(datasetTable.getInfo())) {
+                    Map result = gson.fromJson(datasetTable.getInfo(), Map.class);
+                    List<Map> list = (List<Map>) result.get("list");
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        for (Map details : list) {
+                            allTableIds.add(String.valueOf(details.get("tableId")));
+                        }
+                    }
+                }
+            }
+        }
+        datasetTablesInfo = extDataSetTableMapper.findByTableIds(allTableIds);
         //4.获取所有数据集字段信息
         List<DatasetTableField> datasetTableFieldsInfo = extDataSetTableFieldMapper.findByTableIds(allTableIds);
         //5.获取所有任务信息
@@ -917,6 +908,8 @@ public class PanelGroupService {
 
         Map<String, String> datasetFieldsRealMap = panelAppTemplateService.applyDatasetField(datasetTableFieldsInfo, datasetsRealMap, datasetTypeRealMap, datasetFieldsMd5FormatRealMap);
 
+        panelAppTemplateService.createDorisTable(datasetTablesInfo);
+        
         panelAppTemplateService.resetCustomAndUnionDataset(datasetTablesInfo, datasetsRealMap, datasetFieldsRealMap);
 
         Map<String, String> chartViewsRealMap = panelAppTemplateService.applyViews(chartViewsInfo, datasetsRealMap, datasetFieldsRealMap, datasetFieldsMd5FormatRealMap, newPanelId);
