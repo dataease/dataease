@@ -108,12 +108,15 @@ service.interceptors.response.use(response => {
   const headers = error.response && error.response.headers || error.response || config.headers
   config.loading && tryHideLoading(store.getters.currentPath)
 
-  let msg
+  let msg = ''
   if (error.response) {
     checkAuth(error.response)
     msg = error.response.data.message || error.response.data
   } else {
     msg = error.message
+  }
+  if (msg.length > 600) {
+    msg = msg.slice(0, 600)
   }
   !config.hideMsg && (!headers['authentication-status']) && $error(msg)
   return Promise.reject(config.url === '/dataset/table/sqlPreview' ? msg : error)

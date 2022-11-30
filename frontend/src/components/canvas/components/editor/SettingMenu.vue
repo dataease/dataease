@@ -17,8 +17,7 @@
             v-if="curComponent.type != 'custom-button'"
             icon="el-icon-document-copy"
             @click.native="copy"
-          ><span>{{ $t('panel.copy') }}(<span v-show="systemOS==='Mac'"><i class="icon iconfont icon-command"
-          />+ D</span> <span v-show="systemOS!=='Mac'">Control + D</span>)</span>
+          ><span>{{ $t('panel.copy') }}(<span v-show="systemOS==='Mac'"><i class="icon iconfont icon-command" />+ D</span> <span v-show="systemOS!=='Mac'">Control + D</span>)</span>
           </el-dropdown-item>
           <el-dropdown-item
             icon="el-icon-delete"
@@ -210,7 +209,7 @@ export default {
     ])
   },
   mounted() {
-    if (navigator.platform.indexOf('Mac') == -1) {
+    if (navigator.platform.indexOf('Mac') === -1) {
       this.systemOS = 'Other'
     }
   },

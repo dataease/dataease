@@ -1934,7 +1934,8 @@ export default {
   },
 
   methods: {
-    setTitle(title) {
+    setTitle(title, id) {
+      if (this.view.id !== id) return
       this.view.customStyle.text = { ...this.view.customStyle.text, title }
       this.view.title = title
       this.view.name = title

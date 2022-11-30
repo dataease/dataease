@@ -1,8 +1,8 @@
 <template>
   <el-row
+    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
     style="text-align: left"
     class="de-search-table"
-    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
   >
     <el-row class="top-operate">
       <el-col :span="12">
@@ -36,8 +36,8 @@
           icon="iconfont icon-icon-filter"
           @click="filterShow"
         >{{
-            $t('user.filter')
-          }}
+           $t('user.filter')
+         }}
           <template v-if="filterTexts.length">
             ({{ cacheCondition.length }})
           </template>
@@ -50,7 +50,7 @@
     >
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t('user.result_one') }}</span>
-      <el-divider direction="vertical"/>
+      <el-divider direction="vertical" />
       <i
         v-if="showScroll"
         class="el-icon-arrow-left arrow-filter"
@@ -63,9 +63,9 @@
           class="text"
         >
           {{ ele }} <i
-          class="el-icon-close"
-          @click="clearOneFilter(index)"
-        />
+            class="el-icon-close"
+            @click="clearOneFilter(index)"
+          />
         </p>
       </div>
       <i
@@ -180,11 +180,11 @@
 
     <!--导入templatedialog-->
     <el-dialog
+      v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
       :title="$t('app_template.log_delete_tips')"
       :visible.sync="deleteConfirmDialog"
       :show-close="true"
       width="420px"
-      v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
     >
       <el-row>
         <el-checkbox
