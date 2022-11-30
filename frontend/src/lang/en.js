@@ -152,7 +152,7 @@ export default {
     params_value: 'Param Value',
     input_role_name: 'Enter a role name',
     publish: 'publish',
-    unpublished: 'unpublished',
+    unpublished: 'Unpublished',
     default_pwd: 'Default Pwd',
     stop: 'Stop',
     first_login_tips: 'Please change the initial password',
@@ -312,6 +312,7 @@ export default {
     validate: 'Validate',
     batch_add: 'Batch Add',
     tag_tip: 'Enter add label',
+    search_keywords: 'Enter keywords to search',
     table: {
       select_tip: '{0} data selected'
     },
@@ -323,7 +324,10 @@ export default {
       start_date_time: 'Start date time',
       end_date_time: 'End date time',
       range_separator: 'to',
-      data_time_error: 'The start date cannot be greater than the end date.'
+      data_time_error: 'The start date cannot be greater than the end date.',
+      one_day: 'One day',
+      one_week: 'One week',
+      one_month: 'One month'
     },
     adv_search: {
       title: 'Advanced search',
@@ -1466,7 +1470,15 @@ export default {
     empty_data_strategy: 'Empty Data Strategy',
     break_line: 'Disconnection',
     set_zero: 'Set Zero',
-    ignore_data: 'Ignore Data'
+    ignore_data: 'Ignore Data',
+    sub_dimension_tip: 'This field is required, and cannot be included in the type axis, you should choose non-group chart if you don\'t need it, or you will get unexpected chart.',
+    drill_dimension_tip: 'Only fields in the dataset can be drilled',
+    table_scroll_tip: 'The detail table is only effective when the pagination mode is "Drop-down".',
+    table_threshold_tip: 'Tip: Do not select fields repeatedly. If the same field is configured repeatedly, only the last field will take effect.',
+    table_column_width_tip: 'Column width do not always work. The priority of the container width is higher than the column width, which means if the result of dividing the width of the table container by the number of columns is greater than specified column width, the former will take effect.',
+    reference_field_tip: 'Reference fields start with "[" and end with "]". Do not modify the reference content, otherwise the reference will fail. If you enter content in the same format as the reference field, it will be treated as a reference field.',
+    scatter_tip: 'When this indicator is in effect, the bubble size attribute in the style size will be invalid',
+    place_name_mapping: 'Place name mapping'
   },
   dataset: {
     spend_time: 'Spend',
@@ -1997,7 +2009,7 @@ export default {
     inner_padding: 'Inner Padding',
     board_radio: 'Board Radio',
     background: 'Background',
-    component_style: 'component Style',
+    component_style: 'Component Style',
     web_set_tips: 'Some Websites Cannot Be Displayed Because Of Not Allow Embedded ',
     repeat_params: 'Repeat Params Exist',
     enable_outer_param_set: 'Enable Outer Param Set',
@@ -2240,7 +2252,11 @@ export default {
     select_view: 'Please select a view...',
     visual: 'Visual',
     prohibit_multiple: 'Prohibit multiple fields in the same dataset',
-    be_empty_dir: 'is empty dir'
+    be_empty_dir: 'is empty dir',
+    fold: 'Fold',
+    expand: 'Expand',
+    pdf_export: 'PDF Export',
+    switch_pdf_template: 'Switch PDF Template'
   },
   plugin: {
     local_install: 'Local installation',

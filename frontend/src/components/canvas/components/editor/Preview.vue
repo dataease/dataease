@@ -63,7 +63,7 @@
     </div>
     <el-dialog
       v-if="pdfExportShow"
-      :title="'['+panelInfo.name+']'+'PDF导出'"
+      :title="'['+panelInfo.name+']'+$t('panel.pdf_export')"
       :visible.sync="pdfExportShow"
       width="80%"
       :top="'8vh'"
@@ -77,7 +77,7 @@
         />
         <el-select
           v-model="pdfTemplateSelectedIndex"
-          :placeholder="'切换PDF模板'"
+          :placeholder="$t('panel.switch_pdf_template')"
           @change="changePdfTemplate()"
         >
           <el-option

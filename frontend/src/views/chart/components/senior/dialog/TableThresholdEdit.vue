@@ -164,7 +164,7 @@
         </el-row>
       </div>
     </div>
-    <div class="tip">提示：请勿重复选择字段，若同一字段重复配置，则只有最后的字段配置生效</div>
+    <div class="tip">{{ $t('chart.table_threshold_tip') }}</div>
   </el-col>
 </template>
 

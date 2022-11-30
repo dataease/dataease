@@ -235,7 +235,7 @@
 
     <el-dialog
       v-if="templateSaveShow"
-      :title="templateSaveTitle"
+      :title="$t('panel.save_to_panel')"
       :visible.sync="templateSaveShow"
       width="500px"
     >
@@ -246,7 +246,7 @@
     </el-dialog>
     <el-dialog
       v-if="pdfExportShow"
-      :title="'['+panelInfo.name+']'+'PDF导出'"
+      :title="'['+panelInfo.name+']'+$t('panel.pdf_export')"
       :visible.sync="pdfExportShow"
       width="80%"
       :top="'8vh'"
@@ -260,7 +260,7 @@
         />
         <el-select
           v-model="pdfTemplateSelectedIndex"
-          :placeholder="'切换PDF模板'"
+          :placeholder="$t('panel.switch_pdf_template')"
           @change="changePdfTemplate()"
         >
           <el-option
@@ -295,7 +295,7 @@
         />
         <el-select
           v-model="pdfTemplateSelectedIndex"
-          :placeholder="'切换PDF模板'"
+          :placeholder="$t('panel.switch_pdf_template')"
           @change="changePdfTemplate()"
         >
           <el-option
@@ -359,7 +359,6 @@ export default {
       pdfTemplateContent: '',
       templateInfo: {},
       pdfTemplateAll: [],
-      templateSaveTitle: '保存为模板',
       templateSaveShow: false,
       hasStar: false,
       fullscreen: false,

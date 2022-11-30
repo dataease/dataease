@@ -581,7 +581,7 @@
                           placement="bottom"
                         >
                           <div slot="content">
-                            该字段为必填项，且不应使用类别轴中字段，若无需该字段，请选择基础柱状图展示；否则展示结果不理想
+                            {{ $t('chart.sub_dimension_tip') }}
                           </div>
                           <i
                             class="el-icon-info"
@@ -820,7 +820,7 @@
                           placement="bottom"
                         >
                           <div slot="content">
-                            该指标生效时，样式大小中的气泡大小属性将失效
+                            {{ $t('chart.scatter_tip') }}
                           </div>
                           <i
                             class="el-icon-info"
@@ -914,7 +914,7 @@
                           placement="bottom"
                         >
                           <div slot="content">
-                            钻取字段仅支持数据集中的字段
+                            {{ $t('chart.drill_dimension_tip') }}
                           </div>
                           <i
                             class="el-icon-info"
@@ -1084,7 +1084,7 @@
                 >
 
                   <el-collapse-item
-                    title="地名映射"
+                    :title="$t('chart.place_name_mapping')"
                     name="map-mapping"
                   >
                     <map-mapping
