@@ -135,6 +135,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    collapse_navigation: 'Collapse navigation',
     operate_cancelled: 'Operation cancelled',
     bind: 'Bind',
     unbind: 'Unbind',
@@ -811,6 +812,7 @@ export default {
     edite_organization: 'Edit organization'
   },
   system_parameter_setting: {
+    email_server_config: 'Mailbox server configuration',
     edit_success: 'Edit success',
     mailbox_service_settings: 'Mail Setting',
     test_connection: 'Test connection',
@@ -2541,6 +2543,14 @@ export default {
 
   },
   emailtask: {
+    week_mon: 'Mon',
+    week_tue: 'Tue',
+    week_wed: 'Wed',
+    week_thu: 'Thu',
+    week_fri: 'Fri',
+    week_sat: 'Sat',
+    week_sun: 'Sun',
+    send_config: 'Send configuration',
     title: 'Title',
     panel: 'Panel',
     content: 'Content',

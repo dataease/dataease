@@ -135,6 +135,7 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    collapse_navigation: '收起導航',
     operate_cancelled: '已取消操作',
     bind: '綁定',
     unbind: '解綁',
@@ -811,6 +812,7 @@ export default {
     edite_organization: '編輯組織'
   },
   system_parameter_setting: {
+    email_server_config: '郵箱服務器配置',
     edit_success: '編輯成功',
     mailbox_service_settings: '郵件設置',
     test_connection: '測試連接',
@@ -2542,6 +2544,14 @@ export default {
 
   },
   emailtask: {
+    week_mon: '周一',
+    week_tue: '周二',
+    week_wed: '周三',
+    week_thu: '周四',
+    week_fri: '周五',
+    week_sat: '周六',
+    week_sun: '周日',
+    send_config: '發送設置',
     title: '報告主題',
     panel: '儀表闆',
     content: '報告正文',
@@ -2566,9 +2576,9 @@ export default {
     emial_preview: '報告預覽',
     chart_data_range: '視圖數據範圍',
     simple_repeat: '簡單重複',
-    once_a_day: '每天一次',
-    once_a_week: '每周一次',
-    once_a_month: '每月一次',
+    once_a_day: '每天',
+    once_a_week: '每周',
+    once_a_month: '每月',
     complex_repeat: '複雜重複',
     pixel_tip: '可直接輸入分辨率(例如:2560 * 1600)或者選擇',
     task_type: '任務類型',
