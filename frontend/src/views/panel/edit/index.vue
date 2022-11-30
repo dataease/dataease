@@ -1376,6 +1376,7 @@ export default {
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
+      this.$store.commit('setComponentFromList', this.currentFilterCom)
       bus.$emit('refresh-button-info')
       this.closeButton()
     },
