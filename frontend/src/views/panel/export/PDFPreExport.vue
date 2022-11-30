@@ -23,12 +23,14 @@
       <el-button
         size="mini"
         @click="cancel()"
-      >{{ $t('commons.cancel') }}</el-button>
+      >{{ $t('commons.cancel') }}
+      </el-button>
       <el-button
         type="primary"
         size="mini"
         @click="save()"
-      >{{ $t('panel.export_pdf') }}</el-button>
+      >{{ $t('panel.export_pdf') }}
+      </el-button>
     </el-row>
   </el-row>
 </template>
@@ -41,7 +43,7 @@ import { pdfTemplateReplaceAll } from '@/utils/StringUtils.js'
 
 export default {
   name: 'PDFPreExport',
-  components: { },
+  components: {},
   props: {
     // eslint-disable-next-line vue/require-default-prop
     panelName: {
@@ -131,16 +133,16 @@ export default {
         _this.toExport = true
         setTimeout(() => {
           html2canvas(document.getElementById('exportPdf')).then(function(canvas) {
-            _this.exportLoading = false
-            const contentWidth = canvas.width
-            const contentHeight = canvas.height
-            const pageData = canvas.toDataURL('image/jpeg', 1.0)
-            const lp = contentWidth > contentHeight ? 'l' : 'p'
-            const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
-            PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
-            PDF.save(_this.panelName + '.pdf')
-            _this.$emit('closePreExport')
-          }
+              _this.exportLoading = false
+              const contentWidth = canvas.width / 4
+              const contentHeight = canvas.height / 4
+              const pageData = canvas.toDataURL('image/jpeg', 1.0)
+              const lp = contentWidth > contentHeight ? 'l' : 'p'
+              const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
+              PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
+              PDF.save(_this.panelName + '.pdf')
+              _this.$emit('closePreExport')
+            }
           )
         }, 1500)
       }, 500)
@@ -151,17 +153,18 @@ export default {
 </script>
 
 <style scoped>
-  .root_class {
-    margin: 15px 0px 5px;
-    text-align: center;
-  }
-  .export_body_class{
-    border: 1px solid #dcdfe6 ;
-    height: 65vh;
-    overflow-y: auto;
-  }
+.root_class {
+  margin: 15px 0px 5px;
+  text-align: center;
+}
 
-  .export_body_inner_class{
-    margin: 10px;
-  }
+.export_body_class {
+  border: 1px solid #dcdfe6;
+  height: 65vh;
+  overflow-y: auto;
+}
+
+.export_body_inner_class {
+  margin: 10px;
+}
 </style>

@@ -820,7 +820,7 @@ export default {
     bus.$off('change_panel_right_draw', this.changeRightDrawOpen)
     bus.$off('delete-condition', this.deleteCustomComponent)
     bus.$off('current-component-change', this.asideRefresh)
-    bus.$off('aside-set-title', this.asideSetTitle)
+    bus.$off('title-name', this.asideSetTitle)
     const elx = this.$refs.rightPanel
     elx && elx.remove()
   },
@@ -851,16 +851,16 @@ export default {
       bus.$on('change_panel_right_draw', this.changeRightDrawOpen)
       bus.$on('delete-condition', this.deleteCustomComponent)
       bus.$on('current-component-change', this.asideRefresh)
-      bus.$on('aside-set-title', this.asideSetTitle)
+      bus.$on('title-name', this.asideSetTitle)
     },
     asideRefresh() {
       if (this.$refs['chartEditRef']) {
         this.$refs['chartEditRef'].resetChartData()
       }
     },
-    asideSetTitle(val) {
+    asideSetTitle(val, id) {
       if (this.$refs['chartEditRef']) {
-        this.$refs['chartEditRef'].setTitle(val)
+        this.$refs['chartEditRef'].setTitle(val, id)
       }
     },
     deleteCustomComponent(param) {
@@ -1376,6 +1376,7 @@ export default {
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
+      this.$store.commit('setComponentFromList', this.currentFilterCom)
       bus.$emit('refresh-button-info')
       this.closeButton()
     },

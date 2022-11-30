@@ -67,7 +67,8 @@ export default {
         min_height: 200,
         max_height: 500,
         elementpath: false,
-        statusbar: false
+        statusbar: false,
+        convert_urls: false
       }
     }
   },

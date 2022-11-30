@@ -707,23 +707,26 @@ export default {
   border-color: blueviolet;
 }
 
-::v-deep .el-tabs__nav {
-  width: 100%;
+::v-deep .el-tabs__nav-prev {
+  line-height: 25px;
+}
+::v-deep .el-tabs__nav-next {
+  line-height: 25px;
 }
 
-.tab-head-left ::v-deep .el-tabs__nav {
-  width: 100%;
-  text-align: left;
+.tab-head-left ::v-deep .el-tabs__nav-scroll {
+  display: flex;
+  justify-content: start;
 }
 
-.tab-head-right ::v-deep .el-tabs__nav {
-  width: 100%;
-  text-align: right;
+.tab-head-right ::v-deep .el-tabs__nav-scroll {
+  display: flex;
+  justify-content: end;
 }
 
-.tab-head-center ::v-deep .el-tabs__nav {
-  width: 100%;
-  text-align: center;
+.tab-head-center ::v-deep .el-tabs__nav-scroll {
+  display: flex;
+  justify-content: center;
 }
 
 .frame-mask {

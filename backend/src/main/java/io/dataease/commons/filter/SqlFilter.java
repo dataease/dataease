@@ -12,10 +12,13 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class SqlFilter implements Filter {
 
+    private List<String> excludedUris = new ArrayList<>();
 
     @Override
     public void destroy() {
@@ -34,38 +37,43 @@ public class SqlFilter implements Filter {
             return;
         }
 
-        String method = "GET";
-        String param;
-        XssAndSqlHttpServletRequestWrapper xssRequest = null;
-        if (request instanceof HttpServletRequest) {
-            method = ((HttpServletRequest) request).getMethod();
-            xssRequest = new XssAndSqlHttpServletRequestWrapper((HttpServletRequest) request);
-        }
-        if ("POST".equalsIgnoreCase(method)) {
-            param = this.getBodyString(xssRequest.getReader());
-            if (StringUtils.isNotBlank(param)) {
-                if (xssRequest.checkXSSAndSql(param)) {
-                    response.setCharacterEncoding("UTF-8");
-                    response.setContentType("application/json;charset=UTF-8");
-                    String msg = ThreadLocalContextHolder.getData().toString();
-                    DEException.throwException(msg);
-                    return;
+        if(excludedUris.contains(((HttpServletRequest) request).getRequestURI())){
+            chain.doFilter(request, response);
+        }else {
+            String method = "GET";
+            String param;
+            XssAndSqlHttpServletRequestWrapper xssRequest = null;
+            if (request instanceof HttpServletRequest) {
+                method = ((HttpServletRequest) request).getMethod();
+                xssRequest = new XssAndSqlHttpServletRequestWrapper((HttpServletRequest) request);
+            }
+            if ("POST".equalsIgnoreCase(method)) {
+                param = this.getBodyString(xssRequest.getReader());
+                if (StringUtils.isNotBlank(param)) {
+                    if (xssRequest.checkXSSAndSql(param)) {
+                        response.setCharacterEncoding("UTF-8");
+                        response.setContentType("application/json;charset=UTF-8");
+                        String msg = ThreadLocalContextHolder.getData().toString();
+                        DEException.throwException(msg);
+                        return;
+                    }
                 }
             }
+            if (xssRequest.checkParameter()) {
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("application/json;charset=UTF-8");
+                String msg = ThreadLocalContextHolder.getData().toString();
+                DEException.throwException(msg);
+                return;
+            }
+            chain.doFilter(xssRequest, response);
         }
-        if (xssRequest.checkParameter()) {
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json;charset=UTF-8");
-            String msg = ThreadLocalContextHolder.getData().toString();
-            DEException.throwException(msg);
-            return;
-        }
-        chain.doFilter(xssRequest, response);
+
     }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
+        excludedUris.add("/dataset/table/excel/upload");
     }
 
     // 获取request请求body中参数
