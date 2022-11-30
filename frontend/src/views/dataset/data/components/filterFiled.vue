@@ -398,11 +398,11 @@ export default {
       this.filterList = [
         {
           value: 'logic',
-          label: '条件筛选'
+          label: this.$t('deDataset.logic_filter')
         },
         {
           value: 'enum',
-          label: '枚举筛选'
+          label: this.$t('deDataset.enum_filter')
         }
       ]
       if ([1, 2, 3].includes(deType)) {

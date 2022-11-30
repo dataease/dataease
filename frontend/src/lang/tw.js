@@ -531,7 +531,10 @@ export default {
     set_saved_successfully: '數據集保存成功',
     to_start_using: '瀏覽您的數據庫，表和列的內容。 選擇一個數據庫即可開始使用。',
     to_run_query: '點擊運行査詢',
-    the_running_results: '即可查看運行結果'
+    the_running_results: '即可查看運行結果',
+    item: '项',
+    logic_filter: '条件筛选',
+    enum_filter: '枚举筛选'
   },
   detabs: {
     custom_sort: '自定義排序',
@@ -1722,7 +1725,17 @@ export default {
     export_dataset: '數據集導出',
     filename: '文件名稱',
     export_filter: '篩選條件',
-    pls_input_filename: '請輸入文件名稱'
+    pls_input_filename: '請輸入文件名稱',
+    calc_tips: {
+      tip1: '表达式语法请遵循该数据源对应的数据库语法。',
+      tip2: '数据集中不支持聚合运算。',
+      tip3: '引用字段以 "[" 开始， "]" 结束',
+      tip4: '请勿修改引用内容，否则将引用失败',
+      tip5: '若输入与引用字段相同格式的内容，将被当作引用字段处理',
+      tip6: '使用数据集对应数据库类型所支持的函数，语法同对应数据库',
+      tip7: '如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])',
+      tip8: '非直连模式数据集，使用Doris数据库函数，可参考Doris官网'
+    }
   },
   driver: {
     driver: '驅動',

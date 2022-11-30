@@ -39,7 +39,7 @@
           v-if="['db', 'excel', 'api'].includes(datasetType)"
           class="table-num"
         >{{ $t('deDataset.selected') }} {{ tableNum }}
-          {{ ['excel'].includes(datasetType) ? $t('deDataset.table') : '项' }}</span>
+          {{ ['excel'].includes(datasetType) ? $t('deDataset.table') : $t('deDataset.item') }}</span>
         <deBtn
           :disabled="['db', 'excel', 'api'].includes(datasetType) && !tableNum"
           type="primary"

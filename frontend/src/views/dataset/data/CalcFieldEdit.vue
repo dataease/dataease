@@ -29,9 +29,9 @@
                 placement="bottom"
               >
                 <div slot="content">
-                  表达式语法请遵循该数据源对应的数据库语法。
+                  {{ $t('dataset.calc_tips.tip1') }}
                   <br>
-                  数据集中不支持聚合运算。
+                  {{ $t('dataset.calc_tips.tip2') }}
                 </div>
                 <i
                   class="el-icon-info"
@@ -90,11 +90,11 @@
             placement="bottom"
           >
             <div slot="content">
-              引用字段以 "[" 开始， "]" 结束
+              {{ $t('dataset.calc_tips.tip3') }}
               <br>
-              请勿修改引用内容，否则将引用失败
+              {{ $t('dataset.calc_tips.tip4') }}
               <br>
-              若输入与引用字段相同格式的内容，将被当作引用字段处理
+              {{ $t('dataset.calc_tips.tip5') }}
             </div>
             <i
               class="el-icon-info"
@@ -214,11 +214,11 @@
             placement="bottom"
           >
             <div slot="content">
-              使用数据集对应数据库类型所支持的函数，语法同对应数据库
+              {{ $t('dataset.calc_tips.tip6') }}
               <br>
-              如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])
+              {{ $t('dataset.calc_tips.tip7') }}
               <br>
-              非直连模式数据集，使用Doris数据库函数，可参考Doris官网
+              {{ $t('dataset.calc_tips.tip8') }}
               https://doris.apache.org/zh-CN/
             </div>
             <i
