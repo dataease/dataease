@@ -112,9 +112,9 @@ export default {
         }
       }
 
-      //eslint-disable-next-line
+      // eslint-disable-next-line
       this.showPrevMore = showPrevMore
-      //eslint-disable-next-line
+      // eslint-disable-next-line
       this.showNextMore = showNextMore
 
       return array
