@@ -88,13 +88,10 @@
             class="item"
             effect="dark"
             placement="bottom"
+            popper-class="popper-tip"
           >
             <div slot="content">
-              引用字段以 "[" 开始， "]" 结束
-              <br>
-              请勿修改引用内容，否则将引用失败
-              <br>
-              若输入与引用字段相同格式的内容，将被当作引用字段处理
+              {{ $t('chart.reference_field_tip') }}
             </div>
             <i
               class="el-icon-info"
