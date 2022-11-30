@@ -2,7 +2,7 @@
   <div
     ref="tableContainer"
     :style="bg_class"
-    style="padding: 8px;width: 100%;height: 100%;overflow: hidden;"
+    style="padding: 4px;width: 100%;height: 100%;overflow: hidden;"
   >
     <span
       v-show="title_show"
