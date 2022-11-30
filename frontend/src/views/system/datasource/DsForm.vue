@@ -182,6 +182,7 @@
             >
               <deTextarea
                 v-model="form.desc"
+                :maxlength="50"
                 class="w100-textarea"
               />
             </el-form-item>

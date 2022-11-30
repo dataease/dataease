@@ -36,8 +36,8 @@
           icon="iconfont icon-icon-filter"
           @click="filterShow"
         >{{
-            $t("user.filter")
-          }}
+           $t("user.filter")
+         }}
           <template v-if="filterTexts.length">
             ({{ filterTexts.length }})
           </template>
@@ -83,7 +83,7 @@
     >
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t("user.result_one") }}</span>
-      <el-divider direction="vertical"/>
+      <el-divider direction="vertical" />
       <i
         v-if="showScroll"
         class="el-icon-arrow-left arrow-filter"
@@ -96,9 +96,9 @@
           class="text"
         >
           {{ ele }} <i
-          class="el-icon-close"
-          @click="clearOneFilter(index)"
-        />
+            class="el-icon-close"
+            @click="clearOneFilter(index)"
+          />
         </p>
       </div>
       <i
@@ -162,14 +162,14 @@
         >
           <template slot-scope="scope">
             <span v-if="scope.row.rate === 'SIMPLE'">{{
-                $t("dataset.execute_once")
-              }}</span>
+              $t("dataset.execute_once")
+            }}</span>
             <span v-if="scope.row.rate === 'CRON'">{{
-                $t("dataset.cron_config")
-              }}</span>
+              $t("dataset.cron_config")
+            }}</span>
             <span v-if="scope.row.rate === 'SIMPLE_CRON'">{{
-                $t("dataset.simple_cron")
-              }}</span>
+              $t("dataset.simple_cron")
+            }}</span>
           </template>
         </el-table-column>
 
@@ -197,8 +197,8 @@
               v-if="scope.row.lastExecStatus"
               :class="[`de-${scope.row.lastExecStatus}-pre`, 'de-status']"
             >{{
-                $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
-              }}
+               $t(`dataset.${scope.row.lastExecStatus.toLocaleLowerCase()}`)
+             }}
               <svg-icon
                 v-if="scope.row.lastExecStatus === 'Error'"
                 style="cursor: pointer;"
@@ -333,18 +333,18 @@
           secondary
           @click="show_error_massage = false"
         >{{
-            $t("dataset.close")
-          }}</deBtn>
+          $t("dataset.close")
+        }}</deBtn>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import {columnOptions} from './options'
-import {formatOrders} from '@/utils/index'
-import {datasetTaskList, post} from '@/api/dataset/dataset'
-import {hasDataPermission} from '@/utils/permission'
+import { columnOptions } from './options'
+import { formatOrders } from '@/utils/index'
+import { datasetTaskList, post } from '@/api/dataset/dataset'
+import { hasDataPermission } from '@/utils/permission'
 import GridTable from '@/components/gridTable/index.vue'
 import filterUser from './FilterUser.vue'
 import msgCfm from '@/components/msgCfm/index'
@@ -353,7 +353,7 @@ import keyEnter from '@/components/msgCfm/keyEnter.js'
 
 export default {
   name: 'DatasetTaskList',
-  components: {GridTable, filterUser},
+  components: { GridTable, filterUser },
   mixins: [msgCfm, keyEnter],
   props: {
     transCondition: {
@@ -396,7 +396,7 @@ export default {
     }
   },
   created() {
-    const {taskId, name} = this.transCondition
+    const { taskId, name } = this.transCondition
     if (taskId) {
       this.nickName = name
     }
@@ -427,7 +427,7 @@ export default {
         document.querySelector('#resize-for-filter')
       )
     },
-    layoutResize: _.debounce(function () {
+    layoutResize: _.debounce(function() {
       this.getScrollStatus()
     }, 200),
     scrollPre() {
@@ -501,7 +501,7 @@ export default {
       this.handleCurrentChange(1)
     },
     search(showLoading = true) {
-      const {taskId, name} = this.transCondition
+      const { taskId, name } = this.transCondition
       const param = {
         orders: formatOrders(this.orderConditions),
         conditions: [...this.cacheCondition]
@@ -520,7 +520,7 @@ export default {
           field: 'dataset_table_task.id'
         })
       }
-      const {currentPage, pageSize} = this.paginationConfig
+      const { currentPage, pageSize } = this.paginationConfig
       datasetTaskList(currentPage, pageSize, param, showLoading).then(
         (response) => {
           const multipleSelection = this.multipleSelection.map(ele => ele.id)
@@ -568,7 +568,7 @@ export default {
       })
     },
     changeTaskStatus(task) {
-      const {status} = task
+      const { status } = task
       if (!['Pending', 'Underway'].includes(status)) {
         return
       }
@@ -613,7 +613,7 @@ export default {
     },
     selectDataset(row) {
       if (row) {
-        const {datasetName, id, tableId} = row
+        const { datasetName, id, tableId } = row
         this.$router.push({
           path: '/task-ds-form',
           query: {
@@ -634,7 +634,7 @@ export default {
       )
     },
     disableExec(task) {
-      return ((task.status === 'Stopped' && task.rate !== 'SIMPLE') || task.status === 'Pending' || task.status ==='Exec' || !hasDataPermission('manage', task.privileges))
+      return ((task.status === 'Stopped' && task.rate !== 'SIMPLE') || task.status === 'Pending' || task.status === 'Exec' || !hasDataPermission('manage', task.privileges))
     },
     disableDelete(task) {
       return false

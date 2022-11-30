@@ -372,7 +372,7 @@ export default {
     ])
   },
   mounted() {
-    if (navigator.platform.indexOf('Mac') == -1) {
+    if (navigator.platform.indexOf('Mac') === -1) {
       this.systemOS = 'Other'
     }
     this.initCurFields()
