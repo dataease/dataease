@@ -859,6 +859,9 @@ export default {
         if (item.dateFormatType !== 'custom') {
           item.dateFormat = item.dateFormatType
         }
+      }else {
+        item.dateFormatType = ''
+        item.dateFormat = ''
       }
       if (item.dateFormatType === 'custom' && !item.dateFormat) {
         return
