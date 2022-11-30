@@ -707,9 +707,6 @@ export default {
   border-color: blueviolet;
 }
 
-::v-deep .el-tabs__nav {
-  display: flex;
-}
 ::v-deep .el-tabs__nav-prev {
   line-height: 25px;
 }
@@ -717,19 +714,19 @@ export default {
   line-height: 25px;
 }
 
-.tab-head-left ::v-deep .el-tabs__nav {
+.tab-head-left ::v-deep .el-tabs__nav-scroll {
   display: flex;
-  text-align: left;
+  justify-content: start;
 }
 
-.tab-head-right ::v-deep .el-tabs__nav {
+.tab-head-right ::v-deep .el-tabs__nav-scroll {
   display: flex;
-  text-align: right;
+  justify-content: end;
 }
 
-.tab-head-center ::v-deep .el-tabs__nav {
+.tab-head-center ::v-deep .el-tabs__nav-scroll {
   display: flex;
-  text-align: center;
+  justify-content: center;
 }
 
 .frame-mask {
