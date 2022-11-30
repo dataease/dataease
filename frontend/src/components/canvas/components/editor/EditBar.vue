@@ -137,13 +137,14 @@
           :target="curComponent.hyperlinks.openMode "
           :href="curComponent.hyperlinks.content "
         >
-          <i class="icon iconfont icon-com-jump"/>
+          <i class="icon iconfont icon-com-jump" />
         </a>
       </span>
 
       <map-layer-controller
         v-if="chart && showMapLayerController"
         :chart="chart"
+        :series-id-map="seriesIdMap"
       />
     </div>
 
@@ -239,6 +240,14 @@ export default {
     chart: {
       type: Object,
       default: null
+    },
+    seriesIdMap: {
+      type: Object,
+      default: () => {
+        return {
+          id: ''
+        }
+      }
     }
   },
   data() {

@@ -729,7 +729,6 @@ export default {
             optType: 'rename',
             titlePre: this.$t('commons.edit'),
             panelInfo: {
-              pid: param.data.pid,
               id: param.data.id,
               name: param.data.name,
               nodeType: param.type

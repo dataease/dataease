@@ -42,6 +42,14 @@ export default {
     chart: {
       type: Object,
       required: true
+    },
+    seriesIdMap: {
+      type: Object,
+      default: () => {
+        return {
+          id: ''
+        }
+      }
     }
   },
   data() {
@@ -79,11 +87,12 @@ export default {
         id: this.chart.id,
         seriesId: this.currentSeriesId
       }
+      this.seriesIdMap.id = this.currentSeriesId
       bus.$emit('change-series-id', param)
     },
 
     init() {
-      this.currentSeriesId = this.customAttr.currentSeriesId
+      this.currentSeriesId = this.seriesIdMap?.id || this.customAttr.currentSeriesId
     }
   }
 }

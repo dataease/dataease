@@ -40,6 +40,7 @@
         :canvas-id="canvasId"
         :element="element"
         :chart="chart"
+        :series-id-map="seriesIdMap"
         @showViewDetails="showViewDetails"
         @amRemoveItem="amRemoveItem"
         @amAddItem="amAddItem"
@@ -65,7 +66,7 @@
         @mousedown.stop.prevent="handleDown(handlei, $event)"
         @touchstart.stop.prevent="handleTouchDown(handlei, $event)"
       >
-        <slot :name="handlei"/>
+        <slot :name="handlei" />
       </div>
       <div
         :id="componentCanvasId"
@@ -78,7 +79,7 @@
           class="svg-background"
           :icon-class="mainSlotSvgInner"
         />
-        <slot/>
+        <slot />
       </div>
     </div>
   </div>
@@ -431,7 +432,10 @@ export default {
       // 是否移动 （如果没有移动 不需要记录snapshot）
       hasMove: false,
       // 上次的鼠标指针纵向位置，用来判断指针是上移还是下移
-      latestMoveY: 0
+      latestMoveY: 0,
+      seriesIdMap: {
+        id: ''
+      }
     }
   },
   computed: {
