@@ -1904,7 +1904,7 @@ export default {
   },
   panel: {
     position_adjust_component: 'Position adjust',
-    active_font_size: 'Active font size',
+    active_font_size: 'Selected font size',
     carousel: 'Carousel',
     switch_time: 'Switch time',
     position_adjust: 'Position',
