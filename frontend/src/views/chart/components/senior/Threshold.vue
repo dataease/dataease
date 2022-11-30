@@ -369,7 +369,7 @@ export default {
         const arr = this.thresholdForm.gaugeThreshold.split(',')
         for (let i = 0; i < arr.length; i++) {
           const ele = arr[i]
-          if (parseFloat(ele).toString() === 'NaN' || parseFloat(ele) < 1 || parseFloat(ele) > 99) {
+          if (parseFloat(ele).toString() === 'NaN' || parseFloat(ele) <= 0 || parseFloat(ele) >= 100) {
             this.$message({
               message: this.$t('chart.gauge_threshold_format_error'),
               type: 'error',
