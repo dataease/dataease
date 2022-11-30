@@ -13,6 +13,7 @@
       :canvas-id="canvasId"
       :chart="chart"
       :show-position="showPosition"
+      :series-id-map="seriesIdMap"
       @showViewDetails="showViewDetails"
     />
     <div
@@ -149,7 +150,10 @@ export default {
   data() {
     return {
       previewVisible: false,
-      chart: null
+      chart: null,
+      seriesIdMap: {
+        id: ''
+      }
     }
   },
   computed: {
@@ -274,7 +278,7 @@ export default {
       } else {
         return {
           ...
-            getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
+          getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
           position: 'relative'
         }
       }
