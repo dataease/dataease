@@ -43,7 +43,7 @@
           :span="3"
           style="padding-left: 10px;padding-top: 5px"
         >
-          <el-checkbox v-model="curComponent.commonBackground.backgroundColorSelect">颜色</el-checkbox>
+          <el-checkbox v-model="curComponent.commonBackground.backgroundColorSelect">{{ $t('chart.color') }}</el-checkbox>
         </el-col>
         <el-col
           :span="1"
@@ -58,7 +58,7 @@
           />
         </el-col>
         <el-col :span="3">
-          <span class="params-title-small">不透明度：</span>
+          <span class="params-title-small">{{ $t('chart.not_alpha') }}</span>
         </el-col>
         <el-col :span="11">
           <el-slider
@@ -137,7 +137,7 @@
               v-model="curComponent.commonBackground.backgroundType"
               label="innerImage"
               @change="onChangeType"
-            >边框
+            >{{ $t('panel.board') }}
             </el-radio>
             <el-color-picker
               v-model="curComponent.commonBackground.innerImageColor"

@@ -311,6 +311,7 @@ export default {
     validate: '校验',
     batch_add: '批量添加',
     tag_tip: '输入回车添加标签',
+    search_keywords: '输入关键字搜索',
     table: {
       select_tip: '已选中 {0} 条数据'
     },
@@ -322,7 +323,10 @@ export default {
       start_date_time: '开始日期时间',
       end_date_time: '结束日期时间',
       range_separator: '至',
-      data_time_error: '开始日期不能大于结束日期'
+      data_time_error: '开始日期不能大于结束日期',
+      one_day: '一天',
+      one_week: '一周',
+      one_month: '一个月'
     },
     adv_search: {
       title: '高级搜索',
@@ -1464,7 +1468,15 @@ export default {
     empty_data_strategy: '空值处理',
     break_line: '线条断开',
     set_zero: '置为0,线条不断开',
-    ignore_data: '跳过空值,不展示'
+    ignore_data: '跳过空值,不展示',
+    sub_dimension_tip: '该字段为必填项，且不应使用类别轴中的字段，若无需该字段，请选择基础图表进行展示，否则展示效果不理想。',
+    drill_dimension_tip: '钻取字段仅支持数据集中的字段',
+    table_scroll_tip: '明细表仅在分页模式为"下拉"时生效。',
+    table_threshold_tip: '提示：请勿重复选择字段，若同一字段重复配置，则只有最后的字段配置生效',
+    table_column_width_tip: '列宽并非任何时候都能生效。容器宽度优先级高于列宽，即(表格容器宽度 / 列数 > 指定列宽)，则列宽优先取(容器宽度 / 列数)。',
+    reference_field_tip: '引用字段以 "[" 开始， "]" 结束。请勿修改引用内容，否则将引用失败。若输入与引用字段相同格式的内容，将被当作引用字段处理',
+    scatter_tip: '该指标生效时，样式大小中的气泡大小属性将失效',
+    place_name_mapping: '地名映射'
   },
   dataset: {
     spend_time: '耗时',
@@ -2240,7 +2252,11 @@ export default {
     select_view: '请选择视图...',
     visual: '虚拟化',
     prohibit_multiple: '禁止同数据集多字段',
-    be_empty_dir: '是空目录！'
+    be_empty_dir: '是空目录！',
+    fold: '收起',
+    expand: '展开',
+    pdf_export: 'PDF 导出',
+    switch_pdf_template: '切换 PDF 模板'
   },
   plugin: {
     local_install: '本地安装',
