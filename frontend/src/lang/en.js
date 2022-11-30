@@ -1758,7 +1758,7 @@ export default {
     http_port: 'Http Port',
     port: 'Port',
     datasource_url: 'URL address',
-    please_input_datasource_url: 'Please enter Elasticsearch 地址，e.g: http://es_host:es_port',
+    please_input_datasource_url: 'Please enter Elasticsearch URL address，e.g: http://es_host:es_port',
     please_input_data_base: 'Please enter the database name',
     please_select_oracle_type: 'Select connection type',
     please_input_user_name: 'Please enter user name',
