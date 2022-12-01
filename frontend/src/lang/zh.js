@@ -2764,5 +2764,24 @@ export default {
   logout: {
     oidc_logout_error: 'OIDC退出失败，是否继续退出DataEase？',
     cas_logout_error: 'CAS服务异常，请联系管理员！'
+  },
+  watermark: {
+    support_params: '当前支持的参数：',
+    enable: '启用',
+    enable_panel_custom: '允许仪表板单独打开或者关闭水印',
+    content: '内容',
+    custom_content: '自定义公式',
+    account: '账号',
+    nick_name: '昵称',
+    ip: 'IP',
+    now: '当前时间',
+    watermark_color: '水印颜色',
+    watermark_font_size: '水印字号',
+    watermark_space: '水印间距',
+    horizontal: '横向',
+    vertical: '纵向',
+    reset: '重置',
+    preview: '预览',
+    save: '保存'
   }
 }

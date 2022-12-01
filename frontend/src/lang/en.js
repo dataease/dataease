@@ -2765,5 +2765,24 @@ export default {
   logout: {
     oidc_logout_error: 'OIDC failed to exit, do you continue to exit DataEase?',
     cas_logout_error: 'The CAS service is abnormal, please contact the administrator!'
+  },
+  watermark: {
+    support_params: 'Currently supported parameters:',
+    enable: 'Enable',
+    enable_panel_custom: 'Allow the dashboard to open or close the watermark independently',
+    content: 'content',
+    custom_content: 'Custom Content',
+    account: 'Account',
+    nick_name: 'Nick Name',
+    ip: 'IP',
+    now: 'Now Time',
+    watermark_color: 'Watermark Color',
+    watermark_font_size: 'Watermark Fontsize',
+    watermark_space: 'Watermark Space',
+    horizontal: 'Horizontal',
+    vertical: 'Vertical',
+    reset: 'Reset',
+    preview: 'Preview',
+    save: 'Save'
   }
 }
