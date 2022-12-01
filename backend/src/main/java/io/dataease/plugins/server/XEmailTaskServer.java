@@ -1,8 +1,10 @@
 package io.dataease.plugins.server;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.ArrayUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.dataease.auth.annotation.DeRateLimiter;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.excel.ExcelSheetModel;
@@ -27,6 +29,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 import springfox.documentation.annotations.ApiIgnore;
@@ -150,7 +155,51 @@ public class XEmailTaskServer {
         return xpackEmailCreate;
     }
 
-    @PostMapping("/preview")
+    @DeRateLimiter
+    @GetMapping("/testApple")
+    public String testApple() {
+        return "调用api成功";
+    }
+
+    @DeRateLimiter
+    @PostMapping(value = "/screenshot", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<ByteArrayResource> screenshot(@RequestBody XpackEmailViewRequest request) {
+        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
+        String url = ServletUtils.domain() + "/#/previewScreenShot/" + request.getPanelId() + "/true";
+        byte[] bytes = null;
+        try {
+            String currentToken = ServletUtils.getToken();
+            Future<?> future = priorityExecutor.submit(() -> {
+                try {
+                    return emailXpackService.print(url, currentToken, buildPixel(request.getPixel()));
+                } catch (Exception e) {
+                    LogUtil.error(e.getMessage(), e);
+                    DEException.throwException("预览失败，请联系管理员");
+                }
+                return null;
+            }, 0);
+            Object object = future.get();
+            if (ObjectUtils.isNotEmpty(object)) {
+                bytes = (byte[]) object;
+                if (ArrayUtil.isNotEmpty(bytes)) {
+                    String fileName = request.getPanelId() + ".jpeg";
+                    ByteArrayResource bar = new ByteArrayResource(bytes);
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+                    ContentDisposition contentDisposition = ContentDisposition.parse("attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+                    headers.setContentDisposition(contentDisposition);
+                    return new ResponseEntity(bar, headers, HttpStatus.OK);
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException("预览失败，请联系管理员");
+        }
+
+        return null;
+    }
+
+    @PostMapping(value = "/preview")
     public String preview(@RequestBody XpackEmailViewRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         String panelId = request.getPanelId();
@@ -159,7 +208,6 @@ public class XEmailTaskServer {
         String url = ServletUtils.domain() + "/#/previewScreenShot/" + panelId + "/true";
 
         String token = ServletUtils.getToken();
-        String fileId = null;
         try {
             Future<?> future = priorityExecutor.submit(() -> {
                 try {
@@ -172,19 +220,21 @@ public class XEmailTaskServer {
             }, 0);
             Object object = future.get();
             if (ObjectUtils.isNotEmpty(object)) {
-                fileId = object.toString();
+                byte[] bytes = (byte[]) object;
+                String baseCode = Base64Utils.encodeToString(bytes);
+                String imageUrl = "data:image/jpeg;base64," + baseCode;
+                String html = "<div>" +
+                        content +
+                        "<img style='width: 100%;' id='" + panelId + "' src='" + imageUrl + "' />" +
+                        "</div>";
+
+                return html;
             }
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
             DEException.throwException("预览失败，请联系管理员");
         }
-        String imageUrl = "/system/ui/image/" + fileId;
-        String html = "<div>" +
-                content +
-                "<img style='width: 100%;' id='" + panelId + "' src='" + imageUrl + "' />" +
-                "</div>";
-
-        return html;
+        return null;
 
     }
 
