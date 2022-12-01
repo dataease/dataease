@@ -156,12 +156,6 @@ public class XEmailTaskServer {
     }
 
     @DeRateLimiter
-    @GetMapping("/testApple")
-    public String testApple() {
-        return "调用api成功";
-    }
-
-    @DeRateLimiter
     @PostMapping(value = "/screenshot", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<ByteArrayResource> screenshot(@RequestBody XpackEmailViewRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
