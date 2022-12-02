@@ -435,7 +435,6 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
     }
     sortParams.push(sort)
   }
-  totalCfg.col.totalSort = false
   if (totalCfg.col.totalSort && totalCfg.col.totalSort !== 'none' && r.length > 0 && totalCfg.col.showGrandTotals && v.indexOf(totalCfg.col.totalSortField) > -1) {
     const sort = {
       sortFieldId: r[0],
