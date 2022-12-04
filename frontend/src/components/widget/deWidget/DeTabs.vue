@@ -716,12 +716,12 @@ export default {
 
 .tab-head-left ::v-deep .el-tabs__nav-scroll {
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
 }
 
 .tab-head-right ::v-deep .el-tabs__nav-scroll {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .tab-head-center ::v-deep .el-tabs__nav-scroll {

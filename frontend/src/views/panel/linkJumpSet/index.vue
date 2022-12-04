@@ -282,11 +282,11 @@
                         class="item"
                         effect="dark"
                         placement="bottom"
-                        popper-class="popper-tip"
                       >
-                        <div slot="content">
-                          {{ $t('chart.reference_field_tip') }}
-                        </div>
+                        <div
+                          slot="content"
+                          v-html="$t('chart.reference_field_tip')"
+                        />
                         <i
                           class="el-icon-info"
                           style="cursor: pointer;"

@@ -84,11 +84,10 @@
                     effect="dark"
                     placement="bottom"
                   >
-                    <div slot="content">
-                      最小值、最大值、间隔均为数值类型；若不填，则该项视为自动。
-                      <br>
-                      请确保填写数值能正确计算，否则将无法正常显示轴值。
-                    </div>
+                    <div
+                      slot="content"
+                      v-html="$t('chart.axis_tip')"
+                    />
                     <i
                       class="el-icon-info"
                       style="cursor: pointer;"

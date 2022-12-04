@@ -1031,12 +1031,12 @@ export default {
     line_symbol_size: 'Break point size',
     line_type_solid: 'Solid line',
     line_type_dashed: 'Dotted line',
-    line_symbol_circle: 'circular',
+    line_symbol_circle: 'Circular',
     line_symbol_emptyCircle: 'Hollow circle',
-    line_symbol_rect: 'rectangle',
+    line_symbol_rect: 'Rectangle',
     line_symbol_roundRect: 'Rounded rectangle',
-    line_symbol_triangle: 'triangle',
-    line_symbol_diamond: 'diamond',
+    line_symbol_triangle: 'Triangle',
+    line_symbol_diamond: 'Diamond',
     line_symbol_pin: 'nail',
     line_symbol_arrow: 'arrow',
     line_symbol_none: 'None',
@@ -1046,7 +1046,7 @@ export default {
     funnel_width: 'width',
     line_smooth: 'Smooth polyline',
     title_style: 'Title Style',
-    text_fontsize: 'font size',
+    text_fontsize: 'Font size',
     text_color: 'Font color',
     text_h_position: 'Horizontal position',
     text_v_position: 'Vertical position',
@@ -1064,7 +1064,7 @@ export default {
     shape: 'shape',
     polygon: 'polygon',
     circle: 'circular',
-    label: 'label',
+    label: 'Label',
     label_position: 'Label location',
     label_bg: 'Label BG',
     label_shadow: 'Label Shadow',
@@ -1475,10 +1475,23 @@ export default {
     drill_dimension_tip: 'Only fields in the dataset can be drilled',
     table_scroll_tip: 'The detail table is only effective when the pagination mode is "Drop-down".',
     table_threshold_tip: 'Tip: Do not select fields repeatedly. If the same field is configured repeatedly, only the last field will take effect.',
-    table_column_width_tip: 'Column width do not always work. The priority of the container width is higher than the column width, which means if the result of dividing the width of the table container by the number of columns is greater than specified column width, the former will take effect.',
-    reference_field_tip: 'Reference fields start with "[" and end with "]". Do not modify the reference content, otherwise the reference will fail. If you enter content in the same format as the reference field, it will be treated as a reference field.',
+    table_column_width_tip: `Column width do not always work.<br/>
+                             The priority of the container width is higher than the column width, <br/>
+                             which means if the result of dividing the width of the table container by the number of columns is greater than specified column width, <br/>
+                             the former will take effect.`,
+    reference_field_tip: `Reference fields start with "[" and end with "]". <br/>
+                          Do not modify the reference content, otherwise the reference will fail.<br/>
+                          If you enter content in the same format as the reference field, it will be treated as a reference field.`,
     scatter_tip: 'When this indicator is in effect, the bubble size attribute in the style size will be invalid',
-    place_name_mapping: 'Place name mapping'
+    place_name_mapping: 'Place name mapping',
+    axis_tip: 'The minimum value, maximum value, and interval are all numeric types; it will be regarded as automatic if left blank.<br/>Please make sure that the filled values can be calculated correctly, otherwise the axis values will not be displayed normally.',
+    format_tip: `The template variables include {a}, {b}, {c}, {d}, which represent series name, data name, data value, etc. respectively.<br>
+                    When the trigger position is 'coordinate axis', there will be multiple series of data. At this time, the index of the series can be represented by {a0}, {a1}, {a2} followed by an index.<br>
+                    {a}, {b}, {c}, {d} have different meanings under different graph types. Among them, variables {a}, {b}, {c}, {d} represent data meanings in different chart types:<br><br>
+                    Line (area) chart, Column (Bar) chart, Dashboard: {a} is series name, {b} is category value, {c} is value<br>
+                    Pie chart, Funnel chart: {a} is series name, {b} is data item name, {c} is value, {d} is percentage<br>
+                    Map : {a} (series name), {b} is area name, {c} is merged values, {d} is none<br>
+                    Scatter (Bubble) plot: {a} is series name, {b} is data name, {c} is numeric array, {d} is none`
   },
   dataset: {
     spend_time: 'Spend',
@@ -2062,6 +2075,7 @@ export default {
     delete_success: 'Delete Success',
     confirm: 'Confirm',
     cancel: 'Cancel',
+    save: 'Save',
     search: 'Search',
     back: 'Back',
     view: 'Chart',
