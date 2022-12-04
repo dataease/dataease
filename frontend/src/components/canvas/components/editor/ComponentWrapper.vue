@@ -304,7 +304,6 @@ export default {
       setTimeout(() => {
         _this.$store.commit('setCurComponent', { component: _this.config, index: _this.index })
       }, 200)
-
     },
     showViewDetails(params) {
       this.$refs.wrapperChild.openChartDetailsDialog(params)

@@ -859,7 +859,7 @@ export default {
         if (item.dateFormatType !== 'custom') {
           item.dateFormat = item.dateFormatType
         }
-      }else {
+      } else {
         item.dateFormatType = ''
         item.dateFormat = ''
       }

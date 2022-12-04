@@ -330,11 +330,11 @@
             class="item"
             effect="dark"
             placement="bottom"
-            popper-class="popper-tip"
           >
-            <div slot="content">
-              {{ $t('chart.table_column_width_tip') }}
-            </div>
+            <div
+              slot="content"
+              v-html="$t('chart.table_column_width_tip')"
+            />
             <i
               class="el-icon-info"
               style="cursor: pointer;color: #606266;margin-left: 4px;"
