@@ -29,7 +29,7 @@ const actions = {
     commit('SET_CURRENT_PATH', path)
   }
 }
-export const fullScreenRouters = ['XpackThemeForm', 'system/datasource/DsForm', 'dataset/Form']
+export const fullScreenRouters = ['XpackThemeForm', 'system/datasource/DsForm', 'dataset/Form', 'DeAutoLogin']
 export const filterAsyncRouter = (routers) => { // 遍历后台传来的路由字符串，转换为组件对象
   return routers.map(router => {
     if (!fullScreenRouters.includes(router.component) && router.type === 1 && router.pid === 0 && router.component && router.component !== 'Layout') {

@@ -26,7 +26,7 @@ NProgress.configure({
   showSpinner: false
 }) // NProgress Configuration
 
-const whiteList = ['/login', '/401', '/404', '/delink', '/nolic'] // no redirect whitelist
+const whiteList = ['/login', '/401', '/404', '/delink', '/nolic', '/de-auto-login'] // no redirect whitelist
 
 const routeBefore = (callBack) => {
   let uiInfo = getSysUI()
@@ -53,7 +53,7 @@ const routeBefore = (callBack) => {
     callBack()
   }
 }
-router.beforeEach(async(to, from, next) => routeBefore(() => {
+router.beforeEach(async (to, from, next) => routeBefore(() => {
   // start progress bar
   NProgress.start()
   const mobileIgnores = ['/delink']
