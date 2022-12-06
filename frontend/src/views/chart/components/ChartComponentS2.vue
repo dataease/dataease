@@ -67,8 +67,8 @@
           >
             {{ $t('chart.total') }}
             <span>{{
-              (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
-            }}</span>
+                (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
+              }}</span>
             {{ $t('chart.items') }}
           </span>
           <de-pagination
@@ -101,10 +101,15 @@ import { DEFAULT_TITLE_STYLE, NOT_SUPPORT_PAGE_DATASET } from '@/views/chart/cha
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
 import { mapState } from 'vuex'
 import DePagination from '@/components/deCustomCm/pagination.js'
+
 export default {
   name: 'ChartComponentS2',
   components: { TitleRemark, ViewTrackBar, ChartTitleUpdate, DePagination },
   props: {
+    terminalType: {
+      type: String,
+      default: 'pc'
+    },
     chart: {
       type: Object,
       required: true
@@ -183,13 +188,18 @@ export default {
       return this.previewCanvasScale.scalePointWidth
     },
     autoStyle() {
-      return {
-        height: (100 / this.scale) + '%!important',
-        width: (100 / this.scale) + '%!important',
-        left: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
-        top: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
-        transform: 'scale(' + this.scale + ')'
+      if (this.terminalType === 'pc') {
+        return {
+          height: (100 / this.scale) + '%!important',
+          width: (100 / this.scale) + '%!important',
+          left: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
+          top: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
+          transform: 'scale(' + this.scale + ')'
+        }
+      } else {
+        return {}
       }
+
     },
     trackBarStyleTime() {
       return this.trackBarStyle

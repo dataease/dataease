@@ -17,7 +17,7 @@
       :active-color="activeColor"
       :border-color="borderColor"
       :border-active-color="borderActiveColor"
-      :addable="isEdit"
+      :addable="isEdit && !mobileLayoutStatus"
       @tab-add="addTab"
       @tab-click="handleClick"
     >
@@ -710,6 +710,7 @@ export default {
 ::v-deep .el-tabs__nav-prev {
   line-height: 25px;
 }
+
 ::v-deep .el-tabs__nav-next {
   line-height: 25px;
 }
