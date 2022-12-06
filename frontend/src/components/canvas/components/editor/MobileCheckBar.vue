@@ -13,6 +13,7 @@
 <script>
 
 import { mapState } from 'vuex'
+
 export default {
   props: {
     element: {
@@ -55,7 +56,7 @@ export default {
     },
     deleteComponent() {
       this.$emit('amRemoveItem')
-      this.$store.commit('deleteComponent')
+      this.$store.commit('deleteComponentWithId', this.element.id)
       this.$store.commit('setCurComponent', { component: null, index: null })
     },
     updateMobileSelected(id, mobileSelected) {
@@ -70,29 +71,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .bar-main{
-    position: absolute;
-    float:right;
-    z-index: 10000;
-    border-radius:2px;
-    padding-left: 1px;
-    padding-right: 1px;
-    cursor:pointer!important;
-    text-align: center;
-    background-color: var(--primary,#3370ff);
-  }
-  .bar-main i{
-    color: white;
-    float: right;
-    margin-right: 3px;
-  }
+.bar-main {
+  position: absolute;
+  float: right;
+  z-index: 10000;
+  border-radius: 2px;
+  padding-left: 1px;
+  padding-right: 1px;
+  cursor: pointer !important;
+  text-align: center;
+  background-color: var(--primary, #3370ff);
+}
 
-  .bar-main ::v-deep .el-checkbox__inner{
-    width: 16px;
-    height: 16px;
-  }
+.bar-main i {
+  color: white;
+  float: right;
+  margin-right: 3px;
+}
 
-  .bar-main ::v-deep .el-checkbox__inner::after{
-    width: 4.5px;
-  }
+.bar-main ::v-deep .el-checkbox__inner {
+  width: 16px;
+  height: 16px;
+}
+
+.bar-main ::v-deep .el-checkbox__inner::after {
+  width: 4.5px;
+}
 </style>
