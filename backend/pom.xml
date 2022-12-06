@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <artifactId>dataease-server</artifactId>
         <groupId>io.dataease</groupId>
-        <version>1.17.0</version>
+        <version>1.18.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -203,7 +204,7 @@
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-interface</artifactId>
-            <version>1.17.0</version>
+            <version>1.18.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>guava</artifactId>
@@ -214,12 +215,12 @@
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-view</artifactId>
-            <version>1.17.0</version>
+            <version>1.18.0</version>
         </dependency>
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>dataease-plugin-datasource</artifactId>
-            <version>1.17.0</version>
+            <version>1.18.0</version>
         </dependency>
         <!-- kettle及数据源依赖 -->
         <dependency>
@@ -502,7 +503,8 @@
                                                 <exclude name="*.html"/>
                                             </fileset>
                                         </copy>
-                                        <copy file="../mobile/dist/index.html" tofile="src/main/resources/templates/app.html"/>
+                                        <copy file="../mobile/dist/index.html"
+                                              tofile="src/main/resources/templates/app.html"/>
                                     </target>
                                 </configuration>
                                 <goals>
