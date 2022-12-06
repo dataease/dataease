@@ -130,6 +130,13 @@ export function larkStatus() {
   })
 }
 
+export function larkAppId() {
+  return request({
+    url: '/plugin/lark/appId',
+    method: 'get'
+  })
+}
+
 export function larksuiteStatus() {
   return request({
     url: '/api/auth/isOpenLarksuite',
