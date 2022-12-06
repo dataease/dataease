@@ -55,7 +55,7 @@
             >
               {{ $t('chart.total') }}
               <span>{{
-                chart.datasetMode === 0 ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
+                (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
               }}</span>
               {{ $t('chart.items') }}
             </span>
@@ -166,7 +166,8 @@ export default {
       scrollBarHoverColor: DEFAULT_COLOR_CASE.tableScrollBarHoverColor,
       totalStyle: {
         color: '#606266'
-      }
+      },
+      not_support_page_dataset: NOT_SUPPORT_PAGE_DATASET
     }
   },
   computed: {
