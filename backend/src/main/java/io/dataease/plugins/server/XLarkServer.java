@@ -6,6 +6,7 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.exception.DEException;
+import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
@@ -15,8 +16,10 @@ import io.dataease.plugins.common.base.domain.SysUserAssist;
 import io.dataease.plugins.config.SpringContextUtil;
 
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
+import io.dataease.plugins.xpack.lark.dto.entity.LarkAppUserEntity;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkQrResult;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkUserInfo;
+import io.dataease.plugins.xpack.lark.dto.response.LarkAppUserResult;
 import io.dataease.plugins.xpack.lark.dto.response.LarkInfo;
 import io.dataease.plugins.xpack.lark.service.LarkXpackService;
 import io.dataease.service.sys.SysUserService;
@@ -47,6 +50,13 @@ public class XLarkServer {
     private AuthUserService authUserService;
     @Resource
     private SysUserService sysUserService;
+
+    @ResponseBody
+    @GetMapping("/appId")
+    public String getAppId() {
+        LarkXpackService larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
+        return larkXpackService.appId();
+    }
 
     @ResponseBody
     @GetMapping("/info")
@@ -81,8 +91,12 @@ public class XLarkServer {
         return larkXpackService.getQrParam();
     }
 
-    @GetMapping("/callBack")
-    public ModelAndView callBack(@RequestParam("code") String code, @RequestParam("state") String state) {
+    @GetMapping("/callBackWithoutLogin")
+    public ModelAndView callBackWithoutLogin(@RequestParam("code") String code) {
+        return privateCallBack(code, null, true);
+    }
+
+    private ModelAndView privateCallBack(String code, String state, Boolean withoutLogin) {
         ModelAndView modelAndView = new ModelAndView("redirect:/");
         HttpServletResponse response = ServletUtils.response();
         LarkXpackService larkXpackService = null;
@@ -96,7 +110,14 @@ public class XLarkServer {
             if (!isOpen) {
                 DEException.throwException("未开启飞书");
             }
-            LarkUserInfo larkUserInfo = larkXpackService.userInfo(code, state, false);
+            LarkUserInfo larkUserInfo = null;
+            if (withoutLogin) {
+                LarkAppUserResult larkAppUserResult = larkXpackService.userInfoWithoutLogin(code);
+                LarkAppUserEntity userResultData = larkAppUserResult.getData();
+                larkUserInfo = BeanUtils.copyBean(new LarkUserInfo(), userResultData);
+            } else {
+                larkUserInfo = larkXpackService.userInfo(code, state, false);
+            }
             String username = larkUserInfo.getUser_id();
             SysUserEntity sysUserEntity = authUserService.getUserByLarkId(username);
             if (null == sysUserEntity) {
@@ -138,6 +159,11 @@ public class XLarkServer {
             }
         }
         return modelAndView;
+    }
+
+    @GetMapping("/callBack")
+    public ModelAndView callBack(@RequestParam("code") String code, @RequestParam("state") String state) {
+        return privateCallBack(code, state, false);
     }
 
     private void bindError(HttpServletResponse response, String url, String errorMsg) {
