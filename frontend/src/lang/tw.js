@@ -1737,6 +1737,8 @@ export default {
     please_set_driverClass: '請指定驅動類'
   },
   datasource: {
+    data_source_configuration: '數據源配寘',
+    data_source_table: '數據源錶',
     auth_method: '認證方式',
     passwd: '用戶名密碼',
     kerbers_info: '請確保 krb5.Conf、Keytab Key，已經添加到路徑：/opt/dataease/conf',
