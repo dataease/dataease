@@ -69,7 +69,7 @@
               </span>
               <span
                 v-if="hasDataPermission('manage', data.privileges)"
-                :title="'置顶'"
+                :title="$t('panel.to_top')"
                 class="child"
                 @click.stop
               >
@@ -121,7 +121,7 @@
             class="default-expansion"
             @click="defaultExpansion = !defaultExpansion"
           >
-            {{ defaultExpansion ? '收起' : '展开' }}
+            {{ defaultExpansion ? $t('panel.fold') : $t('panel.expand') }}
             <i
               :class="[
                 defaultExpansion ? 'el-icon-arrow-up' : 'el-icon-arrow-down'
@@ -373,7 +373,7 @@
 
       <el-dialog
         v-dialogDrag
-        :title="linkTitle"
+        :title="$t('panel.link_share')"
         :visible.sync="linkVisible"
         width="500px"
         @closed="removeLink"
@@ -512,7 +512,6 @@ export default {
         node: {},
         optType: 'newFirstFolder'
       },
-      linkTitle: '链接分享',
       linkVisible: false,
       linkResourceId: null,
       authTitle: null,

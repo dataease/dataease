@@ -17,7 +17,7 @@
       :active-color="activeColor"
       :border-color="borderColor"
       :border-active-color="borderActiveColor"
-      :addable="isEdit"
+      :addable="isEdit && !mobileLayoutStatus"
       @tab-add="addTab"
       @tab-click="handleClick"
     >
@@ -707,29 +707,27 @@ export default {
   border-color: blueviolet;
 }
 
-::v-deep .el-tabs__nav {
-  display: flex;
-}
 ::v-deep .el-tabs__nav-prev {
   line-height: 25px;
 }
+
 ::v-deep .el-tabs__nav-next {
   line-height: 25px;
 }
 
-.tab-head-left ::v-deep .el-tabs__nav {
+.tab-head-left ::v-deep .el-tabs__nav-scroll {
   display: flex;
-  text-align: left;
+  justify-content: flex-start;
 }
 
-.tab-head-right ::v-deep .el-tabs__nav {
+.tab-head-right ::v-deep .el-tabs__nav-scroll {
   display: flex;
-  text-align: right;
+  justify-content: flex-end;
 }
 
-.tab-head-center ::v-deep .el-tabs__nav {
+.tab-head-center ::v-deep .el-tabs__nav-scroll {
   display: flex;
-  text-align: center;
+  justify-content: center;
 }
 
 .frame-mask {

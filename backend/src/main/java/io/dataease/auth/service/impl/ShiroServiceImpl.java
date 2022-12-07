@@ -107,6 +107,7 @@ public class ShiroServiceImpl implements ShiroService {
         filterChainDefinitionMap.put("/plugin/lark/callBack*", ANON);
         filterChainDefinitionMap.put("/plugin/lark/bind*", ANON);
         filterChainDefinitionMap.put("/plugin/lark/getQrParam", ANON);
+        filterChainDefinitionMap.put("/plugin/lark/appId", ANON);
         filterChainDefinitionMap.put("/plugin/larksuite/callBack*", ANON);
         filterChainDefinitionMap.put("/plugin/larksuite/bind*", ANON);
         filterChainDefinitionMap.put("/plugin/larksuite/getQrParam", ANON);

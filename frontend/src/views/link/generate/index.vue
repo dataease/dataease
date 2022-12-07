@@ -44,7 +44,7 @@
         <el-date-picker
           v-model="form.overTime"
           type="datetime"
-          placeholder="选择日期时间"
+          :placeholder="$t('commons.date.select_date_time')"
           align="right"
           value-format="timestamp"
           :picker-options="pickerOptions"
@@ -148,17 +148,17 @@ export default {
         },
 
         shortcuts: [{
-          text: '一天',
+          text: this.$t('commons.date.one_day'),
           onClick: function(picker) {
             picker.$emit('pick', this.limitDate('day'))
           }.bind(this)
         }, {
-          text: '一周',
+          text: this.$t('commons.date.one_week'),
           onClick: (picker) => {
             picker.$emit('pick', this.limitDate('week'))
           }
         }, {
-          text: '一月',
+          text: this.$t('commons.date.one_month'),
           onClick: (picker) => {
             picker.$emit('pick', this.limitDate('month'))
           }

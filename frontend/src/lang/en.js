@@ -135,6 +135,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    collapse_navigation: 'Collapse navigation',
     operate_cancelled: 'Operation cancelled',
     bind: 'Bind',
     unbind: 'Unbind',
@@ -151,7 +152,7 @@ export default {
     params_value: 'Param Value',
     input_role_name: 'Enter a role name',
     publish: 'publish',
-    unpublished: 'unpublished',
+    unpublished: 'Unpublished',
     default_pwd: 'Default Pwd',
     stop: 'Stop',
     first_login_tips: 'Please change the initial password',
@@ -311,6 +312,7 @@ export default {
     validate: 'Validate',
     batch_add: 'Batch Add',
     tag_tip: 'Enter add label',
+    search_keywords: 'Enter keywords to search',
     table: {
       select_tip: '{0} data selected'
     },
@@ -322,7 +324,10 @@ export default {
       start_date_time: 'Start date time',
       end_date_time: 'End date time',
       range_separator: 'to',
-      data_time_error: 'The start date cannot be greater than the end date.'
+      data_time_error: 'The start date cannot be greater than the end date.',
+      one_day: 'One day',
+      one_week: 'One week',
+      one_month: 'One month'
     },
     adv_search: {
       title: 'Advanced search',
@@ -531,7 +536,10 @@ export default {
     set_saved_successfully: 'Data set saved successfully',
     to_start_using: 'Browse the contents of your database, tables and columns. Choose a database to get started.',
     to_run_query: 'Click to run query',
-    the_running_results: 'You can view the running results'
+    the_running_results: 'You can view the running results',
+    item: 'item',
+    logic_filter: 'Condition Filter',
+    enum_filter: 'Enum Filter'
   },
   detabs: {
     custom_sort: 'Custom Sort',
@@ -655,6 +663,7 @@ export default {
     input_password: 'Please input a password',
     input_phone: 'Please enter the phone number',
     input_roles: 'Please select role',
+    select_users: 'Please select user',
     user_name_pattern_error: 'IDs can only contain alphanumeric and ._- and start with a letter!',
     special_characters_are_not_supported: 'Special characters are not supported',
     mobile_number_format_is_incorrect: 'Incorrect format of mobile phone number',
@@ -811,6 +820,7 @@ export default {
     edite_organization: 'Edit organization'
   },
   system_parameter_setting: {
+    email_server_config: 'Mailbox server configuration',
     edit_success: 'Edit success',
     mailbox_service_settings: 'Mail Setting',
     test_connection: 'Test connection',
@@ -1021,12 +1031,12 @@ export default {
     line_symbol_size: 'Break point size',
     line_type_solid: 'Solid line',
     line_type_dashed: 'Dotted line',
-    line_symbol_circle: 'circular',
+    line_symbol_circle: 'Circular',
     line_symbol_emptyCircle: 'Hollow circle',
-    line_symbol_rect: 'rectangle',
+    line_symbol_rect: 'Rectangle',
     line_symbol_roundRect: 'Rounded rectangle',
-    line_symbol_triangle: 'triangle',
-    line_symbol_diamond: 'diamond',
+    line_symbol_triangle: 'Triangle',
+    line_symbol_diamond: 'Diamond',
     line_symbol_pin: 'nail',
     line_symbol_arrow: 'arrow',
     line_symbol_none: 'None',
@@ -1036,7 +1046,7 @@ export default {
     funnel_width: 'width',
     line_smooth: 'Smooth polyline',
     title_style: 'Title Style',
-    text_fontsize: 'font size',
+    text_fontsize: 'Font size',
     text_color: 'Font color',
     text_h_position: 'Horizontal position',
     text_v_position: 'Vertical position',
@@ -1054,7 +1064,7 @@ export default {
     shape: 'shape',
     polygon: 'polygon',
     circle: 'circular',
-    label: 'label',
+    label: 'Label',
     label_position: 'Label location',
     label_bg: 'Label BG',
     label_shadow: 'Label Shadow',
@@ -1460,7 +1470,28 @@ export default {
     empty_data_strategy: 'Empty Data Strategy',
     break_line: 'Disconnection',
     set_zero: 'Set Zero',
-    ignore_data: 'Ignore Data'
+    ignore_data: 'Ignore Data',
+    sub_dimension_tip: 'This field is required, and cannot be included in the type axis, you should choose non-group chart if you don\'t need it, or you will get unexpected chart.',
+    drill_dimension_tip: 'Only fields in the dataset can be drilled',
+    table_scroll_tip: 'The detail table is only effective when the pagination mode is "Drop-down".',
+    table_threshold_tip: 'Tip: Do not select fields repeatedly. If the same field is configured repeatedly, only the last field will take effect.',
+    table_column_width_tip: `Column width do not always work.<br/>
+                             The priority of the container width is higher than the column width, <br/>
+                             which means if the result of dividing the width of the table container by the number of columns is greater than specified column width, <br/>
+                             the former will take effect.`,
+    reference_field_tip: `Reference fields start with "[" and end with "]". <br/>
+                          Do not modify the reference content, otherwise the reference will fail.<br/>
+                          If you enter content in the same format as the reference field, it will be treated as a reference field.`,
+    scatter_tip: 'When this indicator is in effect, the bubble size attribute in the style size will be invalid',
+    place_name_mapping: 'Place name mapping',
+    axis_tip: 'The minimum value, maximum value, and interval are all numeric types; it will be regarded as automatic if left blank.<br/>Please make sure that the filled values can be calculated correctly, otherwise the axis values will not be displayed normally.',
+    format_tip: `The template variables include {a}, {b}, {c}, {d}, which represent series name, data name, data value, etc. respectively.<br>
+                    When the trigger position is 'coordinate axis', there will be multiple series of data. At this time, the index of the series can be represented by {a0}, {a1}, {a2} followed by an index.<br>
+                    {a}, {b}, {c}, {d} have different meanings under different graph types. Among them, variables {a}, {b}, {c}, {d} represent data meanings in different chart types:<br><br>
+                    Line (area) chart, Column (Bar) chart, Dashboard: {a} is series name, {b} is category value, {c} is value<br>
+                    Pie chart, Funnel chart: {a} is series name, {b} is data item name, {c} is value, {d} is percentage<br>
+                    Map : {a} (series name), {b} is area name, {c} is merged values, {d} is none<br>
+                    Scatter (Bubble) plot: {a} is series name, {b} is data name, {c} is numeric array, {d} is none`
   },
   dataset: {
     spend_time: 'Spend',
@@ -1722,7 +1753,17 @@ export default {
     export_dataset: 'Export',
     filename: 'Filename',
     export_filter: 'Filter',
-    pls_input_filename: 'Please input filename'
+    pls_input_filename: 'Please input filename',
+    calc_tips: {
+      tip1: 'The expression syntax should follow the database syntax corresponding to the data source.',
+      tip2: 'Aggregation operation is not supported in the dataset.',
+      tip3: 'The reference field starts with "[" and ends with "]"',
+      tip4: 'Do not modify the reference content, otherwise the reference will fail',
+      tip5: 'If you enter content in the same format as the reference field, it will be treated as a reference field',
+      tip6: 'Use the functions supported by the database type corresponding to the dataset. The syntax is the same as that of the corresponding database',
+      tip7: 'For example, date format: MySQL uses DATE_ FORMAT(date,format)； Oracle uses TO_ DATE(X,[,fmt])',
+      tip8: 'Non direct connection mode data set, use Doris database functions, refer to Doris official website'
+    }
   },
   driver: {
     driver: 'Driver',
@@ -1892,7 +1933,7 @@ export default {
   },
   panel: {
     position_adjust_component: 'Position adjust',
-    active_font_size: 'Active font size',
+    active_font_size: 'Selected font size',
     carousel: 'Carousel',
     switch_time: 'Switch time',
     position_adjust: 'Position',
@@ -1983,7 +2024,7 @@ export default {
     inner_padding: 'Inner Padding',
     board_radio: 'Board Radio',
     background: 'Background',
-    component_style: 'component Style',
+    component_style: 'Component Style',
     web_set_tips: 'Some Websites Cannot Be Displayed Because Of Not Allow Embedded ',
     repeat_params: 'Repeat Params Exist',
     enable_outer_param_set: 'Enable Outer Param Set',
@@ -2036,6 +2077,7 @@ export default {
     delete_success: 'Delete Success',
     confirm: 'Confirm',
     cancel: 'Cancel',
+    save: 'Save',
     search: 'Search',
     back: 'Back',
     view: 'Chart',
@@ -2226,7 +2268,11 @@ export default {
     select_view: 'Please select a view...',
     visual: 'Visual',
     prohibit_multiple: 'Prohibit multiple fields in the same dataset',
-    be_empty_dir: 'is empty dir'
+    be_empty_dir: 'is empty dir',
+    fold: 'Fold',
+    expand: 'Expand',
+    pdf_export: 'PDF Export',
+    switch_pdf_template: 'Switch PDF Template'
   },
   plugin: {
     local_install: 'Local installation',
@@ -2543,6 +2589,14 @@ export default {
 
   },
   emailtask: {
+    week_mon: 'Mon',
+    week_tue: 'Tue',
+    week_wed: 'Wed',
+    week_thu: 'Thu',
+    week_fri: 'Fri',
+    week_sat: 'Sat',
+    week_sun: 'Sun',
+    send_config: 'Send configuration',
     title: 'Title',
     panel: 'Panel',
     content: 'Content',
@@ -2727,5 +2781,24 @@ export default {
   logout: {
     oidc_logout_error: 'OIDC failed to exit, do you continue to exit DataEase?',
     cas_logout_error: 'The CAS service is abnormal, please contact the administrator!'
+  },
+  watermark: {
+    support_params: 'Currently supported parameters:',
+    enable: 'Enable',
+    enable_panel_custom: 'Allow the dashboard to open or close the watermark independently',
+    content: 'content',
+    custom_content: 'Custom Content',
+    account: 'Account',
+    nick_name: 'Nick Name',
+    ip: 'IP',
+    now: 'Now Time',
+    watermark_color: 'Watermark Color',
+    watermark_font_size: 'Watermark Fontsize',
+    watermark_space: 'Watermark Space',
+    horizontal: 'Horizontal',
+    vertical: 'Vertical',
+    reset: 'Reset',
+    preview: 'Preview',
+    save: 'Save'
   }
 }

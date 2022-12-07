@@ -1,7 +1,7 @@
 <template>
   <div style="width: 100%">
-    <el-row>
-      <el-col class="custom-item el-form-item">
+    <el-row type="flex">
+      <el-col class="el-form-item">
         <el-checkbox
           v-model="componentStyleForm.backgroundColorSelect"
           style="margin-right: 10px;float: right"
@@ -10,7 +10,7 @@
           <span style="font-size: 12px">{{ $t('chart.chart_background') }}</span>
         </el-checkbox>
       </el-col>
-      <el-col :span="10">
+      <el-col>
         <el-color-picker
           v-model="componentStyleForm.color"
           :disabled="!componentStyleForm.backgroundColorSelect"

@@ -63,7 +63,7 @@
     </div>
     <el-dialog
       v-if="pdfExportShow"
-      :title="'['+panelInfo.name+']'+'PDF导出'"
+      :title="'['+panelInfo.name+']'+$t('panel.pdf_export')"
       :visible.sync="pdfExportShow"
       width="80%"
       :top="'8vh'"
@@ -77,7 +77,7 @@
         />
         <el-select
           v-model="pdfTemplateSelectedIndex"
-          :placeholder="'切换PDF模板'"
+          :placeholder="$t('panel.switch_pdf_template')"
           @change="changePdfTemplate()"
         >
           <el-option
@@ -635,7 +635,7 @@ export default {
               component.style[key] = this.format(component.style[key], this.scaleHeight)
             }
             if (this.needToChangeWidth.includes(key)) {
-              if (key === 'fontSize' && (this.terminal === 'mobile' || component.type === 'custom')) {
+              if ((key === 'fontSize' || key === 'activeFontSize') && (this.terminal === 'mobile' || component.type === 'custom')) {
                 // do nothing 移动端字符大小无需按照比例缩放，当前保持不变(包括 v-text 和 过滤组件)
               } else {
                 component.style[key] = this.format(component.style[key], this.scaleWidth)

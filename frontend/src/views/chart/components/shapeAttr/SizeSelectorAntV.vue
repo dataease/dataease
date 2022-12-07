@@ -331,11 +331,10 @@
             effect="dark"
             placement="bottom"
           >
-            <div slot="content">
-              列宽并非任何时候都能生效。
-              <br>
-              容器宽度优先级高于列宽，即(表格容器宽度 / 列数 > 指定列宽)，则列宽优先取(容器宽度 / 列数)。
-            </div>
+            <div
+              slot="content"
+              v-html="$t('chart.table_column_width_tip')"
+            />
             <i
               class="el-icon-info"
               style="cursor: pointer;color: #606266;margin-left: 4px;"

@@ -56,7 +56,7 @@
             :id="scope.$index"
             v-model="keyWord"
             size="mini"
-            placeholder="输入关键字搜索"
+            :placeholder="$t('commons.search_keywords')"
           />
         </template>
 

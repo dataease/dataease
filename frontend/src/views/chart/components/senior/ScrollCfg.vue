@@ -21,7 +21,7 @@
             placement="bottom"
           >
             <div slot="content">
-              明细表仅在分页模式为"下拉"时生效。
+              {{ $t('chart.table_scroll_tip') }}
             </div>
             <i
               class="el-icon-info"

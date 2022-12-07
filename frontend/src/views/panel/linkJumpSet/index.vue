@@ -283,13 +283,10 @@
                         effect="dark"
                         placement="bottom"
                       >
-                        <div slot="content">
-                          引用字段以 "[" 开始， "]" 结束
-                          <br>
-                          请勿修改引用内容，否则将引用失败
-                          <br>
-                          若输入与引用字段相同格式的内容，将被当作引用字段处理
-                        </div>
+                        <div
+                          slot="content"
+                          v-html="$t('chart.reference_field_tip')"
+                        />
                         <i
                           class="el-icon-info"
                           style="cursor: pointer;"

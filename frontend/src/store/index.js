@@ -232,8 +232,8 @@ const data = {
       }
     },
     setShapeStyle({ curComponent, canvasStyleData, curCanvasScaleMap }, { top, left, width, height, rotate }) {
-      const curCanvasScaleSelf = curCanvasScaleMap[curComponent.canvasId]
       if (curComponent) {
+        const curCanvasScaleSelf = curCanvasScaleMap[curComponent.canvasId]
         if (top || top === 0) curComponent.style.top = Math.round((top / curCanvasScaleSelf.scalePointHeight))
         if (left || left === 0) curComponent.style.left = Math.round((left / curCanvasScaleSelf.scalePointWidth))
         if (width || width === 0) curComponent.style.width = Math.round((width / curCanvasScaleSelf.scalePointWidth))
@@ -569,7 +569,7 @@ const data = {
       // 移动端布局转换
       state.componentData.forEach(item => {
         item.mobileStyle = (item.mobileStyle || BASE_MOBILE_STYLE)
-        if (item.mobileSelected || item.canvasId !== 'canvas-main') {
+        if (item.mobileSelected && item.canvasId === 'canvas-main') {
           item.style.width = item.mobileStyle.style.width
           item.style.height = item.mobileStyle.style.height
           item.style.top = item.mobileStyle.style.top
@@ -580,6 +580,8 @@ const data = {
           item.sizex = item.mobileStyle.sizex
           item.sizey = item.mobileStyle.sizey
           item.auxiliaryMatrix = item.mobileStyle.auxiliaryMatrix
+          mainComponentData.push(item)
+        } else if (item.canvasId !== 'canvas-main') {
           mainComponentData.push(item)
         }
       })

@@ -109,18 +109,18 @@
 
           <!--提供修改个人电话，邮箱和昵称的功能-->
           <el-form-item v-if="formType!=='modify'">
-            <el-button @click="formType = 'modify'">修改个人信息</el-button>
+            <el-button @click="formType = 'modify'">{{ $t('member.modify_personal_info') }}</el-button>
           </el-form-item>
           <el-form-item v-else>
             <el-button
               v-if="formType==='modify'"
               type="primary"
               @click="save"
-            >保存</el-button>
+            >{{ $t('commons.save') }}</el-button>
             <el-button
               v-if="formType==='modify'"
               @click="reset"
-            >取消</el-button>
+            >{{ $t('commons.cancel') }}</el-button>
           </el-form-item>
         </el-form>
 

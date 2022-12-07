@@ -292,7 +292,9 @@
               v-else
               class="view-selected-message-class"
             >
-              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.select_view') }}</span>
+              <span style="font-size: 14px;margin-left: 10px;font-weight: bold;line-height: 20px">
+                {{ $t('panel.select_view') }}
+              </span>
             </div>
           </el-row>
         </div>
@@ -452,7 +454,9 @@
           />
         </el-col>
         <el-col :span="21">
-          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">{{ $t('panel.panel_cache_use_tips') }}</span>
+          <span style="font-size: 13px;margin-left: 10px;font-weight: bold;line-height: 20px">
+            {{ $t('panel.panel_cache_use_tips') }}
+          </span>
         </el-col>
       </el-row>
       <div
@@ -651,7 +655,7 @@ export default {
     },
     // 显示视图工具栏
     showViewToolsAside() {
-      return !this.batchOptStatus && this.curComponent && (this.curComponent.type === 'view' || this.curComponent.type === 'de-tabs')
+      return !this.batchOptStatus && this.curComponent && (this.curComponent.type === 'view' || (this.curComponent.type === 'de-tabs' && this.$store.state.chart.viewId))
     },
     showBatchViewToolsAside() {
       return this.batchOptStatus
@@ -966,11 +970,10 @@ export default {
       if (this.showIndex === -1 || this.showIndex === type) {
         this.$nextTick(() => {
           if (this.show) {
-            this.showIndex === -1
+            this.showIndex = -1
           }
           this.show = !this.show
-        }
-        )
+        })
       }
       this.showIndex = type
     },
@@ -1376,6 +1379,7 @@ export default {
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
+      this.$store.commit('setComponentFromList', this.currentFilterCom)
       bus.$emit('refresh-button-info')
       this.closeButton()
     },

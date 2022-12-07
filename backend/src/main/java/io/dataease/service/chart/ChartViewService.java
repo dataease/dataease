@@ -982,7 +982,8 @@ public class ChartViewService {
             }
             if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
                 datasourceRequest.setQuery(totalPageSql);
-                totalItems = Long.valueOf(datasourceProvider.getData(datasourceRequest).get(0)[0]);
+                java.util.List<java.lang.String[]> tmpData = datasourceProvider.getData(datasourceRequest);
+                totalItems = CollectionUtils.isEmpty(tmpData) ? 0 : Long.valueOf(tmpData.get(0)[0]);
                 totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
             }
 

@@ -1163,7 +1163,6 @@ export const TYPE_CONFIGS = [
     icon: 'percentage-bar-stack-horizontal',
     properties: [
       'color-selector',
-      'size-selector-ant-v',
       'label-selector-ant-v',
       'tooltip-selector-ant-v',
       'x-axis-selector-ant-v',
@@ -1178,10 +1177,6 @@ export const TYPE_CONFIGS = [
         'customColor',
         'gradient',
         'alpha'
-      ],
-      'size-selector-ant-v': [
-        'barDefault',
-        'barGap'
       ],
       'label-selector-ant-v': [
         'show',
@@ -1478,7 +1473,6 @@ export const TYPE_CONFIGS = [
     icon: 'percentage-bar-stack',
     properties: [
       'color-selector',
-      'size-selector-ant-v',
       'label-selector-ant-v',
       'tooltip-selector-ant-v',
       'x-axis-selector-ant-v',
@@ -1493,10 +1487,6 @@ export const TYPE_CONFIGS = [
         'customColor',
         'gradient',
         'alpha'
-      ],
-      'size-selector-ant-v': [
-        'barDefault',
-        'barGap'
       ],
       'label-selector-ant-v': [
         'show',

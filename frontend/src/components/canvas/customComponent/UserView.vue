@@ -85,6 +85,7 @@
       :ref="element.propValue.id"
       class="chart-class"
       :chart="chart"
+      :terminal-type="scaleCoefficientType"
       :track-menu="trackMenu"
       :search-count="searchCount"
       @onChartClick="chartClick"
