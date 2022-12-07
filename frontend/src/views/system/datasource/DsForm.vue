@@ -14,10 +14,10 @@
         />
         {{
           params &&
-            params.id &&
-            params.showModel &&
-            params.showModel === 'show' &&
-            !canEdit
+          params.id &&
+          params.showModel &&
+          params.showModel === 'show' &&
+          !canEdit
             ? $t('datasource.show_info')
             : formType == 'add'
               ? `${$t('commons.create') + typeMap}${$t('commons.datasource')}`
@@ -132,8 +132,62 @@
               />
             </el-form-item>
           </el-form>
+          <div class="de-row-rules">
+              <span>{{
+                  positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
+                }}</span>
+          </div>
+          <el-form
+            ref="historyDsForm"
+            :model="attachForm"
+            :rules="historyFormRule"
+            size="small"
+            :disabled="formType === 'modify'"
+            class="de-form-item"
+            label-width="180px"
+            label-position="right"
+          >
+            <el-form-item
+              :label="$t('app_template.datasource_from')"
+              prop="datasourceFrom"
+              v-if="positionCheck('appMarket')"
+            >
+              <el-radio-group
+                v-model="attachForm.datasourceFrom"
+                size="mini"
+              >
+                <el-radio :label="'new'">
+                  {{ $t('app_template.datasource_new') }}
+                </el-radio>
+                <el-radio :label="'history'">
+                  {{ $t('app_template.datasource_history') }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+
+            <el-form-item
+              v-if="positionCheck('appMarket') && attachForm.datasourceFrom === 'history'"
+              :label="$t('app_template.datasource')"
+              prop="datasourceHistoryId"
+            >
+              <el-select
+                v-model="attachForm.datasourceHistoryId"
+                filterable
+                :placeholder="$t('dataset.pls_slc_data_source')"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in appMarketDatasource"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+            </el-form-item>
+          </el-form>
 
           <el-form
+            v-if="!positionCheck('appMarket') ||  (positionCheck('appMarket')&& attachForm.datasourceFrom === 'new')"
             ref="dsForm"
             :model="form"
             :rules="rule"
@@ -143,11 +197,6 @@
             label-width="180px"
             label-position="right"
           >
-            <div class="de-row-rules">
-              <span>{{
-                positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
-              }}</span>
-            </div>
             <el-form-item
               :label="$t('datasource.display_name')"
               prop="name"
@@ -226,7 +275,7 @@
       </div>
     </div>
     <div
-      v-if="positionCheck('appMarket')"
+      v-if="positionCheck('appMarket') && attachForm.datasourceFrom === 'new'"
       class="de-ds-bottom"
     >
       <div
@@ -271,25 +320,50 @@
         </template>
       </div>
     </div>
+
+    <div
+      v-if="positionCheck('appMarket') && attachForm.datasourceFrom === 'history'"
+      class="de-ds-bottom"
+    >
+      <div
+        class="apply"
+        style="width: 100%"
+      >
+        <template v-if="canEdit">
+          <deBtn
+            secondary
+            @click="closeDraw"
+          >{{ $t('commons.cancel') }}
+          </deBtn>
+          <deBtn
+            v-if="formType === 'add'"
+            type="primary"
+            @click="saveAppMarketHistory"
+          >{{ $t('commons.save') }}
+          </deBtn>
+        </template>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import {
   addDs,
-  editDs,
-  getSchema,
-  validateDs,
-  validateDsById,
   checkApiDatasource,
+  editDs,
+  getDatasourceDetail,
+  getSchema,
+  listDatasource,
+  listDatasourceType,
   listDriverByType,
-  getDatasourceDetail
+  validateDs,
+  validateDsById
 } from '@/api/system/datasource'
 import { $confirm } from '@/utils/message'
 import i18n from '@/lang/index'
 import DsConfiguration from '@/views/system/datasource/DsConfiguration'
 import PluginCom from '@/views/system/plugin/PluginCom'
-import { listDatasourceType, listDatasource } from '@/api/system/datasource'
 import deTextarea from '@/components/deCustomCm/DeTextarea.vue'
 import msgCfm from '@/components/msgCfm'
 import { dsGroupTree } from '@/api/dataset/dataset'
@@ -317,6 +391,7 @@ export default {
   },
   data() {
     return {
+      appMarketDatasource: [],
       appMarketEdit: true,
       attachRule: {
         panelName: [
@@ -348,9 +423,20 @@ export default {
         panelName: '',
         datasetGroupPid: null,
         datasetGroupId: null,
-        datasetGroupName: ''
+        datasetGroupName: '',
+        datasourceFrom: 'new',
+        datasourceHistoryId: null
       },
       disabled: false,
+      historyFormRule: {
+        datasourceFrom: [
+          {
+            required: true,
+            trigger: 'blur'
+          }
+        ],
+        datasourceHistoryId: [{ required: true, message: i18n.t('dataset.pls_slc_data_source'), trigger: 'blur' }]
+      },
       form: {
         configuration: {
           initialPoolSize: 5,
@@ -591,6 +677,8 @@ export default {
       this.attachForm.datasetGroupPid = this.outerParams.datasetGroupPid ? this.outerParams.datasetGroupPid : '0'
       this.attachForm.datasetGroupId = this.outerParams.datasetGroupId
       this.attachForm.datasetGroupName = this.outerParams.datasetGroupName
+      this.attachForm.datasourceFrom = this.outerParams.datasourceFrom ? this.outerParams.datasourceFrom : 'new'
+      this.attachForm.datasourceHistoryId = this.outerParams.datasourceHistoryId
       this.params = {
         id: this.outerParams.datasourceId,
         showModel: this.outerParams.showModel,
@@ -624,6 +712,11 @@ export default {
       if (node.children === null || node.children === 'null') {
         delete node.children
       }
+    },
+    getDatasourceOptions() {
+      return listDatasource().then((response) => {
+        this.options = response.data.filter((item) => item.type !== 'api')
+      })
     },
     getDatasetGroupTree() {
       dsGroupTree({ nodeType: 'group', excludedId: this.attachForm.datasetGroupId }).then(res => {
@@ -665,6 +758,9 @@ export default {
     queryTreeData() {
       listDatasource().then((res) => {
         this.tData = this.buildTree(res.data)
+        if (this.positionCheck('appMarket') && res.data) {
+          this.appMarketDatasource = res.data.filter((item) => item.type === this.outerParams.datasourceType)
+        }
       })
     },
     buildTree(array) {
@@ -735,6 +831,20 @@ export default {
     },
     reset() {
       this.$refs.dsForm.resetFields()
+    },
+    saveAppMarketHistory() {
+      this.$refs.historyDsForm.validate(valid => {
+          if (!valid) {
+            return false
+          }
+          const appApplyForm = {
+            ...this.attachForm,
+            ...this.historyDsForm
+          }
+          const method = this.formType === 'add' ? appApply : appEdit
+          this.appApplyMethod(method, appApplyForm)
+        }
+      )
     },
     save() {
       if (
@@ -879,10 +989,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-          if (!valid) {
-            return false
+            if (!valid) {
+              return false
+            }
           }
-        }
         )
       }
       this.$refs.dsForm.validate((valid) => {
@@ -912,6 +1022,7 @@ export default {
           }
           appApplyForm = {
             ...this.attachForm,
+            ...this.historyDsForm,
             datasourceList: [deepCopy(form)]
           }
           method = this.formType === 'add' ? appApply : appEdit
@@ -1024,10 +1135,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-          if (!valid) {
-            return false
+            if (!valid) {
+              return false
+            }
           }
-        }
         )
       }
       this.$refs.dsForm.validate((valid) => {

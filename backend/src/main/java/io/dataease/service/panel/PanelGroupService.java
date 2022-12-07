@@ -898,7 +898,7 @@ public class PanelGroupService {
         List<PanelView> panelViewsInfo = gson.fromJson(appInfo.getPanelViewsInfo(), new TypeToken<List<PanelView>>() {
         }.getType());
 
-        Map<String, String> datasourceRealMap = panelAppTemplateService.applyDatasource(oldDatasourceInfo, request.getDatasourceList());
+        Map<String, String> datasourceRealMap = panelAppTemplateService.applyDatasource(oldDatasourceInfo, request);
 
         Map<String, String> datasetsRealMap = panelAppTemplateService.applyDataset(datasetTablesInfo, datasourceRealMap, asideDatasetGroupId);
 
@@ -909,7 +909,7 @@ public class PanelGroupService {
         Map<String, String> datasetFieldsRealMap = panelAppTemplateService.applyDatasetField(datasetTableFieldsInfo, datasetsRealMap, datasetTypeRealMap, datasetFieldsMd5FormatRealMap);
 
         panelAppTemplateService.createDorisTable(datasetTablesInfo);
-        
+
         panelAppTemplateService.resetCustomAndUnionDataset(datasetTablesInfo, datasetsRealMap, datasetFieldsRealMap);
 
         Map<String, String> chartViewsRealMap = panelAppTemplateService.applyViews(chartViewsInfo, datasetsRealMap, datasetFieldsRealMap, datasetFieldsMd5FormatRealMap, newPanelId);
@@ -922,17 +922,19 @@ public class PanelGroupService {
 
         String newDatasourceId = datasourceRealMap.entrySet().stream().findFirst().get().getValue();
 
-        String newDatasourceName = request.getDatasourceList().get(0).getName();
 
         PanelAppTemplateLog templateLog = new PanelAppTemplateLog();
         templateLog.setPanelId(newPanelId);
         templateLog.setSourcePanelName(request.getPanelName());
         templateLog.setDatasourceId(newDatasourceId);
-        templateLog.setSourceDatasourceName(newDatasourceName);
+        if (PanelConstants.APP_DATASOURCE_FROM.NEW.equals(request.getDatasourceFrom())) {
+            templateLog.setSourceDatasourceName(request.getDatasourceList().get(0).getName());
+        }
         templateLog.setDatasetGroupId(asideDatasetGroupId);
         templateLog.setSourceDatasetGroupName(request.getDatasetGroupName());
         templateLog.setAppTemplateId(appInfo.getId());
         templateLog.setAppTemplateName(appInfo.getName());
+        templateLog.setDatasourceFrom(request.getDatasourceFrom());
         appTemplateLogService.newAppApplyLog(templateLog);
         return newPanelId;
     }

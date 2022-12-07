@@ -36,8 +36,8 @@
           icon="iconfont icon-icon-filter"
           @click="filterShow"
         >{{
-           $t('user.filter')
-         }}
+            $t('user.filter')
+          }}
           <template v-if="filterTexts.length">
             ({{ cacheCondition.length }})
           </template>
@@ -50,7 +50,7 @@
     >
       <span class="sum">{{ paginationConfig.total }}</span>
       <span class="title">{{ $t('user.result_one') }}</span>
-      <el-divider direction="vertical" />
+      <el-divider direction="vertical"/>
       <i
         v-if="showScroll"
         class="el-icon-arrow-left arrow-filter"
@@ -63,9 +63,9 @@
           class="text"
         >
           {{ ele }} <i
-            class="el-icon-close"
-            @click="clearOneFilter(index)"
-          />
+          class="el-icon-close"
+          @click="clearOneFilter(index)"
+        />
         </p>
       </div>
       <i
@@ -306,6 +306,8 @@ export default {
     },
     editApply(item) {
       const param = {
+        datasourceFrom: item.datasourceFrom,
+        datasourceHistoryId: item.datasourceFrom === 'history' ? item.datasourceId : null,
         datasourceType: item.datasourceType,
         logId: item.id,
         panelId: item.panelId,
