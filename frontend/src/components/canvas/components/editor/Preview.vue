@@ -6,6 +6,7 @@
     @scroll="canvasScroll"
   >
     <canvas-opt-bar
+      v-if="canvasId==='canvas-main'"
       ref="canvas-opt-bar"
       :canvas-style-data="canvasStyleData"
       @link-export-pdf="downloadAsPDF"
