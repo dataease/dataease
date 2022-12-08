@@ -29,5 +29,9 @@ public class PanelAppTemplateApplyRequest {
 
     private String appTemplateId;
 
+    private String datasourceFrom;
+
+    private String datasourceHistoryId;
+
     private List<Datasource> datasourceList;
 }
