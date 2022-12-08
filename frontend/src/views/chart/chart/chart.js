@@ -449,7 +449,8 @@ export const DEFAULT_FUNCTION_CFG = {
 export const DEFAULT_THRESHOLD = {
   gaugeThreshold: '',
   labelThreshold: [],
-  tableThreshold: []
+  tableThreshold: [],
+  textLabelThreshold: []
 }
 export const DEFAULT_SCROLL = {
   open: false,
