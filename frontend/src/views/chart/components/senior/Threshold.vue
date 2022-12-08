@@ -41,6 +41,64 @@
       </el-form>
     </el-col>
 
+    <!--文本卡-->
+    <el-col v-if="chart.type && chart.type === 'label'">
+      <el-col>
+        <el-button
+          :title="$t('chart.edit')"
+          icon="el-icon-edit"
+          type="text"
+          size="small"
+          style="width: 24px;margin-left: 4px;"
+          @click="editTextLabelThreshold"
+        />
+        <el-col style="padding: 0 18px;">
+          <el-row
+            v-for="(item,index) in thresholdForm.textLabelThreshold"
+            :key="index"
+            class="line-style"
+          >
+            <el-col :span="6">
+              <span
+                v-if="item.term === 'eq'"
+                :title="$t('chart.filter_eq')"
+              >{{ $t('chart.filter_eq') }}</span>
+              <span
+                v-else-if="item.term === 'not_eq'"
+                :title="$t('chart.filter_not_eq')"
+              >{{ $t('chart.filter_not_eq') }}</span>
+              <span
+                v-else-if="item.term === 'like'"
+                :title="$t('chart.filter_like')"
+              >{{ $t('chart.filter_like') }}</span>
+              <span
+                v-else-if="item.term === 'not like'"
+                :title="$t('chart.filter_not_like')"
+              >{{ $t('chart.filter_not_like') }}</span>
+              <span
+                v-else-if="item.term === 'null'"
+                :title="$t('chart.filter_null')"
+              >{{ $t('chart.filter_null') }}</span>
+              <span
+                v-else-if="item.term === 'not_null'"
+                :title="$t('chart.filter_not_null')"
+              >{{ $t('chart.filter_not_null') }}</span>
+            </el-col>
+            <el-col :span="12">
+              <span
+                v-if="!item.term.includes('null')"
+                :title="item.value"
+              >{{ item.value }}</span>
+              <span v-else>&nbsp;</span>
+            </el-col>
+            <el-col :span="6">
+              <span :style="{width:'14px', height:'14px', backgroundColor: item.color, border: 'solid 1px #e1e4e8'}" />
+            </el-col>
+          </el-row>
+        </el-col>
+      </el-col>
+    </el-col>
+
     <!--指标卡-->
     <el-col v-if="chart.type && chart.type === 'text'">
       <el-col>
@@ -236,6 +294,37 @@
       </el-col>
     </el-col>
 
+    <!--编辑文本卡阈值-->
+    <el-dialog
+      v-if="editTextLabelThresholdDialog"
+      v-dialogDrag
+      :title="$t('chart.threshold')"
+      :visible="editTextLabelThresholdDialog"
+      :show-close="false"
+      width="800px"
+      class="dialog-css"
+      append-to-body
+    >
+      <text-label-threshold-edit
+        :threshold="thresholdForm.textLabelThreshold"
+        @onTextLabelThresholdChange="thresholdTextChange"
+      />
+      <div
+        slot="footer"
+        class="dialog-footer"
+      >
+        <el-button
+          size="mini"
+          @click="closeTextLabelThreshold"
+        >{{ $t('chart.cancel') }}</el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          @click="changeTextLabelThreshold"
+        >{{ $t('chart.confirm') }}</el-button>
+      </div>
+    </el-dialog>
+
     <!--编辑指标卡阈值-->
     <el-dialog
       v-if="editLabelThresholdDialog"
@@ -306,10 +395,11 @@
 import { DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
 import TextThresholdEdit from '@/views/chart/components/senior/dialog/TextThresholdEdit'
 import TableThresholdEdit from '@/views/chart/components/senior/dialog/TableThresholdEdit'
+import TextLabelThresholdEdit from '@/views/chart/components/senior/dialog/TextLabelThresholdEdit'
 
 export default {
   name: 'Threshold',
-  components: { TableThresholdEdit, TextThresholdEdit },
+  components: { TextLabelThresholdEdit, TableThresholdEdit, TextThresholdEdit },
   props: {
     chart: {
       type: Object,
@@ -319,6 +409,8 @@ export default {
   data() {
     return {
       thresholdForm: JSON.parse(JSON.stringify(DEFAULT_THRESHOLD)),
+      editTextLabelThresholdDialog: false,
+      textThresholdArr: [],
       editLabelThresholdDialog: false,
       thresholdArr: [],
       editTableThresholdDialog: false,
@@ -347,6 +439,9 @@ export default {
         }
         if (senior.threshold) {
           this.thresholdForm = senior.threshold
+          if (!this.thresholdForm.textLabelThreshold) {
+            this.thresholdForm.textLabelThreshold = []
+          }
           if (!this.thresholdForm.labelThreshold) {
             this.thresholdForm.labelThreshold = []
           }
@@ -356,6 +451,7 @@ export default {
         } else {
           this.thresholdForm = JSON.parse(JSON.stringify(DEFAULT_THRESHOLD))
         }
+        this.textThresholdArr = JSON.parse(JSON.stringify(this.thresholdForm.textLabelThreshold))
         this.thresholdArr = JSON.parse(JSON.stringify(this.thresholdForm.labelThreshold))
         this.tableThresholdArr = JSON.parse(JSON.stringify(this.thresholdForm.tableThreshold))
       }
@@ -452,10 +548,45 @@ export default {
     thresholdChange(val) {
       this.thresholdArr = val
     },
+
+    editTextLabelThreshold() {
+      this.editTextLabelThresholdDialog = true
+    },
+    closeTextLabelThreshold() {
+      this.editTextLabelThresholdDialog = false
+    },
+    changeTextLabelThreshold() {
+      // check line config
+      for (let i = 0; i < this.textThresholdArr.length; i++) {
+        const ele = this.textThresholdArr[i]
+        if (!ele.term || ele.term === '') {
+          this.$message({
+            message: this.$t('chart.exp_can_not_empty'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+        if (!ele.value) {
+          this.$message({
+            message: this.$t('chart.value_can_not_empty'),
+            type: 'error',
+            showClose: true
+          })
+          return
+        }
+      }
+      this.thresholdForm.textLabelThreshold = JSON.parse(JSON.stringify(this.textThresholdArr))
+      this.changeThreshold()
+      this.closeTextLabelThreshold()
+    },
+    thresholdTextChange(val) {
+      this.textThresholdArr = val
+    },
+
     tableThresholdChange(val) {
       this.tableThresholdArr = val
     },
-
     editTableThreshold() {
       this.editTableThresholdDialog = true
     },

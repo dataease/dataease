@@ -184,7 +184,7 @@ export default {
       this.$nextTick(function() {
         if (that.$refs.tableContainer) {
           const currentHeight = that.$refs.tableContainer.offsetHeight
-          const contentHeight = currentHeight - that.$refs.title.offsetHeight - 16
+          const contentHeight = currentHeight - that.$refs.title.offsetHeight - 8
           that.height = contentHeight + 'px'
           that.content_class.height = that.height
         }
@@ -195,7 +195,8 @@ export default {
         const customAttr = JSON.parse(this.chart.customAttr)
         if (customAttr.color) {
           this.label_class.color = customAttr.color.dimensionColor
-          this.label_content_class.color = customAttr.color.quotaColor
+          // color threshold
+          this.colorThreshold(customAttr.color.quotaColor)
         }
         if (customAttr.size) {
           this.dimensionShow = customAttr.size.dimensionShow
@@ -303,6 +304,57 @@ export default {
     },
     initRemark() {
       this.remarkCfg = getRemark(this.chart)
+    },
+    colorThreshold(valueColor) {
+      if (this.chart.senior) {
+        const senior = JSON.parse(this.chart.senior)
+        if (senior.threshold && senior.threshold.textLabelThreshold && senior.threshold.textLabelThreshold.length > 0) {
+          const value = this.chart.data.series[0].data[0]
+          for (let i = 0; i < senior.threshold.textLabelThreshold.length; i++) {
+            let flag = false
+            const t = senior.threshold.textLabelThreshold[i]
+            const tv = t.value
+            if (t.term === 'eq') {
+              if (value === tv) {
+                this.label_content_class.color = t.color
+                flag = true
+              }
+            } else if (t.term === 'not_eq') {
+              if (value !== tv) {
+                this.label_content_class.color = t.color
+                flag = true
+              }
+            } else if (t.term === 'like') {
+              if (value.includes(tv)) {
+                this.label_content_class.color = t.color
+                flag = true
+              }
+            } else if (t.term === 'not like') {
+              if (!value.includes(tv)) {
+                this.label_content_class.color = t.color
+                flag = true
+              }
+            } else if (t.term === 'null') {
+              if (value === null || value === undefined || value === '') {
+                this.label_content_class.color = t.color
+                flag = true
+              }
+            } else if (t.term === 'not_null') {
+              if (value !== null && value !== undefined && value !== '') {
+                this.label_content_class.color = t.color
+                flag = true
+              }
+            }
+            if (flag) {
+              break
+            } else if (i === senior.threshold.textLabelThreshold.length - 1) {
+              this.label_content_class.color = valueColor
+            }
+          }
+        } else {
+          this.label_content_class.color = valueColor
+        }
+      }
     }
   }
 }
