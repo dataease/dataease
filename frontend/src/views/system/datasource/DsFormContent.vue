@@ -70,9 +70,9 @@
             </el-form-item>
           </el-form>
           <div class="de-row-rules">
-              <span>{{
-                  positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
-                }}</span>
+            <span>{{
+              positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
+            }}</span>
           </div>
           <el-form
             ref="historyDsForm"
@@ -85,9 +85,9 @@
             label-position="right"
           >
             <el-form-item
+              v-if="positionCheck('appMarket')"
               :label="$t('app_template.datasource_from')"
               prop="datasourceFrom"
-              v-if="positionCheck('appMarket')"
             >
               <el-radio-group
                 v-model="attachForm.datasourceFrom"
@@ -124,7 +124,7 @@
           </el-form>
 
           <el-form
-            v-if="!positionCheck('appMarket') ||  (positionCheck('appMarket')&& attachForm.datasourceFrom === 'new')"
+            v-if="!positionCheck('appMarket') || (positionCheck('appMarket')&& attachForm.datasourceFrom === 'new')"
             ref="dsForm"
             :model="form"
             :rules="rule"
@@ -287,19 +287,20 @@
 <script>
 import {
   addDs,
-  editDs,
-  getSchema,
-  validateDs,
-  validateDsById,
   checkApiDatasource,
+  editDs,
+  getDatasourceDetail,
+  getSchema,
+  listDatasource,
+  listDatasourceType,
   listDriverByType,
-  getDatasourceDetail
+  validateDs,
+  validateDsById
 } from '@/api/system/datasource'
 import { $confirm } from '@/utils/message'
 import i18n from '@/lang/index'
 import DsConfiguration from '@/views/system/datasource/DsConfiguration'
 import PluginCom from '@/views/system/plugin/PluginCom'
-import { listDatasourceType, listDatasource } from '@/api/system/datasource'
 import deTextarea from '@/components/deCustomCm/DeTextarea.vue'
 import msgCfm from '@/components/msgCfm'
 import { dsGroupTree } from '@/api/dataset/dataset'
@@ -347,6 +348,7 @@ export default {
   },
   data() {
     return {
+      appMarketDatasource: [],
       appMarketEdit: true,
       attachRule: {
         panelName: [
@@ -378,9 +380,20 @@ export default {
         panelName: '',
         datasetGroupPid: null,
         datasetGroupId: null,
-        datasetGroupName: ''
+        datasetGroupName: '',
+        datasourceFrom: 'new',
+        datasourceHistoryId: null
       },
       disabled: false,
+      historyFormRule: {
+        datasourceFrom: [
+          {
+            required: true,
+            trigger: 'blur'
+          }
+        ],
+        datasourceHistoryId: [{ required: true, message: i18n.t('dataset.pls_slc_data_source'), trigger: 'blur' }]
+      },
       form: {
         configuration: {
           initialPoolSize: 5,
@@ -601,7 +614,7 @@ export default {
   async created() {
     await this.datasourceTypes()
     this.queryTreeData()
-    const params = this.configFromTabs.id ? this.configFromTabs : this.$route.query
+    const params = this.configFromTabs?.id ? this.configFromTabs : this.$route.query
     let { id, showModel, type, name } = params
     this.params = params
     const appMarketCheck = this.positionCheck('appMarket')
@@ -618,6 +631,8 @@ export default {
       this.attachForm.datasetGroupPid = this.outerParams.datasetGroupPid ? this.outerParams.datasetGroupPid : '0'
       this.attachForm.datasetGroupId = this.outerParams.datasetGroupId
       this.attachForm.datasetGroupName = this.outerParams.datasetGroupName
+      this.attachForm.datasourceFrom = this.outerParams.datasourceFrom ? this.outerParams.datasourceFrom : 'new'
+      this.attachForm.datasourceHistoryId = this.outerParams.datasourceHistoryId
       this.params = {
         id: this.outerParams.datasourceId,
         showModel: this.outerParams.showModel,
@@ -646,6 +661,9 @@ export default {
     })
   },
   methods: {
+    editDatasource() {
+      this.disabled = false
+    },
     baseInfoDisabledCheck(privileges) {
       return !(this.formType === 'add' ? true : hasDataPermission('manage', privileges))
     },
@@ -654,6 +672,11 @@ export default {
       if (node.children === null || node.children === 'null') {
         delete node.children
       }
+    },
+    getDatasourceOptions() {
+      return listDatasource().then((response) => {
+        this.options = response.data.filter((item) => item.type !== 'api')
+      })
     },
     getDatasetGroupTree() {
       dsGroupTree({ nodeType: 'group', excludedId: this.attachForm.datasetGroupId }).then(res => {
@@ -696,6 +719,9 @@ export default {
     queryTreeData() {
       listDatasource().then((res) => {
         this.tData = this.buildTree(res.data)
+        if (this.positionCheck('appMarket') && res.data) {
+          this.appMarketDatasource = res.data.filter((item) => item.type === this.outerParams.datasourceType)
+        }
       })
     },
     buildTree(array) {
@@ -763,8 +789,19 @@ export default {
     reset() {
       this.$refs.dsForm.resetFields()
     },
-    editDatasource() {
-      this.disabled = false
+    saveAppMarketHistory() {
+      this.$refs.historyDsForm.validate(valid => {
+        if (!valid) {
+          return false
+        }
+        const appApplyForm = {
+          ...this.attachForm,
+          ...this.historyDsForm
+        }
+        const method = this.formType === 'add' ? appApply : appEdit
+        this.appApplyMethod(method, appApplyForm)
+      }
+      )
     },
     save() {
       if (
@@ -942,6 +979,7 @@ export default {
           }
           appApplyForm = {
             ...this.attachForm,
+            ...this.historyDsForm,
             datasourceList: [deepCopy(form)]
           }
           method = this.formType === 'add' ? appApply : appEdit

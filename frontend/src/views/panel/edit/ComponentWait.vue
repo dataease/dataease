@@ -1,8 +1,8 @@
 <template>
   <el-row class="component-wait">
     <el-tabs
-      class="wait-tab"
       v-model="activeName"
+      class="wait-tab"
       style="padding-left: 10px"
     >
       <el-tab-pane
@@ -37,7 +37,7 @@
       class="component-wait-main"
       style="padding:10px"
     >
-      <mobile-background-selector/>
+      <mobile-background-selector />
     </el-row>
   </el-row>
 </template>
@@ -141,7 +141,6 @@ export default {
   width: 100% !important;
   height: 100%;
 }
-
 
 .wait-tab {
   height: 40px !important;

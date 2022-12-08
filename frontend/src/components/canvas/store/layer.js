@@ -14,7 +14,6 @@ export default {
           toast('已经到顶了')
         }
       }
-
     },
 
     downComponent({ componentData, curComponent }) {

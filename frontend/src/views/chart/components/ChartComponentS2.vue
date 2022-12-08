@@ -67,8 +67,8 @@
           >
             {{ $t('chart.total') }}
             <span>{{
-                (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
-              }}</span>
+              (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
+            }}</span>
             {{ $t('chart.items') }}
           </span>
           <de-pagination
@@ -199,7 +199,6 @@ export default {
       } else {
         return {}
       }
-
     },
     trackBarStyleTime() {
       return this.trackBarStyle
