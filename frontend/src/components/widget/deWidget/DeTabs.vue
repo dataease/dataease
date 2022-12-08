@@ -79,7 +79,7 @@
             :canvas-style-data="canvasStyleData"
             :canvas-id="element.id+'-'+item.name"
             :panel-info="panelInfo"
-            :in-screen="true"
+            :in-screen="inScreen"
             :show-position="showPosition"
           />
         </div>
@@ -232,6 +232,11 @@ export default {
   name: 'DeTabs',
   components: { TextAttr, Preview, DeCanvasTab, TabUseList, ViewSelect, DataeaseTabs },
   props: {
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     canvasId: {
       type: String,
       default: 'canvas-main'
