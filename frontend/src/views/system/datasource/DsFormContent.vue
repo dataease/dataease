@@ -69,8 +69,62 @@
               />
             </el-form-item>
           </el-form>
+          <div class="de-row-rules">
+              <span>{{
+                  positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
+                }}</span>
+          </div>
+          <el-form
+            ref="historyDsForm"
+            :model="attachForm"
+            :rules="historyFormRule"
+            size="small"
+            :disabled="formType === 'modify'"
+            class="de-form-item"
+            label-width="180px"
+            label-position="right"
+          >
+            <el-form-item
+              :label="$t('app_template.datasource_from')"
+              prop="datasourceFrom"
+              v-if="positionCheck('appMarket')"
+            >
+              <el-radio-group
+                v-model="attachForm.datasourceFrom"
+                size="mini"
+              >
+                <el-radio :label="'new'">
+                  {{ $t('app_template.datasource_new') }}
+                </el-radio>
+                <el-radio :label="'history'">
+                  {{ $t('app_template.datasource_history') }}
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+
+            <el-form-item
+              v-if="positionCheck('appMarket') && attachForm.datasourceFrom === 'history'"
+              :label="$t('app_template.datasource')"
+              prop="datasourceHistoryId"
+            >
+              <el-select
+                v-model="attachForm.datasourceHistoryId"
+                filterable
+                :placeholder="$t('dataset.pls_slc_data_source')"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in appMarketDatasource"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+            </el-form-item>
+          </el-form>
 
           <el-form
+            v-if="!positionCheck('appMarket') ||  (positionCheck('appMarket')&& attachForm.datasourceFrom === 'new')"
             ref="dsForm"
             :model="form"
             :rules="rule"
@@ -80,11 +134,6 @@
             label-width="180px"
             label-position="right"
           >
-            <div class="de-row-rules">
-              <span>{{
-                positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
-              }}</span>
-            </div>
             <el-form-item
               :label="$t('datasource.display_name')"
               prop="name"
@@ -163,7 +212,7 @@
       </div>
     </div>
     <div
-      v-if="positionCheck('appMarket')"
+      v-if="positionCheck('appMarket') && attachForm.datasourceFrom === 'new'"
       class="de-ds-bottom"
     >
       <div
@@ -204,6 +253,30 @@
             "
             @click="validaDatasource"
           >{{ $t('commons.validate') }}
+          </deBtn>
+        </template>
+      </div>
+    </div>
+
+    <div
+      v-if="positionCheck('appMarket') && attachForm.datasourceFrom === 'history'"
+      class="de-ds-bottom"
+    >
+      <div
+        class="apply"
+        style="width: 100%"
+      >
+        <template v-if="canEdit">
+          <deBtn
+            secondary
+            @click="closeDraw"
+          >{{ $t('commons.cancel') }}
+          </deBtn>
+          <deBtn
+            v-if="formType === 'add'"
+            type="primary"
+            @click="saveAppMarketHistory"
+          >{{ $t('commons.save') }}
           </deBtn>
         </template>
       </div>
