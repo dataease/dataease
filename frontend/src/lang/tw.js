@@ -1926,6 +1926,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    unpublished_tips: '取消發布後，該儀表板不能被查看。確定要取消發布？',
     position_adjust_component: '位置調整',
     active_font_size: '选中字體大小',
     carousel: '輪播',
