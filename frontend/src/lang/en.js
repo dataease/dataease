@@ -1930,6 +1930,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    unpublished_tips: 'After unpublishing, the panel cannot be viewed. Are you sure you want to cancel publishing? ',
     position_adjust_component: 'Position adjust',
     active_font_size: 'Selected font size',
     carousel: 'Carousel',
