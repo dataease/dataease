@@ -251,7 +251,7 @@ export default {
     handleElTagStyle() {
       setTimeout(() => {
         this.$refs['deSelect'] && this.$refs['deSelect'].$el && textSelectWidget(this.$refs['deSelect'].$el, this.element.style)
-      }, 50)
+      }, 500)
     },
     initLoad() {
       this.value = this.fillValueDerfault()
