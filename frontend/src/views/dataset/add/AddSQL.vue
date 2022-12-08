@@ -158,7 +158,7 @@
             @click="typeSwitch(ele)"
           >
             <span
-              :title="ele.name"
+              :title="ele.remark"
               class="name"
             >{{ ele.name }}</span>
             <i
@@ -180,7 +180,7 @@
             class="table-or-field field"
           >
             <span
-              :title="ele.fieldName"
+              :title="ele.remarks"
               class="name"
             >{{ ele.fieldName }}</span>
             <i

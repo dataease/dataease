@@ -1778,6 +1778,8 @@ export default {
     please_set_driverClass: 'Please specify driver class'
   },
   datasource: {
+    data_source_configuration: 'Data Source Configuration',
+    data_source_table: 'Data Source Table',
     auth_method: 'Auth method',
     passwd: 'UserName Password',
     kerbers_info: 'Please make sure krb5 Conf, KeyTab key, added to path: /opt/dataease/conf',
