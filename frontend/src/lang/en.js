@@ -2060,6 +2060,7 @@ export default {
     who_share: 'Who share',
     when_share: 'When share',
     share_to: 'Share to',
+    share_to_some: 'Share [{some}] to',
     org: 'Orgnization',
     role: 'Role',
     user: 'User',

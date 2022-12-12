@@ -59,139 +59,155 @@
               v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName"
               style="float: right;margin-right: 10px"
             >
-              <el-button
-                size="mini"
+              <de-btn
                 type="primary"
                 @click="editPanel"
               >
                 {{ $t('commons.edit') }}
-              </el-button>
-            </span>
-
-            <span
-              v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName"
-              style="float: right;margin-right: 10px"
-            >
-              <el-button
-                size="mini"
-                type="primary"
-                @click="changePublishState"
-              >
-                <span v-if="panelInfo.status==='publish'">{{ $t('commons.unpublished') }}</span>
-                <span v-if="panelInfo.status!=='publish'">{{ $t('commons.publish') }}</span>
-              </el-button>
-            </span>
-
-            <span
-              v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'"
-              style="float: right;margin-right: 10px"
-            >
-              <el-tooltip :content="$t('panel.save_to_panel')">
-                <el-button
-                  class="el-icon-folder-checked"
-                  size="mini"
-                  circle
-                  @click="saveToTemplate"
-                />
-              </el-tooltip>
-            </span>
-            <span
-              v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'"
-              style="float: right;margin-right: 10px"
-            >
-              <el-dropdown>
-                <el-button
-                  size="mini"
-                  class="el-icon-download"
-                  circle
-                />
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item
-                    icon="el-icon-copy-document"
-                    @click.native="downloadToTemplate"
-                  >{{ $t('panel.export_to_panel') }}</el-dropdown-item>
-                  <el-dropdown-item
-                    icon="el-icon-notebook-2"
-                    @click.native="downloadAsPDF"
-                  >{{ $t('panel.export_to_pdf') }}</el-dropdown-item>
-                  <el-dropdown-item
-                    icon="el-icon-picture-outline"
-                    @click.native="downloadAsImage"
-                  >{{ $t('panel.export_to_img') }}</el-dropdown-item>
-                  <el-dropdown-item
-                    icon="el-icon-s-data"
-                    @click.native="downLoadToAppPre"
-                  >{{ $t('panel.export_to_app') }}</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </span>
-            <span
-              v-if="panelInfo.status==='publish'"
-              style="float: right;margin-right: 10px"
-            >
-              <el-tooltip :content="$t('panel.fullscreen_preview')">
-                <el-button
-                  class="el-icon-view"
-                  size="mini"
-                  circle
-                  @click="clickFullscreen"
-                />
-              </el-tooltip>
-            </span>
-
-            <span
-              v-if="panelInfo.status==='publish'"
-              style="float: right;margin-right: 10px"
-            >
-              <el-tooltip :content="$t('panel.new_tab_preview')">
-                <el-button
-                  class="el-icon-data-analysis"
-                  size="mini"
-                  circle
-                  @click="newTab"
-                />
-              </el-tooltip>
-            </span>
-
-            <span
-              v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
-              style="float: right;margin-right: 10px"
-            >
-              <el-tooltip :content="$t('panel.store')">
-                <el-button
-                  class="el-icon-star-off"
-                  size="mini"
-                  circle
-                  @click="star"
-                />
-              </el-tooltip>
-            </span>
-
-            <span
-              v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
-              style="float: right;margin-right: 10px"
-            >
-              <el-tooltip :content="$t('commons.cancel')">
-                <el-button
-                  class="el-icon-star-on"
-                  size="mini"
-                  circle
-                  @click="unstar"
-                />
-              </el-tooltip>
+              </de-btn>
             </span>
 
             <span style="float: right;margin-right: 10px">
-              <el-tooltip :content="$t('commons.refresh')">
-                <el-button
-                  class="el-icon-refresh"
-                  size="mini"
-                  circle
-                  @click="refreshPanel"
-                />
-              </el-tooltip>
+              <de-btn
+                secondary
+                @click="share"
+              >
+                {{ $t('panel.share') }}
+              </de-btn>
             </span>
 
+            <span
+              v-if="panelInfo.status==='publish'"
+              style="float: right;margin-right: 10px"
+            >
+              <de-btn
+                secondary
+                @click="clickFullscreen"
+              >
+                {{ $t('panel.fullscreen_preview') }}
+              </de-btn>
+            </span>
+
+            <span
+              style="float: right;margin-right: 10px"
+              class="de-tree"
+            >
+              <el-dropdown
+                trigger="click"
+                size="small"
+                placement="bottom-start"
+              >
+                <span class="el-dropdown-link de-el-tree-node__content">
+                  <el-button
+                    icon="el-icon-more"
+                    type="text"
+                    size="small"
+                  />
+                </span>
+                <el-dropdown-menu
+                  slot="dropdown"
+                  class="de-card-dropdown"
+                >
+                  <el-dropdown-item
+                    v-if="panelInfo.status==='publish'"
+                    @click.native="newTab"
+                  >
+                    <svg-icon
+                      icon-class="icon_pc_outlined_copy"
+                      class="preview-icon-svg"
+                    />
+                    {{ $t('panel.new_tab_preview') }}
+                  </el-dropdown-item>
+
+                  <el-dropdown-item
+                    v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
+                    icon="el-icon-star-off"
+                    @click.native="star"
+                  >
+                    {{ $t('panel.store') }}
+                  </el-dropdown-item>
+
+                  <el-dropdown-item
+                    v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
+                    icon="el-icon-star-on"
+                    @click.native="unstar"
+                  >
+                    {{ $t('commons.cancel') + $t('panel.store') }}
+                  </el-dropdown-item>
+
+                  <el-dropdown-item
+                    v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
+                    icon="el-icon-refresh"
+                    @click.native="refreshPanel"
+                  >
+                    {{ $t('commons.refresh') + $t('chart.chart_data') }}
+                  </el-dropdown-item>
+
+                  <el-dropdown-item
+                    v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'"
+                    @click.native="saveToTemplate"
+                  >
+                    <svg-icon
+                      icon-class="icon_yes_outlined"
+                      class="preview-icon-svg"
+                    />
+                    {{ $t('panel.save_to_panel') }}
+                  </el-dropdown-item>
+
+                  <el-dropdown-item
+                    v-if="hasDataPermission('manage',panelInfo.privileges)&&activeTab==='PanelList'&&!panelInfo.sourcePanelName"
+                    @click.native="changePublishState"
+                  >
+                    <svg-icon
+                      :icon-class="panelInfo.status==='publish' ? 'cancel_release' : 'release'"
+                      class="preview-icon-svg"
+                    />
+                    {{ $t(`commons.${ panelInfo.status==='publish' ? 'unpublished' : 'publish'}`) }}
+                  </el-dropdown-item>
+
+                  <el-dropdown
+                    style="width: 100%"
+                    placement="right-start"
+                  >
+                    <el-dropdown-item
+                      v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'"
+                    >
+                      <svg-icon
+                        icon-class="icon_bottom-align_outlined"
+                        class="preview-icon-svg"
+                      />
+                      导出为
+                      <svg-icon
+                        style="margin-top: 7px;float: right"
+                        icon-class="icon_right_outlined"
+                        class="preview-icon-svg"
+                      />
+                    </el-dropdown-item>
+                    <el-dropdown-menu
+                      slot="dropdown"
+                      class="de-card-dropdown de-card-dropdown-right"
+                    >
+                      <el-dropdown-item
+                        icon="el-icon-copy-document"
+                        @click.native="downloadToTemplate"
+                      >{{ $t('panel.export_to_panel') }}</el-dropdown-item>
+                      <el-dropdown-item
+                        icon="el-icon-notebook-2"
+                        @click.native="downloadAsPDF"
+                      >{{ $t('panel.export_to_pdf') }}</el-dropdown-item>
+                      <el-dropdown-item
+                        icon="el-icon-picture-outline"
+                        @click.native="downloadAsImage"
+                      >{{ $t('panel.export_to_img') }}</el-dropdown-item>
+                      <el-dropdown-item
+                        icon="el-icon-s-data"
+                        @click.native="downLoadToAppPre"
+                      >{{ $t('panel.export_to_app') }}</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </span>
           </el-col>
         </div>
       </el-row>
@@ -314,6 +330,20 @@
       />
     </el-dialog>
 
+    <el-dialog
+      v-dialogDrag
+      :title="authTitle"
+      :visible.sync="authVisible"
+      width="800px"
+      class="dialog-css"
+    >
+      <grant-auth
+        v-if="authVisible"
+        :resource-id="authResourceId"
+        @close-grant="closeGrant"
+      />
+    </el-dialog>
+
     <keep-alive>
       <app-export-form
         ref="appExportForm"
@@ -340,10 +370,11 @@ import { dataURLToBlob, getNowCanvasComponentData } from '@/components/canvas/ut
 import { findResourceAsBase64 } from '@/api/staticResource/staticResource'
 import PanelDetailInfo from '@/views/panel/list/common/PanelDetailInfo'
 import AppExportForm from '@/views/panel/list/AppExportForm'
+import GrantAuth from '../grantAuth'
 
 export default {
   name: 'PanelViewShow',
-  components: { AppExportForm, PanelDetailInfo, Preview, SaveToTemplate, PDFPreExport, ShareHead },
+  components: { AppExportForm, PanelDetailInfo, Preview, SaveToTemplate, PDFPreExport, ShareHead, GrantAuth },
   props: {
     activeTab: {
       type: String,
@@ -352,6 +383,9 @@ export default {
   },
   data() {
     return {
+      authTitle: null,
+      authResourceId: null,
+      authVisible: false,
       canvasInfoTemp: 'preview-temp-canvas-main',
       canvasId: 'canvas-main',
       showMain: true,
@@ -446,6 +480,15 @@ export default {
     },
     clickFullscreen() {
       this.fullscreen = true
+    },
+    share() {
+      this.authResourceId = this.panelInfo.id
+      this.authTitle = this.$t('panel.share_to_some', { some: this.panelInfo.name })
+      this.authVisible = true
+    },
+    closeGrant() {
+      this.authResourceId = null
+      this.authVisible = false
     },
     newTab() {
       let url = '#/preview/' + this.$store.state.panel.panelInfo.id
@@ -786,5 +829,10 @@ export default {
 
 .dialog-css2 ::v-deep .el-dialog__body {
   padding: 0px 20px !important;
+}
+
+.preview-icon-svg {
+  color: inherit;
+  margin-right: 5px;
 }
 </style>

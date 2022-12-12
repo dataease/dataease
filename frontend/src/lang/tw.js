@@ -2054,6 +2054,7 @@ export default {
     who_share: '分享人',
     when_share: '分享時間',
     share_to: '分享對象',
+    share_to_some: '把[{some}]分享給',
     org: '組織',
     role: '角色',
     user: '用戶',
