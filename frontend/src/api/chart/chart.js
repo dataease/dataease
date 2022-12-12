@@ -8,11 +8,12 @@ export function post(url, data, loading = false) {
     data
   })
 }
+
 export function tableField(id) {
   return request({
     url: '/dataset/table/getWithPermission/' + id,
     method: 'post',
-    loading: true,
+    loading: false,
     hideMsg: true,
     timeout: 60000
   })
@@ -34,6 +35,7 @@ export function chartCopy(id, panelId) {
     loading: false
   })
 }
+
 export function chartBatchCopy(params, panelId) {
   return request({
     url: '/chart/view/chartBatchCopy/' + panelId,
@@ -42,6 +44,7 @@ export function chartBatchCopy(params, panelId) {
     loading: false
   })
 }
+
 export function chartGroupTree(data) {
   return request({
     url: '/chart/group/tree',
@@ -116,6 +119,7 @@ export function resetViewCacheCallBack(viewId, panelId, callback) {
     callback(rep)
   })
 }
+
 export function resetViewCache(viewId, panelId) {
   return request({
     url: '/chart/view/resetViewCache/' + viewId + '/' + panelId,

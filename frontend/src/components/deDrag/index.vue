@@ -17,8 +17,8 @@
       },
       className
     ]"
-    @mousedown="elementMouseDown"
     @touchstart="elementTouchDown"
+    @mousedown="outerElementMouseDown"
     @mouseenter="enter"
     @mouseleave="leave"
   >
@@ -66,20 +66,24 @@
         @mousedown.stop.prevent="handleDown(handlei, $event)"
         @touchstart.stop.prevent="handleTouchDown(handlei, $event)"
       >
-        <slot :name="handlei" />
+        <slot :name="handlei"/>
       </div>
       <div
         :id="componentCanvasId"
         :style="mainSlotStyleInner"
         class="main-background"
       >
+        <div @mousedown="elementMouseDown" class="de-drag-area de-drag-top"></div>
+        <div @mousedown="elementMouseDown" class="de-drag-area de-drag-right"></div>
+        <div @mousedown="elementMouseDown" class="de-drag-area de-drag-bottom"></div>
+        <div @mousedown="elementMouseDown" class="de-drag-area de-drag-left"></div>
         <svg-icon
           v-if="svgInnerEnable"
           :style="{'color':element.commonBackground.innerImageColor}"
           class="svg-background"
           :icon-class="mainSlotSvgInner"
         />
-        <slot />
+        <slot/>
       </div>
     </div>
   </div>
@@ -862,6 +866,18 @@ export default {
     elementTouchDown(e) {
       eventsFor = events.touch
       this.elementDown(e)
+    },
+    outerElementMouseDown(e) {
+      // private 设置当前组件数据及状态
+      this.$store.commit('setClickComponentStatus', true)
+      if (this.element.component !== 'user-view' && this.element.component !== 'de-frame' && this.element.component !== 'v-text' && this.element.component !== 'de-rich-text' && this.element.component !== 'rect-shape' && this.element.component !== 'de-input-search' && this.element.component !== 'de-select-grid' && this.element.component !== 'de-number-range' && this.element.component !== 'de-date') {
+        e.preventDefault()
+      }
+      // 阻止冒泡事件
+      e.stopPropagation()
+      this.$nextTick(() => {
+        this.$store.commit('setCurComponent', { component: this.element, index: this.index })
+      })
     },
     elementMouseDown(e) {
       // private 设置当前组件数据及状态
@@ -2131,4 +2147,42 @@ export default {
 .drag-on-tab-collision {
   z-index: 1000 !important;
 }
+
+.de-drag-area {
+  position: absolute;
+  z-index: 10;
+}
+
+.de-drag-area:hover {
+  cursor: move;
+}
+
+.de-drag-top {
+  left: 0;
+  top: 0;
+  height: 12px;
+  width: 100%;
+}
+
+.de-drag-right {
+  right: 0;
+  top: 0;
+  width: 16px;
+  height: 100%;
+}
+
+.de-drag-bottom {
+  left: 0;
+  bottom: 0;
+  height: 12px;
+  width: 100%;
+}
+
+.de-drag-left {
+  left: 0;
+  top: 0;
+  width: 16px;
+  height: 100%;
+}
+
 </style>

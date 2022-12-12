@@ -226,10 +226,7 @@
           >{{ $t('commons.cancel') }}
           </deBtn>
           <deBtn
-            v-if="
-              formType === 'add' ||
-                hasDataPermission('manage', params.privileges)
-            "
+            v-if="formType === 'add' || hasDataPermission('manage', params.privileges)"
             secondary
             @click="validaDatasource"
           >{{ $t('commons.validate') }}
@@ -307,6 +304,7 @@ import { dsGroupTree } from '@/api/dataset/dataset'
 import { appApply, appEdit, groupTree } from '@/api/panel/panel'
 import { deepCopy } from '@/components/canvas/utils/utils'
 import { hasDataPermission } from '@/utils/permission'
+import { Base64 } from 'js-base64'
 
 export default {
   name: 'DsForm',
@@ -710,6 +708,12 @@ export default {
     getDatasourceDetail(id, showModel) {
       this.$emit('update:formLoading', true)
       return getDatasourceDetail(id).then((res) => {
+        if(res.data.configuration){
+          res.data.configuration = Base64.decode(res.data.configuration)
+        }
+        if(res.data.apiConfigurationStr){
+          res.data.apiConfiguration = JSON.parse(Base64.decode(res.data.apiConfigurationStr))
+        }
         this.params = { ...res.data, showModel }
         this.$emit('setParams', { ...this.params })
       }).finally(() => {
@@ -729,6 +733,12 @@ export default {
       const newArr = []
       for (let index = 0; index < array.length; index++) {
         const element = array[index]
+        if(element.configuration){
+          element.configuration = Base64.decode(element.configuration)
+        }
+        if(element.apiConfigurationStr){
+          element.apiConfiguration = Base64.decode(element.apiConfigurationStr)
+        }
         if (this.msgNodeId) {
           if (element.id === this.msgNodeId) {
             element.msgNode = true
@@ -967,9 +977,9 @@ export default {
           form.apiConfiguration.forEach((item) => {
             delete item.status
           })
-          form.configuration = JSON.stringify(form.apiConfiguration)
+          form.configuration = Base64.encode(JSON.stringify(form.apiConfiguration))
         } else {
-          form.configuration = JSON.stringify(form.configuration)
+          form.configuration = Base64.encode(JSON.stringify(form.configuration))
         }
         const isAppMarket = this.positionCheck('appMarket')
         let appApplyForm
@@ -1051,7 +1061,7 @@ export default {
       this.$refs.dsForm.validate((valid) => {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
-          data.configuration = JSON.stringify(data.configuration)
+          data.configuration = Base64.encode(JSON.stringify(data.configuration))
           getSchema(data).then((res) => {
             this.schemas = res.data
             this.openMessageSuccess('commons.success')
@@ -1102,9 +1112,9 @@ export default {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
           if (data.type === 'api') {
-            data.configuration = JSON.stringify(data.apiConfiguration)
+            data.configuration = Base64.encode(JSON.stringify(data.apiConfiguration))
           } else {
-            data.configuration = JSON.stringify(data.configuration)
+            data.configuration = Base64.encode(JSON.stringify(data.configuration))
           }
           if (data.showModel === 'show' && !this.canEdit) {
             validateDsById(data.id).then((res) => {

@@ -17,7 +17,7 @@
         style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;"
       >
         <div style="height: 100%;">
-          <share-head />
+          <share-head/>
         </div>
       </el-row>
       <el-row
@@ -45,7 +45,7 @@
               width="400"
               trigger="click"
             >
-              <panel-detail-info />
+              <panel-detail-info/>
               <i
                 slot="reference"
                 class="el-icon-warning icon-class"
@@ -371,8 +371,10 @@ import { findResourceAsBase64 } from '@/api/staticResource/staticResource'
 import PanelDetailInfo from '@/views/panel/list/common/PanelDetailInfo'
 import AppExportForm from '@/views/panel/list/AppExportForm'
 import GrantAuth from '../grantAuth'
+import msgCfm from '@/components/msgCfm/index'
 
 export default {
+  mixins: [msgCfm],
   name: 'PanelViewShow',
   components: { AppExportForm, PanelDetailInfo, Preview, SaveToTemplate, PDFPreExport, ShareHead, GrantAuth },
   props: {
@@ -743,10 +745,18 @@ export default {
     },
     changePublishState() {
       if (this.panelInfo.status === 'publish') {
-        this.panelInfo.status = 'unpublished'
+        const options = {
+          title: this.$t('panel.unpublished_tips'),
+          type: 'primary',
+          cb: () => this.updatePublishStatus('unpublished')
+        }
+        this.handlerConfirm(options, this.$t('commons.confirm'))
       } else {
-        this.panelInfo.status = 'publish'
+        this.updatePublishStatus('publish')
       }
+    },
+    updatePublishStatus(newStatus) {
+      this.panelInfo.status = newStatus
       updatePanelStatus(this.panelInfo.id, { 'status': this.panelInfo.status })
       this.$emit('editPanelBashInfo', {
         'operation': 'status',

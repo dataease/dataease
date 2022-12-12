@@ -6,6 +6,7 @@
     @scroll="canvasScroll"
   >
     <canvas-opt-bar
+      v-if="canvasId==='canvas-main'"
       ref="canvas-opt-bar"
       :canvas-style-data="canvasStyleData"
       @link-export-pdf="downloadAsPDF"
@@ -155,7 +156,7 @@ import bus from '@/utils/bus'
 import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
 import { hasDataPermission } from '@/utils/permission'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
-import { userLoginInfo } from '@/api/systemInfo/userLogin'
+import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
 import html2canvas from 'html2canvasde'
 import { queryAll } from '@/api/panel/pdfTemplate'
 import PDFPreExport from '@/views/panel/export/PDFPreExport'
@@ -456,7 +457,8 @@ export default {
         if (this.userInfo) {
           activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, waterDomId, this.canvasId, this.panelInfo.watermarkOpen)
         } else {
-          userLoginInfo().then(res => {
+          const method = this.userId ? proxyUserLoginInfo : userLoginInfo
+          method(this.userId).then(res => {
             this.userInfo = res.data
             activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, waterDomId, this.canvasId, this.panelInfo.watermarkOpen)
           })

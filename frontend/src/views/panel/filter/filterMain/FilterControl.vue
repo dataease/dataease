@@ -328,9 +328,12 @@ export default {
 
   created() {
     this.attrs = this.controlAttrs
-    if (this.widget.isTimeWidget && this.widget.isTimeWidget()) {
+    if (this.widget.isTimeWidget) {
       this.showParams = true
       this.isRangeParamWidget = this.widget.isRangeParamWidget && this.widget.isRangeParamWidget()
+    }
+    if ('timeYearWidget,timeMonthWidget,timeDateWidget,textSelectWidget,numberSelectWidget'.indexOf(this.widget.name) !== -1) {
+      this.showParams = true
     }
   },
   methods: {
