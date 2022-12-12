@@ -2712,6 +2712,7 @@ export default {
     user: '操作用戶',
     time: '操作時間',
     export: '導出',
+    export_as: '導出为',
     confirm: '確定導出嗎？',
     search_by_key: '搜索詳情',
     ip: 'IP地址'

@@ -2718,6 +2718,7 @@ export default {
     user: 'User',
     time: 'Time',
     export: 'Export',
+    export_as: 'Export as',
     confirm: 'Sure Export ?',
     search_by_key: 'Search by key',
     ip: 'IP'

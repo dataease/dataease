@@ -176,7 +176,7 @@
                         icon-class="icon_bottom-align_outlined"
                         class="preview-icon-svg"
                       />
-                      导出为
+                      {{ $t('log.export_as') }}
                       <svg-icon
                         style="margin-top: 7px;float: right"
                         icon-class="icon_right_outlined"
