@@ -19,6 +19,7 @@ public class DatasourceDTO extends Datasource {
     @ApiModelProperty("权限")
     private String privileges;
     private List<ApiDefinition> apiConfiguration;
+    private String apiConfigurationStr;
     private String typeDesc;
     private DatasourceCalculationMode calculationMode;
 }

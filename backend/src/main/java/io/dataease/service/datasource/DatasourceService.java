@@ -108,7 +108,7 @@ public class DatasourceService {
         if (!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(datasource.getType())) {
             throw new Exception("Datasource type not supported.");
         }
-
+        datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
         Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
         datasourceProvider.checkConfiguration(datasource);
 
@@ -212,6 +212,14 @@ public class DatasourceService {
                 }
             }
         }
+        if(StringUtils.isNotEmpty(datasourceDTO.getConfiguration())){
+            datasourceDTO.setConfiguration(new String(java.util.Base64.getEncoder().encode(datasourceDTO.getConfiguration().getBytes())));
+        }
+        if(CollectionUtils.isNotEmpty(datasourceDTO.getApiConfiguration())){
+            String config = new Gson().toJson(datasourceDTO.getApiConfiguration());
+            datasourceDTO.setApiConfigurationStr(new String(java.util.Base64.getEncoder().encode(config.getBytes())));
+            datasourceDTO.setApiConfiguration(null);
+        }
     }
 
     public DatasourceDTO getDataSourceDetails(String datasourceId){
@@ -253,6 +261,7 @@ public class DatasourceService {
         if (!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(updataDsRequest.getType())) {
             throw new Exception("Datasource type not supported.");
         }
+        updataDsRequest.setConfiguration(new String(java.util.Base64.getDecoder().decode(updataDsRequest.getConfiguration())));
         checkName(updataDsRequest.getName(), updataDsRequest.getType(), updataDsRequest.getId());
         Datasource datasource = new Datasource();
         datasource.setName(updataDsRequest.getName());
@@ -284,6 +293,7 @@ public class DatasourceService {
     }
 
     public ResultHolder validate(Datasource datasource) throws Exception {
+        datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, datasource);
         try {
@@ -372,6 +382,7 @@ public class DatasourceService {
     }
 
     public List<String> getSchema(Datasource datasource) throws Exception {
+        datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
         Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(datasource);

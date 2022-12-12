@@ -316,6 +316,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import i18n from '@/lang'
+import { Base64 } from 'js-base64'
 import {
   listDatasource,
   listDatasourceByType,
@@ -502,8 +503,7 @@ export default {
       })
     },
     refreshType(datasource) {
-      const method =
-        this.showView === 'Datasource' ? listDatasourceByType : listDriverByType
+      const method = this.showView === 'Datasource' ? listDatasourceByType : listDriverByType
       let typeData = []
       method(datasource.type).then((res) => {
         typeData = this.buildTree(res.data)
@@ -538,6 +538,12 @@ export default {
       const newArr = []
       for (let index = 0; index < array.length; index++) {
         const element = array[index]
+        if(element.configuration){
+          element.configuration = Base64.decode(element.configuration)
+        }
+        if(element.apiConfigurationStr){
+          element.apiConfiguration = JSON.parse(Base64.decode(element.apiConfigurationStr))
+        }
         if (this.msgNodeId) {
           if (element.id === this.msgNodeId) {
             element.msgNode = true
