@@ -522,7 +522,6 @@ import FilterDialog from '../filter/FilterDialog'
 import ButtonDialog from '../filter/ButtonDialog'
 import ButtonResetDialog from '../filter/ButtonResetDialog'
 import toast from '@/components/canvas/utils/toast'
-import generateID from '@/components/canvas/utils/generateID'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 import ChartEdit from '@/views/chart/view/ChartEdit'
@@ -1271,7 +1270,7 @@ export default {
         img.onload = () => {
           const component = {
             ...commonAttr,
-            id: generateID(),
+            id: uuid.v1(),
             component: 'Picture',
             type: 'picture-add',
             label: '图片',
