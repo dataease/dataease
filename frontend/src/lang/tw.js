@@ -2055,6 +2055,7 @@ export default {
     who_share: '分享人',
     when_share: '分享時間',
     share_to: '分享對象',
+    share_to_some: '把[{some}]分享給',
     org: '組織',
     role: '角色',
     user: '用戶',
@@ -2711,6 +2712,7 @@ export default {
     user: '操作用戶',
     time: '操作時間',
     export: '導出',
+    export_as: '導出为',
     confirm: '確定導出嗎？',
     search_by_key: '搜索詳情',
     ip: 'IP地址'

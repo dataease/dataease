@@ -2061,6 +2061,7 @@ export default {
     who_share: 'Who share',
     when_share: 'When share',
     share_to: 'Share to',
+    share_to_some: 'Share [{some}] to',
     org: 'Orgnization',
     role: 'Role',
     user: 'User',
@@ -2717,6 +2718,7 @@ export default {
     user: 'User',
     time: 'Time',
     export: 'Export',
+    export_as: 'Export as',
     confirm: 'Sure Export ?',
     search_by_key: 'Search by key',
     ip: 'IP'
