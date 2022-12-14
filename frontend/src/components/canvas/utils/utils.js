@@ -1,5 +1,6 @@
 import {
   BASE_MOBILE_STYLE,
+  COMMON_BACKGROUND,
   COMMON_BACKGROUND_NONE,
   HYPERLINKS
 } from '@/components/canvas/customComponent/component-list'
@@ -86,7 +87,17 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
   componentStyle.chartInfo.tabStyle = (componentStyle.chartInfo.tabStyle || deepCopy(TAB_COMMON_STYLE))
   componentStyle.themeId = (componentStyle.themeId || 'NO_THEME')
   componentStyle.panel.themeColor = (componentStyle.panel.themeColor || 'light')
-  componentStyle.panel.mobileSetting = (componentStyle.panel.mobileSetting || MOBILE_SETTING)
+  componentStyle.panel.mobileSetting = (componentStyle.panel.mobileSetting || deepCopy(MOBILE_SETTING))
+
+  // 主题增加组件背景设置
+  if (componentStyle.chartCommonStyle) {
+    componentStyle.chartCommonStyle.enable = componentStyle.chartCommonStyle.enable || false
+    componentStyle.chartCommonStyle.backgroundType = componentStyle.chartCommonStyle.backgroundType || 'innerImage'
+    componentStyle.chartCommonStyle.innerImage = componentStyle.chartCommonStyle.innerImage || 'board/blue_1.svg'
+    componentStyle.chartCommonStyle.outerImage = componentStyle.chartCommonStyle.outerImage || null
+  } else {
+    componentStyle.chartCommonStyle = deepCopy(COMMON_BACKGROUND)
+  }
   componentData.forEach((item, index) => {
     if (item.component && item.component === 'de-date') {
       const widget = ApplicationContext.getService(item.serviceName)

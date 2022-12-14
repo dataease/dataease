@@ -1932,6 +1932,9 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    view_style: 'View Style',
+    view_color_setting: 'View Color Setting',
+    border_color_setting: 'Border Color',
     unpublished_tips: 'After unpublishing, the panel cannot be viewed. Are you sure you want to cancel publishing? ',
     position_adjust_component: 'Position adjust',
     active_font_size: 'Selected font size',

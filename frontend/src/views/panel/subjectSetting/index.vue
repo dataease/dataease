@@ -3,7 +3,7 @@
     <div class="theme-slider-main">
       {{ $t('panel.dashboard_theme') }}
     </div>
-    <div class="theme-slider-position" />
+    <div class="theme-slider-position"/>
     <div>
       <slider
         v-if="sliderShow"
@@ -25,38 +25,38 @@
             name="panel"
           >
             <el-row class="selector-div">
-              <overall-setting />
+              <overall-setting/>
             </el-row>
           </el-collapse-item>
           <el-collapse-item
             :title="$t('panel.panel_background')"
             name="panelBackground"
           >
-            <background-selector />
+            <background-selector/>
           </el-collapse-item>
           <el-collapse-item
-            :title="$t('panel.component_style')"
+            :title="$t('panel.view_style')"
             name="componentStyle"
           >
-            <component-style />
+            <background-overall></background-overall>
           </el-collapse-item>
           <el-collapse-item
-            :title="$t('panel.component_color')"
+            :title="$t('panel.view_color_setting')"
             name="graphical"
           >
-            <panel-color-selector @onColorChange="onColorChange" />
+            <panel-color-selector @onColorChange="onColorChange"/>
           </el-collapse-item>
           <el-collapse-item
             :title="$t('panel.chart_title')"
             name="table"
           >
-            <view-title @onTextChange="onTextChange" />
+            <view-title @onTextChange="onTextChange"/>
           </el-collapse-item>
           <el-collapse-item
             :title="$t('panel.filter_component')"
             name="filterComponent"
           >
-            <FilterStyleSelector />
+            <FilterStyleSelector/>
           </el-collapse-item>
         </el-collapse>
       </div>
@@ -75,9 +75,13 @@ import ViewTitle from '@/views/panel/subjectSetting/panelStyle/ViewTitle'
 import ComponentStyle from '@/views/panel/subjectSetting/panelStyle/ComponentStyle'
 import { adaptCurThemeCommonStyleAll } from '@/components/canvas/utils/style'
 import FilterStyleSelector from '@/views/panel/subjectSetting/panelStyle/FilterStyleSelector'
+import Background from '@/views/background'
+import BackgroundOverall from '@/views/background/BackgroundOverall'
 
 export default {
   components: {
+    BackgroundOverall,
+    Background,
     FilterStyleSelector,
     ComponentStyle,
     ViewTitle,
