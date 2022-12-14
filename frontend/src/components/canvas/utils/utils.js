@@ -93,6 +93,7 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
   if (componentStyle.chartCommonStyle) {
     componentStyle.chartCommonStyle.enable = componentStyle.chartCommonStyle.enable || false
     componentStyle.chartCommonStyle.backgroundType = componentStyle.chartCommonStyle.backgroundType || 'innerImage'
+    componentStyle.chartCommonStyle.innerImageColor = componentStyle.chartCommonStyle.innerImageColor || '#1094E5'
     componentStyle.chartCommonStyle.innerImage = componentStyle.chartCommonStyle.innerImage || 'board/blue_1.svg'
     componentStyle.chartCommonStyle.outerImage = componentStyle.chartCommonStyle.outerImage || null
   } else {
