@@ -1926,6 +1926,9 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    view_style: '视图样式',
+    view_color_setting: '视图配色',
+    border_color_setting: '边框配色',
     unpublished_tips: '取消发布后，该仪表板不能被查看。确定要取消发布？',
     position_adjust_component: '位置调整',
     active_font_size: '选中字体大小',
@@ -2258,7 +2261,7 @@ export default {
     show_title: '标题',
     default_settings: '默认值设置',
     choose_background: '选择组件背景',
-    choose_background_tips: '组件自有的背景设置会覆盖当前设置',
+    choose_background_tips: '组件自有背景会覆盖当前设置',
     setting_background: '设置背景',
     setting_jump: '跳转设置',
     select_view: '请选择视图...',
