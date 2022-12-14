@@ -20,6 +20,7 @@
       <div
         style="inset: 17px 10px 10px; position: absolute;"
         :style="chartBackground"
+        class="chart_area"
       />
       <!-- 视图组件 主题-->
       <div style="inset: 20px 13px 15px; position: absolute;">
@@ -77,6 +78,20 @@
           />
           <div
             style="left: 70px; top: 2px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundRight"
+          />
+
+          <!--柱形-->
+          <div
+            style="left: 80px; top: 6px; bottom: 0px; width: 3px; position: absolute;"
+            :style="columnBackgroundLeft"
+          />
+          <div
+            style="left: 85px; top: 11px; bottom: 0px; width: 3px; position: absolute; "
+            :style="columnBackgroundMiddle"
+          />
+          <div
+            style="left: 90px; top: 2px; bottom: 0px; width: 3px; position: absolute; "
             :style="columnBackgroundRight"
           />
         </div>
@@ -150,6 +165,7 @@ import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import { saveOrUpdateSubject } from '@/api/panel/panel'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   name: 'StyleTemplateItem',
@@ -238,13 +254,30 @@ export default {
       }
       return style
     },
+
     chartBackground() {
-      let style = {}
-      if (this.subjectItemDetails && this.subjectItemDetails.chartInfo.chartCommonStyle.backgroundColorSelect) {
-        style = {
-          background: this.subjectItemDetails.chartInfo.chartCommonStyle.color,
-          opacity: this.subjectItemDetails.chartInfo.chartCommonStyle.alpha / 100
+      const style = {}
+      if (this.subjectItemDetails && this.subjectItemDetails.chartInfo.chartCommonStyle) {
+        const commonBackground = this.subjectItemDetails.chartInfo.chartCommonStyle
+        style['padding'] = (commonBackground.innerPadding || 0) + 'px'
+        style['border-radius'] = (commonBackground.borderRadius || 0) + 'px'
+        let colorRGBA = ''
+        if (commonBackground.backgroundColorSelect) {
+          colorRGBA = hexColorToRGBA(commonBackground.color, commonBackground.alpha)
         }
+        if (commonBackground.enable) {
+          if (this.screenShot && commonBackground.backgroundType === 'innerImage' && typeof commonBackground.innerImage === 'string') {
+            const innerImage = commonBackground.innerImage.replace('svg', 'png')
+            style['background'] = `url(${imgUrlTrans(innerImage)}) no-repeat ${colorRGBA}`
+          } else if (commonBackground.backgroundType === 'outerImage' && typeof commonBackground.outerImage === 'string') {
+            style['background'] = `url(${imgUrlTrans(commonBackground.outerImage)}) no-repeat ${colorRGBA}`
+          } else {
+            style['background-color'] = colorRGBA
+          }
+        } else {
+          style['background-color'] = colorRGBA
+        }
+        style['overflow'] = 'hidden'
       }
       return style
     },
@@ -353,6 +386,7 @@ export default {
   z-index: 2;
 
 }
+
 .subject-template:hover {
   border: solid 1px #4b8fdf;
   color: deepskyblue;
@@ -414,7 +448,7 @@ export default {
   overflow: hidden
 }
 
-.common-background{
+.common-background {
   border-radius: 5px 5px 0 0;
   position: absolute;
 }
@@ -423,15 +457,17 @@ export default {
   border: solid 2px #4b8fdf;
 }
 
-.delete-icon{
+.delete-icon {
   position: absolute;
   bottom: 8px;
   right: 8px;
 }
-.delete-icon:hover{
+
+.delete-icon:hover {
   color: red;
 }
-.title-main{
+
+.title-main {
   position: absolute;
   left: 0px;
   right: 0px;
@@ -439,15 +475,21 @@ export default {
   height: 30px;
   float: left
 }
+
 .subject-template:hover > .title-main {
   width: 115px;
 }
+
 .subject-template:hover > .el-icon-delete {
   z-index: 10;
-  display:block;
+  display: block;
 }
 
 .subject-template ::v-deep .el-icon-delete {
-  display:none
+  display: none
+}
+
+.chart_area {
+  background-size: 100% 100% !important;
 }
 </style>
