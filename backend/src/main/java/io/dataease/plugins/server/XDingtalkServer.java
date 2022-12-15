@@ -115,6 +115,11 @@ public class XDingtalkServer {
             DeLogUtils.save(SysLogConstants.OPERATE_TYPE.LOGIN, SysLogConstants.SOURCE_TYPE.USER, sysUserEntity.getUserId(), null, null, null);
 
             Cookie cookie_token = new Cookie("Authorization", token);
+            if (withoutLogin) {
+                Cookie platformCookie = new Cookie("inOtherPlatform", "true");
+                platformCookie.setPath("/");
+                response.addCookie(platformCookie);
+            }
             cookie_token.setPath("/");
 
             response.addCookie(cookie_token);

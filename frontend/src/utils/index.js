@@ -344,3 +344,11 @@ export const mergeCustomSortOption = (customSortList, sourceList) => {
   const result = [...customSortList, ...sourceList]
   return [...new Set(result)]
 }
+
+export const inOtherPlatform = () => {
+  const cookieStr = Cookies.get('inOtherPlatform')
+  if (cookieStr && cookieStr === 'true') {
+    return true
+  }
+  return false
+}
