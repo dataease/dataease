@@ -863,6 +863,17 @@
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                       </div>
                     </el-row>
+
+                    <mark-map-data-editor
+                      v-if="view.type === 'map'"
+                      :view="view"
+                      :param="param"
+                      :dimension-data="dimension"
+                      :quota-data="quota"
+                      @clear-data="clearData"
+                      @calc-data="calcData"
+                    />
+
                     <el-row
                       class="padding-lr"
                       style="margin-top: 6px;"
@@ -988,6 +999,7 @@
             @onMarginChange="onMarginChange"
             @onChangeBackgroundForm="onChangeBackgroundForm"
             @onSuspensionChange="onSuspensionChange"
+            @onMarkChange="onMarkChange"
           />
         </el-tab-pane>
         <el-tab-pane
@@ -1670,7 +1682,7 @@ import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny } from '@/utils/StringUtils'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
-
+import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1707,7 +1719,8 @@ export default {
     DrillItem,
     DrillPath,
     PluginCom,
-    MapMapping
+    MapMapping,
+    MarkMapDataEditor
   },
   props: {
     param: {
@@ -2499,7 +2512,14 @@ export default {
       this.view.customAttr.suspension = val
       this.calcStyle()
     },
-
+    onMarkChange(val) {
+      this.view.customAttr.mark = val
+      if (val.modifyName === 'fieldId') {
+        this.calcData()
+      } else {
+        this.calcStyle()
+      }
+    },
     onSizeChange(val) {
       this.view.customAttr.size = val
       this.calcData()

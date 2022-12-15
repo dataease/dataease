@@ -3170,7 +3170,8 @@ export const TYPE_CONFIGS = [
       'label-selector',
       'tooltip-selector',
       'title-selector',
-      'suspension-selector'
+      'suspension-selector',
+      'condition-style-selector'
     ],
     propertyInner: {
 
@@ -3206,6 +3207,9 @@ export const TYPE_CONFIGS = [
         'isBolder'
       ],
       'suspension-selector': [
+        'show'
+      ],
+      'condition-style-selector': [
         'show'
       ]
     }

@@ -159,11 +159,181 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
       if (chart.senior) {
         const senior = JSON.parse(chart.senior)
 
-        senior && senior.mapMapping && senior.mapMapping[curAreaCode] && (chart_option.series[0].nameMap = senior.mapMapping[curAreaCode])
+        senior && senior.mapMapping && senior.mapMapping[curAreaCode] && (chart_option.geo.nameMap = senior.mapMapping[curAreaCode])
+      }
+
+      if (chart.data?.detailFields?.length > 1) {
+        const deNameArray = ['x', 'y']
+        chart.data.detailFields.forEach(item => {
+          if (item?.busiType === 'locationXaxis') {
+            deNameArray[0] = item
+          } else if (item?.busiType === 'locationYaxis') {
+            deNameArray[1] = item
+          } else {
+            deNameArray.push(item)
+          }
+        })
+        let markData = []
+        chart.data.tableRow.forEach(row => {
+          if (row?.details) {
+            markData = markData.concat(row.details.map(detail => {
+              const temp = deNameArray.map(key => detail[key.dataeaseName])
+              temp.push(1)
+              return temp
+            }))
+          }
+        })
+
+        if (markData.length) {
+          let valueIndex = -1
+          const markCondition = customAttr.mark
+          if (markCondition?.fieldId && markCondition.conditions?.length) {
+            for (let i = 0; i < deNameArray.length; i++) {
+              if (deNameArray[i].id === markCondition.fieldId) {
+                valueIndex = i
+                break
+              }
+            }
+          }
+          const markSeries = {
+            type: 'scatter',
+            coordinateSystem: 'geo',
+            geoIndex: 0,
+            symbolSize: function(params) {
+              return 20
+            },
+            symbol: (values, param) => {
+              if (valueIndex < 0) {
+                return svgPathData()
+              }
+              const val = values[valueIndex]
+              const field = deNameArray[valueIndex]
+              const con = getSvgCondition(val, field, markCondition.conditions)
+              let svgName = null
+              if (con) {
+                svgName = con.icon
+                if (svgName && svgName.startsWith('#')) {
+                  svgName = svgName.substr(1)
+                }
+              }
+              return svgPathData(svgName)
+            },
+            itemStyle: {
+              color: params => {
+                const { value } = params
+                const val = value[valueIndex]
+                const con = getSvgCondition(val, null, markCondition.conditions)
+                return con?.color || '#b02a02'
+              }
+            },
+            encode: {
+              tooltip: 2
+            },
+            data: markData
+          }
+          chart_option.series.push(markSeries)
+        }
       }
     }
   }
   componentStyle(chart_option, chart)
   return chart_option
+}
+
+const getSvgCondition = (val, field, conditions) => {
+  for (let i = 0; i < conditions.length; i++) {
+    const condition = conditions[i]
+    if (conditionMatch(condition, val)) {
+      return condition
+    }
+  }
+  return null
+}
+const conditionMatch = (condition, curVal) => {
+  let matchResult = false
+  const { calc, value, startv, endv } = condition
+  if (!curVal || (!value && !startv && !endv)) {
+    return matchResult
+  }
+  switch (calc) {
+    case 'eq':
+      matchResult = curVal === value
+      break
+    case 'ne':
+      matchResult = curVal !== value
+      break
+    case 'contain':
+      matchResult = curVal.includes(value)
+      break
+    case 'uncontain':
+      matchResult = !curVal.includes(value)
+      break
+    case 'start':
+      matchResult = curVal.startsWith(value)
+      break
+    case 'end':
+      matchResult = curVal.endsWith(value)
+      break
+
+    case 'gt':
+      matchResult = parseFloat(curVal) > parseFloat(value)
+      break
+    case 'ge':
+      matchResult = parseFloat(curVal) >= parseFloat(value)
+      break
+    case 'lt':
+      matchResult = parseFloat(curVal) < parseFloat(value)
+      break
+    case 'le':
+      matchResult = parseFloat(curVal) <= parseFloat(value)
+      break
+    case 'between':
+      if (startv) {
+        matchResult = parseFloat(curVal) >= parseFloat(startv)
+      }
+      if (endv) {
+        matchResult = parseFloat(curVal) <= parseFloat(endv)
+      }
+      break
+
+    default:
+      matchResult = false
+      break
+  }
+  return matchResult
+}
+const loadXML = xmlString => {
+  const domParser = new DOMParser()
+  const xmlDoc = domParser.parseFromString(xmlString, 'text/xml')
+  return xmlDoc
+}
+
+const svgPathData = iconName => {
+  iconName = iconName || 'weizhi'
+  const defaultNode = require(`@/deicons/svg/${iconName}.svg`).default
+  if (!defaultNode?.content) return null
+  const content = defaultNode.content
+  const xmlRoot = loadXML(content)
+  const pathDataList = []
+  const stack = []
+  stack.push(xmlRoot)
+
+  let curNode
+  while (stack.length) {
+    curNode = stack.pop()
+    if (curNode?.tagName === 'path') {
+      pathDataList.push(curNode.getAttribute('d'))
+    }
+    if (curNode.childNodes?.length) {
+      let childLen = curNode.childNodes.length
+      while (childLen--) {
+        stack.push(curNode.childNodes[childLen])
+      }
+    }
+  }
+  if (pathDataList.length) {
+    return pathDataList.map(item => 'path://' + item).join('')
+  }
+  return null
 }
 

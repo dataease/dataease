@@ -929,6 +929,12 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    mark_field: '字段',
+    mark_value: '值',
+    function_style: '功能型样式',
+    condition_style: '标记样式',
+    longitude: '经度',
+    latitude: '纬度',
     gradient: '渐变',
     layer_controller: '指标切换',
     suspension: '悬浮',

@@ -310,6 +310,34 @@
           </el-collapse-item>
         </el-collapse>
       </el-row>
+
+      <el-row
+        v-show="showPropertiesCollapse(['condition-style-selector'])"
+        class="de-collapse-style"
+      >
+        <span class="padding-lr">{{ $t('chart.function_style') }}</span>
+        <el-collapse
+          v-model="styleActiveNames"
+          class="style-collapse"
+        >
+          <el-collapse-item
+            v-show="showPropertiesCollapse(['condition-style-selector'])"
+            name="conditionStyle"
+            :title="$t('chart.condition_style')"
+          >
+
+            <map-mark-selector
+              :param="param"
+              class="attr-selector"
+              :chart="chart"
+              :view="view"
+              :dimension-data="dimensionData"
+              :quota-data="quotaData"
+              @onMarkChange="onMarkChange"
+            />
+          </el-collapse-item>
+        </el-collapse>
+      </el-row>
     </div>
   </el-row>
 </template>
@@ -338,6 +366,7 @@ import BackgroundColorSelector from '@/views/chart/components/componentStyle/Bac
 import SplitSelector from '@/views/chart/components/componentStyle/SplitSelector'
 import SplitSelectorAntV from '@/views/chart/components/componentStyle/SplitSelectorAntV'
 import SuspensionSelector from '@/components/suspensionSelector'
+import MapMarkSelector from '@/views/chart/components/functionStyle/MapMarkSelector'
 import { mapState } from 'vuex'
 
 export default {
@@ -366,7 +395,8 @@ export default {
     ColorSelector,
     MarginSelector,
     PluginCom,
-    SuspensionSelector
+    SuspensionSelector,
+    MapMarkSelector
   },
   props: {
     chart: {
@@ -498,6 +528,10 @@ export default {
     onChangeBackgroundForm(val, propertyName) {
       val['propertyName'] = propertyName
       this.$emit('onChangeBackgroundForm', val)
+    },
+    onMarkChange(val, propertyName) {
+      val['propertyName'] = propertyName
+      this.$emit('onMarkChange', val)
     }
   }
 }
