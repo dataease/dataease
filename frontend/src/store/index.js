@@ -586,7 +586,7 @@ const data = {
         }
       })
       state.componentData = mainComponentData
-      state.mobileLayoutStatus = !state.mobileLayoutStatus
+      state.mobileLayoutStatus = true
     },
     setScrollAutoMove(state, offset) {
       state.scrollAutoMove = offset
