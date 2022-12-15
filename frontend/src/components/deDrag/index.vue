@@ -66,24 +66,36 @@
         @mousedown.stop.prevent="handleDown(handlei, $event)"
         @touchstart.stop.prevent="handleTouchDown(handlei, $event)"
       >
-        <slot :name="handlei"/>
+        <slot :name="handlei" />
       </div>
       <div
         :id="componentCanvasId"
         :style="mainSlotStyleInner"
         class="main-background"
       >
-        <div @mousedown="elementMouseDown" class="de-drag-area de-drag-top"></div>
-        <div @mousedown="elementMouseDown" class="de-drag-area de-drag-right"></div>
-        <div @mousedown="elementMouseDown" class="de-drag-area de-drag-bottom"></div>
-        <div @mousedown="elementMouseDown" class="de-drag-area de-drag-left"></div>
+        <div
+          class="de-drag-area de-drag-top"
+          @mousedown="elementMouseDown"
+        />
+        <div
+          class="de-drag-area de-drag-right"
+          @mousedown="elementMouseDown"
+        />
+        <div
+          class="de-drag-area de-drag-bottom"
+          @mousedown="elementMouseDown"
+        />
+        <div
+          class="de-drag-area de-drag-left"
+          @mousedown="elementMouseDown"
+        />
         <svg-icon
           v-if="svgInnerEnable"
           :style="{'color':element.commonBackground.innerImageColor}"
           class="svg-background"
           :icon-class="mainSlotSvgInner"
         />
-        <slot/>
+        <slot />
       </div>
     </div>
   </div>
