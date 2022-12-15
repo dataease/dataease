@@ -538,10 +538,10 @@ export default {
       const newArr = []
       for (let index = 0; index < array.length; index++) {
         const element = array[index]
-        if(element.configuration){
+        if (element.configuration) {
           element.configuration = Base64.decode(element.configuration)
         }
-        if(element.apiConfigurationStr){
+        if (element.apiConfigurationStr) {
           element.apiConfiguration = JSON.parse(Base64.decode(element.apiConfigurationStr))
         }
         if (this.msgNodeId) {

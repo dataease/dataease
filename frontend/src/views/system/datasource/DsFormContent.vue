@@ -708,10 +708,10 @@ export default {
     getDatasourceDetail(id, showModel) {
       this.$emit('update:formLoading', true)
       return getDatasourceDetail(id).then((res) => {
-        if(res.data.configuration){
+        if (res.data.configuration) {
           res.data.configuration = Base64.decode(res.data.configuration)
         }
-        if(res.data.apiConfigurationStr){
+        if (res.data.apiConfigurationStr) {
           res.data.apiConfiguration = JSON.parse(Base64.decode(res.data.apiConfigurationStr))
         }
         this.params = { ...res.data, showModel }
@@ -733,10 +733,10 @@ export default {
       const newArr = []
       for (let index = 0; index < array.length; index++) {
         const element = array[index]
-        if(element.configuration){
+        if (element.configuration) {
           element.configuration = Base64.decode(element.configuration)
         }
-        if(element.apiConfigurationStr){
+        if (element.apiConfigurationStr) {
           element.apiConfiguration = Base64.decode(element.apiConfigurationStr)
         }
         if (this.msgNodeId) {

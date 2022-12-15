@@ -17,7 +17,7 @@
         style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;"
       >
         <div style="height: 100%;">
-          <share-head/>
+          <share-head />
         </div>
       </el-row>
       <el-row
@@ -31,7 +31,7 @@
             :span="12"
             style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px"
           >
-            <span>{{ panelInfo.name || '测试仪表板' }}</span>
+            <span class="panel-name">{{ panelInfo.name || '测试仪表板' }}</span>
             <span
               v-if="panelInfo.isDefault"
               style="color: green;font-size: 12px"
@@ -40,15 +40,46 @@
               v-if="panelInfo.sourcePanelName"
               style="color: green;font-size: 12px"
             >&nbsp;({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
+            <span
+              v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
+              style="margin-left: 9px"
+            >
+              <el-tooltip :content="$t('panel.store')">
+                <i
+                  class="el-icon-star-off"
+                  @click="star"
+                />
+              </el-tooltip>
+            </span>
+            <span
+              v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
+              style="margin-left: 9px"
+            >
+              <el-tooltip :content="$t('commons.cancel') + $t('panel.store')">
+                <i
+                  class="el-icon-star-on"
+                  @click="unstar"
+                />
+              </el-tooltip>
+            </span>
+            <template v-if="panelInfo.creatorName">
+              <el-divider
+                style="margin: 0 16px;"
+                direction="vertical"
+              />
+              <span class="panel-create">
+                {{ $t('panel.create_by') + ':' + panelInfo.creatorName }}
+              </span>
+            </template>
             <el-popover
               placement="right-start"
               width="400"
               trigger="click"
             >
-              <panel-detail-info/>
+              <panel-detail-info />
               <i
                 slot="reference"
-                class="el-icon-warning icon-class"
+                class="el-icon-warning-outline icon-class"
                 style="margin-left: 4px;cursor: pointer;font-size: 14px;"
               />
             </el-popover>
@@ -117,22 +148,6 @@
                       class="preview-icon-svg"
                     />
                     {{ $t('panel.new_tab_preview') }}
-                  </el-dropdown-item>
-
-                  <el-dropdown-item
-                    v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
-                    icon="el-icon-star-off"
-                    @click.native="star"
-                  >
-                    {{ $t('panel.store') }}
-                  </el-dropdown-item>
-
-                  <el-dropdown-item
-                    v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
-                    icon="el-icon-star-on"
-                    @click.native="unstar"
-                  >
-                    {{ $t('commons.cancel') + $t('panel.store') }}
                   </el-dropdown-item>
 
                   <el-dropdown-item
@@ -374,9 +389,9 @@ import GrantAuth from '../grantAuth'
 import msgCfm from '@/components/msgCfm/index'
 
 export default {
-  mixins: [msgCfm],
   name: 'PanelViewShow',
   components: { AppExportForm, PanelDetailInfo, Preview, SaveToTemplate, PDFPreExport, ShareHead, GrantAuth },
+  mixins: [msgCfm],
   props: {
     activeTab: {
       type: String,
@@ -767,7 +782,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less">
 .view-list {
   height: 100%;
   width: 20%;
@@ -801,6 +816,23 @@ export default {
   background-color: var(--SiderBG, white);
   padding: 0 10px;
   line-height: 40px;
+
+  .panel-name {
+    font-family: PingFang SC;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    color: var(--deTextPrimary, #1F2329);
+
+  }
+
+  .panel-create {
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    color: var(--deTextSecondary, #646A73);
+  }
 }
 
 .panel-share-head {
