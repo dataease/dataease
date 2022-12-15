@@ -199,9 +199,9 @@ export default {
       this.busiFieldMap.daxis.splice(item.index, 1)
       this.calcData(true)
     },
-    calcData(cahce) {
+    calcData(cache) {
       this.fillViewFields()
-      this.$emit('calc-data', cahce)
+      this.$emit('calc-data', cache)
     }
   }
 }
