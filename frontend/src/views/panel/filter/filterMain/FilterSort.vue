@@ -95,6 +95,43 @@
         </el-dropdown-item>
 
         <el-dropdown-item
+          v-if="isChinesSortWidget"
+          :command="beforeClickItem('chinese')"
+        >
+          <span
+            v-popover:popoverchinese
+            class="el-dropdown-link inner-dropdown-menu de-sort-menu"
+            :class="sortNode.sort === 'chinese' ? 'de-active-li': ''"
+          >
+            <span>
+              <span>{{ $t('chart.chinese') }}</span>
+            </span>
+            <i class="el-icon-arrow-right el-icon--right" />
+          </span>
+          <el-popover
+            ref="popoverchinese"
+            v-model="chineseFieldsShow"
+            placement="right-start"
+            width="120"
+            :close-delay="500"
+            trigger="hover"
+          >
+            <ul class="de-ul">
+              <li
+                v-for="(node, i) in chineseFields"
+                :key="node.id"
+                :index="i"
+                class="de-sort-field-span"
+                :class="sortNode.sort === 'chinese' && sortNode.id === node.id ? 'de-active-li': ''"
+                @click="saveChineseField(node)"
+              >
+                <span>{{ node.name }}</span>
+              </li>
+            </ul>
+          </el-popover>
+        </el-dropdown-item>
+
+        <el-dropdown-item
           v-if="isCustomSortWidget"
           :command="beforeClickItem('custom')"
         >
@@ -166,13 +203,18 @@ export default {
     return {
       ascFieldsShow: false,
       descFieldsShow: false,
+      chineseFieldsShow: false,
       defaultSortProp: {
         sort: 'none'
       },
       tableFields: [],
       sortNode: null,
       showCustomSort: false,
-      customSortList: []
+      customSortList: [],
+      chineseFields: [
+        { id: 'chineseAsc', name: this.$t('chart.asc') },
+        { id: 'chineseDesc', name: this.$t('chart.desc') }
+      ]
     }
   },
   computed: {
@@ -192,6 +234,9 @@ export default {
         return this.element.options.attrs.dragItems[0].tableId
       }
       return null
+    },
+    isChinesSortWidget() {
+      return this.widget?.isChinesSortWidget && this.widget.isChinesSortWidget()
     }
   },
   watch: {
@@ -260,6 +305,7 @@ export default {
         this.tableFields = []
       }
     },
+
     clickItem(param) {
       if (!param) {
         return
@@ -277,7 +323,9 @@ export default {
         case 'custom':
           this.sortChange('custom')
           break
-
+        case 'chinese':
+          this.sortChange('chinese')
+          break
         default:
           break
       }
@@ -301,6 +349,12 @@ export default {
       this.sortNode = { id, name, sort }
       this.$emit('sort-change', this.sortNode)
     },
+    saveChineseField({ id, name }) {
+      this.chineseFieldsShow = false
+      const sort = 'chinese'
+      this.sortNode = { id, name, sort }
+      this.$emit('sort-change', this.sortNode)
+    },
     sortChange(type) {
       if (type === 'custom') {
         this.showCustomSort = true
@@ -309,6 +363,9 @@ export default {
       this.sortNode.sort = type
       if (type === 'none') {
         this.sortNode = { sort: 'none' }
+      }
+      if (type === 'chinese') {
+        this.sortNode = { sort: 'chinese', id: 'chineseAsc' }
       }
 
       this.$emit('sort-change', this.sortNode)
