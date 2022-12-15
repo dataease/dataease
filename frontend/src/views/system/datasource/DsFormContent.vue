@@ -71,8 +71,8 @@
           </el-form>
           <div class="de-row-rules">
             <span>{{
-              positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
-            }}</span>
+                positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
+              }}</span>
           </div>
           <el-form
             ref="historyDsForm"
@@ -325,7 +325,8 @@ export default {
     },
     configFromTabs: {
       type: Object,
-      default: () => {}
+      default: () => {
+      }
     },
     canEdit: {
       type: Boolean,
@@ -801,16 +802,16 @@ export default {
     },
     saveAppMarketHistory() {
       this.$refs.historyDsForm.validate(valid => {
-        if (!valid) {
-          return false
+          if (!valid) {
+            return false
+          }
+          const appApplyForm = {
+            ...this.attachForm,
+            ...this.historyDsForm
+          }
+          const method = this.formType === 'add' ? appApply : appEdit
+          this.appApplyMethod(method, appApplyForm)
         }
-        const appApplyForm = {
-          ...this.attachForm,
-          ...this.historyDsForm
-        }
-        const method = this.formType === 'add' ? appApply : appEdit
-        this.appApplyMethod(method, appApplyForm)
-      }
       )
     },
     save() {
@@ -956,10 +957,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-          if (!valid) {
-            return false
+            if (!valid) {
+              return false
+            }
           }
-        }
         )
       }
       this.$refs.dsForm.validate((valid) => {
@@ -1102,10 +1103,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-          if (!valid) {
-            return false
+            if (!valid) {
+              return false
+            }
           }
-        }
         )
       }
       this.$refs.dsForm.validate((valid) => {
@@ -1308,12 +1309,11 @@ export default {
   display: flex;
   width: 100%;
   height: 100%;
-  padding: 12px 24px 24px 24px;
-  background: #f5f6f7;
 
   .de-ds-inner {
+    padding: 12px 24px 24px 24px;
     width: 100%;
-    height: 100;
+    height: 100%;
     background: #fff;
     display: flex;
     align-items: center;
@@ -1325,6 +1325,29 @@ export default {
     width: 600px;
     height: 100%;
     padding-top: 24px;
+  }
+}
+
+.de-ds-bottom {
+  display: flex;
+  text-align: right;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 12px 24px;
+  box-shadow: 2px 2px 4px rgba(31, 35, 41, 0.08);
+
+  .name {
+    font-family: 'PingFang SC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--deTextPrimary, #1f2329);
+  }
+
+  i {
+    cursor: pointer;
   }
 }
 </style>

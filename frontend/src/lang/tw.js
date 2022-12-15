@@ -930,6 +930,12 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    mark_field: '字段',
+    mark_value: '值',
+    function_style: '功能型樣式',
+    condition_style: '標記樣式',
+    longitude: '經度',
+    latitude: '緯度',
     gradient: '漸變',
     layer_controller: '指標切換',
     suspension: '懸浮',
@@ -1926,6 +1932,9 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    view_style: '視圖樣式',
+    view_color_setting: '視圖配色',
+    border_color_setting: '邊框配色',
     unpublished_tips: '取消發布後，該儀表板不能被查看。確定要取消發布？',
     position_adjust_component: '位置調整',
     active_font_size: '选中字體大小',
@@ -2258,7 +2267,7 @@ export default {
     show_title: '標題',
     default_settings: '默認值設置',
     choose_background: '選擇組件背景',
-    choose_background_tips: '組件自有的背景設置會覆蓋當前設置',
+    choose_background_tips: '組件自有背景會覆蓋當前設置',
     setting_background: '設置背景',
     setting_jump: '跳轉設置',
     select_view: '請選擇視圖...',

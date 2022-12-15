@@ -48,7 +48,6 @@
                 :element="element"
                 :in-draw="inDraw"
                 :in-screen="inScreen"
-                :size="sizeInfo"
               />
             </div>
           </div>
@@ -126,17 +125,6 @@ export default {
         top: 50 * (1 - 1 / this.scale) + '%', // 放大余量 除以 2
         transform: 'scale(' + this.scale + ')'
       }
-    },
-    sizeInfo() {
-      let size
-      if (this.duHeight > this.inputLargeSize) {
-        size = 'medium'
-      } else if (this.duHeight > this.inputSmallSize) {
-        size = 'small'
-      } else {
-        size = 'mini'
-      }
-      return size
     },
     deSelectGridBg() {
       if (this.element.component !== 'de-select-grid') return null
@@ -222,7 +210,7 @@ export default {
   left: 0px;
 }
 
-.ccondition-main {
+.condition-main {
   position: absolute;
   overflow: auto;
   top: 0px;
@@ -279,6 +267,11 @@ export default {
 
   display: flex;
   align-items: flex-end;
+}
+
+.first-element-container ::v-deep .el-input__inner {
+  height: 40px !important;
+  line-height: 40px !important;
 }
 
 .first-element-grid-container {

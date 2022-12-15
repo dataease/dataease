@@ -57,30 +57,6 @@
         @setParams="setParams"
       />
     </div>
-
-    <div
-      v-if="positionCheck('appMarket') && attachForm.datasourceFrom === 'history'"
-      class="de-ds-bottom"
-    >
-      <div
-        class="apply"
-        style="width: 100%"
-      >
-        <template v-if="canEdit">
-          <deBtn
-            secondary
-            @click="closeDraw"
-          >{{ $t('commons.cancel') }}
-          </deBtn>
-          <deBtn
-            v-if="formType === 'add'"
-            type="primary"
-            @click="saveAppMarketHistory"
-          >{{ $t('commons.save') }}
-          </deBtn>
-        </template>
-      </div>
-    </div>
   </div>
 </template>
 

@@ -1,5 +1,6 @@
 package io.dataease.service.chart.util;
 
+import cn.hutool.core.util.ArrayUtil;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.dto.chart.*;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
@@ -950,6 +951,46 @@ public class ChartDataBuild {
         }
         fields.addAll(yAxis);
         return transTableNormal(fields, view, data, desensitizationList);
+    }
+
+    public static Map<String, Object> transTableNormalWithDetail(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<String[]> data, List<ChartViewFieldDTO> detailFields, List<String[]> detailData, Map<String, ColumnPermissionItem> desensitizationList) {
+        int detailIndex = xAxis.size();
+
+        List<ChartViewFieldDTO> realDetailFields = detailFields.subList(detailIndex, detailFields.size());
+
+        List<ChartViewFieldDTO> fields = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(xAxis))
+            fields.addAll(xAxis);
+        if (CollectionUtils.isNotEmpty(yAxis))
+            fields.addAll(yAxis);
+        Map<String, Object> map = transTableNormal(fields, null, data, desensitizationList);
+        List<Map<String, Object>> tableRow = (List<Map<String, Object>>) map.get("tableRow");
+        final int xEndIndex = detailIndex;
+        Map<String, List<String[]>> groupDataList = detailData.stream().collect(Collectors.groupingBy(item -> ArrayUtil.join(ArrayUtil.sub(item, 0, xEndIndex), "-de-", "(", ")")));
+
+        tableRow.forEach(row -> {
+            String key = xAxis.stream().map(x -> row.get(x.getDataeaseName()).toString()).collect(Collectors.joining("-de-", "(", ")"));
+            List<String[]> detailFieldValueList = groupDataList.get(key);
+            List<Map<String, Object>> detailValueMapList = detailFieldValueList.stream().map((detailArr -> {
+                Map<String, Object> temp = new HashMap<>();
+                for (int i = 0; i < realDetailFields.size(); i++) {
+                    ChartViewFieldDTO realDetailField = realDetailFields.get(i);
+                    temp.put(realDetailField.getDataeaseName(), detailArr[detailIndex + i]);
+                }
+                return temp;
+            })).collect(Collectors.toList());
+            row.put("details", detailValueMapList);
+        });
+
+        ChartViewFieldDTO detailFieldDTO = new ChartViewFieldDTO();
+        detailFieldDTO.setId("DataEase-Detail");
+        detailFieldDTO.setName("detail");
+        detailFieldDTO.setDataeaseName("detail");
+        fields.add(detailFieldDTO);
+        map.put("fields", fields);
+        map.put("detailFields", realDetailFields);
+        map.put("tableRow", tableRow);
+        return map;
     }
 
     // 表格

@@ -931,6 +931,12 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    mark_field: 'Field',
+    mark_value: 'Value',
+    function_style: 'Function style',
+    condition_style: 'Mark style',
+    longitude: 'Longitude',
+    latitude: 'Latitude',
     gradient: 'Gradient',
     layer_controller: 'Quota switch',
     suspension: 'Suspension',
@@ -1932,6 +1938,9 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    view_style: 'View Style',
+    view_color_setting: 'View Color Setting',
+    border_color_setting: 'Border Color',
     unpublished_tips: 'After unpublishing, the panel cannot be viewed. Are you sure you want to cancel publishing? ',
     position_adjust_component: 'Position adjust',
     active_font_size: 'Selected font size',

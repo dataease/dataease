@@ -783,14 +783,6 @@ export default {
   padding: 10px 20px 20px;
 }
 
-.mobile-dialog-css ::v-deep .el-dialog__headerbtn {
-  top: 7px
-}
-
-.mobile-dialog-css ::v-deep .el-dialog__body {
-  padding: 0px;
-}
-
 ::-webkit-scrollbar {
   width: 0px !important;
   height: 0px !important;

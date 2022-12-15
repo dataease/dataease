@@ -1263,4 +1263,13 @@ export default {
   z-index: 2;
   display: block !important;
 }
+
+
+.mobile-dialog-css ::v-deep .el-dialog__headerbtn {
+  top: 7px
+}
+
+.mobile-dialog-css ::v-deep .el-dialog__body {
+  padding: 0px;
+}
 </style>

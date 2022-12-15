@@ -1,4 +1,4 @@
-import { sin, cos } from '@/components/canvas/utils/translate'
+import { cos, sin } from '@/components/canvas/utils/translate'
 import store from '@/store'
 import Vue from 'vue'
 
@@ -361,7 +361,13 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
     }
   }
   customAttr['color'] = { ...canvasStyle.chartInfo.chartColor }
-  customStyle['text'] = { ...canvasStyle.chartInfo.chartTitle, title: customStyle['text']['title'], show: customStyle['text']['show'], remarkShow: customStyle['text']['remarkShow'], remark: customStyle['text']['remark'] }
+  customStyle['text'] = {
+    ...canvasStyle.chartInfo.chartTitle,
+    title: customStyle['text']['title'],
+    show: customStyle['text']['show'],
+    remarkShow: customStyle['text']['remarkShow'],
+    remark: customStyle['text']['remark']
+  }
   if (customStyle.background) {
     delete customStyle.background
   }
@@ -370,7 +376,7 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
 export function adaptCurThemeCommonStyle(component) {
   const commonStyle = store.state.canvasStyleData.chartInfo.chartCommonStyle
   for (const key in commonStyle) {
-    component.commonBackground[key] = commonStyle[key]
+    Vue.set(component.commonBackground, key, commonStyle[key])
   }
   if (isFilterComponent(component.component)) {
     const filterStyle = store.state.canvasStyleData.chartInfo.filterStyle
