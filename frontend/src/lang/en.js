@@ -931,6 +931,7 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    chinese: 'Chinese',
     mark_field: 'Field',
     mark_value: 'Value',
     function_style: 'Function style',
