@@ -931,6 +931,12 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    mark_field: 'Field',
+    mark_value: 'Value',
+    function_style: 'Function style',
+    condition_style: 'Mark style',
+    longitude: 'Longitude',
+    latitude: 'Latitude',
     gradient: 'Gradient',
     layer_controller: 'Quota switch',
     suspension: 'Suspension',
