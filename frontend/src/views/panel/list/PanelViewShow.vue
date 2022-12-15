@@ -162,7 +162,7 @@
                       :icon-class="panelInfo.status==='publish' ? 'cancel_release' : 'release'"
                       class="preview-icon-svg"
                     />
-                    {{ $t(`commons.${ panelInfo.status==='publish' ? 'unpublished' : 'publish'}`) }}
+                    {{ $t(`commons.${panelInfo.status === 'publish' ? 'unpublished' : 'publish'}`) }}
                   </el-dropdown-item>
 
                   <el-dropdown
@@ -621,6 +621,9 @@ export default {
       this.componentData.forEach(item => {
         if (typeof item.commonBackground.outerImage === 'string' && item.commonBackground.outerImage.indexOf('static-resource') > -1) {
           staticResource.push(item.commonBackground.outerImage)
+        }
+        if (item.type === 'picture-add' && item.propValue && typeof item.propValue === 'string' && item.propValue.indexOf('static-resource') > -1) {
+          staticResource.push(item.propValue)
         }
       })
       if (staticResource.length > 0) {
