@@ -981,6 +981,7 @@ export default {
         } else {
           form.configuration = Base64.encode(JSON.stringify(form.configuration))
         }
+        form.configurationEncryption = true
         const isAppMarket = this.positionCheck('appMarket')
         let appApplyForm
         if (isAppMarket) {
@@ -1062,6 +1063,7 @@ export default {
         if (valid) {
           const data = JSON.parse(JSON.stringify(this.form))
           data.configuration = Base64.encode(JSON.stringify(data.configuration))
+          data.configurationEncryption = true
           getSchema(data).then((res) => {
             this.schemas = res.data
             this.openMessageSuccess('commons.success')
@@ -1116,6 +1118,7 @@ export default {
           } else {
             data.configuration = Base64.encode(JSON.stringify(data.configuration))
           }
+          data.configurationEncryption = true
           if (data.showModel === 'show' && !this.canEdit) {
             validateDsById(data.id).then((res) => {
               if (res.success) {

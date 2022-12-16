@@ -712,6 +712,7 @@ export default {
           } else {
             data.configuration = Base64.encode(JSON.stringify(data.configuration))
           }
+          data.configurationEncryption = true
           if (data.showModel === 'show' && !this.canEdit) {
             validateDsById(data.id).then(res => {
               if (res.success) {

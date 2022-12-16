@@ -247,6 +247,12 @@ public class DataSetTableController {
         return dataSetTableService.paramsWithIds(type, viewIds);
     }
 
+    @ApiOperation("数据集的SQL变量")
+    @PostMapping("/params/{id}/{type}")
+    List<SqlVariableDetails> paramsWithIds(@PathVariable String type, @PathVariable String id) {
+        return dataSetTableService.datasetParams(type, id);
+    }
+
     @ApiOperation("根据数据集文件夹ID查询数据集名称")
     @PostMapping("/getDatasetNameFromGroup/{sceneId}")
     public List<String> getDatasetNameFromGroup(@PathVariable String sceneId) {

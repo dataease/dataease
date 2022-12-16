@@ -22,4 +22,5 @@ public class DatasourceDTO extends Datasource {
     private String apiConfigurationStr;
     private String typeDesc;
     private DatasourceCalculationMode calculationMode;
+    private boolean isConfigurationEncryption = false;
 }
