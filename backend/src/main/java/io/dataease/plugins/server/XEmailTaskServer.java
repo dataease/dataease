@@ -80,7 +80,7 @@ public class XEmailTaskServer {
         List<XpackTaskGridDTO> tasks = emailXpackService.taskGrid(request);
         if (CollectionUtils.isNotEmpty(tasks)) {
             tasks.forEach(item -> {
-                if (CronUtils.taskExpire(item.getEndTime())) {
+                if (CronUtils.taskExpire(item.getEndTime()) || !item.getStatus()) {
                     item.setNextExecTime(null);
                 } else {
                     GlobalTaskEntity globalTaskEntity = new GlobalTaskEntity();
@@ -110,8 +110,16 @@ public class XEmailTaskServer {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         XpackEmailTaskRequest request = emailXpackService.taskForm(taskId);
         GlobalTaskEntity globalTaskEntity = BeanUtils.copyBean(new GlobalTaskEntity(), request);
+        Boolean invalid = false;
         if (CronUtils.taskExpire(globalTaskEntity.getEndTime())) {
             globalTaskEntity.setEndTime(null);
+            invalid = true;
+        }
+        if (!globalTaskEntity.getStatus()) {
+            globalTaskEntity.setStatus(true);
+            invalid = true;
+        }
+        if (invalid) {
             scheduleService.addTempSchedule(globalTaskEntity);
             return;
         }
@@ -268,6 +276,12 @@ public class XEmailTaskServer {
     public void stop(@PathVariable Long taskId) throws Exception {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         emailXpackService.stop(taskId);
+    }
+
+    @PostMapping("/start/{taskId}")
+    public Boolean start(@PathVariable Long taskId) throws Exception {
+        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
+        return emailXpackService.start(taskId);
     }
 
     @PostMapping("/queryInstancies/{goPage}/{pageSize}")

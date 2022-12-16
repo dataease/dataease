@@ -2590,6 +2590,13 @@ export default {
     search_by_name: '根據名稱搜索',
     exec_time: '執行時間',
     status: '執行狀態',
+    task_status: '任務狀態',
+    running: '運行中',
+    stopped: '已停止',
+    start: '啟用',
+    start_success: '啟用成功',
+    start_success_but: '，但任務過期，請手動更改結束時間',
+    sure_batch_delete: '確定批量刪除任務嗎？',
     pixel_error: '分辨率支持{800 - 10000} * {500 - 6250}',
     next_exec_time: '下次執行時間'
 
