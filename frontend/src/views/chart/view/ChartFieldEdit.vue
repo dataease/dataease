@@ -479,6 +479,12 @@
           >
             <template slot-scope="scope">
               <el-button
+                type="text"
+                size="mini"
+                @click="copyField(scope.row)"
+              >{{ $t('dataset.copy') }}
+              </el-button>
+              <el-button
                 v-if="scope.row.extField !== 0"
                 type="text"
                 size="mini"
