@@ -286,6 +286,16 @@ export default {
     textSelectGridWidget: textSelectGridWidget,
     initLoad() {
       this.value = this.element.options.attrs.multiple ? [] : null
+      this.initOptions()
+      if (this.element.options.value) {
+        this.value = this.fillValueDerfault()
+        this.changeValue(this.value)
+      }
+    },
+    refreshLoad() {
+      this.initOptions()
+    },
+    initOptions() {
       if (this.element.options.attrs.fieldId) {
         let method = multFieldValues
         const token = this.$store.getters.token || getToken()
@@ -304,10 +314,6 @@ export default {
             this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
           }
         })
-      }
-      if (this.element.options.value) {
-        this.value = this.fillValueDerfault()
-        this.changeValue(this.value)
       }
     },
     changeValue(value) {
