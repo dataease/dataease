@@ -184,7 +184,7 @@
                     @change="val => {changeDynamicParams(val, item.name)}"
                   >
                     <el-checkbox
-                      v-for="(ele ) in childViews.datasetParams"
+                      v-for="(ele ) in allParams"
                       :key="ele.id"
                       :label="ele.id"
                       :disabled="attrs[tabsOption[(index + 1)%2].name + 'Parameters'] && attrs[tabsOption[(index + 1)%2].name + 'Parameters'].includes(ele.id)"
@@ -276,6 +276,10 @@ export default {
     element: {
       type: Object,
       default: null
+    },
+    datasetParams: {
+      type: Array,
+      default: []
     }
   },
   data() {
@@ -296,7 +300,8 @@ export default {
         { id: 'HH', name: 'HH' },
         { id: 'HH:mm', name: 'HH:mm' },
         { id: 'HH:mm:ss', name: 'HH:mm:ss' }
-      ]
+      ],
+      allParams: []
     }
   },
   computed: {
@@ -321,6 +326,21 @@ export default {
             }
           }
           this.attrs.parameters = parameters
+        }
+        this.allParams = this.childViews.datasetParams
+      }
+    },
+    'datasetParams': {
+      handler(newName, oldName) {
+        if (this.datasetParams.length > 0) {
+          this.allParams = this.childViews.datasetParams
+          for (var j = 0; j < this.datasetParams.length; j++) {
+            for (var i = 0; i < this.childViews.datasetParams.length; i++) {
+              if (this.childViews.datasetParams[i].id.split('|DE|')[0] !== this.datasetParams[j].id.split('|DE|')[0]) {
+                this.allParams.push(this.datasetParams[j])
+              }
+            }
+          }
         }
       }
     }

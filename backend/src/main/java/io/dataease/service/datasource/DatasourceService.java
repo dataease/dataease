@@ -104,11 +104,13 @@ public class DatasourceService {
 
     @DeCleaner(DePermissionType.DATASOURCE)
     @Transactional(rollbackFor = Exception.class)
-    public Datasource addDatasource(Datasource datasource) throws Exception {
+    public Datasource addDatasource(DatasourceDTO datasource) throws Exception {
         if (!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(datasource.getType())) {
             throw new Exception("Datasource type not supported.");
         }
-        datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
+        if(datasource.isConfigurationEncryption()){
+            datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
+        }
         Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
         datasourceProvider.checkConfiguration(datasource);
 
@@ -261,7 +263,12 @@ public class DatasourceService {
         if (!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(updataDsRequest.getType())) {
             throw new Exception("Datasource type not supported.");
         }
-        updataDsRequest.setConfiguration(new String(java.util.Base64.getDecoder().decode(updataDsRequest.getConfiguration())));
+        System.out.println(updataDsRequest.getConfiguration());
+        System.out.println(updataDsRequest.isConfigurationEncryption());
+        if(updataDsRequest.isConfigurationEncryption()){
+            updataDsRequest.setConfiguration(new String(java.util.Base64.getDecoder().decode(updataDsRequest.getConfiguration())));
+        }
+        System.out.println(updataDsRequest.getConfiguration());
         checkName(updataDsRequest.getName(), updataDsRequest.getType(), updataDsRequest.getId());
         Datasource datasource = new Datasource();
         datasource.setName(updataDsRequest.getName());
@@ -292,8 +299,10 @@ public class DatasourceService {
         }
     }
 
-    public ResultHolder validate(Datasource datasource) throws Exception {
-        datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
+    public ResultHolder validate(DatasourceDTO datasource) throws Exception {
+        if(datasource.isConfigurationEncryption()){
+            datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
+        }
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, datasource);
         try {
@@ -381,8 +390,10 @@ public class DatasourceService {
         }
     }
 
-    public List<String> getSchema(Datasource datasource) throws Exception {
-        datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
+    public List<String> getSchema(DatasourceDTO datasource) throws Exception {
+        if(datasource.isConfigurationEncryption()){
+            datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
+        }
         Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(datasource);

@@ -128,6 +128,14 @@ export function fieldListWithPermission(id, showLoading = true) {
   })
 }
 
+export function datasetParams(id, type, showLoading = true) {
+  return request({
+    url: '/dataset/table/params/' + id + '/' + type,
+    loading: showLoading,
+    method: 'post'
+  })
+}
+
 export function fieldListDQ(id, showLoading = true) {
   return request({
     url: '/dataset/field/listByDQ/' + id,

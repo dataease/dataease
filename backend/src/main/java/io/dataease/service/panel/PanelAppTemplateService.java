@@ -11,6 +11,7 @@ import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.panel.PanelAppTemplateApplyRequest;
 import io.dataease.controller.request.panel.PanelAppTemplateRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
+import io.dataease.dto.DatasourceDTO;
 import io.dataease.ext.ExtPanelAppTemplateMapper;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.PanelAppTemplateMapper;
@@ -142,9 +143,9 @@ public class PanelAppTemplateService {
         if (PanelConstants.APP_DATASOURCE_FROM.HISTORY.equals(request.getDatasourceFrom())) {
             datasourceRealMap.put(oldDatasourceList.get(0).getId(), request.getDatasourceHistoryId());
         } else {
-            List<Datasource> newDatasourceList = request.getDatasourceList();
+            List<DatasourceDTO> newDatasourceList = request.getDatasourceList();
             for (int i = 0; i < newDatasourceList.size(); i++) {
-                Datasource datasource = newDatasourceList.get(0);
+                DatasourceDTO datasource = newDatasourceList.get(0);
                 datasource.setId(null);
                 Datasource newDatasource = datasourceService.addDatasource(datasource);
                 datasourceRealMap.put(oldDatasourceList.get(i).getId(), newDatasource.getId());
@@ -392,7 +393,7 @@ public class PanelAppTemplateService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void editDatasource(List<Datasource> updateDatasourceList) throws Exception {
+    public void editDatasource(List<DatasourceDTO> updateDatasourceList) throws Exception {
         for (int i = 0; i < updateDatasourceList.size(); i++) {
             UpdataDsRequest updataDsRequest = new UpdataDsRequest();
             BeanUtils.copyBean(updataDsRequest, updateDatasourceList.get(i));

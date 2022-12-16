@@ -15,4 +15,5 @@ public class UpdataDsRequest {
     private String type;
     @ApiModelProperty(value = "配置详情", required = true)
     private String configuration;
+    private boolean configurationEncryption = false;
 }

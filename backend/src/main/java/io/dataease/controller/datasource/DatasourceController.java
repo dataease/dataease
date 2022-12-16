@@ -48,7 +48,7 @@ public class DatasourceController {
             positionIndex = 0, positionKey = "type",
             value = "id"
     )
-    public Datasource addDatasource(@RequestBody Datasource datasource) throws Exception {
+    public Datasource addDatasource(@RequestBody DatasourceDTO datasource) throws Exception {
         return datasourceService.addDatasource(datasource);
     }
 
@@ -61,7 +61,7 @@ public class DatasourceController {
 
     @ApiIgnore
     @PostMapping("/validate")
-    public ResultHolder validate(@RequestBody Datasource datasource) throws Exception {
+    public ResultHolder validate(@RequestBody DatasourceDTO datasource) throws Exception {
         return datasourceService.validate(datasource);
     }
 
@@ -129,7 +129,7 @@ public class DatasourceController {
 
     @ApiIgnore
     @PostMapping("/getSchema")
-    public List<String> getSchema(@RequestBody Datasource datasource) throws Exception {
+    public List<String> getSchema(@RequestBody DatasourceDTO datasource) throws Exception {
         return datasourceService.getSchema(datasource);
     }
 

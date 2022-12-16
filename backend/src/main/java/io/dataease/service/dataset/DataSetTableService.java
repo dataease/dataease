@@ -967,26 +967,15 @@ public class DataSetTableService {
         return map;
     }
 
-    public List<SqlVariableDetails> paramsWithIds(String type, List<String> viewIds) {
-        if (CollectionUtils.isEmpty(viewIds)) {
-            return new ArrayList<>();
-        }
-
+    public List<SqlVariableDetails> datasetParams(String type, String id) {
         if (!Arrays.asList("DATE", "TEXT", "NUM").contains(type)) {
             return new ArrayList<>();
         }
-        ChartViewExample chartViewExample = new ChartViewExample();
-        chartViewExample.createCriteria().andIdIn(viewIds);
-        List<String> datasetIds = chartViewMapper.selectByExample(chartViewExample).stream().map(ChartView::getTableId).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(datasetIds)) {
-            return new ArrayList<>();
-        }
-        DatasetTableExample datasetTableExample = new DatasetTableExample();
-        datasetTableExample.createCriteria().andIdIn(datasetIds);
-        List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(datasetTableExample);
-        if (CollectionUtils.isEmpty(datasetTables)) {
-            return new ArrayList<>();
-        }
+        DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(id);
+        return getSqlVariableDetails(type, Arrays.asList(datasetTable));
+    }
+
+    private List<SqlVariableDetails> getSqlVariableDetails(String type, List<DatasetTable> datasetTables) {
         List<SqlVariableDetails> sqlVariableDetails = new ArrayList<>();
         for (DatasetTable datasetTable : datasetTables) {
             if (StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())) {
@@ -999,6 +988,7 @@ public class DataSetTableService {
                 }
             }
         }
+
         switch (type) {
             case "DATE":
                 sqlVariableDetails = sqlVariableDetails.stream().filter(item -> item.getType().get(0).contains("DATETIME")).collect(Collectors.toList());
@@ -1020,6 +1010,29 @@ public class DataSetTableService {
                 break;
         }
         return sqlVariableDetails;
+    }
+
+    public List<SqlVariableDetails> paramsWithIds(String type, List<String> viewIds) {
+        if (CollectionUtils.isEmpty(viewIds)) {
+            return new ArrayList<>();
+        }
+
+        if (!Arrays.asList("DATE", "TEXT", "NUM").contains(type)) {
+            return new ArrayList<>();
+        }
+        ChartViewExample chartViewExample = new ChartViewExample();
+        chartViewExample.createCriteria().andIdIn(viewIds);
+        List<String> datasetIds = chartViewMapper.selectByExample(chartViewExample).stream().map(ChartView::getTableId).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(datasetIds)) {
+            return new ArrayList<>();
+        }
+        DatasetTableExample datasetTableExample = new DatasetTableExample();
+        datasetTableExample.createCriteria().andIdIn(datasetIds);
+        List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(datasetTableExample);
+        if (CollectionUtils.isEmpty(datasetTables)) {
+            return new ArrayList<>();
+        }
+        return getSqlVariableDetails(type, datasetTables);
     }
 
 
