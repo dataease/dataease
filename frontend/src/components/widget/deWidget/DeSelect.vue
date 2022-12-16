@@ -47,6 +47,7 @@ import { isSameVueObj, mergeCustomSortOption } from '@/utils'
 import { getLinkToken, getToken } from '@/utils/auth'
 import customInput from '@/components/widget/deWidget/customInput'
 import { textSelectWidget } from '@/components/widget/deWidget/serviceNameFn.js'
+
 export default {
   components: { ElVisualSelect },
   mixins: [customInput],
@@ -255,6 +256,16 @@ export default {
     },
     initLoad() {
       this.value = this.fillValueDerfault()
+      this.initOptions()
+      if (this.element.options.value) {
+        this.value = this.fillValueDerfault()
+        this.changeValue(this.value)
+      }
+    },
+    refreshLoad() {
+      this.initOptions()
+    },
+    initOptions() {
       this.data = []
       if (this.element.options.attrs.fieldId) {
         let method = multFieldValues
@@ -272,10 +283,6 @@ export default {
         }).catch(e => {
           bus.$emit('valid-values-change', false)
         })
-      }
-      if (this.element.options.value) {
-        this.value = this.fillValueDerfault()
-        this.changeValue(this.value)
       }
     },
     visualChange(value) {

@@ -96,10 +96,16 @@ export default {
     isRelation: {
       type: Boolean,
       default: false
+    },
+    searchCount: {
+      type: Number,
+      required: false,
+      default: 0
     }
   },
   data() {
     return {
+      needRefreshComponents: ['de-select', 'de-select-grid', 'de-select-tree'],
       inputMaxSize: 46,
       inputLargeSize: 42,
       inputSmallSize: 38,
@@ -138,6 +144,7 @@ export default {
       return ['de-select', 'de-select-grid', 'de-date', 'de-input-search', 'de-number-range', 'de-select-tree'].includes(this.element.component)
     },
     ...mapState([
+      'curComponent',
       'previewCanvasScale'
     ])
   },
@@ -148,6 +155,13 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    // 监听外部计时器变化
+    searchCount: function(val1) {
+      // 正在操作的组件不进行刷新
+      if (val1 > 0 && this.needRefreshComponents.includes(this.element.component) && (!this.curComponent || this.curComponent.id !== this.element.id)) {
+        this.$refs['deOutWidget'].refreshLoad()
+      }
     }
   },
   mounted() {
