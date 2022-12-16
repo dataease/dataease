@@ -94,7 +94,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         Boolean isTempTask = (Boolean) jobDataMap.getOrDefault(IS_TEMP_TASK, false);
         GlobalTaskEntity taskEntity = (GlobalTaskEntity) jobDataMap.get("taskEntity");
         ScheduleManager scheduleManager = SpringContextUtil.getBean(ScheduleManager.class);
-        if (!isTempTask && CronUtils.taskExpire(taskEntity.getEndTime())) {
+        if (!isTempTask && (CronUtils.taskExpire(taskEntity.getEndTime()) || !taskEntity.getStatus())) {
             removeTask(scheduleManager, taskEntity);
             return;
         }
@@ -167,7 +167,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         try {
             XpackEmailTemplateDTO emailTemplateDTO = emailXpackService.emailTemplate(taskInstance.getTaskId());
             XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskInstance.getTaskId());
-            if (ObjectUtils.isEmpty(taskForm) || (!isTempTask && CronUtils.taskExpire(taskForm.getEndTime()))) {
+            if (ObjectUtils.isEmpty(taskForm) || (!isTempTask && (CronUtils.taskExpire(taskForm.getEndTime()) || !taskForm.getStatus()))) {
                 removeInstance(taskInstance);
                 return;
             }

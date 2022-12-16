@@ -2596,6 +2596,13 @@ export default {
     search_by_name: 'Search by name',
     exec_time: 'Execute time',
     status: 'Execute status',
+    task_status: 'Task status',
+    running: 'Running',
+    stopped: 'Stopped',
+    start: 'Start',
+    start_success: 'Start success',
+    start_success_but: ', But the task expired, please manually change the end time',
+    sure_batch_delete: 'Are you sure you want to delete tasks in bulk?',
     pixel_error: 'Pixel only support {800 - 10000} * {500 - 6250}',
     next_exec_time: 'Next execute time'
 

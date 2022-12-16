@@ -21,6 +21,7 @@ public abstract class TaskHandler implements InitializingBean {
         if (CronUtils.taskExpire(endTime)) { // 过期了就删除任务
             return;
         }
+        if (!taskEntity.getStatus()) return;
         JobKey jobKey = new JobKey(taskEntity.getTaskId().toString());
         TriggerKey triggerKey = new TriggerKey(taskEntity.getTaskId().toString());
         Date start = new Date(taskEntity.getStartTime());
