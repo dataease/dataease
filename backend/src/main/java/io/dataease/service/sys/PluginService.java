@@ -3,6 +3,7 @@ package io.dataease.service.sys;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ZipUtil;
 import com.google.gson.Gson;
+import io.dataease.commons.utils.IPUtils;
 import io.dataease.dto.MyPluginDTO;
 import io.dataease.ext.ExtSysPluginMapper;
 import io.dataease.ext.query.GridExample;
@@ -17,6 +18,7 @@ import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.plugins.common.base.mapper.MyPluginMapper;
 import io.dataease.plugins.config.LoadjarUtil;
+import io.dataease.plugins.entity.PluginOperate;
 import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -56,6 +58,9 @@ public class PluginService {
     @Autowired
     private LoadjarUtil loadjarUtil;
 
+    @Autowired(required = false)
+    private DistributedPluginService distributedPluginService;
+
     @Value("${version}")
     private String version;
 
@@ -71,7 +76,7 @@ public class PluginService {
      * @param file
      * @return
      */
-    public Map<String, Object> localInstall(MultipartFile file) throws Exception{
+    public Map<String, Object> localInstall(MultipartFile file) throws Exception {
         //1.上传文件到服务器pluginDir目录下
         File dest = DeFileUtils.upload(file, pluginDir + "temp/");
         //2.解压目标文件dest 得到plugin.json和jar
@@ -113,7 +118,7 @@ public class PluginService {
         }
 
         if (pluginExist(myPlugin)) {
-            String msg = "插件【"+myPlugin.getName()+"】已存在，请先卸载";
+            String msg = "插件【" + myPlugin.getName() + "】已存在，请先卸载";
             LogUtil.error(msg);
             DEException.throwException(msg);
         }
@@ -123,7 +128,7 @@ public class PluginService {
             targetDir = makeTargetDir(myPlugin);
             String jarPath;
             jarPath = DeFileUtils.copy(jarFile, targetDir);
-            if(myPlugin.getCategory().equalsIgnoreCase("datasource")){
+            if (myPlugin.getCategory().equalsIgnoreCase("datasource")) {
                 DeFileUtils.copyFolder(folder + "/" + myPlugin.getDsType() + "Driver", targetDir + myPlugin.getDsType() + "Driver");
             }
             loadJar(jarPath, myPlugin);
@@ -142,11 +147,47 @@ public class PluginService {
             DeFileUtils.deleteFile(pluginDir + "temp/");
             DeFileUtils.deleteFile(folder);
         }
+        distributeOperate(myPlugin, "install");
         return null;
+    }
+
+    public void distributeOperate(MyPlugin plugin, String type) {
+
+        if (ObjectUtils.isNotEmpty(distributedPluginService)) {
+            PluginOperate operate = new PluginOperate();
+            operate.setPlugin(plugin);
+            operate.setSenderIp(IPUtils.domain());
+            operate.setType(type);
+            if (ObjectUtils.isEmpty(plugin) || StringUtils.isBlank(type) || StringUtils.isBlank(operate.getSenderIp()))
+                return;
+            distributedPluginService.pushBroadcast(operate);
+        }
     }
 
     public void loadJar(String jarPath, MyPlugin myPlugin) throws Exception {
         loadjarUtil.loadJar(jarPath, myPlugin);
+    }
+
+    public void redisBroadcastInstall(MyPlugin plugin) {
+        String path = getPath(plugin);
+        try {
+            if (FileUtil.exist(path)) {
+                loadJar(path, plugin);
+            } else {
+                LogUtil.error("插件路径不存在 {} ", path);
+            }
+        } catch (Exception e) {
+            LogUtil.error(e);
+        }
+    }
+
+    public String getPath(MyPlugin plugin) {
+        String store = plugin.getStore();
+        String version = plugin.getVersion();
+        String moduleName = plugin.getModuleName();
+        String fileName = moduleName + "-" + version + ".jar";
+        String path = pluginDir + store + "/" + fileName;
+        return path;
     }
 
     private String makeTargetDir(MyPlugin myPlugin) {
@@ -161,6 +202,7 @@ public class PluginService {
 
     /**
      * 检测插件是否已存在
+     *
      * @param myPlugin
      * @return
      */
@@ -190,13 +232,29 @@ public class PluginService {
         CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
         CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
 
-        if(myPlugin.getCategory().equalsIgnoreCase("datasource")){
-            if(CollectionUtils.isNotEmpty(datasourceService.selectByType(myPlugin.getDsType()))){
+        if (myPlugin.getCategory().equalsIgnoreCase("datasource")) {
+            if (CollectionUtils.isNotEmpty(datasourceService.selectByType(myPlugin.getDsType()))) {
                 DEException.throwException(Translator.get("i18n_plugin_not_allow_delete"));
             }
             loadjarUtil.deleteModule(myPlugin.getModuleName() + "-" + myPlugin.getVersion());
         }
         myPluginMapper.deleteByPrimaryKey(pluginId);
+        distributeOperate(myPlugin, "uninstall");
+        return true;
+    }
+
+    public Boolean redisBroadcastUnInstall(MyPlugin myPlugin) {
+        CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
+        CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
+        CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
+
+        if (myPlugin.getCategory().equalsIgnoreCase("datasource")) {
+            if (CollectionUtils.isNotEmpty(datasourceService.selectByType(myPlugin.getDsType()))) {
+                DEException.throwException(Translator.get("i18n_plugin_not_allow_delete"));
+            }
+            loadjarUtil.deleteModule(myPlugin.getModuleName() + "-" + myPlugin.getVersion());
+        }
+        myPluginMapper.deleteByPrimaryKey(myPlugin.getPluginId());
         return true;
     }
 
@@ -208,7 +266,7 @@ public class PluginService {
         File jarFile = new File(path);
         FileUtil.del(jarFile);
 
-        if(plugin.getCategory().equalsIgnoreCase("datasource")){
+        if (plugin.getCategory().equalsIgnoreCase("datasource")) {
             File driverFile = new File(pluginDir + plugin.getStore() + "/" + plugin.getDsType() + "Driver");
             FileUtil.del(driverFile);
         }
@@ -259,7 +317,7 @@ public class PluginService {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-        if(result.getCategory().equalsIgnoreCase("datasource") && (StringUtils.isEmpty(result.getStore()) || !result.getStore().equalsIgnoreCase("default"))){
+        if (result.getCategory().equalsIgnoreCase("datasource") && (StringUtils.isEmpty(result.getStore()) || !result.getStore().equalsIgnoreCase("default"))) {
             result.setStore("thirdpart");
         }
 

@@ -3,6 +3,7 @@ package io.dataease.commons.utils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
 import java.util.Arrays;
 
 public class IPUtils {
@@ -41,5 +42,13 @@ public class IPUtils {
         }
         ipStr = Arrays.stream(ipStr.split(",")).filter(item -> StringUtils.isNotBlank(item) && !StringUtils.equalsIgnoreCase(UNKNOWN, item.trim())).findFirst().orElse(ipStr);
         return StringUtils.equals(LOCAL_IP_KEY, ipStr) ? LOCAL_IP_VAL : ipStr;
+    }
+
+    public static String domain() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception e) {
+            return LOCAL_IP_VAL;
+        }
     }
 }
