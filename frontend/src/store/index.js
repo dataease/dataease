@@ -151,7 +151,8 @@ const data = {
       height: 0
     },
     previewVisible: false,
-    previewComponentData: []
+    previewComponentData: [],
+    currentCanvasNewId: []
   },
   mutations: {
     ...animation.mutations,
@@ -271,6 +272,7 @@ const data = {
         state.componentData.splice(index, 0, component)
       } else {
         state.componentData.push(component)
+        state.currentCanvasNewId.push(component.id)
       }
       this.commit('setCurComponent', { component: component, index: index || state.componentData.length - 1 })
     },
@@ -749,6 +751,7 @@ const data = {
       this.commit('clearLinkageSettingInfo', false)
       this.commit('resetViewEditInfo')
       this.commit('initCurMultiplexingComponents')
+      state.currentCanvasNewId = []
       state.batchOptStatus = false
       // Currently selected components
       state.curBatchOptComponents = []
