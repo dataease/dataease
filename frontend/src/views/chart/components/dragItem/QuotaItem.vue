@@ -241,7 +241,7 @@
 
 <script>
 import { compareItem } from '@/views/chart/chart/compare'
-import { getItemType, getOriginFieldName } from '@/views/chart/components/dragItem/utils'
+import { getItemType, getOriginFieldName, resetValueFormatter } from '@/views/chart/components/dragItem/utils'
 import FieldErrorTips from '@/views/chart/components/dragItem/components/FieldErrorTips'
 import bus from '@/utils/bus'
 import { formatterItem } from '@/views/chart/chart/formatter'
@@ -380,10 +380,14 @@ export default {
     quickCalc(param) {
       switch (param.type) {
         case 'none':
+          // 选择占比外，设置自动
+          resetValueFormatter(this.item)
           this.item.compareCalc.type = 'none'
           this.$emit('onQuotaItemChange', this.item)
           break
         case 'setting':
+          // 选择占比外，设置自动
+          resetValueFormatter(this.item)
           this.editCompare()
           break
         case 'percent':
