@@ -48,9 +48,9 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
       let currentSeriesId = seriesId
       const yAxis = JSON.parse(chart.yaxis)
       if (!currentSeriesId || !yAxis.some(item => item.id === currentSeriesId)) {
-        currentSeriesId = yAxis[0].id
+        currentSeriesId = yAxis?.length ? yAxis[0].id : null
       }
-      chart.data.series.forEach((item, index) => {
+      chart.data?.series.forEach((item, index) => {
         if (item.data[0].quotaList[0].id === currentSeriesId) {
           seriesIndex = index
           return false
@@ -213,7 +213,7 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
                 }
                 const val = values[valueIndex]
                 const field = deNameArray[valueIndex]
-                const con = getSvgCondition(val, field, markCondition.conditions)
+                const con = getSvgCondition(val, field, markCondition?.conditions || null)
                 let svgName = null
                 if (con) {
                   svgName = con.icon
@@ -227,7 +227,7 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
                 color: params => {
                   const { value } = params
                   const val = value[valueIndex]
-                  const con = getSvgCondition(val, null, markCondition.conditions)
+                  const con = getSvgCondition(val, null, markCondition?.conditions || null)
                   return con?.color || '#b02a02'
                 }
               },
@@ -248,6 +248,9 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
 }
 
 const getSvgCondition = (val, field, conditions) => {
+  if (!conditions) {
+    return null
+  }
   for (let i = 0; i < conditions.length; i++) {
     const condition = conditions[i]
     if (conditionMatch(condition, val)) {

@@ -455,20 +455,20 @@ export default {
     },
     roamMap(flag) {
       let targetZoom = 1
-      const zoom = this.myChart.getOption().series[0].zoom
+      const zoom = this.myChart.getOption().geo[0].zoom
       if (flag) {
         targetZoom = zoom * 1.2
       } else {
         targetZoom = zoom / 1.2
       }
       const options = JSON.parse(JSON.stringify(this.myChart.getOption()))
-      options.series[0].zoom = targetZoom
+      options.geo[0].zoom = targetZoom
       this.myChart.setOption(options)
     },
     resetZoom() {
       const options = JSON.parse(JSON.stringify(this.myChart.getOption()))
-      options.series[0].zoom = 1
-      options.series[0].center = this.mapCenter
+      options.geo[0].zoom = 1
+      options.geo[0].center = this.mapCenter
       this.myChart.setOption(options)
     }
   }
