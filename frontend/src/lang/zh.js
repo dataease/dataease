@@ -1916,6 +1916,7 @@ export default {
     field_description: '字段描述',
     table_description: '表描述',
     relational_database: '关系型数据库',
+    data_warehouse_lake: '数仓/数据湖',
     non_relational_database: '非关系型数据库',
     all: '所有',
     other: '其他',

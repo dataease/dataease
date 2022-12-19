@@ -265,12 +265,16 @@
           @tab-click="handleClick"
         >
           <el-tab-pane
-            :label="$t('datasource.relational_database')"
-            name="RDBMS"
+            label="OLTP"
+            name="OLTP"
           />
           <el-tab-pane
-            :label="$t('datasource.non_relational_database')"
-            name="NORDBMS"
+            label="OLAP"
+            name="OLAP"
+          />
+          <el-tab-pane
+            :label="$t('datasource.data_warehouse_lake')"
+            name="dataWarehouseLake"
           />
           <el-tab-pane
             :label="$t('datasource.other')"
@@ -281,9 +285,9 @@
           <template v-for="(list, idx) in databaseList">
             <div
               :key="nameMap[idx]"
-              :class="typeList[idx]"
+              :class="nameMap[idx]"
               class="name"
-            >{{ $t(`datasource.${nameMap[idx]}`) }}</div>
+            >{{ nameClassMap[idx] }}</div>
             <div
               :key="nameMap[idx] + 'cont'"
               class="item-container"
@@ -342,14 +346,15 @@ export default {
   },
   data() {
     return {
-      tabActive: 'RDBMS',
+      tabActive: 'OLTP',
       databaseList: [],
       currentNodeId: '',
       dsTypeRelate: false,
       expandedArray: [],
       tData: [],
-      nameMap: ['relational_database', 'non_relational_database', 'other'],
-      typeList: ['RDBMS', 'NORDBMS', 'OTHER'],
+      nameMap: ['OLTP', 'OLAP', 'dataWarehouseLake', 'OTHER'],
+      nameClassMap: ['OLTP', 'OLAP', this.$t(`datasource.data_warehouse_lake`), this.$t(`datasource.other`)],
+      typeList: [['Db2', 'DM', 'KingBase', 'MariaDB', 'MongoDB', 'Mongodb-BI', 'MySQL', 'Oracle', 'PostgreSQL', 'SQL Server', 'TiDB'], ['Doris', 'Apache Impala', 'ClickHouse', 'Elasticsearch', 'Presto', 'StarRocks'], ['Apache Hive', 'Kylin', 'AWS Redshift', 'Maxcompute'], ['API']],
       treeLoading: false,
       dsTypes: [],
       dsTypesForDriver: [],
@@ -489,9 +494,9 @@ export default {
     datasourceTypes() {
       listDatasourceType().then((res) => {
         this.dsTypes = res.data
-        const databaseList = [[], [], []]
+        const databaseList = [[], [], [], []]
         this.dsTypes.forEach((item) => {
-          const index = this.typeList.findIndex(ele => ele === item.databaseClassification)
+          const index = this.typeList.findIndex(ele => ele.includes(item.name))
           if (index !== -1) {
             databaseList[index].push(item)
           }

@@ -279,7 +279,7 @@ export default {
       } else {
         return {
           ...
-            getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
+          getStyle(style, ['top', 'left', 'width', 'height', 'rotate']),
           position: 'relative'
         }
       }

@@ -1923,6 +1923,7 @@ export default {
     field_description: 'Field description',
     table_description: 'Table description',
     relational_database: 'Relational database',
+    data_warehouse_lake: 'Data Warehouse/Data Lake',
     non_relational_database: 'Non relational database',
     all: 'All',
     other: 'other',
