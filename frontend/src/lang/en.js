@@ -1817,6 +1817,7 @@ export default {
     please_input_url: 'Please enter url address',
     please_input_port: 'Please enter port',
     modify: 'Edit data Source',
+    copy: 'Copy datasource',
     validate_success: 'Verification successful',
     validate: 'Validate',
     search_by_name: 'Search by name',
