@@ -263,12 +263,9 @@ public class DatasourceService {
         if (!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(updataDsRequest.getType())) {
             throw new Exception("Datasource type not supported.");
         }
-        System.out.println(updataDsRequest.getConfiguration());
-        System.out.println(updataDsRequest.isConfigurationEncryption());
         if(updataDsRequest.isConfigurationEncryption()){
             updataDsRequest.setConfiguration(new String(java.util.Base64.getDecoder().decode(updataDsRequest.getConfiguration())));
         }
-        System.out.println(updataDsRequest.getConfiguration());
         checkName(updataDsRequest.getName(), updataDsRequest.getType(), updataDsRequest.getId());
         Datasource datasource = new Datasource();
         datasource.setName(updataDsRequest.getName());
@@ -277,15 +274,22 @@ public class DatasourceService {
         datasource.setCreateTime(null);
         datasource.setType(updataDsRequest.getType());
         datasource.setUpdateTime(System.currentTimeMillis());
-
         Provider datasourceProvider = ProviderFactory.getProvider(updataDsRequest.getType());
         datasourceProvider.checkConfiguration(datasource);
-
         checkAndUpdateDatasourceStatus(datasource);
-        DatasourceExample example = new DatasourceExample();
-        example.createCriteria().andIdEqualTo(updataDsRequest.getId());
-        datasourceMapper.updateByExampleSelective(datasource, example);
-        handleConnectionPool(updataDsRequest.getId());
+        if(StringUtils.isNotEmpty(updataDsRequest.getId())){
+            DatasourceExample example = new DatasourceExample();
+            example.createCriteria().andIdEqualTo(updataDsRequest.getId());
+            datasourceMapper.updateByExampleSelective(datasource, example);
+            handleConnectionPool(updataDsRequest.getId());
+        }else {
+            datasource.setId(UUID.randomUUID().toString());
+            datasource.setCreateTime(System.currentTimeMillis());
+            datasourceMapper.insert(datasource);
+            handleConnectionPool(datasource, "add");
+            sysAuthService.copyAuth(datasource.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASOURCE);
+        }
+
     }
 
     private void handleConnectionPool(String datasourceId) {

@@ -53,6 +53,20 @@ public class DatasourceController {
     }
 
     @RequiresPermissions("datasource:read")
+    @DePermission(type = DePermissionType.DATASOURCE, value = "id", level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE)
+    @ApiOperation("更新数据源")
+    @PostMapping("/update")
+    @DeLog(
+            operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+            sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
+            positionIndex = 0, positionKey = "type",
+            value = "id"
+    )
+    public void updateDatasource(@RequestBody UpdataDsRequest dsRequest) throws Exception {
+        datasourceService.updateDatasource(dsRequest);
+    }
+
+    @RequiresPermissions("datasource:read")
     @ApiOperation("数据源类型")
     @GetMapping("/types")
     public Collection types() throws Exception {
@@ -104,20 +118,6 @@ public class DatasourceController {
         if (ObjectUtils.isNotEmpty(resultHolder) && resultHolder.isSuccess())
             DeLogUtils.save(sysLogDTO);
         return resultHolder;
-    }
-
-    @RequiresPermissions("datasource:read")
-    @DePermission(type = DePermissionType.DATASOURCE, value = "id", level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE)
-    @ApiOperation("更新数据源")
-    @PostMapping("/update")
-    @DeLog(
-            operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
-            sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
-            positionIndex = 0, positionKey = "type",
-            value = "id"
-    )
-    public void updateDatasource(@RequestBody UpdataDsRequest dsRequest) throws Exception {
-        datasourceService.updateDatasource(dsRequest);
     }
 
     @DePermission(type = DePermissionType.DATASOURCE)

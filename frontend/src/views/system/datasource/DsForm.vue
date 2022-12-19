@@ -95,6 +95,9 @@ export default {
     },
     tips() {
       const { id, showModel } = this.params
+      if(showModel === 'copy'){
+        return this.$t('datasource.copy')
+      }
       return id && showModel === 'show' && !this.canEdit
         ? this.$t('datasource.show_info')
         : this.formType === 'add'
