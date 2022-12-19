@@ -34,9 +34,22 @@ const remove = function(list, item) {
 
 const iconList = {
   list: [],
+  group: {},
 
   addIcon: function(item) {
     this.list = add(this.list, item)
+  },
+  addGroup: function(item) {
+    const { value, type } = item
+    this.group[type] = this.group[type] ? this.group[type] : []
+    if (TypeUtil.isArray(value)) {
+      this.group[type] = this.group[type].concat(value)
+    } else {
+      this.group[type].push(value)
+    }
+  },
+  initGroup: function(data) {
+    this.group = JSON.parse(JSON.stringify(data))
   },
 
   removeIcon: function(item) {

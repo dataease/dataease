@@ -929,6 +929,11 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    '1-trend': '趋势',
+    '2-state': '状态',
+    '3-rank': '排名',
+    '4-location': '位置',
+    '5-weather': '天气',
     chinese: '中文',
     mark_field: '字段',
     mark_value: '值',

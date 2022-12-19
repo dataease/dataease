@@ -164,74 +164,81 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
 
       if (chart.data?.detailFields?.length > 1) {
         const deNameArray = ['x', 'y']
+        let hasx = false
+        let hasy = false
         chart.data.detailFields.forEach(item => {
           if (item?.busiType === 'locationXaxis') {
+            hasx = true
             deNameArray[0] = item
           } else if (item?.busiType === 'locationYaxis') {
+            hasy = true
             deNameArray[1] = item
           } else {
             deNameArray.push(item)
           }
         })
         let markData = []
-        chart.data.tableRow.forEach(row => {
-          if (row?.details) {
-            markData = markData.concat(row.details.map(detail => {
-              const temp = deNameArray.map(key => detail[key.dataeaseName])
-              temp.push(1)
-              return temp
-            }))
-          }
-        })
-
-        if (markData.length) {
-          let valueIndex = -1
-          const markCondition = customAttr.mark
-          if (markCondition?.fieldId && markCondition.conditions?.length) {
-            for (let i = 0; i < deNameArray.length; i++) {
-              if (deNameArray[i].id === markCondition.fieldId) {
-                valueIndex = i
-                break
-              }
+        if (hasx && hasy) {
+          chart.data.tableRow.forEach(row => {
+            if (row?.details) {
+              markData = markData.concat(row.details.map(detail => {
+                const temp = deNameArray.map(key => detail[key.dataeaseName])
+                temp.push(1)
+                return temp
+              }))
             }
-          }
-          const markSeries = {
-            type: 'scatter',
-            coordinateSystem: 'geo',
-            geoIndex: 0,
-            symbolSize: function(params) {
-              return 20
-            },
-            symbol: (values, param) => {
-              if (valueIndex < 0) {
-                return svgPathData()
-              }
-              const val = values[valueIndex]
-              const field = deNameArray[valueIndex]
-              const con = getSvgCondition(val, field, markCondition.conditions)
-              let svgName = null
-              if (con) {
-                svgName = con.icon
-                if (svgName && svgName.startsWith('#')) {
-                  svgName = svgName.substr(1)
+          })
+
+          if (markData.length) {
+            let valueIndex = -1
+            const markCondition = customAttr.mark
+            if (markCondition?.fieldId && markCondition.conditions?.length) {
+              for (let i = 0; i < deNameArray.length; i++) {
+                if (deNameArray[i].id === markCondition.fieldId) {
+                  valueIndex = i
+                  break
                 }
               }
-              return svgPathData(svgName)
-            },
-            itemStyle: {
-              color: params => {
-                const { value } = params
-                const val = value[valueIndex]
-                const con = getSvgCondition(val, null, markCondition.conditions)
-                return con?.color || '#b02a02'
-              }
-            },
-            encode: {
-              tooltip: 2
-            },
-            data: markData
+            }
+            const markSeries = {
+              type: 'scatter',
+              coordinateSystem: 'geo',
+              geoIndex: 0,
+              symbolSize: function(params) {
+                return 20
+              },
+              symbol: (values, param) => {
+                if (valueIndex < 0) {
+                  return svgPathData()
+                }
+                const val = values[valueIndex]
+                const field = deNameArray[valueIndex]
+                const con = getSvgCondition(val, field, markCondition.conditions)
+                let svgName = null
+                if (con) {
+                  svgName = con.icon
+                  if (svgName && svgName.startsWith('#')) {
+                    svgName = svgName.substr(1)
+                  }
+                }
+                return svgPathData(svgName)
+              },
+              itemStyle: {
+                color: params => {
+                  const { value } = params
+                  const val = value[valueIndex]
+                  const con = getSvgCondition(val, null, markCondition.conditions)
+                  return con?.color || '#b02a02'
+                }
+              },
+              encode: {
+                tooltip: 2
+              },
+              silent: true,
+              data: markData
+            }
+            chart_option.series.push(markSeries)
           }
-          chart_option.series.push(markSeries)
         }
       }
     }
@@ -309,7 +316,7 @@ const loadXML = xmlString => {
 }
 
 const svgPathData = iconName => {
-  iconName = iconName || 'weizhi'
+  iconName = iconName || '4-location-01-mark'
   const defaultNode = require(`@/deicons/svg/${iconName}.svg`).default
   if (!defaultNode?.content) return null
   const content = defaultNode.content

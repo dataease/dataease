@@ -931,6 +931,11 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    '1-trend': 'trend',
+    '2-state': 'State',
+    '3-rank': 'Rank',
+    '4-location': 'Location',
+    '5-weather': 'Weather',
     chinese: 'Chinese',
     mark_field: 'Field',
     mark_value: 'Value',
