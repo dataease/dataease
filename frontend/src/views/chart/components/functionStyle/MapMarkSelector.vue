@@ -96,7 +96,7 @@
             class="col-center"
             :span="6"
           >
-            <de-icon-picker
+            <de-icon-group-picker
               v-model="condition.icon"
               :options="iconOptions"
               :color="condition.color"
@@ -141,11 +141,11 @@
 
 <script>
 import { DEFAULT_MARK } from '../../chart/chart'
-import DeIconPicker from '@/components/deIconPicker'
+import DeIconGroupPicker from '@/components/deIconPicker/deIconGroupPicker'
 import deSvgIcons from '@/deicons'
 export default {
   name: 'MapMarkSelector',
-  components: { DeIconPicker },
+  components: { DeIconGroupPicker },
   props: {
     param: {
       type: Object,
@@ -285,7 +285,18 @@ export default {
       this.changeMarkAttr('conditions')
     },
     loadSvg() {
-      this.iconOptions.addIconList = [...this.iconOptions.addIconList, ...deSvgIcons]
+      const svgList = deSvgIcons
+      const groupMap = {}
+      svgList.forEach(svg => {
+        const arr = svg.split('-')
+        if (arr?.length > 3) {
+          const groupName = arr[0] + '-' + arr[1]
+          const svgName = svg
+          groupMap[groupName] = groupMap[groupName] || []
+          groupMap[groupName].push(svgName)
+        }
+      })
+      this.iconOptions.addIconGroup = groupMap
     },
     initData() {
       const chart = JSON.parse(JSON.stringify(this.chart))

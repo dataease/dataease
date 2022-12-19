@@ -930,6 +930,11 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    '1-trend': '趨勢',
+    '2-state': '狀態',
+    '3-rank': '排名',
+    '4-location': '位置',
+    '5-weather': '天氣',
     chinese: '中文',
     mark_field: '字段',
     mark_value: '值',
