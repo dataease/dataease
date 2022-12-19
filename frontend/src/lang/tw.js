@@ -1816,6 +1816,7 @@ export default {
     please_input_url: '請輸入URL地址',
     please_input_port: '請輸入端口',
     modify: '編輯數據源',
+    copy: '複製數據源',
     validate_success: '校驗成功',
     validate: '校驗',
     search_by_name: '根據名稱搜索',

@@ -716,6 +716,9 @@ export default {
           res.data.apiConfiguration = JSON.parse(Base64.decode(res.data.apiConfigurationStr))
         }
         this.params = { ...res.data, showModel }
+        if(showModel === 'copy'){
+          this.params.id = ''
+        }
         this.$emit('setParams', { ...this.params })
       }).finally(() => {
         this.$emit('update:formLoading', false)

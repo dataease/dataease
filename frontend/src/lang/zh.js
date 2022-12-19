@@ -1815,6 +1815,7 @@ export default {
     please_input_url: '请输入URL地址',
     please_input_port: '请输入端口',
     modify: '编辑数据源',
+    copy: '复制数据源',
     validate_success: '校验成功',
     validate: '校验',
     search_by_name: '根据名称搜索',

@@ -173,6 +173,10 @@
                         <i class="el-icon-edit" />
                         {{ $t('chart.edit') }}
                       </el-dropdown-item>
+                      <el-dropdown-item command="copy" v-show="showView === 'Datasource'">
+                        <i class="el-icon-edit" />
+                        {{ $t('commons.copy') }}
+                      </el-dropdown-item>
                       <el-dropdown-item command="delete">
                         <i class="el-icon-delete" />
                         {{ $t('chart.delete') }}
@@ -651,6 +655,9 @@ export default {
         case 'edit':
           this._handleEditer(data)
           break
+        case 'copy':
+          this._handleCopy(data)
+          break
         case 'delete':
           this._handleDelete(data)
           break
@@ -667,6 +674,17 @@ export default {
       }
       this.editDriver = true
       this.dialogTitle = this.$t('datasource.edit_driver')
+      this.driverForm = { ...row }
+    },
+    _handleCopy(row){
+      if (this.showView === 'Datasource') {
+        const param = { ...row, ...{ showModel: 'copy' }}
+        this.switchMain('DsForm', param, this.tData, this.dsTypes)
+        this.currentNodeId && sessionStorage.setItem('datasource-current-node', this.currentNodeId)
+        return
+      }
+      this.editDriver = true
+      this.dialogTitle = this.$t('commons.copy')
       this.driverForm = { ...row }
     },
     _handleDelete(datasource) {
