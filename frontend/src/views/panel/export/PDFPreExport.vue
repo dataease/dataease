@@ -82,7 +82,7 @@ export default {
     mainCanvasStyle() {
       if (this.toExport) {
         return {
-          width: '4096px'
+          width: '1280px'
         }
       } else {
         return {
@@ -93,7 +93,7 @@ export default {
     templateHtmlStyle() {
       if (this.toExport) {
         return {
-          fontSize: '48px!important'
+          fontSize: '14px!important'
         }
       } else {
         return {}
@@ -133,17 +133,16 @@ export default {
         _this.toExport = true
         setTimeout(() => {
           html2canvas(document.getElementById('exportPdf')).then(function(canvas) {
-              _this.exportLoading = false
-              const contentWidth = canvas.width / 4
-              const contentHeight = canvas.height / 4
-              const pageData = canvas.toDataURL('image/jpeg', 1.0)
-              const lp = contentWidth > contentHeight ? 'l' : 'p'
-              const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
-              PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
-              PDF.save(_this.panelName + '.pdf')
-              _this.$emit('closePreExport')
-            }
-          )
+            _this.exportLoading = false
+            const contentWidth = canvas.width / 2
+            const contentHeight = canvas.height / 2
+            const pageData = canvas.toDataURL('image/jpeg', 1.0)
+            const lp = contentWidth > contentHeight ? 'l' : 'p'
+            const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
+            PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
+            PDF.save(_this.panelName + '.pdf')
+            _this.$emit('closePreExport')
+          })
         }, 1500)
       }, 500)
     }

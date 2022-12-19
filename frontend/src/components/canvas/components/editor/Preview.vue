@@ -443,6 +443,9 @@ export default {
     bus.$off('trigger-reset-button', this.triggerResetButton)
   },
   methods: {
+    getCanvasHeight() {
+      return this.mainHeightCount
+    },
     openChartDetailsDialog(paramInfo) {
       if (this.canvasId === 'canvas-main') {
         this.showChartInfo = paramInfo.showChartInfo

@@ -17,7 +17,7 @@
         style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;"
       >
         <div style="height: 100%;">
-          <share-head />
+          <share-head/>
         </div>
       </el-row>
       <el-row
@@ -45,7 +45,7 @@
               width="400"
               trigger="click"
             >
-              <panel-detail-info />
+              <panel-detail-info/>
               <i
                 slot="reference"
                 class="el-icon-warning icon-class"
@@ -209,6 +209,7 @@
           >
             <Preview
               v-if="showMainFlag"
+              ref="paneViewPreviewRef"
               :component-data="mainCanvasComponentData"
               :canvas-style-data="canvasStyleData"
               :active-tab="activeTab"
@@ -378,8 +379,8 @@ export default {
     imageWrapperStyle() {
       if (this.exporting) {
         return {
-          width: '2560px',
-          height: '1440px'
+          width: '1280px',
+          height: '720px'
         }
       } else {
         return {
@@ -429,6 +430,16 @@ export default {
     bus.$off('set-panel-share-user', this.setPanelShareUser)
   },
   methods: {
+    // 画布高度大于6000px 自动使用原尺寸导出 减小浏览器再渲染压力
+    changeExportingState() {
+      const canvasHeight = this.$refs.paneViewPreviewRef.getCanvasHeight()
+      if (canvasHeight && canvasHeight > 6000) {
+        return false
+      } else {
+        return true
+      }
+
+    },
     downLoadApp(appAttachInfo) {
       this.downLoadToApp(appAttachInfo)
     },
@@ -597,7 +608,7 @@ export default {
     downloadAsImage() {
       this.dataLoading = true
       setTimeout(() => {
-        this.exporting = true
+        this.exporting = this.changeExportingState()
         setTimeout(() => {
           const canvasID = document.getElementById(this.canvasInfoTemp)
           const a = document.createElement('a')
@@ -628,7 +639,7 @@ export default {
       this.dataLoading = true
 
       setTimeout(() => {
-        this.exporting = true
+        this.exporting = this.changeExportingState()
         setTimeout(() => {
           html2canvas(document.getElementById(this.canvasInfoTemp)).then(canvas => {
             const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
