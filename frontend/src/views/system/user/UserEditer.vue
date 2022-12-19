@@ -261,12 +261,7 @@ export default {
             message: this.$t('commons.input_limit', [1, 50]),
             trigger: 'blur'
           },
-          {
-            required: true,
-            pattern: '^[a-zA-Z][a-zA-Z0-9\._-]*$',
-            message: this.$t('user.user_name_pattern_error'),
-            trigger: 'blur'
-          }
+          { required: true, validator: this.validateUsername, trigger: 'blur' }
         ],
         nickName: [
           {
@@ -413,6 +408,16 @@ export default {
 
       if (regep.test(value)) {
         const msg = this.$t('user.special_characters_are_not_supported')
+        callback(new Error(msg))
+      } else {
+        callback()
+      }
+    },
+    validateUsername(rule, value, callback) {
+      const pattern = '^[a-zA-Z][a-zA-Z0-9\._-]*$'
+      const regep = new RegExp(pattern)
+      if (!regep.test(value) && this.formType === 'add') {
+        const msg = this.$t('user.user_name_pattern_error')
         callback(new Error(msg))
       } else {
         callback()
