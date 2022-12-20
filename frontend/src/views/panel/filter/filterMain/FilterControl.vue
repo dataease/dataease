@@ -360,9 +360,12 @@ export default {
     changeDynamicParams(val, name) {
       const start = this.attrs.startParameters ? JSON.parse(JSON.stringify(this.attrs.startParameters)) : []
 
-      const end = this.attrs.endParameters ? JSON.parse(JSON.stringify(this.attrs.endParameters)) : []
+      let end = this.attrs.endParameters ? JSON.parse(JSON.stringify(this.attrs.endParameters)) : []
       if (end?.length) {
-        end[0] += '_START_END_SPLIT'
+        end = end.map(item => {
+          item = item + '_START_END_SPLIT'
+          return item
+        })
       }
       this.attrs.parameters = [...new Set([...start, ...end])]
     },
@@ -393,6 +396,12 @@ export default {
     enableParametersChange(value) {
       if (!value) {
         this.attrs.parameters = []
+        if (this.attrs.startParameters?.length) {
+          this.attrs.startParameters = []
+        }
+        if (this.attrs.endParameters?.length) {
+          this.attrs.endParameters = []
+        }
       }
       this.fillAttrs2Filter()
     },
