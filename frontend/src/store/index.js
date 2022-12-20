@@ -503,6 +503,9 @@ const data = {
         const element = state.componentData[index]
         if (element.id && element.id === id) {
           state.componentData.splice(index, 1)
+          if (element.type === 'de-tabs') {
+            this.commit('deleteComponentsWithCanvasId', element.id)
+          }
           break
         }
       }
@@ -811,6 +814,16 @@ const data = {
       state.mousePointShadowMap.mouseY = mousePoint.mouseY
       state.mousePointShadowMap.width = mousePoint.width
       state.mousePointShadowMap.height = mousePoint.height
+    },
+    deleteComponentsWithCanvasId(state, canvasId) {
+      if (canvasId && canvasId.length > 10) {
+        for (let index = 0; index < state.componentData.length; index++) {
+          const element = state.componentData[index]
+          if (element.canvasId && element.canvasId.includes(canvasId)) {
+            state.componentData.splice(index, 1)
+          }
+        }
+      }
     }
   },
   modules: {
