@@ -71,8 +71,8 @@
           </el-form>
           <div class="de-row-rules">
             <span>{{
-                positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
-              }}</span>
+              positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
+            }}</span>
           </div>
           <el-form
             ref="historyDsForm"
@@ -805,16 +805,16 @@ export default {
     },
     saveAppMarketHistory() {
       this.$refs.historyDsForm.validate(valid => {
-          if (!valid) {
-            return false
-          }
-          const appApplyForm = {
-            ...this.attachForm,
-            ...this.historyDsForm
-          }
-          const method = this.formType === 'add' ? appApply : appEdit
-          this.appApplyMethod(method, appApplyForm)
+        if (!valid) {
+          return false
         }
+        const appApplyForm = {
+          ...this.attachForm,
+          ...this.historyDsForm
+        }
+        const method = this.formType === 'add' ? appApply : appEdit
+        this.appApplyMethod(method, appApplyForm)
+      }
       )
     },
     save() {
@@ -960,10 +960,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-            if (!valid) {
-              return false
-            }
+          if (!valid) {
+            return false
           }
+        }
         )
       }
       this.$refs.dsForm.validate((valid) => {
@@ -1108,10 +1108,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-            if (!valid) {
-              return false
-            }
+          if (!valid) {
+            return false
           }
+        }
         )
       }
       this.$refs.dsForm.validate((valid) => {

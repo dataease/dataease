@@ -1918,6 +1918,7 @@ export default {
     field_description: '欄位描述',
     table_description: '表描述',
     relational_database: '關係型數據庫',
+    data_warehouse_lake: '數倉/數據湖',
     non_relational_database: '非關係型數據庫',
     all: '所有',
     other: '其他',

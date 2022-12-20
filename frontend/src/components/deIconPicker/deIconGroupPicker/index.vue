@@ -217,7 +217,10 @@ export default {
         return ''
       }
     },
-    options: {},
+    options: {
+      type: Object,
+      default: () => {}
+    },
     width: {
       type: Number,
       default() {

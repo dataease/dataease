@@ -279,7 +279,7 @@ export default {
     },
     datasetParams: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   data() {

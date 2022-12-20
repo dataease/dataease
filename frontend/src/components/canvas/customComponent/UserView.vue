@@ -350,7 +350,7 @@ export default {
   },
 
   computed: {
-    //首次加载且非编辑状态新复制的视图，使用外部filter
+    // 首次加载且非编辑状态新复制的视图，使用外部filter
     initLoad() {
       return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad
     },
@@ -1268,7 +1268,6 @@ export default {
   z-index: 2;
   display: block !important;
 }
-
 
 .mobile-dialog-css ::v-deep .el-dialog__headerbtn {
   top: 7px

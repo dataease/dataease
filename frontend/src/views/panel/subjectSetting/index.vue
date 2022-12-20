@@ -3,7 +3,7 @@
     <div class="theme-slider-main">
       {{ $t('panel.dashboard_theme') }}
     </div>
-    <div class="theme-slider-position"/>
+    <div class="theme-slider-position" />
     <div>
       <slider
         v-if="sliderShow"
@@ -25,38 +25,38 @@
             name="panel"
           >
             <el-row class="selector-div">
-              <overall-setting/>
+              <overall-setting />
             </el-row>
           </el-collapse-item>
           <el-collapse-item
             :title="$t('panel.panel_background')"
             name="panelBackground"
           >
-            <background-selector/>
+            <background-selector />
           </el-collapse-item>
           <el-collapse-item
             :title="$t('panel.view_style')"
             name="componentStyle"
           >
-            <background-overall></background-overall>
+            <background-overall />
           </el-collapse-item>
           <el-collapse-item
             :title="$t('panel.view_color_setting')"
             name="graphical"
           >
-            <panel-color-selector @onColorChange="onColorChange"/>
+            <panel-color-selector @onColorChange="onColorChange" />
           </el-collapse-item>
           <el-collapse-item
             :title="$t('panel.chart_title')"
             name="table"
           >
-            <view-title @onTextChange="onTextChange"/>
+            <view-title @onTextChange="onTextChange" />
           </el-collapse-item>
           <el-collapse-item
             :title="$t('panel.filter_component')"
             name="filterComponent"
           >
-            <FilterStyleSelector/>
+            <FilterStyleSelector />
           </el-collapse-item>
         </el-collapse>
       </div>
@@ -81,8 +81,10 @@ import BackgroundOverall from '@/views/background/BackgroundOverall'
 export default {
   components: {
     BackgroundOverall,
+    // eslint-disable-next-line
     Background,
     FilterStyleSelector,
+    // eslint-disable-next-line
     ComponentStyle,
     ViewTitle,
     slider,
