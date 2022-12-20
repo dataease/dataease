@@ -89,6 +89,7 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   }
   // custom color
   options.color = antVCustomColor(chart)
+  // 处理空值
   if (chart.senior) {
     let emptyDataStrategy = JSON.parse(chart.senior)?.functionCfg?.emptyDataStrategy
     if (!emptyDataStrategy) {
@@ -119,7 +120,7 @@ export function baseAreaOptionAntV(plot, container, chart, action, isStack) {
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // data
-  const data = chart.data.data
+  const data = _.cloneDeep(chart.data.data)
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
@@ -196,6 +197,14 @@ export function baseAreaOptionAntV(plot, container, chart, action, isStack) {
         }
       }
     }
+  }
+  // 处理空值
+  if (chart.senior) {
+    let emptyDataStrategy = JSON.parse(chart.senior)?.functionCfg?.emptyDataStrategy
+    if (!emptyDataStrategy) {
+      emptyDataStrategy = 'breakLine'
+    }
+    handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
   }
 
   // 开始渲染
