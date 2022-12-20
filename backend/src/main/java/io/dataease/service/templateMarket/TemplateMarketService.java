@@ -29,56 +29,56 @@ import java.util.stream.Collectors;
 @Service
 public class TemplateMarketService {
 
-    private final static String POSTS_API="/api/content/posts?page=0&size=2000";
-    private final static String CATEGORIES_API="/api/content/categories";
+    private final static String POSTS_API = "/api/content/posts?page=0&size=2000";
+    private final static String CATEGORIES_API = "/api/content/categories";
 
     @Resource
     private SystemParameterService systemParameterService;
 
     /**
-     * @Description Get template file from template market
      * @param templateUrl template url
+     * @Description Get template file from template market
      */
-    public PanelTemplateFileDTO getTemplateFromMarket(String templateUrl){
-        if(StringUtils.isNotEmpty(templateUrl)){
+    public PanelTemplateFileDTO getTemplateFromMarket(String templateUrl) {
+        if (StringUtils.isNotEmpty(templateUrl)) {
             String sufUrl = systemParameterService.templateMarketInfo().getTemplateMarketUlr();
             Gson gson = new Gson();
-            String templateInfo =  HttpClientUtil.get(sufUrl+templateUrl,null);
+            String templateInfo = HttpClientUtil.get(sufUrl + templateUrl, null);
             return gson.fromJson(templateInfo, PanelTemplateFileDTO.class);
-        }else{
+        } else {
             return null;
         }
     }
 
     /**
-     * @Description Get info from template market content api
      * @param url content api url
+     * @Description Get info from template market content api
      */
-    public String marketGet(String url,String accessKey){
+    public String marketGet(String url, String accessKey) {
         HttpClientConfig config = new HttpClientConfig();
-        config.addHeader("API-Authorization",accessKey);
-        return  HttpClientUtil.get(url,config);
+        config.addHeader("API-Authorization", accessKey);
+        return HttpClientUtil.get(url, config);
     }
 
-    public MarketBaseResponse searchTemplate(TemplateMarketSearchRequest request){
-        try{
+    public MarketBaseResponse searchTemplate(TemplateMarketSearchRequest request) {
+        try {
             BasicInfo basicInfo = systemParameterService.templateMarketInfo();
-            String result = marketGet(basicInfo.getTemplateMarketUlr()+POSTS_API,basicInfo.getTemplateAccessKey());
-           List<TemplateMarketDTO> postsResult = JSONObject.parseObject(result).getJSONObject("data").getJSONArray("content").toJavaList(TemplateMarketDTO.class);
-           return new MarketBaseResponse(basicInfo.getTemplateMarketUlr(),postsResult);
-        }catch (Exception e){
+            String result = marketGet(basicInfo.getTemplateMarketUlr() + POSTS_API, basicInfo.getTemplateAccessKey());
+            List<TemplateMarketDTO> postsResult = JSONObject.parseObject(result).getJSONObject("data").getJSONArray("content").toJavaList(TemplateMarketDTO.class);
+            return new MarketBaseResponse(basicInfo.getTemplateMarketUlr(), postsResult);
+        } catch (Exception e) {
             DataEaseException.throwException(e);
         }
         return null;
     }
 
-    public List<String> getCategories(){
+    public List<String> getCategories() {
         BasicInfo basicInfo = systemParameterService.templateMarketInfo();
-        String resultStr = marketGet(basicInfo.getTemplateMarketUlr()+CATEGORIES_API,basicInfo.getTemplateAccessKey());
+        String resultStr = marketGet(basicInfo.getTemplateMarketUlr() + CATEGORIES_API, basicInfo.getTemplateAccessKey());
         List<TemplateCategory> categories = JSONObject.parseObject(resultStr).getJSONArray("data").toJavaList(TemplateCategory.class);
-        if(CollectionUtils.isNotEmpty(categories)){
-            return categories.stream().sorted(Comparator.comparing(TemplateCategory::getPriority)).map(TemplateCategory :: getName).collect(Collectors.toList());
-        }else{
+        if (CollectionUtils.isNotEmpty(categories)) {
+            return categories.stream().filter(item -> !"应用系列".equals(item.getName())).sorted(Comparator.comparing(TemplateCategory::getPriority)).map(TemplateCategory::getName).collect(Collectors.toList());
+        } else {
             return null;
         }
 
