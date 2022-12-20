@@ -76,8 +76,11 @@
             v-model="functionForm.emptyDataStrategy"
             @change="changeFunctionCfg"
           >
-            <el-radio :label="'breakLine'">{{ $t('chart.break_line') }}</el-radio>
-            <el-radio :label="'setZero'">{{ $t('chart.set_zero') }}</el-radio>
+            <el-radio :label="'breakLine'">{{ chart.type.includes('bar')?$t('chart.set_zero'):$t('chart.break_line') }}</el-radio>
+            <el-radio
+              v-if="chart.type.includes('line') || chart.type.includes('area')"
+              :label="'setZero'"
+            >{{ $t('chart.set_zero') }}</el-radio>
             <el-radio :label="'ignoreData'">{{ $t('chart.ignore_data') }}</el-radio>
           </el-radio-group>
         </el-form-item>
