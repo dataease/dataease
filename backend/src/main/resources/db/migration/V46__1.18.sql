@@ -13,3 +13,5 @@ ALTER TABLE `sys_task`
 INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`) VALUES (1100, 1, 0, 1, '血缘关系', 'sys-relationship', 'system/relationship/index', 1002, 'sys-relationship', 'relationship', 0, 0, 0, 'relationship:read');
 
 UPDATE `sys_menu` SET `menu_sort` = 1003 WHERE (`menu_id` = 101);
+
+UPDATE `my_plugin` SET `version` = '1.18.0' where `plugin_id` > 0;
