@@ -305,6 +305,7 @@ import {
 import {
   authModel
 } from '@/api/system/sysAuth'
+import { getNowCanvasComponentData } from '@/components/canvas/utils/utils'
 export default {
   name: 'FilterDialog',
   components: {
@@ -331,6 +332,7 @@ export default {
 
   data() {
     return {
+      canvasId: 'canvas-main',
       activeName: 'dataset',
       showDomType: 'tree',
       comShowDomType: 'view',
@@ -393,6 +395,9 @@ export default {
   computed: {
     isTree() {
       return this.widget && this.widget.isTree
+    },
+    mainCanvasComponentData() {
+      return getNowCanvasComponentData(this.canvasId)
     },
     ...mapState([
       'componentData'
@@ -552,8 +557,8 @@ export default {
 
     loadViews() {
       let viewIds = []; let tabViewIds = []
-      for (let index = 0; index < this.componentData.length; index++) {
-        const element = this.componentData[index]
+      for (let index = 0; index < this.mainCanvasComponentData.length; index++) {
+        const element = this.mainCanvasComponentData[index]
         if (element.type && element.propValue && element.propValue.viewId && element.type === 'view') {
           viewIds.push(element.propValue.viewId)
         }
