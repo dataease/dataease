@@ -15,6 +15,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ChartDataBuild {
+
+    private final static String format = "(%s)";
+
     // AntV
     public static Map<String, Object> transChartDataAntV(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
@@ -969,7 +972,7 @@ public class ChartDataBuild {
         Map<String, List<String[]>> groupDataList = detailData.stream().collect(Collectors.groupingBy(item -> ArrayUtil.join(ArrayUtil.sub(item, 0, xEndIndex), "-de-", "(", ")")));
 
         tableRow.forEach(row -> {
-            String key = xAxis.stream().map(x -> row.get(x.getDataeaseName()).toString()).collect(Collectors.joining("-de-", "(", ")"));
+            String key = xAxis.stream().map(x -> String.format(format, row.get(x.getDataeaseName()).toString())).collect(Collectors.joining("-de-"));
             List<String[]> detailFieldValueList = groupDataList.get(key);
             List<Map<String, Object>> detailValueMapList = detailFieldValueList.stream().map((detailArr -> {
                 Map<String, Object> temp = new HashMap<>();
