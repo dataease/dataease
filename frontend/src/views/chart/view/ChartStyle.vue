@@ -1,7 +1,7 @@
 <template>
   <el-row class="view-panel">
     <div
-      v-if="!pluginShow && properties.length===0"
+      v-if="!pluginShow && properties.length === 0"
       class="no-properties"
     >
       {{ $t('chart.chart_no_properties') }}
@@ -11,19 +11,19 @@
       style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;"
       class="attr-style theme-border-class"
       :component-name="view.type + '-style'"
-      :obj="{view, param, chart, dimensionData, quotaData}"
+      :obj="{ view, param, chart, dimensionData, quotaData }"
     />
     <div
-      v-if="!pluginShow&&properties.length>0"
+      v-if="!pluginShow && properties.length > 0"
       style="overflow:auto;border-right: 1px solid #e6e6e6;height: 100%;width: 100%;padding-right: 6px"
       class="attr-style theme-border-class"
     >
       <el-row
         v-show="showPropertiesCollapse([
-          'color-selector','size-selector','size-selector-ant-v',
-          'label-selector','label-selector-ant-v',
-          'tooltip-selector','tooltip-selector-ant-v',
-          'total-cfg','suspension-selector'])"
+          'color-selector', 'size-selector', 'size-selector-ant-v',
+          'label-selector', 'label-selector-ant-v',
+          'tooltip-selector', 'tooltip-selector-ant-v',
+          'total-cfg', 'suspension-selector'])"
         class="de-collapse-style"
       >
         <span class="padding-lr">{{ $t('chart.shape_attr') }}</span>
@@ -41,7 +41,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['color-selector']"
-              @onColorChange="onColorChange($event,'color-selector')"
+              @onColorChange="onColorChange($event, 'color-selector')"
             />
           </el-collapse-item>
           <el-collapse-item
@@ -54,7 +54,7 @@
               class="attr-selector"
               :property-inner="propertyInnerAll['size-selector']"
               :chart="chart"
-              @onSizeChange="onSizeChange($event,'size-selector')"
+              @onSizeChange="onSizeChange($event, 'size-selector')"
             />
           </el-collapse-item>
           <el-collapse-item
@@ -68,11 +68,11 @@
               :chart="chart"
               :property-inner="propertyInnerAll['size-selector-ant-v']"
               :quota-fields="quotaData"
-              @onSizeChange="onSizeChange($event,'size-selector-ant-v')"
+              @onSizeChange="onSizeChange($event, 'size-selector-ant-v')"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['label-selector','label-selector-ant-v'])"
+            v-show="showPropertiesCollapse(['label-selector', 'label-selector-ant-v'])"
             name="label"
             :title="$t('chart.label')"
           >
@@ -82,7 +82,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['label-selector']"
-              @onLabelChange="onLabelChange($event,'label-selector')"
+              @onLabelChange="onLabelChange($event, 'label-selector')"
             />
             <label-selector-ant-v
               v-else-if="showProperties('label-selector-ant-v')"
@@ -90,11 +90,11 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['label-selector-ant-v']"
-              @onLabelChange="onLabelChange($event,'label-selector-ant-v')"
+              @onLabelChange="onLabelChange($event, 'label-selector-ant-v')"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['tooltip-selector','tooltip-selector-ant-v'])"
+            v-show="showPropertiesCollapse(['tooltip-selector', 'tooltip-selector-ant-v'])"
             name="tooltip"
             :title="$t('chart.tooltip')"
           >
@@ -104,7 +104,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['tooltip-selector']"
-              @onTooltipChange="onTooltipChange($event,'tooltip-selector')"
+              @onTooltipChange="onTooltipChange($event, 'tooltip-selector')"
             />
             <tooltip-selector-ant-v
               v-else-if="showProperties('tooltip-selector-ant-v')"
@@ -112,7 +112,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['tooltip-selector-ant-v']"
-              @onTooltipChange="onTooltipChange($event,'tooltip-selector-ant-v')"
+              @onTooltipChange="onTooltipChange($event, 'tooltip-selector-ant-v')"
             />
           </el-collapse-item>
           <el-collapse-item
@@ -125,7 +125,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['total-cfg']"
-              @onTotalCfgChange="onTotalCfgChange($event,'total-cfg')"
+              @onTotalCfgChange="onTotalCfgChange($event, 'total-cfg')"
             />
           </el-collapse-item>
           <el-collapse-item
@@ -138,7 +138,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['suspension-selector']"
-              @onSuspensionChange="onSuspensionChange($event,'suspension-selector')"
+              @onSuspensionChange="onSuspensionChange($event, 'suspension-selector')"
             />
           </el-collapse-item>
         </el-collapse>
@@ -150,7 +150,7 @@
           class="style-collapse"
         >
           <el-collapse-item
-            v-show="showPropertiesCollapse(['x-axis-selector','x-axis-selector-ant-v'])"
+            v-show="showPropertiesCollapse(['x-axis-selector', 'x-axis-selector-ant-v'])"
             name="xAxis"
             :title="$t('chart.xAxis')"
           >
@@ -160,7 +160,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['x-axis-selector']"
-              @onChangeXAxisForm="onChangeXAxisForm($event,'x-axis-selector')"
+              @onChangeXAxisForm="onChangeXAxisForm($event, 'x-axis-selector')"
             />
             <x-axis-selector-ant-v
               v-else-if="showProperties('x-axis-selector-ant-v')"
@@ -168,11 +168,11 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['x-axis-selector-ant-v']"
-              @onChangeXAxisForm="onChangeXAxisForm($event,'x-axis-selector-ant-v')"
+              @onChangeXAxisForm="onChangeXAxisForm($event, 'x-axis-selector-ant-v')"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['y-axis-selector','y-axis-selector-ant-v'])"
+            v-show="showPropertiesCollapse(['y-axis-selector', 'y-axis-selector-ant-v'])"
             name="yAxis"
             :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
           >
@@ -182,7 +182,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['y-axis-selector']"
-              @onChangeYAxisForm="onChangeYAxisForm($event,'y-axis-selector')"
+              @onChangeYAxisForm="onChangeYAxisForm($event, 'y-axis-selector')"
             />
             <y-axis-selector-ant-v
               v-else-if="showProperties('y-axis-selector-ant-v')"
@@ -190,11 +190,11 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['y-axis-selector-ant-v']"
-              @onChangeYAxisForm="onChangeYAxisForm($event,'y-axis-selector-ant-v')"
+              @onChangeYAxisForm="onChangeYAxisForm($event, 'y-axis-selector-ant-v')"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['y-axis-ext-selector','y-axis-ext-selector-ant-v'])"
+            v-show="showPropertiesCollapse(['y-axis-ext-selector', 'y-axis-ext-selector-ant-v'])"
             name="yAxisExt"
             :title="$t('chart.yAxis_ext')"
           >
@@ -204,7 +204,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['y-axis-ext-selector']"
-              @onChangeYAxisForm="onChangeYAxisExtForm($event,'y-axis-ext-selector')"
+              @onChangeYAxisForm="onChangeYAxisExtForm($event, 'y-axis-ext-selector')"
             />
             <y-axis-ext-selector-ant-v
               v-else-if="showProperties('y-axis-ext-selector-ant-v')"
@@ -212,11 +212,11 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['y-axis-ext-selector-ant-v']"
-              @onChangeYAxisForm="onChangeYAxisExtForm($event,'y-axis-ext-selector-ant-v')"
+              @onChangeYAxisForm="onChangeYAxisExtForm($event, 'y-axis-ext-selector-ant-v')"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['split-selector','split-selector-ant-v'])"
+            v-show="showPropertiesCollapse(['split-selector', 'split-selector-ant-v'])"
             name="split"
             :title="$t('chart.split')"
           >
@@ -226,7 +226,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['split-selector']"
-              @onChangeSplitForm="onChangeSplitForm($event,'split-selector')"
+              @onChangeSplitForm="onChangeSplitForm($event, 'split-selector')"
             />
             <split-selector-ant-v
               v-else-if="showProperties('split-selector-ant-v')"
@@ -234,11 +234,11 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['split-selector-ant-v']"
-              @onChangeSplitForm="onChangeSplitForm($event,'split-selector-ant-v')"
+              @onChangeSplitForm="onChangeSplitForm($event, 'split-selector-ant-v')"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['title-selector','title-selector-ant-v'])"
+            v-show="showPropertiesCollapse(['title-selector', 'title-selector-ant-v'])"
             name="title"
             :title="$t('chart.title')"
           >
@@ -248,7 +248,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['title-selector']"
-              @onTextChange="onTextChange($event,'title-selector')"
+              @onTextChange="onTextChange($event, 'title-selector')"
             />
             <title-selector-ant-v
               v-else-if="showProperties('title-selector-ant-v')"
@@ -256,11 +256,11 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['title-selector-ant-v']"
-              @onTextChange="onTextChange($event,'title-selector-ant-v')"
+              @onTextChange="onTextChange($event, 'title-selector-ant-v')"
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['legend-selector','legend-selector-ant-v'])"
+            v-show="showPropertiesCollapse(['legend-selector', 'legend-selector-ant-v'])"
             name="legend"
             :title="$t('chart.legend')"
           >
@@ -270,7 +270,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['legend-selector']"
-              @onLegendChange="onLegendChange($event,'legend-selector')"
+              @onLegendChange="onLegendChange($event, 'legend-selector')"
             />
             <legend-selector-ant-v
               v-else-if="showProperties('legend-selector-ant-v')"
@@ -278,7 +278,7 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['legend-selector-ant-v']"
-              @onLegendChange="onLegendChange($event,'legend-selector-ant-v')"
+              @onLegendChange="onLegendChange($event, 'legend-selector-ant-v')"
             />
           </el-collapse-item>
           <el-collapse-item
@@ -290,7 +290,7 @@
               :param="param"
               class="attr-selector"
               :chart="chart"
-              @onChangeBackgroundForm="onChangeBackgroundForm($event,'background-color-selector')"
+              @onChangeBackgroundForm="onChangeBackgroundForm($event, 'background-color-selector')"
             />
           </el-collapse-item>
           <el-collapse-item
@@ -304,9 +304,37 @@
               class="attr-selector"
               :chart="chart"
               :property-inner="propertyInnerAll['margin-selector']"
-              @onMarginChange="onMarginChange($event,'margin-selector')"
+              @onMarginChange="onMarginChange($event, 'margin-selector')"
             />
 
+          </el-collapse-item>
+        </el-collapse>
+      </el-row>
+
+      <el-row
+        v-show="showPropertiesCollapse(['condition-style-selector']) && markSelectorShow"
+        class="de-collapse-style"
+      >
+        <span class="padding-lr">{{ $t('chart.function_style') }}</span>
+        <el-collapse
+          v-model="styleActiveNames"
+          class="style-collapse"
+        >
+          <el-collapse-item
+            v-show="showPropertiesCollapse(['condition-style-selector']) && markSelectorShow"
+            name="conditionStyle"
+            :title="$t('chart.condition_style')"
+          >
+
+            <map-mark-selector
+              :param="param"
+              class="attr-selector"
+              :chart="chart"
+              :view="view"
+              :dimension-data="dimensionData"
+              :quota-data="quotaData"
+              @onMarkChange="onMarkChange"
+            />
           </el-collapse-item>
         </el-collapse>
       </el-row>
@@ -338,6 +366,7 @@ import BackgroundColorSelector from '@/views/chart/components/componentStyle/Bac
 import SplitSelector from '@/views/chart/components/componentStyle/SplitSelector'
 import SplitSelectorAntV from '@/views/chart/components/componentStyle/SplitSelectorAntV'
 import SuspensionSelector from '@/components/suspensionSelector'
+import MapMarkSelector from '@/views/chart/components/functionStyle/MapMarkSelector'
 import { mapState } from 'vuex'
 
 export default {
@@ -366,7 +395,8 @@ export default {
     ColorSelector,
     MarginSelector,
     PluginCom,
-    SuspensionSelector
+    SuspensionSelector,
+    MapMarkSelector
   },
   props: {
     chart: {
@@ -416,6 +446,29 @@ export default {
   computed: {
     pluginShow() {
       return this.view.isPlugin && !this.batchOptStatus
+    },
+    markSelectorShow() {
+      const hasViewFields = this.view?.viewFields?.length
+      if (hasViewFields) {
+        let hasx = false
+        let hasy = false
+        for (let index = 0; index < this.view.viewFields.length; index++) {
+          const element = this.view.viewFields[index]
+          if (element.busiType === 'locationXaxis') {
+            hasx = true
+          }
+          if (element.busiType === 'locationYaxis') {
+            hasy = true
+          }
+          if (hasx && hasy) {
+            break
+          }
+        }
+        if (hasx && hasy) {
+          return true
+        }
+      }
+      return false
     },
     ...mapState([
       'batchOptStatus'
@@ -498,6 +551,10 @@ export default {
     onChangeBackgroundForm(val, propertyName) {
       val['propertyName'] = propertyName
       this.$emit('onChangeBackgroundForm', val)
+    },
+    onMarkChange(val, propertyName) {
+      val['propertyName'] = propertyName
+      this.$emit('onMarkChange', val)
     }
   }
 }
@@ -527,7 +584,7 @@ export default {
   float: left;
 }
 
-.col + .col {
+.col+.col {
   margin-left: 10px;
 }
 

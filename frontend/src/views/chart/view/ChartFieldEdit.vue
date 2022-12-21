@@ -243,6 +243,12 @@
           >
             <template slot-scope="scope">
               <el-button
+                type="text"
+                size="mini"
+                @click="copyField(scope.row)"
+              >{{ $t('dataset.copy') }}
+              </el-button>
+              <el-button
                 v-if="scope.row.extField !== 0"
                 type="text"
                 size="mini"
@@ -473,6 +479,12 @@
           >
             <template slot-scope="scope">
               <el-button
+                type="text"
+                size="mini"
+                @click="copyField(scope.row)"
+              >{{ $t('dataset.copy') }}
+              </el-button>
+              <el-button
                 v-if="scope.row.extField !== 0"
                 type="text"
                 size="mini"
@@ -493,6 +505,7 @@
     </el-collapse>
 
     <el-dialog
+      v-if="editCalcField"
       :visible.sync="editCalcField"
       class="de-dialog-form de-center-dialog"
       width="980px"
@@ -512,6 +525,7 @@
 <script>
 import { post } from '@/api/dataset/dataset'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
+import { getFieldName } from '@/views/dataset/data/utils'
 
 export default {
   name: 'ChartFieldEdit',
@@ -657,6 +671,33 @@ export default {
         })
       }).catch(() => {
       })
+    },
+
+    copyField(item) {
+      const param = { ...item }
+      param.id = null
+      param.extField = 2
+      param.originName =
+        item.extField === 2 ? item.originName : '[' + item.id + ']'
+      param.name = getFieldName(
+        this.tableFields.dimensionListData.concat(
+          this.tableFields.quotaListData
+        ),
+        item.name
+      )
+      param.dataeaseName = null
+      param.lastSyncTime = null
+      param.columnIndex =
+        this.tableFields.dimensionListData.length +
+        this.tableFields.quotaListData.length
+
+      post('/chart/field/save/' + this.panelInfo.id, param)
+        .then((response) => {
+          this.initField()
+        })
+        .catch((res) => {
+          this.initField()
+        })
     }
   }
 }

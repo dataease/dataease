@@ -19,7 +19,6 @@ import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.service.datasource.DatasourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
@@ -49,8 +48,22 @@ public class DatasourceController {
             positionIndex = 0, positionKey = "type",
             value = "id"
     )
-    public Datasource addDatasource(@RequestBody Datasource datasource) throws Exception {
+    public Datasource addDatasource(@RequestBody DatasourceDTO datasource) throws Exception {
         return datasourceService.addDatasource(datasource);
+    }
+
+    @RequiresPermissions("datasource:read")
+    @DePermission(type = DePermissionType.DATASOURCE, value = "id", level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE)
+    @ApiOperation("更新数据源")
+    @PostMapping("/update")
+    @DeLog(
+            operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
+            sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
+            positionIndex = 0, positionKey = "type",
+            value = "id"
+    )
+    public void updateDatasource(@RequestBody UpdataDsRequest dsRequest) throws Exception {
+        datasourceService.updateDatasource(dsRequest);
     }
 
     @RequiresPermissions("datasource:read")
@@ -62,7 +75,7 @@ public class DatasourceController {
 
     @ApiIgnore
     @PostMapping("/validate")
-    public ResultHolder validate(@RequestBody Datasource datasource) throws Exception {
+    public ResultHolder validate(@RequestBody DatasourceDTO datasource) throws Exception {
         return datasourceService.validate(datasource);
     }
 
@@ -107,20 +120,6 @@ public class DatasourceController {
         return resultHolder;
     }
 
-    @RequiresPermissions("datasource:read")
-    @DePermission(type = DePermissionType.DATASOURCE, value = "id", level = ResourceAuthLevel.DATASOURCE_LEVEL_MANAGE)
-    @ApiOperation("更新数据源")
-    @PostMapping("/update")
-    @DeLog(
-            operatetype = SysLogConstants.OPERATE_TYPE.MODIFY,
-            sourcetype = SysLogConstants.SOURCE_TYPE.DATASOURCE,
-            positionIndex = 0, positionKey = "type",
-            value = "id"
-    )
-    public void updateDatasource(@RequestBody UpdataDsRequest dsRequest) throws Exception {
-        datasourceService.updateDatasource(dsRequest);
-    }
-
     @DePermission(type = DePermissionType.DATASOURCE)
     @ApiOperation("查询数据源下属所有表")
     @PostMapping("/getTables/{id}")
@@ -130,7 +129,7 @@ public class DatasourceController {
 
     @ApiIgnore
     @PostMapping("/getSchema")
-    public List<String> getSchema(@RequestBody Datasource datasource) throws Exception {
+    public List<String> getSchema(@RequestBody DatasourceDTO datasource) throws Exception {
         return datasourceService.getSchema(datasource);
     }
 

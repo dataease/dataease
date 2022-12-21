@@ -132,6 +132,11 @@ export const DEFAULT_SIZE = {
 export const DEFAULT_SUSPENSION = {
   show: true
 }
+
+export const DEFAULT_MARK = {
+  fieldId: '',
+  conditions: []
+}
 export const DEFAULT_LABEL = {
   show: false,
   position: 'top',
@@ -449,7 +454,8 @@ export const DEFAULT_FUNCTION_CFG = {
 export const DEFAULT_THRESHOLD = {
   gaugeThreshold: '',
   labelThreshold: [],
-  tableThreshold: []
+  tableThreshold: [],
+  textLabelThreshold: []
 }
 export const DEFAULT_SCROLL = {
   open: false,
@@ -891,14 +897,25 @@ export const BASE_MAP = {
     inRange: {
       color: ['lightskyblue', 'yellow', 'orangered']
     },
+    seriesIndex: 0,
     textStyle: {},
     right: 0
+  },
+  geo: {
+    map: 'MAP',
+    roam: true,
+    nameMap: {
+
+    },
+    itemStyle: {
+
+    }
   },
   series: [
     {
       name: '',
       type: 'map',
-      map: 'MAP',
+      geoIndex: 0,
       roam: true,
       data: [],
       itemStyle: {

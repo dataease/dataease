@@ -522,7 +522,6 @@ import FilterDialog from '../filter/FilterDialog'
 import ButtonDialog from '../filter/ButtonDialog'
 import ButtonResetDialog from '../filter/ButtonResetDialog'
 import toast from '@/components/canvas/utils/toast'
-import generateID from '@/components/canvas/utils/generateID'
 import ComponentWait from '@/views/panel/edit/ComponentWait'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
 import ChartEdit from '@/views/chart/view/ChartEdit'
@@ -565,6 +564,7 @@ export default {
   },
   data() {
     return {
+      userInfo: null,
       canvasId: 'canvas-main',
       panelCacheExist: false,
       viewData: [],
@@ -798,6 +798,18 @@ export default {
         this.initWatermark()
       },
       deep: true
+    },
+    rightDrawOpen: {
+      handler(newVal, oldVla) {
+        this.initWatermark()
+      },
+      deep: true
+    },
+    outStyle: {
+      handler(newVal, oldVla) {
+        this.initWatermark()
+      },
+      deep: true
     }
   },
   created() {
@@ -831,9 +843,15 @@ export default {
   methods: {
     initWatermark() {
       if (this.panelInfo.watermarkInfo) {
-        userLoginInfo().then(res => {
-          const userInfo = res.data
-          activeWatermark(this.panelInfo.watermarkInfo.settingContent, userInfo, 'canvasInfo-main', this.canvasId, this.panelInfo.watermarkOpen)
+        this.$nextTick(() => {
+          if (this.userInfo) {
+            activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, 'canvasInfo-main', this.canvasId, this.panelInfo.watermarkOpen)
+          } else {
+            userLoginInfo().then(res => {
+              this.userInfo = res.data
+              activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, 'canvasInfo-main', this.canvasId, this.panelInfo.watermarkOpen)
+            })
+          }
         })
       }
     },
@@ -1252,7 +1270,7 @@ export default {
         img.onload = () => {
           const component = {
             ...commonAttr,
-            id: generateID(),
+            id: uuid.v1(),
             component: 'Picture',
             type: 'picture-add',
             label: '图片',

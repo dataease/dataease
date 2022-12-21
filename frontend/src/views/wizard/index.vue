@@ -175,17 +175,17 @@ export default {
         {
           content: '1.1 连接数据库并添加数据集',
           img: 'wizard_video1.png',
-          href: 'https://www.bilibili.com/video/BV1F34y1n7J7?spm_id_from=333.999.0.0'
+          href: 'https://www.bilibili.com/video/BV13V4y1P7FB/?spm_id_from=333.999.0.0'
         },
         {
           content: '1.2 Excel 数据集和 API 数据集',
           img: 'wizard_video2.png',
-          href: 'https://www.bilibili.com/video/BV1Fa411D7Di?spm_id_from=333.999.0.0'
+          href: 'https://www.bilibili.com/video/BV16P4y1Q7zT/?spm_id_from=333.999.0.0'
         },
         {
           content: '1.3 数据集整合',
           img: 'wizard_video3.png',
-          href: 'https://www.bilibili.com/video/BV1EB4y187AL?spm_id_from=333.999.0.0'
+          href: 'https://www.bilibili.com/video/BV1fR4y1k7Dt/?spm_id_from=333.999.0.0'
         }
       ],
       loading: true

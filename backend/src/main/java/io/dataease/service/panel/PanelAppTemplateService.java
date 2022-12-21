@@ -11,6 +11,7 @@ import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.panel.PanelAppTemplateApplyRequest;
 import io.dataease.controller.request.panel.PanelAppTemplateRequest;
 import io.dataease.controller.request.panel.PanelGroupRequest;
+import io.dataease.dto.DatasourceDTO;
 import io.dataease.ext.ExtPanelAppTemplateMapper;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.PanelAppTemplateMapper;
@@ -137,13 +138,18 @@ public class PanelAppTemplateService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> applyDatasource(List<Datasource> oldDatasourceList, List<Datasource> newDatasourceList) throws Exception {
+    public Map<String, String> applyDatasource(List<Datasource> oldDatasourceList, PanelAppTemplateApplyRequest request) throws Exception {
         Map<String, String> datasourceRealMap = new HashMap<>();
-        for (int i = 0; i < newDatasourceList.size(); i++) {
-            Datasource datasource = newDatasourceList.get(0);
-            datasource.setId(null);
-            Datasource newDatasource = datasourceService.addDatasource(datasource);
-            datasourceRealMap.put(oldDatasourceList.get(i).getId(), newDatasource.getId());
+        if (PanelConstants.APP_DATASOURCE_FROM.HISTORY.equals(request.getDatasourceFrom())) {
+            datasourceRealMap.put(oldDatasourceList.get(0).getId(), request.getDatasourceHistoryId());
+        } else {
+            List<DatasourceDTO> newDatasourceList = request.getDatasourceList();
+            for (int i = 0; i < newDatasourceList.size(); i++) {
+                DatasourceDTO datasource = newDatasourceList.get(0);
+                datasource.setId(null);
+                Datasource newDatasource = datasourceService.addDatasource(datasource);
+                datasourceRealMap.put(oldDatasourceList.get(i).getId(), newDatasource.getId());
+            }
         }
         return datasourceRealMap;
     }
@@ -366,24 +372,28 @@ public class PanelAppTemplateService {
             datasetGroup.setPid(request.getDatasetGroupPid());
             datasetGroup.setName(request.getDatasetGroupName());
             dataSetGroupService.checkName(datasetGroup);
-            request.getDatasourceList().stream().forEach(datasource -> {
-                datasourceService.checkName(datasource.getName(), datasource.getType(), null);
-            });
+            if (PanelConstants.APP_DATASOURCE_FROM.NEW.equals(request.getDatasourceFrom())) {
+                request.getDatasourceList().stream().forEach(datasource -> {
+                    datasourceService.checkName(datasource.getName(), datasource.getType(), null);
+                });
+            }
         } else {
             DatasetGroup datasetGroup = new DatasetGroup();
             datasetGroup.setPid(request.getDatasetGroupPid());
             datasetGroup.setName(request.getDatasetGroupName());
             datasetGroup.setId(request.getDatasetGroupId());
             dataSetGroupService.checkName(datasetGroup);
-            request.getDatasourceList().stream().forEach(datasource -> {
-                datasourceService.checkName(datasource.getName(), datasource.getType(), datasource.getId());
-            });
+            if (PanelConstants.APP_DATASOURCE_FROM.NEW.equals(request.getDatasourceFrom())) {
+                request.getDatasourceList().stream().forEach(datasource -> {
+                    datasourceService.checkName(datasource.getName(), datasource.getType(), datasource.getId());
+                });
+            }
         }
 
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void editDatasource(List<Datasource> updateDatasourceList) throws Exception {
+    public void editDatasource(List<DatasourceDTO> updateDatasourceList) throws Exception {
         for (int i = 0; i < updateDatasourceList.size(); i++) {
             UpdataDsRequest updataDsRequest = new UpdataDsRequest();
             BeanUtils.copyBean(updataDsRequest, updateDatasourceList.get(i));

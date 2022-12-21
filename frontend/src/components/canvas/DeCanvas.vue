@@ -108,7 +108,6 @@ import { ApplicationContext } from '@/utils/ApplicationContext'
 import { chartCopy } from '@/api/chart/chart'
 import { adaptCurThemeCommonStyle } from '@/components/canvas/utils/style'
 import toast from '@/components/canvas/utils/toast'
-import generateID from '@/components/canvas/utils/generateID'
 import ButtonDialog from '@/views/panel/filter/ButtonDialog'
 import ButtonResetDialog from '@/views/panel/filter/ButtonResetDialog'
 import FilterDialog from '@/views/panel/filter/FilterDialog'
@@ -432,7 +431,7 @@ export default {
       uploadFileResult(file, (fileUrl) => {
         const component = {
           ...commonAttr,
-          id: generateID(),
+          id: uuid.v1(),
           component: 'Picture',
           type: 'picture-add',
           label: '图片',

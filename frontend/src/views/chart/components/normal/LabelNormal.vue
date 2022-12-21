@@ -157,7 +157,7 @@ export default {
       this.$nextTick(function() {
         if (that.$refs.tableContainer) {
           const currentHeight = that.$refs.tableContainer.offsetHeight
-          const contentHeight = currentHeight - that.$refs.title.offsetHeight - 16
+          const contentHeight = currentHeight - that.$refs.title.offsetHeight - 8
           that.height = contentHeight + 'px'
           that.content_class.height = that.height
         }

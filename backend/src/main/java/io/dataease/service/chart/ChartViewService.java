@@ -558,6 +558,12 @@ public class ChartViewService {
         return data;
     }
 
+    public Boolean containDetailField(ChartViewDTO view) {
+        List<String> detailFieldViewTypes = new ArrayList<>();
+        detailFieldViewTypes.add("map");
+        return detailFieldViewTypes.contains(view.getType());
+    }
+
     public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest chartExtRequest, boolean cache) throws Exception {
         ChartViewDTO chartViewDTO = new ChartViewDTO();
         if (ObjectUtils.isEmpty(view)) {
@@ -906,6 +912,9 @@ public class ChartViewService {
         pageInfo.setGoPage(chartExtRequest.getGoPage());
         pageInfo.setPageSize(chartExtRequest.getPageSize());
 
+        List<ChartViewFieldDTO> detailFieldList = new ArrayList<>();
+        String detailFieldSql = null;
+        List<String[]> detailData = new ArrayList<>();
         //如果不是插件视图 走原生逻辑
         if (table.getMode() == 0) {// 直连
             if (ObjectUtils.isEmpty(ds)) {
@@ -931,6 +940,11 @@ public class ChartViewService {
                     totalPageSql = qp.getResultCount(true, dataTableInfoDTO.getTable(), xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
                 } else {
                     querySql = qp.getSQL(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
+                    if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
+                        detailFieldList.addAll(xAxis);
+                        detailFieldList.addAll(viewFields);
+                        detailFieldSql = qp.getSQLWithPage(true, dataTableInfoDTO.getTable(), detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                    }
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
                 String sql = dataTableInfoDTO.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())) : dataTableInfoDTO.getSql();
@@ -946,6 +960,11 @@ public class ChartViewService {
                     totalPageSql = qp.getResultCount(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
                 } else {
                     querySql = qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view);
+                    if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
+                        detailFieldList.addAll(xAxis);
+                        detailFieldList.addAll(viewFields);
+                        detailFieldSql = qp.getSQLWithPage(false, sql, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                    }
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.CUSTOM.name())) {
                 DataTableInfoDTO dt = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
@@ -962,6 +981,11 @@ public class ChartViewService {
                     totalPageSql = qp.getResultCount(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
                 } else {
                     querySql = qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view);
+                    if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
+                        detailFieldList.addAll(xAxis);
+                        detailFieldList.addAll(viewFields);
+                        detailFieldSql = qp.getSQLWithPage(false, sql, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                    }
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.UNION.name())) {
                 DataTableInfoDTO dt = gson.fromJson(table.getInfo(), DataTableInfoDTO.class);
@@ -978,6 +1002,11 @@ public class ChartViewService {
                     totalPageSql = qp.getResultCount(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
                 } else {
                     querySql = qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view);
+                    if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
+                        detailFieldList.addAll(xAxis);
+                        detailFieldList.addAll(viewFields);
+                        detailFieldSql = qp.getSQLWithPage(false, sql, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                    }
                 }
             }
             if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
@@ -993,6 +1022,11 @@ public class ChartViewService {
                 datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields));
                 logger.info(datasourceAssistRequest.getQuery());
                 assistData = datasourceProvider.getData(datasourceAssistRequest);
+            }
+
+            if (StringUtils.isNotBlank(detailFieldSql)) {
+                datasourceRequest.setQuery(detailFieldSql);
+                detailData = datasourceProvider.getData(datasourceRequest);
             }
         } else if (table.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
@@ -1010,6 +1044,11 @@ public class ChartViewService {
                 datasourceRequest.setQuery(qp.getSQLTableInfo(tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
             } else {
                 datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
+                if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
+                    detailFieldList.addAll(xAxis);
+                    detailFieldList.addAll(viewFields);
+                    detailFieldSql = qp.getSQLTableInfo(tableName, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
+                }
             }
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields));
@@ -1035,6 +1074,10 @@ public class ChartViewService {
                         lock.unlock();
                     }
                 }
+            }
+            if (StringUtils.isNotBlank(detailFieldSql)) {
+                datasourceRequest.setQuery(detailFieldSql);
+                detailData = datasourceProvider.getData(datasourceRequest);
             }
         }
         // 自定义排序
@@ -1199,7 +1242,12 @@ public class ChartViewService {
             }
         }
         // table组件，明细表，也用于导出数据
-        Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
+        Map<String, Object> mapTableNormal = null;
+        if (CollectionUtils.isNotEmpty(detailData)) {
+            mapTableNormal = ChartDataBuild.transTableNormalWithDetail(xAxis, yAxis, data, detailFieldList, detailData, desensitizationList);
+        } else {
+            mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
+        }
         chartViewDTO = uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData);
         chartViewDTO.setTotalPage(totalPage);
         chartViewDTO.setTotalItems(totalItems);

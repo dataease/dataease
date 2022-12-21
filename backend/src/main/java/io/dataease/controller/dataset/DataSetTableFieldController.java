@@ -200,6 +200,7 @@ public class DataSetTableFieldController {
 
         }
         List<Object> list = results.stream().distinct().collect(Collectors.toList());
+        list = dataSetFieldService.chineseSort(list, multFieldValuesRequest.getSort());
         return list;
     }
 
@@ -246,7 +247,7 @@ public class DataSetTableFieldController {
     @DePermission(type = DePermissionType.DATASET)
     @ApiOperation("时间格式")
     @PostMapping("dateformats/{tableId}")
-    public List<Dateformat> dateformats(@PathVariable String tableId) throws Exception{
+    public List<Dateformat> dateformats(@PathVariable String tableId) throws Exception {
         DatasetTable datasetTable = dataSetTableService.get(tableId);
         Datasource ds = datasetTable.getMode() == 0 ? datasourceService.get(datasetTable.getDataSourceId()) : engineService.getDeEngine();
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());

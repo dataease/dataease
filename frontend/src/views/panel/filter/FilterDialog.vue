@@ -274,6 +274,7 @@
           :widget="widget"
           :control-attrs="myAttrs"
           :child-views="childViews"
+          :dataset-params="datasetParams"
         />
 
         <filter-foot :element="currentElement" />
@@ -296,10 +297,7 @@ import { queryAuthModel } from '@/api/authModel/authModel'
 import {
   mapState
 } from 'vuex'
-import {
-  groupTree,
-  fieldListWithPermission
-} from '@/api/dataset/dataset'
+import { groupTree, fieldListWithPermission, datasetParams } from '@/api/dataset/dataset'
 import {
   paramsWithIds,
   viewsWithIds
@@ -386,6 +384,7 @@ export default {
         viewInfos: [],
         datasetParams: []
       },
+      datasetParams: [],
       currentElement: null,
       tempTreeData: null,
       showTips: false
@@ -735,6 +734,18 @@ export default {
         this.fieldData = JSON.parse(JSON.stringify(data))
       })
     },
+    loadDatasetParams(tableId) {
+      var type = 'TEXT'
+      if (this.widgetInfo.name.indexOf('time') !== -1) {
+        type = 'DATE'
+      }
+      if (this.widgetInfo.name === 'numberSelectWidget') {
+        type = 'NUM'
+      }
+      datasetParams(tableId, type).then(res => {
+        this.datasetParams = res.data
+      })
+    },
     comLoadField(tableId) {
       fieldListWithPermission(tableId).then(res => {
         let data = res.data
@@ -751,6 +762,7 @@ export default {
       this.addQueue(row)
       this.fieldsParent = row
       this.loadField(row.id)
+      this.loadDatasetParams(row.id)
     },
     showNextGroup(row) {
       this.tempTreeData = JSON.parse(JSON.stringify(row.children))

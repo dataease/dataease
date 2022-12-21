@@ -85,7 +85,10 @@
             <el-dropdown-item>{{ $t('commons.ukey_title') }}</el-dropdown-item>
           </router-link>
 
-          <router-link to="/person-pwd/index">
+          <router-link
+            v-if="!isOtherPlatform"
+            to="/person-pwd/index"
+          >
             <el-dropdown-item>{{ $t('user.change_password') }}</el-dropdown-item>
           </router-link>
 
@@ -93,6 +96,7 @@
             <el-dropdown-item>{{ $t('commons.about_us') }}</el-dropdown-item>
           </router-link>
           <el-dropdown-item
+            v-if="!isOtherPlatform"
             divided
             @click.native="logout"
           >
@@ -132,8 +136,7 @@ import { getSysUI } from '@/utils/auth'
 import { pluginLoaded } from '@/api/user'
 import { initTheme } from '@/utils/ThemeUtil'
 import TemplateMarket from '@/views/panel/templateMarket'
-import { changeFavicon } from '@/utils/index'
-
+import { changeFavicon, inOtherPlatform } from '@/utils/index'
 export default {
   name: 'Topbar',
   components: {
@@ -224,6 +227,9 @@ export default {
     },
     sidebar() {
       return this.$store.state.app.sidebar
+    },
+    isOtherPlatform() {
+      return inOtherPlatform()
     },
     ...mapGetters([
       'avatar',

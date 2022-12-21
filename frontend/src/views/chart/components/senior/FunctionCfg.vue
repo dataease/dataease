@@ -68,7 +68,7 @@
           />
         </el-form-item>
         <el-form-item
-          v-show="chart.render === 'antv' && chart.type === 'line'"
+          v-show="chart.render === 'antv' && (chart.type.includes('line') || chart.type.includes('bar') || chart.type.includes('area'))"
           :label="$t('chart.empty_data_strategy')"
           class="form-item"
         >
@@ -76,8 +76,11 @@
             v-model="functionForm.emptyDataStrategy"
             @change="changeFunctionCfg"
           >
-            <el-radio :label="'breakLine'">{{ $t('chart.break_line') }}</el-radio>
-            <el-radio :label="'setZero'">{{ $t('chart.set_zero') }}</el-radio>
+            <el-radio :label="'breakLine'">{{ chart.type.includes('bar')?$t('chart.set_zero'):$t('chart.break_line') }}</el-radio>
+            <el-radio
+              v-if="chart.type.includes('line') || chart.type.includes('area')"
+              :label="'setZero'"
+            >{{ $t('chart.set_zero') }}</el-radio>
             <el-radio :label="'ignoreData'">{{ $t('chart.ignore_data') }}</el-radio>
           </el-radio-group>
         </el-form-item>
@@ -174,7 +177,7 @@ span{
 }
 .form-item ::v-deep .el-radio-group{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
   label {
     line-height: 28px;

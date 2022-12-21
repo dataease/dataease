@@ -80,6 +80,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 export default {
   name: 'TabDataPreview',
   props: {
@@ -134,6 +135,10 @@ export default {
   },
   mounted() {
     this.init()
+    window.addEventListener('resize', this.calHeight)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.calHeight)
   },
   methods: {
     searchRow() {
@@ -146,13 +151,10 @@ export default {
     cancel() {
       this.$refs.setCount.doClose()
     },
-    calHeight() {
-      const that = this
-      setTimeout(function() {
-        const currentHeight = document.documentElement.clientHeight
-        that.height = currentHeight - 215
-      }, 10)
-    },
+    calHeight: _.debounce(function() {
+      const currentHeight = document.documentElement.clientHeight
+      this.height = currentHeight - 215
+    }, 200),
     reSearch() {
       if (
         !this.form.row ||

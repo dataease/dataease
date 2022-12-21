@@ -35,13 +35,13 @@
             <background-selector />
           </el-collapse-item>
           <el-collapse-item
-            :title="$t('panel.component_style')"
+            :title="$t('panel.view_style')"
             name="componentStyle"
           >
-            <component-style />
+            <background-overall />
           </el-collapse-item>
           <el-collapse-item
-            :title="$t('panel.component_color')"
+            :title="$t('panel.view_color_setting')"
             name="graphical"
           >
             <panel-color-selector @onColorChange="onColorChange" />
@@ -75,10 +75,16 @@ import ViewTitle from '@/views/panel/subjectSetting/panelStyle/ViewTitle'
 import ComponentStyle from '@/views/panel/subjectSetting/panelStyle/ComponentStyle'
 import { adaptCurThemeCommonStyleAll } from '@/components/canvas/utils/style'
 import FilterStyleSelector from '@/views/panel/subjectSetting/panelStyle/FilterStyleSelector'
+import Background from '@/views/background'
+import BackgroundOverall from '@/views/background/BackgroundOverall'
 
 export default {
   components: {
+    BackgroundOverall,
+    // eslint-disable-next-line
+    Background,
     FilterStyleSelector,
+    // eslint-disable-next-line
     ComponentStyle,
     ViewTitle,
     slider,

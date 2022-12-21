@@ -20,9 +20,9 @@ public class PanelConstants {
 
     public final static String PANEL_NODE_TYPE_PANEL = "panel";
 
-    public final static String OPT_TYPE_INSERT="insert";
+    public final static String OPT_TYPE_INSERT = "insert";
 
-    public final static String OPT_TYPE_UPDATE="update";
+    public final static String OPT_TYPE_UPDATE = "update";
 
     public final static String PANEL_GATHER_DEFAULT_PANEL = "default_panel";
 
@@ -65,6 +65,18 @@ public class PanelConstants {
 
         // 编辑查询
         public static final String EDIT = "edit";
+
+    }
+
+
+    //应用数据源来源
+    public static final class APP_DATASOURCE_FROM {
+
+        // 新建
+        public static final String NEW = "new";
+
+        // 复用
+        public static final String HISTORY = "history";
 
     }
 

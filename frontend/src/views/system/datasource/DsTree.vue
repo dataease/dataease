@@ -173,6 +173,10 @@
                         <i class="el-icon-edit" />
                         {{ $t('chart.edit') }}
                       </el-dropdown-item>
+                      <el-dropdown-item command="copy" v-show="showView === 'Datasource'">
+                        <i class="el-icon-edit" />
+                        {{ $t('commons.copy') }}
+                      </el-dropdown-item>
                       <el-dropdown-item command="delete">
                         <i class="el-icon-delete" />
                         {{ $t('chart.delete') }}
@@ -265,12 +269,16 @@
           @tab-click="handleClick"
         >
           <el-tab-pane
-            :label="$t('datasource.relational_database')"
-            name="RDBMS"
+            label="OLTP"
+            name="OLTP"
           />
           <el-tab-pane
-            :label="$t('datasource.non_relational_database')"
-            name="NORDBMS"
+            label="OLAP"
+            name="OLAP"
+          />
+          <el-tab-pane
+            :label="$t('datasource.data_warehouse_lake')"
+            name="dataWarehouseLake"
           />
           <el-tab-pane
             :label="$t('datasource.other')"
@@ -281,9 +289,9 @@
           <template v-for="(list, idx) in databaseList">
             <div
               :key="nameMap[idx]"
-              :class="typeList[idx]"
+              :class="nameMap[idx]"
               class="name"
-            >{{ $t(`datasource.${nameMap[idx]}`) }}</div>
+            >{{ nameClassMap[idx] }}</div>
             <div
               :key="nameMap[idx] + 'cont'"
               class="item-container"
@@ -316,6 +324,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import i18n from '@/lang'
+import { Base64 } from 'js-base64'
 import {
   listDatasource,
   listDatasourceByType,
@@ -341,14 +350,15 @@ export default {
   },
   data() {
     return {
-      tabActive: 'RDBMS',
+      tabActive: 'OLTP',
       databaseList: [],
       currentNodeId: '',
       dsTypeRelate: false,
       expandedArray: [],
       tData: [],
-      nameMap: ['relational_database', 'non_relational_database', 'other'],
-      typeList: ['RDBMS', 'NORDBMS', 'OTHER'],
+      nameMap: ['OLTP', 'OLAP', 'dataWarehouseLake', 'OTHER'],
+      nameClassMap: ['OLTP', 'OLAP', this.$t(`datasource.data_warehouse_lake`), this.$t(`datasource.other`)],
+      typeList: [['Db2', 'DM', 'KingBase', 'MariaDB', 'MongoDB', 'Mongodb-BI', 'MySQL', 'Oracle', 'PostgreSQL', 'SQL Server', 'TiDB'], ['Doris', 'Apache Impala', 'ClickHouse', 'Elasticsearch', 'Presto', 'StarRocks'], ['Apache Hive', 'Kylin', 'AWS Redshift', 'Maxcompute'], ['API']],
       treeLoading: false,
       dsTypes: [],
       dsTypesForDriver: [],
@@ -488,9 +498,9 @@ export default {
     datasourceTypes() {
       listDatasourceType().then((res) => {
         this.dsTypes = res.data
-        const databaseList = [[], [], []]
+        const databaseList = [[], [], [], []]
         this.dsTypes.forEach((item) => {
-          const index = this.typeList.findIndex(ele => ele === item.databaseClassification)
+          const index = this.typeList.findIndex(ele => ele.includes(item.name))
           if (index !== -1) {
             databaseList[index].push(item)
           }
@@ -502,8 +512,7 @@ export default {
       })
     },
     refreshType(datasource) {
-      const method =
-        this.showView === 'Datasource' ? listDatasourceByType : listDriverByType
+      const method = this.showView === 'Datasource' ? listDatasourceByType : listDriverByType
       let typeData = []
       method(datasource.type).then((res) => {
         typeData = this.buildTree(res.data)
@@ -538,6 +547,12 @@ export default {
       const newArr = []
       for (let index = 0; index < array.length; index++) {
         const element = array[index]
+        if (element.configuration) {
+          element.configuration = Base64.decode(element.configuration)
+        }
+        if (element.apiConfigurationStr) {
+          element.apiConfiguration = JSON.parse(Base64.decode(element.apiConfigurationStr))
+        }
         if (this.msgNodeId) {
           if (element.id === this.msgNodeId) {
             element.msgNode = true
@@ -640,6 +655,9 @@ export default {
         case 'edit':
           this._handleEditer(data)
           break
+        case 'copy':
+          this._handleCopy(data)
+          break
         case 'delete':
           this._handleDelete(data)
           break
@@ -656,6 +674,17 @@ export default {
       }
       this.editDriver = true
       this.dialogTitle = this.$t('datasource.edit_driver')
+      this.driverForm = { ...row }
+    },
+    _handleCopy(row){
+      if (this.showView === 'Datasource') {
+        const param = { ...row, ...{ showModel: 'copy' }}
+        this.switchMain('DsForm', param, this.tData, this.dsTypes)
+        this.currentNodeId && sessionStorage.setItem('datasource-current-node', this.currentNodeId)
+        return
+      }
+      this.editDriver = true
+      this.dialogTitle = this.$t('commons.copy')
       this.driverForm = { ...row }
     },
     _handleDelete(datasource) {

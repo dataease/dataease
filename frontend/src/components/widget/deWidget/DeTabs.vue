@@ -79,7 +79,7 @@
             :canvas-style-data="canvasStyleData"
             :canvas-id="element.id+'-'+item.name"
             :panel-info="panelInfo"
-            :in-screen="true"
+            :in-screen="inScreen"
             :show-position="showPosition"
           />
         </div>
@@ -232,6 +232,11 @@ export default {
   name: 'DeTabs',
   components: { TextAttr, Preview, DeCanvasTab, TabUseList, ViewSelect, DataeaseTabs },
   props: {
+    inScreen: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     canvasId: {
       type: String,
       default: 'canvas-main'
@@ -635,7 +640,7 @@ export default {
       while (len--) {
         if (this.element.options.tabList[len].name === param.name) {
           this.element.options.tabList.splice(len, 1)
-
+          this.$store.commit('deleteComponentsWithCanvasId', this.element.id + '-' + param.name)
           const activeIndex = (len - 1 + this.element.options.tabList.length) % this.element.options.tabList.length
           this.activeTabName = this.element.options.tabList[activeIndex].name
         }

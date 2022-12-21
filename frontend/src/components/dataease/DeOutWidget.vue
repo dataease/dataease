@@ -48,7 +48,6 @@
                 :element="element"
                 :in-draw="inDraw"
                 :in-screen="inScreen"
-                :size="sizeInfo"
               />
             </div>
           </div>
@@ -97,10 +96,16 @@ export default {
     isRelation: {
       type: Boolean,
       default: false
+    },
+    searchCount: {
+      type: Number,
+      required: false,
+      default: 0
     }
   },
   data() {
     return {
+      needRefreshComponents: ['de-select', 'de-select-grid', 'de-select-tree'],
       inputMaxSize: 46,
       inputLargeSize: 42,
       inputSmallSize: 38,
@@ -127,17 +132,6 @@ export default {
         transform: 'scale(' + this.scale + ')'
       }
     },
-    sizeInfo() {
-      let size
-      if (this.duHeight > this.inputLargeSize) {
-        size = 'medium'
-      } else if (this.duHeight > this.inputSmallSize) {
-        size = 'small'
-      } else {
-        size = 'mini'
-      }
-      return size
-    },
     deSelectGridBg() {
       if (this.element.component !== 'de-select-grid') return null
       const { backgroundColorSelect, color } = this.element.commonBackground
@@ -150,6 +144,7 @@ export default {
       return ['de-select', 'de-select-grid', 'de-date', 'de-input-search', 'de-number-range', 'de-select-tree'].includes(this.element.component)
     },
     ...mapState([
+      'curComponent',
       'previewCanvasScale'
     ])
   },
@@ -160,6 +155,13 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    // 监听外部计时器变化
+    searchCount: function(val1) {
+      // 正在操作的组件不进行刷新
+      if (val1 > 0 && this.needRefreshComponents.includes(this.element.component) && (!this.curComponent || this.curComponent.id !== this.element.id)) {
+        this.$refs['deOutWidget'].refreshLoad()
+      }
     }
   },
   mounted() {
@@ -222,7 +224,7 @@ export default {
   left: 0px;
 }
 
-.ccondition-main {
+.condition-main {
   position: absolute;
   overflow: auto;
   top: 0px;
@@ -279,6 +281,11 @@ export default {
 
   display: flex;
   align-items: flex-end;
+}
+
+.first-element-container ::v-deep .el-input__inner {
+  height: 40px !important;
+  line-height: 40px !important;
 }
 
 .first-element-grid-container {

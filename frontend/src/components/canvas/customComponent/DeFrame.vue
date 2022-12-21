@@ -44,7 +44,12 @@
       v-else
       class="info-class"
     >
-      {{ $t('panel.web_add_tips') }}
+      <span>{{ $t('panel.web_add_tips_pre') }}</span>
+      <i
+        slot="reference"
+        class="icon iconfont icon-chaolianjie"
+      />
+      <span>{{ $t('panel.web_add_tips_suf') }}</span>
     </div>
   </el-row>
 </template>
@@ -53,6 +58,7 @@
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import eventBus from '@/components/canvas/utils/eventBus'
+
 export default {
   name: 'DeFrame',
   props: {
@@ -121,51 +127,56 @@ export default {
 </script>
 
 <style>
-  .info-class{
-    text-align: center;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(255,255,255,0.3);
-    font-size: 12px;
-    color: #9ea6b2;
-  }
+.info-class {
+  text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+  color: #9ea6b2;
+}
 
-  .main-frame{
-    height: 100%;
-    width: 100%;
-  }
-  .frame-mask {
-    display: flex;
-    opacity: 0.5;
-    position:absolute;
-    top:0px;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .edit-mask{
-    left: 0px;
-    background-color: #5c5e61;
-    height: 100%!important;
-    width: 100% !important;
-  }
-  .preview-top-mask{
-    left: 0px;
-    height: 15px!important;
-    width: 100% !important;
-  }
-  .preview-right-mask{
-    right: 0px;
-    height: 100%!important;
-    width: 15px !important;
-  }
-  .preview-left-mask{
-    left: 0px;
-    height: 100%!important;
-    width: 15px !important;
-  }
+.main-frame {
+  height: 100%;
+  width: 100%;
+}
+
+.frame-mask {
+  display: flex;
+  opacity: 0.5;
+  position: absolute;
+  top: 0px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-mask {
+  left: 0px;
+  background-color: #5c5e61;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.preview-top-mask {
+  left: 0px;
+  height: 15px !important;
+  width: 100% !important;
+}
+
+.preview-right-mask {
+  right: 0px;
+  height: 100% !important;
+  width: 15px !important;
+}
+
+.preview-left-mask {
+  left: 0px;
+  height: 100% !important;
+  width: 15px !important;
+}
 </style>
 

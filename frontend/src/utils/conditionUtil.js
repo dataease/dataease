@@ -1,6 +1,6 @@
-
 import { Condition } from '@/components/widget/bean/Condition'
 import { ApplicationContext } from '@/utils/ApplicationContext'
+import store from '@/store'
 
 /**
  * 判断两个conditions数组是否相同
@@ -70,7 +70,11 @@ export const buildViewKeyMap = panelItems => {
 }
 
 export const buildViewKeyFilters = (panelItems, result) => {
-  panelItems.forEach((element, index) => {
+  if (!(panelItems && panelItems.length > 0)) {
+    return result
+  }
+  const buildItems = panelItems[0].canvasId === 'canvas-main' ? panelItems : store.state.componentData
+  buildItems.forEach((element, index) => {
     if (element.type !== 'custom') {
       return true
     }

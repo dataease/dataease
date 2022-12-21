@@ -305,6 +305,7 @@ export default {
   },
   data() {
     return {
+      innerRefreshTimer: null,
       mobileChartDetailsVisible: false,
       chartDetailsVisible: false,
       showChartInfo: {},
@@ -350,6 +351,10 @@ export default {
   },
 
   computed: {
+    // 首次加载且非编辑状态新复制的视图，使用外部filter
+    initLoad() {
+      return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad
+    },
     scaleCoefficient() {
       if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
         return 1.1
@@ -389,14 +394,14 @@ export default {
       return this.httpRequest.status && this.chart.type && this.chart.type === 'label'
     },
     loadingFlag() {
-      return (this.canvasStyleData.refreshViewLoading || this.searchCount === 0) && this.requestStatus === 'waiting'
+      return (this.canvasStyleData.refreshViewLoading || (!this.innerRefreshTimer && this.searchCount === 0)) && this.requestStatus === 'waiting'
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
     filter() {
       const filter = {}
-      filter.filter = this.isFirstLoad ? this.filters : this.cfilters
+      filter.filter = this.initLoad ? this.filters : this.cfilters
       filter.linkageFilters = this.element.linkageFilters
       filter.outerParamsFilters = this.element.outerParamsFilters
       filter.drill = this.drillClickDimensionList
@@ -455,6 +460,7 @@ export default {
       return this.element.commonBackground && this.element.commonBackground.innerPadding || 0
     },
     ...mapState([
+      'currentCanvasNewId',
       'nowPanelTrackInfo',
       'nowPanelJumpInfo',
       'publicLinkStatus',
@@ -515,7 +521,8 @@ export default {
     },
     // 监听外部计时器变化
     searchCount: function(val1) {
-      if (val1 > 0 && this.requestStatus !== 'waiting') {
+      // 内部计时器启动 忽略外部计时器
+      if (val1 > 0 && this.requestStatus !== 'waiting' && !this.innerRefreshTimer) {
         this.getData(this.element.propValue.viewId)
       }
     },
@@ -542,6 +549,7 @@ export default {
   },
 
   beforeDestroy() {
+    this.innerRefreshTimer && clearInterval(this.innerRefreshTimer)
     bus.$off('plugin-chart-click', this.pluginChartClick)
     bus.$off('plugin-jump-click', this.pluginJumpClick)
     bus.$off('plugin-add-view-track-filter', this.pluginAddViewTrackFilter)
@@ -561,6 +569,20 @@ export default {
     }
   },
   methods: {
+    //编辑状态下 不启动刷新
+    buildInnerRefreshTimer(refreshViewEnable = false, refreshUnit = 'minute', refreshTime = 5) {
+      if (this.editMode === 'preview' && !this.innerRefreshTimer && refreshViewEnable) {
+        this.innerRefreshTimer && clearInterval(this.innerRefreshTimer)
+        const timerRefreshTime = refreshUnit === 'second' ? refreshTime * 1000 : refreshTime * 60000
+        this.innerRefreshTimer = setInterval(() => {
+          this.clearViewLinkage()
+          this.getData(this.element.propValue.viewId)
+        }, timerRefreshTime)
+      }
+    },
+    clearViewLinkage() {
+      this.$store.commit('clearViewLinkage', this.element.propValue.viewId)
+    },
     responseResetButton() {
       if (!this.cfilters?.length) {
         this.getData(this.element.propValue.viewId, false)
@@ -736,6 +758,7 @@ export default {
           if (response.success) {
             this.chart = response.data
             this.view = response.data
+            this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
             this.$emit('fill-chart-2-parent', this.chart)
             this.getDataOnly(response.data, dataBroadcast)
             this.chart['position'] = this.inTab ? 'tab' : 'panel'
@@ -1262,5 +1285,13 @@ export default {
 .active ::v-deep .icon-fangda {
   z-index: 2;
   display: block !important;
+}
+
+.mobile-dialog-css ::v-deep .el-dialog__headerbtn {
+  top: 7px
+}
+
+.mobile-dialog-css ::v-deep .el-dialog__body {
+  padding: 0px;
 }
 </style>

@@ -306,6 +306,8 @@ export default {
     },
     editApply(item) {
       const param = {
+        datasourceFrom: item.datasourceFrom,
+        datasourceHistoryId: item.datasourceFrom === 'history' ? item.datasourceId : null,
         datasourceType: item.datasourceType,
         logId: item.id,
         panelId: item.panelId,

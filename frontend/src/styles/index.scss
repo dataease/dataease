@@ -1407,6 +1407,10 @@ div:focus {
   }
 }
 
+.de-card-dropdown-right {
+  margin: 0px !important;
+}
+
 .de-search-table {
   .top-operate {
     margin-bottom: 16px;
@@ -1458,13 +1462,7 @@ div:focus {
     }
   }
 
-  .el-tree-node__content {
-    height: 40px;
-    border-radius: 4px;
-
-    &:hover {
-      background: rgba(31, 35, 41, 0.1);
-    }
+  .el-tree-node__content, .de-el-tree-node__content {
 
     .el-icon-more,
     .el-icon-plus {
@@ -1487,6 +1485,25 @@ div:focus {
     .el-icon-plus:active {
       background: rgba(31, 35, 41, 0.2);
       border-radius: 4px;
+    }
+  }
+  .el-tree-node__content {
+    height: 40px;
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(31, 35, 41, 0.1);
+    }
+  }
+
+  .de-el-tree-node__content {
+    .el-button--text {
+      padding: 0 !important;
+    }
+    .el-icon-more {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
     }
   }
 }

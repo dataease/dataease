@@ -11,7 +11,8 @@ import {
   getAnalyse,
   setGradientColor
 } from '@/views/chart/chart/common/common_antv'
-import { antVCustomColor } from '@/views/chart/chart/util'
+import { antVCustomColor, handleEmptyDataStrategy } from '@/views/chart/chart/util'
+import _ from 'lodash'
 
 export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
   // theme
@@ -24,7 +25,7 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // data
-  const data = chart.data.data
+  const data = _.cloneDeep(chart.data.data)
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
@@ -109,6 +110,14 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
       return setGradientColor(ele, customAttr.color.gradient, 270)
     })
   }
+  // 处理空值
+  if (chart.senior) {
+    let emptyDataStrategy = JSON.parse(chart.senior)?.functionCfg?.emptyDataStrategy
+    if (!emptyDataStrategy) {
+      emptyDataStrategy = 'breakLine'
+    }
+    handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
+  }
 
   // 开始渲染
   if (plot) {
@@ -133,7 +142,7 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
   // data
-  const data = chart.data.data
+  const data = _.cloneDeep(chart.data.data)
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
@@ -210,6 +219,14 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
     options.color = options.color.map((ele) => {
       return setGradientColor(ele, customAttr.color.gradient)
     })
+  }
+  // 处理空值
+  if (chart.senior) {
+    let emptyDataStrategy = JSON.parse(chart.senior)?.functionCfg?.emptyDataStrategy
+    if (!emptyDataStrategy) {
+      emptyDataStrategy = 'breakLine'
+    }
+    handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
   }
 
   // 开始渲染

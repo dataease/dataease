@@ -49,6 +49,7 @@
             size="small"
           >
             <el-option
+              v-if="engineMode !== 'simple'"
               :label="$t('dataset.sync_now')"
               value="sync_now"
               :disabled="engineMode === 'simple'"
@@ -158,7 +159,7 @@
             @click="typeSwitch(ele)"
           >
             <span
-              :title="ele.name"
+              :title="ele.remark"
               class="name"
             >{{ ele.name }}</span>
             <i
@@ -180,7 +181,7 @@
             class="table-or-field field"
           >
             <span
-              :title="ele.fieldName"
+              :title="ele.remarks"
               class="name"
             >{{ ele.fieldName }}</span>
             <i

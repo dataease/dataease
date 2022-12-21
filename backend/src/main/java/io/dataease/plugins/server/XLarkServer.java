@@ -141,6 +141,11 @@ public class XLarkServer {
             cookie_token.setPath("/");
 
             response.addCookie(cookie_token);
+            if (withoutLogin) {
+                Cookie platformCookie = new Cookie("inOtherPlatform", "true");
+                platformCookie.setPath("/");
+                response.addCookie(platformCookie);
+            }
         } catch (Exception e) {
 
             String msg = e.getMessage();

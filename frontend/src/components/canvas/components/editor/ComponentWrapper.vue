@@ -44,6 +44,7 @@
         :in-screen="inScreen"
         :edit-mode="'preview'"
         :h="config.style.height"
+        :search-count="searchCount"
         :canvas-id="canvasId"
       />
       <component

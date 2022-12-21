@@ -266,6 +266,17 @@ export default {
     initLoad() {
       this.value = this.fillValueDerfault()
       this.data = []
+      this.initOptions()
+      if (this.element.options.value) {
+        this.value = this.fillValueDerfault()
+        this.changeValue(this.value)
+      }
+    },
+    refreshLoad() {
+      this.initOptions()
+    },
+    initOptions() {
+      this.data = []
       if (this.element.options.attrs.fieldId) {
         let method = mappingFieldValues
         const token = this.$store.getters.token || getToken()
@@ -282,10 +293,6 @@ export default {
             this.$refs.deSelectTree && this.$refs.deSelectTree.treeDataUpdateFun(this.data)
           })
         })
-      }
-      if (this.element.options.value) {
-        this.value = this.fillValueDerfault()
-        this.changeValue(this.value)
       }
     },
     changeValue(value) {
