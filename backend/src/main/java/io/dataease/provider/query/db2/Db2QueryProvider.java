@@ -808,6 +808,17 @@ public class Db2QueryProvider extends QueryProvider {
         return tmpSql;
     }
 
+
+    public String getTotalCount(boolean isTable, String sql, Datasource ds) {
+        if(isTable){
+            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
+            schema = String.format(Db2Constants.KEYWORD_TABLE, schema);
+            return "SELECT COUNT(*) from " + schema + "." + String.format(Db2Constants.KEYWORD_TABLE, sql);
+        }else {
+            return "SELECT COUNT(*) from ( " + sql + " ) DE_COUNT_TEMP";
+        }
+    }
+
     @Override
     public String createRawQuerySQL(String table, List<DatasetTableField> fields, Datasource ds) {
         String[] array = fields.stream().map(f -> {
@@ -817,15 +828,15 @@ public class Db2QueryProvider extends QueryProvider {
         }).toArray(String[]::new);
         if (ds != null) {
             Db2Configuration db2Configuration = new Gson().fromJson(ds.getConfiguration(), Db2Configuration.class);
-            return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), db2Configuration.getSchema() + ".\"" + table + "\"");
+            return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_OFFSET, DE_PAGE_SIZE ", StringUtils.join(array, ","), db2Configuration.getSchema() + String.format(Db2Constants.KEYWORD_TABLE, table));
         } else {
-            return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), table);
+            return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_OFFSET, DE_PAGE_SIZE ", StringUtils.join(array, ","), table);
         }
     }
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS de_tmp ", fields, null);
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS de_tmp  LIMIT DE_OFFSET, DE_PAGE_SIZE ", fields, null);
     }
 
     @Override

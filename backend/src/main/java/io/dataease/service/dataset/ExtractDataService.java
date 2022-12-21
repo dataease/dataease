@@ -96,6 +96,7 @@ public class ExtractDataService {
     @Resource
     private KettleService kettleService;
 
+
     private static final String lastUpdateTime = "${__last_update_time__}";
     private static final String currentUpdateTime = "${__current_update_time__}";
     private static final String separator = "|DE|";
@@ -104,6 +105,9 @@ public class ExtractDataService {
 
     @Value("${kettle.files.keep:false}")
     private boolean kettleFilesKeep;
+    @Value("${extract.page.size:50000}")
+    private Long extractPageSize;
+
 
     private static final String shellScript = "result=`curl --location-trusted -u %s:%s -H \"label:%s\" -H \"column_separator:%s\" -H \"columns:%s\" -H \"merge_type: %s\" -T %s -XPUT http://%s:%s/api/%s/%s/_stream_load`\n" +
             "if [ $? -eq 0 ] ; then\n" +
@@ -433,7 +437,23 @@ public class ExtractDataService {
             extractApiData(datasetTable, datasource, datasetTableFields, extractType);
             return;
         }
-        extractDataByKettle(datasetTable, datasource, datasetTableFields, extractType, selectSQL);
+        Map<String, String> sql = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
+        if (StringUtils.isNotEmpty(sql.get("totalSql"))) {
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(datasource);
+            Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+            datasourceRequest.setQuery(sql.get("totalSql"));
+            List<String[]> tmpData = datasourceProvider.getData(datasourceRequest);
+            Long totalItems = CollectionUtils.isEmpty(tmpData) ? 0 : Long.valueOf(tmpData.get(0)[0]);
+            Long totalPage = (totalItems / extractPageSize) + (totalItems % extractPageSize > 0 ? 1 : 0);
+            for (Long i = 0L; i < totalPage; i++) {
+                Long offset = i * extractPageSize;
+                Long all = offset + extractPageSize;
+                extractDataByKettle(datasetTable, datasource, datasetTableFields, extractType, sql.get("selectSQL").replace("DE_OFFSET", offset.toString()).replace("DE_PAGE_SIZE", extractPageSize.toString()).replace("DE_ALL", all.toString()));
+            }
+        } else {
+            extractDataByKettle(datasetTable, datasource, datasetTableFields, extractType, selectSQL);
+        }
     }
 
     private void extractApiData(DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String extractType) throws Exception {
@@ -923,7 +943,6 @@ public class ExtractDataService {
                     }
                 }
                 transMeta.addDatabase(dataMeta);
-                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputSteps = inputStep(transMeta, selectSQL, mysqlConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.mysql, mysqlConfiguration);
                 break;
@@ -931,7 +950,6 @@ public class ExtractDataService {
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfiguration.class);
                 dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfiguration.getHost().trim(), sqlServerConfiguration.getDataBase(), sqlServerConfiguration.getPort().toString(), sqlServerConfiguration.getUsername(), sqlServerConfiguration.getPassword());
                 transMeta.addDatabase(dataMeta);
-                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputSteps = inputStep(transMeta, selectSQL, sqlServerConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.sqlServer, sqlServerConfiguration);
                 break;
@@ -939,7 +957,6 @@ public class ExtractDataService {
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasource.getConfiguration(), PgConfiguration.class);
                 dataMeta = new DatabaseMeta("db", "POSTGRESQL", "Native", pgConfiguration.getHost().trim(), pgConfiguration.getDataBase(), pgConfiguration.getPort().toString(), pgConfiguration.getUsername(), pgConfiguration.getPassword());
                 transMeta.addDatabase(dataMeta);
-                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputSteps = inputStep(transMeta, selectSQL, pgConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.pg, pgConfiguration);
                 break;
@@ -952,7 +969,6 @@ public class ExtractDataService {
                     dataMeta = new DatabaseMeta("db", "ORACLE", "Native", oracleConfiguration.getHost().trim(), oracleConfiguration.getDataBase(), oracleConfiguration.getPort().toString(), oracleConfiguration.getUsername(), oracleConfiguration.getPassword());
                 }
                 transMeta.addDatabase(dataMeta);
-                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputSteps = inputStep(transMeta, selectSQL, oracleConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle, oracleConfiguration);
                 break;
@@ -961,7 +977,6 @@ public class ExtractDataService {
                 dataMeta = new DatabaseMeta("db", "ORACLE", "Native", chConfiguration.getHost().trim(), chConfiguration.getDataBase().trim(), chConfiguration.getPort().toString(), chConfiguration.getUsername(), chConfiguration.getPassword());
                 dataMeta.setDatabaseType("Clickhouse");
                 transMeta.addDatabase(dataMeta);
-                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputSteps = inputStep(transMeta, selectSQL, chConfiguration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.ck, chConfiguration);
                 break;
@@ -970,7 +985,6 @@ public class ExtractDataService {
                 dataMeta = new DatabaseMeta("db", "DB2", "Native", db2Configuration.getHost().trim(), db2Configuration.getDataBase().trim(), db2Configuration.getPort().toString(), db2Configuration.getUsername(), db2Configuration.getPassword());
                 dataMeta.setDatabaseType("DB2");
                 transMeta.addDatabase(dataMeta);
-                selectSQL = getSelectSQL(extractType, datasetTable, datasource, datasetTableFields, selectSQL);
                 inputSteps = inputStep(transMeta, selectSQL, db2Configuration);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.db2, db2Configuration);
                 break;
@@ -1019,11 +1033,13 @@ public class ExtractDataService {
         FileUtils.writeStringToFile(file, transXml, "UTF-8");
     }
 
-    private String getSelectSQL(String extractType, DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String selectSQL) {
+    private Map<String, String> getSelectSQL(String extractType, DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String selectSQL) {
+        Map<String, String> sql = new HashMap<>();
         if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase(DatasetType.DB.name())) {
             String tableName = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
             QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
-            selectSQL = qp.createRawQuerySQL(tableName, datasetTableFields, datasource);
+            sql.put("selectSQL", qp.createRawQuerySQL(tableName, datasetTableFields, datasource));
+            sql.put("totalSql", qp.getTotalCount(true, tableName, datasource));
         }
 
         if (extractType.equalsIgnoreCase("all_scope") && datasetTable.getType().equalsIgnoreCase(DatasetType.SQL.name())) {
@@ -1033,13 +1049,17 @@ public class ExtractDataService {
                 selectSQL = new String(java.util.Base64.getDecoder().decode(selectSQL));
             }
             QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
-            selectSQL = qp.createRawQuerySQLAsTmp(selectSQL, datasetTableFields);
+            sql.put("totalSql", qp.getTotalCount(false, selectSQL, datasource));
+            sql.put("selectSQL", qp.createRawQuerySQLAsTmp(selectSQL, datasetTableFields));
         }
+
         if (!extractType.equalsIgnoreCase("all_scope")) {
             QueryProvider qp = ProviderFactory.getQueryProvider(datasource.getType());
-            selectSQL = qp.createRawQuerySQLAsTmp(selectSQL, datasetTableFields);
+            sql.put("totalSql", qp.getTotalCount(false, selectSQL, datasource));
+            sql.put("selectSQL", qp.createRawQuerySQLAsTmp(selectSQL, datasetTableFields));
         }
-        return selectSQL;
+
+        return sql;
     }
 
     private List<StepMeta> inputStep(TransMeta transMeta, String selectSQL, JdbcConfiguration jdbcConfiguration) {

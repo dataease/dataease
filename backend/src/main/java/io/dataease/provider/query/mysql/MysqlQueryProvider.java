@@ -808,12 +808,12 @@ public class MysqlQueryProvider extends QueryProvider {
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), table);
+        return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_OFFSET, DE_PAGE_SIZE ", StringUtils.join(array, ","), table);
     }
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields, null);
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS DE_TEMP LIMIT DE_OFFSET, DE_PAGE_SIZE ", fields, null);
     }
 
     public String transTreeItem(SQLObj tableObj, DatasetRowPermissionsTreeItem item) {
@@ -1346,4 +1346,5 @@ public class MysqlQueryProvider extends QueryProvider {
                 "{\"dateformat\": \"%Y%m%d %H:%i:%S\"}\n" +
                 "]", Dateformat.class);
     }
+
 }
