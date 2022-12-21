@@ -1,6 +1,7 @@
 package io.dataease.ext;
 
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.dto.RelationDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.plugins.common.base.domain.DatasetTable;
 import org.apache.ibatis.annotations.Param;
@@ -19,5 +20,7 @@ public interface ExtDataSetTableMapper {
     List<DatasetTable> findByPanelId(@Param("panelId") String panelId);
 
     List<DatasetTable> findByTableIds(@Param("tableIds") List<String> tableIds);
+
+    RelationDTO queryDatasetRelation(@Param("datasetId") String datasetId, @Param("userId")Long userId);
 
 }
