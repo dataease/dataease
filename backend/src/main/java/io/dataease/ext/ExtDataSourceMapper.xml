@@ -6,6 +6,17 @@
                extends="io.dataease.plugins.common.base.mapper.DatasourceMapper.ResultMapWithBLOBs">
         <result column="privileges" property="privileges"/>
     </resultMap>
+    <resultMap id="RelationResultMap" type="io.dataease.dto.RelationDTO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="auths" property="auths"/>
+        <collection property="subRelation" ofType="io.dataease.dto.RelationDTO">
+            <id column="panel_id" property="id"/>
+            <result column="panel_name" property="name"/>
+            <result column="panel_auths" property="auths"/>
+            <result column="pg_type" property="type"/>
+        </collection>
+    </resultMap>
 
     <select id="query" parameterType="io.dataease.ext.query.GridExample" resultMap="BaseResultMapDTO">
         select datasource.*,
@@ -150,5 +161,84 @@
         where id = #{datasourceId}
     </select>
 
-
+    <select id="queryDatasourceRelation" resultType="io.dataease.dto.RelationDTO" resultMap="RelationResultMap">
+        select
+            dt.id,
+            dt.name,
+            dt_auth.auths,
+            'dataset' `type`,
+            pg.id panel_id,
+            pg.name panel_name,
+            pg_auth.auths panel_auths,
+            if(pg.id is not null,'panel',null) pg_type
+        from
+            datasource ds
+        join dataset_table dt on dt.data_source_id = ds.id
+        left join
+        (
+            select
+                t_dt.id,group_concat(distinct sad.privilege_type) auths
+            from
+                dataset_table t_dt
+            left join sys_auth sa on sa.auth_source = t_dt.id
+            left join sys_auth_detail sad on sa.id = sad.auth_id
+            where
+                sa.auth_source_type = 'dataset'
+            and
+                sad.privilege_value = 1
+            and
+            (
+                (
+                    sa.auth_target_type = 'dept'
+                    AND sa.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id =  #{userId,jdbcType=BIGINT} )
+                )
+            or
+                (
+                    sa.auth_target_type = 'user'
+                    AND sa.auth_target =  #{userId,jdbcType=BIGINT}
+                )
+            or
+                (
+                    sa.auth_target_type = 'role'
+                    AND sa.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id =  #{userId,jdbcType=BIGINT} )
+                )
+            )
+            group by sa.auth_source
+        ) dt_auth on dt.id = dt_auth.id
+        left join chart_view cv on cv.table_id = dt.id
+        left join panel_group pg on cv.scene_id = pg.id
+        left join
+        (
+            select
+                t_pg.id,group_concat(distinct sad.privilege_type) auths
+            from
+                panel_group t_pg
+            left join sys_auth sa on sa.auth_source = t_pg.id
+            left join sys_auth_detail sad on sa.id = sad.auth_id
+            where
+                sa.auth_source_type = 'panel'
+            and
+                sad.privilege_value = 1
+            and
+            (
+                (
+                    sa.auth_target_type = 'dept'
+                    AND sa.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id =  #{userId,jdbcType=BIGINT} )
+                )
+            OR
+                (
+                    sa.auth_target_type = 'user'
+                    AND sa.auth_target =  #{userId,jdbcType=BIGINT}
+                )
+            OR
+                (
+                    sa.auth_target_type = 'role'
+                    AND sa.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id =  #{userId,jdbcType=BIGINT} )
+                )
+            )
+            group by sa.auth_source
+        ) pg_auth on pg_auth.id = pg.id
+        where ds.id=#{datasourceId,jdbcType=VARCHAR}
+        order by id
+    </select>
 </mapper>
