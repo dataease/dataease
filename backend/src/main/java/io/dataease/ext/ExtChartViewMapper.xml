@@ -8,14 +8,11 @@
         <result column="privileges" property="privileges"/>
     </resultMap>
 
-    <select id ="findByPanelId" resultMap="BaseResultMapDTO">
-        SELECT
-            chart_view.*
-        FROM
-            chart_view
-                LEFT JOIN panel_view ON chart_view.id = panel_view.chart_view_id
-        WHERE
-            panel_view.panel_id = #{panelId}
+    <select id="findByPanelId" resultMap="BaseResultMapDTO">
+        SELECT chart_view.*
+        FROM chart_view
+                 LEFT JOIN panel_view ON chart_view.id = panel_view.chart_view_id
+        WHERE panel_view.panel_id = #{panelId}
     </select>
 
     <select id="searchOneWithPrivileges" resultMap="BaseResultMapDTO">
@@ -25,198 +22,210 @@
     </select>
 
     <select id="searchOne" resultMap="BaseResultMapDTO">
-        select
-        chart_view.*
-        from chart_view where id = #{id}
+        select chart_view.*
+        from chart_view
+        where id = #{id}
     </select>
 
     <insert id="copyToCache">
-        INSERT INTO chart_view_cache (
-            id,
-            `name`,
-            title,
-            scene_id,
-            table_id,
-            `type`,
-            render,
-            result_count,
-            result_mode,
-            create_by,
-            create_time,
-            update_time,
-            style_priority,
-            chart_type,
-            is_plugin,
-            x_axis,
-            x_axis_ext,
-            y_axis,
-            y_axis_ext,
-            ext_stack,
-            ext_bubble,
-            custom_attr,
-            custom_style,
-            custom_filter,
-            drill_fields,
-            senior,
-            SNAPSHOT,
-            data_from
-            ) SELECT
-            id,
-            `name`,
-            title,
-            scene_id,
-            table_id,
-            `type`,
-            render,
-            result_count,
-            result_mode,
-            create_by,
-            create_time,
-            update_time,
-            style_priority,
-            chart_type,
-            is_plugin,
-            x_axis,
-            x_axis_ext,
-            y_axis,
-            y_axis_ext,
-            ext_stack,
-            ext_bubble,
-            custom_attr,
-            custom_style,
-            custom_filter,
-            drill_fields,
-            senior,
-            SNAPSHOT,
-            data_from  from chart_view
-        WHERE
-            chart_view.id   = #{id}
+        INSERT INTO chart_view_cache (id,
+                                      `name`,
+                                      title,
+                                      scene_id,
+                                      table_id,
+                                      `type`,
+                                      render,
+                                      result_count,
+                                      result_mode,
+                                      create_by,
+                                      create_time,
+                                      update_time,
+                                      style_priority,
+                                      chart_type,
+                                      is_plugin,
+                                      x_axis,
+                                      x_axis_ext,
+                                      y_axis,
+                                      y_axis_ext,
+                                      ext_stack,
+                                      ext_bubble,
+                                      custom_attr,
+                                      custom_style,
+                                      custom_filter,
+                                      drill_fields,
+                                      senior,
+                                      SNAPSHOT,
+                                      data_from,
+                                      refresh_view_enable,
+                                      refresh_unit,
+                                      refresh_time)
+        SELECT id,
+               `name`,
+               title,
+               scene_id,
+               table_id,
+               `type`,
+               render,
+               result_count,
+               result_mode,
+               create_by,
+               create_time,
+               update_time,
+               style_priority,
+               chart_type,
+               is_plugin,
+               x_axis,
+               x_axis_ext,
+               y_axis,
+               y_axis_ext,
+               ext_stack,
+               ext_bubble,
+               custom_attr,
+               custom_style,
+               custom_filter,
+               drill_fields,
+               senior,
+               SNAPSHOT,
+               data_from,
+               refresh_view_enable,
+               refresh_unit,
+               refresh_time
+        from chart_view
+        WHERE chart_view.id = #{id}
     </insert>
 
     <insert id="copyCache">
-        INSERT INTO chart_view_cache (
-            id,
-            `name`,
-            title,
-            scene_id,
-            table_id,
-            `type`,
-            render,
-            result_count,
-            result_mode,
-            create_by,
-            create_time,
-            update_time,
-            style_priority,
-            chart_type,
-            is_plugin,
-            x_axis,
-            x_axis_ext,
-            y_axis,
-            y_axis_ext,
-            ext_stack,
-            ext_bubble,
-            custom_attr,
-            custom_style,
-            custom_filter,
-            drill_fields,
-            senior,
-            SNAPSHOT,
-            data_from
-            ) SELECT
-            #{newViewId} as id,
-            `name`,
-            title,
-            scene_id,
-            table_id,
-            `type`,
-            render,
-            result_count,
-            result_mode,
-            create_by,
-            create_time,
-            update_time,
-            style_priority,
-            chart_type,
-            is_plugin,
-            x_axis,
-            x_axis_ext,
-            y_axis,
-            y_axis_ext,
-            ext_stack,
-            ext_bubble,
-            custom_attr,
-            custom_style,
-            custom_filter,
-            drill_fields,
-            senior,
-            SNAPSHOT,
-            data_from  from chart_view_cache
-        WHERE
-            chart_view_cache.id   = #{sourceViewId}
+        INSERT INTO chart_view_cache (id,
+                                      `name`,
+                                      title,
+                                      scene_id,
+                                      table_id,
+                                      `type`,
+                                      render,
+                                      result_count,
+                                      result_mode,
+                                      create_by,
+                                      create_time,
+                                      update_time,
+                                      style_priority,
+                                      chart_type,
+                                      is_plugin,
+                                      x_axis,
+                                      x_axis_ext,
+                                      y_axis,
+                                      y_axis_ext,
+                                      ext_stack,
+                                      ext_bubble,
+                                      custom_attr,
+                                      custom_style,
+                                      custom_filter,
+                                      drill_fields,
+                                      senior,
+                                      SNAPSHOT,
+                                      data_from,
+                                      refresh_view_enable,
+                                      refresh_unit,
+                                      refresh_time)
+        SELECT #{newViewId} as id,
+               `name`,
+               title,
+               scene_id,
+               table_id,
+               `type`,
+               render,
+               result_count,
+               result_mode,
+               create_by,
+               create_time,
+               update_time,
+               style_priority,
+               chart_type,
+               is_plugin,
+               x_axis,
+               x_axis_ext,
+               y_axis,
+               y_axis_ext,
+               ext_stack,
+               ext_bubble,
+               custom_attr,
+               custom_style,
+               custom_filter,
+               drill_fields,
+               senior,
+               SNAPSHOT,
+               data_from,
+               refresh_view_enable,
+               refresh_unit,
+               refresh_time
+        from chart_view_cache
+        WHERE chart_view_cache.id = #{sourceViewId}
     </insert>
 
     <insert id="initPanelChartViewCache">
-        INSERT INTO chart_view_cache (
-                    id,
-                    `name`,
-                    title,
-                    scene_id,
-                    table_id,
-                    `type`,
-                    render,
-                    result_count,
-                    result_mode,
-                    create_by,
-                    create_time,
-                    update_time,
-                    style_priority,
-                    chart_type,
-                    is_plugin,
-                    x_axis,
-                    x_axis_ext,
-                    y_axis,
-                    y_axis_ext,
-                    ext_stack,
-                    ext_bubble,
-                    custom_attr,
-                    custom_style,
-                    custom_filter,
-                    drill_fields,
-                    senior,
-                    SNAPSHOT,
-                    data_from
-                    ) SELECT
-                    id,
-                    `name`,
-                    title,
-                    scene_id,
-                    table_id,
-                    `type`,
-                    render,
-                    result_count,
-                    result_mode,
-                    create_by,
-                    create_time,
-                    update_time,
-                    style_priority,
-                    chart_type,
-                    is_plugin,
-                    x_axis,
-                    x_axis_ext,
-                    y_axis,
-                    y_axis_ext,
-                    ext_stack,
-                    ext_bubble,
-                    custom_attr,
-                    custom_style,
-                    custom_filter,
-                    drill_fields,
-                    senior,
-                    SNAPSHOT,
-                    data_from  from chart_view
-                WHERE
-                    chart_view.scene_id   = #{panelId}
+        INSERT INTO chart_view_cache (id,
+                                      `name`,
+                                      title,
+                                      scene_id,
+                                      table_id,
+                                      `type`,
+                                      render,
+                                      result_count,
+                                      result_mode,
+                                      create_by,
+                                      create_time,
+                                      update_time,
+                                      style_priority,
+                                      chart_type,
+                                      is_plugin,
+                                      x_axis,
+                                      x_axis_ext,
+                                      y_axis,
+                                      y_axis_ext,
+                                      ext_stack,
+                                      ext_bubble,
+                                      custom_attr,
+                                      custom_style,
+                                      custom_filter,
+                                      drill_fields,
+                                      senior,
+                                      SNAPSHOT,
+                                      data_from,
+                                      refresh_view_enable,
+                                      refresh_unit,
+                                      refresh_time)
+        SELECT id,
+               `name`,
+               title,
+               scene_id,
+               table_id,
+               `type`,
+               render,
+               result_count,
+               result_mode,
+               create_by,
+               create_time,
+               update_time,
+               style_priority,
+               chart_type,
+               is_plugin,
+               x_axis,
+               x_axis_ext,
+               y_axis,
+               y_axis_ext,
+               ext_stack,
+               ext_bubble,
+               custom_attr,
+               custom_style,
+               custom_filter,
+               drill_fields,
+               senior,
+               SNAPSHOT,
+               data_from,
+               refresh_view_enable,
+               refresh_unit,
+               refresh_time
+        from chart_view
+        WHERE chart_view.scene_id = #{panelId}
     </insert>
 
     <select id="search" resultMap="BaseResultMapDTO">
@@ -299,11 +308,11 @@
                                 `senior`,
                                 `data_from`)
         SELECT #{newChartId},
-               GET_CHART_VIEW_COPY_NAME(#{oldChartId},#{panelId}) as `name`,
+               GET_CHART_VIEW_COPY_NAME(#{oldChartId}, #{panelId}) as `name`,
                #{panelId},
                `table_id`,
                `type`,
-               GET_CHART_VIEW_COPY_NAME(#{oldChartId},#{panelId}) as `title`,
+               GET_CHART_VIEW_COPY_NAME(#{oldChartId}, #{panelId}) as `title`,
                `x_axis`,
                `x_axis_ext`,
                `y_axis`,
@@ -312,8 +321,8 @@
                `custom_filter`,
                `drill_fields`,
                `create_by`,
-               unix_timestamp()*1000 as `create_time`,
-               unix_timestamp()*1000 as `update_time`,
+               unix_timestamp() * 1000                             as `create_time`,
+               unix_timestamp() * 1000                             as `update_time`,
                `snapshot`,
                `style_priority`,
                `ext_stack`,
@@ -405,13 +414,11 @@
                SNAPSHOT,
                senior,
                data_from
-        FROM (
-                 SELECT panel_id,
-                        copy_from_view,
-                        chart_view_id
-                 FROM panel_view
-                 WHERE copy_id = #{copyId}
-             ) pv_copy
+        FROM (SELECT panel_id,
+                     copy_from_view,
+                     chart_view_id
+              FROM panel_view
+              WHERE copy_id = #{copyId}) pv_copy
                  INNER JOIN chart_view ON chart_view.id = pv_copy.copy_from_view
     </insert>
 
@@ -459,16 +466,11 @@
 
 
     <select id="searchViewsWithPanelId" resultMap="BaseResultMapDTO">
-        SELECT * FROM chart_view
-        WHERE
-            id IN (
-            SELECT
-                chart_view_id
-            FROM
-                panel_view
-            WHERE
-            panel_id = #{panelId}
-            )
+        SELECT *
+        FROM chart_view
+        WHERE id IN (SELECT chart_view_id
+                     FROM panel_view
+                     WHERE panel_id = #{panelId})
     </select>
 
     <delete id="deleteCacheWithPanel">
@@ -480,10 +482,12 @@
                 #{viewId}
             </foreach>
         </if>
-	</delete>
+    </delete>
     <delete id="deleteViewCache">
-        delete from chart_view_cache where id = #{viewId}
-	</delete>
+        delete
+        from chart_view_cache
+        where id = #{viewId}
+    </delete>
 
     <update id="copyCacheToView">
         UPDATE chart_view cv,
@@ -514,7 +518,10 @@
         cv.drill_fields = cve.drill_fields,
         cv.senior = cve.senior,
         cv.SNAPSHOT = cve.SNAPSHOT,
-        cv.data_from = cve.data_from
+        cv.data_from = cve.data_from,
+        cv.refresh_view_enable = cve.refresh_view_enable,
+        cv.refresh_unit = cve.refresh_unit,
+        cv.refresh_time = cve.refresh_time
         where cve.id = cv.id and cv.id in
         <foreach collection="viewIds" item="viewId" open='(' separator=',' close=')'>
             #{viewId}
@@ -523,69 +530,75 @@
 
     <update id="updateToCache">
         UPDATE chart_view_cache cv,
-        chart_view cve
+            chart_view cve
         SET cv.`name` = cve.`name`,
-        cv.title = cve.title,
-        cv.scene_id = cve.scene_id,
-        cv.table_id = cve.table_id,
-        cv.`type` = cve.`type`,
-        cv.render = cve.render,
-        cv.result_count = cve.result_count,
-        cv.result_mode = cve.result_mode,
-        cv.create_by = cve.create_by,
-        cv.create_time = cve.create_time,
-        cv.update_time = cve.update_time,
-        cv.style_priority = cve.style_priority,
-        cv.chart_type = cve.chart_type,
-        cv.is_plugin = cve.is_plugin,
-        cv.x_axis = cve.x_axis,
-        cv.x_axis_ext = cve.x_axis_ext,
-        cv.y_axis = cve.y_axis,
-        cv.y_axis_ext = cve.y_axis_ext,
-        cv.ext_stack = cve.ext_stack,
-        cv.ext_bubble = cve.ext_bubble,
-        cv.custom_attr = cve.custom_attr,
-        cv.custom_style = cve.custom_style,
-        cv.custom_filter = cve.custom_filter,
-        cv.drill_fields = cve.drill_fields,
-        cv.senior = cve.senior,
-        cv.SNAPSHOT = cve.SNAPSHOT,
-        cv.data_from = cve.data_from
-        where cve.id = cv.id  and cv.id =#{viewId}
+            cv.title = cve.title,
+            cv.scene_id = cve.scene_id,
+            cv.table_id = cve.table_id,
+            cv.`type` = cve.`type`,
+            cv.render = cve.render,
+            cv.result_count = cve.result_count,
+            cv.result_mode = cve.result_mode,
+            cv.create_by = cve.create_by,
+            cv.create_time = cve.create_time,
+            cv.update_time = cve.update_time,
+            cv.style_priority = cve.style_priority,
+            cv.chart_type = cve.chart_type,
+            cv.is_plugin = cve.is_plugin,
+            cv.x_axis = cve.x_axis,
+            cv.x_axis_ext = cve.x_axis_ext,
+            cv.y_axis = cve.y_axis,
+            cv.y_axis_ext = cve.y_axis_ext,
+            cv.ext_stack = cve.ext_stack,
+            cv.ext_bubble = cve.ext_bubble,
+            cv.custom_attr = cve.custom_attr,
+            cv.custom_style = cve.custom_style,
+            cv.custom_filter = cve.custom_filter,
+            cv.drill_fields = cve.drill_fields,
+            cv.senior = cve.senior,
+            cv.SNAPSHOT = cve.SNAPSHOT,
+            cv.data_from = cve.data_from,
+            cv.refresh_view_enable = cve.refresh_view_enable,
+            cv.refresh_unit = cve.refresh_unit,
+            cv.refresh_time = cve.refresh_time
+        where cve.id = cv.id and cv.id =#{viewId}
     </update>
 
 
     <update id="updateToViewFromCache">
         UPDATE chart_view_cache cve,
-        chart_view cv
+            chart_view cv
         SET cv.`name` = cve.`name`,
-        cv.title = cve.title,
-        cv.scene_id = cve.scene_id,
-        cv.table_id = cve.table_id,
-        cv.`type` = cve.`type`,
-        cv.render = cve.render,
-        cv.result_count = cve.result_count,
-        cv.result_mode = cve.result_mode,
-        cv.create_by = cve.create_by,
-        cv.create_time = cve.create_time,
-        cv.update_time = cve.update_time,
-        cv.style_priority = cve.style_priority,
-        cv.chart_type = cve.chart_type,
-        cv.is_plugin = cve.is_plugin,
-        cv.x_axis = cve.x_axis,
-        cv.x_axis_ext = cve.x_axis_ext,
-        cv.y_axis = cve.y_axis,
-        cv.y_axis_ext = cve.y_axis_ext,
-        cv.ext_stack = cve.ext_stack,
-        cv.ext_bubble = cve.ext_bubble,
-        cv.custom_attr = cve.custom_attr,
-        cv.custom_style = cve.custom_style,
-        cv.custom_filter = cve.custom_filter,
-        cv.drill_fields = cve.drill_fields,
-        cv.senior = cve.senior,
-        cv.SNAPSHOT = cve.SNAPSHOT,
-        cv.data_from = cve.data_from
-        where cve.id = cv.id  and cv.id =#{viewId}
+            cv.title = cve.title,
+            cv.scene_id = cve.scene_id,
+            cv.table_id = cve.table_id,
+            cv.`type` = cve.`type`,
+            cv.render = cve.render,
+            cv.result_count = cve.result_count,
+            cv.result_mode = cve.result_mode,
+            cv.create_by = cve.create_by,
+            cv.create_time = cve.create_time,
+            cv.update_time = cve.update_time,
+            cv.style_priority = cve.style_priority,
+            cv.chart_type = cve.chart_type,
+            cv.is_plugin = cve.is_plugin,
+            cv.x_axis = cve.x_axis,
+            cv.x_axis_ext = cve.x_axis_ext,
+            cv.y_axis = cve.y_axis,
+            cv.y_axis_ext = cve.y_axis_ext,
+            cv.ext_stack = cve.ext_stack,
+            cv.ext_bubble = cve.ext_bubble,
+            cv.custom_attr = cve.custom_attr,
+            cv.custom_style = cve.custom_style,
+            cv.custom_filter = cve.custom_filter,
+            cv.drill_fields = cve.drill_fields,
+            cv.senior = cve.senior,
+            cv.SNAPSHOT = cve.SNAPSHOT,
+            cv.data_from = cve.data_from,
+            cv.refresh_view_enable = cve.refresh_view_enable,
+            cv.refresh_unit = cve.refresh_unit,
+            cv.refresh_time = cve.refresh_time
+        where cve.id = cv.id and cv.id =#{viewId}
     </update>
 
     <delete id="deleteNoUseView">
@@ -600,55 +613,49 @@
     </delete>
 
     <select id="chartOptions" resultType="io.dataease.dto.chart.ViewOption">
-        select id, title as  name  from chart_view where scene_id = #{panelId}
+        select id, title as name
+        from chart_view
+        where scene_id = #{panelId}
     </select>
 
     <insert id='chartFiledCopyWithPanel'>
-        INSERT INTO chart_view_field (
-            id,
-            table_id,
-            chart_id,
-            origin_name,
-            `name`,
-            dataease_name,
-            group_type,
-            `type`,
-            `size`,
-            de_type,
-            de_type_format,
-            de_extract_type,
-            ext_field,
-            `checked`,
-            column_index,
-            last_sync_time
-        ) SELECT
-              uuid() AS id,
-              chart_view_field.table_id,
-              chart_view_field.pv_copy.chart_view_id AS chart_id,
-              chart_view_field.origin_name,
-              chart_view_field.`name`,
-              chart_view_field.dataease_name,
-              chart_view_field.group_type,
-              chart_view_field.`type`,
-              chart_view_field.`size`,
-              chart_view_field.de_type,
-              chart_view_field.de_type_format,
-              chart_view_field.de_extract_type,
-              chart_view_field.ext_field,
-              chart_view_field.`checked`,
-              chart_view_field.column_index,
-              chart_view_field.last_sync_time
-        FROM
-            (
-                SELECT
-                    panel_id,
-                    copy_from_view,
-                    chart_view_id
-                FROM
-                    panel_view
-                WHERE
-                    copy_id = #{copyId}
-            ) pv_copy
-                INNER JOIN chart_view_field ON chart_view_field.chart_id = pv_copy.copy_from_view
+        INSERT INTO chart_view_field (id,
+                                      table_id,
+                                      chart_id,
+                                      origin_name,
+                                      `name`,
+                                      dataease_name,
+                                      group_type,
+                                      `type`,
+                                      `size`,
+                                      de_type,
+                                      de_type_format,
+                                      de_extract_type,
+                                      ext_field,
+                                      `checked`,
+                                      column_index,
+                                      last_sync_time)
+        SELECT uuid()                                 AS id,
+               chart_view_field.table_id,
+               chart_view_field.pv_copy.chart_view_id AS chart_id,
+               chart_view_field.origin_name,
+               chart_view_field.`name`,
+               chart_view_field.dataease_name,
+               chart_view_field.group_type,
+               chart_view_field.`type`,
+               chart_view_field.`size`,
+               chart_view_field.de_type,
+               chart_view_field.de_type_format,
+               chart_view_field.de_extract_type,
+               chart_view_field.ext_field,
+               chart_view_field.`checked`,
+               chart_view_field.column_index,
+               chart_view_field.last_sync_time
+        FROM (SELECT panel_id,
+                     copy_from_view,
+                     chart_view_id
+              FROM panel_view
+              WHERE copy_id = #{copyId}) pv_copy
+                 INNER JOIN chart_view_field ON chart_view_field.chart_id = pv_copy.copy_from_view
     </insert>
 </mapper>

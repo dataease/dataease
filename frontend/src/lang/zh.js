@@ -929,6 +929,7 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    chart_refresh_tips: '视图刷新设置优先于仪表板刷新设置',
     '1-trend': '趋势',
     '2-state': '状态',
     '3-rank': '排名',
