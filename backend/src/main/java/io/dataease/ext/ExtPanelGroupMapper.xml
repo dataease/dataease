@@ -320,4 +320,38 @@
         where pg.id=#{panelId,jdbcType=VARCHAR}
         group by dt.id
     </select>
+
+    <select id="listPanelByUser" resultType="io.dataease.plugins.common.base.domain.PanelGroup"
+            resultMap="io.dataease.plugins.common.base.mapper.PanelGroupMapper.BaseResultMap">
+        select
+            pg.*
+        from
+            panel_group pg
+        join sys_auth sa on sa.auth_source = pg.id
+        join sys_auth_detail sad on sa.id = sad.auth_id
+        where
+            pg.node_type = 'panel'
+        and
+            sa.auth_source_type = 'panel'
+        and
+            sad.privilege_value = 1
+        and
+            (
+                (
+                    sa.auth_target_type = 'dept'
+                    AND sa.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id = #{userId,jdbcType=BIGINT} )
+                )
+            OR
+                (
+                    sa.auth_target_type = 'user'
+                    AND sa.auth_target =  #{userId,jdbcType=BIGINT}
+                )
+            OR
+                (
+                    sa.auth_target_type = 'role'
+                    AND sa.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId,jdbcType=BIGINT} )
+                )
+            )
+        group by pg.id
+    </select>
 </mapper>

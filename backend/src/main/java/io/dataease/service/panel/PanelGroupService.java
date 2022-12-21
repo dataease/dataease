@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.annotation.DeCleaner;
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
@@ -149,6 +150,17 @@ public class PanelGroupService {
         panelGroupRequest.setIsAdmin(AuthUtils.getUser().getIsAdmin());
         List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupListDefault(panelGroupRequest);
         return TreeUtils.mergeTree(panelGroupDTOList, "default_panel");
+    }
+
+    public List<PanelGroup> list() {
+        CurrentUserDto user = AuthUtils.getUser();
+        if (user.getIsAdmin()) {
+            PanelGroupExample example = new PanelGroupExample();
+            example.setOrderByClause("name");
+            example.createCriteria().andNodeTypeEqualTo("panel");
+            return panelGroupMapper.selectByExample(example);
+        }
+        return extPanelGroupMapper.listPanelByUser(user.getUserId());
     }
 
     @DeCleaner(value = DePermissionType.PANEL, key = "pid")

@@ -14,6 +14,7 @@ import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.panel.PanelExport2App;
 import io.dataease.dto.panel.PanelGroupDTO;
+import io.dataease.plugins.common.base.domain.PanelGroup;
 import io.dataease.service.panel.PanelGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -48,6 +49,12 @@ public class PanelGroupController {
     @PostMapping("/tree")
     public List<PanelGroupDTO> tree(@RequestBody PanelGroupRequest request) {
         return panelGroupService.tree(request);
+    }
+
+    @ApiOperation("查询当前用户仪表板")
+    @GetMapping("/list")
+    public List<PanelGroup> list() {
+        return panelGroupService.list();
     }
 
     @ApiOperation("默认树")
