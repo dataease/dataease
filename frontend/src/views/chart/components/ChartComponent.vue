@@ -332,6 +332,13 @@ export default {
         })
         return
       }
+      if (this.canvasStyleData.panel.themeColor === 'dark') {
+        chart_option.legend['pageIconColor'] = '#ffffff'
+        chart_option.legend['pageIconInactiveColor'] = '#8c8c8c'
+      } else {
+        chart_option.legend['pageIconColor'] = '#000000'
+        chart_option.legend['pageIconInactiveColor'] = '#8c8c8c'
+      }
       this.myEcharts(chart_option)
       this.$nextTick(() => (this.linkageActive()))
     },

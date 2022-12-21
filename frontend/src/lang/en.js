@@ -931,6 +931,7 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    chart_refresh_tips: 'View refresh setting takes precedence over panel refresh setting',
     '1-trend': 'trend',
     '2-state': 'State',
     '3-rank': 'Rank',
@@ -1480,9 +1481,9 @@ export default {
     total_sort_desc: 'DESC',
     total_sort_field: 'Sort Field',
     empty_data_strategy: 'Empty Data Strategy',
-    break_line: 'Disconnection',
+    break_line: 'Keep',
     set_zero: 'Set Zero',
-    ignore_data: 'Ignore Data',
+    ignore_data: 'Hide Data',
     sub_dimension_tip: 'This field is required, and cannot be included in the type axis, you should choose non-group chart if you don\'t need it, or you will get unexpected chart.',
     drill_dimension_tip: 'Only fields in the dataset can be drilled',
     table_scroll_tip: 'The detail table is only effective when the pagination mode is "Drop-down".',
@@ -1924,6 +1925,7 @@ export default {
     field_description: 'Field description',
     table_description: 'Table description',
     relational_database: 'Relational database',
+    data_warehouse_lake: 'Data Warehouse/Data Lake',
     non_relational_database: 'Non relational database',
     all: 'All',
     other: 'other',

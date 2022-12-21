@@ -17,7 +17,7 @@
         style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;"
       >
         <div style="height: 100%;">
-          <share-head/>
+          <share-head />
         </div>
       </el-row>
       <el-row
@@ -76,7 +76,7 @@
               width="400"
               trigger="click"
             >
-              <panel-detail-info/>
+              <panel-detail-info />
               <i
                 slot="reference"
                 class="el-icon-warning-outline icon-class"
@@ -489,7 +489,6 @@ export default {
       } else {
         return true
       }
-
     },
     downLoadApp(appAttachInfo) {
       this.downLoadToApp(appAttachInfo)

@@ -640,7 +640,7 @@ export default {
       while (len--) {
         if (this.element.options.tabList[len].name === param.name) {
           this.element.options.tabList.splice(len, 1)
-
+          this.$store.commit('deleteComponentsWithCanvasId', this.element.id + '-' + param.name)
           const activeIndex = (len - 1 + this.element.options.tabList.length) % this.element.options.tabList.length
           this.activeTabName = this.element.options.tabList[activeIndex].name
         }

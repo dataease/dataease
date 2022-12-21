@@ -49,7 +49,6 @@
             <el-checkbox
               v-model="overallSettingForm.refreshViewLoading"
               class="el-input-refresh-loading"
-              :disabled="!overallSettingForm.refreshViewEnable"
               @change="themeChange"
             >{{ $t('panel.enable_view_loading') }}</el-checkbox>
           </span>

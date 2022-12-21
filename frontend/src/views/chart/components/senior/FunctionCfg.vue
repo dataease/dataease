@@ -68,7 +68,7 @@
           />
         </el-form-item>
         <el-form-item
-          v-show="chart.render === 'antv' && chart.type === 'line'"
+          v-show="chart.render === 'antv' && (chart.type.includes('line') || chart.type.includes('bar') || chart.type.includes('area'))"
           :label="$t('chart.empty_data_strategy')"
           class="form-item"
         >
@@ -174,7 +174,7 @@ span{
 }
 .form-item ::v-deep .el-radio-group{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: wrap;
   label {
     line-height: 28px;

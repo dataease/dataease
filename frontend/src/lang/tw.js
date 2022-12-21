@@ -930,6 +930,7 @@ export default {
     password_input_error: '原始密碼輸入錯誤'
   },
   chart: {
+    chart_refresh_tips: '視圖刷新設置優先於儀表板刷新設置',
     '1-trend': '趨勢',
     '2-state': '狀態',
     '3-rank': '排名',
@@ -1479,9 +1480,9 @@ export default {
     total_sort_desc: '降序',
     total_sort_field: '排序字段',
     empty_data_strategy: '空值處理',
-    break_line: '線條斷開',
-    set_zero: '置為0，線條不斷開',
-    ignore_data: '跳過空值，不展示',
+    break_line: '保持為空',
+    set_zero: '置為0',
+    ignore_data: '隱藏空值',
     sub_dimension_tip: '該字段為必填項，且不應使用類別軸中的字段，若無需該字段，請選擇基礎圖表進行展示，否則展示效果不理想',
     drill_dimension_tip: '鑽取字段僅支持數據集中的字段',
     table_scroll_tip: '明細表僅在分頁模式為"下拉"時生效。',
@@ -1918,6 +1919,7 @@ export default {
     field_description: '欄位描述',
     table_description: '表描述',
     relational_database: '關係型數據庫',
+    data_warehouse_lake: '數倉/數據湖',
     non_relational_database: '非關係型數據庫',
     all: '所有',
     other: '其他',

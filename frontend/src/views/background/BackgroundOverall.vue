@@ -36,7 +36,10 @@
           :span="6"
           style="padding-top: 5px"
         >
-          <el-checkbox v-model="commonBackground.backgroundColorSelect" @change="themeChange('backgroundColorSelect')">
+          <el-checkbox
+            v-model="commonBackground.backgroundColorSelect"
+            @change="themeChange('backgroundColorSelect')"
+          >
             {{
               $t('chart.color')
             }}
@@ -75,9 +78,12 @@
           :span="4"
           style="padding-top: 5px"
         >
-          <el-checkbox v-model="commonBackground.enable" @change="themeChange('enable')">{{
-              $t('panel.background')
-            }}
+          <el-checkbox
+            v-model="commonBackground.enable"
+            @change="themeChange('enable')"
+          >{{
+            $t('panel.background')
+          }}
           </el-checkbox>
         </el-col>
         <el-col :span="20">
@@ -113,7 +119,7 @@
               :http-request="upload"
               :file-list="fileList"
             >
-              <i class="el-icon-plus"/>
+              <i class="el-icon-plus" />
             </el-upload>
             <el-dialog
               top="25vh"
@@ -189,6 +195,7 @@ import BackgroundItemOverall from '@/views/background/BackgroundItemOverall'
 
 export default {
   name: 'BackgroundOverall',
+  // eslint-disable-next-line
   components: { BackgroundItemOverall, BackgroundItem },
   props: {
     position: {

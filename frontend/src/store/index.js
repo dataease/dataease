@@ -503,6 +503,9 @@ const data = {
         const element = state.componentData[index]
         if (element.id && element.id === id) {
           state.componentData.splice(index, 1)
+          if (element.type === 'de-tabs') {
+            this.commit('deleteComponentsWithCanvasId', element.id)
+          }
           break
         }
       }
@@ -811,6 +814,33 @@ const data = {
       state.mousePointShadowMap.mouseY = mousePoint.mouseY
       state.mousePointShadowMap.width = mousePoint.width
       state.mousePointShadowMap.height = mousePoint.height
+    },
+    deleteComponentsWithCanvasId(state, canvasId) {
+      if (canvasId && canvasId.length > 10) {
+        for (let index = 0; index < state.componentData.length; index++) {
+          const element = state.componentData[index]
+          if (element.canvasId && element.canvasId.includes(canvasId)) {
+            state.componentData.splice(index, 1)
+          }
+        }
+      }
+    },
+    // 清除相同sourceViewId 的 联动条件
+    clearViewLinkage(state, viewId) {
+      state.componentData.forEach(item => {
+        if (item.linkageFilters && item.linkageFilters.length > 0) {
+          const newList = item.linkageFilters.filter(linkage => linkage.sourceViewId !== viewId)
+          item.linkageFilters.splice(0, item.linkageFilters.length)
+          // 重新push 可保证数组指针不变 可以watch到
+          if (newList.length > 0) {
+            newList.forEach(newLinkage => {
+              item.linkageFilters.push(newLinkage)
+            })
+          }
+        }
+      })
+
+      bus.$emit('clear_panel_linkage', { viewId: viewId })
     }
   },
   modules: {

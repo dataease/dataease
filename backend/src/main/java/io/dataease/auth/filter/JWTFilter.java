@@ -1,6 +1,5 @@
 package io.dataease.auth.filter;
 
-import cn.hutool.core.util.URLUtil;
 import com.auth0.jwt.algorithms.Algorithm;
 import io.dataease.auth.entity.ASKToken;
 import io.dataease.auth.entity.JWTToken;
@@ -24,10 +23,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
 
 
 public class JWTFilter extends BasicHttpAuthenticationFilter {
@@ -159,20 +156,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
         httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
         httpServletResponse.setHeader("authentication-status", "login_expire");
-    }
-
-    @Override
-    protected boolean onAccessDenied(ServletRequest req, ServletResponse res, Object mappedValue) throws Exception {
-        HttpServletResponse response = (HttpServletResponse) res;
-        HttpServletRequest request = (HttpServletRequest) req;
-        String requestURI = request.getRequestURI();
-        String msg = requestURI + " has been denied";
-        String encode = URLUtil.encode(msg, Charset.forName("UTF-8"));
-        Cookie cookie_error = new Cookie("onAccessDeniedMsg", encode);
-        cookie_error.setPath("/");
-        response.addCookie(cookie_error);
-        response.sendRedirect("/");
-        return false;
     }
 
 }

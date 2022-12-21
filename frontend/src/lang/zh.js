@@ -929,6 +929,7 @@ export default {
     password_input_error: '原始密码输入错误'
   },
   chart: {
+    chart_refresh_tips: '视图刷新设置优先于仪表板刷新设置',
     '1-trend': '趋势',
     '2-state': '状态',
     '3-rank': '排名',
@@ -1478,9 +1479,9 @@ export default {
     total_sort_desc: '降序',
     total_sort_field: '排序字段',
     empty_data_strategy: '空值处理',
-    break_line: '线条断开',
-    set_zero: '置为0,线条不断开',
-    ignore_data: '跳过空值,不展示',
+    break_line: '保持为空',
+    set_zero: '置为0',
+    ignore_data: '隐藏空值',
     sub_dimension_tip: '该字段为必填项，且不应使用类别轴中的字段，若无需该字段，请选择基础图表进行展示，否则展示效果不理想。',
     drill_dimension_tip: '钻取字段仅支持数据集中的字段',
     table_scroll_tip: '明细表仅在分页模式为"下拉"时生效。',
@@ -1917,6 +1918,7 @@ export default {
     field_description: '字段描述',
     table_description: '表描述',
     relational_database: '关系型数据库',
+    data_warehouse_lake: '数仓/数据湖',
     non_relational_database: '非关系型数据库',
     all: '所有',
     other: '其他',
