@@ -66,7 +66,7 @@
         @mousedown.stop.prevent="handleDown(handlei, $event)"
         @touchstart.stop.prevent="handleTouchDown(handlei, $event)"
       >
-        <slot :name="handlei" />
+        <slot :name="handlei"/>
       </div>
       <div
         :id="componentCanvasId"
@@ -95,7 +95,7 @@
           class="svg-background"
           :icon-class="mainSlotSvgInner"
         />
-        <slot />
+        <slot/>
       </div>
     </div>
   </div>
@@ -2170,31 +2170,31 @@ export default {
 }
 
 .de-drag-top {
-  left: 0;
-  top: 0;
+  left: 1px;
+  top: 1px;
   height: 12px;
-  width: 100%;
+  width: calc(100% - 2px);
 }
 
 .de-drag-right {
-  right: 0;
-  top: 0;
+  right: 1px;
+  top: 1px;
   width: 16px;
-  height: 100%;
+  height: calc(100% - 30px);
 }
 
 .de-drag-bottom {
-  left: 0;
-  bottom: 0;
+  left: 1px;
+  bottom: 1px;
   height: 12px;
-  width: 100%;
+  width: calc(100% - 2px);
 }
 
 .de-drag-left {
-  left: 0;
-  top: 0;
+  left: 1px;
+  top: 1px;
   width: 16px;
-  height: 100%;
+  height: calc(100% - 2px);
 }
 
 </style>
