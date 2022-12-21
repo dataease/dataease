@@ -279,6 +279,12 @@ public class ChartViewService {
             if (result == null) {
                 DataEaseException.throwException(Translator.get("i18n_chart_delete"));
             }
+            DatasetTable datasetTable = dataSetTableService.get(result.getTableId());
+            if (ObjectUtils.isNotEmpty(datasetTable)) {
+                result.setDatasetMode(datasetTable.getMode());
+                Datasource datasource = datasourceService.get(datasetTable.getDataSourceId());
+                result.setDatasourceType(datasource != null ? datasource.getType() : null);
+            }
             return result;
         } catch (Exception e) {
             e.printStackTrace();
@@ -645,13 +651,23 @@ public class ChartViewService {
         // 直连明细表分页
         Map<String, Object> mapAttr = gson.fromJson(view.getCustomAttr(), Map.class);
         Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("size");
-        if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0 && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
-            if (chartExtRequest.getGoPage() == null) {
-                chartExtRequest.setGoPage(1L);
-            }
-            if (chartExtRequest.getPageSize() == null) {
-                String pageSize = (String) mapSize.get("tablePageSize");
-                chartExtRequest.setPageSize(Long.parseLong(pageSize));
+        if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0) {
+            if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+                if (chartExtRequest.getGoPage() == null) {
+                    chartExtRequest.setGoPage(1L);
+                }
+                if (chartExtRequest.getPageSize() == null) {
+                    String pageSize = (String) mapSize.get("tablePageSize");
+                    chartExtRequest.setPageSize(Math.min(Long.parseLong(pageSize), view.getResultCount().longValue()));
+                }
+            } else {
+                if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+                    chartExtRequest.setGoPage(1L);
+                    chartExtRequest.setPageSize(view.getResultCount().longValue());
+                } else {
+                    chartExtRequest.setGoPage(null);
+                    chartExtRequest.setPageSize(null);
+                }
             }
         } else {
             chartExtRequest.setGoPage(null);
@@ -910,7 +926,11 @@ public class ChartViewService {
         String totalPageSql = null;
         PageInfo pageInfo = new PageInfo();
         pageInfo.setGoPage(chartExtRequest.getGoPage());
-        pageInfo.setPageSize(chartExtRequest.getPageSize());
+        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+            pageInfo.setPageSize(Math.min(view.getResultCount() - (chartExtRequest.getGoPage() - 1) * chartExtRequest.getPageSize(), chartExtRequest.getPageSize()));
+        } else {
+            pageInfo.setPageSize(chartExtRequest.getPageSize());
+        }
 
         List<ChartViewFieldDTO> detailFieldList = new ArrayList<>();
         String detailFieldSql = null;
