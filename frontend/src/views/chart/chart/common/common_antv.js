@@ -376,7 +376,7 @@ export function getTooltip(chart) {
             } else {
               res = param.value
             }
-            obj.value = res
+            obj.value = res === null ? '' : res
             return obj
           }
         }
