@@ -137,7 +137,7 @@
           :target="curComponent.hyperlinks.openMode "
           :href="curComponent.hyperlinks.content "
         >
-          <i class="icon iconfont icon-com-jump" />
+          <i class="icon iconfont icon-com-jump"/>
         </a>
       </span>
 
@@ -496,19 +496,7 @@ export default {
     },
     // 清除相同sourceViewId 的 联动条件
     clearLinkage() {
-      this.componentData.forEach(item => {
-        if (item.linkageFilters && item.linkageFilters.length > 0) {
-          const newList = item.linkageFilters.filter(linkage => linkage.sourceViewId !== this.element.propValue.viewId)
-          item.linkageFilters.splice(0, item.linkageFilters.length)
-          // 重新push 可保证数组指针不变 可以watch到
-          if (newList.length > 0) {
-            newList.forEach(newLinkage => {
-              item.linkageFilters.push(newLinkage)
-            })
-          }
-        }
-      })
-      bus.$emit('clear_panel_linkage', { viewId: this.element.propValue.viewId })
+      this.$store.commit('clearViewLinkage', this.element.propValue.viewId)
     },
     goFile() {
       this.$refs.files.click()

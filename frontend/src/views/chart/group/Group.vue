@@ -13,7 +13,7 @@
           @click="add('group')"
         />
       </el-row>
-      <el-divider />
+      <el-divider/>
       <el-row style="margin-bottom: 10px">
         <el-col :span="16">
           <el-input
@@ -31,7 +31,7 @@
               size="mini"
               type="primary"
             >
-              {{ searchMap[searchType] }}<i class="el-icon-arrow-down el-icon--right" />
+              {{ searchMap[searchType] }}<i class="el-icon-arrow-down el-icon--right"/>
             </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item @click.native="searchTypeClick('all')">{{ $t('commons.all') }}</el-dropdown-item>
@@ -63,7 +63,7 @@
             >
               <span style="display: flex;flex: 1;width: 0;">
                 <span>
-                  <i class="el-icon-folder" />
+                  <i class="el-icon-folder"/>
                 </span>
                 <span
                   style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
@@ -152,7 +152,7 @@
               class="custom-tree-node-list father"
             >
               <span style="display: flex;flex: 1;width: 0;">
-                <span><svg-icon :icon-class="data.modelInnerType" /></span>
+                <span><svg-icon :icon-class="data.modelInnerType"/></span>
                 <span
                   style="margin-left: 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"
                   :title="data.name"
@@ -225,7 +225,7 @@
             :label="$t('commons.name')"
             prop="name"
           >
-            <el-input v-model="groupForm.name" />
+            <el-input v-model="groupForm.name"/>
           </el-form-item>
         </el-form>
         <div
@@ -235,12 +235,14 @@
           <el-button
             size="mini"
             @click="close()"
-          >{{ $t('chart.cancel') }}</el-button>
+          >{{ $t('chart.cancel') }}
+          </el-button>
           <el-button
             type="primary"
             size="mini"
             @click="saveGroup(groupForm)"
-          >{{ $t('chart.confirm') }}</el-button>
+          >{{ $t('chart.confirm') }}
+          </el-button>
         </div>
       </el-dialog>
     </el-col>
@@ -264,7 +266,7 @@
           :label="$t('commons.name')"
           prop="name"
         >
-          <el-input v-model="tableForm.name" />
+          <el-input v-model="tableForm.name"/>
         </el-form-item>
       </el-form>
       <div
@@ -274,12 +276,14 @@
         <el-button
           size="mini"
           @click="closeTable()"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           type="primary"
           size="mini"
           @click="saveTable(tableForm)"
-        >{{ $t('chart.confirm') }}</el-button>
+        >{{ $t('chart.confirm') }}
+        </el-button>
       </div>
     </el-dialog>
 
@@ -318,8 +322,8 @@
         :active="createActive"
         align-center
       >
-        <el-step :title="$t('chart.select_dataset')" />
-        <el-step :title="$t('chart.select_chart_type')" />
+        <el-step :title="$t('chart.select_dataset')"/>
+        <el-step :title="$t('chart.select_chart_type')"/>
       </el-steps>
 
       <table-selector
@@ -385,14 +389,16 @@
         <el-button
           size="mini"
           @click="closeCreateChart"
-        >{{ $t('chart.cancel') }}</el-button>
+        >{{ $t('chart.cancel') }}
+        </el-button>
         <el-button
           v-if="createActive === 2"
           type="primary"
           size="mini"
           @click="createPreview"
-        >{{ $t('chart.preview')
-        }}
+        >{{
+            $t('chart.preview')
+          }}
         </el-button>
         <el-button
           v-if="createActive === 1"
@@ -433,14 +439,16 @@
         <el-button
           size="mini"
           @click="closeMoveGroup()"
-        >{{ $t('dataset.cancel') }}</el-button>
+        >{{ $t('dataset.cancel') }}
+        </el-button>
         <el-button
           :disabled="groupMoveConfirmDisabled"
           type="primary"
           size="mini"
           @click="saveMoveGroup(tGroup)"
         >{{
-          $t('dataset.confirm') }}
+            $t('dataset.confirm')
+          }}
         </el-button>
       </div>
     </el-dialog>
@@ -465,14 +473,16 @@
         <el-button
           size="mini"
           @click="closeMoveDs()"
-        >{{ $t('dataset.cancel') }}</el-button>
+        >{{ $t('dataset.cancel') }}
+        </el-button>
         <el-button
           :disabled="dsMoveConfirmDisabled"
           type="primary"
           size="mini"
           @click="saveMoveDs(tDs)"
         >{{
-          $t('dataset.confirm') }}
+            $t('dataset.confirm')
+          }}
         </el-button>
       </div>
     </el-dialog>
@@ -480,27 +490,26 @@
 </template>
 
 <script>
-import { post, chartGroupTree } from '@/api/chart/chart'
+import { chartGroupTree, pluginTypes, post } from '@/api/chart/chart'
 import { queryAuthModel } from '@/api/authModel/authModel'
 import TableSelector from '../view/TableSelector'
 import GroupMoveSelector from '../components/treeSelector/GroupMoveSelector'
 import ChartMoveSelector from '../components/treeSelector/ChartMoveSelector'
 import ChartType from '@/views/chart/view/ChartType'
-import { pluginTypes } from '@/api/chart/chart'
 import {
   DEFAULT_COLOR_CASE,
+  DEFAULT_FUNCTION_CFG,
   DEFAULT_LABEL,
   DEFAULT_LEGEND_STYLE,
   DEFAULT_SIZE,
+  DEFAULT_SPLIT,
+  DEFAULT_THRESHOLD,
   DEFAULT_TITLE_STYLE,
   DEFAULT_TOOLTIP,
+  DEFAULT_TOTAL,
   DEFAULT_XAXIS_STYLE,
-  DEFAULT_YAXIS_STYLE,
   DEFAULT_YAXIS_EXT_STYLE,
-  DEFAULT_SPLIT,
-  DEFAULT_FUNCTION_CFG,
-  DEFAULT_THRESHOLD,
-  DEFAULT_TOTAL
+  DEFAULT_YAXIS_STYLE
 } from '../chart/chart'
 import { checkViewTitle } from '@/components/canvas/utils/utils'
 import { adaptCurTheme } from '@/components/canvas/utils/style'
@@ -977,6 +986,9 @@ export default {
       view.render = this.view.render
       view.resultMode = 'custom'
       view.resultCount = 1000
+      view.refreshViewEnable = false
+      view.refreshUnit = 'minute'
+      view.refreshTime = 5
       const customAttr = {
         color: DEFAULT_COLOR_CASE,
         tableColor: DEFAULT_COLOR_CASE,
@@ -1226,135 +1238,135 @@ export default {
 </script>
 
 <style scoped>
-  .el-divider--horizontal {
-    margin: 12px 0
-  }
+.el-divider--horizontal {
+  margin: 12px 0
+}
 
-  .search-input {
-    padding: 12px 0;
-  }
+.search-input {
+  padding: 12px 0;
+}
 
-  .custom-tree-container {
-    margin-top: 10px;
-  }
+.custom-tree-container {
+  margin-top: 10px;
+}
 
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right: 8px;
-  }
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
 
-  .custom-tree-node-list {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding: 0 8px;
-  }
+.custom-tree-node-list {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 0 8px;
+}
 
-  .tree-list ::v-deep .el-tree-node__expand-icon.is-leaf {
-    display: none;
-  }
+.tree-list ::v-deep .el-tree-node__expand-icon.is-leaf {
+  display: none;
+}
 
-  .custom-position {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    flex-flow: row nowrap;
-  }
+.custom-position {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  flex-flow: row nowrap;
+}
 
-  .form-item {
-    margin-bottom: 0;
-  }
+.form-item {
+  margin-bottom: 0;
+}
 
-  .title-css {
-    height: 26px;
-  }
+.title-css {
+  height: 26px;
+}
 
-  .title-text {
-    line-height: 26px;
-  }
+.title-text {
+  line-height: 26px;
+}
 
-  .dialog-css ::v-deep .el-dialog__header {
-    padding: 20px 20px 0;
-  }
+.dialog-css ::v-deep .el-dialog__header {
+  padding: 20px 20px 0;
+}
 
-  .dialog-css ::v-deep .el-dialog__body {
-    padding: 10px 20px 20px;
-  }
+.dialog-css ::v-deep .el-dialog__body {
+  padding: 10px 20px 20px;
+}
 
-  .form-item ::v-deep .el-form-item__label {
-    font-size: 12px;
-  }
+.form-item ::v-deep .el-form-item__label {
+  font-size: 12px;
+}
 
-  .scene-title {
-    width: 100%;
-    display: flex;
-  }
+.scene-title {
+  width: 100%;
+  display: flex;
+}
 
-  .scene-title-name {
-    width: 100%;
-    overflow: hidden;
-    display: inline-block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
+.scene-title-name {
+  width: 100%;
+  overflow: hidden;
+  display: inline-block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 
-  .father .child {
-    /*display: none;*/
-    visibility: hidden;
-  }
+.father .child {
+  /*display: none;*/
+  visibility: hidden;
+}
 
-  .father:hover .child {
-    /*display: inline;*/
-    visibility: visible;
-  }
+.father:hover .child {
+  /*display: inline;*/
+  visibility: visible;
+}
 
-  .tree-style {
-    padding: 10px 15px;
-    height: 100%;
-    overflow-y: auto;
-  }
+.tree-style {
+  padding: 10px 15px;
+  height: 100%;
+  overflow-y: auto;
+}
 
-  /deep/ .vue-treeselect__control {
-    height: 28px;
-  }
+/deep/ .vue-treeselect__control {
+  height: 28px;
+}
 
-  /deep/ .vue-treeselect__single-value {
-    color: #606266;
-    line-height: 28px !important;
-  }
+/deep/ .vue-treeselect__single-value {
+  color: #606266;
+  line-height: 28px !important;
+}
 
-  .render-select ::v-deep .el-input__suffix {
-    width: 20px;
-  }
+.render-select ::v-deep .el-input__suffix {
+  width: 20px;
+}
 
-  .render-select ::v-deep .el-input__inner {
-    padding-right: 10px;
-    padding-left: 6px;
-  }
+.render-select ::v-deep .el-input__inner {
+  padding-right: 10px;
+  padding-left: 6px;
+}
 
-  .dialog-css ::v-deep .el-step__title {
-    font-weight: 400;
-    font-size: 12px;
-  }
+.dialog-css ::v-deep .el-step__title {
+  font-weight: 400;
+  font-size: 12px;
+}
 
-  .chart-icon {
-    width: 200px;
-    height: 200px;
-  }
+.chart-icon {
+  width: 200px;
+  height: 200px;
+}
 
-  .chart-box {
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    width: 50%;
-    float: left;
-    height: 380px;
-  }
+.chart-box {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  width: 50%;
+  float: left;
+  height: 380px;
+}
 </style>

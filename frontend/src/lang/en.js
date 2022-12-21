@@ -931,6 +931,7 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    chart_refresh_tips: 'View refresh setting takes precedence over panel refresh setting',
     '1-trend': 'trend',
     '2-state': 'State',
     '3-rank': 'Rank',

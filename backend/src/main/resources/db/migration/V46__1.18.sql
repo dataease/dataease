@@ -10,8 +10,25 @@ ALTER TABLE `sys_task`
     ADD COLUMN `status` tinyint(1) NULL DEFAULT 1 COMMENT '运行状态' AFTER `create_time`;
 
 
-INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`, `path`, `i_frame`, `cache`, `hidden`, `permission`) VALUES (1100, 1, 0, 1, '血缘关系', 'sys-relationship', 'system/relationship/index', 1002, 'sys-relationship', 'relationship', 0, 0, 0, 'relationship:read');
+INSERT INTO `sys_menu` (`menu_id`, `pid`, `sub_count`, `type`, `title`, `name`, `component`, `menu_sort`, `icon`,
+                        `path`, `i_frame`, `cache`, `hidden`, `permission`)
+VALUES (1100, 1, 0, 1, '血缘关系', 'sys-relationship', 'system/relationship/index', 1002, 'sys-relationship',
+        'relationship', 0, 0, 0, 'relationship:read');
 
-UPDATE `sys_menu` SET `menu_sort` = 1003 WHERE (`menu_id` = 101);
+UPDATE `sys_menu`
+SET `menu_sort` = 1003
+WHERE (`menu_id` = 101);
 
-UPDATE `my_plugin` SET `version` = '1.18.0' where `plugin_id` > 0;
+UPDATE `my_plugin`
+SET `version` = '1.18.0'
+where `plugin_id` > 0;
+
+ALTER TABLE `chart_view`
+    ADD COLUMN `refresh_view_enable` tinyint(1) NULL DEFAULT 0 COMMENT '是否开启刷新' AFTER `view_fields`,
+ADD COLUMN `refresh_unit` varchar(255) NULL DEFAULT 'minute' COMMENT '刷新时间单位' AFTER `refresh_view_enable`,
+ADD COLUMN `refresh_time` int(13) NULL DEFAULT 5 COMMENT '刷新时间' AFTER `refresh_unit`;
+
+ALTER TABLE `chart_view_cache`
+    ADD COLUMN `refresh_view_enable` tinyint(1) NULL DEFAULT 0 COMMENT '是否开启刷新' AFTER `view_fields`,
+ADD COLUMN `refresh_unit` varchar(255) NULL DEFAULT 'minute' COMMENT '刷新时间单位' AFTER `refresh_view_enable`,
+ADD COLUMN `refresh_time` int(13) NULL DEFAULT 5 COMMENT '刷新时间' AFTER `refresh_unit`;

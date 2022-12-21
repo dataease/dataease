@@ -824,6 +824,23 @@ const data = {
           }
         }
       }
+    },
+    // 清除相同sourceViewId 的 联动条件
+    clearViewLinkage(state, viewId) {
+      state.componentData.forEach(item => {
+        if (item.linkageFilters && item.linkageFilters.length > 0) {
+          const newList = item.linkageFilters.filter(linkage => linkage.sourceViewId !== viewId)
+          item.linkageFilters.splice(0, item.linkageFilters.length)
+          // 重新push 可保证数组指针不变 可以watch到
+          if (newList.length > 0) {
+            newList.forEach(newLinkage => {
+              item.linkageFilters.push(newLinkage)
+            })
+          }
+        }
+      })
+
+      bus.$emit('clear_panel_linkage', { viewId: viewId })
     }
   },
   modules: {

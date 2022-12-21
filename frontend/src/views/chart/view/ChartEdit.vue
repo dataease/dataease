@@ -192,7 +192,7 @@
                               @command="chartFieldEdit"
                             >
                               <span class="el-dropdown-link">
-                                <i class="el-icon-s-tools" />
+                                <i class="el-icon-s-tools"/>
                               </span>
                               <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item
@@ -267,7 +267,7 @@
                               @command="chartFieldEdit"
                             >
                               <span class="el-dropdown-link">
-                                <i class="el-icon-s-tools" />
+                                <i class="el-icon-s-tools"/>
                               </span>
                               <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item
@@ -362,7 +362,7 @@
                           style="padding: 6px;"
                         >
                           {{ $t('chart.change_chart_type') }}
-                          <i class="el-icon-caret-bottom" />
+                          <i class="el-icon-caret-bottom"/>
                         </el-button>
                       </el-popover>
                     </span>
@@ -404,6 +404,68 @@
                           />
                         </el-radio>
                       </el-radio-group>
+                    </el-row>
+                  </el-row>
+                  <el-row class="padding-lr">
+                    <!--                    <span-->
+                    <!--                      style="color: #909399; font-size: 8px;width: 80px;text-align: right;"-->
+                    <!--                    >-->
+                    <!--                      Tips:{{ $t('chart.rich_text_view_result_tips') }}-->
+                    <!--                    </span>-->
+                    <span
+                      style="width: 80px;text-align: right;"
+                    >
+                      {{ $t('panel.refresh_frequency') }}
+                    </span>
+                    <el-tooltip
+                      class="item"
+                      effect="dark"
+                      placement="bottom"
+                    >
+                      <div slot="content">
+                        {{ $t('chart.chart_refresh_tips') }}
+                      </div>
+                      <i
+                        class="el-icon-info"
+                        style="cursor: pointer;color: #606266;font-size: 12px"
+                      />
+                    </el-tooltip>
+                    <span class="padding-lr">
+                      <el-checkbox
+                        v-model="view.refreshViewEnable"
+                        class="el-input-refresh-loading"
+                        @change="refreshAttrChange"
+                      ></el-checkbox>
+                      {{ $t('panel.enable_refresh_view') }}
+                    </span>
+                    <el-row>
+                      <el-input
+                        v-model="view.refreshTime"
+                        class="el-input-refresh-time"
+                        type="number"
+                        size="mini"
+                        controls-position="right"
+                        :min="1"
+                        :max="3600"
+                        :disabled="!view.refreshViewEnable"
+                        @change="refreshAttrChange"
+                      />
+                      <el-select
+                        v-model="view.refreshUnit"
+                        class="el-input-refresh-unit margin-left8"
+                        size="mini"
+                        :disabled="!view.refreshViewEnable"
+                        @change="refreshAttrChange"
+                      >
+                        <el-option
+                          :label="$t('panel.minute')"
+                          :value="'minute'"
+                        />
+                        <el-option
+                          :label="$t('panel.second')"
+                          :value="'second'"
+                        />
+                      </el-select>
                     </el-row>
                   </el-row>
 
@@ -490,8 +552,8 @@
                     >
                       <span class="data-area-label">
                         <span v-if="view.type && view.type.includes('table')">{{
-                          $t('chart.drag_block_table_data_column')
-                        }}</span>
+                            $t('chart.drag_block_table_data_column')
+                          }}</span>
                         <span
                           v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall' || view.type === 'area')"
                         >{{ $t('chart.drag_block_type_axis') }}</span>
@@ -499,18 +561,18 @@
                           v-else-if="view.type && view.type.includes('pie')"
                         >{{ $t('chart.drag_block_pie_label') }}</span>
                         <span v-else-if="view.type && view.type.includes('funnel')">{{
-                          $t('chart.drag_block_funnel_split')
-                        }}</span>
+                            $t('chart.drag_block_funnel_split')
+                          }}</span>
                         <span v-else-if="view.type && view.type.includes('radar')">{{
-                          $t('chart.drag_block_radar_label')
-                        }}</span>
+                            $t('chart.drag_block_radar_label')
+                          }}</span>
                         <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.area') }}</span>
                         <span v-else-if="view.type && view.type.includes('treemap')">{{
-                          $t('chart.drag_block_treemap_label')
-                        }}</span>
+                            $t('chart.drag_block_treemap_label')
+                          }}</span>
                         <span v-else-if="view.type && view.type === 'word-cloud'">{{
-                          $t('chart.drag_block_word_cloud_label')
-                        }}</span>
+                            $t('chart.drag_block_word_cloud_label')
+                          }}</span>
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
                         <span v-show="view.type !== 'richTextView'"> / </span>
                         <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
@@ -633,8 +695,8 @@
                     >
                       <span class="data-area-label">
                         <span v-if="view.type && view.type.includes('table')">{{
-                          $t('chart.drag_block_table_data_column')
-                        }}</span>
+                            $t('chart.drag_block_table_data_column')
+                          }}</span>
                         <span
                           v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'waterfall' || view.type === 'area')"
                         >{{ $t('chart.drag_block_value_axis') }}</span>
@@ -642,30 +704,30 @@
                           v-else-if="view.type && view.type.includes('pie')"
                         >{{ $t('chart.drag_block_pie_angel') }}</span>
                         <span v-else-if="view.type && view.type.includes('funnel')">{{
-                          $t('chart.drag_block_funnel_width')
-                        }}</span>
+                            $t('chart.drag_block_funnel_width')
+                          }}</span>
                         <span v-else-if="view.type && view.type.includes('radar')">{{
-                          $t('chart.drag_block_radar_length')
-                        }}</span>
+                            $t('chart.drag_block_radar_length')
+                          }}</span>
                         <span v-else-if="view.type && view.type.includes('gauge')">{{
-                          $t('chart.drag_block_gauge_angel')
-                        }}</span>
+                            $t('chart.drag_block_gauge_angel')
+                          }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('text')"
                         >{{ $t('chart.drag_block_label_value') }}</span>
                         <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.chart_data') }}</span>
                         <span v-else-if="view.type && view.type.includes('tree')">{{
-                          $t('chart.drag_block_treemap_size')
-                        }}</span>
+                            $t('chart.drag_block_treemap_size')
+                          }}</span>
                         <span v-else-if="view.type && view.type === 'chart-mix'">{{
-                          $t('chart.drag_block_value_axis_main')
-                        }}</span>
+                            $t('chart.drag_block_value_axis_main')
+                          }}</span>
                         <span
                           v-else-if="view.type && view.type === 'liquid'"
                         >{{ $t('chart.drag_block_progress') }}</span>
                         <span v-else-if="view.type && view.type === 'word-cloud'">{{
-                          $t('chart.drag_block_word_cloud_size')
-                        }}</span>
+                            $t('chart.drag_block_word_cloud_size')
+                          }}</span>
                         <span v-show="view.type !== 'richTextView'"> / </span>
                         <span>{{ $t('chart.quota') }}</span>
                         <i
@@ -1137,7 +1199,7 @@
                 :title="$t('panel.position_adjust_component')"
                 :name="'positionAdjust'"
               >
-                <position-adjust />
+                <position-adjust/>
               </el-collapse-item>
             </el-collapse>
           </div>
@@ -1293,7 +1355,7 @@
       width="800px"
       class="dialog-css"
     >
-      <quota-filter-editor :item="quotaItem" />
+      <quota-filter-editor :item="quotaItem"/>
       <div
         slot="footer"
         class="dialog-footer"
@@ -1320,7 +1382,7 @@
       width="800px"
       class="dialog-css"
     >
-      <dimension-filter-editor :item="dimensionItem" />
+      <dimension-filter-editor :item="dimensionItem"/>
       <div
         slot="footer"
         class="dialog-footer"
@@ -1622,8 +1684,8 @@ import {
   pluginTypes,
   post,
   resetViewCacheCallBack,
-  viewEditSave,
-  tableField
+  tableField,
+  viewEditSave
 } from '@/api/chart/chart'
 import DimensionItem from '../components/dragItem/DimensionItem'
 import QuotaItem from '../components/dragItem/QuotaItem'
@@ -1683,6 +1745,7 @@ import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny } from '@/utils/StringUtils'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
+
 export default {
   name: 'ChartEdit',
   components: {
@@ -1759,6 +1822,9 @@ export default {
         show: true,
         type: 'bar',
         title: '',
+        refreshViewEnable: false,
+        refreshUnit: 'minute',
+        refreshTime: 5,
         customAttr: {
           color: DEFAULT_COLOR_CASE,
           size: DEFAULT_SIZE,
@@ -2290,6 +2356,12 @@ export default {
       view.senior = JSON.stringify(view.senior)
       delete view.data
       return view
+    },
+    refreshAttrChange(switchType = false, switchRender = false) {
+      this.changeEditStatus(true)
+      const view = this.buildParam(true, 'chart', false, switchType, switchRender)
+      if (!view) return
+      viewEditSave(this.panelInfo.id, view)
     },
     calcData(getData, trigger, needRefreshGroup = false, switchType = false, switchRender = false) {
       this.changeEditStatus(true)
@@ -3833,5 +3905,20 @@ span {
   color: rgb(135, 141, 159);
   cursor: pointer;
   z-index: 1;
+}
+
+
+.el-input-refresh-time {
+  width: calc(50% - 4px) !important;
+}
+
+.el-input-refresh-unit {
+  margin-left: 8px;
+  width: calc(50% - 4px) !important;
+}
+
+.el-input-refresh-loading {
+  margin-left: 4px;
+  font-size: 12px !important;
 }
 </style>
