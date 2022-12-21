@@ -178,13 +178,18 @@ export default {
     addLocationXaxis(e) {
       this.dragCheckType(this.busiFieldMap.locationXaxis, 'd')
       this.dragMoveDuplicate(this.busiFieldMap.locationXaxis, e)
-      this.busiFieldMap.locationXaxis = [this.busiFieldMap.locationXaxis[0]]
+      if (this.busiFieldMap.locationXaxis?.length) {
+        this.busiFieldMap.locationXaxis = [this.busiFieldMap.locationXaxis[0]]
+      }
+
       this.calcData(true)
     },
     addLocationYaxis(e) {
       this.dragCheckType(this.busiFieldMap.locationYaxis, 'd')
       this.dragMoveDuplicate(this.busiFieldMap.locationYaxis, e)
-      this.busiFieldMap.locationYaxis = [this.busiFieldMap.locationYaxis[0]]
+      if (this.busiFieldMap.locationYaxis?.length) {
+        this.busiFieldMap.locationYaxis = [this.busiFieldMap.locationYaxis[0]]
+      }
       this.calcData(true)
     },
     locationXItemRemove(item) {
