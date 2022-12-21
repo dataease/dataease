@@ -927,7 +927,9 @@ public class ChartViewService {
         PageInfo pageInfo = new PageInfo();
         pageInfo.setGoPage(chartExtRequest.getGoPage());
         if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
-            pageInfo.setPageSize(Math.min(view.getResultCount() - (chartExtRequest.getGoPage() - 1) * chartExtRequest.getPageSize(), chartExtRequest.getPageSize()));
+            if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0) {
+                pageInfo.setPageSize(Math.min(view.getResultCount() - (chartExtRequest.getGoPage() - 1) * chartExtRequest.getPageSize(), chartExtRequest.getPageSize()));
+            }
         } else {
             pageInfo.setPageSize(chartExtRequest.getPageSize());
         }
