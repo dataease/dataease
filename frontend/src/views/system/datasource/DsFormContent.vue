@@ -1000,7 +1000,7 @@ export default {
           method = this.formType === 'add' ? appApply : appEdit
         }
         if (
-          this.formType === 'modify' &&
+          this.formType === 'modify' && this.$route.query.showModel !== 'copy' &&
           this.originConfiguration !== form.configuration
         ) {
           if (repeat && !isAppMarket) {
