@@ -153,7 +153,7 @@ export function getLabel(chart) {
         // label value formatter
         if (chart.type && chart.type !== 'waterfall') {
           label.formatter = function(param) {
-            let yAxis, extStack
+            let yAxis, extStack, xaxisExt
             let res = param.value
             try {
               yAxis = JSON.parse(chart.yaxis)
@@ -165,11 +165,16 @@ export function getLabel(chart) {
             } catch (e) {
               extStack = JSON.parse(JSON.stringify(chart.extStack))
             }
+            try {
+              xaxisExt = JSON.parse(chart.xaxisExt)
+            } catch (e) {
+              xaxisExt = JSON.parse(JSON.stringify(chart.xaxisExt))
+            }
 
-            if (equalsAny(chart.type, 'bar-stack', 'line-stack',
+            if (equalsAny(chart.type, 'line', 'bar-stack', 'line-stack',
               'bar-stack-horizontal', 'percentage-bar-stack', 'percentage-bar-stack-horizontal')) {
               let f
-              if (extStack && extStack.length > 0) {
+              if (extStack?.length > 0 || xaxisExt?.length > 0) {
                 f = yAxis[0]
               } else {
                 for (let i = 0; i < yAxis.length; i++) {
