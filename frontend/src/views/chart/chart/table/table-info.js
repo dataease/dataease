@@ -32,6 +32,21 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
     const drillFilters = JSON.parse(JSON.stringify(chart.drillFilters))
     const drillExp = drillFilters[drillFilters.length - 1].datasetTableField
 
+    // 记录下钻起始字段的index
+    let xAxis = []
+    try {
+      xAxis = JSON.parse(chart.xaxis)
+    } catch (err) {
+      xAxis = JSON.parse(JSON.stringify(chart.xaxis))
+    }
+    let index = 0
+    for (let i = 0; i < xAxis.length; i++) {
+      if (xAxis[i].id === drillFilters[0].fieldId) {
+        index = i
+        break
+      }
+    }
+
     // 移除所有下钻字段
     const removeField = []
     for (let i = 0; i < chart.drillFilters.length; i++) {
@@ -78,6 +93,11 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
         }
       }
     })
+
+    // 修正下钻字段的index，获取下钻位置元素添加到index位置，并删除
+    const ele = columns[columns.length - 1]
+    columns.splice(index, 0, ele)
+    columns.splice(columns.length - 1, 1)
   } else {
     fields.forEach(ele => {
       const f = getCurrentField(chart.xaxis, ele)
@@ -190,6 +210,21 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
     const drillFilters = JSON.parse(JSON.stringify(chart.drillFilters))
     const drillExp = drillFilters[drillFilters.length - 1].datasetTableField
 
+    // 记录下钻起始字段的index
+    let xAxis
+    try {
+      xAxis = JSON.parse(chart.xaxis)
+    } catch (err) {
+      xAxis = JSON.parse(JSON.stringify(chart.xaxis))
+    }
+    let index = 0
+    for (let i = 0; i < xAxis.length; i++) {
+      if (xAxis[i].id === drillFilters[0].fieldId) {
+        index = i
+        break
+      }
+    }
+
     // 移除所有下钻字段
     const removeField = []
     for (let i = 0; i < chart.drillFilters.length; i++) {
@@ -230,6 +265,17 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
         }
       }
     })
+
+    // 修正下钻字段的index，获取下钻位置元素添加到index位置，并删除
+    let yAxis
+    try {
+      yAxis = JSON.parse(chart.yaxis)
+    } catch (err) {
+      yAxis = JSON.parse(JSON.stringify(chart.yaxis))
+    }
+    const ele = columns[columns.length - 1 - yAxis.length]
+    columns.splice(index, 0, ele)
+    columns.splice(columns.length - 1 - yAxis.length, 1)
   } else {
     fields.forEach(ele => {
       const f = getCurrentField(chart.yaxis, ele)
