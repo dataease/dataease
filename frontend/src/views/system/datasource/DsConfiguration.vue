@@ -734,6 +734,7 @@ import { checkApiDatasource, getSchema } from '@/api/system/datasource'
 import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
 import dePwd from '@/components/deCustomCm/DePwd.vue'
 import msgCfm from '@/components/msgCfm'
+import { Base64 } from 'js-base64'
 export default {
   name: 'DsConfiguration',
   components: {
@@ -1069,10 +1070,10 @@ export default {
         }
         this.$refs.apiItemBasicInfo.validate((valid) => {
           if (valid) {
-            const data = JSON.parse(JSON.stringify(this.apiItem))
+            const data = Base64.encode(JSON.stringify(this.apiItem))
             this.loading = true
             this.disabledNext = true
-            checkApiDatasource(data)
+            checkApiDatasource({'data': data})
               .then((res) => {
                 this.loading = false
                 this.disabledNext = false

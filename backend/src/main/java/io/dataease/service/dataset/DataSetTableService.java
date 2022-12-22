@@ -1116,6 +1116,9 @@ public class DataSetTableService {
             if (dsType.equals(DatasourceTypes.oracle.getType())) {
                 subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
             } else {
+                if(fromItem.getAlias() == null){
+                    throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
+                }
                 subSelect.setAlias(new Alias(fromItem.getAlias().toString()));
             }
             plainSelect.setFromItem(subSelect);
@@ -2818,7 +2821,7 @@ public class DataSetTableService {
                 boolean hasSubBinaryExpression = false;
                 try {
                     BinaryExpression leftBinaryExpression = (BinaryExpression) expr.getLeftExpression();
-                    hasSubBinaryExpression = leftBinaryExpression.getLeftExpression() instanceof BinaryExpression;
+                    hasSubBinaryExpression = leftBinaryExpression.getLeftExpression() instanceof Expression;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
