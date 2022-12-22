@@ -35,7 +35,7 @@
           :key="field.name"
           :field="field.child ? '' : field.dataeaseName"
           :resizable="true"
-          :sortable="(!field.child || !field.child.length)"
+          :sortable="(!mergeCells || !mergeCells.length) && (!field.child || !field.child.length)"
           :title="field.name"
           :width="columnWidth"
         >
