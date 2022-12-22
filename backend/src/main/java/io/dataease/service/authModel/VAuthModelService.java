@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +28,9 @@ public class VAuthModelService {
     public List<VAuthModelDTO> queryAuthModel(VAuthModelRequest request) {
         request.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         List<VAuthModelDTO> result = extVAuthModelMapper.queryAuthModel(request);
-
+        if(CollectionUtils.isEmpty(result)){
+            return new ArrayList<>();
+        }
         if (request.getPrivileges() != null) {
             result = filterPrivileges(request, result);
         }
