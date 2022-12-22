@@ -1116,6 +1116,9 @@ public class DataSetTableService {
             if (dsType.equals(DatasourceTypes.oracle.getType())) {
                 subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
             } else {
+                if(fromItem.getAlias() == null){
+                    throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
+                }
                 subSelect.setAlias(new Alias(fromItem.getAlias().toString()));
             }
             plainSelect.setFromItem(subSelect);
