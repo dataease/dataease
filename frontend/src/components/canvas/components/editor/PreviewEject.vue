@@ -139,6 +139,10 @@ export default {
           sourceFieldId: jumpParam.sourceFieldId,
           targetPanelId: this.panelId
         }
+        //透视表中的其他维度数据数据都进行匹配
+        if (jumpParam.sourceType && jumpParam.sourceType === 'table-pivot') {
+          jumpRequestParam.targetPanelId = null
+        }
         try {
           // 刷新跳转目标仪表板联动信息
           queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
