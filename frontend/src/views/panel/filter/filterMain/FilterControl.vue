@@ -166,7 +166,7 @@
           <el-popover
             placement="bottom-end"
             :disabled="!attrs.enableParameters"
-            width="200"
+            width="420"
           >
             <div class="view-container-class">
               <el-tabs

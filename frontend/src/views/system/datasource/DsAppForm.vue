@@ -800,7 +800,7 @@ export default {
             data.request = JSON.stringify(data.request)
             this.loading = true
             this.disabledNext = true
-            checkApiDatasource(data).then(res => {
+            checkApiDatasource({'data': Base64.encode(JSON.stringify(data))}).then(res => {
               this.loading = false
               this.disabledNext = false
               this.apiItem.status = 'Success'
@@ -858,7 +858,7 @@ export default {
           const data = JSON.parse(JSON.stringify(this.apiItem))
           data.request = JSON.stringify(data.request)
           this.loading = true
-          checkApiDatasource(data).then(res => {
+          checkApiDatasource({'data': Base64.encode(JSON.stringify(data))}).then(res => {
             this.loading = false
             this.$success(i18n.t('commons.success'))
             this.apiItem.fields = res.data.fields

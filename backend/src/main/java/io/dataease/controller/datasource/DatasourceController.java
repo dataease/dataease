@@ -1,6 +1,8 @@
 package io.dataease.controller.datasource;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.commons.constants.DePermissionType;
@@ -27,6 +29,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Api(tags = "数据源：数据源管理")
@@ -135,7 +138,9 @@ public class DatasourceController {
 
     @ApiIgnore
     @PostMapping("/checkApiDatasource")
-    public ApiDefinition checkApiDatasource(@RequestBody ApiDefinition apiDefinition) throws Exception {
+    public ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws Exception {
+        ApiDefinition apiDefinition = new Gson().fromJson(new String(java.util.Base64.getDecoder().decode(data.get("data"))), new TypeToken<ApiDefinition>() {
+        }.getType());
         return datasourceService.checkApiDatasource(apiDefinition);
     }
 
