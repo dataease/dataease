@@ -308,7 +308,7 @@ export default {
       } else if (chart.type === 'table-normal') {
         this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else if (chart.type === 'table-pivot') {
-        this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
+        this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableHeaderClick, this.tableData)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false
@@ -367,6 +367,16 @@ export default {
         this.trackBarStyle.top = (param.y + 10) + 'px'
         this.$refs.viewTrack.trackButtonClick()
       }
+    },
+    tableHeaderClick(param) {
+      const cell = this.myChart.getCell(param.target)
+      const meta = cell.getMeta()
+      const rowData = meta.query
+      // rowData is a object,do something
+      // {
+      //   city:"绍兴市",
+      //   province:"浙江省"
+      // }
     },
     setBackGroundBorder() {
       if (this.chart.customStyle) {

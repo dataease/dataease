@@ -301,7 +301,7 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
   return s2
 }
 
-export function baseTablePivot(s2, container, chart, action, tableData) {
+export function baseTablePivot(s2, container, chart, action, headerAction, tableData) {
   const containerDom = document.getElementById(container)
 
   // row and column
@@ -476,6 +476,8 @@ export function baseTablePivot(s2, container, chart, action, tableData) {
 
   // click
   s2.on(S2Event.DATA_CELL_CLICK, action)
+  s2.on(S2Event.ROW_CELL_CLICK, headerAction)
+  s2.on(S2Event.COL_CELL_CLICK, headerAction)
 
   // theme
   const customTheme = getCustomTheme(chart)
