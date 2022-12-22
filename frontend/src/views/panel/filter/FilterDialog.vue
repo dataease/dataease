@@ -275,6 +275,7 @@
           :control-attrs="myAttrs"
           :child-views="childViews"
           :dataset-params="datasetParams"
+          :activeName="activeName"
         />
 
         <filter-foot :element="currentElement" />
