@@ -61,9 +61,8 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
     if (customAttr.color) {
       const colorValue = customAttr.color.value
       isGradient = isGradientValue(colorValue)
-      // chart_option.color = customAttr.color.colors
       if (customAttr.color.areaBorderColor) {
-        chart_option.series[0].itemStyle.normal.borderColor = customAttr.color.areaBorderColor
+        chart_option.geo.itemStyle.normal.borderColor = customAttr.color.areaBorderColor
       }
     }
     // tooltip
@@ -94,8 +93,8 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
       // label
       if (customAttr.label) {
         const text = customAttr.label.formatter
-        chart_option.series[0].label = customAttr.label
-        chart_option.series[0].label.formatter = params => {
+        chart_option.geo.label = customAttr.label
+        chart_option.geo.label.formatter = params => {
           const a = params.seriesName
           const b = params.name
           const c = params.value ? params.value : ''
@@ -103,13 +102,14 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
         }
         chart_option.series[0].labelLine = customAttr.label.labelLine
         if (customAttr.label.bgColor) {
-          chart_option.series[0].label.backgroundColor = customAttr.label.bgColor
+          chart_option.geo.label.backgroundColor = customAttr.label.bgColor
         }
         if (customAttr.label.showShadow) {
-          chart_option.series[0].label.shadowBlur = 2
-          chart_option.series[0].label.showdowColor = customAttr.label.shadowColor
+          chart_option.geo.label.shadowBlur = 2
+          chart_option.geo.label.showdowColor = customAttr.label.shadowColor
         }
-        chart_option.series[0].itemStyle.emphasis.label.show = customAttr.label.show
+        chart_option.geo.itemStyle.emphasis.label.show = customAttr.label.show
+        delete chart_option.geo.label.formatter
       }
       const valueArr = chart.data.series[seriesIndex].data
       // visualMap
@@ -231,9 +231,7 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
                   return con?.color || '#b02a02'
                 }
               },
-              encode: {
-                tooltip: 2
-              },
+
               silent: true,
               data: markData
             }
