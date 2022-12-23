@@ -554,7 +554,7 @@ export default {
         }
 
         &.active {
-          background-color: var(--deWhiteHover, #3370ff);
+          background-color: var(--deWhiteHover, #e0eaff);
           color: var(--primary, #3370ff);
         }
 

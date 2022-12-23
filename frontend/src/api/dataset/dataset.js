@@ -86,6 +86,23 @@ export function listDatasource() {
   })
 }
 
+export function getDatasetList() {
+  return request({
+    url: 'dataset/table/list',
+    loading: false,
+    method: 'post',
+    data: {}
+  })
+}
+
+export function getPanelGroupList() {
+  return request({
+    url: '/panel/group/list',
+    loading: false,
+    method: 'get'
+  })
+}
+
 export function listApiDatasource() {
   return request({
     url: '/datasource/list/api',
