@@ -58,7 +58,8 @@
                                       data_from,
                                       refresh_view_enable,
                                       refresh_unit,
-                                      refresh_time)
+                                      refresh_time,
+                                      view_fields)
         SELECT id,
                `name`,
                title,
@@ -89,7 +90,8 @@
                data_from,
                refresh_view_enable,
                refresh_unit,
-               refresh_time
+               refresh_time,
+               view_fields
         from chart_view
         WHERE chart_view.id = #{id}
     </insert>
@@ -306,7 +308,8 @@
                                 `chart_type`,
                                 `is_plugin`,
                                 `senior`,
-                                `data_from`)
+                                `data_from`,
+                                `view_fields`)
         SELECT #{newChartId},
                GET_CHART_VIEW_COPY_NAME(#{oldChartId}, #{panelId}) as `name`,
                #{panelId},
@@ -334,7 +337,8 @@
                'private',
                `is_plugin`,
                `senior`,
-               `data_from`
+               `data_from`,
+               `view_fields`
         FROM chart_view
         WHERE id = #{oldChartId}
     </insert>
@@ -521,7 +525,8 @@
         cv.data_from = cve.data_from,
         cv.refresh_view_enable = cve.refresh_view_enable,
         cv.refresh_unit = cve.refresh_unit,
-        cv.refresh_time = cve.refresh_time
+        cv.refresh_time = cve.refresh_time,
+        cv.view_fields = cve.view_fields
         where cve.id = cv.id and cv.id in
         <foreach collection="viewIds" item="viewId" open='(' separator=',' close=')'>
             #{viewId}
@@ -560,7 +565,8 @@
             cv.data_from = cve.data_from,
             cv.refresh_view_enable = cve.refresh_view_enable,
             cv.refresh_unit = cve.refresh_unit,
-            cv.refresh_time = cve.refresh_time
+            cv.refresh_time = cve.refresh_time,
+            cv.view_fields = cve.view_fields
         where cve.id = cv.id and cv.id =#{viewId}
     </update>
 
