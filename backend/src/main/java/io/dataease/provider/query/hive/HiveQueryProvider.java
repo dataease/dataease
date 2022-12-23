@@ -770,6 +770,14 @@ public class HiveQueryProvider extends QueryProvider {
         return tmpSql;
     }
 
+    public String getTotalCount(boolean isTable, String sql, Datasource ds) {
+        if(isTable){
+            return "SELECT COUNT(*) from " + String.format(HiveConstants.KEYWORD_TABLE, sql);
+        }else {
+            return "SELECT COUNT(*) from ( " + sql + " ) DE_COUNT_TEMP";
+        }
+    }
+
     @Override
     public String createRawQuerySQL(String table, List<DatasetTableField> fields, Datasource ds) {
         String[] array = fields.stream().map(f -> {
@@ -781,12 +789,12 @@ public class HiveQueryProvider extends QueryProvider {
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1}", StringUtils.join(array, ","), table);
+        return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_OFFSET, DE_PAGE_SIZE ", StringUtils.join(array, ","), table);
     }
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS tmp ", fields, null);
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS DE_TEMP  LIMIT DE_OFFSET, DE_PAGE_SIZE ", fields, null);
     }
 
     @Override

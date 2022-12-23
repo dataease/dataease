@@ -228,7 +228,7 @@ export default {
         ]
       }
       pluginLists(0, 0, param).then((response) => {
-        this.data = response.data.listObject
+        this.data = response.data.listObject.filter(item => item.pluginId > 1)
         this.data.forEach((ele) => {
           if (ele.cost) {
             ele.cost = ele.cost.toLocaleString()
@@ -283,10 +283,10 @@ export default {
       this.handlerConfirm(options)
     },
     btnDisabled(row) {
-      return row.pluginId < 4
+      return row.store === 'default'
     },
     updateDisabled(row) {
-      return row.pluginId === 1
+      return row.store === 'default'
     }
   }
 }

@@ -166,7 +166,7 @@
           <el-popover
             placement="bottom-end"
             :disabled="!attrs.enableParameters"
-            width="200"
+            width="420"
           >
             <div class="view-container-class">
               <el-tabs
@@ -215,12 +215,12 @@
                 v-model="attrs.parameters"
               >
                 <el-checkbox
-                  v-for="(item ) in childViews.datasetParams"
+                  v-for="(item ) in allParams"
                   :key="item.id"
                   :label="item.id"
                   class="de-checkbox"
                 >
-                  <div class="span-div">
+                  <div class="span-div2">
                     <span
                       v-if="item.alias && item.alias.length <= 7"
                       style="margin-left: 6px"
@@ -280,6 +280,9 @@ export default {
     datasetParams: {
       type: Array,
       default: () => []
+    },
+    activeName:{
+
     }
   },
   data() {
@@ -327,16 +330,41 @@ export default {
           }
           this.attrs.parameters = parameters
         }
-        this.allParams = this.childViews.datasetParams
+        this.allParams = JSON.parse(JSON.stringify(this.childViews.datasetParams))
       }
     },
     'datasetParams': {
       handler(newName, oldName) {
+        this.allParams = JSON.parse(JSON.stringify(this.childViews.datasetParams))
         if (this.datasetParams.length > 0) {
-          this.allParams = this.childViews.datasetParams
           for (var j = 0; j < this.datasetParams.length; j++) {
+            var hasParam = false
             for (var i = 0; i < this.childViews.datasetParams.length; i++) {
-              if (this.childViews.datasetParams[i].id.split('|DE|')[0] !== this.datasetParams[j].id.split('|DE|')[0]) {
+              if (this.childViews.datasetParams[i].id === this.datasetParams[j].id) {
+                hasParam = true
+              }
+            }
+            if(!hasParam){
+              this.allParams.push(this.datasetParams[j])
+            }
+          }
+        }
+      }
+    },
+    'activeName':{
+      handler(newName, oldName) {
+        if(this.activeName === 'assembly'){
+          this.allParams = JSON.parse(JSON.stringify(this.childViews.datasetParams))
+        }else {
+          if (this.datasetParams.length > 0) {
+            for (var j = 0; j < this.datasetParams.length; j++) {
+              var hasParam = false
+              for (var i = 0; i < this.childViews.datasetParams.length; i++) {
+                if (this.childViews.datasetParams[i].id === this.datasetParams[j].id) {
+                  hasParam = true
+                }
+              }
+              if(!hasParam){
                 this.allParams.push(this.datasetParams[j])
               }
             }
@@ -470,6 +498,13 @@ export default {
 
 .span-div {
   width: 135px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.span-div2 {
+  width: 350px;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;

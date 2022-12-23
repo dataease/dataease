@@ -222,7 +222,8 @@
                   icon="el-icon-plus"
                   round
                   @click="addLinkJumpField"
-                >{{ $t('panel.add_jump_field') }}</el-button>
+                >{{ $t('panel.add_jump_field') }}
+                </el-button>
               </el-row>
               <i
                 slot="reference"
@@ -301,7 +302,7 @@
                       clearable
                     />
                     <div class="field-height">
-                      <el-divider />
+                      <el-divider/>
                       <draggable
                         v-model="linkJumpInfoArray"
                         :options="{group:{name: 'drag',pull:'clone'},sort: true}"
@@ -361,12 +362,14 @@
       <el-button
         size="mini"
         @click="cancel()"
-      >{{ $t('commons.cancel') }}</el-button>
+      >{{ $t('commons.cancel') }}
+      </el-button>
       <el-button
         type="primary"
         size="mini"
         @click="save()"
-      >{{ $t('commons.confirm') }}</el-button>
+      >{{ $t('commons.confirm') }}
+      </el-button>
     </el-row>
   </el-row>
 </template>
@@ -487,9 +490,7 @@ export default {
       'panelViewDetailsInfo'
     ])
   },
-  watch: {
-
-  },
+  watch: {},
   created() {
   },
   mounted() {
@@ -509,7 +510,7 @@ export default {
         checkAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + yaxisNew + chartDetails.yaxisExt + chartDetails.drillFields
         checkJumpStr = checkAllAxisStr
       } else if (chartDetails.type === 'table-pivot') {
-        checkJumpStr = chartDetails.yaxis + chartDetails.yaxisExt + chartDetails.drillFields
+        checkJumpStr = checkAllAxisStr
       } else if (chartDetails.type === 'table-info') {
         checkJumpStr = chartDetails.xaxis + chartDetails.drillFields
       } else {
@@ -657,7 +658,10 @@ export default {
       pos2.line = pos1.line
       pos2.ch = pos1.ch
       this.$refs.myCm.codemirror.replaceRange(param, pos2)
-      this.$refs.myCm.codemirror.markText(pos2, { line: pos2.line, ch: param.length + pos2.ch }, { atomic: true, selectRight: true })
+      this.$refs.myCm.codemirror.markText(pos2, { line: pos2.line, ch: param.length + pos2.ch }, {
+        atomic: true,
+        selectRight: true
+      })
     },
     matchToAuto() {
       if (!this.name2Auto.length) return
@@ -665,7 +669,10 @@ export default {
         const search = this.$refs.myCm.codemirror.getSearchCursor(ele, { line: 0, ch: 0 })
         if (search.find()) {
           const { from, to } = search.pos
-          this.$refs.myCm.codemirror.markText({ line: from.line, ch: from.ch - 1 }, { line: to.line, ch: to.ch + 1 }, { atomic: true, selectRight: true })
+          this.$refs.myCm.codemirror.markText({ line: from.line, ch: from.ch - 1 }, {
+            line: to.line,
+            ch: to.ch + 1
+          }, { atomic: true, selectRight: true })
         }
       })
     },
@@ -696,41 +703,46 @@ export default {
 
 <style scoped>
 
-.my_table ::v-deep .el-table__row>td{
+.my_table ::v-deep .el-table__row > td {
   /* 去除表格线 */
   border: none;
   padding: 0 0;
 }
+
 .my_table ::v-deep .el-table th.is-leaf {
   /* 去除上边框 */
-    border: none;
+  border: none;
 }
-.my_table ::v-deep .el-table::before{
+
+.my_table ::v-deep .el-table::before {
   /* 去除下边框 */
   height: 0;
 }
 
-  .root-class {
-    margin: 15px 0px 5px;
-    text-align: center;
-  }
-  .preview {
-    margin-top: 5px;
-    border:1px solid #E6E6E6;
-    height:350px !important;
-    overflow:hidden;
-    background-size: 100% 100% !important;
-  }
-  .preview-show {
-    border-left:1px solid #E6E6E6;
-    height:350px;
-    background-size: 100% 100% !important;
-  }
-.top_border {
-  border-top:1px solid #E6E6E6;
+.root-class {
+  margin: 15px 0px 5px;
+  text-align: center;
 }
 
-.slot-class{
+.preview {
+  margin-top: 5px;
+  border: 1px solid #E6E6E6;
+  height: 350px !important;
+  overflow: hidden;
+  background-size: 100% 100% !important;
+}
+
+.preview-show {
+  border-left: 1px solid #E6E6E6;
+  height: 350px;
+  background-size: 100% 100% !important;
+}
+
+.top_border {
+  border-top: 1px solid #E6E6E6;
+}
+
+.slot-class {
   color: white;
 }
 
@@ -739,13 +751,14 @@ export default {
   text-align: center;
 
 }
-.ellip{
+
+.ellip {
   /*width: 100%;*/
   margin-left: 10px;
   margin-right: 10px;
-  overflow: hidden;/*超出部分隐藏*/
-  white-space: nowrap;/*不换行*/
-  text-overflow:ellipsis;/*超出部分文字以...显示*/
+  overflow: hidden; /*超出部分隐藏*/
+  white-space: nowrap; /*不换行*/
+  text-overflow: ellipsis; /*超出部分文字以...显示*/
   text-align: center;
   background-color: #f7f8fa;
   color: #3d4d66;
@@ -755,23 +768,25 @@ export default {
   border-radius: 3px;
 }
 
-.select-filed{
+.select-filed {
   /*width: 100%;*/
   margin-left: 10px;
   margin-right: 10px;
-  overflow: hidden;/*超出部分隐藏*/
-  white-space: nowrap;/*不换行*/
-  text-overflow:ellipsis;/*超出部分文字以...显示*/
+  overflow: hidden; /*超出部分隐藏*/
+  white-space: nowrap; /*不换行*/
+  text-overflow: ellipsis; /*超出部分文字以...显示*/
   color: #3d4d66;
   font-size: 12px;
   line-height: 35px;
   height: 35px;
   border-radius: 3px;
 }
-::v-deep .el-popover{
+
+::v-deep .el-popover {
   height: 200px;
   overflow: auto;
 }
+
 .custom-position {
   flex: 1;
   display: flex;
@@ -781,17 +796,20 @@ export default {
   flex-flow: row nowrap;
   color: #9ea6b2;
 }
+
 .tree-style {
   padding: 10px 15px;
   height: 100%;
   overflow-y: auto;
 }
-/deep/ .vue-treeselect__control{
+
+/deep/ .vue-treeselect__control {
   height: 28px;
 }
-/deep/ .vue-treeselect__single-value{
-  color:#606266;
-  line-height: 28px!important;
+
+/deep/ .vue-treeselect__single-value {
+  color: #606266;
+  line-height: 28px !important;
 }
 
 .custom-tree-node {
@@ -801,26 +819,30 @@ export default {
   justify-content: space-between;
   font-size: 14px;
 }
-.auth-span{
+
+.auth-span {
   float: right;
-  width:30px;
+  width: 30px;
   margin-right: 5px
 }
-.tree-head{
+
+.tree-head {
   height: 30px;
   line-height: 30px;
   border-bottom: 1px solid var(--TableBorderColor, #e6e6e6);
   background-color: var(--SiderBG, #f7f8fa);
   font-size: 12px;
-  color: var(--TableColor, #3d4d66) ;
+  color: var(--TableColor, #3d4d66);
 }
-/deep/ .vue-treeselect__placeholder{
-    line-height:28px
-  }
 
-/deep/ .el-tree--highlight-current .el-tree-node.is-current >.el-tree-node__content {
+/deep/ .vue-treeselect__placeholder {
+  line-height: 28px
+}
+
+/deep/ .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
   background-color: #8dbbef !important;
 }
+
 .codemirror {
   height: 190px;
   overflow-y: auto;
@@ -929,12 +951,12 @@ span {
   font-size: 12px;
 }
 
-.field-height ::v-deep .el-divider--horizontal{
-  margin: 2px 0!important;
+.field-height ::v-deep .el-divider--horizontal {
+  margin: 2px 0 !important;
 }
 
 ::v-deep .CodeMirror {
-  height: 190px!important;
+  height: 190px !important;
 }
 
 </style>

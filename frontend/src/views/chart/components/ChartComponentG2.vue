@@ -58,6 +58,7 @@ import { DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import { baseMixOptionAntV } from '@/views/chart/chart/mix/mix_antv'
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
 import { equalsAny } from '@/utils/StringUtils'
+import { mapState } from 'vuex'
 
 export default {
   name: 'ChartComponentG2',
@@ -140,7 +141,10 @@ export default {
     chartInfo() {
       const { id, title } = this.chart
       return { id, title }
-    }
+    },
+    ...mapState([
+      'canvasStyleData'
+    ])
   },
   watch: {
     chart: {
@@ -279,6 +283,24 @@ export default {
 
       if (this.myChart && chart.type !== 'liquid' && this.searchCount > 0) {
         this.myChart.options.animation = false
+      }
+      if (this.myChart.options.legend) {
+        let pageNavigatorInactiveFill, pageNavigatorFill
+        if (this.canvasStyleData.panel.themeColor === 'dark') {
+          pageNavigatorFill = '#ffffff'
+          pageNavigatorInactiveFill = '#8c8c8c'
+        } else {
+          pageNavigatorFill = '#000000'
+          pageNavigatorInactiveFill = '#8c8c8c'
+        }
+        this.myChart.options.legend['pageNavigator'] = {
+          marker: {
+            style: {
+              inactiveFill: pageNavigatorInactiveFill, // 不能点击的颜色
+              fill: pageNavigatorFill // 正常的颜色
+            }
+          }
+        }
       }
 
       if (this.antVRenderStatus) {

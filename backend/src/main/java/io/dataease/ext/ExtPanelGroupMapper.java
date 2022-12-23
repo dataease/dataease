@@ -3,6 +3,7 @@ package io.dataease.ext;
 import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.dto.RelationDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
+import io.dataease.plugins.common.base.domain.PanelGroup;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -30,4 +31,6 @@ public interface ExtPanelGroupMapper {
     List<PanelGroupDTO> panelGroupInit();
 
     List<RelationDTO> queryPanelRelation(@Param("panelId") String panelId, @Param("userId") Long userId);
+
+    List<PanelGroup> listPanelByUser(@Param("userId") long userId);
 }

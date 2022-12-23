@@ -67,8 +67,8 @@
           >
             {{ $t('chart.total') }}
             <span>{{
-              (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
-            }}</span>
+                (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
+              }}</span>
             {{ $t('chart.items') }}
           </span>
           <de-pagination
@@ -308,7 +308,7 @@ export default {
       } else if (chart.type === 'table-normal') {
         this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
       } else if (chart.type === 'table-pivot') {
-        this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
+        this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableHeaderClick, this.tableData)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false
@@ -347,16 +347,19 @@ export default {
       }
       const dimensionList = []
       for (const key in rowData) {
-        if (meta.fieldValue === rowData[key]) {
+        if (nameIdMap[key]) {
           dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
         }
       }
-
+      this.antVActionPost(dimensionList, nameIdMap[meta.valueField] || 'null')
+    },
+    antVActionPost(dimensionList, name) {
       this.pointParam = {
         data: {
           dimensionList: dimensionList,
           quotaList: [],
-          name: meta.fieldValue || 'null'
+          name: name,
+          sourceType: this.chart.type
         }
       }
 
@@ -367,6 +370,22 @@ export default {
         this.trackBarStyle.top = (param.y + 10) + 'px'
         this.$refs.viewTrack.trackButtonClick()
       }
+    },
+    tableHeaderClick(param) {
+      const cell = this.myChart.getCell(param.target)
+      const meta = cell.getMeta()
+      const rowData = meta.query
+      const nameIdMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['dataeaseName']] = next['id']
+        return pre
+      }, {})
+      const dimensionList = []
+      for (const key in rowData) {
+        if (nameIdMap[key]) {
+          dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
+        }
+      }
+      this.antVActionPost(dimensionList, nameIdMap[meta.field] || 'null')
     },
     setBackGroundBorder() {
       if (this.chart.customStyle) {

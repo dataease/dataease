@@ -6,6 +6,7 @@ import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.service.sys.PluginService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -53,7 +54,7 @@ public class PluginRunner implements ApplicationRunner {
                     MyPlugin plugin = discardPlugins.get(i);
                     pluginService.uninstall(plugin.getPluginId());
                 }
-            }catch (Exception e) {
+            } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
             }
 
@@ -73,10 +74,17 @@ public class PluginRunner implements ApplicationRunner {
 
 
             String jarPath = jarFile.getAbsolutePath();
+            if (!StringUtils.equals("default", store) && !jarFile.exists()) {
+                version = "1.0-SNAPSHOT";
+                path = pluginDir + store + "/" + moduleName + "-" + version + ".jar";
+                plugin.setVersion(version);
+                jarFile = new File(path);
+                jarPath = jarFile.getAbsolutePath();
+            }
             try {
                 if (jarFile.exists()) {
                     pluginService.loadJar(jarPath, plugin);
-                }else {
+                } else {
                     LogUtil.error("插件路径不存在 {} ", jarPath);
                 }
             } catch (Exception e) {

@@ -227,7 +227,7 @@ public class PluginService {
             LogUtil.error(msg);
             DEException.throwException(msg);
         }
-        deleteJarFile(myPlugin);
+        myPlugin = deleteJarFile(myPlugin);
         CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
         CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
         CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
@@ -258,18 +258,26 @@ public class PluginService {
         return true;
     }
 
-    private void deleteJarFile(MyPlugin plugin) {
+    private MyPlugin deleteJarFile(MyPlugin plugin) {
         String version = plugin.getVersion();
         String moduleName = plugin.getModuleName();
         String fileName = moduleName + "-" + version + ".jar";
         String path = pluginDir + plugin.getStore() + "/" + fileName;
         File jarFile = new File(path);
+        if (!StringUtils.equals("default", plugin.getStore()) && !jarFile.exists()) {
+            version = "1.0-SNAPSHOT";
+            fileName = moduleName + "-" + version + ".jar";
+            path = pluginDir + plugin.getStore() + "/" + fileName;
+            jarFile = new File(path);
+            plugin.setVersion(version);
+        }
         FileUtil.del(jarFile);
 
         if (plugin.getCategory().equalsIgnoreCase("datasource")) {
             File driverFile = new File(pluginDir + plugin.getStore() + "/" + plugin.getDsType() + "Driver");
             FileUtil.del(driverFile);
         }
+        return plugin;
     }
 
     /**

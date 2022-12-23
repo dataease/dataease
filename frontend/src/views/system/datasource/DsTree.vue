@@ -174,7 +174,10 @@
                         {{ $t('chart.edit') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="copy" v-show="showView === 'Datasource'">
-                        <i class="el-icon-edit" />
+                        <svg-icon
+                          icon-class="de-copy"
+                          class="de-copy-icon"
+                        />
                         {{ $t('commons.copy') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="delete">
@@ -898,5 +901,10 @@ export default {
   .marLeft {
     margin-left: 0;
   }
+}
+.de-copy-icon {
+  cursor: pointer;
+  margin-right: 5px;
+  color: var(--deTextSecondary, #646a73);
 }
 </style>

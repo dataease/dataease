@@ -1,8 +1,8 @@
 <template>
-  <span style="position: relative;display: inline-block;">
+  <span style="position: relative;display: inline-block;width: calc(100% - 6px)">
     <i
       class="el-icon-arrow-down el-icon-delete"
-      style="position: absolute;top: 6px;right: 4px;color: #878d9f;cursor: pointer;z-index: 1;"
+      style="position: absolute;top: 6px;right: 0px;color: #878d9f;cursor: pointer;z-index: 1;"
       @click="removeItem"
     />
     <span class="el-dropdown-link">

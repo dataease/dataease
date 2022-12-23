@@ -1,10 +1,12 @@
 package io.dataease.service.panel;
 
+import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.annotation.DeCleaner;
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
@@ -41,6 +43,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.slf4j.Logger;
@@ -149,6 +152,17 @@ public class PanelGroupService {
         panelGroupRequest.setIsAdmin(AuthUtils.getUser().getIsAdmin());
         List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupListDefault(panelGroupRequest);
         return TreeUtils.mergeTree(panelGroupDTOList, "default_panel");
+    }
+
+    public List<PanelGroup> list() {
+        CurrentUserDto user = AuthUtils.getUser();
+        if (user.getIsAdmin()) {
+            PanelGroupExample example = new PanelGroupExample();
+            example.setOrderByClause("name");
+            example.createCriteria().andNodeTypeEqualTo("panel");
+            return panelGroupMapper.selectByExample(example);
+        }
+        return extPanelGroupMapper.listPanelByUser(user.getUserId());
     }
 
     @DeCleaner(value = DePermissionType.PANEL, key = "pid")
@@ -630,12 +644,14 @@ public class PanelGroupService {
         OutputStream outputStream = response.getOutputStream();
         try {
             String snapshot = request.getSnapshot();
-            List<String[]> details = request.getDetails();
+            List<Object[]> details = request.getDetails();
             Integer[] excelTypes = request.getExcelTypes();
             details.add(0, request.getHeader());
+
             Workbook wb = new XSSFWorkbook();
             //明细sheet
             Sheet detailsSheet = wb.createSheet("数据");
+
 
             //给单元格设置样式
             CellStyle cellStyle = wb.createCellStyle();
@@ -651,30 +667,104 @@ public class PanelGroupService {
             //设置单元格填充样式(使用纯色背景颜色填充)
             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-            if (CollectionUtils.isNotEmpty(details)) {
-                for (int i = 0; i < details.size(); i++) {
-                    Row row = detailsSheet.createRow(i);
-                    String[] rowData = details.get(i);
+
+            Boolean mergeHead = false;
+            ViewDetailField[] detailFields = request.getDetailFields();
+            if (ArrayUtil.isNotEmpty(detailFields)) {
+                cellStyle.setBorderTop(BorderStyle.THIN);
+                cellStyle.setBorderRight(BorderStyle.THIN);
+                cellStyle.setBorderBottom(BorderStyle.THIN);
+                cellStyle.setBorderLeft(BorderStyle.THIN);
+                String[] detailField = Arrays.stream(detailFields).map(field -> field.getName()).collect(Collectors.toList()).toArray(new String[detailFields.length]);
+                Object[] header = request.getHeader();
+                Row row = detailsSheet.createRow(0);
+                int headLen = header.length;
+                int detailFieldLen = detailField.length;
+                for (int i = 0; i < headLen; i++) {
+                    Cell cell = row.createCell(i);
+                    cell.setCellValue(header[i].toString());
+                    if (i < headLen - 1) {
+                        CellRangeAddress cellRangeAddress = new CellRangeAddress(0, 1, i, i);
+                        detailsSheet.addMergedRegion(cellRangeAddress);
+                    } else {
+                        for (int j = i + 1; j < detailFieldLen + i; j++) {
+                            row.createCell(j).setCellStyle(cellStyle);
+                        }
+                        CellRangeAddress cellRangeAddress = new CellRangeAddress(0, 0, i, i + detailFieldLen - 1);
+                        detailsSheet.addMergedRegion(cellRangeAddress);
+                    }
+                    cell.setCellStyle(cellStyle);
+                    detailsSheet.setColumnWidth(i, 255 * 20);
+                }
+
+                Row detailRow = detailsSheet.createRow(1);
+                for (int i = 0; i < headLen - 1; i++) {
+                    Cell cell = detailRow.createCell(i);
+                    cell.setCellStyle(cellStyle);
+                }
+                for (int i = 0; i < detailFieldLen; i++) {
+                    int colIndex = headLen - 1 + i;
+                    Cell cell = detailRow.createCell(colIndex);
+                    cell.setCellValue(detailField[i]);
+                    cell.setCellStyle(cellStyle);
+                    detailsSheet.setColumnWidth(colIndex, 255 * 20);
+                }
+                details.add(1, detailField);
+                mergeHead = true;
+            }
+            if (CollectionUtils.isNotEmpty(details) && (!mergeHead || details.size() > 2)) {
+                int realDetailRowIndex = 2;
+                for (int i = (mergeHead ? 2 : 0); i < details.size(); i++) {
+                    Row row = detailsSheet.createRow(realDetailRowIndex > 2 ? realDetailRowIndex : i);
+                    Object[] rowData = details.get(i);
                     if (rowData != null) {
                         for (int j = 0; j < rowData.length; j++) {
+                            Object cellValObj = rowData[j];
+                            if (mergeHead && j == rowData.length - 1 && (cellValObj.getClass().isArray() || cellValObj instanceof ArrayList)) {
+                                Object[] detailRowArray = ((List<Object>) cellValObj).toArray(new Object[((List<?>) cellValObj).size()]);
+                                int detailRowArrayLen = detailRowArray.length;
+                                int temlJ = j;
+                                while (detailRowArrayLen > 1 && temlJ-- > 0) {
+                                    CellRangeAddress cellRangeAddress = new CellRangeAddress(realDetailRowIndex, realDetailRowIndex + detailRowArrayLen - 1, temlJ, temlJ);
+                                    detailsSheet.addMergedRegion(cellRangeAddress);
+                                }
+
+                                for (int k = 0; k < detailRowArrayLen; k++) {
+                                    List<Object> detailRows = (List<Object>) detailRowArray[k];
+                                    Row curRow = row;
+                                    if (k > 0) {
+                                        curRow = detailsSheet.createRow(realDetailRowIndex + k);
+                                    }
+
+                                    for (int l = 0; l < detailRows.size(); l++) {
+                                        Object col = detailRows.get(l);
+                                        Cell cell = curRow.createCell(j + l);
+                                        cell.setCellValue(col.toString());
+                                    }
+                                }
+                                realDetailRowIndex += detailRowArrayLen;
+                                break;
+                            }
+
                             Cell cell = row.createCell(j);
                             if (i == 0) {// 头部
-                                cell.setCellValue(rowData[j]);
+                                cell.setCellValue(cellValObj.toString());
                                 cell.setCellStyle(cellStyle);
                                 //设置列的宽度
                                 detailsSheet.setColumnWidth(j, 255 * 20);
                             } else {
                                 // with DataType
-                                if ((excelTypes[j] == DeTypeConstants.DE_INT || excelTypes[j] == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData[j])) {
+                                if ((excelTypes[j] == DeTypeConstants.DE_INT || excelTypes[j] == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(cellValObj.toString())) {
                                     try {
-                                        cell.setCellValue(Double.valueOf(rowData[j]));
+                                        cell.setCellValue(Double.valueOf(cellValObj.toString()));
                                     } catch (Exception e) {
                                         LogUtil.warn("export excel data transform error");
                                     }
                                 } else {
-                                    cell.setCellValue(rowData[j]);
+                                    cell.setCellValue(cellValObj.toString());
                                 }
                             }
+
                         }
                     }
                 }

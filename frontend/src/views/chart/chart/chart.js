@@ -908,7 +908,14 @@ export const BASE_MAP = {
 
     },
     itemStyle: {
+      normal: {
 
+      },
+      emphasis: {
+        label: {
+          show: false
+        }
+      }
     }
   },
   series: [

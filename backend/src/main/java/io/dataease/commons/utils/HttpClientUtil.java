@@ -123,7 +123,6 @@ public class HttpClientUtil {
             EntityBuilder entityBuilder = EntityBuilder.create();
             entityBuilder.setText(json);
             entityBuilder.setContentType(ContentType.APPLICATION_JSON);
-            entityBuilder.setContentEncoding(config.getCharset());
             HttpEntity requestEntity = entityBuilder.build();
             httpPost.setEntity(requestEntity);
 
