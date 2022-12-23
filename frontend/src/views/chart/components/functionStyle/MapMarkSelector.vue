@@ -143,6 +143,8 @@
 import { DEFAULT_MARK } from '../../chart/chart'
 import DeIconGroupPicker from '@/components/deIconPicker/deIconGroupPicker'
 import deSvgIcons from '@/deicons'
+import { getItemType } from '@/views/chart/components/dragItem/utils'
+import bus from '@/utils/bus'
 export default {
   name: 'MapMarkSelector',
   components: { DeIconGroupPicker },
@@ -275,7 +277,12 @@ export default {
       }
     }
   },
+
+  beforeDestroy() {
+    bus.$off('reset-change-table', this.getItemTagType)
+  },
   mounted() {
+    bus.$on('reset-change-table', this.getItemTagType)
     this.initData()
     this.loadSvg()
   },
@@ -309,6 +316,12 @@ export default {
         }
         if (customAttr.mark) {
           this.markForm = customAttr.mark
+          if (this.markForm.fieldId) {
+            const valid = this.fieldOptions.some(group => group.options.some(item => item.id === this.markForm.fieldId))
+            if (!valid) {
+              this.markForm.fieldId = null
+            }
+          }
         }
       }
     },
@@ -360,8 +373,25 @@ export default {
       }
 
       this.changeMarkAttr('fieldId')
+    },
+    getItemTagType() {
+      if (this.markForm.fieldId) {
+        const field = this.getField(this.markForm.fieldId)
+        if (!field) {
+          this.changeFields()
+          this.markForm.fieldId = null
+          return
+        }
+        const tagType = getItemType(this.dimensionData, this.quotaData, field)
+        if (tagType === 'danger') {
+          this.changeFields()
+          this.markForm.fieldId = null
+        }
+      } else {
+        this.changeFields()
+        this.markForm.fieldId = null
+      }
     }
-
   }
 }
 </script>

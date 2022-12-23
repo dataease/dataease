@@ -29,8 +29,8 @@
             :param="param"
             :index="index"
             :item="item"
-            :dimension-data="dimension"
-            :quota-data="quota"
+            :dimension-data="dimensionData"
+            :quota-data="quotaData"
             @onDetailItemRemove="locationXItemRemove"
           />
         </transition-group>
@@ -69,8 +69,8 @@
             :param="param"
             :index="index"
             :item="item"
-            :dimension-data="dimension"
-            :quota-data="quota"
+            :dimension-data="dimensionData"
+            :quota-data="quotaData"
             @onDetailItemRemove="locationYItemRemove"
           />
         </transition-group>
