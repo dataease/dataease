@@ -51,7 +51,7 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
         currentSeriesId = yAxis?.length ? yAxis[0].id : null
       }
       chart.data?.series.forEach((item, index) => {
-        if (item.data[0].quotaList[0].id === currentSeriesId) {
+        if (item.data?.length && item.data[0].quotaList[0].id === currentSeriesId) {
           seriesIndex = index
           return false
         }
