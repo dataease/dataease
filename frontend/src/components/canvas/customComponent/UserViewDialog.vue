@@ -250,8 +250,32 @@ export default {
       const excelHeader = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.name)
       const excelTypes = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.deType)
       const excelHeaderKeys = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.dataeaseName)
-      const excelData = JSON.parse(JSON.stringify(this.chart.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
+      let excelData = JSON.parse(JSON.stringify(this.chart.data.tableRow)).map(item => excelHeaderKeys.map(i => item[i]))
       const excelName = this.chart.name
+      let detailFields = []
+      if (this.chart.data.detailFields?.length) {
+        detailFields = this.chart.data.detailFields.map(item => {
+          const temp = {
+            name: item.name,
+            deType: item.deType,
+            dataeaseName: item.dataeaseName
+          }
+          return temp
+        })
+        excelData = JSON.parse(JSON.stringify(this.chart.data.tableRow)).map(item => {
+          const temp = excelHeaderKeys.map(i => {
+            if (i === 'detail' && !item[i] && Array.isArray(item['details'])) {
+              const arr = item['details']
+              if (arr?.length) {
+                return arr.map(ele => detailFields.map(field => ele[field.dataeaseName]))
+              }
+              return null
+            }
+            return item[i]
+          })
+          return temp
+        })
+      }
       const request = {
         viewId: this.chart.id,
         viewName: excelName,
@@ -260,7 +284,8 @@ export default {
         excelTypes: excelTypes,
         snapshot: snapshot,
         snapshotWidth: width,
-        snapshotHeight: height
+        snapshotHeight: height,
+        detailFields
       }
       let method = innerExportDetails
       const token = this.$store.getters.token || getToken()
