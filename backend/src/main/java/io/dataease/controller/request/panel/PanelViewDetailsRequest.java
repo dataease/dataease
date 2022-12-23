@@ -20,7 +20,7 @@ public class PanelViewDetailsRequest {
 
     private Integer[] excelTypes;
 
-    private List<String[]> details;
+    private List<Object[]> details;
 
     private String snapshot;
 
@@ -28,6 +28,6 @@ public class PanelViewDetailsRequest {
 
     private int snapshotHeight;
 
-
+    private ViewDetailField[] detailFields;
 
 }
