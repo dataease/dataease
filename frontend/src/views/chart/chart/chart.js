@@ -1133,3 +1133,5 @@ export const CHART_FONT_LETTER_SPACE = [
 ]
 
 export const NOT_SUPPORT_PAGE_DATASET = ['kylin', 'sqlServer', 'es', 'presto', 'ds_doris', 'StarRocks']
+
+export const SUPPORT_Y_M = ['y', 'y_M', 'y_M_d']
