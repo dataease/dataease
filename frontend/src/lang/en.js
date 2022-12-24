@@ -1179,6 +1179,8 @@ export default {
     datePattern: 'Date Format',
     y: 'Year',
     y_M: 'Year Month',
+    y_Q: 'Year Quarter',
+    y_W: 'Year Week',
     y_M_d: 'Year Month Day',
     H_m_s: 'Hour Minute Second',
     y_M_d_H_m: 'Year Month Day Hour Minute',
