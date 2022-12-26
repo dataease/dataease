@@ -151,7 +151,6 @@
                   </el-dropdown-item>
 
                   <el-dropdown-item
-                    v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
                     icon="el-icon-refresh"
                     @click.native="refreshPanel"
                   >
