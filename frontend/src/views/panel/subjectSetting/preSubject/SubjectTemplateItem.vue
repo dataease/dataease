@@ -410,7 +410,6 @@ export default {
   width: 131px;
   height: 78px;
   margin: 0 auto;
-  box-shadow: 0 0 2px 0 rgba(31, 31, 31, 0.15), 0 1px 2px 0 rgba(31, 31, 31, 0.15);
   box-sizing: border-box;
 }
 
@@ -473,12 +472,10 @@ export default {
   right: 0px;
   bottom: 0px;
   height: 30px;
-  float: left
-}
-
-.subject-template:hover > .title-main {
+  float: left;
   width: 115px;
 }
+
 
 .subject-template:hover > .el-icon-delete {
   z-index: 10;
