@@ -2359,14 +2359,14 @@ export default {
       delete view.data
       return view
     },
-    refreshAttrChange(switchType = false, switchRender = false) {
+    refreshAttrChange() {
       if (this.view.refreshTime > 3600) {
         this.view.refreshTime = 3600
       } else if (this.view.refreshTime < 1) {
         this.view.refreshTime = 1
       }
       this.changeEditStatus(true)
-      const view = this.buildParam(true, 'chart', false, switchType, switchRender)
+      const view = this.buildParam(true, 'chart', false)
       if (!view) return
       viewEditSave(this.panelInfo.id, view)
     },
