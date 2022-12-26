@@ -53,12 +53,14 @@ export function listenGlobalKeyDown() {
   window.onkeydown = (e) => {
     if (!store.state.isInEditor) return
     const { keyCode } = e
-    e.preventDefault()
-    e.stopPropagation()
     if (keyCode === ctrlKey || keyCode === commandKey) {
+      e.preventDefault()
+      e.stopPropagation()
       isCtrlOrCommandDown = true
     } else if (isCtrlOrCommandDown) {
       if (keyCode === zKey || keyCode === yKey || keyCode === dKey || keyCode === sKey || keyCode === enlargeKey) {
+        e.preventDefault()
+        e.stopPropagation()
         unlockMap[keyCode]()
       }
     }
@@ -74,13 +76,14 @@ export function listenGlobalKeyDown() {
 export function listenGlobalKeyDownPreview() {
   window.onkeydown = (e) => {
     const { keyCode } = e
-    e.preventDefault()
-    e.stopPropagation()
     if (keyCode === ctrlKey || keyCode === commandKey) {
+      e.preventDefault()
+      e.stopPropagation()
       isCtrlOrCommandDown = true
     } else if (isCtrlOrCommandDown) {
       if (keyCode === enlargeKey) {
         e.preventDefault()
+        e.stopPropagation()
         unlockMap[keyCode]()
       }
     }
