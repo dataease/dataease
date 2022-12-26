@@ -145,7 +145,10 @@ export default {
       return this.selectValue === id && 'selected'
     },
     selectAllChange(val) {
-      const vals = val ? [...this.list.map(ele => ele.id)] : []
+      let vals = val ? [...this.list.map(ele => ele.id)] : []
+      if (this.keyWord.trim() && val) {
+        vals = this.list.filter(item => item.text.includes(this.keyWord.trim())).map(ele => ele.id)
+      }
       this.visualChange(vals)
       this.selectValue = vals
       this.$emit('change', vals)
