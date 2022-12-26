@@ -543,6 +543,11 @@ export default {
             this.tData.push(typeData[0])
           }
         }
+
+        if (!this.key) return
+        this.$nextTick(() => {
+          this.$refs.myDsTree.filter(this.key)
+        })
       })
     },
     buildTree(array = []) {
@@ -671,7 +676,7 @@ export default {
     _handleEditer(row) {
       if (this.showView === 'Datasource') {
         const param = { ...row, ...{ showModel: 'show' }}
-        this.switchMain('DsForm', param, this.tData, this.dsTypes)
+        this.switchMain('dsTable', param, this.tData, this.dsTypes)
         this.currentNodeId && sessionStorage.setItem('datasource-current-node', this.currentNodeId)
         return
       }
@@ -720,6 +725,22 @@ export default {
       this.handlerConfirm(params)
     },
     switchMain(component, componentParam, tData, dsTypes) {
+      if (component === 'dsTable') {
+        const { id, type, showModel } = componentParam
+        this.$emit('switch-main', {
+          component,
+          componentParam: {
+            id,
+            type,
+            showModel,
+            msgNodeId: this.msgNodeId
+          },
+          tData,
+          dsTypes
+        })
+        return
+      }
+
       if (component === 'DsForm') {
         const { id, type, showModel } = componentParam
         this.$router.push({

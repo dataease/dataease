@@ -21,9 +21,15 @@
       <template v-else>
         <div class="ds-top">
           <deBtn
-            v-if="privileges"
+            v-if="privileges && canEdit"
             secondary
-            @click="editDatasource"
+            @click="editDatasource(false)"
+          >{{ $t('commons.cancel') }}
+          </deBtn>
+          <deBtn
+            v-if="privileges && !canEdit"
+            secondary
+            @click="editDatasource(true)"
           >{{ $t('commons.edit') }}
           </deBtn>
           <el-tooltip
@@ -56,6 +62,7 @@
         </div>
         <div style="height: calc(100% - 36px)">
           <ds-form-content
+            @editeTodisable="editDatasource(false)"
             ref="DsFormContent"
             :config-from-tabs="configFromTabs"
           />
@@ -78,7 +85,8 @@ export default {
   },
   data() {
     return {
-      activeName: 'detail'
+      activeName: 'detail',
+      canEdit: false,
     }
   },
   computed: {
@@ -90,8 +98,9 @@ export default {
     }
   },
   methods: {
-    editDatasource() {
-      this.$refs.DsFormContent.editDatasource()
+    editDatasource(type = false) {
+      this.$refs.DsFormContent.editDatasource(type)
+      this.canEdit = type
     },
     validaDatasource() {
       this.$refs.DsFormContent.validaDatasource()

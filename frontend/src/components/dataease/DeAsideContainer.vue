@@ -46,7 +46,8 @@ export default {
   },
   data() {
     return {
-      asideHidden: false
+      asideHidden: false,
+      currentWidth: '',
     }
   },
   computed: {
@@ -56,6 +57,17 @@ export default {
     isSystem() {
       // 系统管理不需要拖拽菜单
       return this.isTemplate || (!this.$route.fullPath.includes('system') && this.showDragBar)
+    }
+  },
+  mounted() {
+    this.setCurrentWidth()
+  },
+  beforeUpdate() {
+    this.setCurrentWidth()
+  },
+  methods: {
+    setCurrentWidth() {
+      this.currentWidth = this.isCollapseWidth || this.type && getLayout(this.type) || this.width
     }
   }
 }
