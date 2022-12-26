@@ -26,7 +26,9 @@
       v-else
       class="info-class"
     >
-      {{ $t('panel.video_add_tips') }}
+      <span>{{ $t('panel.link_add_tips_pre') }}</span>
+      <i class="icon iconfont icon-chaolianjie"/>
+      <span>{{ $t('panel.video_add_tips') }}</span>
     </div>
   </el-row>
 </template>
@@ -139,20 +141,21 @@ export default {
 </script>
 
 <style>
-  .info-class{
-    text-align: center;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(255,255,255,0.3);
-    font-size: 12px;
-    color: #9ea6b2;
-  }
-  .move-bg {
-    height: 100%;
-    width: 100%;
-    background-color: #000000;
-  }
+.info-class {
+  text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+  color: #9ea6b2;
+}
+
+.move-bg {
+  height: 100%;
+  width: 100%;
+  background-color: #000000;
+}
 </style>
 

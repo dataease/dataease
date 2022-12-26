@@ -32,7 +32,9 @@
       v-else
       class="info-stream-class"
     >
-      {{ $t('panel.stream_media_add_tips') }}
+      <span>{{ $t('panel.link_add_tips_pre') }}</span>
+      <i class="icon iconfont icon-chaolianjie"/>
+      <span>{{ $t('panel.stream_media_add_tips') }}</span>
     </div>
   </el-row>
 </template>
@@ -145,7 +147,7 @@ export default {
       }
     },
     destroyPlayer() {
-    // Destroy
+      // Destroy
       if (this.flvPlayer) {
         this.flvPlayer.pause()
         this.flvPlayer.destroy()
@@ -157,53 +159,53 @@ export default {
 </script>
 
 <style>
-  .info-stream-class {
-    text-align: center;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(245, 245, 220, 0.3);
-    font-size: 12px;
-    color: #000000;
-  }
+.info-stream-class {
+  text-align: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(245, 245, 220, 0.3);
+  font-size: 12px;
+  color: #000000;
+}
 
-  .move-bg {
-    height: 100%;
-    width: 100%;
-    background-color: #000000;
-  }
+.move-bg {
+  height: 100%;
+  width: 100%;
+  background-color: #000000;
+}
 
-  .video-container {
-    width: 100%;
-    height: 100%;
-    background-color: #000000;
-  }
+.video-container {
+  width: 100%;
+  height: 100%;
+  background-color: #000000;
+}
 
-  .centered-video {
-    width: 100%;
-    height: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: auto;
-  }
+.centered-video {
+  width: 100%;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: auto;
+}
 
-  .stream-mask {
-    display: flex;
-    height: calc(100% - 60px) !important;
-    width: 100% !important;
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.stream-mask {
+  display: flex;
+  height: calc(100% - 60px) !important;
+  width: 100% !important;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .edit-mask-stream{
-    opacity: 0;
-  }
+.edit-mask-stream {
+  opacity: 0;
+}
 
 </style>
 
