@@ -167,7 +167,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         try {
             XpackEmailTemplateDTO emailTemplateDTO = emailXpackService.emailTemplate(taskInstance.getTaskId());
             XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskInstance.getTaskId());
-            if (ObjectUtils.isEmpty(taskForm) || (!isTempTask && (CronUtils.taskExpire(taskForm.getEndTime()) || !taskForm.getStatus()))) {
+            if (ObjectUtils.isEmpty(taskForm) || (!isTempTask && (CronUtils.taskExpire(taskForm.getEndTime()) || !emailXpackService.status(taskInstance.getTaskId())))) {
                 removeInstance(taskInstance);
                 return;
             }
