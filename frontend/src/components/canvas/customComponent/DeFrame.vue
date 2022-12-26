@@ -44,11 +44,8 @@
       v-else
       class="info-class"
     >
-      <span>{{ $t('panel.web_add_tips_pre') }}</span>
-      <i
-        slot="reference"
-        class="icon iconfont icon-chaolianjie"
-      />
+      <span>{{ $t('panel.link_add_tips_pre') }}</span>
+      <i class="icon iconfont icon-chaolianjie"/>
       <span>{{ $t('panel.web_add_tips_suf') }}</span>
     </div>
   </el-row>

@@ -116,7 +116,15 @@
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item :command="beforeDateStyle('y')">{{ $t('chart.y') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="showDateExt"
+                  :command="beforeDateStyle('y_Q')"
+                >{{ $t('chart.y_Q') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M')">{{ $t('chart.y_M') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="showDateExt"
+                  :command="beforeDateStyle('y_W')"
+                >{{ $t('chart.y_W') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M_d')">{{ $t('chart.y_M_d') }}</el-dropdown-item>
                 <el-dropdown-item
                   :command="beforeDateStyle('H_m_s')"
@@ -215,7 +223,8 @@ export default {
   data() {
     return {
       tagType: 'success',
-      formatterItem: formatterItem
+      formatterItem: formatterItem,
+      showDateExt: false
     }
   },
   watch: {
@@ -224,6 +233,9 @@ export default {
     },
     item: function() {
       this.getItemTagType()
+    },
+    chart: function() {
+      this.getDateExtStatus()
     }
   },
   mounted() {
@@ -325,6 +337,14 @@ export default {
       this.item.index = this.index
       this.item.formatterType = 'dimension'
       this.$emit('valueFormatter', this.item)
+    },
+
+    getDateExtStatus() {
+      if (this.chart) {
+        this.showDateExt = this.chart.datasourceType === 'mysql' && this.chart.datasetMode === 0
+      } else {
+        this.showDateExt = false
+      }
     }
   }
 }

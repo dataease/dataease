@@ -239,7 +239,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item
-            v-if="chart.type === 'table-pivot' && totalForm.col.totalSort !== 'none'"
+            v-show="false && chart.type === 'table-pivot' && totalForm.col.totalSort !== 'none'"
             :label="$t('chart.total_sort_field')"
             class="form-item"
           >
@@ -425,9 +425,7 @@ export default {
           if (this.resetTotalSort(this.totalForm.row.totalSortField)) {
             this.totalForm.row.totalSortField = this.totalSortFields[0].dataeaseName
           }
-          if (this.resetTotalSort(this.totalForm.col.totalSortField)) {
-            this.totalForm.col.totalSortField = this.totalSortFields[0].dataeaseName
-          }
+          this.totalForm.col.totalSortField = this.totalSortFields[0].dataeaseName
         } else {
           this.totalForm.row.totalSortField = ''
           this.totalForm.col.totalSortField = ''

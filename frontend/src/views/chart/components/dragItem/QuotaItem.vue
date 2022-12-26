@@ -246,6 +246,7 @@ import FieldErrorTips from '@/views/chart/components/dragItem/components/FieldEr
 import bus from '@/utils/bus'
 import { formatterItem } from '@/views/chart/chart/formatter'
 import { quotaViews } from '@/views/chart/chart/util'
+import { SUPPORT_Y_M } from '@/views/chart/chart/chart'
 
 export default {
   name: 'QuotaItem',
@@ -321,7 +322,7 @@ export default {
         xAxis = JSON.parse(this.chart.xaxis)
       }
       const t1 = xAxis.filter(ele => {
-        return ele.deType === 1
+        return ele.deType === 1 && SUPPORT_Y_M.includes(ele.dateStyle)
       })
       // 暂时只支持类别轴/维度的时间类型字段
       if (t1.length > 0 && this.chart.type !== 'text' && this.chart.type !== 'label' && this.chart.type !== 'gauge' && this.chart.type !== 'liquid') {

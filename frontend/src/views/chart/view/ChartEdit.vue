@@ -435,7 +435,7 @@
                         v-model="view.refreshViewEnable"
                         class="el-input-refresh-loading"
                         @change="refreshAttrChange"
-                      ></el-checkbox>
+                      />
                       {{ $t('panel.enable_refresh_view') }}
                     </span>
                     <el-row>
@@ -531,6 +531,7 @@
                             :item="item"
                             :dimension-data="dimension"
                             :quota-data="quota"
+                            :chart="chart"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
@@ -673,6 +674,7 @@
                             :item="item"
                             :dimension-data="dimension"
                             :quota-data="quota"
+                            :chart="chart"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
@@ -2357,9 +2359,14 @@ export default {
       delete view.data
       return view
     },
-    refreshAttrChange(switchType = false, switchRender = false) {
+    refreshAttrChange() {
+      if (this.view.refreshTime > 3600) {
+        this.view.refreshTime = 3600
+      } else if (this.view.refreshTime < 1) {
+        this.view.refreshTime = 1
+      }
       this.changeEditStatus(true)
-      const view = this.buildParam(true, 'chart', false, switchType, switchRender)
+      const view = this.buildParam(true, 'chart', false)
       if (!view) return
       viewEditSave(this.panelInfo.id, view)
     },
@@ -2369,6 +2376,7 @@ export default {
       if (!view) return
       viewEditSave(this.panelInfo.id, view).then(() => {
         // this.getData(this.param.id)
+        this.getChart(this.param.id)
         bus.$emit('view-in-cache', {
           type: 'propChange',
           viewId: this.param.id,
@@ -3906,7 +3914,6 @@ span {
   cursor: pointer;
   z-index: 1;
 }
-
 
 .el-input-refresh-time {
   width: calc(50% - 4px) !important;
