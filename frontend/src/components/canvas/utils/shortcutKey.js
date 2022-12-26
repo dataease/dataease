@@ -53,11 +53,12 @@ export function listenGlobalKeyDown() {
   window.onkeydown = (e) => {
     if (!store.state.isInEditor) return
     const { keyCode } = e
+    e.preventDefault()
+    e.stopPropagation()
     if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
     } else if (isCtrlOrCommandDown) {
       if (keyCode === zKey || keyCode === yKey || keyCode === dKey || keyCode === sKey || keyCode === enlargeKey) {
-        e.preventDefault()
         unlockMap[keyCode]()
       }
     }
