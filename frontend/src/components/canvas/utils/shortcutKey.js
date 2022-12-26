@@ -74,6 +74,8 @@ export function listenGlobalKeyDown() {
 export function listenGlobalKeyDownPreview() {
   window.onkeydown = (e) => {
     const { keyCode } = e
+    e.preventDefault()
+    e.stopPropagation()
     if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
     } else if (isCtrlOrCommandDown) {

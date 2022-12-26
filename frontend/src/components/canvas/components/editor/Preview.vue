@@ -413,7 +413,8 @@ export default {
     }
   },
   created() {
-    if (this.canvasId === 'canvas-main') {
+    // 防止编辑界面销毁键盘事件监听
+    if (this.canvasId === 'canvas-main' && !this.showPosition.includes('multiplexing')) {
       listenGlobalKeyDownPreview()
     }
     // 取消视图请求
