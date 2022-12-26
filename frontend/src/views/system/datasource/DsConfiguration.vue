@@ -57,6 +57,7 @@
               >
                 <svg-icon
                   icon-class="de-copy"
+                  :disabled="disabled"
                   class="de-copy-icon"
                   @click.stop="copyItem(api)"
                 />
@@ -66,10 +67,11 @@
                     :ref="`apiTable${api.name}`"
                     placement="top"
                     width="200"
+                    :disabled="disabled"
                     popper-class="api-table-delete"
                     trigger="click"
                   >
-                    <i class="el-icon-warning" />
+                    <i :disabled="disabled" class="el-icon-warning" />
                     <div class="tips">
                       {{ $t('datasource.delete_this_item') }}
                     </div>
@@ -1140,6 +1142,9 @@ export default {
       }
     },
     copyItem(item) {
+      if (this.disabled) {
+        return
+      }
       var newItem = JSON.parse(JSON.stringify(item))
       newItem.serialNumber =
         this.form.apiConfiguration[this.form.apiConfiguration.length - 1]

@@ -135,6 +135,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    consanguinity: '血缘关系',
     collapse_navigation: '收起导航',
     operate_cancelled: '已取消操作',
     bind: '绑定',

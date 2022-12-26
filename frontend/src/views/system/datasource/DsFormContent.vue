@@ -660,8 +660,9 @@ export default {
     })
   },
   methods: {
-    editDatasource() {
-      this.disabled = false
+    editDatasource(type) {
+      this.canEdit = type
+      this.disabled = !type
     },
     baseInfoDisabledCheck(privileges) {
       return !(this.formType === 'add' ? true : hasDataPermission('manage', privileges))
@@ -1190,7 +1191,7 @@ export default {
       }
     },
     backToList() {
-      this.$router.push('/datasource/index')
+      this.$emit('editeTodisable', false)
     },
 
     closeDraw() {

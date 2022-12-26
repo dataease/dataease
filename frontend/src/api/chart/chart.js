@@ -152,3 +152,30 @@ export const viewOptions = panelId => {
     method: 'post'
   })
 }
+
+
+export function getDatasourceRelationship(id) {
+  return request({
+    url: `/api/relation/datasource/${id}`,
+    method: 'get',
+    loading: true
+  })
+}
+
+
+export function getDatasetRelationship(id) {
+  return request({
+    url: `/api/relation/dataset/${id}`,
+    method: 'get',
+    loading: true
+  })
+}
+
+
+export function getPanelRelationship(id) {
+  return request({
+    url: `/api/relation/panel/${id}`,
+    method: 'get',
+    loading: true
+  })
+}

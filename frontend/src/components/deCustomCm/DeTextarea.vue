@@ -17,7 +17,10 @@ export default {
     count: {
       update: function(el, binding) {
         const { value, maxlength, buttonDisabled } = binding.value
-        if (buttonDisabled) return
+        if (buttonDisabled) {
+          el.removeChild(el.querySelector('.el-input__count'))
+          return
+        }
         const lg = value?.length || 0
         const count = el.querySelector('.el-input__count')
         if (!count) return

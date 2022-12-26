@@ -135,6 +135,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    consanguinity: 'Consanguinity',
     collapse_navigation: 'Collapse navigation',
     operate_cancelled: 'Operation cancelled',
     bind: 'Bind',
