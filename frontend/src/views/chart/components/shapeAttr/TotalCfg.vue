@@ -239,7 +239,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item
-            v-if="chart.type === 'table-pivot' && totalForm.col.totalSort !== 'none'"
+            v-show="false && chart.type === 'table-pivot' && totalForm.col.totalSort !== 'none'"
             :label="$t('chart.total_sort_field')"
             class="form-item"
           >
