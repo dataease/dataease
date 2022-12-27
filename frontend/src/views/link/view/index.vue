@@ -152,6 +152,9 @@ export default {
               sourceFieldId: jumpParam.sourceFieldId,
               targetPanelId: this.resourceId
             }
+            if (jumpParam.sourceType && jumpParam.sourceType === 'table-pivot') {
+              jumpRequestParam.sourceFieldId = null
+            }
             // 刷新跳转目标仪表板联动信息
             queryTargetPanelJumpInfo(jumpRequestParam).then(rsp => {
               this.show = true
