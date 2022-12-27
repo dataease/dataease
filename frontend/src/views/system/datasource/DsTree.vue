@@ -529,7 +529,7 @@ export default {
         this.dsTypes = res.data
         const databaseList = [[], [], [], []]
         this.dsTypes.forEach((item) => {
-          const index = this.typeList.findIndex(ele => ele === item.databaseClassification) // databaseClassification
+          const index = this.typeList.findIndex(ele => ele === item.databaseClassification)
           if (index !== -1) {
             databaseList[index].push(item)
           }
