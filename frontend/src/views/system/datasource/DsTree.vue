@@ -343,7 +343,7 @@ import {
   getDatasourceRelationship,
 } from '@/api/chart/chart.js'
 
-import ContenVue from './ContenVue.vue'
+import msgContent from './MsgContent.vue'
 import deTextarea from '@/components/deCustomCm/DeTextarea.vue'
 import msgCfm from '@/components/msgCfm'
 export default {
@@ -759,7 +759,7 @@ export default {
           params.title = this.$t('datasource.this_data_source')
           params.link = this.$t('datasource.click_to_check')
           params.content = this.$t('datasource.cannot_be_deleted_dataset')
-          params.templateDel = ContenVue
+          params.templateDel = msgContent
           
           params.linkTo = this.linkTo.bind(this, { queryType, id })
           this.withLink(params)

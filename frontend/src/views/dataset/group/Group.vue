@@ -549,7 +549,7 @@ import {
   getDatasetRelationship,
 } from '@/api/chart/chart.js'
 
-import ContenVue from '@/views/system/datasource/ContenVue.vue'
+import msgContent from '@/views/system/datasource/MsgContent.vue'
 import GroupMoveSelector from './GroupMoveSelector'
 import CreatDsGroup from './CreatDsGroup'
 import { queryAuthModel } from '@/api/authModel/authModel'
@@ -930,7 +930,7 @@ export default {
         options.title = this.$t('datasource.delete_this_dataset')
         options.link = this.$t('datasource.click_to_check')
         options.content = this.$t('datasource.cannot_be_deleted_dataset')
-        options.templateDel = ContenVue
+        options.templateDel = msgContent
         
         options.linkTo = this.linkTo.bind(this, { queryType, id })
         this.withLink(options)
