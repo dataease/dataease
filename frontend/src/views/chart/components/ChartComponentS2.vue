@@ -426,7 +426,8 @@ export default {
         name: this.pointParam.data.name,
         viewId: this.chart.id,
         dimensionList: this.pointParam.data.dimensionList,
-        quotaList: this.pointParam.data.quotaList
+        quotaList: this.pointParam.data.quotaList,
+        sourceType: this.pointParam.data.sourceType
       }
       switch (trackAction) {
         case 'drill':
