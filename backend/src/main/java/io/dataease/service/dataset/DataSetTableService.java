@@ -1116,7 +1116,7 @@ public class DataSetTableService {
             if (dsType.equals(DatasourceTypes.oracle.getType())) {
                 subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
             } else {
-                if(fromItem.getAlias() == null){
+                if (fromItem.getAlias() == null) {
                     throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
                 }
                 subSelect.setAlias(new Alias(fromItem.getAlias().toString()));
@@ -2426,7 +2426,7 @@ public class DataSetTableService {
                 jsonArray = data.stream().map(ele -> {
                     Map<String, Object> map = new HashMap<>();
                     for (int i = 0; i < fieldArray.length; i++) {
-                        map.put(fieldArray[i], ele.get(i));
+                        map.put(fieldArray[i], i < ele.size() ? ele.get(i) : "");
                     }
                     return map;
                 }).collect(Collectors.toList());
