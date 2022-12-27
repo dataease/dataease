@@ -239,6 +239,7 @@
             group by sa.auth_source
         ) pg_auth on pg_auth.id = pg.id
         where ds.id=#{datasourceId,jdbcType=VARCHAR}
+        group by id,panel_id
         order by id
     </select>
 </mapper>

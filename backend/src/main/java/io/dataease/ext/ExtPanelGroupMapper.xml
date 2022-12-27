@@ -285,7 +285,7 @@
             )
             group by sa.auth_source
         ) dt_auth on dt.id = dt_auth.id
-        join datasource ds on dt.data_source_id = ds.id
+        left join datasource ds on dt.data_source_id = ds.id
         left join
         (
             select
@@ -318,7 +318,8 @@
             group by sa.auth_source
         ) ds_auth on ds_auth.id = ds.id
         where pg.id=#{panelId,jdbcType=VARCHAR}
-        group by dt.id
+        group by id,dt_id
+        order by id
     </select>
 
     <select id="listPanelByUser" resultType="io.dataease.plugins.common.base.domain.PanelGroup"
