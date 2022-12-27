@@ -545,6 +545,11 @@ import {
   isKettleRunning,
   alter
 } from '@/api/dataset/dataset'
+import {
+  getDatasetRelationship,
+} from '@/api/chart/chart.js'
+
+import ContenVue from '@/views/system/datasource/ContenVue.vue'
 import GroupMoveSelector from './GroupMoveSelector'
 import CreatDsGroup from './CreatDsGroup'
 import { queryAuthModel } from '@/api/authModel/authModel'
@@ -631,6 +636,7 @@ export default {
           { required: true, trigger: 'blur', validator: this.filedValidator }
         ]
       },
+      treeData: [],
       moveGroup: false,
       tGroup: {},
       moveDs: false,
@@ -711,6 +717,26 @@ export default {
     sessionStorage.setItem('dataset-current-node', this.currentNodeId)
   },
   methods: {
+    getDatasetRelationship({ queryType, label, id }) {
+      return getDatasetRelationship(id).then((res) => {
+        const arr = res.data ? [res.data] : []
+        this.treeData = []
+        this.dfsTree(arr, { queryType, label })
+      })
+    },
+    dfsTree(arr = [], { queryType, label }, item) {
+      arr.forEach((ele) => {
+        const { name, type, subRelation = [] } = ele
+        const obj = {}
+        obj[type] = name
+        obj[queryType] = label
+        if (subRelation.length) {
+          this.dfsTree(subRelation, { queryType: type, label: name }, obj)
+        } else {
+          this.treeData.push({ ...item, ...obj })
+        }
+      })
+    },
     dfsTableData(arr, id) {
       arr.some((ele) => {
         if (ele.id === id) {
@@ -777,7 +803,7 @@ export default {
       switch (type) {
         case 'rename':
           this.originName = data.label
-          this.dialogTitle = this.$t('编辑文件夹')
+          this.dialogTitle = this.$t('datasource.edit_folder')
           this.dfsTdata(this.tData, data.id)
           this.add(data.modelInnerType)
           this.groupForm = JSON.parse(JSON.stringify(data))
@@ -876,7 +902,7 @@ export default {
         .catch(() => {})
     },
 
-    deleteTable(data) {
+    async deleteTable(data) {
       let confirm_delete_msg = ''
       if (data.modelInnerType === 'union' || data.modelInnerType === 'custom') {
         confirm_delete_msg = this.$t('dataset.confirm_delete')
@@ -884,7 +910,7 @@ export default {
         confirm_delete_msg = this.$t('dataset.confirm_delete_msg')
       }
       const options = {
-        title: '确定删除该数据集吗？',
+        title: 'datasource.delete_this_dataset',
         content: confirm_delete_msg,
         type: 'primary',
         confirmButtonText: this.$t('commons.confirm'),
@@ -897,7 +923,26 @@ export default {
           })
         }
       }
+
+      const { queryType = 'dataset', name: label, id } = data
+      await this.getDatasetRelationship({ queryType, label, id })
+      if (this.treeData.length) {
+        options.title = this.$t('datasource.delete_this_dataset')
+        options.link = this.$t('datasource.click_to_check')
+        options.content = this.$t('datasource.cannot_be_deleted_dataset')
+        options.templateDel = ContenVue
+        
+        options.linkTo = this.linkTo.bind(this, { queryType, id })
+        this.withLink(options)
+        return
+      }
       this.handlerConfirm(options)
+    },
+    linkTo(query) {
+      window.open(this.$router.resolve({
+        path: '/system/relationship',
+        query
+      }).href, '_blank')
     },
 
     close() {

@@ -291,6 +291,7 @@ export default {
   font-family: PingFang SC;
   width: 100%;
   height: 100%;
+  overflow: auto;
 
   .name {
     font-size: 16px;

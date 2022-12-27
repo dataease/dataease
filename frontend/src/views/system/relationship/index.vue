@@ -149,6 +149,7 @@ export default {
       },
       treeData: [],
       loading: false,
+      routerWithParams: {},
       activeIcon: 'date',
       paginationConfig: {
         currentPage: 1,
@@ -187,6 +188,12 @@ export default {
     }
   },
   created() {
+    this.routerWithParams = this.$route.query
+    const { id, queryType } = this.routerWithParams
+    if (id && queryType) {
+      this.searchDetail(id, queryType)
+      return
+    }
     this.listDatasource()
   },
   beforeDestroy() {
@@ -197,6 +204,23 @@ export default {
     this.getChartSize()
   },
   methods: {
+    async searchDetail(id, queryType) {
+      switch (queryType) {
+        case 'datasource':
+          await this.listDatasource()
+          break
+        case 'dataset':
+          await this.getDatasetList()
+          break
+        case 'panel':
+          await this.getPanelGroupList()
+          break
+        default:
+          break
+      }
+      this.formInline = { queryType, dataSourceName: id }
+      this.getChartData()
+    },
     getChartData() {
       const { queryType, dataSourceName: id } = this.formInline
       switch (queryType) {
@@ -280,7 +304,7 @@ export default {
       }
     }, 200),
     listDatasource() {
-      listDatasource().then((res) => {
+      return listDatasource().then((res) => {
         const arr = res?.data || []
         this.dataSourceNameList = arr.map((ele) => ({
           value: ele.id,
@@ -289,7 +313,7 @@ export default {
       })
     },
     getDatasetList() {
-      getDatasetList().then((res) => {
+      return getDatasetList().then((res) => {
         const arr = res?.data || []
         this.dataSourceNameList = arr.map((ele) => ({
           value: ele.id,
@@ -298,7 +322,7 @@ export default {
       })
     },
     getPanelGroupList() {
-      getPanelGroupList().then((res) => {
+      return getPanelGroupList().then((res) => {
         const arr = res?.data || []
         this.dataSourceNameList = arr.map((ele) => ({
           value: ele.id,
