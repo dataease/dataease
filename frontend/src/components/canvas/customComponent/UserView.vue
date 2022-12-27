@@ -792,12 +792,14 @@ export default {
             this.requestStatus = 'success'
             this.httpRequest.status = true
           } else {
+            console.error('err2-' + JSON.stringify(response))
             this.requestStatus = 'error'
             this.message = response.message
           }
           this.isFirstLoad = false
           return true
         }).catch(err => {
+          console.error('err-' + err)
           this.requestStatus = 'error'
           if (err.message && err.message.indexOf('timeout') > -1) {
             this.message = this.$t('panel.timeout_refresh')
@@ -878,10 +880,10 @@ export default {
           }
           if (formatterCfg) {
             const v = valueFormatter(value, formatterCfg)
-            rowData[key] = v.includes('NaN') ? value : v
+            rowData[key] = v && v.includes('NaN') ? value : v
           } else {
             const v = valueFormatter(value, formatterItem)
-            rowData[key] = v.includes('NaN') ? value : v
+            rowData[key] = v && v.includes('NaN') ? value : v
           }
         }
       }
