@@ -74,18 +74,22 @@
         class="main-background"
       >
         <div
+          v-show="!this.element.editing"
           class="de-drag-area de-drag-top"
           @mousedown="elementMouseDown"
         />
         <div
+          v-show="!this.element.editing"
           class="de-drag-area de-drag-right"
           @mousedown="elementMouseDown"
         />
         <div
+          v-show="!this.element.editing"
           class="de-drag-area de-drag-bottom"
           @mousedown="elementMouseDown"
         />
         <div
+          v-show="!this.element.editing"
           class="de-drag-area de-drag-left"
           @mousedown="elementMouseDown"
         />

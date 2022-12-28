@@ -36,6 +36,7 @@ import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
 import { mapState } from 'vuex'
+import Vue from 'vue'
 
 export default {
   name: 'DeRichText',
@@ -155,7 +156,7 @@ export default {
     setEdit() {
       if (this.editStatus) {
         this.canEdit = true
-        this.element.editing = true
+        Vue.set(this.element, 'editing', true)
         this.reShow()
       }
     },
