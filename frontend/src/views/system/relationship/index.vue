@@ -50,14 +50,14 @@
       </el-form>
       <div class="select-icon">
         <i
-          @click="activeIcon = 'date'"
+          @click="activeQueryType('date')"
           :class="[activeIcon === 'date' ? 'active-icon' : '']"
           class="el-icon-date"
         ></i>
         <svg-icon
           icon-class="sys-relationship"
           :class="[activeIcon === 'share' ? 'active-icon' : '']"
-          @click="activeIcon = 'share'"
+          @click="activeQueryType('share')"
         />
       </div>
       <div v-show="activeIcon === 'share'" id="consanguinity">
@@ -204,6 +204,10 @@ export default {
     this.getChartSize()
   },
   methods: {
+    activeQueryType(activeIcon) {
+      this.activeIcon = activeIcon
+      this.onSubmit()
+    },
     async searchDetail(id, queryType) {
       switch (queryType) {
         case 'datasource':
@@ -247,9 +251,13 @@ export default {
     },
     getDatasetRelationship(id) {
       getDatasetRelationship(id).then((res) => {
+        const { id, name } = res.data
+        res.data.id = this.current.num
+        res.data.name = this.current.label
+        res.data.type = this.current.queryType
         const arr = res.data ? [res.data] : []
         this.treeData = []
-        this.dfsTree(arr, this.current)
+        this.dfsTree(arr, { num: id, label: name, queryType: 'datasource' })
         this.initTable()
       })
     },
@@ -352,9 +360,7 @@ export default {
           if (this.activeIcon === 'date') {
             this.getChartData()
           } else {
-            this.$refs.consanguinity.getChartData(
-              this.formInline.dataSourceName
-            )
+            this.$refs.consanguinity.getChartData(this.current)
           }
         }
       })
@@ -367,113 +373,6 @@ export default {
     handleCurrentChange(currentPage) {
       this.paginationConfig.currentPage = currentPage
       this.onSubmit()
-    },
-    initTree() {
-      const chartDom = document.getElementById('consanguinity')
-      this.treeChart = this.$echarts.init(chartDom)
-      const data = {
-        name: 'flare',
-        children: [
-          {
-            name: 'data',
-            children: [
-              {
-                name: 'converters',
-                children: [
-                  { name: 'Converters', value: 721 },
-                  { name: 'DelimitedTextConverter', value: 4294 }
-                ]
-              },
-              {
-                name: 'DataUtil',
-                value: 3322
-              }
-            ]
-          },
-          {
-            name: 'display',
-            children: [
-              { name: 'DirtySprite', value: 8833 },
-              { name: 'LineSprite', value: 1732 },
-              { name: 'RectSprite', value: 3623 }
-            ]
-          },
-          {
-            name: 'flex',
-            children: [{ name: 'FlareVis', value: 4116 }]
-          },
-          {
-            name: 'scale',
-            children: [
-              { name: 'IScaleMap', value: 2105 },
-              { name: 'LinearScale', value: 1316 },
-              { name: 'LogScale', value: 3151 },
-              { name: 'OrdinalScale', value: 3770 },
-              { name: 'QuantileScale', value: 2435 },
-              { name: 'QuantitativeScale', value: 4839 },
-              { name: 'RootScale', value: 1756 },
-              { name: 'Scale', value: 4268 },
-              { name: 'ScaleType', value: 1821 },
-              { name: 'TimeScale', value: 5833 }
-            ]
-          }
-        ]
-      }
-
-      const option = {
-        tooltip: {
-          trigger: 'item',
-          triggerOn: 'mousemove'
-        },
-        series: [
-          {
-            type: 'tree',
-            id: 0,
-            name: 'tree1',
-            data: [data],
-            top: '10%',
-            left: '8%',
-            bottom: '22%',
-            right: '20%',
-            symbolSize: 0,
-            edgeShape: 'polyline',
-            edgeForkPosition: '50%',
-            initialTreeDepth: 3,
-            lineStyle: {
-              width: 2
-            },
-            label: {
-              formatter: function (a, b) {
-                return [`{a|${a.data.name}a}`].join('\n')
-              },
-
-              rich: {
-                a: {
-                  color: 'red',
-                  backgroundColor: '#fff',
-                  lineHeight: 10,
-                  borderColor: '#DCDFE6',
-                  borderWidth: '1',
-                  borderRadius: 2,
-                  padding: [5, 10]
-                }
-              }
-            },
-            leaves: {
-              label: {
-                position: 'right',
-                verticalAlign: 'middle',
-                align: 'left'
-              }
-            },
-            expandAndCollapse: true,
-            animationDuration: 550,
-            animationDurationUpdate: 750
-          }
-        ]
-      }
-
-      this.treeChart.setOption(option)
     }
   }
 }
