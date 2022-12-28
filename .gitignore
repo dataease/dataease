@@ -10,6 +10,9 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+#drivers下的东西都要
+!/drivers/**
+
 # Package Files #
 *.jar
 *.war
