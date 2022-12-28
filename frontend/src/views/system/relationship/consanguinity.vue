@@ -11,10 +11,6 @@ import {
 } from '@/api/chart/chart.js'
 export default {
   props: {
-    current: {
-      type: Object,
-      default: () => {}
-    },
     chartSize: {
       type: Object,
       default: () => {}
@@ -23,6 +19,8 @@ export default {
   data() {
     return {
       measureText: null,
+      current: {},
+      activeId: '',
       treeData: [],
       myChart: null,
       datasourcePanel: {
@@ -43,8 +41,11 @@ export default {
     }
   },
   methods: {
-    getChartData(id) {
-      switch (this.current.queryType) {
+    getChartData(current) {
+      this.current = {...current}
+      const { queryType, num: id } = current
+      this.activeId = id
+      switch (queryType) {
         case 'datasource':
           this.getDatasourceRelationship(id)
           break
@@ -68,9 +69,14 @@ export default {
     },
     getDatasetRelationship(id) {
       getDatasetRelationship(id).then((res) => {
+        const { id, name } = res.data
+        res.data.id = this.current.num
+        res.data.name = this.current.label
+        res.data.type = this.current.queryType
         const arr = res.data ? [res.data] : []
+        this.current = { num: id, label: name, queryType: 'datasource' }
         this.treeData = []
-        this.dfsTree(arr, this.current.num)
+        this.dfsTree(arr, id)
         this.initEchart()
       })
     },
@@ -89,12 +95,14 @@ export default {
           this.dfsTreeFlip(subRelation, { id, name })
         } else if (type === 'dataset') {
           this.treeData.push({ id, name, type, pid: this.current.num })
-          this.treeData.push({
-            id: obj.id,
-            name: obj.name,
-            type: 'datasource',
-            pid: id
-          })
+          if (obj.id) {
+            this.treeData.push({
+              id: obj.id,
+              name: obj.name,
+              type: 'datasource',
+              pid: id
+            })
+          }
         }
       })
     },
@@ -374,7 +382,7 @@ export default {
                     ], //相对位置
                     z2: 10,
                     style: {
-                      text: api.value(5), //data中取值
+                      text: isNaN(api.value(5)) ? data.find(ele => ele[4] === api.value(4))[5] : api.value(5), //data中取值
                       color: '#1F2329',
                       x: 5,
                       y: 5
@@ -405,7 +413,7 @@ export default {
                     ),
                     style: {
                       ...api.style(),
-                      fill: api.value(4) === that.current.num ? '#c2d4ff' : 'none',
+                      fill: api.value(4) === that.activeId ? '#c2d4ff' : 'none',
                       stroke: '#3370FF'
                     }
                   }
