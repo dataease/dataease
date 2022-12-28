@@ -1338,7 +1338,6 @@ public class SqlserverQueryProvider extends QueryProvider {
     public List<Dateformat> dateformat() {
         return JSONArray.parseArray("[\n" +
                 "{\"dateformat\": \"102\", \"desc\": \"yyyy.mm.dd\"},\n" +
-                "{\"dateformat\": \"120\", \"desc\": \"yyyy-mm-dd\"},\n" +
                 "{\"dateformat\": \"111\", \"desc\": \"yyyy/mm/dd\"},\n" +
                 "{\"dateformat\": \"112\", \"desc\": \"yyyymmdd\"},\n" +
                 "{\"dateformat\": \"120\", \"desc\": \"yyyy-mm-dd hh:mi:ss\"}\n" +
