@@ -54,8 +54,6 @@ export function listenGlobalKeyDown() {
     if (!store.state.isInEditor) return
     const { keyCode } = e
     if (keyCode === ctrlKey || keyCode === commandKey) {
-      e.preventDefault()
-      e.stopPropagation()
       isCtrlOrCommandDown = true
     } else if (isCtrlOrCommandDown) {
       if (keyCode === zKey || keyCode === yKey || keyCode === dKey || keyCode === sKey || keyCode === enlargeKey) {
@@ -73,12 +71,15 @@ export function listenGlobalKeyDown() {
   }
 }
 
+export function removeKeyListen() {
+  // window.onkeydown = null
+  // window.onkeyup = null
+}
+
 export function listenGlobalKeyDownPreview() {
   window.onkeydown = (e) => {
     const { keyCode } = e
     if (keyCode === ctrlKey || keyCode === commandKey) {
-      e.preventDefault()
-      e.stopPropagation()
       isCtrlOrCommandDown = true
     } else if (isCtrlOrCommandDown) {
       if (keyCode === enlargeKey) {
