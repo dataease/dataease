@@ -67,8 +67,8 @@
           >
             {{ $t('chart.total') }}
             <span>{{
-                (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
-              }}</span>
+              (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
+            }}</span>
             {{ $t('chart.items') }}
           </span>
           <de-pagination
@@ -351,9 +351,9 @@ export default {
           dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
         }
       }
-      this.antVActionPost(dimensionList, nameIdMap[meta.valueField] || 'null')
+      this.antVActionPost(dimensionList, nameIdMap[meta.valueField] || 'null', param)
     },
-    antVActionPost(dimensionList, name) {
+    antVActionPost(dimensionList, name, param) {
       this.pointParam = {
         data: {
           dimensionList: dimensionList,
@@ -385,7 +385,7 @@ export default {
           dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
         }
       }
-      this.antVActionPost(dimensionList, nameIdMap[meta.field] || 'null')
+      this.antVActionPost(dimensionList, nameIdMap[meta.field] || 'null', param)
     },
     setBackGroundBorder() {
       if (this.chart.customStyle) {

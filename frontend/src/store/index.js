@@ -198,6 +198,9 @@ const data = {
     },
 
     setCurComponent(state, { component, index }) {
+      if (!component && state.curComponent) {
+        Vue.set(state.curComponent, 'editing', false)
+      }
       // 当前视图操作状态置空
       if (component) {
         component['optStatus'] = {
@@ -206,9 +209,9 @@ const data = {
         }
         // Is the current component in editing status
         if (!state.curComponent) {
-          component['editing'] = false
+          Vue.set(component, 'editing', false)
         } else if (component.id !== state.curComponent.id) {
-          component['editing'] = false
+          Vue.set(component, 'editing', false)
         }
       }
       state.styleChangeTimes = 0

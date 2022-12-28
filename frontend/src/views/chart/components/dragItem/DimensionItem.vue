@@ -241,6 +241,7 @@ export default {
   mounted() {
     bus.$on('reset-change-table', this.getItemTagType)
     this.init()
+    this.getDateExtStatus()
   },
   beforeDestroy() {
     bus.$off('reset-change-table', this.getItemTagType)

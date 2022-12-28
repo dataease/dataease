@@ -14,18 +14,6 @@
         <result column="is_default" property="isDefault"/>
     </resultMap>
 
-    <resultMap id="RelationResultMap" type="io.dataease.dto.RelationDTO">
-        <id column="id" property="id"/>
-        <result column="name" property="name"/>
-        <result column="auths" property="auths"/>
-        <collection property="subRelation" ofType="io.dataease.dto.RelationDTO">
-            <id column="dt_id" property="id"/>
-            <result column="dt_name" property="name"/>
-            <result column="dt_auths" property="auths"/>
-            <result column="dt_type" property="type"/>
-        </collection>
-    </resultMap>
-
     <select id="findOneWithPrivileges" resultMap="BaseResultMapDTO">
         select panel_group.*,
                panel_group.name                                                        as label,
@@ -238,16 +226,16 @@
 
     </delete>
 
-    <select id="queryPanelRelation" resultType="io.dataease.dto.RelationDTO" resultMap="RelationResultMap">
+    <select id="queryPanelRelation" resultType="io.dataease.dto.RelationDTO" resultMap="io.dataease.ext.ExtDataSourceMapper.RelationResultMap">
         select
             ds.id,
             ds.name,
             ds_auth.auths,
             'link' `type`,
-            dt.id dt_id,
-            dt.name dt_name,
-            dt_auth.auths dt_auths,
-            if(dt.id is not null,'dataset',null) dt_type
+            dt.id sub_id,
+            dt.name sub_name,
+            dt_auth.auths sub_auths,
+            if(dt.id is not null,'dataset',null) sub_type
         from
             panel_group pg
         join
@@ -318,7 +306,7 @@
             group by sa.auth_source
         ) ds_auth on ds_auth.id = ds.id
         where pg.id=#{panelId,jdbcType=VARCHAR}
-        group by id,dt_id
+        group by id,sub_id
         order by id
     </select>
 
