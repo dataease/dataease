@@ -98,7 +98,7 @@
               </de-btn>
             </span>
 
-            <span style="float: right;margin-right: 10px">
+            <span v-if="showType !== 1" style="float: right;margin-right: 10px">
               <de-btn
                 secondary
                 @click="share"
@@ -824,10 +824,10 @@ export default {
 }
 
 .panel-design-head {
-  height: 40px;
+  height: 56px;
   background-color: var(--SiderBG, white);
   padding: 0 10px;
-  line-height: 40px;
+  line-height: 56px;
 
   .panel-name {
     font-family: PingFang SC;
@@ -857,7 +857,7 @@ export default {
 
 .panel-design-preview {
   width: 100%;
-  height: calc(100% - 40px);
+  height: calc(100% - 56px);
   overflow-x: hidden;
   overflow-y: auto;
   /*padding: 5px;*/
@@ -890,3 +890,4 @@ export default {
   margin-right: 5px;
 }
 </style>
+

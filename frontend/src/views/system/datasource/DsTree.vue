@@ -339,6 +339,11 @@ import {
   listDriverByType,
   updateDriver
 } from '@/api/system/datasource'
+import {
+  getDatasourceRelationship,
+} from '@/api/chart/chart.js'
+
+import msgContent from './MsgContent.vue'
 import deTextarea from '@/components/deCustomCm/DeTextarea.vue'
 import msgCfm from '@/components/msgCfm'
 export default {
@@ -354,6 +359,7 @@ export default {
   data() {
     return {
       tabActive: 'OLTP',
+      treeData: [],
       databaseList: [],
       currentNodeId: '',
       dsTypeRelate: false,
@@ -361,7 +367,7 @@ export default {
       tData: [],
       nameMap: ['OLTP', 'OLAP', 'dataWarehouseLake', 'OTHER'],
       nameClassMap: ['OLTP', 'OLAP', this.$t(`datasource.data_warehouse_lake`), this.$t(`datasource.other`)],
-      typeList: [['Db2', 'DM', 'KingBase', 'MariaDB', 'MongoDB', 'Mongodb-BI', 'MySQL', 'Oracle', 'PostgreSQL', 'SQL Server', 'TiDB'], ['Doris', 'Apache Impala', 'ClickHouse', 'Elasticsearch', 'Presto', 'StarRocks'], ['Apache Hive', 'Kylin', 'AWS Redshift', 'Maxcompute'], ['API']],
+      typeList: ['OLTP', 'OLAP', 'DL', 'OTHER'],
       treeLoading: false,
       dsTypes: [],
       dsTypesForDriver: [],
@@ -426,6 +432,26 @@ export default {
     this.datasourceTypes()
   },
   methods: {
+    getDatasourceRelationship({ queryType, label, id }) {
+     return getDatasourceRelationship(id).then((res) => {
+        const arr = res.data || []
+        this.treeData = []
+        this.dfsTree(arr, { queryType, label })
+      })
+    },
+    dfsTree(arr = [], { queryType, label }, item) {
+      arr.forEach((ele) => {
+        const { name, type, subRelation = [] } = ele
+        const obj = {}
+        obj[type] = name
+        obj[queryType] = label
+        if (subRelation.length) {
+          this.dfsTree(subRelation, { queryType: type, label: name }, obj)
+        } else {
+          this.treeData.push({ ...item, ...obj })
+        }
+      })
+    },
     handleClick() {
       document.querySelector(`.${this.tabActive}`).scrollIntoView()
     },
@@ -503,7 +529,7 @@ export default {
         this.dsTypes = res.data
         const databaseList = [[], [], [], []]
         this.dsTypes.forEach((item) => {
-          const index = this.typeList.findIndex(ele => ele.includes(item.name))
+          const index = this.typeList.findIndex(ele => ele === item.databaseClassification)
           if (index !== -1) {
             databaseList[index].push(item)
           }
@@ -511,7 +537,11 @@ export default {
             this.dsTypesForDriver.push(item)
           }
         })
-        this.databaseList = databaseList
+        this.databaseList = databaseList.map(ele => {
+          return ele.sort((a, b) => {
+            return a.name.toLowerCase().charCodeAt(0) - b.name.toLowerCase().charCodeAt(0)
+          })
+        })
       })
     },
     refreshType(datasource) {
@@ -695,7 +725,7 @@ export default {
       this.dialogTitle = this.$t('commons.copy')
       this.driverForm = { ...row }
     },
-    _handleDelete(datasource) {
+    async _handleDelete(datasource) {
       const params = {
         title:
           this.showView === 'Datasource'
@@ -722,17 +752,34 @@ export default {
           })
         }
       }
+      const { queryType = 'datasource', name: label, id } = datasource
+      if (this.showView === 'Datasource') {
+        await this.getDatasourceRelationship({ queryType, label, id })
+        if (this.treeData.length) {
+          params.title = this.$t('datasource.this_data_source')
+          params.link = this.$t('datasource.click_to_check')
+          params.content = this.$t('datasource.cannot_be_deleted_dataset')
+          params.templateDel = msgContent
+          
+          params.linkTo = this.linkTo.bind(this, { queryType, id })
+          this.withLink(params)
+          return
+        }
+      }
       this.handlerConfirm(params)
+    },
+    linkTo(query) {
+      window.open(this.$router.resolve({
+        path: '/system/relationship',
+        query
+      }).href, '_blank')
     },
     switchMain(component, componentParam, tData, dsTypes) {
       if (component === 'dsTable') {
-        const { id, type, showModel } = componentParam
         this.$emit('switch-main', {
           component,
           componentParam: {
-            id,
-            type,
-            showModel,
+            ...componentParam,
             msgNodeId: this.msgNodeId
           },
           tData,
