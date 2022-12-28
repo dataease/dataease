@@ -159,23 +159,25 @@
 
     <select id="queryDatasetRelation" resultType="io.dataease.dto.RelationDTO" resultMap="io.dataease.ext.ExtDataSourceMapper.RelationResultMap">
         select
-            dt.id,
-            dt.name,
-            dt_auth.auths,
-            'dataset' `type`,
-            pg.id panel_id,
-            pg.name panel_name,
-            pg_auth.auths panel_auths,
-            if(pg.id is not null,'panel',null) pg_type
+            ds.id,
+            ds.name,
+            ds_auth.auths,
+            'link' `type`,
+            pg.id sub_id,
+            pg.name sub_name,
+            pg_auth.auths sub_auths,
+            if(pg.id is not null,'panel',null) sub_type
         from
             dataset_table dt
         left join
+            datasource ds on dt.data_source_id = ds.id
+        left join
         (
             select
-                t_dt.id,group_concat(distinct sad.privilege_type) auths
+                t_ds.id,group_concat(distinct sad.privilege_type) auths
             from
-                dataset_table t_dt
-            left join sys_auth sa on sa.auth_source = t_dt.id
+                datasource t_ds
+            left join sys_auth sa on sa.auth_source = t_ds.id
             left join sys_auth_detail sad on sa.id = sad.auth_id
             where
                 sa.auth_source = #{datasetId,jdbcType=VARCHAR}
@@ -199,7 +201,7 @@
                 )
             )
             group by sa.auth_source
-        ) dt_auth on dt.id = dt_auth.id
+        ) ds_auth on ds.id = ds_auth.id
         left join chart_view cv on cv.table_id = dt.id
         left join panel_group pg on cv.scene_id = pg.id
         left join
@@ -234,7 +236,7 @@
             group by sa.auth_source
         ) pg_auth on pg_auth.id = pg.id
         where dt.id=#{datasetId,jdbcType=VARCHAR}
-        group by id,panel_id
+        group by id,sub_id
         order by id
     </select>
 </mapper>
