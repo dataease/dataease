@@ -10,7 +10,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.mapper.PanelLinkJumpInfoMapper;
 import io.dataease.plugins.common.base.mapper.PanelLinkJumpMapper;
 import io.dataease.plugins.common.base.mapper.PanelLinkJumpTargetViewInfoMapper;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;

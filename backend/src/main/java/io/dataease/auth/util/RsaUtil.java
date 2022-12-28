@@ -1,7 +1,7 @@
 package io.dataease.auth.util;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import javax.crypto.Cipher;
 import java.security.KeyFactory;
