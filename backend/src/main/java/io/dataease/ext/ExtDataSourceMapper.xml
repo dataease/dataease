@@ -11,10 +11,10 @@
         <result column="name" property="name"/>
         <result column="auths" property="auths"/>
         <collection property="subRelation" ofType="io.dataease.dto.RelationDTO">
-            <id column="panel_id" property="id"/>
-            <result column="panel_name" property="name"/>
-            <result column="panel_auths" property="auths"/>
-            <result column="pg_type" property="type"/>
+            <id column="sub_id" property="id"/>
+            <result column="sub_name" property="name"/>
+            <result column="sub_auths" property="auths"/>
+            <result column="sub_type" property="type"/>
         </collection>
     </resultMap>
 
@@ -167,10 +167,10 @@
             dt.name,
             dt_auth.auths,
             'dataset' `type`,
-            pg.id panel_id,
-            pg.name panel_name,
-            pg_auth.auths panel_auths,
-            if(pg.id is not null,'panel',null) pg_type
+            pg.id sub_id,
+            pg.name sub_name,
+            pg_auth.auths sub_auths,
+            if(pg.id is not null,'panel',null) sub_type
         from
             datasource ds
         join dataset_table dt on dt.data_source_id = ds.id
@@ -239,7 +239,7 @@
             group by sa.auth_source
         ) pg_auth on pg_auth.id = pg.id
         where ds.id=#{datasourceId,jdbcType=VARCHAR}
-        group by id,panel_id
+        group by id,sub_id
         order by id
     </select>
 </mapper>
