@@ -452,7 +452,7 @@ public class ExtractDataService {
                 extractDataByKettle(datasetTable, datasource, datasetTableFields, extractType, sql.get("selectSQL").replace("DE_OFFSET", offset.toString()).replace("DE_PAGE_SIZE", extractPageSize.toString()).replace("DE_ALL", all.toString()));
             }
         } else {
-            extractDataByKettle(datasetTable, datasource, datasetTableFields, extractType, selectSQL);
+            extractDataByKettle(datasetTable, datasource, datasetTableFields, extractType, sql.get("selectSQL"));
         }
     }
 
