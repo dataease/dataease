@@ -931,9 +931,12 @@ export default {
         options.link = this.$t('datasource.click_to_check')
         options.content = this.$t('datasource.cannot_be_deleted_dataset')
         options.templateDel = msgContent
+        options.confirmButtonText = undefined
+        options.type = 'danger'
+        
         
         options.linkTo = this.linkTo.bind(this, { queryType, id })
-        this.withLink(options)
+        this.withLink(options, this.$t('commons.delete'))
         return
       }
       this.handlerConfirm(options)

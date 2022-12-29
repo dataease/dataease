@@ -458,10 +458,12 @@ import { mapState } from 'vuex'
 import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
 import TreeSelector from '@/components/treeSelector'
 import { queryAuthModel } from '@/api/authModel/authModel'
+import msgCfm from '@/components/msgCfm/index'
 
 export default {
   name: 'PanelList',
   components: { GrantAuth, LinkGenerate, EditPanel, TreeSelector },
+  mixins: [msgCfm],
   data() {
     return {
       lastActiveDefaultPanelId: null, // 激活的节点 在这个节点下面动态放置子节点
@@ -856,12 +858,10 @@ export default {
     },
 
     delete(data) {
-      this.$confirm(this.$t('panel.confirm_delete'), this.$t('panel.tips'), {
-        confirmButtonText: this.$t('panel.confirm'),
-        cancelButtonText: this.$t('panel.cancel'),
-        type: 'warning'
-      })
-        .then(() => {
+      const params = {
+        title: 'commons.delete_this_dashboard',
+        type: 'danger',
+        cb: () => {
           delGroup(data.id).then((response) => {
             this.$message({
               type: 'success',
@@ -872,9 +872,9 @@ export default {
             this.tree()
             this.defaultTree(false)
           })
-        })
-        .catch(() => {
-        })
+        }
+      }
+      this.handlerConfirm(params, this.$t('commons.delete'))
     },
 
     clearCanvas() {

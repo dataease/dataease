@@ -380,6 +380,7 @@ export default {
     ukey_title: 'API Keys',
     thumbnail: '缩略图',
     confirm_delete: '确认删除',
+    delete_this_dashboard: '确认删除该仪表板吗?',
     confirm_stop: '确认停止',
     stop_success: '停止成功',
     treeselect: {
