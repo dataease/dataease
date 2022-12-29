@@ -18,10 +18,10 @@ export default {
       update: function(el, binding) {
         const { value, maxlength, buttonDisabled } = binding.value
         if (buttonDisabled && el.querySelector('.el-input__count')) {
-          el.querySelector('.el-input__count').style.dispaly = 'none'
+          el.querySelector('.el-input__count').style.display = 'none'
           return
         } else if (el.querySelector('.el-input__count')) {
-          el.querySelector('.el-input__count').style.dispaly = 'block'
+          el.querySelector('.el-input__count').style.display = 'block'
         }
         const lg = value?.length || 0
         const count = el.querySelector('.el-input__count')
