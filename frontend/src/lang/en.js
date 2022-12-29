@@ -381,6 +381,7 @@ export default {
     ukey_title: 'API Keys',
     thumbnail: 'thumbnail',
     confirm_delete: 'Confirm delete',
+    delete_this_dashboard: 'Are you sure to delete this dashboard?',
     confirm_stop: 'Confirm stop',
     stop_success: 'Stop success',
     treeselect: {

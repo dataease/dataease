@@ -661,7 +661,7 @@ export default {
   },
   methods: {
     editDatasource(type) {
-      this.canEdit = type
+      this.$emit('update:canEdit', type)
       this.disabled = !type
     },
     baseInfoDisabledCheck(privileges) {
