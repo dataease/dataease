@@ -47,7 +47,7 @@
             @command="(type) => clickMore(type, ele)"
           >
             <span class="el-dropdown-link">
-              <i class="el-icon-more" />
+              <i class="el-icon-more"/>
             </span>
             <el-dropdown-menu
               slot="dropdown"
@@ -57,19 +57,19 @@
                 icon="el-icon-upload2"
                 command="import"
               >
-                {{ $t("panel.import") }}
+                {{ $t('panel.import') }}
               </el-dropdown-item>
               <el-dropdown-item
                 icon="el-icon-edit"
                 command="edit"
               >
-                {{ $t("panel.rename") }}
+                {{ $t('panel.rename') }}
               </el-dropdown-item>
               <el-dropdown-item
                 icon="el-icon-delete"
                 command="delete"
               >
-                {{ $t("panel.delete") }}
+                {{ $t('panel.delete') }}
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -83,7 +83,7 @@
       secondary
       @click="add()"
     >
-      {{ $t("panel.add_category") }}
+      {{ $t('panel.add_category') }}
     </deBtn>
   </div>
 </template>
@@ -174,12 +174,14 @@ export default {
 .de-template-list {
   height: 100%;
   position: relative;
+
   ul {
     margin: 16px 0 20px 0;
     padding: 0;
     overflow-y: auto;
     max-height: calc(100% - 90px);
   }
+
   li {
     list-style: none;
     width: 100%;
@@ -200,7 +202,7 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
 
-    .text-template-overflow{
+    .text-template-overflow {
       display: inline-block;
       max-width: 87%;
       overflow: hidden;
@@ -212,12 +214,14 @@ export default {
       color: #8f959e;
       margin-right: 9px;
     }
+
     .more {
       position: absolute;
       top: 50%;
       right: 10px;
       transform: translateY(-50%);
       display: none;
+
       .el-icon-more {
         width: 24px;
         height: 24px;
@@ -250,16 +254,19 @@ export default {
 
   li.select {
     background: var(--deWhiteHover, #3370ff);
-    color: var(--primary, #3370ff);
+    color: var(--TextActive, #f4f4f5);
   }
+
   .de-btn-fix {
     position: absolute;
     bottom: 0;
     left: 0;
   }
 }
+
 .de-template-dropdown {
   margin-top: 0 !important;
+
   .popper__arrow {
     display: none !important;
   }
