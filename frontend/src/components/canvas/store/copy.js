@@ -126,8 +126,8 @@ export default {
           Vue.set(newView, 'needAdaptor', needAdaptor)
           newView.id = uuid.v1()
           newView.propValue.viewId = res.data
-          newView['canvasId'] = 'canvas-main'
-          newView['canvasPid'] = '0'
+          newView['canvasId'] = data.canvasId
+          newView['canvasPid'] = data.canvasPid
           if (newView.filters && newView.filters.length) {
             newView.filters = []
           }
