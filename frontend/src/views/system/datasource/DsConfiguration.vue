@@ -449,7 +449,7 @@
       v-closePress
       :title="api_table_title"
       :visible.sync="edit_api_item"
-      custom-class="api-datasource-drawer"
+      custom-class="api-datasource-drawer ds-configuration-input"
       size="840px"
       :before-close="closeEditItem"
       direction="rtl"
@@ -1515,6 +1515,12 @@ export default {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+}
+
+.ds-configuration-input {
+  .el-input__inner {
+    color: var(--deTextPrimary, #1F2329);
   }
 }
 .checkbox-table {

@@ -381,6 +381,7 @@ export default {
     ukey_title: 'API Keys',
     thumbnail: '縮略圖',
     confirm_delete: '確認刪除',
+    delete_this_dashboard: '確認删除該儀錶板嗎?',
     confirm_stop: '確認停止',
     stop_success: '停止成功',
     treeselect: {

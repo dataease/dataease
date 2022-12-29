@@ -23,11 +23,13 @@
           <deBtn
             v-if="privileges && canEdit"
             secondary
+            key="cancel"
             @click="editDatasource(false)"
           >{{ $t('commons.cancel') }}
           </deBtn>
           <deBtn
             v-if="privileges && !canEdit"
+            key="edit"
             secondary
             @click="editDatasource(true)"
           >{{ $t('commons.edit') }}
@@ -54,7 +56,7 @@
           >{{ $t('commons.validate') }}
           </deBtn>
           <deBtn
-            v-if="privileges"
+            v-if="privileges && canEdit"
             type="primary"
             @click="save"
           >{{ $t('commons.save') }}
