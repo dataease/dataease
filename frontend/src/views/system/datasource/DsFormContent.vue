@@ -1058,7 +1058,7 @@ export default {
       method(form).then((res) => {
         this.$success(i18n.t('commons.save_success'))
         this.refreshType(form)
-        this.$router.push('/datasource/index')
+        this.backToList()
       }).finally(() => {
         this.$emit('update:formLoading', false)
       })
