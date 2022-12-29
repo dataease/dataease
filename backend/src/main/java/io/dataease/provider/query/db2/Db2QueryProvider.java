@@ -836,7 +836,7 @@ public class Db2QueryProvider extends QueryProvider {
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS de_tmp  LIMIT DE_OFFSET, DE_PAGE_SIZE ", fields, null);
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS de_tmp  ", fields, null);
     }
 
     @Override
