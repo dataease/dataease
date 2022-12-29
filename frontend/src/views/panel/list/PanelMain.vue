@@ -77,9 +77,6 @@ export default {
       if (newVal === 'PanelMain' && this.lastActiveNodeData) {
         this.activeNodeAndClickOnly(this.lastActiveNodeData)
       }
-    },
-    activeName: function(newVal, oldVal) {
-      this.clear()
     }
   },
   mounted() {
@@ -115,15 +112,6 @@ export default {
     refreshEnshrine() {
       this.showEnshrine = false
       this.$nextTick(() => (this.showEnshrine = true))
-    },
-    clear() {
-      // 清空
-      this.$store.dispatch('panel/setPanelInfo', {
-        id: null,
-        name: '',
-        preStyle: null
-      })
-      this.$store.dispatch('panel/setMainActiveName', 'PanelMain')
     },
     msg2Current(panelIds) {
       this.refreshShare()
