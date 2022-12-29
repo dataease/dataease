@@ -228,7 +228,7 @@
 
     <select id="queryPanelRelation" resultType="io.dataease.dto.RelationDTO" resultMap="io.dataease.ext.ExtDataSourceMapper.RelationResultMap">
         select
-            ds.id,
+            ifnull(ds.id,'') `id`,
             ds.name,
             ds_auth.auths,
             'link' `type`,
