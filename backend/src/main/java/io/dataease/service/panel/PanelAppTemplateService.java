@@ -104,7 +104,7 @@ public class PanelAppTemplateService {
         BeanUtils.copyBean(requestTemplate, request);
         //Store static resource into the server
         if (StringUtils.isNotEmpty(request.getSnapshot())) {
-            String snapshotName = "app-template-" + request.getId() + ".jpeg";
+            String snapshotName = "app-template-" + UUIDUtil.getUUIDAsString() + ".jpeg";
             staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
             requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
         }
