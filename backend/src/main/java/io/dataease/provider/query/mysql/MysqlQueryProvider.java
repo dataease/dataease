@@ -821,7 +821,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS DE_TEMP LIMIT DE_OFFSET, DE_PAGE_SIZE ", fields, null);
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS DE_TEMP", fields, null);
     }
 
     public String transTreeItem(SQLObj tableObj, DatasetRowPermissionsTreeItem item) {

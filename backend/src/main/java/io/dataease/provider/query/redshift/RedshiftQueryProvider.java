@@ -835,7 +835,7 @@ public class RedshiftQueryProvider extends QueryProvider {
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS DE_TEMP LIMIT DE_PAGE_SIZE OFFSET DE_OFFSET ", fields, null);
+        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS DE_TEMP  ", fields, null);
     }
 
     @Override
