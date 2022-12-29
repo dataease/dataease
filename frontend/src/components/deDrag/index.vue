@@ -79,17 +79,17 @@
           @mousedown="elementMouseDown"
         />
         <div
-          v-show="!this.element.editing"
+          v-show="!this.element.editing && this.element.type !=='de-tabs'"
           class="de-drag-area de-drag-right"
           @mousedown="elementMouseDown"
         />
         <div
-          v-show="!this.element.editing"
+          v-show="!this.element.editing && this.element.type !=='de-tabs'"
           class="de-drag-area de-drag-bottom"
           @mousedown="elementMouseDown"
         />
         <div
-          v-show="!this.element.editing"
+          v-show="!this.element.editing && this.element.type !=='de-tabs'"
           class="de-drag-area de-drag-left"
           @mousedown="elementMouseDown"
         />
