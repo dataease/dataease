@@ -924,22 +924,21 @@ export default {
         }
       }
 
-      const { queryType = 'dataset', name: label, id } = data
-      await this.getDatasetRelationship({ queryType, label, id })
-      if (this.treeData.length) {
-        options.title = this.$t('datasource.delete_this_dataset')
-        options.link = this.$t('datasource.click_to_check')
-        options.content = this.$t('datasource.cannot_be_deleted_dataset')
-        options.templateDel = msgContent
-        options.confirmButtonText = undefined
-        options.type = 'danger'
-        
-        
-        options.linkTo = this.linkTo.bind(this, { queryType, id })
-        this.withLink(options, this.$t('commons.delete'))
-        return
-      }
-      this.handlerConfirm(options)
+      const { queryType = 'dataset', id } = data
+      getDatasetRelationship(id).then((res) => {
+        if (res.data.subRelation?.length) {
+          options.title = this.$t('datasource.delete_this_dataset')
+          options.link = this.$t('datasource.click_to_check')
+          options.content = this.$t('datasource.cannot_be_deleted_dataset')
+          options.templateDel = msgContent
+          options.confirmButtonText = undefined
+          options.type = 'danger'
+          options.linkTo = this.linkTo.bind(this, { queryType, id })
+          this.withLink(options, this.$t('commons.delete'))
+          return
+        }
+        this.handlerConfirm(options)
+      })
     },
     linkTo(query) {
       window.open(this.$router.resolve({
