@@ -74,7 +74,9 @@ export default {
         res.data.name = this.current.label
         res.data.type = this.current.queryType
         const arr = res.data ? [res.data] : []
-        this.current = { num: id, label: name, queryType: 'datasource' }
+        if (id) {
+          this.current = { num: id, label: name, queryType: 'datasource' }
+        }
         this.treeData = []
         this.dfsTree(arr, id)
         this.initEchart()
