@@ -46,6 +46,7 @@
     <div style="height: calc(100% - 56px)">
       <DsFormContent
         ref="DsFormContent"
+        @editeTodisable="backToList"
         :outer-params="outerParams"
         :reference-position="referencePosition"
         :form-type.sync="formType"
