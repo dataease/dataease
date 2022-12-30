@@ -145,19 +145,21 @@
           >
             <ux-table-column
               v-for="field in sheetObj.fields"
-              :key="field.fieldName + field.fieldType"
+              :key="field.fieldName"
               min-width="200px"
               :field="field.fieldName"
               :title="field.remarks"
+              :fieldType="field.fieldType"
               :resizable="true"
             >
-              <template slot="header">
+              <template #header>
                 <el-dropdown
                   placement="bottom-start"
                   trigger="click"
+                  :key="field.fieldName + field.fieldType"
                   @command="(type) => handleCommand(type, field)"
                 >
-                  <span class="type-switch">
+                  <span  class="type-switch">
                     <svg-icon
                       v-if="field.fieldType === 'TEXT'"
                       icon-class="field_text"
