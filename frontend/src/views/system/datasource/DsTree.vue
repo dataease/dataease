@@ -705,7 +705,7 @@ export default {
     },
     _handleEditer(row) {
       if (this.showView === 'Datasource') {
-        const param = { ...row, ...{ showModel: 'show' }}
+        const param = { ...row, ...{ showModel: 'show', editor: 'editor' }}
         this.switchMain('dsTable', param, this.tData, this.dsTypes)
         this.currentNodeId && sessionStorage.setItem('datasource-current-node', this.currentNodeId)
         return
