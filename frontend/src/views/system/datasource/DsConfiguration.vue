@@ -93,6 +93,7 @@
                       slot="reference"
                       icon-class="de-delete"
                       class="de-delete-icon"
+                      :class="[disabled ? 'not-allow' : '']"
                     />
                   </el-popover>
                 </span>
@@ -1584,7 +1585,7 @@ export default {
     margin-right: 20px;
     color: var(--deTextSecondary, #646a73);
   }
-  .de-delete-icon {
+  .de-delete-icon:not(.not-allow) {
     cursor: pointer;
     &:hover {
       color: var(--deDanger, #f54a45);
