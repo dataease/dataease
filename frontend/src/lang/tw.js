@@ -1949,6 +1949,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    url_check_error: '跳轉錯誤，URL不合法',
     view_style: '視圖樣式',
     view_color_setting: '視圖配色',
     border_color_setting: '邊框配色',
