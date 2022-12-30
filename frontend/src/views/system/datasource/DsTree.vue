@@ -758,9 +758,8 @@ export default {
         if (this.treeData.length) {
           params.title = this.$t('datasource.this_data_source')
           params.link = this.$t('datasource.click_to_check')
-          params.content = this.$t('datasource.cannot_be_deleted_dataset')
+          params.content = this.$t('datasource.cannot_be_deleted_datasource')
           params.templateDel = msgContent
-          
           params.linkTo = this.linkTo.bind(this, { queryType, id })
           this.withLink(params)
           return

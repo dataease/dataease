@@ -389,7 +389,8 @@
                                 drill_fields,
                                 SNAPSHOT,
                                 senior,
-                                data_from)
+                                data_from,
+                                view_fields)
         SELECT pv_copy.chart_view_id AS id,
                `name`,
                title,
@@ -417,7 +418,8 @@
                drill_fields,
                SNAPSHOT,
                senior,
-               data_from
+               data_from,
+               view_fields
         FROM (SELECT panel_id,
                      copy_from_view,
                      chart_view_id
