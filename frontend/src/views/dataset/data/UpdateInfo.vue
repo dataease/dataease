@@ -940,7 +940,7 @@ export default {
           this.sql = ''
           return
         }
-        if (this.incrementalConfig.incrementalAdd.length > 0) {
+        if (this.incrementalConfig?.incrementalAdd?.length > 0) {
           this.incrementalUpdateType = 'incrementalAdd'
           this.sql = this.incrementalConfig.incrementalAdd
         } else {
