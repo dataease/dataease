@@ -263,19 +263,16 @@ export default {
     .info-item {
       font-family: PingFang SC;
       font-weight: 400;
-      margin-bottom: 8px !important;
-      p {
-        margin: 0;
-      }
+      margin: 6px 0;
     }
     .info-title {
+      margin: 0!important;
+      font-weight: 600;
       font-size: 12px;
-      margin-bottom: 4px !important;
-      color: var(--deTextSecondary, #646a73);
     }
     .info-content {
-      font-size: 14px;
-      color: var(--deTextPrimary, #1f2329);
+      font-size: 12px;
+      margin: 0!important;
     }
   }
 

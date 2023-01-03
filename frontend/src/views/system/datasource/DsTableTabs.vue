@@ -109,6 +109,7 @@
         </el-table-column>
         <el-table-column
           prop="remarks"
+          show-overflow-tooltip
           :label="$t('datasource.field_description')"
         />
       </el-table>
