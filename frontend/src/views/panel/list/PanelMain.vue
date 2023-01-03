@@ -79,7 +79,7 @@ export default {
       }
     },
     activeName: function(newVal, oldVal) {
-      if (newVal !== 'PanelMain') {
+      if (newVal !== 'PanelList') {
         this.clear()
       }
     }
