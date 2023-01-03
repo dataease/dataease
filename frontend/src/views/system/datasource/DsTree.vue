@@ -339,13 +339,12 @@ import {
   listDriverByType,
   updateDriver
 } from '@/api/system/datasource'
-import {
-  getDatasourceRelationship,
-} from '@/api/chart/chart.js'
+import { getDatasourceRelationship } from '@/api/chart/chart.js'
 
 import msgContent from './MsgContent.vue'
 import deTextarea from '@/components/deCustomCm/DeTextarea.vue'
 import msgCfm from '@/components/msgCfm'
+import { checkPermission } from '@/utils/permission'
 export default {
   name: 'DsTree',
   components: { deTextarea },
@@ -754,15 +753,17 @@ export default {
       }
       const { queryType = 'datasource', name: label, id } = datasource
       if (this.showView === 'Datasource') {
-        await this.getDatasourceRelationship({ queryType, label, id })
-        if (this.treeData.length) {
-          params.title = this.$t('datasource.this_data_source')
-          params.link = this.$t('datasource.click_to_check')
-          params.content = this.$t('datasource.cannot_be_deleted_datasource')
-          params.templateDel = msgContent
-          params.linkTo = this.linkTo.bind(this, { queryType, id })
-          this.withLink(params)
-          return
+        if (checkPermission(['relationship:read'])) {
+          await this.getDatasourceRelationship({ queryType, label, id })
+          if (this.treeData.length) {
+            params.title = this.$t('datasource.this_data_source')
+            params.link = this.$t('datasource.click_to_check')
+            params.content = this.$t('datasource.cannot_be_deleted_datasource')
+            params.templateDel = msgContent
+            params.linkTo = this.linkTo.bind(this, { queryType, id })
+            this.withLink(params)
+            return
+          }
         }
       }
       this.handlerConfirm(params)
