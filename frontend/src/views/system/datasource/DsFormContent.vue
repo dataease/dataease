@@ -71,8 +71,8 @@
           </el-form>
           <div class="de-row-rules">
             <span>{{
-              positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
-            }}</span>
+                positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
+              }}</span>
           </div>
           <el-form
             ref="historyDsForm"
@@ -246,7 +246,8 @@
             v-if="
               formType === 'add'
                 ? true
-                : hasDataPermission('manage', params.privileges)
+                : (hasDataPermission('manage', outerParams.panelPrivileges)
+                ||hasDataPermission('manage', outerParams.datasetPrivileges))
             "
             @click="validaDatasource"
           >{{ $t('commons.validate') }}
@@ -270,7 +271,11 @@
           >{{ $t('commons.cancel') }}
           </deBtn>
           <deBtn
-            v-if="formType === 'add'"
+            v-if="
+              formType === 'add'
+                ? true
+                : hasDataPermission('manage', params.privileges)
+            "
             type="primary"
             @click="saveAppMarketHistory"
           >{{ $t('commons.save') }}
@@ -720,7 +725,7 @@ export default {
           res.data.apiConfiguration = JSON.parse(Base64.decode(res.data.apiConfigurationStr))
         }
         this.params = { ...res.data, showModel }
-        if(showModel === 'copy'){
+        if (showModel === 'copy') {
           this.params.id = ''
         }
         this.$emit('setParams', { ...this.params })
@@ -809,16 +814,16 @@ export default {
     },
     saveAppMarketHistory() {
       this.$refs.historyDsForm.validate(valid => {
-        if (!valid) {
-          return false
+          if (!valid) {
+            return false
+          }
+          const appApplyForm = {
+            ...this.attachForm,
+            ...this.historyDsForm
+          }
+          const method = this.formType === 'add' ? appApply : appEdit
+          this.appApplyMethod(method, appApplyForm)
         }
-        const appApplyForm = {
-          ...this.attachForm,
-          ...this.historyDsForm
-        }
-        const method = this.formType === 'add' ? appApply : appEdit
-        this.appApplyMethod(method, appApplyForm)
-      }
       )
     },
     save() {
@@ -964,10 +969,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-          if (!valid) {
-            return false
+            if (!valid) {
+              return false
+            }
           }
-        }
         )
       }
       this.$refs.dsForm.validate((valid) => {
@@ -1112,10 +1117,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-          if (!valid) {
-            return false
+            if (!valid) {
+              return false
+            }
           }
-        }
         )
       }
       this.$refs.dsForm.validate((valid) => {
