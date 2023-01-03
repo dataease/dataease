@@ -145,7 +145,8 @@
           >
             <ux-table-column
               v-for="field in sheetObj.fields"
-              :key="field.fieldName"
+              :key="field.fieldName + sheetObj.id"
+              :column-key="field.fieldName + sheetObj.id"
               min-width="200px"
               :field="field.fieldName"
               :title="field.remarks"
