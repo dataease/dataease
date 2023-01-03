@@ -284,7 +284,7 @@ export default {
       return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType !== 'richTextView'
     },
     enlargeShow() {
-      return this.curComponent.type === 'view' && this.curComponent.propValue.innerType !== 'richTextView'
+      return this.curComponent.type === 'view' && this.curComponent.propValue.innerType !== 'richTextView' && !this.curComponent.propValue.innerType.includes('table')
     },
     selectFieldShow() {
       return this.activeModel === 'edit' && this.curComponent.type === 'view' && this.curComponent.propValue.innerType === 'richTextView' && this.curComponent.editing

@@ -287,6 +287,9 @@ export default {
       return this.$store.state.panel.mainActiveName
     },
     showUnpublishedArea() {
+      if (this.canvasId !== 'canvas-main') {
+        return false
+      }
       if (this.showPosition === 'edit') {
         return false
       } else if (this.panelInfo && this.panelInfo.showType === 'view') {
