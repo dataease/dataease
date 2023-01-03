@@ -1068,9 +1068,10 @@ public class PanelGroupService {
         datasetGroupHistoryInfo.setName(request.getDatasetGroupName());
         datasetGroupHistoryInfo.setPid(request.getDatasetGroupPid());
         datasetGroupMapper.updateByPrimaryKey(datasetGroupHistoryInfo);
-
-        //数据源变更
-        panelAppTemplateService.editDatasource(request.getDatasourceList());
+        if ("new".equals(request.getDatasourceFrom())) {
+            //数据源变更
+            panelAppTemplateService.editDatasource(request.getDatasourceList());
+        }
     }
 
     public void toTop(String panelId) {
