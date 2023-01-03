@@ -938,7 +938,7 @@ export default {
       // 如果有名称name 获取和name匹配的dimension 否则倒序取最后一个能匹配的
       if (param.name) {
         param.dimensionList.forEach(dimensionItem => {
-          if (dimensionItem.id === param.name) {
+          if (dimensionItem.id === param.name || dimensionItem.value === param.name) {
             dimension = dimensionItem
             sourceInfo = param.viewId + '#' + dimension.id
             jumpInfo = this.nowPanelJumpInfo[sourceInfo]
