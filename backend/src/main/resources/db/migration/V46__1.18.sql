@@ -644,3 +644,13 @@ INSERT INTO `sys_auth_detail` (`id`, `auth_id`, `privilege_name`, `privilege_typ
                                `copy_from`, `copy_id`)
 VALUES ('e49bf17e-0af8-11ec-a2b0-0242ac130003', '00590a7c-8e7b-45f4-8428-55532be07602', 'i18n_auth_use', 1, 1, 'use',
         '基础权限-使用', 'admin', 1630482464000, NULL, NULL, NULL);
+
+UPDATE `sys_menu`
+SET `permission` = 'app-template:read'
+WHERE `menu_id` = 41;
+UPDATE `sys_menu`
+SET `permission` = 'app-template-market:read'
+WHERE `menu_id` = 203;
+
+ALTER TABLE `panel_subject`
+    ADD COLUMN `create_num` int(13) DEFAULT 0 COMMENT '创建序号' AFTER `details`;
