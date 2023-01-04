@@ -31,6 +31,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
@@ -128,6 +129,7 @@ public class XEmailTaskServer {
 
     @RequiresPermissions("task-email:add")
     @PostMapping("/save")
+    @Transactional
     public void save(@RequestBody XpackEmailCreate param) throws Exception {
         XpackEmailTaskRequest request = param.fillContent();
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
