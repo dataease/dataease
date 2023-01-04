@@ -65,6 +65,7 @@
         <div style="height: calc(100% - 36px)">
           <ds-form-content
             @editeTodisable="editDatasource"
+            :canEdit="canEdit"
             ref="DsFormContent"
             :config-from-tabs="configFromTabs"
           />
