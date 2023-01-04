@@ -545,6 +545,7 @@ export default {
     }
   },
   mounted() {
+    bus.$on('tab-canvas-change', this.tabSwitch)
     this.bindPluginEvent()
   },
 
@@ -569,6 +570,11 @@ export default {
     }
   },
   methods: {
+    tabSwitch(tabCanvasId) {
+      if (this.charViewS2ShowFlag && tabCanvasId === this.canvasId && this.$refs[this.element.propValue.id]) {
+        this.$refs[this.element.propValue.id].chartResize()
+      }
+    },
     //编辑状态下 不启动刷新
     buildInnerRefreshTimer(refreshViewEnable = false, refreshUnit = 'minute', refreshTime = 5) {
       if (this.editMode === 'preview' && !this.innerRefreshTimer && refreshViewEnable) {
