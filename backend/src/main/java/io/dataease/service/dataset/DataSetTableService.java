@@ -1123,6 +1123,31 @@ public class DataSetTableService {
             }
             plainSelect.setFromItem(subSelect);
         }
+        List<Join> joins = plainSelect.getJoins();
+        if (joins != null) {
+            for (Join join : joins) {
+                FromItem rightItem = join.getRightItem();
+                if (rightItem instanceof SubSelect) {
+                    SelectBody selectBody = ((SubSelect) rightItem).getSelectBody();
+                    SubSelect subSelect = new SubSelect();
+                    Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
+                    PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
+                    subSelect.setSelectBody(subPlainSelect);
+                    if (dsType.equals(DatasourceTypes.oracle.getType())) {
+                        subSelect.setAlias(new Alias(rightItem.getAlias().toString(), false));
+                    } else {
+                        if (rightItem.getAlias() == null) {
+                            throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
+                        }
+                        subSelect.setAlias(new Alias(rightItem.getAlias().toString()));
+                    }
+                    List<Join> joinsList = new ArrayList<>();
+                    join.setRightItem(subSelect);
+                    joinsList.add(join);
+                    plainSelect.setJoins(joinsList);
+                }
+            }
+        }
         Expression expr = plainSelect.getWhere();
         if (expr == null) {
             return handleWith(plainSelect, statementSelect, dsType);
@@ -2375,13 +2400,13 @@ public class DataSetTableService {
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
         if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
             ExcelXlsReader excelXlsReader = new ExcelXlsReader();
-            excelXlsReader.setObtainedNum(100);
+            excelXlsReader.setObtainedNum(1000);
             excelXlsReader.process(inputStream);
             excelSheetDataList = excelXlsReader.totalSheets;
         }
         if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
             ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
-            excelXlsxReader.setObtainedNum(100);
+            excelXlsxReader.setObtainedNum(1000);
             excelXlsxReader.process(inputStream);
             excelSheetDataList = excelXlsxReader.totalSheets;
         }
