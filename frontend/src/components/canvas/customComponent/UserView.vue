@@ -545,6 +545,7 @@ export default {
     }
   },
   mounted() {
+    bus.$on('tab-canvas-change', this.tabSwitch)
     this.bindPluginEvent()
   },
 
@@ -569,6 +570,11 @@ export default {
     }
   },
   methods: {
+    tabSwitch(tabCanvasId) {
+      if (this.charViewS2ShowFlag && tabCanvasId === this.canvasId && this.$refs[this.element.propValue.id]) {
+        this.$refs[this.element.propValue.id].chartResize()
+      }
+    },
     //编辑状态下 不启动刷新
     buildInnerRefreshTimer(refreshViewEnable = false, refreshUnit = 'minute', refreshTime = 5) {
       if (this.editMode === 'preview' && !this.innerRefreshTimer && refreshViewEnable) {
@@ -938,7 +944,7 @@ export default {
       // 如果有名称name 获取和name匹配的dimension 否则倒序取最后一个能匹配的
       if (param.name) {
         param.dimensionList.forEach(dimensionItem => {
-          if (dimensionItem.id === param.name) {
+          if (dimensionItem.id === param.name || dimensionItem.value === param.name) {
             dimension = dimensionItem
             sourceInfo = param.viewId + '#' + dimension.id
             jumpInfo = this.nowPanelJumpInfo[sourceInfo]
@@ -966,7 +972,7 @@ export default {
               // 判断是否有公共链接ID
               if (jumpInfo.publicJumpId) {
                 const url = '/link/' + jumpInfo.publicJumpId
-                window.open(url, jumpInfo.jumpType)
+                this.windowsJump(url, jumpInfo.jumpType)
               } else {
                 this.$message({
                   type: 'warn',
@@ -976,7 +982,7 @@ export default {
               }
             } else {
               const url = '#/preview/' + jumpInfo.targetPanelId
-              window.open(url, jumpInfo.jumpType)
+              this.windowsJump(url, jumpInfo.jumpType)
             }
           } else {
             this.$message({
@@ -989,7 +995,7 @@ export default {
           const colList = [...param.dimensionList, ...param.quotaList]
           let url = this.setIdValueTrans('id', 'value', jumpInfo.content, colList)
           url = checkAddHttp(url)
-          window.open(url, jumpInfo.jumpType)
+          this.windowsJump(url, jumpInfo.jumpType)
         }
       } else {
         if (this.chart.type.indexOf('table') === -1) {
@@ -1018,6 +1024,17 @@ export default {
         })
       }
       return name2Id
+    },
+    windowsJump(url, jumpType) {
+      try {
+        window.open(url, jumpType)
+      } catch (e) {
+        this.$message({
+          message: this.$t('panel.url_check_error') + ':' + url,
+          type: 'error',
+          showClose: true
+        })
+      }
     },
 
     resetDrill() {

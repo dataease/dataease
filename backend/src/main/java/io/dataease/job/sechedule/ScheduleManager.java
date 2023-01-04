@@ -2,6 +2,7 @@ package io.dataease.job.sechedule;
 
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.exception.DataEaseException;
+import io.dataease.i18n.Translator;
 import org.quartz.*;
 import org.springframework.stereotype.Component;
 
@@ -399,7 +400,8 @@ public class ScheduleManager {
 
     public static CronTrigger getCronTrigger(String cron) {
         if (!CronExpression.isValidExpression(cron)) {
-            DataEaseException.throwException("cron :" + cron + " error");
+            String msg = Translator.get("I18N_CRON_ERROR");
+            DataEaseException.throwException(msg + " : " + cron);
         }
         return TriggerBuilder.newTrigger().withIdentity("Calculate Date")
                 .withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();

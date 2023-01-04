@@ -34,7 +34,7 @@ public class PanelGroupExtendDataService {
         if (CollectionUtils.isNotEmpty(extendDataList)) {
             ChartViewDTO chartViewTemplate = gson.fromJson(extendDataList.get(0).getViewDetails(), ChartViewDTO.class);
             Map<String, Object> dataInfo = chartViewTemplate.getData();
-            if (dataInfo.get(transDataKey) != null) {
+            if (dataInfo != null && dataInfo.get(transDataKey) != null) {
                 dataInfo.put("data", dataInfo.get(transDataKey));
                 dataInfo.remove(transDataKey);
             }

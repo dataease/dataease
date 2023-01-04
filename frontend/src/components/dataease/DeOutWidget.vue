@@ -226,7 +226,7 @@ export default {
 
 .condition-main {
   position: absolute;
-  overflow: auto;
+  overflow: hidden;
   top: 0px;
   right: 0px;
   bottom: 0px;

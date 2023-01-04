@@ -79,7 +79,9 @@ export default {
       }
     },
     activeName: function(newVal, oldVal) {
-      this.clear()
+      if (newVal !== 'PanelList') {
+        this.clear()
+      }
     }
   },
   mounted() {
@@ -96,6 +98,15 @@ export default {
     // this.clear()
   },
   methods: {
+    clear() {
+      // 清空
+      this.$store.dispatch('panel/setPanelInfo', {
+        id: null,
+        name: '',
+        preStyle: null
+      })
+      this.$store.dispatch('panel/setMainActiveName', 'PanelMain')
+    },
     handleClick(tab, event) {
       // 点击分析面板需要刷新分享内容
       if (tab.name === 'panels_share') {
@@ -115,15 +126,6 @@ export default {
     refreshEnshrine() {
       this.showEnshrine = false
       this.$nextTick(() => (this.showEnshrine = true))
-    },
-    clear() {
-      // 清空
-      this.$store.dispatch('panel/setPanelInfo', {
-        id: null,
-        name: '',
-        preStyle: null
-      })
-      this.$store.dispatch('panel/setMainActiveName', 'PanelMain')
     },
     msg2Current(panelIds) {
       this.refreshShare()

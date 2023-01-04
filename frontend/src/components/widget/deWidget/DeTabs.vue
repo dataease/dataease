@@ -415,6 +415,7 @@ export default {
             // ignore
           }
         })
+        bus.$emit('tab-canvas-change', this.activeCanvasId)
       }
     },
     active: {

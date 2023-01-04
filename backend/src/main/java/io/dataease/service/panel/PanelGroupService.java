@@ -138,6 +138,9 @@ public class PanelGroupService {
     @Resource
     private PanelWatermarkMapper panelWatermarkMapper;
 
+    @Resource
+    private DatasourceMapper datasourceMapper;
+
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
         panelGroupRequest.setUserId(userId);
@@ -1019,6 +1022,9 @@ public class PanelGroupService {
         templateLog.setDatasourceId(newDatasourceId);
         if (PanelConstants.APP_DATASOURCE_FROM.NEW.equals(request.getDatasourceFrom())) {
             templateLog.setSourceDatasourceName(request.getDatasourceList().get(0).getName());
+        } else {
+            Datasource applyDatasourceInfo = datasourceMapper.selectByPrimaryKey(newDatasourceId);
+            templateLog.setSourceDatasourceName(applyDatasourceInfo.getName());
         }
         templateLog.setDatasetGroupId(asideDatasetGroupId);
         templateLog.setSourceDatasetGroupName(request.getDatasetGroupName());
@@ -1062,9 +1068,10 @@ public class PanelGroupService {
         datasetGroupHistoryInfo.setName(request.getDatasetGroupName());
         datasetGroupHistoryInfo.setPid(request.getDatasetGroupPid());
         datasetGroupMapper.updateByPrimaryKey(datasetGroupHistoryInfo);
-
-        //数据源变更
-        panelAppTemplateService.editDatasource(request.getDatasourceList());
+        if ("new".equals(request.getDatasourceFrom())) {
+            //数据源变更
+            panelAppTemplateService.editDatasource(request.getDatasourceList());
+        }
     }
 
     public void toTop(String panelId) {
