@@ -181,11 +181,11 @@
 
                   <el-dropdown
                     style="width: 100%"
+                    v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'"
+                    trigger="hover"
                     placement="right-start"
                   >
-                    <el-dropdown-item
-                      v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'"
-                    >
+                    <div class="el-dropdown-menu__item">
                       <svg-icon
                         icon-class="icon_bottom-align_outlined"
                         class="preview-icon-svg"
@@ -196,7 +196,7 @@
                         icon-class="icon_right_outlined"
                         class="preview-icon-svg"
                       />
-                    </el-dropdown-item>
+                    </div>
                     <el-dropdown-menu
                       slot="dropdown"
                       class="de-card-dropdown de-card-dropdown-right"
