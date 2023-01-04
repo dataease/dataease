@@ -475,7 +475,9 @@ export default {
   watch: {
     'innerPadding': {
       handler: function(val1, val2) {
-        this.resizeChart()
+        if (val1 !== val2) {
+          this.resizeChart()
+        }
       },
       deep: true
     },
@@ -575,7 +577,7 @@ export default {
         this.$refs[this.element.propValue.id].chartResize()
       }
     },
-    //编辑状态下 不启动刷新
+    // 编辑状态下 不启动刷新
     buildInnerRefreshTimer(refreshViewEnable = false, refreshUnit = 'minute', refreshTime = 5) {
       if (this.editMode === 'preview' && !this.innerRefreshTimer && refreshViewEnable) {
         this.innerRefreshTimer && clearInterval(this.innerRefreshTimer)
