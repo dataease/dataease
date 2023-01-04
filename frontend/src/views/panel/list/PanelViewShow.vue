@@ -120,6 +120,7 @@
             </span>
 
             <span
+              v-if="activeTab!=='panels_star' || (activeTab ==='panels_star' && panelInfo.status === 'publish')"
               style="float: right;margin-right: 10px"
               class="de-tree"
             >
