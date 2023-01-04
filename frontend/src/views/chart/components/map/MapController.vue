@@ -8,7 +8,7 @@
         size="mini"
         icon="el-icon-plus"
         circle
-        @click="callParent('roamMap', true)"
+        @click.stop="callParent('roamMap', true)"
       />
     </div>
 
@@ -18,7 +18,7 @@
         size="mini"
         icon="el-icon-refresh"
         circle
-        @click="callParent('resetZoom')"
+        @click.stop="callParent('resetZoom')"
       />
     </div>
 
@@ -28,7 +28,7 @@
         size="mini"
         icon="el-icon-minus"
         circle
-        @click="callParent('roamMap', false)"
+        @click.stop="callParent('roamMap', false)"
       />
     </div>
 
