@@ -40,10 +40,10 @@ public class F2CDocFilter extends AccessControlFilter {
             DefaultLicenseService defaultLicenseService = CommonBeanFactory.getBean(DefaultLicenseService.class);
             F2CLicenseResponse f2CLicenseResponse = defaultLicenseService.validateLicense();
             Status status = f2CLicenseResponse.getStatus();
-            /*if (status != Status.valid) {
+            if (status != Status.valid) {
                 request.setAttribute(RESULT_URI_KEY, NOLIC_PAGE);
                 return false;
-            }*/
+            }
         } catch (Exception e) {
             request.setAttribute(RESULT_URI_KEY, NOLIC_PAGE);
             LogUtil.error(e.getMessage(), e);
