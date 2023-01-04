@@ -772,7 +772,7 @@ public class ImpalaQueryProvider extends QueryProvider {
         if(isTable){
             return "SELECT COUNT(*) from " + String.format(ImpalaConstants.KEYWORD_TABLE, sql);
         }else {
-            return "SELECT COUNT(*) from ( " + sql + " ) DE_COUNT_TEMP";
+            return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
         }
     }
 

@@ -824,7 +824,7 @@ public class CKQueryProvider extends QueryProvider {
         if(isTable){
             return "SELECT COUNT(*) from " + String.format(CKConstants.KEYWORD_TABLE, sql);
         }else {
-            return "SELECT COUNT(*) from ( " + sql + " ) DE_COUNT_TEMP";
+            return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
         }
     }
 
