@@ -121,7 +121,7 @@
       :canvas-id="canvasId"
     />
     <!-- 右击菜单 -->
-    <ContextMenu />
+    <ContextMenu/>
 
     <!-- 对齐标线 -->
     <span
@@ -667,8 +667,8 @@ function setPlayerPosition(item, position) {
   item.y = targetY
 
   // 还原到像素
-  item.style.left = ((item.x - 1) * this.matrixStyle.width) / this.scalePointWidth
-  item.style.top = ((item.y - 1) * this.matrixStyle.height) / this.scalePointHeight
+  item.style.left = (item.x - 1) / this.matrixScaleWidth
+  item.style.top = (item.y - 1) / this.matrixScaleHeight
   if (item.y + item.sizey > itemMaxY) {
     itemMaxY = item.y + item.sizey
   }
@@ -906,6 +906,12 @@ export default {
     }
   },
   computed: {
+    matrixScaleWidth() {
+      return this.scalePointWidth / this.matrixStyle.width
+    },
+    matrixScaleHeight() {
+      return this.scalePointHeight / this.matrixStyle.height
+    },
     moveTabCollisionActive() {
       return this.tabCollisionActiveId
     },
@@ -1609,37 +1615,35 @@ export default {
       const startY = infoBox.startY
       const moveXSize = e.pageX - startX // X方向移动的距离
       const moveYSize = e.pageY - startY // Y方向移动的距离
-
-      const addSizex = (moveXSize) % vm.cellWidth > (vm.cellWidth / 4 * 1) ? parseInt(((moveXSize) / vm.cellWidth + 1)) : parseInt(((moveXSize) / vm.cellWidth))
-      const addSizey = (moveYSize) % vm.cellHeight > (vm.cellHeight / 4 * 1) ? parseInt(((moveYSize) / vm.cellHeight + 1)) : parseInt(((moveYSize) / vm.cellHeight))
-      let nowX = Math.round((item.style.width * this.scalePointWidth) / this.matrixStyle.width)
-      let nowY = Math.round((item.style.height * this.scalePointHeight) / this.matrixStyle.height)
+      let nowX = Math.round(item.style.width * this.matrixScaleWidth)
+      let nowY = Math.round(item.style.height * this.matrixScaleHeight)
       nowX = nowX > 0 ? nowX : 1
       nowY = nowY > 0 ? nowY : 1
 
       const oldX = infoBox.oldX
       const oldY = infoBox.oldY
-      let newX = Math.round((item.style.left * this.scalePointWidth) / this.matrixStyle.width) + 1
-      let newY = Math.round((item.style.top * this.scalePointHeight) / this.matrixStyle.height) + 1
+      let newX = Math.round(item.style.left * this.matrixScaleWidth) + 1
+      let newY = Math.round(item.style.top * this.matrixScaleHeight) + 1
       newX = newX > 0 ? newX : 1
       newY = newY > 0 ? newY : 1
-      debounce((function(newX, oldX, newY, oldY, addSizex, addSizey) {
-        return function() {
-          if (newX !== oldX || oldY !== newY) {
-            movePlayer.call(vm, resizeItem, {
-              x: newX,
-              y: newY
+      if (item.sizex !== nowX || item.sizey !== nowY) {
+        debounce((function(newX, oldX, newY, oldY) {
+          return function() {
+            if (newX !== oldX || oldY !== newY) {
+              movePlayer.call(vm, resizeItem, {
+                x: newX,
+                y: newY
+              })
+              infoBox.oldX = newX
+              infoBox.oldY = newY
+            }
+            resizePlayer.call(vm, resizeItem, {
+              sizex: nowX,
+              sizey: nowY
             })
-
-            infoBox.oldX = newX
-            infoBox.oldY = newY
           }
-          resizePlayer.call(vm, resizeItem, {
-            sizex: nowX,
-            sizey: nowY
-          })
-        }
-      })(newX, oldX, newY, oldY, addSizex, addSizey), 10)
+        })(newX, oldX, newY, oldY), 10)
+      }
     },
     onDragging(e, item) {
       const infoBox = this.infoBox
@@ -1659,19 +1663,21 @@ export default {
       if (this.moveTabCollisionActive) {
         return
       }
-      debounce((function(newX, oldX, newY, oldY) {
-        return function() {
-          if (newX !== oldX || oldY !== newY) {
-            movePlayer.call(vm, moveItem, {
-              x: newX,
-              y: newY
-            })
+      if (newX !== oldX || oldY !== newY) {
+        debounce((function(newX, oldX, newY, oldY) {
+          return function() {
+            if (newX !== oldX || oldY !== newY) {
+              movePlayer.call(vm, moveItem, {
+                x: newX,
+                y: newY
+              })
 
-            infoBox.oldX = newX
-            infoBox.oldY = newY
+              infoBox.oldX = newX
+              infoBox.oldY = newY
+            }
           }
-        }
-      })(newX, oldX, newY, oldY), 10)
+        })(newX, oldX, newY, oldY), 10)
+      }
     },
     endMove(e) {
 
