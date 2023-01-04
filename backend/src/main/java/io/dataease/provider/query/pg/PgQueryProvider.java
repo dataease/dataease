@@ -803,8 +803,8 @@ public class PgQueryProvider extends QueryProvider {
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {
         if(isTable){
             String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-            String tableWithSchema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema) + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, sql);
-            return "SELECT COUNT(*) from " + String.format(PgConstants.KEYWORD_TABLE, tableWithSchema);
+            String tableWithSchema = String.format(PgConstants.KEYWORD_TABLE, schema) + "." + String.format(PgConstants.KEYWORD_TABLE, sql);
+            return "SELECT COUNT(*) from " + tableWithSchema;
         }else {
             return "SELECT COUNT(*) from ( " + sql + " ) DE_COUNT_TEMP";
         }
