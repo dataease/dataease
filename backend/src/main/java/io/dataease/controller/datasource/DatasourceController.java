@@ -7,6 +7,7 @@ import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
+import io.dataease.commons.constants.SysAuthConstants;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.DeLogUtils;
@@ -18,10 +19,15 @@ import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.datasource.DBTableDTO;
 import io.dataease.plugins.common.base.domain.Datasource;
+import io.dataease.plugins.common.base.domain.DatasourceExample;
+import io.dataease.plugins.common.dto.datasource.DataSourceType;
+import io.dataease.plugins.datasource.provider.Provider;
+import io.dataease.provider.ProviderFactory;
 import io.dataease.service.datasource.DatasourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -30,6 +36,7 @@ import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Api(tags = "数据源：数据源管理")
@@ -65,8 +72,21 @@ public class DatasourceController {
             positionIndex = 0, positionKey = "type",
             value = "id"
     )
-    public void updateDatasource(@RequestBody UpdataDsRequest dsRequest) throws Exception {
-        datasourceService.updateDatasource(dsRequest);
+    public void updateDatasource(@RequestBody UpdataDsRequest updataDsRequest) throws Exception {
+        DatasourceDTO datasource = new DatasourceDTO();
+        datasource.setConfigurationEncryption(updataDsRequest.isConfigurationEncryption());
+        datasource.setName(updataDsRequest.getName());
+        datasource.setDesc(updataDsRequest.getDesc());
+        datasource.setConfiguration(updataDsRequest.getConfiguration());
+        datasource.setCreateTime(null);
+        datasource.setType(updataDsRequest.getType());
+        datasource.setUpdateTime(System.currentTimeMillis());
+        datasourceService.preCheckDs(datasource);
+        if (StringUtils.isNotEmpty(updataDsRequest.getId())) {
+            datasourceService.updateDatasource(updataDsRequest.getId(), datasource);
+        } else {
+            datasourceService.insert(datasource);
+        }
     }
 
     @RequiresPermissions("datasource:read")

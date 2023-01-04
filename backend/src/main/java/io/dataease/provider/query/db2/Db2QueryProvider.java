@@ -810,12 +810,12 @@ public class Db2QueryProvider extends QueryProvider {
 
 
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {
-        if(isTable){
+        if (isTable) {
             String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
             schema = String.format(Db2Constants.KEYWORD_TABLE, schema);
             return "SELECT COUNT(*) from " + schema + "." + String.format(Db2Constants.KEYWORD_TABLE, sql);
-        }else {
-            return "SELECT COUNT(*) from ( " + sql + " ) DE_COUNT_TEMP";
+        } else {
+            return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
         }
     }
 
@@ -828,7 +828,7 @@ public class Db2QueryProvider extends QueryProvider {
         }).toArray(String[]::new);
         if (ds != null) {
             Db2Configuration db2Configuration = new Gson().fromJson(ds.getConfiguration(), Db2Configuration.class);
-            return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_OFFSET, DE_PAGE_SIZE ", StringUtils.join(array, ","), db2Configuration.getSchema() + String.format(Db2Constants.KEYWORD_TABLE, table));
+            return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_OFFSET, DE_PAGE_SIZE ", StringUtils.join(array, ","), String.format(Db2Constants.KEYWORD_TABLE, db2Configuration.getSchema()) + "." + String.format(Db2Constants.KEYWORD_TABLE, table));
         } else {
             return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_OFFSET, DE_PAGE_SIZE ", StringUtils.join(array, ","), table);
         }

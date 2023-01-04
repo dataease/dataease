@@ -71,7 +71,10 @@
           @click="redo"
         />
       </el-tooltip>
-      <el-tooltip :content="$t('panel.fullscreen_preview')">
+      <el-tooltip
+        v-if="!isOtherPlatform"
+        :content="$t('panel.fullscreen_preview')"
+      >
         <svg-icon
           icon-class="icon_magnify_outlined"
           class="toolbar-icon-active icon16"
@@ -235,7 +238,7 @@ import { panelUpdate, removePanelCache, saveCache } from '@/api/panel/panel'
 import { getPanelAllLinkageInfo, saveLinkage } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
 import { queryPanelJumpInfo } from '@/api/panel/linkJump'
-
+import { inOtherPlatform } from '@/utils/index'
 export default {
   name: 'Toolbar',
   props: {
@@ -273,6 +276,9 @@ export default {
     },
     editControlButton() {
       return this.linkageSettingStatus || this.mobileLayoutStatus
+    },
+    isOtherPlatform() {
+      return inOtherPlatform()
     },
     ...mapState([
       'componentData',

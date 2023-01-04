@@ -105,16 +105,12 @@ public class DatasourceService {
     @DeCleaner(DePermissionType.DATASOURCE)
     @Transactional(rollbackFor = Exception.class)
     public Datasource addDatasource(DatasourceDTO datasource) throws Exception {
-        if (!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(datasource.getType())) {
-            throw new Exception("Datasource type not supported.");
-        }
-        if(datasource.isConfigurationEncryption()){
-            datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
-        }
-        Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
-        datasourceProvider.checkConfiguration(datasource);
+        preCheckDs(datasource);
+        return insert(datasource);
+    }
 
-        checkName(datasource.getName(), datasource.getType(), datasource.getId());
+    @DeCleaner(DePermissionType.DATASOURCE)
+    public DatasourceDTO insert(DatasourceDTO datasource) {
         long currentTimeMillis = System.currentTimeMillis();
         datasource.setId(UUID.randomUUID().toString());
         datasource.setUpdateTime(currentTimeMillis);
@@ -127,6 +123,17 @@ public class DatasourceService {
         return datasource;
     }
 
+    public void preCheckDs(DatasourceDTO datasource) throws Exception {
+        if (!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(datasource.getType())) {
+            throw new Exception("Datasource type not supported.");
+        }
+        if (datasource.isConfigurationEncryption()) {
+            datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
+        }
+        Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+        datasourceProvider.checkConfiguration(datasource);
+        checkName(datasource.getName(), datasource.getType(), datasource.getId());
+    }
 
     public void handleConnectionPool(String datasourceId, String type) {
         Datasource datasource = datasourceMapper.selectByPrimaryKey(datasourceId);
@@ -159,7 +166,7 @@ public class DatasourceService {
         return datasourceDTOS;
     }
 
-    private void datasourceTrans(DatasourceDTO datasourceDTO){
+    private void datasourceTrans(DatasourceDTO datasourceDTO) {
         types().forEach(dataSourceType -> {
             if (dataSourceType.getType().equalsIgnoreCase(datasourceDTO.getType())) {
                 datasourceDTO.setTypeDesc(dataSourceType.getName());
@@ -214,23 +221,24 @@ public class DatasourceService {
                 }
             }
         }
-        if(StringUtils.isNotEmpty(datasourceDTO.getConfiguration())){
+        if (StringUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
             datasourceDTO.setConfiguration(new String(java.util.Base64.getEncoder().encode(datasourceDTO.getConfiguration().getBytes())));
         }
-        if(CollectionUtils.isNotEmpty(datasourceDTO.getApiConfiguration())){
+        if (CollectionUtils.isNotEmpty(datasourceDTO.getApiConfiguration())) {
             String config = new Gson().toJson(datasourceDTO.getApiConfiguration());
             datasourceDTO.setApiConfigurationStr(new String(java.util.Base64.getEncoder().encode(config.getBytes())));
             datasourceDTO.setApiConfiguration(null);
         }
     }
 
-    public DatasourceDTO getDataSourceDetails(String datasourceId){
-        DatasourceDTO result =  extDataSourceMapper.queryDetails(datasourceId,String.valueOf(AuthUtils.getUser().getUserId()));
-        if(result != null){
+    public DatasourceDTO getDataSourceDetails(String datasourceId) {
+        DatasourceDTO result = extDataSourceMapper.queryDetails(datasourceId, String.valueOf(AuthUtils.getUser().getUserId()));
+        if (result != null) {
             this.datasourceTrans(result);
         }
         return result;
     }
+
     public List<DatasourceDTO> gridQuery(BaseGridRequest request) {
         //如果没有查询条件增加一个默认的条件
         if (CollectionUtils.isEmpty(request.getConditions())) {
@@ -260,12 +268,6 @@ public class DatasourceService {
     }
 
     public void updateDatasource(UpdataDsRequest updataDsRequest) throws Exception {
-        if (!types().stream().map(DataSourceType::getType).collect(Collectors.toList()).contains(updataDsRequest.getType())) {
-            throw new Exception("Datasource type not supported.");
-        }
-        if(updataDsRequest.isConfigurationEncryption()){
-            updataDsRequest.setConfiguration(new String(java.util.Base64.getDecoder().decode(updataDsRequest.getConfiguration())));
-        }
         checkName(updataDsRequest.getName(), updataDsRequest.getType(), updataDsRequest.getId());
         Datasource datasource = new Datasource();
         datasource.setName(updataDsRequest.getName());
@@ -277,19 +279,15 @@ public class DatasourceService {
         Provider datasourceProvider = ProviderFactory.getProvider(updataDsRequest.getType());
         datasourceProvider.checkConfiguration(datasource);
         checkAndUpdateDatasourceStatus(datasource);
-        if(StringUtils.isNotEmpty(updataDsRequest.getId())){
-            DatasourceExample example = new DatasourceExample();
-            example.createCriteria().andIdEqualTo(updataDsRequest.getId());
-            datasourceMapper.updateByExampleSelective(datasource, example);
-            handleConnectionPool(updataDsRequest.getId());
-        }else {
-            datasource.setId(UUID.randomUUID().toString());
-            datasource.setCreateTime(System.currentTimeMillis());
-            datasourceMapper.insert(datasource);
-            handleConnectionPool(datasource, "add");
-            sysAuthService.copyAuth(datasource.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASOURCE);
-        }
+        updateDatasource(updataDsRequest.getId(), datasource);
+    }
 
+
+    public void updateDatasource(String id, Datasource datasource) {
+        DatasourceExample example = new DatasourceExample();
+        example.createCriteria().andIdEqualTo(id);
+        datasourceMapper.updateByExampleSelective(datasource, example);
+        handleConnectionPool(id);
     }
 
     private void handleConnectionPool(String datasourceId) {
@@ -304,7 +302,7 @@ public class DatasourceService {
     }
 
     public ResultHolder validate(DatasourceDTO datasource) throws Exception {
-        if(datasource.isConfigurationEncryption()){
+        if (datasource.isConfigurationEncryption()) {
             datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
         }
         DatasourceDTO datasourceDTO = new DatasourceDTO();
@@ -395,7 +393,7 @@ public class DatasourceService {
     }
 
     public List<String> getSchema(DatasourceDTO datasource) throws Exception {
-        if(datasource.isConfigurationEncryption()){
+        if (datasource.isConfigurationEncryption()) {
             datasource.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasource.getConfiguration())));
         }
         Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
@@ -519,7 +517,7 @@ public class DatasourceService {
         return datasourceMapper.selectByExampleWithBLOBs(example);
     }
 
-    private void checkAndUpdateDatasourceStatus(Datasource datasource) {
+    public void checkAndUpdateDatasourceStatus(Datasource datasource) {
         try {
             Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();

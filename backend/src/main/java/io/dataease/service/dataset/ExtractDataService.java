@@ -208,7 +208,7 @@ public class ExtractDataService {
                         for (DatasetTableField oldField : oldFields) {
                             boolean delete = true;
                             for (DatasetTableField datasetTableField : datasetTableFields) {
-                                if (oldField.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldField.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
+                                if (oldField.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName())) {
                                     delete = false;
                                 }
                             }
@@ -220,7 +220,7 @@ public class ExtractDataService {
                         for (DatasetTableField datasetTableField : datasetTableFields) {
                             boolean add = true;
                             for (DatasetTableField oldField : oldFields) {
-                                if (oldField.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName()) && oldField.getDeExtractType().equals(datasetTableField.getDeExtractType())) {
+                                if (oldField.getDataeaseName().equalsIgnoreCase(datasetTableField.getDataeaseName())) {
                                     add = false;
                                 }
                             }

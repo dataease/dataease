@@ -17,7 +17,7 @@
         style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;"
       >
         <div style="height: 100%;">
-          <share-head/>
+          <share-head />
         </div>
       </el-row>
       <el-row
@@ -76,7 +76,7 @@
               width="400"
               trigger="click"
             >
-              <panel-detail-info/>
+              <panel-detail-info />
               <i
                 slot="reference"
                 class="el-icon-warning-outline icon-class"
@@ -98,7 +98,10 @@
               </de-btn>
             </span>
 
-            <span v-if="showType !== 1" style="float: right;margin-right: 10px">
+            <span
+              v-if="showType !== 1"
+              style="float: right;margin-right: 10px"
+            >
               <de-btn
                 secondary
                 @click="share"
@@ -108,7 +111,7 @@
             </span>
 
             <span
-              v-if="panelInfo.status==='publish'"
+              v-if="panelInfo.status==='publish' && !isOtherPlatform"
               style="float: right;margin-right: 10px"
             >
               <de-btn
@@ -141,7 +144,7 @@
                   class="de-card-dropdown"
                 >
                   <el-dropdown-item
-                    v-if="panelInfo.status==='publish'"
+                    v-if="panelInfo.status==='publish' && !isOtherPlatform"
                     @click.native="newTab"
                   >
                     <svg-icon
@@ -181,8 +184,8 @@
                   </el-dropdown-item>
 
                   <el-dropdown
-                    style="width: 100%"
                     v-if="hasDataPermission('export',panelInfo.privileges)&&panelInfo.status==='publish'"
+                    style="width: 100%"
                     trigger="hover"
                     placement="right-start"
                   >
@@ -388,7 +391,7 @@ import PanelDetailInfo from '@/views/panel/list/common/PanelDetailInfo'
 import AppExportForm from '@/views/panel/list/AppExportForm'
 import GrantAuth from '../grantAuth'
 import msgCfm from '@/components/msgCfm/index'
-
+import { inOtherPlatform } from '@/utils/index'
 export default {
   name: 'PanelViewShow',
   components: { AppExportForm, PanelDetailInfo, Preview, SaveToTemplate, PDFPreExport, ShareHead, GrantAuth },
@@ -445,6 +448,9 @@ export default {
     },
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    isOtherPlatform() {
+      return inOtherPlatform()
     },
     ...mapState([
       'componentData',

@@ -1480,7 +1480,7 @@ export default {
           this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
           // 记录snapshot后 移动已记录设置为false
           this.hasMove = false
-        }, 100)
+        }, 200)
       } else {
         this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
         // 记录snapshot后 移动已记录设置为false
