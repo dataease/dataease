@@ -866,7 +866,7 @@ public class OracleQueryProvider extends QueryProvider {
             schema = String.format(OracleConstants.KEYWORD_TABLE, schema);
             return "SELECT COUNT(*) from " + schema + "." + String.format(OracleConstants.KEYWORD_TABLE, sql);
         } else {
-            return "SELECT COUNT(*) from ( " + sql + " ) DE_COUNT_TEMP";
+            return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
         }
     }
 

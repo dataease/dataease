@@ -774,7 +774,7 @@ public class HiveQueryProvider extends QueryProvider {
         if(isTable){
             return "SELECT COUNT(*) from " + String.format(HiveConstants.KEYWORD_TABLE, sql);
         }else {
-            return "SELECT COUNT(*) from ( " + sql + " ) DE_COUNT_TEMP";
+            return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
         }
     }
 

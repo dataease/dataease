@@ -815,7 +815,7 @@ public class Db2QueryProvider extends QueryProvider {
             schema = String.format(Db2Constants.KEYWORD_TABLE, schema);
             return "SELECT COUNT(*) from " + schema + "." + String.format(Db2Constants.KEYWORD_TABLE, sql);
         } else {
-            return "SELECT COUNT(*) from ( " + sql + " ) DE_COUNT_TEMP";
+            return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
         }
     }
 

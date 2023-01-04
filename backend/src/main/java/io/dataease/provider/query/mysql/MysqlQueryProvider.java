@@ -815,7 +815,7 @@ public class MysqlQueryProvider extends QueryProvider {
         if(isTable){
             return "SELECT COUNT(*) from " + String.format(MySQLConstants.KEYWORD_TABLE, sql);
         }else {
-            return "SELECT COUNT(*) from ( " + sql + " ) DE_COUNT_TEMP";
+            return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
         }
     }
 
@@ -1123,6 +1123,7 @@ public class MysqlQueryProvider extends QueryProvider {
     }
 
     private String sqlFix(String sql) {
+        sql = sql.trim();
         if (sql.lastIndexOf(";") == (sql.length() - 1)) {
             sql = sql.substring(0, sql.length() - 1);
         }
