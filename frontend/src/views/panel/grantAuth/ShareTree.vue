@@ -93,7 +93,7 @@
 </template>
 
 <script>
-import { loadTree, loadShareOutTree, removePanelShares } from '@/api/panel/share'
+import { loadShareOutTree, loadTree, removePanelShares } from '@/api/panel/share'
 import { uuid } from 'vue-uuid'
 import { initPanelData, viewPanelLog } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
@@ -142,7 +142,6 @@ export default {
     refreshMyShareOut() {
       this.initOutData().then(res => {
         this.outData = res.data
-        this.setMainNull()
       })
     },
     initData() {
@@ -228,57 +227,57 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .header-title {
-    font-size: 14px;
-    flex: 1;
-    color: var(--TextPrimary, #606266);
-    font-weight: bold;
-    display: block;
-    height: 100%;
-    /*line-height: 36px;*/
-  }
+.header-title {
+  font-size: 14px;
+  flex: 1;
+  color: var(--TextPrimary, #606266);
+  font-weight: bold;
+  display: block;
+  height: 100%;
+  /*line-height: 36px;*/
+}
 
-  .msg-node-class {
+.msg-node-class {
+  color: red;
+
+  ::v-deep i {
     color: red;
-
-    ::v-deep i {
-      color: red;
-    }
   }
+}
 
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right: 8px;
-  }
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
 
-  .custom-tree-node-list {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding: 0 8px;
-  }
+.custom-tree-node-list {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 0 8px;
+}
 
-  .father .child {
-    /*display: none;*/
-    visibility: hidden;
-  }
+.father .child {
+  /*display: none;*/
+  visibility: hidden;
+}
 
-  .father:hover .child {
-    /*display: inline;*/
-    visibility: visible;
-  }
+.father:hover .child {
+  /*display: inline;*/
+  visibility: visible;
+}
 
-  .unpublished {
-    color: #b2b2b2
-  }
+.unpublished {
+  color: #b2b2b2
+}
 
-  .publish {
-  }
+.publish {
+}
 
 </style>

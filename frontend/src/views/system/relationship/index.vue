@@ -340,6 +340,7 @@ export default {
     },
     queryTypeChange(val) {
       this.formInline.dataSourceName = ''
+      this.dataSourceNameList = []
       switch (val) {
         case 'datasource':
           this.listDatasource()

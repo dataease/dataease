@@ -1,5 +1,6 @@
 delete
-from `panel_subject`;
+from `panel_subject`
+where id in ('system_1', 'system_2');
 BEGIN;
 INSERT INTO `panel_subject` (`id`, `name`, `type`, `details`, `create_num`, `create_time`, `create_by`, `update_time`,
                              `update_by`)

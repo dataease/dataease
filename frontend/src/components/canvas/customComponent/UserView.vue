@@ -545,6 +545,7 @@ export default {
     }
   },
   mounted() {
+    bus.$on('tab-canvas-change', this.tabSwitch)
     this.bindPluginEvent()
   },
 
@@ -569,6 +570,11 @@ export default {
     }
   },
   methods: {
+    tabSwitch(tabCanvasId) {
+      if (this.charViewS2ShowFlag && tabCanvasId === this.canvasId && this.$refs[this.element.propValue.id]) {
+        this.$refs[this.element.propValue.id].chartResize()
+      }
+    },
     //编辑状态下 不启动刷新
     buildInnerRefreshTimer(refreshViewEnable = false, refreshUnit = 'minute', refreshTime = 5) {
       if (this.editMode === 'preview' && !this.innerRefreshTimer && refreshViewEnable) {
@@ -938,7 +944,7 @@ export default {
       // 如果有名称name 获取和name匹配的dimension 否则倒序取最后一个能匹配的
       if (param.name) {
         param.dimensionList.forEach(dimensionItem => {
-          if (dimensionItem.id === param.name) {
+          if (dimensionItem.id === param.name || dimensionItem.value === param.name) {
             dimension = dimensionItem
             sourceInfo = param.viewId + '#' + dimension.id
             jumpInfo = this.nowPanelJumpInfo[sourceInfo]
