@@ -964,6 +964,7 @@ export default {
           status = valid
         })
       }
+      this.$refs.dsForm.validate()
       if (!status) {
         return
       }
