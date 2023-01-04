@@ -2375,13 +2375,13 @@ public class DataSetTableService {
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
         if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
             ExcelXlsReader excelXlsReader = new ExcelXlsReader();
-            excelXlsReader.setObtainedNum(100);
+            excelXlsReader.setObtainedNum(1000);
             excelXlsReader.process(inputStream);
             excelSheetDataList = excelXlsReader.totalSheets;
         }
         if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
             ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
-            excelXlsxReader.setObtainedNum(100);
+            excelXlsxReader.setObtainedNum(1000);
             excelXlsxReader.process(inputStream);
             excelSheetDataList = excelXlsxReader.totalSheets;
         }
