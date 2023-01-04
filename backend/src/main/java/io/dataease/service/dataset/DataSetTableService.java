@@ -1123,6 +1123,31 @@ public class DataSetTableService {
             }
             plainSelect.setFromItem(subSelect);
         }
+        List<Join> joins = plainSelect.getJoins();
+        if (joins != null) {
+            for (Join join : joins) {
+                FromItem rightItem = join.getRightItem();
+                if (rightItem instanceof SubSelect) {
+                    SelectBody selectBody = ((SubSelect) rightItem).getSelectBody();
+                    SubSelect subSelect = new SubSelect();
+                    Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
+                    PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
+                    subSelect.setSelectBody(subPlainSelect);
+                    if (dsType.equals(DatasourceTypes.oracle.getType())) {
+                        subSelect.setAlias(new Alias(rightItem.getAlias().toString(), false));
+                    } else {
+                        if (rightItem.getAlias() == null) {
+                            throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
+                        }
+                        subSelect.setAlias(new Alias(rightItem.getAlias().toString()));
+                    }
+                    List<Join> joinsList = new ArrayList<>();
+                    join.setRightItem(subSelect);
+                    joinsList.add(join);
+                    plainSelect.setJoins(joinsList);
+                }
+            }
+        }
         Expression expr = plainSelect.getWhere();
         if (expr == null) {
             return handleWith(plainSelect, statementSelect, dsType);
