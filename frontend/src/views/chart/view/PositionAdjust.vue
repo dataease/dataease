@@ -16,7 +16,6 @@
             :min="0"
             :max="maxTop"
             class="hide-icon-number"
-            @change="topOnChange"
           >
             <template slot="append">px</template>
           </el-input>
@@ -33,7 +32,6 @@
             :min="0"
             :max="maxLeft"
             class="hide-icon-number"
-            @change="leftOnChange"
           >
             <template slot="append">px</template>
           </el-input>
@@ -50,7 +48,6 @@
             :max="maxWidth"
             type="number"
             class="hide-icon-number"
-            @change="widthOnChange"
           >
             <template slot="append">px</template>
           </el-input>
@@ -59,7 +56,6 @@
           :label="$t('panel.space_height')"
           :min="0"
           class="form-item"
-          prop="marginTop"
         >
           <el-input
             v-model="styleInfo.height"
@@ -67,7 +63,6 @@
             :min="0"
             :max="maxHeight"
             class="hide-icon-number"
-            @change="heightOnChange"
           >
             <template slot="append">px</template>
           </el-input>
@@ -87,7 +82,7 @@ export default {
   data() {
     return {
       maxHeight: 2000,
-      maxTop: 40000
+      maxTop: 20000
     }
   },
   computed: {
@@ -104,7 +99,20 @@ export default {
       'componentGap'
     ])
   },
-  watch: {},
+  watch: {
+    'styleInfo.top': function() {
+      this.topOnChange()
+    },
+    'styleInfo.left': function() {
+      this.leftOnChange()
+    },
+    'styleInfo.width': function() {
+      this.widthOnChange()
+    },
+    'styleInfo.height': function() {
+      this.heightOnChange()
+    }
+  },
   mounted() {
   },
   methods: {
