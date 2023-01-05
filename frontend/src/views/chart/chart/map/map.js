@@ -73,7 +73,7 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
       tooltip.formatter = params => {
         const a = params.seriesName
         const b = params.name
-        const c = params.value ? params.value : ''
+        const c = params.value ?? ''
         return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
       }
       chart_option.tooltip = tooltip
