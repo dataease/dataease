@@ -6,11 +6,13 @@
         :model="markForm"
         label-width="40px"
         size="mini"
+        :rules="rules"
       >
 
         <el-form-item
           class="form-item"
           :label="$t('chart.mark_field')"
+          prop="fieldId"
         >
           <el-select
             v-model="markForm.fieldId"
@@ -174,7 +176,11 @@ export default {
     return {
       markForm: JSON.parse(JSON.stringify(DEFAULT_MARK)),
       values: null,
-
+      rules: {
+        fieldId: [
+          { validator: this.fieldIdValidator, trigger: 'blur' }
+        ]
+      },
       calcOptions: [{
         value: 'eq',
         label: '等于',
@@ -287,6 +293,20 @@ export default {
     this.loadSvg()
   },
   methods: {
+    fieldIdValidator(rule, value, callback) {
+      if (!value) {
+        return callback()
+      }
+      const field = this.getField(value)
+      if (!field) {
+        return callback(new Error(this.$t('chart.mark_field_error')))
+      }
+      const tagType = getItemType(this.dimensionData, this.quotaData, field)
+      if (tagType === 'danger') {
+        return callback(new Error(this.$t('chart.mark_field_error')))
+      }
+      callback()
+    },
     setConditionColor(index, color) {
       this.markForm.conditions[index].color = color
       this.changeMarkAttr('conditions')
@@ -317,10 +337,7 @@ export default {
         if (customAttr.mark) {
           this.markForm = customAttr.mark
           if (this.markForm.fieldId) {
-            const valid = this.fieldOptions.some(group => group.options.some(item => item.id === this.markForm.fieldId))
-            if (!valid) {
-              this.markForm.fieldId = null
-            }
+            this.getItemTagType()
           }
         }
       }
@@ -375,22 +392,9 @@ export default {
       this.changeMarkAttr('fieldId')
     },
     getItemTagType() {
-      if (this.markForm.fieldId) {
-        const field = this.getField(this.markForm.fieldId)
-        if (!field) {
-          this.changeFields()
-          this.markForm.fieldId = null
-          return
-        }
-        const tagType = getItemType(this.dimensionData, this.quotaData, field)
-        if (tagType === 'danger') {
-          this.changeFields()
-          this.markForm.fieldId = null
-        }
-      } else {
-        this.changeFields()
-        this.markForm.fieldId = null
-      }
+      this.$refs['markForm'].validate((valid) => {
+        console.log(valid)
+      })
     }
   }
 }
