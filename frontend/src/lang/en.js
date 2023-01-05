@@ -1366,6 +1366,7 @@ export default {
     chart_table_pivot: 'Pivot Table',
     table_pivot_row: 'Data Row',
     field_error_tips: 'This field is changed(Include dimension、quota，field type，deleted),please edit again.',
+    mark_field_error: 'The current field does not exist, please select again',
     table_border_color: 'Border Color',
     table_header_align: 'Header Align',
     table_item_align: 'Body Align',
