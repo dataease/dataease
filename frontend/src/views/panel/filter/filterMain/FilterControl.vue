@@ -280,10 +280,8 @@ export default {
     datasetParams: {
       type: Array,
       default: () => []
-    },
-    activeName:{
-
     }
+
   },
   data() {
     return {
@@ -344,18 +342,18 @@ export default {
                 hasParam = true
               }
             }
-            if(!hasParam){
+            if (!hasParam) {
               this.allParams.push(this.datasetParams[j])
             }
           }
         }
       }
     },
-    'activeName':{
+    'activeName': {
       handler(newName, oldName) {
-        if(this.activeName === 'assembly'){
+        if (this.activeName === 'assembly') {
           this.allParams = JSON.parse(JSON.stringify(this.childViews.datasetParams))
-        }else {
+        } else {
           if (this.datasetParams.length > 0) {
             for (var j = 0; j < this.datasetParams.length; j++) {
               var hasParam = false
@@ -364,7 +362,7 @@ export default {
                   hasParam = true
                 }
               }
-              if(!hasParam){
+              if (!hasParam) {
                 this.allParams.push(this.datasetParams[j])
               }
             }
