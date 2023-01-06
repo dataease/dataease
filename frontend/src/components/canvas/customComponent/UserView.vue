@@ -974,6 +974,8 @@ export default {
               // 判断是否有公共链接ID
               if (jumpInfo.publicJumpId) {
                 const url = '/link/' + jumpInfo.publicJumpId
+                const currentUrl = window.location.href
+                localStorage.setItem('beforeJumpUrl', currentUrl)
                 this.windowsJump(url, jumpInfo.jumpType)
               } else {
                 this.$message({
