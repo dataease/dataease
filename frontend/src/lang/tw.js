@@ -2829,8 +2829,8 @@ export default {
     watermark_color: '水印顏色',
     watermark_font_size: '水印字號',
     watermark_space: '水印間距',
-    horizontal: '橫向',
-    vertical: '縱向',
+    horizontal: '橫向間距',
+    vertical: '縱向間距',
     reset: '重置',
     preview: '預覽',
     save: '保存'
