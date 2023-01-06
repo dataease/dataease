@@ -2837,8 +2837,8 @@ export default {
     watermark_color: 'Watermark Color',
     watermark_font_size: 'Watermark Fontsize',
     watermark_space: 'Watermark Space',
-    horizontal: 'Horizontal',
-    vertical: 'Vertical',
+    horizontal: 'Horizontal Space',
+    vertical: 'Vertical Space',
     reset: 'Reset',
     preview: 'Preview',
     save: 'Save'
