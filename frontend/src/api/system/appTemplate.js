@@ -56,3 +56,11 @@ export function nameCheck(data) {
     method: 'post'
   })
 }
+
+export function move(data) {
+  return request({
+    url: '/appTemplate/move',
+    data: data,
+    method: 'post'
+  })
+}

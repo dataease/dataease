@@ -2786,6 +2786,8 @@ export default {
   'I18N_USER_TEMPLATE_ERROR': 'Template file error',
   'i18n_max_user_import_size': 'File size exceeds 10M',
   app_template: {
+    move: 'Move',
+    move_item: 'Move App',
     datasource_new: 'New',
     datasource_history: 'Multiplexing',
     datasource_from: 'Datasource From',
