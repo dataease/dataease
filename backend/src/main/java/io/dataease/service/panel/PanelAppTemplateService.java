@@ -120,6 +120,16 @@ public class PanelAppTemplateService {
 
     }
 
+    public void move(PanelAppTemplateRequest request) {
+        if (!CommonConstants.CHECK_RESULT.NONE.equals(nameCheck(CommonConstants.OPT_TYPE.INSERT, request.getName(), request.getPid(), request.getId()))) {
+            throw new RuntimeException("当前名称在目标分类中已经存在！请选择其他分类或修改名称");
+        }
+        PanelAppTemplateWithBLOBs appTemplate = new PanelAppTemplateWithBLOBs();
+        appTemplate.setId(request.getId());
+        appTemplate.setPid(request.getPid());
+        panelAppTemplateMapper.updateByPrimaryKeySelective(appTemplate);
+    }
+
     //名称检查
     public String nameCheck(String optType, String name, String pid, String id) {
         PanelAppTemplateExample example = new PanelAppTemplateExample();

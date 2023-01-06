@@ -2781,6 +2781,8 @@ export default {
   'I18N_USER_TEMPLATE_ERROR': '模版错误',
   'i18n_max_user_import_size': '文件最大不能超过10M',
   app_template: {
+    move: '移动',
+    move_item: '移动应用',
     datasource_new: '新建',
     datasource_history: '复用',
     datasource_from: '数据来源',
