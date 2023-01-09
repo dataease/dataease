@@ -121,6 +121,11 @@ export default {
           senior = JSON.parse(chart.senior)
         }
         if (senior.assistLine) {
+          for (let i = 0; i < senior.assistLine.length; i++) {
+            if (!senior.assistLine[i].fontSize) {
+              senior.assistLine[i].fontSize = '10'
+            }
+          }
           this.assistLine = senior.assistLine
         } else {
           this.assistLine = []

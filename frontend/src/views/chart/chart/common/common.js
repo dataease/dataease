@@ -352,7 +352,7 @@ export function seniorCfg(chart_option, chart) {
               label: {
                 show: true,
                 color: ele.color,
-                fontSize: 10,
+                fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10,
                 position: xAxis.position === 'bottom' ? 'insideStartTop' : 'insideEndTop',
                 formatter: function(param) {
                   return ele.name + ' : ' + valueFormatter(param.value, axisFormatterCfg)
@@ -374,7 +374,7 @@ export function seniorCfg(chart_option, chart) {
               label: {
                 show: true,
                 color: ele.color,
-                fontSize: 10,
+                fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10,
                 position: yAxis.position === 'left' ? 'insideStartTop' : 'insideEndTop',
                 formatter: function(param) {
                   return ele.name + ' : ' + valueFormatter(param.value, axisFormatterCfg)
