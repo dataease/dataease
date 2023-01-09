@@ -225,6 +225,8 @@ import { listDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
 import { engineMode, dbPreview } from '@/api/system/engine'
 import msgCfm from '@/components/msgCfm/index'
 import cancelMix from './cancelMix'
+
+import { pySort } from './util'
 export default {
   name: 'AddDB',
   mixins: [msgCfm, cancelMix],
@@ -415,7 +417,7 @@ export default {
     },
     initDataSource() {
       listDatasource().then((response) => {
-        this.options = response.data.filter((item) => item.type !== 'api')
+        this.options = pySort(response.data.filter((item) => item.type !== 'api'))
       })
     },
     kettleState() {

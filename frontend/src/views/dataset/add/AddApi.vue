@@ -218,6 +218,7 @@ import { listApiDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
 import { dbPreview, engineMode } from '@/api/system/engine'
 import cancelMix from './cancelMix'
 import msgCfm from '@/components/msgCfm/index'
+import { pySort } from './util'
 
 export default {
   name: 'AddApi',
@@ -398,7 +399,7 @@ export default {
     },
     initDataSource() {
       listApiDatasource().then((response) => {
-        this.options = response.data
+        this.options = pySort(response.data)
       })
     },
     kettleState() {
