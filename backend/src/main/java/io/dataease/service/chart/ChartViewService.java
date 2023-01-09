@@ -525,6 +525,9 @@ public class ChartViewService {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
                 }
             }
+            List<ChartViewFieldDTO> xAxisForRequest = new ArrayList<>();
+            xAxisForRequest.addAll(xAxis); xAxisForRequest.addAll(extStack);
+            datasourceRequest.setXAxis(xAxisForRequest);
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
             datasourceRequest.setDatasource(ds);
@@ -1039,6 +1042,9 @@ public class ChartViewService {
             }
 
             datasourceRequest.setQuery(querySql);
+            List<ChartViewFieldDTO> xAxisForRequest = new ArrayList<>();
+            xAxisForRequest.addAll(xAxis); xAxisForRequest.addAll(extStack);
+            datasourceRequest.setXAxis(xAxisForRequest);
             data = datasourceProvider.getData(datasourceRequest);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields));
