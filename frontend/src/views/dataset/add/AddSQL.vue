@@ -109,6 +109,7 @@
               @click="
                 showTable = false
                 dataTable = ''
+                ;keywords = ''
               "
             ><i class="el-icon-arrow-left" /> {{ $t('chart.back') }}</span>
             <span v-else>{{ $t('deDataset.data_reference') }}</span>
@@ -147,13 +148,15 @@
         >{{
           $t('deDataset.to_start_using')
         }}</span>
-        <div
-          v-else-if="dataSource && !dataTable"
+        <template v-else>
+          <el-input :placeholder="$t('fu.search_bar.please_input')" style="padding: 5px" size="small" v-model="keywords"></el-input>
+          <div
+          v-if="dataSource && !dataTable"
           v-loading="tableLoading"
           class="item-list"
         >
           <div
-            v-for="ele in tableData"
+            v-for="ele in tableDataCopy"
             :key="ele.name"
             class="table-or-field"
             @click="typeSwitch(ele)"
@@ -173,10 +176,11 @@
         </div>
         <div
           v-else-if="dataSource && dataTable"
+          v-loading="tableLoading"
           class="item-list"
         >
           <div
-            v-for="ele in fieldData"
+            v-for="ele in fieldDataCopy"
             :key="ele.fieldName"
             class="table-or-field field"
           >
@@ -193,6 +197,8 @@
             />
           </div>
         </div>
+        </template>
+        
       </div>
       <div class="sql-table">
         <div
@@ -559,6 +565,7 @@ import 'codemirror/addon/hint/show-hint'
 import { engineMode } from '@/api/system/engine'
 import msgCfm from '@/components/msgCfm/index'
 import cancelMix from './cancelMix'
+import { pySort } from './util'
 import _ from 'lodash'
 import GridTable from '@/components/gridTable/index.vue'
 export default {
@@ -579,6 +586,7 @@ export default {
         pageSize: 10,
         total: 0
       },
+      keywords: '',
       sqlData: [],
       dataSource: '',
       loading: false,
@@ -605,6 +613,8 @@ export default {
           completeSingle: false // 当匹配只有一项的时候是否自动补全
         }
       },
+      tableDataCopy: [],
+      fieldDataCopy: [],
       errImg: require('@/assets/error.png'),
       initImg: require('@/assets/None.png'),
       sqlHeight: 248,
@@ -685,6 +695,21 @@ export default {
       handler: function() {
         this.calHeight()
       }
+    },
+    keywords(val) {
+      if (!val) {
+        this.tableDataCopy = [...this.tableData]
+        this.fieldDataCopy = [...this.fieldData]
+        return
+      }
+
+      if (this.dataSource && !this.dataTable) {
+        this.tableDataCopy = this.tableData.filter(ele => ele.name.includes(val))
+      }
+
+      if (this.dataSource && this.dataTable) {
+        this.fieldDataCopy = this.fieldData.filter(ele => ele.fieldName.includes(val))
+      }
     }
   },
   beforeDestroy() {
@@ -729,16 +754,22 @@ export default {
       this.listSqlLog()
     },
     getField(name) {
+      this.tableLoading = true
       post('/dataset/table/getFields', {
         dataSourceId: this.dataSource,
         info: JSON.stringify({ table: name })
       }).then((res) => {
         this.fieldData = res.data
+        this.fieldDataCopy = [...this.fieldData]
       })
+      .finally(() => {
+          this.tableLoading = false
+        })
     },
     typeSwitch({ name }) {
       this.showTable = true
       this.dataTable = name
+      this.keywords = ''
       this.getField(name)
     },
     mousedownDrag() {
@@ -787,6 +818,7 @@ export default {
       post('/datasource/getTables/' + this.dataSource, {})
         .then((response) => {
           this.tableData = response.data
+          this.tableDataCopy = [...this.tableData]
         })
         .finally(() => {
           this.tableLoading = false
@@ -799,7 +831,7 @@ export default {
     }, 200),
     initDataSource() {
       return listDatasource().then((response) => {
-        this.options = response.data.filter((item) => item.type !== 'api')
+        this.options = pySort(response.data.filter((item) => item.type !== 'api'))
       })
     },
 
@@ -1119,7 +1151,7 @@ export default {
 
       .item-list {
         padding: 16px 8px;
-        height: calc(100vh - 200px);
+        height: calc(100vh - 242px);
         overflow: auto;
         .table-or-field {
           height: 40px;
