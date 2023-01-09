@@ -507,12 +507,14 @@ export const BASE_BAR = {
     },
     {
       type: 'inside',
+      disabled: true,
       xAxisIndex: [0],
       start: 0,
       end: 100
     },
     {
       type: 'inside',
+      disabled: true,
       yAxisIndex: [0],
       start: 0,
       end: 100
@@ -563,12 +565,14 @@ export const HORIZONTAL_BAR = {
     },
     {
       type: 'inside',
+      disabled: true,
       xAxisIndex: [0],
       start: 0,
       end: 100
     },
     {
       type: 'inside',
+      disabled: true,
       yAxisIndex: [0],
       start: 0,
       end: 100
@@ -621,12 +625,14 @@ export const BASE_LINE = {
     },
     {
       type: 'inside',
+      disabled: true,
       xAxisIndex: [0],
       start: 0,
       end: 100
     },
     {
       type: 'inside',
+      disabled: true,
       yAxisIndex: [0],
       start: 0,
       end: 100
@@ -903,14 +909,10 @@ export const BASE_MAP = {
   },
   geo: {
     map: 'MAP',
-    roam: true,
-    nameMap: {
-
-    },
+    roam: false,
+    nameMap: {},
     itemStyle: {
-      normal: {
-
-      },
+      normal: {},
       emphasis: {
         label: {
           show: false
@@ -926,9 +928,7 @@ export const BASE_MAP = {
       roam: true,
       data: [],
       itemStyle: {
-        normal: {
-
-        },
+        normal: {},
         emphasis: {
           label: {
             show: false
@@ -984,12 +984,14 @@ export const BASE_SCATTER = {
     },
     {
       type: 'inside',
+      disabled: true,
       xAxisIndex: [0],
       start: 0,
       end: 100
     },
     {
       type: 'inside',
+      disabled: true,
       yAxisIndex: [0],
       start: 0,
       end: 100
@@ -1079,12 +1081,14 @@ export const BASE_MIX = {
     },
     {
       type: 'inside',
+      disabled: true,
       xAxisIndex: [0],
       start: 0,
       end: 100
     },
     {
       type: 'inside',
+      disabled: true,
       yAxisIndex: [0],
       start: 0,
       end: 100
