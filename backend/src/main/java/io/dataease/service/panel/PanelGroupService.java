@@ -755,18 +755,19 @@ public class PanelGroupService {
                                 cell.setCellStyle(cellStyle);
                                 //设置列的宽度
                                 detailsSheet.setColumnWidth(j, 255 * 20);
-                            } else {
-                                // with DataType
-                                if ((excelTypes[j] == DeTypeConstants.DE_INT || excelTypes[j] == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(cellValObj.toString())) {
-                                    try {
+                            } else if (cellValObj != null) {
+                                try {
+                                    // with DataType
+                                    if ((excelTypes[j] == DeTypeConstants.DE_INT || excelTypes[j] == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(cellValObj.toString())) {
                                         cell.setCellValue(Double.valueOf(cellValObj.toString()));
-                                    } catch (Exception e) {
-                                        LogUtil.warn("export excel data transform error");
+                                    } else {
+                                        cell.setCellValue(cellValObj.toString());
                                     }
-                                } else {
-                                    cell.setCellValue(cellValObj.toString());
+                                } catch (Exception e) {
+                                    LogUtil.warn("export excel data transform error");
                                 }
                             }
+
 
                         }
                     }
