@@ -65,6 +65,11 @@ export default {
     MapController
   },
   props: {
+    active: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     chart: {
       type: Object,
       required: true
@@ -121,7 +126,18 @@ export default {
       buttonTextColor: null,
       loading: true,
       showSuspension: true,
-      currentSeriesId: null
+      currentSeriesId: null,
+      havaScrollType: [
+        'map',
+        'chart-mix',
+        'bar',
+        'bar-stack',
+        'bar-horizontal',
+        'bar-stack-horizontal',
+        'line',
+        'line-stack',
+        'scatter'
+      ]
     }
   },
 
@@ -134,6 +150,11 @@ export default {
     ])
   },
   watch: {
+    active: {
+      handler(newVal, oldVla) {
+        this.scrollStatusChange(newVal)
+      }
+    },
     currentSeriesId(value, old) {
       if (value !== old) {
         this.preDraw()
@@ -173,6 +194,27 @@ export default {
     this.loadThemeStyle()
   },
   methods: {
+    scrollStatusChange() {
+      if (this.havaScrollType.includes(this.chart.type)) {
+        const opt = this.myChart.getOption()
+        this.adaptorOpt(opt)
+        this.myChart.setOption(opt)
+      }
+    },
+    adaptorOpt(opt) {
+      const disabledStatus = !this.active
+      if (opt.dataZoom) {
+        opt.dataZoom.forEach(function(s) {
+          if (s.type === 'inside') {
+            s.disabled = disabledStatus
+          }
+        })
+      }
+      //地图
+      if (opt.geo && opt.geo[0]) {
+        opt.geo[0].roam = this.active
+      }
+    },
     changeSeriesId(param) {
       const { id, seriesId } = param
       if (id !== this.chart.id) {
@@ -303,6 +345,7 @@ export default {
       } else if (chart.type === 'chart-mix') {
         chart_option = baseMixOption(JSON.parse(JSON.stringify(BASE_MIX)), chart)
       }
+      this.adaptorOpt(chart_option)
       if (this.myChart && this.searchCount > 0) {
         chart_option.animation = false
       }
@@ -384,6 +427,7 @@ export default {
       }
       const chart_option = baseMapOption(base_json, chart, this.buttonTextColor, curAreaCode, this.currentSeriesId)
       this.myEcharts(chart_option)
+      this.adaptorOpt(chart_option)
       const opt = this.myChart.getOption()
       if (opt && opt.series) {
         const center = opt.series[0].center

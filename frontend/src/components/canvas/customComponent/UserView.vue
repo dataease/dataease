@@ -66,6 +66,7 @@
       :terminal-type="scaleCoefficientType"
       :scale="scale"
       :theme-style="element.commonBackground"
+      :active="this.active"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -1272,6 +1273,7 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  position: relative;
 }
 
 .chart-class {
