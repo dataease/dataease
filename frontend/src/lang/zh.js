@@ -2420,7 +2420,9 @@ export default {
     standard: '标准版',
     enterprise: '企业版',
     support: '获取技术支持',
-    update_success: '更新成功'
+    update_success: '更新成功',
+    serial_no: '序列号',
+    remark: '备注'
   },
   template: {
     exit_same_template_check: '当前分类存在相同名称模板，是否覆盖？',

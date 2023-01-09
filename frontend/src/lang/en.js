@@ -2426,7 +2426,9 @@ export default {
     standard: 'Standard',
     enterprise: 'Enterprise',
     support: 'Get technical support',
-    update_success: 'Update Success'
+    update_success: 'Update Success',
+    serial_no: 'Serial Number',
+    remark: 'Remark'
   },
   template: {
     exit_same_template_check: 'The Same Name Exists In Now Class. Do You Want To Override It?',
