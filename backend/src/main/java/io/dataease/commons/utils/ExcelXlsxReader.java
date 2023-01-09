@@ -359,8 +359,8 @@ public class ExcelXlsxReader extends DefaultHandler {
             formatIndex = style.getDataFormat();
             formatString = style.getDataFormatString();
             short format = this.formatIndex;
-            if ((14 <= format && format <= 17) || format == 20 || format == 22 || format == 31 || format == 35 || format == 45 || format == 46 || format == 47 || (57 <= format && format <= 59)
-                    || (175 < format && format < 178) || (182 <= format && format <= 196) || (210 <= format && format <= 213) || (208 == format)) { // 日期
+            if ((14 <= format && format <= 17) || format == 0 || format == 20 || format == 22 || format == 31 || format == 35 || (45 <= format && format <= 49) || format == 46 || format == 47 || (57 <= format && format <= 59)
+                    || (59 < format && format <= 76) || (175 < format && format <= 196) || (210 <= format && format <= 213) || (208 == format)) { // 日期
                 isDateFormat = true;
             }
 
@@ -418,7 +418,11 @@ public class ExcelXlsxReader extends DefaultHandler {
                 break;
             case NUMBER: //数字
                 if (formatString != null && isDateFormat) {
-                    thisStr = formatter.formatRawCellContents(Double.parseDouble(value), formatIndex, formatString).trim();
+                    if (obtainedNum != null) {
+                        thisStr = formatter.formatRawCellContents(Double.parseDouble(value), formatIndex, formatString).trim();
+                    } else {
+                        thisStr = formatter.formatRawCellContents(Double.parseDouble(value), formatIndex, "yyyy-mm-dd hh:mm:ss").trim();
+                    }
                 } else {
                     thisStr = value;
                 }
