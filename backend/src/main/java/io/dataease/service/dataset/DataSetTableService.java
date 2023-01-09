@@ -1119,12 +1119,13 @@ public class DataSetTableService {
                 if (fromItem.getAlias() == null) {
                     throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
                 }
-                subSelect.setAlias(new Alias(fromItem.getAlias().toString()));
+                subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
             }
             plainSelect.setFromItem(subSelect);
         }
         List<Join> joins = plainSelect.getJoins();
         if (joins != null) {
+            List<Join> joinsList = new ArrayList<>();
             for (Join join : joins) {
                 FromItem rightItem = join.getRightItem();
                 if (rightItem instanceof SubSelect) {
@@ -1139,14 +1140,13 @@ public class DataSetTableService {
                         if (rightItem.getAlias() == null) {
                             throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
                         }
-                        subSelect.setAlias(new Alias(rightItem.getAlias().toString()));
+                        subSelect.setAlias(new Alias(rightItem.getAlias().toString(), false));
                     }
-                    List<Join> joinsList = new ArrayList<>();
                     join.setRightItem(subSelect);
                     joinsList.add(join);
-                    plainSelect.setJoins(joinsList);
                 }
             }
+            plainSelect.setJoins(joinsList);
         }
         Expression expr = plainSelect.getWhere();
         if (expr == null) {
