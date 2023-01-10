@@ -278,16 +278,16 @@ export default {
       return JSON.parse(this.chart.yaxis)
     },
     showMapLayerController() {
-      return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType === 'map' && this.yaxis.length > 1
+      return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType && this.curComponent.propValue.innerType === 'map' && this.yaxis.length > 1
     },
     detailsShow() {
-      return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType !== 'richTextView'
+      return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType && this.curComponent.propValue.innerType !== 'richTextView'
     },
     enlargeShow() {
-      return this.curComponent.type === 'view' && this.curComponent.propValue.innerType !== 'richTextView' && !this.curComponent.propValue.innerType.includes('table')
+      return this.curComponent.type === 'view' && this.curComponent.propValue.innerType && this.curComponent.propValue.innerType !== 'richTextView' && !this.curComponent.propValue.innerType.includes('table')
     },
     selectFieldShow() {
-      return this.activeModel === 'edit' && this.curComponent.type === 'view' && this.curComponent.propValue.innerType === 'richTextView' && this.curComponent.editing
+      return this.activeModel === 'edit' && this.curComponent.type === 'view' && this.curComponent.propValue.innerType && this.curComponent.propValue.innerType === 'richTextView' && this.curComponent.editing
     },
     curComponentTypes() {
       const types = []
