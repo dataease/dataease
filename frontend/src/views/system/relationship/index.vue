@@ -1,11 +1,14 @@
 <template>
-  <div class="consanguinity">
+  <div
+    class="consanguinity"
+    @click.stop="resetFilter"
+  >
     <div class="route-title">{{ $t('commons.consanguinity') }}</div>
     <div class="container-wrapper">
       <el-form
+        ref="form"
         :rules="rules"
         :inline="true"
-        ref="form"
         :model="formInline"
         class="de-form-inline"
       >
@@ -15,59 +18,114 @@
         >
           <el-select
             v-model="formInline.queryType"
-            @change="queryTypeChange"
             :placeholder="$t('fu.search_bar.please_select')"
+            @change="queryTypeChange"
+            @focus="resetFilter"
           >
             <el-option
               v-for="item in queryTypeNameList"
               :key="item.value"
               :label="$t(item.label)"
               :value="item.value"
-            >
-            </el-option>
+            />
           </el-select>
         </el-form-item>
-        <el-form-item prop="dataSourceName" :label="queryTypeTitle">
-          <el-select
-            v-model="formInline.dataSourceName"
-            filterable
-            :placeholder="$t('fu.search_bar.please_select')"
+        <el-form-item
+          prop="dataSourceName"
+          :label="queryTypeTitle"
+        >
+          <el-popover
+            v-model="showTree"
+            placement="bottom"
+            trigger="manual"
+            :width="popoverSize"
           >
-            <el-option
-              v-for="item in dataSourceNameList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+            <el-tree
+              v-show="showTree"
+              ref="resourceTree"
+              accordion
+              node-key="id"
+              :indent="8"
+              :data="resourceTreeData"
+              :highlight-current="true"
+              :filter-node-method="filterNodeMethod"
+              :current-node-key="formInline.dataSourceName"
+              @node-click="nodeClick"
             >
-            </el-option>
-          </el-select>
+              <span
+                slot-scope="{ data }"
+              >
+                <span>
+                  <span>
+                    <svg-icon
+                      :icon-class="getIconClass(formInline.queryType, data)"
+                      :class="getNodeClass(formInline.queryType, data)"
+                    />
+                  </span>
+                  <span
+                    :title="data.name"
+                    style="padding-right: 8px"
+                  >
+                    {{ data.name }}
+                  </span>
+                </span>
+              </span>
+            </el-tree>
+            <el-select
+              ref="treeSelect"
+              slot="reference"
+              v-model="formInline.dataSourceName"
+              filterable
+              remote
+              :filter-method="filterMethod"
+              :title="nodeData.name"
+              popper-class="tree-select"
+              @focus="showTree = true"
+            >
+              <el-option
+                v-for="item in ignoredOptions"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-popover>
         </el-form-item>
         <el-form-item style="float: right">
-          <de-btn type="primary" @click="onSubmit">{{
-            $t('commons.adv_search.search')
-          }}</de-btn>
+          <de-btn
+            type="primary"
+            @click="onSubmit"
+          >
+            {{ $t('commons.adv_search.search') }}
+          </de-btn>
         </el-form-item>
       </el-form>
       <div class="select-icon">
         <i
-          @click="activeQueryType('date')"
           :class="[activeIcon === 'date' ? 'active-icon' : '']"
           class="el-icon-date"
-        ></i>
+          @click="activeQueryType('date')"
+        />
         <svg-icon
           icon-class="sys-relationship"
           :class="[activeIcon === 'share' ? 'active-icon' : '']"
           @click="activeQueryType('share')"
         />
       </div>
-      <div v-show="activeIcon === 'share'" id="consanguinity">
+      <div
+        v-show="activeIcon === 'share'"
+        id="consanguinity"
+      >
         <consanguinity
-          :chartSize="chartSize"
-          :current="current"
           ref="consanguinity"
+          :chart-size="chartSize"
+          :current="current"
         />
       </div>
-      <div v-show="activeIcon === 'date'" class="consanguinity-table">
+      <div
+        v-show="activeIcon === 'date'"
+        class="consanguinity-table"
+      >
         <grid-table
           v-loading="loading"
           :table-data="tableData"
@@ -75,7 +133,11 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         >
-          <el-table-column :label="$t('table.id')" type="index" width="50" />
+          <el-table-column
+            :label="$t('table.id')"
+            type="index"
+            width="50"
+          />
           <el-table-column
             prop="datasource"
             :formatter="formatter"
@@ -106,15 +168,14 @@ import {
   getDatasetRelationship,
   getPanelRelationship
 } from '@/api/chart/chart.js'
-import {
-  listDatasource,
-  getDatasetList,
-  getPanelGroupList
-} from '@/api/dataset/dataset'
+import { listDatasource } from '@/api/dataset/dataset'
 import _ from 'lodash'
 import GridTable from '@/components/gridTable/index.vue'
 import consanguinity from './consanguinity.vue'
-import { log } from '@antv/g2plot/lib/utils'
+import { groupTree } from '@/api/panel/panel'
+import { queryAuthModel } from '@/api/authModel/authModel'
+import { data } from 'vue2-ace-editor'
+
 export default {
   name: 'Consanguinity',
   components: { GridTable, consanguinity },
@@ -128,7 +189,6 @@ export default {
         queryType: [{ required: true, trigger: 'blur' }],
         dataSourceName: [{ required: true, trigger: 'blur', message: this.$t('chart.name_can_not_empty') }]
       },
-      dataSourceNameList: [],
       queryTypeNameList: [
         {
           label: 'commons.datasource',
@@ -155,19 +215,21 @@ export default {
         currentPage: 1,
         pageSize: 10,
         total: 0
-      }
+      },
+      resourceTreeData: [],
+      ignoredOptions: [],
+      showTree: false,
+      nodeData: {},
+      popoverSize: 400,
+      currentNode: {}
     }
   },
   computed: {
     current() {
-      const { queryType = '', dataSourceName } = this.formInline
-      const obj =
-        this.dataSourceNameList.find((ele) => dataSourceName === ele.value) ||
-        {}
       return {
-        queryType,
-        num: obj.value,
-        label: obj.label
+        queryType: this.formInline.queryType,
+        num: this.formInline.dataSourceName,
+        label: this.nodeData.name
       }
     },
     queryTypeTitle() {
@@ -189,9 +251,9 @@ export default {
   },
   created() {
     this.routerWithParams = this.$route.query
-    const { id, queryType } = this.routerWithParams
+    const { id, queryType, name } = this.routerWithParams
     if (id && queryType) {
-      this.searchDetail(id, queryType)
+      this.searchDetail(id, queryType, name)
       return
     }
     this.listDatasource()
@@ -204,11 +266,12 @@ export default {
     this.getChartSize()
   },
   methods: {
+    data,
     activeQueryType(activeIcon) {
       this.activeIcon = activeIcon
       this.onSubmit()
     },
-    async searchDetail(id, queryType) {
+    async searchDetail(id, queryType, name) {
       switch (queryType) {
         case 'datasource':
           await this.listDatasource()
@@ -223,6 +286,13 @@ export default {
           break
       }
       this.formInline = { queryType, dataSourceName: id }
+      this.nodeData = { id, name }
+      this.ignoredOptions = [this.nodeData]
+      this.$refs.resourceTree.setCurrentKey(id)
+      const currentParents = this.$refs.resourceTree.getNodePath(this.nodeData)
+      currentParents.forEach((node) => {
+        this.$refs.resourceTree.store.nodesMap[node.id].expanded = true
+      })
       this.getChartData()
     },
     getChartData() {
@@ -270,7 +340,7 @@ export default {
       })
     },
     formatter(row, column, cellValue) {
-      return cellValue ? cellValue : '-'
+      return cellValue || '-'
     },
     initTable() {
       this.paginationConfig.total = this.treeData.length
@@ -302,7 +372,7 @@ export default {
         }
       })
     },
-    getChartSize: _.debounce(function () {
+    getChartSize: _.debounce(function() {
       const dom = document.querySelector(
         this.activeIcon === 'date' ? '.consanguinity-table' : '#consanguinity'
       )
@@ -313,44 +383,55 @@ export default {
     }, 200),
     listDatasource() {
       return listDatasource().then((res) => {
-        const arr = res?.data || []
-        this.dataSourceNameList = arr.map((ele) => ({
-          value: ele.id,
-          label: ele.name
-        }))
+        const dsArr = res?.data || []
+        const typeMap = {}
+        dsArr.forEach((item) => {
+          if (!typeMap[item.type]) {
+            typeMap[item.type] = [{ id: item.id, name: item.name, type: 'datasource' }]
+            this.resourceTreeData.push({
+              id: item.type,
+              name: item.typeDesc,
+              type: 'folder',
+              children: typeMap[item.type]
+            })
+          } else {
+            typeMap[item.type].push({ id: item.id, name: item.name, type: 'datasource' })
+          }
+        })
       })
     },
     getDatasetList() {
-      return getDatasetList().then((res) => {
-        const arr = res?.data || []
-        this.dataSourceNameList = arr.map((ele) => ({
-          value: ele.id,
-          label: ele.name
-        }))
+      return queryAuthModel({ modelType: 'dataset' }, false).then((res) => {
+        this.resourceTreeData = res.data
       })
     },
     getPanelGroupList() {
-      return getPanelGroupList().then((res) => {
-        const arr = res?.data || []
-        this.dataSourceNameList = arr.map((ele) => ({
-          value: ele.id,
-          label: ele.name
-        }))
+      const form = {
+        panelType: 'self',
+        sort: 'create_time desc,node_type desc,name asc'
+      }
+      return groupTree(form, true).then((res) => {
+        this.resourceTreeData = res.data
       })
     },
     queryTypeChange(val) {
       this.formInline.dataSourceName = ''
-      this.dataSourceNameList = []
+      this.resourceTreeData = []
+      this.nodeData = {}
+      this.currentNode = {}
       switch (val) {
-        case 'datasource':
+        case 'datasource': {
           this.listDatasource()
           break
-        case 'dataset':
+        }
+        case 'dataset': {
           this.getDatasetList()
           break
-        case 'panel':
+        }
+        case 'panel': {
           this.getPanelGroupList()
           break
+        }
         default:
           break
       }
@@ -374,6 +455,88 @@ export default {
     handleCurrentChange(currentPage) {
       this.paginationConfig.currentPage = currentPage
       this.onSubmit()
+    },
+    getIconClass(queryType, nodeData) {
+      switch (queryType) {
+        case 'datasource': {
+          if (nodeData.type === 'folder') {
+            return 'scene'
+          }
+          return 'db-de'
+        }
+        case 'dataset': {
+          if (nodeData.modelInnerType === 'group') {
+            return 'scene'
+          }
+          return `ds-${nodeData.modelInnerType}`
+        }
+        case 'panel':
+          if (nodeData.nodeType === 'panel') {
+            let iconClass = 'panel-'
+            if (nodeData.mobileLayout) {
+              iconClass += 'mobile-'
+            }
+            iconClass += nodeData.status
+            return iconClass
+          }
+          return 'scene'
+        default:
+          break
+      }
+    },
+    getNodeClass(queryType, nodeData) {
+      switch (queryType) {
+        case 'dataset': {
+          if (nodeData.modelInnerType !== 'group') {
+            return `ds-icon-${nodeData.modelInnerType}`
+          }
+          return ''
+        }
+        case 'panel': {
+          if (nodeData.nodeType === 'panel') {
+            return 'ds-icon-scene'
+          }
+          return ''
+        }
+        default: {
+          return ''
+        }
+      }
+    },
+    filterNodeMethod(value, data) {
+      if (!value) {
+        return true
+      }
+      return data.name.toLowerCase().indexOf(value.toLowerCase()) !== -1
+    },
+    filterMethod(filterText) {
+      this.$refs.resourceTree.filter(filterText)
+    },
+    nodeClick(data, node) {
+      if (node.isLeaf) {
+        this.ignoredOptions = [{ id: data.id, name: data.name }]
+        this.formInline.dataSourceName = data.id
+        this.showTree = false
+        this.nodeData = data
+        this.currentNode = node
+      }
+    },
+    resetFilter() {
+      if (this.showTree) {
+        this.showTree = false
+        this.$refs.resourceTree.filter()
+        this.$refs.resourceTree.setCurrentKey(this.formInline.dataSourceName)
+        if (this.formInline.dataSourceName === '') {
+          this.$refs.resourceTree.setCurrentKey(null)
+        }
+        if (this.formInline.dataSourceName) {
+          const currentParents = this.$refs.resourceTree.getNodePath(this.nodeData).map((item) => item.id)
+          const nodesMap = this.$refs.resourceTree.store.nodesMap || {}
+          for (const key in nodesMap) {
+            nodesMap[key].expanded = currentParents.includes(key)
+          }
+        }
+      }
     }
   }
 }
@@ -427,5 +590,32 @@ export default {
       }
     }
   }
+}
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
+
+.custom-tree-node-list {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 0 8px;
+}
+
+.father .child {
+  /*display: none;*/
+  visibility: hidden;
+}
+
+.father:hover .child {
+  /*display: inline;*/
+  visibility: visible;
 }
 </style>
