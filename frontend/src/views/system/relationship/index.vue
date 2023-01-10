@@ -172,7 +172,7 @@ import { listDatasource } from '@/api/dataset/dataset'
 import _ from 'lodash'
 import GridTable from '@/components/gridTable/index.vue'
 import consanguinity from './consanguinity.vue'
-import { groupTree } from '@/api/panel/panel'
+import { defaultTree, groupTree } from '@/api/panel/panel'
 import { queryAuthModel } from '@/api/authModel/authModel'
 import { data } from 'vue2-ace-editor'
 
@@ -406,12 +406,24 @@ export default {
       })
     },
     getPanelGroupList() {
-      const form = {
-        panelType: 'self',
-        sort: 'create_time desc,node_type desc,name asc'
-      }
-      return groupTree(form, true).then((res) => {
-        this.resourceTreeData = res.data
+      return defaultTree({ panelType: 'system' }, true).then((res) => {
+        if (res.data?.length > 0) {
+          const defaultPanelTree = {
+            id: 'defaultPanel',
+            name: this.$t('panel.default_panel'),
+            nodeType: 'folder',
+            children: res.data
+          }
+          this.resourceTreeData.push(defaultPanelTree)
+        }
+      }).then(() => {
+        const form = {
+          panelType: 'self',
+          sort: 'create_time desc,node_type desc,name asc'
+        }
+        groupTree(form, true).then((res) => {
+          this.resourceTreeData = [...this.resourceTreeData, ...res.data]
+        })
       })
     },
     queryTypeChange(val) {
