@@ -760,7 +760,7 @@ export default {
             params.link = this.$t('datasource.click_to_check')
             params.content = this.$t('datasource.cannot_be_deleted_datasource')
             params.templateDel = msgContent
-            params.linkTo = this.linkTo.bind(this, { queryType, id })
+            params.linkTo = this.linkTo.bind(this, { queryType, id, name: label })
             this.withLink(params)
             return
           }
