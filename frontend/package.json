@@ -1,6 +1,6 @@
 {
   "name": "dataease",
-  "version": "1.18.0",
+  "version": "1.18.1",
   "description": "dataease front",
   "private": true,
   "scripts": {
@@ -51,6 +51,7 @@
     "jquery": "^3.1.1",
     "js-base64": "^3.7.2",
     "js-cookie": "2.2.0",
+    "js-pinyin": "^0.1.9",
     "jsencrypt": "^3.0.0-rc.1",
     "jspdf": "^2.3.1",
     "jszip": "^3.10.1",

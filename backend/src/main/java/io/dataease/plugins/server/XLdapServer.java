@@ -31,10 +31,10 @@ public class XLdapServer {
     }
 
     @PostMapping("/testConn")
-    public void testConn() {
+    public void testConn(@RequestBody List<SysSettingDto> settings) {
         LdapXpackService ldapXpackService = SpringContextUtil.getBean(LdapXpackService.class);
         try {
-            ldapXpackService.testConn();
+            ldapXpackService.testConn(settings);
         }catch(Exception e) {
             throw new RuntimeException(e);
         } 

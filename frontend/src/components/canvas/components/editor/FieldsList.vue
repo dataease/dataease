@@ -1,5 +1,5 @@
 <template>
-  <div @mousedown="fieldsAreaDown">
+  <div @mousedown="fieldsAreaDown" class="field-main">
     <el-button
       v-for="(field) in fields"
       :key="field.id"
@@ -29,15 +29,10 @@ export default {
     }
   },
   data() {
-    return {
-    }
+    return {}
   },
-  computed: {
-
-  },
-  watch: {
-
-  },
+  computed: {},
+  watch: {},
   mounted() {
   },
   methods: {
@@ -53,11 +48,18 @@ export default {
 </script>
 
 <style scoped>
-.field-area{
+.field-main {
+  width: 183px;
+  max-height: 300px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.field-area {
   width: 174px;
   margin: 4px 0 0 0;
   text-align: left;
-  margin-left: 0px!important;
+  margin-left: 0px !important;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

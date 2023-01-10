@@ -66,6 +66,7 @@
       :terminal-type="scaleCoefficientType"
       :scale="scale"
       :theme-style="element.commonBackground"
+      :active="this.active"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -974,6 +975,8 @@ export default {
               // 判断是否有公共链接ID
               if (jumpInfo.publicJumpId) {
                 const url = '/link/' + jumpInfo.publicJumpId
+                const currentUrl = window.location.href
+                localStorage.setItem('beforeJumpUrl', currentUrl)
                 this.windowsJump(url, jumpInfo.jumpType)
               } else {
                 this.$message({
@@ -1270,6 +1273,7 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  position: relative;
 }
 
 .chart-class {

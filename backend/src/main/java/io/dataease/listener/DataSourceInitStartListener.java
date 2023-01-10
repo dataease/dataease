@@ -1,5 +1,6 @@
 package io.dataease.listener;
 
+import io.dataease.listener.util.CacheUtils;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.engine.EngineService;
@@ -25,7 +26,7 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
         datasourceService.initDsCheckJob();
         dataSetTableService.updateDatasetTableStatus();
         engineService.initSimpleEngine();
-
+        CacheUtils.removeAll("ENGINE");
     }
 
 

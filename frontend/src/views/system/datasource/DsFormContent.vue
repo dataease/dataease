@@ -662,7 +662,7 @@ export default {
     this.$emit('setParams', { ...this.params })
     this.$nextTick(() => {
       this.disabled = appMarketCheck ? !this.appMarketEdit : (Boolean(id) && showModel === 'show' && !this.canEdit)
-      if (this.configFromTabs.editor === 'editor') {
+      if (this.configFromTabs?.editor === 'editor') {
         this.$emit('editeTodisable', true)
       }
     })
@@ -1113,6 +1113,7 @@ export default {
           }
         })
       }
+      this.$refs.dsForm.validate()
       if (!status) {
         return
       }

@@ -182,14 +182,20 @@ export default {
         textAlign: horizontal
       }
       this.outsideStyle = {
-        flexWrap: 'wrap'
+        flexDirection: 'column'
       }
+
+      
       if (vertical !== 'top' && this.element.component !== 'de-select-grid') {
         this.titleStyle = null
         this.outsideStyle = {
           flexDirection: horizontal === 'right' ? 'row-reverse' : '',
           alignItems: 'center'
         }
+      }
+
+      if (this.element.component === 'de-select-grid') {
+        this.$set(this.outsideStyle, 'flexDirection', 'column')
       }
 
       if (vertical !== 'top' && this.element.component === 'de-number-range') {

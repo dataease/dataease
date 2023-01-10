@@ -2420,7 +2420,9 @@ export default {
     standard: '標準版',
     enterprise: '企業版',
     support: '獲取技術支持',
-    update_success: '更新成功'
+    update_success: '更新成功',
+    serial_no: '序列號',
+    remark: '備註'
   },
   template: {
     exit_same_template_check: '當前分類存在相同名稱模闆，是否覆蓋？',
@@ -2781,6 +2783,8 @@ export default {
   'I18N_USER_TEMPLATE_ERROR': '模版錯誤',
   'i18n_max_user_import_size': '文件最大不能超過10M',
   app_template: {
+    move: '移動',
+    move_item: '移動應用',
     datasource_new: '新建',
     datasource_history: '復用',
     datasource_from: '數據來源',
@@ -2830,8 +2834,8 @@ export default {
     watermark_color: '水印顏色',
     watermark_font_size: '水印字號',
     watermark_space: '水印間距',
-    horizontal: '橫向',
-    vertical: '縱向',
+    horizontal: '橫向間距',
+    vertical: '縱向間距',
     reset: '重置',
     preview: '預覽',
     save: '保存'

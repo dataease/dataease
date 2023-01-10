@@ -41,7 +41,7 @@
         </el-col>
         <el-col
           v-if="item.field === '0'"
-          :span="8"
+          :span="6"
         >
           <el-input
             v-model="item.value"
@@ -54,7 +54,7 @@
         </el-col>
         <el-col
           v-if="item.field === '1'"
-          :span="8"
+          :span="6"
         >
           <el-select
             v-model="item.fieldId"
@@ -119,7 +119,24 @@
             />
           </el-select>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="3">
+          <el-select
+            v-model="item.fontSize"
+            size="mini"
+            class="select-item"
+            style="margin-left: 10px;"
+            :placeholder="$t('chart.text_fontsize')"
+            @change="changeAssistLine"
+          >
+            <el-option
+              v-for="option in fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-col>
+        <el-col :span="3">
           <el-select
             v-model="item.lineType"
             size="mini"
@@ -135,7 +152,7 @@
           </el-select>
         </el-col>
         <el-col
-          :span="2"
+          :span="1"
           style="text-align: center;"
         >
           <el-color-picker
@@ -145,7 +162,7 @@
             @change="changeAssistLine"
           />
         </el-col>
-        <el-col :span="2">
+        <el-col :span="1">
           <el-button
             type="text"
             icon="el-icon-delete"
@@ -186,7 +203,8 @@ export default {
         value: '0',
         lineType: 'solid',
         color: '#ff0000',
-        curField: {}
+        curField: {},
+        fontSize: '10'
       },
       fieldOptions: [
         { label: this.$t('chart.field_fixed'), value: '0' },
@@ -198,7 +216,8 @@ export default {
         { label: this.$t('chart.line_type_dotted'), value: 'dotted' }
       ],
       predefineColors: COLOR_PANEL,
-      quotaData: []
+      quotaData: [],
+      fontSize: []
     }
   },
   watch: {
@@ -216,6 +235,15 @@ export default {
     },
     init() {
       this.lineArr = JSON.parse(JSON.stringify(this.line))
+
+      const arr = []
+      for (let i = 10; i <= 60; i = i + 2) {
+        arr.push({
+          name: i + '',
+          value: i + ''
+        })
+      }
+      this.fontSize = arr
     },
     addLine() {
       const obj = { ...this.lineObj,

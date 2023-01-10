@@ -2426,7 +2426,9 @@ export default {
     standard: 'Standard',
     enterprise: 'Enterprise',
     support: 'Get technical support',
-    update_success: 'Update Success'
+    update_success: 'Update Success',
+    serial_no: 'Serial Number',
+    remark: 'Remark'
   },
   template: {
     exit_same_template_check: 'The Same Name Exists In Now Class. Do You Want To Override It?',
@@ -2787,6 +2789,8 @@ export default {
   'I18N_USER_TEMPLATE_ERROR': 'Template file error',
   'i18n_max_user_import_size': 'File size exceeds 10M',
   app_template: {
+    move: 'Move',
+    move_item: 'Move App',
     datasource_new: 'New',
     datasource_history: 'Multiplexing',
     datasource_from: 'Datasource From',
@@ -2837,8 +2841,8 @@ export default {
     watermark_color: 'Watermark Color',
     watermark_font_size: 'Watermark Fontsize',
     watermark_space: 'Watermark Space',
-    horizontal: 'Horizontal',
-    vertical: 'Vertical',
+    horizontal: 'Horizontal Space',
+    vertical: 'Vertical Space',
     reset: 'Reset',
     preview: 'Preview',
     save: 'Save'
