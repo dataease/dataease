@@ -32,7 +32,7 @@
       v-if="chart.isPlugin"
       :ref="element.propValue.id"
       :component-name="chart.type + '-view'"
-      :obj="{chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
+      :obj="{active, chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
       :chart="chart"
       :track-menu="trackMenu"
       :search-count="searchCount"
