@@ -1,6 +1,6 @@
 UPDATE `my_plugin`
 SET `version` = '1.18.1'
-where `plugin_id` > 0 and `store` = 'default' and `version` = '1.18.0';
+where `plugin_id` > 0 and `version` = '1.18.0';
 
 ALTER TABLE `dataset_table_field`
     CHANGE COLUMN `origin_name` `origin_name` LONGTEXT BINARY NOT NULL COMMENT '原始字段名' ;
