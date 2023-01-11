@@ -1021,6 +1021,7 @@ export const BASE_TREEMAP = {
     {
       // name: '',
       type: 'treemap',
+      roam: true,
       itemStyle: {
         gapWidth: 2
       },
