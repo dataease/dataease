@@ -115,8 +115,8 @@ export default {
       // 仪表板复制的组件默认不在移动端部署中mobileSelected = false
       data.mobileSelected = false
       if (!state.curComponent.auxiliaryMatrix) {
-        data.style.top += 20
-        data.style.left += 20
+        data.style.top = Number(data.style.top) + 20
+        data.style.left = Number(data.style.left) + 20
       }
       data.id = generateID()
       // 如果是用户视图 测先进行底层复制

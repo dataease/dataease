@@ -263,7 +263,7 @@ export default {
     },
 
     del(row) {
-      if (row.pluginId < 4) return
+      if (this.btnDisabled(row)) return
       const options = {
         title: 'components.uninstall_the_plugin',
         content: 'components.it_takes_effect',

@@ -850,7 +850,7 @@ export function getAnalyse(chart) {
             style: {
               textBaseline: 'bottom',
               fill: ele.color,
-              fontSize: 10
+              fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
             }
           })
         } else {
@@ -864,7 +864,7 @@ export function getAnalyse(chart) {
             style: {
               textBaseline: 'bottom',
               fill: ele.color,
-              fontSize: 10
+              fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
             }
           })
         }

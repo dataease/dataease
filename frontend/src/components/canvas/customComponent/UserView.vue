@@ -32,7 +32,7 @@
       v-if="chart.isPlugin"
       :ref="element.propValue.id"
       :component-name="chart.type + '-view'"
-      :obj="{chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
+      :obj="{active, chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
       :chart="chart"
       :track-menu="trackMenu"
       :search-count="searchCount"
@@ -66,6 +66,7 @@
       :terminal-type="scaleCoefficientType"
       :scale="scale"
       :theme-style="element.commonBackground"
+      :active="this.active"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -149,6 +150,7 @@
         </el-button>
         <el-button
           v-if="showChartInfoType==='details'"
+          v-permission="['view:export']"
           size="mini"
           @click="exportExcel"
         >
@@ -475,7 +477,9 @@ export default {
   watch: {
     'innerPadding': {
       handler: function(val1, val2) {
-        this.resizeChart()
+        if (val1 !== val2) {
+          this.resizeChart()
+        }
       },
       deep: true
     },
@@ -575,7 +579,7 @@ export default {
         this.$refs[this.element.propValue.id].chartResize()
       }
     },
-    //编辑状态下 不启动刷新
+    // 编辑状态下 不启动刷新
     buildInnerRefreshTimer(refreshViewEnable = false, refreshUnit = 'minute', refreshTime = 5) {
       if (this.editMode === 'preview' && !this.innerRefreshTimer && refreshViewEnable) {
         this.innerRefreshTimer && clearInterval(this.innerRefreshTimer)
@@ -972,6 +976,8 @@ export default {
               // 判断是否有公共链接ID
               if (jumpInfo.publicJumpId) {
                 const url = '/link/' + jumpInfo.publicJumpId
+                const currentUrl = window.location.href
+                localStorage.setItem('beforeJumpUrl', currentUrl)
                 this.windowsJump(url, jumpInfo.jumpType)
               } else {
                 this.$message({
@@ -1268,6 +1274,7 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  position: relative;
 }
 
 .chart-class {

@@ -14,6 +14,7 @@
         <el-button
           v-if="!isNewBlank"
           size="mini"
+          type="button"
           @click="back2Last"
         ><span><svg-icon
           style="width: 12px;height: 12px"
@@ -53,6 +54,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { isMobile } from '@/utils'
 import bus from '@/utils/bus'
 
 export default {
@@ -103,7 +105,16 @@ export default {
       bus.$emit('clear_panel_linkage', { viewId: 'all' })
     },
     back2Last() {
-      this.$router.back(-1)
+      if (isMobile()) {
+        let parentUrl = window.location.href
+        parentUrl = localStorage.getItem('beforeJumpUrl')
+        localStorage.removeItem('beforeJumpUrl')
+        window.location.href = parentUrl
+        window.location.reload()
+        return false
+      } else {
+        this.$router.back(-1)
+      }
     },
     exportPDF() {
       this.$refs['widget-div'].style.display = ''

@@ -77,7 +77,7 @@
           :label="dialogTitleLabel"
           prop="name"
         >
-          <el-input v-model="templateEditForm.name" />
+          <el-input v-model="templateEditForm.name"/>
         </el-form-item>
         <el-form-item
           :label="$t('app_template.app_group_icon')"
@@ -95,7 +95,7 @@
               :http-request="upload"
               :file-list="fileList"
             >
-              <i class="el-icon-plus" />
+              <i class="el-icon-plus"/>
             </el-upload>
             <el-dialog
               top="25vh"
@@ -147,6 +147,23 @@
         @closeEditTemplateDialog="closeEditTemplateDialog"
       />
     </el-dialog>
+
+    <!--导入templatedialog-->
+    <el-dialog
+      :title="$t('app_template.move_item') "
+      :visible.sync="moveItemDialogShow"
+      :show-close="true"
+      class="de-dialog-form"
+      width="300px"
+    >
+      <template-move-list
+        :template-list="templateList"
+        :source-template-info="currentMoveItem"
+        @closeDialog="moveItemDialogShow=false"
+        @templateMoveClose="templateMoveClose"
+      >
+      </template-move-list>
+    </el-dialog>
   </div>
 </template>
 
@@ -159,10 +176,11 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import msgCfm from '@/components/msgCfm/index'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
+import TemplateMoveList from '@/views/panel/appTemplate/component/TemplateMoveList'
 
 export default {
   name: 'AppTemplateContent',
-  components: { TemplateList, TemplateItem, TemplateImport },
+  components: { TemplateMoveList, TemplateList, TemplateItem, TemplateImport },
   mixins: [msgCfm],
   props: {
     showPosition: {
@@ -173,6 +191,8 @@ export default {
   },
   data() {
     return {
+      moveItemDialogShow: false,
+      currentMoveItem: {},
       templateOptType: 'add',
       currentAppTemplateInfo: null,
       fileList: [],
@@ -302,6 +322,9 @@ export default {
         case 'update':
           this.updateAppTemplate(data)
           break
+        case 'move':
+          this.moveTo(data)
+          break
         default:
           break
       }
@@ -311,6 +334,10 @@ export default {
       this.templateDialog.visible = true
       this.currentAppTemplateInfo = data
       this.templateDialog.pid = data.pid
+    },
+    moveTo(data) {
+      this.moveItemDialogShow = true
+      this.currentMoveItem = data
     },
     templateDeleteConfirm(template) {
       const options = {
@@ -348,6 +375,10 @@ export default {
           this.showCurrentTemplate(this.currentTemplateId, this.currentTemplateLabel)
         })
       }
+    },
+    templateMoveClose() {
+      this.moveItemDialogShow = false
+      this.showCurrentTemplate(this.currentTemplateId, this.currentTemplateLabel)
     },
     showTemplateEditDialog(type, templateInfo) {
       this.templateEditForm = null

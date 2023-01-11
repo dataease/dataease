@@ -48,6 +48,18 @@
                 <span>{{ build }}</span>
               </td>
             </tr>
+            <tr v-if="license.serialNo">
+              <th>{{ $t('about.serial_no') }}</th>
+              <td>
+                <span>{{ license.serialNo }}</span>
+              </td>
+            </tr>
+            <tr v-if="license.remark">
+              <th>{{ $t('about.remark') }}</th>
+              <td>
+                <span>{{ license.remark }}</span>
+              </td>
+            </tr>
           </table>
         </div>
 
@@ -137,7 +149,9 @@ export default {
         expired: result.license ? result.license.expired : '',
         count: result.license ? result.license.count : '',
         version: result.license ? result.license.version : '',
-        edition: result.license ? result.license.edition : ''
+        edition: result.license ? result.license.edition : '',
+        serialNo: result.license ? result.license.serialNo : '',
+        remark: result.license ? result.license.remark : ''
       }
     },
     importLic(file) {

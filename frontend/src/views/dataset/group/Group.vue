@@ -923,7 +923,7 @@ export default {
         }
       }
 
-      const { queryType = 'dataset', id } = data
+      const { queryType = 'dataset', id, name } = data
       if (checkPermission(['relationship:read'])) {
         let hasSubRelation = false
         await getDatasetRelationship(id).then((res) => {
@@ -938,7 +938,7 @@ export default {
           options.templateDel = msgContent
           options.confirmButtonText = undefined
           options.type = 'danger'
-          options.linkTo = this.linkTo.bind(this, { queryType, id })
+          options.linkTo = this.linkTo.bind(this, { queryType, id, name })
           this.withLink(options, this.$t('commons.delete'))
           return
         }
