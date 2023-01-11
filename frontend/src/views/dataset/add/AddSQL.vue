@@ -698,17 +698,17 @@ export default {
     },
     keywords(val) {
       if (!val) {
-        this.tableDataCopy = [...this.tableData]
-        this.fieldDataCopy = [...this.fieldData]
+        this.tableDataCopy = this.arrSort([...this.tableData], 'name')
+        this.fieldDataCopy = this.arrSort([...this.fieldData])
         return
       }
 
       if (this.dataSource && !this.dataTable) {
-        this.tableDataCopy = this.tableData.filter(ele => ele.name.includes(val))
+        this.tableDataCopy = this.arrSort(this.tableData.filter(ele => ele.name.includes(val)), 'name')
       }
 
       if (this.dataSource && this.dataTable) {
-        this.fieldDataCopy = this.fieldData.filter(ele => ele.fieldName.includes(val))
+        this.fieldDataCopy = this.arrSort(this.fieldData.filter(ele => ele.fieldName.includes(val)))
       }
     }
   },
@@ -760,7 +760,7 @@ export default {
         info: JSON.stringify({ table: name })
       }).then((res) => {
         this.fieldData = res.data
-        this.fieldDataCopy = [...this.fieldData]
+        this.fieldDataCopy = this.arrSort([...this.fieldData])
       })
       .finally(() => {
           this.tableLoading = false
@@ -818,11 +818,18 @@ export default {
       post('/datasource/getTables/' + this.dataSource, {})
         .then((response) => {
           this.tableData = response.data
-          this.tableDataCopy = [...this.tableData]
+          this.tableDataCopy = this.arrSort([...this.tableData], 'name')
         })
         .finally(() => {
           this.tableLoading = false
         })
+    },
+    arrSort(arr = [], field = 'fieldName') {
+      arr.sort((a, b) => {
+            return a[field][0].toLowerCase().charCodeAt() - b[field][0].toLowerCase().charCodeAt()
+          })
+
+      return arr
     },
     calHeight: _.debounce(function() {
       const sqlHeight = Math.max(this.sqlHeight, 248)
