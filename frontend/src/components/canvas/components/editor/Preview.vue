@@ -121,6 +121,7 @@
         </el-button>
         <el-button
           v-if="showChartInfoType==='details'"
+          v-permission="['view:export']"
           size="mini"
           @click="exportExcel"
         >
