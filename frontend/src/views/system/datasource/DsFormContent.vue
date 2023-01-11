@@ -118,7 +118,33 @@
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
-                />
+                >
+                  <span
+                    v-if="
+                      item.status !== 'Error' &&
+                      item.status !== 'Warning'
+                  "
+                  >
+                  <svg-icon
+                    icon-class="db-de"
+                  />
+                </span>
+                  <span v-if="item.status === 'Error'">
+                  <svg-icon
+                    icon-class="de-ds-error"
+                    class="ds-icon-scene"
+                  />
+                </span>
+                  <span v-if="item.status === 'Warning'">
+                  <svg-icon
+                    icon-class="de-ds-warning"
+                    class="ds-icon-scene"
+                  />
+                </span>
+                  <span>
+                    {{ item.name }}
+                  </span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-form>
