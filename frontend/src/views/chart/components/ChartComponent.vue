@@ -128,6 +128,7 @@ export default {
       showSuspension: true,
       currentSeriesId: null,
       haveScrollType: [
+        'treemap',
         'map',
         'chart-mix',
         'bar',
@@ -198,7 +199,13 @@ export default {
       if (this.haveScrollType.includes(this.chart.type)) {
         const opt = this.myChart.getOption()
         this.adaptorOpt(opt)
-        this.myChart.setOption(opt)
+        if (this.chart.type === 'treemap') {
+          this.myChart.dispose()
+          this.myChart = null
+          this.preDraw()
+        } else {
+          this.myChart.setOption(opt)
+        }
       }
     },
     adaptorOpt(opt) {
@@ -217,6 +224,10 @@ export default {
         } else {
           opt.geo.roam = this.active
         }
+      }
+      //矩形树图
+      if (this.chart.type === 'treemap' && opt.series) {
+        opt.series[0].roam = this.active
       }
     },
     changeSeriesId(param) {
