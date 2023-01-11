@@ -149,8 +149,7 @@
           {{ $t('chart.export_img') }}
         </el-button>
         <el-button
-          v-if="showChartInfoType==='details'"
-          v-permission="['view:export']"
+          v-if="showChartInfoType==='details' && hasDataPermission('export',panelInfo.privileges)"
           size="mini"
           @click="exportExcel"
         >
