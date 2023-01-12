@@ -166,6 +166,44 @@ public class XEmailTaskServer {
     }
 
     @DeRateLimiter
+    @PostMapping(value = "/screenpdf", produces = {MediaType.APPLICATION_PDF_VALUE})
+    public ResponseEntity<ByteArrayResource> screenpdf(@RequestBody XpackEmailViewRequest request) {
+        EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
+        String url = ServletUtils.domain() + "/#/previewScreenShot/" + request.getPanelId() + "/true";
+        byte[] bytes = null;
+        try {
+            String currentToken = ServletUtils.getToken();
+            Future<?> future = priorityExecutor.submit(() -> {
+                try {
+                    return emailXpackService.printPdf(url, currentToken, buildPixel(request.getPixel()));
+                } catch (Exception e) {
+                    LogUtil.error(e.getMessage(), e);
+                    DEException.throwException("预览失败，请联系管理员");
+                }
+                return null;
+            }, 0);
+            Object object = future.get();
+            if (ObjectUtils.isNotEmpty(object)) {
+                bytes = (byte[]) object;
+                if (ArrayUtil.isNotEmpty(bytes)) {
+                    String fileName = request.getPanelId() + ".pdf";
+                    ByteArrayResource bar = new ByteArrayResource(bytes);
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.APPLICATION_PDF);
+                    ContentDisposition contentDisposition = ContentDisposition.parse("attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+                    headers.setContentDisposition(contentDisposition);
+                    return new ResponseEntity(bar, headers, HttpStatus.OK);
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException("预览失败，请联系管理员");
+        }
+
+        return null;
+    }
+
+    @DeRateLimiter
     @PostMapping(value = "/screenshot", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<ByteArrayResource> screenshot(@RequestBody XpackEmailViewRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);

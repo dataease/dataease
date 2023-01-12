@@ -2245,6 +2245,8 @@ export default {
     aided_grid: '辅助设计网格',
     aided_grid_open: '打开',
     aided_grid_close: '关闭',
+    export_pdf_page: '分页线',
+    export_pdf_page_remark: '仅对API导出仪表板PDF分页有效',
     subject_no_edit: '系统主题不能修改',
     subject_name_not_null: '主题名称需要1~20字符',
     is_enable: '是否启用',

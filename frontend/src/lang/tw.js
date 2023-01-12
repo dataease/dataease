@@ -2245,6 +2245,8 @@ export default {
     aided_grid: '輔助設計網格',
     aided_grid_open: '打開',
     aided_grid_close: '關閉',
+    export_pdf_page: '分頁線',
+    export_pdf_page_remark: '僅對API導出儀表板PDF分頁有效',
     subject_no_edit: '繫統主題不能修改',
     subject_name_not_null: '主題名稱需要1~20字符',
     is_enable: '是否啟用',
