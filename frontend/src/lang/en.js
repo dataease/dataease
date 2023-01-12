@@ -2244,6 +2244,8 @@ export default {
     aided_grid: 'Aided Grid',
     aided_grid_open: 'Open',
     aided_grid_close: 'Close',
+    export_pdf_page: 'Pagination Line',
+    export_pdf_page_remark: 'Only valid for API export dashboard PDF pagination',
     subject_no_edit: 'System Subject Can Not Edit',
     subject_name_not_null: 'Subject Name Can Not Be Null And Less Than 20 charts',
     is_enable: 'Enable',

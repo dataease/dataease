@@ -297,6 +297,9 @@ export default {
     //   this.$emit('handleDrop', e)
     // }
     handleDrop(e) {
+      if (!this.dragComponentInfo) {
+        return
+      }
       this.dragComponentInfo.moveStatus = 'drop'
       // 记录拖拽信息
       this.dropComponentInfo = deepCopy(this.dragComponentInfo)

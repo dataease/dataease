@@ -69,6 +69,10 @@ export const CANVAS_STYLE = {
     showGrid: false,
     matrixBase: 4 // 当前matrix的基数 （是pcMatrixCount的几倍）
   }, // 辅助设计
+  pdfPageLine: {
+    showPageLine: false,
+    proportion: null
+  },
   refreshViewEnable: true, // 开启视图刷新（默认开启）
   refreshViewLoading: true, // 仪表板视图loading提示
   refreshUnit: 'minute', // 仪表板刷新时间带外 默认 分钟
@@ -80,6 +84,11 @@ export const CANVAS_STYLE = {
 export const AIDED_DESIGN = {
   showGrid: false,
   matrixBase: 1 // 当前matrix的基数 （是pcMatrixCount的几倍）
+}
+
+export const PAGE_LINE_DESIGN = {
+  showPageLine: false,
+  proportion: null
 }
 
 export const DEFAULT_COMMON_CANVAS_STYLE_STRING = {
