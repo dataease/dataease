@@ -124,7 +124,7 @@
                 and configuration = #{configuration,jdbcType=LONGVARCHAR}
             </if>
         </where>
-        <if test="sort == null">
+        <if test="sort != null">
             order by ${sort}
         </if>
     </select>

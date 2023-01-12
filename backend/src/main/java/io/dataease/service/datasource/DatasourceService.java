@@ -158,11 +158,9 @@ public class DatasourceService {
     }
 
     public List<DatasourceDTO> getDatasourceList(DatasourceUnionRequest request) throws Exception {
-        request.setSort("update_time desc");
+        request.setSort("type,name");
         List<DatasourceDTO> datasourceDTOS = extDataSourceMapper.queryUnion(request);
-        datasourceDTOS.forEach(datasourceDTO -> {
-            datasourceTrans(datasourceDTO);
-        });
+        datasourceDTOS.forEach(this::datasourceTrans);
         return datasourceDTOS;
     }
 
