@@ -972,7 +972,11 @@ public class DataSetTableService {
             return new ArrayList<>();
         }
         DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(id);
-        return getSqlVariableDetails(type, Arrays.asList(datasetTable));
+        if (datasetTable != null) {
+            return getSqlVariableDetails(type, Arrays.asList(datasetTable));
+        } else {
+            return null;
+        }
     }
 
     private List<SqlVariableDetails> getSqlVariableDetails(String type, List<DatasetTable> datasetTables) {
@@ -2861,7 +2865,8 @@ public class DataSetTableService {
                 hasSubBinaryExpression = false;
                 try {
                     BinaryExpression rightBinaryExpression = (BinaryExpression) expr.getRightExpression();
-                    hasSubBinaryExpression = rightBinaryExpression instanceof AndExpression || rightBinaryExpression instanceof OrExpression;;
+                    hasSubBinaryExpression = rightBinaryExpression instanceof AndExpression || rightBinaryExpression instanceof OrExpression;
+                    ;
                 } catch (Exception e) {
                 }
                 if (expr.getRightExpression() instanceof BinaryExpression && !hasSubBinaryExpression && hasVariable(expr.getRightExpression().toString())) {
