@@ -39,6 +39,7 @@
             placement="bottom"
             trigger="manual"
             :width="popoverSize"
+            popper-class="relation-popover"
           >
             <el-tree
               v-show="showTree"
@@ -617,5 +618,9 @@ export default {
 .father:hover .child {
   /*display: inline;*/
   visibility: visible;
+}
+.relation-popover {
+  max-height: 100%;
+  overflow-y: scroll;
 }
 </style>
