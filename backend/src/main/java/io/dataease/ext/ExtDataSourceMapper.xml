@@ -125,7 +125,7 @@
             </if>
         </where>
         <if test="sort != null">
-            order by ${sort}
+            order by #{sort}
         </if>
     </select>
 
