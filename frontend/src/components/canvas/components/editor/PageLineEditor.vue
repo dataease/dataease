@@ -29,7 +29,7 @@ export default {
     return {
       baseLineKey: 'page-line-',
       lineLocations: [],
-      curLineHieght: 0,
+      curLineHeight: 0,
       clientStartY: 0,
       startTop: 0,
       movingLineHeight: 0,
@@ -71,15 +71,15 @@ export default {
       this.scrollHeight = scrollHeight || document.getElementById('canvas-id-canvas-main').scrollHeight
 
       if (this.pdfPageLine?.proportion) {
-        this.curLineHieght = this.pdfPageLine.proportion * this.scrollHeight
+        this.curLineHeight = this.pdfPageLine.proportion * this.scrollHeight
       } else {
-        this.curLineHieght = this.windowHeight
+        this.curLineHeight = this.windowHeight
         this.saveLineHeight()
       }
-      let curLineLocation = this.curLineHieght
+      let curLineLocation = this.curLineHeight
       while (curLineLocation < this.scrollHeight) {
         this.lineLocations.push(curLineLocation)
-        curLineLocation += this.curLineHieght
+        curLineLocation += this.curLineHeight
       }
     },
     handleMouseDown(e) {
@@ -87,7 +87,7 @@ export default {
       this.startTop = parseInt(e.target.style.top)
       document.onmousemove = ev => this.handleMouseMove(e, ev)
       document.onmouseup = () => {
-        this.curLineHieght = this.movingLineHeight
+        this.curLineHeight = this.movingLineHeight
         this.saveLineHeight()
         this.init()
         document.onmousemove = document.onmouseup = null
@@ -95,13 +95,13 @@ export default {
     },
     handleMouseMove(e, ev) {
       const moveInstance = ev.clientY - this.clientStartY
-      this.movingLineHeight = this.curLineHieght + moveInstance
+      this.movingLineHeight = this.curLineHeight + moveInstance
       e.target.style.top = this.startTop + moveInstance + 'px'
     },
     saveLineHeight() {
       this.$store.commit('canvasChange')
-      this.canvasStyleData.pdfPageLine.proportion = this.curLineHieght / this.scrollHeight
-      this.pdfPageLine.proportion = this.curLineHieght / this.scrollHeight
+      this.canvasStyleData.pdfPageLine.proportion = this.curLineHeight / this.scrollHeight
+      this.pdfPageLine.proportion = this.curLineHeight / this.scrollHeight
     }
   }
 }
