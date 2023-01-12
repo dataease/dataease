@@ -253,8 +253,8 @@ export default {
   }
 
   li.select {
-    background: var(--deWhiteHover, #3370ff);
-    color: var(--TextActive, #f4f4f5);
+    background: var(--deWhiteHover, #ecf5ff) !important;
+    color: var(--TextActive, #3370ff) !important;
   }
 
   .de-btn-fix {
