@@ -1509,7 +1509,14 @@ export default {
                     Line (area) chart, Column (Bar) chart, Dashboard: {a} is series name, {b} is category value, {c} is value<br>
                     Pie chart, Funnel chart: {a} is series name, {b} is data item name, {c} is value, {d} is percentage<br>
                     Map : {a} (series name), {b} is area name, {c} is merged values, {d} is none<br>
-                    Scatter (Bubble) plot: {a} is series name, {b} is data name, {c} is numeric array, {d} is none`
+                    Scatter (Bubble) plot: {a} is series name, {b} is data name, {c} is numeric array, {d} is none`,
+    h_position: 'Horizontal Position',
+    v_position: 'Vertical Position',
+    p_left: 'Left',
+    p_right: 'Right',
+    p_top: 'Top',
+    p_bottom: 'Bottom',
+    p_center: 'Center'
   },
   dataset: {
     spend_time: 'Spend',
