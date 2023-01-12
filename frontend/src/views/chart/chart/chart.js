@@ -127,7 +127,9 @@ export const DEFAULT_SIZE = {
   symbolOpacity: 0.7,
   symbolStrokeWidth: 2,
   showIndex: false,
-  indexLabel: '序号'
+  indexLabel: '序号',
+  hPosition: 'center',
+  vPosition: 'center'
 }
 export const DEFAULT_SUSPENSION = {
   show: true

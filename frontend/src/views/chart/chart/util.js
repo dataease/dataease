@@ -206,7 +206,9 @@ export const TYPE_CONFIGS = [
         'dimensionFontStyle',
         'dimensionLetterSpace',
         'dimensionFontShadow',
-        'spaceSplit'
+        'spaceSplit',
+        'hPosition',
+        'vPosition'
       ],
       'title-selector-ant-v': [
         'show',
@@ -251,7 +253,9 @@ export const TYPE_CONFIGS = [
         'dimensionFontStyle',
         'dimensionLetterSpace',
         'dimensionFontShadow',
-        'spaceSplit'
+        'spaceSplit',
+        'hPosition',
+        'vPosition'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1939,7 +1943,9 @@ export const TYPE_CONFIGS = [
         'dimensionFontStyle',
         'dimensionLetterSpace',
         'dimensionFontShadow',
-        'spaceSplit'
+        'spaceSplit',
+        'hPosition',
+        'vPosition'
       ],
       'title-selector': [
         'show',
@@ -1984,7 +1990,9 @@ export const TYPE_CONFIGS = [
         'dimensionFontStyle',
         'dimensionLetterSpace',
         'dimensionFontShadow',
-        'spaceSplit'
+        'spaceSplit',
+        'hPosition',
+        'vPosition'
       ],
       'title-selector': [
         'show',
