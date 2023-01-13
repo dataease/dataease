@@ -632,7 +632,7 @@ export default {
   visibility: visible;
 }
 .relation-popover {
-  max-height: 100%;
+  max-height: 80%;
   overflow-y: scroll;
 }
 </style>
