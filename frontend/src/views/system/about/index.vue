@@ -1,6 +1,9 @@
 <template>
   <div style="width: 100%;display: flex;justify-content: center;">
-    <el-card class="box-card about-card">
+    <el-card
+      class="box-card about-card"
+      :class="dynamicCardClass"
+    >
       <div
         slot="header"
         class="clearfix license-header"
@@ -110,6 +113,15 @@ export default {
     }
   },
   computed: {
+    dynamicCardClass() {
+      if (this.license?.serialNo && this.license?.remark) {
+        return 'about-card-max'
+      }
+      if (!this.license?.serialNo && !this.license?.remark) {
+        return ''
+      }
+      return 'about-card-medium'
+    },
     ...mapGetters([
       'user'
     ])
@@ -201,6 +213,12 @@ export default {
         ::v-deep div.el-card__header {
             padding: 0;
         }
+    }
+    .about-card-medium {
+      height: 415px !important;
+    }
+    .about-card-max {
+      height: 430px !important;
     }
     .license-header {
         height: 100px;
