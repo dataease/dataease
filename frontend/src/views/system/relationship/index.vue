@@ -230,7 +230,8 @@ export default {
       return {
         queryType: this.formInline.queryType,
         num: this.formInline.dataSourceName,
-        label: this.nodeData.name
+        label: this.nodeData.name,
+        nodeData: this.nodeData
       }
     },
     queryTypeTitle() {
@@ -305,9 +306,14 @@ export default {
         case 'dataset':
           this.getDatasetRelationship(id)
           break
-        case 'panel':
-          this.getPanelRelationship(id)
+        case 'panel': {
+          let targetId = id
+          if (this.nodeData.source) {
+            targetId = this.nodeData.source
+          }
+          this.getPanelRelationship(targetId)
           break
+        }
         default:
           break
       }
@@ -632,7 +638,7 @@ export default {
   visibility: visible;
 }
 .relation-popover {
-  max-height: 80%;
+  max-height: 70%;
   overflow-y: scroll;
 }
 </style>
