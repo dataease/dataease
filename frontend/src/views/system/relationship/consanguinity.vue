@@ -32,17 +32,17 @@ export default {
   },
   watch: {
     chartSize: {
-        handler(val) {
-            if (this.myChart) {
-                this.myChart.resize(val)
-            }
-        },
-        deep: true
+      handler(val) {
+        if (this.myChart) {
+          this.myChart.resize(val)
+        }
+      },
+      deep: true
     }
   },
   methods: {
     getChartData(current) {
-      this.current = {...current}
+      this.current = { ...current }
       const { queryType, num: id } = current
       this.activeId = id
       switch (queryType) {
@@ -52,9 +52,14 @@ export default {
         case 'dataset':
           this.getDatasetRelationship(id)
           break
-        case 'panel':
-          this.getPanelRelationship(id)
+        case 'panel': {
+          let targetId = id
+          if (current.nodeData?.source) {
+            targetId = current.nodeData.source
+          }
+          this.getPanelRelationship(targetId)
           break
+        }
         default:
           break
       }
