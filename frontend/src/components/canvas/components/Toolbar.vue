@@ -155,7 +155,12 @@
             </el-dropdown-item>
 
             <el-dropdown-item>
-              <span class="icon iconfont el-icon-reading icon16" />
+              <span>
+                <svg-icon
+                  style="width: 16px; height: 16px;"
+                  icon-class="page-line"
+                />
+              </span>
               <el-tooltip
                 class="item"
                 :content="$t('panel.export_pdf_page_remark')"
