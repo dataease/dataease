@@ -444,7 +444,7 @@ public class ChartViewService {
             fieldMap.put("yAxis", yAxis);
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
-            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view);
+            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree);
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
                 return new ArrayList<String[]>();
@@ -908,7 +908,7 @@ public class ChartViewService {
             fieldMap.put("extBubble", extBubble);
             fieldMap.put("xAxis", xAxis);
             fieldMap.put("yAxis", yAxis);
-            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view);
+            PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree);
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
                 return emptyChartViewDTO(view);
@@ -1358,7 +1358,7 @@ public class ChartViewService {
         return dto;
     }
 
-    private PluginViewParam buildPluginParam(Map<String, List<ChartViewFieldDTO>> fieldMap, List<ChartFieldCustomFilterDTO> customFilters, List<ChartExtFilterRequest> extFilters, Datasource ds, DatasetTable table, ChartViewDTO view) {
+    private PluginViewParam buildPluginParam(Map<String, List<ChartViewFieldDTO>> fieldMap, List<ChartFieldCustomFilterDTO> customFilters, List<ChartExtFilterRequest> extFilters, Datasource ds, DatasetTable table, ChartViewDTO view, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
         PluginViewParam pluginViewParam = new PluginViewParam();
         PluginViewSetImpl pluginViewSet = BeanUtils.copyBean(new PluginViewSetImpl(), table);
         pluginViewSet.setDsType(ds.getType());
@@ -1380,6 +1380,7 @@ public class ChartViewService {
         pluginViewParam.setPluginChartFieldCustomFilters(fieldFilters);
         pluginViewParam.setPluginChartExtFilters(panelFilters);
         pluginViewParam.setPluginViewLimit(pluginViewLimit);
+        pluginViewParam.setRowPermissionsTree(rowPermissionsTree);
         return pluginViewParam;
     }
 
