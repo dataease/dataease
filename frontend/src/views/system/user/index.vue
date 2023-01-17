@@ -304,6 +304,7 @@
               type="text"
               @click="unlock(scope.row)"
             >{{ $t("commons.unlock") }}</el-button>
+            <span v-else>&nbsp;</span>
           </template>
         </el-table-column>
       </grid-table>

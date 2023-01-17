@@ -261,7 +261,6 @@ export default {
 
 .condition-content-container {
   position: relative;
-  display: table;
   width: 100%;
   height: 100%;
   white-space: nowrap;
@@ -269,8 +268,6 @@ export default {
 
 .first-element {
   position: relative;
-  display: table-cell;
-  vertical-align: middle;
   margin: 0px;
   padding: 0px;
   height: 100%;
@@ -298,6 +295,7 @@ export default {
   background: #fff;
   border: 1px solid #d7dae2;
   top: 5px;
+  height: 100%;
 }
 
 .condition-main-line {
