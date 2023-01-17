@@ -23,5 +23,7 @@ public class ApiDefinition {
     private int previewNum = 10;
     private int maxPreviewNum = 10;
     private int serialNumber;
+    private boolean useJsonPath;
+    private String jsonPath;
 
 }

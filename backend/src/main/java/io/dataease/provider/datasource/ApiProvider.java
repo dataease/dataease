@@ -125,7 +125,6 @@ public class ApiProvider extends Provider {
     }
 
     static public String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout) throws Exception {
-
         String response = "";
         HttpClientConfig httpClientConfig = new HttpClientConfig();
         httpClientConfig.setSocketTimeout(socketTimeout * 1000);
@@ -135,7 +134,6 @@ public class ApiProvider extends Provider {
                 httpClientConfig.addHeader(header.get("name").toString(), header.get("value").toString());
             }
         }
-
         if (apiDefinitionRequest.getAuthManager() != null
                 && StringUtils.isNotBlank(apiDefinitionRequest.getAuthManager().getUsername())
                 && StringUtils.isNotBlank(apiDefinitionRequest.getAuthManager().getPassword())
@@ -188,27 +186,72 @@ public class ApiProvider extends Provider {
             throw new Exception("该请求返回数据为空");
         }
         List<JSONObject> fields = new ArrayList<>();
-        String rootPath;
-        if (response.startsWith("[")) {
-            rootPath = "$[*]";
-            JSONArray jsonArray = JSONObject.parseArray(response);
-            for (Object o : jsonArray) {
-                handleStr(apiDefinition, o.toString(), fields, rootPath);
+        if (apiDefinition.isUseJsonPath()) {
+            List<LinkedHashMap> currentData = new ArrayList<>();
+            Object object = JsonPath.read(response, apiDefinition.getJsonPath());
+            if (object instanceof List) {
+                currentData = (List<LinkedHashMap>) object;
+            } else {
+                currentData.add((LinkedHashMap) object);
             }
+            for (LinkedHashMap data : currentData) {
+                int i = 0;
+                if (i >= apiDefinition.getPreviewNum()) {
+                    break;
+                }
+                if (i == 0) {
+                    for (Object o : data.keySet()) {
+                        JSONObject field = new JSONObject();
+                        field.put("originName", o.toString());
+                        field.put("name", o.toString());
+                        field.put("type", "STRING");
+                        field.put("checked", true);
+                        field.put("size", 65535);
+                        field.put("deExtractType", 0);
+                        field.put("deType", 0);
+                        field.put("extField", 0);
+                        fields.add(field);
+                    }
+                }
+                for (JSONObject field : fields) {
+                    JSONArray array = field.getJSONArray("value");
+                    if (array != null) {
+                        array.add(Optional.ofNullable(data.get(field.getString("originName"))).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
+                    } else {
+                        array = new JSONArray();
+                        array.add(Optional.ofNullable(data.get(field.getString("originName"))).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
+                    }
+                    field.put("value", array);
+                    i++;
+                }
+            }
+
+            apiDefinition.setJsonFields(fields);
+            return apiDefinition;
         } else {
-            rootPath = "$";
-            handleStr(apiDefinition, response, fields, rootPath);
-        }
-        for (JSONObject field : fields) {
-            if (field.containsKey("children") && CollectionUtils.isNotEmpty(field.getJSONArray("children"))) {
-                field.put("disabled", false);
+
+            String rootPath;
+            if (response.startsWith("[")) {
+                rootPath = "$[*]";
+                JSONArray jsonArray = JSONObject.parseArray(response);
+                for (Object o : jsonArray) {
+                    handleStr(apiDefinition, o.toString(), fields, rootPath);
+                }
+            } else {
+                rootPath = "$";
+                handleStr(apiDefinition, response, fields, rootPath);
             }
-            if (field.containsKey("children") && CollectionUtils.isEmpty(field.getJSONArray("children"))) {
-                field.put("disabled", true);
+            for (JSONObject field : fields) {
+                if (field.containsKey("children") && CollectionUtils.isNotEmpty(field.getJSONArray("children"))) {
+                    field.put("disabled", false);
+                }
+                if (field.containsKey("children") && CollectionUtils.isEmpty(field.getJSONArray("children"))) {
+                    field.put("disabled", true);
+                }
             }
+            apiDefinition.setJsonFields(fields);
+            return apiDefinition;
         }
-        apiDefinition.setJsonFields(fields);
-        return apiDefinition;
     }
 
 
@@ -362,7 +405,7 @@ public class ApiProvider extends Provider {
 
     private List<String[]> fetchResult(String result, ApiDefinition apiDefinition) {
         List<String[]> dataList = new LinkedList<>();
-        if (StringUtils.isNotEmpty(apiDefinition.getDataPath()) && CollectionUtils.isEmpty(apiDefinition.getJsonFields())) {
+        if(apiDefinition.isUseJsonPath()){
             List<LinkedHashMap> currentData = new ArrayList<>();
             Object object = JsonPath.read(result, apiDefinition.getDataPath());
             if (object instanceof List) {
@@ -379,30 +422,49 @@ public class ApiProvider extends Provider {
                 }
                 dataList.add(row);
             }
-        } else {
-            List<String> jsonPaths = apiDefinition.getFields().stream().map(DatasetTableFieldDTO::getJsonPath).collect(Collectors.toList());
-            Long maxLength = 0l;
-            List<List<String>> columnDataList = new ArrayList<>();
-            for (int i = 0; i < jsonPaths.size(); i++) {
-                List<String> data = new ArrayList<>();
-                Object object = JsonPath.read(result, jsonPaths.get(i));
-                if (object instanceof List && jsonPaths.get(i).contains("[*]")) {
-                    data = (List<String>) object;
+        }else {
+            if (StringUtils.isNotEmpty(apiDefinition.getDataPath()) && CollectionUtils.isEmpty(apiDefinition.getJsonFields())) {
+                List<LinkedHashMap> currentData = new ArrayList<>();
+                Object object = JsonPath.read(result, apiDefinition.getDataPath());
+                if (object instanceof List) {
+                    currentData = (List<LinkedHashMap>) object;
                 } else {
-                    if (object != null) {
-                        data.add(object.toString());
-                    }
+                    currentData.add((LinkedHashMap) object);
                 }
-                maxLength = maxLength > data.size() ? maxLength : data.size();
-                columnDataList.add(data);
-            }
-            for (int i = 0; i < maxLength; i++) {
-                String[] row = new String[apiDefinition.getFields().size()];
-                dataList.add(row);
-            }
-            for (int i = 0; i < columnDataList.size(); i++) {
-                for (int j = 0; j < columnDataList.get(i).size(); j++) {
-                    dataList.get(j)[i] = Optional.ofNullable(String.valueOf(columnDataList.get(i).get(j))).orElse("").replaceAll("\n", " ").replaceAll("\r", " ");
+                for (LinkedHashMap data : currentData) {
+                    String[] row = new String[apiDefinition.getFields().size()];
+                    int i = 0;
+                    for (DatasetTableFieldDTO field : apiDefinition.getFields()) {
+                        row[i] = Optional.ofNullable(data.get(field.getOriginName())).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " ");
+                        i++;
+                    }
+                    dataList.add(row);
+                }
+            } else {
+                List<String> jsonPaths = apiDefinition.getFields().stream().map(DatasetTableFieldDTO::getJsonPath).collect(Collectors.toList());
+                Long maxLength = 0l;
+                List<List<String>> columnDataList = new ArrayList<>();
+                for (int i = 0; i < jsonPaths.size(); i++) {
+                    List<String> data = new ArrayList<>();
+                    Object object = JsonPath.read(result, jsonPaths.get(i));
+                    if (object instanceof List && jsonPaths.get(i).contains("[*]")) {
+                        data = (List<String>) object;
+                    } else {
+                        if (object != null) {
+                            data.add(object.toString());
+                        }
+                    }
+                    maxLength = maxLength > data.size() ? maxLength : data.size();
+                    columnDataList.add(data);
+                }
+                for (int i = 0; i < maxLength; i++) {
+                    String[] row = new String[apiDefinition.getFields().size()];
+                    dataList.add(row);
+                }
+                for (int i = 0; i < columnDataList.size(); i++) {
+                    for (int j = 0; j < columnDataList.get(i).size(); j++) {
+                        dataList.get(j)[i] = Optional.ofNullable(String.valueOf(columnDataList.get(i).get(j))).orElse("").replaceAll("\n", " ").replaceAll("\r", " ");
+                    }
                 }
             }
         }

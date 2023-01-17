@@ -2431,7 +2431,7 @@ public class DataSetTableService {
             int num = 1;
             String line;
             while ((line = reader.readLine()) != null) {
-                if (num > 100) {
+                if (num > 1000) {
                     break;
                 }
                 data.add(Arrays.asList(line.split(",")));
