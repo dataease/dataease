@@ -538,9 +538,9 @@
 
           <el-form-item
             :label="$t('datasource.isUseJsonPath')"
-            prop="url"
           >
             <el-input
+              :disabled="!apiItem.useJsonPath"
               v-model="apiItem.jsonPath"
               :placeholder="$t('datasource.jsonpath_info')"
               class="input-with-select"
@@ -1101,6 +1101,10 @@ export default {
         })
         if (hasRepeatName) {
           this.$message.error(i18n.t('datasource.has_repeat_name'))
+          return
+        }
+        if (this.apiItem.useJsonPath && !this.apiItem.jsonPath) {
+          this.$message.error(i18n.t('datasource.please_input_dataPath'))
           return
         }
         this.$refs.apiItemBasicInfo.validate((valid) => {
