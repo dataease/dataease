@@ -535,6 +535,32 @@
               />
             </el-form-item>
           </div>
+
+          <el-form-item
+            :label="$t('datasource.isUseJsonPath')"
+            prop="url"
+          >
+            <el-input
+              v-model="apiItem.jsonPath"
+              :placeholder="$t('datasource.jsonpath_info')"
+              class="input-with-select"
+              size="small"
+            >
+              <el-select
+                slot="prepend"
+                v-model="apiItem.useJsonPath"
+                style="width: 100px"
+                size="small"
+              >
+                <el-option
+                  v-for="item in isUseJsonPath"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.id"
+                />
+              </el-select>
+            </el-input>
+          </el-form-item>
         </el-form>
       </el-row>
       <el-row v-show="active === 2">
@@ -567,7 +593,7 @@
                   <el-checkbox
                     :key="scope.row.jsonPath"
                     v-model="scope.row.checked"
-                    :disabled="scope.row.disabled"
+                    :disabled="scope.row.disabled || apiItem.useJsonPath"
                     @change="handleCheckAllChange(scope.row)"
                   >
                     {{ scope.row.originName }}
@@ -973,11 +999,17 @@ export default {
             originName: 'comments',
             deExtractType: 0
           }
-        ]
+        ],
+        useJsonPath: false,
+        jsonPath: ''
       },
       reqOptions: [
         { id: 'GET', label: 'GET' },
         { id: 'POST', label: 'POST' }
+      ],
+      isUseJsonPath: [
+        { id: true, label: this.$t('commons.yes') },
+        { id: false, label: this.$t('commons.no') }
       ],
       loading: false,
       responseData: { type: 'HTTP', responseResult: {}, subRequestResults: [] },
