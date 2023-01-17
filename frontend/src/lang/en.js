@@ -1963,6 +1963,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    forbidden_copy: 'Forbidden copy',
     url_check_error: 'Jump error, Illegal URL',
     view_style: 'View Style',
     view_color_setting: 'View Color Setting',

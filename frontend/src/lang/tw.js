@@ -1957,6 +1957,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    forbidden_copy: '當前組件不允許復製',
     url_check_error: '跳轉錯誤，URL不合法',
     view_style: '視圖樣式',
     view_color_setting: '視圖配色',
