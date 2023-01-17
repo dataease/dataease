@@ -407,7 +407,7 @@ public class ApiProvider extends Provider {
         List<String[]> dataList = new LinkedList<>();
         if(apiDefinition.isUseJsonPath()){
             List<LinkedHashMap> currentData = new ArrayList<>();
-            Object object = JsonPath.read(result, apiDefinition.getDataPath());
+            Object object = JsonPath.read(result, apiDefinition.getJsonPath());
             if (object instanceof List) {
                 currentData = (List<LinkedHashMap>) object;
             } else {
