@@ -16,10 +16,7 @@ import io.dataease.plugins.common.entity.GlobalTaskInstance;
 import io.dataease.plugins.common.entity.XpackConditionEntity;
 import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
-import io.dataease.plugins.xpack.email.dto.request.XpackEmailCreate;
-import io.dataease.plugins.xpack.email.dto.request.XpackEmailTaskRequest;
-import io.dataease.plugins.xpack.email.dto.request.XpackEmailViewRequest;
-import io.dataease.plugins.xpack.email.dto.request.XpackPixelEntity;
+import io.dataease.plugins.xpack.email.dto.request.*;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskGridDTO;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskInstanceDTO;
 import io.dataease.plugins.xpack.email.service.EmailXpackService;
@@ -167,7 +164,7 @@ public class XEmailTaskServer {
 
     @DeRateLimiter
     @PostMapping(value = "/screenpdf", produces = {MediaType.APPLICATION_PDF_VALUE})
-    public ResponseEntity<ByteArrayResource> screenpdf(@RequestBody XpackEmailViewRequest request) {
+    public ResponseEntity<ByteArrayResource> screenpdf(@RequestBody XpackReportExportRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
         String url = ServletUtils.domain() + "/#/previewScreenShot/" + request.getPanelId() + "/true";
         byte[] bytes = null;
@@ -175,7 +172,7 @@ public class XEmailTaskServer {
             String currentToken = ServletUtils.getToken();
             Future<?> future = priorityExecutor.submit(() -> {
                 try {
-                    return emailXpackService.printPdf(url, currentToken, buildPixel(request.getPixel()));
+                    return emailXpackService.printPdf(url, currentToken, buildPixel(request.getPixel()), request.isShowPageNo());
                 } catch (Exception e) {
                     LogUtil.error(e.getMessage(), e);
                     DEException.throwException("预览失败，请联系管理员");
