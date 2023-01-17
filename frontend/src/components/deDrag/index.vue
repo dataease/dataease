@@ -455,7 +455,9 @@ export default {
       latestMoveY: 0,
       seriesIdMap: {
         id: ''
-      }
+      },
+      // 禁止移入Tab中的组件
+      ignoreTabMoveComponent: ['de-button', 'de-reset-button', 'de-tabs']
     }
   },
   computed: {
@@ -1966,7 +1968,7 @@ export default {
       const width = this.width
       const height = this.height
       // tab 移入检测开启 tab组件不能相互移入另一个tab组件
-      if (this.isTabMoveCheck && this.element.type !== 'de-tabs') {
+      if (this.isTabMoveCheck && !this.ignoreTabMoveComponent.includes(this.element.component)) {
         const nodes = this.$el.parentNode.childNodes // 获取当前父节点下所有子节点
         for (const item of nodes) {
           if (
