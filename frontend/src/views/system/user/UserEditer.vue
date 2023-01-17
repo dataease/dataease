@@ -223,7 +223,6 @@
 </template>
 
 <script>
-import { PHONE_REGEX } from '@/utils/validate'
 import { getDeptTree, treeByDeptId } from '@/api/system/dept'
 import { addUser, editUser, allRoles, queryAssist } from '@/api/system/user'
 import { pluginLoaded, defaultPwd, wecomStatus, dingtalkStatus, larkStatus } from '@/api/user'
@@ -280,7 +279,7 @@ export default {
         ],
         phone: [
           {
-            pattern: PHONE_REGEX,
+            validator: this.phoneRegex,
             message: this.$t('user.phone_format'),
             trigger: 'blur'
           }
@@ -408,6 +407,16 @@ export default {
 
       if (regep.test(value)) {
         const msg = this.$t('user.special_characters_are_not_supported')
+        callback(new Error(msg))
+      } else {
+        callback()
+      }
+    },
+    phoneRegex(rule, value, callback) {
+      const regep = new RegExp(/^1[3-9]\d{9}$/)
+
+      if (!regep.test(value)) {
+        const msg = this.$t('user.phone_format')
         callback(new Error(msg))
       } else {
         callback()

@@ -253,7 +253,7 @@ export default {
   }
 
   li.select {
-    background: var(--deWhiteHover, #ecf5ff) !important;
+    background: var(--deWhiteHover, #e0eaff) !important;
     color: var(--TextActive, #3370ff) !important;
   }
 
