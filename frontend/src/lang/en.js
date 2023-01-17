@@ -2840,9 +2840,9 @@ export default {
   },
   watermark: {
     support_params: 'Currently supported parameters:',
-    enable: 'Enable',
+    enable: 'Watermark Enable',
     enable_panel_custom: 'Allow the dashboard to open or close the watermark independently',
-    content: 'content',
+    content: 'Watermark Content',
     custom_content: 'Custom Content',
     account: 'Account',
     nick_name: 'Nick Name',
