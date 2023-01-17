@@ -2833,9 +2833,9 @@ export default {
   },
   watermark: {
     support_params: '当前支持的参数：',
-    enable: '启用',
+    enable: '启用水印',
     enable_panel_custom: '允许仪表板单独打开或者关闭水印',
-    content: '内容',
+    content: '水印内容',
     custom_content: '自定义公式',
     account: '账号',
     nick_name: '昵称',

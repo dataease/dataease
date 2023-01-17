@@ -2833,9 +2833,9 @@ export default {
   },
   watermark: {
     support_params: '當前支持的參數：',
-    enable: '啟用',
+    enable: '啟用水印',
     enable_panel_custom: '允許儀表板單獨打開或者關閉水印',
-    content: '內容',
+    content: '水印內容',
     custom_content: '自定義公式',
     account: '賬號',
     nick_name: '昵稱',
