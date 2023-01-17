@@ -1018,6 +1018,7 @@ export default {
             delete item.status
           })
           form.configuration = Base64.encode(JSON.stringify(form.apiConfiguration))
+          form.apiConfiguration = []
         } else {
           form.configuration = Base64.encode(JSON.stringify(form.configuration))
         }
@@ -1156,6 +1157,7 @@ export default {
           const data = JSON.parse(JSON.stringify(this.form))
           if (data.type === 'api') {
             data.configuration = Base64.encode(JSON.stringify(data.apiConfiguration))
+            data.apiConfiguration = []
           } else {
             data.configuration = Base64.encode(JSON.stringify(data.configuration))
           }
