@@ -39,6 +39,7 @@
             placement="bottom"
             trigger="manual"
             :width="popoverSize"
+            popper-class="relation-popover"
           >
             <el-tree
               v-show="showTree"
@@ -229,7 +230,8 @@ export default {
       return {
         queryType: this.formInline.queryType,
         num: this.formInline.dataSourceName,
-        label: this.nodeData.name
+        label: this.nodeData.name,
+        nodeData: this.nodeData
       }
     },
     queryTypeTitle() {
@@ -304,9 +306,14 @@ export default {
         case 'dataset':
           this.getDatasetRelationship(id)
           break
-        case 'panel':
-          this.getPanelRelationship(id)
+        case 'panel': {
+          let targetId = id
+          if (this.nodeData.source) {
+            targetId = this.nodeData.source
+          }
+          this.getPanelRelationship(targetId)
           break
+        }
         default:
           break
       }
@@ -629,5 +636,9 @@ export default {
 .father:hover .child {
   /*display: inline;*/
   visibility: visible;
+}
+.relation-popover {
+  max-height: 70%;
+  overflow-y: scroll;
 }
 </style>

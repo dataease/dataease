@@ -1503,7 +1503,14 @@ export default {
                   折線（區域）圖、柱狀（條形）圖、儀表盤 : {a}（系列名稱），{b}（類目值），{c}（數值）<br>
                   餅圖、漏鬥圖: {a}（系列名稱），{b}（數據項名稱），{c}（數值）, {d}（百分比）<br>
                   地圖 : {a}（系列名稱），{b}（區域名稱），{c}（合並數值）, {d}（無）<br>
-                  散點圖（氣泡）圖 : {a}（系列名稱），{b}（數據名稱），{c}（數值數組）, {d}（無）`
+                  散點圖（氣泡）圖 : {a}（系列名稱），{b}（數據名稱），{c}（數值數組）, {d}（無）`,
+    h_position: '水平位置',
+    v_position: '垂直位置',
+    p_left: '左對齊',
+    p_right: '右對齊',
+    p_top: '上對齊',
+    p_bottom: '下對齊',
+    p_center: '居中'
   },
   dataset: {
     spend_time: '耗時',
@@ -2238,6 +2245,8 @@ export default {
     aided_grid: '輔助設計網格',
     aided_grid_open: '打開',
     aided_grid_close: '關閉',
+    export_pdf_page: '分頁線',
+    export_pdf_page_remark: '僅對API導出儀表板PDF分頁有效',
     subject_no_edit: '繫統主題不能修改',
     subject_name_not_null: '主題名稱需要1~20字符',
     is_enable: '是否啟用',

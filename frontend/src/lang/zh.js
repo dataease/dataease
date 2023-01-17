@@ -1502,7 +1502,14 @@ export default {
                   折线（区域）图、柱状（条形）图、仪表盘 : {a}（系列名称），{b}（类目值），{c}（数值）<br>
                   饼图、漏斗图: {a}（系列名称），{b}（数据项名称），{c}（数值）, {d}（百分比）<br>
                   地图 : {a}（系列名称），{b}（区域名称），{c}（合并数值）, {d}（无）<br>
-                  散点图（气泡）图 : {a}（系列名称），{b}（数据名称），{c}（数值数组）, {d}（无）`
+                  散点图（气泡）图 : {a}（系列名称），{b}（数据名称），{c}（数值数组）, {d}（无）`,
+    h_position: '水平位置',
+    v_position: '垂直位置',
+    p_left: '左对齐',
+    p_right: '右对齐',
+    p_top: '上对齐',
+    p_bottom: '下对齐',
+    p_center: '居中'
   },
   dataset: {
     spend_time: '耗时',
@@ -2238,6 +2245,8 @@ export default {
     aided_grid: '辅助设计网格',
     aided_grid_open: '打开',
     aided_grid_close: '关闭',
+    export_pdf_page: '分页线',
+    export_pdf_page_remark: '仅对API导出仪表板PDF分页有效',
     subject_no_edit: '系统主题不能修改',
     subject_name_not_null: '主题名称需要1~20字符',
     is_enable: '是否启用',

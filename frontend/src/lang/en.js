@@ -1509,7 +1509,14 @@ export default {
                     Line (area) chart, Column (Bar) chart, Dashboard: {a} is series name, {b} is category value, {c} is value<br>
                     Pie chart, Funnel chart: {a} is series name, {b} is data item name, {c} is value, {d} is percentage<br>
                     Map : {a} (series name), {b} is area name, {c} is merged values, {d} is none<br>
-                    Scatter (Bubble) plot: {a} is series name, {b} is data name, {c} is numeric array, {d} is none`
+                    Scatter (Bubble) plot: {a} is series name, {b} is data name, {c} is numeric array, {d} is none`,
+    h_position: 'Horizontal Position',
+    v_position: 'Vertical Position',
+    p_left: 'Left',
+    p_right: 'Right',
+    p_top: 'Top',
+    p_bottom: 'Bottom',
+    p_center: 'Center'
   },
   dataset: {
     spend_time: 'Spend',
@@ -2244,6 +2251,8 @@ export default {
     aided_grid: 'Aided Grid',
     aided_grid_open: 'Open',
     aided_grid_close: 'Close',
+    export_pdf_page: 'Pagination Line',
+    export_pdf_page_remark: 'Only valid for API export dashboard PDF pagination',
     subject_no_edit: 'System Subject Can Not Edit',
     subject_name_not_null: 'Subject Name Can Not Be Null And Less Than 20 charts',
     is_enable: 'Enable',
