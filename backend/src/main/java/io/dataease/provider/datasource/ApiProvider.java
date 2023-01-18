@@ -194,8 +194,8 @@ public class ApiProvider extends Provider {
             } else {
                 currentData.add((LinkedHashMap) object);
             }
+            int i = 0;
             for (LinkedHashMap data : currentData) {
-                int i = 0;
                 if (i >= apiDefinition.getPreviewNum()) {
                     break;
                 }
@@ -222,8 +222,8 @@ public class ApiProvider extends Provider {
                         array.add(Optional.ofNullable(data.get(field.getString("originName"))).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
                     }
                     field.put("value", array);
-                    i++;
                 }
+                i++;
             }
 
             apiDefinition.setJsonFields(fields);
