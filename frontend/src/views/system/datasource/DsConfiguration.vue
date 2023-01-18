@@ -559,8 +559,79 @@
                   :value="item.id"
                 />
               </el-select>
+
+              <el-button
+                :disabled="!apiItem.useJsonPath"
+                slot="append"
+                @click="showApiData"
+              >{{ $t('datasource.show_api_data') }}
+              </el-button>
             </el-input>
           </el-form-item>
+
+          <div class="row-rules" v-show="apiItem.useJsonPath">
+            <span>{{ $t('datasource.column_info') }}</span>
+          </div>
+          <div class="table-container de-svg-in-table" v-show="apiItem.useJsonPath">
+            <el-table
+              ref="apiItemTable"
+              :data="originFieldItem.jsonFields"
+              style="width: 100%"
+              row-key="jsonPath"
+            >
+              <el-table-column
+                class-name="checkbox-table"
+                prop="originName"
+                :label="$t('dataset.parse_filed')"
+                :show-overflow-tooltip="true"
+                width="255"
+              >
+                <template slot-scope="scope">
+                  <el-checkbox
+                    :key="scope.row.jsonPath"
+                    v-model="scope.row.checked"
+                    :disabled="scope.row.disabled"
+                    @change="handleCheckAllChange(originFieldItem, scope.row, 'originPlxTable')"
+                  >
+                    {{ scope.row.originName }}
+                  </el-checkbox>
+                </template>
+              </el-table-column>
+
+            </el-table>
+          </div>
+
+          <div class="row-rules" v-show="apiItem.useJsonPath">
+            <span>{{ $t('dataset.data_preview') }}</span>
+          </div>
+          <el-empty
+            v-if="showEmpty && apiItem.useJsonPath"
+            size="125"
+            :image="noneImg"
+            style="margin-top: 24px"
+            :description="$t('暂无数据，请在数据结构勾选字段')"
+          />
+          <ux-grid
+            v-if="!showEmpty && apiItem.useJsonPath"
+            ref="originPlxTable"
+            size="mini"
+            style="width: 100%"
+            :height="height"
+            :checkbox-config="{ highlight: true }"
+            :width-resize="true"
+          >
+            <ux-table-column
+              v-for="field in originFieldItem.fields"
+              :key="field.name + field.deExtractType"
+              min-width="200px"
+              :field="field.name"
+              :resizable="true"
+            >
+              <template slot="header">
+                <span>{{ field.name }}</span>
+              </template>
+            </ux-table-column>
+          </ux-grid>
         </el-form>
       </el-row>
       <el-row v-show="active === 2">
@@ -594,7 +665,7 @@
                     :key="scope.row.jsonPath"
                     v-model="scope.row.checked"
                     :disabled="scope.row.disabled || apiItem.useJsonPath"
-                    @change="handleCheckAllChange(scope.row)"
+                    @change="handleCheckAllChange(apiItem, scope.row, 'plxTable')"
                   >
                     {{ scope.row.originName }}
                   </el-checkbox>
@@ -1047,7 +1118,11 @@ export default {
           value: 3
         }
       ],
-      certinKey: false
+      certinKey: false,
+      originFieldItem: {
+        jsonFields: [],
+        fields: []
+      },
     }
   },
   methods: {
@@ -1121,8 +1196,10 @@ export default {
                 this.active++
                 this.apiItem.jsonFields = res.data.jsonFields
                 this.apiItem.fields = []
-                this.handleFiledChange()
-                this.previewData()
+                this.handleFiledChange(this.apiItem)
+                this.$nextTick(() => {
+                  this.$refs.plxTable?.reloadData(this.previewData(this.apiItem))
+                })
               })
               .catch((res) => {
                 this.loading = false
@@ -1134,6 +1211,32 @@ export default {
           }
         })
       }
+    },
+    showApiData(){
+      if (this.apiItem.useJsonPath && !this.apiItem.jsonPath) {
+        this.$message.error(i18n.t('datasource.please_input_dataPath'))
+        return
+      }
+      this.$refs.apiItemBasicInfo.validate((valid) => {
+        if (valid) {
+          const data = Base64.encode(JSON.stringify(this.apiItem))
+          this.loading = true
+          checkApiDatasource({'data': data})
+            .then((res) => {
+              res.data.jsonFields.forEach(((item) => {
+                item.checked = false
+              }))
+             this.originFieldItem.jsonFields = res.data.jsonFields
+              this.loading = false
+              this.$success(i18n.t('commons.success'))
+            })
+            .catch((res) => {
+              this.loading = false
+            })
+        } else {
+          return false
+        }
+      })
     },
     before() {
       this.active--
@@ -1236,12 +1339,21 @@ export default {
     cancelItem({ name }) {
       this.$refs[`apiTable${name}`][0].doClose()
     },
-    handleCheckAllChange(row) {
+    handleCheckAllChange(apiItem, row, ref) {
       this.errMsg = []
-      this.handleCheckChange(row)
-      this.apiItem.fields = []
-      this.handleFiledChange(row)
-      this.previewData()
+      this.handleCheckChange(apiItem, row)
+      apiItem.fields = []
+      this.handleFiledChange(apiItem, row)
+      if(ref === 'plxTable'){
+        this.$nextTick(() => {
+          this.$refs.plxTable?.reloadData(this.previewData(this.apiItem))
+        })
+      }else {
+        this.$nextTick(() => {
+          this.$refs.originPlxTable?.reloadData(this.previewData(this.originFieldItem))
+        })
+      }
+
       if (this.errMsg.length) {
         this.$message.error(
           [...new Set(this.errMsg)].join(',') +
@@ -1250,24 +1362,24 @@ export default {
         )
       }
     },
-    handleFiledChange() {
-      for (var i = 0; i < this.apiItem.jsonFields.length; i++) {
+    handleFiledChange(apiItem) {
+      for (var i = 0; i < apiItem.jsonFields.length; i++) {
         if (
-          this.apiItem.jsonFields[i].checked &&
-          this.apiItem.jsonFields[i].children === undefined
+          apiItem.jsonFields[i].checked &&
+          apiItem.jsonFields[i].children === undefined
         ) {
-          this.apiItem.fields.push(this.apiItem.jsonFields[i])
+          apiItem.fields.push(apiItem.jsonFields[i])
         }
-        if (this.apiItem.jsonFields[i].children !== undefined) {
-          this.handleFiledChange2(this.apiItem.jsonFields[i].children)
+        if (apiItem.jsonFields[i].children !== undefined) {
+          this.handleFiledChange2(apiItem, apiItem.jsonFields[i].children)
         }
       }
     },
-    handleFiledChange2(jsonFields) {
+    handleFiledChange2(apiItem, jsonFields) {
       for (var i = 0; i < jsonFields.length; i++) {
         if (jsonFields[i].checked && jsonFields[i].children === undefined) {
-          for (var j = 0; j < this.apiItem.fields.length; j++) {
-            if (this.apiItem.fields[j].name === jsonFields[i].name) {
+          for (var j = 0; j < apiItem.fields.length; j++) {
+            if (apiItem.fields[j].name === jsonFields[i].name) {
               jsonFields[i].checked = false
               this.$nextTick(() => {
                 jsonFields[i].checked = false
@@ -1275,52 +1387,52 @@ export default {
               this.errMsg.push(jsonFields[i].name)
             }
           }
-          this.apiItem.fields.push(jsonFields[i])
+          apiItem.fields.push(jsonFields[i])
         }
         if (jsonFields[i].children !== undefined) {
           this.handleFiledChange2(jsonFields[i].children)
         }
       }
     },
-    previewData() {
+    previewData(apiItem) {
       this.showEmpty = false
       const data = []
       let maxPreviewNum = 0
-      for (let j = 0; j < this.apiItem.fields.length; j++) {
+      for (let j = 0; j < apiItem.fields.length; j++) {
         if (
-          this.apiItem.fields[j].value &&
-          this.apiItem.fields[j].value.length > maxPreviewNum
+          apiItem.fields[j].value &&
+          apiItem.fields[j].value.length > maxPreviewNum
         ) {
-          maxPreviewNum = this.apiItem.fields[j].value.length
+          maxPreviewNum = apiItem.fields[j].value.length
         }
       }
       for (let i = 0; i < maxPreviewNum; i++) {
         data.push({})
       }
-      for (let i = 0; i < this.apiItem.fields.length; i++) {
-        for (let j = 0; j < this.apiItem.fields[i].value.length; j++) {
+      for (let i = 0; i < apiItem.fields.length; i++) {
+        for (let j = 0; j < apiItem.fields[i].value.length; j++) {
           this.$set(
             data[j],
-            this.apiItem.fields[i].name,
-            this.apiItem.fields[i].value[j]
+            apiItem.fields[i].name,
+            apiItem.fields[i].value[j]
           )
         }
-        this.$nextTick(() => {
-          this.$refs.plxTable?.reloadData(data)
-        })
       }
       this.showEmpty = this.apiItem.fields.length === 0
+      return data
     },
-    handleCheckChange(node) {
+    handleCheckChange(apiItem, node) {
       if (node.children !== undefined) {
         node.children.forEach((item) => {
           item.checked = node.checked
-          this.handleCheckChange(item)
+          this.handleCheckChange(apiItem, item)
         })
       }
     },
     fieldNameChange(row) {
-      this.previewData()
+      this.$nextTick(() => {
+        this.$refs.plxTable?.reloadData(this.previewData(this.apiItem))
+      })
     },
     fieldTypeChange(row) {}
   }
