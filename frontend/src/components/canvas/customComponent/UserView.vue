@@ -66,7 +66,7 @@
       :terminal-type="scaleCoefficientType"
       :scale="scale"
       :theme-style="element.commonBackground"
-      :active="this.active"
+      :active="active"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -761,6 +761,9 @@ export default {
             requestInfo.goPage = this.currentPage.page
             requestInfo.pageSize = this.currentPage.pageSize
           }
+        }
+        if (this.isFirstLoad) {
+          this.element.filters = this.filters?.length ? JSON.parse(JSON.stringify(this.filters)) : []
         }
         method(id, this.panelInfo.id, requestInfo).then(response => {
           // 将视图传入echart组件
