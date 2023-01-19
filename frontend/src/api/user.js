@@ -116,6 +116,13 @@ export function wecomStatus() {
   })
 }
 
+export function wecomQrParams() {
+  return request({
+    url: '/plugin/wecom/getQrParam',
+    method: 'post'
+  })
+}
+
 export function dingtalkStatus() {
   return request({
     url: '/api/auth/isOpenDingtalk',
