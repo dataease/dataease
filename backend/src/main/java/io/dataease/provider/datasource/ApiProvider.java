@@ -186,7 +186,7 @@ public class ApiProvider extends Provider {
             throw new Exception("该请求返回数据为空");
         }
         List<JSONObject> fields = new ArrayList<>();
-        if (apiDefinition.isUseJsonPath()) {
+        if (apiDefinition.isUseJsonPath() && !apiDefinition.isShowApiStructure()) {
             List<LinkedHashMap> currentData = new ArrayList<>();
             Object object = JsonPath.read(response, apiDefinition.getJsonPath());
             if (object instanceof List) {
