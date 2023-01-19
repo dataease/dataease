@@ -25,5 +25,6 @@ public class ApiDefinition {
     private int serialNumber;
     private boolean useJsonPath;
     private String jsonPath;
+    private boolean showApiStructure;
 
 }

@@ -587,51 +587,12 @@
                 width="255"
               >
                 <template slot-scope="scope">
-                  <el-checkbox
-                    :key="scope.row.jsonPath"
-                    v-model="scope.row.checked"
-                    :disabled="scope.row.disabled"
-                    @change="handleCheckAllChange(originFieldItem, scope.row, 'originPlxTable')"
-                  >
-                    {{ scope.row.originName }}
-                  </el-checkbox>
+                  {{ scope.row.originName }}
                 </template>
               </el-table-column>
 
             </el-table>
           </div>
-
-          <div class="row-rules" v-show="apiItem.useJsonPath">
-            <span>{{ $t('dataset.data_preview') }}</span>
-          </div>
-          <el-empty
-            v-if="showEmpty && apiItem.useJsonPath"
-            size="125"
-            :image="noneImg"
-            style="margin-top: 24px"
-            :description="$t('暂无数据，请在数据结构勾选字段')"
-          />
-          <ux-grid
-            v-if="!showEmpty && apiItem.useJsonPath"
-            ref="originPlxTable"
-            size="mini"
-            style="width: 100%"
-            :height="height"
-            :checkbox-config="{ highlight: true }"
-            :width-resize="true"
-          >
-            <ux-table-column
-              v-for="field in originFieldItem.fields"
-              :key="field.name + field.deExtractType"
-              min-width="200px"
-              :field="field.name"
-              :resizable="true"
-            >
-              <template slot="header">
-                <span>{{ field.name }}</span>
-              </template>
-            </ux-table-column>
-          </ux-grid>
         </el-form>
       </el-row>
       <el-row v-show="active === 2">
@@ -1221,7 +1182,7 @@ export default {
         if (valid) {
           const data = Base64.encode(JSON.stringify(this.apiItem))
           this.loading = true
-          checkApiDatasource({'data': data})
+          checkApiDatasource({'data': data, 'type': 'apiStructure'})
             .then((res) => {
               res.data.jsonFields.forEach(((item) => {
                 item.checked = false

@@ -164,6 +164,9 @@ public class DatasourceController {
     public ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws Exception {
         ApiDefinition apiDefinition = new Gson().fromJson(new String(java.util.Base64.getDecoder().decode(data.get("data"))), new TypeToken<ApiDefinition>() {
         }.getType());
+        if(data.keySet().contains("type") && data.get("type").equals("apiStructure")){
+            apiDefinition.setShowApiStructure(true);
+        }
         return datasourceService.checkApiDatasource(apiDefinition);
     }
 
