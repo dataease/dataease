@@ -1379,7 +1379,7 @@ export default {
           )
         }
       }
-      this.showEmpty = this.apiItem.fields.length === 0
+      this.showEmpty = apiItem.fields.length === 0
       return data
     },
     handleCheckChange(apiItem, node) {
