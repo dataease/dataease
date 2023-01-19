@@ -81,8 +81,17 @@ public class XWecomServer {
         return wecomXpackService.getQrParam();
     }
 
+    @GetMapping("/callBackWithoutLogin")
+    public ModelAndView callBackWithoutLogin(@RequestParam("code") String code,@RequestParam("state") String state) {
+        return privateCallBack(code, state, true);
+    }
+
     @GetMapping("/callBack")
     public ModelAndView callBack(@RequestParam("code") String code, @RequestParam("state") String state) {
+        return privateCallBack(code, state, false);
+    }
+
+    private ModelAndView privateCallBack(String code, String state, Boolean withoutLogin) {
         ModelAndView modelAndView = new ModelAndView("redirect:/");
         HttpServletResponse response = ServletUtils.response();
         WecomXpackService wecomXpackService = null;
@@ -122,6 +131,12 @@ public class XWecomServer {
 
             Cookie cookie_token = new Cookie("Authorization", token);
             cookie_token.setPath("/");
+
+            if (withoutLogin) {
+                Cookie platformCookie = new Cookie("inOtherPlatform", "true");
+                platformCookie.setPath("/");
+                response.addCookie(platformCookie);
+            }
 
             response.addCookie(cookie_token);
 
