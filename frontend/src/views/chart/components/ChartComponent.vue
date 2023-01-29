@@ -217,7 +217,6 @@ export default {
           }
         })
       }
-      //地图
       if (opt.geo) {
         if (opt.geo instanceof Array) {
           opt.geo[0].roam = this.active
@@ -225,7 +224,6 @@ export default {
           opt.geo.roam = this.active
         }
       }
-      //矩形树图
       if (this.chart.type === 'treemap' && opt.series) {
         opt.series[0].roam = this.active
       }
@@ -413,8 +411,10 @@ export default {
     },
     initMapChart(geoJson, chart, curAreaCode) {
       this.formatGeoJson(geoJson)
-      this.$echarts.registerMap('MAP', geoJson)
+      const mapId = 'MAP' + this.chartId
+      this.$echarts.registerMap(mapId, geoJson)
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
+      base_json.geo.map = mapId
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
