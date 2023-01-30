@@ -126,7 +126,7 @@
       :canvas-id="canvasId"
     />
     <!-- 右击菜单 -->
-    <ContextMenu />
+    <ContextMenu/>
 
     <!-- 对齐标线 -->
     <span
@@ -1055,7 +1055,6 @@ export default {
               lineRef.init(newVal)
             }
           }
-          console.log(newVal)
         })
       },
       deep: true
