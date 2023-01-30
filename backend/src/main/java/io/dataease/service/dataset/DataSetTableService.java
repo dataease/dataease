@@ -1090,7 +1090,7 @@ public class DataSetTableService {
         if (!hasVariables && !tmpSql.contains(SubstitutedParams)) {
             return tmpSql;
         }
-        CCJSqlParserUtil.parse(tmpSql, parser -> parser.withSquareBracketQuotation(true));
+
         Statement statement = CCJSqlParserUtil.parse(tmpSql);
         Select select = (Select) statement;
 
