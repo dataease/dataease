@@ -108,6 +108,7 @@ export default {
       handler() {
         this.$nextTick(() => {
           this.$refs.table.doLayout()
+          this.$emit('columnsChange')
         })
       },
       deep: true

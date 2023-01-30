@@ -1114,6 +1114,25 @@ export default {
         }
       })
     },
+    reloadStatus(apiConfiguration = []) {
+      let arr = []
+      let arrError = []
+      let arrSuccess = []
+      if (!Array.isArray(apiConfiguration)) {
+        arr = JSON.parse(apiConfiguration)
+        if (!Array.isArray(arr)) return
+      }
+      arrError = arr.filter(ele => ele.status === 'Error').map(ele => ele.name)
+      arrSuccess = arr.filter(ele => ele.status === 'Success').map(ele => ele.name)
+      this.form.apiConfiguration.forEach(ele => {
+        if (arrError.includes(ele.name)) {
+          ele.status = 'Error'
+        }
+        if (arrSuccess.includes(ele.name)) {
+          ele.status = 'Success'
+        }
+      })
+    },
     validaDatasource() {
       if (!this.form.configuration.schema && this.form.type === 'oracle') {
         this.openMessageSuccess('datasource.please_choose_schema', 'error')
@@ -1167,6 +1186,9 @@ export default {
               if (res.success) {
                 this.openMessageSuccess('datasource.validate_success')
               } else {
+                if (data.type === 'api') {
+                  this.reloadStatus(res.data?.configuration)
+                }
                 if (res.message.length < 2500) {
                   this.openMessageSuccess(res.message, 'error')
                 } else {
