@@ -152,11 +152,17 @@ export default {
     },
     resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
-        const values = this.element.options.value
-        this.form.min = values[0]
-        if (values.length > 1) {
-          this.form.max = values[1]
+        if (!this.element.options.value) {
+          this.form.min = null
+          this.form.max = null
+        } else {
+          const values = this.element.options.value
+          this.form.min = values[0]
+          if (values.length > 1) {
+            this.form.max = values[1]
+          }
         }
+
         this.search()
       }
     },

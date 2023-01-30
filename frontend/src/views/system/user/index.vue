@@ -118,13 +118,16 @@
         v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
         :table-data="data"
         :columns="checkedColumnNames"
+        current-row-key="email"
         :pagination="paginationConfig"
+        @columnsChange="columnsChange"
         @sort-change="sortChange"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       >
         <el-table-column
           prop="username"
+          key="username"
           label="ID"
         />
         <el-table-column
@@ -137,6 +140,7 @@
         <!-- <el-table-column prop="gender" :label="$t('commons.gender')" width="60" /> -->
         <el-table-column
           prop="from"
+          key="from"
           :label="$t('user.source')"
           width="80"
         >
@@ -237,6 +241,7 @@
         </el-table-column>
 
         <el-table-column
+          key="__operation"
           slot="__operation"
           :label="$t('commons.operating')"
           fixed="right"
@@ -552,6 +557,13 @@ export default {
       this.$nextTick(() => {
         const dom = document.querySelector('.filter-texts-container')
         this.showScroll = dom && dom.scrollWidth > dom.offsetWidth
+      })
+    },
+    columnsChange() {
+      const arr = this.data
+      this.data = []
+      this.$nextTick(() => {
+        this.data = arr
       })
     },
     search() {

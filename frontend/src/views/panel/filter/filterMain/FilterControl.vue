@@ -357,23 +357,7 @@ export default {
     },
     'activeName': {
       handler(newName, oldName) {
-        if (this.activeName === 'assembly') {
-          this.allParams = JSON.parse(JSON.stringify(this.childViews.datasetParams))
-        } else {
-          if (this.datasetParams.length > 0) {
-            for (var j = 0; j < this.datasetParams.length; j++) {
-              var hasParam = false
-              for (var i = 0; i < this.childViews.datasetParams.length; i++) {
-                if (this.childViews.datasetParams[i].id === this.datasetParams[j].id) {
-                  hasParam = true
-                }
-              }
-              if (!hasParam) {
-                this.allParams.push(this.datasetParams[j])
-              }
-            }
-          }
-        }
+
       }
     }
   },

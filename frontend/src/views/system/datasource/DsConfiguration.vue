@@ -1302,16 +1302,16 @@ export default {
     },
     handleCheckAllChange(apiItem, row, ref) {
       this.errMsg = []
-      this.handleCheckChange(apiItem, row)
-      apiItem.fields = []
-      this.handleFiledChange(apiItem, row)
+      this.handleCheckChange(this.apiItem, row)
+      this.apiItem.fields = []
+      this.handleFiledChange(this.apiItem, row)
       if(ref === 'plxTable'){
         this.$nextTick(() => {
           this.$refs.plxTable?.reloadData(this.previewData(this.apiItem))
         })
       }else {
         this.$nextTick(() => {
-          this.$refs.originPlxTable?.reloadData(this.previewData(this.originFieldItem))
+          this.$refs.originPlxTable?.reloadData(this.previewData(this.apiItem))
         })
       }
 
