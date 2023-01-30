@@ -285,6 +285,7 @@
               <el-button
                 slot="reference"
                 v-permission="['user:editPwd']"
+                :disabled="resetPwdDisabled(scope.row)"
                 class="de-text-btn mar16"
                 type="text"
               >{{ $t("member.edit_password") }}</el-button>
@@ -303,6 +304,7 @@
               type="text"
               @click="unlock(scope.row)"
             >{{ $t("commons.unlock") }}</el-button>
+            <span v-else>&nbsp;</span>
           </template>
         </el-table-column>
       </grid-table>
@@ -436,6 +438,9 @@ export default {
     bus.$off('reload-user-grid', this.search)
   },
   methods: {
+    resetPwdDisabled(row) {
+      return ((row.from ?? '') !== '') && row.from > 0
+    },
     resizeObserver() {
       this.resizeForFilter = new ResizeObserver(entries => {
         if (!this.filterTexts.length) return

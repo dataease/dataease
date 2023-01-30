@@ -455,7 +455,9 @@ export default {
       latestMoveY: 0,
       seriesIdMap: {
         id: ''
-      }
+      },
+      // 禁止移入Tab中的组件
+      ignoreTabMoveComponent: ['de-button', 'de-reset-button', 'de-tabs']
     }
   },
   computed: {
@@ -828,6 +830,22 @@ export default {
     this.beforeDestroyFunction()
   },
   methods: {
+    sizeAdaptor() {
+      this.top = this.y
+      this.left = this.x
+      const [parentWidth, parentHeight] = this.getParentSize()
+      this.parentWidth = parentWidth
+      this.parentHeight = parentHeight
+      const [width, height] = getComputedSize(this.$el)
+      this.aspectFactor = (this.w !== 'auto' ? this.w : width) / (this.h !== 'auto' ? this.h : height)
+      if (this.outsideAspectRatio) {
+        this.aspectFactor = this.outsideAspectRatio
+      }
+      this.width = this.w !== 'auto' ? this.w : width
+      this.height = this.h !== 'auto' ? this.h : height
+      this.right = this.parentWidth - this.width - this.left
+      this.bottom = this.parentHeight - this.height - this.top
+    },
     setChartData(chart) {
       this.chart = chart
     },
@@ -1480,6 +1498,7 @@ export default {
           this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
           // 记录snapshot后 移动已记录设置为false
           this.hasMove = false
+          this.sizeAdaptor()
         }, 200)
       } else {
         this.hasMove && this.$store.commit('recordSnapshot', 'handleUp')
@@ -1888,18 +1907,7 @@ export default {
       if (!this.enableNativeDrag) {
         this.$el.ondragstart = () => false
       }
-      const [parentWidth, parentHeight] = this.getParentSize()
-      this.parentWidth = parentWidth
-      this.parentHeight = parentHeight
-      const [width, height] = getComputedSize(this.$el)
-      this.aspectFactor = (this.w !== 'auto' ? this.w : width) / (this.h !== 'auto' ? this.h : height)
-      if (this.outsideAspectRatio) {
-        this.aspectFactor = this.outsideAspectRatio
-      }
-      this.width = this.w !== 'auto' ? this.w : width
-      this.height = this.h !== 'auto' ? this.h : height
-      this.right = this.parentWidth - this.width - this.left
-      this.bottom = this.parentHeight - this.height - this.top
+      this.sizeAdaptor()
 
       // 绑定data-*属性
       this.settingAttribute()
@@ -1966,7 +1974,7 @@ export default {
       const width = this.width
       const height = this.height
       // tab 移入检测开启 tab组件不能相互移入另一个tab组件
-      if (this.isTabMoveCheck && this.element.type !== 'de-tabs') {
+      if (this.isTabMoveCheck && !this.ignoreTabMoveComponent.includes(this.element.component)) {
         const nodes = this.$el.parentNode.childNodes // 获取当前父节点下所有子节点
         for (const item of nodes) {
           if (

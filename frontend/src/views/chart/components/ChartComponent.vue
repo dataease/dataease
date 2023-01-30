@@ -65,6 +65,11 @@ export default {
     MapController
   },
   props: {
+    active: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     chart: {
       type: Object,
       required: true
@@ -121,7 +126,19 @@ export default {
       buttonTextColor: null,
       loading: true,
       showSuspension: true,
-      currentSeriesId: null
+      currentSeriesId: null,
+      haveScrollType: [
+        'treemap',
+        'map',
+        'chart-mix',
+        'bar',
+        'bar-stack',
+        'bar-horizontal',
+        'bar-stack-horizontal',
+        'line',
+        'line-stack',
+        'scatter'
+      ]
     }
   },
 
@@ -134,6 +151,11 @@ export default {
     ])
   },
   watch: {
+    active: {
+      handler(newVal, oldVla) {
+        this.scrollStatusChange(newVal)
+      }
+    },
     currentSeriesId(value, old) {
       if (value !== old) {
         this.preDraw()
@@ -173,6 +195,39 @@ export default {
     this.loadThemeStyle()
   },
   methods: {
+    scrollStatusChange() {
+      if (this.haveScrollType.includes(this.chart.type)) {
+        const opt = this.myChart.getOption()
+        this.adaptorOpt(opt)
+        if (this.chart.type === 'treemap') {
+          this.myChart.dispose()
+          this.myChart = null
+          this.preDraw()
+        } else {
+          this.myChart.setOption(opt)
+        }
+      }
+    },
+    adaptorOpt(opt) {
+      const disabledStatus = !this.active
+      if (opt.dataZoom) {
+        opt.dataZoom.forEach(function(s) {
+          if (s.type === 'inside') {
+            s.disabled = disabledStatus
+          }
+        })
+      }
+      if (opt.geo) {
+        if (opt.geo instanceof Array) {
+          opt.geo[0].roam = this.active
+        } else {
+          opt.geo.roam = this.active
+        }
+      }
+      if (this.chart.type === 'treemap' && opt.series) {
+        opt.series[0].roam = this.active
+      }
+    },
     changeSeriesId(param) {
       const { id, seriesId } = param
       if (id !== this.chart.id) {
@@ -356,8 +411,10 @@ export default {
     },
     initMapChart(geoJson, chart, curAreaCode) {
       this.formatGeoJson(geoJson)
-      this.$echarts.registerMap('MAP', geoJson)
+      const mapId = 'MAP' + this.chartId
+      this.$echarts.registerMap(mapId, geoJson)
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
+      base_json.geo.map = mapId
       let themeStyle = null
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
@@ -391,6 +448,7 @@ export default {
       }
     },
     myEcharts(option) {
+      this.adaptorOpt(option)
       // 指定图表的配置项和数据
       const chart = this.myChart
       this.setBackGroundBorder()

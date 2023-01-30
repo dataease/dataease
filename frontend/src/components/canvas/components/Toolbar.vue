@@ -153,6 +153,30 @@
                 @change="styleChange"
               />
             </el-dropdown-item>
+
+            <el-dropdown-item>
+              <span>
+                <svg-icon
+                  style="width: 16px; height: 16px;"
+                  icon-class="page-line"
+                />
+              </span>
+              <el-tooltip
+                class="item"
+                :content="$t('panel.export_pdf_page_remark')"
+                placement="top-start"
+              >
+
+                <span class="text14 margin-left8">{{ $t('panel.export_pdf_page') }}</span>
+
+              </el-tooltip>
+              <el-switch
+                v-model="showPageLine"
+                :class="[{['grid-active']: showPageLine},'margin-left8']"
+                size="mini"
+                @change="showPageLineChange"
+              />
+            </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </span>
@@ -247,6 +271,7 @@ export default {
   },
   data() {
     return {
+      showPageLine: false,
       showGridSwitch: false,
       mobileLayoutInitStatus: false,
       isShowPreview: false,
@@ -305,6 +330,7 @@ export default {
     this.scale = this.canvasStyleData.scale
     this.mobileLayoutInitStatus = this.mobileLayoutStatus
     this.showGridSwitch = this.canvasStyleData.aidedDesign.showGrid
+    this.showPageLine = this.canvasStyleData.pdfPageLine?.showPageLine
     this.autoCache()
   },
   beforeDestroy() {
@@ -323,6 +349,7 @@ export default {
     },
     editPanelInit() {
       this.showGridSwitch = this.canvasStyleData.aidedDesign.showGrid
+      this.showPageLine = this.canvasStyleData.pdfPageLine?.showPageLine
     },
     close() {
       // 关闭页面清理缓存
@@ -588,6 +615,10 @@ export default {
     showGridChange() {
       this.$store.commit('canvasChange')
       this.canvasStyleData.aidedDesign.showGrid = !this.canvasStyleData.aidedDesign.showGrid
+    },
+    showPageLineChange() {
+      this.$store.commit('canvasChange')
+      this.canvasStyleData.pdfPageLine.showPageLine = !this.canvasStyleData.pdfPageLine.showPageLine
     },
     // batch option
     batchOption() {

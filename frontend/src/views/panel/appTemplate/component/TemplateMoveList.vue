@@ -29,76 +29,47 @@
         :class="[{ select: activeTemplate === ele.id }]"
         @click="nodeClick(ele)"
       >
-        <svg-icon
-          icon-class="scene"
-          class="de-icon-sense"
-        />
-        <span
-          class="text-template-overflow"
-          :title="ele.name"
-        >{{ ele.name }}</span>
-        <span
-          class="more"
-          @click.stop
+        <img
+          :src="iconImgRul(ele.icon)"
+          style="margin-right: 8px;border-radius: 4px"
+          width="24"
+          height="24"
         >
-          <el-dropdown
-            trigger="click"
-            size="small"
-            @command="(type) => clickMore(type, ele)"
-          >
-            <span class="el-dropdown-link">
-              <i class="el-icon-more"/>
-            </span>
-            <el-dropdown-menu
-              slot="dropdown"
-              class="de-template-dropdown"
-            >
-              <el-dropdown-item
-                icon="el-icon-upload2"
-                command="import"
-              >
-                {{ $t('panel.import') }}
-              </el-dropdown-item>
-              <el-dropdown-item
-                icon="el-icon-edit"
-                command="edit"
-              >
-                {{ $t('panel.rename') }}
-              </el-dropdown-item>
-              <el-dropdown-item
-                icon="el-icon-delete"
-                command="delete"
-              >
-                {{ $t('panel.delete') }}
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </span>
+        <span>{{ ele.name }}</span>
       </li>
     </ul>
-    <deBtn
-      v-if="templateFilterText === ''"
-      style="width: 100%"
-      icon="el-icon-plus"
-      secondary
-      @click="add()"
-    >
-      {{ $t('panel.add_category') }}
-    </deBtn>
+    <el-row class="de-root-class">
+      <deBtn
+        secondary
+        @click="cancel()"
+      >{{
+          $t('commons.cancel')
+        }}
+      </deBtn>
+      <deBtn
+        type="primary"
+        @click="save()"
+        :disabled="!activeTemplate"
+      >{{
+          $t('commons.confirm')
+        }}
+      </deBtn>
+    </el-row>
   </div>
 </template>
 
 <script>
 import msgCfm from '@/components/msgCfm/index'
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
+import { move } from '@/api/system/appTemplate'
 
 export default {
-  name: 'TemplateList',
+  name: 'TemplateMoveList',
   components: {},
   mixins: [msgCfm],
   props: {
-    templateType: {
-      type: String,
-      default: ''
+    sourceTemplateInfo: {
+      type: Object
     },
     templateList: {
       type: Array,
@@ -117,54 +88,38 @@ export default {
   },
   computed: {
     templateListComputed() {
-      // if (!this.templateFilterText)
-      //   return [
-      //     ...this.templateList,
-      //     ...this.templateList,
-      //     ...this.templateList,
-      //     ...this.templateList,
-      //   ];
-      if (!this.templateFilterText) return [...this.templateList]
+      if (!this.templateFilterText) {
+        return this.templateList.filter((ele) =>
+          ele.id !== this.sourceTemplateInfo.pid
+        )
+      }
       return this.templateList.filter((ele) =>
-        ele.name.includes(this.templateFilterText)
+        ele.name.includes(this.templateFilterText) && ele.id !== this.sourceTemplateInfo.pid
       )
     }
   },
   methods: {
-    clickMore(type, data) {
-      switch (type) {
-        case 'edit':
-          this.templateEdit(data)
-          break
-        case 'delete':
-          this.templateDelete(data)
-          break
-        case 'import':
-          this.templateImport(data)
-          break
-      }
+    iconImgRul(iconUrl) {
+      return imgUrlTrans(iconUrl)
     },
-    nodeClick({ id, label }) {
+    cancel() {
+      this.$emit('closeDialog')
+    },
+    save() {
+      const request = {
+        id: this.sourceTemplateInfo.id,
+        pid: this.activeTemplate,
+        name: this.sourceTemplateInfo.name
+      }
+      move(request).then((response) => {
+        this.$emit('templateMoveClose')
+      })
+    },
+    showPositionCheck(requiredPosition) {
+      return this.showPosition === requiredPosition
+    },
+    nodeClick({ id, name }) {
       this.activeTemplate = id
-      this.$emit('showCurrentTemplate', id, label)
-    },
-    add() {
-      this.$emit('showTemplateEditDialog', 'new')
-    },
-    templateDelete(template) {
-      const options = {
-        title: 'system_parameter_setting.delete_this_category',
-        content: 'system_parameter_setting.also_be_deleted',
-        type: 'primary',
-        cb: () => this.$emit('templateDelete', template.id)
-      }
-      this.handlerConfirm(options)
-    },
-    templateEdit(template) {
-      this.$emit('templateEdit', template)
-    },
-    templateImport(template) {
-      this.$emit('templateImport', template.id)
     }
   }
 }
@@ -172,7 +127,8 @@ export default {
 
 <style scoped lang="scss">
 .de-template-list {
-  height: 100%;
+  height: 380px;
+  overflow-y: hidden;
   position: relative;
 
   ul {
@@ -201,14 +157,6 @@ export default {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
-    .text-template-overflow {
-      display: inline-block;
-      max-width: 87%;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
 
     .folder {
       color: #8f959e;
@@ -253,7 +201,7 @@ export default {
   }
 
   li.select {
-    background: var(--deWhiteHover, #e0eaff) !important;
+    background: var(--deWhiteHover, #ecf5ff) !important;
     color: var(--TextActive, #3370ff) !important;
   }
 
@@ -270,5 +218,12 @@ export default {
   .popper__arrow {
     display: none !important;
   }
+}
+
+.de-root-class {
+  bottom: 0;
+  width: 100%;
+  position: absolute;
+  text-align: right;
 }
 </style>

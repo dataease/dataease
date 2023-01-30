@@ -12,6 +12,11 @@
     @mousedown="handleMouseDown"
     @scroll="canvasScroll"
   >
+    <page-line-editor
+      v-if="showPageLine"
+      ref="main-page-line"
+      :canvas-style-data="canvasStyleData"
+    />
     <!-- 网格线 -->
     <Grid
       v-if="showGrid"
@@ -157,6 +162,7 @@ import MarkLine from './MarkLine'
 import Area from './Area'
 import eventBus from '@/components/canvas/utils/eventBus'
 import Grid from './Grid'
+import PageLineEditor from './PageLineEditor'
 import PGrid from './PGrid'
 import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
@@ -763,7 +769,8 @@ export default {
     UserViewDialog,
     DeOutWidget,
     DragShadow,
-    LinkJumpSet
+    LinkJumpSet,
+    PageLineEditor
   },
   props: {
     parentForbid: {
@@ -944,10 +951,25 @@ export default {
         return false
       }
     },
+    showPageLine() {
+      if (this.canvasStyleData && this.canvasStyleData.pdfPageLine) {
+        return this.canvasStyleData.pdfPageLine.showPageLine
+      }
+      return false
+    },
     editStyle() {
       return {
         height: this.outStyle.height + this.scrollTop + 'px !important'
       }
+    },
+    scrollHeight() {
+      let baseHeight = 0
+      this.componentData.forEach(item => {
+        const top = this.getShapeStyleIntDeDrag(item.style, 'top')
+        const height = this.getShapeStyleIntDeDrag(item.style, 'height')
+        baseHeight = Math.max(baseHeight, top + height)
+      })
+      return baseHeight
     },
     customStyle() {
       let style = {
@@ -1020,6 +1042,19 @@ export default {
         this.dragShadowShow = false
         this.$nextTick(() => {
           this.dragShadowShow = true
+        })
+      },
+      deep: true
+    },
+    scrollHeight: {
+      handler(newVal, oldVla) {
+        this.$nextTick(() => {
+          if (newVal !== oldVla && this.showPageLine) {
+            const lineRef = this.$refs['main-page-line']
+            if (lineRef?.init) {
+              lineRef.init(newVal)
+            }
+          }
         })
       },
       deep: true
@@ -1251,6 +1286,9 @@ export default {
     },
     changeStyleWithScale,
     handleMouseDown(e) {
+      if (this.isPageLineTarget(e)) {
+        return
+      }
       // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
       if (!this.curComponent || (this.curComponent.component !== 'v-text' && this.curComponent.component !== 'rect-shape')) {
         e.preventDefault()
@@ -1258,6 +1296,9 @@ export default {
       this.hideArea()
       // 挤占式画布设计
       this.containerMouseDown(e)
+    },
+    isPageLineTarget(e) {
+      return e.target.classList && [...e.target.classList].includes('page-line-item')
     },
 
     hideArea() {
@@ -1517,6 +1558,9 @@ export default {
       }
     },
     handleDragOver(e) {
+      if (!this.dragComponentInfo?.shadowStyle) {
+        return
+      }
       this.dragComponentInfo.shadowStyle.x = e.pageX - 220
       this.dragComponentInfo.shadowStyle.y = e.pageY - 90 + this.scrollTop
       this.dragComponentInfo.style.left = this.dragComponentInfo.shadowStyle.x / this.scalePointWidth

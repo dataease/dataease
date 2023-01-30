@@ -15,6 +15,7 @@ import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
+import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.util.BeanUtils;
 import io.dataease.plugins.common.util.ConstantsUtil;
 import io.dataease.plugins.datasource.query.QueryProvider;
@@ -74,9 +75,9 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         String methodName = "transCustomFilterList";
         SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
         List<ChartFieldCustomFilterDTO> filters = list.stream().map(item -> gson.fromJson(gson.toJson(item), ChartFieldCustomFilterDTO.class)).collect(Collectors.toList());
-        Object o ;
+        Object o;
         if ((o = execProviderMethod(queryProvider, methodName, sqlObj, filters)) != null) {
-            return (String)o;
+            return (String) o;
         }
         return null;
     }
@@ -89,9 +90,16 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         List<ChartExtFilterRequest> filters = list.stream().map(item -> gson.fromJson(gson.toJson(item), ChartExtFilterRequest.class)).collect(Collectors.toList());
         Object o;
         if ((o = execProviderMethod(queryProvider, methodName, sqlObj, filters)) != null) {
-            return (String)o;
+            return (String) o;
         }
         return null;
+    }
+
+    @Override
+    public String permissionWhere(String s, List<DataSetRowPermissionsTreeDTO> list, PluginViewSQL pluginViewSQL) {
+        QueryProvider queryProvider = ProviderFactory.getQueryProvider(s);
+        SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
+        return queryProvider.transFilterTrees(sqlObj, list);
     }
 
     private String sqlFix(String sql) {
@@ -100,19 +108,20 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         }
         return sql;
     }
+
     @Override
     public PluginViewSQL getTableObj(PluginViewSet pluginViewSet) {
         String tableName = null;
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(pluginViewSet.getInfo(), DataTableInfoDTO.class);
         if (ObjectUtils.isNotEmpty(pluginViewSet.getMode()) && 1 == pluginViewSet.getMode()) {
             tableName = TableUtils.tableName(pluginViewSet.getTableId());
-        }else {
+        } else {
             switch (DatasetType.getEnumObjByKey(pluginViewSet.getType())) {
                 case DB:
                     tableName = dataTableInfoDTO.getTable();
                     break;
                 case SQL:
-                    String sql = dataTableInfoDTO.isBase64Encryption()? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())): dataTableInfoDTO.getSql();
+                    String sql = dataTableInfoDTO.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfoDTO.getSql())) : dataTableInfoDTO.getSql();
                     tableName = dataSetTableService.handleVariableDefaultValue(sql, null, pluginViewSet.getDsType());
 
                     tableName = "(" + sqlFix(tableName) + ")";
@@ -139,7 +148,7 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         PluginViewSQL tableObj = PluginViewSQL.builder().tableName(realTableName).tableAlias(tableAlias).build();
         QueryProvider queryProvider = ProviderFactory.getQueryProvider(pluginViewSet.getDsType());
         SQLObj sqlObj = SQLObj.builder().tableName(realTableName).tableAlias(tableAlias).build();
-        PluginViewSetImpl child = (PluginViewSetImpl)pluginViewSet;
+        PluginViewSetImpl child = (PluginViewSetImpl) pluginViewSet;
         queryProvider.setSchema(sqlObj, child.getDs());
         tableObj.setTableName(sqlObj.getTableName());
         tableObj.setTableAlias(sqlObj.getTableAlias());
@@ -149,9 +158,9 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
     private String getOriginName(String dsType, PluginViewField pluginViewField, PluginViewSQL tableObj) {
         String keyword_fix = ConstantsUtil.constantsValue(dsType, "KEYWORD_FIX");
         String originField;
-        String reflectField =  reflectFieldName(dsType, pluginViewField);
+        String reflectField = reflectFieldName(dsType, pluginViewField);
         if (ObjectUtils.isNotEmpty(pluginViewField.getExtField()) && pluginViewField.getExtField() == 2) {
-            originField = calcFieldRegex(dsType,pluginViewField.getOriginName(), tableObj);
+            originField = calcFieldRegex(dsType, pluginViewField.getOriginName(), tableObj);
         } else if (ObjectUtils.isNotEmpty(pluginViewField.getExtField()) && pluginViewField.getExtField() == 1) {
             originField = String.format(keyword_fix, tableObj.getTableAlias(), StringUtils.isNotBlank(reflectField) ? reflectField : pluginViewField.getOriginName());
         } else {
@@ -164,24 +173,23 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         QueryProvider queryProvider = ProviderFactory.getQueryProvider(dsType);
         String methodName = "calcFieldRegex";
         SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
-        Object o ;
+        Object o;
         if ((o = execProviderMethod(queryProvider, methodName, originField, sqlObj)) != null) {
-            return (String)o;
+            return (String) o;
         }
         return null;
     }
 
-    private String reflectFieldName(String dsType, PluginViewField pluginViewField ) {
+    private String reflectFieldName(String dsType, PluginViewField pluginViewField) {
         QueryProvider queryProvider = ProviderFactory.getQueryProvider(dsType);
         String methodName = "reflectFieldName";
-        DatasetTableField field = BeanUtils.copyBean(new DatasetTableField(), pluginViewField);;
-        Object o ;
+        DatasetTableField field = BeanUtils.copyBean(new DatasetTableField(), pluginViewField);
+        Object o;
         if ((o = execProviderMethod(queryProvider, methodName, field)) != null) {
-            return (String)o;
+            return (String) o;
         }
         return null;
     }
-
 
 
     private PluginViewSQL getField(String dsType, PluginViewField field, String originField, String fieldAlias) {
@@ -189,13 +197,13 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         String methodName;
         if (StringUtils.equals(field.getTypeField(), "xAxis") || StringUtils.equals(field.getTypeField(), "extStack")) {
             methodName = "getXFields";
-        }else {
+        } else {
             methodName = "getYFields";
         }
         ChartViewFieldDTO chartViewFieldDTO = BeanUtils.copyBean(new ChartViewFieldDTO(), field);
         Object execResult;
-        if ((execResult = execProviderMethod(queryProvider, methodName, chartViewFieldDTO, originField, fieldAlias)) != null){
-            SQLObj sqlObj = (SQLObj)execResult;
+        if ((execResult = execProviderMethod(queryProvider, methodName, chartViewFieldDTO, originField, fieldAlias)) != null) {
+            SQLObj sqlObj = (SQLObj) execResult;
             PluginViewSQL result = PluginViewSQL.builder().build();
             return BeanUtils.copyBean(result, sqlObj);
         }
@@ -215,27 +223,26 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
     }
 
 
-
-    private PluginViewSQL addSort(String sort, String originField, String  fieldAlias) {
+    private PluginViewSQL addSort(String sort, String originField, String fieldAlias) {
         if (StringUtils.isNotEmpty(sort) && !StringUtils.equalsIgnoreCase(sort, "none")) {
             return PluginViewSQL.builder().orderField(originField).orderAlias(fieldAlias).orderDirection(sort).build();
         }
         return null;
     }
 
-    private String getWhere(String dsType, PluginViewField field,String originField,String fieldAlias) {
+    private String getWhere(String dsType, PluginViewField field, String originField, String fieldAlias) {
         QueryProvider queryProvider = ProviderFactory.getQueryProvider(dsType);
         String methodName;
         if (StringUtils.equals(field.getTypeField(), "xAxis") || StringUtils.equals(field.getTypeField(), "extStack")) {
             return null;
 
-        }else {
+        } else {
             methodName = "getYWheres";
         }
         ChartViewFieldDTO chartViewFieldDTO = BeanUtils.copyBean(new ChartViewFieldDTO(), field);
         Object execResult;
-        if ((execResult = execProviderMethod(queryProvider, methodName, chartViewFieldDTO, originField, fieldAlias)) != null){
-            String where = (String)execResult;
+        if ((execResult = execProviderMethod(queryProvider, methodName, chartViewFieldDTO, originField, fieldAlias)) != null) {
+            String where = (String) execResult;
             return where;
         }
         return null;

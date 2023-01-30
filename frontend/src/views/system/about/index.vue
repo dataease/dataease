@@ -1,6 +1,9 @@
 <template>
   <div style="width: 100%;display: flex;justify-content: center;">
-    <el-card class="box-card about-card">
+    <el-card
+      class="box-card about-card"
+      :class="dynamicCardClass"
+    >
       <div
         slot="header"
         class="clearfix license-header"
@@ -46,6 +49,18 @@
               <th>{{ $t('about.version_num') }}</th>
               <td>
                 <span>{{ build }}</span>
+              </td>
+            </tr>
+            <tr v-if="license.serialNo">
+              <th>{{ $t('about.serial_no') }}</th>
+              <td>
+                <span>{{ license.serialNo }}</span>
+              </td>
+            </tr>
+            <tr v-if="license.remark">
+              <th>{{ $t('about.remark') }}</th>
+              <td>
+                <span>{{ license.remark }}</span>
               </td>
             </tr>
           </table>
@@ -98,6 +113,15 @@ export default {
     }
   },
   computed: {
+    dynamicCardClass() {
+      if (this.license?.serialNo && this.license?.remark) {
+        return 'about-card-max'
+      }
+      if (!this.license?.serialNo && !this.license?.remark) {
+        return ''
+      }
+      return 'about-card-medium'
+    },
     ...mapGetters([
       'user'
     ])
@@ -137,7 +161,9 @@ export default {
         expired: result.license ? result.license.expired : '',
         count: result.license ? result.license.count : '',
         version: result.license ? result.license.version : '',
-        edition: result.license ? result.license.edition : ''
+        edition: result.license ? result.license.edition : '',
+        serialNo: result.license ? result.license.serialNo : '',
+        remark: result.license ? result.license.remark : ''
       }
     },
     importLic(file) {
@@ -187,6 +213,12 @@ export default {
         ::v-deep div.el-card__header {
             padding: 0;
         }
+    }
+    .about-card-medium {
+      height: 415px !important;
+    }
+    .about-card-max {
+      height: 430px !important;
     }
     .license-header {
         height: 100px;

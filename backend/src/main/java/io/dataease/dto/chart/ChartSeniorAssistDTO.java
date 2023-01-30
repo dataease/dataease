@@ -17,4 +17,5 @@ public class ChartSeniorAssistDTO {
     private String lineType;
     private String color;
     private DatasetTableField curField;
+    private String fontSize;
 }

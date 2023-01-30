@@ -30,12 +30,12 @@
           />
         </el-row>
         <el-row class="top_banner_card">
-          <wizard-card :details="cardList[0]" />
+          <wizard-card :details="cardList[0]"/>
           <wizard-card
             :details="cardList[1]"
             style="margin:0 24px 0 24px"
           />
-          <wizard-card-enterprise :details="cardList[2]" />
+          <wizard-card-enterprise :details="cardList[2]"/>
         </el-row>
         <el-row class="content_middle">
           <div class="content_middle_left">
@@ -44,15 +44,15 @@
               <div class="content_middle_more"><a
                 target="_blank"
                 href="https://space.bilibili.com/510493147/channel/collectiondetail?sid=262774"
-              >{{ $t('wizard.more') }}<i class="el-icon-arrow-right" /></a></div>
+              >{{ $t('wizard.more') }}<i class="el-icon-arrow-right"/></a></div>
             </el-row>
             <el-row style="margin-top: 12px">
-              <video-card :details="videoList[0]" />
+              <video-card :details="videoList[0]"/>
               <video-card
                 style="margin:0 12px 0 12px"
                 :details="videoList[1]"
               />
-              <video-card :details="videoList[2]" />
+              <video-card :details="videoList[2]"/>
             </el-row>
           </div>
           <div class="content_middle_right">
@@ -61,7 +61,7 @@
               <div class="content_middle_more"><a
                 target="_blank"
                 href="https://blog.fit2cloud.com/?cat=321"
-              >{{ $t('wizard.more') }}<i class="el-icon-arrow-right" /></a></div>
+              >{{ $t('wizard.more') }}<i class="el-icon-arrow-right"/></a></div>
             </el-row>
             <el-row>
               <ul class="ul-custom">
@@ -93,10 +93,10 @@
             </el-row>
             <el-row class="contact_content">
               {{ $t('wizard.web') }}<a
-                style="text-decoration:underline;"
-                target="_blank"
-                href="https://www.dataease.io"
-              >www.dataease.io</a>
+              style="text-decoration:underline;"
+              target="_blank"
+              href="https://www.dataease.io"
+            >www.dataease.io</a>
             </el-row>
           </div>
 
@@ -154,7 +154,7 @@ export default {
           content: this.$t('wizard.demo_video_hint'),
           img: 'wizard_quick_start',
           bgColor: '#E7F2FF',
-          href: 'https://www.bilibili.com/video/BV1i34y1v7hq/'
+          href: 'https://www.bilibili.com/video/BV1qG4y1F7uc/'
         },
         {
           head: this.$t('wizard.online_document'),

@@ -112,7 +112,7 @@
         style="position: absolute;right: 70px;top:15px"
       >
         <el-button
-          v-if="showChartInfoType==='enlarge' && showChartInfo && showChartInfo.type !== 'symbol-map'"
+          v-if="showChartInfoType==='enlarge' && hasDataPermission('export',panelInfo.privileges)&& showChartInfo && showChartInfo.type !== 'symbol-map'"
           class="el-icon-picture-outline"
           size="mini"
           @click="exportViewImg"
@@ -120,7 +120,7 @@
           {{ $t('chart.export_img') }}
         </el-button>
         <el-button
-          v-if="showChartInfoType==='details'"
+          v-if="showChartInfoType==='details'&& hasDataPermission('export',panelInfo.privileges)"
           size="mini"
           @click="exportExcel"
         >

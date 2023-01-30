@@ -61,7 +61,6 @@
                   <span
                     slot-scope="{ node, data }"
                     style="display: flex;flex: 1;width: 0%;"
-                    class="custom-tree-node"
                   >
                     <span>
                       <svg-icon
@@ -275,7 +274,7 @@
           :control-attrs="myAttrs"
           :child-views="childViews"
           :dataset-params="datasetParams"
-          :activeName="activeName"
+          :active-name="activeName"
         />
 
         <filter-foot :element="currentElement" />

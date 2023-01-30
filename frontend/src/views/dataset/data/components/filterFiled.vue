@@ -128,7 +128,7 @@
                 />
                 <ul
                   class="infinite-list autochecker-list"
-                  style="overflow: auto"
+                  style="overflow: auto;height: 231px"
                 >
                   <li
                     v-for="i in checkListWithFilter"
@@ -218,7 +218,7 @@
                 </ul>
                 <div class="right-menu-foot">
                   <div class="footer-left">
-                    {{ $t("auth.added") }} {{ checklist.length }}
+                    &nbsp;
                   </div>
                   <div
                     class="confirm-btn"

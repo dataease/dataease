@@ -32,7 +32,7 @@
       v-if="chart.isPlugin"
       :ref="element.propValue.id"
       :component-name="chart.type + '-view'"
-      :obj="{chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
+      :obj="{active, chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
       :chart="chart"
       :track-menu="trackMenu"
       :search-count="searchCount"
@@ -66,6 +66,7 @@
       :terminal-type="scaleCoefficientType"
       :scale="scale"
       :theme-style="element.commonBackground"
+      :active="active"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -140,7 +141,7 @@
         style="position: absolute;right: 70px;top:15px"
       >
         <el-button
-          v-if="showChartInfoType==='enlarge' && showChartInfo && showChartInfo.type !== 'symbol-map'"
+          v-if="showChartInfoType==='enlarge' && hasDataPermission('export',panelInfo.privileges)&& showChartInfo && showChartInfo.type !== 'symbol-map'"
           class="el-icon-picture-outline"
           size="mini"
           @click="exportViewImg"
@@ -148,7 +149,7 @@
           {{ $t('chart.export_img') }}
         </el-button>
         <el-button
-          v-if="showChartInfoType==='details'"
+          v-if="showChartInfoType==='details' && hasDataPermission('export',panelInfo.privileges)"
           size="mini"
           @click="exportExcel"
         >
@@ -761,6 +762,9 @@ export default {
             requestInfo.pageSize = this.currentPage.pageSize
           }
         }
+        if (this.isFirstLoad) {
+          this.element.filters = this.filters?.length ? JSON.parse(JSON.stringify(this.filters)) : []
+        }
         method(id, this.panelInfo.id, requestInfo).then(response => {
           // 将视图传入echart组件
           if (response.success) {
@@ -1272,6 +1276,7 @@ export default {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  position: relative;
 }
 
 .chart-class {

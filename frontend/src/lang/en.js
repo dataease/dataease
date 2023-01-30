@@ -1509,7 +1509,14 @@ export default {
                     Line (area) chart, Column (Bar) chart, Dashboard: {a} is series name, {b} is category value, {c} is value<br>
                     Pie chart, Funnel chart: {a} is series name, {b} is data item name, {c} is value, {d} is percentage<br>
                     Map : {a} (series name), {b} is area name, {c} is merged values, {d} is none<br>
-                    Scatter (Bubble) plot: {a} is series name, {b} is data name, {c} is numeric array, {d} is none`
+                    Scatter (Bubble) plot: {a} is series name, {b} is data name, {c} is numeric array, {d} is none`,
+    h_position: 'Horizontal Position',
+    v_position: 'Vertical Position',
+    p_left: 'Left',
+    p_right: 'Right',
+    p_top: 'Top',
+    p_bottom: 'Bottom',
+    p_center: 'Center'
   },
   dataset: {
     spend_time: 'Spend',
@@ -1877,6 +1884,7 @@ export default {
     all_compute_mode: 'Direct connection and extraction mode',
     extra_params: 'Extra JDBC connection string',
     please_input_dataPath: 'Please enter the JsonPath data path',
+    show_api_data: 'View API raw data',
     warning: 'Contains invalid table',
     data_table: 'Dataset Table',
     data_table_name: 'Dataset Table name',
@@ -1887,7 +1895,9 @@ export default {
     base_info: 'Basic information',
     column_info: 'Data structure',
     request: 'Request',
+    isUseJsonPath: 'Specify JsonPath or not',
     path_all_info: 'Please fill in the full address',
+    jsonpath_info: 'Please fill in JsonPath',
     req_param: 'Request parameters',
     headers: 'Request header',
     key: 'Key',
@@ -1956,6 +1966,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    forbidden_copy: 'Forbidden copy',
     url_check_error: 'Jump error, Illegal URL',
     view_style: 'View Style',
     view_color_setting: 'View Color Setting',
@@ -2244,6 +2255,8 @@ export default {
     aided_grid: 'Aided Grid',
     aided_grid_open: 'Open',
     aided_grid_close: 'Close',
+    export_pdf_page: 'Pagination Line',
+    export_pdf_page_remark: 'Only valid for API export dashboard PDF pagination',
     subject_no_edit: 'System Subject Can Not Edit',
     subject_name_not_null: 'Subject Name Can Not Be Null And Less Than 20 charts',
     is_enable: 'Enable',
@@ -2426,7 +2439,9 @@ export default {
     standard: 'Standard',
     enterprise: 'Enterprise',
     support: 'Get technical support',
-    update_success: 'Update Success'
+    update_success: 'Update Success',
+    serial_no: 'Serial Number',
+    remark: 'Remark'
   },
   template: {
     exit_same_template_check: 'The Same Name Exists In Now Class. Do You Want To Override It?',
@@ -2787,6 +2802,8 @@ export default {
   'I18N_USER_TEMPLATE_ERROR': 'Template file error',
   'i18n_max_user_import_size': 'File size exceeds 10M',
   app_template: {
+    move: 'Move',
+    move_item: 'Move App',
     datasource_new: 'New',
     datasource_history: 'Multiplexing',
     datasource_from: 'Datasource From',
@@ -2826,9 +2843,9 @@ export default {
   },
   watermark: {
     support_params: 'Currently supported parameters:',
-    enable: 'Enable',
+    enable: 'Watermark Enable',
     enable_panel_custom: 'Allow the dashboard to open or close the watermark independently',
-    content: 'content',
+    content: 'Watermark Content',
     custom_content: 'Custom Content',
     account: 'Account',
     nick_name: 'Nick Name',
@@ -2837,8 +2854,8 @@ export default {
     watermark_color: 'Watermark Color',
     watermark_font_size: 'Watermark Fontsize',
     watermark_space: 'Watermark Space',
-    horizontal: 'Horizontal',
-    vertical: 'Vertical',
+    horizontal: 'Horizontal Space',
+    vertical: 'Vertical Space',
     reset: 'Reset',
     preview: 'Preview',
     save: 'Save'

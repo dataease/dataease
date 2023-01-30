@@ -17,20 +17,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.operator-bar {
-  width: 100%;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  .title {
-    font-family: PingFang SC;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 24px;
-    color: #1f2329;
-  }
-}
-</style>

@@ -1,5 +1,7 @@
 import store from '@/store'
 import eventBus from '@/components/canvas/utils/eventBus'
+import { $warning } from '@/utils/message'
+import i18n from '@/lang'
 
 const ctrlKey = 17
 const commandKey = 91 // mac command
@@ -24,6 +26,8 @@ const sKey = 83 // 保存
 const enlargeKey = 190 // command + .
 
 export const keycodes = [66, 67, 68, 69, 71, 76, 80, 83, 85, 86, 88, 89, 90]
+
+const ignoreComponent = ['de-button', 'de-reset-button']
 
 // 与组件状态无关的操作
 const basemap = {
@@ -134,9 +138,13 @@ function decompose() {
 
 function copyAndPast() {
   if (store.state.curComponent) {
-    store.commit('copy')
-    store.commit('paste', false)
-    store.commit('recordSnapshot', 'copyAndPast')
+    if (ignoreComponent.includes(store.state.curComponent.component)) {
+      $warning(i18n.t('panel.forbidden_copy'))
+    } else {
+      store.commit('copy')
+      store.commit('paste', false)
+      store.commit('recordSnapshot', 'copyAndPast')
+    }
   }
 }
 

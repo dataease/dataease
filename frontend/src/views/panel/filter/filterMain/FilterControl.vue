@@ -117,7 +117,7 @@
                 @change="checkedViewsChange"
               >
                 <el-checkbox
-                  v-for="(item ) in childViews.viewInfos"
+                  v-for="(item ) in curTableViews"
                   :key="item.id"
                   :label="item.id"
                   class="de-checkbox"
@@ -308,6 +308,12 @@ export default {
   computed: {
     fieldIds() {
       return this.element.options.attrs.fieldId || []
+    },
+    curTableViews() {
+      const tableIdList = this.element.options.attrs.dragItems.map(item => item.tableId) || []
+
+      const views = this.childViews.viewInfos.filter(view => tableIdList.includes(view.tableId))
+      return views
     }
   },
   watch: {
