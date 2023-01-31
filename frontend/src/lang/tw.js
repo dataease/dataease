@@ -1878,7 +1878,7 @@ export default {
     all_compute_mode: '直連、抽取模式',
     extra_params: '額外的JDBC連接字符串',
     please_input_dataPath: '請輸入 JsonPath 數據路徑',
-    show_api_data: '查看API原始數據',
+    show_api_data: '查看API数据結構',
     warning: '包含無效數據表',
     data_table: '數據表',
     data_table_name: '數據表名稱',
