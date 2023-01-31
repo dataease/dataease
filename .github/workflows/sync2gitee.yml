@@ -12,5 +12,5 @@ jobs:
           dst: 'gitee/fit2cloud-feizhiyun'
           dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
           dst_token:  ${{ secrets.GITEE_TOKEN }}
-          static_list: ${{ github.event.repository.name }}
+          static_list: "DataEase"
           force_update: true
