@@ -1752,3 +1752,11 @@ div:focus {
     color: var(--deTextPrimary, #1F2329) !important;
   }
 }
+
+.el-pagination__editor.el-input .el-input__inner {
+  line-height: 28px !important;
+}
+
+.el-table__fixed-right::before {
+  display: none;
+}

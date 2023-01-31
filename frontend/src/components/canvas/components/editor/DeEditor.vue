@@ -1017,7 +1017,7 @@ export default {
     ]),
 
     searchButtonInfo() {
-      const result = this.buildButtonFilterMap(this.componentData)
+      const result = this.buildButtonFilterMap(this.$store.state.componentData)
       return result
     },
     filterMap() {
@@ -1138,6 +1138,25 @@ export default {
   created() {
   },
   methods: {
+    getWrapperChildRefs() {
+      return this.$refs['wrapperChild']
+    },
+    getAllWrapperChildRefs() {
+      let allChildRefs = []
+      const currentChildRefs = this.getWrapperChildRefs()
+      if (currentChildRefs && currentChildRefs.length > 0) {
+        allChildRefs.push.apply(allChildRefs, currentChildRefs)
+      }
+      currentChildRefs && currentChildRefs.forEach(subRef => {
+        if (subRef?.getType && subRef.getType() === 'de-tabs') {
+          const currentTabChildRefs = subRef.getWrapperChildRefs()
+          if (currentTabChildRefs && currentTabChildRefs.length > 0) {
+            allChildRefs.push.apply(allChildRefs, currentTabChildRefs)
+          }
+        }
+      })
+      return allChildRefs
+    },
     setChartData(chart) {
       this.componentData.forEach((item, index) => {
         if (item.type === 'view' && item.component === 'user-view' && item.propValue.viewId === chart.id) {
@@ -1154,7 +1173,7 @@ export default {
       })
     },
     refreshButtonInfo(isClear = false) {
-      const result = this.buildButtonFilterMap(this.componentData, isClear)
+      const result = this.buildButtonFilterMap(this.$store.state.componentData, isClear)
       this.searchButtonInfo.buttonExist = result.buttonExist
       this.searchButtonInfo.relationFilterIds = result.relationFilterIds
       this.searchButtonInfo.filterMap = result.filterMap
@@ -1162,10 +1181,12 @@ export default {
       this.buttonFilterMap = this.searchButtonInfo.filterMap
     },
     triggerSearchButton(isClear = false) {
+      if (this.canvasId !== 'canvas-main') {
+        return
+      }
       this.refreshButtonInfo(isClear)
       this.buttonFilterMap = this.searchButtonInfo.filterMap
-
-      this.componentData.forEach(component => {
+      this.$store.state.componentData.forEach(component => {
         if (component.type === 'view' && this.buttonFilterMap[component.propValue.viewId]) {
           component.filters = this.buttonFilterMap[component.propValue.viewId]
         }
@@ -1212,20 +1233,16 @@ export default {
       return result
     },
     buildViewKeyFilters(panelItems, result, isClear = false) {
-      const refs = this.$refs
-      if (!this.$refs['wrapperChild'] || !this.$refs['wrapperChild'].length) return result
-      const len = this.$refs['wrapperChild'].length
+      const wrapperChildAll = this.getAllWrapperChildRefs()
+      if (!wrapperChildAll || !wrapperChildAll.length) return result
       panelItems.forEach((element) => {
-        if (element.type !== 'custom') {
-          return true
-        }
-
         let param = null
-        const index = this.getComponentIndex(element.id)
-        if (index < 0 || index >= len) {
-          return true
-        }
-        const wrapperChild = refs['wrapperChild'][index]
+        let wrapperChild
+        wrapperChildAll?.forEach(item => {
+          if (item?.['getComponentId'] && item.getComponentId() === element.id) {
+            wrapperChild = item
+          }
+        })
         if (!wrapperChild || !wrapperChild.getCondition) return true
         if (isClear) {
           wrapperChild.clearHandler && wrapperChild.clearHandler()
@@ -1234,9 +1251,11 @@ export default {
         const condition = formatCondition(param)
         const vValid = valueValid(condition)
         const filterComponentId = condition.componentId
+        const conditionCanvasId = wrapperChild.getCanvasId && wrapperChild.getCanvasId()
         Object.keys(result).forEach(viewId => {
           const vidMatch = viewIdMatch(condition.viewIds, viewId)
           const viewFilters = result[viewId]
+          const canvasMatch = this.checkCanvasViewIdsMatch(conditionCanvasId, viewId)
           let j = viewFilters.length
           while (j--) {
             const filter = viewFilters[j]
@@ -1244,14 +1263,24 @@ export default {
               viewFilters.splice(j, 1)
             }
           }
-          vidMatch && vValid && viewFilters.push(condition)
+          canvasMatch && vidMatch && vValid && viewFilters.push(condition)
         })
       })
       return result
     },
+    checkCanvasViewIdsMatch(conditionCanvasId, viewId) {
+      if (conditionCanvasId === 'canvas-main') {
+        return true
+      }
+      for (let index = 0; index < this.$store.state.componentData.length; index++) {
+        const item = this.$store.state.componentData[index]
+        if (item.type === 'view' && item.propValue.viewId === viewId && item.canvasId === conditionCanvasId) return true
+      }
+      return false
+    },
     getComponentIndex(id) {
-      for (let index = 0; index < this.componentData.length; index++) {
-        const item = this.componentData[index]
+      for (let index = 0; index < this.$store.state.componentData.length; index++) {
+        const item = this.$store.state.componentData[index]
         if (item.id === id) return index
       }
       return -1

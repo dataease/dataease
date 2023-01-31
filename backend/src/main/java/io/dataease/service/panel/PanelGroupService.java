@@ -509,6 +509,9 @@ public class PanelGroupService {
             if (dynamicDataMap == null) {
                 DataEaseException.throwException("Please use the template after v1.9");
             }
+            //custom组件替换.tableId 和 parentFieldId 追加识别标识
+            templateData = templateData.replaceAll("\"tableId\":\"", "\"tableId\":\"no_auth");
+            templateData = templateData.replaceAll("\"fieldsParent\":\\{\"id\":\"", "\"fieldsParent\":\\{\"id\":\"no_auth");
 
             List<PanelViewInsertDTO> panelViews = new ArrayList<>();
             List<PanelGroupExtendDataDTO> viewsData = new ArrayList<>();

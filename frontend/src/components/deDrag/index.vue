@@ -630,7 +630,8 @@ export default {
       }
       if (this.element.auxiliaryMatrix && this.curCanvasScaleSelf) {
         const height = Math.round(this.height / this.curCanvasScaleSelf.matrixStyleHeight) * this.curCanvasScaleSelf.matrixStyleHeight
-        return (height - this.curGap * 2) + 'px'
+        const hp = (height - this.curGap * 2)
+        return (hp > 3 ? hp : 3) + 'px'
       } else {
         return (this.height - this.curGap * 2) + 'px'
       }
@@ -682,14 +683,14 @@ export default {
       return (this.canvasStyleData.panel.gap === 'yes' && this.element.auxiliaryMatrix) ? this.componentGap : 0
     },
     miniWidth() {
-      return this.element.auxiliaryMatrix ? this.curCanvasScaleSelf.matrixStyleWidth * (this.mobileLayoutStatus ? 1 : 4) : 0
+      return this.element.auxiliaryMatrix ? this.curCanvasScaleSelf.matrixStyleWidth * (this.mobileLayoutStatus ? 1 : 1) : 0
     },
     miniHeight() {
       if (this.element.auxiliaryMatrix) {
         if (this.element.component === 'de-number-range') {
-          return this.element.auxiliaryMatrix ? this.curCanvasScaleSelf.matrixStyleHeight * (this.mobileLayoutStatus ? 1 : 4) : 0
+          return this.element.auxiliaryMatrix ? this.curCanvasScaleSelf.matrixStyleHeight * (this.mobileLayoutStatus ? 1 : 1) : 0
         } else {
-          return this.element.auxiliaryMatrix ? this.curCanvasScaleSelf.matrixStyleHeight * (this.mobileLayoutStatus ? 1 : 4) : 0
+          return this.element.auxiliaryMatrix ? this.curCanvasScaleSelf.matrixStyleHeight * (this.mobileLayoutStatus ? 1 : 1) : 0
         }
       } else {
         return 0

@@ -138,7 +138,7 @@
               <svg-icon
                 :icon-class="showTable ? 'reference-table' : 'reference-field'"
               />
-              {{ (showTable && fieldData.length) || tableData.length }}
+              {{ (showTable && fieldDataCopy.length) || tableDataCopy.length }}
             </span>
           </p>
         </div>
