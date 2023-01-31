@@ -223,10 +223,18 @@ export default {
     runAnimation(this.$el, this.config.animations)
   },
   methods: {
-    setChartData(chart) {
-      this.chart = chart
+    getComponentId() {
+      return this.config.id
     },
-    getStyle,
+    getCanvasId() {
+      return this.canvasId
+    },
+    getType() {
+      return this.config.type
+    },
+    getWrapperChildRefs() {
+      return this.$refs.wrapperChild.getWrapperChildRefs()
+    },
     getShapeStyleIntDeDrag(style, prop) {
       if (prop === 'rotate') {
         return style['rotate']
