@@ -1884,7 +1884,7 @@ export default {
     all_compute_mode: 'Direct connection and extraction mode',
     extra_params: 'Extra JDBC connection string',
     please_input_dataPath: 'Please enter the JsonPath data path',
-    show_api_data: 'View API raw data',
+    show_api_data: 'View API data structure',
     warning: 'Contains invalid table',
     data_table: 'Dataset Table',
     data_table_name: 'Dataset Table name',

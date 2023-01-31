@@ -175,6 +175,12 @@ export default {
     this.$set(this.element.style, 'innerBgColor', innerBgColor || '')
   },
   methods: {
+    getComponentId() {
+      return this.element.id
+    },
+    getCanvasId() {
+      return this.canvasId
+    },
     handlerPositionChange(val) {
       const { horizontal = 'left', vertical = 'center' } = val
       this.titleStyle = {
@@ -185,7 +191,6 @@ export default {
         flexDirection: 'column'
       }
 
-      
       if (vertical !== 'top' && this.element.component !== 'de-select-grid') {
         this.titleStyle = null
         this.outsideStyle = {
