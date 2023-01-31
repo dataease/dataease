@@ -252,6 +252,9 @@ export default {
     bus.$off('button-dialog-edit', this.editButtonDialog)
   },
   methods: {
+    getWrapperChildRefs() {
+      return this.$refs[this.editorRefName].getWrapperChildRefs()
+    },
     initEvents() {
       bus.$on('component-dialog-edit', this.editDialog)
       bus.$on('button-dialog-edit', this.editButtonDialog)

@@ -1143,6 +1143,7 @@ export default {
           this.$message.error(i18n.t('datasource.please_input_dataPath'))
           return
         }
+        this.originFieldItem.jsonFields = []
         this.$refs.apiItemBasicInfo.validate((valid) => {
           if (valid) {
             const data = Base64.encode(JSON.stringify(this.apiItem))
@@ -1158,9 +1159,7 @@ export default {
                 this.apiItem.jsonFields = res.data.jsonFields
                 this.apiItem.fields = []
                 this.handleFiledChange(this.apiItem)
-                this.$nextTick(() => {
-                  this.$refs.plxTable?.reloadData(this.previewData(this.apiItem))
-                })
+                this.previewData(this.apiItem)
               })
               .catch((res) => {
                 this.loading = false
@@ -1183,7 +1182,7 @@ export default {
               res.data.jsonFields.forEach(((item) => {
                 item.checked = false
               }))
-             this.originFieldItem.jsonFields = res.data.jsonFields
+              this.originFieldItem.jsonFields = res.data.jsonFields
               this.loading = false
               this.$success(i18n.t('commons.success'))
             })
@@ -1301,15 +1300,7 @@ export default {
       this.handleCheckChange(this.apiItem, row)
       this.apiItem.fields = []
       this.handleFiledChange(this.apiItem, row)
-      if(ref === 'plxTable'){
-        this.$nextTick(() => {
-          this.$refs.plxTable?.reloadData(this.previewData(this.apiItem))
-        })
-      }else {
-        this.$nextTick(() => {
-          this.$refs.originPlxTable?.reloadData(this.previewData(this.apiItem))
-        })
-      }
+      this.previewData(this.apiItem)
 
       if (this.errMsg.length) {
         this.$message.error(
@@ -1347,7 +1338,7 @@ export default {
           apiItem.fields.push(jsonFields[i])
         }
         if (jsonFields[i].children !== undefined) {
-          this.handleFiledChange2(jsonFields[i].children)
+          this.handleFiledChange2(apiItem, jsonFields[i].children)
         }
       }
     },
@@ -1374,6 +1365,9 @@ export default {
             apiItem.fields[i].value[j]
           )
         }
+        this.$nextTick(() => {
+          this.$refs.plxTable?.reloadData(data)
+        })
       }
       this.showEmpty = apiItem.fields.length === 0
       return data
@@ -1387,9 +1381,7 @@ export default {
       }
     },
     fieldNameChange(row) {
-      this.$nextTick(() => {
-        this.$refs.plxTable?.reloadData(this.previewData(this.apiItem))
-      })
+      this.previewData(this.apiItem)
     },
     fieldTypeChange(row) {}
   }
