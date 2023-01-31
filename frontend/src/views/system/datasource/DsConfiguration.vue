@@ -1174,10 +1174,6 @@ export default {
       }
     },
     showApiData(){
-      if (this.apiItem.useJsonPath && !this.apiItem.jsonPath) {
-        this.$message.error(i18n.t('datasource.please_input_dataPath'))
-        return
-      }
       this.$refs.apiItemBasicInfo.validate((valid) => {
         if (valid) {
           const data = Base64.encode(JSON.stringify(this.apiItem))
