@@ -154,7 +154,7 @@
               />
             </el-dropdown-item>
 
-            <el-dropdown-item>
+            <el-dropdown-item v-if="showPdfPageButton">
               <span>
                 <svg-icon
                   style="width: 16px; height: 16px;"
@@ -286,7 +286,8 @@ export default {
       scale: '100%',
       timer: null,
       changes: 0,
-      closePanelVisible: false
+      closePanelVisible: false,
+      showPdfPageButton: false
     }
   },
   computed: {

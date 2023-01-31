@@ -346,10 +346,10 @@ export default {
       return this.targetLinkageInfo[this.element.propValue.viewId]
     },
     miniHeight() {
-      return this.mobileLayoutStatus ? 1 : 4
+      return this.mobileLayoutStatus ? 1 : 1
     },
     miniWidth() {
-      return this.mobileLayoutStatus ? 1 : 4
+      return this.mobileLayoutStatus ? 1 : 1
     },
     curCanvasScaleSelf() {
       return this.curCanvasScaleMap[this.canvasId]
