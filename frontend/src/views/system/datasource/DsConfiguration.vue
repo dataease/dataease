@@ -583,8 +583,7 @@
                 class-name="checkbox-table"
                 prop="originName"
                 :label="$t('dataset.parse_filed')"
-                :show-overflow-tooltip="true"
-                width="255"
+                show-overflow-tooltip
               >
                 <template slot-scope="scope">
                   {{ scope.row.originName }}
