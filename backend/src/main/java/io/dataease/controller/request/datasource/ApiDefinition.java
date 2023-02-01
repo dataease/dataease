@@ -26,5 +26,7 @@ public class ApiDefinition {
     private boolean useJsonPath;
     private String jsonPath;
     private boolean showApiStructure;
+    private boolean reName = false;
+    private String orgName;
 
 }
