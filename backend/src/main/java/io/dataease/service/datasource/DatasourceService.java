@@ -292,6 +292,7 @@ public class DatasourceService {
     public void updateDatasource(String id, Datasource datasource) {
         DatasourceExample example = new DatasourceExample();
         example.createCriteria().andIdEqualTo(id);
+        checkAndUpdateDatasourceStatus(datasource);
         datasourceMapper.updateByExampleSelective(datasource, example);
         handleConnectionPool(id);
     }
@@ -339,6 +340,7 @@ public class DatasourceService {
 
                 datasourceDTO.setApiConfiguration(apiDefinitionListWithStatus);
                 if (success == apiDefinitionList.size()) {
+                    datasource.setStatus(datasourceStatus);
                     return ResultHolder.success(datasourceDTO);
                 }
                 if (success > 0 && success < apiDefinitionList.size()) {
@@ -363,7 +365,6 @@ public class DatasourceService {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
             datasourceStatus = datasourceProvider.checkStatus(datasourceRequest);
-
             if (datasource.getType().equalsIgnoreCase("api")) {
                 List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<List<ApiDefinition>>() {
                 }.getType());
@@ -377,6 +378,7 @@ public class DatasourceService {
                     }
                 }
                 if (success == apiDefinitionList.size()) {
+                    datasource.setStatus(datasourceStatus);
                     return ResultHolder.success(datasource);
                 }
                 if (success > 0 && success < apiDefinitionList.size()) {
