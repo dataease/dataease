@@ -340,6 +340,7 @@ public class DatasourceService {
 
                 datasourceDTO.setApiConfiguration(apiDefinitionListWithStatus);
                 if (success == apiDefinitionList.size()) {
+                    datasource.setStatus(datasourceStatus);
                     return ResultHolder.success(datasourceDTO);
                 }
                 if (success > 0 && success < apiDefinitionList.size()) {
