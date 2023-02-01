@@ -1114,23 +1114,9 @@ export default {
         }
       })
     },
-    reloadStatus(apiConfiguration = []) {
-      let arr = []
-      let arrError = []
-      let arrSuccess = []
-      if (!Array.isArray(apiConfiguration)) {
-        arr = JSON.parse(apiConfiguration)
-        if (!Array.isArray(arr)) return
-      }
-      arrError = arr.filter(ele => ele.status === 'Error').map(ele => ele.name)
-      arrSuccess = arr.filter(ele => ele.status === 'Success').map(ele => ele.name)
+    reloadStatus(statusMap = {}) {
       this.form.apiConfiguration.forEach(ele => {
-        if (arrError.includes(ele.name)) {
-          ele.status = 'Error'
-        }
-        if (arrSuccess.includes(ele.name)) {
-          ele.status = 'Success'
-        }
+         ele.status = statusMap[ele.name] || ele.status
       })
     },
     validaDatasource() {
@@ -1183,12 +1169,12 @@ export default {
           data.configurationEncryption = true
           if (data.showModel === 'show' && !this.canEdit) {
             validateDsById(data.id).then((res) => {
+              if (data.type === 'api') {
+                this.reloadStatus(JSON.parse(res.data?.status || '{}'))
+              }
               if (res.success) {
                 this.openMessageSuccess('datasource.validate_success')
               } else {
-                if (data.type === 'api') {
-                  this.reloadStatus(res.data?.configuration)
-                }
                 if (res.message.length < 2500) {
                   this.openMessageSuccess(res.message, 'error')
                 } else {
