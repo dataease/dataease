@@ -103,7 +103,7 @@ public class PanelAppTemplateService {
         PanelAppTemplateWithBLOBs requestTemplate = new PanelAppTemplateWithBLOBs();
         BeanUtils.copyBean(requestTemplate, request);
         //Store static resource into the server
-        if (StringUtils.isNotEmpty(request.getSnapshot())) {
+        if (StringUtils.isNotEmpty(request.getSnapshot()) && request.getSnapshot().indexOf("static-resource") == -1) {
             String snapshotName = "app-template-" + UUIDUtil.getUUIDAsString() + ".jpeg";
             staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
             requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
