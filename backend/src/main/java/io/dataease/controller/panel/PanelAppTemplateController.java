@@ -17,7 +17,7 @@ import java.util.List;
  * Date: 2022/9/8
  * Description:
  */
-@Api(tags = "仪表板：应该关系")
+@Api(tags = "仪表板：应用关系")
 @ApiSupport(order = 170)
 @RestController
 @RequestMapping("appTemplate")
