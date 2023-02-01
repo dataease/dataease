@@ -155,8 +155,14 @@ public class DataSetTableFieldController {
     public DatasetTableField save(@RequestBody DatasetTableField datasetTableField) {
         dataSetTableFieldsService.checkFieldName(datasetTableField);
         try {
-            // 执行一次sql，确保数据集中所有字段均能正确执行
+            // 非直连数据集需先完成数据同步
             DatasetTable datasetTable = dataSetTableService.get(datasetTableField.getTableId());
+            if (datasetTable.getMode() == 1) {
+                if (!dataSetTableService.checkEngineTableIsExists(datasetTableField.getTableId())) {
+                    throw new RuntimeException(Translator.get("i18n_data_not_sync"));
+                }
+            }
+            // 执行一次sql，确保数据集中所有字段均能正确执行
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
             BeanUtils.copyProperties(datasetTable, dataSetTableRequest);
             dataSetTableService.getPreviewData(dataSetTableRequest, 1, 1, Collections.singletonList(datasetTableField), null);
