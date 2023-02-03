@@ -528,15 +528,20 @@
         <repository>
             <id>pentaho-public</id>
             <name>Pentaho Public</name>
-            <url>https://nexus.pentaho.org/content/groups/omni</url>
+            <url>https://repo.orl.eng.hitachivantara.com/artifactory/pnt-mvn/</url>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
+                <updatePolicy>daily</updatePolicy>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
+                <updatePolicy>interval:15</updatePolicy>
             </snapshots>
+        </repository>
+
+        <repository>
+            <id>clojars</id>
+            <url>https://repo.clojars.org/</url>
         </repository>
     </repositories>
 
