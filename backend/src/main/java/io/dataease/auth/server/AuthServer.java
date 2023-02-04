@@ -234,6 +234,7 @@ public class AuthServer implements AuthApi {
             if (StringUtils.isBlank(result)) {
                 result = "success";
             }
+            TokenCacheUtils.remove(token);
         } catch (Exception e) {
             LogUtil.error(e);
             if (StringUtils.isBlank(result)) {
@@ -287,6 +288,7 @@ public class AuthServer implements AuthApi {
             if (StringUtils.isBlank(result)) {
                 result = "success";
             }
+            TokenCacheUtils.remove(token);
         } catch (Exception e) {
             LogUtil.error(e);
             if (StringUtils.isBlank(result)) {
