@@ -11,6 +11,7 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.commons.utils.TokenCacheUtils;
 import io.dataease.listener.util.CacheUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -83,6 +84,9 @@ public class F2CRealm extends AuthorizingRealm {
             token = (String) auth.getCredentials();
             // 解密获得username，用于和数据库进行对比
             tokenInfo = JWTUtils.tokenInfoByToken(token);
+            if (!TokenCacheUtils.validate(token)) {
+                throw new AuthenticationException("token invalid");
+            }
         } catch (Exception e) {
             throw new AuthenticationException(e);
         }
