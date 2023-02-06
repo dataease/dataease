@@ -413,6 +413,10 @@ export default {
       }
     },
     phoneRegex(rule, value, callback) {
+      if (!value || !`${value}`.trim()) {
+        callback()
+        return
+      }
       const regep = new RegExp(/^1[3-9]\d{9}$/)
 
       if (!regep.test(value)) {
