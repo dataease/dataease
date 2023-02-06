@@ -270,5 +270,14 @@
             memoryStoreEvictionPolicy="LRU"
     />
 
+    <cache
+            name="sys_token_store"
+            eternal="true"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="3000"
+            overflowToDisk="true"
+            diskPersistent="false"
+    />
+
 
 </ehcache>

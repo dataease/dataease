@@ -10,6 +10,7 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.commons.utils.TokenCacheUtils;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.StringUtils;
@@ -64,6 +65,9 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         String authorization = httpServletRequest.getHeader("Authorization");
         if (StringUtils.startsWith(authorization, "Basic")) {
             return false;
+        }
+        if (!TokenCacheUtils.validate(authorization)) {
+            throw new AuthenticationException(expireMessage);
         }
         // 当没有出现登录超时 且需要刷新token 则执行刷新token
         if (JWTUtils.loginExpire(authorization)) {
