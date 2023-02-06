@@ -284,7 +284,6 @@ public class DatasourceService {
         datasource.setUpdateTime(System.currentTimeMillis());
         Provider datasourceProvider = ProviderFactory.getProvider(updataDsRequest.getType());
         datasourceProvider.checkConfiguration(datasource);
-        checkAndUpdateDatasourceStatus(datasource);
         updateDatasource(updataDsRequest.getId(), datasource);
     }
 
@@ -295,6 +294,28 @@ public class DatasourceService {
         checkAndUpdateDatasourceStatus(datasource);
         datasourceMapper.updateByExampleSelective(datasource, example);
         handleConnectionPool(id);
+
+        if (datasource.getType().equalsIgnoreCase("api")) {
+            DatasetTableExample datasetTableExample = new DatasetTableExample();
+            datasetTableExample.createCriteria().andDataSourceIdEqualTo(id);
+            List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(datasetTableExample);
+            List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<List<ApiDefinition>>() {}.getType());
+            apiDefinitionList.forEach(apiDefinition -> {
+                if(apiDefinition.isReName()){
+                    datasetTables.forEach(datasetTable -> {
+                        if(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable().equals(apiDefinition.getOrgName())){
+                            DatasetTable record = new DatasetTable();
+                            DataTableInfoDTO dataTableInfoDTO = new DataTableInfoDTO();
+                            dataTableInfoDTO.setTable(apiDefinition.getName());
+                            record.setInfo(new Gson().toJson(dataTableInfoDTO));
+                            datasetTableExample.clear();
+                            datasetTableExample.createCriteria().andIdEqualTo(datasetTable.getId());
+                            datasetTableMapper.updateByExampleSelective(record, datasetTableExample);
+                        }
+                    });
+                }
+            });
+        }
     }
 
     private void handleConnectionPool(String datasourceId) {
@@ -340,6 +361,7 @@ public class DatasourceService {
 
                 datasourceDTO.setApiConfiguration(apiDefinitionListWithStatus);
                 if (success == apiDefinitionList.size()) {
+                    datasource.setStatus(datasourceStatus);
                     return ResultHolder.success(datasourceDTO);
                 }
                 if (success > 0 && success < apiDefinitionList.size()) {

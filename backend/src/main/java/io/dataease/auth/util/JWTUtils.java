@@ -10,6 +10,7 @@ import com.auth0.jwt.interfaces.Verification;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.entity.TokenInfo.TokenInfoBuilder;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.TokenCacheUtils;
 import io.dataease.exception.DataEaseException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -117,7 +118,9 @@ public class JWTUtils {
             Builder builder = JWT.create()
                     .withClaim("username", tokenInfo.getUsername())
                     .withClaim("userId", tokenInfo.getUserId());
-            return builder.withExpiresAt(date).sign(algorithm);
+            String sign = builder.withExpiresAt(date).sign(algorithm);
+            TokenCacheUtils.add(sign, tokenInfo.getUserId());
+            return sign;
 
         } catch (Exception e) {
             return null;
