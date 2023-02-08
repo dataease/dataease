@@ -365,7 +365,7 @@ export default {
       if (result !== 'success' && result !== 'fail') {
         window.location.href = result
       } else {
-        this.$router.push('/login')
+        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
       }
     },
     loadUiInfo() {
