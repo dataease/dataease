@@ -1,5 +1,7 @@
 <template>
-  <div id="main" :style="chartSize"></div>
+  <div :style="chartSize">
+    <div id="main" :style="chartSizeMax"></div>
+  </div>
 </template>
 
 <script>
@@ -20,6 +22,7 @@ export default {
     return {
       measureText: null,
       current: {},
+      maxSize: 0,
       activeId: '',
       treeData: [],
       myChart: null,
@@ -30,12 +33,27 @@ export default {
       }
     }
   },
+  computed: {
+    chartSizeMax() {
+      const { height } = this.chartSize
+      return this.maxSize > parseInt(height)/25  ? {
+        height: this.maxSize * 25  + 'px',
+        width: this.chartSize.width
+      } : this.chartSize
+    }
+  },
   watch: {
     chartSize: {
-      handler(val) {
-        if (this.myChart) {
-          this.myChart.resize(val)
-        }
+      handler() {
+        this.initEchart()
+      },
+      deep: true
+    },
+    chartSizeMax: {
+      handler() {
+        setTimeout(() => {
+          this.initEchart()
+        }, 1000)
       },
       deep: true
     }
@@ -320,11 +338,12 @@ export default {
       }
       return [list, gap]
     },
-    initEchart() {
+    initEchart(clickNode = []) {
       if (this.myChart) {
         this.myChart.dispose()
         this.myChart = null
       }
+
       this.myChart = echarts.init(document.getElementById('main'))
       const that = this
       let [data, gap] = this.calculatedWidth(this.treeData)
@@ -337,6 +356,32 @@ export default {
       gapDetail[this.current.queryType] = 0
       let lineData = this.calculatedLine(data)
       data = this.deleteRepeat(data)
+
+      const lineEnd = [clickNode[0]]
+      lineData = lineData.map(ele => {
+        let arr = [...ele]
+        if (clickNode[0] === ele[0]) {
+          arr.push(1)
+          lineEnd.push(ele[3])
+        } else if(clickNode[0] === ele[3]) {
+          arr.push(1)
+          lineEnd.push(ele[0])
+        } else {
+          arr.push(0)
+        }
+        return arr
+      })
+
+      data = data.map(ele => {
+        let arr = [...ele]
+        arr.push(Boolean(lineEnd.includes(ele[0])))
+        return arr
+      })
+      
+      if (this.maxSize !== data.length) {
+        this.maxSize = data.length
+        return
+      }
       let option = {
         xAxis: {
           show: false, //不显示分隔线,
@@ -413,7 +458,7 @@ export default {
                       width: 15,
                       height: 15,
                       x: 5,
-                      y: 5
+                      y: 3.5
                     }
                   },
                   {
@@ -442,7 +487,7 @@ export default {
                     style: {
                       ...api.style(),
                       fill: api.value(4) === that.activeId ? '#c2d4ff' : 'none',
-                      stroke: '#3370FF'
+                      stroke: api.value(8) ? 'green' : '#3370FF'
                     }
                   }
                 ]
@@ -493,14 +538,14 @@ export default {
                       y1: startPoint[1],
                       x2: endPoint[0] + gapDetail[api.value(5)],
                       y2: endPoint[1],
-                      cpx1:endPoint[0] + gapDetail[api.value(5)] - 100,
+                      cpx1:endPoint[0] + gapDetail[api.value(5)] - 50,
                       cpx2:endPoint[0] + gapDetail[api.value(5)] - 10,
                       cpy1:endPoint[1],
                       cpy2:endPoint[1],
                       percent: 1
                     },
                     style: {
-                      stroke: '#3370FF',
+                      stroke: api.value(7) ? 'green' : '#3370FF',
                       fill: 'transparent',
                       lineWidth: 1
                     }
@@ -513,6 +558,9 @@ export default {
         ]
       }
       this.myChart.setOption(option, true)
+      this.myChart.on('click', function (params) {
+          that.initEchart(params.value)
+      });
     }
   }
 }
