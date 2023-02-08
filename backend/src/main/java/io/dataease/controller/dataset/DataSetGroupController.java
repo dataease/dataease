@@ -9,8 +9,10 @@ import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.controller.request.dataset.DataSetGroupRequest;
 import io.dataease.dto.SysLogDTO;
+import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.plugins.common.base.domain.DatasetGroup;
+import io.dataease.service.authModel.VAuthModelService;
 import io.dataease.service.dataset.DataSetGroupService;
 import io.dataease.service.kettle.KettleService;
 import io.swagger.annotations.Api;
@@ -18,7 +20,9 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,14 +39,18 @@ public class DataSetGroupController {
     @Resource
     private KettleService kettleService;
 
+    @Resource
+    private VAuthModelService vAuthModelService;
+
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id"),
             @DePermission(type = DePermissionType.DATASET, value = "pid", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
     }, logical = Logical.AND)
     @ApiOperation("保存")
     @PostMapping("/save")
-    public DataSetGroupDTO save(@RequestBody DatasetGroup datasetGroup) throws Exception {
-        return dataSetGroupService.save(datasetGroup);
+    public VAuthModelDTO save(@RequestBody DatasetGroup datasetGroup) throws Exception {
+        DataSetGroupDTO result = dataSetGroupService.save(datasetGroup);
+        return vAuthModelService.queryAuthModelByIds("dataset", Arrays.asList(result.getId())).get(0);
     }
 
     @ApiIgnore
