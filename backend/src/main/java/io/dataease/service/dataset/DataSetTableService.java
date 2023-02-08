@@ -1147,8 +1147,8 @@ public class DataSetTableService {
                         subSelect.setAlias(new Alias(rightItem.getAlias().toString(), false));
                     }
                     join.setRightItem(subSelect);
-                    joinsList.add(join);
                 }
+                joinsList.add(join);
             }
             plainSelect.setJoins(joinsList);
         }
