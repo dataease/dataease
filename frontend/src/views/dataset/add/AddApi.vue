@@ -9,7 +9,7 @@
       class="arrow-right"
       @click="showLeft = true"
     >
-      <i class="el-icon-d-arrow-right" />
+      <i class="el-icon-d-arrow-right"/>
     </p>
     <div
       v-show="showLeft"
@@ -172,8 +172,8 @@
           class="data"
         >
           <span class="result-num">{{
-            `${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')}`
-          }}</span>
+              `${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')}`
+            }}</span>
           <div class="table-grid">
             <ux-grid
               ref="plxTable"
@@ -214,11 +214,12 @@
 </template>
 
 <script>
-import { listApiDatasource, post, isKettleRunning } from '@/api/dataset/dataset'
+import { isKettleRunning, listApiDatasource, post } from '@/api/dataset/dataset'
 import { dbPreview, engineMode } from '@/api/system/engine'
 import cancelMix from './cancelMix'
 import msgCfm from '@/components/msgCfm/index'
 import { pySort } from './util'
+import { updateCacheTree } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'AddApi',
@@ -442,6 +443,7 @@ export default {
       post('/dataset/table/batchAdd', tables)
         .then((response) => {
           this.openMessageSuccess('deDataset.set_saved_successfully')
+          updateCacheTree('batchNew', 'dataset-tree', response.data, JSON.parse(localStorage.getItem('dataset-tree')))
           this.cancel(response.data)
         })
         .finally(() => {
@@ -485,10 +487,12 @@ export default {
     border-top-right-radius: 13px;
     border-bottom-right-radius: 13px;
   }
+
   .table-list {
     p {
       margin: 0;
     }
+
     height: 100%;
     width: 240px;
     padding: 16px 12px;
@@ -501,6 +505,7 @@ export default {
       display: flex;
       justify-content: space-between;
       color: var(--deTextPrimary, #1f2329);
+
       i {
         cursor: pointer;
         font-size: 12px;
@@ -511,6 +516,7 @@ export default {
     .search {
       margin: 12px 0;
     }
+
     .ds-list {
       margin: 12px 0 24px 0;
       width: 100%;
@@ -519,6 +525,7 @@ export default {
     .table-checkbox-list {
       height: calc(100% - 190px);
       overflow-y: auto;
+
       .item {
         height: 40px;
         width: 100%;
@@ -556,12 +563,14 @@ export default {
           text-overflow: ellipsis;
           white-space: nowrap;
         }
+
         .error-name-exist {
           position: absolute;
           top: 10px;
           right: 10px;
         }
       }
+
       .not-allow {
         cursor: not-allowed;
         color: var(--deTextDisable, #bbbfc4);
@@ -573,6 +582,7 @@ export default {
     font-family: PingFang SC;
     flex: 1;
     overflow: hidden;
+
     .top-table-detail {
       height: 64px;
       width: 100%;
@@ -580,6 +590,7 @@ export default {
       background: #f5f6f7;
       display: flex;
       align-items: center;
+
       .el-select {
         width: 120px;
         margin-right: 12px;
@@ -593,6 +604,7 @@ export default {
       display: flex;
       align-items: center;
       position: relative;
+
       .name {
         font-size: 14px;
         font-weight: 400;
@@ -611,6 +623,7 @@ export default {
       height: calc(100% - 140px);
       width: 100%;
       box-sizing: border-box;
+
       .result-num {
         font-weight: 400;
         display: inline-block;

@@ -8,6 +8,29 @@
         <result column="is_plugin" jdbcType="VARCHAR" property="isPlugin"/>
     </resultMap>
 
+    <select id="queryAuthModelByIds" resultMap="ExtResultMap">
+        SELECT
+        v_auth_model.id,
+        v_auth_model.name,
+        v_auth_model.label,
+        v_auth_model.pid,
+        v_auth_model.node_type,
+        v_auth_model.model_type,
+        v_auth_model.model_inner_type,
+        v_auth_model.auth_type,
+        v_auth_model.create_by,
+        v_auth_model.level,
+        v_auth_model.mode,
+        v_auth_model.data_source_id,
+        get_auths(v_auth_model.id, #{modelType}, #{userId}) as `privileges`
+        FROM
+        v_auth_model where v_auth_model.model_type = #{modelType} and v_auth_model.id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+        ORDER BY v_auth_model.node_type desc, CONVERT(v_auth_model.label using gbk) asc
+    </select>
+
     <select id="queryAuthModel" resultMap="ExtResultMap">
         SELECT
         v_auth_model.id,
@@ -137,10 +160,8 @@
 
 
     <select id="queryAuthViewsOriginal" resultMap="ExtResultMap">
-        SELECT
-            *
-        FROM
-            v_history_chart_view viewsOriginal
+        SELECT *
+        FROM v_history_chart_view viewsOriginal
         ORDER BY viewsOriginal.node_type desc, CONVERT(viewsOriginal.label using gbk) asc
     </select>
 
