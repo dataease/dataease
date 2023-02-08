@@ -4,7 +4,7 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.dto.authModel.VAuthModelDTO;
-import io.dataease.ext.*;
+import io.dataease.ext.ExtVAuthModelMapper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +25,22 @@ public class VAuthModelService {
     @Resource
     private ExtVAuthModelMapper extVAuthModelMapper;
 
+    public List<VAuthModelDTO> queryAuthModelByIds(String modelType, List<String> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        List<VAuthModelDTO> result = extVAuthModelMapper.queryAuthModelByIds(String.valueOf(AuthUtils.getUser().getUserId()), modelType, ids);
+        if (CollectionUtils.isEmpty(result)) {
+            return new ArrayList<>();
+        } else {
+            return result;
+        }
+    }
+
     public List<VAuthModelDTO> queryAuthModel(VAuthModelRequest request) {
         request.setUserId(String.valueOf(AuthUtils.getUser().getUserId()));
         List<VAuthModelDTO> result = extVAuthModelMapper.queryAuthModel(request);
-        if(CollectionUtils.isEmpty(result)){
+        if (CollectionUtils.isEmpty(result)) {
             return new ArrayList<>();
         }
         if (request.getPrivileges() != null) {
@@ -44,7 +56,7 @@ public class VAuthModelService {
     }
 
     private List<VAuthModelDTO> filterPrivileges(VAuthModelRequest request, List<VAuthModelDTO> result) {
-        if(AuthUtils.getUser().getIsAdmin()){
+        if (AuthUtils.getUser().getIsAdmin()) {
             return result;
         }
         if (request.getPrivileges() != null) {
