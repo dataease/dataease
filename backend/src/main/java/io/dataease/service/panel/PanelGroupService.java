@@ -10,6 +10,7 @@ import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
+import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.panel.*;
 import io.dataease.dto.DatasourceDTO;
@@ -652,6 +653,7 @@ public class PanelGroupService {
     public void exportPanelViewDetails(PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
         OutputStream outputStream = response.getOutputStream();
         try {
+            findExcelData(request);
             String snapshot = request.getSnapshot();
             List<Object[]> details = request.getDetails();
             Integer[] excelTypes = request.getExcelTypes();
@@ -1089,6 +1091,32 @@ public class PanelGroupService {
         request.setUpdateTime(time);
         request.setUpdateBy(AuthUtils.getUser().getUsername());
         panelGroupMapper.updateByPrimaryKeySelective(request);
+    }
+
+    public void findExcelData(PanelViewDetailsRequest request) {
+        ChartViewWithBLOBs viewInfo = chartViewService.get(request.getViewId());
+        if ("table-info".equals(viewInfo.getType())) {
+            try {
+                List<String> excelHeaderKeys = request.getExcelHeaderKeys();
+                ChartExtRequest componentFilterInfo = request.getComponentFilterInfo();
+                componentFilterInfo.setGoPage(1l);
+                componentFilterInfo.setPageSize(1000000l);
+                componentFilterInfo.setExcelExportFlag(true);
+                ChartViewDTO chartViewInfo = chartViewService.getData(request.getViewId(), componentFilterInfo);
+                List<Map> tableRow = (List) chartViewInfo.getData().get("tableRow");
+                List<Object[]> result = new ArrayList<>();
+                for (Map detailMap : tableRow) {
+                    List<Object> detailObj = new ArrayList<>();
+                    for (String key : excelHeaderKeys) {
+                        detailObj.add(detailMap.get(key));
+                    }
+                    result.add(detailObj.toArray());
+                }
+                request.setDetails(result);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
 
     }
 }
