@@ -53,7 +53,7 @@ const routeBefore = (callBack) => {
     callBack()
   }
 }
-router.beforeEach(async(to, from, next) => routeBefore(() => {
+router.beforeEach(async (to, from, next) => routeBefore(() => {
   // start progress bar
   NProgress.start()
   const mobileIgnores = ['/delink']
@@ -118,8 +118,7 @@ router.beforeEach(async(to, from, next) => routeBefore(() => {
       next()
     } else {
       // other pages that do not have permission to access are redirected to the login page.
-      // next(`/login?redirect=${to.path}`)
-      next('/login')
+      next(`/login?redirect=${to.path}`)
       NProgress.done()
     }
   }

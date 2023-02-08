@@ -7,7 +7,6 @@
     <div class="container-wrapper">
       <el-form
         ref="form"
-        :rules="rules"
         :inline="true"
         :model="formInline"
         class="de-form-inline"
@@ -15,6 +14,7 @@
         <el-form-item
           prop="queryType"
           :label="$t('commons.adv_search.search') + $t('table.type')"
+          :required="true"
         >
           <el-select
             v-model="formInline.queryType"
@@ -31,8 +31,8 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          prop="dataSourceName"
           :label="queryTypeTitle"
+          :error="errorMsg"
         >
           <el-popover
             v-model="showTree"
@@ -72,24 +72,15 @@
                 </span>
               </span>
             </el-tree>
-            <el-select
+            <el-input
               ref="treeSelect"
               slot="reference"
-              v-model="formInline.dataSourceName"
-              filterable
-              remote
-              :filter-method="filterMethod"
-              :title="nodeData.name"
-              popper-class="tree-select"
-              @focus="showTree = true"
-            >
-              <el-option
-                v-for="item in ignoredOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              />
-            </el-select>
+              v-model="querySelected"
+              :placeholder="queryPlaceholder"
+              @click.native.stop="showTree = true"
+              @input="onQueryInput"
+              @focus="onQueryFocus"
+            />
           </el-popover>
         </el-form-item>
         <el-form-item style="float: right">
@@ -186,10 +177,6 @@ export default {
         queryType: 'datasource',
         dataSourceName: ''
       },
-      rules: {
-        queryType: [{ required: true, trigger: 'blur' }],
-        dataSourceName: [{ required: true, trigger: 'blur', message: this.$t('chart.name_can_not_empty') }]
-      },
       queryTypeNameList: [
         {
           label: 'commons.datasource',
@@ -218,11 +205,13 @@ export default {
         total: 0
       },
       resourceTreeData: [],
-      ignoredOptions: [],
       showTree: false,
       nodeData: {},
       popoverSize: 400,
-      currentNode: {}
+      currentNode: {},
+      querySelected: '',
+      queryPlaceholder: '',
+      errorMsg: ''
     }
   },
   computed: {
@@ -271,7 +260,9 @@ export default {
     data,
     activeQueryType(activeIcon) {
       this.activeIcon = activeIcon
-      this.onSubmit()
+      if (this.formInline.dataSourceName) {
+        this.onSubmit()
+      }
     },
     async searchDetail(id, queryType, name) {
       switch (queryType) {
@@ -289,7 +280,7 @@ export default {
       }
       this.formInline = { queryType, dataSourceName: id }
       this.nodeData = { id, name }
-      this.ignoredOptions = [this.nodeData]
+      this.querySelected = this.queryPlaceholder = name
       this.$refs.resourceTree.setCurrentKey(id)
       const currentParents = this.$refs.resourceTree.getNodePath(this.nodeData)
       currentParents.forEach((node) => {
@@ -438,6 +429,7 @@ export default {
       this.resourceTreeData = []
       this.nodeData = {}
       this.currentNode = {}
+      this.querySelected = this.queryPlaceholder = ''
       switch (val) {
         case 'datasource': {
           this.listDatasource()
@@ -456,15 +448,16 @@ export default {
       }
     },
     onSubmit() {
-      this.$refs.form.validate((valid) => {
-        if (valid) {
-          if (this.activeIcon === 'date') {
-            this.getChartData()
-          } else {
-            this.$refs.consanguinity.getChartData(this.current)
-          }
-        }
-      })
+      if (!this.formInline.dataSourceName) {
+        this.errorMsg = this.$t('chart.name_can_not_empty')
+        return
+      }
+      this.errorMsg = ''
+      if (this.activeIcon === 'date') {
+        this.getChartData()
+      } else {
+        this.$refs.consanguinity.getChartData(this.current)
+      }
     },
     handleSizeChange(pageSize) {
       this.paginationConfig.currentPage = 1
@@ -528,32 +521,38 @@ export default {
       }
       return data.name.toLowerCase().indexOf(value.toLowerCase()) !== -1
     },
-    filterMethod(filterText) {
+    onQueryInput(filterText) {
       this.$refs.resourceTree.filter(filterText)
+    },
+    onQueryFocus() {
+      this.querySelected = ''
     },
     nodeClick(data, node) {
       if (node.isLeaf) {
-        this.ignoredOptions = [{ id: data.id, name: data.name }]
         this.formInline.dataSourceName = data.id
         this.showTree = false
         this.nodeData = data
         this.currentNode = node
+        this.querySelected = this.queryPlaceholder = data.name
+        this.errorMsg = ''
       }
     },
     resetFilter() {
       if (this.showTree) {
         this.showTree = false
+        this.querySelected = this.queryPlaceholder = this.nodeData.name
         this.$refs.resourceTree.filter()
         this.$refs.resourceTree.setCurrentKey(this.formInline.dataSourceName)
         if (this.formInline.dataSourceName === '') {
           this.$refs.resourceTree.setCurrentKey(null)
         }
+        const nodesMap = this.$refs.resourceTree.store.nodesMap || {}
+        let currentParents = []
         if (this.formInline.dataSourceName) {
-          const currentParents = this.$refs.resourceTree.getNodePath(this.nodeData).map((item) => item.id)
-          const nodesMap = this.$refs.resourceTree.store.nodesMap || {}
-          for (const key in nodesMap) {
-            nodesMap[key].expanded = currentParents.includes(key)
-          }
+          currentParents = this.$refs.resourceTree.getNodePath(this.nodeData).map((item) => item.id)
+        }
+        for (const key in nodesMap) {
+          nodesMap[key].expanded = currentParents.includes(key)
         }
       }
     }
