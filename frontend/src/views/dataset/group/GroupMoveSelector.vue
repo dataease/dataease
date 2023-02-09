@@ -23,8 +23,8 @@
           :class="treeClass(data, node)"
         >
           <span style="display: flex; flex: 1; width: 0">
-            <span v-if="data.type === 'group'">
-              <svg-icon icon-class="scene" />
+            <span v-if="data.modelInnerType === 'group'">
+              <svg-icon icon-class="scene"/>
             </span>
             <span
               style="
@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { groupTree } from '@/api/dataset/dataset'
+import { formatDatasetTreeFolder, getCacheTree } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'GroupMoveSelector',
@@ -87,22 +87,23 @@ export default {
   },
   methods: {
     tree(group) {
-      groupTree(group).then((res) => {
-        if (this.moveDir) {
-          this.tData = [
-            {
-              id: '0',
-              name: this.$t('dataset.dataset_group'),
-              pid: '0',
-              privileges: 'grant,manage,use',
-              type: 'group',
-              children: res.data
-            }
-          ]
-          return
-        }
-        this.tData = res.data
-      })
+      const treeData = getCacheTree('dataset-tree')
+      formatDatasetTreeFolder(treeData)
+      if (this.moveDir) {
+        this.tData = [
+          {
+            id: '0',
+            name: this.$t('dataset.dataset_group'),
+            pid: '0',
+            privileges: 'grant,manage,use',
+            modelInnerType: 'group',
+            children: treeData
+          }
+        ]
+        return
+      } else {
+        this.tData = treeData
+      }
     },
     filterNode(value, data) {
       if (!value) return true
@@ -143,10 +144,12 @@ export default {
 <style lang="scss">
 .ds-move-tree {
   height: 100%;
+
   .tree {
     height: calc(100% - 115px);
     overflow-y: auto;
   }
+
   .select-tree-keywords {
     color: var(--primary, #3370ff);
   }

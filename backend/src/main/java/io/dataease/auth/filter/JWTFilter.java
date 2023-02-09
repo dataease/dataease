@@ -71,9 +71,11 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         }
         // 当没有出现登录超时 且需要刷新token 则执行刷新token
         if (JWTUtils.loginExpire(authorization)) {
+            TokenCacheUtils.remove(authorization);
             throw new AuthenticationException(expireMessage);
         }
         if (JWTUtils.needRefresh(authorization)) {
+            TokenCacheUtils.remove(authorization);
             authorization = refreshToken(request, response);
         }
         JWTToken token = new JWTToken(authorization);
