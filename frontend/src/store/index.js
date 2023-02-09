@@ -152,7 +152,8 @@ const data = {
     },
     previewVisible: false,
     previewComponentData: [],
-    currentCanvasNewId: []
+    currentCanvasNewId: [],
+    lastViewRequestInfo: {}
   },
   mutations: {
     ...animation.mutations,
@@ -609,6 +610,9 @@ const data = {
     },
     resetViewEditInfo(state) {
       state.panelViewEditInfo = {}
+    },
+    setLastViewRequestInfo(state, viewRequestInfo) {
+      state.lastViewRequestInfo[viewRequestInfo.viewId] = viewRequestInfo.requestInfo
     },
     removeCurBatchComponentWithId(state, id) {
       for (let index = 0; index < state.curBatchOptComponents.length; index++) {
