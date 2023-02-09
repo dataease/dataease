@@ -111,8 +111,8 @@
               class="no-tdata-new"
               @click="() => clickAdd()"
             >{{
-              $t('deDataset.create')
-            }}</span>
+                $t('deDataset.create')
+              }}</span>
           </div>
           <el-tree
             v-else
@@ -134,7 +134,7 @@
             >
               <span style="display: flex; flex: 1; width: 0">
                 <span>
-                  <svg-icon icon-class="scene" />
+                  <svg-icon icon-class="scene"/>
                 </span>
                 <span
                   style="
@@ -242,15 +242,15 @@
                       class="de-card-dropdown"
                     >
                       <el-dropdown-item command="rename">
-                        <svg-icon icon-class="de-ds-rename" />
+                        <svg-icon icon-class="de-ds-rename"/>
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="move">
-                        <svg-icon icon-class="de-ds-move" />
+                        <svg-icon icon-class="de-ds-move"/>
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="delete">
-                        <svg-icon icon-class="de-ds-trash" />
+                        <svg-icon icon-class="de-ds-trash"/>
                         {{ $t('dataset.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -353,15 +353,15 @@
                       class="de-card-dropdown"
                     >
                       <el-dropdown-item command="editTable">
-                        <svg-icon icon-class="de-ds-rename" />
+                        <svg-icon icon-class="de-ds-rename"/>
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="moveDs">
-                        <svg-icon icon-class="de-ds-move" />
+                        <svg-icon icon-class="de-ds-move"/>
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="deleteTable">
-                        <svg-icon icon-class="de-ds-trash" />
+                        <svg-icon icon-class="de-ds-trash"/>
                         {{ $t('dataset.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -405,7 +405,8 @@
           <deBtn
             secondary
             @click="close()"
-          >{{ $t('dataset.cancel') }}</deBtn>
+          >{{ $t('dataset.cancel') }}
+          </deBtn>
           <deBtn
             type="primary"
             @click="saveGroup(groupForm)"
@@ -433,7 +434,7 @@
           :label="$t('dataset.name')"
           prop="name"
         >
-          <el-input v-model="tableForm.name" />
+          <el-input v-model="tableForm.name"/>
         </el-form-item>
       </el-form>
       <div
@@ -444,8 +445,9 @@
           secondary
           @click="closeTable()"
         >{{
-          $t('dataset.cancel')
-        }}</deBtn>
+            $t('dataset.cancel')
+          }}
+        </deBtn>
         <deBtn
           type="primary"
           @click="saveTable(tableForm)"
@@ -467,8 +469,8 @@
           :title="moveDialogTitle"
           class="text-overflow"
         >{{
-          moveDialogTitle
-        }}</span>
+            moveDialogTitle
+          }}</span>
         {{ $t('dataset.m2') }}
       </template>
       <group-move-selector
@@ -481,8 +483,9 @@
           secondary
           @click="closeMoveGroup()"
         >{{
-          $t('dataset.cancel')
-        }}</deBtn>
+            $t('dataset.cancel')
+          }}
+        </deBtn>
         <deBtn
           :disabled="groupMoveConfirmDisabled"
           type="primary"
@@ -505,8 +508,8 @@
           :title="moveDialogTitle"
           class="text-overflow"
         >{{
-          moveDialogTitle
-        }}</span>
+            moveDialogTitle
+          }}</span>
         {{ $t('dataset.m2') }}
       </template>
       <group-move-selector
@@ -518,8 +521,9 @@
           secondary
           @click="closeMoveDs()"
         >{{
-          $t('dataset.cancel')
-        }}</deBtn>
+            $t('dataset.cancel')
+          }}
+        </deBtn>
         <deBtn
           :disabled="dsMoveConfirmDisabled"
           type="primary"
@@ -530,21 +534,12 @@
     </el-drawer>
 
     <!-- 新增数据集文件夹 -->
-    <CreatDsGroup ref="CreatDsGroup" />
+    <CreatDsGroup ref="CreatDsGroup"/>
   </el-col>
 </template>
 
 <script>
-import {
-  loadTable,
-  getScene,
-  addGroup,
-  delGroup,
-  delTable,
-  post,
-  isKettleRunning,
-  alter
-} from '@/api/dataset/dataset'
+import { addGroup, alter, delGroup, delTable, getScene, isKettleRunning, loadTable, post } from '@/api/dataset/dataset'
 import { getDatasetRelationship } from '@/api/chart/chart.js'
 
 import msgContent from '@/views/system/datasource/MsgContent.vue'
@@ -555,6 +550,7 @@ import { engineMode } from '@/api/system/engine'
 import _ from 'lodash'
 import msgCfm from '@/components/msgCfm/index'
 import { checkPermission } from '@/utils/permission'
+import { updateCacheTree } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'Group',
@@ -688,34 +684,49 @@ export default {
     })
   },
   mounted() {
-    const { id, name } = this.$route.params
-    this.treeLoading = true
-    queryAuthModel({ modelType: 'dataset' }, true)
-      .then((res) => {
-        localStorage.setItem('dataset-tree', JSON.stringify(res.data))
-        this.tData = res.data || []
-        this.$nextTick(() => {
-          this.$refs.datasetTreeRef?.filter(this.filterText)
-          if (id && name.includes(this.filterText)) {
-            this.dfsTableData(this.tData, id)
-          } else {
-            const currentNodeId = sessionStorage.getItem('dataset-current-node')
-            if (currentNodeId) {
-              sessionStorage.setItem('dataset-current-node', '')
-              this.dfsTableData(this.tData, currentNodeId)
-            }
-          }
-        })
-      })
-      .finally(() => {
-        this.treeLoading = false
-      })
-    this.refresh()
+    this.init(true)
   },
   beforeDestroy() {
     sessionStorage.setItem('dataset-current-node', this.currentNodeId)
   },
   methods: {
+    init(cache = true) {
+      const { id, name } = this.$route.params
+      const modelInfo = localStorage.getItem('dataset-tree')
+      const userCache = modelInfo && cache
+      if (userCache) {
+        this.tData = JSON.parse(modelInfo)
+        this.queryAfter(id)
+      } else {
+        this.treeLoading = true
+      }
+      queryAuthModel({ modelType: 'dataset' }, !userCache)
+        .then((res) => {
+          localStorage.setItem('dataset-tree', JSON.stringify(res.data))
+          if (!userCache) {
+            this.tData = res.data || []
+            this.queryAfter(id)
+          }
+        })
+        .finally(() => {
+          this.treeLoading = false
+        })
+      this.refresh()
+    },
+    queryAfter(id) {
+      this.$nextTick(() => {
+        this.$refs.datasetTreeRef?.filter(this.filterText)
+        if (id && name.includes(this.filterText)) {
+          this.dfsTableData(this.tData, id)
+        } else {
+          const currentNodeId = sessionStorage.getItem('dataset-current-node')
+          if (currentNodeId) {
+            sessionStorage.setItem('dataset-current-node', '')
+            this.dfsTableData(this.tData, currentNodeId)
+          }
+        }
+      })
+    },
     getDatasetRelationship({ queryType, label, id }) {
       return getDatasetRelationship(id).then((res) => {
         const arr = res.data ? [res.data] : []
@@ -852,7 +863,8 @@ export default {
             this.close()
             this.openMessageSuccess('dataset.save_success')
             this.expandedArray.push(group.pid)
-            this.treeNode()
+            const opt = group.id ? 'rename' : 'new'
+            updateCacheTree(opt, 'dataset-tree', res.data, this.tData)
           })
         } else {
           return false
@@ -872,7 +884,9 @@ export default {
             this.openMessageSuccess('dataset.save_success')
             _this.expandedArray.push(table.sceneId)
             _this.$refs.datasetTreeRef.setCurrentKey(table.id)
-            _this.treeNode()
+            const renameNode = { id: table.id, name: table.name, label: table.name }
+            updateCacheTree('rename', 'dataset-tree', renameNode, this.tData)
+            ('rename', 'dataset-tree', response.data, this.tData)
             this.$emit('switchComponent', { name: '' })
           })
         } else {
@@ -894,11 +908,12 @@ export default {
         .then(() => {
           delGroup(data.id).then((response) => {
             this.openMessageSuccess('dataset.delete_success')
-            this.treeNode()
+            updateCacheTree('delete', 'dataset-tree', data.id, this.tData)
             this.$emit('switchComponent', { name: '' })
           })
         })
-        .catch(() => {})
+        .catch(() => {
+        })
     },
 
     async deleteTable(data) {
@@ -916,7 +931,7 @@ export default {
         cb: () => {
           delTable(data.id).then((response) => {
             this.openMessageSuccess('dataset.delete_success')
-            this.treeNode()
+            updateCacheTree('delete', 'dataset-tree', data.id, this.tData)
             this.$emit('switchComponent', { name: '' })
             this.$store.dispatch('dataset/setTable', new Date().getTime())
           })
@@ -1108,7 +1123,7 @@ export default {
       addGroup(this.groupForm).then((res) => {
         this.openMessageSuccess('dept.move_success')
         this.closeMoveGroup()
-        this.treeNode()
+        updateCacheTree('move', 'dataset-tree', res.data, this.tData)
       })
     },
     targetGroup(val) {
@@ -1133,12 +1148,14 @@ export default {
     },
     saveMoveDs() {
       const newSceneId = this.tDs.id
+      const nodeId = this.dsForm.id
       this.dsForm.sceneId = newSceneId
       this.dsForm.isRename = true
       alter(this.dsForm).then((res) => {
         this.closeMoveDs()
         this.expandedArray.push(newSceneId)
-        this.treeNode()
+        const moveNode = { id: nodeId, pid: newSceneId }
+        updateCacheTree('move', 'dataset-tree', moveNode, this.tData)
         this.openMessageSuccess('移动成功')
       })
     },
@@ -1213,6 +1230,7 @@ export default {
 
 .custom-tree-container {
   margin-top: 10px;
+
   .no-tdata {
     text-align: center;
     margin-top: 80px;
@@ -1220,6 +1238,7 @@ export default {
     font-size: 14px;
     color: var(--deTextSecondary, #646a73);
     font-weight: 400;
+
     .no-tdata-new {
       cursor: pointer;
       color: var(--primary, #3370ff);
@@ -1273,6 +1292,7 @@ export default {
   width: 100%;
   display: flex;
 }
+
 .scene-title-name {
   width: 100%;
   overflow: hidden;
@@ -1280,9 +1300,11 @@ export default {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
 .father .child {
   visibility: hidden;
 }
+
 .father:hover .child {
   visibility: visible;
 }
@@ -1299,19 +1321,25 @@ export default {
   padding: 10px 24px;
   height: 100%;
   overflow-y: auto;
+
   .main-area-input {
+    //width: calc(100% - 80px);
+
     .el-input-group__append {
       width: 70px;
       background: transparent;
+
       .el-input__inner {
         padding-left: 12px;
       }
     }
   }
+
   .title-css {
     display: flex;
     justify-content: space-between;
   }
+
   .el-icon-plus {
     width: 28px;
     height: 28px;
@@ -1332,6 +1360,7 @@ export default {
     }
   }
 }
+
 .de-dataset-dropdown {
   .el-dropdown-menu__item {
     height: 40px;
@@ -1342,6 +1371,7 @@ export default {
     font-family: PingFang SC;
     font-size: 14px;
     font-weight: 400;
+
     .svg-icon {
       margin-right: 8.75px;
       width: 16.5px;
@@ -1358,6 +1388,7 @@ export default {
       color: #fff;
     }
   }
+
   .de-top-border {
     border-top: 1px solid rgba(31, 35, 41, 0.15);
   }

@@ -770,6 +770,9 @@ export default {
           if (response.success) {
             this.chart = response.data
             this.view = response.data
+            if (this.chart.type.includes('table')) {
+              this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
+            }
             this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
             this.$emit('fill-chart-2-parent', this.chart)
             this.getDataOnly(response.data, dataBroadcast)
@@ -912,6 +915,7 @@ export default {
       tableChart.customAttr.color.tableHeaderFontColor = '#7c7e81'
       tableChart.customAttr.color.tableFontColor = '#7c7e81'
       tableChart.customAttr.color.tableStripe = true
+      tableChart.customAttr.size.tablePageMode = 'pull'
       tableChart.customStyle.text.show = false
       tableChart.customAttr = JSON.stringify(tableChart.customAttr)
       tableChart.customStyle = JSON.stringify(tableChart.customStyle)

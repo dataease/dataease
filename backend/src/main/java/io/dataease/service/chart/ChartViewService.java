@@ -526,7 +526,8 @@ public class ChartViewService {
                 }
             }
             List<ChartViewFieldDTO> xAxisForRequest = new ArrayList<>();
-            xAxisForRequest.addAll(xAxis); xAxisForRequest.addAll(extStack);
+            xAxisForRequest.addAll(xAxis);
+            xAxisForRequest.addAll(extStack);
             datasourceRequest.setXAxis(xAxisForRequest);
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
@@ -655,7 +656,7 @@ public class ChartViewService {
         Map<String, Object> mapAttr = gson.fromJson(view.getCustomAttr(), Map.class);
         Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("size");
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0) {
-            if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+            if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page") && !chartExtRequest.getExcelExportFlag()) {
                 if (chartExtRequest.getGoPage() == null) {
                     chartExtRequest.setGoPage(1L);
                 }
@@ -1043,7 +1044,8 @@ public class ChartViewService {
 
             datasourceRequest.setQuery(querySql);
             List<ChartViewFieldDTO> xAxisForRequest = new ArrayList<>();
-            xAxisForRequest.addAll(xAxis); xAxisForRequest.addAll(extStack);
+            xAxisForRequest.addAll(xAxis);
+            xAxisForRequest.addAll(extStack);
             datasourceRequest.setXAxis(xAxisForRequest);
             data = datasourceProvider.getData(datasourceRequest);
             if (CollectionUtils.isNotEmpty(assistFields)) {

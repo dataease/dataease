@@ -192,7 +192,7 @@ const actions = {
   setLanguage({ commit }, language) {
     languageApi(language).then(() => {
       commit('SET_LANGUAGE', language)
-      router.go(0)
+      location.reload()
     })
   },
   setLinkToken({ commit }, linkToken) {

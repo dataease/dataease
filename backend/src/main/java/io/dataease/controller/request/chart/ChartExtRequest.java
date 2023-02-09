@@ -5,6 +5,7 @@ import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.List;
 
 /**
@@ -47,5 +48,7 @@ public class ChartExtRequest {
     private Long goPage;
 
     private Long pageSize;
+
+    private Boolean excelExportFlag = false;
 
 }
