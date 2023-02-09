@@ -1,4 +1,4 @@
-querySql(limitFiled, groups, aggregators, filters, orders, table, notUseAs)
+querySql(limitFiled, groups, aggregators, filters, orders, table, notUseAs, useAliasForGroup)
 ::=<<
 SELECT
 <if(limitFiled)>
@@ -25,7 +25,12 @@ WHERE
 <endif>
 <if(groups)>
 GROUP BY
+<if(!useAliasForGroup)>
     <groups:{group|<if(group)><group.fieldName><endif>}; separator=",\n">
+<endif>
+<if(useAliasForGroup)>
+    <groups:{group|<if(group)><group.fieldAlias><endif>}; separator=",\n">
+<endif>
 <endif>
 <if(orders)>
 ORDER BY
@@ -34,7 +39,7 @@ ORDER BY
 >>
 
 
-previewSql(limitFiled, groups, aggregators, filters, orders, table, isGroup, notUseAs)
+previewSql(limitFiled, groups, aggregators, filters, orders, table, isGroup, notUseAs, useAliasForGroup)
 ::=<<
 SELECT
 <if(limitFiled)>
@@ -61,7 +66,12 @@ WHERE
 <endif>
 <if(isGroup && groups)>
 GROUP BY
+<if(!useAliasForGroup)>
     <groups:{group|<if(group)><group.fieldName><endif>}; separator=",\n">
+<endif>
+<if(useAliasForGroup)>
+    <groups:{group|<if(group)><group.fieldAlias><endif>}; separator=",\n">
+<endif>
 <endif>
 <if(orders)>
 ORDER BY
