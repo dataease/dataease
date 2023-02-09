@@ -240,7 +240,7 @@ export default {
             showClose: true
           })
           this.loading = false
-          this.$emit('closeEditPanelDialog', { id: response.data, name: this.editPanel.panelInfo.name })
+          this.$emit('closeEditPanelDialog', response.data)
         }).catch(() => {
           this.loading = false
         })
