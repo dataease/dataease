@@ -29,7 +29,7 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Api(tags = "权限管理")
+@Api(tags = "xpack：权限管理")
 @RequestMapping("/plugin/auth")
 @RestController
 public class XAuthServer {
