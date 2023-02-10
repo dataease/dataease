@@ -23,14 +23,13 @@ FROM
 WHERE
     <filters:{filter|<if(filter)><filter><endif>}; separator="\nAND ">
 <endif>
-<if(groups)>
+<if(groups && !useAliasForGroup)>
 GROUP BY
-<if(!useAliasForGroup)>
     <groups:{group|<if(group)><group.fieldName><endif>}; separator=",\n">
 <endif>
-<if(useAliasForGroup)>
+<if(groups && useAliasForGroup)>
+GROUP BY
     <groups:{group|<if(group)><group.fieldAlias><endif>}; separator=",\n">
-<endif>
 <endif>
 <if(orders)>
 ORDER BY
@@ -64,14 +63,13 @@ FROM
 WHERE
     <filters:{filter|<if(filter)><filter><endif>}; separator="\nAND ">
 <endif>
-<if(isGroup && groups)>
+<if(groups && !useAliasForGroup)>
 GROUP BY
-<if(!useAliasForGroup)>
     <groups:{group|<if(group)><group.fieldName><endif>}; separator=",\n">
 <endif>
-<if(useAliasForGroup)>
+<if(groups && useAliasForGroup)>
+GROUP BY
     <groups:{group|<if(group)><group.fieldAlias><endif>}; separator=",\n">
-<endif>
 <endif>
 <if(orders)>
 ORDER BY
