@@ -162,6 +162,7 @@ public class XAuthServer {
     }
 
     @GetMapping("/getDatasourceTypes")
+    @ApiOperation("查询授权的数据类型")
     public List<DatasourceBaseType> getDatasourceTypes() {
         Collection<DataSourceType> activeType = datasourceService.types();
         Map<String, String> activeTypeMap = activeType.stream().collect(Collectors.toMap(DataSourceType::getType, DataSourceType::getName));
