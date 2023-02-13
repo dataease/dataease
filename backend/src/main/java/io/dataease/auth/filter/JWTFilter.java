@@ -66,7 +66,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         if (StringUtils.startsWith(authorization, "Basic")) {
             return false;
         }
-        if (!TokenCacheUtils.validate(authorization) && TokenCacheUtils.validateDelay(authorization)) {
+        if (!TokenCacheUtils.validate(authorization) && !TokenCacheUtils.validateDelay(authorization)) {
             throw new AuthenticationException(expireMessage);
         }
         // 当没有出现登录超时 且需要刷新token 则执行刷新token
