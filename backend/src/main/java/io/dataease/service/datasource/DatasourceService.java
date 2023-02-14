@@ -63,6 +63,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -644,6 +646,24 @@ public class DatasourceService {
     public void initDsCheckJob() {
         BasicInfo basicInfo = systemParameterService.basicInfo();
         addJob(basicInfo.getDsCheckIntervalType(), Integer.valueOf(basicInfo.getDsCheckInterval()));
+    }
+
+    public void updateDemoDs() {
+        Datasource datasource = datasourceMapper.selectByPrimaryKey("76026997-94f9-4a35-96ca-151084638969");
+        MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);
+        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+        Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
+        if (!matcher.find()) {
+            return;
+        }
+        mysqlConfiguration.setHost(matcher.group(1));
+        mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
+        mysqlConfiguration.setDataBase(matcher.group(3).split("\\?")[0]);
+        mysqlConfiguration.setExtraParams(matcher.group(3).split("\\?")[1]);
+        mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
+        mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
+        datasource.setConfiguration(new Gson().toJson(mysqlConfiguration));
+        datasourceMapper.updateByPrimaryKey(datasource);
     }
 
 }
