@@ -237,8 +237,10 @@ import { $alert } from '@/utils/message'
 import store from '@/store'
 import msgCfm from '@/components/msgCfm/index'
 import cancelMix from './cancelMix'
+import Config from "@/settings";
 
 const token = getToken()
+const RefreshTokenKey = Config.RefreshTokenKey
 
 export default {
   name: 'AddExcel',
@@ -453,6 +455,12 @@ export default {
         this.$refs.tree.setCheckedKeys(this.defaultCheckedKeys)
       })
       this.fileList = fileList
+
+      if (response.headers[RefreshTokenKey]) {
+        const refreshToken = response.headers[RefreshTokenKey]
+        setToken(refreshToken)
+        store.dispatch('user/refreshToken', refreshToken)
+      }
     },
 
     save() {
