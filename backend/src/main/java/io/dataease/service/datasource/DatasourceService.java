@@ -663,7 +663,7 @@ public class DatasourceService {
         mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
         mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
         datasource.setConfiguration(new Gson().toJson(mysqlConfiguration));
-        datasourceMapper.updateByPrimaryKey(datasource);
+        datasourceMapper.updateByPrimaryKeyWithBLOBs(datasource);
     }
 
 }
