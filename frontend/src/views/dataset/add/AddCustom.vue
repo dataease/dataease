@@ -5,7 +5,7 @@
       class="title-text"
     >
       <span style="line-height: 26px;">
-        {{ param.tableId?$t('dataset.edit_custom_table'):$t('dataset.add_custom_table') }}
+        {{ param.tableId ? $t('dataset.edit_custom_table') : $t('dataset.add_custom_table') }}
       </span>
       <el-row style="float: right">
         <el-button
@@ -24,7 +24,7 @@
         </el-button>
       </el-row>
     </el-row>
-    <el-divider />
+    <el-divider/>
     <el-row>
       <el-form :inline="true">
         <el-form-item
@@ -105,9 +105,10 @@
 </template>
 
 <script>
-import { post, getTable } from '@/api/dataset/dataset'
+import { getTable, post } from '@/api/dataset/dataset'
 import DatasetGroupSelector from '../common/DatasetGroupSelector'
 import DatasetCustomField from '../common/DatasetCustomField'
+import { updateCacheTree } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'AddCustom',
@@ -252,6 +253,12 @@ export default {
       }
       post('/dataset/table/update', table).then(response => {
         // this.$store.dispatch('dataset/setSceneData', new Date().getTime())
+        if (table.id) {
+          const renameNode = { id: table.id, name: table.name, label: table.name }
+          updateCacheTree('rename', 'dataset-tree', renameNode, JSON.parse(localStorage.getItem('dataset-tree')))
+        } else {
+          updateCacheTree('batchNew', 'dataset-tree', response.data, JSON.parse(localStorage.getItem('dataset-tree')))
+        }
         this.$emit('saveSuccess', table)
         this.cancel()
       })
@@ -296,49 +303,50 @@ export default {
 </script>
 
 <style scoped>
-  .el-divider--horizontal {
-    margin: 12px 0;
-  }
+.el-divider--horizontal {
+  margin: 12px 0;
+}
 
-  .form-item {
-    margin-bottom: 6px;
-  }
+.form-item {
+  margin-bottom: 6px;
+}
 
-  .el-checkbox {
-    margin-bottom: 14px;
-    margin-left: 0;
-    margin-right: 14px;
-  }
+.el-checkbox {
+  margin-bottom: 14px;
+  margin-left: 0;
+  margin-right: 14px;
+}
 
-  .el-checkbox.is-bordered + .el-checkbox.is-bordered {
-    margin-left: 0;
-  }
+.el-checkbox.is-bordered + .el-checkbox.is-bordered {
+  margin-left: 0;
+}
 
-  .dataPreview ::v-deep .el-card__header{
-    padding: 0 8px 12px;
-  }
+.dataPreview ::v-deep .el-card__header {
+  padding: 0 8px 12px;
+}
 
-  .dataPreview ::v-deep .el-card__body{
-    padding:10px;
-  }
+.dataPreview ::v-deep .el-card__body {
+  padding: 10px;
+}
 
-  span{
-    font-size: 14px;
-  }
+span {
+  font-size: 14px;
+}
 
-  .panel-height{
-    height: calc(100vh - 56px - 15px - 26px - 25px - 43px);
-  }
+.panel-height {
+  height: calc(100vh - 56px - 15px - 26px - 25px - 43px);
+}
 
-  .blackTheme .panel-height{
-    height: calc(100vh - 56px - 15px - 26px - 25px - 43px);
-    border-color: var(--TableBorderColor) !important;
-  }
+.blackTheme .panel-height {
+  height: calc(100vh - 56px - 15px - 26px - 25px - 43px);
+  border-color: var(--TableBorderColor) !important;
+}
 
-  .span-number{
-    color: #0a7be0;
-  }
-  .table-count{
-    color: #606266;
-  }
+.span-number {
+  color: #0a7be0;
+}
+
+.table-count {
+  color: #606266;
+}
 </style>
