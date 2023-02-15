@@ -8,7 +8,7 @@
       class="arrow-right"
       @click="showLeft = true"
     >
-      <i class="el-icon-d-arrow-right" />
+      <i class="el-icon-d-arrow-right"/>
     </p>
     <div
       v-show="showLeft"
@@ -21,16 +21,16 @@
             effect="dark"
             placement="right"
           >
-            <div slot="content">
-              {{ $t('dataset.excel_info_1') }}<br>
-              {{ $t('dataset.excel_info_2') }}<br>
-              {{ $t('dataset.excel_info_3') }}
-            </div>
-            <i class="el-icon-warning-outline" /> </el-tooltip></span>
-        <i
-          class="el-icon-d-arrow-left"
-          @click="showLeft = false"
-        />
+      <div slot="content">
+        {{ $t('dataset.excel_info_1') }}<br>
+        {{ $t('dataset.excel_info_2') }}<br>
+        {{ $t('dataset.excel_info_3') }}
+      </div>
+      <i class="el-icon-warning-outline"/> </el-tooltip></span>
+      <i
+        class="el-icon-d-arrow-left"
+        @click="showLeft = false"
+      />
       </p>
       <el-upload
         :action="baseUrl + 'dataset/table/excel/upload'"
@@ -160,7 +160,7 @@
                   :key="field.fieldName + field.fieldType"
                   @command="(type) => handleCommand(type, field)"
                 >
-                  <span  class="type-switch">
+                  <span class="type-switch">
                     <svg-icon
                       v-if="field.fieldType === 'TEXT'"
                       icon-class="field_text"
@@ -179,7 +179,7 @@
                       icon-class="field_value"
                       class="field-icon-value"
                     />
-                    <i class="el-icon-arrow-down el-icon--right" /></span>
+                    <i class="el-icon-arrow-down el-icon--right"/></span>
                   <el-dropdown-menu
                     slot="dropdown"
                     style="width: 178px"
@@ -238,6 +238,7 @@ import store from '@/store'
 import msgCfm from '@/components/msgCfm/index'
 import cancelMix from './cancelMix'
 import Config from "@/settings";
+import { updateCacheTree } from '@/components/canvas/utils/utils'
 
 const token = getToken()
 const RefreshTokenKey = Config.RefreshTokenKey
@@ -577,6 +578,9 @@ export default {
             table.mergeSheet = false
             post('/dataset/table/update', table)
               .then((response) => {
+                if (!table.id) {
+                  updateCacheTree('batchNew', 'dataset-tree', response.data, JSON.parse(localStorage.getItem('dataset-tree')))
+                }
                 this.openMessageSuccess('deDataset.set_saved_successfully')
                 this.cancel(response.data)
               })
@@ -590,6 +594,9 @@ export default {
         this.loading = true
         post('/dataset/table/update', table)
           .then((response) => {
+            if (!table.id) {
+              updateCacheTree('batchNew', 'dataset-tree', response.data, JSON.parse(localStorage.getItem('dataset-tree')))
+            }
             this.openMessageSuccess('deDataset.set_saved_successfully')
             this.cancel(response.data)
           })
@@ -645,10 +652,12 @@ export default {
     border-top-right-radius: 13px;
     border-bottom-right-radius: 13px;
   }
+
   .table-list {
     p {
       margin: 0;
     }
+
     height: 100%;
     width: 240px;
     padding: 16px 12px;
@@ -661,6 +670,7 @@ export default {
       display: flex;
       justify-content: space-between;
       color: var(--deTextPrimary, #1f2329);
+
       i {
         font-size: 14px;
         color: var(--deTextPlaceholder, #8f959e);
@@ -674,10 +684,12 @@ export default {
     .table-checkbox-list {
       height: calc(100% - 100px);
       overflow-y: auto;
+
       .custom-tree-node {
         position: relative;
         width: 80%;
         display: flex;
+
         .label {
           overflow: hidden;
           white-space: nowrap;
@@ -685,11 +697,13 @@ export default {
           width: 85%;
         }
       }
+
       .error-name-exist {
         position: absolute;
         top: 0;
         right: 0;
       }
+
       .item {
         height: 40px;
         width: 215px;
@@ -727,6 +741,7 @@ export default {
       display: flex;
       align-items: center;
       position: relative;
+
       .name {
         font-size: 14px;
         font-weight: 400;
@@ -757,10 +772,12 @@ export default {
         padding: 2px 1.5px;
         display: inline-block;
         cursor: pointer;
+
         i {
           margin-left: 4px;
           font-size: 12px;
         }
+
         &:hover {
           background: rgba(31, 35, 41, 0.1);
           border-radius: 4px;

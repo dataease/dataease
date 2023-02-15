@@ -195,6 +195,7 @@ public class DirectFieldService implements DataSetFieldService {
             datasourceRequest.setQuery(qp.createQuerySQL(tableName, permissionFields, !needSort, null, customFilter, rowPermissionsTree, deSortFields));
         }
         LogUtil.info(datasourceRequest.getQuery());
+        datasourceRequest.setPermissionFields(permissionFields);
         List<String[]> rows = datasourceProvider.getData(datasourceRequest);
         if (!needMapping) {
             List<Object> results = rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
