@@ -381,7 +381,10 @@ export function adaptCurThemeCommonStyle(component) {
   if (isFilterComponent(component.component)) {
     const filterStyle = store.state.canvasStyleData.chartInfo.filterStyle
     for (const styleKey in filterStyle) {
-      Vue.set(component.style, styleKey, filterStyle[styleKey])
+      // 位置属性不修改
+      if (styleKey !== 'horizontal' && styleKey !== 'vertical') {
+        Vue.set(component.style, styleKey, filterStyle[styleKey])
+      }
     }
   } else if (isTabComponent(component.component)) {
     const tabStyle = store.state.canvasStyleData.chartInfo.tabStyle

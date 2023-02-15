@@ -72,11 +72,12 @@ public class DataSetTableController {
     }, logical = Logical.AND)
     @ApiOperation("更新")
     @PostMapping("update")
-    public List<DatasetTable> save(@RequestBody DataSetTableRequest datasetTable) throws Exception {
+    public List<VAuthModelDTO> save(@RequestBody DataSetTableRequest datasetTable) throws Exception {
         if (datasetTable.getType().equalsIgnoreCase("excel")) {
-            return dataSetTableService.saveExcel(datasetTable);
+            List<String> ids = dataSetTableService.saveExcel(datasetTable).stream().map(DatasetTable::getId).collect(Collectors.toList());
+            return vAuthModelService.queryAuthModelByIds("dataset", ids);
         } else {
-            return Collections.singletonList(dataSetTableService.save(datasetTable));
+            return vAuthModelService.queryAuthModelByIds("dataset", Collections.singletonList(dataSetTableService.save(datasetTable).getId()));
         }
     }
 
