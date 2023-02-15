@@ -12,7 +12,7 @@
       :title="$t('user.change_password')"
       :show-close="false"
     >
-      <PasswordUpdateForm oldPwd="DataEase" />
+      <PasswordUpdateForm oldPwd="dataease" />
     </el-dialog>
   </div>
 </template>

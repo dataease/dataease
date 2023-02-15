@@ -83,6 +83,9 @@ const actions = {
         commit('SET_TOKEN', data.token)
         commit('SET_LOGIN_MSG', null)
         setToken(data.token)
+        if(data.hasOwnProperty('passwordModified')){
+          commit('SET_PASSWORD_MODIFIED', data.passwordModified)
+        }
         resolve()
       }).catch(error => {
         reject(error)
