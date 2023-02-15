@@ -6,17 +6,42 @@
       ref="de-theme"
       component-name="ThemeSetting"
     />
+    <el-dialog
+      :visible.sync="showPasswordModifiedDialog"
+      append-to-body
+      :title="$t('user.change_password')"
+      :show-close="false"
+    >
+      <PasswordUpdateForm oldPwd="DataEase" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import PluginCom from '@/views/system/plugin/PluginCom'
+import { mapState } from 'vuex'
+import PasswordUpdateForm from '@/views/system/user/PasswordUpdateForm.vue'
 
 export default {
   name: 'App',
-  components: { PluginCom },
-  beforeCreate() {
-
+  components: { PluginCom, PasswordUpdateForm },
+  computed: {
+    ...mapState('user', [
+      'passwordModified',
+    ])
+  },
+  data() {
+    return {
+      showPasswordModifiedDialog: false
+    }
+  },
+  watch: {
+    passwordModified: {
+      handler(val) {
+        this.showPasswordModifiedDialog = !val
+      },
+      immediate: true
+    }
   }
 }
 </script>
