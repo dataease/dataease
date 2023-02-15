@@ -13,6 +13,7 @@ const getDefaultState = () => {
     name: '',
     user: {},
     roles: [],
+    passwordModified: true,
     avatar: '',
     // 第一次加载菜单时用到
     loadMenus: false,
@@ -66,7 +67,10 @@ const mutations = {
     if (language && i18n.locale !== language) {
       i18n.locale = language
     }
-  }
+  },
+  SET_PASSWORD_MODIFIED: (state, passwordModified) => {
+    state.passwordModified = passwordModified
+  },
 }
 
 const actions = {
