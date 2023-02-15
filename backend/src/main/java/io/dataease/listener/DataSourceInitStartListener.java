@@ -26,6 +26,7 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
         datasourceService.initDsCheckJob();
         dataSetTableService.updateDatasetTableStatus();
         engineService.initSimpleEngine();
+        datasourceService.updateDemoDs();
         CacheUtils.removeAll("ENGINE");
     }
 

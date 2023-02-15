@@ -7,15 +7,19 @@ import com.google.common.base.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.RequestHandler;
-import springfox.documentation.builders.*;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +27,7 @@ import java.util.List;
 @EnableOpenApi
 @Configuration
 @Import(BeanValidatorPluginsConfiguration.class)
-public class Knife4jConfiguration implements BeanPostProcessor{
+public class Knife4jConfiguration implements BeanPostProcessor {
 
     private static final String splitor = ",";
 
@@ -33,7 +37,6 @@ public class Knife4jConfiguration implements BeanPostProcessor{
     private String version;
 
 
-
     @Autowired
     public Knife4jConfiguration(OpenApiExtensionResolver openApiExtensionResolver) {
         this.openApiExtensionResolver = openApiExtensionResolver;
@@ -41,7 +44,7 @@ public class Knife4jConfiguration implements BeanPostProcessor{
 
     @Bean(value = "authApi")
     public Docket authApi() {
-        return defaultApi("权限管理", "io.dataease.auth");
+        return defaultApi("登录管理", "io.dataease.auth");
     }
 
     @Bean(value = "chartApi")
@@ -69,24 +72,24 @@ public class Knife4jConfiguration implements BeanPostProcessor{
         return defaultApi("系统管理", "io.dataease.controller.sys,io.dataease.plugins.server");
     }
 
-    private ApiInfo apiInfo(){
+    private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("DataEase")
                 .description("人人可用的开源数据可视化分析工具")
                 .termsOfServiceUrl("https://dataease.io")
-                .contact(new Contact("Dataease","https://www.fit2cloud.com/dataease/index.html","dataease@fit2cloud.com"))
+                .contact(new Contact("Dataease", "https://www.fit2cloud.com/dataease/index.html", "dataease@fit2cloud.com"))
                 .version(version)
                 .build();
     }
 
     private Docket defaultApi(String groupName, String packageName) {
-        List<SecurityScheme> securitySchemes=new ArrayList<>();
+        List<SecurityScheme> securitySchemes = new ArrayList<>();
         securitySchemes.add(accessKey());
         securitySchemes.add(signature());
 
         List<SecurityContext> securityContexts = new ArrayList<>();
         securityContexts.add(securityContext());
-        Docket docket=new Docket(DocumentationType.OAS_30)
+        Docket docket = new Docket(DocumentationType.OAS_30)
                 .apiInfo(apiInfo())
                 .groupName(groupName)
                 .select()
@@ -131,7 +134,7 @@ public class Knife4jConfiguration implements BeanPostProcessor{
         return input -> declaringClass(input).transform(handlerPackage(basePackage)).or(true);
     }
 
-    private static Function<Class<?>, Boolean> handlerPackage(final String basePackage)     {
+    private static Function<Class<?>, Boolean> handlerPackage(final String basePackage) {
         return input -> {
             // 循环判断匹配
             for (String strPackage : basePackage.split(splitor)) {
