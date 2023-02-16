@@ -828,8 +828,12 @@ div:focus {
   color: #1F2329 !important;
 }
 
-.de-select-grid-class {
-  .el-checkbox__input.is-checked:not(.is-disabled)+.el-checkbox__label {
+.el-radio__input.is-checked:not(.is-disabled)+.el-radio__label {
+  color: var(--deTextPrimary, #1F2329) !important;
+}
+
+.de-select-grid-class{
+  .el-checkbox__input.is-checked:not(.is-disabled)+.el-checkbox__label, .el-radio__input.is-checked:not(.is-disabled)+.el-radio__label {
     color: #3370ff !important;
   }
 }
@@ -1176,9 +1180,6 @@ div:focus {
   color: var(--deTextPrimary, #1F2329) !important;
 }
 
-.el-radio__input.is-checked:not(.is-disabled)+.el-radio__label {
-  color: var(--deTextPrimary, #1F2329) !important;
-}
 
 .date-filter-poper>.el-scrollbar>.el-select-dropdown__wrap {
   max-height: 230px !important;
