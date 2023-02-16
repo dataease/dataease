@@ -2316,7 +2316,13 @@ export default {
     fold: 'Fold',
     expand: 'Expand',
     pdf_export: 'PDF Export',
-    switch_pdf_template: 'Switch PDF Template'
+    switch_pdf_template: 'Switch PDF Template',
+    pdf_template_with_params: 'Default template(with params)',
+    pdf_template_only_pic: 'Default template(only screenshot)',
+    panel_name: 'Panel name',
+    export_user: 'Export User',
+    export_time: 'Export Time',
+    you_can_type_here: 'You can type here'
   },
   plugin: {
     local_install: 'Local installation',
