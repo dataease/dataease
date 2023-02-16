@@ -39,7 +39,7 @@
 import JsPDF from 'jspdf'
 import html2canvas from 'html2canvasde'
 import { formatTimeToStr } from './date.js'
-import { pdfTemplateReplaceAll } from '@/utils/StringUtils.js'
+import { pdfTemplateReplaceAll, replaceInlineI18n } from '@/utils/StringUtils.js'
 
 export default {
   name: 'PDFPreExport',
@@ -121,6 +121,7 @@ export default {
       for (const [key, value] of Object.entries(this.varsInfo)) {
         this.templateContentChange = pdfTemplateReplaceAll(this.templateContentChange, key, value || '')
       }
+      this.templateContentChange = replaceInlineI18n(this.templateContentChange)
     },
 
     cancel() {

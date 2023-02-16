@@ -2310,7 +2310,13 @@ export default {
     fold: '收起',
     expand: '展开',
     pdf_export: 'PDF 导出',
-    switch_pdf_template: '切换 PDF 模板'
+    switch_pdf_template: '切换 PDF 模板',
+    pdf_template_with_params: '默认模板(加参数样式)',
+    pdf_template_only_pic: '默认模板(只截图)',
+    panel_name: '仪表板名称',
+    export_user: '导出用户',
+    export_time: '导出时间',
+    you_can_type_here: '可以在这里输入其他内容'
   },
   plugin: {
     local_install: '本地安装',
