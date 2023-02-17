@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 public class TokenCacheUtils {
 
     private static final String KEY = "sys_token_store";
-    private static final String DELAY_KEY = "sys_token_store_delay";
 
     public static void add(String token, Long userId) {
         CacheUtils.put(KEY, token, userId, null, null);
@@ -27,12 +26,4 @@ public class TokenCacheUtils {
         return ObjectUtils.isNotEmpty(sys_token_store) && StringUtils.isNotBlank(sys_token_store.toString()) && userId == Long.parseLong(sys_token_store.toString());
     }
 
-    public static void addWithTtl(String token, Long userId) {
-        CacheUtils.put(DELAY_KEY, token, userId, 3, 5);
-    }
-
-    public static boolean validateDelay(String token) {
-        Object tokenObj = CacheUtils.get(DELAY_KEY, token);
-        return ObjectUtils.isNotEmpty(tokenObj) && StringUtils.isNotBlank(tokenObj.toString());
-    }
 }
