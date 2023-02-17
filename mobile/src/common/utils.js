@@ -143,3 +143,16 @@ export function parseLanguage() {
     if(language === 'sys') return uni.getLocale()
     return language
 }
+
+export function getUrlParams(url){
+  const Params = {}
+  if(url.indexOf('?')>0){//判断是否有qurey
+    let parmas = url.slice(url.indexOf('?')+1)//截取出query
+    const paramlists = parmas.split('&')//分割键值对
+    for (const param of paramlists) {
+      let a = param.split('=')
+      Object.assign(Params,{[a[0]]:a[1]})//将键值对封装成对象
+    }
+  }
+  return Params
+}

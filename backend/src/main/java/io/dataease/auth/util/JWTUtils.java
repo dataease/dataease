@@ -68,7 +68,8 @@ public class JWTUtils {
 
     public static boolean needRefresh(String token) {
         Date exp = JWTUtils.getExp(token);
-        return new Date().getTime() >= exp.getTime();
+        Long advanceTime = 5000L;
+        return (new Date().getTime() + advanceTime) >= exp.getTime();
     }
 
     /**
