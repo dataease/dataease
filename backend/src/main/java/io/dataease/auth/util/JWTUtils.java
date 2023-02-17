@@ -20,6 +20,9 @@ import java.util.Date;
 
 public class JWTUtils {
 
+    // token过期时间1min (过期会自动刷新续命 目的是避免一直都是同一个token )
+    private static final long EXPIRE_TIME = 1 * 60 * 1000;
+    // 登录间隔时间10min 超过这个时间强制重新登录
     private static long Login_Interval;
 
     /**
@@ -64,7 +67,9 @@ public class JWTUtils {
     }
 
     public static boolean needRefresh(String token) {
-        return false;
+        Date exp = JWTUtils.getExp(token);
+        Long advanceTime = 5000L;
+        return (new Date().getTime() + advanceTime) >= exp.getTime();
     }
 
     /**
@@ -90,9 +95,18 @@ public class JWTUtils {
         return isExpire;
     }
 
-
+    public static Date getExp(String token) {
+        try {
+            DecodedJWT jwt = JWT.decode(token);
+            return jwt.getClaim("exp").asDate();
+        } catch (JWTDecodeException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     /**
+     * 生成签名,5min后过期
      *
      * @param tokenInfo 用户信息
      * @param secret    用户的密码
@@ -100,11 +114,12 @@ public class JWTUtils {
      */
     public static String sign(TokenInfo tokenInfo, String secret) {
         try {
+            Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
             Algorithm algorithm = Algorithm.HMAC256(secret);
             Builder builder = JWT.create()
                     .withClaim("username", tokenInfo.getUsername())
                     .withClaim("userId", tokenInfo.getUserId());
-            String sign = builder.sign(algorithm);
+            String sign = builder.withExpiresAt(date).sign(algorithm);
             TokenCacheUtils.add(sign, tokenInfo.getUserId());
             return sign;
 
