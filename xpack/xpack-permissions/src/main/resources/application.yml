@@ -1,0 +1,7 @@
+server:
+  port: 8200
+spring:
+  profiles:
+    active: '@profiles.active@'
+  application:
+    name: xpack-permissions

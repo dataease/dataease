@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>xpack</artifactId>
+        <groupId>io.dataease</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>xpack-permissions</artifactId>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>io.dataease</groupId>
+            <artifactId>api-permissions</artifactId>
+            <version>${version}</version>
+        </dependency>
+    </dependencies>
+
+
+    <profiles>
+        <!-- 权限服务只有单机版和分布式版本，因为桌面版根本不需要 -->
+        <profile>
+            <id>standalone</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <profiles.active>standalone</profiles.active>
+            </properties>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <excludes>
+                            <exclude>*.yml</exclude>
+                        </excludes>
+                    </resource>
+                </resources>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/PermissionsApplication.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>distributed</id>
+            <properties>
+                <profiles.active>distributed</profiles.active>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>io.dataease</groupId>
+                    <artifactId>distributed</artifactId>
+                    <version>${version}</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

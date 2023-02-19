@@ -1,0 +1,7 @@
+server:
+  port: 8100
+spring:
+  profiles:
+    active: '@profiles.active@'
+  application:
+    name: core-backend
