@@ -273,23 +273,13 @@
     <cache
             name="sys_token_store"
             eternal="true"
-            maxElementsInMemory="100"
-            maxElementsOnDisk="3000"
+            maxElementsInMemory="1"
+            maxElementsOnDisk="0"
             overflowToDisk="true"
-            diskPersistent="false"
+            diskPersistent="true"
     />
 
-    <cache
-            name="sys_token_store_delay"
-            eternal="false"
-            maxElementsInMemory="100"
-            maxElementsOnDisk="3000"
-            overflowToDisk="true"
-            diskPersistent="false"
-            timeToIdleSeconds="3"
-            timeToLiveSeconds="5"
-            memoryStoreEvictionPolicy="LRU"
-    />
+
 
 
 </ehcache>

@@ -4,7 +4,7 @@
     {
       "path": "pages/login/index",
       "style": {
-        "navigationBarTitleText": "%navigate.login%",
+        "navigationBarTitleText": "%app.name%",
         "app-plus": {
           "titleNView": false
         }
