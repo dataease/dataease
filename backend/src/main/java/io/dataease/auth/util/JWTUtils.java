@@ -10,7 +10,6 @@ import com.auth0.jwt.interfaces.Verification;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.entity.TokenInfo.TokenInfoBuilder;
 import io.dataease.commons.utils.CommonBeanFactory;
-import io.dataease.commons.utils.TokenCacheUtils;
 import io.dataease.exception.DataEaseException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -68,7 +67,8 @@ public class JWTUtils {
 
     public static boolean needRefresh(String token) {
         Date exp = JWTUtils.getExp(token);
-        return new Date().getTime() >= exp.getTime();
+        Long advanceTime = 5000L;
+        return (new Date().getTime() + advanceTime) >= exp.getTime();
     }
 
     /**
@@ -119,7 +119,6 @@ public class JWTUtils {
                     .withClaim("username", tokenInfo.getUsername())
                     .withClaim("userId", tokenInfo.getUserId());
             String sign = builder.withExpiresAt(date).sign(algorithm);
-            TokenCacheUtils.add(sign, tokenInfo.getUserId());
             return sign;
 
         } catch (Exception e) {
