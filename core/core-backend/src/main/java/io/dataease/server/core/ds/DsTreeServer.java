@@ -33,13 +33,16 @@ public class DsTreeServer implements DsTreeApi {
     @Override
     public List<DsTreeDTO> query(String keyWord) {
         // 获取当前用户Id以及当前组织Id
-        /*AuthRequest request = new AuthRequest();
+        AuthRequest request = new AuthRequest();
         request.setUserId(1L);
         request.setOrgId(1L);
-        request.setResourceTypeId(1);*/
+        request.setResourceTypeId(1);
         // 获取根据当前用户及组织查询权限合法的数据源Id集合
-        AuthDTO authDTO = authApi.queryByUserId(1L);
-
+        // 这个测试rpc发送get请求带参数
+        // 注意：如果参数是RequestBody类型请不要用Get openFeign暂不支持这种
+        // AuthDTO authDTO = authApi.queryByUserId(1L);
+        // 这个测试rpc发送post请求带参数
+        AuthDTO authDTO = authApi.query(request);
         List<DsTreeDTO> result = new ArrayList<>();
         for (long i = 0L; i < 10L; i++) {
             DsTreeDTO item = new DsTreeDTO();
