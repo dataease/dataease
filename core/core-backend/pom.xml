@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>dataease-2.0</artifactId>
+        <artifactId>core</artifactId>
         <groupId>io.dataease</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -17,14 +17,16 @@
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>api-base</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>api-permissions</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
+
+
     </dependencies>
 
     <profiles>
@@ -42,7 +44,7 @@
                 <dependency>
                     <groupId>io.dataease</groupId>
                     <artifactId>xpack-permissions</artifactId>
-                    <version>${version}</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>
@@ -68,11 +70,7 @@
                 <profiles.active>simple</profiles.active>
             </properties>
             <dependencies>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>common</artifactId>
-                    <version>${version}</version>
-                </dependency>
+
             </dependencies>
             <build>
                 <plugins>
@@ -95,7 +93,7 @@
                 <dependency>
                     <groupId>io.dataease</groupId>
                     <artifactId>distributed</artifactId>
-                    <version>${version}</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>
@@ -114,6 +112,38 @@
             </build>
         </profile>
     </profiles>
+
+    <build>
+        <!-- 打包时必须要包含resources下配置文件 -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.yml</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <!-- springboot打包插件 -->
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>io.dataease.server.CoreApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>

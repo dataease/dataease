@@ -16,7 +16,7 @@
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>api-permissions</artifactId>
-            <version>${version}</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -32,14 +32,7 @@
                 <profiles.active>standalone</profiles.active>
             </properties>
             <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <excludes>
-                            <exclude>*.yml</exclude>
-                        </excludes>
-                    </resource>
-                </resources>
+
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -63,16 +56,41 @@
                 <dependency>
                     <groupId>io.dataease</groupId>
                     <artifactId>distributed</artifactId>
-                    <version>${version}</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <includes>
+                            <include>**/*.properties</include>
+                            <include>**/*.xml</include>
+                            <include>**/*.yml</include>
+                        </includes>
+                    </resource>
+                </resources>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
                     </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <mainClass>io.dataease.xpack.permissions.PermissionsApplication</mainClass>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>repackage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
+
             </build>
         </profile>
     </profiles>

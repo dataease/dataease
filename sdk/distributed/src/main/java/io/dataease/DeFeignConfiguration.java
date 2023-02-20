@@ -8,5 +8,5 @@ import org.springframework.context.annotation.Import;
 @Configuration
 @EnableFeignClients
 @Import(DeFeignRegister.class)
-public class DeFeignConfigration {
+public class DeFeignConfiguration {
 }
