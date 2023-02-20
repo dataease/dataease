@@ -7,6 +7,7 @@
       component-name="ThemeSetting"
     />
     <el-dialog
+      v-if="$route.path !== '/login'"
       :visible.sync="showPasswordModifiedDialog"
       append-to-body
       :title="$t('user.change_password')"
@@ -33,6 +34,12 @@ export default {
   data() {
     return {
       showPasswordModifiedDialog: false
+    }
+  },
+  mounted() {
+    const passwordModified = JSON.parse(localStorage.getItem('passwordModified'))
+    if (typeof passwordModified === 'boolean') {
+      this.$store.commit('user/SET_PASSWORD_MODIFIED', passwordModified)
     }
   },
   watch: {

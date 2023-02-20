@@ -83,9 +83,12 @@ const actions = {
         commit('SET_TOKEN', data.token)
         commit('SET_LOGIN_MSG', null)
         setToken(data.token)
-        if(data.hasOwnProperty('passwordModified')){
-          commit('SET_PASSWORD_MODIFIED', data.passwordModified)
+        let passwordModified = true
+        if (data.hasOwnProperty('passwordModified')) {
+          passwordModified = data.passwordModified
         }
+        commit('SET_PASSWORD_MODIFIED', passwordModified)
+        localStorage.setItem('passwordModified', passwordModified)
         resolve()
       }).catch(error => {
         reject(error)

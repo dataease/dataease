@@ -84,7 +84,7 @@ public class F2CRealm extends AuthorizingRealm {
             token = (String) auth.getCredentials();
             // 解密获得username，用于和数据库进行对比
             tokenInfo = JWTUtils.tokenInfoByToken(token);
-            if (!TokenCacheUtils.validate(token)) {
+            if (TokenCacheUtils.invalid(token)) {
                 throw new AuthenticationException("token invalid");
             }
         } catch (Exception e) {

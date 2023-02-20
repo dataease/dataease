@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    v-loading="loading"
     :title="formType == 'add' ? $t('user.create') : $t('user.modify')"
     :visible.sync="dialogVisible"
     class="user-editer-form"
@@ -229,6 +230,7 @@ import { pluginLoaded, defaultPwd, wecomStatus, dingtalkStatus, larkStatus } fro
 export default {
   data() {
     return {
+      loading: false,
       defaultProps: {
         children: 'children',
         label: 'label',
@@ -553,12 +555,13 @@ export default {
     save() {
       this.$refs.createUserForm.validate((valid) => {
         if (valid) {
-          // !this.form.deptId && (this.form.deptId = 0)
+          this.loading = true
           const method = this.formType === 'add' ? addUser : editUser
           method(this.form).then((res) => {
             this.$success(this.$t('commons.save_success'))
             this.reset()
             this.$emit('saved')
+            this.loading = false
           })
         } else {
           return false
