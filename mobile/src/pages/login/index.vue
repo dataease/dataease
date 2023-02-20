@@ -69,7 +69,7 @@
         title: this.$t('commons.loading')
       });
       this.loadUiInfo()
-      this.loadPublicKey()      
+      this.loadPublicKey()     
       if (!this.autoLogin() && getToken() && getUserInfo()) {
         this.toMain()
       }
@@ -154,8 +154,15 @@
         const url = window.location.href
         const param = getUrlParams(url)
         if (param?.detoken) {
+          if(param.detoken.endsWith('#/'))
+          param.detoken = param.detoken.substr(0, param.detoken.length - 2)
           setToken(param.detoken)
-          this.toMain()
+          getInfo().then(res => {
+            setUserInfo(res.data)
+            const redirect = window.location.href.split('?')[0]
+           
+            window.location.href = redirect
+          })
           return true
         }
         return false
