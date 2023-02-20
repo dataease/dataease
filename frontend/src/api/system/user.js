@@ -35,6 +35,7 @@ export const addUser = (data) => {
   return request({
     url: pathMap.createPath,
     method: 'post',
+    loading: true,
     data
   })
 }
