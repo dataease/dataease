@@ -2310,7 +2310,13 @@ export default {
     fold: '收起',
     expand: '展開',
     pdf_export: 'PDF 導出',
-    switch_pdf_template: '切換 PDF 模板'
+    switch_pdf_template: '切換 PDF 模板',
+    pdf_template_with_params: '默認模板(加參數樣式)',
+    pdf_template_only_pic: '默認模板(只截圖)',
+    panel_name: '儀錶板名稱',
+    export_user: '導出用戶',
+    export_time: '導出時間',
+    you_can_type_here: '可以在這裡輸入其他內容'
   },
   plugin: {
     local_install: '本地安裝',

@@ -179,13 +179,13 @@
           :span="5"
           style="padding-left: 10px;padding-top: 8px"
         >
-          输入框样式(颜色):
+          {{ $t('panel.input_style') }}:
         </el-col>
         <el-col
           :span="2"
           style="padding-left: 10px;padding-top: 8px"
         >
-          边框
+          {{ $t('panel.board') }}
         </el-col>
         <el-col
           :span="3"
@@ -202,7 +202,7 @@
           :span="2"
           style="padding-left: 10px;padding-top: 8px"
         >
-          文字
+          {{ $t('panel.text') }}
         </el-col>
         <el-col
           :span="3"
@@ -219,7 +219,7 @@
           :span="2"
           style="padding-left: 10px;padding-top: 8px"
         >
-          背景
+          {{ $t('panel.background') }}
         </el-col>
         <el-col
           :span="3"

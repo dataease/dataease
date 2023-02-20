@@ -13,6 +13,7 @@ const getDefaultState = () => {
     name: '',
     user: {},
     roles: [],
+    passwordModified: true,
     avatar: '',
     // 第一次加载菜单时用到
     loadMenus: false,
@@ -66,7 +67,10 @@ const mutations = {
     if (language && i18n.locale !== language) {
       i18n.locale = language
     }
-  }
+  },
+  SET_PASSWORD_MODIFIED: (state, passwordModified) => {
+    state.passwordModified = passwordModified
+  },
 }
 
 const actions = {
@@ -79,6 +83,12 @@ const actions = {
         commit('SET_TOKEN', data.token)
         commit('SET_LOGIN_MSG', null)
         setToken(data.token)
+        let passwordModified = true
+        if (data.hasOwnProperty('passwordModified')) {
+          passwordModified = data.passwordModified
+        }
+        commit('SET_PASSWORD_MODIFIED', passwordModified)
+        localStorage.setItem('passwordModified', passwordModified)
         resolve()
       }).catch(error => {
         reject(error)
@@ -192,7 +202,7 @@ const actions = {
   setLanguage({ commit }, language) {
     languageApi(language).then(() => {
       commit('SET_LANGUAGE', language)
-      router.go(0)
+      location.reload()
     })
   },
   setLinkToken({ commit }, linkToken) {

@@ -6,14 +6,13 @@ import io.dataease.auth.api.dto.LoginDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
-import springfox.documentation.annotations.ApiIgnore;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Map;
 
-@Api(tags = "权限：权限管理")
+@Api(tags = "登录：登录管理")
 @ApiSupport(order = 10)
 @RequestMapping("/api/auth")
 public interface AuthApi {

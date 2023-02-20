@@ -31,6 +31,26 @@
           and panel_type = 'self'
     </select>
 
+    <select id="findShortOneWithPrivileges" resultMap="BaseResultMapDTO">
+        SELECT panel_group.id,
+               panel_group.`name`,
+               panel_group.pid,
+               panel_group.`level`,
+               panel_group.node_type,
+               panel_group.create_by,
+               panel_group.create_time,
+               panel_group.panel_type,
+               panel_group.`name`                            AS label,
+               panel_group.`source`,
+               panel_group.`panel_type`,
+               panel_group.`status`,
+               panel_group.`mobile_layout`,
+               panel_group.`name`                            as source_panel_name,
+               get_auths(panel_group.id, 'panel', #{userId}) as `privileges`
+        from panel_group
+        where id = #{panelId}
+    </select>
+
     <select id="panelGroupListDefault" resultMap="BaseResultMapDTO">
         SELECT
         panel_group.id,
@@ -185,20 +205,34 @@
     <delete id="deleteCircle">
         delete
         from panel_group
-        where FIND_IN_SET(panel_group.id, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
-           or FIND_IN_SET(panel_group.source, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+        where
+        panel_group.id = #{pid}
+        or
+        panel_group.source = #{pid}
+        <if test="nodeType == 'folder'">
+            or FIND_IN_SET(panel_group.id, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+            or FIND_IN_SET(panel_group.source, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+        </if>
     </delete>
 
     <delete id="deleteCircleView">
         delete
         from chart_view
-        where FIND_IN_SET(chart_view.scene_id, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+        where
+        chart_view.scene_id = #{pid}
+        <if test="nodeType == 'folder'">
+            or FIND_IN_SET(chart_view.scene_id, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+        </if>
     </delete>
 
     <delete id="deleteCircleViewCache">
         delete
         from chart_view_cache
-        where FIND_IN_SET(chart_view_cache.scene_id, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+        where
+        chart_view_cache.scene_id = #{pid}
+        <if test="nodeType == 'folder'">
+            or FIND_IN_SET(chart_view_cache.scene_id, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+        </if>
     </delete>
 
     <insert id="copyPanelView">
@@ -226,120 +260,106 @@
 
     </delete>
 
-    <select id="queryPanelRelation" resultType="io.dataease.dto.RelationDTO" resultMap="io.dataease.ext.ExtDataSourceMapper.RelationResultMap">
-        select
-            ifnull(ds.id,'') `id`,
-            ds.name,
-            ds_auth.auths,
-            'link' `type`,
-            dt.id sub_id,
-            dt.name sub_name,
-            dt_auth.auths sub_auths,
-            if(dt.id is not null,'dataset',null) sub_type
-        from
-            panel_group pg
-        join
-            chart_view cv on cv.scene_id = pg.id
-        join
-            dataset_table dt on cv.table_id = dt.id
-        left join
-        (
-            select
-                t_dt.id,group_concat(distinct sad.privilege_type) auths
-            from
-                dataset_table t_dt
-            left join sys_auth sa on sa.auth_source = t_dt.id
-            left join sys_auth_detail sad on sa.id = sad.auth_id
-            where
-                sa.auth_source_type = 'dataset'
-            and
-                sad.privilege_value = 1
-            and
-            (
-                (
-                    sa.auth_target_type = 'dept'
-                    AND sa.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id = #{userId,jdbcType=BIGINT} )
-                )
-            or
-                (
-                    sa.auth_target_type = 'user'
-                    AND sa.auth_target =  #{userId,jdbcType=BIGINT}
-                )
-            or
-                (
-                    sa.auth_target_type = 'role'
-                    AND sa.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id =  #{userId,jdbcType=BIGINT} )
-                )
-            )
-            group by sa.auth_source
-        ) dt_auth on dt.id = dt_auth.id
-        left join datasource ds on dt.data_source_id = ds.id
-        left join
-        (
-            select
-                t_pg.id,group_concat(distinct sad.privilege_type) auths
-            from
-                panel_group t_pg
-            left join sys_auth sa on sa.auth_source = t_pg.id
-            left join sys_auth_detail sad on sa.id = sad.auth_id
-            where
-                sa.auth_source_type = 'link'
-            and
-                sad.privilege_value = 1
-            and
-            (
-                (
-                    sa.auth_target_type = 'dept'
-                    AND sa.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id = #{userId,jdbcType=BIGINT} )
-                )
-            OR
-                (
-                    sa.auth_target_type = 'user'
-                    AND sa.auth_target =  #{userId,jdbcType=BIGINT}
-                )
-            OR
-                (
-                    sa.auth_target_type = 'role'
-                    AND sa.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId,jdbcType=BIGINT} )
-                )
-            )
-            group by sa.auth_source
-        ) ds_auth on ds_auth.id = ds.id
-        where pg.id=#{panelId,jdbcType=VARCHAR}
-        group by id,sub_id
+    <select id="queryPanelRelation" resultType="io.dataease.dto.RelationDTO"
+            resultMap="io.dataease.ext.ExtDataSourceMapper.RelationResultMap">
+        select ifnull(ds.id, '')                      `id`,
+               ds.name,
+               ds_auth.auths,
+               'link'                                 `type`,
+               dt.id                                  sub_id,
+               dt.name                                sub_name,
+               dt_auth.auths                          sub_auths,
+               if(dt.id is not null, 'dataset', null) sub_type
+        from panel_group pg
+                 join
+             chart_view cv on cv.scene_id = pg.id
+                 join
+             dataset_table dt on cv.table_id = dt.id
+                 left join
+             (select t_dt.id,
+                     group_concat(distinct sad.privilege_type) auths
+              from dataset_table t_dt
+                       left join sys_auth sa on sa.auth_source = t_dt.id
+                       left join sys_auth_detail sad on sa.id = sad.auth_id
+              where sa.auth_source_type = 'dataset'
+                and sad.privilege_value = 1
+                and (
+                      (
+                                  sa.auth_target_type = 'dept'
+                              AND sa.auth_target in
+                                  (SELECT dept_id FROM sys_user WHERE user_id = #{userId,jdbcType=BIGINT})
+                          )
+                      or
+                      (
+                                  sa.auth_target_type = 'user'
+                              AND sa.auth_target = #{userId,jdbcType=BIGINT}
+                          )
+                      or
+                      (
+                                  sa.auth_target_type = 'role'
+                              AND sa.auth_target in
+                                  (SELECT role_id FROM sys_users_roles WHERE user_id = #{userId,jdbcType=BIGINT})
+                          )
+                  )
+              group by sa.auth_source) dt_auth on dt.id = dt_auth.id
+                 left join datasource ds on dt.data_source_id = ds.id
+                 left join
+             (select t_pg.id,
+                     group_concat(distinct sad.privilege_type) auths
+              from panel_group t_pg
+                       left join sys_auth sa on sa.auth_source = t_pg.id
+                       left join sys_auth_detail sad on sa.id = sad.auth_id
+              where sa.auth_source_type = 'link'
+                and sad.privilege_value = 1
+                and (
+                      (
+                                  sa.auth_target_type = 'dept'
+                              AND sa.auth_target in
+                                  (SELECT dept_id FROM sys_user WHERE user_id = #{userId,jdbcType=BIGINT})
+                          )
+                      OR
+                      (
+                                  sa.auth_target_type = 'user'
+                              AND sa.auth_target = #{userId,jdbcType=BIGINT}
+                          )
+                      OR
+                      (
+                                  sa.auth_target_type = 'role'
+                              AND sa.auth_target in
+                                  (SELECT role_id FROM sys_users_roles WHERE user_id = #{userId,jdbcType=BIGINT})
+                          )
+                  )
+              group by sa.auth_source) ds_auth on ds_auth.id = ds.id
+        where pg.id = #{panelId,jdbcType=VARCHAR}
+        group by id, sub_id
         order by id
     </select>
 
     <select id="listPanelByUser" resultType="io.dataease.plugins.common.base.domain.PanelGroup"
             resultMap="io.dataease.plugins.common.base.mapper.PanelGroupMapper.BaseResultMap">
-        select
-            pg.*
-        from
-            panel_group pg
-        join sys_auth sa on sa.auth_source = pg.id
-        join sys_auth_detail sad on sa.id = sad.auth_id
-        where
-            pg.node_type = 'panel'
-        and
-            sa.auth_source_type = 'panel'
-        and
-            sad.privilege_value = 1
-        and
-            (
+        select pg.*
+        from panel_group pg
+                 join sys_auth sa on sa.auth_source = pg.id
+                 join sys_auth_detail sad on sa.id = sad.auth_id
+        where pg.node_type = 'panel'
+          and sa.auth_source_type = 'panel'
+          and sad.privilege_value = 1
+          and (
                 (
-                    sa.auth_target_type = 'dept'
-                    AND sa.auth_target in ( SELECT dept_id FROM sys_user WHERE user_id = #{userId,jdbcType=BIGINT} )
-                )
-            OR
+                            sa.auth_target_type = 'dept'
+                        AND sa.auth_target in (SELECT dept_id FROM sys_user WHERE user_id = #{userId,jdbcType=BIGINT})
+                    )
+                OR
                 (
-                    sa.auth_target_type = 'user'
-                    AND sa.auth_target =  #{userId,jdbcType=BIGINT}
-                )
-            OR
+                            sa.auth_target_type = 'user'
+                        AND sa.auth_target = #{userId,jdbcType=BIGINT}
+                    )
+                OR
                 (
-                    sa.auth_target_type = 'role'
-                    AND sa.auth_target in ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId,jdbcType=BIGINT} )
-                )
+                            sa.auth_target_type = 'role'
+                        AND sa.auth_target in
+                            (SELECT role_id FROM sys_users_roles WHERE user_id = #{userId,jdbcType=BIGINT})
+                    )
             )
         group by pg.id
     </select>

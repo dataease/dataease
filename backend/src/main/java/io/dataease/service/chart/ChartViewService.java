@@ -526,8 +526,12 @@ public class ChartViewService {
                 }
             }
             List<ChartViewFieldDTO> xAxisForRequest = new ArrayList<>();
-            xAxisForRequest.addAll(xAxis); xAxisForRequest.addAll(extStack);
+            xAxisForRequest.addAll(xAxis);
+            xAxisForRequest.addAll(extStack);
             datasourceRequest.setXAxis(xAxisForRequest);
+            List<ChartViewFieldDTO> yAxisForRequest = new ArrayList<>();
+            yAxisForRequest.addAll(yAxis);
+            datasourceRequest.setYAxis(yAxisForRequest);
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
             datasourceRequest.setDatasource(ds);
@@ -655,7 +659,7 @@ public class ChartViewService {
         Map<String, Object> mapAttr = gson.fromJson(view.getCustomAttr(), Map.class);
         Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("size");
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0) {
-            if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+            if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page") && !chartExtRequest.getExcelExportFlag()) {
                 if (chartExtRequest.getGoPage() == null) {
                     chartExtRequest.setGoPage(1L);
                 }
@@ -1036,6 +1040,7 @@ public class ChartViewService {
             }
             if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
                 datasourceRequest.setQuery(totalPageSql);
+                datasourceRequest.setTotalPageFlag(true);
                 java.util.List<java.lang.String[]> tmpData = datasourceProvider.getData(datasourceRequest);
                 totalItems = CollectionUtils.isEmpty(tmpData) ? 0 : Long.valueOf(tmpData.get(0)[0]);
                 totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
@@ -1043,8 +1048,13 @@ public class ChartViewService {
 
             datasourceRequest.setQuery(querySql);
             List<ChartViewFieldDTO> xAxisForRequest = new ArrayList<>();
-            xAxisForRequest.addAll(xAxis); xAxisForRequest.addAll(extStack);
+            xAxisForRequest.addAll(xAxis);
+            xAxisForRequest.addAll(extStack);
             datasourceRequest.setXAxis(xAxisForRequest);
+            List<ChartViewFieldDTO> yAxisForRequest = new ArrayList<>();
+            yAxisForRequest.addAll(yAxis);
+            datasourceRequest.setYAxis(yAxisForRequest);
+            datasourceRequest.setTotalPageFlag(false);
             data = datasourceProvider.getData(datasourceRequest);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields));

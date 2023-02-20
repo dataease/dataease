@@ -466,7 +466,7 @@ export default {
       initFontSize: 12,
       initActiveFontSize: 18,
       miniFontSize: 12,
-      maxFontSize: 128,
+      maxFontSize: 256,
       textAlignOptions: [
         {
           icon: 'iconfont icon-juzuo',

@@ -18,7 +18,7 @@
         :label="$t('dataset.name')"
         prop="name"
       >
-        <el-input v-model="datasetForm.name" />
+        <el-input v-model="datasetForm.name"/>
       </el-form-item>
       <el-form-item
         :label="$t('deDataset.folder')"
@@ -44,8 +44,8 @@
               slot-scope="{ data }"
               class="custom-tree-node-dataset"
             >
-              <span v-if="data.type === 'group'">
-                <svg-icon icon-class="scene" />
+              <span v-if="data.modelInnerType === 'group'">
+                <svg-icon icon-class="scene"/>
               </span>
               <span
                 style="
@@ -84,7 +84,8 @@
       <deBtn
         secondary
         @click="resetForm"
-      >{{ $t('dataset.cancel') }}</deBtn>
+      >{{ $t('dataset.cancel') }}
+      </deBtn>
       <deBtn
         type="primary"
         @click="saveDataset"
@@ -97,7 +98,8 @@
 <script>
 import { post } from '@/api/dataset/dataset'
 import { datasetTypeMap } from './options'
-import { groupTree } from '@/api/dataset/dataset'
+import { formatDatasetTreeFolder, getCacheTree } from '@/components/canvas/utils/utils'
+
 export default {
   data() {
     return {
@@ -203,21 +205,8 @@ export default {
       )
     },
     tree() {
-      this.loading = true
-      groupTree({
-        name: '',
-        pid: '0',
-        level: 0,
-        type: 'group',
-        children: [],
-        sort: 'type desc,name asc'
-      })
-        .then((res) => {
-          this.tData = res.data
-        })
-        .finally(() => {
-          this.loading = false
-        })
+      this.tData = getCacheTree('dataset-tree')
+      formatDatasetTreeFolder(this.tData)
     },
     nodeClick({ id, label }) {
       this.selectDatasets = [
