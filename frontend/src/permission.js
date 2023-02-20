@@ -18,9 +18,13 @@ import {
   changeFavicon
 } from '@/utils/index'
 import Layout from '@/layout/index'
-import { getSysUI } from '@/utils/auth'
+import {
+  getSysUI
+} from '@/utils/auth'
 
-import { getSocket } from '@/websocket'
+import {
+  getSocket
+} from '@/websocket'
 
 NProgress.configure({
   showSpinner: false
@@ -53,14 +57,19 @@ const routeBefore = (callBack) => {
     callBack()
   }
 }
-router.beforeEach(async (to, from, next) => routeBefore(() => {
+router.beforeEach(async(to, from, next) => routeBefore(() => {
   // start progress bar
   NProgress.start()
-  const mobileIgnores = ['/delink']
+  const mobileIgnores = ['/delink', '/de-auto-login']
   const mobilePreview = '/preview/'
+  const hasToken = getToken()
 
   if (isMobile() && !to.path.includes(mobilePreview) && mobileIgnores.indexOf(to.path) === -1) {
-    window.location.href = window.origin + '/app.html'
+    let urlSuffix = '/app.html'
+    if (hasToken) {
+      urlSuffix += ('?detoken=' + hasToken)
+    }
+    window.location.href = window.origin + urlSuffix
     NProgress.done()
   }
 
@@ -68,7 +77,7 @@ router.beforeEach(async (to, from, next) => routeBefore(() => {
   document.title = getPageTitle(to.meta.title)
 
   // determine whether the user has logged in
-  const hasToken = getToken()
+
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page

@@ -808,7 +808,7 @@ public class MysqlQueryProvider extends QueryProvider {
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_OFFSET, DE_PAGE_SIZE ", StringUtils.join(array, ","), table);
+        return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_OFFSET, DE_PAGE_SIZE ", StringUtils.join(array, ","), String.format(MySQLConstants.KEYWORD_TABLE, table));
     }
 
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {

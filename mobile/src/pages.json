@@ -1,192 +1,192 @@
 {
-	"pages": [ 
+  "pages": [
 
-        {
-			"path": "pages/login/index",
-			"style": {
-                "navigationBarTitleText": "%navigate.login%",
-				"app-plus": {
-					"titleNView": false
-				}
-			}
-		},
-        {
-			"path": "pages/tabBar/home/index",
-			"style": {
-                "navigationBarTitleText": "%navigate.menuHome%",
-				"app-plus": {
-                    "titleNView": false
-					
-				},
-                "enablePullDownRefresh": true
-			}
-		},
-        
-        {
-            "path": "pages/tabBar/home/detail",
-            "style": {
-                "navigationBarTitleText": "",
-                "app-plus": {
-					"titleNView": false,
-					"bounce": "none"
-				}
-            }
+    {
+      "path": "pages/login/index",
+      "style": {
+        "navigationBarTitleText": "%app.name%",
+        "app-plus": {
+          "titleNView": false
+        }
+      }
+    },
+    {
+      "path": "pages/tabBar/home/index",
+      "style": {
+        "navigationBarTitleText": "%navigate.menuHome%",
+        "app-plus": {
+          "titleNView": false
+
         },
-        {
-			"path": "pages/tabBar/dir/index",
-			"style": {				
-                "navigationBarTitleText": "%navigate.menuDir%",
-                "app-plus": {
-                    "titleNView": {
-                        "type": "transparent",
-                        "titleColor": "#fff",
-                        "backgroundColor": "#0faeff",
-                        "buttons": [],
-                        "searchInput": {
-                            "backgroundColor": "#fff",
-                            "borderRadius": "6px",
-                            "placeholder": "%searchPlaceholder%",
-                            "disabled": true
-                        }
-                    }
-                },
-                "enablePullDownRefresh": true
-			}
-		},
-        {
-            "path": "pages/tabBar/dir/search",
-            "style": {
-                "navigationBarTitleText": "%navigate.search%",
-                "app-plus": {
-                    "titleNView": {
-                        "titleColor": "#fff",
-                        "backgroundColor": "#0faeff",
-                        
-                        "searchInput": {
-                            "backgroundColor": "#fff",
-                            "borderRadius": "6px",
-                            "placeholder": "%searchPlaceholder%",
-                            "autoFocus": true
-                        }
-                    }
-                }
+        "enablePullDownRefresh": true
+      }
+    },
+
+    {
+      "path": "pages/tabBar/home/detail",
+      "style": {
+        "navigationBarTitleText": "",
+        "app-plus": {
+          "titleNView": false,
+          "bounce": "none"
+        }
+      }
+    },
+    {
+      "path": "pages/tabBar/dir/index",
+      "style": {
+        "navigationBarTitleText": "%navigate.menuDir%",
+        "app-plus": {
+          "titleNView": {
+            "type": "transparent",
+            "titleColor": "#fff",
+            "backgroundColor": "#0faeff",
+            "buttons": [],
+            "searchInput": {
+              "backgroundColor": "#fff",
+              "borderRadius": "6px",
+              "placeholder": "%searchPlaceholder%",
+              "disabled": true
             }
+          }
         },
-        {
-            "path": "pages/tabBar/dir/folder",
-            "style": {
-                "navigationBarTitleText": "",
-                "app-plus": {
-                    "titleNView": {
-                        "type": "transparent"
-                    }
-                },
-                "h5": {
-                    "titleNView": {
-                        "type": "transparent",
-                        "buttons": []
-                    }
-                }
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/tabBar/dir/search",
+      "style": {
+        "navigationBarTitleText": "%navigate.search%",
+        "app-plus": {
+          "titleNView": {
+            "titleColor": "#fff",
+            "backgroundColor": "#0faeff",
+
+            "searchInput": {
+              "backgroundColor": "#fff",
+              "borderRadius": "6px",
+              "placeholder": "%searchPlaceholder%",
+              "autoFocus": true
             }
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/tabBar/dir/folder",
+      "style": {
+        "navigationBarTitleText": "",
+        "app-plus": {
+          "titleNView": {
+            "type": "transparent"
+          }
         },
-        {
-			"path": "pages/tabBar/me/index",
-			"style": {
-                "navigationBarTitleText": "%navigate.menuMe%",
-				"app-plus": {
-					"titleNView": false
-				}
-			}
-		},
-        {
-			"path": "pages/tabBar/me/person",
-			"style": {
-				"navigationBarTitleText": "%navigate.personInfo%",
-                
-                "app-plus": {
-                    "titleNView": {
-                        "type": "transparent"
-                    }
-                }
-			}
-		},
-        {
-			"path": "pages/tabBar/me/language",
-			"style": {
-				"navigationBarTitleText": "%navigate.language%",
-                
-                "app-plus": {
-                    "titleNView": {
-                        "type": "transparent"
-                    }
-                }
-			}
-		},
-        {
-			"path": "pages/tabBar/me/about",
-			"style": {
-				"navigationBarTitleText": "%navigate.about%",
-                
-                "app-plus": {
-                    "titleNView": {
-                        "type": "transparent"
-                    }
-                }
-			}
-		},
-        {
-			"path": "pages/tabBar/me/outlink",
-			"style": {
-				"navigationBarTitleText": "",
-                
-                "app-plus": {
-                    "titleNView": {
-                        "type": "transparent"
-                    }
-                }
-			}
-		},
-		{
-			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "%app.name%",
-                "h5": {
-                    "maxWidth": 1190,
-                    "navigationBarTextStyle": "black",
-                    "navigationBarBackgroundColor": "#F1F1F1"
-                }
-			}
-		}
-	],
-	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "%app.name%",
-		"navigationBarBackgroundColor": "#ffffff",
-		"backgroundColor": "#ffffff"
-	},
-    "tabBar": {
-		"color": "#7A7E83",
-		"selectedColor": "#007AFF",
-		"borderStyle": "black",
-		"backgroundColor": "#ffffff",
-        
-		"list": [{
-				"pagePath": "pages/tabBar/home/index",
-				"iconPath": "static/home.png",
-				"selectedIconPath": "static/home_select.png",
-				"text": "%navigate.menuHome%"
-			},
-			{
-				"pagePath": "pages/tabBar/dir/index",
-				"iconPath": "static/dir.png",
-				"selectedIconPath": "static/dir_select.png",
-				"text": "%navigate.menuDir%"
-			}, {
-				"pagePath": "pages/tabBar/me/index",
-				"iconPath": "static/me.png",
-				"selectedIconPath": "static/me_select.png",
-				"text": "%navigate.menuMe%"
-			}
-		]
-	}
+        "h5": {
+          "titleNView": {
+            "type": "transparent",
+            "buttons": []
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/tabBar/me/index",
+      "style": {
+        "navigationBarTitleText": "%navigate.menuMe%",
+        "app-plus": {
+          "titleNView": false
+        }
+      }
+    },
+    {
+      "path": "pages/tabBar/me/person",
+      "style": {
+        "navigationBarTitleText": "%navigate.personInfo%",
+
+        "app-plus": {
+          "titleNView": {
+            "type": "transparent"
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/tabBar/me/language",
+      "style": {
+        "navigationBarTitleText": "%navigate.language%",
+
+        "app-plus": {
+          "titleNView": {
+            "type": "transparent"
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/tabBar/me/about",
+      "style": {
+        "navigationBarTitleText": "%navigate.about%",
+
+        "app-plus": {
+          "titleNView": {
+            "type": "transparent"
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/tabBar/me/outlink",
+      "style": {
+        "navigationBarTitleText": "",
+
+        "app-plus": {
+          "titleNView": {
+            "type": "transparent"
+          }
+        }
+      }
+    },
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "%app.name%",
+        "h5": {
+          "maxWidth": 1190,
+          "navigationBarTextStyle": "black",
+          "navigationBarBackgroundColor": "#F1F1F1"
+        }
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "%app.name%",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#ffffff"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#007AFF",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+
+    "list": [{
+        "pagePath": "pages/tabBar/home/index",
+        "iconPath": "static/home.png",
+        "selectedIconPath": "static/home_select.png",
+        "text": "%navigate.menuHome%"
+      },
+      {
+        "pagePath": "pages/tabBar/dir/index",
+        "iconPath": "static/dir.png",
+        "selectedIconPath": "static/dir_select.png",
+        "text": "%navigate.menuDir%"
+      }, {
+        "pagePath": "pages/tabBar/me/index",
+        "iconPath": "static/me.png",
+        "selectedIconPath": "static/me_select.png",
+        "text": "%navigate.menuMe%"
+      }
+    ]
+  }
 }
