@@ -916,6 +916,9 @@ public class OracleQueryProvider extends QueryProvider {
                     continue;
                 }
                 String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                if(datasetTableField.getType().equals("DATE")){
+                    originField = String.format(OracleConstants.TO_CHAR, originField, OracleConstants.DEFAULT_DATE_FORMAT);
+                }
                 String fieldAlias = String.format(OracleConstants.KEYWORD_TABLE, x.getOriginName());
                 xFields.add(getXFields(x, originField, fieldAlias));
             }
