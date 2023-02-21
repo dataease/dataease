@@ -262,7 +262,7 @@
         v-dialogDrag
         :title="$t('datasource.create')"
         :visible.sync="dsTypeRelate"
-        width="1005px"
+        width="1010px"
         class="de-dialog-form none-scroll-bar"
         append-to-body
       >
