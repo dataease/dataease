@@ -64,7 +64,7 @@
         :enable-scroll="false"
         :chart="chartTable"
         :show-summary="false"
-        class="table-class"
+        class="table-class-dialog"
       />
     </de-main-container>
   </de-container>
@@ -342,8 +342,9 @@ export default {
   height: 100%;
 }
 
-.table-class {
+.table-class-dialog {
   height: 100%;
+  overflow-y: auto !important;
 }
 
 .canvas-class {
