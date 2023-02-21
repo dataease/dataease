@@ -272,12 +272,16 @@
 
     <cache
             name="sys_token_store"
-            eternal="true"
-            maxElementsInMemory="1"
-            maxElementsOnDisk="0"
+            eternal="false"
+            maxElementsInMemory="5000"
+            maxElementsOnDisk="50000"
             overflowToDisk="true"
-            diskPersistent="true"
-    />
+            timeToIdleSeconds="28800"
+            timeToLiveSeconds="28800"
+            memoryStoreEvictionPolicy="LRU"
+            diskPersistent="true">
+            <BootstrapCacheLoaderFactory class="net.sf.ehcache.store.DiskStoreBootstrapCacheLoaderFactory" properties="bootstrapAsynchronously=true" />
+    </cache>
 
 
 
