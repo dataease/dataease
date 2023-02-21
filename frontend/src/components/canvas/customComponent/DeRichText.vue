@@ -37,6 +37,7 @@ import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
 import { mapState } from 'vuex'
 import Vue from 'vue'
+import xssCheck from 'xss'
 
 export default {
   name: 'DeRichText',
@@ -77,7 +78,7 @@ export default {
       canEdit: false,
       // 初始化配置
       tinymceId: 'tinymce-' + this.element.id,
-      myValue: this.propValue,
+      myValue: xssCheck(this.propValue),
       init: {
         selector: '#tinymce-' + this.element.id,
         toolbar_items_size: 'small',

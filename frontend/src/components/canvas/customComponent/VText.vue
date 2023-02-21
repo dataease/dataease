@@ -18,7 +18,7 @@
       @mousedown="handleMousedown"
       @blur="handleBlur"
       @input="handleInput"
-      v-html="element.propValue"
+      v-html="$xss(element.propValue)"
     />
     <div
       v-if="!canEdit"
@@ -28,7 +28,7 @@
       @mousedown="handleMousedown"
       @blur="handleBlur"
       @input="handleInput"
-      v-html="element.propValue"
+      v-html="$xss(element.propValue)"
     />
   </div>
   <div
@@ -37,7 +37,7 @@
   >
     <div
       :style="{ verticalAlign: element.style.verticalAlign }"
-      v-html="textInfo"
+      v-html="$xss(textInfo)"
     />
   </div>
 </template>
@@ -80,7 +80,7 @@ export default {
     },
     textInfo() {
       if (this.element && this.element.hyperlinks && this.element.hyperlinks.enable) {
-        return "<a title='" + this.element.hyperlinks.content + "' target='" + this.element.hyperlinks.openMode + "' href='" + this.element.hyperlinks.content + "'>" + this.element.propValue + '</a>'
+        return '<a title=\'' + this.element.hyperlinks.content + '\' target=\'' + this.element.hyperlinks.openMode + '\' href=\'' + this.element.hyperlinks.content + '\'>' + this.element.propValue + '</a>'
       } else {
         return this.element.propValue
       }
