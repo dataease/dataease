@@ -43,6 +43,12 @@ import 'video.js/dist/video-js.css'
 // 控制标签宽高成比例的指令
 import proportion from 'vue-proportion-directive'
 
+import xss from 'xss'
+// 定义全局XSS解决方法
+Object.defineProperty(Vue.prototype, '$xss', {
+  value: xss
+})
+
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
 Vue.use(widgets)
