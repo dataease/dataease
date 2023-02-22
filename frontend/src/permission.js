@@ -57,7 +57,7 @@ const routeBefore = (callBack) => {
     callBack()
   }
 }
-router.beforeEach(async(to, from, next) => routeBefore(() => {
+router.beforeEach(async (to, from, next) => routeBefore(() => {
   // start progress bar
   NProgress.start()
   const mobileIgnores = ['/delink', '/de-auto-login']
@@ -69,6 +69,9 @@ router.beforeEach(async(to, from, next) => routeBefore(() => {
     if (hasToken) {
       urlSuffix += ('?detoken=' + hasToken)
     }
+    localStorage.removeItem('user-info')
+    localStorage.removeItem('userId')
+    localStorage.removeItem('Authorization')
     window.location.href = window.origin + urlSuffix
     NProgress.done()
   }

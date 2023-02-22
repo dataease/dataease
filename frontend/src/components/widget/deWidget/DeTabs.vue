@@ -411,6 +411,10 @@ export default {
         const _this = this
         _this.$nextTick(() => {
           try {
+            const targetRef = _this.$refs['canvasTabRef-' + _this.activeTabName]
+            if (targetRef) {
+              targetRef[0].restore()
+            }
             _this.$refs[this.activeTabName][0].resizeChart()
           } catch (e) {
             // ignore

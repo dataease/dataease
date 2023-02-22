@@ -759,7 +759,7 @@ export default {
           const attrSize = JSON.parse(this.view.customAttr).size
           if (this.chart.type === 'table-info' && this.view.datasetMode === 0 && (!attrSize.tablePageMode || attrSize.tablePageMode === 'page')) {
             requestInfo.goPage = this.currentPage.page
-            requestInfo.pageSize = this.currentPage.pageSize
+            requestInfo.pageSize = this.currentPage.pageSize === parseInt(attrSize.tablePageSize) ? this.currentPage.pageSize : parseInt(attrSize.tablePageSize)
           }
         }
         if (this.isFirstLoad) {

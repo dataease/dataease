@@ -38,6 +38,7 @@ import 'tinymce/plugins/pagebreak'
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import { uuid } from 'vue-uuid'
+import xssCheck from 'xss'
 
 export default {
   name: 'DeRichTextView',
@@ -152,7 +153,7 @@ export default {
     viewInit() {
       bus.$on('fieldSelect-' + this.element.propValue.viewId, this.fieldSelect)
       tinymce.init({})
-      this.myValue = this.assignment(this.element.propValue.textValue)
+      this.myValue = xssCheck(this.assignment(this.element.propValue.textValue))
       bus.$on('initCurFields-' + this.element.id, this.initCurFieldsChange)
       this.$nextTick(() => {
         this.initReady = true
