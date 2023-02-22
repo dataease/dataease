@@ -5,3 +5,7 @@ spring:
     active: '@profiles.active@'
   application:
     name: xpack-permissions
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

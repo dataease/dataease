@@ -1,0 +1,13 @@
+
+spring:
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:/opt/dataease2.0/simple;AUTO_RECONNECT=TRUE;MODE=MySQL
+    username: sa
+    password: 123456
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console

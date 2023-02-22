@@ -5,12 +5,14 @@ import io.dataease.api.ds.dto.DsTreeDTO;
 import io.dataease.api.permissions.AuthApi;
 import io.dataease.api.permissions.dto.AuthDTO;
 import io.dataease.api.permissions.request.AuthRequest;
+import io.dataease.mapper.TestMapper;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 查询数据源树
@@ -54,5 +56,11 @@ public class DsTreeServer implements DsTreeApi {
         if (authDTO.isSimple()) return result;
         // 根据查询到到资源ID进行过滤
         return result.stream().filter(item -> authDTO.getResourceId().contains(item.getId())).toList();
+    }
+
+    @Resource
+    private TestMapper testMapper;
+    public List<Map> testQuery() {
+        return testMapper.queryTest();
     }
 }

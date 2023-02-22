@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface DsTreeApi {
     /**
@@ -14,4 +15,7 @@ public interface DsTreeApi {
      */
     @GetMapping("/query/{keyWord}")
     List<DsTreeDTO> query(@PathVariable("keyWord") String keyWord);
+
+    @GetMapping("/testQuery")
+    List<Map> testQuery();
 }

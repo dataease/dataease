@@ -5,3 +5,8 @@ spring:
     active: '@profiles.active@'
   application:
     name: core-backend
+
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true

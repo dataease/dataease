@@ -1,11 +1,12 @@
-package io.dataease.server;
+package io.dataease;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan("io.dataease")
+
 public class CoreApplication {
 
     public static void main(String[] args) {
