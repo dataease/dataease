@@ -71,7 +71,7 @@
                     popper-class="api-table-delete"
                     trigger="click"
                   >
-                    <i :disabled="disabled" class="el-icon-warning" />
+                    <svg-icon :disabled="disabled" icon-class="icon_info_filled" />
                     <div class="tips">
                       {{ $t('datasource.delete_this_item') }}
                     </div>

@@ -454,7 +454,7 @@
                     :content="$t('commons.parameter_effect')"
                     placement="top"
                   >
-                    <i class="el-icon-warning"/>
+                    <svg-icon icon-class="icon_info_filled" />
                   </el-tooltip>
                 </template>
                 <template slot-scope="scope">

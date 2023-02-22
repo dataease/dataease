@@ -261,7 +261,7 @@
               popper-class="reset-pwd"
               trigger="click"
             >
-              <i class="el-icon-warning" />
+              <svg-icon icon-class="icon_info_filled" />
               <div class="tips">{{ $t('user.recover_pwd') }}</div>
               <div class="editer-form-title">
                 <span

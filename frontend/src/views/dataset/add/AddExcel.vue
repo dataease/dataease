@@ -26,7 +26,7 @@
         {{ $t('dataset.excel_info_2') }}<br>
         {{ $t('dataset.excel_info_3') }}
       </div>
-      <i class="el-icon-warning-outline"/> </el-tooltip></span>
+      <svg-icon icon-class="icon_info_outlined" /></el-tooltip></span>
       <i
         class="el-icon-d-arrow-left"
         @click="showLeft = false"
