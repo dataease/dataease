@@ -77,11 +77,7 @@
               trigger="click"
             >
               <panel-detail-info />
-              <i
-                slot="reference"
-                class="el-icon-warning-outline icon-class"
-                style="margin-left: 4px;cursor: pointer;font-size: 14px;"
-              />
+              <svg-icon slot="reference" style="margin-left: 4px;cursor: pointer;font-size: 14px;" class="icon-class" icon-class="icon_info_outlined" />
             </el-popover>
           </el-col>
           <el-col :span="12">
