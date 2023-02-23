@@ -671,7 +671,7 @@ public class ChartViewService {
                 if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
                     chartExtRequest.setGoPage(1L);
                     chartExtRequest.setPageSize(view.getResultCount().longValue());
-                } else {
+                } else if (!chartExtRequest.getExcelExportFlag()) {
                     chartExtRequest.setGoPage(null);
                     chartExtRequest.setPageSize(null);
                 }
@@ -847,7 +847,7 @@ public class ChartViewService {
         List<ChartDrillRequest> drillRequestList = chartExtRequest.getDrill();
         if (CollectionUtils.isNotEmpty(drillRequestList) && (drill.size() > drillRequestList.size())) {
 //            如果是从子维度开始下钻，那么先把主维度的条件先加上去
-            if (CollectionUtils.isNotEmpty(xAxisExt) && StringUtils.equalsIgnoreCase(drill.get(0).getId(),xAxisExt.get(0).getId())) {
+            if (CollectionUtils.isNotEmpty(xAxisExt) && StringUtils.equalsIgnoreCase(drill.get(0).getId(), xAxisExt.get(0).getId())) {
                 ChartDrillRequest head = drillRequestList.get(0);
                 for (int i = 0; i < xAxisBase.size(); i++) {
                     ChartDimensionDTO dimensionDTO = head.getDimensionList().get(i);
