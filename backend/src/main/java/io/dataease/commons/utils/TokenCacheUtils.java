@@ -50,8 +50,9 @@ public class TokenCacheUtils {
         }
 
         Long time = expTime * 60;
-        CacheUtils.put(KEY, token, userId, time.intValue(), null);
-
+        Double v = time * 0.6;
+        CacheUtils.put(KEY, token, userId, time.intValue(), v.intValue());
+        CacheUtils.flush(KEY);
     }
 
     public static void remove(String token) {

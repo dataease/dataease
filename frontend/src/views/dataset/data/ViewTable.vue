@@ -48,10 +48,7 @@
             :data="table"
             :tab-status="tabStatus"
           />
-          <i
-            slot="reference"
-            class="el-icon-warning-outline detail"
-          />
+          <svg-icon slot="reference" class="detail" icon-class="icon_info_outlined" />
         </el-popover>
       </el-col>
       <el-col
