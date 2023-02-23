@@ -63,11 +63,11 @@ FROM
 WHERE
     <filters:{filter|<if(filter)><filter><endif>}; separator="\nAND ">
 <endif>
-<if(groups && !useAliasForGroup)>
+<if(isGroup && groups && !useAliasForGroup)>
 GROUP BY
     <groups:{group|<if(group)><group.fieldName><endif>}; separator=",\n">
 <endif>
-<if(groups && useAliasForGroup)>
+<if(isGroup && groups && useAliasForGroup)>
 GROUP BY
     <groups:{group|<if(group)><group.fieldAlias><endif>}; separator=",\n">
 <endif>
