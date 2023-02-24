@@ -609,33 +609,6 @@ export default {
     }
   }
 }
-.custom-tree-node {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  padding-right: 8px;
-}
-
-.custom-tree-node-list {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  padding: 0 8px;
-}
-
-.father .child {
-  /*display: none;*/
-  visibility: hidden;
-}
-
-.father:hover .child {
-  /*display: inline;*/
-  visibility: visible;
-}
 .relation-popover {
   max-height: 70%;
   overflow-y: scroll;
