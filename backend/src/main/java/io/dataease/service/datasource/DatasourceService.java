@@ -650,6 +650,9 @@ public class DatasourceService {
 
     public void updateDemoDs() {
         Datasource datasource = datasourceMapper.selectByPrimaryKey("76026997-94f9-4a35-96ca-151084638969");
+        if(datasource == null){
+            return;
+        }
         MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);
         Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
         Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
