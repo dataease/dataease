@@ -53,8 +53,8 @@
       <div class="sql-title">
         {{ $t('deDataset.data_preview') }}
         <span class="result-num">{{
-          `(${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')})`
-        }}</span>
+            `(${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')})`
+          }}</span>
         <span
           class="drag"
           @mousedown="mousedownDrag"
@@ -96,13 +96,15 @@
           secondary
           @click="closeSelectDs()"
         >{{
-          $t('dataset.cancel')
-        }}</deBtn>
+            $t('dataset.cancel')
+          }}
+        </deBtn>
         <deBtn
           :disabled="!tempDs.id"
           type="primary"
           @click="confirmSelectDs()"
-        >{{ $t('dataset.confirm') }}</deBtn>
+        >{{ $t('dataset.confirm') }}
+        </deBtn>
       </div>
     </el-drawer>
 
@@ -120,20 +122,22 @@
       size="840px"
       direction="rtl"
     >
-      <union-edit :union-param="unionParam" />
+      <union-edit :union-param="unionParam"/>
       <div class="de-foot">
         <deBtn
           secondary
           @click="closeEditUnion()"
         >{{
-          $t('dataset.cancel')
-        }}</deBtn>
+            $t('dataset.cancel')
+          }}
+        </deBtn>
         <deBtn
           type="primary"
           @click="confirmEditUnion()"
         >{{
-          $t('dataset.confirm')
-        }}</deBtn>
+            $t('dataset.confirm')
+          }}
+        </deBtn>
       </div>
     </el-drawer>
   </div>
@@ -148,6 +152,8 @@ import { post } from '@/api/dataset/dataset'
 import UnionPreview from '@/views/dataset/add/union/UnionPreview'
 import cancelMix from './cancelMix'
 import msgCfm from '@/components/msgCfm/index'
+import { updateCacheTree } from '@/components/canvas/utils/utils'
+
 export default {
   name: 'AddUnion',
   components: {
@@ -267,6 +273,12 @@ export default {
       }
       post('/dataset/table/update', table)
         .then((response) => {
+          if (table.id) {
+            const renameNode = { id: table.id, name: table.name, label: table.name }
+            updateCacheTree('rename', 'dataset-tree', renameNode, JSON.parse(localStorage.getItem('dataset-tree')))
+          } else {
+            updateCacheTree('batchNew', 'dataset-tree', response.data, JSON.parse(localStorage.getItem('dataset-tree')))
+          }
           this.$emit('saveSuccess', table)
           this.cancel(response.data)
         })
@@ -413,6 +425,7 @@ export default {
     overflow-y: auto;
     box-sizing: border-box;
     flex: 1;
+
     .sql-title {
       user-select: none;
       height: 54px;
@@ -437,6 +450,7 @@ export default {
         color: var(--deTextSecondary, #646a73);
         margin-left: 12px;
       }
+
       .drag {
         position: absolute;
         top: 0;

@@ -261,7 +261,7 @@
               popper-class="reset-pwd"
               trigger="click"
             >
-              <i class="el-icon-warning" />
+              <svg-icon class="reset-pwd-icon" icon-class="icon_info_filled" />
               <div class="tips">{{ $t('user.recover_pwd') }}</div>
               <div class="editer-form-title">
                 <span
@@ -681,6 +681,10 @@ export default {
 }
 </style>
 <style lang="scss">
+.reset-pwd-icon {
+  margin-top: 4px;
+  color: rgb(255, 153, 0);
+}
 .reset-pwd {
   padding: 20px 24px !important;
   display: flex;

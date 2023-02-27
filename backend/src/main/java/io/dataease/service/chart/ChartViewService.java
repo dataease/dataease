@@ -529,6 +529,9 @@ public class ChartViewService {
             xAxisForRequest.addAll(xAxis);
             xAxisForRequest.addAll(extStack);
             datasourceRequest.setXAxis(xAxisForRequest);
+            List<ChartViewFieldDTO> yAxisForRequest = new ArrayList<>();
+            yAxisForRequest.addAll(yAxis);
+            datasourceRequest.setYAxis(yAxisForRequest);
             data = datasourceProvider.getData(datasourceRequest);
         } else if (table.getMode() == 1) {// 抽取
             datasourceRequest.setDatasource(ds);
@@ -668,7 +671,7 @@ public class ChartViewService {
                 if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
                     chartExtRequest.setGoPage(1L);
                     chartExtRequest.setPageSize(view.getResultCount().longValue());
-                } else {
+                } else if (!chartExtRequest.getExcelExportFlag()) {
                     chartExtRequest.setGoPage(null);
                     chartExtRequest.setPageSize(null);
                 }
@@ -841,22 +844,37 @@ public class ChartViewService {
         // 下钻
         List<ChartExtFilterRequest> drillFilters = new ArrayList<>();
         boolean isDrill = false;
-        List<ChartDrillRequest> drillRequest = chartExtRequest.getDrill();
-        if (CollectionUtils.isNotEmpty(drillRequest) && (drill.size() > drillRequest.size())) {
-            for (int i = 0; i < drillRequest.size(); i++) {
-                ChartDrillRequest request = drillRequest.get(i);
-                for (ChartDimensionDTO dto : request.getDimensionList()) {
-                    ChartViewFieldDTO chartViewFieldDTO = drill.get(i);
+        List<ChartDrillRequest> drillRequestList = chartExtRequest.getDrill();
+        if (CollectionUtils.isNotEmpty(drillRequestList) && (drill.size() > drillRequestList.size())) {
+//            如果是从子维度开始下钻，那么先把主维度的条件先加上去
+            if (CollectionUtils.isNotEmpty(xAxisExt) && StringUtils.equalsIgnoreCase(drill.get(0).getId(), xAxisExt.get(0).getId())) {
+                ChartDrillRequest head = drillRequestList.get(0);
+                for (int i = 0; i < xAxisBase.size(); i++) {
+                    ChartDimensionDTO dimensionDTO = head.getDimensionList().get(i);
+                    DatasetTableField datasetTableField = dataSetTableFieldsService.get(dimensionDTO.getId());
+                    ChartExtFilterRequest tmp = new ChartExtFilterRequest();
+                    tmp.setFieldId(tmp.getFieldId());
+                    tmp.setValue(Collections.singletonList(dimensionDTO.getValue()));
+                    tmp.setOperator("in");
+                    tmp.setDatasetTableField(datasetTableField);
+                    extFilterList.add(tmp);
+                    drillFilters.add(tmp);
+                }
+            }
+            for (int i = 0; i < drillRequestList.size(); i++) {
+                ChartDrillRequest request = drillRequestList.get(i);
+                ChartViewFieldDTO chartViewFieldDTO = drill.get(i);
+                for (ChartDimensionDTO requestDimension : request.getDimensionList()) {
                     // 将钻取值作为条件传递，将所有钻取字段作为xAxis并加上下一个钻取字段
-                    if (StringUtils.equalsIgnoreCase(dto.getId(), chartViewFieldDTO.getId())) {
+                    if (StringUtils.equalsIgnoreCase(requestDimension.getId(), chartViewFieldDTO.getId())) {
                         isDrill = true;
-                        DatasetTableField datasetTableField = dataSetTableFieldsService.get(dto.getId());
+                        DatasetTableField datasetTableField = dataSetTableFieldsService.get(requestDimension.getId());
                         ChartViewFieldDTO d = new ChartViewFieldDTO();
                         BeanUtils.copyBean(d, datasetTableField);
 
                         ChartExtFilterRequest drillFilter = new ChartExtFilterRequest();
-                        drillFilter.setFieldId(dto.getId());
-                        drillFilter.setValue(Collections.singletonList(dto.getValue()));
+                        drillFilter.setFieldId(requestDimension.getId());
+                        drillFilter.setValue(Collections.singletonList(requestDimension.getValue()));
                         drillFilter.setOperator("in");
                         drillFilter.setDatasetTableField(datasetTableField);
                         extFilterList.add(drillFilter);
@@ -866,7 +884,8 @@ public class ChartViewService {
                         if (!checkDrillExist(xAxis, extStack, d, view)) {
                             xAxis.add(d);
                         }
-                        if (i == drillRequest.size() - 1) {
+//
+                        if (i == drillRequestList.size() - 1) {
                             ChartViewFieldDTO nextDrillField = drill.get(i + 1);
                             if (!checkDrillExist(xAxis, extStack, nextDrillField, view)) {
                                 // get drill list first element's sort,then assign to nextDrillField
@@ -1037,6 +1056,7 @@ public class ChartViewService {
             }
             if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
                 datasourceRequest.setQuery(totalPageSql);
+                datasourceRequest.setTotalPageFlag(true);
                 java.util.List<java.lang.String[]> tmpData = datasourceProvider.getData(datasourceRequest);
                 totalItems = CollectionUtils.isEmpty(tmpData) ? 0 : Long.valueOf(tmpData.get(0)[0]);
                 totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
@@ -1047,6 +1067,10 @@ public class ChartViewService {
             xAxisForRequest.addAll(xAxis);
             xAxisForRequest.addAll(extStack);
             datasourceRequest.setXAxis(xAxisForRequest);
+            List<ChartViewFieldDTO> yAxisForRequest = new ArrayList<>();
+            yAxisForRequest.addAll(yAxis);
+            datasourceRequest.setYAxis(yAxisForRequest);
+            datasourceRequest.setTotalPageFlag(false);
             data = datasourceProvider.getData(datasourceRequest);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields));

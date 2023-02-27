@@ -67,8 +67,8 @@
           >
             {{ $t('chart.total') }}
             <span>{{
-              (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
-            }}</span>
+                (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
+              }}</span>
             {{ $t('chart.items') }}
           </span>
           <de-pagination
@@ -339,7 +339,7 @@ export default {
       if (this.chart.type === 'table-pivot') {
         rowData = { ...meta.rowQuery, ...meta.colQuery }
         rowData[meta.valueField] = meta.fieldValue
-      } else if (this.showPage) {
+      } else if (this.showPage && (this.chart.datasetMode === 1 || (this.chart.datasetMode === 0 && this.not_support_page_dataset.includes(this.chart.datasourceType)))) {
         const rowIndex = (this.currentPage.page - 1) * this.currentPage.pageSize + meta.rowIndex
         rowData = this.chart.data.tableRow[rowIndex]
       } else {

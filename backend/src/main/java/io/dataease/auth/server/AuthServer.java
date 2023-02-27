@@ -63,6 +63,7 @@ public class AuthServer implements AuthApi {
 
     @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
+        Map<String, Object> result = new HashMap<>();
         String username = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getUsername());
         String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getPassword());
 
@@ -147,9 +148,11 @@ public class AuthServer implements AuthApi {
                 AccountLockStatus lockStatus = authUserService.recordLoginFail(username, 0);
                 DataEaseException.throwException(appendLoginErrorMsg(Translator.get("i18n_id_or_pwd_error"), lockStatus));
             }
+            if (user.getIsAdmin() && user.getPassword().equals("40b8893ea9ebc2d631c4bb42bb1e8996")) {
+                result.put("passwordModified", false);
+            }
         }
 
-        Map<String, Object> result = new HashMap<>();
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
         String token = JWTUtils.sign(tokenInfo, realPwd);
         // 记录token操作时间
@@ -234,7 +237,7 @@ public class AuthServer implements AuthApi {
             if (StringUtils.isBlank(result)) {
                 result = "success";
             }
-            TokenCacheUtils.remove(token);
+            TokenCacheUtils.add(token, userId);
         } catch (Exception e) {
             LogUtil.error(e);
             if (StringUtils.isBlank(result)) {
@@ -288,7 +291,7 @@ public class AuthServer implements AuthApi {
             if (StringUtils.isBlank(result)) {
                 result = "success";
             }
-            TokenCacheUtils.remove(token);
+            TokenCacheUtils.add(token, userId);
         } catch (Exception e) {
             LogUtil.error(e);
             if (StringUtils.isBlank(result)) {

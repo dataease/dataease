@@ -34,6 +34,7 @@ import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.constants.DeTypeConstants;
+import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.dto.datasource.TableField;
@@ -712,6 +713,7 @@ public class DataSetTableService {
                 datasourceRequest.setPreviewData(true);
                 try {
                     datasourceRequest.setPageable(true);
+                    datasourceRequest.setPermissionFields(fields);
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());

@@ -6,7 +6,7 @@
       :content="$t('chart.field_error_tips')"
       placement="bottom"
     >
-      <span><i class="el-icon-warning" /></span>
+      <span><svg-icon icon-class="icon_info_filled" /></span>
     </el-tooltip>
   </div>
 </template>

@@ -28,11 +28,7 @@
           :data="view"
           :tab-status="tabStatus"
         />
-        <i
-          slot="reference"
-          class="el-icon-warning icon-class"
-          style="position:absolute; margin-left: 30px; top:14px;cursor: pointer;"
-        />
+        <svg-icon slot="reference" class="icon-class" style="position:absolute; margin-left: 30px; top:14px;cursor: pointer;" icon-class="icon_info_filled" />
       </el-popover>
       <span
         class="title-text view-title-name"

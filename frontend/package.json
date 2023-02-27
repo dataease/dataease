@@ -1,6 +1,6 @@
 {
   "name": "dataease",
-  "version": "1.18.2",
+  "version": "1.18.3",
   "description": "dataease front",
   "private": true,
   "scripts": {
@@ -88,7 +88,8 @@
     "vuedraggable": "^2.24.3",
     "vuex": "3.1.0",
     "webpack": "^4.46.0",
-    "xlsx": "^0.17.0"
+    "xlsx": "^0.17.0",
+    "xss": "^1.0.14"
   },
   "devDependencies": {
     "@babel/core": "^7.4.0-0",

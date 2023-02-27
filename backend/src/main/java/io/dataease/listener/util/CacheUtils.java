@@ -66,6 +66,12 @@ public class CacheUtils {
         return cache(cacheName).remove(key);
     }
 
+    public static void flush(String cacheName) {
+        CacheManager manager = getCacheManager();
+        if (manager instanceof RedisCacheManager) return;
+        cache(cacheName).flush();
+    }
+
     public static void removeAll(String cacheName) {
         if (getCacheManager() instanceof RedisCacheManager) {
             org.springframework.cache.Cache cache = getCacheManager().getCache(cacheName);

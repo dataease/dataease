@@ -1,24 +1,18 @@
 package io.dataease.auth.filter;
 
-import com.auth0.jwt.algorithms.Algorithm;
 import io.dataease.auth.entity.ASKToken;
 import io.dataease.auth.entity.JWTToken;
-import io.dataease.auth.entity.SysUserEntity;
-import io.dataease.auth.entity.TokenInfo;
+
 import io.dataease.auth.handler.ApiKeyHandler;
-import io.dataease.auth.service.AuthUserService;
-import io.dataease.auth.util.JWTUtils;
-import io.dataease.commons.utils.CommonBeanFactory;
+
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.TokenCacheUtils;
-import io.dataease.exception.DataEaseException;
-import io.dataease.i18n.Translator;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -30,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 
 public class JWTFilter extends BasicHttpAuthenticationFilter {
 
-    private Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     public final static String expireMessage = "Login token is expire.";
 
@@ -66,18 +59,10 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         if (StringUtils.startsWith(authorization, "Basic")) {
             return false;
         }
-        if (!TokenCacheUtils.validate(authorization)) {
+        if (TokenCacheUtils.invalid(authorization)) {
             throw new AuthenticationException(expireMessage);
         }
-        // 当没有出现登录超时 且需要刷新token 则执行刷新token
-        if (JWTUtils.loginExpire(authorization)) {
-            TokenCacheUtils.remove(authorization);
-            throw new AuthenticationException(expireMessage);
-        }
-        if (JWTUtils.needRefresh(authorization)) {
-            TokenCacheUtils.remove(authorization);
-            authorization = refreshToken(request, response);
-        }
+
         JWTToken token = new JWTToken(authorization);
         Subject subject = getSubject(request, response);
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
@@ -108,28 +93,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
             }
         }
         return false;
-    }
-
-
-    private String refreshToken(ServletRequest request, ServletResponse response) throws Exception {
-        // 获取AccessToken(Shiro中getAuthzHeader方法已经实现)
-        String token = this.getAuthzHeader(request);
-        // 获取当前Token的帐号信息
-        TokenInfo tokenInfo = JWTUtils.tokenInfoByToken(token);
-        AuthUserService authUserService = CommonBeanFactory.getBean(AuthUserService.class);
-        SysUserEntity user = authUserService.getUserById(tokenInfo.getUserId());
-        if (user == null) {
-            DataEaseException.throwException(Translator.get("i18n_not_find_user"));
-        }
-        String password = user.getPassword();
-        Algorithm algorithm = Algorithm.HMAC256(password);
-        JWTUtils.verifySign(algorithm, token);
-        String newToken = JWTUtils.sign(tokenInfo, password);
-        // 设置响应的Header头新Token
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        httpServletResponse.addHeader("Access-Control-Expose-Headers", "RefreshAuthorization");
-        httpServletResponse.setHeader("RefreshAuthorization", newToken);
-        return newToken;
     }
 
 

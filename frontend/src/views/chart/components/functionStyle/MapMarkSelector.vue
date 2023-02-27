@@ -393,7 +393,6 @@ export default {
     },
     getItemTagType() {
       this.$refs['markForm'].validate((valid) => {
-        console.log(valid)
       })
     }
   }
