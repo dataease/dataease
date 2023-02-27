@@ -808,7 +808,8 @@ public class MysqlQueryProvider extends QueryProvider {
             }
             return stringBuilder.toString();
         }).toArray(String[]::new);
-        return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_OFFSET, DE_PAGE_SIZE ", StringUtils.join(array, ","), String.format(MySQLConstants.KEYWORD_TABLE, table));
+        table = table.trim().startsWith("(") ? table : String.format(MySQLConstants.KEYWORD_TABLE, table);
+        return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_OFFSET, DE_PAGE_SIZE ", StringUtils.join(array, ","), table);
     }
 
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {
@@ -821,7 +822,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
     @Override
     public String createRawQuerySQLAsTmp(String sql, List<DatasetTableField> fields) {
-        return createRawQuerySQL(" (" + sqlFix(sql) + ") AS DE_TEMP", fields, null);
+        return createRawQuerySQL("(" + sqlFix(sql) + ") AS DE_TEMP", fields, null);
     }
 
     public String transTreeItem(SQLObj tableObj, DatasetRowPermissionsTreeItem item) {
