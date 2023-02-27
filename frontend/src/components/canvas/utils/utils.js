@@ -10,6 +10,7 @@ import { uuid } from 'vue-uuid'
 import store from '@/store'
 import { AIDED_DESIGN, MOBILE_SETTING, PAGE_LINE_DESIGN, PANEL_CHART_INFO, TAB_COMMON_STYLE } from '@/views/panel/panel'
 import html2canvas from 'html2canvasde'
+import xssCheck from 'xss'
 
 export function deepCopy(target) {
   if (typeof target === 'object' && target !== null) {
@@ -101,6 +102,9 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
     componentStyle.chartCommonStyle = deepCopy(COMMON_BACKGROUND)
   }
   componentData.forEach((item, index) => {
+    if (item.component && item.component === 'v-text') {
+      item.propValue = xssCheck(item.propValue)
+    }
     if (item.component && item.component === 'de-date') {
       const widget = ApplicationContext.getService(item.serviceName)
       if (item.options.attrs &&
