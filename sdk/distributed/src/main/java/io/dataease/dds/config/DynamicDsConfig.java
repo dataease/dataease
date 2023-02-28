@@ -29,6 +29,9 @@ public class DynamicDsConfig implements WebMvcConfigurer {
     @Value("${de.tenant.ds.lazy:false}")
     private Boolean tenantDsLazyLoad;
 
+    @Value("${spring.application.name}")
+    private String appName;
+
     @Autowired
     private DynamicDataSourceProperties properties;
 
@@ -57,7 +60,7 @@ public class DynamicDsConfig implements WebMvcConfigurer {
             Object key = entry.getKey();
             boolean isManage = key.equals(DataSourceConstant.DATA_SOURCE_MANAGE);
             try {
-                TenantFlywayUtil.executeFlyway((HikariDataSource) entry.getValue(), isManage);
+                TenantFlywayUtil.executeFlyway((HikariDataSource) entry.getValue(), isManage, appName);
             } catch (Exception e) {
                 // 记录日志 循环继续
             }
@@ -71,9 +74,10 @@ public class DynamicDsConfig implements WebMvcConfigurer {
     /**
      * 从配置文件加载额外的数据源
      * DE官方库业务库可以从这里加载进去(客户业务库是从数据库读进去)
+     *
      * @return
      */
-    private Map<Object, Object> getDynamicDataSource(){
+    private Map<Object, Object> getDynamicDataSource() {
         Map<String, DataSourceProperties> dataSourcePropertiesMap = properties.getDatasource();
         Map<Object, Object> targetDataSources = new HashMap<>(dataSourcePropertiesMap.size());
         dataSourcePropertiesMap.forEach((k, v) -> {
