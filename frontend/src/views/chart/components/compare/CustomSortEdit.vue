@@ -69,6 +69,7 @@ export default {
     init() {
       post('/chart/view/getFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + this.field.id + '/' + this.fieldType, {}).then(response => {
         this.sortList = response.data
+        this.onUpdate()
       })
     },
     onMove() {
