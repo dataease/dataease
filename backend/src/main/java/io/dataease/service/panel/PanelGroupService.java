@@ -288,7 +288,7 @@ public class PanelGroupService {
 
         List<PanelGroup> checkResult = panelGroupMapper.selectByExample(groupExample);
         if (CollectionUtils.isNotEmpty(checkResult)) {
-            DataEaseException.throwException(Translator.get("I18N_PANEL_EXIST"));
+            DataEaseException.throwException(PanelConstants.PANEL_NODE_TYPE_PANEL.equals(nodeType) ? Translator.get("I18N_PANEL_EXIST") : Translator.get("I18N_FOlDER_EXIST"));
         }
     }
 
