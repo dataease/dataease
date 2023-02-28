@@ -434,9 +434,9 @@ public class OracleQueryProvider extends QueryProvider {
         fieldCustomFilter.add(chartFieldCustomFilterDTO);
 
         if (isTable) {
-            return "SELECT * FROM (" + sqlFix(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM >= " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
+            return "SELECT * FROM (" + sqlFix(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
         } else {
-            return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM >= " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
+            return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
         }
     }
 
@@ -946,7 +946,7 @@ public class OracleQueryProvider extends QueryProvider {
                 .build();
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
 
-        return "SELECT * FROM (" + sqlFix(st.render()) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM >= DE_OFFSET";
+        return "SELECT * FROM (" + sqlFix(st.render()) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > DE_OFFSET";
     }
 
     @Override
