@@ -273,12 +273,27 @@
               :description="$t('deDataset.run_failed')"
             >{{ errMsgCont }}
             </el-empty>
-            <el-table
-              v-else
+            <div style="float: left" v-else-if="fields.length">
+              <el-table
               :data="plxTableData"
               size="mini"
               border
-              style="width: 100%; height: 100%;overflow-y: auto;"
+            >
+              <el-table-column
+                v-for="field in fields"
+                :key="field.fieldName"
+                min-width="200px"
+                :prop="field.fieldName"
+                :label="field.remarks"
+                resizable
+              />
+            </el-table>
+            </div>
+            <el-table
+              :data="plxTableData"
+              v-else
+              size="mini"
+              border
             >
               <el-table-column
                 v-for="field in fields"
@@ -1300,9 +1315,9 @@ export default {
     }
 
     .table-sql {
-      height: calc(100% - 110px);
-      padding: 0 25px 18px 25px;
-      overflow-y: auto;
+      height: calc(100% - 128px);
+      margin: 0 25px 18px 25px;
+      overflow: auto;
       box-sizing: border-box;
 
       .el-empty__bottom,
