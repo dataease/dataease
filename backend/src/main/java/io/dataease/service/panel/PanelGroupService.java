@@ -288,7 +288,7 @@ public class PanelGroupService {
 
         List<PanelGroup> checkResult = panelGroupMapper.selectByExample(groupExample);
         if (CollectionUtils.isNotEmpty(checkResult)) {
-            DataEaseException.throwException(Translator.get("I18N_PANEL_EXIST"));
+            DataEaseException.throwException(PanelConstants.PANEL_NODE_TYPE_PANEL.equals(nodeType) ? Translator.get("I18N_PANEL_EXIST") : Translator.get("I18N_FOlDER_EXIST"));
         }
     }
 
@@ -932,6 +932,28 @@ public class PanelGroupService {
                     }
                 }
             }
+
+            // 兼容过滤组件使用独立的数据集情况
+            PanelGroupDTO panelGroupInfo = this.findOne(panelId);
+            String panelData = panelGroupInfo.getPanelData();
+            try {
+                if (StringUtils.isNotEmpty(panelData)) {
+                    JSONArray panelDataArray = JSONObject.parseArray(panelData);
+                    for (int i = 0; i < panelDataArray.size(); i++) {
+                        JSONObject element = panelDataArray.getJSONObject(i);
+                        if ("custom".equals(element.getString("type"))) {
+                            JSONObject fieldsParent = element.getJSONObject("options").getJSONObject("attrs").getJSONObject("fieldsParent");
+                            if (ObjectUtils.isNotEmpty(fieldsParent)) {
+                                allTableIds.add(fieldsParent.getString("id"));
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                //ignore
+                LogUtil.warn("custom component dataset id get error");
+            }
+
         }
         datasetTablesInfo = extDataSetTableMapper.findByTableIds(allTableIds);
         //4.获取所有数据集字段信息
