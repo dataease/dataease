@@ -5,6 +5,7 @@ import io.dataease.dds.DynamicDataSource;
 import io.dataease.dds.constant.DataSourceConstant;
 import io.dataease.dds.interceptor.DSInterceptor;
 import io.dataease.dds.provider.TenantDatasourceProvider;
+import io.dataease.flyway.TenantFlywayUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -52,6 +53,15 @@ public class DynamicDsConfig implements WebMvcConfigurer {
             }
         }
         dynamicDataSource.setTargetDataSources(dynamicDataSourceMap);
+        for (Map.Entry<Object, Object> entry : dynamicDataSourceMap.entrySet()) {
+            Object key = entry.getKey();
+            boolean isManage = key.equals(DataSourceConstant.DATA_SOURCE_MANAGE);
+            try {
+                TenantFlywayUtil.executeFlyway((HikariDataSource) entry.getValue(), isManage);
+            } catch (Exception e) {
+                // 记录日志 循环继续
+            }
+        }
         //默认数据源
         dynamicDataSource.setDefaultTargetDataSource(defaultDataSource);
         return dynamicDataSource;

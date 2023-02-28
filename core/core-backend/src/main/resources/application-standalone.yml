@@ -1,6 +1,14 @@
 spring:
 
   datasource:
-    url: jdbc:mysql://localhost:3306/de_official?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    url: jdbc:mysql://localhost:3306/de_standalone?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
     username: root
     password: 1qaz@WSX
+
+  flyway:
+    enabled: true
+    table: de_standalone_version
+    validate-on-migrate: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    out-of-order: true

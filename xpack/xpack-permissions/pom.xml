@@ -42,7 +42,14 @@
                 <profiles.active>standalone</profiles.active>
             </properties>
             <build>
-
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <includes>
+                            <include>db/migration/*.sql</include>
+                        </includes>
+                    </resource>
+                </resources>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -74,9 +81,7 @@
                     <resource>
                         <directory>src/main/resources</directory>
                         <includes>
-                            <include>**/*.properties</include>
-                            <include>**/*.xml</include>
-                            <include>**/*.yml</include>
+                            <include>**/*.*</include>
                         </includes>
                     </resource>
                 </resources>

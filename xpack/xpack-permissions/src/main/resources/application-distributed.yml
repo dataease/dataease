@@ -9,6 +9,8 @@ spring:
     url: jdbc:mysql://localhost:3306/de_manage?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
     username: root
     password: 1qaz@WSX
+  flyway:
+    enabled: false
 
 dynamic:
   datasource:

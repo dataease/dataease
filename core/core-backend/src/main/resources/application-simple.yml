@@ -11,3 +11,11 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+  flyway:
+    enabled: true
+    table: de_simple_version
+    validate-on-migrate: true
+    locations: classpath:db/simple
+    baseline-on-migrate: true
+    out-of-order: true
