@@ -1519,6 +1519,8 @@ export default {
     p_center: 'Center'
   },
   dataset: {
+    scope_edit: 'Effective only when editing',
+    scope_all: 'Global effective',
     spend_time: 'Spend',
     sql: 'SQL',
     sql_result: 'Result',
