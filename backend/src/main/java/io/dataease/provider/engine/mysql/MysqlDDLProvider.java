@@ -56,11 +56,7 @@ public class MysqlDDLProvider extends DDLProviderImpl {
             Integer size = datasetTableField.getSize() * 4;
             switch (datasetTableField.getDeExtractType()) {
                 case 0:
-                    if (size < 65533) {
-                        Column_Fields.append("varchar(length)".replace("length", String.valueOf(datasetTableField.getSize()))).append(",`");
-                    }else {
-                        Column_Fields.append("longtext").append(",`");
-                    }
+                    Column_Fields.append("longtext").append(",`");
                     break;
                 case 1:
                     size  = size < 50? 50 : size;
