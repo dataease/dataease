@@ -10,3 +10,6 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+logging:
+  file:
+    path: /opt/dataease2.0/log/${spring.application.name}

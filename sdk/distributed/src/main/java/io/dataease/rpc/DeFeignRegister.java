@@ -2,7 +2,7 @@ package io.dataease.rpc;
 
 import feign.Request;
 
-import io.dataease.annotation.DeFeign;
+import io.dataease.feign.DeFeign;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;

@@ -1,4 +1,4 @@
-package io.dataease.annotation;
+package io.dataease.feign;
 
 import org.springframework.core.annotation.AliasFor;
 
