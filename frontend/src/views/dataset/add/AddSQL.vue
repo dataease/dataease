@@ -478,8 +478,21 @@
                     v-model="scope.row.defaultValue"
                     size="small"
                     type="text"
-                    :placeholder="$t('fu.search_bar.please_input')"
-                  />
+                    :placeholder="$t('fu.search_bar.please_input')">
+                    <el-select
+                      slot="prepend"
+                      v-model="scope.row.defaultValueScope"
+                      style="width: 100px"
+                      size="small"
+                    >
+                      <el-option
+                        v-for="item in defaultValueScopeList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-input>
                   <el-input
                     v-if="
                       scope.row.type[0] === 'LONG' ||
@@ -489,7 +502,21 @@
                     size="small"
                     :placeholder="$t('fu.search_bar.please_input')"
                     type="number"
-                  />
+                  >
+                    <el-select
+                      slot="prepend"
+                      v-model="scope.row.defaultValueScope"
+                      style="width: 100px"
+                      size="small"
+                    >
+                      <el-option
+                        v-for="item in defaultValueScopeList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-input>
 
                   <el-date-picker
                     v-if="scope.row.type[0] === 'DATETIME-YEAR'"
@@ -498,7 +525,21 @@
                     size="small"
                     value-format="yyyy"
                     :placeholder="$t('dataset.select_year')"
-                  />
+                  >
+                    <el-select
+                      slot="prepend"
+                      v-model="scope.row.defaultValueScope"
+                      style="width: 100px"
+                      size="small"
+                    >
+                      <el-option
+                        v-for="item in defaultValueScopeList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-date-picker>
 
                   <el-date-picker
                     v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH'"
@@ -653,6 +694,9 @@ export default {
       dialogTitle: '',
       variables: [],
       variablesTmp: [],
+      defaultValueScopeList: [
+        { label: this.$t('dataset.scope_edit'), value: 'EDIT' },
+        { label: this.$t('dataset.scope_all'), value: 'ALLSCOPE' }],
       fieldOptions: [
         { label: this.$t('dataset.text'), value: 'TEXT' },
         { label: this.$t('dataset.value'), value: 'LONG' },
@@ -1038,6 +1082,9 @@ export default {
             for (let i = 0; i < this.variables.length; i++) {
               if (this.variables[i].variableName === name) {
                 obj = this.variables[i]
+                if(!obj.hasOwnProperty("defaultValueScope")){
+                  obj.defaultValueScope = 'EDIT'
+                }
               }
             }
             if (obj === undefined) {
@@ -1047,7 +1094,8 @@ export default {
                 type: [],
                 required: false,
                 defaultValue: '',
-                details: ''
+                details: '',
+                defaultValueScope: 'EDIT'
               }
               obj.type.push('TEXT')
             }

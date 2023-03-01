@@ -144,7 +144,7 @@ public class DataSetTableService {
     private static boolean isUpdatingDatasetTableStatus = false;
     private static final String lastUpdateTime = "${__last_update_time__}";
     private static final String currentUpdateTime = "${__current_update_time__}";
-    private static final String regex = "\\$\\{(.*?)\\}";
+    public static final String regex = "\\$\\{(.*?)\\}";
     private static final String SubstitutedParams = "DATAEASE_PATAMS_BI";
     private static final String SubstitutedSql = " 'BI' = 'BI' ";
 
@@ -701,7 +701,7 @@ public class DataSetTableService {
                 datasourceRequest.setDatasource(ds);
                 DataTableInfoDTO dataTableInfo = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
-                sql = handleVariableDefaultValue(sql, null, ds.getType());
+                sql = handleVariableDefaultValue(sql, datasetTable.getSqlVariableDetails(), ds.getType());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
                         qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, null, rowPermissionsTree));
@@ -1058,15 +1058,15 @@ public class DataSetTableService {
             Matcher matcher = pattern.matcher(sql);
             while (matcher.find()) {
                 SqlVariableDetails defaultsSqlVariableDetail = null;
-                List<SqlVariableDetails> defaultsSqlVariableDetails = new Gson().fromJson(sqlVariableDetails, new TypeToken<List<SqlVariableDetails>>() {
-                }.getType());
+                List<SqlVariableDetails> defaultsSqlVariableDetails = new Gson().fromJson(sqlVariableDetails, new TypeToken<List<SqlVariableDetails>>() {}.getType());
                 for (SqlVariableDetails sqlVariableDetail : defaultsSqlVariableDetails) {
                     if (matcher.group().substring(2, matcher.group().length() - 1).equalsIgnoreCase(sqlVariableDetail.getVariableName())) {
                         defaultsSqlVariableDetail = sqlVariableDetail;
                         break;
                     }
                 }
-                if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
+                if (defaultsSqlVariableDetail != null && defaultsSqlVariableDetail.getDefaultValueScope() != null &&
+                        defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE) && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
                     sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
                 }
             }
