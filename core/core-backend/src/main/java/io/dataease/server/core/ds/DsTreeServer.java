@@ -1,8 +1,9 @@
 package io.dataease.server.core.ds;
 
+/*
 import io.dataease.api.ds.DsTreeApi;
 import io.dataease.api.ds.dto.DsTreeDTO;
-import io.dataease.api.permissions.AuthApi;
+import io.dataease.api.permissions.auth.api.AuthApi;
 import io.dataease.api.permissions.dto.AuthDTO;
 import io.dataease.api.permissions.request.AuthRequest;
 import io.dataease.mapper.TestMapper;
@@ -14,21 +15,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+*/
 /**
  * 查询数据源树
  * 以此api演示代码层面无感切换(桌面版、企业版、saas版)3种模式
  * 这就叫做-魔方架构-飞致云独创
- */
+ *//*
+
 @RestController
 @RequestMapping("/dsTree")
 public class DsTreeServer implements DsTreeApi {
 
-    /**
+    */
+/**
      * 这个authApi是根据环境注入不同实例的
      * 如果当前环境是(simple单机桌面版)则注入auth的实现类
      * 如果当前环境是(standalone单机企业版)则注入authApi在xpack-auth模块中的实现类
      * 如果当前环境是(distributed分布式Saas版)则注入feignClient的代理类
-     */
+     *//*
+
     @Resource
     private AuthApi authApi;
 
@@ -64,3 +69,4 @@ public class DsTreeServer implements DsTreeApi {
         return testMapper.queryTest();
     }
 }
+*/

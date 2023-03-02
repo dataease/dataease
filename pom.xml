@@ -24,6 +24,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <mybatis-plus.version>3.5.3</mybatis-plus.version>
         <h2.version>1.4.199</h2.version>
+        <knife4j.version>3.0.3</knife4j.version>
     </properties>
     <packaging>pom</packaging>
 
@@ -65,6 +66,12 @@
                 <version>${h2.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-spring-boot-starter</artifactId>
+                <version>3.0.3</version>
             </dependency>
 
         </dependencies>
