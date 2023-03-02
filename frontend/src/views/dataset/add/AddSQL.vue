@@ -517,7 +517,21 @@
                       />
                     </el-select>
                   </el-input>
-
+                  <div v-if="['DATETIME-YEAR', 'DATETIME-YEAR-MONTH', 'DATETIME-YEAR-MONTH-DAY', 'DATETIME'].includes(scope.row.type[0])" class="el-input-group el-input-group--prepend de-group__prepend">
+                    <div class="el-input-group__prepend">
+                      <el-select
+                        v-model="scope.row.defaultValueScope"
+                        style="width: 100px"
+                        size="small"
+                      >
+                        <el-option
+                          v-for="item in defaultValueScopeList"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value"
+                        />
+                      </el-select>
+                    </div>
                   <el-date-picker
                     v-if="scope.row.type[0] === 'DATETIME-YEAR'"
                     v-model="scope.row.defaultValue"
@@ -525,21 +539,7 @@
                     size="small"
                     value-format="yyyy"
                     :placeholder="$t('dataset.select_year')"
-                  >
-                    <el-select
-                      slot="prepend"
-                      v-model="scope.row.defaultValueScope"
-                      style="width: 100px"
-                      size="small"
-                    >
-                      <el-option
-                        v-for="item in defaultValueScopeList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                  </el-date-picker>
+                  />
 
                   <el-date-picker
                     v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH'"
@@ -570,6 +570,7 @@
                     :value-format="scope.row.type[1]"
                     :placeholder="$t('dataset.select_time')"
                   />
+                </div>
                 </template>
               </el-table-column>
             </el-table>
@@ -1141,8 +1142,13 @@ export default {
     padding-bottom: 80px;
   }
 
+  .de-group__prepend {
+    width: 100%;
+  }
+
   .el-date-editor {
     width: 100%;
+    display: inline-block;
   }
 
   .select-type {
