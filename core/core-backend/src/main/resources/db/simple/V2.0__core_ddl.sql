@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `datasource`;
-CREATE TABLE `datasource`
+DROP TABLE IF EXISTS `core_datasource`;
+CREATE TABLE `core_datasource`
 (
     `id`            varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
     `name`          varchar(50) NOT NULL COMMENT '数据源名称',
