@@ -5,6 +5,12 @@
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
+    "forceConsistentCasingInFileNames": true,
+    "strictFunctionTypes": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
     "paths": {
       "@/*": ["src/*"],
     },
@@ -15,4 +21,5 @@
     ],
   },
   "include": ["src/**/*", "types/**/*.d.ts"],
+  "exclude": ["dist", "node_modules"]
 }

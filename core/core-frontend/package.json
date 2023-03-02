@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "ts:check": "vue-tsc --noEmit",
-    "build": "vite build && electron-builder",
+    "build": "npm run ts:check && vite build && electron-builder",
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
     "lint:stylelint": "stylelint --fix \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/",
     "preview": "vite preview"

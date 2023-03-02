@@ -11,10 +11,8 @@
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
-    // "outDir": "./lib/",
-    // "rootDir": "../",
     "noEmit": true,
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "electron-main/**/*.ts"],
+  "include": ["electron-main/**/*.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
