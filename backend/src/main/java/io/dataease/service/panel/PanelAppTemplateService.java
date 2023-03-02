@@ -363,7 +363,7 @@ public class PanelAppTemplateService {
                 //替换datasetId
                 chartViewField.setTableId(datasetsRealMap.get(chartViewField.getTableId()));
                 //替换chartViewId
-                chartViewField.setChartId(chartViewsRealMap.get(chartViewField.getId()));
+                chartViewField.setChartId(chartViewsRealMap.get(chartViewField.getChartId()));
                 //替换datasetFieldId
                 datasetFieldsRealMap.forEach((k, v) -> {
                     chartViewField.setOriginName(chartViewField.getOriginName().replaceAll(k, v));
