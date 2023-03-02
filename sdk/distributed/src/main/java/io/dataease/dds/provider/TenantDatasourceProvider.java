@@ -26,7 +26,7 @@ public class TenantDatasourceProvider {
 
     /**
      * 这里需要加上异常处理
-     * 某个数据源不能构建成功 contine 不能影响全局
+     * 某个数据源不能构建成功 continue 不能影响全局
      * @param manage
      * @return
      */
