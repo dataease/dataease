@@ -757,7 +757,13 @@ public class ExtractDataService {
                 List<List<String>> csvData = new ArrayList<>();
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    csvData.add(Arrays.asList(line.split(",")));
+                    if(line.endsWith(",")){
+                        List<String> list = new ArrayList<>(Arrays.asList(line.split(",")));
+                        list.add("");
+                        csvData.add(list);
+                    }else {
+                        csvData.add(Arrays.asList(line.split(",")));
+                    }
                 }
                 ExcelSheetData csvSheetData = new ExcelSheetData();
                 String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
