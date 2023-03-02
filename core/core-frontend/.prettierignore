@@ -1,0 +1,6 @@
+/node_modules/**
+/dist/
+/dist*
+/public/*
+/vite.config.ts
+/src/types/env.d.ts
