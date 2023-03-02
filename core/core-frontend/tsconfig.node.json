@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+    },
+    "types": [
+      "vite/client",
+      "vite-plugin-svg-icons/client",
+      "element-plus-secondary/global",
+    ],
+  },
+  "include": ["src/**/*", "types/**/*.d.ts"],
+}

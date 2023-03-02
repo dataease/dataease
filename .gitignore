@@ -23,3 +23,8 @@ target/
 *.iml
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+node_modules/
+dist/
+package-lock.json
+.DS_Store
+core/core-frontend/release/
