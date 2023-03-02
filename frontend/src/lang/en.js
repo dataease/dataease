@@ -1526,7 +1526,7 @@ export default {
     sql_result: 'Result',
     parse_filed: 'Parse Field',
     field_rename: 'Rename Field',
-    params_work: 'Effective only when editing SQL',
+    params_work: 'Effective only when editing: parameter values are effective only when editing data sets; Global Effective: It takes effect in dataset view, preview, and view where dataset is used.',
     sql_variable_limit_1: '1、SQL variables can only be used in where conditions',
     sql_variable_limit_2: '2、Example：select * from table_name where column_name1=\'${param_name1}\' and column_name2 in \'${param_name2}\'',
     select_year: 'Select Year',

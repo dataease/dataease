@@ -1520,7 +1520,7 @@ export default {
     sql_result: '運行結果',
     parse_filed: '解析字段',
     field_rename: '字段重命名',
-    params_work: '僅在編輯 sql 時生效',
+    params_work: '僅編輯時生效：參數值僅在數据集編輯時生效； 全域生效：在數据集查看、預覽、以及用到數据集的視圖中均生效。',
     sql_variable_limit_1: '1、SQL變數只能在WHERE條件中使用',
     sql_variable_limit_2: '2、示例：select * from table_name where column_name1=\'${param_name1}\' and column_name2 in \'${param_name2}\'',
     selesql_variable_limit_2ct_year: '選擇年',
