@@ -2264,6 +2264,9 @@ public class DataSetTableService {
         }
         Set<String> nameSet = new HashSet<>();
         for (DataSetTableRequest table : datasetTable) {
+            if(StringUtils.isEmpty(table.getName())){
+                throw new RuntimeException(Translator.get("I18n_name_cant_empty"));
+            }
             nameSet.add(table.getName());
         }
         if (nameSet.size() != datasetTable.size()) {
