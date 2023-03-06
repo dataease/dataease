@@ -1513,7 +1513,7 @@ export default {
   },
   dataset: {
     scope_edit: '仅编辑时生效',
-    scope_all: '全局生效',
+    scope_all: '数据集预览时全局生效',
     spend_time: '耗时',
     sql: 'SQL 语句',
     sql_result: '运行结果',

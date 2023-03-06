@@ -1520,7 +1520,7 @@ export default {
   },
   dataset: {
     scope_edit: 'Effective only when editing',
-    scope_all: 'Global effective',
+    scope_all: 'Effect globally when the dataset is previewed',
     spend_time: 'Spend',
     sql: 'SQL',
     sql_result: 'Result',

@@ -1514,7 +1514,7 @@ export default {
   },
   dataset: {
     scope_edit: '僅編輯時生效',
-    scope_all: '全域生效',
+    scope_all: '數据集預覽時全域生效',
     spend_time: '耗時',
     sql: 'SQL 語句',
     sql_result: '運行結果',
