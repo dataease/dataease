@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.permissions.user.api.UserApi;
-import io.dataease.api.permissions.user.domain.UserGridVO;
+import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.request.BaseGridRequest;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;

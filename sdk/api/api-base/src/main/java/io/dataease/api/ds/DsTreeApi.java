@@ -1,6 +1,6 @@
 package io.dataease.api.ds;
 
-import io.dataease.api.ds.dto.DsTreeDTO;
+import io.dataease.api.ds.vo.DsTreeDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -16,6 +16,4 @@ public interface DsTreeApi {
     @GetMapping("/query/{keyWord}")
     List<DsTreeDTO> query(@PathVariable("keyWord") String keyWord);
 
-    @GetMapping("/testQuery")
-    List<Map> testQuery();
 }

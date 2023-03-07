@@ -1,7 +1,7 @@
 package io.dataease.api.permissions.user.api;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.dataease.api.permissions.user.domain.UserGridVO;
+import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.request.BaseGridRequest;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,4 +1,4 @@
-package io.dataease.api.permissions.user.domain;
+package io.dataease.api.permissions.user.vo;
 
 import lombok.Data;
 

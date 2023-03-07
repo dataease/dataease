@@ -1,4 +1,4 @@
-package io.dataease.server.substitute.permissions;
+package io.dataease.substitute.permissions.auth;
 
 /*import io.dataease.api.permissions.auth.api.AuthApi;
 import io.dataease.api.permissions.dto.AuthDTO;
