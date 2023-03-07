@@ -911,7 +911,7 @@ export default {
     },
 
     initTableInfo() {
-      if (this.param.tableId) {
+      if (this.param.tableId || this.$route.query.id) {
         getTable(this.param.tableId).then((response) => {
           const table = response.data
           this.dataSource = table.dataSourceId
