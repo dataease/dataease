@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.dataease</groupId>
     <artifactId>dataease-server</artifactId>
-    <version>1.18.4</version>
+    <version>${dataease.version}</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -14,6 +14,10 @@
         <version>2.4.3</version>
         <relativePath/>
     </parent>
+
+    <properties>
+        <dataease.version>1.18.5</dataease.version>
+    </properties>
 
     <name>dataease</name>
 
