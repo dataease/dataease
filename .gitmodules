@@ -1,0 +1,3 @@
+[submodule "xpack-sub"]
+	path = xpack-sub
+	url = git@github.com:dataease/xpack-sub.git
