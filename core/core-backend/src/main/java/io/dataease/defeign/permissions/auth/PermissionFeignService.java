@@ -1,4 +1,4 @@
-package io.dataease.server.defeign.permissions.auth;
+package io.dataease.defeign.permissions.auth;
 
 import io.dataease.feign.DeFeign;
 import io.dataease.api.permissions.auth.api.AuthApi;

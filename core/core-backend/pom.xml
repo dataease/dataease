@@ -59,7 +59,7 @@
                         <configuration>
                             <excludes>
                                 <!-- 单机版 需要排除权限替补实现 否则就会出现多个权限实现 报错 -->
-                                <exclude>io/dataease/server/substitute/**</exclude>
+                                <exclude>io/dataease/substitute/**</exclude>
                             </excludes>
                         </configuration>
                     </plugin>
@@ -111,7 +111,7 @@
                         <configuration>
                             <excludes>
                                 <!-- 分布式版(企业版/saas版) 需要排除权限替补实现 否则就会出现多个权限实现 报错 -->
-                                <exclude>io/dataease/server/substitute/**</exclude>
+                                <exclude>io/dataease/substitute/**</exclude>
                             </excludes>
                         </configuration>
                     </plugin>

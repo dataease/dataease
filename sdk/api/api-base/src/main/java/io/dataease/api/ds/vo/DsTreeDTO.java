@@ -1,4 +1,4 @@
-package io.dataease.api.ds.dto;
+package io.dataease.api.ds.vo;
 
 import lombok.Data;
 
