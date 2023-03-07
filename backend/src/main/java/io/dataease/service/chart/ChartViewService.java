@@ -71,6 +71,8 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -1795,8 +1797,7 @@ public class ChartViewService {
     }
 
     private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table, Datasource ds) throws Exception {
-        List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
-        }.getType());
+        List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
         if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
                 if (CollectionUtils.isEmpty(chartExtFilterRequest.getValue())) {
@@ -1845,7 +1846,7 @@ public class ChartViewService {
                 }
             }
         }
-        sql = dataSetTableService.removeVariables(sql, ds.getType());
+        sql = dataSetTableService.handleVariableDefaultValue(sql, null, ds.getType());
         return sql;
     }
 
