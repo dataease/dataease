@@ -1127,8 +1127,9 @@ export default {
     },
     filterNode(value, data) {
       if (!value) return true
+      const result = data.label.toLowerCase().indexOf(value.toLowerCase()) !== -1
       if (this.searchType === 'folder') {
-        if (data.nodeType === 'folder' && data.label.indexOf(value) !== -1) {
+        if (data.nodeType === 'folder' && result) {
           this.searchPids.push(data.id)
           return true
         }
@@ -1139,7 +1140,7 @@ export default {
           return true
         }
       } else {
-        return data.label.indexOf(value) !== -1
+        return result
       }
       return false
     },
