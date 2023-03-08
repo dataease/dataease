@@ -1846,7 +1846,7 @@ public class ChartViewService {
                 }
             }
         }
-        sql = dataSetTableService.handleVariableDefaultValue(sql, null, ds.getType());
+        sql = dataSetTableService.handleVariableDefaultValue(sql, null, ds.getType(), false);
         return sql;
     }
 
