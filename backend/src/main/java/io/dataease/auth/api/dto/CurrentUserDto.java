@@ -17,4 +17,9 @@ public class CurrentUserDto extends SysUserEntity implements Serializable {
 
     @ApiModelProperty("权限集合")
     private List<String> permissions;
+
+    public CurrentUserDto(String username, String nickName) {
+        super.setUsername(username);
+        super.setNickName(nickName);
+    }
 }

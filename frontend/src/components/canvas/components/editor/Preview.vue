@@ -485,7 +485,7 @@ export default {
           activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, waterDomId, this.canvasId, this.panelInfo.watermarkOpen)
         } else {
           const method = this.userId ? proxyUserLoginInfo : userLoginInfo
-          method(this.userId).then(res => {
+          method().then(res => {
             this.userInfo = res.data
             activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, waterDomId, this.canvasId, this.panelInfo.watermarkOpen)
           })
