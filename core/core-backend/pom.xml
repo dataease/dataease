@@ -69,9 +69,9 @@
 
         <!-- 简单版(桌面版/社区版) 使用substitute包内的替补权限实现 -->
         <profile>
-            <id>simple</id>
+            <id>desktop</id>
             <properties>
-                <profiles.active>simple</profiles.active>
+                <profiles.active>desktop</profiles.active>
             </properties>
             <dependencies>
                 <dependency>
