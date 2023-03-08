@@ -22,4 +22,9 @@ public class UserLoginInfoDTO {
         this.userInfo = userInfo;
         this.ip = ip;
     }
+
+    public UserLoginInfoDTO(String username, String nickname, String ip) {
+        this.userInfo = new CurrentUserDto(username, nickname);
+        this.ip = ip;
+    }
 }

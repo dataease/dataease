@@ -80,7 +80,7 @@ public class DataSetTableTaskLogService {
                 row[0] = item.getName();
                 row[1] = item.getDatasetName();
                 row[2] = DateUtil.formatDateTime(new Date(item.getStartTime()));
-                row[3] = DateUtil.formatDateTime(new Date(item.getEndTime()));
+                row[3] = item.getEndTime() != null ? DateUtil.formatDateTime(new Date(item.getEndTime())) : "";
                 row[4] = Translator.get("I18N_TASK_LOG_" + item.getStatus().toUpperCase()) ;
                 return row;
             }).collect(Collectors.toList());
