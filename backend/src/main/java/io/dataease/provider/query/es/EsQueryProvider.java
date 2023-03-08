@@ -1328,4 +1328,9 @@ public class EsQueryProvider extends QueryProvider {
     public String getResultCount(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
       return null;
     }
+
+    @Override
+    public String sqlForPreview(String table, Datasource ds) {
+        return "SELECT * FROM " + String.format(EsSqlLConstants.KEYWORD_TABLE, table);
+    }
 }
