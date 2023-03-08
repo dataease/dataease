@@ -14,7 +14,7 @@ spring:
 
   flyway:
     enabled: true
-    table: de_simple_version
+    table: de_desktop_version
     validate-on-migrate: true
     locations: classpath:db/desktop
     baseline-on-migrate: true
