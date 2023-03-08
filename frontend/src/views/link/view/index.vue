@@ -77,7 +77,7 @@ export default {
       })
     },
     setPanelInfo() {
-      loadResource(this.resourceId).then(res => {
+      loadResource(this.resourceId,this.user).then(res => {
         this.show = false
         let loadingCount = 0
         const watermarkInfo = {
