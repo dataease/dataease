@@ -94,8 +94,8 @@ public class LinkServer implements LinkApi {
     }
 
     @Override
-    public Object resourceDetail(@PathVariable String resourceId) {
-        return panelLinkService.resourceInfo(resourceId);
+    public Object resourceDetail(@PathVariable String resourceId,@PathVariable String userId) {
+        return panelLinkService.resourceInfo(resourceId,userId);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class LinkServer implements LinkApi {
             operateType = SysLogConstants.OPERATE_TYPE.MB_VIEW;
         }
         if (ObjectUtils.isEmpty(userId)) return;
-        PanelGroupWithBLOBs panelGroupWithBLOBs = panelLinkService.resourceInfo(panelId);
+        PanelGroupWithBLOBs panelGroupWithBLOBs = panelLinkService.resourceInfo(panelId,String.valueOf(userId));
         String pid = panelGroupWithBLOBs.getPid();
         DeLogUtils.save(operateType, SysLogConstants.SOURCE_TYPE.LINK, panelId, pid, userId, SysLogConstants.SOURCE_TYPE.USER);
     }

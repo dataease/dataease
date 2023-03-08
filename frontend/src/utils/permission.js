@@ -9,7 +9,7 @@ export function checkPermission(pers) {
 }
 
 export function hasDataPermission(pTarget, pSource) {
-  if (store.state.user.user.isAdmin) {
+  if (store.state.user.user.isAdmin || pSource === 'ignore') {
     return true
   }
   if (pSource && pTarget) {
