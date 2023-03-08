@@ -146,6 +146,7 @@ public class PanelGroupController {
 
     @ApiOperation("站内导出仪表板视图明细")
     @PostMapping("/innerExportDetails")
+    @DePermissionProxy(value = "proxy")
     @I18n
     public void innerExportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
         panelGroupService.exportPanelViewDetails(request, response);

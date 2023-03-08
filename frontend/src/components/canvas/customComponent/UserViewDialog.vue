@@ -124,6 +124,9 @@ export default {
     }
   },
   computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
     isAbsoluteContainer() {
       return this.showChartCanvas && this.chart.type === 'symbol-map'
     },
@@ -288,6 +291,7 @@ export default {
         })
       }
       const request = {
+        proxy:null,
         viewId: this.chart.id,
         viewName: excelName,
         header: excelHeader,
@@ -305,6 +309,10 @@ export default {
       const linkToken = this.$store.getters.linkToken || getLinkToken()
       if (!token && linkToken) {
         method = exportDetails
+      }
+
+      if (this.panelInfo.proxy) {
+        request.proxy = { userId: this.panelInfo.proxy }
       }
       method(request).then((res) => {
         const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
