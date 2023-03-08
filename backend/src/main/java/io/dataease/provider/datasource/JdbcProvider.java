@@ -777,6 +777,14 @@ public class JdbcProvider extends DefaultJdbcProvider {
             case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);
                 mysqlConfiguration.getJdbc();
+            case redshift:
+                RedshiftConfiguration redshiftConfiguration = new Gson().fromJson(datasource.getConfiguration(), RedshiftConfiguration.class);
+                if(redshiftConfiguration.getDataBase().length() > 64 || redshiftConfiguration.getDataBase().length() < 1){
+                    throw new Exception("Invalid database name");
+                }
+                if(!redshiftConfiguration.getDataBase().matches("\"^[a-z][a-z0-9_+.@-]*$\"")){
+                    throw new Exception("Invalid database name");
+                }
             default:
                 break;
         }
