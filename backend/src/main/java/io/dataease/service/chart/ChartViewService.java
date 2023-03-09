@@ -71,8 +71,6 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -848,21 +846,31 @@ public class ChartViewService {
         boolean isDrill = false;
         List<ChartDrillRequest> drillRequestList = chartExtRequest.getDrill();
         if (CollectionUtils.isNotEmpty(drillRequestList) && (drill.size() > drillRequestList.size())) {
-//            如果是从子维度开始下钻，那么先把主维度的条件先加上去
-            if (CollectionUtils.isNotEmpty(xAxisExt) && StringUtils.equalsIgnoreCase(drill.get(0).getId(), xAxisExt.get(0).getId())) {
-                ChartDrillRequest head = drillRequestList.get(0);
-                for (int i = 0; i < xAxisBase.size(); i++) {
-                    ChartDimensionDTO dimensionDTO = head.getDimensionList().get(i);
-                    DatasetTableField datasetTableField = dataSetTableFieldsService.get(dimensionDTO.getId());
-                    ChartExtFilterRequest tmp = new ChartExtFilterRequest();
-                    tmp.setFieldId(tmp.getFieldId());
-                    tmp.setValue(Collections.singletonList(dimensionDTO.getValue()));
-                    tmp.setOperator("in");
-                    tmp.setDatasetTableField(datasetTableField);
-                    extFilterList.add(tmp);
-                    drillFilters.add(tmp);
+            ArrayList<ChartViewFieldDTO> fieldsToFilter = new ArrayList<>();
+//            如果是从子维度开始下钻，那么其他维度的条件要先加上去
+//            分组和堆叠
+            if (StringUtils.containsIgnoreCase(view.getType(), "group")) {
+                fieldsToFilter.addAll(xAxisBase);
+//              分组堆叠
+                if (StringUtils.containsIgnoreCase(view.getType(),"stack")){
+//                  分组和堆叠字段都有才有效
+                    if (CollectionUtils.isNotEmpty(xAxisExt) && CollectionUtils.isNotEmpty(extStack)) {
+//                      从分组字段下钻，就加上堆叠字段的条件
+                        if (StringUtils.equalsIgnoreCase(drill.get(0).getId(), xAxisExt.get(0).getId())) {
+                            fieldsToFilter.addAll(extStack);
+                        }
+//                      从堆叠字段下钻，就加上分组字段的条件
+                        if (StringUtils.equalsIgnoreCase(drill.get(0).getId(), extStack.get(0).getId())) {
+                            fieldsToFilter.addAll(xAxisExt);
+                        }
+                    }
                 }
+            }else if (StringUtils.containsIgnoreCase(view.getType(),"stack")){
+//              堆叠
+                fieldsToFilter.addAll(xAxisBase);
             }
+            ChartDrillRequest head = drillRequestList.get(0);
+            Map<String, String> dimMap = head.getDimensionList().stream().collect(Collectors.toMap(ChartDimensionDTO::getId, ChartDimensionDTO::getValue));
             for (int i = 0; i < drillRequestList.size(); i++) {
                 ChartDrillRequest request = drillRequestList.get(i);
                 ChartViewFieldDTO chartViewFieldDTO = drill.get(i);
@@ -870,26 +878,15 @@ public class ChartViewService {
                     // 将钻取值作为条件传递，将所有钻取字段作为xAxis并加上下一个钻取字段
                     if (StringUtils.equalsIgnoreCase(requestDimension.getId(), chartViewFieldDTO.getId())) {
                         isDrill = true;
-                        DatasetTableField datasetTableField = dataSetTableFieldsService.get(requestDimension.getId());
-                        ChartViewFieldDTO d = new ChartViewFieldDTO();
-                        BeanUtils.copyBean(d, datasetTableField);
-
-                        ChartExtFilterRequest drillFilter = new ChartExtFilterRequest();
-                        drillFilter.setFieldId(requestDimension.getId());
-                        drillFilter.setValue(Collections.singletonList(requestDimension.getValue()));
-                        drillFilter.setOperator("in");
-                        drillFilter.setDatasetTableField(datasetTableField);
-                        extFilterList.add(drillFilter);
-
-                        drillFilters.add(drillFilter);
-
-                        if (!checkDrillExist(xAxis, extStack, d, view)) {
-                            xAxis.add(d);
+                        fieldsToFilter.add(chartViewFieldDTO);
+                        dimMap.put(requestDimension.getId(), requestDimension.getValue());
+                        if (!checkDrillExist(xAxis, extStack, requestDimension.getId(), view)) {
+                            xAxis.add(chartViewFieldDTO);
                         }
 //
                         if (i == drillRequestList.size() - 1) {
                             ChartViewFieldDTO nextDrillField = drill.get(i + 1);
-                            if (!checkDrillExist(xAxis, extStack, nextDrillField, view)) {
+                            if (!checkDrillExist(xAxis, extStack, nextDrillField.getId(), view)) {
                                 // get drill list first element's sort,then assign to nextDrillField
                                 nextDrillField.setSort(getDrillSort(xAxis, drill.get(0)));
                                 xAxis.add(nextDrillField);
@@ -897,6 +894,19 @@ public class ChartViewService {
                         }
                     }
                 }
+            }
+            for (int i = 0; i < fieldsToFilter.size(); i++) {
+                ChartViewFieldDTO tmpField = fieldsToFilter.get(i);
+                ChartExtFilterRequest tmpFilter = new ChartExtFilterRequest();
+                DatasetTableField datasetTableField = dataSetTableFieldsService.get(tmpField.getId());
+                tmpFilter.setDatasetTableField(datasetTableField);
+                tmpFilter.setOperator("in");
+                tmpFilter.setDateStyle(tmpField.getDateStyle());
+                tmpFilter.setDatePattern(tmpField.getDatePattern());
+                tmpFilter.setFieldId(tmpField.getId());
+                tmpFilter.setValue(Collections.singletonList(dimMap.get(tmpField.getId())));
+                extFilterList.add(tmpFilter);
+                drillFilters.add(tmpFilter);
             }
         }
 
@@ -1540,17 +1550,17 @@ public class ChartViewService {
         }
     }
 
-    private boolean checkDrillExist(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> extStack, ChartViewFieldDTO dto, ChartViewWithBLOBs view) {
+    private boolean checkDrillExist(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> extStack, String fieldId, ChartViewWithBLOBs view) {
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (ChartViewFieldDTO x : xAxis) {
-                if (StringUtils.equalsIgnoreCase(x.getId(), dto.getId())) {
+                if (StringUtils.equalsIgnoreCase(x.getId(), fieldId)) {
                     return true;
                 }
             }
         }
         if (StringUtils.containsIgnoreCase(view.getType(), "stack") && CollectionUtils.isNotEmpty(extStack)) {
             for (ChartViewFieldDTO x : extStack) {
-                if (StringUtils.equalsIgnoreCase(x.getId(), dto.getId())) {
+                if (StringUtils.equalsIgnoreCase(x.getId(), fieldId)) {
                     return true;
                 }
             }

@@ -31,6 +31,7 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
 import javax.annotation.Resource;
+import java.text.Format;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1141,15 +1142,16 @@ public class CKQueryProvider extends QueryProvider {
                 }
 
                 if (field.getDeType() == DeTypeConstants.DE_TIME) {
+                    String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                        whereName = String.format(CKConstants.toDateTime, originName);
+                        whereName = String.format(CKConstants.formatDateTime, String.format(CKConstants.toDateTime, originName), format);
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == 4) {
                         String cast = String.format(CKConstants.toFloat64, originName);
-                        whereName = String.format(CKConstants.toDateTime, cast);
+                        whereName = String.format(CKConstants.formatDateTime, String.format(CKConstants.toDateTime, cast), format);
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = originName;
+                        whereName = String.format(CKConstants.formatDateTime, originName, format);
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
