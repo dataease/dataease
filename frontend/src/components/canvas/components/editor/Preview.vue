@@ -786,7 +786,6 @@ export default {
 <style lang="scss" scoped>
 .bg {
   min-width: 200px;
-  min-height: 300px;
   width: 100%;
   height: 100%;
   overflow-x: hidden;
