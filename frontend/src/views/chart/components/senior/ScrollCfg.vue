@@ -31,6 +31,7 @@
         </el-form-item>
         <span v-show="scrollForm.open">
           <el-form-item
+            v-show="!isAutoBreakLine"
             :label="$t('chart.row')"
             class="form-item"
           >
@@ -38,6 +39,20 @@
               v-model="scrollForm.row"
               :min="1"
               :max="1000"
+              :precision="0"
+              size="mini"
+              @change="changeScrollCfg"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="isAutoBreakLine"
+            :label="$t('chart.step')"
+            class="form-item"
+          >
+            <el-input-number
+              v-model="scrollForm.step"
+              :min="1"
+              :max="10000"
               :precision="0"
               size="mini"
               @change="changeScrollCfg"
@@ -63,7 +78,7 @@
 </template>
 
 <script>
-import { DEFAULT_SCROLL } from '@/views/chart/chart/chart'
+import { DEFAULT_SCROLL, DEFAULT_SIZE } from '@/views/chart/chart/chart'
 
 export default {
   name: 'ScrollCfg',
@@ -75,7 +90,8 @@ export default {
   },
   data() {
     return {
-      scrollForm: JSON.parse(JSON.stringify(DEFAULT_SCROLL))
+      scrollForm: JSON.parse(JSON.stringify(DEFAULT_SCROLL)),
+      isAutoBreakLine: false
     }
   },
   watch: {
@@ -100,8 +116,24 @@ export default {
         }
         if (senior.scrollCfg) {
           this.scrollForm = senior.scrollCfg
+          this.scrollForm.step = senior.scrollCfg.step ? senior.scrollCfg.step : DEFAULT_SCROLL.step
         } else {
           this.scrollForm = JSON.parse(JSON.stringify(DEFAULT_SCROLL))
+        }
+      }
+      if (chart.customAttr) {
+        let customAttr = null
+        if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
+          customAttr = JSON.parse(JSON.stringify(chart.customAttr))
+        } else {
+          customAttr = JSON.parse(chart.customAttr)
+        }
+        if (customAttr.size) {
+          if (this.chart.render === 'antv') {
+            this.isAutoBreakLine = false
+          } else {
+            this.isAutoBreakLine = customAttr.size.tableAutoBreakLine ? customAttr.size.tableAutoBreakLine : DEFAULT_SIZE.tableAutoBreakLine
+          }
         }
       }
     },

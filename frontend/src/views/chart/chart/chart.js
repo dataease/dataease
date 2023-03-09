@@ -77,6 +77,7 @@ export const DEFAULT_SIZE = {
   tableColumnWidth: 100,
   tableHeaderAlign: 'left',
   tableItemAlign: 'right',
+  tableAutoBreakLine: false,
   gaugeMinType: 'fix', // fix or dynamic
   gaugeMinField: {
     id: '',
@@ -462,7 +463,8 @@ export const DEFAULT_THRESHOLD = {
 export const DEFAULT_SCROLL = {
   open: false,
   row: 1,
-  interval: 2000
+  interval: 2000,
+  step: 50
 }
 // chart config
 export const BASE_BAR = {

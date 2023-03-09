@@ -1510,7 +1510,10 @@ export default {
     p_right: '右對齊',
     p_top: '上對齊',
     p_bottom: '下對齊',
-    p_center: '居中'
+    p_center: '居中',
+    table_auto_break_line: '自動換行',
+    table_break_line_tip: '開啟自動換行，表格行高設置將失效',
+    step: '步長(px)'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
