@@ -34,6 +34,7 @@ import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.plugins.common.base.mapper.PanelViewMapper;
 import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
+import io.dataease.plugins.common.dto.chart.ChartCustomFilterItemDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
@@ -49,6 +50,7 @@ import io.dataease.plugins.view.entity.*;
 import io.dataease.plugins.view.service.ViewPluginService;
 import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import io.dataease.provider.ProviderFactory;
+import io.dataease.provider.query.SQLUtils;
 import io.dataease.service.chart.util.ChartDataBuild;
 import io.dataease.service.dataset.*;
 import io.dataease.service.datasource.DatasourceService;
@@ -852,7 +854,7 @@ public class ChartViewService {
             if (StringUtils.containsIgnoreCase(view.getType(), "group")) {
                 fieldsToFilter.addAll(xAxisBase);
 //              分组堆叠
-                if (StringUtils.containsIgnoreCase(view.getType(),"stack")){
+                if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
 //                  分组和堆叠字段都有才有效
                     if (CollectionUtils.isNotEmpty(xAxisExt) && CollectionUtils.isNotEmpty(extStack)) {
 //                      从分组字段下钻，就加上堆叠字段的条件
@@ -865,7 +867,7 @@ public class ChartViewService {
                         }
                     }
                 }
-            }else if (StringUtils.containsIgnoreCase(view.getType(),"stack")){
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
 //              堆叠
                 fieldsToFilter.addAll(xAxisBase);
             }
@@ -931,6 +933,25 @@ public class ChartViewService {
         ) {
             assistFields = getAssistFields(dynamicAssistFields, yAxis);
         }
+
+        // 处理过滤条件中的单引号
+        fieldCustomFilter = fieldCustomFilter.stream().peek(ele -> {
+            if (CollectionUtils.isNotEmpty(ele.getEnumCheckField())) {
+                List<String> collect = ele.getEnumCheckField().stream().map(SQLUtils::transKeyword).collect(Collectors.toList());
+                ele.setEnumCheckField(collect);
+            }
+            if (CollectionUtils.isNotEmpty(ele.getFilter())) {
+                List<ChartCustomFilterItemDTO> collect = ele.getFilter().stream().peek(f -> f.setValue(SQLUtils.transKeyword(f.getValue()))).collect(Collectors.toList());
+                ele.setFilter(collect);
+            }
+        }).collect(Collectors.toList());
+
+        extFilterList = extFilterList.stream().peek(ele -> {
+            if (CollectionUtils.isNotEmpty(ele.getValue())) {
+                List<String> collect = ele.getValue().stream().map(SQLUtils::transKeyword).collect(Collectors.toList());
+                ele.setValue(collect);
+            }
+        }).collect(Collectors.toList());
 
         // 如果是插件视图 走插件内部的逻辑
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
@@ -1807,7 +1828,8 @@ public class ChartViewService {
     }
 
     private String handleVariable(String sql, ChartExtRequest requestList, QueryProvider qp, DataSetTableDTO table, Datasource ds) throws Exception {
-        List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {}.getType());
+        List<SqlVariableDetails> sqlVariables = new Gson().fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
+        }.getType());
         if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
                 if (CollectionUtils.isEmpty(chartExtFilterRequest.getValue())) {
