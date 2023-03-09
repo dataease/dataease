@@ -1516,7 +1516,10 @@ export default {
     p_right: 'Right',
     p_top: 'Top',
     p_bottom: 'Bottom',
-    p_center: 'Center'
+    p_center: 'Center',
+    table_auto_break_line: 'Auto Line Feed',
+    table_break_line_tip: 'If open this option,the table item height will disabled.',
+    step: 'Step(px)'
   },
   dataset: {
     scope_edit: 'Effective only when editing',
