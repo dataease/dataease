@@ -1847,6 +1847,7 @@ export const TYPE_CONFIGS = [
         'tableItemBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
+        'tableBorderColor',
         'tableScrollBarColor',
         'alpha'
       ],
@@ -1857,7 +1858,8 @@ export const TYPE_CONFIGS = [
         'tableItemHeight',
         'tableColumnWidth',
         'showIndex',
-        'indexLabel'
+        'indexLabel',
+        'tableAutoBreakLine'
       ],
       'title-selector': [
         'show',
@@ -1887,6 +1889,7 @@ export const TYPE_CONFIGS = [
         'tableItemBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
+        'tableBorderColor',
         'tableScrollBarColor',
         'alpha'
       ],
@@ -1899,7 +1902,8 @@ export const TYPE_CONFIGS = [
         'tableItemHeight',
         'tableColumnWidth',
         'showIndex',
-        'indexLabel'
+        'indexLabel',
+        'tableAutoBreakLine'
       ],
       'title-selector': [
         'show',

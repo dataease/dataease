@@ -284,6 +284,30 @@
           </el-select>
         </el-form-item>
         <el-form-item
+          v-show="showProperty('tableAutoBreakLine')"
+          label-width="100px"
+          :label="$t('chart.table_auto_break_line')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.tableAutoBreakLine"
+            @change="changeBarSizeCase('tableAutoBreakLine')"
+          >{{ $t('chart.open') }}</el-checkbox>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            placement="bottom"
+          >
+            <div slot="content">
+              {{ $t('chart.table_break_line_tip') }}
+            </div>
+            <i
+              class="el-icon-info"
+              style="cursor: pointer;color: gray;font-size: 12px;"
+            />
+          </el-tooltip>
+        </el-form-item>
+        <el-form-item
           v-show="showProperty('tableTitleFontSize')"
           label-width="100px"
           :label="$t('chart.table_title_fontsize')"
@@ -345,6 +369,7 @@
         >
           <el-slider
             v-model="sizeForm.tableItemHeight"
+            :disabled="sizeForm.tableAutoBreakLine"
             :min="36"
             :max="100"
             show-input
@@ -1127,6 +1152,8 @@ export default {
 
           this.sizeForm.hPosition = this.sizeForm.hPosition ? this.sizeForm.hPosition : DEFAULT_SIZE.hPosition
           this.sizeForm.vPosition = this.sizeForm.vPosition ? this.sizeForm.vPosition : DEFAULT_SIZE.vPosition
+
+          this.sizeForm.tableAutoBreakLine = this.sizeForm.tableAutoBreakLine ? this.sizeForm.tableAutoBreakLine : DEFAULT_SIZE.tableAutoBreakLine
         }
       }
     },

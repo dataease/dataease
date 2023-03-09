@@ -54,8 +54,8 @@ public interface LinkApi {
     boolean validatePwd(PasswordRequest request) throws Exception;
 
     @ApiOperation("资源详细信息")
-    @GetMapping("/resourceDetail/{resourceId}")
-    Object resourceDetail(@PathVariable String resourceId);
+    @GetMapping("/resourceDetail/{resourceId}/{userId}")
+    Object resourceDetail(@PathVariable String resourceId,@PathVariable String userId);
 
     @ApiOperation("视图详细信息")
     @PostMapping("/viewDetail/{viewId}/{panelId}")

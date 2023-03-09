@@ -113,7 +113,7 @@ Vue.use(VueVideoPlayer)
 Vue.use(proportion)
 
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {
-  if (this.$store.state.user.user.isAdmin) {
+  if (this.$store.state.user.user.isAdmin || pSource === 'ignore') {
     return true
   }
   if (pSource && pTarget) {
