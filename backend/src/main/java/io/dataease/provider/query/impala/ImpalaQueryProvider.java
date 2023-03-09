@@ -1154,6 +1154,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
                     fieldName = String.format(ImpalaConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : ImpalaConstants.DEFAULT_DATE_FORMAT ,ImpalaConstants.DEFAULT_DATE_FORMAT);
+                    fieldName = String.format(ImpalaConstants.DATE_FORMAT, fieldName, format);
                 } else {
                     String cast = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_INT_FORMAT) + "/1000";
                     String from_unixtime = String.format(ImpalaConstants.FROM_UNIXTIME, cast, ImpalaConstants.DEFAULT_DATE_FORMAT);
