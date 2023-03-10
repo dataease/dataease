@@ -198,7 +198,7 @@ export default {
     validateCom(rule, value, callback) {
       if (!value) return callback()
       const one = Number(value)
-      if (Number.isInteger(one)) {
+      if (!Number.isNaN(one)) {
         if (one < MIN_NUMBER) {
           return callback(new Error(this.$t('denumberrange.out_of_min')))
         } else if (one > MAX_NUMBER) {
