@@ -1170,7 +1170,7 @@ public class CKQueryProvider extends QueryProvider {
             }
 
             String whereName = "";
-            if (request.getIsTree()) {
+            if (request.getIsTree() && whereNameList.size() > 1) {
                 whereName = "CONCAT(" + StringUtils.join(whereNameList, ",',',") + ")";
             } else {
                 whereName = whereNameList.get(0);
