@@ -2542,7 +2542,7 @@ export default {
     please_key_max: '请输入最大值',
     out_of_min: '最小值不能小于最小整数-2³²',
     out_of_max: '最大值不能大于最大整数2³²-1',
-    must_int: '请输入整数',
+    must_int: '请输入数字',
     min_out_max: '最小值必须小于最大值',
     max_out_min: '最大值必须大于最小值'
   },

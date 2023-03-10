@@ -2542,7 +2542,7 @@ export default {
     please_key_max: '請輸入最大值',
     out_of_min: '最小值不能小於最小整數-2³²',
     out_of_max: '最大值不能大於最大整數2³²-1',
-    must_int: '請輸入整數',
+    must_int: '請輸入數字',
     min_out_max: '最小值必須小於最大值',
     max_out_min: '最大值必須大於最小值'
   },
