@@ -125,6 +125,7 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
+                <filtering>true</filtering>
                 <includes>
                     <include>**/*.properties</include>
                     <include>**/*.xml</include>
