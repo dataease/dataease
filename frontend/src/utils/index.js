@@ -1,10 +1,10 @@
 import Cookies from 'js-cookie'
 import i18n from '@/lang'
 import { $error, $confirm } from '@/utils/message'
-import {seizeLogin} from '@/api/user'
+import { seizeLogin } from '@/api/user'
 import router from '@/router'
-import store from "@/store";
-import { Loading } from 'element-ui';
+import store from '@/store'
+import { Loading } from 'element-ui'
 export function timeSection(date, type, labelFormat = 'yyyy-MM-dd') {
   if (!date) {
     return null
@@ -367,7 +367,7 @@ export const showMultiLoginMsg = () => {
     const content = infos.map(info => buildMultiLoginErrorItem(info)).join('</br>')
     let msgContent = '<strong>' + i18n.t('multi_login_lang.title') + '</strong>'
     msgContent += content + '<p>' + i18n.t('multi_login_lang.label') + '</p>'
-    $error(msgContent, 10000, true);
+    $error(msgContent, 10000, true)
   }
   const multiLoginError2 = Cookies.get('MultiLoginError2')
   if (multiLoginError2) {
@@ -378,11 +378,11 @@ export const showMultiLoginMsg = () => {
     msgContent += content + '<p>' + i18n.t('multi_login_lang.confirm') + '</p>'
     $confirm(msgContent, () => seize(infos[0]), {
       dangerouslyUseHTMLString: true
-    });
+    })
   }
 }
 const seize = model => {
-  let loadingInstance = Loading.service({});
+  const loadingInstance = Loading.service({})
   const token = model.token
   const param = {
     token
@@ -391,7 +391,7 @@ const seize = model => {
     const resultToken = res.data.token
     store.dispatch('user/refreshToken', resultToken)
     router.push('/')
-    loadingInstance.close();
+    loadingInstance.close()
   })
 }
 const buildMultiLoginErrorItem = (info) => {
