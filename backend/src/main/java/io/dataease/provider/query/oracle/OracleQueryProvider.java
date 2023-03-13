@@ -1205,17 +1205,17 @@ public class OracleQueryProvider extends QueryProvider {
                 } else {
                     originName = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
                 }
-
+                String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(OracleConstants.TO_DATE, originName, format);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, format);
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = originName;
+                        whereName = String.format(OracleConstants.TO_CHAR, format);
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {

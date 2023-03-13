@@ -1080,15 +1080,16 @@ public class EsQueryProvider extends QueryProvider {
                 }
 
                 if (field.getDeType() == 1) {
+                    String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(EsSqlLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : EsSqlLConstants.DEFAULT_DATE_FORMAT, EsSqlLConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(EsSqlLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : EsSqlLConstants.DEFAULT_DATE_FORMAT, format);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(EsSqlLConstants.CAST, originName, "timestamp");
-                        whereName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, EsSqlLConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, format);
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = originName;
+                        whereName = String.format(EsSqlLConstants.DATETIME_FORMAT, originName, format);
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {

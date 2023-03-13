@@ -1080,15 +1080,12 @@ public class SqlserverQueryProvider extends QueryProvider {
                 }
 
                 if (field.getDeType() == 1) {
-                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(SqlServerSQLConstants.STRING_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
+                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
+                        whereName = transDateFormat(request.getDateStyle(), request.getDatePattern(), originName);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
-                        whereName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
-                    }
-                    if (field.getDeExtractType() == 1) {
-                        whereName = originName;
+                        whereName = transDateFormat(request.getDateStyle(), request.getDatePattern(), cast);;
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
