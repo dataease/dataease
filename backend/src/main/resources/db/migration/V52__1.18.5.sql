@@ -53,3 +53,5 @@ END if;
 END
 ;;
 delimiter ;
+
+INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('loginlimit.multiLogin', '0', 'text', '3');

@@ -61,6 +61,7 @@ import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import bus from '@/utils/bus'
+import { showMultiLoginMsg } from '@/utils/index'
 
 import { needModifyPwd, removePwdTips } from '@/api/user'
 
@@ -131,11 +132,22 @@ export default {
   },
   mounted() {
     bus.$on('PanelSwitchComponent', this.panelSwitchComponent)
+    bus.$on('web-seize-topic-call', this.webMsgTopicCall)
   },
   beforeDestroy() {
     bus.$off('PanelSwitchComponent', this.panelSwitchComponent)
+    bus.$off('web-seize-topic-call', this.webMsgTopicCall)
+  },
+  created() {
+    showMultiLoginMsg()
   },
   methods: {
+    webMsgTopicCall(param) {
+      const ip = param
+      const msg = this.$t('multi_login_lang.forced_offline')
+      this.$error(eval(msg))
+      bus.$emit('sys-logout')
+    },
     panelSwitchComponent(c) {
       this.componentName = c.name
     },
