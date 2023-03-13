@@ -850,7 +850,7 @@ export default {
 
     delete(data) {
       const params = {
-        title: 'commons.delete_this_dashboard',
+        title: data.nodeType === 'folder'?'commons.delete_this_folder':'commons.delete_this_dashboard',
         type: 'danger',
         cb: () => {
           delGroup(data.id).then((response) => {
