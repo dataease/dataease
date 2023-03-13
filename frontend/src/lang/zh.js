@@ -1,3 +1,5 @@
+import {$confirm} from "@/utils/message";
+
 export default {
   fu: {
     search_bar: {
@@ -2863,5 +2865,14 @@ export default {
     reset: '重置',
     preview: '预览',
     save: '保存'
+  },
+  multi_login_lang: {
+    title: '当前账号已在线！',
+    ip: 'IP',
+    time: '登录时间',
+    label: '禁止多端登录！',
+    confirm_title: '强行登录会导致其他客户端掉线',
+    confirm: '是否强行登录？',
+    forced_offline: '`当前账号在客户端【${ip}】登录，您已被挤下线！`'
   }
 }

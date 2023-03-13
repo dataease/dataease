@@ -6,15 +6,24 @@ import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
+import com.google.gson.Gson;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.entity.TokenInfo.TokenInfoBuilder;
-import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.exception.DEException;
+import io.dataease.commons.model.OnlineUserModel;
+import io.dataease.commons.utils.*;
 import io.dataease.exception.DataEaseException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 
-import java.util.Date;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class JWTUtils {
 
@@ -68,22 +77,104 @@ public class JWTUtils {
      * @return 加密的token
      */
     public static String sign(TokenInfo tokenInfo, String secret) {
+        return sign(tokenInfo, secret, true);
+    }
+
+    private static boolean tokenValid(OnlineUserModel model) {
+        String token = model.getToken();
+        // 如果已经加入黑名单 则直接返回无效
+        boolean invalid = TokenCacheUtils.invalid(token);
+        if (invalid) return false;
+
+        Long loginTime = model.getLoginTime();
+        if (ObjectUtils.isEmpty(expireTime)) {
+            expireTime = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout", Long.class, 480L);
+        }
+        long expireTimeMillis = expireTime * 60000L;
+        // 如果当前时间减去登录时间小于超时时间则说明token未过期 返回有效状态
+        return System.currentTimeMillis() - loginTime < expireTimeMillis;
+
+    }
+
+    private static Set<OnlineUserModel> filterValid(Set<OnlineUserModel> userModels) {
+        Set<OnlineUserModel> models = userModels.stream().filter(JWTUtils::tokenValid).collect(Collectors.toSet());
+
+        return models;
+    }
+
+    private static String models2Json(Set<OnlineUserModel> models, boolean withCurToken, String token) {
+        Gson gson = new Gson();
+        List<OnlineUserModel> userModels = models.stream().map(item -> {
+            item.setToken(null);
+            return item;
+        }).collect(Collectors.toList());
+        if (withCurToken) {
+            userModels.get(0).setToken(token);
+        }
+        String json = gson.toJson(userModels);
         try {
-            if (ObjectUtils.isEmpty(expireTime)) {
-                expireTime = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout", Long.class, 480L);
-            }
-            long expireTimeMillis = expireTime * 60000L;
-            Date date = new Date(System.currentTimeMillis() + expireTimeMillis);
-            Algorithm algorithm = Algorithm.HMAC256(secret);
-            Builder builder = JWT.create()
-                    .withClaim("username", tokenInfo.getUsername())
-                    .withClaim("userId", tokenInfo.getUserId());
-            String sign = builder.withExpiresAt(date).sign(algorithm);
-            return sign;
+            return URLEncoder.encode(json, "utf-8");
         } catch (Exception e) {
             return null;
         }
     }
+
+    public static String seizeSign(Long userId, String token) {
+        Set<OnlineUserModel> userModels = Optional.ofNullable(TokenCacheUtils.onlineUserTokens(userId)).orElse(new LinkedHashSet<>());
+        userModels.stream().forEach(model -> {
+            TokenCacheUtils.add(model.getToken(), userId);
+        });
+        userModels.clear();
+        OnlineUserModel curModel = TokenCacheUtils.buildModel(token);
+        userModels.add(curModel);
+        TokenCacheUtils.resetOnlinePools(userId, userModels);
+        return IPUtils.get();
+    }
+    public static String sign(TokenInfo tokenInfo, String secret, boolean writeOnline) {
+
+        Long userId = tokenInfo.getUserId();
+        String multiLoginType = null;
+        if (writeOnline && StringUtils.equals("1", (multiLoginType = TokenCacheUtils.multiLoginType()))) {
+            Set<OnlineUserModel> userModels = TokenCacheUtils.onlineUserTokens(userId);
+            if (CollectionUtils.isNotEmpty(userModels) && CollectionUtils.isNotEmpty((userModels = filterValid(userModels)))) {
+                TokenCacheUtils.resetOnlinePools(userId, userModels);
+                HttpServletResponse response = ServletUtils.response();
+                Cookie cookie_token = new Cookie("MultiLoginError1", models2Json(userModels, false, null));cookie_token.setPath("/");
+                cookie_token.setPath("/");
+                response.addCookie(cookie_token);
+                DataEaseException.throwException("MultiLoginError1");
+            }
+
+        }
+        if (ObjectUtils.isEmpty(expireTime)) {
+            expireTime = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout", Long.class, 480L);
+        }
+        long expireTimeMillis = expireTime * 60000L;
+        Date date = new Date(System.currentTimeMillis() + expireTimeMillis);
+        Algorithm algorithm = Algorithm.HMAC256(secret);
+        Builder builder = JWT.create()
+                .withClaim("username", tokenInfo.getUsername())
+                .withClaim("userId", userId);
+        String sign = builder.withExpiresAt(date).sign(algorithm);
+        if (writeOnline && !StringUtils.equals("0", multiLoginType)) {
+            if (StringUtils.equals("2", multiLoginType)) {
+                Set<OnlineUserModel> userModels = TokenCacheUtils.onlineUserTokens(userId);
+                if (CollectionUtils.isNotEmpty(userModels) && CollectionUtils.isNotEmpty((userModels = filterValid(userModels)))) {
+                    HttpServletResponse response = ServletUtils.response();
+                    Cookie cookie_token = new Cookie("MultiLoginError2", models2Json(userModels, true, sign));
+                    cookie_token.setPath("/");
+                    response.addCookie(cookie_token);
+                    userModels = userModels.stream().filter(mode -> !StringUtils.equals(mode.getToken(), sign)).collect(Collectors.toSet());
+                    TokenCacheUtils.resetOnlinePools(userId, userModels);
+                    DataEaseException.throwException("MultiLoginError");
+                }
+            }
+            TokenCacheUtils.add2OnlinePools(sign, userId);
+        }
+        return sign;
+
+    }
+
 
     public static String signLink(String resourceId, Long userId, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);

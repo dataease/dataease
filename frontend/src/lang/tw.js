@@ -2863,5 +2863,14 @@ export default {
     reset: '重置',
     preview: '預覽',
     save: '保存'
+  },
+  multi_login_lang: {
+    title: '當前賬號已在線！',
+    ip: 'IP',
+    time: '登錄時間',
+    label: '禁止多端登錄！',
+    confirm_title: '強行登錄會導致其他客戶端掉線',
+    confirm: '是否強行登錄？',
+    forced_offline: '`當前賬號在客戶端【${ip}】登錄，您已被擠下線！`'
   }
 }

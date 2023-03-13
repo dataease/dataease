@@ -127,6 +127,8 @@ public interface ParamConstants {
         LOGIN_LIMIT_OPEN("loginlimit.open"),
 
         SCAN_CREATE_USER("loginlimit.scanCreateUser"),
+
+        MULTI_LOGIN("loginlimit.multiLogin"),
         TEMPLATE_ACCESS_KEY("basic.templateAccessKey");
 
         private String value;

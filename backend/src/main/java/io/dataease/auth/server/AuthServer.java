@@ -4,6 +4,7 @@ import io.dataease.auth.api.AuthApi;
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.api.dto.LoginDto;
+import io.dataease.auth.api.dto.SeizeLoginDto;
 import io.dataease.auth.config.RsaProperties;
 import io.dataease.auth.entity.AccountLockStatus;
 import io.dataease.auth.entity.SysUserEntity;
@@ -28,6 +29,8 @@ import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 import io.dataease.service.sys.SysUserService;
 
 import io.dataease.service.system.SystemParameterService;
+import io.dataease.websocket.entity.WsMessage;
+import io.dataease.websocket.service.WsService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -60,6 +63,9 @@ public class AuthServer implements AuthApi {
 
     @Resource
     private SystemParameterService systemParameterService;
+
+    @Autowired
+    private WsService wsService;
 
     @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
@@ -161,6 +167,23 @@ public class AuthServer implements AuthApi {
         DeLogUtils.save(SysLogConstants.OPERATE_TYPE.LOGIN, SysLogConstants.SOURCE_TYPE.USER, user.getUserId(), null, null, null);
         authUserService.unlockAccount(username, ObjectUtils.isEmpty(loginType) ? 0 : loginType);
         authUserService.clearCache(user.getUserId());
+        return result;
+    }
+
+    @Override
+    public Object seizeLogin(@RequestBody SeizeLoginDto loginDto) throws Exception {
+        String token = loginDto.getToken();
+        Map<String, Object> result = new HashMap<>();
+        result.put("token", token);
+        ServletUtils.setToken(token);
+        TokenInfo tokenInfo = JWTUtils.tokenInfoByToken(token);
+        Long userId = tokenInfo.getUserId();
+        JWTUtils.seizeSign(userId, token);
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.LOGIN, SysLogConstants.SOURCE_TYPE.USER, userId, null, null, null);
+        WsMessage message = new WsMessage(userId, "/web-seize-topic", IPUtils.get());
+        wsService.releaseMessage(message);
+        authUserService.clearCache(userId);
+        Thread.sleep(3000L);
         return result;
     }
 

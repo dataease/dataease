@@ -2870,5 +2870,14 @@ export default {
     reset: 'Reset',
     preview: 'Preview',
     save: 'Save'
+  },
+  multi_login_lang: {
+    title: 'The current account is online!',
+    ip: 'IP',
+    time: 'Login time',
+    label: 'Prohibit multi-terminal login!',
+    confirm_title: 'Forced login will cause other clients to go offline',
+    confirm: 'Whether to force login?',
+    forced_offline: '`The current account is logged in on the client [${ip}],and you have been pushed off the line!`'
   }
 }

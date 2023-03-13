@@ -118,7 +118,7 @@ service.interceptors.response.use(response => {
   if (msg.length > 600) {
     msg = msg.slice(0, 600)
   }
-  !config.hideMsg && (!headers['authentication-status']) && $error(msg)
+  !config.hideMsg && (!headers['authentication-status']) && !msg?.startsWith("MultiLoginError") && $error(msg)
   return Promise.reject(config.url === '/dataset/table/sqlPreview' ? msg : error)
 })
 const checkDownError = response => {

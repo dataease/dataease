@@ -6,13 +6,10 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.impl.AuthUserServiceImpl;
 import io.dataease.auth.util.JWTUtils;
+import io.dataease.commons.utils.*;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.chart.ViewOption;
 import io.dataease.ext.ExtTaskMapper;
-import io.dataease.commons.utils.CommonBeanFactory;
-import io.dataease.commons.utils.CronUtils;
-import io.dataease.commons.utils.LogUtil;
-import io.dataease.commons.utils.ServletUtils;
 import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.job.sechedule.strategy.TaskHandler;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
@@ -164,6 +161,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         AuthUserServiceImpl userService = SpringContextUtil.getBean(AuthUserServiceImpl.class);
         SysUserService sysUserService = SpringContextUtil.getBean(SysUserService.class);
         List<File> files = null;
+        String token = null;
         try {
             XpackEmailTemplateDTO emailTemplateDTO = emailXpackService.emailTemplate(taskInstance.getTaskId());
             XpackEmailTaskRequest taskForm = emailXpackService.taskForm(taskInstance.getTaskId());
@@ -173,7 +171,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             }
             String panelId = emailTemplateDTO.getPanelId();
             String url = panelUrl(panelId);
-            String token = tokenByUser(user);
+            token = tokenByUser(user);
             XpackPixelEntity xpackPixelEntity = buildPixel(emailTemplateDTO);
             LogUtil.info("url is " + url);
             LogUtil.info("token is " + token);
@@ -349,6 +347,9 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             error(taskInstance, e);
             LogUtil.error(e.getMessage(), e);
         } finally {
+            if (StringUtils.isNotBlank(token)) {
+                TokenCacheUtils.add(token, user.getUserId());
+            }
             if (CollectionUtils.isNotEmpty(files)) {
                 files.forEach(file -> {
                     if (file.exists()) {
@@ -381,7 +382,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
     private String tokenByUser(SysUserEntity user) {
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(user.getUsername()).build();
-        String token = JWTUtils.sign(tokenInfo, user.getPassword());
+        String token = JWTUtils.sign(tokenInfo, user.getPassword(), false);
 
         return token;
     }
