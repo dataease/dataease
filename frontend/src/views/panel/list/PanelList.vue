@@ -899,7 +899,7 @@ export default {
       groupTree(this.groupForm, !userCache).then((res) => {
         localStorage.setItem('panel-main-tree', JSON.stringify(res.data || []))
         if (!userCache) {
-          this.tData = res.data
+          this.tData = res.data || []
         }
         if (this.responseSource === 'appApply') {
           this.fromAppActive()
