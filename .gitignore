@@ -28,3 +28,5 @@ dist/
 package-lock.json
 .DS_Store
 core/core-frontend/release/
+
+plugins/vite-test

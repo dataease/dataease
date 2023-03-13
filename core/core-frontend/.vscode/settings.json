@@ -3,8 +3,6 @@
   "prettier.enable": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true,
-    "source.fixAll.tslint": true,
-    "source.fixAll.stylelint": true,
   },
   "[vue]": {
     "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"

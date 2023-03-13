@@ -1,15 +1,17 @@
 import Vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
-import electron from "vite-plugin-electron"
+import electron from 'vite-plugin-electron'
 import eslintPlugin from 'vite-plugin-eslint'
 import viteStylelint from 'vite-plugin-stylelint'
 import { resolve } from 'path'
-import { createStyleImportPlugin, ElementPlusSecondaryResolve } from 'vite-plugin-style-import-secondary'
-import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite"
+import {
+  createStyleImportPlugin,
+  ElementPlusSecondaryResolve
+} from 'vite-plugin-style-import-secondary'
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 
-import electronRenderer from "vite-plugin-electron-renderer";
+import electronRenderer from 'vite-plugin-electron-renderer'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-
 
 import path from 'path'
 import { readdirSync } from 'fs'
@@ -23,14 +25,14 @@ export interface Page {
 function readPages(srcDir: string): Page[] {
   const pagesDir = path.resolve(srcDir, 'pages')
   let pages: Page[] = readdirSync(pagesDir, { withFileTypes: true })
-    .filter((o) => o.isDirectory() && !/^[._]/.test(o.name))
-    .map((o) => ({ name: o.name, path: path.join('pages', o.name) }))
+    .filter(o => o.isDirectory() && !/^[._]/.test(o.name))
+    .map(o => ({ name: o.name, path: path.join('pages', o.name) }))
   if (!pages.length) {
     pages = [
       {
         name: 'index',
-        path: '',
-      },
+        path: ''
+      }
     ]
   }
 
@@ -41,35 +43,36 @@ export const ROOT_DIR = path.resolve(__dirname, '.')
 
 export const PAGES = readPages(path.resolve(ROOT_DIR, 'src'))
 
-
 // https://vitejs.dev/config/
 const root = process.cwd()
 
 function pathResolve(dir: string) {
   return resolve(root, '.', dir)
 }
-console.log(pathResolve('src/assets/svg'));
+console.log(pathResolve('src/assets/svg'))
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     Vue(),
     electron({
-      entry: "electron-main/index.ts", // 主进程文件
+      entry: 'electron-main/index.ts' // 主进程文件
     }),
     createStyleImportPlugin({
       resolves: [ElementPlusSecondaryResolve()],
-      libs: [{
-        libraryName: 'element-plus-secondary',
-        esModule: true,
-        resolveStyle: (name) => {
-          return `element-plus-secondary/es/components/${name.substring(3)}/style/css`
+      libs: [
+        {
+          libraryName: 'element-plus-secondary',
+          esModule: true,
+          resolveStyle: name => {
+            return `element-plus-secondary/es/components/${name.substring(3)}/style/css`
+          }
         }
-      }]
+      ]
     }),
     createSvgIconsPlugin({
       iconDirs: [pathResolve('src/assets/svg')],
-      symbolId: "icon-[dir]-[name]",
+      symbolId: 'icon-[dir]-[name]'
     }),
     VueI18nPlugin({
       runtimeOnly: true,
@@ -86,10 +89,20 @@ export default defineConfig({
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.less', '.css'],
     alias: [
       {
-        find: "@",
+        find: '@',
         replacement: `${pathResolve('src')}`
       }
     ]
+  },
+  server: {
+    proxy: {
+      // 使用 proxy 实例
+      '/api': {
+        target: 'https://www.fastmock.site/mock/750e1fe302dda5186c2adb327a7ae472/_vite',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, '')
+      }
+    }
   },
   build: {
     emptyOutDir: false, // 默认情况下，若 outDir 在 root 目录下，则 Vite 会在构建时清空该目录
@@ -98,7 +111,7 @@ export default defineConfig({
       input: PAGES.reduce((map, { name }) => {
         map[name] = path.resolve(ROOT_DIR, `${name}.html`)
         return map
-      }, {}),
-    },
-  },
+      }, {})
+    }
+  }
 })
