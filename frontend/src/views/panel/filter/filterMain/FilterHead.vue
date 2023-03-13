@@ -92,7 +92,7 @@ export default {
 .filter-field {
   border-radius: 4px;
   height: 40px;
-
+  overflow-x: overlay;
   .field-content {
     position: relative;
     display: table;
