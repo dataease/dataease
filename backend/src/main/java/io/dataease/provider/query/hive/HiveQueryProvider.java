@@ -1035,17 +1035,17 @@ public class HiveQueryProvider extends QueryProvider {
                 } else {
                     originName = String.format(HiveConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
                 }
-
+                String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                 if (field.getDeType() == DeTypeConstants.DE_TIME) {
                     if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                        whereName = String.format(HiveConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : HiveConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(HiveConstants.DATE_FORMAT, originName, format);
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(HiveConstants.CAST, originName, HiveConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        whereName = String.format(HiveConstants.FROM_UNIXTIME, cast, HiveConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(HiveConstants.FROM_UNIXTIME, cast, format);
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-                        whereName = originName;
+                        whereName = String.format(HiveConstants.DATE_FORMAT, originName, format);
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
