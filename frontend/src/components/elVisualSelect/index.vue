@@ -237,7 +237,7 @@ export default {
 .VisualSelects {
   .el-scrollbar {
     position: relative;
-    height: 250px;
+    height: 245px;
     overflow: inherit;
     overflow-x: hidden;
     content-visibility: auto;
