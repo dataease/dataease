@@ -9,11 +9,9 @@ import com.auth0.jwt.interfaces.Verification;
 import com.google.gson.Gson;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.entity.TokenInfo.TokenInfoBuilder;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.OnlineUserModel;
 import io.dataease.commons.utils.*;
 import io.dataease.exception.DataEaseException;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
@@ -23,7 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class JWTUtils {
 
@@ -96,13 +93,9 @@ public class JWTUtils {
 
     }
 
-    private static Set<OnlineUserModel> filterValid(Set<OnlineUserModel> userModels) {
-        Set<OnlineUserModel> models = userModels.stream().filter(JWTUtils::tokenValid).collect(Collectors.toSet());
-
-        return models;
-    }
-
-    private static String models2Json(Set<OnlineUserModel> models, boolean withCurToken, String token) {
+    private static String models2Json(OnlineUserModel model, boolean withCurToken, String token) {
+        Set<OnlineUserModel> models = new LinkedHashSet<>();
+        models.add(model);
         Gson gson = new Gson();
         List<OnlineUserModel> userModels = models.stream().map(item -> {
             item.setToken(null);
@@ -120,31 +113,25 @@ public class JWTUtils {
     }
 
     public static String seizeSign(Long userId, String token) {
-        Set<OnlineUserModel> userModels = Optional.ofNullable(TokenCacheUtils.onlineUserTokens(userId)).orElse(new LinkedHashSet<>());
-        userModels.stream().forEach(model -> {
-            TokenCacheUtils.add(model.getToken(), userId);
-        });
-        userModels.clear();
-        OnlineUserModel curModel = TokenCacheUtils.buildModel(token);
-        userModels.add(curModel);
-        TokenCacheUtils.resetOnlinePools(userId, userModels);
+        Optional.ofNullable(TokenCacheUtils.onlineUserToken(userId)).ifPresent(model -> TokenCacheUtils.add(model.getToken(), userId));
+        TokenCacheUtils.add2OnlinePools(token, userId);
         return IPUtils.get();
     }
+
     public static String sign(TokenInfo tokenInfo, String secret, boolean writeOnline) {
 
         Long userId = tokenInfo.getUserId();
         String multiLoginType = null;
         if (writeOnline && StringUtils.equals("1", (multiLoginType = TokenCacheUtils.multiLoginType()))) {
-            Set<OnlineUserModel> userModels = TokenCacheUtils.onlineUserTokens(userId);
-            if (CollectionUtils.isNotEmpty(userModels) && CollectionUtils.isNotEmpty((userModels = filterValid(userModels)))) {
-                TokenCacheUtils.resetOnlinePools(userId, userModels);
+            OnlineUserModel userModel = TokenCacheUtils.onlineUserToken(userId);
+            if (ObjectUtils.isNotEmpty(userModel) && tokenValid(userModel)) {
                 HttpServletResponse response = ServletUtils.response();
-                Cookie cookie_token = new Cookie("MultiLoginError1", models2Json(userModels, false, null));cookie_token.setPath("/");
+                Cookie cookie_token = new Cookie("MultiLoginError1", models2Json(userModel, false, null));
+                cookie_token.setPath("/");
                 cookie_token.setPath("/");
                 response.addCookie(cookie_token);
                 DataEaseException.throwException("MultiLoginError1");
             }
-
         }
         if (ObjectUtils.isEmpty(expireTime)) {
             expireTime = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout", Long.class, 480L);
@@ -156,23 +143,21 @@ public class JWTUtils {
                 .withClaim("username", tokenInfo.getUsername())
                 .withClaim("userId", userId);
         String sign = builder.withExpiresAt(date).sign(algorithm);
-        if (writeOnline && !StringUtils.equals("0", multiLoginType)) {
-            if (StringUtils.equals("2", multiLoginType)) {
-                Set<OnlineUserModel> userModels = TokenCacheUtils.onlineUserTokens(userId);
-                if (CollectionUtils.isNotEmpty(userModels) && CollectionUtils.isNotEmpty((userModels = filterValid(userModels)))) {
-                    HttpServletResponse response = ServletUtils.response();
-                    Cookie cookie_token = new Cookie("MultiLoginError2", models2Json(userModels, true, sign));
-                    cookie_token.setPath("/");
-                    response.addCookie(cookie_token);
-                    userModels = userModels.stream().filter(mode -> !StringUtils.equals(mode.getToken(), sign)).collect(Collectors.toSet());
-                    TokenCacheUtils.resetOnlinePools(userId, userModels);
-                    DataEaseException.throwException("MultiLoginError");
-                }
+
+        if (StringUtils.equals("2", multiLoginType)) {
+            OnlineUserModel userModel = TokenCacheUtils.onlineUserToken(userId);
+            if (ObjectUtils.isNotEmpty(userModel) && tokenValid(userModel)) {
+                HttpServletResponse response = ServletUtils.response();
+                Cookie cookie_token = new Cookie("MultiLoginError2", models2Json(userModel, true, sign));
+                cookie_token.setPath("/");
+                response.addCookie(cookie_token);
+                DataEaseException.throwException("MultiLoginError");
             }
+        }
+        if (writeOnline && !StringUtils.equals("0", multiLoginType)) {
             TokenCacheUtils.add2OnlinePools(sign, userId);
         }
         return sign;
-
     }
 
 
