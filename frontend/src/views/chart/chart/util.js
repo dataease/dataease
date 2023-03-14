@@ -886,7 +886,8 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-v'
+        'position-v',
+        'labelContent'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -3552,4 +3553,14 @@ export function resetRgbOpacity(sourceColor, times) {
     }
   }
   return sourceColor
+}
+
+export function getDefaultLabelContent(chart) {
+  if (chart?.type?.includes('pie')) {
+    return ['dimension', 'proportion']
+  }
+  if (chart?.type?.includes('bar')) {
+    return ['quota']
+  }
+  return []
 }
