@@ -74,6 +74,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @Author gin
@@ -852,27 +853,36 @@ public class ChartViewService {
 //            如果是从子维度开始下钻，那么其他维度的条件要先加上去
 //            分组和堆叠
             if (StringUtils.containsIgnoreCase(view.getType(), "group")) {
-                fieldsToFilter.addAll(xAxisBase);
 //              分组堆叠
                 if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
 //                  分组和堆叠字段都有才有效
                     if (CollectionUtils.isNotEmpty(xAxisExt) && CollectionUtils.isNotEmpty(extStack)) {
 //                      从分组字段下钻，就加上堆叠字段的条件
                         if (StringUtils.equalsIgnoreCase(drill.get(0).getId(), xAxisExt.get(0).getId())) {
+                            fieldsToFilter.addAll(xAxisBase);
                             fieldsToFilter.addAll(extStack);
                         }
 //                      从堆叠字段下钻，就加上分组字段的条件
                         if (StringUtils.equalsIgnoreCase(drill.get(0).getId(), extStack.get(0).getId())) {
+                            fieldsToFilter.addAll(xAxisBase);
                             fieldsToFilter.addAll(xAxisExt);
                         }
                     }
+                } else if (CollectionUtils.isNotEmpty(xAxisExt) &&
+                        StringUtils.equalsIgnoreCase(drill.get(0).getId(), xAxisExt.get(0).getId())) {
+                    fieldsToFilter.addAll(xAxisBase);
                 }
-            } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "stack") &&
+                    CollectionUtils.isNotEmpty(extStack) &&
+                    StringUtils.equalsIgnoreCase(drill.get(0).getId(), extStack.get(0).getId())) {
 //              堆叠
                 fieldsToFilter.addAll(xAxisBase);
             }
             ChartDrillRequest head = drillRequestList.get(0);
-            Map<String, String> dimMap = head.getDimensionList().stream().collect(Collectors.toMap(ChartDimensionDTO::getId, ChartDimensionDTO::getValue));
+            Map<String, String> dimValMap = head.getDimensionList().stream().collect(Collectors.toMap(ChartDimensionDTO::getId, ChartDimensionDTO::getValue));
+            Map<String, ChartViewFieldDTO> fieldMap = Stream.of(xAxisBase, xAxisExt, extStack).
+                    flatMap(Collection::stream).
+                    collect(Collectors.toMap(ChartViewFieldDTO::getId, o -> o));
             for (int i = 0; i < drillRequestList.size(); i++) {
                 ChartDrillRequest request = drillRequestList.get(i);
                 ChartViewFieldDTO chartViewFieldDTO = drill.get(i);
@@ -881,11 +891,10 @@ public class ChartViewService {
                     if (StringUtils.equalsIgnoreCase(requestDimension.getId(), chartViewFieldDTO.getId())) {
                         isDrill = true;
                         fieldsToFilter.add(chartViewFieldDTO);
-                        dimMap.put(requestDimension.getId(), requestDimension.getValue());
+                        dimValMap.put(requestDimension.getId(), requestDimension.getValue());
                         if (!checkDrillExist(xAxis, extStack, requestDimension.getId(), view)) {
                             xAxis.add(chartViewFieldDTO);
                         }
-//
                         if (i == drillRequestList.size() - 1) {
                             ChartViewFieldDTO nextDrillField = drill.get(i + 1);
                             if (!checkDrillExist(xAxis, extStack, nextDrillField.getId(), view)) {
@@ -903,10 +912,10 @@ public class ChartViewService {
                 DatasetTableField datasetTableField = dataSetTableFieldsService.get(tmpField.getId());
                 tmpFilter.setDatasetTableField(datasetTableField);
                 tmpFilter.setOperator("in");
-                tmpFilter.setDateStyle(tmpField.getDateStyle());
-                tmpFilter.setDatePattern(tmpField.getDatePattern());
+                tmpFilter.setDateStyle(fieldMap.get(tmpField.getId()).getDateStyle());
+                tmpFilter.setDatePattern(fieldMap.get(tmpField.getId()).getDatePattern());
                 tmpFilter.setFieldId(tmpField.getId());
-                tmpFilter.setValue(Collections.singletonList(dimMap.get(tmpField.getId())));
+                tmpFilter.setValue(Collections.singletonList(dimValMap.get(tmpField.getId())));
                 extFilterList.add(tmpFilter);
                 drillFilters.add(tmpFilter);
             }
