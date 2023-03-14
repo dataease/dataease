@@ -31,7 +31,8 @@
         "loginbtn": "Login",
         "pwdFmtError": "Password Must More Than 6 Characters",
         "uOrpwdError": "Invalid Account Or Password",
-		"accFmtError": "Account Must More Than 1 Characters"
+		"accFmtError": "Account Must More Than 1 Characters",
+        "multiLogin": "The current account is online,Prohibit multi-terminal login"
     },
     "home": {
         "tab1": "My Favorites",

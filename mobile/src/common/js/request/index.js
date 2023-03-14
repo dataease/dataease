@@ -60,10 +60,13 @@ checkAuth(error.response)
   } else {
     msg = error.message
   }
+  if (msg?.startsWith('MultiLoginError')) {
+    return Promise.reject(error)
+  } 
   uni.showToast({
     icon: 'error',
     title: msg
-  });
+  })
   return Promise.reject(error)
 })
 const logout = () => {
