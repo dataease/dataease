@@ -21,6 +21,9 @@ export const usePermissionStore = defineStore('permission', {
     getRouters(): AppRouteRecordRaw[] {
       return this.routers
     },
+    getRoutersNotHidden(): AppRouteRecordRaw[] {
+      return this.routers.filter(ele => !ele.hidden)
+    },
     getAddRouters(): AppRouteRecordRaw[] {
       return cloneDeep(this.addRouters)
     },
@@ -41,8 +44,7 @@ export const usePermissionStore = defineStore('permission', {
             redirect: '/404',
             name: '404Page',
             meta: {
-              hidden: true,
-              breadcrumb: false
+              hidden: true
             }
           }
         ])

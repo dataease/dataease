@@ -8,17 +8,20 @@ export const routes: AppRouteRecordRaw[] = [
     name: 'index',
     redirect: '/home',
     component: () => import('@/layout/index.vue'),
-    meta: { hidden: true },
+    hidden: true,
+    meta: {},
     children: [
       {
         path: 'home',
         name: 'home',
+        hidden: true,
         component: () => import('@/views/home/index.vue'),
         meta: { hidden: true }
       },
       {
         path: 'system',
         name: 'system',
+        hidden: false,
         component: () => import('@/views/system/index.vue'),
         meta: { hidden: false }
       }
@@ -27,7 +30,8 @@ export const routes: AppRouteRecordRaw[] = [
   {
     path: '/login',
     name: 'login',
-    meta: { hidden: true },
+    hidden: true,
+    meta: {},
     component: () => import('@/views/login/index.vue')
   }
 ]
