@@ -80,7 +80,7 @@ public class XDingtalkServer {
         return dingtalkXpackService.getQrParam();
     }
 
-    private ModelAndView privateCallBack(String code, Boolean withoutLogin) {
+    private ModelAndView privateCallBack(String code, Boolean withoutLogin, Boolean isMobile) {
         ModelAndView modelAndView = new ModelAndView("redirect:/");
         HttpServletResponse response = ServletUtils.response();
         DingtalkXpackService dingtalkXpackService = null;
@@ -109,7 +109,7 @@ public class XDingtalkServer {
             }
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
             String realPwd = sysUserEntity.getPassword();
-            String token = JWTUtils.sign(tokenInfo, realPwd);
+            String token = JWTUtils.sign(tokenInfo, realPwd, !isMobile);
             ServletUtils.setToken(token);
 
             DeLogUtils.save(SysLogConstants.OPERATE_TYPE.LOGIN, SysLogConstants.SOURCE_TYPE.USER, sysUserEntity.getUserId(), null, null, null);
@@ -144,13 +144,14 @@ public class XDingtalkServer {
     }
 
     @GetMapping("/callBackWithoutLogin")
-    public ModelAndView callBackWithoutLogin(@RequestParam("code") String code) {
-        return privateCallBack(code, true);
+    public ModelAndView callBackWithoutLogin(@RequestParam("code") String code, @RequestParam("mobile") String mobile) {
+        boolean isMobile = StringUtils.equals("1", mobile);
+        return privateCallBack(code, true, isMobile);
     }
 
     @GetMapping("/callBack")
     public ModelAndView callBack(@RequestParam("code") String code, @RequestParam("state") String state) {
-        return privateCallBack(code, false);
+        return privateCallBack(code, false, false);
     }
 
     private void bindError(HttpServletResponse response, String url, String errorMsg) {
