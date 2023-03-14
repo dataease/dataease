@@ -200,13 +200,31 @@ export function getLabel(chart) {
                 f.formatterCfg.thousandSeparator = false
               }
               res = valueFormatter(param.value, f.formatterCfg)
-            } else if (equalsAny(chart.type, 'bar-group', 'bar-group-stack')) {
+            } else if (equalsAny(chart.type, 'bar-group')) {
               const f = yAxis[0]
               if (f.formatterCfg) {
                 res = valueFormatter(param.value, f.formatterCfg)
               } else {
                 res = valueFormatter(param.value, formatterItem)
               }
+            } else if (equalsAny(chart.type, 'bar-group-stack')) {
+              const f = yAxis[0]
+              let formatterCfg = formatterItem
+              if (f.formatterCfg) {
+                formatterCfg = f.formatterCfg
+              }
+              const labelContent = l.labelContent ?? ['quota']
+              const contentItems = []
+              if (labelContent.includes('group')) {
+                contentItems.push(param.group)
+              }
+              if (labelContent.includes('stack')) {
+                contentItems.push(param.category)
+              }
+              if (labelContent.includes('quota')) {
+                contentItems.push(valueFormatter(param.value, formatterCfg))
+              }
+              res = contentItems.join('\n')
             } else {
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
@@ -363,7 +381,14 @@ export function getTooltip(chart) {
               if (chart.type === 'bar-group') {
                 obj = { name: param.category, value: param.value }
               } else {
-                obj = { name: param.group, value: param.value }
+                let name = ''
+                if (param.group) {
+                  name = param.name + '-'
+                }
+                if (param.category) {
+                  name += param.category
+                }
+                obj = { name: name, value: param.value }
               }
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]

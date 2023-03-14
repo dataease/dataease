@@ -314,11 +314,6 @@ export default {
         { name: this.$t('chart.reserve_zero'), value: 0 },
         { name: this.$t('chart.reserve_one'), value: 1 },
         { name: this.$t('chart.reserve_two'), value: 2 }
-      ],
-      labelContentOptions: [
-        { name: this.$t('chart.dimension'), value: 'dimension' },
-        { name: this.$t('chart.quota'), value: 'quota' },
-        { name: this.$t('chart.proportion'), value: 'proportion' }
       ]
     }
   },
@@ -402,6 +397,25 @@ export default {
      */
     showProperty(property) {
       return this.propertyInner.includes(property)
+    }
+  },
+  computed: {
+    labelContentOptions() {
+      if (this.chart.type.includes('pie')) {
+        return [
+          { name: this.$t('chart.dimension'), value: 'dimension' },
+          { name: this.$t('chart.quota'), value: 'quota' },
+          { name: this.$t('chart.proportion'), value: 'proportion' }
+        ]
+      }
+      if (this.chart.type.includes('bar')) {
+        return [
+          { name: this.$t('chart.chart_group'), value: 'group' },
+          { name: this.$t('chart.stack_item'), value: 'stack' },
+          { name: this.$t('chart.quota'), value: 'quota' }
+        ]
+      }
+      return []
     }
   }
 }

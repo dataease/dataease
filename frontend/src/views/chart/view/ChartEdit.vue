@@ -1748,6 +1748,7 @@ import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny } from '@/utils/StringUtils'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
+import { getDefaultLabelContent } from '@/views/chart/chart/util'
 
 export default {
   name: 'ChartEdit',
@@ -3313,6 +3314,7 @@ export default {
           this.view.customAttr.label.position = 'middle'
         }
       }
+      customAttr.label.labelContent = getDefaultLabelContent(this.view)
       // reset custom colors
       this.view.customAttr.color.seriesColors = []
     },
