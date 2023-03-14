@@ -36,7 +36,8 @@
 </template>
 <script>
 import { setToken, getLanguage } from '@/common/utils'
-import {getUserInfo, setUserInfo} from '@/common/utils'
+import { getUserInfo, setUserInfo } from '@/common/utils'
+import { logout } from '@/api/auth'
 export default {
     data() {
         return {
@@ -85,11 +86,15 @@ export default {
             });
         },
         logout() {
-            setToken(null)
-            setUserInfo(null)
-            uni.reLaunch({
-                url: '/'
-            });
+            const callBack = () => {
+                setToken(null)
+                setUserInfo(null)
+                uni.reLaunch({
+                    url: '/'
+                });
+            }
+            logout().then(res => {callBack()}).catch(e => {callBack()})
+            
         }
     }
 }
