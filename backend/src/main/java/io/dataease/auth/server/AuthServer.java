@@ -68,6 +68,46 @@ public class AuthServer implements AuthApi {
     private WsService wsService;
 
     @Override
+    public Object mobileLogin(@RequestBody LoginDto loginDto) throws Exception {
+        String username = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getUsername());
+        String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getPassword());
+        AccountLockStatus accountLockStatus = authUserService.lockStatus(username, 0);
+        if (accountLockStatus.getLocked()) {
+            String msg = Translator.get("I18N_ACCOUNT_LOCKED");
+            msg = String.format(msg, username, accountLockStatus.getRelieveTimes().toString());
+            DataEaseException.throwException(msg);
+        }
+
+        SysUserEntity user = authUserService.getUserByName(username);
+
+        if (ObjectUtils.isEmpty(user)) {
+            AccountLockStatus lockStatus = authUserService.recordLoginFail(username, 0);
+            DataEaseException.throwException(appendLoginErrorMsg(Translator.get("i18n_id_or_pwd_error"), lockStatus));
+        }
+        if (user.getEnabled() == 0) {
+            AccountLockStatus lockStatus = authUserService.recordLoginFail(username, 0);
+            DataEaseException.throwException(appendLoginErrorMsg(Translator.get("i18n_user_is_disable"), lockStatus));
+        }
+        String realPwd = user.getPassword();
+        pwd = CodingUtil.md5(pwd);
+
+        if (!StringUtils.equals(pwd, realPwd)) {
+            AccountLockStatus lockStatus = authUserService.recordLoginFail(username, 0);
+            DataEaseException.throwException(appendLoginErrorMsg(Translator.get("i18n_id_or_pwd_error"), lockStatus));
+        }
+        TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
+        String token = JWTUtils.sign(tokenInfo, realPwd, false);
+        // 记录token操作时间
+        Map<String, Object> result = new HashMap<>();
+        result.put("token", token);
+        ServletUtils.setToken(token);
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.LOGIN, SysLogConstants.SOURCE_TYPE.USER, user.getUserId(), null, null, null);
+        authUserService.unlockAccount(username, 0);
+        authUserService.clearCache(user.getUserId());
+        return result;
+    }
+
+    @Override
     public Object login(@RequestBody LoginDto loginDto) throws Exception {
         Map<String, Object> result = new HashMap<>();
         String username = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getUsername());
