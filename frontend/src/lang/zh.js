@@ -1,4 +1,4 @@
-import {$confirm} from "@/utils/message";
+import { $confirm } from '@/utils/message'
 
 export default {
   fu: {
@@ -1515,7 +1515,8 @@ export default {
     p_center: '居中',
     table_auto_break_line: '自动换行',
     table_break_line_tip: '开启自动换行，表格行高设置将失效',
-    step: '步长(px)'
+    step: '步长(px)',
+    no_function: '函数尚未支持直接引用，请在字段表达式中手动输入。'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
