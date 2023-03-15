@@ -75,6 +75,7 @@ export const decorate = (router: AppCustomRouteRecordRaw): AppCustomRouteRecordR
     id: router.id + 1000000,
     path: router.path,
     meta: router.meta,
+    component: 'Layout',
     children: [],
     hidden: false
   }

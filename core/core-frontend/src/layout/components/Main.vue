@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { ElMain } from 'element-plus-secondary'
 </script>
 
