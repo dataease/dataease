@@ -31,6 +31,13 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+
+        <!--calcite核心包-->
+        <dependency>
+            <groupId>org.apache.calcite</groupId>
+            <artifactId>calcite-core</artifactId>
+            <version>${calcite-core.version}</version>
+        </dependency>
     </dependencies>
 
     <profiles>
