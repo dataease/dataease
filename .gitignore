@@ -30,4 +30,4 @@ package-lock.json
 core/core-frontend/release/
 
 plugins/vite-test
-.stylelintcache
+core/core-frontend/.stylelintcache
