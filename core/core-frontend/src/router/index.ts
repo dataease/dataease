@@ -21,6 +21,11 @@ const router = createRouter({
           path: 'system',
           component: () => import('@/view/system/index.vue'),
           meta: { requiresAuth: false }
+        },
+        {
+          path: 'dataVisualization',
+          component: () => import('@/view/dataVisualization/index.vue'),
+          meta: { requiresAuth: false }
         }
       ]
     }
