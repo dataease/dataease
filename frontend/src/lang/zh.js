@@ -1,3 +1,5 @@
+import { $confirm } from '@/utils/message'
+
 export default {
   fu: {
     search_bar: {
@@ -381,6 +383,7 @@ export default {
     thumbnail: '缩略图',
     confirm_delete: '确认删除',
     delete_this_dashboard: '确认删除该仪表板吗?',
+    delete_this_folder: '确认删除该目录吗?',
     confirm_stop: '确认停止',
     stop_success: '停止成功',
     treeselect: {
@@ -1509,7 +1512,11 @@ export default {
     p_right: '右对齐',
     p_top: '上对齐',
     p_bottom: '下对齐',
-    p_center: '居中'
+    p_center: '居中',
+    table_auto_break_line: '自动换行',
+    table_break_line_tip: '开启自动换行，表格行高设置将失效',
+    step: '步长(px)',
+    no_function: '函数尚未支持直接引用，请在字段表达式中手动输入。'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
@@ -2539,7 +2546,7 @@ export default {
     please_key_max: '请输入最大值',
     out_of_min: '最小值不能小于最小整数-2³²',
     out_of_max: '最大值不能大于最大整数2³²-1',
-    must_int: '请输入整数',
+    must_int: '请输入数字',
     min_out_max: '最小值必须小于最大值',
     max_out_min: '最大值必须大于最小值'
   },
@@ -2860,5 +2867,14 @@ export default {
     reset: '重置',
     preview: '预览',
     save: '保存'
+  },
+  multi_login_lang: {
+    title: '当前账号已在线！',
+    ip: 'IP',
+    time: '登录时间',
+    label: '禁止多端登录！',
+    confirm_title: '强行登录会导致其他客户端掉线',
+    confirm: '是否强行登录？',
+    forced_offline: '`当前账号在客户端【${ip}】登录，您已被挤下线！`'
   }
 }

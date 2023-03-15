@@ -886,7 +886,8 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-v'
+        'position-v',
+        'labelContent'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -1847,6 +1848,7 @@ export const TYPE_CONFIGS = [
         'tableItemBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
+        'tableBorderColor',
         'tableScrollBarColor',
         'alpha'
       ],
@@ -1857,7 +1859,8 @@ export const TYPE_CONFIGS = [
         'tableItemHeight',
         'tableColumnWidth',
         'showIndex',
-        'indexLabel'
+        'indexLabel',
+        'tableAutoBreakLine'
       ],
       'title-selector': [
         'show',
@@ -1887,6 +1890,7 @@ export const TYPE_CONFIGS = [
         'tableItemBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
+        'tableBorderColor',
         'tableScrollBarColor',
         'alpha'
       ],
@@ -1899,7 +1903,8 @@ export const TYPE_CONFIGS = [
         'tableItemHeight',
         'tableColumnWidth',
         'showIndex',
-        'indexLabel'
+        'indexLabel',
+        'tableAutoBreakLine'
       ],
       'title-selector': [
         'show',
@@ -3548,4 +3553,14 @@ export function resetRgbOpacity(sourceColor, times) {
     }
   }
   return sourceColor
+}
+
+export function getDefaultLabelContent(chart) {
+  if (chart?.type?.includes('pie')) {
+    return ['dimension', 'proportion']
+  }
+  if (chart?.type?.includes('bar')) {
+    return ['quota']
+  }
+  return []
 }

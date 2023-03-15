@@ -3,6 +3,7 @@ package io.dataease.auth.api;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.api.dto.LoginDto;
+import io.dataease.auth.api.dto.SeizeLoginDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,13 @@ public interface AuthApi {
     @ApiOperation("登录")
     @PostMapping("/login")
     Object login(LoginDto loginDto) throws Exception;
+
+    @ApiOperation("移动端登录")
+    @PostMapping("/mobileLogin")
+    Object mobileLogin(LoginDto loginDto) throws Exception;
+
+    @PostMapping("/seizeLogin")
+    Object seizeLogin(SeizeLoginDto loginDto) throws Exception;
 
     @ApiOperation("获取用户信息")
     @PostMapping("/userInfo")

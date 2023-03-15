@@ -8,6 +8,15 @@ export function login(data) {
   })
 }
 
+export function seizeLogin(data) {
+  return request({
+    url: '/api/auth/seizeLogin',
+    method: 'post',
+    data,
+    loading: true
+  })
+}
+
 export function getInfo(token) {
   return request({
     url: '/api/auth/userInfo',

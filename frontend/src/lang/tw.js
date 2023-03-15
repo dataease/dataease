@@ -382,6 +382,7 @@ export default {
     thumbnail: '縮略圖',
     confirm_delete: '確認刪除',
     delete_this_dashboard: '確認删除該儀錶板嗎?',
+    delete_this_folder: '確認删除該目錄嗎?',
     confirm_stop: '確認停止',
     stop_success: '停止成功',
     treeselect: {
@@ -1510,7 +1511,11 @@ export default {
     p_right: '右對齊',
     p_top: '上對齊',
     p_bottom: '下對齊',
-    p_center: '居中'
+    p_center: '居中',
+    table_auto_break_line: '自動換行',
+    table_break_line_tip: '開啟自動換行，表格行高設置將失效',
+    step: '步長(px)',
+    no_function: '函數尚未支持直接引用，請在字段表達式中手動輸入。'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
@@ -2539,7 +2544,7 @@ export default {
     please_key_max: '請輸入最大值',
     out_of_min: '最小值不能小於最小整數-2³²',
     out_of_max: '最大值不能大於最大整數2³²-1',
-    must_int: '請輸入整數',
+    must_int: '請輸入數字',
     min_out_max: '最小值必須小於最大值',
     max_out_min: '最大值必須大於最小值'
   },
@@ -2860,5 +2865,14 @@ export default {
     reset: '重置',
     preview: '預覽',
     save: '保存'
+  },
+  multi_login_lang: {
+    title: '當前賬號已在線！',
+    ip: 'IP',
+    time: '登錄時間',
+    label: '禁止多端登錄！',
+    confirm_title: '強行登錄會導致其他客戶端掉線',
+    confirm: '是否強行登錄？',
+    forced_offline: '`當前賬號在客戶端【${ip}】登錄，您已被擠下線！`'
   }
 }

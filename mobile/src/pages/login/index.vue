@@ -106,9 +106,13 @@
 
         }).catch(error => {
           this.loginBtnLoading = false
+          let msg = error.response.data.message
+          if (msg?.startsWith('MultiLoginError')) {
+            msg = this.$t('login.multiLogin')
+          }
           uni.showToast({
             icon: 'error',
-            title: error.response.data.message,
+            title: msg,
           });
         })
       },

@@ -1115,23 +1115,24 @@ public class Db2QueryProvider extends QueryProvider {
                 }
 
                 if (field.getDeType() == DeTypeConstants.DE_TIME) {
+                    String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
                         if (StringUtils.isNotEmpty(field.getDateFormat())) {
                             originName = String.format(Db2Constants.TO_DATE, originName, field.getDateFormat());
                         } else {
                             originName = String.format(Db2Constants.STR_TO_DATE, originName);
                         }
-                        whereName = String.format(Db2Constants.DATE_FORMAT, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(Db2Constants.DATE_FORMAT, originName, format);
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(Db2Constants.CAST, originName, Db2Constants.DEFAULT_INT_FORMAT);
-                        whereName = String.format(Db2Constants.FROM_UNIXTIME, cast, Db2Constants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(Db2Constants.FROM_UNIXTIME, cast, format);
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
                         if (field.getType().equalsIgnoreCase("TIME")) {
-                            whereName = String.format(Db2Constants.FORMAT_TIME, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+                            whereName = String.format(Db2Constants.FORMAT_TIME, originName, format);
                         } else if (field.getType().equalsIgnoreCase("DATE")) {
-                            whereName = String.format(Db2Constants.FORMAT_DATE, originName, Db2Constants.DEFAULT_DATE_FORMAT);
+                            whereName = String.format(Db2Constants.FORMAT_DATE, originName, format);
                         } else {
                             whereName = originName;
                         }

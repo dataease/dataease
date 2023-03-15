@@ -269,7 +269,8 @@ public class MysqlQueryProvider extends QueryProvider {
                 ChartViewFieldDTO x = xAxis.get(i);
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
-                    // 解析origin name中有关联的字段生成sql表达式
+//                  计算字段和视图字段，规则为 函数([原始字段id])，这边把[原始字段id] 换成 表名.原始字段id
+//                  解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
                     originField = String.format(MysqlConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getDataeaseName());
@@ -1058,12 +1059,13 @@ public class MysqlQueryProvider extends QueryProvider {
                 }
 
                 if (field.getDeType() == 1) {
+                    String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                        whereName = String.format(MysqlConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(MysqlConstants.DATE_FORMAT, originName, format);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(MysqlConstants.CAST, originName, MysqlConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        whereName = String.format(MysqlConstants.FROM_UNIXTIME, cast, MysqlConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(MysqlConstants.FROM_UNIXTIME, cast, format);
                     }
                 } else if (field.getDeType() == 0 && field.getDeExtractType() == 0) {
                     whereName = String.format(MysqlConstants.CAST, originName, MysqlConstants.CHAR);

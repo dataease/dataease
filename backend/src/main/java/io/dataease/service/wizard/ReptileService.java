@@ -17,7 +17,7 @@ import java.util.*;
  */
 @Service
 public class ReptileService {
-    String blogUrl = "https://blog.fit2cloud.com/?cat=321";
+    String blogUrl = "https://blog.fit2cloud.com/categories/dataease";
     //获取最新的前几条数据
     private static int infoCount=5;
 
@@ -28,23 +28,20 @@ public class ReptileService {
             config.setSocketTimeout(5000);
             //爬取最新数据
             Document doc = Jsoup.parse(HttpClientUtil.get(blogUrl, config));
-            Elements elementsContent = doc.getElementsByAttributeValue("rel", "bookmark");
-            Elements elementsTime = doc.getElementsByTag("time");
+            Elements elementsContent = doc.getElementsByClass("aspect-w-16");
             for(int i = 0;i<infoCount;i++){
-                Element info = elementsContent.get(i*3);
+                Element info = elementsContent.get(i).children().get(0);
                 Map<String, String> infoMap = new HashMap();
                 infoMap.put("title",info.attr("title"));
                 infoMap.put("href",info.attr("href"));
-                infoMap.put("time",elementsTime.get(i).childNode(0).outerHtml());
                 result.add(infoMap);
             }
         } catch (Exception e) {
             e.printStackTrace();
             //ignore
             Map<String, String> infoMap = new HashMap();
-            infoMap.put("title","支持移动端展示，数据源新增对DB2的支持，DataEase开源数据可视化分析平台v1.6.0发布");
-            infoMap.put("href","https://blog.fit2cloud.com/?p=3200");
-            infoMap.put("time","2022年1月10日");
+            infoMap.put("title","模板学堂丨妙用Tab组件制作多屏仪表板并实现自动轮播");
+            infoMap.put("href","https://blog.fit2cloud.com/?p=7c524ae9-69f1-4687-a5a2-f27971047308");
             result.add(infoMap);
         }
         return result;

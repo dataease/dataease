@@ -28,7 +28,12 @@
           :data="view"
           :tab-status="tabStatus"
         />
-        <svg-icon slot="reference" class="icon-class" style="position:absolute; margin-left: 30px; top:14px;cursor: pointer;" icon-class="icon_info_filled" />
+        <svg-icon
+          slot="reference"
+          class="icon-class"
+          style="position:absolute; margin-left: 30px; top:14px;cursor: pointer;"
+          icon-class="icon_info_filled"
+        />
       </el-popover>
       <span
         class="title-text view-title-name"
@@ -188,7 +193,7 @@
                               @command="chartFieldEdit"
                             >
                               <span class="el-dropdown-link">
-                                <i class="el-icon-s-tools"/>
+                                <i class="el-icon-s-tools" />
                               </span>
                               <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item
@@ -263,7 +268,7 @@
                               @command="chartFieldEdit"
                             >
                               <span class="el-dropdown-link">
-                                <i class="el-icon-s-tools"/>
+                                <i class="el-icon-s-tools" />
                               </span>
                               <el-dropdown-menu slot="dropdown">
                                 <el-dropdown-item
@@ -358,7 +363,7 @@
                           style="padding: 6px;"
                         >
                           {{ $t('chart.change_chart_type') }}
-                          <i class="el-icon-caret-bottom"/>
+                          <i class="el-icon-caret-bottom" />
                         </el-button>
                       </el-popover>
                     </span>
@@ -549,8 +554,8 @@
                     >
                       <span class="data-area-label">
                         <span v-if="view.type && view.type.includes('table')">{{
-                            $t('chart.drag_block_table_data_column')
-                          }}</span>
+                          $t('chart.drag_block_table_data_column')
+                        }}</span>
                         <span
                           v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall' || view.type === 'area')"
                         >{{ $t('chart.drag_block_type_axis') }}</span>
@@ -558,18 +563,18 @@
                           v-else-if="view.type && view.type.includes('pie')"
                         >{{ $t('chart.drag_block_pie_label') }}</span>
                         <span v-else-if="view.type && view.type.includes('funnel')">{{
-                            $t('chart.drag_block_funnel_split')
-                          }}</span>
+                          $t('chart.drag_block_funnel_split')
+                        }}</span>
                         <span v-else-if="view.type && view.type.includes('radar')">{{
-                            $t('chart.drag_block_radar_label')
-                          }}</span>
+                          $t('chart.drag_block_radar_label')
+                        }}</span>
                         <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.area') }}</span>
                         <span v-else-if="view.type && view.type.includes('treemap')">{{
-                            $t('chart.drag_block_treemap_label')
-                          }}</span>
+                          $t('chart.drag_block_treemap_label')
+                        }}</span>
                         <span v-else-if="view.type && view.type === 'word-cloud'">{{
-                            $t('chart.drag_block_word_cloud_label')
-                          }}</span>
+                          $t('chart.drag_block_word_cloud_label')
+                        }}</span>
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
                         <span v-show="view.type !== 'richTextView'"> / </span>
                         <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
@@ -693,8 +698,8 @@
                     >
                       <span class="data-area-label">
                         <span v-if="view.type && view.type.includes('table')">{{
-                            $t('chart.drag_block_table_data_column')
-                          }}</span>
+                          $t('chart.drag_block_table_data_column')
+                        }}</span>
                         <span
                           v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'waterfall' || view.type === 'area')"
                         >{{ $t('chart.drag_block_value_axis') }}</span>
@@ -702,30 +707,30 @@
                           v-else-if="view.type && view.type.includes('pie')"
                         >{{ $t('chart.drag_block_pie_angel') }}</span>
                         <span v-else-if="view.type && view.type.includes('funnel')">{{
-                            $t('chart.drag_block_funnel_width')
-                          }}</span>
+                          $t('chart.drag_block_funnel_width')
+                        }}</span>
                         <span v-else-if="view.type && view.type.includes('radar')">{{
-                            $t('chart.drag_block_radar_length')
-                          }}</span>
+                          $t('chart.drag_block_radar_length')
+                        }}</span>
                         <span v-else-if="view.type && view.type.includes('gauge')">{{
-                            $t('chart.drag_block_gauge_angel')
-                          }}</span>
+                          $t('chart.drag_block_gauge_angel')
+                        }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('text')"
                         >{{ $t('chart.drag_block_label_value') }}</span>
                         <span v-else-if="view.type && view.type === 'map'">{{ $t('chart.chart_data') }}</span>
                         <span v-else-if="view.type && view.type.includes('tree')">{{
-                            $t('chart.drag_block_treemap_size')
-                          }}</span>
+                          $t('chart.drag_block_treemap_size')
+                        }}</span>
                         <span v-else-if="view.type && view.type === 'chart-mix'">{{
-                            $t('chart.drag_block_value_axis_main')
-                          }}</span>
+                          $t('chart.drag_block_value_axis_main')
+                        }}</span>
                         <span
                           v-else-if="view.type && view.type === 'liquid'"
                         >{{ $t('chart.drag_block_progress') }}</span>
                         <span v-else-if="view.type && view.type === 'word-cloud'">{{
-                            $t('chart.drag_block_word_cloud_size')
-                          }}</span>
+                          $t('chart.drag_block_word_cloud_size')
+                        }}</span>
                         <span v-show="view.type !== 'richTextView'"> / </span>
                         <span>{{ $t('chart.quota') }}</span>
                         <i
@@ -1197,7 +1202,7 @@
                 :title="$t('panel.position_adjust_component')"
                 :name="'positionAdjust'"
               >
-                <position-adjust/>
+                <position-adjust />
               </el-collapse-item>
             </el-collapse>
           </div>
@@ -1353,7 +1358,7 @@
       width="800px"
       class="dialog-css"
     >
-      <quota-filter-editor :item="quotaItem"/>
+      <quota-filter-editor :item="quotaItem" />
       <div
         slot="footer"
         class="dialog-footer"
@@ -1380,7 +1385,7 @@
       width="800px"
       class="dialog-css"
     >
-      <dimension-filter-editor :item="dimensionItem"/>
+      <dimension-filter-editor :item="dimensionItem" />
       <div
         slot="footer"
         class="dialog-footer"
@@ -1743,6 +1748,7 @@ import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny } from '@/utils/StringUtils'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
+import { getDefaultLabelContent } from '@/views/chart/chart/util'
 
 export default {
   name: 'ChartEdit',
@@ -2002,6 +2008,7 @@ export default {
     bus.$off('show-quota-edit-filter', this.showQuotaEditFilter)
     bus.$off('show-quota-edit-compare', this.showQuotaEditCompare)
     bus.$off('show-edit-filter', this.showEditFilter)
+    bus.$off('show-edit-formatter', this.valueFormatter)
     bus.$off('calc-data', this.calcData)
     bus.$off('plugins-calc-style', this.calcStyle)
     bus.$off('plugin-chart-click', this.chartClick)
@@ -2072,6 +2079,7 @@ export default {
       bus.$on('show-quota-edit-filter', this.showQuotaEditFilter)
       bus.$on('show-quota-edit-compare', this.showQuotaEditCompare)
       bus.$on('show-edit-filter', this.showEditFilter)
+      bus.$on('show-edit-formatter', this.valueFormatter)
       bus.$on('calc-data', this.calcData)
       bus.$on('plugins-calc-style', this.calcStyle)
       bus.$on('plugin-chart-click', this.chartClick)
@@ -2892,19 +2900,22 @@ export default {
 
     // 更换数据集
     changeChart() {
-      this.view.dataFrom = 'dataset'
       const optType = this.view.tableId === this.changeTable.id ? 'same' : 'change'
-      // this.save(true, 'chart', false)
-      this.view.tableId = this.changeTable.id
-      // 更换数据集后清空视图字段
-      post('/chart/field/deleteByChartId/' + this.param.id + '/' + this.panelInfo.id, null).then(response => {
-        // reset gauge
-        this.view.customAttr.size.gaugeMinType = 'fix'
-        this.view.customAttr.size.gaugeMaxType = 'fix'
-        this.calcData(true, 'chart', false)
-        this.initTableData(this.view.tableId, optType)
+      // 更换数据集后清空视图字段，并重新请求数据；否则没有操作
+      if (optType === 'change') {
+        this.view.dataFrom = 'dataset'
+        this.view.tableId = this.changeTable.id
+        post('/chart/field/deleteByChartId/' + this.param.id + '/' + this.panelInfo.id, null).then(response => {
+          // reset gauge
+          this.view.customAttr.size.gaugeMinType = 'fix'
+          this.view.customAttr.size.gaugeMaxType = 'fix'
+          this.calcData(true, 'chart', false)
+          this.initTableData(this.view.tableId, optType)
+          this.closeChangeChart()
+        })
+      } else {
         this.closeChangeChart()
-      })
+      }
     },
 
     fieldFilter(val) {
@@ -3303,6 +3314,7 @@ export default {
           this.view.customAttr.label.position = 'middle'
         }
       }
+      customAttr.label.labelContent = getDefaultLabelContent(this.view)
       // reset custom colors
       this.view.customAttr.color.seriesColors = []
     },

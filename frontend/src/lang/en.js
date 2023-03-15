@@ -382,6 +382,7 @@ export default {
     thumbnail: 'thumbnail',
     confirm_delete: 'Confirm delete',
     delete_this_dashboard: 'Are you sure to delete this dashboard?',
+    delete_this_folder: 'Are you sure to delete this folder?',
     confirm_stop: 'Confirm stop',
     stop_success: 'Stop success',
     treeselect: {
@@ -1516,7 +1517,11 @@ export default {
     p_right: 'Right',
     p_top: 'Top',
     p_bottom: 'Bottom',
-    p_center: 'Center'
+    p_center: 'Center',
+    table_auto_break_line: 'Auto Line Feed',
+    table_break_line_tip: 'If open this option,the table item height will disabled.',
+    step: 'Step(px)',
+    no_function: 'Function not enter，please input.'
   },
   dataset: {
     scope_edit: 'Effective only when editing',
@@ -2545,7 +2550,7 @@ export default {
     please_key_max: 'Please key max value',
     out_of_min: 'The min value cannot be less than the min integer -2³²',
     out_of_max: 'The max value cannot be more than the max integer 2³²-1',
-    must_int: 'Please key integer',
+    must_int: 'Please key number',
     min_out_max: 'The min value must be less than the max value',
     max_out_min: 'The max value must be more than the min value'
   },
@@ -2867,5 +2872,14 @@ export default {
     reset: 'Reset',
     preview: 'Preview',
     save: 'Save'
+  },
+  multi_login_lang: {
+    title: 'The current account is online!',
+    ip: 'IP',
+    time: 'Login time',
+    label: 'Prohibit multi-terminal login!',
+    confirm_title: 'Forced login will cause other clients to go offline',
+    confirm: 'Whether to force login?',
+    forced_offline: '`The current account is logged in on the client [${ip}],and you have been pushed off the line!`'
   }
 }

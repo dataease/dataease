@@ -160,6 +160,13 @@
       />
 
       <plugin-com
+        v-if="isPluginLoaded"
+        ref="MultiLoginLimit"
+        :form="formInline"
+        component-name="MultiLoginLimit"
+      />
+
+      <plugin-com
         v-if="isPluginLoaded && scanOpen"
         ref="ScanLimitSetting"
         :form="formInline"
@@ -427,6 +434,12 @@ export default {
         {
           paramKey: 'loginlimit.scanCreateUser',
           paramValue: this.formInline.scanCreateUser,
+          type: 'text',
+          sort: 3
+        },
+        {
+          paramKey: 'loginlimit.multiLogin',
+          paramValue: this.formInline.multiLogin,
           type: 'text',
           sort: 3
         }

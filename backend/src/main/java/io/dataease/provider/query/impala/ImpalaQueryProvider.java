@@ -1032,16 +1032,17 @@ public class ImpalaQueryProvider extends QueryProvider {
                     originName = String.format(ImpalaConstants.KEYWORD_FIX, tableObj.getTableAlias(), field.getOriginName());
                 }
 
+                String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                 if (field.getDeType() == DeTypeConstants.DE_TIME) {
                     if (field.getDeExtractType() == DeTypeConstants.DE_STRING || field.getDeExtractType() == 5) {
-                        whereName = String.format(ImpalaConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : ImpalaConstants.DEFAULT_DATE_FORMAT ,ImpalaConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(ImpalaConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : ImpalaConstants.DEFAULT_DATE_FORMAT, format);
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(ImpalaConstants.CAST, originName, ImpalaConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        whereName = String.format(ImpalaConstants.FROM_UNIXTIME, cast, ImpalaConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(ImpalaConstants.FROM_UNIXTIME, cast, format);
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-                        whereName = originName;
+                        whereName = String.format(ImpalaConstants.DATE_FORMAT, originName, format);
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -1069,7 +1070,12 @@ public class ImpalaQueryProvider extends QueryProvider {
             String whereValue = "";
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                whereValue = "('" + StringUtils.join(value, "','") + "')";
+                DatasetTableField field = fieldList.get(0);
+                if (!request.getIsTree() && (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == DeTypeConstants.DE_BOOL)) {
+                    whereValue = "(" + StringUtils.join(value, ",") + ")";
+                } else {
+                    whereValue = "('" + StringUtils.join(value, "','") + "')";
+                }
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 whereValue = "'%" + value.get(0) + "%'";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
@@ -1154,6 +1160,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
                     fieldName = String.format(ImpalaConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : ImpalaConstants.DEFAULT_DATE_FORMAT ,ImpalaConstants.DEFAULT_DATE_FORMAT);
+                    fieldName = String.format(ImpalaConstants.DATE_FORMAT, fieldName, format);
                 } else {
                     String cast = String.format(ImpalaConstants.CAST, originField, ImpalaConstants.DEFAULT_INT_FORMAT) + "/1000";
                     String from_unixtime = String.format(ImpalaConstants.FROM_UNIXTIME, cast, ImpalaConstants.DEFAULT_DATE_FORMAT);
