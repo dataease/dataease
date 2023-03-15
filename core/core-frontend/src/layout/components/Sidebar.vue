@@ -12,7 +12,6 @@ const width = computed(() => `${asideWidth.value || 260}px`)
 
 <template>
   <el-aside ref="bbc" :width="width">
-    {{ asideWidth }}
     <slot />
   </el-aside>
 </template>

@@ -4,7 +4,7 @@ import { useCache } from '@/hooks/web/useCache'
 
 type Sidebar = 'DATASET' | 'DASHBOARD' | 'DATASOURCE'
 
-export const useMoveLine = (type: Sidebar, node: HTMLElement, width: ref) => {
+export const useMoveLine = (type: Sidebar, node: HTMLElement, width) => {
   const ele = ref<null | HTMLDivElement>(null)
   const { wsCache } = useCache('localStorage')
   width.value = wsCache.get(type) || 260
@@ -17,7 +17,7 @@ export const useMoveLine = (type: Sidebar, node: HTMLElement, width: ref) => {
 
   const setCoordinates = (e: MouseEvent) => {
     const x = e.clientX
-    if (x > 400 || x < 260) {
+    if (x > 401 || x < 259) {
       cancelEvent()
       return
     }

@@ -1,3 +1,5 @@
+import { isExternal } from '@/utils/validate'
+
 const modules = import.meta.glob('../views/**/*.vue')
 export const Layout = () => import('@/layout/index.vue')
 export const fullScreenRouters = [
@@ -24,15 +26,6 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
       route = decorate(route)
     }
 
-    const data: AppRouteRecordRaw = {
-      path: route.path,
-      hidden: route.hidden,
-      id: route.id,
-      name: route.name,
-      redirect: route.redirect,
-      meta: route.meta
-    }
-
     if (route.isPlugin) {
       const jsName = route.component
       route.component = 'system/plugin/Dynamic'
@@ -41,6 +34,16 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
         menuid: route.id,
         noLayout: route.noLayout
       }
+    }
+
+    const data: AppRouteRecordRaw = {
+      path: route.path,
+      hidden: route.hidden,
+      id: route.id,
+      name: route.name,
+      redirect: route.redirect,
+      meta: route.meta,
+      props: route.props as Recordable
     }
 
     if (route.component) {
@@ -89,4 +92,42 @@ export const decorate = (router: AppCustomRouteRecordRaw): AppCustomRouteRecordR
   }
 
   return parent
+}
+
+export const resolvePath = (item: AppRouteRecordRaw) => {
+  // 如果是首页，就返回重定向路由
+  if (item.path === '/') {
+    return item.redirect as string
+  }
+
+  // 如果有子项，默认跳转第一个子项路由
+  let path = ''
+  /**
+   * item 路由子项
+   * parent 路由父项
+   */
+  const getDefaultPath = (item, parent) => {
+    // 如果path是个外部链接（不建议），直接返回链接，存在个问题：如果是外部链接点击跳转后当前页内容还是上一个路由内容
+    if (isExternal(item.path)) {
+      path = item.path
+      return
+    }
+    // 第一次需要父项路由拼接，所以只是第一个传parent
+    if (parent) {
+      path += parent.path + '/' + item.path
+    } else {
+      path += '/' + item.path
+    }
+    // 如果还有子项，继续递归
+    if (item.children) {
+      getDefaultPath(item.children[0], item)
+    }
+  }
+
+  if (item.children) {
+    getDefaultPath(item.children[0], item)
+    return path
+  }
+
+  return item.path
 }
