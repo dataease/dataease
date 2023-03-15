@@ -160,7 +160,8 @@ export default {
       selectDom.insertBefore(this.maxHeightDom, this.domList)
     },
     reCacularHeight() {
-      this.maxHeightDom.style.height = this.newList.length * this.itemHeight + 'px'
+      const h = this.$attrs.multiple ? 16 : 0
+      this.maxHeightDom.style.height = this.newList.length * this.itemHeight + h + 'px'
     },
     resetList(arrays) {
       if (Array.isArray(arrays)) {
