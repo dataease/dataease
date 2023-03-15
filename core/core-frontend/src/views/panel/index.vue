@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { ElMain } from 'element-plus-secondary'
+import { ref } from 'vue'
+const panel = ref('panel')
 </script>
 
 <template>
-  <el-main>
-    <RouterView />
-  </el-main>
+  <div>
+    {{ panel }}
+  </div>
 </template>
 
 <style lang="less" scoped></style>

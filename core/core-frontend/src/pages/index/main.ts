@@ -7,6 +7,8 @@ import { setupI18n } from '@/plugins/vueI18n'
 import { setupStore } from '@/store'
 import { setupRouter } from '@/router'
 import { setupElementPlus } from '@/plugins/elementPlus'
+
+import '@/permission'
 const setupAll = async () => {
   const app = createApp(App)
   await setupI18n(app)

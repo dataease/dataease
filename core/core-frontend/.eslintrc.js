@@ -5,7 +5,7 @@ module.exports = {
     node: true
   },
   extends: [
-    'eslint:recommended',
+    'prettier',
     'plugin:vue/vue3-essential',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended' // 解决ESlint和Prettier冲突
@@ -19,7 +19,6 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: ['vue', '@typescript-eslint'],
-  // 添加规则
   rules: {
     '@typescript-eslint/ban-types': [
       'error',

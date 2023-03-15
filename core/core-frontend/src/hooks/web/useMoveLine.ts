@@ -16,7 +16,12 @@ export const useMoveLine = (type: Sidebar, node: HTMLElement, width: ref) => {
   }
 
   const setCoordinates = (e: MouseEvent) => {
-    width.value = e.clientX
+    const x = e.clientX
+    if (x > 400 || x < 260) {
+      cancelEvent()
+      return
+    }
+    width.value = x
     ele.value.style.left = width.value - 2 + 'px'
   }
 

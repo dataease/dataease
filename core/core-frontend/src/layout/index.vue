@@ -1,15 +1,19 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
 import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
 import Main from './components/Main.vue'
 import { ElContainer } from 'element-plus-secondary'
+import { useRoute } from 'vue-router'
+const route = useRoute()
+const systemMenu = computed(() => route.path.includes('system'))
 </script>
 
 <template>
   <div class="common-layout">
     <Header></Header>
     <el-container class="layout-container">
-      <Sidebar class="layout-sidebar"></Sidebar>
+      <Sidebar v-if="systemMenu" class="layout-sidebar"></Sidebar>
       <Main class="layout-main"></Main>
     </el-container>
   </div>
