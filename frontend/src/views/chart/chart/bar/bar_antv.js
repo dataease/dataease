@@ -114,7 +114,7 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   if (chart.senior) {
     let emptyDataStrategy = JSON.parse(chart.senior)?.functionCfg?.emptyDataStrategy
     if (!emptyDataStrategy) {
-      emptyDataStrategy = 'breakLine'
+      emptyDataStrategy = 'ignoreData'
     }
     handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
   }

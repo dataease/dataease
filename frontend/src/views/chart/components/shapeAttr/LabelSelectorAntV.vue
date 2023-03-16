@@ -317,6 +317,25 @@ export default {
       ]
     }
   },
+  computed: {
+    labelContentOptions() {
+      if (this.chart.type.includes('pie')) {
+        return [
+          { name: this.$t('chart.dimension'), value: 'dimension' },
+          { name: this.$t('chart.quota'), value: 'quota' },
+          { name: this.$t('chart.proportion'), value: 'proportion' }
+        ]
+      }
+      if (this.chart.type.includes('bar')) {
+        return [
+          { name: this.$t('chart.chart_group'), value: 'group' },
+          { name: this.$t('chart.stack_item'), value: 'stack' },
+          { name: this.$t('chart.quota'), value: 'quota' }
+        ]
+      }
+      return []
+    }
+  },
   watch: {
     'chart': {
       handler: function() {
@@ -397,25 +416,6 @@ export default {
      */
     showProperty(property) {
       return this.propertyInner.includes(property)
-    }
-  },
-  computed: {
-    labelContentOptions() {
-      if (this.chart.type.includes('pie')) {
-        return [
-          { name: this.$t('chart.dimension'), value: 'dimension' },
-          { name: this.$t('chart.quota'), value: 'quota' },
-          { name: this.$t('chart.proportion'), value: 'proportion' }
-        ]
-      }
-      if (this.chart.type.includes('bar')) {
-        return [
-          { name: this.$t('chart.chart_group'), value: 'group' },
-          { name: this.$t('chart.stack_item'), value: 'stack' },
-          { name: this.$t('chart.quota'), value: 'quota' }
-        ]
-      }
-      return []
     }
   }
 }
