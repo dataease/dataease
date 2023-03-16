@@ -1,6 +1,6 @@
 import { deepCopy } from './utils'
 import { divide, multiply } from 'mathjs'
-import { dvMainStoreWithOut } from '@/store/modules/dataVisualization/dvMain'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 
 const dvMainStore = dvMainStoreWithOut()
