@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.request.BaseGridRequest;
+import io.dataease.utils.BeanUtils;
+import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
 import jakarta.annotation.Resource;
@@ -31,5 +33,21 @@ public class UserServer implements UserApi {
         wrapper.like(StringUtils.isNotBlank(keyword), "u.name", keyword);
         IPage<UserGridVO> pager = userExtMapper.pager(page, wrapper);
         return pager;
+    }
+
+    @Override
+    public UserGridVO queryById(Long id) {
+        PerUser perUser = perUserMapper.selectById(id);
+        UserGridVO userGridVO = new UserGridVO();
+        BeanUtils.copyBean(userGridVO, perUser);
+        return userGridVO;
+    }
+
+    @Override
+    public void delete(UserGridVO vo) {
+        Long id = vo.getId();
+        PerUser perUser = perUserMapper.selectById(id);
+        perUser.setEnable(false);
+        perUserMapper.updateById(perUser);
     }
 }
