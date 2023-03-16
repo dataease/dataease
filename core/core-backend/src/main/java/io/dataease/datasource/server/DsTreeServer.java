@@ -1,6 +1,7 @@
 package io.dataease.datasource.server;
 
 import io.dataease.api.ds.DsTreeApi;
+import io.dataease.api.ds.vo.DataSourceDTO;
 import io.dataease.api.ds.vo.DsTreeDTO;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,5 +15,15 @@ public class DsTreeServer implements DsTreeApi {
     @Override
     public List<DsTreeDTO> query(String keyWord) {
         return null;
+    }
+
+    @Override
+    public void save(DataSourceDTO dataSourceDTO) {
+
+    }
+
+    @Override
+    public void update(DataSourceDTO dataSourceDTO) {
+
     }
 }
