@@ -3554,13 +3554,3 @@ export function resetRgbOpacity(sourceColor, times) {
   }
   return sourceColor
 }
-
-export function getDefaultLabelContent(chart) {
-  if (chart?.type?.includes('pie')) {
-    return ['dimension', 'proportion']
-  }
-  if (chart?.type?.includes('bar')) {
-    return ['quota']
-  }
-  return []
-}

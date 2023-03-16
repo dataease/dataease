@@ -1748,7 +1748,6 @@ import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny } from '@/utils/StringUtils'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
-import { getDefaultLabelContent } from '@/views/chart/chart/util'
 
 export default {
   name: 'ChartEdit',
@@ -3282,6 +3281,11 @@ export default {
       const type = this.view.type
       const customAttr = this.view.customAttr
       const customStyle = this.view.customStyle
+      if (this.view.render === 'echarts') {
+        this.view.customAttr.label.position = 'inside'
+      } else {
+        this.view.customAttr.label.position = 'middle'
+      }
       if (type.includes('pie')) {
         if (this.view.render === 'echarts') {
           customAttr.label.position = 'inside'
@@ -3299,22 +3303,12 @@ export default {
         if (equalsAny(type, 'pie', 'pie-rose')) {
           customAttr.size.pieInnerRadius = 0
         }
+      } else if (type.includes('bar')) {
+        this.view.customAttr.label.labelContent = ['quota']
+        this.view.senior.functionCfg.emptyDataStrategy = 'ignoreData'
       } else if (type.includes('line')) {
         this.view.customAttr.label.position = 'top'
-      } else if (type.includes('treemap')) {
-        if (this.view.render === 'echarts') {
-          this.view.customAttr.label.position = 'inside'
-        } else {
-          this.view.customAttr.label.position = 'middle'
-        }
-      } else {
-        if (this.view.render === 'echarts') {
-          this.view.customAttr.label.position = 'inside'
-        } else {
-          this.view.customAttr.label.position = 'middle'
-        }
       }
-      customAttr.label.labelContent = getDefaultLabelContent(this.view)
       // reset custom colors
       this.view.customAttr.color.seriesColors = []
     },
