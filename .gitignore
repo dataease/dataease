@@ -26,6 +26,7 @@ hs_err_pid*
 node_modules/
 dist/
 package-lock.json
+.stylelintcache
 .DS_Store
 core/core-frontend/release/
 
