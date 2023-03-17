@@ -1,31 +1,3 @@
-<template>
-  <div @click="onClick" @mouseenter="onMouseEnter">
-    <component
-      :is="config?.component"
-      v-if="config?.component.startsWith('SVG')"
-      ref="component"
-      class="component"
-      :style="getSVGStyle(config?.style)"
-      :prop-value="config?.propValue"
-      :element="config"
-      :request="config?.request"
-      :linkage="config?.linkage"
-    />
-
-    <component
-      :is="config?.component"
-      v-else
-      ref="component"
-      class="component"
-      :style="getStyle(config?.style)"
-      :prop-value="config?.propValue"
-      :element="config"
-      :request="config?.request"
-      :linkage="config?.linkage"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { getStyle, getSVGStyle } from '@/utils/style'
 import runAnimation from '@/utils/runAnimation'
@@ -69,6 +41,34 @@ const onMouseEnter = () => {
   eventBus.emit('v-hover', config.value.id)
 }
 </script>
+
+<template>
+  <div @click="onClick" @mouseenter="onMouseEnter">
+    <component
+      :is="config?.component"
+      v-if="config?.component.startsWith('SVG')"
+      ref="component"
+      class="component"
+      :style="getSVGStyle(config?.style)"
+      :prop-value="config?.propValue"
+      :element="config"
+      :request="config?.request"
+      :linkage="config?.linkage"
+    />
+
+    <component
+      :is="config?.component"
+      v-else
+      ref="component"
+      class="component"
+      :style="getStyle(config?.style)"
+      :prop-value="config?.propValue"
+      :element="config"
+      :request="config?.request"
+      :linkage="config?.linkage"
+    />
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .component {

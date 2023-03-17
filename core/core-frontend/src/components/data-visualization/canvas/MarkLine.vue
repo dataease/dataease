@@ -32,7 +32,7 @@ const showLine = (isDownward, isRightward) => {
   const curComponentHalfwidth = curComponentStyle.width / 2
   const curComponentHalfHeight = curComponentStyle.height / 2
 
-  this.hideLine()
+  hideLine()
   components.forEach(component => {
     if (component === curComponent.value) return
     const componentStyle = getComponentRotatedStyle(component.style)
@@ -136,7 +136,7 @@ const showLine = (isDownward, isRightward) => {
           key,
           value:
             rotate != 0
-              ? this.translatecurComponentShift(key, condition, curComponentStyle)
+              ? translatecurComponentShift(key, condition, curComponentStyle)
               : condition.dragShift
         })
         condition.lineNode.style[key] = `${condition.lineShift}px`

@@ -22,6 +22,6 @@ export const contextmenuStore = defineStore('contextmenu', {
   }
 })
 
-export const contextmenuWithOut = () => {
+export const contextmenuStoreWithOut = () => {
   return contextmenuStore(store)
 }
