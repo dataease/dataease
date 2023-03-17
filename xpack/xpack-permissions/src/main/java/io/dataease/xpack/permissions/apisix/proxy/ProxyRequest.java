@@ -2,9 +2,7 @@ package io.dataease.xpack.permissions.apisix.proxy;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.server.RequestPath;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
@@ -15,10 +13,7 @@ public class ProxyRequest implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String path = request.getHeader("X-Forwarded-Uri");
-        // Object attribute = request.getAttribute("org.springframework.web.util.ServletRequestPathUtils.PATH");
-        // PathContainer instance = instance(path);
-        // RequestPath requestPath = ServletRequestPathUtils.parseAndCache(request);
-        // request.setAttribute("org.springframework.web.util.ServletRequestPathUtils.PATH", requestPath);
+        String sourceHttpMethod = request.getHeader("X-Forwarded-Method");
         if (StringUtils.equals(method.getName(), "getRequestURI")) {
             return path;
         }
@@ -26,10 +21,11 @@ public class ProxyRequest implements InvocationHandler {
             return path;
         }
         if (StringUtils.equals(method.getName(), "getRequestURI")) {
-
             return path;
         }
-
+        if (StringUtils.isNotBlank(sourceHttpMethod) && StringUtils.equals(method.getName(), "getMethod")) {
+            return sourceHttpMethod;
+        }
         return method.invoke(request, args);
     }
 
@@ -48,11 +44,4 @@ public class ProxyRequest implements InvocationHandler {
     public ProxyRequest() {
     }
 
-    private RequestPath instance(String path) throws Exception{
-
-        Class<?> aClass = Class.forName("org.springframework.web.util.ServletRequestPathUtils.ServletRequestPath");
-        Constructor<?> constructor = aClass.getConstructor(String.class, String.class, String.class);
-        Object o = constructor.newInstance(path, null, null);
-        return (RequestPath) o;
-    }
 }
