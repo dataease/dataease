@@ -1,5 +1,7 @@
 package io.dataease.auth;
 
+import org.springframework.core.annotation.AliasFor;
+
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -7,5 +9,9 @@ import java.lang.annotation.*;
 @Documented
 public @interface DeApiPath {
 
-    String value() default "/";
+    @AliasFor("path")
+    String[] value() default {};
+
+    @AliasFor("value")
+    String[] path() default {};
 }

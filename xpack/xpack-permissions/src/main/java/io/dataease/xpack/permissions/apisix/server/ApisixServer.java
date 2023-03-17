@@ -25,6 +25,5 @@ public class ApisixServer {
         apisixManage.parseRequest();
         LogUtil.info("---------------------");
         return true;
-        // return HttpStatus.OK;
     }
 }
