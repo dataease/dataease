@@ -147,6 +147,7 @@ public class DataSetTableService {
     public static final String regex = "\\$\\{(.*?)\\}";
     private static final String SubstitutedParams = "DATAEASE_PATAMS_BI";
     private static final String SubstitutedSql = " 'BI' = 'BI' ";
+    private static final String SubstitutedSqlVirtualData = " 1 < 2 ";
 
     @Value("${upload.file.path}")
     private String path;
@@ -323,7 +324,7 @@ public class DataSetTableService {
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.name()) && !"appApply".equalsIgnoreCase(datasetTable.getOptFrom())) {
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
             BeanUtils.copyBean(dataSetTableRequest, datasetTable);
-            getSQLPreview(dataSetTableRequest);
+            getSQLPreview(dataSetTableRequest, false);
         }
         if (StringUtils.isEmpty(datasetTable.getId())) {
             datasetTable.setId(UUID.randomUUID().toString());
@@ -1242,7 +1243,7 @@ public class DataSetTableService {
         return datasetSqlLogMapper.selectByExample(example);
     }
 
-    public ResultHolder getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
+    public ResultHolder getSQLPreview(DataSetTableRequest dataSetTableRequest, boolean realData) throws Exception {
         DatasetSqlLog datasetSqlLog = new DatasetSqlLog();
 
         DataTableInfoDTO dataTableInfo = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
@@ -1253,6 +1254,9 @@ public class DataSetTableService {
             throw new Exception(Translator.get("i18n_invalid_ds"));
         }
         String tmpSql = removeVariables(sql, ds.getType());
+        if(!realData){
+            tmpSql.replaceAll(SubstitutedSql, SubstitutedSqlVirtualData);
+        }
         if (dataSetTableRequest.getMode() == 1 && (tmpSql.contains(SubstitutedParams) || tmpSql.contains(SubstitutedSql.trim()))) {
             throw new Exception(Translator.get("I18N_SQL_variable_direct_limit"));
         }
@@ -1263,14 +1267,11 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
 
-
-        sql = handleVariableDefaultValue(sql, dataSetTableRequest.getSqlVariableDetails(), ds.getType(), true);
-        System.out.println(sql);
+        sql = realData ? handleVariableDefaultValue(sql, dataSetTableRequest.getSqlVariableDetails(), ds.getType(), true) : removeVariables(sql, ds.getType()).replaceAll(SubstitutedSql, SubstitutedSqlVirtualData);
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
         checkVariable(sql, ds.getType());
-        System.out.println(sql);
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
         datasourceRequest.setQuery(sqlAsTable);
@@ -1932,7 +1933,7 @@ public class DataSetTableService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             DataTableInfoDTO dataTableInfo = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
             String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
-            sql = handleVariableDefaultValue(sql, null, ds.getType(), false);
+            sql = removeVariables(sql, ds.getType()).replaceAll(SubstitutedSql, SubstitutedSqlVirtualData);
             String sqlAsTable = qp.createSQLPreview(sql, null);
             datasourceRequest.setQuery(sqlAsTable);
             fields = datasourceProvider.fetchResultField(datasourceRequest);
