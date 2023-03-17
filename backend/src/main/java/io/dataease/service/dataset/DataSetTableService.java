@@ -1069,8 +1069,7 @@ public class DataSetTableService {
                         defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE) && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
                     sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
                 }
-                if (isEdit && defaultsSqlVariableDetail != null && defaultsSqlVariableDetail.getDefaultValueScope() != null &&
-                        defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.EDIT) && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
+                if (isEdit && defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())){
                     sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
                 }
             }
@@ -1266,10 +1265,12 @@ public class DataSetTableService {
 
 
         sql = handleVariableDefaultValue(sql, dataSetTableRequest.getSqlVariableDetails(), ds.getType(), true);
+        System.out.println(sql);
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
         checkVariable(sql, ds.getType());
+        System.out.println(sql);
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
         datasourceRequest.setQuery(sqlAsTable);
