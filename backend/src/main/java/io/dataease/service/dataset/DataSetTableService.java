@@ -1058,7 +1058,8 @@ public class DataSetTableService {
             Matcher matcher = pattern.matcher(sql);
             while (matcher.find()) {
                 SqlVariableDetails defaultsSqlVariableDetail = null;
-                List<SqlVariableDetails> defaultsSqlVariableDetails = new Gson().fromJson(sqlVariableDetails, new TypeToken<List<SqlVariableDetails>>() {}.getType());
+                List<SqlVariableDetails> defaultsSqlVariableDetails = new Gson().fromJson(sqlVariableDetails, new TypeToken<List<SqlVariableDetails>>() {
+                }.getType());
                 for (SqlVariableDetails sqlVariableDetail : defaultsSqlVariableDetails) {
                     if (matcher.group().substring(2, matcher.group().length() - 1).equalsIgnoreCase(sqlVariableDetail.getVariableName())) {
                         defaultsSqlVariableDetail = sqlVariableDetail;
@@ -1642,7 +1643,9 @@ public class DataSetTableService {
             // field
             StringBuilder field = new StringBuilder();
             for (Map.Entry<String, String[]> next : checkedInfo.entrySet()) {
-                field.append(StringUtils.join(next.getValue(), ",")).append(",");
+                if (next.getValue().length > 0) {
+                    field.append(StringUtils.join(next.getValue(), ",")).append(",");
+                }
             }
             String f = subPrefixSuffixChar(field.toString());
             // join
@@ -1790,7 +1793,9 @@ public class DataSetTableService {
             // field
             StringBuilder field = new StringBuilder();
             for (Map.Entry<String, String[]> next : checkedInfo.entrySet()) {
-                field.append(StringUtils.join(next.getValue(), ",")).append(",");
+                if (next.getValue().length > 0) {
+                    field.append(StringUtils.join(next.getValue(), ",")).append(",");
+                }
             }
             String f = subPrefixSuffixChar(field.toString());
             // join
@@ -2269,7 +2274,7 @@ public class DataSetTableService {
         }
         Set<String> nameSet = new HashSet<>();
         for (DataSetTableRequest table : datasetTable) {
-            if(StringUtils.isEmpty(table.getName())){
+            if (StringUtils.isEmpty(table.getName())) {
                 throw new RuntimeException(Translator.get("I18n_name_cant_empty"));
             }
             nameSet.add(table.getName());
