@@ -5,6 +5,7 @@ import cn.hutool.core.util.ArrayUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.auth.annotation.DeRateLimiter;
+import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.excel.ExcelSheetModel;
@@ -59,6 +60,7 @@ public class XEmailTaskServer {
 
     @RequiresPermissions("task-email:read")
     @PostMapping("/queryTasks/{goPage}/{pageSize}")
+    @SqlInjectValidator(value = {"create_time"})
     public Pager<List<XpackTaskGridDTO>> queryTask(@PathVariable int goPage, @PathVariable int pageSize,
                                                    @RequestBody XpackGridRequest request) {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);

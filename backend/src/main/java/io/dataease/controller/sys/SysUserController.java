@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.entity.AccountLockStatus;
 import io.dataease.auth.service.AuthUserService;
@@ -78,6 +79,7 @@ public class SysUserController {
             @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
+    @SqlInjectValidator(value = {"create_time", "u.enabled", "nick_name", "u.dept_id"})
     public Pager<List<SysUserGridResponse>> userGrid(@PathVariable int goPage, @PathVariable int pageSize,
                                                      @RequestBody KeyGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
@@ -102,6 +104,7 @@ public class SysUserController {
 
     @ApiIgnore
     @PostMapping("/userLists")
+    @SqlInjectValidator({"nick_name", "create_time"})
     public List<SysUserGridResponse> userLists(@RequestBody BaseGridRequest request) {
         KeyGridRequest keyGridRequest = BeanUtils.copyBean(new KeyGridRequest(), request);
         return sysUserService.query(keyGridRequest);
@@ -224,6 +227,7 @@ public class SysUserController {
             @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
+    @SqlInjectValidator({"create_time",  "update_time"})
     public Pager<List<SysRole>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize,
                                          @RequestBody BaseGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
