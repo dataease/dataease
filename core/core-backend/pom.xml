@@ -38,6 +38,14 @@
             <artifactId>calcite-core</artifactId>
             <version>${calcite-core.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.antlr/antlr -->
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>${antlr.version}</version>
+        </dependency>
+
     </dependencies>
 
     <profiles>

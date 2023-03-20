@@ -26,6 +26,7 @@
         <h2.version>1.4.199</h2.version>
         <knife4j.version>3.0.3</knife4j.version>
         <calcite-core.version>1.30.0</calcite-core.version>
+        <antlr.version>3.5.2</antlr.version>
     </properties>
     <packaging>pom</packaging>
 
@@ -110,7 +111,6 @@
 
         </pluginManagement>
     </build>
-
 
 
 </project>
