@@ -6,6 +6,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.auth.service.ExtAuthService;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.constants.DePermissionType;
@@ -155,6 +156,7 @@ public class XDeptServer {
             @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
     @PostMapping("/userGrid/{goPage}/{pageSize}")
+    @SqlInjectValidator(value = {"dept_name", "nick_name"})
     public Pager<List<DeptUserItemDTO>> userGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackDeptUserRequest request) {
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);

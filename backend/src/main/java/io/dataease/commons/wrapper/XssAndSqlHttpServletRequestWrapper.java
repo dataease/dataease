@@ -225,7 +225,7 @@ public class XssAndSqlHttpServletRequestWrapper extends HttpServletRequestWrappe
             if (Arrays.stream(whiteLists.split(",")).anyMatch(item -> url.indexOf(item) != -1)) return false;
         }
         Pattern pattern= Pattern.compile("(.*\\=.*\\-\\-.*)|(.*(\\+).*)|(.*\\w+(%|\\$|#|&)\\w+.*)|(.*\\|\\|.*)|(.*\\s+(and|or)\\s+.*)" +
-                "|(.*\\b(select|update|union|and|or|delete|insert|trancate|char|into|substr|ascii|declare|exec|count|master|into|drop|execute|sleep|extractvalue|updatexml|substring|database|concat|rand)\\b.*)");
+                "|(.*\\b(select|update|union|and|or|delete|insert|trancate|char|into|substr|ascii|declare|exec|count|master|into|drop|execute|sleep|extractvalue|updatexml|substring|database|concat|rand|gtid_subset)\\b.*)");
         Matcher matcher=pattern.matcher(orders.toLowerCase());
         return matcher.find();
     }

@@ -3,6 +3,7 @@ package io.dataease.controller.sys;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.plugins.common.base.domain.SysMsgChannel;
 import io.dataease.plugins.common.base.domain.SysMsgSetting;
@@ -47,6 +48,7 @@ public class MsgController {
             @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "msgRequest", value = "查询条件", required = true)
     })
+    @SqlInjectValidator(value = {"create_time", "type_id"})
     public Pager<List<MsgGridDto>> messages(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody MsgRequest msgRequest) {
         Long userId = AuthUtils.getUser().getUserId();
         List<Long> typeIds = null;

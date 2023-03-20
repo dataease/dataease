@@ -2,6 +2,7 @@ package io.dataease.controller.sys;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
@@ -30,6 +31,7 @@ public class SysPluginController {
     @ApiOperation("查询已安装插件")
     @PostMapping("/pluginGrid/{goPage}/{pageSize}")
     @RequiresPermissions("plugin:read")
+    @SqlInjectValidator(value = {"install_time"})
     public Pager<List<MyPlugin>> pluginGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody BaseGridRequest request) {
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);
         return PageUtils.setPageInfo(page, pluginService.query(request));

@@ -1,7 +1,7 @@
 <template>
   <div
     :style="getOutStyleDefault(config.style)"
-    class="component"
+    class="component component-outer"
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
@@ -345,8 +345,7 @@ export default {
 .component {
   position: absolute;
 }
-
-.component:hover {
+.component-outer:hover {
   box-shadow: 0px 0px 3px #0a7be0;
 }
 
