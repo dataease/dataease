@@ -1515,7 +1515,7 @@ export default {
     table_auto_break_line: '自動換行',
     table_break_line_tip: '開啟自動換行，表格行高設置將失效',
     step: '步長(px)',
-    no_function: '函數尚未支持直接引用，請在字段表達式中手動輸入。'
+    no_function: '函數尚未支持直接引用，請在字段表達式中手動輸入'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
