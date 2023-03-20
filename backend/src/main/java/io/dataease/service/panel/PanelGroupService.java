@@ -964,6 +964,14 @@ public class PanelGroupService {
         List<DatasourceDTO> datasourceDTOS = extDataSourceMapper.findByTableIds(allTableIds);
 
         List<PanelView> panelViews = panelViewService.findPanelViewsByPanelId(panelId);
+        //获取所有跳转信息
+        List<PanelLinkJump> linkJumps = extPanelLinkJumpMapper.findLinkJumpWithPanelId(panelId);
+        //获取所有跳转关联信息
+        List<PanelLinkJumpInfo> linkJumpInfos = extPanelLinkJumpMapper.findLinkJumpInfoWithPanelId(panelId);
+        //获取所有联动信息
+        List<PanelViewLinkage> linkages = extPanelViewLinkageMapper.findLinkageWithPanelId(panelId);
+        //获取所有联动关联信息
+        List<PanelViewLinkageField> LinkageFields = extPanelViewLinkageMapper.findLinkageFieldWithPanelId(panelId);
 
         //校验标准 1.存在视图且所有视图的数据来源必须是dataset 2.存在数据集且没有excel数据集 3.存在数据源且是单数据源
         //1.view check
@@ -979,7 +987,8 @@ public class PanelGroupService {
         } else if (datasourceDTOS.size() > 1) {
             return new PanelExport2App(Translator.get("I18N_APP_ONE_DATASOURCE_TIPS"));
         }
-        return new PanelExport2App(chartViewsInfo, chartViewFieldsInfo, datasetTablesInfo, datasetTableFieldsInfo, dataSetTasksInfo, datasourceDTOS, panelViews);
+        return new PanelExport2App(chartViewsInfo, chartViewFieldsInfo, datasetTablesInfo, datasetTableFieldsInfo,
+                dataSetTasksInfo, datasourceDTOS, panelViews, linkJumps, linkJumpInfos, linkages, LinkageFields);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -1016,11 +1025,32 @@ public class PanelGroupService {
         //6.获取所有数据源信息
         List<Datasource> oldDatasourceInfo = gson.fromJson(appInfo.getDatasourceInfo(), new TypeToken<List<Datasource>>() {
         }.getType());
-        //获取仪表板信息
+        //7.获取仪表板信息
         PanelGroupRequest panelInfo = gson.fromJson(appInfo.getPanelInfo(), PanelGroupRequest.class);
-        //获取仪表板视图信息
+        //8.获取仪表板视图信息
         List<PanelView> panelViewsInfo = gson.fromJson(appInfo.getPanelViewsInfo(), new TypeToken<List<PanelView>>() {
         }.getType());
+        //9.获取跳转信息
+        List<PanelLinkJump> linkJumps = null;
+        if(StringUtils.isNotEmpty(appInfo.getLinkJumps())){
+            linkJumps = gson.fromJson(appInfo.getLinkJumps(), new TypeToken<List<PanelLinkJump>>() {}.getType());
+        }
+        //10.获取跳转关联信息
+        List<PanelLinkJumpInfo> linkJumpInfos = null;
+        if(StringUtils.isNotEmpty(appInfo.getLinkJumpInfos())){
+            linkJumpInfos = gson.fromJson(appInfo.getLinkJumpInfos(), new TypeToken<List<PanelLinkJumpInfo>>() {}.getType());
+        }
+        //11.获取联动信息
+        List<PanelViewLinkage> linkages = null;
+        if(StringUtils.isNotEmpty(appInfo.getLinkages())){
+            linkages = gson.fromJson(appInfo.getLinkages(), new TypeToken<List<PanelViewLinkage>>() {}.getType());
+        }
+
+        //12.获取联动关联信息
+        List<PanelViewLinkageField> linkageFields = null;
+        if(StringUtils.isNotEmpty(appInfo.getLinkageFields())){
+            linkageFields = gson.fromJson(appInfo.getLinkageFields(), new TypeToken<List<PanelViewLinkageField>>() {}.getType());
+        }
 
         Map<String, String> datasourceRealMap = panelAppTemplateService.applyDatasource(oldDatasourceInfo, request);
 
@@ -1044,8 +1074,15 @@ public class PanelGroupService {
 
         panelAppTemplateService.applyPanelView(panelViewsInfo, chartViewsRealMap, newPanelId);
 
-        String newDatasourceId = datasourceRealMap.entrySet().stream().findFirst().get().getValue();
+        Map<String,String> linkageIdMap = panelAppTemplateService.applyLinkages(linkages,chartViewsRealMap,newPanelId);
 
+        panelAppTemplateService.applyLinkageFields(linkageFields,linkageIdMap,datasetFieldsRealMap);
+
+        Map<String,String> linkJumpIdMap = panelAppTemplateService.applyLinkJumps(linkJumps,chartViewsRealMap,newPanelId);
+
+        panelAppTemplateService.applyLinkJumpInfos(linkJumpInfos,linkJumpIdMap,datasetFieldsRealMap);
+
+        String newDatasourceId = datasourceRealMap.entrySet().stream().findFirst().get().getValue();
 
         PanelAppTemplateLog templateLog = new PanelAppTemplateLog();
         templateLog.setPanelId(newPanelId);

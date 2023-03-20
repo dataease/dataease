@@ -269,4 +269,29 @@
                              WHERE copy_id = #{copyId}) plji_copy
                             ON panel_link_jump_target_view_info.link_jump_info_id = plji_copy.s_id
     </insert>
+
+    <select id="findLinkJumpWithPanelId" resultType="io.dataease.plugins.common.base.domain.PanelLinkJump">
+        SELECT
+        *
+        FROM
+        panel_link_jump
+        WHERE
+        source_panel_id = #{panelId}
+    </select>
+
+    <select id="findLinkJumpInfoWithPanelId" resultType="io.dataease.plugins.common.base.domain.PanelLinkJumpInfo">
+        SELECT
+            *
+        FROM
+            panel_link_jump_info
+        WHERE
+            link_type = 'outer'
+          AND link_jump_id IN (
+            SELECT
+                id
+            FROM
+                panel_link_jump
+            WHERE
+                source_panel_id =  #{panelId})
+    </select>
 </mapper>

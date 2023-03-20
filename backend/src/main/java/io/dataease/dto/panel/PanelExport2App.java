@@ -37,6 +37,14 @@ public class PanelExport2App {
 
     private String datasourceInfo;
 
+    private String linkJumps;
+
+    private String linkJumpInfos;
+
+    private String linkages;
+
+    private String linkageFields;
+
     public PanelExport2App() {
 
     }
@@ -45,7 +53,11 @@ public class PanelExport2App {
         this.checkMes = checkMes;
     }
 
-    public PanelExport2App(List<ChartViewWithBLOBs> chartViewsInfo, List<ChartViewField> chartViewFieldsInfo, List<DatasetTable> datasetTablesInfo, List<DatasetTableField> datasetTableFieldsInfo, List<DataSetTaskDTO> datasetTasksInfo, List<DatasourceDTO> datasourceInfo, List<PanelView> panelViewsInfo) {
+    public PanelExport2App(List<ChartViewWithBLOBs> chartViewsInfo, List<ChartViewField> chartViewFieldsInfo,
+                           List<DatasetTable> datasetTablesInfo, List<DatasetTableField> datasetTableFieldsInfo,
+                           List<DataSetTaskDTO> datasetTasksInfo, List<DatasourceDTO> datasourceInfo,
+                           List<PanelView> panelViewsInfo,List<PanelLinkJump> linkJumps,List<PanelLinkJumpInfo> linkJumpInfos,
+                           List<PanelViewLinkage> linkages, List<PanelViewLinkageField> linkageFields) {
         List empty = new ArrayList();
         this.checkStatus = true;
         this.checkMes = "success";
@@ -56,5 +68,9 @@ public class PanelExport2App {
         this.datasetTasksInfo = JSON.toJSONString(datasetTasksInfo!=null?datasetTasksInfo:empty);
         this.datasourceInfo = JSON.toJSONString(datasourceInfo!=null?datasourceInfo:empty);
         this.panelViewsInfo = JSON.toJSONString(panelViewsInfo!=null?panelViewsInfo:empty);
+        this.linkJumps = JSON.toJSONString(linkJumps!=null?linkJumps:empty);
+        this.linkJumpInfos = JSON.toJSONString(linkJumpInfos!=null?linkJumpInfos:empty);
+        this.linkages = JSON.toJSONString(linkages!=null?linkages:empty);
+        this.linkageFields = JSON.toJSONString(linkJumpInfos!=null?linkageFields:empty);
     }
 }
