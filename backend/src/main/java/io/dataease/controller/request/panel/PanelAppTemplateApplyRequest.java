@@ -33,5 +33,13 @@ public class PanelAppTemplateApplyRequest {
 
     private String datasourceHistoryId;
 
+    private String linkJumps;
+
+    private String linkJumpInfos;
+
+    private String linkages;
+
+    private String linkageFields;
+
     private List<DatasourceDTO> datasourceList;
 }

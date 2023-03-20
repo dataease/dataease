@@ -2,6 +2,8 @@ package io.dataease.ext;
 
 import io.dataease.dto.panel.linkJump.PanelLinkJumpBaseRequest;
 import io.dataease.dto.panel.linkJump.PanelLinkJumpDTO;
+import io.dataease.plugins.common.base.domain.PanelLinkJump;
+import io.dataease.plugins.common.base.domain.PanelLinkJumpInfo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -30,4 +32,7 @@ public interface ExtPanelLinkJumpMapper {
     void copyLinkJumpInfo(@Param("copyId")String copyId);
 
     void copyLinkJumpTarget(@Param("copyId")String copyId);
+
+    List<PanelLinkJump> findLinkJumpWithPanelId(@Param("panelId")String panelId);
+    List<PanelLinkJumpInfo> findLinkJumpInfoWithPanelId(@Param("panelId")String panelId);
 }
