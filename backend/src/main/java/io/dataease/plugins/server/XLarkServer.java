@@ -92,11 +92,12 @@ public class XLarkServer {
     }
 
     @GetMapping("/callBackWithoutLogin")
-    public ModelAndView callBackWithoutLogin(@RequestParam("code") String code) {
-        return privateCallBack(code, null, true);
+    public ModelAndView callBackWithoutLogin(@RequestParam("code") String code, @RequestParam("mobile") String mobile) {
+        boolean isMobile = StringUtils.equals("1", mobile);
+        return privateCallBack(code, null, true, isMobile);
     }
 
-    private ModelAndView privateCallBack(String code, String state, Boolean withoutLogin) {
+    private ModelAndView privateCallBack(String code, String state, Boolean withoutLogin, Boolean isMobile) {
         ModelAndView modelAndView = new ModelAndView("redirect:/");
         HttpServletResponse response = ServletUtils.response();
         LarkXpackService larkXpackService = null;
@@ -132,7 +133,7 @@ public class XLarkServer {
             }
             TokenInfo tokenInfo = TokenInfo.builder().userId(sysUserEntity.getUserId()).username(sysUserEntity.getUsername()).build();
             String realPwd = sysUserEntity.getPassword();
-            String token = JWTUtils.sign(tokenInfo, realPwd);
+            String token = JWTUtils.sign(tokenInfo, realPwd, !isMobile);
             ServletUtils.setToken(token);
 
             DeLogUtils.save(SysLogConstants.OPERATE_TYPE.LOGIN, SysLogConstants.SOURCE_TYPE.USER, sysUserEntity.getUserId(), null, null, null);
@@ -168,7 +169,7 @@ public class XLarkServer {
 
     @GetMapping("/callBack")
     public ModelAndView callBack(@RequestParam("code") String code, @RequestParam("state") String state) {
-        return privateCallBack(code, state, false);
+        return privateCallBack(code, state, false, false);
     }
 
     private void bindError(HttpServletResponse response, String url, String errorMsg) {

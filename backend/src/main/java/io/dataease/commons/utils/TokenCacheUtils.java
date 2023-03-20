@@ -1,6 +1,9 @@
 package io.dataease.commons.utils;
 
+import com.google.gson.Gson;
+import io.dataease.commons.model.OnlineUserModel;
 import io.dataease.listener.util.CacheUtils;
+import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,9 +20,13 @@ public class TokenCacheUtils {
 
     private static final String KEY = "sys_token_store";
 
+    private static final String ONLINE_TOKEN_POOL_KEY = "online_token_store";
+
     private static String cacheType;
 
     private static Long expTime;
+
+    private static Gson gson = new Gson();
 
     @Value("${spring.cache.type:ehcache}")
     public void setCacheType(String cacheType) {
@@ -55,17 +62,6 @@ public class TokenCacheUtils {
         CacheUtils.flush(KEY);
     }
 
-    public static void remove(String token) {
-        if (useRedis()) {
-            RedisTemplate redisTemplate = (RedisTemplate) CommonBeanFactory.getBean("redisTemplate");
-            String key = KEY + token;
-            if (redisTemplate.hasKey(key)) {
-                redisTemplate.delete(key);
-            }
-            return;
-        }
-        CacheUtils.remove(KEY, token);
-    }
 
     public static boolean invalid(String token) {
         if (useRedis()) {
@@ -74,6 +70,48 @@ public class TokenCacheUtils {
         }
         Object sys_token_store = CacheUtils.get(KEY, token);
         return ObjectUtils.isNotEmpty(sys_token_store) && StringUtils.isNotBlank(sys_token_store.toString());
+    }
+
+    public static void add2OnlinePools(String token, Long userId) {
+        OnlineUserModel model = buildModel(token);
+        if (useRedis()) {
+            ValueOperations valueOperations = cacheHandler();
+            valueOperations.set(ONLINE_TOKEN_POOL_KEY + userId, model, expTime, TimeUnit.MINUTES);
+            return;
+        }
+
+        Long time = expTime * 60;
+        Double v = time * 0.6;
+        CacheUtils.put(ONLINE_TOKEN_POOL_KEY, userId, model, time.intValue(), v.intValue());
+        CacheUtils.flush(ONLINE_TOKEN_POOL_KEY);
+    }
+
+    public static String multiLoginType() {
+        SystemParameterService service = CommonBeanFactory.getBean(SystemParameterService.class);
+        return service.multiLoginType();
+    }
+
+    public static OnlineUserModel onlineUserToken(Long userId) {
+        if (useRedis()) {
+            ValueOperations valueOperations = cacheHandler();
+            Object obj = valueOperations.get(ONLINE_TOKEN_POOL_KEY + userId);
+            if (ObjectUtils.isNotEmpty(obj)) return (OnlineUserModel) obj;
+            return null;
+        }
+        Object o = CacheUtils.get(ONLINE_TOKEN_POOL_KEY, userId);
+        if (ObjectUtils.isNotEmpty(o)) {
+            OnlineUserModel userModel = gson.fromJson(gson.toJson(o), OnlineUserModel.class);
+            return userModel;
+        }
+        return null;
+    }
+
+    public static OnlineUserModel buildModel(String token) {
+        OnlineUserModel model = new OnlineUserModel();
+        model.setToken(token);
+        model.setIp(IPUtils.get());
+        model.setLoginTime(System.currentTimeMillis());
+        return model;
     }
 
 }

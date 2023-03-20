@@ -886,7 +886,8 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-v'
+        'position-v',
+        'labelContent'
       ],
       'tooltip-selector-ant-v': [
         'show',

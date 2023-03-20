@@ -2,7 +2,6 @@ import bus from '@/utils/bus'
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 import store from '@/store'
-
 class DeWebsocket {
   constructor() {
     this.ws_url = '/websocket'
@@ -11,6 +10,10 @@ class DeWebsocket {
       {
         topic: '/web-msg-topic',
         event: 'web-msg-topic-call'
+      },
+      {
+        topic: '/web-seize-topic',
+        event: 'web-seize-topic-call'
       }
     ]
     this.timer = null

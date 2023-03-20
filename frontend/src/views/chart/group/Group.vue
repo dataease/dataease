@@ -1044,6 +1044,11 @@ export default {
     setChartDefaultOptions(view) {
       const type = view.type
       const attr = JSON.parse(view.customAttr)
+      if (view.render === 'echarts') {
+        attr.label.position = 'inside'
+      } else {
+        attr.label.position = 'middle'
+      }
       if (type.includes('pie')) {
         if (view.render === 'echarts') {
           attr.label.position = 'inside'
@@ -1060,20 +1065,13 @@ export default {
         if (type === 'pie-donut-rose') {
           attr.size.pieInnerRadius = Math.round(attr.size.pieOuterRadius * 0.5)
         }
+      } else if (type.includes('bar')) {
+        attr.label.labelContent = ['quota']
+        const senior = JSON.parse(view.senior)
+        senior.functionCfg.emptyDataStrategy = 'ignoreData'
+        view.senior = JSON.stringify(senior)
       } else if (type.includes('line')) {
         attr.label.position = 'top'
-      } else if (type.includes('treemap')) {
-        if (view.render === 'echarts') {
-          attr.label.position = 'inside'
-        } else {
-          attr.label.position = 'middle'
-        }
-      } else {
-        if (view.render === 'echarts') {
-          attr.label.position = 'inside'
-        } else {
-          attr.label.position = 'middle'
-        }
       }
       view.customAttr = JSON.stringify(attr)
     },

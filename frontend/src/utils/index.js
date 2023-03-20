@@ -1,4 +1,10 @@
 import Cookies from 'js-cookie'
+import i18n from '@/lang'
+import { $error, $confirm } from '@/utils/message'
+import { seizeLogin } from '@/api/user'
+import router from '@/router'
+import store from '@/store'
+import { Loading } from 'element-ui'
 export function timeSection(date, type, labelFormat = 'yyyy-MM-dd') {
   if (!date) {
     return null
@@ -351,4 +357,46 @@ export const inOtherPlatform = () => {
     return true
   }
   return false
+}
+
+export const showMultiLoginMsg = () => {
+  const multiLoginError1 = Cookies.get('MultiLoginError1')
+  if (multiLoginError1) {
+    Cookies.remove('MultiLoginError1')
+    const infos = JSON.parse(multiLoginError1)
+    const content = infos.map(info => buildMultiLoginErrorItem(info)).join('</br>')
+    let msgContent = '<strong>' + i18n.t('multi_login_lang.title') + '</strong>'
+    msgContent += content + '<p>' + i18n.t('multi_login_lang.label') + '</p>'
+    $error(msgContent, 10000, true)
+  }
+  const multiLoginError2 = Cookies.get('MultiLoginError2')
+  if (multiLoginError2) {
+    const infos = JSON.parse(multiLoginError2)
+    Cookies.remove('MultiLoginError2')
+    const content = infos.map(info => buildMultiLoginErrorItem(info)).join('</br>')
+    let msgContent = '<strong>' + i18n.t('multi_login_lang.confirm_title') + '</strong>'
+    msgContent += content + '<p>' + i18n.t('multi_login_lang.confirm') + '</p>'
+    $confirm(msgContent, () => seize(infos[0]), {
+      dangerouslyUseHTMLString: true
+    })
+  }
+}
+const seize = model => {
+  const loadingInstance = Loading.service({})
+  const token = model.token
+  const param = {
+    token
+  }
+  seizeLogin(param).then(res => {
+    const resultToken = res.data.token
+    store.dispatch('user/refreshToken', resultToken)
+    router.push('/')
+    loadingInstance.close()
+  })
+}
+const buildMultiLoginErrorItem = (info) => {
+  if (!info) return null
+  const ip = i18n.t('multi_login_lang.ip')
+  const time = i18n.t('multi_login_lang.time')
+  return '<p>' + ip + ': ' + info.ip + ', ' + time + ': ' + new Date(info.loginTime).format('yyyy-MM-dd hh:mm:ss') + '</p>'
 }

@@ -160,7 +160,8 @@ export default {
       selectDom.insertBefore(this.maxHeightDom, this.domList)
     },
     reCacularHeight() {
-      this.maxHeightDom.style.height = this.newList.length * this.itemHeight + 'px'
+      const h = this.$attrs.multiple ? 16 : 0
+      this.maxHeightDom.style.height = this.newList.length * this.itemHeight + h + 'px'
     },
     resetList(arrays) {
       if (Array.isArray(arrays)) {
@@ -237,7 +238,7 @@ export default {
 .VisualSelects {
   .el-scrollbar {
     position: relative;
-    height: 251px;
+    height: 245px;
     overflow: inherit;
     overflow-x: hidden;
     content-visibility: auto;
@@ -268,5 +269,8 @@ export default {
 
 .select-all {
   padding: 10px 20px 0 20px;
+}
+.coustom-de-select {
+  z-index: 999 !important;
 }
 </style>

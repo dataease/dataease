@@ -32,7 +32,8 @@
         "loginbtn": "登錄",
         "pwdFmtError": "密碼最短為6個字符",
         "uOrpwdError": "無效賬號或密碼",
-		"accFmtError": "帳號最短為1個字符"
+		"accFmtError": "帳號最短為1個字符",
+        "multiLogin": "當前賬號已在線，禁止多端登錄"
     },
     "home": {
         "tab1": "我的收藏",
