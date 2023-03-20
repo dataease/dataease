@@ -16,7 +16,7 @@ import java.util.Map;
  * Description:
  */
 @RestController
-@RequestMapping("/static/resource")
+@RequestMapping("/staticResource")
 public class StaticResourceController {
 
     @Resource
