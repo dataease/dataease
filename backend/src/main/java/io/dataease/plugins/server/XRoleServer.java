@@ -5,6 +5,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.auth.service.ExtAuthService;
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.constants.DePermissionType;
@@ -93,6 +94,7 @@ public class XRoleServer {
         @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
         @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
+    @SqlInjectValidator(value = {"create_time", "name"})
     public Pager<List<XpackRoleDto>> roleGrid(@PathVariable int goPage, @PathVariable int pageSize, @RequestBody XpackGridRequest request) {
         RoleXpackService roleXpackService = SpringContextUtil.getBean(RoleXpackService.class);
         Page<Object> page = PageHelper.startPage(goPage, pageSize, true);

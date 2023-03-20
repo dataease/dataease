@@ -2,6 +2,7 @@ package io.dataease.controller.panel.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelStoreDto;
@@ -31,6 +32,7 @@ public interface StoreApi {
 
     @ApiOperation("查询收藏")
     @PostMapping("/list")
+    @SqlInjectValidator(value = {"s.create_time"})
     List<PanelStoreDto> list(@RequestBody BaseGridRequest request);
 
 
