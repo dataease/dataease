@@ -15,6 +15,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 public class UserServer implements UserApi {
@@ -49,5 +52,10 @@ public class UserServer implements UserApi {
         PerUser perUser = perUserMapper.selectById(id);
         perUser.setEnable(false);
         perUserMapper.updateById(perUser);
+    }
+
+    @Override
+    public List<Object> delOrgUser(Long orgId, UserGridVO vo) {
+        return new ArrayList<>(){{add("删除成功");}};
     }
 }
