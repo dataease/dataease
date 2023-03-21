@@ -1,6 +1,5 @@
 package io.dataease.xpack.permissions.apisix.server;
 
-import io.dataease.utils.LogUtil;
 import io.dataease.utils.ServletUtils;
 import io.dataease.xpack.permissions.apisix.manage.ApisixManage;
 import jakarta.annotation.Resource;
@@ -18,12 +17,8 @@ public class ApisixServer {
     @RequestMapping("/check")
     public boolean check() {
         HttpServletRequest request = ServletUtils.request();
-        String sourceUri = request.getHeader("X-Forwarded-Uri");
-
-        LogUtil.info("---------------------");
-        LogUtil.info(sourceUri);
-        apisixManage.parseRequest();
-        LogUtil.info("---------------------");
+        apisixManage.checkAuthenticationInfo(request);
+        apisixManage.checkAuthorizationInfo(request);
         return true;
     }
 }
