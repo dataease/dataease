@@ -1,9 +1,9 @@
 import eventBus from '@/utils/eventBus'
-import { dvMainStoreWithOut } from '@/store/modules/dataVisualization/dvMain'
-import { snapshotStoreWithOut } from '@/store/modules/dataVisualization/snapshot'
-import { copyStoreWithOut } from '@/store/modules/dataVisualization/copy'
-import { composeStoreWithOut } from '@/store/modules/dataVisualization/compose'
-import { lockStoreWithOut } from '@/store/modules/dataVisualization/lock'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
+import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
+import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { storeToRefs } from 'pinia'
 
 const dvMainStore = dvMainStoreWithOut()

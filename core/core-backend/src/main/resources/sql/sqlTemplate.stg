@@ -1,0 +1,78 @@
+querySql(limitFiled, groups, aggregators, filters, orders, table, notUseAs, useAliasForGroup)
+::=<<
+SELECT
+<if(limitFiled)>
+   <limitFiled.limitFiled>
+<endif>
+<if(!groups && !aggregators)>
+    *
+<endif>
+<if(groups && notUseAs)>
+    <groups:{group|<if(group)><group.fieldName> <endif>}; separator=",\n">
+<endif>
+<if(groups && !notUseAs)>
+    <groups:{group|<if(group)><group.fieldName> AS <group.fieldAlias><endif>}; separator=",\n">
+<endif>
+    <if(groups && aggregators)>,<endif>
+<if(aggregators)>
+    <aggregators:{agg|<if(agg)><agg.fieldName> AS <agg.fieldAlias><endif>}; separator=",\n">
+<endif>
+FROM
+    <table.tableName>   <table.tableAlias>
+<if(filters)>
+WHERE
+    <filters:{filter|<if(filter)><filter><endif>}; separator="\nAND ">
+<endif>
+<if(groups && !useAliasForGroup)>
+GROUP BY
+    <groups:{group|<if(group)><group.fieldName><endif>}; separator=",\n">
+<endif>
+<if(groups && useAliasForGroup)>
+GROUP BY
+    <groups:{group|<if(group)><group.fieldAlias><endif>}; separator=",\n">
+<endif>
+<if(orders)>
+ORDER BY
+    <orders:{order|<if(order)><order.orderAlias> <order.orderDirection><endif>}; separator=",\n">
+<endif>
+>>
+
+
+previewSql(limitFiled, groups, aggregators, filters, orders, table, isGroup, notUseAs, useAliasForGroup)
+::=<<
+SELECT
+<if(limitFiled)>
+   <limitFiled.limitFiled>
+<endif>
+<if(!groups && !aggregators)>
+    *
+<endif>
+<if(groups && notUseAs)>
+    <groups:{group|<if(group)><group.fieldName> <endif>}; separator=",\n">
+<endif>
+<if(groups && !notUseAs)>
+    <groups:{group|<if(group)><group.fieldName> AS <group.fieldAlias><endif>}; separator=",\n">
+<endif>
+    <if(groups && aggregators)>,<endif>
+<if(aggregators)>
+    <aggregators:{agg|<if(agg)><agg.fieldName> AS <agg.fieldAlias><endif>}; separator=",\n">
+<endif>
+FROM
+    <table.tableName>   <table.tableAlias>
+<if(filters)>
+WHERE
+    <filters:{filter|<if(filter)><filter><endif>}; separator="\nAND ">
+<endif>
+<if(isGroup && groups && !useAliasForGroup)>
+GROUP BY
+    <groups:{group|<if(group)><group.fieldName><endif>}; separator=",\n">
+<endif>
+<if(isGroup && groups && useAliasForGroup)>
+GROUP BY
+    <groups:{group|<if(group)><group.fieldAlias><endif>}; separator=",\n">
+<endif>
+<if(orders)>
+ORDER BY
+    <orders:{order|<if(order)><order.orderAlias> <order.orderDirection><endif>}; separator=",\n">
+<endif>
+>>

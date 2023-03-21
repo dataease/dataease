@@ -12,6 +12,9 @@
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "noEmit": true,
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["electron-main/**/*.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]

@@ -6,12 +6,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.request.BaseGridRequest;
+import io.dataease.utils.BeanUtils;
+import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -31,5 +36,26 @@ public class UserServer implements UserApi {
         wrapper.like(StringUtils.isNotBlank(keyword), "u.name", keyword);
         IPage<UserGridVO> pager = userExtMapper.pager(page, wrapper);
         return pager;
+    }
+
+    @Override
+    public UserGridVO queryById(Long id) {
+        PerUser perUser = perUserMapper.selectById(id);
+        UserGridVO userGridVO = new UserGridVO();
+        BeanUtils.copyBean(userGridVO, perUser);
+        return userGridVO;
+    }
+
+    @Override
+    public void delete(UserGridVO vo) {
+        Long id = vo.getId();
+        PerUser perUser = perUserMapper.selectById(id);
+        perUser.setEnable(false);
+        perUserMapper.updateById(perUser);
+    }
+
+    @Override
+    public List<Object> delOrgUser(Long orgId, UserGridVO vo) {
+        return new ArrayList<>(){{add("删除成功");}};
     }
 }
