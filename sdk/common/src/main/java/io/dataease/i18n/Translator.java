@@ -65,7 +65,7 @@ public class Translator {
                 String rawString = javaObject.toString();
                 if (StringUtils.contains(rawString, JSON_SYMBOL)) {
                     try {
-                        Object jsonObject = JsonUtil.parse(rawString);
+                        Object jsonObject = JsonUtil.parse(rawString, Object.class);
                         return JsonUtil.toJSONString(translateObject(jsonObject));
                     } catch (Exception e) {
                         LogUtil.error("Failed to translate object: " + rawString, e);
