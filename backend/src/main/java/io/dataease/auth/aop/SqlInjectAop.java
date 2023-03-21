@@ -46,7 +46,7 @@ public class SqlInjectAop {
             String[] value = annotation.value();
             boolean illegal = isIllegal(value, request.getOrders());
             if (illegal) {
-                DEException.throwException("Illegal order exp");
+                DEException.throwException("Illegal sort exp");
             }
             return point.proceed(args);
         } catch (Throwable e) {
