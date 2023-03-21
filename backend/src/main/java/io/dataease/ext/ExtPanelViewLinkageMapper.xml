@@ -195,4 +195,18 @@
             ) pvlf_copy ON panel_view_linkage_field.linkage_id = pvlf_copy.s_id
 
     </insert>
+
+
+    <select id="findLinkageWithPanelId" resultType="io.dataease.plugins.common.base.domain.PanelViewLinkage">
+        select * from panel_view_linkage  where panel_id =#{panelId};
+    </select>
+
+    <select id="findLinkageFieldWithPanelId" resultType="io.dataease.plugins.common.base.domain.PanelViewLinkageField">
+        SELECT
+            *
+        FROM
+            panel_view_linkage_field
+        WHERE
+                linkage_id IN ( SELECT id FROM panel_view_linkage WHERE panel_id = #{panelId} );
+    </select>
 </mapper>

@@ -55,3 +55,9 @@ END
 delimiter ;
 
 INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('loginlimit.multiLogin', '0', 'text', '3');
+
+ALTER TABLE `panel_app_template`
+    ADD COLUMN `link_jumps` longtext NULL AFTER `datasource_info`,
+ADD COLUMN `link_jump_infos` longtext NULL AFTER `link_jumps`,
+ADD COLUMN `linkages` longtext NULL AFTER `link_jump_infos`,
+ADD COLUMN `linkage_fields` longtext NULL AFTER `linkages`;
