@@ -5,7 +5,6 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -20,5 +19,31 @@
 }
 body {
   background: #fff;
-  color: black;
+  color: #1F2329;
+}
+
+.de-search-table {
+  .top-operate {
+    margin-bottom: 16px;
+
+    .right-filter {
+      text-align: right;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      .el-input + button,
+      .el-input {
+        margin-right: 12px;
+      }
+
+      .el-input {
+        width: 240px;
+      }
+
+      :last-child {
+        margin-right: 0 !important;
+      }
+    }
+  }
 }

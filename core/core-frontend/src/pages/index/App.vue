@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import configGlobal from '@/components/config-global/src/config-global.vue'
+</script>
 <template>
-  <RouterView />
+  <config-global>
+    <router-view />
+  </config-global>
 </template>

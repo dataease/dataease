@@ -49,13 +49,15 @@ const root = process.cwd()
 function pathResolve(dir: string) {
   return resolve(root, '.', dir)
 }
-console.log(pathResolve('src/assets/svg'))
+
+const isDev = process.argv[3] === 'dev'
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     Vue(),
-    electron({
+    !isDev && electron({
       entry: 'electron-main/index.ts' // 主进程文件
     }),
     createStyleImportPlugin({
@@ -83,7 +85,7 @@ export default defineConfig({
       include: ['src/**/*.ts', 'src/**/*.js', 'src/**/*.vue', 'src/*.ts', 'src/*.js', 'src/*.vue']
     }),
     viteStylelint(),
-    electronRenderer()
+    !isDev && electronRenderer()
   ],
   resolve: {
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.less', '.css'],

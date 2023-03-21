@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import '@/style.css'
+import '@/style.less'
 import App from './App.vue'
 // import { setupI18n } from './plugins/vueI18n'
 import { setupStore } from '@/store'

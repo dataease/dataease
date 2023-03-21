@@ -6,7 +6,7 @@
 </template>
 <script setup lang="ts">
 import { shallowRef } from 'vue'
-import { ElTag } from 'element-plus-secondary'
+import { ElTag, ElMessage } from 'element-plus-secondary'
 import { ElButton } from 'element-plus-secondary'
 import { useAppStore } from '@/store/modules/app'
 import { computed } from 'vue'
@@ -15,8 +15,14 @@ const size = computed(() => app.getSize)
 
 let Header = shallowRef(null)
 const btn = (type: string) => {
-  import(`../../../../../xpack-sub/${type}.vue`).then((res: any) => {
-    Header.value = res.default
+  // import(`../../../../../xpack-sub/${type}.vue`).then((res: any) => {
+  //   Header.value = res.default
+  // })
+
+  ElMessage({
+    duration: 0,
+    message: 'Congrats, this is a success message.',
+    type: 'success'
   })
 }
 </script>
