@@ -31,11 +31,15 @@ import { nextTick, onMounted, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
+import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
-const { curComponent, editor } = storeToRefs(dvMainStore)
+const composeStore = composeStoreWithOut()
+
+const { curComponent } = storeToRefs(dvMainStore)
+const { editor } = storeToRefs(composeStore)
 
 const props = defineProps({
   active: {
@@ -106,7 +110,7 @@ const getPointList = () => {
 }
 
 const isActive = () => {
-  return active.value && !element.value.isLock
+  return active.value && !element.value['isLock']
 }
 
 // 处理旋转
@@ -192,7 +196,7 @@ const handleMouseDownOnShape = e => {
 
   e.stopPropagation()
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
-  if (element.value.isLock) return
+  if (element.value['isLock']) return
 
   cursors.value = getCursor() // 根据旋转角度获取光标位置
 
@@ -200,8 +204,8 @@ const handleMouseDownOnShape = e => {
   const startY = e.clientY
   const startX = e.clientX
   // 如果直接修改属性，值的类型会变为字符串，所以要转为数值型
-  const startTop = Number(pos.top)
-  const startLeft = Number(pos.left)
+  const startTop = Number(pos['top'])
+  const startLeft = Number(pos['left'])
 
   // 如果元素没有移动，则不保存快照
   let hasMove = false
@@ -209,8 +213,8 @@ const handleMouseDownOnShape = e => {
     hasMove = true
     const curX = moveEvent.clientX
     const curY = moveEvent.clientY
-    pos.top = curY - startY + startTop
-    pos.left = curX - startX + startLeft
+    pos['top'] = curY - startY + startTop
+    pos['left'] = curX - startX + startLeft
 
     // 修改当前组件样式
     dvMainStore.setShapeStyle(pos)
@@ -228,7 +232,7 @@ const handleMouseDownOnShape = e => {
   const up = () => {
     hasMove && snapshotStore.recordSnapshot()
     // 触发元素停止移动事件，用于隐藏标线
-    eventBus.emit('unmove')
+    eventBus.emit('unMove')
     document.removeEventListener('mousemove', move)
     document.removeEventListener('mouseup', up)
   }
@@ -253,12 +257,12 @@ const handleMouseDownOnPoint = (point, e) => {
   const style = { ...defaultStyle.value }
 
   // 组件宽高比
-  const proportion = style.width / style.height
+  const proportion = style['width'] / style['height']
 
   // 组件中心点
   const center = {
-    x: style.left + style.width / 2,
-    y: style.top + style.height / 2
+    x: style['left'] + style['width'] / 2,
+    y: style['top'] + style['height'] / 2
   }
 
   // 获取画布位移信息
@@ -344,7 +348,7 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .shape {
   position: absolute;
 

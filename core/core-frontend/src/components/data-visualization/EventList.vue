@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Modal from '@/components/data-visualization/Modal'
+import Modal from '@/components/data-visualization/Modal.vue'
 import { eventList } from '@/utils/events'
 import { ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -70,7 +70,7 @@ const removeEvent = event => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .event-list {
   .div-events {
     text-align: center;

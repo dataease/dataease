@@ -25,7 +25,7 @@ const { propValue, element } = toRefs(props)
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .circle-shape {
   width: 100%;
   height: 100%;

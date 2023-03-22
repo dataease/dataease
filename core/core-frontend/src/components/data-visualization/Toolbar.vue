@@ -2,7 +2,7 @@
 import { ElMessage } from 'element-plus-secondary'
 import { generateID } from '@/utils/generateID'
 import toast from '@/utils/toast'
-import Preview from '@/components/data-visualization/canvas/Preview'
+import Preview from '@/components/data-visualization/canvas/Preview.vue'
 import AceEditor from '@/components/data-visualization/canvas/AceEditor.vue'
 import { commonStyle, commonAttr } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
@@ -117,7 +117,9 @@ const handleFileChange = e => {
       $('#input').setAttribute('type', 'file')
     }
 
-    img.src = fileResult
+    if (typeof fileResult === 'string') {
+      img.src = fileResult
+    }
   }
 
   reader.readAsDataURL(file)
@@ -154,27 +156,31 @@ eventBus.on('clearCanvas', clearCanvas)
 <template>
   <div>
     <div class="toolbar">
-      <el-button @click="handleAceEditorChange">JSON</el-button>
-      <el-button @click="undo">撤消</el-button>
-      <el-button @click="redo">重做</el-button>
+      <el-button @click="handleAceEditorChange()">JSON</el-button>
+      <el-button @click="undo()">撤消</el-button>
+      <el-button @click="redo()">重做</el-button>
       <label for="input" class="insert">
         插入图片
         <input id="input" type="file" hidden @change="handleFileChange" />
       </label>
 
       <el-button style="margin-left: 10px" @click="preview(false)">预览</el-button>
-      <el-button @click="save">保存</el-button>
-      <el-button @click="clearCanvas">清空画布</el-button>
-      <el-button :disabled="!areaData.components.length" @click="compose">组合</el-button>
+      <el-button @click="save()">保存</el-button>
+      <el-button @click="clearCanvas()">清空画布</el-button>
+      <el-button :disabled="!areaData.components.length" @click="compose()">组合</el-button>
       <el-button
-        :disabled="!curComponent || curComponent.isLock || curComponent.component != 'Group'"
-        @click="decompose"
+        :disabled="!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group'"
+        @click="decompose()"
       >
         拆分
       </el-button>
 
-      <el-button :disabled="!curComponent || curComponent.isLock" @click="lock">锁定</el-button>
-      <el-button :disabled="!curComponent || !curComponent.isLock" @click="unlock">解锁</el-button>
+      <el-button :disabled="!curComponent || curComponent['isLock']" @click="lock()"
+        >锁定</el-button
+      >
+      <el-button :disabled="!curComponent || !curComponent['isLock']" @click="unlock()"
+        >解锁</el-button
+      >
       <el-button @click="preview(true)">截图</el-button>
 
       <div class="canvas-config">
@@ -195,7 +201,7 @@ eventBus.on('clearCanvas', clearCanvas)
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .toolbar {
   padding: 15px 10px;
   white-space: nowrap;

@@ -71,7 +71,7 @@ const onMouseEnter = () => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .component {
   position: absolute;
 }

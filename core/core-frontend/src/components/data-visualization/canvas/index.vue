@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Shape from './Shape'
+import Shape from './Shape.vue'
 import {
   getStyle,
   getComponentRotatedStyle,
@@ -8,11 +8,11 @@ import {
   getCanvasStyle
 } from '@/utils/style'
 import { $, isPreventDrop } from '@/utils/utils'
-import ContextMenu from './ContextMenu'
-import MarkLine from './MarkLine'
-import Area from './Area'
+import ContextMenu from './ContextMenu.vue'
+import MarkLine from './MarkLine.vue'
+import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
-import Grid from './Grid'
+import Grid from './Grid.vue'
 import { changeStyleWithScale } from '@/utils/translate'
 import { ref, onMounted, toRef, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -23,7 +23,9 @@ import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
-const { componentData, curComponent, canvasStyleData, editor } = storeToRefs(dvMainStore)
+
+const { componentData, curComponent, canvasStyleData } = storeToRefs(dvMainStore)
+const { editor } = storeToRefs(composeStore)
 const props = defineProps({
   isEdit: {
     type: Boolean,
@@ -318,7 +320,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .editor {
   position: relative;
   background: #fff;

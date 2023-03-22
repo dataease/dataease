@@ -34,7 +34,7 @@ const { start, width, height } = toRefs(props)
     class="area"
   ></div>
 </template>
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .area {
   border: 1px solid #70c0ff;
   position: absolute;

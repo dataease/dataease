@@ -136,7 +136,7 @@ const showLine = (isDownward, isRightward) => {
           key,
           value:
             rotate != 0
-              ? translatecurComponentShift(key, condition, curComponentStyle)
+              ? translateCurComponentShift(key, condition, curComponentStyle)
               : condition.dragShift
         })
         condition.lineNode.style[key] = `${condition.lineShift}px`
@@ -147,12 +147,12 @@ const showLine = (isDownward, isRightward) => {
     // 同一方向上同时显示三条线可能不太美观，因此才有了这个解决方案
     // 同一方向上的线只显示一条，例如多条横条只显示一条横线
     if (needToShow.length) {
-      chooseTheTureLine(needToShow, isDownward, isRightward)
+      chooseTheTrueLine(needToShow, isDownward, isRightward)
     }
   })
 }
 
-const translatecurComponentShift = (key, condition, curComponentStyle) => {
+const translateCurComponentShift = (key, condition, curComponentStyle) => {
   const { width, height } = curComponent.value.style
   if (key == 'top') {
     return Math.round(condition.dragShift - (height - curComponentStyle.height) / 2)
@@ -161,7 +161,7 @@ const translatecurComponentShift = (key, condition, curComponentStyle) => {
   return Math.round(condition.dragShift - (width - curComponentStyle.width) / 2)
 }
 
-const chooseTheTureLine = (needToShow, isDownward, isRightward) => {
+const chooseTheTrueLine = (needToShow, isDownward, isRightward) => {
   // 如果鼠标向右移动 则按从右到左的顺序显示竖线 否则按相反顺序显示
   // 如果鼠标向下移动 则按从下到上的顺序显示横线 否则按相反顺序显示
   if (isRightward) {
@@ -214,7 +214,7 @@ onMounted(() => {
     showLine(isDownward, isRightward)
   })
 
-  eventBus.on('unmove', () => {
+  eventBus.on('unMove', () => {
     hideLine()
   })
 })
@@ -227,12 +227,12 @@ onMounted(() => {
       :key="line"
       :ref="line"
       class="line"
-      :class="line.includes('x') ? 'xline' : 'yline'"
+      :class="line.includes('x') ? 'xLine' : 'yLine'"
     ></div>
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .mark-line {
   height: 100%;
 }
@@ -243,12 +243,12 @@ onMounted(() => {
   z-index: 1000;
 }
 
-.xline {
+.xLine {
   width: 100%;
   height: 1px;
 }
 
-.yline {
+.yLine {
   width: 1px;
   height: 100%;
 }
