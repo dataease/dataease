@@ -1,6 +1,5 @@
 package io.dataease.result;
 
-import com.google.gson.Gson;
 import io.dataease.i18n.I18n;
 import io.dataease.i18n.Translator;
 import org.springframework.core.MethodParameter;
@@ -34,9 +33,6 @@ public class ResultResponseBodyAdvice implements ResponseBodyAdvice<Object> {
         }
 
         if (!(o instanceof ResultHolder)) {
-            if (o instanceof String) {
-                return new Gson().toJson(ResultHolder.success(o));
-            }
             return ResultHolder.success(o);
         }
         return o;

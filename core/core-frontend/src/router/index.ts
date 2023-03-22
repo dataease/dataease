@@ -17,13 +17,6 @@ export const routes: AppRouteRecordRaw[] = [
         hidden: true,
         component: () => import('@/views/home/index.vue'),
         meta: { hidden: true }
-      },
-      {
-        path: 'system',
-        name: 'system',
-        hidden: false,
-        component: () => import('@/views/system/index.vue'),
-        meta: { hidden: false }
       }
     ]
   },

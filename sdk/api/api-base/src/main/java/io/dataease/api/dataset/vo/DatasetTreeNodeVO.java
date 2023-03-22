@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class DataSetTreeNodeVO implements Serializable {
+public class DatasetTreeNodeVO implements Serializable {
 
     private Long id;
 
