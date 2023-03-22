@@ -879,7 +879,7 @@ public class ChartViewService {
                 fieldsToFilter.addAll(xAxisBase);
             }
             ChartDrillRequest head = drillRequestList.get(0);
-            Map<String, String> dimValMap = head.getDimensionList().stream().collect(Collectors.toMap(ChartDimensionDTO::getId, ChartDimensionDTO::getValue));
+            Map<String, String> dimValMap = head.getDimensionList().stream().collect(Collectors.toMap(ChartDimensionDTO::getId, ChartDimensionDTO::getValue, ((p, n) -> p)));
             Map<String, ChartViewFieldDTO> fieldMap = Stream.of(xAxisBase, xAxisExt, extStack).
                     flatMap(Collection::stream).
                     collect(Collectors.toMap(ChartViewFieldDTO::getId, o -> o, ((p, n) -> p)));
@@ -987,8 +987,8 @@ public class ChartViewService {
         }
 
         String querySql = null;
-        long totalPage = 0l;
-        long totalItems = 0l;
+        long totalPage = 0L;
+        long totalItems = 0L;
         String totalPageSql = null;
         PageInfo pageInfo = new PageInfo();
         pageInfo.setGoPage(chartExtRequest.getGoPage());
