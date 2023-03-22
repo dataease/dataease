@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { propTypes } from '../../utils/propTypes'
-
+import { toRefs } from 'vue'
 const props = defineProps({
   propValue: {
     type: String,
@@ -10,15 +9,19 @@ const props = defineProps({
   element: {
     type: Object,
     default() {
-      return {}
+      return {
+        propValue: null
+      }
     }
   }
 })
+
+const { propValue, element } = toRefs(props)
 </script>
 
 <template>
   <div class="circle-shape">
-    <v-text :prop-value="element.propValue" :element="element" />
+    <v-text :prop-value="element?.propValue" :element="element" />
   </div>
 </template>
 

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, toRefs } from 'vue'
+import { computed, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import utilsAttr from '@/utils/attr'
+import { styleData, selectKey, optionMap } from '@/utils/attr'
 
-const { styleData, selectKey, optionMap } = toRefs(utilsAttr)
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
 const activeName = ref(curComponent.value.collapseName)
@@ -12,7 +11,7 @@ const activeName = ref(curComponent.value.collapseName)
 const styleKeys = computed(() => {
   if (curComponent) {
     const curComponentStyleKeys = Object.keys(curComponent.value.style)
-    return styleData.value.filter(item => curComponentStyleKeys.includes(item.key))
+    return styleData.filter(item => curComponentStyleKeys.includes(item.key))
   } else {
     return null
   }

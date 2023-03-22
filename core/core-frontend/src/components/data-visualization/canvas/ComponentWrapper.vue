@@ -17,7 +17,8 @@ const props = defineProps({
         type: null,
         events: null,
         style: null,
-        id: null
+        id: null,
+        animations: null
       }
     }
   }
@@ -26,7 +27,7 @@ const component = ref(null)
 const { config } = toRefs(props)
 
 onMounted(() => {
-  runAnimation(component.value.$el, config.value.type)
+  runAnimation(component.value.$el, config.value.animations.type)
 })
 
 const onClick = () => {

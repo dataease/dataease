@@ -6,6 +6,7 @@ import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
 const dvMainStore = dvMainStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -15,6 +16,7 @@ const layerStore = layerStoreWithOut()
 
 const { curComponent } = storeToRefs(dvMainStore)
 const { menuTop, menuLeft, menuShow } = storeToRefs(contextmenuStore)
+const copyData = ref(null)
 
 const lock = () => {
   lockStore.lock()
@@ -43,7 +45,7 @@ const paste = () => {
 }
 
 const deleteComponent = () => {
-  dvMainStore.deleteComponent(undefined)
+  dvMainStore.deleteComponent()
   snapshotStore.recordSnapshot()
 }
 

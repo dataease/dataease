@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import eventBus from '@/utils/eventBus'
 import { getComponentRotatedStyle } from '@/utils/style'
-import { onMounted, ref } from 'vue'
+import { getCurrentInstance, onMounted, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 
@@ -18,7 +18,7 @@ const lineStatus = ref({
 
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, componentData } = storeToRefs(dvMainStore)
-
+let currentInstance
 const hideLine = () => {
   Object.keys(lineStatus.value).forEach(line => {
     lineStatus.value[line] = false
@@ -26,10 +26,10 @@ const hideLine = () => {
 }
 
 const showLine = (isDownward, isRightward) => {
-  const lines = this.$refs
+  const lines = currentInstance.ctx.$refs
   const components = componentData.value
   const curComponentStyle = getComponentRotatedStyle(curComponent.value.style)
-  const curComponentHalfwidth = curComponentStyle.width / 2
+  const curComponentHalfWidth = curComponentStyle.width / 2
   const curComponentHalfHeight = curComponentStyle.height / 2
 
   hideLine()
@@ -37,20 +37,20 @@ const showLine = (isDownward, isRightward) => {
     if (component === curComponent.value) return
     const componentStyle = getComponentRotatedStyle(component.style)
     const { top, left, bottom, right } = componentStyle
-    const componentHalfwidth = componentStyle.width / 2
+    const componentHalfWidth = componentStyle.width / 2
     const componentHalfHeight = componentStyle.height / 2
 
     const conditions = {
       top: [
         {
-          isNearly: this.isNearly(curComponentStyle.top, top),
+          isNearly: isNearly(curComponentStyle.top, top),
           lineNode: lines.xt[0], // xt
           line: 'xt',
           dragShift: top,
           lineShift: top
         },
         {
-          isNearly: this.isNearly(curComponentStyle.bottom, top),
+          isNearly: isNearly(curComponentStyle.bottom, top),
           lineNode: lines.xt[0], // xt
           line: 'xt',
           dragShift: top - curComponentStyle.height,
@@ -100,13 +100,13 @@ const showLine = (isDownward, isRightward) => {
         {
           // 组件与拖拽节点的中间是否对齐
           isNearly: isNearly(
-            curComponentStyle.left + curComponentHalfwidth,
-            left + componentHalfwidth
+            curComponentStyle.left + curComponentHalfWidth,
+            left + componentHalfWidth
           ),
           lineNode: lines.yc[0], // yc
           line: 'yc',
-          dragShift: left + componentHalfwidth - curComponentHalfwidth,
-          lineShift: left + componentHalfwidth
+          dragShift: left + componentHalfWidth - curComponentHalfWidth,
+          lineShift: left + componentHalfWidth
         },
         {
           isNearly: isNearly(curComponentStyle.left, right),
@@ -208,8 +208,9 @@ const isNearly = (dragValue, targetValue) => {
 }
 
 onMounted(() => {
+  currentInstance = getCurrentInstance()
   // 监听元素移动和不移动的事件
-  eventBus.on('move', (isDownward, isRightward) => {
+  eventBus.on('move', ({ isDownward, isRightward }) => {
     showLine(isDownward, isRightward)
   })
 

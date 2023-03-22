@@ -54,14 +54,12 @@ const removeEvent = event => {
             v-model="item.param"
             type="textarea"
             placeholder="请输入完整的 URL"
-            @keydown.native.stop
           />
           <el-input
             v-if="item.key == 'alert'"
             v-model="item.param"
             type="textarea"
             placeholder="请输入要 alert 的内容"
-            @keydown.native.stop
           />
           <el-button style="margin-top: 20px" @click="addEvent(item.key, item.param)"
             >确定</el-button

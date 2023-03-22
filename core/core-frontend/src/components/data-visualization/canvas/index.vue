@@ -14,7 +14,7 @@ import Area from './Area'
 import eventBus from '@/utils/eventBus'
 import Grid from './Grid'
 import { changeStyleWithScale } from '@/utils/translate'
-import { ref, onMounted, toRefs } from 'vue'
+import { ref, onMounted, toRef, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -30,7 +30,7 @@ const props = defineProps({
     default: true
   }
 })
-const { isEdit } = toRefs(props)
+const isEdit = toRef(props, 'isEdit')
 const editorX = ref(0)
 const editorY = ref(0)
 const start = ref({
@@ -41,11 +41,11 @@ const start = ref({
 const width = ref(0)
 const height = ref(0)
 const isShowArea = ref(false)
-const svgFilterAttrs = ref(['width', 'height', 'top', 'left', 'rotate'])
+const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 
 const handleMouseDown = e => {
   // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
-  if (!curComponent || isPreventDrop(curComponent.value.component)) {
+  if (!curComponent.value || isPreventDrop(curComponent.value.component)) {
     e.preventDefault()
   }
 
@@ -206,21 +206,21 @@ const handleContextMenu = e => {
 }
 
 const getComponentStyle = style => {
-  return getStyle(style, svgFilterAttrs.value)
+  return getStyle(style, svgFilterAttrs)
 }
 
 const getSVGStyleInner = style => {
-  return getSVGStyle(style, svgFilterAttrs.value)
+  return getSVGStyle(style, svgFilterAttrs)
 }
 
 const handleInput = (element, value) => {
   // 根据文本组件高度调整 shape 高度
   dvMainStore.setShapeStyle({
-    top: undefined,
-    left: undefined,
-    width: undefined,
+    top: null,
+    left: null,
+    width: null,
     height: getTextareaHeight(element, value),
-    rotate: undefined
+    rotate: null
   })
 }
 
@@ -234,6 +234,14 @@ const getTextareaHeight = (element, text) => {
     (text.split('<br>').length - 1) * lineHeight * (fontSize || canvasStyleData.value.fontSize)
   return height > newHeight ? height : newHeight
 }
+
+const editStyle = computed(() => {
+  return {
+    ...getCanvasStyle(canvasStyleData.value),
+    width: changeStyleWithScale(canvasStyleData.value['width']) + 'px',
+    height: changeStyleWithScale(canvasStyleData.value['height']) + 'px'
+  }
+})
 
 onMounted(() => {
   // 获取编辑器元素
@@ -249,11 +257,7 @@ onMounted(() => {
     id="editor"
     class="editor"
     :class="{ edit: isEdit }"
-    :style="{
-      ...getCanvasStyle(canvasStyleData),
-      width: changeStyleWithScale(canvasStyleData.width) + 'px',
-      height: changeStyleWithScale(canvasStyleData.height) + 'px'
-    }"
+    :style="editStyle"
     @contextmenu="handleContextMenu"
     @mousedown="handleMouseDown"
   >
@@ -266,7 +270,7 @@ onMounted(() => {
       :key="item.id"
       :default-style="item.style"
       :style="getShapeStyle(item.style)"
-      :active="item.id === (curComponent || {}).id"
+      :active="item.id === (curComponent || {})['id']"
       :element="item"
       :index="index"
       :class="{ lock: item.isLock }"

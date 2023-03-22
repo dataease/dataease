@@ -59,7 +59,7 @@ export const copyStore = defineStore('copy', {
       restorePreCutData()
       copyData()
 
-      dvMainStore.deleteComponent(undefined)
+      dvMainStore.deleteComponent()
       this.isCut = true
     }
   }

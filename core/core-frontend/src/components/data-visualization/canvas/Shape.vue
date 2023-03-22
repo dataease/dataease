@@ -10,7 +10,7 @@
       class="iconfont icon-xiangyouxuanzhuan"
       @mousedown="handleRotate"
     ></span>
-    <span v-show="element.isLock" class="iconfont icon-suo"></span>
+    <span v-show="element['isLock']" class="iconfont icon-suo"></span>
     <div
       v-for="item in isActive() ? getPointList() : []"
       :key="item"
@@ -72,13 +72,11 @@ const props = defineProps({
   }
 })
 
-
-
 const { active, element, defaultStyle, index } = toRefs(props)
 
-const pointList = ref(['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l'])
-const pointList2 = ref(['r', 'l'])
-const initialAngle = ref({
+const pointList = ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l']
+const pointList2 = ['r', 'l']
+const initialAngle = {
   // 每个点对应的初始角度
   lt: 0,
   t: 45,
@@ -88,8 +86,10 @@ const initialAngle = ref({
   b: 225,
   lb: 270,
   l: 315
-})
-const angleToCursor = ref([
+}
+const cursors = ref({})
+
+const angleToCursor = [
   // 每个范围的角度对应的光标
   { start: 338, end: 23, cursor: 'nw' },
   { start: 23, end: 68, cursor: 'n' },
@@ -99,11 +99,10 @@ const angleToCursor = ref([
   { start: 203, end: 248, cursor: 's' },
   { start: 248, end: 293, cursor: 'sw' },
   { start: 293, end: 338, cursor: 'w' }
-])
-const cursors = ref({})
+]
 
 const getPointList = () => {
-  return element.value.component === 'line-shape' ? pointList2.value : pointList.value
+  return element.value.component === 'line-shape' ? pointList2 : pointList
 }
 
 const isActive = () => {
@@ -158,9 +157,9 @@ const getCursor = () => {
   const result = {}
   let lastMatchIndex = -1 // 从上一个命中的角度的索引开始匹配下一个，降低时间复杂度
 
-  pointList.value.forEach(point => {
+  pointList.forEach(point => {
     const angle = mod360(initialAngle[point] + rotate)
-    const len = angleToCursor.value.length
+    const len = angleToCursor.length
     // eslint-disable-next-line no-constant-condition
     while (true) {
       lastMatchIndex = (lastMatchIndex + 1) % len
@@ -222,7 +221,7 @@ const handleMouseDownOnShape = e => {
       // 后面两个参数代表鼠标移动方向
       // curY - startY > 0 true 表示向下移动 false 表示向上移动
       // curX - startX > 0 true 表示向右移动 false 表示向左移动
-      eventBus.emit('move', curY - startY > 0, curX - startX > 0)
+      eventBus.emit('move', { isDownward: curY - startY > 0, isRightward: curX - startX > 0 })
     })
   }
 

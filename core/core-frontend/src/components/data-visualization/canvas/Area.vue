@@ -26,8 +26,8 @@ const { start, width, height } = toRefs(props)
 <template>
   <div
     :style="{
-      left: start.x + 'px',
-      top: start.y + 'px',
+      left: start?.x + 'px',
+      top: start?.y + 'px',
       width: width + 'px',
       height: height + 'px'
     }"

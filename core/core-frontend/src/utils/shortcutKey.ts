@@ -11,7 +11,7 @@ const composeStore = composeStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
-const { curComponent, isInEdiotr } = storeToRefs(dvMainStore)
+const { curComponent, isInEditor } = storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 
 const ctrlKey = 17,
@@ -65,13 +65,13 @@ let isCtrlOrCommandDown = false
 // 全局监听按键操作并执行相应命令
 export function listenGlobalKeyDown() {
   window.onkeydown = e => {
-    if (!isInEdiotr) return
+    if (!isInEditor) return
 
     const { keyCode } = e
     if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
     } else if (keyCode == deleteKey && curComponent) {
-      dvMainStore.deleteComponent(undefined)
+      dvMainStore.deleteComponent()
       snapshotStore.recordSnapshot()
     } else if (isCtrlOrCommandDown) {
       if (unlockMap[keyCode] && (!curComponent || !curComponent.value.isLock)) {
@@ -145,7 +145,7 @@ function preview() {
 
 function deleteComponent() {
   if (curComponent) {
-    dvMainStore.deleteComponent(undefined)
+    dvMainStore.deleteComponent()
     snapshotStore.recordSnapshot()
   }
 }

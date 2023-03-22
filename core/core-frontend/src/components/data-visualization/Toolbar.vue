@@ -2,8 +2,8 @@
 import { ElMessage } from 'element-plus-secondary'
 import { generateID } from '@/utils/generateID'
 import toast from '@/utils/toast'
-import Preview from '@/components/Editor/Preview'
-import AceEditor from '@/components/Editor/AceEditor.vue'
+import Preview from '@/components/data-visualization/canvas/Preview'
+import AceEditor from '@/components/data-visualization/canvas/AceEditor.vue'
 import { commonStyle, commonAttr } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { $ } from '@/utils/utils'
@@ -167,14 +167,14 @@ eventBus.on('clearCanvas', clearCanvas)
       <el-button @click="clearCanvas">清空画布</el-button>
       <el-button :disabled="!areaData.components.length" @click="compose">组合</el-button>
       <el-button
-        :disabled="!curComponent || curComponent?.isLock || curComponent.component != 'Group'"
+        :disabled="!curComponent || curComponent.isLock || curComponent.component != 'Group'"
         @click="decompose"
       >
         拆分
       </el-button>
 
-      <el-button :disabled="!curComponent || curComponent?.isLock" @click="lock">锁定</el-button>
-      <el-button :disabled="!curComponent || !curComponent?.isLock" @click="unlock">解锁</el-button>
+      <el-button :disabled="!curComponent || curComponent.isLock" @click="lock">锁定</el-button>
+      <el-button :disabled="!curComponent || !curComponent.isLock" @click="unlock">解锁</el-button>
       <el-button @click="preview(true)">截图</el-button>
 
       <div class="canvas-config">
