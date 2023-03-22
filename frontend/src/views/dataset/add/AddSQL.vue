@@ -927,7 +927,6 @@ export default {
             ).sql
           }
           this.variables = JSON.parse(table.sqlVariableDetails)
-          this.getSQLPreview()
         })
       }
     },

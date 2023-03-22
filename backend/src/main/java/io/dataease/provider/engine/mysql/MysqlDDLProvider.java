@@ -4,9 +4,12 @@ import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.commons.utils.TableUtils;
 import io.dataease.provider.DDLProviderImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @Author gin
@@ -24,6 +27,30 @@ public class MysqlDDLProvider extends DDLProviderImpl {
     public String createView(String name, String viewSQL) {
         return "CREATE or replace view " + name + " AS (" + viewSQL + ")";
     }
+
+    @Override
+    public String insertSql(String name, List<String[]> dataList, int page, int pageNumber) {
+        String insertSql = "INSERT INTO TABLE_NAME VALUES ".replace("TABLE_NAME", name);
+        StringBuffer values = new StringBuffer();
+
+        Integer realSize = page * pageNumber < dataList.size() ? page * pageNumber : dataList.size();
+        for (String[] strings : dataList.subList((page - 1) * pageNumber, realSize)) {
+            String[] strings1 = new String[strings.length];
+            for (int i = 0; i < strings.length; i++) {
+                if (StringUtils.isEmpty(strings[i])) {
+                    strings1[i] = null;
+                } else {
+                    strings1[i] = strings[i].replace("'", "\\'");
+                }
+            }
+            values.append("('").append(UUID.randomUUID())
+                    .append("','").append(String.join("','", Arrays.asList(strings1)))
+                    .append("'),");
+        }
+        return (insertSql + values.substring(0, values.length() - 1)).replaceAll(",'null'",  ",null");
+    }
+
+
 
     @Override
     public String dropTable(String name) {
@@ -67,7 +94,7 @@ public class MysqlDDLProvider extends DDLProviderImpl {
                     }
                     break;
                 case 2:
-                    Column_Fields.append("varchar(100)").append(",`");
+                    Column_Fields.append("bigint(20)").append(",`");
                     break;
                 case 3:
                     Column_Fields.append("varchar(100)").append(",`");
