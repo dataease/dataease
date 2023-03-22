@@ -27,6 +27,8 @@
         <knife4j.version>3.0.3</knife4j.version>
         <calcite-core.version>1.30.0</calcite-core.version>
         <antlr.version>3.5.2</antlr.version>
+        <java-jwt.version>3.12.1</java-jwt.version>
+        <velocity.version>2.3</velocity.version>
     </properties>
     <packaging>pom</packaging>
 
@@ -73,7 +75,19 @@
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-spring-boot-starter</artifactId>
-                <version>3.0.3</version>
+                <version>${knife4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.auth0</groupId>
+                <artifactId>java-jwt</artifactId>
+                <version>${java-jwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-engine-core</artifactId>
+                <version>${velocity.version}</version>
             </dependency>
 
         </dependencies>

@@ -1,8 +1,14 @@
 package io.dataease.result;
 
 
+import java.io.Serial;
+import java.io.Serializable;
 
-public class ResultHolder {
+public class ResultHolder implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = -6070157865089258673L;
+
     public ResultHolder() {
         this.success = true;
     }
