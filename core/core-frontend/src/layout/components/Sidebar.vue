@@ -2,16 +2,16 @@
 import { ref, onMounted, computed } from 'vue'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { ElAside } from 'element-plus-secondary'
-const bbc = ref()
+const line = ref()
 let asideWidth = ref()
 onMounted(() => {
-  useMoveLine('DATASET', bbc.value?.$el, asideWidth)
+  useMoveLine('DATASET', line.value?.$el, asideWidth)
 })
 const width = computed(() => `${asideWidth.value || 260}px`)
 </script>
 
 <template>
-  <el-aside ref="bbc" :width="width">
+  <el-aside ref="line" :width="width">
     <slot />
   </el-aside>
 </template>
@@ -24,7 +24,6 @@ const width = computed(() => `${asideWidth.value || 260}px`)
   width: 2px;
   height: 100%;
   position: absolute;
-  background: red;
   cursor: col-resize;
 }
 </style>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, computed, watch, nextTick, onBeforeMount, useAttrs, toRaw } from 'vue'
 import { ElTable, ElPagination } from 'element-plus-secondary'
-import TableBody from './table-body.vue'
+import TableBody from './TableBody.vue'
 import { propTypes } from '@/utils/propTypes'
 const props = defineProps({
   columns: propTypes.arrayOf(propTypes.string),
@@ -102,9 +102,9 @@ defineExpose({
 <template>
   <div class="flex-table">
     <el-table
+      header-cell-class-name="header-cell"
       ref="table"
       v-bind="attrs"
-      height="2000"
       :data="tableData"
       :style="{ width: '100%' }"
       v-on="state.tableEvent"
@@ -112,7 +112,6 @@ defineExpose({
       <table-body :columns="columns">
         <slot />
       </table-body>
-      <slot name="_operation" />
     </el-table>
     <div v-if="showPagination" class="pagination-cont">
       <el-pagination
@@ -133,8 +132,15 @@ defineExpose({
   flex-direction: column;
   justify-content: space-between;
   .pagination-cont {
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
     margin-top: 10px;
   }
+}
+</style>
+<style lang="less">
+.header-cell {
+  background-color: #f5f6f7 !important;
+  border-top: 1px solid rgba(31, 35, 41, 0.15);
 }
 </style>

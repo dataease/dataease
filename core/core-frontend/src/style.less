@@ -16,6 +16,7 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 body {
   background: #fff;
@@ -41,7 +42,7 @@ body {
         width: 240px;
       }
 
-      :last-child {
+      & > :last-child {
         margin-right: 0 !important;
       }
     }

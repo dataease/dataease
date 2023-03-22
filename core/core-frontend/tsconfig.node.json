@@ -4,17 +4,15 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
     "forceConsistentCasingInFileNames": true,
     "strictFunctionTypes": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "experimentalDecorators": true,
     "noImplicitAny": false,
+    "baseUrl": "./",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
+      "@/*": ["./src/*"]
     },
     "types": [
       "vite/client",

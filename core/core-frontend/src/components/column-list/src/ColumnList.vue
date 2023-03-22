@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import { reactive, ref, toRaw } from 'vue'
+import { Icon } from '@/components/icon-custom'
 import {
   ElDropdown,
   ElDropdownMenu,
   ElCheckbox,
   ElCheckboxGroup,
+  ElIcon,
   ElButton
 } from 'element-plus-secondary'
 
@@ -23,7 +25,7 @@ const props = defineProps({
 
 const emit = defineEmits(['columnChange'])
 
-const checkAll = ref(false)
+const checkAll = ref(true)
 const isIndeterminate = ref(false)
 
 const state = reactive({
@@ -51,7 +53,12 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
 
 <template>
   <el-dropdown trigger="click" :hide-on-click="false">
-    <el-button plain type="primary">{{ $t('component.columnList') }}</el-button>
+    <el-button plain>
+      <el-icon>
+        <Icon name="icon-setting"></Icon>
+      </el-icon>
+      {{ $t('component.columnList') }}
+    </el-button>
     <template #dropdown>
       <el-dropdown-menu class="list-columns-select">
         <p class="title">{{ $t('component.selectInfo') }}</p>

@@ -1,6 +1,6 @@
 <script lang="ts">
-const nodes = []
 const TableBody = (props, context) => {
+  const nodes = []
   const { columns } = props
   const [slots] = context.slots.default()
   const { children = [] } = slots || {}
