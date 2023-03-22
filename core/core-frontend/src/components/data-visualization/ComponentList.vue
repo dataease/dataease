@@ -20,7 +20,7 @@ const handleDragStart = e => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .component-list {
   height: 65%;
   padding: 10px;

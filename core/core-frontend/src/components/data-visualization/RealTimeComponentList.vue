@@ -1,23 +1,3 @@
-<template>
-  <div class="real-time-component-list">
-    <div
-      v-for="(item, index) in componentData"
-      :key="index"
-      class="list"
-      :class="{ actived: transformIndex(index) === curComponentIndex }"
-      @click="onClick(transformIndex(index))"
-    >
-      <span class="iconfont" :class="'icon-' + getComponent(index).icon"></span>
-      <span>{{ getComponent(index).label }}</span>
-      <div class="icon-container">
-        <span class="iconfont icon-shangyi" @click="upComponent(transformIndex(index))"></span>
-        <span class="iconfont icon-xiayi" @click="downComponent(transformIndex(index))"></span>
-        <span class="iconfont icon-shanchu" @click="deleteComponent(transformIndex(index))"></span>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -37,19 +17,19 @@ const transformIndex = index => {
 const onClick = index => {
   setCurComponent(index)
 }
-const deleteComponent = () => {
+const deleteComponent = (number: number) => {
   setTimeout(() => {
-    dvMainStore.deleteComponent(undefined)
+    dvMainStore.deleteComponent()
     snapshotStore.recordSnapshot()
   })
 }
-const upComponent = () => {
+const upComponent = (number: number) => {
   setTimeout(() => {
     layerStore.upComponent()
     snapshotStore.recordSnapshot()
   })
 }
-const downComponent = () => {
+const downComponent = (number: number) => {
   setTimeout(() => {
     layerStore.downComponent()
     snapshotStore.recordSnapshot()
@@ -60,7 +40,27 @@ const setCurComponent = index => {
 }
 </script>
 
-<style lang="scss" scoped>
+<template>
+  <div class="real-time-component-list">
+    <div
+      v-for="(item, index) in componentData"
+      :key="index"
+      class="list"
+      :class="{ activated: transformIndex(index) === curComponentIndex }"
+      @click="onClick(transformIndex(index))"
+    >
+      <span class="iconfont" :class="'icon-' + getComponent(index).icon"></span>
+      <span>{{ getComponent(index).label }}</span>
+      <div class="icon-container">
+        <span class="iconfont icon-shangyi" @click="upComponent(transformIndex(index))"></span>
+        <span class="iconfont icon-xiayi" @click="downComponent(transformIndex(index))"></span>
+        <span class="iconfont icon-shanchu" @click="deleteComponent(transformIndex(index))"></span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style lang="less" scoped>
 .real-time-component-list {
   height: 35%;
 
@@ -109,7 +109,7 @@ const setCurComponent = index => {
     }
   }
 
-  .actived {
+  .activated {
     background: #ecf5ff;
     color: #409eff;
   }

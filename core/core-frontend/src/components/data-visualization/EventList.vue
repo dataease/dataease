@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Modal from '@/components/data-visualization/Modal'
+import Modal from '@/components/data-visualization/Modal.vue'
 import { eventList } from '@/utils/events'
 import { ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -54,14 +54,12 @@ const removeEvent = event => {
             v-model="item.param"
             type="textarea"
             placeholder="请输入完整的 URL"
-            @keydown.native.stop
           />
           <el-input
             v-if="item.key == 'alert'"
             v-model="item.param"
             type="textarea"
             placeholder="请输入要 alert 的内容"
-            @keydown.native.stop
           />
           <el-button style="margin-top: 20px" @click="addEvent(item.key, item.param)"
             >确定</el-button
@@ -72,7 +70,7 @@ const removeEvent = event => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .event-list {
   .div-events {
     text-align: center;

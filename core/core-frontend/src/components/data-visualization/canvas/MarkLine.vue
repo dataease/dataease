@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import eventBus from '@/utils/eventBus'
 import { getComponentRotatedStyle } from '@/utils/style'
-import { onMounted, ref } from 'vue'
+import { getCurrentInstance, onMounted, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 
@@ -18,7 +18,7 @@ const lineStatus = ref({
 
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, componentData } = storeToRefs(dvMainStore)
-
+let currentInstance
 const hideLine = () => {
   Object.keys(lineStatus.value).forEach(line => {
     lineStatus.value[line] = false
@@ -26,10 +26,10 @@ const hideLine = () => {
 }
 
 const showLine = (isDownward, isRightward) => {
-  const lines = this.$refs
+  const lines = currentInstance.ctx.$refs
   const components = componentData.value
   const curComponentStyle = getComponentRotatedStyle(curComponent.value.style)
-  const curComponentHalfwidth = curComponentStyle.width / 2
+  const curComponentHalfWidth = curComponentStyle.width / 2
   const curComponentHalfHeight = curComponentStyle.height / 2
 
   hideLine()
@@ -37,20 +37,20 @@ const showLine = (isDownward, isRightward) => {
     if (component === curComponent.value) return
     const componentStyle = getComponentRotatedStyle(component.style)
     const { top, left, bottom, right } = componentStyle
-    const componentHalfwidth = componentStyle.width / 2
+    const componentHalfWidth = componentStyle.width / 2
     const componentHalfHeight = componentStyle.height / 2
 
     const conditions = {
       top: [
         {
-          isNearly: this.isNearly(curComponentStyle.top, top),
+          isNearly: isNearly(curComponentStyle.top, top),
           lineNode: lines.xt[0], // xt
           line: 'xt',
           dragShift: top,
           lineShift: top
         },
         {
-          isNearly: this.isNearly(curComponentStyle.bottom, top),
+          isNearly: isNearly(curComponentStyle.bottom, top),
           lineNode: lines.xt[0], // xt
           line: 'xt',
           dragShift: top - curComponentStyle.height,
@@ -100,13 +100,13 @@ const showLine = (isDownward, isRightward) => {
         {
           // 组件与拖拽节点的中间是否对齐
           isNearly: isNearly(
-            curComponentStyle.left + curComponentHalfwidth,
-            left + componentHalfwidth
+            curComponentStyle.left + curComponentHalfWidth,
+            left + componentHalfWidth
           ),
           lineNode: lines.yc[0], // yc
           line: 'yc',
-          dragShift: left + componentHalfwidth - curComponentHalfwidth,
-          lineShift: left + componentHalfwidth
+          dragShift: left + componentHalfWidth - curComponentHalfWidth,
+          lineShift: left + componentHalfWidth
         },
         {
           isNearly: isNearly(curComponentStyle.left, right),
@@ -136,7 +136,7 @@ const showLine = (isDownward, isRightward) => {
           key,
           value:
             rotate != 0
-              ? translatecurComponentShift(key, condition, curComponentStyle)
+              ? translateCurComponentShift(key, condition, curComponentStyle)
               : condition.dragShift
         })
         condition.lineNode.style[key] = `${condition.lineShift}px`
@@ -147,12 +147,12 @@ const showLine = (isDownward, isRightward) => {
     // 同一方向上同时显示三条线可能不太美观，因此才有了这个解决方案
     // 同一方向上的线只显示一条，例如多条横条只显示一条横线
     if (needToShow.length) {
-      chooseTheTureLine(needToShow, isDownward, isRightward)
+      chooseTheTrueLine(needToShow, isDownward, isRightward)
     }
   })
 }
 
-const translatecurComponentShift = (key, condition, curComponentStyle) => {
+const translateCurComponentShift = (key, condition, curComponentStyle) => {
   const { width, height } = curComponent.value.style
   if (key == 'top') {
     return Math.round(condition.dragShift - (height - curComponentStyle.height) / 2)
@@ -161,7 +161,7 @@ const translatecurComponentShift = (key, condition, curComponentStyle) => {
   return Math.round(condition.dragShift - (width - curComponentStyle.width) / 2)
 }
 
-const chooseTheTureLine = (needToShow, isDownward, isRightward) => {
+const chooseTheTrueLine = (needToShow, isDownward, isRightward) => {
   // 如果鼠标向右移动 则按从右到左的顺序显示竖线 否则按相反顺序显示
   // 如果鼠标向下移动 则按从下到上的顺序显示横线 否则按相反顺序显示
   if (isRightward) {
@@ -208,12 +208,13 @@ const isNearly = (dragValue, targetValue) => {
 }
 
 onMounted(() => {
+  currentInstance = getCurrentInstance()
   // 监听元素移动和不移动的事件
-  eventBus.on('move', (isDownward, isRightward) => {
+  eventBus.on('move', ({ isDownward, isRightward }) => {
     showLine(isDownward, isRightward)
   })
 
-  eventBus.on('unmove', () => {
+  eventBus.on('unMove', () => {
     hideLine()
   })
 })
@@ -226,12 +227,12 @@ onMounted(() => {
       :key="line"
       :ref="line"
       class="line"
-      :class="line.includes('x') ? 'xline' : 'yline'"
+      :class="line.includes('x') ? 'xLine' : 'yLine'"
     ></div>
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .mark-line {
   height: 100%;
 }
@@ -242,12 +243,12 @@ onMounted(() => {
   z-index: 1000;
 }
 
-.xline {
+.xLine {
   width: 100%;
   height: 1px;
 }
 
-.yline {
+.yLine {
   width: 1px;
   height: 100%;
 }

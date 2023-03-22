@@ -25,7 +25,7 @@ const stopPropagation = e => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .modal-bg {
   position: fixed;
   top: 0;

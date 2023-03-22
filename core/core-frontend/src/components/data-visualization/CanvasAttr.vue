@@ -34,7 +34,7 @@ const isIncludesColor = str => {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="less">
 .attr-container {
   .title {
     text-align: center;
