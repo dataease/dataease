@@ -2,6 +2,7 @@ package io.dataease.result;
 
 import io.dataease.i18n.I18n;
 import io.dataease.i18n.Translator;
+import io.dataease.utils.JsonUtil;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -33,7 +34,11 @@ public class ResultResponseBodyAdvice implements ResponseBodyAdvice<Object> {
         }
 
         if (!(o instanceof ResultHolder)) {
-            return ResultHolder.success(o);
+            ResultHolder resultHolder = ResultHolder.success(o);
+            if (o instanceof String) {
+                return JsonUtil.toJSONString(resultHolder);
+            }
+            return resultHolder;
         }
         return o;
     }
