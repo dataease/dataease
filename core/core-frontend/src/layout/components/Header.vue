@@ -21,6 +21,8 @@ const permissionStore = usePermissionStore()
 
 const routers = permissionStore.getRoutersNotHidden
 
+console.log('routers', routers)
+
 const handleSelect = (index: string) => {
   // 自定义事件
   if (isExternal(index)) {

@@ -21,14 +21,14 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 const { t } = useI18n()
 const activeName = ref('user')
 const isPluginLoaded = ref(false)
-const drawerMain = ref(null)
+const drawerMainRef = ref(null)
 const nickName = ref('')
 const handleClick = () => {
   console.log('handleClick')
 }
 
 const drawerMainOpen = () => {
-  drawerMain.value.init()
+  drawerMainRef.value.init()
 }
 
 const state = reactive({
@@ -128,7 +128,7 @@ const clearFilter = (index?: number) => {
       </GridTable>
     </div>
   </div>
-  <drawer-main ref="drawerMain"></drawer-main>
+  <drawer-main ref="drawerMainRef"></drawer-main>
 </template>
 
 <style lang="less" scoped>
