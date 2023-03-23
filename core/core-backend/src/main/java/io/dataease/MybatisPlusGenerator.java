@@ -19,11 +19,11 @@ public class MybatisPlusGenerator {
     /**
      * 业务模块例如datasource,dataset,panel等
      */
-    private static final String busi = "datasource";
+    private static final String busi = "menu";
     /**
      * 这是要生成代码的表名称
      */
-    private static final String TABLE_NAME = "core_datasource";
+    private static final String TABLE_NAME = "core_menu";
 
     /**
      * 下面两个配置基本上不用动

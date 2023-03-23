@@ -8,7 +8,7 @@ spring:
   flyway:
     enabled: true
     table: de_standalone_version
-    validate-on-migrate: true
+    validate-on-migrate: false
     locations: classpath:db/migration
     baseline-on-migrate: true
     out-of-order: true

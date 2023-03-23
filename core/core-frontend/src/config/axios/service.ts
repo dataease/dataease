@@ -60,7 +60,8 @@ service.interceptors.response.use(
     if (response.config.responseType === 'blob') {
       // 如果是文件流，直接过
       return response
-    } else if (response.data.code === result_code) {
+      // } else if (response.data.code === result_code) {
+    } else if (response.data.success) {
       return response.data
     } else {
       ElMessage.error(response.data.message)
