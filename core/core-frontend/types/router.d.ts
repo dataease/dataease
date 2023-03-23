@@ -24,12 +24,8 @@ declare global {
   interface AppRouteRecordRaw extends Omit<RouteRecordRaw, 'meta' | 'children'> {
     name?: string
     hidden?: boolean
-    id?: string
-    type?: number
-    isPlugin?: boolean
-    noLayout?: boolean
-    permission?: string
-    pid?: number | string
+    plugin?: boolean
+    inLayout?: boolean
     meta: RouteMeta
     component?: Component | string
     children?: AppRouteRecordRaw[]
@@ -40,12 +36,8 @@ declare global {
   interface AppCustomRouteRecordRaw extends Omit<RouteRecordRaw, 'meta' | 'children'> {
     name?: string
     hidden: boolean
-    id: string
-    type?: number
-    isPlugin?: boolean
-    noLayout?: boolean
-    permission?: string
-    pid?: number | string
+    plugin?: boolean
+    inLayout?: boolean
     meta?: RouteMeta
     component?: Component | string
     path: string
