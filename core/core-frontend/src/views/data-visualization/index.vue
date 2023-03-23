@@ -1,37 +1,3 @@
-<template>
-  <div class="home">
-    <!--    <Toolbar />-->
-    <main>
-      <!-- 左侧组件列表 -->
-      <section class="left">
-        <ComponentList />
-        <RealTimeComponentList />
-      </section>
-      <!-- 中间画布 -->
-      <section class="center">
-        <div
-          class="content"
-          @drop="handleDrop"
-          @dragover="handleDragOver"
-          @mousedown="handleMouseDown"
-          @mouseup="deselectCurComponent"
-        >
-          <DvCanvas />
-        </div>
-      </section>
-      <!-- 右侧属性列表 -->
-      <section class="right">
-        <el-tabs v-if="curComponent" v-model="activeName">
-          <el-tab-pane label="属性" name="attr">
-            <component :is="curComponent['component'] + '-attr'" />
-          </el-tab-pane>
-        </el-tabs>
-        <CanvasAttr v-else></CanvasAttr>
-      </section>
-    </main>
-  </div>
-</template>
-
 <script setup lang="ts">
 import DvCanvas from '@/components/data-visualization/canvas/index.vue'
 import ComponentList from '@/components/data-visualization/ComponentList.vue' // 左侧列表组件
@@ -118,10 +84,44 @@ restore()
 listenGlobalKeyDown()
 </script>
 
+<template>
+  <div class="home">
+    <Toolbar />
+    <main>
+      <!-- 左侧组件列表 -->
+      <section class="left">
+        <ComponentList />
+        <RealTimeComponentList />
+      </section>
+      <!-- 中间画布 -->
+      <section class="center">
+        <div
+          class="content"
+          @drop="handleDrop"
+          @dragover="handleDragOver"
+          @mousedown="handleMouseDown"
+          @mouseup="deselectCurComponent"
+        >
+          <DvCanvas />
+        </div>
+      </section>
+      <!-- 右侧属性列表 -->
+      <!--      <section class="right">-->
+      <!--        <el-tabs v-if="curComponent" v-model="activeName">-->
+      <!--          <el-tab-pane label="属性" name="attr">-->
+      <!--            <component :is="curComponent['component'] + '-attr'" />-->
+      <!--          </el-tab-pane>-->
+      <!--        </el-tabs>-->
+      <!--        <CanvasAttr v-else></CanvasAttr>-->
+      <!--      </section>-->
+    </main>
+  </div>
+</template>
+
 <style lang="less">
 .home {
   height: 100vh;
-  background: #fff;
+  background: #252d36;
 
   main {
     height: calc(100% - 64px);
@@ -156,8 +156,8 @@ listenGlobalKeyDown()
 
     .center {
       margin-left: 200px;
-      margin-right: 288px;
-      background: #f5f5f5;
+      //margin-right: 288px;
+      background: #333333;
       height: 100%;
       overflow: auto;
       padding: 20px;

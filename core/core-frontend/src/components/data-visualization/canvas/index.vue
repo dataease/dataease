@@ -13,6 +13,7 @@ import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
 import Grid from './Grid.vue'
+import RectShape from '@/custom-component/rect-shape/Component.vue'
 import { changeStyleWithScale } from '@/utils/translate'
 import { ref, onMounted, toRef, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -245,6 +246,10 @@ const editStyle = computed(() => {
   }
 })
 
+const componentsMap = {
+  'rect-shape': RectShape
+}
+
 onMounted(() => {
   // 获取编辑器元素
   composeStore.getEditor()
@@ -264,7 +269,7 @@ onMounted(() => {
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-    <Grid />
+    <!--    <Grid />-->
 
     <!--页面组件列表展示-->
     <Shape
@@ -278,7 +283,7 @@ onMounted(() => {
       :class="{ lock: item.isLock }"
     >
       <component
-        :is="item.component"
+        :is="componentsMap[item.component]"
         v-if="item.component.startsWith('SVG')"
         :id="'component' + item.id"
         :style="getSVGStyleInner(item.style)"
@@ -289,7 +294,7 @@ onMounted(() => {
       />
 
       <component
-        :is="item.component"
+        :is="componentsMap[item.component]"
         v-else-if="item.component != 'VText'"
         :id="'component' + item.id"
         class="component"
@@ -300,7 +305,7 @@ onMounted(() => {
       />
 
       <component
-        :is="item.component"
+        :is="componentsMap[item.component]"
         v-else
         :id="'component' + item.id"
         class="component"

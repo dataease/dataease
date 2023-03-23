@@ -2,7 +2,7 @@
 import { getStyle, getSVGStyle } from '@/utils/style'
 import runAnimation from '@/utils/runAnimation'
 import eventBus from '@/utils/eventBus'
-import { ref, onMounted, toRefs } from 'vue'
+import { ref, onMounted, toRefs, getCurrentInstance } from 'vue'
 
 const props = defineProps({
   config: {
@@ -25,15 +25,17 @@ const props = defineProps({
 })
 const component = ref(null)
 const { config } = toRefs(props)
+let currentInstance
 
 onMounted(() => {
   runAnimation(component.value.$el, config.value.animations.type)
+  currentInstance = getCurrentInstance()
 })
 
 const onClick = () => {
   const events = config.value.events
   Object.keys(events).forEach(event => {
-    this[event](events[event])
+    currentInstance.ctx[event](events[event])
   })
   eventBus.emit('v-click', config.value.id)
 }
@@ -46,7 +48,7 @@ const onMouseEnter = () => {
 <template>
   <div @click="onClick" @mouseenter="onMouseEnter">
     <component
-      :is="config?.component"
+      :is="config['component']"
       v-if="config?.component.startsWith('SVG')"
       ref="component"
       class="component"
@@ -58,7 +60,7 @@ const onMouseEnter = () => {
     />
 
     <component
-      :is="config?.component"
+      :is="config['component']"
       v-else
       ref="component"
       class="component"

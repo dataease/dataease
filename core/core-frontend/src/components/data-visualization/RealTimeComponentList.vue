@@ -68,7 +68,7 @@ const setCurComponent = index => {
     height: 30px;
     cursor: grab;
     text-align: center;
-    color: #333;
+    color: #59c7f9;
     display: flex;
     align-items: center;
     font-size: 12px;
