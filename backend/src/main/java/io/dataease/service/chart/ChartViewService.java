@@ -879,10 +879,11 @@ public class ChartViewService {
                 fieldsToFilter.addAll(xAxisBase);
             }
             ChartDrillRequest head = drillRequestList.get(0);
-            Map<String, String> dimValMap = head.getDimensionList().stream().collect(Collectors.toMap(ChartDimensionDTO::getId, ChartDimensionDTO::getValue, ((p, n) -> p)));
-            Map<String, ChartViewFieldDTO> fieldMap = Stream.of(xAxisBase, xAxisExt, extStack).
-                    flatMap(Collection::stream).
-                    collect(Collectors.toMap(ChartViewFieldDTO::getId, o -> o, ((p, n) -> p)));
+            Map<String, String> dimValMap = new HashMap<>();
+            head.getDimensionList().forEach(item -> dimValMap.put(item.getId(), item.getValue()));
+            Map<String, ChartViewFieldDTO> fieldMap = Stream.of(xAxisBase, xAxisExt, extStack)
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toMap(ChartViewFieldDTO::getId, o -> o, ((p, n) -> p)));
             for (int i = 0; i < drillRequestList.size(); i++) {
                 ChartDrillRequest request = drillRequestList.get(i);
                 ChartViewFieldDTO chartViewFieldDTO = drill.get(i);
