@@ -463,14 +463,6 @@
               >
                 <template #header>
                   {{ $t('commons.params_value') }}
-                  <el-tooltip
-                    class="item"
-                    effect="dark"
-                    :content="$t('commons.parameter_effect')"
-                    placement="top"
-                  >
-                    <svg-icon icon-class="icon_info_filled" />
-                  </el-tooltip>
                 </template>
                 <template slot-scope="scope">
                   <el-input
