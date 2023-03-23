@@ -645,7 +645,7 @@
                                       last_sync_time)
         SELECT uuid()                                 AS id,
                chart_view_field.table_id,
-               chart_view_field.pv_copy.chart_view_id AS chart_id,
+               pv_copy.chart_view_id AS chart_id,
                chart_view_field.origin_name,
                chart_view_field.`name`,
                chart_view_field.dataease_name,
