@@ -1169,8 +1169,12 @@ public class DataSetTableService {
             binaryExpression = (BinaryExpression) expr;
         } catch (Exception e) {
         }
-        if (binaryExpression != null && !(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getRightExpression() instanceof BinaryExpression) && hasVariable(binaryExpression.toString())) {
-            stringBuilder.append(SubstitutedSql);
+        if (binaryExpression != null) {
+            if (!(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && hasVariable(binaryExpression.getRightExpression().toString())) {
+                stringBuilder.append(SubstitutedSql);
+            }else {
+                expr.accept(getExpressionDeParser(stringBuilder));
+            }
         } else {
             expr.accept(getExpressionDeParser(stringBuilder));
         }
