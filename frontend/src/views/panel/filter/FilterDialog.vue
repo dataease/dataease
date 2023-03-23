@@ -567,6 +567,7 @@ export default {
         const data = res.data
 
         this.viewInfos = data
+        this.updateParentName()
         this.childViews.viewInfos = data
       })
       var type = 'TEXT'
@@ -581,6 +582,17 @@ export default {
 
         this.childViews.datasetParams = data
       })
+    },
+    updateParentName() {
+      if (this.fieldsParent && this.viewInfos?.length && this.activeName !== 'dataset') {
+        this.viewInfos.forEach(info => {
+          if (info.id === this.fieldsParent.id && info.name !== this.fieldsParent.name) {
+            this.fieldsParent.name = info.name
+            this.comBackLink(this.fieldsParent)
+            this.comShowFieldData(this.fieldsParent)
+          }
+        })
+      }
     },
     handleNodeClick(data) {
       if (data.modelInnerType !== 'group') {
