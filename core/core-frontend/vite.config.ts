@@ -13,6 +13,10 @@ import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import electronRenderer from 'vite-plugin-electron-renderer'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components-secondary/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components-secondary/resolvers'
+
 import path from 'path'
 import { readdirSync } from 'fs'
 
@@ -71,6 +75,12 @@ export default defineConfig({
           }
         }
       ]
+    }),
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
     }),
     createSvgIconsPlugin({
       iconDirs: [pathResolve('src/assets/svg')],

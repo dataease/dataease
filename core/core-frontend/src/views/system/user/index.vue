@@ -3,8 +3,8 @@ import { ref, reactive } from 'vue'
 import { columnNames } from './options'
 import { Icon } from '@/components/icon-custom'
 import { FilterText } from '@/components/filter-text'
-
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
+import UserForm from './UserForm.vue'
 import {
   ElTableColumn,
   ElTabs,
@@ -129,6 +129,7 @@ const clearFilter = (index?: number) => {
     </div>
   </div>
   <drawer-main ref="drawerMainRef"></drawer-main>
+  <user-form></user-form>
 </template>
 
 <style lang="less" scoped>
