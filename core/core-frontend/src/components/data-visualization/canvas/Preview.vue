@@ -36,11 +36,11 @@ const htmlToImage = () => {
       a.setAttribute('download', 'screenshot')
       a.href = dataUrl
       a.click()
-      this.close
+      close()
     })
     .catch(error => {
       console.error('oops, something went wrong!', error)
-      this.close
+      close()
     })
 }
 </script>

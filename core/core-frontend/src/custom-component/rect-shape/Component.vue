@@ -20,16 +20,16 @@ const { propValue, element } = toRefs(props)
 </script>
 
 <template>
-  <div class="circle-shape">
-    <v-text :prop-value="element?.propValue" :element="element" />
+  <div class="rect-shape">
+    this is test
+    <!--    <v-text :prop-value="element.propValue" :element="element" />-->
   </div>
 </template>
 
-<style lang="less" scoped>
-.circle-shape {
+<style lang="scss" scoped>
+.rect-shape {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
   overflow: auto;
 }
 </style>
