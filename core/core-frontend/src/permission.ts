@@ -22,7 +22,7 @@ const whiteList = ['/login'] // 不重定向白名单
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
-  wsCache.set(appStore.getToken, 'Authorization')
+  // wsCache.set(appStore.getToken, 'Authorization')
 
   if (wsCache.get(appStore.getToken)) {
     if (to.path === '/login') {
