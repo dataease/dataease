@@ -6,6 +6,7 @@
     :class="classId"
     popper-class="VisualSelects coustom-de-select"
     no-match-text=" "
+    reserve-keyword
     clearable
     v-bind="$attrs"
     v-on="$listeners"
@@ -93,7 +94,7 @@ export default {
   },
   computed: {
     isIndeterminate() {
-      return Array.isArray(this.selectValue) && this.selectValue.length > 0 && this.selectValue.length !== this.list.length
+      return Array.isArray(this.selectValue) && this.selectValue.length > 0 && this.isAllSelect() > 0 && this.selectValue.length !== this.halfSelect()
     }
   },
   watch: {
@@ -218,14 +219,34 @@ export default {
       this.domList.style.paddingTop = scrollTop - (scrollTop % this.itemHeight) + 'px'
     },
     popChange() {
+      this.$emit('resetKeyWords', '')
       this.domList.style.paddingTop = 0 + 'px'
-
+      this.startIndex = 0
+      this.$nextTick(() => {
+        if (this.$attrs.multiple) {
+          this.selectAll = this.selectValue.length === this.list.length
+        }
+      })
       this.resetList()
       this.reCacularHeight()
     },
+    isAllSelect() {
+      let vals = this.list.length
+      if (this.keyWord.trim()) {
+        vals = this.list.filter(item => item.text.includes(this.keyWord.trim())).map(ele => ele.id).filter(ele => this.selectValue.includes(ele)).length
+      }
+      return vals
+    },
+    halfSelect() {
+      let vals = this.list.length
+      if (this.keyWord.trim()) {
+        vals = this.list.filter(item => item.text.includes(this.keyWord.trim())).map(ele => ele.id).length
+      }
+      return vals
+    },
     visualChange(val) {
       if (this.$attrs.multiple) {
-        this.selectAll = val.length === this.list.length
+        this.selectAll = val.length === this.halfSelect()
       }
       this.$emit('visual-change', val)
     }
