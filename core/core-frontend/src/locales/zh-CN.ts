@@ -6,7 +6,10 @@ export default {
     email: '邮箱',
     phone: '手机号',
     pwd: '密码',
-    require: '必填'
+    require: '必填',
+    personal_info: '个人信息',
+    about: '关于',
+    exit_system: '退出系统'
   },
   login: {
     welcome: '欢迎使用',
@@ -21,5 +24,8 @@ export default {
     user: '用户',
     role: '角色',
     addUser: '@:common.add@:system.user'
+  },
+  user: {
+    change_password: '修改密码'
   }
 }

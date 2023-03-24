@@ -5,10 +5,16 @@ export default {
     email: 'Email',
     phone: 'Phone',
     pwd: 'Password',
-    require: 'Require'
+    require: 'Require',
+    personal_info: 'Personal info',
+    about: 'About',
+    exit_system: 'Exit system'
   },
   login: {
     welcome: 'Welcome',
     btn: 'Login'
+  },
+  user: {
+    change_password: 'Change password'
   }
 }
