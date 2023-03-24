@@ -769,6 +769,7 @@ export default {
   }
 }
 .de-one-line {
+  max-width: 80px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
