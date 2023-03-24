@@ -570,6 +570,7 @@ export default {
   data() {
     return {
       sceneMode: false,
+      saveGroupLoading: false,
       treeLoading: false,
       dialogTitle: '',
       search: '',
@@ -859,12 +860,16 @@ export default {
     saveGroup(group) {
       this.$refs['groupForm'].validate((valid) => {
         if (valid) {
+          if (this.saveGroupLoading) return
+          this.saveGroupLoading = true
           addGroup(group).then((res) => {
             this.close()
             this.openMessageSuccess('dataset.save_success')
             this.expandedArray.push(group.pid)
             const opt = group.id ? 'rename' : 'new'
             updateCacheTree(opt, 'dataset-tree', res.data, this.tData)
+          }).finally(() => {
+            this.saveGroupLoading = false
           })
         } else {
           return false

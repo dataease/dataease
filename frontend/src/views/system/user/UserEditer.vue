@@ -561,6 +561,7 @@ export default {
             this.$success(this.$t('commons.save_success'))
             this.reset()
             this.$emit('saved')
+          }).finally(() => {
             this.loading = false
           })
         } else {
