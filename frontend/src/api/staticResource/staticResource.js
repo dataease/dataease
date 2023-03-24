@@ -4,7 +4,7 @@ import store from '@/store'
 
 export function uploadFile(fileId, param) {
   return request({
-    url: '/static/resource/upload/' + fileId,
+    url: '/staticResource/upload/' + fileId,
     method: 'post',
     headers: { 'Content-Type': 'multipart/form-data' },
     data: param,
@@ -26,7 +26,7 @@ export function uploadFileResult(file, callback) {
 
 export function findResourceAsBase64(params) {
   return request({
-    url: '/static/resource/findResourceAsBase64',
+    url: '/staticResource/findResourceAsBase64',
     method: 'post',
     data: params,
     loading: false

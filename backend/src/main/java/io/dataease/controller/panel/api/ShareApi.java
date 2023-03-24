@@ -2,6 +2,7 @@ package io.dataease.controller.panel.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
+import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.plugins.common.base.domain.PanelShare;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.controller.request.panel.PanelShareFineDto;
@@ -30,6 +31,7 @@ public interface ShareApi {
 
     @ApiOperation("查询分享给我")
     @PostMapping("/treeList")
+    @SqlInjectValidator(value = {"s.create_time"})
     List<PanelShareDto> treeList(BaseGridRequest request);
 
     @ApiOperation("查询我分享的")

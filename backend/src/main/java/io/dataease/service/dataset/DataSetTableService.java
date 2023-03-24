@@ -147,6 +147,7 @@ public class DataSetTableService {
     public static final String regex = "\\$\\{(.*?)\\}";
     private static final String SubstitutedParams = "DATAEASE_PATAMS_BI";
     private static final String SubstitutedSql = " 'BI' = 'BI' ";
+    private static final String SubstitutedSqlVirtualData = " 1 < 2 ";
 
     @Value("${upload.file.path}")
     private String path;
@@ -323,7 +324,7 @@ public class DataSetTableService {
         if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.name()) && !"appApply".equalsIgnoreCase(datasetTable.getOptFrom())) {
             DataSetTableRequest dataSetTableRequest = new DataSetTableRequest();
             BeanUtils.copyBean(dataSetTableRequest, datasetTable);
-            getSQLPreview(dataSetTableRequest);
+            getSQLPreview(dataSetTableRequest, false);
         }
         if (StringUtils.isEmpty(datasetTable.getId())) {
             datasetTable.setId(UUID.randomUUID().toString());
@@ -1058,7 +1059,8 @@ public class DataSetTableService {
             Matcher matcher = pattern.matcher(sql);
             while (matcher.find()) {
                 SqlVariableDetails defaultsSqlVariableDetail = null;
-                List<SqlVariableDetails> defaultsSqlVariableDetails = new Gson().fromJson(sqlVariableDetails, new TypeToken<List<SqlVariableDetails>>() {}.getType());
+                List<SqlVariableDetails> defaultsSqlVariableDetails = new Gson().fromJson(sqlVariableDetails, new TypeToken<List<SqlVariableDetails>>() {
+                }.getType());
                 for (SqlVariableDetails sqlVariableDetail : defaultsSqlVariableDetails) {
                     if (matcher.group().substring(2, matcher.group().length() - 1).equalsIgnoreCase(sqlVariableDetail.getVariableName())) {
                         defaultsSqlVariableDetail = sqlVariableDetail;
@@ -1069,8 +1071,7 @@ public class DataSetTableService {
                         defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE) && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
                     sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
                 }
-                if (isEdit && defaultsSqlVariableDetail != null && defaultsSqlVariableDetail.getDefaultValueScope() != null &&
-                        defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.EDIT) && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
+                if (isEdit && defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())){
                     sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
                 }
             }
@@ -1168,8 +1169,12 @@ public class DataSetTableService {
             binaryExpression = (BinaryExpression) expr;
         } catch (Exception e) {
         }
-        if (binaryExpression != null && !(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getRightExpression() instanceof BinaryExpression) && hasVariable(binaryExpression.toString())) {
-            stringBuilder.append(SubstitutedSql);
+        if (binaryExpression != null) {
+            if (!(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && hasVariable(binaryExpression.getRightExpression().toString())) {
+                stringBuilder.append(SubstitutedSql);
+            }else {
+                expr.accept(getExpressionDeParser(stringBuilder));
+            }
         } else {
             expr.accept(getExpressionDeParser(stringBuilder));
         }
@@ -1243,7 +1248,7 @@ public class DataSetTableService {
         return datasetSqlLogMapper.selectByExample(example);
     }
 
-    public ResultHolder getSQLPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
+    public ResultHolder getSQLPreview(DataSetTableRequest dataSetTableRequest, boolean realData) throws Exception {
         DatasetSqlLog datasetSqlLog = new DatasetSqlLog();
 
         DataTableInfoDTO dataTableInfo = new Gson().fromJson(dataSetTableRequest.getInfo(), DataTableInfoDTO.class);
@@ -1254,6 +1259,9 @@ public class DataSetTableService {
             throw new Exception(Translator.get("i18n_invalid_ds"));
         }
         String tmpSql = removeVariables(sql, ds.getType());
+        if(!realData){
+            tmpSql.replaceAll(SubstitutedSql, SubstitutedSqlVirtualData);
+        }
         if (dataSetTableRequest.getMode() == 1 && (tmpSql.contains(SubstitutedParams) || tmpSql.contains(SubstitutedSql.trim()))) {
             throw new Exception(Translator.get("I18N_SQL_variable_direct_limit"));
         }
@@ -1264,8 +1272,7 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
 
-
-        sql = handleVariableDefaultValue(sql, dataSetTableRequest.getSqlVariableDetails(), ds.getType(), true);
+        sql = realData ? handleVariableDefaultValue(sql, dataSetTableRequest.getSqlVariableDetails(), ds.getType(), true) : removeVariables(sql, ds.getType()).replaceAll(SubstitutedSql, SubstitutedSqlVirtualData);
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
@@ -1641,7 +1648,9 @@ public class DataSetTableService {
             // field
             StringBuilder field = new StringBuilder();
             for (Map.Entry<String, String[]> next : checkedInfo.entrySet()) {
-                field.append(StringUtils.join(next.getValue(), ",")).append(",");
+                if (next.getValue().length > 0) {
+                    field.append(StringUtils.join(next.getValue(), ",")).append(",");
+                }
             }
             String f = subPrefixSuffixChar(field.toString());
             // join
@@ -1789,7 +1798,9 @@ public class DataSetTableService {
             // field
             StringBuilder field = new StringBuilder();
             for (Map.Entry<String, String[]> next : checkedInfo.entrySet()) {
-                field.append(StringUtils.join(next.getValue(), ",")).append(",");
+                if (next.getValue().length > 0) {
+                    field.append(StringUtils.join(next.getValue(), ",")).append(",");
+                }
             }
             String f = subPrefixSuffixChar(field.toString());
             // join
@@ -1931,7 +1942,7 @@ public class DataSetTableService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             DataTableInfoDTO dataTableInfo = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
             String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
-            sql = handleVariableDefaultValue(sql, null, ds.getType(), false);
+            sql = removeVariables(sql, ds.getType()).replaceAll(SubstitutedSql, SubstitutedSqlVirtualData);
             String sqlAsTable = qp.createSQLPreview(sql, null);
             datasourceRequest.setQuery(sqlAsTable);
             fields = datasourceProvider.fetchResultField(datasourceRequest);
@@ -2268,7 +2279,7 @@ public class DataSetTableService {
         }
         Set<String> nameSet = new HashSet<>();
         for (DataSetTableRequest table : datasetTable) {
-            if(StringUtils.isEmpty(table.getName())){
+            if (StringUtils.isEmpty(table.getName())) {
                 throw new RuntimeException(Translator.get("I18n_name_cant_empty"));
             }
             nameSet.add(table.getName());

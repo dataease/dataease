@@ -1,5 +1,6 @@
 package io.dataease.controller.sys;
 
+import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.sys.base.BaseGridRequest;
@@ -40,6 +41,7 @@ public class SysDeptController extends ResultHolder {
     }
 
     @PostMapping("/search")
+    @SqlInjectValidator({"name"})
     public List<DeptNodeResponse> search(@RequestBody BaseGridRequest request){
         List<SysDept> nodes = deptService.nodesTreeByCondition(request);
         List<DeptNodeResponse> nodeResponses = nodes.stream().map(node -> {

@@ -291,7 +291,5 @@ export default {
 .select-all {
   padding: 10px 20px 0 20px;
 }
-.coustom-de-select {
-  z-index: 999 !important;
-}
+
 </style>

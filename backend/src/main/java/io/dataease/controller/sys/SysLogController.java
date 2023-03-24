@@ -3,6 +3,7 @@ package io.dataease.controller.sys;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.controller.handler.annotation.I18n;
@@ -36,6 +37,7 @@ public class SysLogController {
             @ApiImplicitParam(paramType = "path", name = "pageSize", value = "页容量", required = true, dataType = "Integer"),
             @ApiImplicitParam(name = "request", value = "查询条件", required = true)
     })
+    @SqlInjectValidator(value = {"time"})
     public Pager<List<SysLogGridDTO>> logGrid(@PathVariable int goPage, @PathVariable int pageSize,
                                               @RequestBody KeyGridRequest request) {
         request = logService.logRetentionProxy(request);

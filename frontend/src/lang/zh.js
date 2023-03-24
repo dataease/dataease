@@ -1516,7 +1516,7 @@ export default {
     table_auto_break_line: '自动换行',
     table_break_line_tip: '开启自动换行，表格行高设置将失效',
     step: '步长(px)',
-    no_function: '函数尚未支持直接引用，请在字段表达式中手动输入。'
+    no_function: '函数尚未支持直接引用，请在字段表达式中手动输入'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
@@ -1529,7 +1529,7 @@ export default {
     params_work: '仅编辑时生效：参数值仅在数据集编辑时生效；全局生效：在数据集查看、预览、以及用到数据集的视图中均生效。',
     select_year: '选择年',
     sql_variable_limit_1: '1、SQL 变量只能在 WHERE 条件中使用',
-    sql_variable_limit_2: '2、示例：select * from table_name where column_name1=\'${param_name1}\' and column_name2 in \'${param_name2}\'',
+    sql_variable_limit_2: '2、示例：select * from table_name where column_name1=\'${param_name1}\' and column_name2 in ${param_name2}',
     select_month: '选择月',
     select_date: '选择日期',
     select_time: '选择时间',

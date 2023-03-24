@@ -85,7 +85,8 @@ export default {
       value: null,
       data: [],
       onFocus: false,
-      keyWord: ''
+      keyWord: '',
+      separator: ','
     }
   },
   computed: {
@@ -150,7 +151,7 @@ export default {
       if (!token && linkToken) {
         method = linkMultFieldValues
       }
-      const param = { fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(this.separator), sort: this.element.options.attrs.sort }
       if (this.panelInfo.proxy) {
         param.userId = this.panelInfo.proxy
       }
@@ -189,7 +190,7 @@ export default {
       if (!token && linkToken) {
         method = linkMultFieldValues
       }
-      const param = { fieldIds: this.element.options.attrs.fieldId.split(','), sort: this.element.options.attrs.sort }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(this.separator), sort: this.element.options.attrs.sort }
       if (this.panelInfo.proxy) {
         param.userId = this.panelInfo.proxy
       }
@@ -246,8 +247,8 @@ export default {
             this.element.options.value = ''
             return
           }
-          const tempValueArray = JSON.parse(JSON.stringify(this.element.options.value.split(',')))
-          this.element.options.value = tempValueArray.filter(item => optionList.some(option => option === item)).join(',')
+          const tempValueArray = JSON.parse(JSON.stringify(this.element.options.value.split(this.separator)))
+          this.element.options.value = tempValueArray.filter(item => optionList.some(option => option === item)).join(this.separator)
         }
       }
     },
@@ -298,7 +299,7 @@ export default {
           method = linkMultFieldValues
         }
         method({
-          fieldIds: this.element.options.attrs.fieldId.split(','),
+          fieldIds: this.element.options.attrs.fieldId.split(this.separator),
           sort: this.element.options.attrs.sort
         }).then(res => {
           this.data = this.optionData(res.data)
@@ -322,7 +323,7 @@ export default {
         if (value === null) {
           this.element.options.value = ''
         } else {
-          this.element.options.value = Array.isArray(value) ? value.join() : value
+          this.element.options.value = Array.isArray(value) ? value.join(this.separator) : value
         }
         this.element.options.manualModify = false
       } else {
@@ -365,16 +366,19 @@ export default {
     formatFilterValue() {
       if (this.value === null) return []
       if (Array.isArray(this.value)) return this.value
+      if (!this.element.options.attrs.multiple) {
+        return [this.value]
+      }
       return this.value.split(',')
     },
     fillValueDerfault() {
       const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
       if (this.element.options.attrs.multiple) {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
-        return defaultV.split(',')
+        return defaultV.split(this.separator)
       } else {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
-        return defaultV.split(',')[0]
+        return defaultV.split(this.separator)[0]
       }
     },
     optionData(data) {

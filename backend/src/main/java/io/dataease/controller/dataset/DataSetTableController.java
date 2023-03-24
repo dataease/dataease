@@ -170,7 +170,7 @@ public class DataSetTableController {
             @DePermission(type = DePermissionType.DATASOURCE, value = "dataSourceId", level = ResourceAuthLevel.DATASOURCE_LEVEL_USE)
     }, logical = Logical.AND)
     public ResultHolder getSQLPreview(@RequestBody DataSetTableRequest dataSetTableRequest) throws Exception {
-        return dataSetTableService.getSQLPreview(dataSetTableRequest);
+        return dataSetTableService.getSQLPreview(dataSetTableRequest, true);
     }
 
     @ApiOperation("根据sql查询预览数据")

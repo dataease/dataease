@@ -1521,7 +1521,7 @@ export default {
     table_auto_break_line: 'Auto Line Feed',
     table_break_line_tip: 'If open this option,the table item height will disabled.',
     step: 'Step(px)',
-    no_function: 'Function not enter，please input.'
+    no_function: 'Function not enter，please input'
   },
   dataset: {
     scope_edit: 'Effective only when editing',
@@ -1533,7 +1533,7 @@ export default {
     field_rename: 'Rename Field',
     params_work: 'Effective only when editing: parameter values are effective only when editing data sets; Global Effective: It takes effect in dataset view, preview, and view where dataset is used.',
     sql_variable_limit_1: '1、SQL variables can only be used in where conditions',
-    sql_variable_limit_2: '2、Example：select * from table_name where column_name1=\'${param_name1}\' and column_name2 in \'${param_name2}\'',
+    sql_variable_limit_2: '2、Example：select * from table_name where column_name1=\'${param_name1}\' and column_name2 in ${param_name2}',
     select_year: 'Select Year',
     select_month: 'Select Month',
     select_date: 'Select Date',

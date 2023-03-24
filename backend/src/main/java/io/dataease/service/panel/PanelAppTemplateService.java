@@ -14,7 +14,7 @@ import io.dataease.controller.request.panel.PanelGroupRequest;
 import io.dataease.dto.DatasourceDTO;
 import io.dataease.ext.ExtPanelAppTemplateMapper;
 import io.dataease.plugins.common.base.domain.*;
-import io.dataease.plugins.common.base.mapper.PanelAppTemplateMapper;
+import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.service.chart.ChartViewFieldService;
 import io.dataease.service.chart.ChartViewService;
@@ -72,6 +72,14 @@ public class PanelAppTemplateService {
     private StaticResourceService staticResourceService;
     @Resource
     private ExtractDataService extractDataService;
+    @Resource
+    private PanelLinkJumpMapper panelLinkJumpMapper;
+    @Resource
+    private PanelLinkJumpInfoMapper panelLinkJumpInfoMapper;
+    @Resource
+    private PanelViewLinkageMapper panelViewLinkageMapper;
+    @Resource
+    private PanelViewLinkageFieldMapper panelViewLinkageFieldMapper;
 
     public List<PanelAppTemplateWithBLOBs> list(PanelAppTemplateRequest request) {
         return extPanelAppTemplateMapper.queryBaseInfo(request.getNodeType(), request.getPid());
@@ -409,6 +417,69 @@ public class PanelAppTemplateService {
             BeanUtils.copyBean(updataDsRequest, updateDatasourceList.get(i));
             datasourceService.updateDatasource(updataDsRequest);
 
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String,String> applyLinkJumps(List<PanelLinkJump> linkJumps, Map<String, String> chartViewsRealMap, String newPanelId) {
+        Map<String,String> linkJumpIdMap = new HashMap<>();
+        if(!CollectionUtils.isEmpty(linkJumps)){
+            for(PanelLinkJump linkJump :linkJumps){
+                String newLinkJumpId = UUIDUtil.getUUIDAsString();
+                linkJumpIdMap.put(linkJump.getId(),newLinkJumpId);
+                linkJump.setId(newLinkJumpId);
+                linkJump.setSourcePanelId(newPanelId);
+                linkJump.setSourceViewId(chartViewsRealMap.get(linkJump.getSourceViewId()));
+                panelLinkJumpMapper.insertSelective(linkJump);
+            }
+        }
+        return linkJumpIdMap;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void applyLinkJumpInfos(List<PanelLinkJumpInfo> linkJumpInfos, Map<String, String> linkJumpIdMap, Map<String, String> datasetFieldsRealMap) {
+        if(!CollectionUtils.isEmpty(linkJumpInfos)){
+            for(PanelLinkJumpInfo linkJumpInfo :linkJumpInfos){
+                String newLinkJumpInfoId = UUIDUtil.getUUIDAsString();
+                linkJumpInfo.setId(newLinkJumpInfoId);
+                linkJumpInfo.setLinkJumpId(linkJumpIdMap.get(linkJumpInfo.getLinkJumpId()));
+                linkJumpInfo.setSourceFieldId(datasetFieldsRealMap.get(linkJumpInfo.getSourceFieldId()));
+                datasetFieldsRealMap.forEach((k, v) -> {
+                    linkJumpInfo.setContent(linkJumpInfo.getContent().replaceAll(k, v));
+                });
+                panelLinkJumpInfoMapper.insertSelective(linkJumpInfo);
+            }
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String,String> applyLinkages(List<PanelViewLinkage> linkages, Map<String, String> chartViewsRealMap, String newPanelId) {
+        Map<String,String> linkageIdMap = new HashMap<>();
+        if(!CollectionUtils.isEmpty(linkages)){
+            for(PanelViewLinkage linkage :linkages){
+                String newId = UUIDUtil.getUUIDAsString();
+                linkageIdMap.put(linkage.getId(),newId);
+                linkage.setId(newId);
+                linkage.setPanelId(newPanelId);
+                linkage.setSourceViewId(chartViewsRealMap.get(linkage.getSourceViewId()));
+                linkage.setTargetViewId(chartViewsRealMap.get(linkage.getTargetViewId()));
+                panelViewLinkageMapper.insertSelective(linkage);
+            }
+        }
+        return linkageIdMap;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void applyLinkageFields(List<PanelViewLinkageField> linkageFields, Map<String, String> linkageIdMap, Map<String, String> datasetFieldsRealMap) {
+        if(!CollectionUtils.isEmpty(linkageFields)){
+            for(PanelViewLinkageField linkageField :linkageFields){
+                String newId = UUIDUtil.getUUIDAsString();
+                linkageField.setId(newId);
+                linkageField.setLinkageId(linkageIdMap.get(linkageField.getLinkageId()));
+                linkageField.setSourceField(datasetFieldsRealMap.get(linkageField.getSourceField()));
+                linkageField.setTargetField(datasetFieldsRealMap.get(linkageField.getTargetField()));
+                panelViewLinkageFieldMapper.insertSelective(linkageField);
+            }
         }
     }
 }
