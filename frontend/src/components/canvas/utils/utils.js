@@ -373,7 +373,12 @@ export function insertBatchTreeNode(nodeInfoArray, tree) {
   }
 }
 
-export function updateCacheTree(opt, treeName, nodeInfo, tree) {
+export function updateCacheTree(opt, treeName, nodeInfoFull, tree) {
+  const nodeInfo = {
+    ...nodeInfoFull,
+    panelData: null,
+    panelStyle: null
+  }
   if (opt === 'new' || opt === 'copy') {
     insertTreeNode(nodeInfo, tree)
   } else if (opt === 'move') {
