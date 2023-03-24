@@ -146,7 +146,7 @@ public class DataSetTableService {
     public static final String regex = "\\$\\{(.*?)\\}";
     private static final String SubstitutedParams = "DATAEASE_PATAMS_BI";
     private static final String SubstitutedSql = " 'BI' = 'BI' ";
-    private static final String SubstitutedSqlVirtualData = " 1 < 2 ";
+    private static final String SubstitutedSqlVirtualData = " 1 > 2 ";
 
     @Value("${upload.file.path}")
     private String path;
@@ -1271,7 +1271,7 @@ public class DataSetTableService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
 
-        sql = realData ? handleVariableDefaultValue(sql, dataSetTableRequest.getSqlVariableDetails(), ds.getType(), true) : removeVariables(sql, ds.getType()).replaceAll(SubstitutedSql, SubstitutedSqlVirtualData);
+        sql = realData ? handleVariableDefaultValue(sql, dataSetTableRequest.getSqlVariableDetails(), ds.getType(), true) : removeVariables(sql, ds.getType()).replaceAll(SubstitutedSql.trim(), SubstitutedSqlVirtualData);
         if (StringUtils.isEmpty(sql)) {
             DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
         }
@@ -1941,7 +1941,7 @@ public class DataSetTableService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             DataTableInfoDTO dataTableInfo = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
             String sql = dataTableInfo.isBase64Encryption() ? new String(java.util.Base64.getDecoder().decode(dataTableInfo.getSql())) : dataTableInfo.getSql();
-            sql = removeVariables(sql, ds.getType()).replaceAll(SubstitutedSql, SubstitutedSqlVirtualData);
+            sql = removeVariables(sql, ds.getType()).replaceAll(SubstitutedSql.trim(), SubstitutedSqlVirtualData);
             String sqlAsTable = qp.createSQLPreview(sql, null);
             datasourceRequest.setQuery(sqlAsTable);
             fields = datasourceProvider.fetchResultField(datasourceRequest);
