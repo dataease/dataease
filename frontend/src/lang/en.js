@@ -607,7 +607,8 @@ export default {
     oidc: 'OIDC Setting',
     theme: 'Theme Setting',
     cas: 'CAS Setting',
-    map: 'MAP Setting'
+    map: 'MAP Setting',
+    select_left: 'Please select a region on the left'
   },
   license: {
     i18n_no_license_record: 'No License Record',
