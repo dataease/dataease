@@ -5,8 +5,10 @@ import { isExternal } from '@/utils/validate'
 import { resolvePath } from '@/router/establish'
 import { Icon } from '@/components/icon-custom'
 import { ElHeader, ElMenu, ElMenuItem } from 'element-plus-secondary'
-import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter, useRoute } from 'vue-router'
+import LangSelector from '@/layout/components/LangSelector.vue'
+import TopDoc from '@/layout/components/TopDoc.vue'
+import AccountOperator from '@/layout/components/AccountOperator.vue'
 const { push } = useRouter()
 const route = useRoute()
 
@@ -16,7 +18,6 @@ const activeIndex = computed(() => {
   }
   return route.path
 })
-const { t } = useI18n()
 const permissionStore = usePermissionStore()
 
 const routers = permissionStore.getRoutersNotHidden
@@ -47,7 +48,11 @@ const handleSelect = (index: string) => {
         {{ item.meta.title }}
       </el-menu-item>
     </el-menu>
-    <div class="operate-setting">{{ t('common.inputText') }}</div>
+    <div class="operate-setting">
+      <LangSelector />
+      <TopDoc />
+      <AccountOperator />
+    </div>
   </el-header>
 </template>
 
@@ -57,6 +62,18 @@ const handleSelect = (index: string) => {
   align-items: center;
   .operate-setting {
     margin-left: auto;
+    float: right;
+    height: 56px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    &:focus {
+      outline: none;
+    }
+    div {
+      padding: 0 10px;
+    }
   }
 }
 .flex-grow {
