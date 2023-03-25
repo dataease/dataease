@@ -608,7 +608,8 @@ export default {
     oidc: 'OIDC设置',
     theme: '主题设置',
     cas: 'CAS设置',
-    map: '地图设置'
+    map: '地图设置',
+    select_left: '请在左侧选择区域'
   },
   license: {
     i18n_no_license_record: '没有 License 记录',
