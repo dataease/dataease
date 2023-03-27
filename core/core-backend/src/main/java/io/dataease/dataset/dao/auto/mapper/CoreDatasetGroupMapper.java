@@ -1,6 +1,6 @@
 package io.dataease.dataset.dao.auto.mapper;
 
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
+import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-27
+ * @since 2023-03-24
  */
-public interface CoreDatasetTableMapper extends BaseMapper<CoreDatasetTable> {
+public interface CoreDatasetGroupMapper extends BaseMapper<CoreDatasetGroup> {
 
 }

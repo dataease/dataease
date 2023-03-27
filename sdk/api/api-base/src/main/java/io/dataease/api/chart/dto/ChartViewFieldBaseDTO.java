@@ -11,7 +11,11 @@ import java.io.Serializable;
 public class ChartViewFieldBaseDTO implements Serializable {
     private String id;
 
-    private String tableId;
+    private String datasourceId;
+
+    private String datasetTableId;
+
+    private String datasetGroupId;
 
     private String originName;
 

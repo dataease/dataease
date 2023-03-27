@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-22
+ * @since 2023-03-27
  */
 @TableName("core_dataset_table_field")
 public class CoreDatasetTableField implements Serializable {
@@ -22,9 +22,19 @@ public class CoreDatasetTableField implements Serializable {
     private String id;
 
     /**
-     * 表ID
+     * 数据源ID
+     */
+    private String datasourceId;
+
+    /**
+     * 数据表ID
      */
     private String datasetTableId;
+
+    /**
+     * 数据集ID
+     */
+    private String datasetGroupId;
 
     /**
      * 原始字段名
@@ -108,12 +118,28 @@ public class CoreDatasetTableField implements Serializable {
         this.id = id;
     }
 
+    public String getDatasourceId() {
+        return datasourceId;
+    }
+
+    public void setDatasourceId(String datasourceId) {
+        this.datasourceId = datasourceId;
+    }
+
     public String getDatasetTableId() {
         return datasetTableId;
     }
 
     public void setDatasetTableId(String datasetTableId) {
         this.datasetTableId = datasetTableId;
+    }
+
+    public String getDatasetGroupId() {
+        return datasetGroupId;
+    }
+
+    public void setDatasetGroupId(String datasetGroupId) {
+        this.datasetGroupId = datasetGroupId;
     }
 
     public String getOriginName() {
@@ -248,7 +274,9 @@ public class CoreDatasetTableField implements Serializable {
     public String toString() {
         return "CoreDatasetTableField{" +
         "id = " + id +
+        ", datasourceId = " + datasourceId +
         ", datasetTableId = " + datasetTableId +
+        ", datasetGroupId = " + datasetGroupId +
         ", originName = " + originName +
         ", name = " + name +
         ", description = " + description +
