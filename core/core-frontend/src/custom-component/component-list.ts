@@ -27,7 +27,7 @@ export const commonAttr = {
 // 编辑器左侧组件列表
 const list = [
   {
-    component: 'rect-shape',
+    component: 'RectShape',
     label: '矩形',
     propValue: '&nbsp;',
     icon: 'juxing',

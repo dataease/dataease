@@ -13,13 +13,13 @@ import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
 import Grid from './Grid.vue'
-import RectShape from '@/custom-component/rect-shape/Component.vue'
 import { changeStyleWithScale } from '@/utils/translate'
 import { ref, onMounted, toRef, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { storeToRefs } from 'pinia'
+import findComponent from '@/utils/components'
 
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -60,8 +60,8 @@ const handleMouseDown = e => {
 
   const startX = e.clientX
   const startY = e.clientY
-  start.value.x = startX.value - editorX.value
-  start.value.y = startY.value - editorY.value
+  start.value.x = startX - editorX.value
+  start.value.y = startY - editorY.value
   // 展示选中区域
   isShowArea.value = true
 
@@ -245,11 +245,6 @@ const editStyle = computed(() => {
     height: changeStyleWithScale(canvasStyleData.value['height']) + 'px'
   }
 })
-
-const componentsMap = {
-  'rect-shape': RectShape
-}
-
 onMounted(() => {
   // 获取编辑器元素
   composeStore.getEditor()
@@ -269,7 +264,7 @@ onMounted(() => {
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-    <!--    <Grid />-->
+    <Grid />
 
     <!--页面组件列表展示-->
     <Shape
@@ -283,7 +278,7 @@ onMounted(() => {
       :class="{ lock: item.isLock }"
     >
       <component
-        :is="componentsMap[item.component]"
+        :is="findComponent(item.component)"
         v-if="item.component.startsWith('SVG')"
         :id="'component' + item.id"
         :style="getSVGStyleInner(item.style)"
@@ -294,7 +289,7 @@ onMounted(() => {
       />
 
       <component
-        :is="componentsMap[item.component]"
+        :is="findComponent(item.component)"
         v-else-if="item.component != 'VText'"
         :id="'component' + item.id"
         class="component"
@@ -305,7 +300,7 @@ onMounted(() => {
       />
 
       <component
-        :is="componentsMap[item.component]"
+        :is="findComponent(item.component)"
         v-else
         :id="'component' + item.id"
         class="component"

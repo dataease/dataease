@@ -105,15 +105,15 @@ listenGlobalKeyDown()
           <DvCanvas />
         </div>
       </section>
-      <!-- 右侧属性列表 -->
-      <!--      <section class="right">-->
-      <!--        <el-tabs v-if="curComponent" v-model="activeName">-->
-      <!--          <el-tab-pane label="属性" name="attr">-->
-      <!--            <component :is="curComponent['component'] + '-attr'" />-->
-      <!--          </el-tab-pane>-->
-      <!--        </el-tabs>-->
-      <!--        <CanvasAttr v-else></CanvasAttr>-->
-      <!--      </section>-->
+      <!--右侧属性列表-->
+      <section class="right">
+        <el-tabs v-if="curComponent" v-model="activeName">
+          <el-tab-pane label="属性" name="attr">
+            <component :is="curComponent['component'] + '-attr'" />
+          </el-tab-pane>
+        </el-tabs>
+        <CanvasAttr v-else></CanvasAttr>
+      </section>
     </main>
   </div>
 </template>
@@ -121,7 +121,6 @@ listenGlobalKeyDown()
 <style lang="less">
 .home {
   height: 100vh;
-  background: #252d36;
 
   main {
     height: calc(100% - 64px);
@@ -156,8 +155,8 @@ listenGlobalKeyDown()
 
     .center {
       margin-left: 200px;
-      //margin-right: 288px;
-      background: #333333;
+      margin-right: 288px;
+      background: #f5f5f5;
       height: 100%;
       overflow: auto;
       padding: 20px;
