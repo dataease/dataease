@@ -32,8 +32,8 @@ CREATE TABLE `core_menu`
     `menu_sort` int         DEFAULT NULL COMMENT '排序',
     `icon`      varchar(45) DEFAULT NULL COMMENT '图标',
     `path`      varchar(45) DEFAULT NULL COMMENT '路径',
-    `hidden`    tinyint unsigned NOT NULL DEFAULT '0' COMMENT '隐藏',
-    `in_layout` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '是否内部',
+    `hidden`    tinyint(1)  NOT NULL DEFAULT '0' COMMENT '隐藏',
+    `in_layout` tinyint(1)  NOT NULL DEFAULT '1' COMMENT '是否内部',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb3;
 

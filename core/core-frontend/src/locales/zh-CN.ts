@@ -9,11 +9,15 @@ export default {
     require: '必填',
     personal_info: '个人信息',
     about: '关于',
-    exit_system: '退出系统'
+    exit_system: '退出系统',
+    letter_start: '必须以字母开头',
+    required: '必填'
   },
   login: {
     welcome: '欢迎使用',
-    btn: '登录'
+    btn: '登录',
+    username_format: '3-10位字母数字下划线且以字母开头',
+    pwd_format: '密码长度在5-15'
   },
   component: {
     columnList: '列表项',
