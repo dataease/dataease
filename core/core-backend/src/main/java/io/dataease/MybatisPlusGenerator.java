@@ -1,7 +1,9 @@
 package io.dataease;
 
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
+import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
 import com.baomidou.mybatisplus.generator.config.TemplateType;
+import com.baomidou.mybatisplus.generator.config.converts.MySqlTypeConvert;
 
 /**
  * 研发使用，请勿提交
@@ -39,7 +41,9 @@ public class MybatisPlusGenerator {
         path = path.substring(0, path.indexOf("target/classes"));
         String packageName = packageName() + "." + busi + AUTO_DAO;
         String outPath = path + codeDir;
-        FastAutoGenerator.create(url, username, password)
+        DataSourceConfig.Builder dsc = new DataSourceConfig.Builder(url, username, password);
+        dsc.typeConvert( MySqlTypeConvert.INSTANCE);
+        FastAutoGenerator.create(dsc)
                 .globalConfig(builder -> {
                     builder.author("fit2cloud").outputDir(outPath);
                 })
@@ -47,7 +51,7 @@ public class MybatisPlusGenerator {
                     builder.parent(packageName);
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude(TABLE_NAME); //设置需要生成的表名
+                    builder.addInclude(TABLE_NAME).entityBuilder().enableFileOverride().mapperBuilder().enableFileOverride(); //设置需要生成的表名
                 })
                 .templateConfig(builder -> {
                     builder.disable(TemplateType.CONTROLLER).disable(TemplateType.SERVICE).disable(TemplateType.SERVICE_IMPL).disable(TemplateType.XML).build();

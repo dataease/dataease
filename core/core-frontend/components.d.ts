@@ -29,6 +29,8 @@ declare module '@vue/runtime-core' {
     ElFormItem: typeof import('element-plus-secondary/es')['ElFormItem']
     ElIcon: typeof import('element-plus-secondary/es')['ElIcon']
     ElInput: typeof import('element-plus-secondary/es')['ElInput']
+    ElRadio: typeof import('element-plus-secondary/es')['ElRadio']
+    ElRadioGroup: typeof import('element-plus-secondary/es')['ElRadioGroup']
     ElTabPane: typeof import('element-plus-secondary/es')['ElTabPane']
     ElTabs: typeof import('element-plus-secondary/es')['ElTabs']
     EventList: typeof import('./src/components/data-visualization/EventList.vue')['default']

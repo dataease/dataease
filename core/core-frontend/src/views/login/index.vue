@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElButton, ElCol, ElRow, ElInput } from 'element-plus-secondary'
+import { ElButton, ElCol, ElRow, ElInput, FormRules } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { loginApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
@@ -31,10 +31,31 @@ const state = reactive({
     loginType: 0,
     password: ''
   },
-  loginRules: {},
   uiInfo: {},
   radioTypes: [],
   footContent: ''
+})
+
+const checkUsername = (_rule: any, value: any, callback: any) => {
+  if (!value) {
+    return callback(new Error(t('common.required')))
+  }
+  setTimeout(() => {
+    const reg = /^[a-zA-Z][a-zA-Z0-9]{2,9}/
+    if (!reg.test(value)) {
+      callback(new Error(t('login.username_format')))
+    } else {
+      callback()
+    }
+  }, 1000)
+}
+
+const rules = reactive<FormRules>({
+  username: [{ validator: checkUsername, trigger: 'blur' }],
+  password: [
+    { required: true, message: t('common.required'), trigger: 'blur' },
+    { min: 5, max: 15, message: t('login.pwd_format'), trigger: 'blur' }
+  ]
 })
 
 const showQr = () => {
@@ -46,7 +67,10 @@ const changeLoginType = val => {
 }
 
 const handleLogin = () => {
-  const param = {}
+  const name = state.loginForm.username
+  const pwd = state.loginForm.password
+
+  const param = { name, pwd }
   loginApi(param)
     .then(res => {
       const token = res.data
@@ -54,7 +78,7 @@ const handleLogin = () => {
       router.push({ path: '/' })
     })
     .catch(() => {
-      wsCache.set(appStore.getToken, 'i am Authorization')
+      // wsCache.set(appStore.getToken, 'i am Authorization')
       router.push({ path: '/' })
     })
 }
@@ -80,7 +104,7 @@ const switchCodeIndex = codeIndex => {
             v-show="!codeShow"
             ref="loginForm"
             :model="state.loginForm"
-            :rules="state.loginRules"
+            :rules="rules"
             size="default"
           >
             <div class="login-logo">

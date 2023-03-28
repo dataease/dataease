@@ -8,6 +8,7 @@ import io.dataease.menu.dao.auto.entity.CoreMenu;
 import io.dataease.menu.dao.auto.mapper.CoreMenuMapper;
 import io.dataease.utils.BeanUtils;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -60,12 +61,16 @@ public class MenuManage {
     }
 
     private MenuVO convert(CoreMenu coreMenu) {
+        if (0 != coreMenu.getPid() && StringUtils.startsWith(coreMenu.getPath(), "/")) {
+            coreMenu.setPath(coreMenu.getPath().substring(1));
+        }
         MenuVO menuVO = new MenuVO();
         BeanUtils.copyBean(menuVO, coreMenu, "children");
         MenuMeta meta = new MenuMeta();
         meta.setTitle(coreMenu.getName());
         meta.setIcon(coreMenu.getIcon());
         menuVO.setMeta(meta);
+
         return menuVO;
     }
 }
