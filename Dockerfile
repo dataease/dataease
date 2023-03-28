@@ -8,7 +8,9 @@ ADD core/core-backend/target/core-backend-$IMAGE_TAG.jar /opt/apps/app.jar
 
 RUN mkdir -p /opt/apps/config
 
-ADD core/core-backend/src/main/resources/application-standalone.yml /opt/apps/config/application.yml
+WORKDIR /opt/apps
+
+#ADD core/core-backend/src/main/resources/application-standalone.yml /opt/apps/config/application.yml
 
 EXPOSE 8100
 
