@@ -34,7 +34,7 @@ const handleDragStart = e => {
     border: 1px solid #ddd;
     cursor: grab;
     text-align: center;
-    color: #59c7f9;
+    color: #333;
     padding: 2px 5px;
     display: flex;
     align-items: center;

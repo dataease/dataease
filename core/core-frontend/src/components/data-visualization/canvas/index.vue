@@ -264,7 +264,7 @@ onMounted(() => {
     @mousedown="handleMouseDown"
   >
     <!-- 网格线 -->
-    <Grid />
+    <!--    <Grid />-->
 
     <!--页面组件列表展示-->
     <Shape
