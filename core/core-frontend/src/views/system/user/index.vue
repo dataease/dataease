@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue'
 import { columnNames } from './options'
+import { Icon } from '@/components/icon-custom'
+import { FilterText } from '@/components/filter-text'
+import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
+import UserForm from './UserForm.vue'
 import {
   ElTableColumn,
   ElTabs,
@@ -8,21 +12,29 @@ import {
   ElButton,
   ElCol,
   ElRow,
-  ElInput
+  ElInput,
+  ElIcon
 } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import ColumnList from '@/components/column-list/src/column-list.vue'
-import GridTable from '@/components/grid-table/src/grid-table.vue'
+import ColumnList from '@/components/column-list/src/ColumnList.vue'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
 const { t } = useI18n()
 const activeName = ref('user')
 const isPluginLoaded = ref(false)
+const drawerMainRef = ref(null)
 const nickName = ref('')
 const handleClick = () => {
   console.log('handleClick')
 }
 
+const drawerMainOpen = () => {
+  drawerMainRef.value.init()
+}
+
 const state = reactive({
   userList: [],
+  columnList: [],
+  filterTexts: [],
   paginationConfig: {
     currentPage: 1,
     pageSize: 10,
@@ -38,6 +50,19 @@ state.userList = Array(20)
   }))
 
 state.paginationConfig.total = state.userList.length
+state.filterTexts = ['12312312', '1231231', '123123']
+
+const columnChange = (columns: string[]) => {
+  state.columnList = columns
+}
+
+const clearFilter = (index?: number) => {
+  if (isNaN(index)) {
+    state.filterTexts = []
+  } else {
+    state.filterTexts.splice(index, 1)
+  }
+}
 </script>
 <template>
   <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
@@ -48,20 +73,44 @@ state.paginationConfig.total = state.userList.length
     <el-row class="user-table__filter top-operate">
       <el-col :span="12">
         <el-button type="primary">
-          <el-icon class="el-icon--right"></el-icon>
+          <el-icon>
+            <Icon name="icon_add_outlined"></Icon>
+          </el-icon>
           {{ t('system.addUser') }}
         </el-button>
       </el-col>
       <el-col :span="12" class="right-filter">
-        <el-input v-model="nickName" clearable />
-        <el-button plain>
-          {{ t('system.addUser') }}
+        <el-input v-model="nickName" clearable>
+          <template #prefix>
+            <el-icon>
+              <Icon name="icon_search-outline_outlined"></Icon>
+            </el-icon>
+          </template>
+        </el-input>
+        <el-button @click="drawerMainOpen" plain>
+          <el-icon>
+            <Icon name="icon-filter"></Icon>
+          </el-icon>
+          筛选
         </el-button>
-        <column-list :is-plugin-loaded="isPluginLoaded" :column-names="columnNames"></column-list>
+        <column-list
+          @column-change="columnChange"
+          :is-plugin-loaded="isPluginLoaded"
+          :column-names="columnNames"
+        ></column-list>
       </el-col>
     </el-row>
-    <div class="user-table__content">
-      <GridTable :columns="[]" :pagination="state.paginationConfig" :table-data="state.userList">
+    <filter-text
+      @clear-filter="clearFilter"
+      :total="state.paginationConfig.total"
+      :filter-texts="state.filterTexts"
+    ></filter-text>
+    <div :class="[state.filterTexts.length ? 'is-in-filter' : 'user-table__content']">
+      <GridTable
+        :columns="state.columnList"
+        :pagination="state.paginationConfig"
+        :table-data="state.userList"
+      >
         <el-table-column type="selection" width="55" />
         <el-table-column prop="username" key="username" label="ID" />
         <el-table-column
@@ -79,6 +128,8 @@ state.paginationConfig.total = state.userList.length
       </GridTable>
     </div>
   </div>
+  <drawer-main ref="drawerMainRef"></drawer-main>
+  <user-form></user-form>
 </template>
 
 <style lang="less" scoped>
@@ -87,7 +138,11 @@ state.paginationConfig.total = state.userList.length
   box-sizing: border-box;
 
   .user-table__content {
-    height: 500px;
+    height: calc(100vh - 225px);
+  }
+
+  .is-in-filter {
+    height: calc(100vh - 290px);
   }
 }
 </style>

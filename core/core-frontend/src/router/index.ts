@@ -26,6 +26,13 @@ export const routes: AppRouteRecordRaw[] = [
     hidden: true,
     meta: {},
     component: () => import('@/views/login/index.vue')
+  },
+  {
+    path: '/dvCanvas',
+    name: 'dvCanvas',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/data-visualization/index.vue')
   }
 ]
 

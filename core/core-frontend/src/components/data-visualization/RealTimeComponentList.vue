@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -47,7 +46,7 @@ const setCurComponent = index => {
       v-for="(item, index) in componentData"
       :key="index"
       class="list"
-      :class="{ actived: transformIndex(index) === curComponentIndex }"
+      :class="{ activated: transformIndex(index) === curComponentIndex }"
       @click="onClick(transformIndex(index))"
     >
       <span class="iconfont" :class="'icon-' + getComponent(index).icon"></span>
@@ -61,7 +60,7 @@ const setCurComponent = index => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .real-time-component-list {
   height: 35%;
 
@@ -110,7 +109,7 @@ const setCurComponent = index => {
     }
   }
 
-  .actived {
+  .activated {
     background: #ecf5ff;
     color: #409eff;
   }

@@ -6,7 +6,7 @@ import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, componentData } = storeToRefs(dvMainStore)
 
-let defaultcomponentData = []
+let defaultComponentData = []
 
 export const snapshotStore = defineStore('snapshot', {
   state: () => {
@@ -19,11 +19,13 @@ export const snapshotStore = defineStore('snapshot', {
     undo() {
       if (this.snapshotIndex >= 0) {
         this.snapshotIndex--
-        const componentData =
-          deepCopy(this.snapshotData[this.snapshotIndex]) || getDefaultcomponentData()
-        if (curComponent) {
+        const componentDataSnapshot =
+          deepCopy(this.snapshotData[this.snapshotIndex]) || getDefaultComponentData()
+        if (curComponent.value) {
           // 如果当前组件不在 componentData 中，则置空
-          const needClean = !componentData.find(component => curComponent.value.id === component.id)
+          const needClean = !componentDataSnapshot.find(
+            component => curComponent.value.id === component.id
+          )
 
           if (needClean) {
             dvMainStore.setCurComponent({
@@ -32,7 +34,7 @@ export const snapshotStore = defineStore('snapshot', {
             })
           }
         }
-        dvMainStore.setComponentData(componentData)
+        dvMainStore.setComponentData(componentDataSnapshot)
       }
     },
 
@@ -45,7 +47,7 @@ export const snapshotStore = defineStore('snapshot', {
 
     recordSnapshot() {
       // 添加新的快照
-      this.snapshotData[++this.snapshotIndex] = deepCopy(componentData)
+      this.snapshotData[++this.snapshotIndex] = deepCopy(componentData.value)
       // 在 undo 过程中，添加新的快照时，要将它后面的快照清理掉
       if (this.snapshotIndex < this.snapshotData.length - 1) {
         this.snapshotData = this.snapshotData.slice(0, this.snapshotIndex + 1)
@@ -54,12 +56,12 @@ export const snapshotStore = defineStore('snapshot', {
   }
 })
 
-function getDefaultcomponentData() {
-  return defaultcomponentData
+function getDefaultComponentData() {
+  return defaultComponentData
 }
 
-export function setDefaultcomponentData(data = []) {
-  defaultcomponentData = data
+export function setDefaultComponentData(data = []) {
+  defaultComponentData = data
 }
 
 export const snapshotStoreWithOut = () => {

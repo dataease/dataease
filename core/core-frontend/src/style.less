@@ -16,6 +16,7 @@
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 body {
   background: #fff;
@@ -41,9 +42,46 @@ body {
         width: 240px;
       }
 
-      :last-child {
+      & > :last-child {
         margin-right: 0 !important;
       }
     }
+  }
+}
+
+
+.list-item_primary {
+  height: 40px;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+
+  &:not(.active):hover {
+    background: rgba(31, 35, 41, 0.1);
+  }
+
+  &.active {
+    background: rgba(51, 112, 255, 0.1);
+  }
+}
+
+.title-form_primary {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  color: #1f2329;
+  position: relative;
+  padding-left: 10px;
+
+  &::before {
+    content: '';
+    width: 2px;
+    height: 14px;
+    background: #3370ff;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: -10px;
   }
 }

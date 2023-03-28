@@ -15,7 +15,7 @@ const systemMenu = computed(() => route.path.includes('system'))
     <Header></Header>
     <el-container class="layout-container">
       <Sidebar v-if="systemMenu" class="layout-sidebar">
-        <Menu></Menu>
+        <Menu style="height: 100%"></Menu>
       </Sidebar>
       <Main class="layout-main"></Main>
     </el-container>
@@ -26,23 +26,15 @@ const systemMenu = computed(() => route.path.includes('system'))
 .common-layout {
   width: 100vw;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
 
   .layout-container {
-    // flex: 1;
-    // width: 100%;
-    // display: flex;
-
     .layout-sidebar {
-      //   height: 100%;
+      height: calc(100vh - 60px);
     }
 
     .layout-main {
       flex: 1;
       padding: 24px;
-
-      //   height: 100%;
     }
   }
 }

@@ -8,7 +8,7 @@ const { componentData, curComponentIndex, canvasStyleData } = storeToRefs(dvMain
 
 const needToChangeAttrs = ['top', 'left', 'width', 'height', 'fontSize']
 export default function changeComponentsSizeWithScale(scale) {
-  const componentDataCopy = deepCopy(componentData)
+  const componentDataCopy = deepCopy(componentData.value)
   componentDataCopy.forEach(component => {
     Object.keys(component.style).forEach(key => {
       if (needToChangeAttrs.includes(key)) {
@@ -27,7 +27,7 @@ export default function changeComponentsSizeWithScale(scale) {
   dvMainStore.setComponentData(componentDataCopy)
   // 更新画布数组后，需要重新设置当前组件，否则在改变比例后，直接拖动圆点改变组件大小不会生效 https://github.com/woai3c/visual-drag-demo/issues/74
   dvMainStore.setCurComponent({
-    component: componentData[curComponentIndex.value],
+    component: componentData.value[curComponentIndex.value],
     index: curComponentIndex.value
   })
 

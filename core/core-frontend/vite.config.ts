@@ -13,6 +13,10 @@ import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import electronRenderer from 'vite-plugin-electron-renderer'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components-secondary/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components-secondary/resolvers'
+
 import path from 'path'
 import { readdirSync } from 'fs'
 
@@ -72,6 +76,12 @@ export default defineConfig({
         }
       ]
     }),
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
+    }),
     createSvgIconsPlugin({
       iconDirs: [pathResolve('src/assets/svg')],
       symbolId: 'icon-[dir]-[name]'
@@ -101,6 +111,7 @@ export default defineConfig({
       // 使用 proxy 实例
       '/api': {
         target: 'https://www.fastmock.site/mock/750e1fe302dda5186c2adb327a7ae472/_vite',
+        // target: 'http://localhost:8100',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, '')
       }

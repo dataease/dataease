@@ -1,6 +1,6 @@
 <script lang="ts">
 import { h } from 'vue'
-import { Icon } from '@/components/Icon'
+import { Icon } from '@/components/icon-custom'
 import { ElMenuItem, ElSubMenu, ElIcon } from 'element-plus-secondary'
 
 const title = props => {

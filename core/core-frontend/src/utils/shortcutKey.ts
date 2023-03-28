@@ -70,14 +70,14 @@ export function listenGlobalKeyDown() {
     const { keyCode } = e
     if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
-    } else if (keyCode == deleteKey && curComponent) {
+    } else if (keyCode == deleteKey && curComponent.value) {
       dvMainStore.deleteComponent()
       snapshotStore.recordSnapshot()
     } else if (isCtrlOrCommandDown) {
-      if (unlockMap[keyCode] && (!curComponent || !curComponent.value.isLock)) {
+      if (unlockMap[keyCode] && (!curComponent.value || !curComponent.value.isLock)) {
         e.preventDefault()
         unlockMap[keyCode]()
-      } else if (lockMap[keyCode] && curComponent && curComponent.value.isLock) {
+      } else if (lockMap[keyCode] && curComponent.value && curComponent.value.isLock) {
         e.preventDefault()
         lockMap[keyCode]()
       }
@@ -124,12 +124,8 @@ function compose() {
 }
 
 function decompose() {
-  const curComponentLink = dvMainStore.curComponent
-  if (
-    curComponentLink &&
-    !curComponentLink.value.isLock &&
-    curComponentLink.value.component == 'Group'
-  ) {
+  const curComponentLink = curComponent.value
+  if (curComponentLink && !curComponentLink.isLock && curComponentLink.component == 'Group') {
     composeStore.decompose()
     snapshotStore.recordSnapshot()
   }
@@ -144,7 +140,7 @@ function preview() {
 }
 
 function deleteComponent() {
-  if (curComponent) {
+  if (curComponent.value) {
     dvMainStore.deleteComponent()
     snapshotStore.recordSnapshot()
   }

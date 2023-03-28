@@ -4,7 +4,7 @@ import App from './App.vue'
 // import { setupI18n } from './plugins/vueI18n'
 import { setupStore } from '@/store'
 import { setupRouter } from '@/router'
-import { setupElementPlus } from '@/plugins/elementPlus'
+import { setupElementPlus } from '@/plugins/element-plus'
 
 const setupAll = async () => {
   const app = createApp(App)

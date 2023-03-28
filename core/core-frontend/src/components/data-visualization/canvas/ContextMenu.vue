@@ -78,7 +78,7 @@ const bottomComponent = () => {
   >
     <ul @mouseup="handleMouseUp">
       <template v-if="curComponent">
-        <template v-if="!curComponent.isLock">
+        <template v-if="!curComponent['isLock']">
           <li @click="copy">复制</li>
           <li @click="paste">粘贴</li>
           <li @click="cut">剪切</li>
@@ -96,7 +96,7 @@ const bottomComponent = () => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .contextmenu {
   position: absolute;
   z-index: 1000;

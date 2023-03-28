@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getStyle, getCanvasStyle } from '@/utils/style'
-import ComponentWrapper from './ComponentWrapper'
+import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
 import { toPng } from 'html-to-image'
 import { deepCopy } from '@/utils/utils'
@@ -9,6 +9,7 @@ import { getCurrentInstance } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
+import { ElButton } from 'element-plus-secondary'
 
 const props = defineProps({
   isScreenshot: {
@@ -21,7 +22,7 @@ const currentInstance = getCurrentInstance()
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, componentData } = storeToRefs(dvMainStore)
-const copyData = ref(deepCopy(componentData))
+const copyData = ref(deepCopy(componentData.value))
 const container = ref(null)
 
 const close = () => {
@@ -35,19 +36,19 @@ const htmlToImage = () => {
       a.setAttribute('download', 'screenshot')
       a.href = dataUrl
       a.click()
-      this.close
+      close()
     })
     .catch(error => {
       console.error('oops, something went wrong!', error)
-      this.close
+      close()
     })
 }
 </script>
 
 <template>
   <div ref="container" class="bg">
-    <el-button v-if="!isScreenshot" class="close" @click="close">关闭</el-button>
-    <el-button v-else class="close" @click="htmlToImage">确定</el-button>
+    <el-button v-if="!isScreenshot" class="close" @click="close()">关闭</el-button>
+    <el-button v-else class="close" @click="htmlToImage()">确定</el-button>
     <div class="canvas-container">
       <div
         class="canvas"
@@ -63,7 +64,7 @@ const htmlToImage = () => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .bg {
   width: 100%;
   height: 100%;
