@@ -11,7 +11,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-23
+ * @since 2023-03-28
  */
 @TableName("core_menu")
 public class CoreMenu implements Serializable {
@@ -62,12 +62,12 @@ public class CoreMenu implements Serializable {
     /**
      * 隐藏
      */
-    private Byte hidden;
+    private Boolean hidden;
 
     /**
      * 是否内部
      */
-    private Byte inLayout;
+    private Boolean inLayout;
 
     public Long getId() {
         return id;
@@ -133,19 +133,19 @@ public class CoreMenu implements Serializable {
         this.path = path;
     }
 
-    public Byte getHidden() {
+    public Boolean getHidden() {
         return hidden;
     }
 
-    public void setHidden(Byte hidden) {
+    public void setHidden(Boolean hidden) {
         this.hidden = hidden;
     }
 
-    public Byte getInLayout() {
+    public Boolean getInLayout() {
         return inLayout;
     }
 
-    public void setInLayout(Byte inLayout) {
+    public void setInLayout(Boolean inLayout) {
         this.inLayout = inLayout;
     }
 

@@ -36,7 +36,7 @@ const logout = () => {
         </router-link>
 
         <router-link to="/about/index">
-          <el-dropdown-item>{{ $t('common.about_us') }}</el-dropdown-item>
+          <el-dropdown-item>{{ $t('common.about') }}</el-dropdown-item>
         </router-link>
         <el-dropdown-item divided @click="logout">
           <span>{{ $t('common.exit_system') }}</span>
