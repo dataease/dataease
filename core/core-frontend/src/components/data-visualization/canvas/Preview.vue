@@ -22,7 +22,7 @@ const currentInstance = getCurrentInstance()
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, componentData } = storeToRefs(dvMainStore)
-const copyData = ref(deepCopy(componentData))
+const copyData = ref(deepCopy(componentData.value))
 const container = ref(null)
 
 const close = () => {

@@ -9,7 +9,7 @@ import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 import RealTimeComponentList from '@/components/data-visualization/RealTimeComponentList.vue'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
-import { setDefaultcomponentData } from '@/store/modules/data-visualization/snapshot'
+import { setDefaultComponentData } from '@/store/modules/data-visualization/snapshot'
 import { ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -29,7 +29,7 @@ const { editor } = storeToRefs(composeStore)
 const restore = () => {
   // 用保存的数据恢复画布
   if (localStorage.getItem('canvasData')) {
-    setDefaultcomponentData(JSON.parse(localStorage.getItem('canvasData')))
+    setDefaultComponentData(JSON.parse(localStorage.getItem('canvasData')))
     dvMainStore.setComponentData(JSON.parse(localStorage.getItem('canvasData')))
   }
 
@@ -105,7 +105,7 @@ listenGlobalKeyDown()
           <DvCanvas />
         </div>
       </section>
-      <!-- 右侧属性列表 -->
+      <!--右侧属性列表-->
       <!--      <section class="right">-->
       <!--        <el-tabs v-if="curComponent" v-model="activeName">-->
       <!--          <el-tab-pane label="属性" name="attr">-->
@@ -121,7 +121,6 @@ listenGlobalKeyDown()
 <style lang="less">
 .home {
   height: 100vh;
-  background: #252d36;
 
   main {
     height: calc(100% - 64px);
@@ -156,8 +155,8 @@ listenGlobalKeyDown()
 
     .center {
       margin-left: 200px;
-      //margin-right: 288px;
-      background: #333333;
+      margin-right: 0px;
+      background: #f5f5f5;
       height: 100%;
       overflow: auto;
       padding: 20px;
