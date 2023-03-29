@@ -7,8 +7,11 @@ import io.dataease.xpack.permissions.login.bo.TokenUserBO;
 import io.dataease.xpack.permissions.login.manage.LoginManage;
 import io.dataease.xpack.permissions.login.utils.TokenUtils;
 import jakarta.annotation.Resource;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/login")

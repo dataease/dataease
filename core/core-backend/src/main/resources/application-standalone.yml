@@ -1,10 +1,11 @@
 spring:
 
   datasource:
-    url: jdbc:mysql://123.56.8.132:33061/dataease2-sl?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    url: jdbc:mysql://localhost:3306/de_standalone?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
     username: root
-    password: Calong@2015
-
+    password: 1qaz@WSX
+  messages:
+    basename: i18n/core,i18n/permissions
   flyway:
     enabled: true
     table: de_standalone_version

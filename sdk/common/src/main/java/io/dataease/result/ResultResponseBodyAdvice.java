@@ -33,12 +33,12 @@ public class ResultResponseBodyAdvice implements ResponseBodyAdvice<Object> {
             o = translate(o, i18n.value());
         }
 
-        if (!(o instanceof ResultHolder)) {
-            ResultHolder resultHolder = ResultHolder.success(o);
+        if (!(o instanceof ResultMessage)) {
+            ResultMessage resultMessage = ResultMessage.success(o);
             if (o instanceof String) {
-                return JsonUtil.toJSONString(resultHolder);
+                return JsonUtil.toJSONString(resultMessage);
             }
-            return resultHolder;
+            return resultMessage;
         }
         return o;
     }

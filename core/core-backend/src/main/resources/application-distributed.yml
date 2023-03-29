@@ -12,6 +12,8 @@ spring:
     password: 1qaz@WSX
   flyway:
     enabled: false
+  messages:
+    basename: i18n/core
 
 
 dynamic:
