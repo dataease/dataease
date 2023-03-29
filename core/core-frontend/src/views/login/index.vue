@@ -71,16 +71,11 @@ const handleLogin = () => {
   const pwd = state.loginForm.password
 
   const param = { name, pwd }
-  loginApi(param)
-    .then(res => {
-      const token = res.data
-      wsCache.set(appStore.getToken, token)
-      router.push({ path: '/' })
-    })
-    .catch(() => {
-      // wsCache.set(appStore.getToken, 'i am Authorization')
-      router.push({ path: '/' })
-    })
+  loginApi(param).then(res => {
+    const token = res.data
+    wsCache.set(appStore.getToken, token)
+    router.push({ path: '/' })
+  })
 }
 
 const switchCodeIndex = codeIndex => {
