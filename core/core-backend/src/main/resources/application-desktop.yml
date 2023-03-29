@@ -11,7 +11,8 @@ spring:
     console:
       enabled: true
       path: /h2-console
-
+  messages:
+    basename: i18n/core
   flyway:
     enabled: true
     table: de_desktop_version

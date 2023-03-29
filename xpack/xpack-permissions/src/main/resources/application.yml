@@ -5,6 +5,9 @@ spring:
     active: '@profiles.active@'
   application:
     name: xpack-permissions
+  messages:
+    basename: i18n/permissions
+    encoding: UTF-8
 
 mybatis:
   configuration:

@@ -47,6 +47,7 @@
                         <directory>src/main/resources</directory>
                         <includes>
                             <include>db/migration/*.sql</include>
+                            <include>i18n/*.properties</include>
                         </includes>
                     </resource>
                 </resources>
