@@ -54,9 +54,11 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
 <template>
   <el-dropdown trigger="click" :hide-on-click="false">
     <el-button plain>
-      <el-icon>
-        <Icon name="icon-setting"></Icon>
-      </el-icon>
+      <template #icon>
+        <el-icon>
+          <Icon name="icon-setting"></Icon>
+        </el-icon>
+      </template>
       {{ $t('component.columnList') }}
     </el-button>
     <template #dropdown>

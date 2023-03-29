@@ -35,6 +35,7 @@ const systemMenu = computed(() => route.path.includes('system'))
     .layout-main {
       flex: 1;
       padding: 24px;
+      background-color: var(--MainBG, #f5f6f7);
     }
   }
 }

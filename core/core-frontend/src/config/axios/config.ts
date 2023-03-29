@@ -29,7 +29,7 @@ const config: {
   /**
    * 接口成功返回状态码
    */
-  result_code: '0000',
+  result_code: 0,
 
   /**
    * 接口请求超时时间
