@@ -1,9 +1,12 @@
 package io.dataease.controller.panel;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.DePermissionProxy;
 import io.dataease.auth.annotation.DePermissions;
+import io.dataease.auth.filter.F2CLinkFilter;
 import io.dataease.auth.service.impl.ExtAuthServiceImpl;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.PanelConstants;
@@ -21,9 +24,12 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
@@ -141,6 +147,12 @@ public class PanelGroupController {
     @PostMapping("/exportDetails")
     @I18n
     public void exportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest();
+        String linkToken = httpServletRequest.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
+        DecodedJWT jwt = JWT.decode(linkToken);
+        Long userId = jwt.getClaim("userId").asLong();
+        request.setUserId(userId);
         panelGroupService.exportPanelViewDetails(request, response);
     }
 
