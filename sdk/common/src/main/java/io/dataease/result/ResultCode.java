@@ -30,7 +30,7 @@ public enum ResultCode {
 
     /* 接口错误：60001-69999 */
     INTERFACE_INNER_INVOKE_ERROR(60001, "内部系统接口调用异常"),
-    INTERFACE_OUTTER_INVOKE_ERROR(60002, "外部系统接口调用异常"),
+    INTERFACE_OUTER_INVOKE_ERROR(60002, "外部系统接口调用异常"),
     INTERFACE_FORBID_VISIT(60003, "该接口禁止访问"),
     INTERFACE_ADDRESS_INVALID(60004, "接口地址无效"),
     INTERFACE_REQUEST_TIMEOUT(60005, "接口请求超时"),
