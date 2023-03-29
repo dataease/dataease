@@ -10,7 +10,7 @@ const name = ref('admin')
 
 const logout = () => {
   wsCache.delete(appStore.getToken)
-  router.push({ path: '/' })
+  router.push({ path: '/login' })
 }
 </script>
 
