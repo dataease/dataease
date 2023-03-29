@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ElButton, ElMessage } from 'element-plus-secondary'
+import { ElMessage } from 'element-plus-secondary'
 import { generateID } from '@/utils/generateID'
 import toast from '@/utils/toast'
 import Preview from '@/components/data-visualization/canvas/Preview.vue'
-import AceEditor from '@/components/data-visualization/canvas/AceEditor.vue'
 import { commonStyle, commonAttr } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { $ } from '@/utils/utils'
@@ -18,7 +17,6 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { storeToRefs } from 'pinia'
 
 const isShowPreview = ref(false)
-const isShowAceEditor = ref(false)
 const isScreenshot = ref(false)
 let timer = null
 const dvMainStore = dvMainStoreWithOut()
@@ -37,14 +35,6 @@ const handleScaleChange = () => {
     scale.value = ~~scale.value || 1
     changeComponentsSizeWithScale(scale.value)
   }, 1000)
-}
-
-const handleAceEditorChange = () => {
-  isShowAceEditor.value = !isShowAceEditor.value
-}
-
-const closeEditor = () => {
-  handleAceEditorChange()
 }
 
 const lock = () => {
@@ -107,12 +97,11 @@ const handleFileChange = e => {
         }
       }
 
-      // 根据画面比例修改组件样式比例 https://github.com/woai3c/visual-drag-demo/issues/91
+      // 根据画面比例修改组件样式比例
       changeComponentSizeWithScale(component)
       dvMainStore.addComponent({ component: component, index: undefined })
       snapshotStore.recordSnapshot()
 
-      // 修复重复上传同一文件，@change 不触发的问题
       $('#input').setAttribute('type', 'text')
       $('#input').setAttribute('type', 'file')
     }
@@ -132,8 +121,8 @@ const preview = isScreenshotFlag => {
 }
 
 const save = () => {
-  localStorage.setItem('canvasData', JSON.stringify(componentData))
-  localStorage.setItem('canvasStyle', JSON.stringify(canvasStyleData))
+  localStorage.setItem('canvasData', JSON.stringify(componentData.value))
+  localStorage.setItem('canvasStyle', JSON.stringify(canvasStyleData.value))
   ElMessage.success('保存成功')
 }
 
@@ -156,18 +145,46 @@ eventBus.on('clearCanvas', clearCanvas)
 <template>
   <div>
     <div class="toolbar">
-      <el-button @click="clearCanvas()">清空</el-button>
+      <el-button @click="undo()">撤消</el-button>
+      <el-button @click="redo()">重做</el-button>
+      <label for="input" class="insert">
+        插入图片
+        <input id="input" type="file" hidden @change="handleFileChange" />
+      </label>
+
+      <el-button style="margin-left: 10px" @click="preview(false)">预览</el-button>
+      <el-button @click="save()">保存</el-button>
+      <el-button @click="clearCanvas()">清空画布</el-button>
+      <el-button :disabled="!areaData.components.length" @click="compose()">组合</el-button>
+      <el-button
+        :disabled="!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group'"
+        @click="decompose()"
+      >
+        拆分
+      </el-button>
+
+      <el-button :disabled="!curComponent || curComponent['isLock']" @click="lock()"
+        >锁定</el-button
+      >
+      <el-button :disabled="!curComponent || !curComponent['isLock']" @click="unlock()"
+        >解锁</el-button
+      >
+      <el-button @click="preview(true)">截图</el-button>
+
       <div class="canvas-config">
         <span>画布大小</span>
         <input v-model="canvasStyleData.width" />
         <span>*</span>
         <input v-model="canvasStyleData.height" />
       </div>
+      <div class="canvas-config">
+        <span>画布比例</span>
+        <input v-model="scale" @input="handleScaleChange" /> %
+      </div>
     </div>
 
     <!-- 预览 -->
     <Preview v-if="isShowPreview" :is-screenshot="isScreenshot" @close="handlePreviewChange" />
-    <AceEditor v-if="isShowAceEditor" @closeEditor="closeEditor" />
   </div>
 </template>
 
@@ -176,7 +193,7 @@ eventBus.on('clearCanvas', clearCanvas)
   padding: 15px 10px;
   white-space: nowrap;
   overflow-x: auto;
-  background: #001529;
+  background: #fff;
   border-bottom: 1px solid #ddd;
 
   .canvas-config {

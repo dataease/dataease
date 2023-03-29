@@ -37,8 +37,9 @@ export const composeStore = defineStore('compose', {
     },
 
     compose: function () {
+      const { areaData } = this
       const components = []
-      this.areaData.components.forEach(component => {
+      areaData.components.forEach(component => {
         if (component.component != 'Group') {
           components.push(component)
         } else {
@@ -63,7 +64,7 @@ export const composeStore = defineStore('compose', {
         ...commonAttr,
         style: {
           ...commonStyle,
-          ...this.areaData.style
+          ...areaData.style
         },
         propValue: components
       }
@@ -75,9 +76,9 @@ export const composeStore = defineStore('compose', {
       })
 
       eventBus.emit('hideArea')
-      this.batchDeleteComponent(this.areaData.components)
+      this.batchDeleteComponent(areaData.components)
       dvMainStore.setCurComponent({
-        component: componentData[componentData.value.length - 1],
+        component: componentData.value[componentData.value.length - 1],
         index: componentData.value.length - 1
       })
 

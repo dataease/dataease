@@ -3,7 +3,7 @@ package io.dataease.api.permissions.login.api;
 
 import io.dataease.api.permissions.login.dto.PwdLoginDTO;
 import io.dataease.auth.DeApiPath;
-import org.springframework.validation.annotation.Validated;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +21,7 @@ public interface LoginApi {
      * @param dto
      */
     @PostMapping("/localLogin")
-    String localLogin(@RequestBody @Validated PwdLoginDTO dto);
+    String localLogin(@Valid @RequestBody PwdLoginDTO dto);
 
     /**
      * oidc登录

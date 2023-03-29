@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-22
+ * @since 2023-03-27
  */
 @TableName("core_dataset_table")
 public class CoreDatasetTable implements Serializable {
@@ -27,19 +27,9 @@ public class CoreDatasetTable implements Serializable {
     private String name;
 
     /**
-     * 父级ID
+     * 物理表名
      */
-    private String pid;
-
-    /**
-     * 当前分组处于第几级
-     */
-    private Integer level;
-
-    /**
-     * node类型：folder or dataset
-     */
-    private String nodeType;
+    private String tableName;
 
     /**
      * 数据源ID
@@ -47,44 +37,22 @@ public class CoreDatasetTable implements Serializable {
     private String datasourceId;
 
     /**
-     * db,sql,union
+     * 数据集ID
+     */
+    private String datasetGroupId;
+
+    /**
+     * db,sql,union,excel,api
      */
     private String type;
 
     /**
-     * 连接模式：0-直连，1-同步(excel、api等数据存在de中的表)
-     */
-    private Integer mode;
-
-    /**
-     * 表原始信息
+     * 表原始信息,表名,sql等
      */
     private String info;
 
     /**
-     * 创建人ID
-     */
-    private String createBy;
-
-    /**
-     * 创建时间
-     */
-    private Long createTime;
-
-    private String qrtzInstance;
-
-    /**
-     * 同步状态
-     */
-    private String syncStatus;
-
-    /**
-     * 最后同步时间
-     */
-    private Long lastUpdateTime;
-
-    /**
-     * SQL数据集参数
+     * SQL参数
      */
     private String sqlVariableDetails;
 
@@ -104,28 +72,12 @@ public class CoreDatasetTable implements Serializable {
         this.name = name;
     }
 
-    public String getPid() {
-        return pid;
+    public String getTableName() {
+        return tableName;
     }
 
-    public void setPid(String pid) {
-        this.pid = pid;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public String getNodeType() {
-        return nodeType;
-    }
-
-    public void setNodeType(String nodeType) {
-        this.nodeType = nodeType;
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     public String getDatasourceId() {
@@ -136,6 +88,14 @@ public class CoreDatasetTable implements Serializable {
         this.datasourceId = datasourceId;
     }
 
+    public String getDatasetGroupId() {
+        return datasetGroupId;
+    }
+
+    public void setDatasetGroupId(String datasetGroupId) {
+        this.datasetGroupId = datasetGroupId;
+    }
+
     public String getType() {
         return type;
     }
@@ -144,60 +104,12 @@ public class CoreDatasetTable implements Serializable {
         this.type = type;
     }
 
-    public Integer getMode() {
-        return mode;
-    }
-
-    public void setMode(Integer mode) {
-        this.mode = mode;
-    }
-
     public String getInfo() {
         return info;
     }
 
     public void setInfo(String info) {
         this.info = info;
-    }
-
-    public String getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(String createBy) {
-        this.createBy = createBy;
-    }
-
-    public Long getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Long createTime) {
-        this.createTime = createTime;
-    }
-
-    public String getQrtzInstance() {
-        return qrtzInstance;
-    }
-
-    public void setQrtzInstance(String qrtzInstance) {
-        this.qrtzInstance = qrtzInstance;
-    }
-
-    public String getSyncStatus() {
-        return syncStatus;
-    }
-
-    public void setSyncStatus(String syncStatus) {
-        this.syncStatus = syncStatus;
-    }
-
-    public Long getLastUpdateTime() {
-        return lastUpdateTime;
-    }
-
-    public void setLastUpdateTime(Long lastUpdateTime) {
-        this.lastUpdateTime = lastUpdateTime;
     }
 
     public String getSqlVariableDetails() {
@@ -213,18 +125,11 @@ public class CoreDatasetTable implements Serializable {
         return "CoreDatasetTable{" +
         "id = " + id +
         ", name = " + name +
-        ", pid = " + pid +
-        ", level = " + level +
-        ", nodeType = " + nodeType +
+        ", tableName = " + tableName +
         ", datasourceId = " + datasourceId +
+        ", datasetGroupId = " + datasetGroupId +
         ", type = " + type +
-        ", mode = " + mode +
         ", info = " + info +
-        ", createBy = " + createBy +
-        ", createTime = " + createTime +
-        ", qrtzInstance = " + qrtzInstance +
-        ", syncStatus = " + syncStatus +
-        ", lastUpdateTime = " + lastUpdateTime +
         ", sqlVariableDetails = " + sqlVariableDetails +
         "}";
     }

@@ -5,16 +5,39 @@ DROP TABLE IF EXISTS `core_datasource`;
 CREATE TABLE `core_datasource`
 (
     `id`            varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
-    `name`          varchar(50) NOT NULL COMMENT '数据源名称',
+    `name`          varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
     `desc`          varchar(50)          DEFAULT NULL COMMENT '描述',
     `type`          varchar(50) NOT NULL COMMENT '类型',
     `configuration` longtext    NOT NULL COMMENT '详细信息',
-    `create_time`   bigint      NOT NULL COMMENT 'Create timestamp',
-    `update_time`   bigint      NOT NULL COMMENT 'Update timestamp',
+    `create_time`   bigint      NOT NULL COMMENT '创健时间',
+    `update_time`   bigint      NOT NULL COMMENT '更新时间',
     `create_by`     varchar(50)          DEFAULT NULL COMMENT '创建人ID',
     `status`        longtext COMMENT '状态',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `core_driver`;
+CREATE TABLE `core_driver` (
+     `id`           varchar(50) NOT NULL COMMENT '主键',
+     `name`         varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
+     `create_time`  bigint(13) NOT NULL COMMENT '创健时间',
+     `type`         varchar(255) DEFAULT NULL COMMENT '数据源类型',
+     `driver_class` varchar(255) DEFAULT NULL COMMENT '驱动类',
+     `desc`         varchar(255) DEFAULT NULL COMMENT '描述',
+     PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='驱动';
+
+DROP TABLE IF EXISTS `core_driver_jar`;
+CREATE TABLE `core_driver_jar` (
+     `id`           varchar(50) NOT NULL COMMENT '主键',
+     `de_driver_id` varchar(50) NOT NULL COMMENT '驱动主键',
+     `file_name`    varchar(255) DEFAULT NULL COMMENT '名称',
+     `version`      varchar(255) DEFAULT NULL COMMENT '版本',
+     `driver_class` longtext COMMENT '驱动类',
+     `trans_name`   varchar(255) DEFAULT NULL,
+     `is_trans_name` tinyint(1) DEFAULT NULL,
+     PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='驱动详情';
 
 
 --
@@ -32,8 +55,8 @@ CREATE TABLE `core_menu`
     `menu_sort` int         DEFAULT NULL COMMENT '排序',
     `icon`      varchar(45) DEFAULT NULL COMMENT '图标',
     `path`      varchar(45) DEFAULT NULL COMMENT '路径',
-    `hidden`    tinyint unsigned NOT NULL DEFAULT '0' COMMENT '隐藏',
-    `in_layout` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '是否内部',
+    `hidden`    tinyint(1)  NOT NULL DEFAULT '0' COMMENT '隐藏',
+    `in_layout` tinyint(1)  NOT NULL DEFAULT '1' COMMENT '是否内部',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb3;
 
@@ -62,24 +85,35 @@ VALUES (1, 0, 2, 'home', 'home', 1, NULL, '/home', 0, 1),
 UNLOCK
 TABLES;
 
+DROP TABLE IF EXISTS `core_dataset_group`;
+CREATE TABLE `core_dataset_group`
+(
+    `id`               varchar(50) NOT NULL COMMENT 'ID',
+    `name`             varchar(128)  DEFAULT NULL COMMENT '名称',
+    `pid`              varchar(50)   DEFAULT NULL COMMENT '父级ID',
+    `level`            int(10) DEFAULT '0' COMMENT '当前分组处于第几级',
+    `node_type`        varchar(50) NOT NULL COMMENT 'node类型：folder or dataset',
+    `mode`             int           DEFAULT '0' COMMENT '连接模式：0-直连，1-同步(包括excel、api等数据存在de中的表)',
+    `info`             longtext COMMENT '关联关系树',
+    `create_by`        varchar(50)   DEFAULT NULL COMMENT '创建人ID',
+    `create_time`      bigint        DEFAULT NULL COMMENT '创建时间',
+    `qrtz_instance`    varchar(1024) DEFAULT NULL,
+    `sync_status`      varchar(45)   DEFAULT NULL COMMENT '同步状态',
+    `last_update_time` bigint        DEFAULT '0' COMMENT '最后同步时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
 DROP TABLE IF EXISTS `core_dataset_table`;
 CREATE TABLE `core_dataset_table`
 (
     `id`                   varchar(50) NOT NULL COMMENT 'ID',
-    `name`                 varchar(128)  DEFAULT NULL COMMENT '名称',
-    `pid`                  varchar(50)   DEFAULT NULL COMMENT '父级ID',
-    `level`                int(10) DEFAULT '0' COMMENT '当前分组处于第几级',
-    `node_type`            varchar(50) NOT NULL COMMENT 'node类型：folder or dataset',
-    `datasource_id`        varchar(50)   DEFAULT NULL COMMENT '数据源ID',
-    `type`                 varchar(50)   DEFAULT NULL COMMENT 'db,sql,union',
-    `mode`                 int           DEFAULT '0' COMMENT '连接模式：0-直连，1-同步(excel、api等数据存在de中的表)',
-    `info`                 longtext COMMENT '表原始信息',
-    `create_by`            varchar(50)   DEFAULT NULL COMMENT '创建人ID',
-    `create_time`          bigint        DEFAULT NULL COMMENT '创建时间',
-    `qrtz_instance`        varchar(1024) DEFAULT NULL,
-    `sync_status`          varchar(45)   DEFAULT NULL COMMENT '同步状态',
-    `last_update_time`     bigint        DEFAULT '0' COMMENT '最后同步时间',
-    `sql_variable_details` longtext COMMENT 'SQL数据集参数',
+    `name`                 varchar(128) DEFAULT NULL COMMENT '名称',
+    `table_name`           varchar(128) DEFAULT NULL COMMENT '物理表名',
+    `datasource_id`        varchar(50)  DEFAULT NULL COMMENT '数据源ID',
+    `dataset_group_id`     varchar(50) NOT NULL COMMENT '数据集ID',
+    `type`                 varchar(50)  DEFAULT NULL COMMENT 'db,sql,union,excel,api',
+    `info`                 longtext COMMENT '表原始信息,表名,sql等',
+    `sql_variable_details` longtext COMMENT 'SQL参数',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
@@ -87,7 +121,9 @@ DROP TABLE IF EXISTS `core_dataset_table_field`;
 CREATE TABLE `core_dataset_table_field`
 (
     `id`               varchar(50)  NOT NULL COMMENT 'ID',
-    `dataset_table_id` varchar(50)  NOT NULL COMMENT '表ID',
+    `datasource_id`    varchar(50)  DEFAULT NULL COMMENT '数据源ID',
+    `dataset_table_id` varchar(50)  NOT NULL COMMENT '数据表ID',
+    `dataset_group_id` varchar(50)  NOT NULL COMMENT '数据集ID',
     `origin_name`      longtext     NOT NULL COMMENT '原始字段名',
     `name`             longtext     DEFAULT NULL COMMENT '字段名用于展示',
     `description`      longtext     DEFAULT NULL COMMENT '描述',
@@ -106,3 +142,4 @@ CREATE TABLE `core_dataset_table_field`
     `date_format_type` varchar(255) DEFAULT NULL COMMENT '时间格式类型',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+

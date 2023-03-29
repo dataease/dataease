@@ -9,7 +9,7 @@ const { curComponent } = storeToRefs(dvMainStore)
 const activeName = ref(curComponent.value.collapseName)
 
 const styleKeys = computed(() => {
-  if (curComponent) {
+  if (curComponent.value) {
     const curComponentStyleKeys = Object.keys(curComponent.value.style)
     return styleData.filter(item => curComponentStyleKeys.includes(item.key))
   } else {

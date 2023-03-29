@@ -186,7 +186,7 @@ const getCursor = () => {
 }
 
 const handleMouseDownOnShape = e => {
-  // 将当前点击组件的事件传播出去，目前的消费是 VText 组件 https://github.com/woai3c/visual-drag-demo/issues/90
+  // 将当前点击组件的事件传播出去
   nextTick(() => eventBus.emit('componentClick'))
   dvMainStore.setInEditorStatus(true)
   dvMainStore.setClickComponentStatus(true)
@@ -268,8 +268,7 @@ const handleMouseDownOnPoint = (point, e) => {
   // 获取画布位移信息
   const editorRectInfo = editor.value.getBoundingClientRect()
 
-  // 获取 point 与实际拖动基准点的差值 @justJokee
-  // fix https://github.com/woai3c/visual-drag-demo/issues/26#issue-937686285
+  // 获取 point 与实际拖动基准点的差值
   const pointRect = e.target.getBoundingClientRect()
   // 当前点击圆点相对于画布的中心坐标
   const curPoint = {

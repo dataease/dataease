@@ -10,9 +10,9 @@ export const dvMainStore = defineStore('dataVisualization', {
         width: 1200,
         height: 740,
         scale: 100,
-        color: '#fff',
+        color: '#000',
         opacity: 1,
-        background: '#cccccc',
+        background: '#fff',
         fontSize: 14
       },
       isInEditor: false, // 是否在编辑器中，用于判断复制、粘贴组件时是否生效，如果在编辑器外，则无视这些操作
