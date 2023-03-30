@@ -1,20 +1,13 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue'
+import { ElTabs, ElTabPane } from 'element-plus-secondary'
 import { columnNames } from './options'
 import { Icon } from '@/components/icon-custom'
 import { FilterText } from '@/components/filter-text'
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
 import UserForm from './UserForm.vue'
-import {
-  ElTableColumn,
-  ElTabs,
-  ElTabPane,
-  ElButton,
-  ElCol,
-  ElRow,
-  ElInput,
-  ElIcon
-} from 'element-plus-secondary'
+import DatasetUnion from './DatasetUnion.vue'
+import RoleManage from './RoleManage.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import ColumnList from '@/components/column-list/src/ColumnList.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
@@ -23,8 +16,14 @@ const activeName = ref('user')
 const isPluginLoaded = ref(false)
 const drawerMainRef = ref(null)
 const nickName = ref('')
+const userFormDialog = ref(null)
+
 const handleClick = () => {
   console.log('handleClick')
+}
+
+const addUser = () => {
+  userFormDialog.value.init()
 }
 
 const drawerMainOpen = () => {
@@ -68,29 +67,34 @@ const clearFilter = (index?: number) => {
   <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
     <el-tab-pane :label="t('system.user')" name="user"></el-tab-pane>
     <el-tab-pane :label="t('system.role')" name="role"></el-tab-pane>
+    <el-tab-pane label="test" name="test"></el-tab-pane>
   </el-tabs>
-  <div class="user-table de-search-table">
+  <div v-if="activeName === 'user'" class="user-table de-search-table">
     <el-row class="user-table__filter top-operate">
       <el-col :span="12">
-        <el-button type="primary">
-          <el-icon>
-            <Icon name="icon_add_outlined"></Icon>
-          </el-icon>
+        <el-button @click="addUser" type="primary">
+          <template #icon>
+            <el-icon>
+              <Icon name="icon_add_outlined"></Icon>
+            </el-icon>
+          </template>
           {{ t('system.addUser') }}
         </el-button>
       </el-col>
       <el-col :span="12" class="right-filter">
         <el-input v-model="nickName" clearable>
-          <template #prefix>
+          <template #prefix-icon>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
             </el-icon>
           </template>
         </el-input>
         <el-button @click="drawerMainOpen" plain>
-          <el-icon>
-            <Icon name="icon-filter"></Icon>
-          </el-icon>
+          <template #icon>
+            <el-icon>
+              <Icon name="icon-filter"></Icon>
+            </el-icon>
+          </template>
           筛选
         </el-button>
         <column-list
@@ -128,21 +132,35 @@ const clearFilter = (index?: number) => {
       </GridTable>
     </div>
   </div>
+  <div v-else-if="activeName === 'role'" class="role-content">
+    <role-manage></role-manage>
+  </div>
+  <div v-else class="user-table">
+    <dataset-union></dataset-union>
+  </div>
   <drawer-main ref="drawerMainRef"></drawer-main>
-  <user-form></user-form>
+  <user-form ref="userFormDialog"></user-form>
 </template>
 
 <style lang="less" scoped>
-.user-table {
-  height: calc(100% - 61px);
+.user-table,
+.role-content {
+  height: calc(100% - 60px);
   box-sizing: border-box;
+  margin-top: 12px;
+  background: white;
+  padding: 24px;
 
   .user-table__content {
-    height: calc(100vh - 225px);
+    height: calc(100vh - 260px);
   }
 
   .is-in-filter {
-    height: calc(100vh - 290px);
+    height: calc(100vh - 310px);
   }
+}
+
+.role-content {
+  padding: 0;
 }
 </style>

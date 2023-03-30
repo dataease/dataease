@@ -118,6 +118,7 @@ export default defineConfig({
     }
   },
   build: {
+    sourcemap: true,
     emptyOutDir: false, // 默认情况下，若 outDir 在 root 目录下，则 Vite 会在构建时清空该目录
     rollupOptions: {
       // 多页支持
