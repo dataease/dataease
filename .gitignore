@@ -33,3 +33,5 @@ core/core-frontend/release/
 
 plugins/vite-test
 core/core-frontend/.stylelintcache
+/core/core-backend/src/main/resources/static/
+/core/core-frontend/node/

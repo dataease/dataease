@@ -9,7 +9,6 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    AceEditor: typeof import('./src/components/data-visualization/canvas/AceEditor.vue')['default']
     Area: typeof import('./src/components/data-visualization/canvas/Area.vue')['default']
     Canvas: typeof import('./src/components/data-visualization/canvas/index.vue')['default']
     CanvasAttr: typeof import('./src/components/data-visualization/CanvasAttr.vue')['default']
@@ -21,6 +20,8 @@ declare module '@vue/runtime-core' {
     DrawerFilter: typeof import('./src/components/drawer-filter/src/DrawerFilter.vue')['default']
     DrawerMain: typeof import('./src/components/drawer-main/src/DrawerMain.vue')['default']
     ElButton: typeof import('element-plus-secondary/es')['ElButton']
+    ElCollapse: typeof import('element-plus-secondary/es')['ElCollapse']
+    ElCollapseItem: typeof import('element-plus-secondary/es')['ElCollapseItem']
     ElColorPicker: typeof import('element-plus-secondary/es')['ElColorPicker']
     ElDropdown: typeof import('element-plus-secondary/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus-secondary/es')['ElDropdownItem']
@@ -29,10 +30,10 @@ declare module '@vue/runtime-core' {
     ElFormItem: typeof import('element-plus-secondary/es')['ElFormItem']
     ElIcon: typeof import('element-plus-secondary/es')['ElIcon']
     ElInput: typeof import('element-plus-secondary/es')['ElInput']
+    ElOption: typeof import('element-plus-secondary/es')['ElOption']
     ElRadio: typeof import('element-plus-secondary/es')['ElRadio']
     ElRadioGroup: typeof import('element-plus-secondary/es')['ElRadioGroup']
-    ElTabPane: typeof import('element-plus-secondary/es')['ElTabPane']
-    ElTabs: typeof import('element-plus-secondary/es')['ElTabs']
+    ElSelect: typeof import('element-plus-secondary/es')['ElSelect']
     EventList: typeof import('./src/components/data-visualization/EventList.vue')['default']
     FilterText: typeof import('./src/components/filter-text/src/FilterText.vue')['default']
     Grid: typeof import('./src/components/data-visualization/canvas/Grid.vue')['default']
