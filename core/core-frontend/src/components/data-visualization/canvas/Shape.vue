@@ -337,7 +337,7 @@ onMounted(() => {
     cursors.value = getCursor() // 根据旋转角度获取光标位置
   }
   eventBus.on('runAnimation', () => {
-    if (this.element == curComponent.value) {
+    if (element.value == curComponent.value) {
       // runAnimation(this.$el, curComponent.value.animations)
     }
   })
