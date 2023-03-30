@@ -607,7 +607,8 @@ export default {
     oidc: 'OIDC設置',
     theme: '主題設置',
     cas: 'CAS設置',
-    map: '地圖設置'
+    map: '地圖設置',
+    select_left: '請在左側選擇區域'
   },
   license: {
     i18n_no_license_record: '沒有 License 記錄',
