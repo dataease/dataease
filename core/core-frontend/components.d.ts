@@ -9,7 +9,6 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    AceEditor: typeof import('./src/components/data-visualization/canvas/AceEditor.vue')['default']
     Area: typeof import('./src/components/data-visualization/canvas/Area.vue')['default']
     Canvas: typeof import('./src/components/data-visualization/canvas/index.vue')['default']
     CanvasAttr: typeof import('./src/components/data-visualization/CanvasAttr.vue')['default']
@@ -21,12 +20,18 @@ declare module '@vue/runtime-core' {
     DrawerFilter: typeof import('./src/components/drawer-filter/src/DrawerFilter.vue')['default']
     DrawerMain: typeof import('./src/components/drawer-main/src/DrawerMain.vue')['default']
     ElButton: typeof import('element-plus-secondary/es')['ElButton']
+
+    ElCollapse: typeof import('element-plus-secondary/es')['ElCollapse']
+    ElCollapseItem: typeof import('element-plus-secondary/es')['ElCollapseItem']
+
     ElCheckbox: typeof import('element-plus-secondary/es')['ElCheckbox']
     ElCheckboxGroup: typeof import('element-plus-secondary/es')['ElCheckboxGroup']
     ElCol: typeof import('element-plus-secondary/es')['ElCol']
     ElColorPicker: typeof import('element-plus-secondary/es')['ElColorPicker']
     ElDialog: typeof import('element-plus-secondary/es')['ElDialog']
     ElDivider: typeof import('element-plus-secondary/es')['ElDivider']
+
+    ElColorPicker: typeof import('element-plus-secondary/es')['ElColorPicker']
     ElDropdown: typeof import('element-plus-secondary/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus-secondary/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus-secondary/es')['ElDropdownMenu']
@@ -38,6 +43,7 @@ declare module '@vue/runtime-core' {
     ElOption: typeof import('element-plus-secondary/es')['ElOption']
     ElRadio: typeof import('element-plus-secondary/es')['ElRadio']
     ElRadioGroup: typeof import('element-plus-secondary/es')['ElRadioGroup']
+
     ElRow: typeof import('element-plus-secondary/es')['ElRow']
     ElSelect: typeof import('element-plus-secondary/es')['ElSelect']
     ElSwitch: typeof import('element-plus-secondary/es')['ElSwitch']
@@ -46,6 +52,10 @@ declare module '@vue/runtime-core' {
     ElTabs: typeof import('element-plus-secondary/es')['ElTabs']
     ElTree: typeof import('element-plus-secondary/es')['ElTree']
     EmptyBackground: typeof import('./src/components/empty-background/src/EmptyBackground.vue')['default']
+
+    ElRadio: typeof import('element-plus-secondary/es')['ElRadio']
+    ElRadioGroup: typeof import('element-plus-secondary/es')['ElRadioGroup']
+    ElSelect: typeof import('element-plus-secondary/es')['ElSelect']
     EventList: typeof import('./src/components/data-visualization/EventList.vue')['default']
     FilterText: typeof import('./src/components/filter-text/src/FilterText.vue')['default']
     Grid: typeof import('./src/components/data-visualization/canvas/Grid.vue')['default']
