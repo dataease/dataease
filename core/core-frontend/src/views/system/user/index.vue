@@ -11,8 +11,10 @@ import RoleManage from './RoleManage.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import ColumnList from '@/components/column-list/src/ColumnList.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
+
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 const { t } = useI18n()
-const activeName = ref('user')
+const activeName = ref('test')
 const isPluginLoaded = ref(false)
 const drawerMainRef = ref(null)
 const nickName = ref('')
@@ -74,16 +76,14 @@ const clearFilter = (index?: number) => {
       <el-col :span="12">
         <el-button @click="addUser" type="primary">
           <template #icon>
-            <el-icon>
-              <Icon name="icon_add_outlined"></Icon>
-            </el-icon>
+            <Icon name="icon_add_outlined"></Icon>
           </template>
           {{ t('system.addUser') }}
         </el-button>
       </el-col>
       <el-col :span="12" class="right-filter">
         <el-input v-model="nickName" clearable>
-          <template #prefix-icon>
+          <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
             </el-icon>
@@ -91,9 +91,7 @@ const clearFilter = (index?: number) => {
         </el-input>
         <el-button @click="drawerMainOpen" plain>
           <template #icon>
-            <el-icon>
-              <Icon name="icon-filter"></Icon>
-            </el-icon>
+            <Icon name="icon-filter"></Icon>
           </template>
           筛选
         </el-button>
@@ -136,7 +134,8 @@ const clearFilter = (index?: number) => {
     <role-manage></role-manage>
   </div>
   <div v-else class="user-table">
-    <dataset-union></dataset-union>
+    <EmptyBackground></EmptyBackground>
+    <!-- <dataset-union></dataset-union> -->
   </div>
   <drawer-main ref="drawerMainRef"></drawer-main>
   <user-form ref="userFormDialog"></user-form>

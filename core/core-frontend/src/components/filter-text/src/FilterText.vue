@@ -58,9 +58,9 @@ watch(
       <Icon name="icon_right_outlined"></Icon>
     </el-icon>
     <el-button type="text" class="clear-btn" @click="clearFilter()">
-      <el-icon>
+      <template #icon>
         <Icon name="icon_delete-trash_outlined"></Icon>
-      </el-icon>
+      </template>
       清空条件</el-button
     >
   </div>
