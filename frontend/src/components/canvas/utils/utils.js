@@ -374,10 +374,15 @@ export function insertBatchTreeNode(nodeInfoArray, tree) {
 }
 
 export function updateCacheTree(opt, treeName, nodeInfoFull, tree) {
-  const nodeInfo = {
-    ...nodeInfoFull,
-    panelData: null,
-    panelStyle: null
+  const nodeInfo = deepCopy(nodeInfoFull)
+  if( nodeInfo instanceof Array){
+    nodeInfo.forEach(item=>{
+      delete item.panelData
+      delete item.panelStyle
+    })
+  }else{
+    delete nodeInfo.panelData
+    delete nodeInfo.panelStyle
   }
   if (opt === 'new' || opt === 'copy') {
     insertTreeNode(nodeInfo, tree)
