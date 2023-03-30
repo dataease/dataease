@@ -2,12 +2,6 @@ import { isExternal } from '@/utils/validate'
 
 const modules = import.meta.glob('../views/**/*.vue')
 export const Layout = () => import('@/layout/index.vue')
-export const fullScreenRouters = [
-  'XpackThemeForm',
-  'system/datasource/DsForm',
-  'dataset/Form',
-  'DeAutoLogin'
-]
 
 // 后端控制路由生成
 export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRecordRaw[] => {
@@ -16,7 +10,7 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
   for (const router of routes) {
     let route = { ...router }
 
-    if (!fullScreenRouters.includes(route.component) && route.inLayout) {
+    if (route.top && route.inLayout) {
       route = decorate(route)
     }
 
@@ -55,13 +49,6 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
   }
 
   return res
-}
-
-// 后台设计时未考虑activeMenu字段 这里先前端处理一下
-export const fillMeta = (router: AppCustomRouteRecordRaw) => {
-  router.name.includes('system-user-form') && (router.meta.activeMenu = '/system/user')
-  router.name.includes('system-role-form') && (router.meta.activeMenu = '/system/role')
-  router.name.includes('system-dept-form') && (router.meta.activeMenu = '/system/dept')
 }
 
 // 包装一层父级目录

@@ -22,6 +22,7 @@ type Component<T = any> =
 
 declare global {
   interface AppRouteRecordRaw extends Omit<RouteRecordRaw, 'meta' | 'children'> {
+    top?: boolean
     name?: string
     hidden?: boolean
     plugin?: boolean
@@ -34,6 +35,7 @@ declare global {
   }
 
   interface AppCustomRouteRecordRaw extends Omit<RouteRecordRaw, 'meta' | 'children'> {
+    top?: boolean
     name?: string
     hidden: boolean
     plugin?: boolean
