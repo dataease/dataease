@@ -39,6 +39,11 @@
             <version>${calcite-core.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>${commons-dbcp2.version}</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.antlr/antlr -->
         <dependency>
             <groupId>org.antlr</groupId>

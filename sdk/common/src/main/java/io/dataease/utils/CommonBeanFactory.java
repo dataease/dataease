@@ -32,4 +32,7 @@ public class CommonBeanFactory implements ApplicationContextAware {
             return null;
         }
     }
+    public static ApplicationContext getApplicationContext() {
+        return context;
+    }
 }
