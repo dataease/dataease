@@ -105,11 +105,7 @@ const defaultProps = {
       <div class="title">
         角色列表
         <el-button type="primary">
-          <template #icon>
-            <el-icon>
-              <Icon name="icon_add_outlined"></Icon>
-            </el-icon> </template
-          >添加角色
+          <template #icon> <Icon name="icon_add_outlined"></Icon> </template>添加角色
         </el-button>
         <el-input class="m24 w100" v-model="nickName" clearable>
           <template #prefix-icon>
@@ -126,7 +122,7 @@ const defaultProps = {
       <div class="title">
         已添加用户
         <el-input v-model="nickName" clearable>
-          <template #prefix-icon>
+          <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
             </el-icon>
@@ -144,7 +140,7 @@ const defaultProps = {
           <Icon name="icon_add_outlined"></Icon>
         </el-icon>
         <el-input class="m24 w100" v-model="nickName" clearable>
-          <template #prefix-icon>
+          <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
             </el-icon>

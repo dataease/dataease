@@ -27,6 +27,7 @@ declare module '@vue/runtime-core' {
     ElCheckbox: typeof import('element-plus-secondary/es')['ElCheckbox']
     ElCheckboxGroup: typeof import('element-plus-secondary/es')['ElCheckboxGroup']
     ElCol: typeof import('element-plus-secondary/es')['ElCol']
+    ElColorPicker: typeof import('element-plus-secondary/es')['ElColorPicker']
     ElDialog: typeof import('element-plus-secondary/es')['ElDialog']
     ElDivider: typeof import('element-plus-secondary/es')['ElDivider']
 
@@ -34,11 +35,14 @@ declare module '@vue/runtime-core' {
     ElDropdown: typeof import('element-plus-secondary/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus-secondary/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus-secondary/es')['ElDropdownMenu']
+    ElEmpty: typeof import('element-plus-secondary/es')['ElEmpty']
     ElForm: typeof import('element-plus-secondary/es')['ElForm']
     ElFormItem: typeof import('element-plus-secondary/es')['ElFormItem']
     ElIcon: typeof import('element-plus-secondary/es')['ElIcon']
     ElInput: typeof import('element-plus-secondary/es')['ElInput']
     ElOption: typeof import('element-plus-secondary/es')['ElOption']
+    ElRadio: typeof import('element-plus-secondary/es')['ElRadio']
+    ElRadioGroup: typeof import('element-plus-secondary/es')['ElRadioGroup']
 
     ElRow: typeof import('element-plus-secondary/es')['ElRow']
     ElSelect: typeof import('element-plus-secondary/es')['ElSelect']
@@ -47,6 +51,7 @@ declare module '@vue/runtime-core' {
     ElTabPane: typeof import('element-plus-secondary/es')['ElTabPane']
     ElTabs: typeof import('element-plus-secondary/es')['ElTabs']
     ElTree: typeof import('element-plus-secondary/es')['ElTree']
+    EmptyBackground: typeof import('./src/components/empty-background/src/EmptyBackground.vue')['default']
 
     ElRadio: typeof import('element-plus-secondary/es')['ElRadio']
     ElRadioGroup: typeof import('element-plus-secondary/es')['ElRadioGroup']

@@ -53,7 +53,7 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
 
 <template>
   <el-dropdown trigger="click" :hide-on-click="false">
-    <el-button plain>
+    <el-button secondary>
       <template #icon>
         <el-icon>
           <Icon name="icon-setting"></Icon>
