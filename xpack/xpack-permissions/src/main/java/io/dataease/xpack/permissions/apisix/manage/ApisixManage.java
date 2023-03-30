@@ -36,12 +36,14 @@ public class ApisixManage {
     @Resource
     private AuthHandlerMethodMapping authHandlerMethodMapping;
 
+
     @Resource
     private AuthMappingHandlerAdapter authMappingHandlerAdapter;
 
     /**
      * 认证校验
      * 从请求头获取token进行解析验证并存放在threadLocal中
+     *
      * @return
      */
     public void checkAuthenticationInfo(HttpServletRequest request) {
@@ -57,6 +59,7 @@ public class ApisixManage {
      * 3、根据请求获取接口参数(模拟springMVC实现)
      * 4、使用springEl表达式以及2、3的结果获取当前url需要的权限
      * 5、根据token中携带的用户信息坚定当前用户是否有4中需要的权限
+     *
      * @return
      */
     public void checkAuthorizationInfo(HttpServletRequest request) {
@@ -124,6 +127,7 @@ public class ApisixManage {
 
     /**
      * 目前用户权限数据结构未定 只提供接口
+     *
      * @param userInfo
      * @param requirePermissions
      */

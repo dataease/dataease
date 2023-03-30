@@ -14,8 +14,8 @@
     <artifactId>core</artifactId>
 
     <modules>
-        <module>core-backend</module>
         <module>core-frontend</module>
+        <module>core-backend</module>
     </modules>
 
 

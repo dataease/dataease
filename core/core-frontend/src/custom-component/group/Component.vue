@@ -37,7 +37,7 @@ const { propValue, element } = toRefs(props)
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .group {
   & > div {
     position: relative;
