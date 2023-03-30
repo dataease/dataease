@@ -1,12 +1,13 @@
 package io.dataease.api.ds;
 
 import io.dataease.api.ds.vo.DatasourceDTO;
-import io.dataease.api.ds.vo.DatasourceType;
+import io.dataease.api.ds.vo.DatasourceConfiguration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface DatasourceApi {
@@ -26,7 +27,7 @@ public interface DatasourceApi {
     DatasourceDTO update(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
 
     @GetMapping("/types")
-    List<DatasourceType> datasourceTypes() throws Exception;
+    Collection<DatasourceConfiguration> datasourceTypes() throws Exception;
 
     @PostMapping("/validate")
     DatasourceDTO validate(@RequestBody DatasourceDTO dataSourceDTO) throws Exception;
