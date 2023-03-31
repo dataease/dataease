@@ -134,8 +134,8 @@ const clearFilter = (index?: number) => {
     <role-manage></role-manage>
   </div>
   <div v-else class="user-table">
-    <EmptyBackground></EmptyBackground>
-    <!-- <dataset-union></dataset-union> -->
+    <!-- <EmptyBackground></EmptyBackground> -->
+    <dataset-union></dataset-union>
   </div>
   <drawer-main ref="drawerMainRef"></drawer-main>
   <user-form ref="userFormDialog"></user-form>
