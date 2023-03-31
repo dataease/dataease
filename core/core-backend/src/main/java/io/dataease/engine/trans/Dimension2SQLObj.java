@@ -14,6 +14,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author Junjun
@@ -31,10 +32,10 @@ public class Dimension2SQLObj {
             for (int i = 0; i < fields.size(); i++) {
                 ChartViewFieldDTO x = fields.get(i);
                 String originField;
-                if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == ExtFieldConstant.EXT_CALC) {
+                if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_CALC)) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = Utils.calcFieldRegex(x.getOriginName(), tableObj, calcFields);
-                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == ExtFieldConstant.EXT_COPY) {
+                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_COPY)) {
                     originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getDataeaseName());
                 } else {
                     originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getDataeaseName());
@@ -59,10 +60,10 @@ public class Dimension2SQLObj {
 
     private static SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
         String fieldName = "";
-        if (x.getDeExtractType() == 1) {
-            if (x.getDeType() == 2 || x.getDeType() == 3) {
+        if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_TIME)) {
+            if (Objects.equals(x.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(x.getDeType(), DeTypeConstants.DE_FLOAT)) {
                 fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
-            } else if (x.getDeType() == 1) {
+            } else if (Objects.equals(x.getDeType(), DeTypeConstants.DE_TIME)) {
                 String format = Utils.transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                     fieldName = String.format(format,
@@ -75,9 +76,9 @@ public class Dimension2SQLObj {
                 fieldName = originField;
             }
         } else {
-            if (x.getDeType() == 1) {
+            if (Objects.equals(x.getDeType(), DeTypeConstants.DE_TIME)) {
                 String format = Utils.transDateFormat(x.getDateStyle(), x.getDatePattern());
-                if (x.getDeExtractType() == 0) {
+                if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_STRING)) {
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format(format,
                                 String.format(SQLConstants.DATE_FORMAT, String.format(SQLConstants.STR_TO_DATE, originField, SQLConstants.DEFAULT_DATE_FORMAT), "%Y"),
@@ -96,12 +97,12 @@ public class Dimension2SQLObj {
                         fieldName = String.format(SQLConstants.DATE_FORMAT, from_unixtime, format);
                     }
                 }
-            } else if (x.getDeType() == 0 && x.getDeExtractType() == 0) {
+            } else if (Objects.equals(x.getDeType(), DeTypeConstants.DE_STRING) && Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_STRING)) {
                 fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.CHAR);
             } else {
-                if (x.getDeType() == DeTypeConstants.DE_INT) {
+                if (Objects.equals(x.getDeType(), DeTypeConstants.DE_INT)) {
                     fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_INT_FORMAT);
-                } else if (x.getDeType() == DeTypeConstants.DE_FLOAT) {
+                } else if (Objects.equals(x.getDeType(), DeTypeConstants.DE_FLOAT)) {
                     fieldName = String.format(SQLConstants.CAST, originField, SQLConstants.DEFAULT_FLOAT_FORMAT);
                 } else {
                     fieldName = originField;
