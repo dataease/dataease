@@ -263,7 +263,23 @@
             />
           </el-form-item>
         </div>
-
+        <el-form-item
+          v-show="showProperty('mapStyle')"
+          :label="$t('chart.map_style')"
+          class="form-item"
+        >
+          <el-select
+            v-model="colorForm.mapStyle"
+            @change="changeColorCase('mapStyle')"
+          >
+            <el-option
+              v-for="item in mapStyleOptions"
+              :key="item.name"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item
           v-show="showProperty('alpha')"
           :label="$t('chart.not_alpha')"
@@ -277,7 +293,35 @@
             @change="changeColorCase('alpha')"
           />
         </el-form-item>
-
+        <el-form-item
+          :label="$t('chart.gradient')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="colorForm.mapLineGradient"
+            :disabled="checkMapLineGradient"
+            @change="changeColorCase('lineLinear')"
+          />
+        </el-form-item>
+        <el-form-item
+          :label="colorForm.mapLineGradient ? $t('chart.map_line_color_source_color') : $t('chart.color')"
+          class="form-item"
+        >
+          <el-color-picker
+            v-model="colorForm.mapLineSourceColor"
+            @change="changeColorCase('mapLineSourceColor')"
+          />
+        </el-form-item>
+        <el-form-item
+          v-if="colorForm.mapLineGradient"
+          :label="$t('chart.map_line_color_target_color')"
+          class="form-item"
+        >
+          <el-color-picker
+            v-model="colorForm.mapLineTargetColor"
+            @change="changeColorCase('mapLineTargetColor')"
+          />
+        </el-form-item>
         <el-form-item
           v-show="showProperty('area-border-color') "
           :label="$t('chart.area_border_color')"
@@ -301,6 +345,7 @@ import { getColors } from '@/views/chart/chart/util'
 import { mapState } from 'vuex'
 import GradientColorSelector from '@/components/gradientColorSelector'
 import bus from '@/utils/bus'
+import { equalsAny } from '@/utils/StringUtils'
 
 export default {
   name: 'ColorSelector',
@@ -414,10 +459,36 @@ export default {
       colorForm: JSON.parse(JSON.stringify(DEFAULT_COLOR_CASE)),
       customColor: null,
       colorIndex: 0,
-      predefineColors: COLOR_PANEL
+      predefineColors: COLOR_PANEL,
+      mapStyleOptions: [
+        { name: this.$t('chart.map_style_normal'), value: 'normal' },
+        { name: this.$t('chart.map_style_darkblue'), value: 'darkblue' },
+        { name: this.$t('chart.map_style_light'), value: 'light' },
+        { name: this.$t('chart.map_style_dark'), value: 'dark' },
+        { name: this.$t('chart.map_style_whitesmoke'), value: 'whitesmoke' },
+        { name: this.$t('chart.map_style_fresh'), value: 'fresh' },
+        { name: this.$t('chart.map_style_grey'), value: 'grey' },
+        { name: this.$t('chart.map_style_graffiti'), value: 'graffiti' },
+        { name: this.$t('chart.map_style_macaron'), value: 'macaron' },
+        { name: this.$t('chart.map_style_blue'), value: 'blue' },
+        { name: this.$t('chart.map_style_wine'), value: 'wine' }
+      ]
     }
   },
   computed: {
+    checkMapLineGradient() {
+      const chart = this.chart
+      if (chart.type === 'flow-map') {
+        let customAttr = null
+        if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
+          customAttr = JSON.parse(JSON.stringify(chart.customAttr))
+        } else {
+          customAttr = JSON.parse(chart.customAttr)
+        }
+        return customAttr.size.mapLineAnimate && equalsAny(customAttr.size.mapLineType, 'line', 'arc')
+      }
+      return false
+    },
     ...mapState([
       'batchOptStatus',
       'componentViewsData'
@@ -493,6 +564,11 @@ export default {
           this.colorForm.tableHeaderFontColor = this.colorForm.tableHeaderFontColor ? this.colorForm.tableHeaderFontColor : this.colorForm.tableFontColor
           this.$set(this.colorForm, 'gradient', this.colorForm.gradient || false)
           this.colorForm.tableScrollBarColor = this.colorForm.tableScrollBarColor ? this.colorForm.tableScrollBarColor : DEFAULT_COLOR_CASE.tableScrollBarColor
+
+          this.colorForm.mapStyle = this.colorForm.mapStyle ? this.colorForm.mapStyle : DEFAULT_COLOR_CASE.mapStyle
+          this.colorForm.mapLineGradient = this.colorForm.mapLineGradient ? this.colorForm.mapLineGradient : DEFAULT_COLOR_CASE.mapLineGradient
+          this.colorForm.mapLineSourceColor = this.colorForm.mapLineSourceColor ? this.colorForm.mapLineSourceColor : DEFAULT_COLOR_CASE.mapLineSourceColor
+          this.colorForm.mapLineTargetColor = this.colorForm.mapLineTargetColor ? this.colorForm.mapLineTargetColor : DEFAULT_COLOR_CASE.mapLineTargetColor
 
           this.initCustomColor()
         }
