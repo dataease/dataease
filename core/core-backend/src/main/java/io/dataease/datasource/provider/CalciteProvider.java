@@ -93,9 +93,9 @@ public class CalciteProvider {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
             for (int i = 0; i < columnCount; i++) {
-                CoreDatasetTableField coreDatasetTableFiel = new CoreDatasetTableField();
-                coreDatasetTableFiel.setOriginName(metaData.getColumnName(i));
-                datasetTableFields.add(coreDatasetTableFiel);
+                CoreDatasetTableField coreDatasetTableField = new CoreDatasetTableField();
+                coreDatasetTableField.setOriginName(metaData.getColumnName(i));
+                datasetTableFields.add(coreDatasetTableField);
             }
         } catch (Exception e) {
 
