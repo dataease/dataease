@@ -1,5 +1,7 @@
 package io.dataease.engine.trans;
 
+import io.dataease.api.chart.dto.ChartViewFieldDTO;
+import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
@@ -11,46 +13,45 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * @Author Junjun
  */
-public class Field2SQLObj {
+public class Sort2SQLObj {
 
-    public static void field2sqlObj(SQLMeta meta, List<CoreDatasetTableField> fields, List<CoreDatasetTableField> calcFields) {
+    public static void getOrders(SQLMeta meta, List<ChartViewFieldDTO> fields, List<CoreDatasetTableField> calcFields, List<DeSortField> sortFields) {
         SQLObj tableObj = meta.getTable();
-        if (ObjectUtils.isEmpty(tableObj)) {
+        List<SQLObj> xOrders = meta.getXOrders();
+        if (ObjectUtils.isEmpty(tableObj) || CollectionUtils.isEmpty(xOrders)) {
             return;
         }
-        List<SQLObj> xFields = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(fields)) {
-            for (int i = 0; i < fields.size(); i++) {
-                CoreDatasetTableField x = fields.get(i);
-                String originField;
-                if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_CALC)) {
-                    // 解析origin name中有关联的字段生成sql表达式
-                    originField = Utils.calcFieldRegex(x.getOriginName(), tableObj, calcFields);
-                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_COPY)) {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getDataeaseName());
-                } else {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getDataeaseName());
-                }
-                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
-                // 处理横轴字段
-                xFields.add(getXFields(x, originField, fieldAlias));
+        if (!CollectionUtils.isEmpty(sortFields)) {
+            int step = fields.size();
+            for (int i = step; i < (step + sortFields.size()); i++) {
+                DeSortField deSortField = sortFields.get(i - step);
+                SQLObj order = buildSortField(deSortField, tableObj, i, calcFields);
+                xOrders.add(order);
             }
         }
-        meta.setXFields(xFields);
     }
 
-    private static SQLObj getXFields(CoreDatasetTableField f, String originField, String fieldAlias) {
+    private static SQLObj buildSortField(DeSortField f, SQLObj tableObj, int i, List<CoreDatasetTableField> calcFields) {
+        String originField;
+        if (ObjectUtils.isNotEmpty(f.getExtField()) && Objects.equals(f.getExtField(), ExtFieldConstant.EXT_CALC)) {
+            // 解析origin name中有关联的字段生成sql表达式
+            originField = Utils.calcFieldRegex(f.getOriginName(), tableObj, calcFields);
+        } else if (ObjectUtils.isNotEmpty(f.getExtField()) && Objects.equals(f.getExtField(), ExtFieldConstant.EXT_COPY)) {
+            originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), f.getDataeaseName());
+        } else {
+            originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), f.getDataeaseName());
+        }
+        String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
         String fieldName = "";
         // 处理横轴字段
         if (Objects.equals(f.getDeExtractType(), DeTypeConstants.DE_TIME)) {
-            if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT) || f.getDeType() == DeTypeConstants.DE_FLOAT) {
+            if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(f.getDeType(), DeTypeConstants.DE_FLOAT)) {
                 fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
             } else {
                 fieldName = originField;
@@ -78,10 +79,8 @@ public class Field2SQLObj {
                 fieldName = originField;
             }
         }
-        return SQLObj.builder()
-                .fieldName(fieldName)
-                .fieldAlias(fieldAlias)
-                .build();
+        SQLObj result = SQLObj.builder().orderField(originField).orderAlias(originField).orderDirection(f.getOrderDirection()).build();
+        return result;
     }
 
 }

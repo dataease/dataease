@@ -72,6 +72,7 @@
                 </dependency>
             </dependencies>
             <build>
+
                 <plugins>
                     <plugin>
                         <artifactId>maven-clean-plugin</artifactId>
@@ -84,9 +85,30 @@
                                     </includes>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
-
                             </filesets>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-front-2-back</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <move todir="src/main/resources/static">
+                                            <fileset dir="../core-frontend/dist">
+                                                <include name="**"/>
+                                            </fileset>
+                                        </move>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -98,10 +120,56 @@
                             </excludes>
                         </configuration>
                     </plugin>
+
+                </plugins>
+
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                        <includes>
+                            <include>static/**</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+
+        <!-- 简单版(桌面版/社区版) 使用substitute包内的替补权限实现 -->
+        <profile>
+            <id>desktop</id>
+            <properties>
+                <profiles.active>desktop</profiles.active>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>src/main/resources/static</directory>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.8</version>
                         <executions>
                             <execution>
                                 <id>copy-front-2-back</id>
@@ -122,28 +190,15 @@
                         </executions>
                     </plugin>
                 </plugins>
-            </build>
-        </profile>
-
-        <!-- 简单版(桌面版/社区版) 使用substitute包内的替补权限实现 -->
-        <profile>
-            <id>desktop</id>
-            <properties>
-                <profiles.active>desktop</profiles.active>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.h2database</groupId>
-                    <artifactId>h2</artifactId>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                    </plugin>
-                </plugins>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                        <includes>
+                            <include>static/**</include>
+                        </includes>
+                    </resource>
+                </resources>
             </build>
         </profile>
 
@@ -185,7 +240,6 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>static/**</include>
                     <include>**/*.properties</include>
                     <include>**/*.xml</include>
                     <include>**/*.yml</include>

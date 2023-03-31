@@ -22,11 +22,10 @@ const whiteList = ['/login'] // 不重定向白名单
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
-  // wsCache.set(appStore.getToken, 'Authorization')
 
   if (wsCache.get(appStore.getToken)) {
     if (to.path === '/login') {
-      next({ path: '/' })
+      next({ path: '/home/index' })
     } else {
       if (permissionStore.getIsAddRouters) {
         next()
@@ -34,7 +33,9 @@ router.beforeEach(async (to, from, next) => {
       }
 
       const roleRouters = (await getRoleRouters()) || []
-      await permissionStore.generateRoutes(roleRouters as AppCustomRouteRecordRaw[])
+      const routers: any[] = roleRouters as AppCustomRouteRecordRaw[]
+      routers.forEach(item => (item['top'] = true))
+      await permissionStore.generateRoutes(routers as AppCustomRouteRecordRaw[])
 
       permissionStore.getAddRouters.forEach(route => {
         router.addRoute(route as unknown as RouteRecordRaw) // 动态添加可访问路由表
