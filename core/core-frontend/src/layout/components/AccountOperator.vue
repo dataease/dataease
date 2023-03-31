@@ -10,7 +10,12 @@ const name = ref('admin')
 
 const logout = () => {
   wsCache.delete(appStore.getToken)
-  router.push({ path: '/login' })
+  let queryRedirectPath = '/home/index'
+  // 如果redirect参数中有值
+  if (router.currentRoute.value.fullPath) {
+    queryRedirectPath = router.currentRoute.value.fullPath as string
+  }
+  router.push(`/login?redirect=${queryRedirectPath}`)
 }
 </script>
 

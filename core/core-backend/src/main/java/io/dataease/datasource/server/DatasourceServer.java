@@ -3,21 +3,20 @@ package io.dataease.datasource.server;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.DatasourceDTO;
-import io.dataease.api.ds.vo.DatasourceType;
+import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
-import io.dataease.i18n.Translator;
+import io.dataease.datasource.provider.CalciteProvider;
+import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.CommonBeanFactory;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,10 +38,10 @@ public class DatasourceServer implements DatasourceApi {
         dataSourceDTO.setId(UUID.randomUUID().toString());
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         coreDatasource.setCreateTime(System.currentTimeMillis());
+        checkDatasourceStatus(coreDatasource);
         datasourceMapper.insert(coreDatasource);
         return dataSourceDTO;
     }
-
 
     @Override
     public DatasourceDTO update(DatasourceDTO dataSourceDTO) throws Exception{
@@ -54,32 +53,38 @@ public class DatasourceServer implements DatasourceApi {
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         coreDatasource.setUpdateTime(System.currentTimeMillis());
+        checkDatasourceStatus(coreDatasource);
         datasourceMapper.updateById(coreDatasource);
         return dataSourceDTO;
     }
 
     @Override
-    public List<DatasourceType> datasourceTypes(){
-        return new ArrayList<>();
+    public Collection<DatasourceConfiguration> datasourceTypes(){
+        Collection<DatasourceConfiguration> datasourceConfigurations = CommonBeanFactory.getApplicationContext().getBeansOfType(DatasourceConfiguration.class).values();
+        return datasourceConfigurations;
     }
 
     @Override
     public DatasourceDTO validate(DatasourceDTO dataSourceDTO) throws Exception{
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
-        DatasourceDTO datasourceDTO = new DatasourceDTO();
+        CoreDatasource coreDatasource = new CoreDatasource();
+        BeanUtils.copyBean(coreDatasource, dataSourceDTO);
+        checkDatasourceStatus(coreDatasource);
+        dataSourceDTO.setStatus(coreDatasource.getStatus());
         return dataSourceDTO;
     }
 
     @Override
     public DatasourceDTO validate(String datasourceId) throws Exception{
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
+        checkDatasourceStatus(coreDatasource);
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
-        return validate(datasourceDTO);
+        return datasourceDTO;
     }
 
     private  void preCheckDs(DatasourceDTO datasource) throws Exception {
-        if (!datasourceTypes().stream().map(DatasourceType::getType).collect(Collectors.toList()).contains(datasource.getType())) {
+        if (!datasourceTypes().stream().map(DatasourceConfiguration::getType).collect(Collectors.toList()).contains(datasource.getType())) {
             throw new Exception("Datasource type not supported.");
         }
         //TODO check Configuration
@@ -94,6 +99,17 @@ public class DatasourceServer implements DatasourceApi {
         }
         if (CollectionUtils.isEmpty(datasourceMapper.selectList(queryWrapper))) {
             throw new Exception("ds_name_exists");
+        }
+    }
+
+    public void checkDatasourceStatus(CoreDatasource coreDatasource) {
+        try {
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(coreDatasource);
+            String status = CommonBeanFactory.getBean(CalciteProvider.class).checkStatus(datasourceRequest);
+            coreDatasource.setStatus(status);
+        } catch (Exception e) {
+            coreDatasource.setStatus("Error");
         }
     }
 

@@ -74,7 +74,13 @@ const handleLogin = () => {
   loginApi(param).then(res => {
     const token = res.data
     wsCache.set(appStore.getToken, token)
-    router.push({ path: '/' })
+    let queryRedirectPath = '/home/index'
+    // 如果redirect参数中有值
+    if (router.currentRoute.value.query.redirect) {
+      queryRedirectPath = router.currentRoute.value.query.redirect as string
+    }
+    // 跳转页面
+    router.push({ path: queryRedirectPath })
   })
 }
 

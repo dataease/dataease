@@ -2,6 +2,8 @@ package io.dataease.engine.trans;
 
 import io.dataease.api.chart.dto.ChartViewFieldDTO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
+import io.dataease.engine.constant.DeTypeConstants;
+import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.model.SQLMeta;
 import io.dataease.engine.model.SQLObj;
@@ -12,6 +14,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author Junjun
@@ -30,10 +33,10 @@ public class Quota2SQLObj {
             for (int i = 0; i < fields.size(); i++) {
                 ChartViewFieldDTO y = fields.get(i);
                 String originField;
-                if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 2) {
+                if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_CALC)) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = Utils.calcFieldRegex(y.getOriginName(), tableObj, calcFields);
-                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == 1) {
+                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_COPY)) {
                     originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getDataeaseName());
                 } else {
                     originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getDataeaseName());
@@ -70,12 +73,12 @@ public class Quota2SQLObj {
             }
         } else {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "avg") || StringUtils.containsIgnoreCase(y.getSummary(), "pop")) {
-                String cast = String.format(SQLConstants.CAST, originField, y.getDeType() == 2 ? SQLConstants.DEFAULT_INT_FORMAT : SQLConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(SQLConstants.CAST, originField, Objects.equals(y.getDeType(), DeTypeConstants.DE_INT) ? SQLConstants.DEFAULT_INT_FORMAT : SQLConstants.DEFAULT_FLOAT_FORMAT);
                 String agg = String.format(SQLConstants.AGG_FIELD, y.getSummary(), cast);
                 String cast1 = String.format(SQLConstants.CAST, agg, SQLConstants.DEFAULT_FLOAT_FORMAT);
                 fieldName = String.format(SQLConstants.ROUND, cast1, "8");
             } else {
-                String cast = String.format(SQLConstants.CAST, originField, y.getDeType() == 2 ? SQLConstants.DEFAULT_INT_FORMAT : SQLConstants.DEFAULT_FLOAT_FORMAT);
+                String cast = String.format(SQLConstants.CAST, originField, Objects.equals(y.getDeType(), DeTypeConstants.DE_INT) ? SQLConstants.DEFAULT_INT_FORMAT : SQLConstants.DEFAULT_FLOAT_FORMAT);
                 if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
                     fieldName = String.format(SQLConstants.AGG_FIELD, "COUNT", "DISTINCT " + cast);
                 } else {
