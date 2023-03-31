@@ -212,7 +212,7 @@ export function checkViewTitle(opt, id, tile) {
   }
 }
 
-export function exportImg(imgName) {
+export function exportImg(imgName,callback) {
   const canvasID = document.getElementById('chartCanvas')
   const a = document.createElement('a')
   html2canvas(canvasID).then(canvas => {
@@ -227,6 +227,9 @@ export function exportImg(imgName) {
     a.click()
     URL.revokeObjectURL(blob)
     document.body.removeChild(a)
+    callback()
+  }).catch(() => {
+    callback()
   })
 }
 
