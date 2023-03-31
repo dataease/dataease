@@ -2060,6 +2060,7 @@ export default {
     multiplexing: 'Multiplexing',
     panel_off: 'Off the shelf',
     batch_opt: 'Batch Operation',
+    cancel_batch_opt: 'Cancel Batch Operation',
     edit_leave_tips: 'Do You Want To Abandon And Leave The Current Page?',
     hyperlinks: 'Hyperlinks',
     is_live: 'Is Live',
