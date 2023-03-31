@@ -2056,6 +2056,7 @@ export default {
     multiplexing: '复用',
     panel_off: '仪表板已下架',
     batch_opt: '批量操作',
+    cancel_batch_opt: '退出批量操作',
     edit_leave_tips: '是否放弃编辑离开当前界面？',
     hyperlinks: '超链接',
     is_live: '是否直播',
