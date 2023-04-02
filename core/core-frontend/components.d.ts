@@ -10,7 +10,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Area: typeof import('./src/components/data-visualization/canvas/Area.vue')['default']
-    Canvas: typeof import('./src/components/dashborad/canvas/index.vue')['default']
+    Canvas: typeof import('./src/components/dashboard/canvas/index.vue')['default']
     CanvasAttr: typeof import('./src/components/data-visualization/CanvasAttr.vue')['default']
     ColumnList: typeof import('./src/components/column-list/src/ColumnList.vue')['default']
     ComponentList: typeof import('./src/components/data-visualization/ComponentList.vue')['default']
@@ -43,9 +43,6 @@ declare module '@vue/runtime-core' {
     ElOption: typeof import('element-plus-secondary/es')['ElOption']
     ElRadio: typeof import('element-plus-secondary/es')['ElRadio']
     ElRadioGroup: typeof import('element-plus-secondary/es')['ElRadioGroup']
-    ElRadio: typeof import('element-plus-secondary/es')['ElRadio']
-    ElRadioGroup: typeof import('element-plus-secondary/es')['ElRadioGroup']
-
     ElRow: typeof import('element-plus-secondary/es')['ElRow']
     ElSelect: typeof import('element-plus-secondary/es')['ElSelect']
     ElSwitch: typeof import('element-plus-secondary/es')['ElSwitch']
@@ -53,10 +50,6 @@ declare module '@vue/runtime-core' {
     ElTree: typeof import('element-plus-secondary/es')['ElTree']
 
     EmptyBackground: typeof import('./src/components/empty-background/src/EmptyBackground.vue')['default']
-
-    ElRadio: typeof import('element-plus-secondary/es')['ElRadio']
-    ElRadioGroup: typeof import('element-plus-secondary/es')['ElRadioGroup']
-    ElSelect: typeof import('element-plus-secondary/es')['ElSelect']
     EventList: typeof import('./src/components/data-visualization/EventList.vue')['default']
     FilterText: typeof import('./src/components/filter-text/src/FilterText.vue')['default']
     Grid: typeof import('./src/components/data-visualization/canvas/Grid.vue')['default']

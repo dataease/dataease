@@ -6,12 +6,13 @@
     @mouseup="endMove($event)"
     @mousemove="moving($event)"
   >
+    this id canvas
     <div v-if="renderOk">
       <div
         :class="{
           item: true,
           moveAnimation: moveAnimate,
-          movingItem: item.isPlayer,
+          movingItem: item['isPlayer'],
           canNotDrag: !draggable
         }"
         @mousedown="startMove($event, item, index)"
@@ -133,6 +134,7 @@ const cellWidth = ref(0)
 const cellHeight = ref(0)
 const maxCell = ref(0)
 const infoBox = ref(null)
+const container = ref(null)
 
 const {
   yourList,
@@ -206,15 +208,12 @@ function resetPositionBox() {
 
 /**
  * 填充位置盒子
- *
- * @param {any} item
  */
 function addItemToPositionBox(item) {
   let pb = positionBox
   if (item.x <= 0 || item.y <= 0) return
-
-  for (let i = item.x - 1; i < item.x - 1 + item.sizex; i++) {
-    for (let j = item.y - 1; j < item.y - 1 + item.sizey; j++) {
+  for (let i = item.x - 1; i < item.x - 1 + item.sizeX; i++) {
+    for (let j = item.y - 1; j < item.y - 1 + item.sizeY; j++) {
       if (pb[j][i]) {
         pb[j][i].el = item
       }
@@ -239,14 +238,14 @@ function fillPositionBox(maxY) {
 
   itemMaxY = maxY
   //problem
-  $(currentInstance.$el).css('height', (itemMaxY + 2) * cellHeight.value + 'px')
+  $(container.value).css('height', (itemMaxY + 2) * cellHeight.value + 'px')
 }
 
 function removeItemFromPositionBox(item) {
   let pb = positionBox
   if (item.x <= 0 || item.y <= 0) return
-  for (let i = item.x - 1; i < item.x - 1 + item.sizex; i++) {
-    for (let j = item.y - 1; j < item.y - 1 + item.sizey; j++) {
+  for (let i = item.x - 1; i < item.x - 1 + item.sizeX; i++) {
+    for (let j = item.y - 1; j < item.y - 1 + item.sizeY; j++) {
       if (pb[j][i]) {
         pb[j][i].el = false
       }
@@ -258,45 +257,12 @@ function removeItemFromPositionBox(item) {
  * 重新计算宽度，使最小单元格能占满整个容器
  *
  */
-function recalcCellWidth() {
+function reCalcCellWidth() {
   //problem
-  let containerNode = currentInstance.$refs['container']
-  let containerWidth = containerNode.offsetWidth
-
+  let containerWidth = container.value.offsetWidth
   let cells = Math.round(containerWidth / cellWidth.value)
   maxCell.value = cells
 }
-
-function init() {
-  cellWidth.value = baseWidth.value + baseMarginLeft.value
-  cellHeight.value = baseHeight.value + baseMarginTop.value
-  positionBox = []
-  coordinates = [] //坐标点集合
-  lastTask = undefined
-  isOverlay = false //是否正在交换位置
-  moveTime = 80 //移动动画时间
-  itemMaxY = 0
-  itemMaxX = 0
-
-  recalcCellWidth()
-  resetPositionBox()
-
-  let i = 0
-  let timeId = setInterval(function () {
-    if (i >= yourList.value.length) {
-      clearInterval(timeId)
-      nextTick(() => {
-        moveAnimate.value = true
-      })
-    } else {
-      let item = yourList.value[i]
-      addItem(item, i)
-      i++
-    }
-  }, 1)
-  renderOk.value = true
-}
-
 function resizePlayer(item, newSize) {
   removeItemFromPositionBox(item)
   let belowItems = findBelowItems(item)
@@ -308,15 +274,15 @@ function resizePlayer(item, newSize) {
     }
   })
 
-  item.sizex = newSize.sizex
-  item.sizey = newSize.sizey
+  item.sizeX = newSize.sizeX
+  item.sizeY = newSize.sizeY
 
-  if (item.sizex + item.x - 1 > itemMaxX) {
-    item.sizex = itemMaxX - item.x + 1
+  if (item.sizeX + item.x - 1 > itemMaxX) {
+    item.sizeX = itemMaxX - item.x + 1
   }
 
-  if (item.sizey + item.y > itemMaxY) {
-    fillPositionBox(item.y + item.sizey)
+  if (item.sizeY + item.y > itemMaxY) {
+    fillPositionBox(item.y + item.sizeY)
   }
   emptyTargetCell(item)
   addItemToPositionBox(item)
@@ -341,16 +307,16 @@ function checkItemPosition(item, position) {
   }
 
   // 检查大小
-  if (item.sizex > itemMaxX) {
-    item.sizex = itemMaxX
+  if (item.sizeX > itemMaxX) {
+    item.sizeX = itemMaxX
   }
 
-  if (item.sizex < 1) {
-    item.sizex = 1
+  if (item.sizeX < 1) {
+    item.sizeX = 1
   }
 
-  if (item.x + item.sizex - 1 > itemMaxX) {
-    item.x = itemMaxX - item.sizex + 1
+  if (item.x + item.sizeX - 1 > itemMaxX) {
+    item.x = itemMaxX - item.sizeX + 1
     if (item.x < 1) {
       item.x = 1
     }
@@ -360,12 +326,12 @@ function checkItemPosition(item, position) {
     item.y = 1
   }
 
-  if (item.sizey < 1) {
-    item.sizey = 1
+  if (item.sizeY < 1) {
+    item.sizeY = 1
   }
 
-  if (item.y + item.sizey > itemMaxY - 1) {
-    fillPositionBox(item.y + item.sizey - 1)
+  if (item.y + item.sizeY > itemMaxY - 1) {
+    fillPositionBox(item.y + item.sizeY - 1)
   }
 }
 
@@ -468,7 +434,7 @@ function findClosetCoords(item, tCoordinate) {
   }
   isOverlay = true
   collisionsItem = _.sortBy(collisionsItem, 'area')
-  movePlayer.call(this, item, {
+  movePlayer(item, {
     x: collisionsItem[0].coordinate.el.x,
     y: collisionsItem[0].coordinate.el.y
   })
@@ -483,8 +449,8 @@ function findClosetCoords(item, tCoordinate) {
  * @param {any} item
  */
 function makeCoordinate(item) {
-  let width = cellWidth.value * item.sizex - baseMarginLeft.value
-  let height = cellHeight.value * item.sizey - baseMarginTop.value
+  let width = cellWidth.value * item.sizeX - baseMarginLeft.value
+  let height = cellHeight.value * item.sizeY - baseMarginTop.value
   let left = cellWidth.value * (item.x - 1) + baseMarginLeft.value
   let top = cellHeight.value * (item.y - 1) + baseMarginTop.value
   let coordinate = {
@@ -499,8 +465,8 @@ function makeCoordinate(item) {
   coordinates.push(coordinate)
 }
 function changeItemCoordinate(item) {
-  let width = cellWidth.value * item.sizex - baseMarginLeft.value
-  let height = cellHeight.value * item.sizey - baseMarginTop.value
+  let width = cellWidth.value * item.sizeX - baseMarginLeft.value
+  let height = cellHeight.value * item.sizeY - baseMarginTop.value
   let left = cellWidth.value * (item.x - 1) + baseMarginLeft.value
   let top = cellHeight.value * (item.y - 1) + baseMarginTop.value
 
@@ -529,7 +495,7 @@ function emptyTargetCell(item) {
   let belowItems = findBelowItems(item)
   _.forEach(belowItems, function (downItem, index) {
     if (downItem['_dragId'] == item['_dragId']) return
-    let moveSize = item.y + item.sizey - downItem['y']
+    let moveSize = item.y + item.sizeY - downItem['y']
     if (moveSize > 0) {
       moveItemDown(downItem, moveSize)
     }
@@ -542,7 +508,7 @@ function emptyTargetCell(item) {
 function canItemGoUp(item) {
   let upperRows = 0
   for (let row = item.y - 2; row >= 0; row--) {
-    for (let cell = item.x - 1; cell < item.x - 1 + item.sizex; cell++) {
+    for (let cell = item.x - 1; cell < item.x - 1 + item.sizeX; cell++) {
       if (positionBox[row][cell] && positionBox[row][cell].el) {
         return upperRows
       }
@@ -580,8 +546,8 @@ function setPlayerPosition(item, position) {
   let targetY = position.y || item.y
   item.x = targetX
   item.y = targetY
-  if (item.y + item.sizey > itemMaxY) {
-    itemMaxY = item.y + item.sizey
+  if (item.y + item.sizeY > itemMaxY) {
+    itemMaxY = item.y + item.sizeY
   }
 }
 
@@ -590,9 +556,9 @@ function setPlayerPosition(item, position) {
  */
 function calcDiff(parent, son, size) {
   let diffs = []
-  for (let i = son.x - 1; i < son.x - 1 + son.sizex; i++) {
+  for (let i = son.x - 1; i < son.x - 1 + son.sizeX; i++) {
     let temp_y = 0
-    for (let j = parent.y - 1 + parent.sizey; j < son.y - 1; j++) {
+    for (let j = parent.y - 1 + parent.sizeY; j < son.y - 1; j++) {
       if (positionBox[j][i] && positionBox[j][i].el == false) {
         temp_y++
       }
@@ -622,7 +588,7 @@ function moveItemUp(item, size) {
 }
 function findBelowItems(item) {
   let belowItems = {}
-  for (let cell = item.x - 1; cell < item.x - 1 + item.sizex; cell++) {
+  for (let cell = item.x - 1; cell < item.x - 1 + item.sizeX; cell++) {
     for (let row = item.y - 1; row < positionBox.length; row++) {
       let target = positionBox[row][cell]
       if (target && target.el) {
@@ -636,7 +602,7 @@ function findBelowItems(item) {
 
 const startResize = (e, item, index) => {
   if (!resizable.value) return
-  resizeStart.value(null, e, item, index)
+  resizeStart.value(e, item, index)
   // e.preventDefault();
   let target = $(e.target)
 
@@ -678,7 +644,7 @@ const startMove = (e, item, index) => {
 
   if (className.includes('resizeHandle')) {
   } else if (draggable.value && (className.includes('dragHandle') || className.includes('item'))) {
-    dragStart.value.call(null, e, item, index)
+    dragStart.value(e, item, index)
     infoBoxTemp.moveItem = item
     infoBoxTemp.moveItemIndex = index
   }
@@ -695,16 +661,17 @@ const startMove = (e, item, index) => {
   }
   infoBoxTemp.cloneItem.addClass('cloneNode')
 
-  $(currentInstance.$el).append(infoBoxTemp.cloneItem)
+  //problem
+  $(container.value).append(infoBoxTemp.cloneItem)
 
-  infoBoxTemp.orignX = infoBoxTemp.cloneItem.position().left //克隆对象原始X位置
-  infoBoxTemp.orignY = infoBoxTemp.cloneItem.position().top
+  infoBoxTemp.originX = infoBoxTemp.cloneItem.position().left //克隆对象原始X位置
+  infoBoxTemp.originY = infoBoxTemp.cloneItem.position().top
   infoBoxTemp.oldX = item.x //实际对象原始X位置
   infoBoxTemp.oldY = item.y
-  infoBoxTemp.oldSizeX = item.sizex
-  infoBoxTemp.oldSizeY = item.sizey
-  infoBoxTemp.orignWidth = infoBoxTemp.cloneItem.prop('offsetWidth')
-  infoBoxTemp.orignHeight = infoBoxTemp.cloneItem.prop('offsetHeight')
+  infoBoxTemp.oldSizeX = item.sizeX
+  infoBoxTemp.oldSizeY = item.sizeY
+  infoBoxTemp.originWidth = infoBoxTemp.cloneItem.prop('offsetWidth')
+  infoBoxTemp.originHeight = infoBoxTemp.cloneItem.prop('offsetHeight')
 
   function itemMouseMove(e) {
     let moveItem = _.get(infoBoxTemp, 'moveItem')
@@ -712,48 +679,65 @@ const startMove = (e, item, index) => {
 
     if (resizeItem) {
       //调整大小时
-      resizing.value.call(null, e, resizeItem, resizeItem._dragId)
-
-      currentInstance.$set(resizeItem, 'isPlayer', true)
+      resizing.value(e, resizeItem, resizeItem._dragId)
+      resizeItem['isPlayer'] = true
       let nowItemIndex = infoBoxTemp.resizeItemIndex
       let cloneItem = infoBoxTemp.cloneItem
       let startX = infoBoxTemp.startX
       let startY = infoBoxTemp.startY
       let oldSizeX = infoBoxTemp.oldSizeX
       let oldSizeY = infoBoxTemp.oldSizeY
-      let orignWidth = infoBoxTemp.orignWidth
-      let orignHeight = infoBoxTemp.orignHeight
+      let originWidth = infoBoxTemp.originWidth
+      let originHeight = infoBoxTemp.originHeight
 
       let moveXSize = e.pageX - startX //X方向移动的距离
       let moveYSize = e.pageY - startY //Y方向移动的距离
 
-      let addSizex =
+      console.log(
+        'e.pageX=' + e.pageX + ';e.pageY=' + e.pageY + ';startX=' + startX + ';startY=' + startY
+      )
+
+      let addSizeX =
         moveXSize % cellWidth.value > (cellWidth.value / 4) * 1
           ? Math.floor(moveXSize / cellWidth.value + 1)
           : Math.floor(moveXSize / cellWidth.value)
-      let addSizey =
+      let addSizeY =
         moveYSize % cellHeight.value > (cellHeight.value / 4) * 1
           ? Math.floor(moveYSize / cellHeight.value + 1)
           : Math.floor(moveYSize / cellHeight.value)
 
-      let nowX = oldSizeX + addSizex > 0 ? oldSizeX + addSizex : 1
-      let nowY = oldSizeY + addSizey > 0 ? oldSizeY + addSizey : 1
+      let nowX = oldSizeX + addSizeX > 0 ? oldSizeX + addSizeX : 1
+      let nowY = oldSizeY + addSizeY > 0 ? oldSizeY + addSizeY : 1
 
       debounce(
-        (function (addSizex, addSizey) {
+        (function (addSizeX, addSizeY) {
           return function () {
             resizePlayer(resizeItem, {
-              sizex: nowX,
-              sizey: nowY
+              sizeX: nowX,
+              sizeY: nowY
             })
           }
-        })(addSizex, addSizey),
+        })(addSizeX, addSizeY),
         10
       )
 
-      let nowWidth = orignWidth + moveXSize
+      let nowWidth = originWidth + moveXSize
       nowWidth = nowWidth <= baseWidth.value ? baseWidth.value : nowWidth
-      let nowHeight = orignHeight + moveYSize
+      let nowHeight = originHeight + moveYSize
+      console.log(
+        'width=' +
+          nowWidth +
+          ';height=' +
+          nowHeight +
+          ';baseWidth.value=' +
+          baseWidth.value +
+          ';baseHeight.value=' +
+          baseHeight.value +
+          ';moveXSize=' +
+          moveXSize +
+          ';originWidth=' +
+          originWidth
+      )
       nowHeight = nowHeight <= baseHeight.value ? baseHeight.value : nowHeight
       //克隆元素实时改变大小
       cloneItem.css({
@@ -763,24 +747,23 @@ const startMove = (e, item, index) => {
     } else if (moveItem) {
       scrollScreen(e)
       if (!draggable.value) return
-      dragging.value.call(null, e, moveItem, moveItem._dragId)
-
-      currentInstance.$set(moveItem, 'isPlayer', true)
-      // this.$set(moveItem, "show", false);
+      dragging.value(e, moveItem, moveItem._dragId)
+      //problem
+      moveItem['isPlayer'] = true
       let nowItemIndex = infoBoxTemp.moveItemIndex
       let cloneItem = infoBoxTemp.cloneItem
       let startX = infoBoxTemp.startX
       let startY = infoBoxTemp.startY
-      let orignX = infoBoxTemp.orignX
-      let orignY = infoBoxTemp.orignY
+      let originX = infoBoxTemp.originX
+      let originY = infoBoxTemp.originY
       let oldX = infoBoxTemp.oldX
       let oldY = infoBoxTemp.oldY
 
       let moveXSize = e.pageX - startX //X方向移动的距离
       let moveYSize = e.pageY - startY //Y方向移动的距离
 
-      let nowCloneItemX = orignX + moveXSize
-      let nowCloneItemY = orignY + moveYSize
+      let nowCloneItemX = originX + moveXSize
+      let nowCloneItemY = originY + moveYSize
 
       let newX = Math.floor(
         (nowCloneItemX + cloneItem.width() / 12 - baseMarginLeft.value) / cellWidth.value + 1
@@ -815,27 +798,28 @@ const startMove = (e, item, index) => {
     }
   }
 
-  $(window).mousemove(itemMouseMove)
-
-  $(window).mouseup(function itemMouseUp(e) {
+  const up = () => {
     if (_.isEmpty(infoBox.value)) return
     if (infoBox.value.cloneItem) {
       infoBox.value.cloneItem.remove()
     }
     if (infoBox.value.resizeItem) {
-      currentInstance.$delete(infoBox.value.resizeItem, 'isPlayer')
-      resizeEnd.value.call(null, e, infoBox.value.resizeItem, infoBox.value.resizeItem._dragId)
+      delete infoBox.value.resizeItem['isPlayer']
+      resizeEnd.value(e, infoBox.value.resizeItem, infoBox.value.resizeItem._dragId)
     }
     if (infoBox.value.moveItem) {
       dragEnd?.value(null, e, infoBox.value.moveItem, infoBox.value.moveItem._dragId)
-      currentInstance.$set(infoBox.value.moveItem, 'show', true)
-      currentInstance.$delete(infoBox.value.moveItem, 'isPlayer')
+      //problem
+      infoBox.value.moveItem['show'] = true
+      delete infoBox.value.moveItem['isPlayer']
     }
     infoBox.value = {}
+    document.removeEventListener('mousemove', itemMouseMove)
+    document.removeEventListener('mouseup', up)
+  }
 
-    $(currentInstance).off('mousemove', itemMouseMove)
-    $(currentInstance).off('mouseup', itemMouseUp)
-  })
+  document.addEventListener('mousemove', itemMouseMove)
+  document.addEventListener('mouseup', up)
 }
 
 const endMove = e => {
@@ -846,13 +830,43 @@ const moving = e => {
   return {}
 }
 
+const canvasInit = () => {
+  cellWidth.value = baseWidth.value + baseMarginLeft.value
+  cellHeight.value = baseHeight.value + baseMarginTop.value
+  positionBox = []
+  coordinates = [] //坐标点集合
+  lastTask = undefined
+  isOverlay = false //是否正在交换位置
+  moveTime = 80 //移动动画时间
+  itemMaxY = 0
+  itemMaxX = 0
+
+  reCalcCellWidth()
+  resetPositionBox()
+
+  let i = 0
+  let timeId = setInterval(function () {
+    if (i >= yourList.value.length) {
+      clearInterval(timeId)
+      nextTick(() => {
+        moveAnimate.value = true
+      })
+    } else {
+      let item = yourList.value[i]
+      addItem(item, i)
+      i++
+    }
+  }, 1)
+  renderOk.value = true
+}
+
 /**
  * 计算当前item的位置和大小
  */
 const nowItemStyle = (item, index) => {
   return {
-    width: cellWidth.value * item.sizex - baseMarginLeft.value + 'px',
-    height: cellHeight.value * item.sizey - baseMarginTop.value + 'px',
+    width: cellWidth.value * item.sizeX - baseMarginLeft.value + 'px',
+    height: cellHeight.value * item.sizeY - baseMarginTop.value + 'px',
     left: cellWidth.value * (item.x - 1) + baseMarginLeft.value + 'px',
     top: cellHeight.value * (item.y - 1) + baseMarginTop.value + 'px'
   }
@@ -898,6 +912,11 @@ const addItemBox = item => {
     addItem(item, yourList.value.length - 1)
   })
 }
+
+defineExpose({
+  canvasInit,
+  afterInitOk
+})
 </script>
 
 <style lang="less">
