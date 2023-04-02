@@ -6,7 +6,11 @@ import java.util.logging.Logger;
 
 public class DriverShim implements Driver {
     private Driver driver;
-    public DriverShim(Driver d) { this.driver = d; }
+
+    public DriverShim(Driver d) {
+        this.driver = d;
+    }
+
     public boolean acceptsURL(String u) throws SQLException {
         return this.driver.acceptsURL(u);
     }

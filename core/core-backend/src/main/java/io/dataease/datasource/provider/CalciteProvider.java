@@ -23,7 +23,6 @@ import java.net.URL;
 import java.sql.*;
 import java.util.*;
 
-import static org.apache.calcite.sql.validate.SqlConformanceEnum.ORACLE_10;
 
 
 @Component("calciteProvider")
@@ -93,9 +92,9 @@ public class CalciteProvider {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
             for (int i = 0; i < columnCount; i++) {
-                CoreDatasetTableField coreDatasetTableFiel = new CoreDatasetTableField();
-                coreDatasetTableFiel.setOriginName(metaData.getColumnName(i));
-                datasetTableFields.add(coreDatasetTableFiel);
+                CoreDatasetTableField coreDatasetTableField = new CoreDatasetTableField();
+                coreDatasetTableField.setOriginName(metaData.getColumnName(i));
+                datasetTableFields.add(coreDatasetTableField);
             }
         } catch (Exception e) {
 
@@ -223,7 +222,7 @@ public class CalciteProvider {
         if (StringUtils.isNotBlank(datasourceConfiguration.getUsername())) {
             props.setProperty("user", datasourceConfiguration.getUsername());
             if (StringUtils.isNotBlank(datasourceConfiguration.getPassword())) {
-                props.setProperty("password", datasourceConfiguration.getUsername());
+                props.setProperty("password", datasourceConfiguration.getPassword());
             }
         }
 
