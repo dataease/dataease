@@ -26,7 +26,7 @@ const possibleNodeAreaList = computed(() => {
   return flatArr.filter(ele => !ele.isShadow)
 })
 
-function elementInterectArea(pos1, pos2) {
+function elementInteractArea(pos1, pos2) {
   const pos1Width = pos1.right - pos1.left
   const pos1Height = pos1.bottom - pos1.top
   const pos2Width = pos2.right - pos2.left
@@ -266,7 +266,7 @@ const dragover_handler = ev => {
     }
 
     return [
-      elementInterectArea(
+      elementInteractArea(
         {
           left: dragOffsetX.value,
           right: dragOffsetX.value + 200,
@@ -281,7 +281,7 @@ const dragover_handler = ev => {
         }
       ),
       isLeaf || k === label
-        ? elementInterectArea(
+        ? elementInteractArea(
             {
               left: dragOffsetX.value,
               right: dragOffsetX.value + 200,
