@@ -1,16 +1,9 @@
 package io.dataease.engine.sql;
 
-import io.dataease.api.chart.dto.ChartViewFieldDTO;
-import io.dataease.api.chart.dto.DatasetTableField;
-import io.dataease.api.chart.dto.DeSortField;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
-import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.model.SQLMeta;
 import io.dataease.engine.model.SQLObj;
-import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
