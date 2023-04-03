@@ -280,7 +280,7 @@ eventBus.on('clearCanvas', clearCanvas)
   cursor: pointer;
 }
 
-.contaner-demo {
+.container-demo {
   width: 100%;
   padding: 1.5em 0 1.5em 0;
 
