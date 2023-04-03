@@ -19,7 +19,7 @@ import java.util.Objects;
 /**
  * @Author Junjun
  */
-public class Sort2SQLObj {
+public class Order2SQLObj {
 
     public static void getOrders(SQLMeta meta, List<ChartViewFieldDTO> fields, List<CoreDatasetTableField> calcFields, List<DeSortField> sortFields) {
         SQLObj tableObj = meta.getTable();

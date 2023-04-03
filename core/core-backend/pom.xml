@@ -50,6 +50,12 @@
             <artifactId>antlr</artifactId>
             <version>${antlr.version}</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -94,7 +100,7 @@
                         <executions>
                             <execution>
                                 <id>copy-front-2-back</id>
-                                <phase>package</phase>
+                                <phase>generate-resources</phase>
                                 <configuration>
                                     <target>
                                         <move todir="src/main/resources/static">
@@ -173,7 +179,7 @@
                         <executions>
                             <execution>
                                 <id>copy-front-2-back</id>
-                                <phase>package</phase>
+                                <phase>generate-resources</phase>
                                 <configuration>
                                     <target>
                                         <move todir="src/main/resources/static">
