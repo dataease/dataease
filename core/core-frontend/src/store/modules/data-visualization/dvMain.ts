@@ -7,8 +7,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       editMode: 'edit', // 编辑器模式 edit preview
       canvasStyleData: {
         // 页面全局数据
-        width: 1200,
-        height: 740,
+        width: 1600,
+        height: 900,
         scale: 100,
         color: '#000',
         opacity: 1,

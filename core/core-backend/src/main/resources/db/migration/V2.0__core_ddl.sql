@@ -143,3 +143,31 @@ CREATE TABLE `core_dataset_table_field`
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
+DROP TABLE IF EXISTS `data_visualization_info`;
+CREATE TABLE `data_visualization_info` (
+                                           `id` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+                                           `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '名称',
+                                           `pid` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '父id',
+                                           `org_id` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '所属组织id',
+                                           `level` int DEFAULT NULL COMMENT '层级',
+                                           `node_type` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
+                                           `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '类型',
+                                           `canvas_style_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '样式数据',
+                                           `component_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci COMMENT '组件数据',
+                                           `mobile_layout` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '移动端布局',
+                                           `status` int DEFAULT '1' COMMENT '状态 0-未发布 1-已发布',
+                                           `self_watermark_status` int DEFAULT '0' COMMENT '是否单独打开水印 0-关闭 1-开启',
+                                           `sort` int DEFAULT '0' COMMENT '排序',
+                                           `create_time` bigint DEFAULT NULL COMMENT '创建时间',
+                                           `create_by` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '创建人',
+                                           `update_time` bigint DEFAULT NULL COMMENT '更新时间',
+                                           `update_by` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '更新人',
+                                           `remark` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
+                                           `source` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '数据来源',
+                                           `delete_flag` tinyint(1) DEFAULT '0' COMMENT '删除标志',
+                                           `delete_time` bigint DEFAULT NULL COMMENT '删除时间',
+                                           `delete_by` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '删除人',
+                                           PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
