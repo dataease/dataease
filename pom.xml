@@ -31,6 +31,7 @@
         <java-jwt.version>3.12.1</java-jwt.version>
         <velocity.version>2.3</velocity.version>
         <maven.antrun.version>3.1.0</maven.antrun.version>
+        <junit.version>4.13.2</junit.version>
     </properties>
     <packaging>pom</packaging>
 
