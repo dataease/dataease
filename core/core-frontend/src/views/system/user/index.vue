@@ -6,15 +6,15 @@ import { Icon } from '@/components/icon-custom'
 import { FilterText } from '@/components/filter-text'
 import DrawerMain from '@/components/drawer-main/src/DrawerMain.vue'
 import UserForm from './UserForm.vue'
-import DatasetUnion from './DatasetUnion.vue'
+// import DatasetUnion from './DatasetUnion.vue'
 import RoleManage from './RoleManage.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import ColumnList from '@/components/column-list/src/ColumnList.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 
-import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+// import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 const { t } = useI18n()
-const activeName = ref('test')
+const activeName = ref('user')
 const isPluginLoaded = ref(false)
 const drawerMainRef = ref(null)
 const nickName = ref('')
@@ -66,10 +66,10 @@ const clearFilter = (index?: number) => {
 }
 </script>
 <template>
-  <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
+  <el-tabs v-model="activeName" @tab-click="handleClick">
     <el-tab-pane :label="t('system.user')" name="user"></el-tab-pane>
     <el-tab-pane :label="t('system.role')" name="role"></el-tab-pane>
-    <el-tab-pane label="test" name="test"></el-tab-pane>
+    <!-- <el-tab-pane label="test" name="test"></el-tab-pane> -->
   </el-tabs>
   <div v-if="activeName === 'user'" class="user-table de-search-table">
     <el-row class="user-table__filter top-operate">
@@ -133,10 +133,10 @@ const clearFilter = (index?: number) => {
   <div v-else-if="activeName === 'role'" class="role-content">
     <role-manage></role-manage>
   </div>
-  <div v-else class="user-table">
-    <!-- <EmptyBackground></EmptyBackground> -->
+  <!-- <div v-else class="user-table">
+    <EmptyBackground></EmptyBackground>
     <dataset-union></dataset-union>
-  </div>
+  </div> -->
   <drawer-main ref="drawerMainRef"></drawer-main>
   <user-form ref="userFormDialog"></user-form>
 </template>

@@ -1,18 +1,34 @@
 package io.dataease.dataset.server;
 
 import io.dataease.api.dataset.DatasetTreeApi;
+import io.dataease.api.dataset.dto.DatasetNodeDTO;
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DatasetTreeNodeVO;
+import io.dataease.dataset.manage.DatasetGroupManage;
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/datasetTree")
+@RequestMapping("datasetTree")
 public class DatasetTreeServer implements DatasetTreeApi {
+    @Resource
+    private DatasetGroupManage datasetGroupManage;
 
     @Override
-    public List<DatasetTreeNodeVO> query(String keyword) {
-        return null;
+    public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetNodeDTO) {
+        return datasetGroupManage.save(datasetNodeDTO);
+    }
+
+    @Override
+    public void delete(String id) {
+        datasetGroupManage.delete(id);
+    }
+
+    @Override
+    public List<DatasetTreeNodeVO> tree(DatasetNodeDTO datasetNodeDTO) {
+        return datasetGroupManage.tree(datasetNodeDTO);
     }
 }

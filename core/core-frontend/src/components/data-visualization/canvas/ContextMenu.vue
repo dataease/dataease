@@ -5,6 +5,7 @@ import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
+import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 const dvMainStore = dvMainStoreWithOut()
@@ -13,7 +14,9 @@ const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const layerStore = layerStoreWithOut()
+const composeStore = composeStoreWithOut()
 
+const { areaData } = storeToRefs(composeStore)
 const { curComponent } = storeToRefs(dvMainStore)
 const { menuTop, menuLeft, menuShow } = storeToRefs(contextmenuStore)
 const copyData = ref(null)
@@ -27,7 +30,7 @@ const unlock = () => {
 }
 
 // 点击菜单时不取消当前组件的选中状态
-const handleMouseUp = () => {
+const handleMouseUp = e => {
   dvMainStore.setClickComponentStatus(true)
 }
 
@@ -68,6 +71,22 @@ const bottomComponent = () => {
   layerStore.bottomComponent()
   snapshotStore.recordSnapshot()
 }
+
+const componentCompose = () => {
+  composeStore.compose()
+  snapshotStore.recordSnapshot()
+}
+
+const decompose = () => {
+  composeStore.decompose()
+  snapshotStore.recordSnapshot()
+}
+
+// 阻止事件向父级组件传播调用父级的handleMouseDown 导致areaData 被隐藏
+const handleComposeMouseDown = e => {
+  e.preventDefault()
+  e.stopPropagation()
+}
 </script>
 
 <template>
@@ -92,6 +111,19 @@ const bottomComponent = () => {
         <li v-else @click="unlock">解锁</li>
       </template>
       <li v-else @click="paste">粘贴</li>
+      <li
+        v-show="areaData.components.length"
+        @mousedown="handleComposeMouseDown"
+        @click="componentCompose"
+      >
+        组合
+      </li>
+      <li
+        v-show="!(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')"
+        @click="decompose()"
+      >
+        拆分
+      </li>
     </ul>
   </div>
 </template>

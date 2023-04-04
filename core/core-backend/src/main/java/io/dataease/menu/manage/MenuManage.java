@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 @Component
 public class MenuManage {
 
+    private static final String I18N_PREFIX = "i18n_menu.";
+
     private final static int ROOTID = 0;
 
     @Resource
@@ -67,7 +69,7 @@ public class MenuManage {
         MenuVO menuVO = new MenuVO();
         BeanUtils.copyBean(menuVO, coreMenu, "children");
         MenuMeta meta = new MenuMeta();
-        meta.setTitle(coreMenu.getName());
+        meta.setTitle(I18N_PREFIX + coreMenu.getName());
         meta.setIcon(coreMenu.getIcon());
         menuVO.setMeta(meta);
 

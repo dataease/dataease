@@ -31,6 +31,9 @@
         <java-jwt.version>3.12.1</java-jwt.version>
         <velocity.version>2.3</velocity.version>
         <maven.antrun.version>3.1.0</maven.antrun.version>
+        <hutool.version>5.8.16</hutool.version>
+        <ehcache.version>2.10.9.2</ehcache.version>
+        <bcprov.version>1.72</bcprov.version>
         <junit.version>4.13.2</junit.version>
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
@@ -95,6 +98,12 @@
                 <version>${velocity.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>net.sf.ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>${ehcache.version}</version>
+            </dependency>
+
         </dependencies>
 
     </dependencyManagement>
@@ -104,6 +113,23 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-crypto</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15to18</artifactId>
+            <version>${bcprov.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
