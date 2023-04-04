@@ -2,6 +2,7 @@ package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.dataset.dto.DatasetNodeDTO;
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DatasetTreeNodeVO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
@@ -24,25 +25,25 @@ public class DatasetGroupManage {
     @Resource
     private CoreDatasetGroupMapper coreDatasetGroupMapper;
 
-    public DatasetNodeDTO save(DatasetNodeDTO datasetNodeDTO) {
-        checkName(datasetNodeDTO);
+    public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO) {
+        checkName(datasetGroupInfoDTO);
         // todo node_type=dataset需要创建dataset_table和field
-        if (StringUtils.equalsIgnoreCase(datasetNodeDTO.getNodeType(), "dataset")) {
+        if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), "dataset")) {
             // todo coding...
         }
         // save dataset group
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
-        if (StringUtils.isEmpty(datasetNodeDTO.getId())) {
-            datasetNodeDTO.setId(UUID.randomUUID().toString());
-            datasetNodeDTO.setCreateBy("admin");// todo username
-            datasetNodeDTO.setCreateTime(System.currentTimeMillis());
-            BeanUtils.copyBean(coreDatasetGroup, datasetNodeDTO);
+        if (StringUtils.isEmpty(datasetGroupInfoDTO.getId())) {
+            datasetGroupInfoDTO.setId(UUID.randomUUID().toString());
+            datasetGroupInfoDTO.setCreateBy("admin");// todo username
+            datasetGroupInfoDTO.setCreateTime(System.currentTimeMillis());
+            BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
             coreDatasetGroupMapper.insert(coreDatasetGroup);
         } else {
-            BeanUtils.copyBean(coreDatasetGroup, datasetNodeDTO);
+            BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
             coreDatasetGroupMapper.updateById(coreDatasetGroup);
         }
-        return datasetNodeDTO;
+        return datasetGroupInfoDTO;
     }
 
     public void delete(String id) {
@@ -60,22 +61,22 @@ public class DatasetGroupManage {
         return TreeUtils.mergeTree(collect);
     }
 
-    private void checkName(DatasetNodeDTO datasetNodeDTO) {
+    private void checkName(DatasetGroupInfoDTO dto) {
         QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
-        if (StringUtils.isNotEmpty(datasetNodeDTO.getPid())) {
-            wrapper.eq("pid", datasetNodeDTO.getPid());
+        if (StringUtils.isNotEmpty(dto.getPid())) {
+            wrapper.eq("pid", dto.getPid());
         }
-        if (StringUtils.isNotEmpty(datasetNodeDTO.getName())) {
-            wrapper.eq("name", datasetNodeDTO.getName());
+        if (StringUtils.isNotEmpty(dto.getName())) {
+            wrapper.eq("name", dto.getName());
         }
-        if (StringUtils.isNotEmpty(datasetNodeDTO.getId())) {
-            wrapper.ne("id", datasetNodeDTO.getId());
+        if (StringUtils.isNotEmpty(dto.getId())) {
+            wrapper.ne("id", dto.getId());
         }
-        if (ObjectUtils.isNotEmpty(datasetNodeDTO.getLevel())) {
-            wrapper.eq("level", datasetNodeDTO.getLevel());
+        if (ObjectUtils.isNotEmpty(dto.getLevel())) {
+            wrapper.eq("level", dto.getLevel());
         }
-        if (ObjectUtils.isNotEmpty(datasetNodeDTO.getNodeType())) {
-            wrapper.eq("node_type", datasetNodeDTO.getNodeType());
+        if (ObjectUtils.isNotEmpty(dto.getNodeType())) {
+            wrapper.eq("node_type", dto.getNodeType());
         }
         List<CoreDatasetGroup> list = coreDatasetGroupMapper.selectList(wrapper);
         if (list.size() > 0) {
