@@ -278,6 +278,7 @@ export default {
   },
   data() {
     return {
+      tabsAreaScroll: false,
       timer: null,
       scrollLeft: 50,
       scrollTop: 10,
@@ -312,7 +313,11 @@ export default {
       return Boolean(this.$store.state.dragComponentInfo)
     },
     headClass() {
-      return 'tab-head-' + this.element.style.headPosition
+      if(this.tabsAreaScroll){
+        return 'tab-head-left'
+      }else{
+        return 'tab-head-' + this.element.style.headPosition
+      }
     },
     curCanvasScaleSelf() {
       return this.curCanvasScaleMap[this.canvasId]
@@ -405,6 +410,11 @@ export default {
         this.initCarousel()
       }
     },
+    'element': {
+      handler(newVal, oldVla) {
+        this.calcTabLength()
+      }
+    },
     activeTabName: {
       handler(newVal, oldVla) {
         this.$store.commit('setTabActiveTabNameMap', { tabId: this.element.id, activeTabName: this.activeTabName })
@@ -452,17 +462,30 @@ export default {
   },
   created() {
     bus.$on('add-new-tab', this.addNewTab)
-    this.activeTabName = this.element.options.tabList[0].name
+    this.$nextTick(() => {
+      this.activeTabName = this.element.options.tabList[0].name
+    });
     this.$store.commit('setTabActiveTabNameMap', { tabId: this.element.id, activeTabName: this.activeTabName })
     this.setContentThemeStyle()
   },
   mounted() {
     this.initCarousel()
+    this.calcTabLength()
   },
   beforeDestroy() {
     bus.$off('add-new-tab', this.addNewTab)
   },
   methods: {
+    calcTabLength(){
+      this.$nextTick(()=>{
+        if(this.element.options.tabList.length>0){
+          const containerDom = document.getElementById("tab-"+this.element.options.tabList[this.element.options.tabList.length -1].name)
+          this.tabsAreaScroll = containerDom.parentNode.scrollWidth > containerDom.parentNode.parentNode.scrollWidth
+        }else{
+          this.tabsAreaScroll = false
+        }
+      })
+    },
     getType() {
       return this.element.type
     },
@@ -501,11 +524,13 @@ export default {
         _this.timer = setInterval(() => {
           const nowIndex = switchCount % _this.element.options.tabList.length
           switchCount++
-          _this.activeTabName = _this.element.options.tabList[nowIndex].name
-          const targetRef = _this.$refs['canvasTabRef-' + _this.activeTabName]
-          if (targetRef) {
-            targetRef[0].restore()
-          }
+          _this.$nextTick(() => {
+            _this.activeTabName = _this.element.options.tabList[nowIndex].name
+            const targetRef = _this.$refs['canvasTabRef-' + _this.activeTabName]
+            if (targetRef) {
+              targetRef[0].restore()
+            }
+          });
         }, switchTime)
       }
     },
