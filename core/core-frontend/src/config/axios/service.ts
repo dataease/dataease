@@ -12,6 +12,11 @@ import { config } from './config'
 
 import { ElMessage } from 'element-plus-secondary'
 
+import { useCache } from '@/hooks/web/useCache'
+import { useAppStoreWithOut } from '@/store/modules/app'
+const appStore = useAppStoreWithOut()
+
+const { wsCache } = useCache()
 const { result_code } = config
 
 export const PATH_URL = import.meta.env.VITE_API_BASEPATH
@@ -31,6 +36,9 @@ service.interceptors.request.use(
         'application/x-www-form-urlencoded'
     ) {
       config.data = qs.stringify(config.data)
+    }
+    if (wsCache.get(appStore.getToken)) {
+      ;(config.headers as AxiosRequestHeaders)['Authorization'] = wsCache.get(appStore.getToken)
     }
     // ;(config.headers as AxiosRequestHeaders)['Token'] = 'test test'
     // get参数编码

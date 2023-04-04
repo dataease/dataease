@@ -1,13 +1,13 @@
-package io.dataease.xpack.permissions.login.utils;
+package io.dataease.utils;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
-import io.dataease.utils.CommonBeanFactory;
-import io.dataease.xpack.permissions.login.bo.TokenUserBO;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.core.env.Environment;
 
@@ -20,18 +20,22 @@ public class TokenUtils {
     public static String generate(TokenUserBO bo, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
         Long userId = bo.getUserId();
+        Long defaultOid = bo.getDefaultOid();
         Date expDate = new Date(System.currentTimeMillis() + getExpireTime(TimeUnit.MILLISECONDS));
-        String token = JWT.create().withClaim("userId", userId).withExpiresAt(expDate).sign(algorithm);
+        JWTCreator.Builder builder = JWT.create();
+        builder.withClaim("uid", userId).withClaim("oid", defaultOid);
+        String token = builder.withExpiresAt(expDate).sign(algorithm);
         return token;
     }
 
     public static TokenUserBO userBOByToken(String token) {
         DecodedJWT jwt = JWT.decode(token);
-        Long userId = jwt.getClaim("userId").asLong();
+        Long userId = jwt.getClaim("uid").asLong();
+        Long oid = jwt.getClaim("oid").asLong();
         if (ObjectUtils.isEmpty(userId)) {
             DEException.throwException("token格式错误！");
         }
-        return new TokenUserBO(userId);
+        return new TokenUserBO(userId, oid);
     }
 
     public static boolean verify(String token, TokenUserBO bo, String secret) {

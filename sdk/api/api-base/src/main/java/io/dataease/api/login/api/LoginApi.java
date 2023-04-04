@@ -1,7 +1,7 @@
-package io.dataease.api.permissions.login.api;
+package io.dataease.api.login.api;
 
 
-import io.dataease.api.permissions.login.dto.PwdLoginDTO;
+import io.dataease.api.login.dto.PwdLoginDTO;
 import io.dataease.auth.DeApiPath;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
