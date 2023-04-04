@@ -85,7 +85,7 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
   componentStyle.refreshViewEnable = (componentStyle.refreshViewEnable === undefined ? true : componentStyle.refreshViewEnable)
   componentStyle.aidedDesign = (componentStyle.aidedDesign || deepCopy(AIDED_DESIGN))
   componentStyle.pdfPageLine = (componentStyle.pdfPageLine || deepCopy(PAGE_LINE_DESIGN))
-  componentStyle.chartInfo = { ...deepCopy(PANEL_CHART_INFO), ...componentStyle.chartInfo }
+  componentStyle.chartInfo = (componentStyle.chartInfo || deepCopy(PANEL_CHART_INFO))
   componentStyle.chartInfo.tabStyle = (componentStyle.chartInfo.tabStyle || deepCopy(TAB_COMMON_STYLE))
   componentStyle.themeId = (componentStyle.themeId || 'NO_THEME')
   componentStyle.panel.themeColor = (componentStyle.panel.themeColor || 'light')
