@@ -294,16 +294,18 @@
           />
         </el-form-item>
         <el-form-item
+          v-show="showProperty('mapLineGradient')"
           :label="$t('chart.gradient')"
           class="form-item"
         >
           <el-checkbox
             v-model="colorForm.mapLineGradient"
             :disabled="checkMapLineGradient"
-            @change="changeColorCase('lineLinear')"
+            @change="changeColorCase('mapLineGradient')"
           />
         </el-form-item>
         <el-form-item
+          v-show="showProperty('mapLineSourceColor')"
           :label="colorForm.mapLineGradient ? $t('chart.map_line_color_source_color') : $t('chart.color')"
           class="form-item"
         >
@@ -313,11 +315,12 @@
           />
         </el-form-item>
         <el-form-item
-          v-if="colorForm.mapLineGradient"
+          v-show="showProperty('mapLineTargetColor')"
           :label="$t('chart.map_line_color_target_color')"
           class="form-item"
         >
           <el-color-picker
+            v-if="colorForm.mapLineGradient"
             v-model="colorForm.mapLineTargetColor"
             @change="changeColorCase('mapLineTargetColor')"
           />
