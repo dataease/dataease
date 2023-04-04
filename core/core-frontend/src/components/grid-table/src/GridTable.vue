@@ -138,9 +138,3 @@ defineExpose({
   }
 }
 </style>
-<style lang="less">
-.header-cell {
-  background-color: #f5f6f7 !important;
-  border-top: 1px solid rgba(31, 35, 41, 0.15);
-}
-</style>
