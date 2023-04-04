@@ -1,8 +1,10 @@
 package io.dataease.home;
 
+import io.dataease.utils.RsaUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping
@@ -19,5 +21,11 @@ public class IndexController {
     @GetMapping("/panel")
     public String panel() {
         return PANEL_PAGE;
+    }
+
+    @GetMapping("/dekey")
+    @ResponseBody
+    public String dekey() {
+        return RsaUtils.publicKey();
     }
 }

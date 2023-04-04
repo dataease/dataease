@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.permissions.login.dto.PwdLoginDTO;
 import io.dataease.exception.DEException;
 import io.dataease.utils.Md5Utils;
+import io.dataease.utils.RsaUtils;
 import io.dataease.xpack.permissions.login.bo.TokenUserBO;
 import io.dataease.xpack.permissions.login.dao.LoginMapper;
 import io.dataease.xpack.permissions.login.dao.po.LoginUserPO;
@@ -18,7 +19,9 @@ public class LoginManage {
 
     public TokenUserBO localBuild(PwdLoginDTO dto) {
         String name = dto.getName();
+        name = RsaUtils.decryptStr(name);
         String pwd = dto.getPwd();
+        pwd = RsaUtils.decryptStr(pwd);
         String md5Pwd = Md5Utils.md5(pwd);
         QueryWrapper<LoginUserPO> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("account", name).eq("pwd", md5Pwd);

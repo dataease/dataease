@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-02
+ * @since 2023-03-31
  */
 @TableName("per_user")
 public class PerUser implements Serializable {
@@ -72,6 +72,11 @@ public class PerUser implements Serializable {
      * 语言
      */
     private String language;
+
+    /**
+     * 默认组织ID
+     */
+    private Long defaultOid;
 
     public Long getId() {
         return id;
@@ -169,6 +174,14 @@ public class PerUser implements Serializable {
         this.language = language;
     }
 
+    public Long getDefaultOid() {
+        return defaultOid;
+    }
+
+    public void setDefaultOid(Long defaultOid) {
+        this.defaultOid = defaultOid;
+    }
+
     @Override
     public String toString() {
         return "PerUser{" +
@@ -184,6 +197,7 @@ public class PerUser implements Serializable {
         ", creatorId = " + creatorId +
         ", createTime = " + createTime +
         ", language = " + language +
+        ", defaultOid = " + defaultOid +
         "}";
     }
 }

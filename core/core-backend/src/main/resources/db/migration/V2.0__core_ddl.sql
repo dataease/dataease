@@ -60,7 +60,7 @@ CREATE TABLE `core_menu`
     `hidden`    tinyint(1) NOT NULL DEFAULT '0' COMMENT '隐藏',
     `in_layout` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否内部',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `core_menu`
@@ -145,6 +145,19 @@ CREATE TABLE `core_dataset_table_field`
     `date_format_type` varchar(255) DEFAULT NULL COMMENT '时间格式类型',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
+
+--
+-- Table structure for table `core_rsa`
+--
+DROP TABLE IF EXISTS `core_rsa`;
+CREATE TABLE `core_rsa`
+(
+    `id`          int          NOT NULL COMMENT '主键',
+    `private_key` varchar(255) NOT NULL COMMENT '私钥',
+    `public_key`  varchar(255) NOT NULL COMMENT '公钥',
+    `create_time` bigint(13) NOT NULL COMMENT '生成时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `data_visualization_info`;
 CREATE TABLE `data_visualization_info` (
