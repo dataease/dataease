@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElButton, ElCol, ElRow, ElInput, FormRules } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
-import { loginApi } from '@/api/login'
+import { loginApi, queryDekey } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { rsaEncryp } from '@/utils/encryption'
 import router from '@/router'
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
@@ -69,8 +70,7 @@ const changeLoginType = val => {
 const handleLogin = () => {
   const name = state.loginForm.username
   const pwd = state.loginForm.password
-
-  const param = { name, pwd }
+  const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
   loginApi(param).then(res => {
     const token = res.data
     wsCache.set(appStore.getToken, token)
@@ -87,6 +87,14 @@ const handleLogin = () => {
 const switchCodeIndex = codeIndex => {
   codeIndex.value = codeIndex
 }
+
+onMounted(() => {
+  if (!wsCache.get(appStore.getDekey)) {
+    queryDekey().then(res => {
+      wsCache.set(appStore.getDekey, res.data)
+    })
+  }
+})
 </script>
 
 <template>

@@ -6,6 +6,7 @@ interface AppState {
   pageLoading: boolean
   token: string
   title: string
+  dekey: string
 }
 
 export const useAppStore = defineStore('app', {
@@ -14,7 +15,8 @@ export const useAppStore = defineStore('app', {
       size: true, // 尺寸图标
       pageLoading: false, // 路由跳转loading
       token: 'Authorization',
-      title: 'DataEase'
+      title: 'DataEase',
+      dekey: 'DataEaseKey'
     }
   },
   getters: {
@@ -29,6 +31,9 @@ export const useAppStore = defineStore('app', {
     },
     getToken(): string {
       return this.token
+    },
+    getDekey(): string {
+      return this.dekey
     }
   },
   actions: {
@@ -44,6 +49,9 @@ export const useAppStore = defineStore('app', {
     },
     setToken(token: string) {
       this.token = token
+    },
+    setDekey(dekey: string) {
+      this.dekey = dekey
     }
   }
 })

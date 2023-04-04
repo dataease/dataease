@@ -17,7 +17,6 @@ declare module '@vue/runtime-core' {
     ComponentWrapper: typeof import('./src/components/data-visualization/canvas/ComponentWrapper.vue')['default']
     ConfigGlobal: typeof import('./src/components/config-global/src/ConfigGlobal.vue')['default']
     ContextMenu: typeof import('./src/components/data-visualization/canvas/ContextMenu.vue')['default']
-    Drag: typeof import('./src/components/drag/drag.vue')['default']
     DrawerFilter: typeof import('./src/components/drawer-filter/src/DrawerFilter.vue')['default']
     DrawerMain: typeof import('./src/components/drawer-main/src/DrawerMain.vue')['default']
     ElButton: typeof import('element-plus-secondary/es')['ElButton']
@@ -26,10 +25,6 @@ declare module '@vue/runtime-core' {
     ElCol: typeof import('element-plus-secondary/es')['ElCol']
     ElCollapse: typeof import('element-plus-secondary/es')['ElCollapse']
     ElCollapseItem: typeof import('element-plus-secondary/es')['ElCollapseItem']
-    ElColorPicker: typeof import('element-plus-secondary/es')['ElColorPicker']
-    ElDialog: typeof import('element-plus-secondary/es')['ElDialog']
-    ElDivider: typeof import('element-plus-secondary/es')['ElDivider']
-
     ElColorPicker: typeof import('element-plus-secondary/es')['ElColorPicker']
     ElDialog: typeof import('element-plus-secondary/es')['ElDialog']
     ElDropdown: typeof import('element-plus-secondary/es')['ElDropdown']
@@ -48,7 +43,6 @@ declare module '@vue/runtime-core' {
     ElSwitch: typeof import('element-plus-secondary/es')['ElSwitch']
     ElTableColumn: typeof import('element-plus-secondary/es')['ElTableColumn']
     ElTree: typeof import('element-plus-secondary/es')['ElTree']
-
     EmptyBackground: typeof import('./src/components/empty-background/src/EmptyBackground.vue')['default']
     EventList: typeof import('./src/components/data-visualization/EventList.vue')['default']
     FilterText: typeof import('./src/components/filter-text/src/FilterText.vue')['default']
