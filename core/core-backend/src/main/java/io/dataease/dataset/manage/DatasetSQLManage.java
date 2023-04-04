@@ -57,7 +57,7 @@ public class DatasetSQLManage {
             }
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
             */
-            // TODO
+            // TODO permission
             List<CoreDatasetTableField> fields = datasetTableFieldManage.selectByFieldIds(unionDTO.getCurrentDsField());
 
             String[] array = fields.stream()
