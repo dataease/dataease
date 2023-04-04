@@ -478,7 +478,7 @@ export default {
   methods: {
     calcTabLength(){
       this.$nextTick(()=>{
-        if(this.element.options.tabList.length>0){
+        if(this.element.options.tabList.length>1){
           const containerDom = document.getElementById("tab-"+this.element.options.tabList[this.element.options.tabList.length -1].name)
           this.tabsAreaScroll = containerDom.parentNode.scrollWidth > containerDom.parentNode.parentNode.scrollWidth
         }else{
