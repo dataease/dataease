@@ -1,5 +1,6 @@
 package io.dataease.api.chart.dto;
 
+import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -20,11 +21,11 @@ public class ChartExtFilterDTO {
     @ApiModelProperty("sql 数据集参数")
     private List<String> parameters;
     @ApiModelProperty("过滤字段")
-    private DatasetTableField datasetTableField;
+    private DatasetTableFieldDTO datasetTableField;
     @ApiModelProperty("是否树")
     private Boolean isTree = false;
     @ApiModelProperty("过滤字段集合")
-    private List<DatasetTableField> datasetTableFieldList;
+    private List<DatasetTableFieldDTO> datasetTableFieldList;
     @ApiModelProperty("日期分隔符类型")
     private String dateStyle;
     @ApiModelProperty("日期格式")

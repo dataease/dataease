@@ -14,6 +14,7 @@ declare module '@vue/runtime-core' {
     CanvasAttr: typeof import('./src/components/data-visualization/CanvasAttr.vue')['default']
     ColumnList: typeof import('./src/components/column-list/src/ColumnList.vue')['default']
     ComponentList: typeof import('./src/components/data-visualization/ComponentList.vue')['default']
+    ComponentToolBar: typeof import('./src/components/data-visualization/ComponentToolBar.vue')['default']
     ComponentWrapper: typeof import('./src/components/data-visualization/canvas/ComponentWrapper.vue')['default']
     ConfigGlobal: typeof import('./src/components/config-global/src/ConfigGlobal.vue')['default']
     ContextMenu: typeof import('./src/components/data-visualization/canvas/ContextMenu.vue')['default']

@@ -178,29 +178,6 @@ eventBus.on('clearCanvas', clearCanvas)
         >
         <el-button @click="preview()" style="float: right">预览</el-button>
       </div>
-
-      <!--      <label for="input" class="insert">-->
-      <!--        插入图片-->
-      <!--        <input id="input" type="file" hidden @change="handleFileChange" />-->
-      <!--      </label>-->
-
-      <!--      <el-button style="margin-left: 10px" @click="preview(false)">预览</el-button>-->
-      <!--      <el-button @click="clearCanvas()">清空画布</el-button>-->
-      <!--      <el-button :disabled="!areaData.components.length" @click="compose()">组合</el-button>-->
-      <!--      <el-button-->
-      <!--        :disabled="!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group'"-->
-      <!--        @click="decompose()"-->
-      <!--      >-->
-      <!--        拆分-->
-      <!--      </el-button>-->
-
-      <!--      <el-button :disabled="!curComponent || curComponent['isLock']" @click="lock()"-->
-      <!--        >锁定</el-button-->
-      <!--      >-->
-      <!--      <el-button :disabled="!curComponent || !curComponent['isLock']" @click="unlock()"-->
-      <!--        >解锁</el-button-->
-      <!--      >-->
-      <!--      <el-button @click="preview(true)">截图</el-button>-->
     </div>
 
     <!-- 预览 -->
@@ -267,42 +244,6 @@ eventBus.on('clearCanvas', clearCanvas)
       background-color: #ecf5ff;
       color: #3a8ee6;
     }
-  }
-}
-
-.custom-el-icon {
-  margin-left: 12px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.custom-el-icon:hover {
-  cursor: pointer;
-}
-
-.container-demo {
-  width: 100%;
-  padding: 1.5em 0 1.5em 0;
-
-  .head {
-    width: 100%;
-
-    padding-left: 20px;
-
-    height: 50px;
-
-    a {
-      text-decoration: none;
-      color: black;
-    }
-  }
-
-  .arrow {
-    font-size: 20px;
-
-    position: relative;
-    margin-right: 10px;
-    top: 2px;
   }
 }
 </style>

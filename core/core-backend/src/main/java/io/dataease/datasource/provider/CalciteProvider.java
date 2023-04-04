@@ -1,9 +1,9 @@
 package io.dataease.datasource.provider;
 
 import io.dataease.api.ds.vo.DatasourceConfiguration;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
+import io.dataease.datasource.model.TableField;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
@@ -27,7 +27,7 @@ import java.util.*;
 
 @Component("calciteProvider")
 
-public class CalciteProvider {
+public class CalciteProvider extends Provider{
 
     @Resource
     private CoreDriverMapper coreDriverMapper;
@@ -70,8 +70,18 @@ public class CalciteProvider {
 
     }
 
-    public List<CoreDatasetTableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
-        List<CoreDatasetTableField> datasetTableFields = new ArrayList<>();
+    @Override
+    public List<TableField> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
+        return null;
+    }
+
+    public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
+        List<TableField> datasetTableFields = new ArrayList<>();
         DatasourceConfiguration datasourceConfiguration = (DatasourceConfiguration) CommonBeanFactory.getBean(datasourceRequest.getDatasource().getType());
         int queryTimeout = datasourceConfiguration.getQueryTimeout() > 0 ? datasourceConfiguration.getQueryTimeout() : 0;
 
@@ -92,9 +102,9 @@ public class CalciteProvider {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
             for (int i = 0; i < columnCount; i++) {
-                CoreDatasetTableField coreDatasetTableField = new CoreDatasetTableField();
-                coreDatasetTableField.setOriginName(metaData.getColumnName(i));
-                datasetTableFields.add(coreDatasetTableField);
+                TableField tableField = new TableField();
+                tableField.setFieldName(metaData.getColumnName(i));
+                datasetTableFields.add(tableField);
             }
         } catch (Exception e) {
 
@@ -136,6 +146,11 @@ public class CalciteProvider {
             if (connection != null) connection.close();
         }
         return list;
+    }
+
+    @Override
+    public List<Map<String, String>> getTables(DatasourceRequest datasourceRequest) throws Exception {
+        return null;
     }
 
     private SchemaPlus buildSchema(DatasourceRequest datasourceRequest, CalciteConnection calciteConnection, BasicDataSource dataSource) {
