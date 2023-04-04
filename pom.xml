@@ -32,6 +32,8 @@
         <velocity.version>2.3</velocity.version>
         <maven.antrun.version>3.1.0</maven.antrun.version>
         <junit.version>4.13.2</junit.version>
+        <httpclient.version>4.5.14</httpclient.version>
+        <httpcore.version>4.4.16</httpcore.version>
     </properties>
     <packaging>pom</packaging>
 

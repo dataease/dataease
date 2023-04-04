@@ -6,7 +6,7 @@ import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
-import io.dataease.datasource.provider.CalciteProvider;
+import io.dataease.datasource.provider.ProviderUtil;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
@@ -106,7 +106,7 @@ public class DatasourceServer implements DatasourceApi {
         try {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
-            String status = CommonBeanFactory.getBean(CalciteProvider.class).checkStatus(datasourceRequest);
+            String status = ProviderUtil.getProvider(coreDatasource.getType()).checkStatus(datasourceRequest);
             coreDatasource.setStatus(status);
         } catch (Exception e) {
             coreDatasource.setStatus("Error");
