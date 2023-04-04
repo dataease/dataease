@@ -26,8 +26,10 @@ export function baseFlowMapOption(chartDom, chartId, chart, action) {
     })
     init = true
   } else {
-    chartDom.setPitch(size.mapPitch)
-    chartDom.setMapStyle(mapStyle)
+    if (chartDom.map) {
+      chartDom.setPitch(size.mapPitch)
+      chartDom.setMapStyle(mapStyle)
+    }
   }
   if (xAxis?.length < 2 || xAxisExt?.length < 2) {
     return chartDom

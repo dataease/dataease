@@ -1,6 +1,7 @@
 import { cos, sin } from '@/components/canvas/utils/translate'
 import store from '@/store'
 import Vue from 'vue'
+import { DEFAULT_COLOR_CASE, DEFAULT_COLOR_CASE_DARK } from '@/views/chart/chart/chart'
 
 export const LIGHT_THEME_COLOR_MAIN = '#000000'
 export const LIGHT_THEME_COLOR_SLAVE1 = '#CCCCCC'
@@ -348,6 +349,7 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
       // 符号地图特殊处理
       Vue.set(customStyle, 'baseMapStyle', { baseMapTheme: 'light' })
     }
+    customAttr['color'] = { ...DEFAULT_COLOR_CASE, ...canvasStyle.chartInfo.chartColor }
   } else {
     recursionThemTransObj(THEME_STYLE_TRANS_MAIN, customStyle, DARK_THEME_COLOR_MAIN)
     recursionThemTransObj(THEME_STYLE_TRANS_SLAVE1, customStyle, DARK_THEME_COLOR_SLAVE1)
@@ -359,8 +361,8 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
       recursionThemTransObj(THEME_ATTR_TRANS_MAIN, customAttr, DARK_THEME_COLOR_MAIN)
       recursionThemTransObj(THEME_ATTR_TRANS_SLAVE1_BACKGROUND, customAttr, DARK_THEME_COMPONENT_BACKGROUND_BACK)
     }
+    customAttr['color'] = { ...DEFAULT_COLOR_CASE_DARK, ...canvasStyle.chartInfo.chartColor }
   }
-  customAttr['color'] = { ...canvasStyle.chartInfo.chartColor }
   customStyle['text'] = {
     ...canvasStyle.chartInfo.chartTitle,
     title: customStyle['text']['title'],
