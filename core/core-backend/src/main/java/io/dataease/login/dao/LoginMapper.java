@@ -1,7 +1,7 @@
-package io.dataease.xpack.permissions.login.dao;
+package io.dataease.login.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.dataease.xpack.permissions.login.dao.po.LoginUserPO;
+import io.dataease.login.dao.po.LoginUserPO;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
