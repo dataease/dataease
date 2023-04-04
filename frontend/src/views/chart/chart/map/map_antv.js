@@ -52,19 +52,19 @@ export function baseFlowMapOption(chartDom, chartId, chart, action) {
         .shape(size.mapLineType)
         .animate({
           enable: size.mapLineAnimate,
-          interval: size.lineAnimateInterval,
-          trailLength: size.lineAnimateTrailLength,
-          duration: size.lineAnimateDuration
+          duration: size.mapLineAnimateDuration,
+          interval: size.mapLineAnimateInterval,
+          trailLength: size.mapLineAnimateTrailLength
         })
       if (color.mapLineGradient) {
         lineLayer.style({
           sourceColor: color.mapLineSourceColor,
           targetColor: color.mapLineTargetColor,
-          opacity: (color.alpha / 100).toFixed(1)
+          opacity: color.alpha / 100
         })
       } else {
         lineLayer.style({
-          opacity: (color.alpha / 100).toFixed(1)
+          opacity: color.alpha / 100
         })
           .color(color.mapLineSourceColor)
       }
