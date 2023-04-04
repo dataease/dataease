@@ -1,13 +1,16 @@
 <script lang="ts" setup>
 import { reactive, computed, ref } from 'vue'
-
+// import { throttle } from 'lodash'
 const state = reactive({
   leftList: [],
   nodeList: [],
   pathList: [],
   visualNode: null,
+  visualNodeParent: null,
   visualPath: null
 })
+
+const maskShow = ref(false)
 
 const offsetX = ref(0)
 const offsetY = ref(0)
@@ -15,70 +18,47 @@ const offsetY = ref(0)
 const dragOffsetX = ref(0)
 const dragOffsetY = ref(0)
 
-const visualNode = computed(() => {
-  return {}
-})
-
-const visualPath = computed(() => {
-  return {}
-})
-
 const possibleNodeAreaList = computed(() => {
   let flatArr = []
   let nodeListLocation = []
   dfsNode(state.nodeList, nodeListLocation)
   leafNode(nodeListLocation, flatArr)
-  console.log('cbd', flatArr)
-  return flatArr
+  return flatArr.filter(ele => !ele.isShadow)
 })
 
-const mostlyIntersects = arr => {
-  let len = arr.length
-  let [x, y, l, h] = arr[0]
-  let [a, b, c, d] = [y, x + l, y - h, x]
-  for (let i = 1; i < len; i++) {
-    ;[x, y, l, h] = arr[i]
-    ;[a, b, c, d] = [
-      Math.min(a, y), // 上边界为三个坐标Y轴坐标的最小值
-      Math.min(b, x + l), //右边界为三个坐标（X轴坐标+宽度）的最小值
-      Math.max(c, y - h), //下边界为三个坐标（Y轴坐标-高度）的最大值
-      Math.max(d, x) //左边界为三个坐标X轴坐标的最大值
-    ]
+function elementInteractArea(pos1, pos2) {
+  const pos1Width = pos1.right - pos1.left
+  const pos1Height = pos1.bottom - pos1.top
+  const pos2Width = pos2.right - pos2.left
+  const pos2Height = pos2.bottom - pos2.top
+
+  const axisOverlap =
+    pos1Width + pos2Width - (Math.max(pos1.right, pos2.right) - Math.min(pos1.left, pos2.left))
+  const crossOverlap =
+    pos1Height + pos2Height - (Math.max(pos1.bottom, pos2.bottom) - Math.min(pos1.top, pos2.top))
+  if (axisOverlap <= 0 || crossOverlap <= 0) {
+    return 0
   }
-  if (a > c && b > d) {
-    return (a - c) * (b - d) //高为（上边界-下边界）*宽为（右边界-左边界）
-  }
-  return 0
+  return axisOverlap * crossOverlap
 }
 
-console.log(
-  'mostlyIntersects(0,0 , 4, 4, 2, 0, 4,4)',
-  mostlyIntersects([
-    [324, -152, 524, -344],
-    [326, -74, 526, -114]
-  ]),
-  mostlyIntersects([
-    [0, 0, 4, 4],
-    [2, 0, 4, 4]
-  ])
-)
-
 const leafNode = (arr, leafList) => {
-  arr.forEach(({ x, y, label, children = [] }, index) => {
+  arr.forEach(({ x, y, label, children = [], isShadow = false }, index) => {
     const fromX = x * 300 + 24
     const fromY = y * 64 + 24
-    let toX = fromX + 500
+    let toX = fromX + 200
     let toY = fromY + 64
     const next = arr[index + 1]
-    if (next && !next.isShadow) {
+    if (next) {
       toY = next.y * 64 + 24
     }
     if (children?.length) {
-      toX = fromX + 200
       leafNode(children, leafList)
     }
     if (x || y) {
       leafList.push({
+        isShadow,
+        isLeaf: !children?.length,
         fromX,
         fromY,
         toX,
@@ -94,7 +74,6 @@ const flatNodeList = computed(() => {
   let nodeListLocation = []
   dfsNode(state.nodeList, nodeListLocation)
   flatNode(nodeListLocation, flatArr)
-  console.log('dfsNode(state.nodeList)', nodeListLocation)
   return flatArr
 })
 
@@ -109,28 +88,63 @@ const flatPathList = computed(() => {
 
 const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
   arr.map((ele, index) => {
+    const pre = nodeListLocation[index - 1]
     if (!ele.children?.length) {
+      let idxChild = index + y
+      if (pre) {
+        const last = pre.children?.length ? pre.children[pre.children.length - 1] : { y: 0 }
+        idxChild = Math.max(last.y, index, pre.y) + 1
+      }
       nodeListLocation.push({
         x,
-        y: index + y,
+        y: idxChild,
+        isShadow: !!ele.isShadow,
         label: ele.label
       })
     } else {
+      const children = []
       const pre = nodeListLocation[index - 1]
       let idx = y
       if (pre) {
-        console.log('pre.children?.length', pre.label, pre.children?.length, pre.y, index)
-        idx = (pre.children?.length || 0) + pre.y
+        const last = pre.children?.length ? pre.children[pre.children.length - 1] : { y: 0 }
+        idx = Math.max(last.y, pre.y) + 1
       }
-      const children = []
       dfsNode(ele.children, children, x + 1, idx)
       nodeListLocation.push({
         x,
         y: idx,
+        isShadow: !!ele.isShadow,
         children,
         label: ele.label
       })
     }
+  })
+}
+
+const dfsNodeShadow = (arr, label, position = 'b') => {
+  return arr.some((ele, index) => {
+    if (ele.label === label) {
+      const flag = label + '_' + position
+      if (ele.isShadow && state.visualNode.flag === flag) return true
+      state.visualNode = {
+        label: '',
+        isShadow: true,
+        flag
+      }
+
+      if (position === 'b') {
+        state.visualNodeParent = arr
+        arr.splice(index + 1, 0, state.visualNode)
+      } else {
+        state.visualNodeParent = ele
+        ele.children = [state.visualNode]
+      }
+      return true
+    }
+    if (ele.children?.length) {
+      return dfsNodeShadow(ele.children, label, position)
+    }
+    return false
   })
 }
 
@@ -174,9 +188,26 @@ state.nodeList = [
             label: 'lll'
           },
           {
-            label: 'kkkk'
+            label: 'kkkyk',
+            children: [
+              {
+                label: 'kkkykllll'
+              }
+            ]
+          },
+          {
+            label: 'kkkyllk'
+          },
+          {
+            label: 'kkkyklllpl'
           }
         ]
+      },
+      {
+        label: 'llloo'
+      },
+      {
+        label: 'llloops'
       },
       {
         label: '1231jjj2',
@@ -193,7 +224,7 @@ state.nodeList = [
             ]
           },
           {
-            label: 'kkkk'
+            label: 'kkkkg'
           }
         ]
       },
@@ -216,18 +247,97 @@ const dragstart = (e: MouseEvent, ele: string) => {
   offsetX.value = e.offsetX
   offsetY.value = e.offsetY
   e.dataTransfer.setData('text/plain', ele)
+  maskShow.value = true
 }
-
-// const dragover = e => {
-//   console.log('ee', e, e.dataTransfer.getData('text'))
-// }
 
 const dragover_handler = ev => {
   console.log('dragOver')
   // prevent Default event
   ev.preventDefault()
+
   dragOffsetX.value = ev.offsetX - offsetX.value
   dragOffsetY.value = ev.offsetY - offsetY.value
+
+  let resultList = possibleNodeAreaList.value.map(ele => {
+    const { fromX, fromY, toX, toY, isLeaf = false, label } = ele
+    const [k] = (state.visualNode?.flag || '').split('_')
+    if (k === label) {
+      console.log('obj.isShadow', JSON.stringify(ele), JSON.stringify(state.visualNode))
+    }
+
+    return [
+      elementInteractArea(
+        {
+          left: dragOffsetX.value,
+          right: dragOffsetX.value + 200,
+          top: dragOffsetY.value,
+          bottom: dragOffsetY.value + 40
+        },
+        {
+          left: fromX,
+          right: toX,
+          top: fromY,
+          bottom: toY
+        }
+      ),
+      isLeaf || k === label
+        ? elementInteractArea(
+            {
+              left: dragOffsetX.value,
+              right: dragOffsetX.value + 200,
+              top: dragOffsetY.value,
+              bottom: dragOffsetY.value + 40
+            },
+            {
+              left: fromX + 200,
+              right: toX + 100,
+              top: fromY,
+              bottom: fromY + 40
+            }
+          )
+        : 0
+    ]
+  })
+
+  let maxIndex = 0
+
+  resultList.reduce((pre, next, idx) => {
+    const max = Math.max(...pre) > Math.max(...next)
+    maxIndex = max ? maxIndex : idx
+    return max ? pre : next
+  })
+
+  let maxArr = resultList[maxIndex]
+
+  if (Array.isArray(state.visualNodeParent)) {
+    const shadowIndex = state.visualNodeParent.findIndex(ele => ele.isShadow)
+    if (shadowIndex > -1) {
+      state.visualNodeParent.splice(shadowIndex, 1)
+    }
+  } else if (state.visualNodeParent) {
+    state.visualNodeParent.children = []
+    delete state.visualNodeParent.children
+  }
+
+  console.log(maxArr, 'maxArr', resultList)
+
+  if (Math.max(...maxArr)) {
+    const { label, isShadow = false } = possibleNodeAreaList.value[maxIndex]
+    const [b, r] = maxArr
+
+    if (!isShadow) {
+      dfsNodeShadow(state.nodeList, label, b > r ? 'b' : 'r')
+    }
+    console.log(
+      'Math.max(...resultList[maxIndex]',
+      Math.max(...resultList[maxIndex]),
+      maxIndex,
+      label,
+      isShadow,
+      b,
+      r
+    )
+  }
 }
 
 const dragenter_handler = ev => {
@@ -239,52 +349,10 @@ const dragenter_handler = ev => {
 const drop_handler = ev => {
   console.log('Drop')
   ev.preventDefault()
-  var data = ev.dataTransfer.getData('text')
-  let maxArea = 0
-
-  console.log(
-    'data',
-    possibleNodeAreaList,
-    possibleNodeAreaList.value.map(ele => {
-      const { fromX, fromY, toX, toY } = ele
-      console.log(
-        'dragOffsetX.value, dragOffsetY.value, dragOffsetX.value + 200, dragOffsetY.value + 40',
-        dragOffsetX.value,
-        dragOffsetY.value,
-        dragOffsetX.value + 200,
-        dragOffsetY.value + 40
-      )
-
-      return mostlyIntersects([
-        [dragOffsetX.value, -dragOffsetY.value, dragOffsetX.value + 200, -dragOffsetY.value + 40],
-        [fromX, -fromY, toX, -toY]
-      ])
-    })
-  )
-  //   maxArea = Math.max(
-  //     ...possibleNodeAreaList.value.map(ele => {
-  //       const { fromX, fromY, toX, toY } = ele
-  //       console.log(
-  //         'dragOffsetX.value, dragOffsetY.value, dragOffsetX.value + 200, dragOffsetY.value + 40',
-  //         dragOffsetX.value,
-  //         dragOffsetY.value,
-  //         dragOffsetX.value + 200,
-  //         dragOffsetY.value + 40
-  //       )
-
-  //       return mostlyIntersects([
-  //         [dragOffsetX.value, dragOffsetY.value, dragOffsetX.value + 200, dragOffsetY.value + 40],
-  //         [fromX, fromY, toX, toY]
-  //       ])
-  //     })
-  //   )
-
-  //   console.log('maxArea', maxArea)
-
-  // ev.dataTransfer.clearData();
+  // let data = ev.dataTransfer.getData('text')
 }
 
-state.leftList = Array(10)
+state.leftList = Array(15)
   .fill(1)
   .map((_, index) => 'test' + index)
 </script>
@@ -294,6 +362,7 @@ state.leftList = Array(10)
     <div style="width: 200px">
       <div
         @dragstart="$event => dragstart($event, ele)"
+        @dragend="maskShow = false"
         draggable="true"
         class="list-item_primary"
         :key="ele"
@@ -302,11 +371,12 @@ state.leftList = Array(10)
         {{ ele }}
       </div>
     </div>
+
     <div
       @drop="$event => drop_handler($event)"
       @dragenter="$event => dragenter_handler($event)"
       @dragover="$event => dragover_handler($event)"
-      style="flex: 1; overflow-x: auto; border: 1px solid #ccc"
+      class="drag-mask"
     >
       <svg
         version="1.1"
@@ -323,7 +393,7 @@ state.leftList = Array(10)
           width="200"
           height="40"
         >
-          <div class="node-union">
+          <div class="node-union" :class="[ele.isShadow ? 'shadow-node' : '']">
             {{ ele.label }}
           </div>
         </foreignObject>
@@ -352,6 +422,7 @@ state.leftList = Array(10)
           </div>
         </foreignObject> -->
       </svg>
+      <div class="mask-dataset" v-if="maskShow"></div>
     </div>
   </div>
 </template>
@@ -370,5 +441,27 @@ state.leftList = Array(10)
   &.dasharray {
     border: dashed;
   }
+}
+
+.shadow-node {
+  border: dotted;
+}
+
+.drag-mask {
+  flex: 1;
+  overflow-x: auto;
+  border: 1px solid #ccc;
+  position: relative;
+}
+
+.mask-dataset {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  background: #cccccc52;
+  user-select: none;
 }
 </style>

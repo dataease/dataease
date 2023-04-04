@@ -15,6 +15,7 @@ import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
+import Icon from '../icon-custom/src/Icon.vue'
 
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -137,6 +138,10 @@ const handlePreviewChange = () => {
   dvMainStore.setEditMode('edit')
 }
 
+const backToMain = () => {
+  alert('backToMain')
+}
+
 eventBus.on('preview', preview)
 eventBus.on('save', save)
 eventBus.on('clearCanvas', clearCanvas)
@@ -145,42 +150,57 @@ eventBus.on('clearCanvas', clearCanvas)
 <template>
   <div>
     <div class="toolbar">
-      <el-button @click="undo()">撤消</el-button>
-      <el-button @click="redo()">重做</el-button>
-      <label for="input" class="insert">
-        插入图片
-        <input id="input" type="file" hidden @change="handleFileChange" />
-      </label>
+      <el-icon class="custom-el-icon" @click="backToMain()">
+        <Icon name="icon_left_outlined"></Icon>
+      </el-icon>
+      <div style="display: table-cell; float: right; width: 60%; vertical-align: middle">
+        <el-divider direction="vertical" />
+        <el-icon class="custom-el-icon" @click="undo()">
+          <Icon name="icon_undo_outlined"></Icon>
+        </el-icon>
+        <el-icon class="custom-el-icon" @click="redo()">
+          <Icon name="icon_redo_outlined"></Icon>
+        </el-icon>
 
-      <el-button style="margin-left: 10px" @click="preview(false)">预览</el-button>
-      <el-button @click="save()">保存</el-button>
-      <el-button @click="clearCanvas()">清空画布</el-button>
-      <el-button :disabled="!areaData.components.length" @click="compose()">组合</el-button>
-      <el-button
-        :disabled="!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group'"
-        @click="decompose()"
-      >
-        拆分
-      </el-button>
-
-      <el-button :disabled="!curComponent || curComponent['isLock']" @click="lock()"
-        >锁定</el-button
-      >
-      <el-button :disabled="!curComponent || !curComponent['isLock']" @click="unlock()"
-        >解锁</el-button
-      >
-      <el-button @click="preview(true)">截图</el-button>
-
-      <div class="canvas-config">
-        <span>画布大小</span>
-        <input v-model="canvasStyleData.width" />
-        <span>*</span>
-        <input v-model="canvasStyleData.height" />
+        <div class="canvas-config">
+          <span>画布大小</span>
+          <input v-model="canvasStyleData.width" />
+          <span>*</span>
+          <input v-model="canvasStyleData.height" />
+        </div>
+        <div class="canvas-config">
+          <span>画布比例</span>
+          <input v-model="scale" @input="handleScaleChange" /> %
+        </div>
+        <el-button @click="save()" style="float: right" type="primary">保存并发布</el-button>
+        <el-button @click="save()" style="float: right; margin-right: 12px" type="primary"
+          >保存</el-button
+        >
+        <el-button @click="preview()" style="float: right">预览</el-button>
       </div>
-      <div class="canvas-config">
-        <span>画布比例</span>
-        <input v-model="scale" @input="handleScaleChange" /> %
-      </div>
+
+      <!--      <label for="input" class="insert">-->
+      <!--        插入图片-->
+      <!--        <input id="input" type="file" hidden @change="handleFileChange" />-->
+      <!--      </label>-->
+
+      <!--      <el-button style="margin-left: 10px" @click="preview(false)">预览</el-button>-->
+      <!--      <el-button @click="clearCanvas()">清空画布</el-button>-->
+      <!--      <el-button :disabled="!areaData.components.length" @click="compose()">组合</el-button>-->
+      <!--      <el-button-->
+      <!--        :disabled="!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group'"-->
+      <!--        @click="decompose()"-->
+      <!--      >-->
+      <!--        拆分-->
+      <!--      </el-button>-->
+
+      <!--      <el-button :disabled="!curComponent || curComponent['isLock']" @click="lock()"-->
+      <!--        >锁定</el-button-->
+      <!--      >-->
+      <!--      <el-button :disabled="!curComponent || !curComponent['isLock']" @click="unlock()"-->
+      <!--        >解锁</el-button-->
+      <!--      >-->
+      <!--      <el-button @click="preview(true)">截图</el-button>-->
     </div>
 
     <!-- 预览 -->
@@ -190,7 +210,8 @@ eventBus.on('clearCanvas', clearCanvas)
 
 <style lang="less" scoped>
 .toolbar {
-  padding: 15px 10px;
+  padding: 5px 10px;
+  line-height: 33px;
   white-space: nowrap;
   overflow-x: auto;
   background: #fff;
@@ -246,6 +267,42 @@ eventBus.on('clearCanvas', clearCanvas)
       background-color: #ecf5ff;
       color: #3a8ee6;
     }
+  }
+}
+
+.custom-el-icon {
+  margin-left: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.custom-el-icon:hover {
+  cursor: pointer;
+}
+
+.container-demo {
+  width: 100%;
+  padding: 1.5em 0 1.5em 0;
+
+  .head {
+    width: 100%;
+
+    padding-left: 20px;
+
+    height: 50px;
+
+    a {
+      text-decoration: none;
+      color: black;
+    }
+  }
+
+  .arrow {
+    font-size: 20px;
+
+    position: relative;
+    margin-right: 10px;
+    top: 2px;
   }
 }
 </style>

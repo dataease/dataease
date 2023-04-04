@@ -692,11 +692,6 @@ const startMove = (e, item, index) => {
 
       let moveXSize = e.pageX - startX //X方向移动的距离
       let moveYSize = e.pageY - startY //Y方向移动的距离
-
-      console.log(
-        'e.pageX=' + e.pageX + ';e.pageY=' + e.pageY + ';startX=' + startX + ';startY=' + startY
-      )
-
       let addSizeX =
         moveXSize % cellWidth.value > (cellWidth.value / 4) * 1
           ? Math.floor(moveXSize / cellWidth.value + 1)
@@ -724,20 +719,6 @@ const startMove = (e, item, index) => {
       let nowWidth = originWidth + moveXSize
       nowWidth = nowWidth <= baseWidth.value ? baseWidth.value : nowWidth
       let nowHeight = originHeight + moveYSize
-      console.log(
-        'width=' +
-          nowWidth +
-          ';height=' +
-          nowHeight +
-          ';baseWidth.value=' +
-          baseWidth.value +
-          ';baseHeight.value=' +
-          baseHeight.value +
-          ';moveXSize=' +
-          moveXSize +
-          ';originWidth=' +
-          originWidth
-      )
       nowHeight = nowHeight <= baseHeight.value ? baseHeight.value : nowHeight
       //克隆元素实时改变大小
       cloneItem.css({

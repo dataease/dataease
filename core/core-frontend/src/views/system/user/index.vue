@@ -86,7 +86,7 @@ const clearFilter = (index?: number) => {
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
-            </el-icon>
+            </el-icon>i
           </template>
         </el-input>
         <el-button @click="drawerMainOpen" plain>
@@ -134,8 +134,8 @@ const clearFilter = (index?: number) => {
     <role-manage></role-manage>
   </div>
   <div v-else class="user-table">
-    <EmptyBackground></EmptyBackground>
-    <!-- <dataset-union></dataset-union> -->
+    <!-- <EmptyBackground></EmptyBackground> -->
+    <dataset-union></dataset-union>
   </div>
   <drawer-main ref="drawerMainRef"></drawer-main>
   <user-form ref="userFormDialog"></user-form>

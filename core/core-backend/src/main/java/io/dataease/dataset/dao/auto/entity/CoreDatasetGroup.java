@@ -1,11 +1,12 @@
 package io.dataease.dataset.dao.auto.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author fit2cloud
@@ -40,6 +41,11 @@ public class CoreDatasetGroup implements Serializable {
      * node类型：folder or dataset
      */
     private String nodeType;
+
+    /**
+     * sql,union
+     */
+    private String type;
 
     /**
      * 连接模式：0-直连，1-同步(包括excel、api等数据存在de中的表)
@@ -113,6 +119,14 @@ public class CoreDatasetGroup implements Serializable {
         this.nodeType = nodeType;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public Integer getMode() {
         return mode;
     }
@@ -172,18 +186,19 @@ public class CoreDatasetGroup implements Serializable {
     @Override
     public String toString() {
         return "CoreDatasetGroup{" +
-        "id = " + id +
-        ", name = " + name +
-        ", pid = " + pid +
-        ", level = " + level +
-        ", nodeType = " + nodeType +
-        ", mode = " + mode +
-        ", info = " + info +
-        ", createBy = " + createBy +
-        ", createTime = " + createTime +
-        ", qrtzInstance = " + qrtzInstance +
-        ", syncStatus = " + syncStatus +
-        ", lastUpdateTime = " + lastUpdateTime +
-        "}";
+                "id = " + id +
+                ", name = " + name +
+                ", pid = " + pid +
+                ", level = " + level +
+                ", nodeType = " + nodeType +
+                ", type = " + type +
+                ", mode = " + mode +
+                ", info = " + info +
+                ", createBy = " + createBy +
+                ", createTime = " + createTime +
+                ", qrtzInstance = " + qrtzInstance +
+                ", syncStatus = " + syncStatus +
+                ", lastUpdateTime = " + lastUpdateTime +
+                "}";
     }
 }

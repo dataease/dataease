@@ -23,7 +23,6 @@ import java.net.URL;
 import java.sql.*;
 import java.util.*;
 
-import static org.apache.calcite.sql.validate.SqlConformanceEnum.ORACLE_10;
 
 
 @Component("calciteProvider")
@@ -223,7 +222,7 @@ public class CalciteProvider {
         if (StringUtils.isNotBlank(datasourceConfiguration.getUsername())) {
             props.setProperty("user", datasourceConfiguration.getUsername());
             if (StringUtils.isNotBlank(datasourceConfiguration.getPassword())) {
-                props.setProperty("password", datasourceConfiguration.getUsername());
+                props.setProperty("password", datasourceConfiguration.getPassword());
             }
         }
 

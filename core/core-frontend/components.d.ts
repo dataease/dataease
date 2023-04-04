@@ -27,6 +27,7 @@ declare module '@vue/runtime-core' {
     ElCollapseItem: typeof import('element-plus-secondary/es')['ElCollapseItem']
     ElColorPicker: typeof import('element-plus-secondary/es')['ElColorPicker']
     ElDialog: typeof import('element-plus-secondary/es')['ElDialog']
+    ElDivider: typeof import('element-plus-secondary/es')['ElDivider']
     ElDropdown: typeof import('element-plus-secondary/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus-secondary/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus-secondary/es')['ElDropdownMenu']

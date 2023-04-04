@@ -34,6 +34,7 @@
         <hutool.version>5.8.16</hutool.version>
         <ehcache.version>2.10.9.2</ehcache.version>
         <bcprov.version>1.72</bcprov.version>
+        <junit.version>4.13.2</junit.version>
     </properties>
     <packaging>pom</packaging>
 
