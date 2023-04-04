@@ -1845,9 +1845,9 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'alpha',
         'mapStyle',
-        'lineLinear',
-        'lineSourceColor',
-        'lineTargetColor'
+        'mapLineGradient',
+        'mapLineSourceColor',
+        'mapLineTargetColor'
       ],
       'size-selector-ant-v': [
         'mapPitch',

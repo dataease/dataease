@@ -1264,6 +1264,7 @@
         size="mini"
       >
         <el-form-item
+          v-show="showProperty('mapPitch')"
           :label="$t('chart.map_pitch')"
           class="form-item form-item-slider"
         >
@@ -1275,6 +1276,7 @@
           />
         </el-form-item>
         <el-form-item
+          v-show="showProperty('mapLineType')"
           :label="$t('chart.map_line_type')"
           class="form-item"
         >
@@ -1292,6 +1294,7 @@
           </el-select>
         </el-form-item>
         <el-form-item
+          v-show="showProperty('mapLineWidth')"
           :label="$t('chart.map_line_width')"
           class="form-item form-item-slider"
         >
@@ -1299,10 +1302,11 @@
             v-model="sizeForm.mapLineWidth"
             :min="1"
             :max="10"
-            @change="changeBarSizeCase('lineWidth')"
+            @change="changeBarSizeCase('mapLineWidth')"
           />
         </el-form-item>
         <el-form-item
+          v-show="showProperty('mapLineAnimate')"
           :label="$t('chart.map_line_animate')"
           class="form-item"
         >
@@ -1314,6 +1318,7 @@
         </el-form-item>
         <div v-if="sizeForm.mapLineAnimate">
           <el-form-item
+            v-show="showProperty('mapLineAnimateDuration')"
             :label="$t('chart.map_line_animate_duration')"
             class="form-item form-item-slider"
           >
@@ -1325,6 +1330,7 @@
             />
           </el-form-item>
           <el-form-item
+            v-show="showProperty('mapLineAnimateInterval')"
             :label="$t('chart.map_line_animate_interval')"
             class="form-item form-item-slider"
           >
@@ -1337,6 +1343,7 @@
             />
           </el-form-item>
           <el-form-item
+            v-show="showProperty('mapLineAnimateTrailLength')"
             :label="$t('chart.map_line_animate_trail_length')"
             class="form-item form-item-slider"
           >
