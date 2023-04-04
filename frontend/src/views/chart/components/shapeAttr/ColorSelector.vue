@@ -316,11 +316,11 @@
         </el-form-item>
         <el-form-item
           v-show="showProperty('mapLineTargetColor')"
+          v-if="colorForm.mapLineGradient"
           :label="$t('chart.map_line_color_target_color')"
           class="form-item"
         >
           <el-color-picker
-            v-if="colorForm.mapLineGradient"
             v-model="colorForm.mapLineTargetColor"
             @change="changeColorCase('mapLineTargetColor')"
           />
