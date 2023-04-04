@@ -11,7 +11,7 @@ export function baseFlowMapOption(chartDom, chartId, chart, action) {
   }
   const size = customAttr.size
   const color = customAttr.color
-  const mapStyle = `amap://styles/${color.mapStyle}`
+  const mapStyle = `amap://styles/${color.mapStyle ? color.mapStyle : 'normal'}`
   const lang = getLanguage().includes('zh') ? 'zh' : 'en'
   let init = false
   if (!chartDom) {
@@ -25,6 +25,9 @@ export function baseFlowMapOption(chartDom, chartId, chart, action) {
       logoVisible: false
     })
     init = true
+  } else {
+    chartDom.setPitch(size.mapPitch)
+    chartDom.setMapStyle(mapStyle)
   }
   if (xAxis?.length < 2 || xAxisExt?.length < 2) {
     return chartDom
@@ -66,8 +69,6 @@ export function baseFlowMapOption(chartDom, chartId, chart, action) {
           .color(color.mapLineSourceColor)
       }
       if (!init) {
-        chartDom.setPitch(size.mapPitch)
-        chartDom.setMapStyle(mapStyle)
         chartDom.addLayer(lineLayer)
       }
       chartDom.on('loaded', () => {
