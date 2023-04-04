@@ -47,7 +47,7 @@ public class XpackMybatisPlusGenerator {
                     builder.parent(packageName);
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude(TABLE_NAME); //设置需要生成的表名
+                    builder.addInclude(TABLE_NAME).entityBuilder().enableFileOverride().mapperBuilder().enableFileOverride(); //设置需要生成的表名
                 })
                 .templateConfig(builder -> {
                     builder.disable(TemplateType.CONTROLLER).disable(TemplateType.SERVICE).disable(TemplateType.SERVICE_IMPL).disable(TemplateType.XML).build();

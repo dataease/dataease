@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-02
+ * @since 2023-04-04
  */
 @TableName("per_org")
 public class PerOrg implements Serializable {
@@ -30,6 +30,8 @@ public class PerOrg implements Serializable {
      * 上级组织
      */
     private Long pid;
+
+    private String rootWay;
 
     public Long getId() {
         return id;
@@ -55,12 +57,21 @@ public class PerOrg implements Serializable {
         this.pid = pid;
     }
 
+    public String getRootWay() {
+        return rootWay;
+    }
+
+    public void setRootWay(String rootWay) {
+        this.rootWay = rootWay;
+    }
+
     @Override
     public String toString() {
         return "PerOrg{" +
         "id = " + id +
         ", name = " + name +
         ", pid = " + pid +
+        ", rootWay = " + rootWay +
         "}";
     }
 }
