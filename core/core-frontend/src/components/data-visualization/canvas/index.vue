@@ -47,11 +47,15 @@ const isShowArea = ref(false)
 const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 
 const handleMouseDown = e => {
+  console.log('handleMouseDown')
+  // 右键返回
+  if (e.buttons === 2) {
+    return
+  }
   // 如果没有选中组件 在画布上点击时需要调用 e.preventDefault() 防止触发 drop 事件
   if (!curComponent.value || isPreventDrop(curComponent.value.component)) {
     e.preventDefault()
   }
-
   hideArea()
   // 获取编辑器的位移信息，每次点击时都需要获取一次。主要是为了方便开发时调试用。
   const rectInfo = editor.value.getBoundingClientRect()
@@ -162,6 +166,10 @@ const createGroup = () => {
     },
     components: areaData
   })
+  // 如果有组件被group选中 取消当前画布选中的组件
+  if (areaData.length > 0) {
+    dvMainStore.setCurComponent({ component: null, index: null })
+  }
 }
 
 const getSelectArea = () => {
@@ -325,10 +333,8 @@ onMounted(() => {
   position: relative;
   background: #fff;
   margin: auto;
-
   .lock {
     opacity: 0.5;
-
     &:hover {
       cursor: not-allowed;
     }

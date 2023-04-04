@@ -10,7 +10,7 @@ import RealTimeComponentList from '@/components/data-visualization/RealTimeCompo
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { setDefaultComponentData } from '@/store/modules/data-visualization/snapshot'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -25,15 +25,6 @@ const activeName = ref('attr')
 const reSelectAnimateIndex = ref(undefined)
 const { componentData, curComponent, isClickComponent, canvasStyleData } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
-
-const contentStyle = computed(() => {
-  const { width, height, scale } = canvasStyleData.value
-  return {
-    width: width * 1.5 + 'px',
-    height: height * 2 + 'px',
-    paddingTop: height * (1 - scale / 200) + 'px'
-  }
-})
 
 const restore = () => {
   // 用保存的数据恢复画布
@@ -105,7 +96,6 @@ listenGlobalKeyDown()
       <section class="center">
         <div
           class="content"
-          :style="contentStyle"
           @drop="handleDrop"
           @dragover="handleDragOver"
           @mousedown="handleMouseDown"
@@ -114,15 +104,6 @@ listenGlobalKeyDown()
           <DvCanvas />
         </div>
       </section>
-      <!--右侧属性列表-->
-      <!--      <section class="right">-->
-      <!--        <el-tabs v-if="curComponent" v-model="activeName">-->
-      <!--          <el-tab-pane label="属性" name="attr">-->
-      <!--            <component :is="curComponent['component'] + '-attr'" />-->
-      <!--          </el-tab-pane>-->
-      <!--        </el-tabs>-->
-      <!--        <CanvasAttr v-else></CanvasAttr>-->
-      <!--      </section>-->
     </main>
   </div>
 </template>
@@ -171,8 +152,9 @@ listenGlobalKeyDown()
       padding: 20px;
 
       .content {
+        width: 100%;
+        height: 100%;
         overflow: auto;
-        margin: auto;
       }
     }
   }
