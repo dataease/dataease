@@ -31,7 +31,8 @@ CREATE TABLE `per_user`
 LOCK
 TABLES `per_user` WRITE;
 INSERT INTO `per_user`
-VALUES (1, 'admin', '7bc4b3f2d99c56c2d906ba588f589b5f', '系统管理员', 'admin@fit2cloud.com', '+86', NULL, 1, 0, 1, 1677671694000, 'zh-CN', 1);
+VALUES (1, 'admin', '7bc4b3f2d99c56c2d906ba588f589b5f', '系统管理员', 'admin@fit2cloud.com', '+86', NULL, 1, 0, 1,
+        1677671694000, 'zh-CN', 1);
 UNLOCK
 TABLES;
 
@@ -96,9 +97,10 @@ TABLES;
 DROP TABLE IF EXISTS `per_org`;
 CREATE TABLE `per_org`
 (
-    `id`   bigint       NOT NULL COMMENT '组织ID',
-    `name` varchar(100) NOT NULL COMMENT '名称',
-    `pid`  bigint       NOT NULL COMMENT '上级组织',
+    `id`       bigint       NOT NULL COMMENT '组织ID',
+    `name`     varchar(100) NOT NULL COMMENT '名称',
+    `pid`      bigint       NOT NULL COMMENT '上级组织',
+    `root_way` varchar(255) DEFAULT NULL COMMENT '寻根路径',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -109,7 +111,7 @@ CREATE TABLE `per_org`
 LOCK
 TABLES `per_org` WRITE;
 INSERT INTO `per_org`
-VALUES (1, '默认组织', 0);
+VALUES (1, '默认组织', 0, null);
 UNLOCK
 TABLES;
 
