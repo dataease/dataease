@@ -1,17 +1,14 @@
-package io.dataease.xpack.permissions.login;
+package io.dataease.login;
 
-import io.dataease.api.permissions.login.api.LoginApi;
-import io.dataease.api.permissions.login.dto.PwdLoginDTO;
+import io.dataease.api.login.api.LoginApi;
+import io.dataease.api.login.dto.PwdLoginDTO;
+import io.dataease.login.manage.LoginManage;
 import io.dataease.utils.Md5Utils;
-import io.dataease.xpack.permissions.login.bo.TokenUserBO;
-import io.dataease.xpack.permissions.login.manage.LoginManage;
-import io.dataease.xpack.permissions.login.utils.TokenUtils;
+import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.utils.TokenUtils;
 import jakarta.annotation.Resource;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/login")

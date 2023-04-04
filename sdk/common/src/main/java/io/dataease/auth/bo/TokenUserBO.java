@@ -1,4 +1,4 @@
-package io.dataease.xpack.permissions.login.bo;
+package io.dataease.auth.bo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,4 +16,6 @@ public class TokenUserBO implements Serializable {
     private static final long serialVersionUID = -9163835853313313361L;
 
     private Long userId;
+
+    private Long defaultOid;
 }

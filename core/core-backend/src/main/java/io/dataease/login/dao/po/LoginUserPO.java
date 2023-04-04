@@ -1,4 +1,4 @@
-package io.dataease.xpack.permissions.login.dao.po;
+package io.dataease.login.dao.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -19,4 +19,6 @@ public class LoginUserPO implements Serializable {
     private Long userId;
 
     private String pwd;
+
+    private Long defaultOid;
 }
