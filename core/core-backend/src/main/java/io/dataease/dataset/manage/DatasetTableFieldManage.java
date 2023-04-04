@@ -57,4 +57,14 @@ public class DatasetTableFieldManage {
         wrapper.eq("dataset_group_id", id);
         return coreDatasetTableFieldMapper.selectList(wrapper);
     }
+
+    public List<CoreDatasetTableField> selectByFieldIds(List<String> ids) {
+        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
+        wrapper.in("id", ids);
+        return coreDatasetTableFieldMapper.selectList(wrapper);
+    }
+
+    public CoreDatasetTableField selectById(String id) {
+        return coreDatasetTableFieldMapper.selectById(id);
+    }
 }

@@ -33,6 +33,11 @@ public class DatasetNodeDTO implements Serializable {
     private String nodeType;
 
     /**
+     * sql,union
+     */
+    private String type;
+
+    /**
      * 连接模式：0-直连，1-同步(包括excel、api等数据存在de中的表)
      */
     private Integer mode;

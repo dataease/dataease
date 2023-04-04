@@ -86,7 +86,7 @@ const clearFilter = (index?: number) => {
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
-            </el-icon>
+            </el-icon>i
           </template>
         </el-input>
         <el-button @click="drawerMainOpen" plain>
