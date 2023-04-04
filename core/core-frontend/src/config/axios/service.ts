@@ -19,7 +19,9 @@ const appStore = useAppStoreWithOut()
 const { wsCache } = useCache()
 const { result_code } = config
 
-export const PATH_URL = import.meta.env.VITE_API_BASEPATH
+export const PATH_URL = window.DataEaseBi
+  ? window.DataEaseBi?.base_url
+  : import.meta.env.VITE_API_BASEPATH
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({

@@ -54,14 +54,14 @@ function pathResolve(dir: string) {
   return resolve(root, '.', dir)
 }
 
-const isDev = process.argv[3] === 'dev'
+const isDesktop = process.argv[3] === 'desktop'
 
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     Vue(),
-    !isDev && electron({
+    isDesktop && electron({
       entry: 'electron-main/index.ts' // 主进程文件
     }),
     createStyleImportPlugin({
@@ -95,7 +95,7 @@ export default defineConfig({
       include: ['src/**/*.ts', 'src/**/*.js', 'src/**/*.vue', 'src/*.ts', 'src/*.js', 'src/*.vue']
     }),
     viteStylelint(),
-    !isDev && electronRenderer()
+    isDesktop && electronRenderer()
   ],
   resolve: {
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.less', '.css'],
