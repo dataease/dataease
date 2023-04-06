@@ -1995,6 +1995,7 @@ export default {
     position_adjust_component: '位置調整',
     active_font_size: '选中字體大小',
     carousel: '輪播',
+    enable_carousel: '啟用輪播',
     switch_time: '切換時間',
     position_adjust: '位置',
     space_top: '上',
