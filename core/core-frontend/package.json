@@ -5,6 +5,7 @@
   "main": "dist-electron/index.js",
   "scripts": {
     "dev": "vite --mode dev",
+    "dev:desktop": "vite --mode desktop",
     "ts:check": "vue-tsc --noEmit",
     "build:base": "vite build --mode base",
     "build:desktop": "npm run ts:check && vite --mode desktop && electron-builder",
@@ -60,7 +61,7 @@
     "axios": "^1.3.3",
     "crypto-js": "^4.1.1",
     "electron-devtools-installer": "^3.2.0",
-    "element-plus-secondary": "^0.0.4",
+    "element-plus-secondary": "^0.0.5",
     "highcharts": "^10.3.3",
     "html-to-image": "^1.11.11",
     "js-base64": "^3.7.5",
