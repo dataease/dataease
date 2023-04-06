@@ -3,13 +3,18 @@ package io.dataease.xpack.permissions.user.server;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.dataease.api.permissions.role.dto.UserRequest;
 import io.dataease.api.permissions.user.api.UserApi;
+import io.dataease.api.permissions.user.dto.UserCreator;
+import io.dataease.api.permissions.user.dto.UserEditor;
 import io.dataease.api.permissions.user.vo.UserGridVO;
+import io.dataease.api.permissions.user.vo.UserItem;
 import io.dataease.request.BaseGridRequest;
 import io.dataease.utils.BeanUtils;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
+import io.dataease.xpack.permissions.user.manage.UserPageManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +32,9 @@ public class UserServer implements UserApi {
 
     @Resource
     private UserExtMapper userExtMapper;
+
+    @Resource
+    private UserPageManage userPageManage;
 
     @Override
     public IPage<UserGridVO> pager(int goPage, int pageSize, BaseGridRequest request) {
@@ -47,15 +55,27 @@ public class UserServer implements UserApi {
     }
 
     @Override
-    public void delete(UserGridVO vo) {
-        Long id = vo.getId();
-        PerUser perUser = perUserMapper.selectById(id);
-        perUser.setEnable(false);
-        perUserMapper.updateById(perUser);
+    public void create(UserCreator creator) {
+        userPageManage.save(creator);
     }
 
     @Override
-    public List<Object> delOrgUser(Long orgId, UserGridVO vo) {
-        return new ArrayList<>(){{add("删除成功");}};
+    public void edit(UserEditor editor) {
+        userPageManage.edit(editor);
+    }
+
+    @Override
+    public void delete(Long id) {
+        userPageManage.delete(id);
+    }
+
+    @Override
+    public List<UserItem> optionForRole(UserRequest request) {
+        return userPageManage.optionForRole(request);
+    }
+
+    @Override
+    public List<UserItem> selectedForRole(UserRequest request) {
+        return userPageManage.selectedForRole(request);
     }
 }

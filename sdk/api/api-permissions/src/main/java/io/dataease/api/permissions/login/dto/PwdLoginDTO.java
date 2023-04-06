@@ -1,4 +1,4 @@
-package io.dataease.api.login.dto;
+package io.dataease.api.permissions.login.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.validation.constraints.NotBlank;

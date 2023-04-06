@@ -1,7 +1,11 @@
 package io.dataease.api.permissions.user.api;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.dataease.api.permissions.role.dto.UserRequest;
+import io.dataease.api.permissions.user.dto.UserCreator;
+import io.dataease.api.permissions.user.dto.UserEditor;
 import io.dataease.api.permissions.user.vo.UserGridVO;
+import io.dataease.api.permissions.user.vo.UserItem;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.request.BaseGridRequest;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+
 
 @DeApiPath("/user")
 public interface UserApi {
@@ -23,11 +28,25 @@ public interface UserApi {
     @GetMapping("/queryById/{id}")
     UserGridVO queryById(@PathVariable("id") Long id);
 
-    @DePermit("#p0.id+':modify'")
-    @PostMapping("/delete")
-    void delete(@RequestBody UserGridVO vo);
 
-    @DePermit({"#p0+':modify'", "#p1.id+':modify'"})
-    @PostMapping("/delOrgUser/{orgId}")
-    List<Object> delOrgUser(@PathVariable("orgId") Long orgId, @RequestBody UserGridVO vo);
+    @DePermit("read")
+    @PostMapping("/create")
+    void create(@RequestBody UserCreator creator);
+
+    @DePermit("read")
+    @PostMapping("/edit")
+    void edit(@RequestBody UserEditor editor);
+
+    @DePermit("read")
+    @PostMapping("/delete")
+    void delete(@PathVariable("id") Long id);
+
+
+    @PostMapping("/role/option")
+    List<UserItem> optionForRole(@RequestBody UserRequest request);
+
+    @PostMapping("/role/selected")
+    List<UserItem> selectedForRole(@RequestBody UserRequest request);
+
+
 }

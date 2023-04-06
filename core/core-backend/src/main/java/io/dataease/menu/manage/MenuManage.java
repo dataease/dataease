@@ -63,7 +63,7 @@ public class MenuManage {
     }
 
     private MenuVO convert(CoreMenu coreMenu) {
-        if (0 != coreMenu.getPid() && StringUtils.startsWith(coreMenu.getPath(), "/")) {
+        if (ROOTID != coreMenu.getPid() && StringUtils.startsWith(coreMenu.getPath(), "/")) {
             coreMenu.setPath(coreMenu.getPath().substring(1));
         }
         MenuVO menuVO = new MenuVO();
