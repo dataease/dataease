@@ -6,10 +6,12 @@ import { Icon } from '@/components/icon-custom'
 import { loginApi, queryDekey } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import { rsaEncryp } from '@/utils/encryption'
 import router from '@/router'
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
+const userStore = useUserStoreWithOut()
 const { t } = useI18n()
 const contentShow = ref(true)
 const loading = ref(false)
@@ -73,13 +75,11 @@ const handleLogin = () => {
   const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
   loginApi(param).then(res => {
     const token = res.data
-    wsCache.set(appStore.getToken, token)
+    userStore.setToken(token)
     let queryRedirectPath = '/home/index'
-    // 如果redirect参数中有值
     if (router.currentRoute.value.query.redirect) {
       queryRedirectPath = router.currentRoute.value.query.redirect as string
     }
-    // 跳转页面
     router.push({ path: queryRedirectPath })
   })
 }

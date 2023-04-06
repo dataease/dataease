@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.permissions.role.dto.UserRequest;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
+import io.dataease.api.permissions.user.vo.CurUserVO;
 import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.api.permissions.user.vo.UserItem;
 import io.dataease.auth.DeApiPath;
@@ -38,7 +39,7 @@ public interface UserApi {
     void edit(@RequestBody UserEditor editor);
 
     @DePermit("read")
-    @PostMapping("/delete")
+    @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 
 
@@ -48,5 +49,9 @@ public interface UserApi {
     @PostMapping("/role/selected")
     List<UserItem> selectedForRole(@RequestBody UserRequest request);
 
+    @PostMapping("/switch/{oId}")
+    void switchOrg(@PathVariable("oId") Long oId);
 
+    @GetMapping("/info")
+    CurUserVO info();
 }

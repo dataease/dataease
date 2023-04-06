@@ -49,6 +49,7 @@ declare module '@vue/runtime-core' {
     ElTabs: typeof import('element-plus-secondary/es')['ElTabs']
     ElTooltip: typeof import('element-plus-secondary/es')['ElTooltip']
     ElTree: typeof import('element-plus-secondary/es')['ElTree']
+    ElTreeSelect: typeof import('element-plus-secondary/es')['ElTreeSelect']
     EmptyBackground: typeof import('./src/components/empty-background/src/EmptyBackground.vue')['default']
     EventList: typeof import('./src/components/data-visualization/EventList.vue')['default']
     FilterText: typeof import('./src/components/filter-text/src/FilterText.vue')['default']

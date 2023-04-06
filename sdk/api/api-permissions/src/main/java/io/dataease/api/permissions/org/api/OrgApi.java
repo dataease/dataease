@@ -2,6 +2,7 @@ package io.dataease.api.permissions.org.api;
 
 import io.dataease.api.permissions.org.dto.OrgCreator;
 import io.dataease.api.permissions.org.dto.OrgEditor;
+import io.dataease.api.permissions.org.vo.MountedVO;
 import io.dataease.api.permissions.org.vo.OrgPageVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
@@ -31,4 +32,7 @@ public interface OrgApi {
     @PostMapping("/page/delete")
     @DePermit({"read", "#p0+':read'"})
     void delete(@PathVariable("id") Long id);
+
+    @GetMapping("/mounted")
+    List<MountedVO> mounted();
 }
