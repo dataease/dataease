@@ -1,4 +1,4 @@
-package io.dataease.login.dao.po;
+package io.dataease.xpack.permissions.login.dao.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;

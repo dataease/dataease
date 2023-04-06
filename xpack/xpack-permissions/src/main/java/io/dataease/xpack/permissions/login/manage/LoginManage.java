@@ -1,13 +1,13 @@
-package io.dataease.login.manage;
+package io.dataease.xpack.permissions.login.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.api.login.dto.PwdLoginDTO;
+import io.dataease.api.permissions.login.dto.PwdLoginDTO;
 import io.dataease.exception.DEException;
 import io.dataease.utils.Md5Utils;
 import io.dataease.utils.RsaUtils;
 import io.dataease.auth.bo.TokenUserBO;
-import io.dataease.login.dao.LoginMapper;
-import io.dataease.login.dao.po.LoginUserPO;
+import io.dataease.xpack.permissions.login.dao.LoginMapper;
+import io.dataease.xpack.permissions.login.dao.po.LoginUserPO;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;

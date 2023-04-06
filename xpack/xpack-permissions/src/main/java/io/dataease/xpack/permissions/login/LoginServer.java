@@ -1,8 +1,9 @@
-package io.dataease.login;
+package io.dataease.xpack.permissions.login;
 
-import io.dataease.api.login.api.LoginApi;
-import io.dataease.api.login.dto.PwdLoginDTO;
-import io.dataease.login.manage.LoginManage;
+
+import io.dataease.api.permissions.login.api.LoginApi;
+import io.dataease.api.permissions.login.dto.PwdLoginDTO;
+import io.dataease.xpack.permissions.login.manage.LoginManage;
 import io.dataease.utils.Md5Utils;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.utils.TokenUtils;

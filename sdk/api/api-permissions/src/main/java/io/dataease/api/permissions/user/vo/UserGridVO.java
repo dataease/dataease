@@ -15,8 +15,6 @@ public class UserGridVO {
 
     private List<UserGridRoleItem> roleItems;
 
-    private List<UserGridOrgItem> orgItems;
-
     private String email;
 
     private Boolean enable;
