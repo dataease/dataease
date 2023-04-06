@@ -1,17 +1,14 @@
 import router from './router'
-import { useAppStoreWithOut } from '@/store/modules/app'
-import { useCache } from '@/hooks/web/useCache'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import type { RouteRecordRaw } from 'vue-router'
 import { useNProgress } from '@/hooks/web/useNProgress'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { getRoleRouters } from '@/api/common'
-
+import { userInfo } from '@/api/user'
 const permissionStore = usePermissionStoreWithOut()
 
-const appStore = useAppStoreWithOut()
-
-const { wsCache } = useCache()
+const userStore = useUserStoreWithOut()
 
 const { start, done } = useNProgress()
 
@@ -23,7 +20,16 @@ router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
 
-  if (wsCache.get(appStore.getToken)) {
+  if (userStore.getToken) {
+    if (!userStore.getUid) {
+      userInfo().then(res => {
+        const { id, name, oid, language } = res.data
+        userStore.setUid(id)
+        userStore.setName(name)
+        userStore.setOid(oid)
+        userStore.setLanguage(language)
+      })
+    }
     if (to.path === '/login') {
       next({ path: '/home/index' })
     } else {

@@ -7,6 +7,7 @@ import io.dataease.api.permissions.role.dto.UserRequest;
 import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
+import io.dataease.api.permissions.user.vo.CurUserVO;
 import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.api.permissions.user.vo.UserItem;
 import io.dataease.request.BaseGridRequest;
@@ -20,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -77,5 +77,15 @@ public class UserServer implements UserApi {
     @Override
     public List<UserItem> selectedForRole(UserRequest request) {
         return userPageManage.selectedForRole(request);
+    }
+
+    @Override
+    public void switchOrg(Long oId) {
+        userPageManage.switchOrg(oId);
+    }
+
+    @Override
+    public CurUserVO info() {
+        return userPageManage.getUserInfo();
     }
 }

@@ -6,6 +6,7 @@ import { resolvePath } from '@/router/establish'
 import { Icon } from '@/components/icon-custom'
 import { ElHeader, ElMenu, ElMenuItem } from 'element-plus-secondary'
 import { useRouter, useRoute } from 'vue-router'
+import OrgSwicther from '@/layout/components/OrgSwitcher.vue'
 import LangSelector from '@/layout/components/LangSelector.vue'
 import TopDoc from '@/layout/components/TopDoc.vue'
 import AccountOperator from '@/layout/components/AccountOperator.vue'
@@ -49,6 +50,7 @@ const handleSelect = (index: string) => {
       </el-menu-item>
     </el-menu>
     <div class="operate-setting">
+      <OrgSwicther />
       <LangSelector />
       <TopDoc />
       <AccountOperator />
