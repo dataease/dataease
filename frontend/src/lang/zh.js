@@ -2012,6 +2012,7 @@ export default {
     position_adjust_component: '位置调整',
     active_font_size: '选中字体大小',
     carousel: '轮播',
+    enable_carousel: '启用轮播',
     switch_time: '切换时间',
     position_adjust: '位置',
     space_top: '上',

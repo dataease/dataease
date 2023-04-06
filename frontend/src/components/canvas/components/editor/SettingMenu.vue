@@ -67,6 +67,12 @@
           >{{ $t('panel.linkage_setting') }}
           </el-dropdown-item>
           <el-dropdown-item
+            v-if="tabCarouselShow"
+            icon="el-icon-switch-button"
+            @click.native="tabCarouselSet"
+          >{{ $t('panel.carousel') }}
+          </el-dropdown-item>
+          <el-dropdown-item
             v-if="'de-tabs'===curComponent.type"
             icon="el-icon-plus"
             @click.native="addTab"
@@ -115,6 +121,21 @@
       />
     </el-dialog>
 
+    <!--tab 轮播设计-->
+    <el-dialog
+      :visible.sync="tabCarouselVisible"
+      width="400px"
+      class="dialog-css"
+      :destroy-on-close="true"
+      :append-to-body="true"
+      :show-close="true"
+    >
+      <TabCarouselDialog
+        v-if="tabCarouselVisible"
+        @onClose="tabCarouselVisible = false"
+      />
+    </el-dialog>
+
     <el-dialog
       v-if="showCustomSort"
       v-dialogDrag
@@ -155,12 +176,14 @@ import { mapState } from 'vuex'
 import bus from '@/utils/bus'
 import { getViewLinkageGather } from '@/api/panel/linkage'
 import HyperlinksDialog from '@/components/canvas/components/editor/HyperlinksDialog'
+import TabCarouselDialog from '@/components/canvas/components/editor/TabCarouselDialog'
 import CustomTabsSort from '@/components/widget/deWidget/CustomTabsSort'
 
 export default {
-  components: { CustomTabsSort, HyperlinksDialog },
+  components: { CustomTabsSort, HyperlinksDialog,TabCarouselDialog },
   data() {
     return {
+      tabCarouselVisible: false,
       systemOS: 'Mac',
       showCustomSort: false,
       jumpExcludeViewType: [
@@ -189,6 +212,9 @@ export default {
     }
   },
   computed: {
+    tabCarouselShow() {
+      return this.curComponent.type === 'de-tabs'
+    },
     linkJumpSetShow() {
       return this.curComponent.type === 'view' &&
         !this.jumpExcludeViewType.includes(this.curComponent.propValue.innerType) &&
@@ -340,7 +366,12 @@ export default {
     // 超链接设置
     hyperlinksSet() {
       this.hyperlinksSetVisible = true
+    },
+    // 轮播设置
+    tabCarouselSet() {
+      this.tabCarouselVisible = true
     }
+
   }
 }
 </script>
