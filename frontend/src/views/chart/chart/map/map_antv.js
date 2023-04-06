@@ -55,8 +55,8 @@ export function baseFlowMapOption(chartDom, chartId, chart, action) {
         .animate({
           enable: size.mapLineAnimate,
           duration: size.mapLineAnimateDuration,
-          interval: size.mapLineAnimateInterval,
-          trailLength: size.mapLineAnimateTrailLength
+          interval: 1,
+          trailLength: 1
         })
       if (color.mapLineGradient) {
         lineLayer.style({

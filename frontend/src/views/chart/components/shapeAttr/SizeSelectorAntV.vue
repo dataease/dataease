@@ -1306,7 +1306,7 @@
           />
         </el-form-item>
         <el-form-item
-          v-show="showProperty('mapLineAnimate')"
+          v-show="false"
           :label="$t('chart.map_line_animate')"
           class="form-item"
         >
@@ -1330,7 +1330,7 @@
             />
           </el-form-item>
           <el-form-item
-            v-show="showProperty('mapLineAnimateInterval')"
+            v-show="false"
             :label="$t('chart.map_line_animate_interval')"
             class="form-item form-item-slider"
           >
@@ -1343,7 +1343,7 @@
             />
           </el-form-item>
           <el-form-item
-            v-show="showProperty('mapLineAnimateTrailLength')"
+            v-show="false"
             :label="$t('chart.map_line_animate_trail_length')"
             class="form-item form-item-slider"
           >
@@ -1427,8 +1427,7 @@ export default {
       lineTypeOptions: [
         { name: this.$t('chart.map_line_type_line'), value: 'line' },
         { name: this.$t('chart.map_line_type_arc'), value: 'arc' },
-        { name: this.$t('chart.map_line_type_arc_3d'), value: 'arc3d' },
-        { name: this.$t('chart.map_line_type_great_circle'), value: 'greatcircle' }
+        { name: this.$t('chart.map_line_type_arc_3d'), value: 'arc3d' }
       ]
     }
   },

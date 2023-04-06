@@ -140,12 +140,12 @@ export const DEFAULT_SIZE = {
   hPosition: 'center',
   vPosition: 'center',
   mapPitch: 0,
-  mapLineType: 'line',
+  mapLineType: 'arc',
   mapLineWidth: 1,
   mapLineAnimate: true,
-  mapLineAnimateDuration: 4,
-  mapLineAnimateInterval: 0.5,
-  mapLineAnimateTrailLength: 0.1
+  mapLineAnimateDuration: 3,
+  mapLineAnimateInterval: 1,
+  mapLineAnimateTrailLength: 1
 }
 export const DEFAULT_SUSPENSION = {
   show: true
