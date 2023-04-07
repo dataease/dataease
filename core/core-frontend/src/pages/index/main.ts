@@ -9,7 +9,7 @@ import { setupRouter } from '@/router'
 import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
 // 注册数据大屏组件
 import { setupCustomComponent } from '@/custom-component'
-
+import '@/utils/DateUtil'
 import '@/permission'
 const setupAll = async () => {
   const app = createApp(App)

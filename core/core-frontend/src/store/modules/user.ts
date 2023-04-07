@@ -4,9 +4,9 @@ import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 interface UserState {
   token: string
-  uid: number
+  uid: string
   name: string
-  oid: number
+  oid: string
   language: string
 }
 
@@ -24,13 +24,13 @@ export const userStore = defineStore('user', {
     getToken(): string {
       return wsCache.get('user.token') || this.token
     },
-    getUid(): number {
+    getUid(): string {
       return wsCache.get('user.uid') || this.uid
     },
     getName(): string {
       return wsCache.get('user.name') || this.name
     },
-    getOid(): number {
+    getOid(): string {
       return wsCache.get('user.oid') || this.oid
     },
     getLanguage(): string {
@@ -42,7 +42,7 @@ export const userStore = defineStore('user', {
       wsCache.set('user.token', token)
       this.token = token
     },
-    setUid(uid: number) {
+    setUid(uid: string) {
       wsCache.set('user.uid', uid)
       this.uid = uid
     },
@@ -50,7 +50,7 @@ export const userStore = defineStore('user', {
       wsCache.set('user.name', name)
       this.name = name
     },
-    setOid(oid: number) {
+    setOid(oid: string) {
       wsCache.set('user.oid', oid)
       this.oid = oid
     },

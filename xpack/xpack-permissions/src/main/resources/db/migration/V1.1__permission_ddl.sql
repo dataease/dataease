@@ -97,10 +97,11 @@ TABLES;
 DROP TABLE IF EXISTS `per_org`;
 CREATE TABLE `per_org`
 (
-    `id`       bigint       NOT NULL COMMENT '组织ID',
-    `name`     varchar(100) NOT NULL COMMENT '名称',
-    `pid`      bigint       NOT NULL COMMENT '上级组织',
-    `root_way` varchar(255) DEFAULT NULL COMMENT '寻根路径',
+    `id`          bigint       NOT NULL COMMENT '组织ID',
+    `name`        varchar(100) NOT NULL COMMENT '名称',
+    `pid`         bigint       NOT NULL COMMENT '上级组织',
+    `root_way`    varchar(255) DEFAULT NULL COMMENT '寻根路径',
+    `create_time` bigint       DEFAULT NULL COMMENT '创建时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -111,7 +112,7 @@ CREATE TABLE `per_org`
 LOCK
 TABLES `per_org` WRITE;
 INSERT INTO `per_org`
-VALUES (1, '默认组织', 0, null);
+VALUES (1, '默认组织', 0, null, 1680839960000);
 UNLOCK
 TABLES;
 
