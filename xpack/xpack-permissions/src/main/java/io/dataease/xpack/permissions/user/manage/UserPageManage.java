@@ -1,15 +1,21 @@
 package io.dataease.xpack.permissions.user.manage;
 
+import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.api.permissions.role.dto.UserRequest;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
+import io.dataease.api.permissions.user.vo.CurUserVO;
 import io.dataease.api.permissions.user.vo.UserItem;
 import io.dataease.auth.bo.TokenUserBO;
+import io.dataease.exception.DEException;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
+import io.dataease.xpack.permissions.org.bo.PerOrgItem;
+import io.dataease.xpack.permissions.org.manage.OrgPageManage;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
+import io.dataease.xpack.permissions.user.dao.ext.entity.UserInfoPO;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
@@ -24,6 +30,9 @@ public class UserPageManage {
 
     @Resource
     private UserExtMapper userExtMapper;
+
+    @Resource
+    private OrgPageManage orgPageManage;
 
     private static final String DEFAULT_PWD = "";
 
@@ -65,5 +74,20 @@ public class UserPageManage {
     public List<UserItem> selectedForRole(UserRequest request) {
         Long defaultOid = AuthUtils.getUser().getDefaultOid();
         return userExtMapper.selectedForRole(request.getRId(), defaultOid, request.getKeyword());
+    }
+
+    public void switchOrg(Long oId) {
+        TokenUserBO user = AuthUtils.getUser();
+        List<PerOrgItem> perOrgItems = orgPageManage.queryByUser(user.getUserId());
+        if (CollectionUtil.isNotEmpty(perOrgItems) && perOrgItems.stream().filter(item -> !item.isDisabled()).anyMatch(item -> item.getId() == oId)) {
+            userExtMapper.switchOrg(user.getUserId(), oId);
+            return;
+        }
+        DEException.throwException("invalid orgid");
+    }
+
+    public CurUserVO getUserInfo() {
+        Long userId = AuthUtils.getUser().getUserId();
+        return userExtMapper.userInfo(userId);
     }
 }

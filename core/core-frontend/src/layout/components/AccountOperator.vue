@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { Icon } from '@/components/icon-custom'
-import { useCache } from '@/hooks/web/useCache'
-import { useAppStoreWithOut } from '@/store/modules/app'
+import { useUserStoreWithOut } from '@/store/modules/user'
 import router from '@/router'
-const { wsCache } = useCache()
-const appStore = useAppStoreWithOut()
+const userStore = useUserStoreWithOut()
 const name = ref('admin')
 
 const logout = () => {
-  wsCache.delete(appStore.getToken)
+  userStore.setToken(null)
+  userStore.$reset()
+  userStore.clear()
   let queryRedirectPath = '/home/index'
   // 如果redirect参数中有值
   if (router.currentRoute.value.fullPath) {

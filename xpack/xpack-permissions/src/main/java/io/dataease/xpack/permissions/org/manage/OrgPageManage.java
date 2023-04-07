@@ -2,6 +2,7 @@ package io.dataease.xpack.permissions.org.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.dataease.api.permissions.org.vo.MountedVO;
 import io.dataease.api.permissions.org.vo.OrgPageVO;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
@@ -9,8 +10,10 @@ import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.xpack.permissions.org.bo.OrgTreeNode;
+import io.dataease.xpack.permissions.org.bo.PerOrgItem;
 import io.dataease.xpack.permissions.org.dao.auto.entity.PerOrg;
 import io.dataease.xpack.permissions.org.dao.auto.mapper.PerOrgMapper;
+import io.dataease.xpack.permissions.org.dao.ext.mapper.OrgExtMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,10 +34,19 @@ public class OrgPageManage {
     @Resource
     private PerOrgMapper perOrgMapper;
 
-    public List<OrgPageVO> buildTree(List<PerOrg> poList) {
+    @Resource
+    private OrgExtMapper orgExtMapper;
+
+    public List<OrgPageVO> buildTree(List<PerOrgItem> poList) {
         List<OrgTreeNode> orgTreeNodes = poList.stream().map(po -> BeanUtils.copyBean(new OrgTreeNode(), po)).collect(Collectors.toList());
         List<OrgTreeNode> treeNodes = poTree(orgTreeNodes);
         return convertTree(treeNodes);
+    }
+
+    public List<MountedVO> buildMountedTree(List<PerOrgItem> poList) {
+        List<OrgTreeNode> orgTreeNodes = poList.stream().map(po -> BeanUtils.copyBean(new OrgTreeNode(), po)).collect(Collectors.toList());
+        List<OrgTreeNode> treeNodes = poTree(orgTreeNodes);
+        return convertMountedTree(treeNodes);
     }
 
     private List<OrgTreeNode> poTree(List<OrgTreeNode> nodeList) {
@@ -62,22 +74,66 @@ public class OrgPageManage {
         return result;
     }
 
+    private List<MountedVO> convertMountedTree(List<OrgTreeNode> roots) {
+        List<MountedVO> result = new ArrayList<>();
+        for (int i = 0; i < roots.size(); i++) {
+            OrgTreeNode orgTreeNode = roots.get(i);
+            MountedVO vo = BeanUtils.copyBean(new MountedVO(), orgTreeNode, "children");
+            result.add(vo);
+            List<OrgTreeNode> children = null;
+            if (!CollectionUtils.isEmpty(children = orgTreeNode.getChildren())) {
+                vo.setChildren(convertMountedTree(children));
+            }
+        }
+        return result;
+    }
 
 
-    public List<PerOrg> query(String keyword) {
+
+    public List<PerOrgItem> query(String keyword) {
         QueryWrapper<PerOrg> queryWrapper = new QueryWrapper<>();
         if (StringUtils.isNotBlank(keyword)) {
             queryWrapper.like("name", keyword);
         }
         List<PerOrg> perOrgs = perOrgMapper.selectList(queryWrapper);
+        List<PerOrgItem> perOrgItems = perOrgs.stream().map(org -> {
+            PerOrgItem perOrgItem = BeanUtils.copyBean(new PerOrgItem(), org);
+            perOrgItem.setDisabled(false);
+            return perOrgItem;
+        }).toList();
         if (StringUtils.isNotBlank(keyword) && CollectionUtil.isNotEmpty(perOrgs)) {
             List<Long> matchIds = perOrgs.stream().map(PerOrg::getId).collect(Collectors.toList());
             List<String> ids = perOrgs.stream().flatMap(item -> Arrays.stream(StringUtils.split(item.getRootWay(), ","))).distinct().filter(item -> !matchIds.contains(item)).collect(Collectors.toList());
             queryWrapper.clear();
             queryWrapper.in(CollectionUtil.isNotEmpty(ids), "id", ids);
-            perOrgs.addAll(perOrgMapper.selectList(queryWrapper));
+            List<PerOrgItem> orgItems = perOrgMapper.selectList(queryWrapper).stream().map(org -> {
+                PerOrgItem perOrgItem = BeanUtils.copyBean(new PerOrgItem(), org);
+                return perOrgItem;
+            }).toList();
+            perOrgItems.addAll(orgItems);
         }
-        return perOrgs;
+        return perOrgItems;
+    }
+
+    public List<PerOrgItem> queryByUser(Long userId) {
+        List<PerOrg> perOrgs = orgExtMapper.queryByUserId(userId);
+        List<PerOrgItem> perOrgItems = perOrgs.stream().map(org -> {
+            PerOrgItem perOrgItem = BeanUtils.copyBean(new PerOrgItem(), org);
+            perOrgItem.setDisabled(false);
+            return perOrgItem;
+        }).toList();
+        if (CollectionUtil.isNotEmpty(perOrgs)) {
+            List<Long> matchIds = perOrgs.stream().map(PerOrg::getId).collect(Collectors.toList());
+            List<String> ids = perOrgs.stream().flatMap(item -> Arrays.stream(StringUtils.split(item.getRootWay(), ","))).distinct().filter(item -> !matchIds.contains(item)).collect(Collectors.toList());
+            QueryWrapper<PerOrg> queryWrapper = new QueryWrapper<>();
+            queryWrapper.in(CollectionUtil.isNotEmpty(ids), "id", ids);
+            List<PerOrgItem> orgItems = perOrgMapper.selectList(queryWrapper).stream().map(org -> {
+                PerOrgItem perOrgItem = BeanUtils.copyBean(new PerOrgItem(), org);
+                return perOrgItem;
+            }).toList();
+            perOrgItems.addAll(orgItems);
+        }
+        return perOrgItems;
     }
 
     /**

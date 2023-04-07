@@ -4,7 +4,6 @@ import { store } from '../index'
 interface AppState {
   size: boolean
   pageLoading: boolean
-  token: string
   title: string
   dekey: string
 }
@@ -14,7 +13,6 @@ export const useAppStore = defineStore('app', {
     return {
       size: true, // 尺寸图标
       pageLoading: false, // 路由跳转loading
-      token: 'Authorization',
       title: 'DataEase',
       dekey: 'DataEaseKey'
     }
@@ -29,9 +27,7 @@ export const useAppStore = defineStore('app', {
     getTitle(): string {
       return this.title
     },
-    getToken(): string {
-      return this.token
-    },
+
     getDekey(): string {
       return this.dekey
     }
@@ -47,9 +43,7 @@ export const useAppStore = defineStore('app', {
       this.title = title
       document.title = title
     },
-    setToken(token: string) {
-      this.token = token
-    },
+
     setDekey(dekey: string) {
       this.dekey = dekey
     }
