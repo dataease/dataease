@@ -1,4 +1,4 @@
-package io.dataease.engine.model;
+package io.dataease.api.dataset.union.model;
 
 import lombok.Data;
 
