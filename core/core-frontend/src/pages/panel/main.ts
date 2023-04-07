@@ -6,7 +6,7 @@ import App from './App.vue'
 import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
 import { setupElementPlus } from '@/plugins/element-plus'
-import { useAppStoreWithOut } from '@/store/modules/app'
+import { useUserStoreWithOut } from '@/store/modules/user'
 
 const setupAll = async (dom: string, componentName: string) => {
   const app = createApp(App, { componentName })
@@ -43,7 +43,7 @@ class DataEaseBi {
   initialize(options: Options) {
     this.deOptions = { ...defaultOptions, ...options }
     setupAll(this.deOptions.container, this.type)
-    const appStore = useAppStoreWithOut()
+    const appStore = useUserStoreWithOut()
     appStore.setToken(this.token)
   }
 }

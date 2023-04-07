@@ -69,7 +69,7 @@ htmlStream.pipe(parserStream).on('finish', () => {
         flushbonading
     </div>
 </body>
-<script >
+<script type="module">
     // https://de2.fit2cloud.com
     DataEaseBi.create('Dashboard', { baseUrl: 'https://de2.fit2cloud.com/', token: 'oBTKean4bOhSyFFk9g' })
     DataEaseBi.initialize({ container: '#dataease-container' })
