@@ -17,7 +17,7 @@ import java.util.List;
 @DeApiPath("/org")
 public interface OrgApi {
 
-    @GetMapping("/page/tree")
+    @PostMapping("/page/tree")
     @DePermit("read")
     List<OrgPageVO> pageTree(@RequestBody KeywordRequest request);
 
@@ -29,10 +29,13 @@ public interface OrgApi {
     @PostMapping("/page/edit")
     void edit(@RequestBody OrgEditor editor);
 
-    @PostMapping("/page/delete")
+    @PostMapping("/page/delete/{id}")
     @DePermit({"read", "#p0+':read'"})
     void delete(@PathVariable("id") Long id);
 
-    @GetMapping("/mounted")
-    List<MountedVO> mounted();
+    @PostMapping("/mounted")
+    List<MountedVO> mounted(@RequestBody KeywordRequest request);
+
+    @GetMapping("/resourceExist/{oid}")
+    boolean resourceExist(@PathVariable("oid") Long oid);
 }

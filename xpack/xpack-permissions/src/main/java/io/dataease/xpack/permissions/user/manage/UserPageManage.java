@@ -15,7 +15,6 @@ import io.dataease.xpack.permissions.org.bo.PerOrgItem;
 import io.dataease.xpack.permissions.org.manage.OrgPageManage;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
-import io.dataease.xpack.permissions.user.dao.ext.entity.UserInfoPO;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
@@ -78,7 +77,7 @@ public class UserPageManage {
 
     public void switchOrg(Long oId) {
         TokenUserBO user = AuthUtils.getUser();
-        List<PerOrgItem> perOrgItems = orgPageManage.queryByUser(user.getUserId());
+        List<PerOrgItem> perOrgItems = orgPageManage.queryByUser(user.getUserId(), null);
         if (CollectionUtil.isNotEmpty(perOrgItems) && perOrgItems.stream().filter(item -> !item.isDisabled()).anyMatch(item -> item.getId() == oId)) {
             userExtMapper.switchOrg(user.getUserId(), oId);
             return;

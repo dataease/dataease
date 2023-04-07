@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-04
+ * @since 2023-04-07
  */
 @TableName("per_org")
 public class PerOrg implements Serializable {
@@ -32,6 +32,8 @@ public class PerOrg implements Serializable {
     private Long pid;
 
     private String rootWay;
+
+    private Long createTime;
 
     public Long getId() {
         return id;
@@ -65,6 +67,14 @@ public class PerOrg implements Serializable {
         this.rootWay = rootWay;
     }
 
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
+    }
+
     @Override
     public String toString() {
         return "PerOrg{" +
@@ -72,6 +82,7 @@ public class PerOrg implements Serializable {
         ", name = " + name +
         ", pid = " + pid +
         ", rootWay = " + rootWay +
+        ", createTime = " + createTime +
         "}";
     }
 }
