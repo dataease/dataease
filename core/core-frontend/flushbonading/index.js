@@ -77,7 +77,7 @@ htmlStream.pipe(parserStream).on('finish', () => {
 
 </html>`
 
-  fs.writeFile('./demo.html', template, err => {
+  fs.writeFile('../dist/demo.html', template, err => {
     console.log('写入成功')
   })
 })
