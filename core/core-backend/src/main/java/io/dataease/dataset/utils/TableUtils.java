@@ -1,6 +1,8 @@
 package io.dataease.dataset.utils;
 
+import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.utils.Md5Utils;
+import org.apache.commons.lang3.StringUtils;
 
 public class TableUtils {
 
@@ -30,5 +32,13 @@ public class TableUtils {
 
     public static String columnName(String fieldName) {
         return "C_" + Md5Utils.md5(fieldName);
+    }
+
+    public static String getTableAndAlias(SQLObj sqlObj) {
+        String schema = "";
+        if (StringUtils.isNotEmpty(sqlObj.getTableSchema())) {
+            schema = sqlObj.getTableSchema() + ".";
+        }
+        return schema + sqlObj.getTableName() + " " + sqlObj.getTableAlias();
     }
 }

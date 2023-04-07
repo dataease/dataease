@@ -1,8 +1,8 @@
 package io.dataease.engine.utils;
 
+import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.engine.constant.SQLConstants;
-import io.dataease.engine.model.SQLObj;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 

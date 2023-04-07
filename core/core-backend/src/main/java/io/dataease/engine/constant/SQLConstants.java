@@ -27,6 +27,8 @@ public class SQLConstants {
      */
     public static final String SQL_TEMPLATE = "sqlTemplate.stg";
 
+    public static final String SCHEMA = "s_a_%s";
+
     public static final String TABLE_ALIAS_PREFIX = "t_a_%s";
 
     public static final String FIELD_ALIAS_X_PREFIX = "f_ax_%s";

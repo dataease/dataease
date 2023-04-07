@@ -1,4 +1,4 @@
-package io.dataease.engine.model;
+package io.dataease.api.dataset.union.model;
 
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 @Builder
 public class SQLObj {
-    private String tablePrefix;
+    private String tableSchema;
     private String tableName;
     private String tableAlias;
 
