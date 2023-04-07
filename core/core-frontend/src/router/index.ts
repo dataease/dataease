@@ -43,31 +43,11 @@ export const routes: AppRouteRecordRaw[] = [
   }
 ]
 
-export const routesPanel: AppRouteRecordRaw[] = [
-  {
-    path: '/',
-    name: 'index',
-    redirect: '/dashboard',
-    meta: {}
-  },
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    hidden: true,
-    meta: {},
-    component: () => import('@/views/dashboard/index.vue')
-  }
-]
-
 const router = createRouter({
   history: createWebHashHistory(),
   routes: routes as RouteRecordRaw[]
 })
 
-const routerPanel = createRouter({
-  history: createWebHashHistory(),
-  routes: routesPanel as RouteRecordRaw[]
-})
 export const resetRouter = (): void => {
   const resetWhiteNameList = ['Login']
   router.getRoutes().forEach(route => {
@@ -80,10 +60,6 @@ export const resetRouter = (): void => {
 
 export const setupRouter = (app: App<Element>) => {
   app.use(router)
-}
-
-export const setupRouterPanel = (app: App<Element>) => {
-  app.use(routerPanel)
 }
 
 export default router

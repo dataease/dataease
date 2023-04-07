@@ -5,14 +5,13 @@ import 'normalize.css/normalize.css'
 import App from './App.vue'
 import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
-import { setupRouterPanel } from '@/router'
 import { setupElementPlus } from '@/plugins/element-plus'
+import { useAppStoreWithOut } from '@/store/modules/app'
 
-const setupAll = async (dom: string) => {
-  const app = createApp(App)
+const setupAll = async (dom: string, componentName: string) => {
+  const app = createApp(App, { componentName })
   await setupI18n(app)
   setupStore(app)
-  setupRouterPanel(app)
   setupElementPlus(app)
   app.mount(dom)
 }
@@ -32,7 +31,7 @@ const defaultOptions = {
 class DataEaseBi {
   baseUrl: string
   token: string
-  type: 'dashboard' | 'view'
+  type: 'Dashboard' | 'View'
   deOptions: Options
 
   create(type, options) {
@@ -43,7 +42,9 @@ class DataEaseBi {
 
   initialize(options: Options) {
     this.deOptions = { ...defaultOptions, ...options }
-    setupAll(this.deOptions.container)
+    setupAll(this.deOptions.container, this.type)
+    const appStore = useAppStoreWithOut()
+    appStore.setToken(this.token)
   }
 }
 
