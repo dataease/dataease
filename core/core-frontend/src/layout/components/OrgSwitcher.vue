@@ -17,6 +17,7 @@ import { useUserStoreWithOut } from '@/store/modules/user'
 const userStore = useUserStoreWithOut()
 const value = ref()
 const props = {
+  value: 'id',
   label: 'name'
 }
 const state = reactive({
@@ -41,7 +42,7 @@ const switchHandler = (id: number) => {
 }
 
 onMounted(() => {
-  mountedOrg().then(res => {
+  mountedOrg(null).then(res => {
     state.orgOption = res.data
   })
   value.value = userStore.getOid

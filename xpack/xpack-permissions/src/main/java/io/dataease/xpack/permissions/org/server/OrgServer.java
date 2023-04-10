@@ -24,13 +24,13 @@ public class OrgServer implements OrgApi {
 
     @Override
     public List<OrgPageVO> pageTree(KeywordRequest request) {
-        List<PerOrgItem> orgList = orgPageManage.query(request.getKeyword());
+        List<PerOrgItem> orgList = orgPageManage.queryByUser(AuthUtils.getUser().getUserId(), request.getKeyword());
         return orgPageManage.buildTree(orgList);
     }
 
     @Override
     public void create(OrgCreator creator) {
-        orgPageManage.save(creator.getName());
+        orgPageManage.save(creator.getName(), creator.getPid());
     }
 
     @Override
@@ -44,8 +44,13 @@ public class OrgServer implements OrgApi {
     }
 
     @Override
-    public List<MountedVO> mounted() {
-        List<PerOrgItem> perOrgs = orgPageManage.queryByUser(AuthUtils.getUser().getUserId());
+    public List<MountedVO> mounted(KeywordRequest request) {
+        List<PerOrgItem> perOrgs = orgPageManage.queryByUser(AuthUtils.getUser().getUserId(), request.getKeyword());
         return orgPageManage.buildMountedTree(perOrgs);
+    }
+
+    @Override
+    public boolean resourceExist(Long oid) {
+        return orgPageManage.busiExist(oid);
     }
 }

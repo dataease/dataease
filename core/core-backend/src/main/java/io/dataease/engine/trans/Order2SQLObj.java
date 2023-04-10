@@ -1,10 +1,9 @@
 package io.dataease.engine.trans;
 
-import io.dataease.api.chart.dto.ChartViewFieldDTO;
 import io.dataease.api.chart.dto.DeSortField;
+import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -21,13 +20,13 @@ import java.util.Objects;
  */
 public class Order2SQLObj {
 
-    public static void getOrders(SQLMeta meta, List<ChartViewFieldDTO> fields, List<CoreDatasetTableField> calcFields, List<DeSortField> sortFields) {
+    public static void getOrders(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> calcFields, List<DeSortField> sortFields) {
         SQLObj tableObj = meta.getTable();
         List<SQLObj> xOrders = meta.getXOrders();
         if (ObjectUtils.isEmpty(tableObj) || CollectionUtils.isEmpty(xOrders)) {
             return;
         }
-        if (!CollectionUtils.isEmpty(sortFields)) {
+        if (ObjectUtils.isNotEmpty(sortFields)) {
             int step = fields.size();
             for (int i = step; i < (step + sortFields.size()); i++) {
                 DeSortField deSortField = sortFields.get(i - step);
@@ -37,7 +36,7 @@ public class Order2SQLObj {
         }
     }
 
-    private static SQLObj buildSortField(DeSortField f, SQLObj tableObj, int i, List<CoreDatasetTableField> calcFields) {
+    private static SQLObj buildSortField(DeSortField f, SQLObj tableObj, int i, List<DatasetTableFieldDTO> calcFields) {
         String originField;
         if (ObjectUtils.isNotEmpty(f.getExtField()) && Objects.equals(f.getExtField(), ExtFieldConstant.EXT_CALC)) {
             // 解析origin name中有关联的字段生成sql表达式

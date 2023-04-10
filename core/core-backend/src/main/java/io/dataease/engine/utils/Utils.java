@@ -1,7 +1,7 @@
 package io.dataease.engine.utils;
 
+import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLObj;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.engine.constant.SQLConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -17,7 +17,7 @@ public class Utils {
         return (StringUtils.equalsIgnoreCase(sort, "asc") || StringUtils.equalsIgnoreCase(sort, "desc"));
     }
 
-    public static String calcFieldRegex(String originField, SQLObj tableObj, List<CoreDatasetTableField> calcFields) {
+    public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> calcFields) {
         originField = originField.replaceAll("[\\t\\n\\r]]", "");
         // 正则提取[xxx]
         String regex = "\\[(.*?)]";
@@ -31,7 +31,7 @@ public class Utils {
         if (CollectionUtils.isEmpty(ids)) {
             return originField;
         }
-        for (CoreDatasetTableField ele : calcFields) {
+        for (DatasetTableFieldDTO ele : calcFields) {
             if (StringUtils.containsIgnoreCase(originField, ele.getId())) {
                 originField = originField.replaceAll("\\[" + ele.getId() + "]",
                         String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));

@@ -61,4 +61,12 @@ public class RoleManage {
         List<RolePO> rolePOS = roleExtMapper.selectList(queryWrapper);
         return rolePOS.stream().map(po -> BeanUtils.copyBean(new RoleVO(), po)).toList();
     }
+
+    public List<RoleVO> optionForUser(String keyword, Long oid, Long uid) {
+        QueryWrapper<RolePO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotBlank(keyword), "name", keyword);
+        queryWrapper.eq("org_id", oid);
+        List<RolePO> rolePOS = roleExtMapper.selectOptionForUser(uid, queryWrapper);
+        return rolePOS.stream().map(po -> BeanUtils.copyBean(new RoleVO(), po)).toList();
+    }
 }

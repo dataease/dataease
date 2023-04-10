@@ -60,6 +60,7 @@ public class OrgPageManage {
         });
         return result;
     }
+
     private List<OrgPageVO> convertTree(List<OrgTreeNode> roots) {
         List<OrgPageVO> result = new ArrayList<>();
         for (int i = 0; i < roots.size(); i++) {
@@ -89,49 +90,43 @@ public class OrgPageManage {
     }
 
 
-
-    public List<PerOrgItem> query(String keyword) {
-        QueryWrapper<PerOrg> queryWrapper = new QueryWrapper<>();
-        if (StringUtils.isNotBlank(keyword)) {
-            queryWrapper.like("name", keyword);
-        }
-        List<PerOrg> perOrgs = perOrgMapper.selectList(queryWrapper);
+    private List<PerOrgItem> convertItems(List<PerOrg> perOrgs, boolean disabled) {
         List<PerOrgItem> perOrgItems = perOrgs.stream().map(org -> {
             PerOrgItem perOrgItem = BeanUtils.copyBean(new PerOrgItem(), org);
-            perOrgItem.setDisabled(false);
+            perOrgItem.setDisabled(disabled);
             return perOrgItem;
         }).toList();
-        if (StringUtils.isNotBlank(keyword) && CollectionUtil.isNotEmpty(perOrgs)) {
-            List<Long> matchIds = perOrgs.stream().map(PerOrg::getId).collect(Collectors.toList());
-            List<String> ids = perOrgs.stream().flatMap(item -> Arrays.stream(StringUtils.split(item.getRootWay(), ","))).distinct().filter(item -> !matchIds.contains(item)).collect(Collectors.toList());
-            queryWrapper.clear();
-            queryWrapper.in(CollectionUtil.isNotEmpty(ids), "id", ids);
-            List<PerOrgItem> orgItems = perOrgMapper.selectList(queryWrapper).stream().map(org -> {
-                PerOrgItem perOrgItem = BeanUtils.copyBean(new PerOrgItem(), org);
-                return perOrgItem;
-            }).toList();
-            perOrgItems.addAll(orgItems);
-        }
         return perOrgItems;
     }
 
-    public List<PerOrgItem> queryByUser(Long userId) {
-        List<PerOrg> perOrgs = orgExtMapper.queryByUserId(userId);
-        List<PerOrgItem> perOrgItems = perOrgs.stream().map(org -> {
-            PerOrgItem perOrgItem = BeanUtils.copyBean(new PerOrgItem(), org);
-            perOrgItem.setDisabled(false);
-            return perOrgItem;
-        }).toList();
+    public List<PerOrgItem> queryByUser(Long userId, String keyword) {
+        List<PerOrg> perOrgs = null;
+        QueryWrapper<PerOrg> queryWrapper = new QueryWrapper<>();
+
+        if (AuthUtils.isSysAdmin(userId) && StringUtils.isBlank(keyword)) {
+            perOrgs = perOrgMapper.selectList(queryWrapper);
+            return convertItems(perOrgs, false);
+        }
+        queryWrapper.like(StringUtils.isNotBlank(keyword), "po.name", keyword);
+
+        if (!AuthUtils.isSysAdmin(userId)) {
+            queryWrapper.eq("pur.uid", userId);
+        }
+
+        perOrgs = orgExtMapper.queryByUserId(queryWrapper);
+        List<PerOrgItem> perOrgItems = convertItems(perOrgs, false);
         if (CollectionUtil.isNotEmpty(perOrgs)) {
             List<Long> matchIds = perOrgs.stream().map(PerOrg::getId).collect(Collectors.toList());
             List<String> ids = perOrgs.stream().flatMap(item -> Arrays.stream(StringUtils.split(item.getRootWay(), ","))).distinct().filter(item -> !matchIds.contains(item)).collect(Collectors.toList());
-            QueryWrapper<PerOrg> queryWrapper = new QueryWrapper<>();
+            queryWrapper.clear();
+            queryWrapper = new QueryWrapper<>();
             queryWrapper.in(CollectionUtil.isNotEmpty(ids), "id", ids);
-            List<PerOrgItem> orgItems = perOrgMapper.selectList(queryWrapper).stream().map(org -> {
-                PerOrgItem perOrgItem = BeanUtils.copyBean(new PerOrgItem(), org);
-                return perOrgItem;
-            }).toList();
-            perOrgItems.addAll(orgItems);
+            List<PerOrg> orgList = perOrgMapper.selectList(queryWrapper);
+            List<PerOrgItem> orgItems = convertItems(orgList, true);
+            if (CollectionUtil.isNotEmpty(orgItems)) {
+                perOrgItems = new ArrayList<>(perOrgItems);
+                perOrgItems.addAll(new ArrayList<>(orgItems));
+            }
         }
         return perOrgItems;
     }
@@ -140,11 +135,11 @@ public class OrgPageManage {
      * 保存了组织就完了？
      * 建角色 组织管理员 查看角色
      * 当前用户挂给组织管理员
-     *
      */
-    public void save(String name) {
+    public void save(String name, Long pid) {
         TokenUserBO user = AuthUtils.getUser();
-        Long pid = user.getDefaultOid();
+        if (ObjectUtils.isEmpty(pid))
+            pid = user.getDefaultOid();
         PerOrg perOrg = new PerOrg();
         perOrg.setId(IDUtils.snowID());
         perOrg.setName(name);
@@ -155,6 +150,7 @@ public class OrgPageManage {
             newRootWay = parent.getRootWay() + "," + pid;
         }
         perOrg.setRootWay(newRootWay);
+        perOrg.setCreateTime(System.currentTimeMillis());
         perOrgMapper.insert(perOrg);
     }
 
@@ -180,5 +176,9 @@ public class OrgPageManage {
         QueryWrapper<PerOrg> queryWrapper = new QueryWrapper();
         queryWrapper.eq("pid", id);
         return perOrgMapper.selectCount(queryWrapper) > 0;
+    }
+
+    public boolean busiExist(Long oid) {
+        return orgExtMapper.busiCount(oid) > 0;
     }
 }
