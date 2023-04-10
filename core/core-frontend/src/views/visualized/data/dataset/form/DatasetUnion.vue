@@ -2,9 +2,8 @@
 import { reactive, computed, ref } from 'vue'
 // import { throttle } from 'lodash'
 import { HandleMore } from '@/components/handle-more'
-interface DragEvent extends MouseEvent {
-  dataTransfer: DataTransfer
-}
+import { propTypes } from '@/utils/propTypes'
+
 const state = reactive({
   leftList: [],
   nodeList: [],
@@ -13,8 +12,11 @@ const state = reactive({
   visualNodeParent: null,
   visualPath: null
 })
-
-const maskShow = ref(false)
+const props = defineProps({
+  maskShow: propTypes.bool.def(false),
+  offsetX: propTypes.number.def(0),
+  offsetY: propTypes.number.def(0)
+})
 
 const activeNode = ref('')
 
@@ -38,9 +40,6 @@ const menuList = [
     command: 'del'
   }
 ]
-
-const offsetX = ref(0)
-const offsetY = ref(0)
 
 const dragOffsetX = ref(0)
 const dragOffsetY = ref(0)
@@ -214,18 +213,11 @@ const flatLine = ({ x, y, children = [], isShadow, label }, flatNodeList) => {
 
 state.nodeList = []
 
-const dragstart = (e: DragEvent, ele: string) => {
-  offsetX.value = e.offsetX
-  offsetY.value = e.offsetY
-  e.dataTransfer.setData('text/plain', ele)
-  maskShow.value = true
-}
-
 const dragover_handler = ev => {
   ev.preventDefault()
 
-  dragOffsetX.value = ev.offsetX - offsetX.value
-  dragOffsetY.value = ev.offsetY - offsetY.value
+  dragOffsetX.value = ev.offsetX - props.offsetX
+  dragOffsetY.value = ev.offsetY - props.offsetY
 
   const lg = state.nodeList.length
   const [fir] = state.nodeList

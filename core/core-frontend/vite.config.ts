@@ -2,6 +2,8 @@ import Vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 import electron from 'vite-plugin-electron'
 import eslintPlugin from 'vite-plugin-eslint'
+import VueJsx from '@vitejs/plugin-vue-jsx'
+
 import viteStylelint from 'vite-plugin-stylelint'
 import { resolve } from 'path'
 import {
@@ -61,6 +63,7 @@ const isDesktop = process.argv[3] === 'desktop'
 export default defineConfig({
   plugins: [
     Vue(),
+    VueJsx(),
     isDesktop && electron({
       entry: 'electron-main/index.ts' // 主进程文件
     }),
@@ -92,7 +95,8 @@ export default defineConfig({
       include: [resolve(__dirname, 'src/locales/**')]
     }),
     eslintPlugin({
-      include: ['src/**/*.ts', 'src/**/*.js', 'src/**/*.vue', 'src/*.ts', 'src/*.js', 'src/*.vue']
+      cache: false,
+      include: ['src/**/*.ts','src/**/*.tsx', 'src/**/*.js', 'src/**/*.vue', 'src/*.ts', 'src/*.js', 'src/*.vue']
     }),
     viteStylelint(),
     isDesktop && electronRenderer()

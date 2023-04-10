@@ -5,10 +5,10 @@
     "module": "ESNext",
     "moduleResolution": "Node",
     "strict": true,
-    "jsx": "preserve",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
+    "jsx": "preserve",
     "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "noEmit": true,
@@ -16,6 +16,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["electron-main/**/*.ts", "src/**/*"],
+  "include": ["electron-main/**/*.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
