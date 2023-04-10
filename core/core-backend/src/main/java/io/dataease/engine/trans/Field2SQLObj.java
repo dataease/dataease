@@ -1,8 +1,8 @@
 package io.dataease.engine.trans;
 
+import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -20,15 +20,15 @@ import java.util.Objects;
  */
 public class Field2SQLObj {
 
-    public static void field2sqlObj(SQLMeta meta, List<CoreDatasetTableField> fields, List<CoreDatasetTableField> calcFields) {
+    public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> calcFields) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
         }
         List<SQLObj> xFields = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(fields)) {
+        if (ObjectUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
-                CoreDatasetTableField x = fields.get(i);
+                DatasetTableFieldDTO x = fields.get(i);
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_CALC)) {
                     // 解析origin name中有关联的字段生成sql表达式
@@ -46,11 +46,11 @@ public class Field2SQLObj {
         meta.setXFields(xFields);
     }
 
-    private static SQLObj getXFields(CoreDatasetTableField f, String originField, String fieldAlias) {
+    private static SQLObj getXFields(DatasetTableFieldDTO f, String originField, String fieldAlias) {
         String fieldName = "";
         // 处理横轴字段
         if (Objects.equals(f.getDeExtractType(), DeTypeConstants.DE_TIME)) {
-            if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT) || f.getDeType() == DeTypeConstants.DE_FLOAT) {
+            if (Objects.equals(f.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(f.getDeType(), DeTypeConstants.DE_FLOAT)) {
                 fieldName = String.format(SQLConstants.UNIX_TIMESTAMP, originField) + "*1000";
             } else {
                 fieldName = originField;
