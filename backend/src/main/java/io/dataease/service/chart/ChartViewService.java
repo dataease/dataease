@@ -606,7 +606,8 @@ public class ChartViewService {
         List<ChartViewFieldDTO> xAxisExt = gson.fromJson(view.getXAxisExt(), tokenType);
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot")
                 || StringUtils.containsIgnoreCase(view.getType(), "group")
-                || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))) {
+                || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
+                || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")) {
             xAxis.addAll(xAxisExt);
         }
         List<ChartViewFieldDTO> yAxis = gson.fromJson(view.getYAxis(), tokenType);
@@ -714,6 +715,7 @@ public class ChartViewService {
                 break;
             case "bar-group":
             case "bar-group-stack":
+            case "flow-map":
                 xAxis = xAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
                 yAxis = yAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
                 xAxisBase = xAxisBase.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());

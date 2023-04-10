@@ -576,8 +576,11 @@
                           $t('chart.drag_block_word_cloud_label')
                         }}</span>
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
+                        <span v-else-if="view.type === 'flow-map'">{{ $t('chart.start_point') }}</span>
                         <span v-show="view.type !== 'richTextView'"> / </span>
-                        <span v-if="view.type && view.type !== 'table-info'">{{ $t('chart.dimension') }}</span>
+                        <span v-if="view.type && view.type !== 'table-info'">
+                          {{ $t('chart.dimension') }}
+                        </span>
                         <span
                           v-else-if="view.type && view.type === 'table-info'"
                         >{{ $t('chart.dimension_or_quota') }}</span>
@@ -625,12 +628,14 @@
                     <el-row
                       v-if="view.type === 'bar-group'
                         || view.type === 'bar-group-stack'
-                        || (view.render === 'antv' && view.type === 'line')"
+                        || (view.render === 'antv' && view.type === 'line')
+                        || view.type === 'flow-map'"
                       class="padding-lr"
                     >
                       <span class="data-area-label">
                         <span>
-                          {{ $t('chart.chart_group') }}
+                          <span v-if="view.type !=='flow-map'">{{ $t('chart.chart_group') }}</span>
+                          <span v-else-if="view.type === 'flow-map'">{{ $t('chart.end_point') }}</span>
                           <span
                             v-show="view.type !== 'line'"
                             style="color:#F54A45;"
@@ -692,7 +697,7 @@
                     </el-row>
                     <!--yaxis-->
                     <el-row
-                      v-if="view.type !=='table-info' && view.type !=='label'"
+                      v-if="!equalsAny(view.type , 'table-info', 'label', 'flow-map')"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -701,7 +706,9 @@
                           $t('chart.drag_block_table_data_column')
                         }}</span>
                         <span
-                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'waterfall' || view.type === 'area')"
+                          v-else-if="view.type
+                            && (includesAny(view.type,'bar','line','scatter')
+                              || equalsAny(view.type,'waterfall','area','flow-map'))"
                         >{{ $t('chart.drag_block_value_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
@@ -976,7 +983,12 @@
                       </div>
                     </el-row>
                     <el-row
-                      v-if="view.type && !(view.type.includes('table') && view.render === 'echarts') && !view.type.includes('text') && !view.type.includes('gauge') && view.type !== 'liquid' && view.type !== 'word-cloud' && view.type !== 'table-pivot' && view.type !=='label'&&view.type !=='richTextView'"
+                      v-if="view.type
+                        && !(view.type.includes('table') && view.render === 'echarts')
+                        && !view.type.includes('text') && !view.type.includes('gauge')
+                        && view.type !== 'liquid' && view.type !== 'word-cloud'
+                        && view.type !== 'table-pivot' && view.type !=='label'
+                        && view.type !=='richTextView' && view.type !== 'flow-map'"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -1065,6 +1077,7 @@
             @onChangeBackgroundForm="onChangeBackgroundForm"
             @onSuspensionChange="onSuspensionChange"
             @onMarkChange="onMarkChange"
+            @onMapChange="onMapChange"
           />
         </el-tab-pane>
         <el-tab-pane
@@ -1745,7 +1758,7 @@ import CustomSortEdit from '@/views/chart/components/compare/CustomSortEdit'
 import ScrollCfg from '@/views/chart/components/senior/ScrollCfg'
 import ChartFieldEdit from '@/views/chart/view/ChartFieldEdit'
 import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
-import { equalsAny } from '@/utils/StringUtils'
+import { equalsAny, includesAny } from '@/utils/StringUtils'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
 
@@ -2017,6 +2030,8 @@ export default {
   },
 
   methods: {
+    includesAny,
+    equalsAny,
     setTitle(title, id) {
       if (this.view.id !== id) return
       this.view.customStyle.text = { ...this.view.customStyle.text, title }
@@ -2217,7 +2232,8 @@ export default {
           ele.filter = []
         }
       })
-      if (view.type === 'table-pivot' || view.type === 'bar-group' || (view.render === 'antv' && view.type === 'line')) {
+      if (equalsAny(view.type, 'table-pivot', 'bar-group', 'bar-group-stack', 'flow-map') ||
+        (view.render === 'antv' && view.type === 'line')) {
         view.xaxisExt.forEach(function(ele) {
           if (!ele.dateStyle || ele.dateStyle === '') {
             ele.dateStyle = 'y_M_d'
@@ -2686,7 +2702,10 @@ export default {
       this.view.senior.mapMapping = val
       this.calcStyle()
     },
-
+    onMapChange(val) {
+      this.view.customAttr.map = val
+      this.calcStyle()
+    },
     showDimensionEditFilter(item) {
       this.dimensionItem = JSON.parse(JSON.stringify(item))
       this.dimensionFilterEdit = true

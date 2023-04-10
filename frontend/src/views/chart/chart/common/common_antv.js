@@ -104,9 +104,9 @@ export function getTheme(chart) {
       }
     }
   }
-  // 百分比堆叠柱状图需要取消 offset，因为在顶部类别占比较低的时候有可能会把标签挤出去
+  // 堆叠柱状图需要取消 offset，因为在顶部类别占比较低的时候有可能会把标签挤出去
   // 并且视觉上也比较不舒服
-  if (chart.type === 'percentage-bar-stack') {
+  if (equalsAny(chart.type, 'percentage-bar-stack', 'bar-group-stack')) {
     theme.innerLabels.offset = 0
   }
   return theme
