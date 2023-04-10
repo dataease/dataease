@@ -7,7 +7,9 @@ import Main from './components/Main.vue'
 import { ElContainer } from 'element-plus-secondary'
 import { useRoute } from 'vue-router'
 const route = useRoute()
-const systemMenu = computed(() => route.path.includes('system'))
+const systemMenu = computed(
+  () => route.path.includes('system') || route.path.includes('visualized')
+)
 </script>
 
 <template>
