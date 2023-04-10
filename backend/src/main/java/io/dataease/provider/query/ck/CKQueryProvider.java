@@ -1151,7 +1151,7 @@ public class CKQueryProvider extends QueryProvider {
                         whereName = String.format(CKConstants.formatDateTime, String.format(CKConstants.toDateTime, cast), format);
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = String.format(CKConstants.formatDateTime, originName, format);
+                        whereName = originName;
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
