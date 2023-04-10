@@ -52,7 +52,8 @@ public class RoleServer implements RoleApi {
 
     @Override
     public List<RoleVO> optionForUser(Long id) {
-        return null;
+        Long defaultOid = AuthUtils.getUser().getDefaultOid();
+        return roleManage.optionForUser(null, defaultOid, id);
     }
 
     @Override

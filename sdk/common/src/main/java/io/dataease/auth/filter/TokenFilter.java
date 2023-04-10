@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.utils.AuthUtils;
+import io.dataease.utils.ModelUtils;
 import io.dataease.utils.TokenUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.FilterConfig;
@@ -35,7 +36,14 @@ public class TokenFilter implements Filter {
     }
 
     private void check(String token) {
-        TokenUserBO tokenUserBO = TokenUtils.userBOByToken(token);
+        TokenUserBO tokenUserBO = null;
+        if (ModelUtils.isDesktop()) {
+            tokenUserBO = new TokenUserBO();
+            tokenUserBO.setUserId(1L);
+            tokenUserBO.setDefaultOid(1L);
+        } else {
+            tokenUserBO = TokenUtils.userBOByToken(token);
+        }
         AuthUtils.setUser(tokenUserBO);
     }
 
