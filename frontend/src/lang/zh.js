@@ -1936,6 +1936,8 @@ export default {
     jsonpath_info: '请填入JsonPath',
     req_param: '请求参数',
     headers: '请求头',
+    query_param: "QUERY參數",
+    query_info: "地址栏中跟在？后面的参数,如: updateapi?id=112",
     key: '键',
     value: '值',
     data_path: '提取数据',

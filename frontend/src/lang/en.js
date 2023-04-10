@@ -1926,6 +1926,8 @@ export default {
     jsonpath_info: 'Please fill in JsonPath',
     req_param: 'Request parameters',
     headers: 'Request header',
+    query_param: "QUERY param",
+    query_info: "Follow in the address bar? The following parameters, such as: updateAPI? id=112",
     key: 'Key',
     value: 'Value',
     data_path: 'Extract data',

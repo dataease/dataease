@@ -36,6 +36,27 @@
               />
             </el-tab-pane>
 
+            <!--query 参数-->
+            <el-tab-pane :label="$t('datasource.query_param')" name="parameters">
+              <el-tooltip class="item-tabs" effect="dark" :content="$t('datasource.query_info')"
+                          placement="top-start" slot="label">
+              <span>{{ $t('datasource.query_param') }}
+                <div class="el-step__icon is-text ms-api-col ms-header" v-if="request.arguments.length>1">
+                  <div class="el-step__icon-inner">{{ request.arguments.length - 1 }}</div>
+                </div>
+              </span>
+              </el-tooltip>
+              <api-variable
+                @editScenarioAdvance="editScenarioAdvance"
+                :scenario-definition="scenarioDefinition"
+                :with-mor-setting="true"
+                :is-read-only="isReadOnly"
+                :isShowEnable="isShowEnable"
+                :parameters="request.arguments"
+                v-if="activeName === 'parameters'"
+              />
+            </el-tab-pane>
+
             <!--请求体-->
             <el-tab-pane
               v-if="isBodyShow"
@@ -78,6 +99,7 @@
 <script>
 import ApiKeyValue from '@/views/system/datasource/ApiKeyValue'
 import ApiBody from '@/views/system/datasource/ApiBody'
+import ApiVariable from '@/views/system/datasource/ApiVariable.vue'
 import ApiAuthConfig from '@/views/system/datasource/ApiAuthConfig'
 import { Body, KeyValue } from '@/views/system/datasource/ApiTestModel'
 import Convert from '@/views/system/datasource/convert'
@@ -87,7 +109,8 @@ export default {
   components: {
     ApiAuthConfig,
     ApiBody,
-    ApiKeyValue
+    ApiKeyValue,
+    ApiVariable
   },
   props: {
     method: String,

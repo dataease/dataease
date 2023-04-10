@@ -993,6 +993,7 @@ export default {
         method: 'GET',
         request: {
           headers: [{}],
+          arguments: [],
           body: {
             type: '',
             raw: '',
@@ -1009,6 +1010,7 @@ export default {
         dataPath: '',
         request: {
           headers: [],
+          arguments: [],
           body: {
             type: '',
             raw: '',
