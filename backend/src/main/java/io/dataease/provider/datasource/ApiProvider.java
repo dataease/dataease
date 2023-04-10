@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 
 import javax.annotation.Resource;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -145,6 +146,15 @@ public class ApiProvider extends Provider {
 
         switch (apiDefinition.getMethod()) {
             case "GET":
+                List<String>  params = new ArrayList<>();
+                for (Map<String, String> argument : apiDefinition.getRequest().getArguments()) {
+                    if(StringUtils.isNotEmpty(argument.get("name")) && StringUtils.isNotEmpty(argument.get("value"))){
+                        params.add(argument.get("name") + "=" + URLEncoder.encode(argument.get("value")));
+                    }
+                }
+                if(CollectionUtils.isNotEmpty(params)){
+                    apiDefinition.setUrl(apiDefinition.getUrl() + "?" + StringUtils.join(params, "&"));
+                }
                 response = HttpClientUtil.get(apiDefinition.getUrl().trim(), httpClientConfig);
                 break;
             case "POST":
