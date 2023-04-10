@@ -1,16 +1,18 @@
 package io.dataease.datasource.provider;
 
 import io.dataease.api.ds.vo.DatasourceConfiguration;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
 import io.dataease.datasource.model.TableField;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.exception.DEException;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
-import org.apache.calcite.jdbc.CalciteConnection;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
+import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -24,10 +26,9 @@ import java.sql.*;
 import java.util.*;
 
 
-
 @Component("calciteProvider")
 
-public class CalciteProvider extends Provider{
+public class CalciteProvider extends Provider {
 
     @Resource
     private CoreDriverMapper coreDriverMapper;
@@ -72,12 +73,66 @@ public class CalciteProvider extends Provider{
 
     @Override
     public List<TableField> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
-        return null;
+        List<TableField> datasetTableFields = new ArrayList<>();
+
+        Connection connection = null;
+        CalciteConnection calciteConnection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = getCalciteConnection(datasourceRequest);
+            calciteConnection = connection.unwrap(CalciteConnection.class);
+            buildSchema(datasourceRequest, calciteConnection);
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(datasourceRequest.getQuery());
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            for (int i = 0; i < columnCount; i++) {
+                TableField tableField = new TableField();
+                tableField.setFieldName(metaData.getColumnName(i));
+                datasetTableFields.add(tableField);
+            }
+        } catch (Exception e) {
+            DEException.throwException(e.getMessage());
+        } finally {
+            if (resultSet != null) resultSet.close();
+            if (statement != null) statement.close();
+            if (calciteConnection != null) calciteConnection.close();
+            if (connection != null) connection.close();
+        }
+        return datasetTableFields;
     }
 
     @Override
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
-        return null;
+        Map<String, List> map = new LinkedHashMap<>();
+
+        List<TableField> fields = fetchResultField(datasourceRequest);
+        List<String[]> list = new LinkedList<>();
+
+        Connection connection = null;
+        CalciteConnection calciteConnection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = getCalciteConnection(datasourceRequest);
+            calciteConnection = connection.unwrap(CalciteConnection.class);
+            buildSchema(datasourceRequest, calciteConnection);
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(datasourceRequest.getQuery());
+            list = getDataResult(resultSet);
+        } catch (Exception e) {
+
+        } finally {
+            if (resultSet != null) resultSet.close();
+            if (statement != null) statement.close();
+            if (calciteConnection != null) calciteConnection.close();
+            if (connection != null) connection.close();
+        }
+
+        map.put("fields", fields);
+        map.put("data", list);
+        return map;
     }
 
     public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
@@ -168,6 +223,51 @@ public class CalciteProvider extends Provider{
                 return rootSchema;
         }
 
+    }
+
+    // 构建root schema
+    private SchemaPlus buildSchema(DatasourceRequest datasourceRequest, CalciteConnection calciteConnection) {
+        SchemaPlus rootSchema = calciteConnection.getRootSchema();
+        Map<String, DatasourceSchemaDTO> dsList = datasourceRequest.getDsList();
+
+        for (Map.Entry<String, DatasourceSchemaDTO> next : dsList.entrySet()) {
+            DatasourceSchemaDTO ds = next.getValue();
+            DatasourceConfiguration datasourceConfiguration = (DatasourceConfiguration) CommonBeanFactory.getBean(ds.getType());
+
+            // build schema
+            BasicDataSource dataSource = new BasicDataSource();
+            dataSource.setUrl(datasourceConfiguration.getJdbc());
+            dataSource.setUsername(datasourceConfiguration.getUsername());
+            dataSource.setPassword(datasourceConfiguration.getPassword());
+            dataSource.setDefaultQueryTimeout(datasourceConfiguration.getQueryTimeout() > 0 ? datasourceConfiguration.getQueryTimeout() : 0);
+
+            Schema schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, datasourceConfiguration.getDataBase());
+            rootSchema.add(ds.getSchemaAlias(), schema);
+        }
+        return rootSchema;
+    }
+
+    private void registerDriver(DatasourceRequest datasourceRequest) throws Exception {
+        for (Map.Entry<String, DatasourceSchemaDTO> next : datasourceRequest.getDsList().entrySet()) {
+            DatasourceSchemaDTO ds = next.getValue();
+            DatasourceConfiguration datasourceConfiguration = (DatasourceConfiguration) CommonBeanFactory.getBean(ds.getType());
+            Driver driver = (Driver) extendedJdbcClassLoader.loadClass(datasourceConfiguration.getDriver()).newInstance();
+            Thread.currentThread().setContextClassLoader(extendedJdbcClassLoader);
+            Class.forName("org.apache.calcite.jdbc.Driver");
+            DriverManager.registerDriver(new DriverShim(driver));
+        }
+    }
+
+    private Connection getCalciteConnection(DatasourceRequest datasourceRequest) throws Exception {
+        registerDriver(datasourceRequest);
+        Properties info = new Properties();
+        info.setProperty("lex", "JAVA"); //TODO
+//        info.setProperty("conformance", "ORACLE_10"); //TODO
+        info.setProperty("caseSensitive", "false");
+        info.setProperty("remarks", "true");
+        info.setProperty("parserFactory", "org.apache.calcite.sql.parser.impl.SqlParserImpl#FACTORY");
+        Connection connection = DriverManager.getConnection("jdbc:calcite:", info);
+        return connection;
     }
 
     private Connection getCalciteConnection(DatasourceConfiguration datasourceConfiguration) throws Exception {
