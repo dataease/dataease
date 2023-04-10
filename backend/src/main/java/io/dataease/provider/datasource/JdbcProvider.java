@@ -94,7 +94,11 @@ public class JdbcProvider extends DefaultJdbcProvider {
                     tableNamePattern = String.format(MySQLConstants.KEYWORD_TABLE, tableNamePattern);
                 }
             }
-            ResultSet resultSet = databaseMetaData.getColumns(null, "%", tableNamePattern, "%");
+            String schemaPattern = "%";
+            if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.oracle.name())) {
+                schemaPattern = databaseMetaData.getUserName();
+            }
+            ResultSet resultSet = databaseMetaData.getColumns(null, schemaPattern, tableNamePattern, "%");
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
                 String database;
