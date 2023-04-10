@@ -1161,6 +1161,8 @@ public class PanelGroupService {
                 componentFilterInfo.setGoPage(1l);
                 componentFilterInfo.setPageSize(1000000l);
                 componentFilterInfo.setExcelExportFlag(true);
+                componentFilterInfo.setProxy(request.getProxy());
+                componentFilterInfo.setUser(request.getUserId());
                 ChartViewDTO chartViewInfo = chartViewService.getData(request.getViewId(), componentFilterInfo);
                 List<Map> tableRow = (List) chartViewInfo.getData().get("tableRow");
                 List<Object[]> result = new ArrayList<>();

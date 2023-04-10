@@ -212,7 +212,7 @@ export function checkViewTitle(opt, id, tile) {
   }
 }
 
-export function exportImg(imgName) {
+export function exportImg(imgName,callback) {
   const canvasID = document.getElementById('chartCanvas')
   const a = document.createElement('a')
   html2canvas(canvasID).then(canvas => {
@@ -227,6 +227,9 @@ export function exportImg(imgName) {
     a.click()
     URL.revokeObjectURL(blob)
     document.body.removeChild(a)
+    callback()
+  }).catch(() => {
+    callback()
   })
 }
 
@@ -374,10 +377,15 @@ export function insertBatchTreeNode(nodeInfoArray, tree) {
 }
 
 export function updateCacheTree(opt, treeName, nodeInfoFull, tree) {
-  const nodeInfo = {
-    ...nodeInfoFull,
-    panelData: null,
-    panelStyle: null
+  const nodeInfo = deepCopy(nodeInfoFull)
+  if( nodeInfo instanceof Array){
+    nodeInfo.forEach(item=>{
+      delete item.panelData
+      delete item.panelStyle
+    })
+  }else{
+    delete nodeInfo.panelData
+    delete nodeInfo.panelStyle
   }
   if (opt === 'new' || opt === 'copy') {
     insertTreeNode(nodeInfo, tree)

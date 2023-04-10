@@ -339,6 +339,7 @@ export default {
       return [list, gap]
     },
     initEchart(clickNode = []) {
+      if (!this.treeData.length) return
       if (this.myChart) {
         this.myChart.dispose()
         this.myChart = null

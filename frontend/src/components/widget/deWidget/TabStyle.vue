@@ -112,39 +112,6 @@
           <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item :label="$t('panel.carousel')">
-        <el-row>
-          <el-col :span="6">
-            <el-checkbox
-              v-model="styleInfo.carouselEnable"
-              size="mini"
-              @change="styleChange"
-            >{{ $t('commons.enable') }}
-            </el-checkbox>
-          </el-col>
-          <el-col
-            :span="8"
-            style="text-align: right;padding-right: 10px"
-          >
-            {{ $t('panel.switch_time') }}
-          </el-col>
-          <el-col :span="10">
-            <el-input
-              v-model="styleInfo.switchTime"
-              :disabled="!styleInfo.carouselEnable"
-              type="number"
-              size="mini"
-              :min="2"
-              :max="3600"
-              class="hide-icon-number number-padding"
-              @change="switchTimeChange"
-            >
-              <template slot="append">S</template>
-            </el-input>
-          </el-col>
-
-        </el-row>
-      </el-form-item>
     </el-form>
     <i
       slot="reference"
@@ -180,14 +147,6 @@ export default {
       const pickKey = key + 'Picker'
       const current = this.$refs[pickKey]
       current && (current.showPicker = true)
-    },
-    switchTimeChange() {
-      if (!this.styleInfo.switchTime || this.styleInfo.switchTime < 2) {
-        this.styleInfo.switchTime = 2
-      } else if (this.styleInfo.switchTime && this.styleInfo.switchTime > 3600) {
-        this.styleInfo.switchTime = 3600
-      }
-      this.styleChange()
     },
     styleChange() {
       this.$store.commit('canvasChange')
