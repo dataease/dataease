@@ -1,9 +1,9 @@
 package io.dataease.engine.trans;
 
 import io.dataease.api.chart.dto.ChartViewFieldDTO;
+import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 public class Dimension2SQLObj {
 
-    public static void dimension2sqlObj(SQLMeta meta, List<ChartViewFieldDTO> fields, List<CoreDatasetTableField> calcFields) {
+    public static void dimension2sqlObj(SQLMeta meta, List<ChartViewFieldDTO> fields, List<DatasetTableFieldDTO> calcFields) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;

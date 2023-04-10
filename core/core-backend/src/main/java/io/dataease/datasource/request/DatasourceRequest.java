@@ -1,9 +1,11 @@
 package io.dataease.datasource.request;
 
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import lombok.Data;
 import org.springframework.util.StringUtils;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +23,7 @@ public class DatasourceRequest {
     private boolean pageable = false;
     private boolean previewData = false;
     private boolean totalPageFlag;
+    private Map<String, DatasourceSchemaDTO> dsList;
 
     public DatasourceRequest() {
     }
