@@ -1920,6 +1920,8 @@ export default {
     jsonpath_info: '請輸入JsonPath',
     req_param: '請求參數',
     headers: '請求頭',
+    query_param: "QUERY參數",
+    query_info: "地址欄中跟在？後面的參數，如：updateapi？ id=112",
     key: '鍵',
     value: '值',
     data_path: '提取數據',
