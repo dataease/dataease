@@ -55,6 +55,14 @@ body {
   border-radius: 4px;
   padding: 8px 12px;
   cursor: pointer;
+  display: flex;
+
+  .label {
+    width: 85%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   &:not(.active):hover {
     background: rgba(31, 35, 41, 0.1);

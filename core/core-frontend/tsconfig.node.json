@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "jsx": "preserve",
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "Node",
@@ -10,6 +11,7 @@
     "noUnusedParameters": true,
     "experimentalDecorators": true,
     "noImplicitAny": false,
+    "noEmit": true,
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"]

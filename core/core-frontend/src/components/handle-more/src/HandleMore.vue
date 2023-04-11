@@ -7,13 +7,15 @@ defineProps({
     propTypes.shape({
       svgName: propTypes.string,
       label: propTypes.string,
-      command: propTypes.string
+      command: propTypes.string,
+      divided: propTypes.bool.def(false)
     })
   ),
   placement: {
     type: String as () => Placement,
     default: 'bottom-end'
-  }
+  },
+  iconName: propTypes.string.def('icon_more_outlined')
 })
 const handleCommand = (command: string | number | object) => {
   emit('handleCommand', command)
@@ -30,11 +32,16 @@ const emit = defineEmits(['handleCommand'])
     @command="handleCommand"
   >
     <el-icon class="menu-more">
-      <Icon name="icon_more_outlined"></Icon>
+      <Icon :name="iconName"></Icon>
     </el-icon>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item :command="ele.command" v-for="ele in menuList" :key="ele.label">
+        <el-dropdown-item
+          :divided="ele.divided"
+          :command="ele.command"
+          v-for="ele in menuList"
+          :key="ele.label"
+        >
           <el-icon v-if="ele.svgName">
             <Icon :name="ele.svgName"></Icon>
           </el-icon>
