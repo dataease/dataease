@@ -1,16 +1,15 @@
 package io.dataease.dataset.dao.auto.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-
 import java.io.Serializable;
 
 /**
  * <p>
- *
+ * 
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-24
+ * @since 2023-04-11
  */
 @TableName("core_dataset_group")
 public class CoreDatasetGroup implements Serializable {
@@ -78,6 +77,11 @@ public class CoreDatasetGroup implements Serializable {
      * 最后同步时间
      */
     private Long lastUpdateTime;
+
+    /**
+     * 关联sql
+     */
+    private String unionSql;
 
     public String getId() {
         return id;
@@ -183,22 +187,31 @@ public class CoreDatasetGroup implements Serializable {
         this.lastUpdateTime = lastUpdateTime;
     }
 
+    public String getUnionSql() {
+        return unionSql;
+    }
+
+    public void setUnionSql(String unionSql) {
+        this.unionSql = unionSql;
+    }
+
     @Override
     public String toString() {
         return "CoreDatasetGroup{" +
-                "id = " + id +
-                ", name = " + name +
-                ", pid = " + pid +
-                ", level = " + level +
-                ", nodeType = " + nodeType +
-                ", type = " + type +
-                ", mode = " + mode +
-                ", info = " + info +
-                ", createBy = " + createBy +
-                ", createTime = " + createTime +
-                ", qrtzInstance = " + qrtzInstance +
-                ", syncStatus = " + syncStatus +
-                ", lastUpdateTime = " + lastUpdateTime +
-                "}";
+        "id = " + id +
+        ", name = " + name +
+        ", pid = " + pid +
+        ", level = " + level +
+        ", nodeType = " + nodeType +
+        ", type = " + type +
+        ", mode = " + mode +
+        ", info = " + info +
+        ", createBy = " + createBy +
+        ", createTime = " + createTime +
+        ", qrtzInstance = " + qrtzInstance +
+        ", syncStatus = " + syncStatus +
+        ", lastUpdateTime = " + lastUpdateTime +
+        ", unionSql = " + unionSql +
+        "}";
     }
 }
