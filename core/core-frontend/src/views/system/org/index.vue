@@ -91,16 +91,23 @@ const canNotDelete = () => {
 
 const resourceExistMsg = () => {
   ElMessageBox.confirm(t('org.confirm_delete'), {
+    showPreButton: true,
     confirmButtonText: t('org.move_resource_first'),
     cancelButtonText: t('common.cancel'),
     showCancelButton: true,
-    // dangerouslyUseHTMLString: true,
-    // message: '<span>' + t('org.confirm_content') + '</span>',
+    preButtonText: t('org.give_up_resource'),
+    preButtonType: 'danger',
     tip: t('org.confirm_content'),
     confirmButtonType: 'primary',
     type: 'warning',
     autofocus: false,
-    showClose: false
+    showClose: false,
+    callback: (action: Action) => {
+      ElMessage({
+        message: `action: ${action}`,
+        type: 'success'
+      })
+    }
   })
 }
 

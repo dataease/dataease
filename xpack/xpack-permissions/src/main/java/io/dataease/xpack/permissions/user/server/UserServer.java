@@ -8,12 +8,11 @@ import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
 import io.dataease.api.permissions.user.vo.CurUserVO;
+import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.api.permissions.user.vo.UserItem;
 import io.dataease.request.BaseGridRequest;
-import io.dataease.utils.BeanUtils;
-import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
-import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
+
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
 import io.dataease.xpack.permissions.user.manage.UserPageManage;
 import jakarta.annotation.Resource;
@@ -27,8 +26,7 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserServer implements UserApi {
 
-    @Resource
-    private PerUserMapper perUserMapper;
+
 
     @Resource
     private UserExtMapper userExtMapper;
@@ -47,11 +45,8 @@ public class UserServer implements UserApi {
     }
 
     @Override
-    public UserGridVO queryById(Long id) {
-        PerUser perUser = perUserMapper.selectById(id);
-        UserGridVO userGridVO = new UserGridVO();
-        BeanUtils.copyBean(userGridVO, perUser);
-        return userGridVO;
+    public UserFormVO queryById(Long id) {
+        return userPageManage.queryForm(id);
     }
 
     @Override

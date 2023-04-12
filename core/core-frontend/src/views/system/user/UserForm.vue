@@ -1,39 +1,44 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
-
-interface UserAssist {
-  wecomId: string
-  dingtalkId: string
-  larkId: string
-}
+import { userCreateApi, userEditApi, roleOptionForUserApi, queryFormApi } from '@/api/user'
 interface UserForm {
   id?: string | number
-  username: string
-  password?: string
-  nickName: string
-  gender: '男' | '女'
+  account: string
+  name: string
   email?: string
-  enabled: 1 | 0
+  enable: boolean
   phone?: string | number
   phonePrefix: '+86'
   roleIds: number[]
-  sysUserAssist: UserAssist
 }
+
 const { toClipboard } = useClipboard()
 const { t } = useI18n()
 
 const dialogVisible = ref(false)
 const loading = ref(false)
-const isPluginLoaded = ref(true)
 const formType = ref('add')
 const defaultPWD = ref('DataEase123..')
 
 const createUserForm = ref<FormInstance>()
+const state = reactive({
+  roles: [],
+  form: reactive<UserForm>({
+    id: null,
+    account: null,
+    name: null,
+    email: null,
+    enable: true,
+    phone: null,
+    phonePrefix: '+86',
+    roleIds: null
+  })
+})
 const copyInfo = async () => {
   try {
     await toClipboard(defaultPWD.value)
@@ -53,10 +58,6 @@ const validateUsername = (_, value, callback) => {
     callback()
   }
 }
-const roles = Array.from({ length: 10 }).map((_, idx) => ({
-  name: `${idx + 1}`,
-  id: `${idx + 1}`
-}))
 
 const repeatValidator = (_, value, callback) => {
   if (value !== form.password) {
@@ -92,25 +93,8 @@ const phoneRegex = (_, value, callback) => {
   }
 }
 
-const form = reactive<UserForm>({
-  id: null,
-  username: null,
-  nickName: null,
-  gender: '男',
-  email: null,
-  enabled: 1,
-  phone: null,
-  phonePrefix: '+86',
-  roleIds: [2],
-  sysUserAssist: {
-    wecomId: null,
-    dingtalkId: null,
-    larkId: null
-  }
-})
-
 const rule = reactive<FormRules>({
-  username: [
+  account: [
     {
       required: true,
       message: t('user.id_mandatory'),
@@ -124,7 +108,7 @@ const rule = reactive<FormRules>({
     },
     { required: true, validator: validateUsername, trigger: 'blur' }
   ],
-  nickName: [
+  name: [
     {
       required: true,
       message: t('user.name_mandatory'),
@@ -157,54 +141,37 @@ const rule = reactive<FormRules>({
       message: t('user.email_format_is_incorrect'),
       trigger: 'blur'
     }
-  ],
-  password: [
-    {
-      required: true,
-      message: t('user.input_password'),
-      trigger: 'blur'
-    },
-    {
-      required: true,
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,30}$/,
-      message: t('member.password_format_is_incorrect'),
-      trigger: 'blur'
-    }
-  ],
-  confirmPassword: [
-    {
-      required: true,
-      message: t('user.input_password'),
-      trigger: 'blur'
-    },
-    { required: true, validator: repeatValidator, trigger: 'blur' }
-  ],
-  newPassword: [
-    {
-      required: true,
-      message: t('user.input_password'),
-      trigger: 'blur'
-    },
-    {
-      required: true,
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,30}$/,
-      message: t('member.password_format_is_incorrect'),
-      trigger: 'blur'
-    }
-  ],
-  gender: [],
-  enabled: [{ required: true, trigger: 'change' }]
+  ]
 })
 
 const init = () => {
+  formType.value = 'add'
   dialogVisible.value = true
 }
-
+const edit = uid => {
+  formType.value = 'modify'
+  dialogVisible.value = true
+  queryForm(uid)
+}
+const queryForm = uid => {
+  queryFormApi(uid).then(res => {
+    state.form = reactive<UserForm>(res.data)
+  })
+}
+const emits = defineEmits(['saved'])
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      console.log('submit!')
+      const param = { ...state.form }
+      const method = formType.value === 'modify' ? userEditApi : userCreateApi
+      method(param).then(res => {
+        if (!res.msg) {
+          ElMessage.success(t('common.save_success'))
+          emits('saved')
+          reset()
+        }
+      })
     } else {
       console.log('error submit!', fields)
     }
@@ -220,8 +187,21 @@ const resetForm = (formEl: FormInstance | undefined) => {
 const reset = () => {
   resetForm(createUserForm.value)
 }
+
+const queryRole = () => {
+  const param = {
+    uid: state.form.id
+  }
+  roleOptionForUserApi(param).then(res => {
+    state.roles = res.data
+  })
+}
 defineExpose({
-  init
+  init,
+  edit
+})
+onMounted(() => {
+  queryRole()
 })
 </script>
 
@@ -237,30 +217,33 @@ defineExpose({
       <el-icon>
         <Icon name="icon_warning_filled"></Icon>
       </el-icon>
-      <span class="pwd">{{ $t('commons.default_pwd') + '：' + defaultPWD }}</span>
+      <span class="pwd">{{ $t('user.default_pwd') + '：' + defaultPWD }}</span>
       <el-button @click="copyInfo" class="btn-text" type="text">
-        {{ $t('commons.copy') }}
+        {{ $t('common.copy') }}
       </el-button>
     </div>
     <el-form
       ref="createUserForm"
       require-asterisk-position="right"
-      :model="form"
+      :model="state.form"
       :rules="rule"
       label-width="80px"
       label-position="top"
     >
       <el-row :gutter="24">
         <el-col :span="12">
-          <el-form-item :label="$t('commons.nick_name')" prop="nickName">
-            <el-input v-model="form.nickName" :placeholder="$t('user.input_name')" />
+          <el-form-item :label="$t('user.name')" prop="name">
+            <el-input
+              v-model="state.form.name"
+              :placeholder="$t('common.please_input') + $t('user.name')"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="ID" prop="username">
+          <el-form-item :label="t('common.account')" prop="account">
             <el-input
-              v-model="form.username"
-              :placeholder="$t('user.input_id')"
+              v-model="state.form.account"
+              :placeholder="$t('common.please_input') + $t('common.account')"
               :disabled="formType !== 'add'"
             />
           </el-form-item>
@@ -268,22 +251,22 @@ defineExpose({
       </el-row>
       <el-row :gutter="24">
         <el-col :span="12">
-          <el-form-item :label="$t('commons.email')" prop="email">
-            <el-input v-model="form.email" :placeholder="$t('user.input_email')" />
+          <el-form-item :label="$t('common.email')" prop="email">
+            <el-input
+              v-model="state.form.email"
+              :placeholder="$t('common.please_input') + $t('common.email')"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item :label="$t('commons.mobile_phone_number')" prop="phone">
+          <el-form-item :label="$t('common.phone')" prop="phone">
             <el-input
-              v-model="form.phone"
-              :placeholder="$t('commons.mobile_phone')"
+              v-model="state.form.phone"
+              :placeholder="$t('common.please_input') + $t('common.phone')"
               class="input-with-select"
             >
               <template #prepend>
-                <el-select
-                  v-model="form.phonePrefix"
-                  :placeholder="$t('fu.search_bar.please_select')"
-                >
+                <el-select v-model="state.form.phonePrefix">
                   <el-option label="+86" value="+86" />
                 </el-select>
               </template>
@@ -291,43 +274,35 @@ defineExpose({
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row :gutter="24">
-        <el-col :span="12">
-          <el-form-item :label="$t('commons.gender')" prop="gender">
-            <el-select
-              v-model="form.gender"
-              class="de-form-gender-select"
-              :placeholder="$t('user.select_gender')"
-            >
-              <el-option :label="$t('commons.man')" value="男" />
-              <el-option :label="$t('commons.woman')" value="女" />
-              <el-option :label="$t('commons.keep_secret')" value="保密" />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
 
-      <el-form-item v-show="isPluginLoaded" :label="$t('commons.role')" prop="roleIds">
+      <el-form-item :label="$t('user.role')" prop="roleIds">
         <el-select
           ref="roleSelect"
-          v-model="form.roleIds"
+          v-model="state.form.roleIds"
           style="width: 100%"
           multiple
           filterable
-          :placeholder="$t('user.input_roles')"
+          :placeholder="$t('common.please_select') + $t('user.role')"
         >
-          <el-option v-for="item in roles" :key="item.name" :label="item.name" :value="item.id" />
+          <el-option
+            v-for="item in state.roles"
+            :key="item.name"
+            :label="item.name"
+            :value="item.id"
+          />
         </el-select>
       </el-form-item>
 
-      <el-form-item :label="$t('commons.status')" prop="enabled">
-        <el-switch v-model="form.enabled" :active-value="1" :inactive-value="0" />
+      <el-form-item :label="$t('user.state')" prop="enabled">
+        <el-switch v-model="state.form.enable" />
       </el-form-item>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="resetForm(createUserForm)">Cancel</el-button>
-        <el-button type="primary" @click="submitForm(createUserForm)"> Confirm </el-button>
+        <el-button @click="resetForm(createUserForm)">{{ t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="submitForm(createUserForm)">
+          {{ t('common.sure') }}
+        </el-button>
       </span>
     </template>
   </el-dialog>

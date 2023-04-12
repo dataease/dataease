@@ -4,10 +4,11 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class UserGridVO {
+public class UserFormVO implements Serializable {
 
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
@@ -16,11 +17,13 @@ public class UserGridVO {
 
     private String name;
 
-    private List<UserGridRoleItem> roleItems;
+    private List<String> roleIds;
 
     private String email;
 
     private Boolean enable;
 
-    private Long createTime;
+    private String phonePrefix;
+
+    private String phone;
 }

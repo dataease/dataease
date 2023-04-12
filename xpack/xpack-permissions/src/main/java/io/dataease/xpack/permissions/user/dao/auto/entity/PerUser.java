@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-31
+ * @since 2023-04-12
  */
 @TableName("per_user")
 public class PerUser implements Serializable {
@@ -56,7 +56,7 @@ public class PerUser implements Serializable {
     /**
      * 来源
      */
-    private Integer from;
+    private Integer origin;
 
     /**
      * 创建人ID
@@ -142,12 +142,12 @@ public class PerUser implements Serializable {
         this.enable = enable;
     }
 
-    public Integer getFrom() {
-        return from;
+    public Integer getOrigin() {
+        return origin;
     }
 
-    public void setFrom(Integer from) {
-        this.from = from;
+    public void setOrigin(Integer origin) {
+        this.origin = origin;
     }
 
     public Long getCreatorId() {
@@ -193,7 +193,7 @@ public class PerUser implements Serializable {
         ", phonePrefix = " + phonePrefix +
         ", phone = " + phone +
         ", enable = " + enable +
-        ", from = " + from +
+        ", origin = " + origin +
         ", creatorId = " + creatorId +
         ", createTime = " + createTime +
         ", language = " + language +
