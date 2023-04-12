@@ -30,6 +30,7 @@ declare module '@vue/runtime-core' {
     ElColorPicker: typeof import('element-plus-secondary/es')['ElColorPicker']
     ElDialog: typeof import('element-plus-secondary/es')['ElDialog']
     ElDivider: typeof import('element-plus-secondary/es')['ElDivider']
+    ElDrawer: typeof import('element-plus-secondary/es')['ElDrawer']
     ElDropdown: typeof import('element-plus-secondary/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus-secondary/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus-secondary/es')['ElDropdownMenu']

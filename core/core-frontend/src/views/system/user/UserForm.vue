@@ -323,8 +323,7 @@ onMounted(() => {
     font-size: 14.666666030883789px;
   }
 
-  .pwd,
-  .btn-text {
+  .pwd {
     font-family: PingFang SC;
     font-size: 14px;
     font-weight: 400;
@@ -335,12 +334,6 @@ onMounted(() => {
   .pwd {
     margin: 0 8px;
     color: #1f2329;
-  }
-
-  .btn-text {
-    padding: 0;
-    border: none;
-    height: 22px;
   }
 }
 .input-with-select {

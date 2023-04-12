@@ -1,11 +1,18 @@
 <script lang="ts" setup>
 import { ref, nextTick, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import CalcFieldEdit from './CalcFieldEdit.vue'
+import UnionEdit from './UnionEdit.vue'
+
 import DatasetUnion from './DatasetUnion.vue'
 interface DragEvent extends MouseEvent {
   dataTransfer: DataTransfer
 }
 const { t } = useI18n()
+
+const editCalcField = ref(true)
+
+const editUnion = ref(false)
 
 const datasetName = ref('新建数据源')
 const originName = ref('')
@@ -842,7 +849,32 @@ state.tableData = [
   }
 ]
 
-const dragstart = (e: DragEvent, ele: string) => {
+const closeEditUnion = () => {
+  console.log('123')
+  // this.editUnion = false
+  // // 添加关联的时候，如果关闭关联关系设置的界面，则删除子节点，同时向父级传递消息
+  // if (this.unionParam.type === 'add') {
+  //   this.dataset[0].childrenDs.pop()
+  //   this.calc({
+  //     type: 'delete',
+  //     grandParentAdd: true,
+  //     grandParentSub: true,
+  //     subCount: 0
+  //   })
+  // }
+}
+const confirmEditUnion = () => {
+  console.log('123')
+
+  // 校验关联关系与字段，必填
+  // if (this.checkUnion()) {
+  //   this.editUnion = false
+  // } else {
+  //   this.openMessageSuccess('dataset.union_error')
+  // }
+}
+
+const dragstart = (e: DragEvent, ele) => {
   offsetX.value = e.offsetX
   offsetY.value = e.offsetY
   e.dataTransfer.setData('text/plain', ele.name)
@@ -1013,9 +1045,29 @@ const handleClick = () => {
           </template>
         </div>
       </div>
-      <dataset-union :maskShow="maskShow" :offsetX="offsetX" :offsetY="offsetY"></dataset-union>
+      <div class="drag-right">
+        <dataset-union :maskShow="maskShow" :offsetX="offsetX" :offsetY="offsetY"></dataset-union>
+      </div>
     </div>
+    <el-drawer
+      :title="t('dataset.edit_union_relation')"
+      v-model="editUnion"
+      custom-class="union-dataset-drawer"
+      size="840px"
+      direction="rtl"
+    >
+      <union-edit />
+      <template #footer>
+        <el-button secondary @click="closeEditUnion()">{{ t('dataset.cancel') }} </el-button>
+        <el-button type="primary" @click="confirmEditUnion()"
+          >{{ t('dataset.confirm') }}
+        </el-button>
+      </template>
+    </el-drawer>
   </div>
+  <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
+    <calc-field-edit :param="{ id: 0 }" />
+  </el-dialog>
 </template>
 
 <style lang="less" scoped>
@@ -1129,6 +1181,10 @@ const handleClick = () => {
 
   .dataset-db {
     display: flex;
+    .drag-right {
+      flex: 1;
+      height: calc(100vh - 56px);
+    }
   }
 }
 </style>

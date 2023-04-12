@@ -160,6 +160,7 @@ const saveHandler = () => {
           :label="t('user.name')"
           width="150"
         />
+
         <el-table-column prop="roleItems" key="roleItems" :label="t('user.role')" width="200">
           <template #default="scope">
             <el-tooltip popper-class="de-table-tooltips" class="item" effect="dark" placement="top">
@@ -194,6 +195,7 @@ const saveHandler = () => {
               <div><Icon name="unlock" @click="unlock(scope.row)"></Icon></div>
               <div><Icon name="delete" @click="delHandler(scope.row)"></Icon></div>
             </div>
+
           </template>
         </el-table-column>
       </GridTable>

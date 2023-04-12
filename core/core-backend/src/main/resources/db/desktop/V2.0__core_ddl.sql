@@ -4,14 +4,14 @@
 DROP TABLE IF EXISTS `core_datasource`;
 CREATE TABLE `core_datasource`
 (
-    `id`            varchar(50)                                           NOT NULL DEFAULT '' COMMENT 'ID',
-    `name`          varchar(50)  NOT NULL COMMENT '名称',
-    `desc`          varchar(50)                                                    DEFAULT NULL COMMENT '描述',
-    `type`          varchar(50)                                           NOT NULL COMMENT '类型',
-    `configuration` longtext                                              NOT NULL COMMENT '详细信息',
-    `create_time`   bigint                                                NOT NULL COMMENT '创健时间',
-    `update_time`   bigint                                                NOT NULL COMMENT '更新时间',
-    `create_by`     varchar(50)                                                    DEFAULT NULL COMMENT '创建人ID',
+    `id`            varchar(50) NOT NULL DEFAULT '' COMMENT 'ID',
+    `name`          varchar(50) NOT NULL COMMENT '名称',
+    `desc`          varchar(50)          DEFAULT NULL COMMENT '描述',
+    `type`          varchar(50) NOT NULL COMMENT '类型',
+    `configuration` longtext    NOT NULL COMMENT '详细信息',
+    `create_time`   bigint      NOT NULL COMMENT '创健时间',
+    `update_time`   bigint      NOT NULL COMMENT '更新时间',
+    `create_by`     varchar(50)          DEFAULT NULL COMMENT '创建人ID',
     `status`        longtext COMMENT '状态',
     PRIMARY KEY (`id`)
 );
@@ -19,8 +19,8 @@ CREATE TABLE `core_datasource`
 DROP TABLE IF EXISTS `core_driver`;
 CREATE TABLE `core_driver`
 (
-    `id`           varchar(50)                                           NOT NULL COMMENT '主键',
-    `name`         varchar(50)  NOT NULL COMMENT '名称',
+    `id`           varchar(50) NOT NULL COMMENT '主键',
+    `name`         varchar(50) NOT NULL COMMENT '名称',
     `create_time`  bigint(13) NOT NULL COMMENT '创健时间',
     `type`         varchar(255) DEFAULT NULL COMMENT '数据源类型',
     `driver_class` varchar(255) DEFAULT NULL COMMENT '驱动类',
@@ -62,7 +62,7 @@ CREATE TABLE `core_menu`
     PRIMARY KEY (`id`)
 );
 
-    --
+--
 -- Dumping data for table `core_menu`
 --
 
@@ -102,6 +102,7 @@ CREATE TABLE `core_dataset_group`
     `qrtz_instance`    varchar(1024) DEFAULT NULL,
     `sync_status`      varchar(45)   DEFAULT NULL COMMENT '同步状态',
     `last_update_time` bigint        DEFAULT '0' COMMENT '最后同步时间',
+    `union_sql`        longtext COMMENT '关联sql',
     PRIMARY KEY (`id`)
 );
 
@@ -163,27 +164,27 @@ DROP TABLE IF EXISTS `data_visualization_info`;
 CREATE TABLE `data_visualization_info`
 (
     `id`                    varchar(50) NOT NULL,
-    `name`                  varchar(255)                   DEFAULT NULL COMMENT '名称',
-    `pid`                   varchar(50)                   DEFAULT NULL COMMENT '父id',
-    `org_id`                varchar(50)                   DEFAULT NULL COMMENT '所属组织id',
-    `level`                 int                                                           DEFAULT NULL COMMENT '层级',
-    `node_type`             varchar(255)                   DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
-    `type`                  varchar(50)   DEFAULT NULL COMMENT '类型',
-    `canvas_style_data`     longtext  COMMENT '样式数据',
-    `component_data`        longtext  COMMENT '组件数据',
-    `mobile_layout`         varchar(255)  DEFAULT NULL COMMENT '移动端布局',
-    `status`                int                                                           DEFAULT '1' COMMENT '状态 0-未发布 1-已发布',
-    `self_watermark_status` int                                                           DEFAULT '0' COMMENT '是否单独打开水印 0-关闭 1-开启',
-    `sort`                  int                                                           DEFAULT '0' COMMENT '排序',
-    `create_time`           bigint                                                        DEFAULT NULL COMMENT '创建时间',
-    `create_by`             varchar(255)               DEFAULT NULL COMMENT '创建人',
-    `update_time`           bigint                                                        DEFAULT NULL COMMENT '更新时间',
-    `update_by`             varchar(255)                  DEFAULT NULL COMMENT '更新人',
-    `remark`                varchar(255)                  DEFAULT NULL COMMENT '备注',
-    `source`                varchar(255)                  DEFAULT NULL COMMENT '数据来源',
+    `name`                  varchar(255) DEFAULT NULL COMMENT '名称',
+    `pid`                   varchar(50)  DEFAULT NULL COMMENT '父id',
+    `org_id`                varchar(50)  DEFAULT NULL COMMENT '所属组织id',
+    `level`                 int          DEFAULT NULL COMMENT '层级',
+    `node_type`             varchar(255) DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
+    `type`                  varchar(50)  DEFAULT NULL COMMENT '类型',
+    `canvas_style_data`     longtext COMMENT '样式数据',
+    `component_data`        longtext COMMENT '组件数据',
+    `mobile_layout`         varchar(255) DEFAULT NULL COMMENT '移动端布局',
+    `status`                int          DEFAULT '1' COMMENT '状态 0-未发布 1-已发布',
+    `self_watermark_status` int          DEFAULT '0' COMMENT '是否单独打开水印 0-关闭 1-开启',
+    `sort`                  int          DEFAULT '0' COMMENT '排序',
+    `create_time`           bigint       DEFAULT NULL COMMENT '创建时间',
+    `create_by`             varchar(255) DEFAULT NULL COMMENT '创建人',
+    `update_time`           bigint       DEFAULT NULL COMMENT '更新时间',
+    `update_by`             varchar(255) DEFAULT NULL COMMENT '更新人',
+    `remark`                varchar(255) DEFAULT NULL COMMENT '备注',
+    `source`                varchar(255) DEFAULT NULL COMMENT '数据来源',
     `delete_flag`           tinyint(1) DEFAULT '0' COMMENT '删除标志',
-    `delete_time`           bigint                                                        DEFAULT NULL COMMENT '删除时间',
-    `delete_by`             varchar(255)              DEFAULT NULL COMMENT '删除人',
+    `delete_time`           bigint       DEFAULT NULL COMMENT '删除时间',
+    `delete_by`             varchar(255) DEFAULT NULL COMMENT '删除人',
     PRIMARY KEY (`id`)
 );
 

@@ -190,7 +190,7 @@ const saveCallBack = () => {
 
         <el-table-column :label="t('common.operate')" fixed="right" width="186">
           <template #default="scope">
-            <el-button @click="edit(scope.row)" type="text">{{ t('common.edit') }}</el-button>
+            <el-button @click="edit(scope.row)" text>{{ t('common.edit') }}</el-button>
 
             <template v-if="scope.row.id === '1'">
               <el-tooltip
@@ -200,14 +200,14 @@ const saveCallBack = () => {
                 placement="left"
               >
                 <div class="btn-outer">
-                  <el-button disabled type="text">{{ t('common.delete') }}</el-button>
+                  <el-button disabled text>{{ t('common.delete') }}</el-button>
                 </div>
               </el-tooltip>
             </template>
-            <el-button v-else @click="deptIsEmpty(scope.row)" type="text">{{
+            <el-button v-else @click="deptIsEmpty(scope.row)" text>{{
               t('common.delete')
             }}</el-button>
-            <el-button @click="addOrg(scope.row)" type="text">{{ t('org.add_sub') }}</el-button>
+            <el-button @click="addOrg(scope.row)" text>{{ t('org.add_sub') }}</el-button>
           </template>
         </el-table-column>
       </el-table>

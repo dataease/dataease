@@ -49,6 +49,12 @@ body {
   }
 }
 
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 
 .list-item_primary {
   height: 40px;
@@ -59,9 +65,7 @@ body {
 
   .label {
     width: 85%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    .ellipsis
   }
 
   &:not(.active):hover {

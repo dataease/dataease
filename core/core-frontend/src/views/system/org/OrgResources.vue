@@ -456,7 +456,7 @@ const buildTree = arrs => {
 
       <el-table-column :label="t('table.actions')" fixed="right" width="186">
         <template #default="scope">
-          <el-button @click="edit(scope.row)" type="text">{{ t('commons.edit') }}</el-button>
+          <el-button @click="edit(scope.row)" text>{{ t('commons.edit') }}</el-button>
         </template>
       </el-table-column>
     </el-table>
