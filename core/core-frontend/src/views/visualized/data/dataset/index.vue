@@ -229,17 +229,19 @@ const defaultProps = {
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node">
-            <span>{{ node.label }}</span>
-            <handle-more
-              @handle-command="cmd => handleDatasetTree(cmd, data)"
-              :menu-list="state.datasetTypeList"
-              icon-name="icon_add_outlined"
-              placement="bottom-start"
-            ></handle-more>
-            <handle-more
-              @handle-command="cmd => handleDatasetTree(cmd, data)"
-              :menu-list="state.menuList"
-            ></handle-more>
+            <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+            <div>
+              <handle-more
+                @handle-command="cmd => handleDatasetTree(cmd, data)"
+                :menu-list="state.datasetTypeList"
+                icon-name="icon_add_outlined"
+                placement="bottom-start"
+              ></handle-more>
+              <handle-more
+                @handle-command="cmd => handleDatasetTree(cmd, data)"
+                :menu-list="state.menuList"
+              ></handle-more>
+            </div>
           </span>
         </template>
       </el-tree>
@@ -404,5 +406,13 @@ const defaultProps = {
   align-items: center;
   justify-content: space-between;
   padding-right: 8px;
+  box-sizing: content-box;
+
+  .label-tooltip {
+    width: 60%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 }
 </style>

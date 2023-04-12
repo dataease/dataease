@@ -165,7 +165,7 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
 const dfsNodeShadow = (arr, label, position) => {
   return arr.some((ele, index) => {
     if (ele.label === label) {
-      const flag = label + '_' + position
+      const flag = label + '_&&' + position
       if (ele.isShadow && state.visualNode.flag === flag) return true
       state.visualNode = {
         label: '',
@@ -231,7 +231,7 @@ const dragover_handler = ev => {
     state.visualNode = {
       label: '',
       isShadow: true,
-      flag: '_'
+      flag: '_&&'
     }
 
     state.nodeList[0].children = [state.visualNode]
@@ -260,7 +260,7 @@ const dragover_handler = ev => {
           bottom: toY
         }
       ),
-      isLeaf || state.visualNode?.flag === label + '_r'
+      isLeaf || state.visualNode?.flag === label + '_&&r'
         ? elementInteractArea(
             {
               left: dragOffsetX.value,
@@ -471,11 +471,12 @@ state.leftList = Array(15)
 }
 
 .drag-mask {
-  flex: 1;
   background: #f5f6f7;
   overflow-x: auto;
   border: 1px solid #ccc;
   position: relative;
+  width: 100%;
+  height: 50%;
 }
 
 .mask-dataset {
