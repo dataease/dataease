@@ -191,7 +191,7 @@
         @click="batchOption"
       ><span
         class="icon-font-margin"
-      >{{ $t('panel.batch_opt') }}</span></span>
+      >{{ batchOptStatus?$t('panel.cancel_batch_opt'):$t('panel.batch_opt') }}</span></span>
       <span style="float: right;margin-right: 24px">
         <el-button
           size="mini"

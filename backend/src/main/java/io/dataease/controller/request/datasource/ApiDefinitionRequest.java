@@ -9,6 +9,7 @@ import java.util.Map;
 @Data
 public class ApiDefinitionRequest {
     private List<Map<String, String>> headers = new ArrayList<>();
+    private List<Map<String, String>> arguments = new ArrayList<>();
     private JSONObject body = new JSONObject();
     private AuthManager authManager = new AuthManager();
 

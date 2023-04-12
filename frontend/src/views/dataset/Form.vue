@@ -43,6 +43,7 @@
         <deBtn
           :disabled="['db', 'excel', 'api'].includes(datasetType) && !tableNum"
           type="primary"
+          :loading="loading"
           @click="datasetSave"
         >{{
           $t('commons.save')
@@ -184,6 +185,7 @@ export default {
           return
         }
       }
+      this.loading = true
       this.$refs.addDataset.save()
     },
     handleClick() {

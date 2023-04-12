@@ -17,6 +17,8 @@ module.exports = {
       'echarts',
       '@antv/g2plot',
       '@antv/l7-maps',
+      '@antv/l7-core',
+      '@antv/l7-utils',
       '@antv/s2',
       'lodash',
     ],

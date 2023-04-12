@@ -254,8 +254,8 @@ export default {
         }
       }
     },
-    exportViewImg() {
-      exportImg(this.chart.name)
+    exportViewImg(callback) {
+      exportImg(this.chart.name,callback)
     },
     setLastMapChart(data) {
       this.lastMapChart = JSON.parse(JSON.stringify(data))
