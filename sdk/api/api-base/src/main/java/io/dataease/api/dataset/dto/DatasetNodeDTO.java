@@ -69,4 +69,9 @@ public class DatasetNodeDTO implements Serializable {
      */
     private Long lastUpdateTime;
 
+    /**
+     * 关联sql
+     */
+    private String unionSql;
+
 }

@@ -104,6 +104,7 @@ CREATE TABLE `core_dataset_group`
     `qrtz_instance`    varchar(1024) DEFAULT NULL,
     `sync_status`      varchar(45)   DEFAULT NULL COMMENT '同步状态',
     `last_update_time` bigint        DEFAULT '0' COMMENT '最后同步时间',
+    `union_sql`        longtext COMMENT '关联sql',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
