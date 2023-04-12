@@ -590,7 +590,7 @@ const insertParamToCodeMirror = (value: string) => {
   overflow: auto;
   margin-top: 4px;
 }
-.function-pop ::v-deep .el-popover {
+.function-pop :deep(.el-popover) {
   padding: 6px !important;
 }
 .pop-title {

@@ -124,7 +124,7 @@ const clearFilter = (index?: number) => {
         />
         <el-table-column key="_operation" :label="$t('commons.operating')" fixed="right">
           <template>
-            <el-button type="text">{{ t('commons.unlock') }}</el-button>
+            <el-button text>{{ t('commons.unlock') }}</el-button>
           </template>
         </el-table-column>
       </GridTable>

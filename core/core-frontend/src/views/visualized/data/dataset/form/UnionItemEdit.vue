@@ -166,10 +166,13 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
                 unionParam.node.unionToParent.unionFields &&
                 unionParam.node.unionToParent.unionFields.length === 1
               "
-              type="text"
-              icon="el-icon-delete"
+              text
               @click="removeUnionItem(index)"
-            />
+            >
+              <template #icon>
+                <Icon name="icon_delete-trash_outlined"></Icon>
+              </template>
+            </el-button>
           </span>
         </div>
       </div>
@@ -208,7 +211,7 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
 }
 .union-selector {
   width: 180px;
-  ::v-deep.el-input__inner {
+  :deep(.el-input__inner) {
     padding-left: 32px;
   }
 }
@@ -267,7 +270,7 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
 .union-body-item .column-last {
   width: 40px;
   text-align: center;
-  ::v-deep i {
+  :deep(i) {
     font-size: 16px;
     color: var(--deTextSecondary, #646a73);
   }

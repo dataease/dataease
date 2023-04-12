@@ -238,7 +238,7 @@ defineExpose({
         <Icon name="icon_warning_filled"></Icon>
       </el-icon>
       <span class="pwd">{{ $t('commons.default_pwd') + '：' + defaultPWD }}</span>
-      <el-button @click="copyInfo" class="btn-text" type="text">
+      <el-button @click="copyInfo" text>
         {{ $t('commons.copy') }}
       </el-button>
     </div>
@@ -348,8 +348,7 @@ defineExpose({
     font-size: 14.666666030883789px;
   }
 
-  .pwd,
-  .btn-text {
+  .pwd {
     font-family: PingFang SC;
     font-size: 14px;
     font-weight: 400;
@@ -360,12 +359,6 @@ defineExpose({
   .pwd {
     margin: 0 8px;
     color: #1f2329;
-  }
-
-  .btn-text {
-    padding: 0;
-    border: none;
-    height: 22px;
   }
 }
 .input-with-select {
