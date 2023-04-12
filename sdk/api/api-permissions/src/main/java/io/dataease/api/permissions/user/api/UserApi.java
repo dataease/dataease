@@ -5,6 +5,7 @@ import io.dataease.api.permissions.role.dto.UserRequest;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
 import io.dataease.api.permissions.user.vo.CurUserVO;
+import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.api.permissions.user.vo.UserItem;
 import io.dataease.auth.DeApiPath;
@@ -27,7 +28,7 @@ public interface UserApi {
 
     @DePermit("#p0+':read'")
     @GetMapping("/queryById/{id}")
-    UserGridVO queryById(@PathVariable("id") Long id);
+    UserFormVO queryById(@PathVariable("id") Long id);
 
 
     @DePermit("read")

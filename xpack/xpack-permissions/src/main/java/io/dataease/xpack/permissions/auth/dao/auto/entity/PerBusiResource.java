@@ -1,6 +1,5 @@
-package io.dataease.xpack.permissions.user.dao.auto.entity;
+package io.dataease.xpack.permissions.auth.dao.auto.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 
@@ -10,15 +9,15 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-31
+ * @since 2023-04-11
  */
-@TableName("per_role")
-public class PerRole implements Serializable {
+@TableName("per_busi_resource")
+public class PerBusiResource implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 角色ID
+     * 资源ID
      */
     private Long id;
 
@@ -28,30 +27,24 @@ public class PerRole implements Serializable {
     private String name;
 
     /**
-     * 描述
+     * 类型ID
      */
-    @TableField("`desc`")
-    private String desc;
+    private Long rtId;
 
     /**
-     * 级别1系统级2组织级
-     */
-    private Integer level;
-
-    /**
-     * 是否只读
-     */
-    private Boolean readonly;
-
-    /**
-     * 所属组织
+     * 所属组织ID
      */
     private Long orgId;
 
     /**
-     * 继承角色ID
+     * 上级资源ID
      */
     private Long pid;
+
+    /**
+     * 寻根路径
+     */
+    private String rootWay;
 
     public Long getId() {
         return id;
@@ -69,28 +62,12 @@ public class PerRole implements Serializable {
         this.name = name;
     }
 
-    public String getDesc() {
-        return desc;
+    public Long getRtId() {
+        return rtId;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public Boolean getReadonly() {
-        return readonly;
-    }
-
-    public void setReadonly(Boolean readonly) {
-        this.readonly = readonly;
+    public void setRtId(Long rtId) {
+        this.rtId = rtId;
     }
 
     public Long getOrgId() {
@@ -109,16 +86,23 @@ public class PerRole implements Serializable {
         this.pid = pid;
     }
 
+    public String getRootWay() {
+        return rootWay;
+    }
+
+    public void setRootWay(String rootWay) {
+        this.rootWay = rootWay;
+    }
+
     @Override
     public String toString() {
-        return "PerRole{" +
+        return "PerBusiResource{" +
         "id = " + id +
         ", name = " + name +
-        ", desc = " + desc +
-        ", level = " + level +
-        ", readonly = " + readonly +
+        ", rtId = " + rtId +
         ", orgId = " + orgId +
         ", pid = " + pid +
+        ", rootWay = " + rootWay +
         "}";
     }
 }
