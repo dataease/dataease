@@ -27,7 +27,7 @@ import { ApplicationContext } from '@/utils/ApplicationContext'
 import { timeSection } from '@/utils'
 import bus from '@/utils/bus'
 import customInput from '@/components/widget/deWidget/customInput'
-
+import { mapState } from 'vuex'
 export default {
   mixins: [customInput],
   props: {
@@ -59,7 +59,8 @@ export default {
       operator: 'between',
       values: null,
       onFocus: false,
-      show: true
+      show: true,
+      timer: null
     }
   },
   computed: {
@@ -126,10 +127,19 @@ export default {
         return ['00:00:00', '23:59:59']
       }
       return null
-    }
+    },
+    ...mapState([
+      'canvasStyleData'
+    ])
 
   },
   watch: {
+    canvasStyleData: {
+      handler(newVal, oldVla) {
+        this.canvasStyleDataInit()
+      },
+      deep: true
+    },
     'viewIds': function(value, old) {
       if (typeof value === 'undefined' || value === old) return
       this.setCondition()
@@ -163,18 +173,8 @@ export default {
     }
   },
   created() {
-    if (this.element.options.attrs.default && this.element.options.attrs.default.isDynamic) {
-      if (this.element.options.attrs.default) {
-        const widget = ApplicationContext.getService(this.element.serviceName)
-        this.values = widget.dynamicDateFormNow(this.element)
-        this.dateChange(this.values)
-      }
-      return
-    }
-    if (this.element.options.value) {
-      this.values = this.fillValueDerfault()
-      this.dateChange(this.values)
-    }
+    this.loadInit()
+    this.canvasStyleDataInit()
   },
   mounted() {
     bus.$on('onScroll', this.onScroll)
@@ -187,6 +187,38 @@ export default {
     bus.$off('reset-default-value', this.resetDefaultValue)
   },
   methods: {
+    loadInit() {
+      if (this.element.options.attrs.default && this.element.options.attrs.default.isDynamic) {
+        if (this.element.options.attrs.default) {
+          const widget = ApplicationContext.getService(this.element.serviceName)
+          this.values = widget.dynamicDateFormNow(this.element)
+          this.dateChange(this.values)
+        }
+        return
+      }
+      if (this.element.options.value) {
+        this.values = this.fillValueDerfault()
+        this.dateChange(this.values)
+      }
+    },
+    canvasStyleDataInit() {
+      if (this.inDraw && this.canvasStyleData.refreshViewEnable && this.element.options.attrs.default && this.element.options.attrs.default.isDynamic) {
+        this.searchCount = 0
+        this.timer && clearInterval(this.timer)
+        let refreshTime = 300000
+        if (this.canvasStyleData.refreshTime && this.canvasStyleData.refreshTime > 0) {
+          if (this.canvasStyleData.refreshUnit === 'second') {
+            refreshTime = this.canvasStyleData.refreshTime * 1000
+          } else {
+            refreshTime = this.canvasStyleData.refreshTime * 60000
+          }
+        }
+        this.timer = setInterval(() => {
+          this.loadInit()
+          this.searchCount++
+        }, refreshTime)
+      }
+    },
     clearHandler() {
       this.values = null
     },
