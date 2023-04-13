@@ -144,7 +144,7 @@
           v-if="showChartInfoType==='enlarge' && hasDataPermission('export',panelInfo.privileges)&& showChartInfo && showChartInfo.type !== 'symbol-map'"
           class="el-icon-picture-outline"
           size="mini"
-          :disabled ="imageDownloading"
+          :disabled="imageDownloading"
           @click="exportViewImg"
         >
           {{ $t('chart.export_img') }}
@@ -152,7 +152,7 @@
         <el-button
           v-if="showChartInfoType==='details' && hasDataPermission('export',panelInfo.privileges)"
           size="mini"
-          :disabled="$store.getters.loadingMap[$store.getters.currentPath]"
+          :disabled="$store.getters.loadingMap[$store.getters.currentPath] || dialogLoading"
           @click="exportExcel"
         >
           <svg-icon
@@ -308,6 +308,7 @@ export default {
   },
   data() {
     return {
+      dialogLoading: false,
       imageDownloading: false,
       innerRefreshTimer: null,
       mobileChartDetailsVisible: false,
@@ -601,7 +602,10 @@ export default {
       }
     },
     exportExcel() {
-      this.$refs['userViewDialog'].exportExcel()
+      this.dialogLoading = true
+      this.$refs['userViewDialog'].exportExcel(() => {
+        this.dialogLoading = false
+      })
     },
     exportViewImg() {
       this.imageDownloading = true
