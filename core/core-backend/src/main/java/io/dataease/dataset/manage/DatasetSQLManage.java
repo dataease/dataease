@@ -38,7 +38,7 @@ public class DatasetSQLManage {
     @Resource
     private CoreDatasourceMapper coreDatasourceMapper;
 
-    // todo 编辑模式下使用
+    // 编辑模式下使用
     public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO) {
         Map<String, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         List<UnionDTO> union = dataTableInfoDTO.getUnion();
@@ -99,19 +99,21 @@ public class DatasetSQLManage {
                 SQLObj parentSQLObj = unionParamDTO.getParentSQLObj();
                 SQLObj currentSQLObj = unionParamDTO.getCurrentSQLObj();
 
+                String ts = "";
+                if (ObjectUtils.isNotEmpty(currentSQLObj.getTableSchema())) {
+                    ts = currentSQLObj.getTableSchema() + ".";
+                }
                 // build join
                 join.append(" ").append(joinType).append(" ")
-                        .append(dsMap.get(currentDs.getDatasourceId()).getSchemaAlias())
-                        .append(".").append(currentSQLObj.getTableName())
+                        .append(ts)
+                        .append(currentSQLObj.getTableName())
                         .append(" ").append(currentSQLObj.getTableAlias()).append(" ")
                         .append(" ON ");
                 for (int i = 0; i < unionParamDTO.getUnionFields().size(); i++) {
                     UnionItemDTO unionItemDTO = unionParamDTO.getUnionFields().get(i);
                     // 通过field id取得field详情，并且以第一组为准，寻找dataset table
-                    CoreDatasetTableField parentField = datasetTableFieldManage
-                            .selectById(unionItemDTO.getParentField().getId());
-                    CoreDatasetTableField currentField = datasetTableFieldManage
-                            .selectById(unionItemDTO.getCurrentField().getId());
+                    DatasetTableFieldDTO parentField = unionItemDTO.getParentField();
+                    DatasetTableFieldDTO currentField = unionItemDTO.getCurrentField();
 
                     join.append(parentSQLObj.getTableAlias()).append(".")
                             .append(parentField.getOriginName())
@@ -350,7 +352,7 @@ public class DatasetSQLManage {
         if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_DB)) {
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();
         } else if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_SQL)) {
-            tableObj = SQLObj.builder().tableName("(" + infoDTO.getSql() + ")").tableAlias(tableAlias).build();
+            tableObj = SQLObj.builder().tableSchema("").tableName("(" + infoDTO.getSql() + ")").tableAlias(tableAlias).build();
         } else {
             // todo excel,api
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();
