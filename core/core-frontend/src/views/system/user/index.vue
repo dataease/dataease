@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElTabs, ElTabPane } from 'element-plus-secondary'
 import { columnNames } from './options'
 import { Icon } from '@/components/icon-custom'
@@ -11,7 +11,8 @@ import RoleManage from './RoleManage.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import ColumnList from '@/components/column-list/src/ColumnList.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
-
+import { userPageApi, userDelApi } from '@/api/user'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 // import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 const { t } = useI18n()
 const activeName = ref('user')
@@ -43,15 +44,7 @@ const state = reactive({
   }
 })
 
-state.userList = Array(20)
-  .fill(1)
-  .map((_, index) => ({
-    username: 'test' + index,
-    nickName: index + 'nickName'
-  }))
-
-state.paginationConfig.total = state.userList.length
-state.filterTexts = ['12312312', '1231231', '123123']
+state.filterTexts = []
 
 const columnChange = (columns: string[]) => {
   state.columnList = columns
@@ -64,12 +57,56 @@ const clearFilter = (index?: number) => {
     state.filterTexts.splice(index, 1)
   }
 }
+
+const search = () => {
+  userPageApi(state.paginationConfig.currentPage, state.paginationConfig.pageSize, {}).then(res => {
+    state.userList = res.data.records
+    state.paginationConfig.total = res.data.total
+  })
+}
+const filterRoles = cellValue => {
+  const roleNames = cellValue.map(ele => ele?.name)
+  return roleNames.length ? roleNames.join() : '-'
+}
+const changeSwitch = row => {
+  console.log(row.id)
+}
+const timestampFormatDate = value => {
+  if (!value) {
+    return '-'
+  }
+  return new Date(value).format()
+}
+const edit = row => {
+  userFormDialog.value.edit(row.id)
+}
+const unlock = row => {
+  console.log(row.id)
+}
+const delHandler = row => {
+  ElMessageBox.confirm(t('user.confirm_delete'), {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  }).then(() => {
+    userDelApi(row.id).then(() => {
+      ElMessage.success(t('common.delete_success'))
+      search()
+    })
+  })
+}
+onMounted(() => {
+  search()
+})
+const saveHandler = () => {
+  search()
+}
 </script>
 <template>
   <el-tabs v-model="activeName" @tab-click="handleClick">
     <el-tab-pane :label="t('system.user')" name="user"></el-tab-pane>
     <el-tab-pane :label="t('system.role')" name="role"></el-tab-pane>
-    <!-- <el-tab-pane label="test" name="test"></el-tab-pane> -->
   </el-tabs>
   <div v-if="activeName === 'user'" class="user-table de-search-table">
     <el-row class="user-table__filter top-operate">
@@ -113,18 +150,52 @@ const clearFilter = (index?: number) => {
         :pagination="state.paginationConfig"
         :table-data="state.userList"
       >
-        <el-table-column type="selection" width="55" />
-        <el-table-column prop="username" key="username" label="ID" />
+        <el-table-column type="selection" width="30" />
+        <el-table-column prop="account" key="account" label="ID" width="100" />
         <el-table-column
-          key="nickName"
+          key="name"
           show-overflow-tooltip
-          prop="nickName"
+          prop="name"
           sortable="custom"
-          :label="t('commons.nick_name')"
+          :label="t('user.name')"
+          width="150"
         />
-        <el-table-column key="_operation" :label="$t('commons.operating')" fixed="right">
-          <template>
-            <el-button text>{{ t('commons.unlock') }}</el-button>
+
+        <el-table-column prop="roleItems" key="roleItems" :label="t('user.role')" width="200">
+          <template #default="scope">
+            <el-tooltip popper-class="de-table-tooltips" class="item" effect="dark" placement="top">
+              <template #content>
+                <div v-html="filterRoles(scope.row.roleItems)" />
+              </template>
+
+              <div class="de-one-line">{{ filterRoles(scope.row.roleItems) }}</div>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column prop="email" key="email" :label="t('common.email')" width="200" />
+
+        <el-table-column prop="enable" key="enable" :label="t('user.state')" width="80">
+          <template #default="scope">
+            <el-switch
+              v-model="scope.row.enable"
+              inactive-color="#DCDFE6"
+              @change="changeSwitch(scope.row)"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column prop="createTime" :label="t('common.create_time')" width="170">
+          <template v-slot:default="scope">
+            <span>{{ timestampFormatDate(scope.row.createTime) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column key="_operation" :label="$t('common.operate')">
+          <template #default="scope">
+            <div class="operate-icon-container">
+              <div><Icon name="edit" @click="edit(scope.row)"></Icon></div>
+              <div><Icon name="unlock" @click="unlock(scope.row)"></Icon></div>
+              <div><Icon name="delete" @click="delHandler(scope.row)"></Icon></div>
+            </div>
+
           </template>
         </el-table-column>
       </GridTable>
@@ -138,7 +209,7 @@ const clearFilter = (index?: number) => {
     <dataset-union></dataset-union>
   </div> -->
   <drawer-main ref="drawerMainRef"></drawer-main>
-  <user-form ref="userFormDialog"></user-form>
+  <user-form @saved="saveHandler" ref="userFormDialog"></user-form>
 </template>
 
 <style lang="less" scoped>
@@ -161,5 +232,28 @@ const clearFilter = (index?: number) => {
 
 .role-content {
   padding: 0;
+}
+.operate-icon-container {
+  font-size: 16px;
+  display: flex;
+  div {
+    width: 24px;
+    height: 20px;
+    padding: 0 3px;
+    svg {
+      width: 16px;
+      height: 16px;
+      color: var(--el-text-color-regular);
+      background-color: var(--el-color-white);
+    }
+  }
+
+  div:hover {
+    cursor: pointer;
+    svg {
+      color: var(--el-color-primary) !important;
+      background: var(--el-color-primary-light-7) !important;
+    }
+  }
 }
 </style>

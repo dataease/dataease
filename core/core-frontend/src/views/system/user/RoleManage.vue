@@ -1,102 +1,133 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted, h } from 'vue'
 import { Icon } from '@/components/icon-custom'
-const nickName = ref('')
+import { searchRoleApi, userOptionForRoleApi, userSelectedForRoleApi, roleDelApi } from '@/api/user'
+import RoleForm from './RoleForm.vue'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+const roleKeyword = ref('')
+const optionKeyword = ref('')
+const selectedKeyword = ref('')
+const roleFormRef = ref(null)
+const { t } = useI18n()
 interface Tree {
-  label: string
+  id: string
+  name: string
+  readonly: boolean
   children?: Tree[]
+  disabled: boolean
 }
 
 const handleNodeClick = (data: Tree) => {
-  console.log(data)
+  optionSearch(data.id)
+  selectedSearch(data.id)
 }
 
 const checkList = ref(['test0'])
 
 const state = reactive({
-  addedUserList: []
+  optionUserList: [],
+  addedUserList: [],
+  roleData: []
 })
-state.addedUserList = Array(40)
-  .fill(1)
-  .map((_, index) => ({
-    username: 'test' + index,
-    nickName: index + 'nickName'
-  }))
 
-const data: Tree[] = [
+state.roleData = [
   {
-    label: 'Level one 1',
-    children: [
-      {
-        label: 'Level two 1-1',
-        children: [
-          {
-            label: 'Level three 1-1-1'
-          }
-        ]
-      }
-    ]
+    id: 'admin',
+    name: '组织管理员',
+    children: null,
+    disabled: true
   },
   {
-    label: 'Level one 2',
-    children: [
-      {
-        label: 'Level two 2-1',
-        children: [
-          {
-            label: 'Level three 2-1-1'
-          }
-        ]
-      },
-      {
-        label: 'Level two 2-2',
-        children: [
-          {
-            label: 'Level three 2-2-1'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    label: 'Level one 3',
-    children: [
-      {
-        label: 'Level two 3-1',
-        children: [
-          {
-            label: 'Level three 3-1-1'
-          }
-        ]
-      },
-      {
-        label: 'Level two 3-2',
-        children: [
-          {
-            label: 'Level three 3-2-1'
-          },
-          {
-            label: 'Level three 3-2-2'
-          },
-          {
-            label: 'Level three 3-2-3'
-          },
-          {
-            label: 'Level three 3-2-4'
-          },
-          {
-            label: 'Level three 3-2-5'
-          }
-        ]
-      }
-    ]
+    id: 'readonly',
+    name: '普通用户',
+    children: null,
+    disabled: true
   }
 ]
 
+const optionSearch = (rid?: string) => {
+  const param = { rid, keyword: optionKeyword.value }
+  rid &&
+    userOptionForRoleApi(param).then(res => {
+      state.optionUserList = res.data
+    })
+}
+
+const selectedSearch = (rid?: string) => {
+  const param = { rid, keyword: selectedKeyword.value }
+  rid &&
+    userSelectedForRoleApi(param).then(res => {
+      state.addedUserList = res.data
+    })
+}
+
+const roleSearch = () => {
+  searchRoleApi(roleKeyword.value).then(res => {
+    const roles = res.data
+    const map = groupBy(roles)
+    state.roleData[0].children = map.get(false)
+    state.roleData[1].children = map.get(true)
+  })
+}
+
+const groupBy = (list: Tree[]) => {
+  const map = new Map()
+  list.forEach(item => {
+    const readonly = item.readonly
+    let arr = map.get(readonly)
+    if (!arr) {
+      arr = []
+    }
+    item.disabled = false
+    arr.push(item)
+    map.set(readonly, arr)
+  })
+  return map
+}
+
 const defaultProps = {
   children: 'children',
-  label: 'label'
+  label: 'name',
+  value: 'id'
 }
+const roleAdd = () => {
+  roleFormRef.value.init()
+}
+
+const roleEdit = row => {
+  roleFormRef.value.edit(row.id)
+}
+
+const delHandler = row => {
+  ElMessageBox.confirm(t('role.confirm_delete'), {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    dangerouslyUseHTMLString: true,
+    message:
+      '<strong style="font-size: 16px;">' +
+      t('role.confirm_delete') +
+      '</strong></br>' +
+      t('role.delete_tips'),
+    showClose: false
+  }).then(() => {
+    roleDelApi(row.id).then(() => {
+      ElMessage.success(t('common.delete_success'))
+      roleSearch()
+    })
+  })
+
+  console.log(row.id)
+}
+
+const roleSaved = () => {
+  roleSearch()
+}
+
+onMounted(() => {
+  roleSearch()
+})
 </script>
 
 <template>
@@ -104,10 +135,10 @@ const defaultProps = {
     <div class="role-list role-height">
       <div class="title">
         角色列表
-        <el-button type="primary">
+        <el-button type="primary" @click="roleAdd">
           <template #icon> <Icon name="icon_add_outlined"></Icon> </template>添加角色
         </el-button>
-        <el-input class="m24 w100" v-model="nickName" clearable>
+        <el-input class="m24 w100" v-model="roleKeyword" clearable>
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -116,12 +147,22 @@ const defaultProps = {
         </el-input>
       </div>
 
-      <el-tree menu :data="data" :props="defaultProps" @node-click="handleNodeClick" />
+      <el-tree menu :data="state.roleData" :props="defaultProps" @node-click="handleNodeClick">
+        <template #default="{ node, data }">
+          <span class="custom-tree-node">
+            <span :title="node.label">{{ node.label }}</span>
+            <div v-if="!data.disabled" class="operate-icon-container">
+              <div><Icon name="edit" @click.stop="roleEdit(data)"></Icon></div>
+              <div><Icon name="delete" @click.stop="delHandler(data)"></Icon></div>
+            </div>
+          </span>
+        </template>
+      </el-tree>
     </div>
     <div class="added-user-list role-height">
       <div class="title">
         已添加用户
-        <el-input v-model="nickName" clearable>
+        <el-input v-model="selectedKeyword" clearable>
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -129,17 +170,21 @@ const defaultProps = {
           </template>
         </el-input>
       </div>
-      <div :key="ele.username" v-for="ele in state.addedUserList" class="user-list-item">
-        {{ ele.username }}
+      <el-empty
+        v-if="!state.addedUserList || !state.addedUserList.length"
+        description="description"
+      />
+      <div v-else :key="ele.id" v-for="ele in state.addedUserList" class="user-list-item">
+        {{ ele.name }}
       </div>
     </div>
     <div class="add-user-list role-height">
       <div class="title">
-        角色列表
+        可添加用户
         <el-icon>
           <Icon name="icon_add_outlined"></Icon>
         </el-icon>
-        <el-input class="m24 w100" v-model="nickName" clearable>
+        <el-input class="m24 w100" v-model="optionKeyword" clearable>
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -147,14 +192,18 @@ const defaultProps = {
           </template>
         </el-input>
       </div>
-
-      <el-checkbox-group v-model="checkList">
-        <div :key="ele.username" v-for="ele in state.addedUserList" class="user-list-item">
-          <el-checkbox :label="ele.username" />
+      <el-empty
+        v-if="!state.optionUserList || !state.optionUserList.length"
+        description="description"
+      />
+      <el-checkbox-group v-else v-model="checkList">
+        <div :key="ele.id" v-for="ele in state.optionUserList" class="user-list-item">
+          <el-checkbox :label="ele.name" />
         </div>
       </el-checkbox-group>
     </div>
   </div>
+  <role-form ref="roleFormRef" @saved="roleSaved" />
 </template>
 
 <style lang="less" scoped>
@@ -247,6 +296,46 @@ const defaultProps = {
       margin-bottom: 24px;
       padding-left: 24px;
       border: 1px solid #ccc;
+    }
+  }
+}
+.custom-tree-node {
+  display: flex;
+  span {
+    width: 150px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+  .operate-icon-container {
+    display: none;
+  }
+  &:hover {
+    span {
+      width: 135px;
+    }
+    .operate-icon-container {
+      text-align: end;
+      font-size: 16px;
+      display: flex;
+      div {
+        width: 24px;
+        height: 20px;
+        padding: 0 3px;
+        cursor: pointer;
+        svg {
+          width: 16px;
+          height: 16px;
+          color: var(--el-text-color-regular);
+          background-color: var(--el-color-white);
+        }
+      }
+      div:hover {
+        svg {
+          color: var(--el-color-primary) !important;
+          background: var(--el-color-primary-light-7) !important;
+        }
+      }
     }
   }
 }
