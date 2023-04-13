@@ -1215,7 +1215,8 @@ public class OracleQueryProvider extends QueryProvider {
                         whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, format);
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = String.format(OracleConstants.TO_CHAR, format);
+                        whereName = originName;
+//                        whereName = String.format(OracleConstants.TO_CHAR, originName, format);
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
