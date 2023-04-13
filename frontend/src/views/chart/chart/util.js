@@ -3367,19 +3367,21 @@ export function getColors(chart, colors, reset) {
     }
   } else if (equalsAny(chart.type, 'bar-group', 'line')) {
     // 拿到data中的category，并去重，然后构建seriesColor
-    const data = chart.data.data
-    const s = []
-    data.forEach((cur) => {
-      if (s.indexOf(cur.category) < 0) {
-        s.push(cur.category)
-      }
-    })
-    for (let i = 0; i < s.length; i++) {
-      seriesColors.push({
-        name: s[i],
-        color: colors[i % colors.length],
-        isCustom: false
+    if (chart.data) {
+      const data = chart.data.data
+      const s = []
+      data.forEach((cur) => {
+        if (s.indexOf(cur.category) < 0) {
+          s.push(cur.category)
+        }
       })
+      for (let i = 0; i < s.length; i++) {
+        seriesColors.push({
+          name: s[i],
+          color: colors[i % colors.length],
+          isCustom: false
+        })
+      }
     }
   } else {
     if (chart.data) {

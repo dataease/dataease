@@ -243,7 +243,7 @@ export default {
     fieldOptions() {
       const xaxis = this.view.xaxis
       const yaxis = this.view.yaxis
-      const locationIds = this.view.viewFields.filter(item => item.busiType === 'locationXaxis' || item.busiType === 'locationYaxis').map(item => item.id)
+      const locationIds = this.view.viewFields ? this.view.viewFields.filter(item => item.busiType === 'locationXaxis' || item.busiType === 'locationYaxis').map(item => item.id) : []
       const xIds = xaxis ? xaxis.map(item => item.id) : []
       const yIds = yaxis ? yaxis.map(item => item.id) : []
       const disableIds = [...xIds, ...yIds, ...locationIds]
