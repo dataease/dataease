@@ -3220,7 +3220,7 @@ export const TYPE_CONFIGS = [
     category: 'chart.chart_type_space',
     value: 'map',
     title: 'chart.chart_map',
-    icon: 'map',
+    icon: 'map_mini',
     properties: [
       'color-selector',
       'label-selector',
