@@ -63,7 +63,7 @@ public class ViewExportExcel {
         String panelStyle = panelDto.getPanelStyle();
         Map map = gson.fromJson(panelStyle, Map.class);
         Map panelMap = (LinkedTreeMap) map.get("panel");
-        double resultCount = Double.parseDouble(panelMap.get("resultCount").toString());
+        double resultCount = ObjectUtils.isEmpty(panelMap.get("resultCount")) ? 1000 : Double.parseDouble(panelMap.get("resultCount").toString());
         String resultMode = null;
         if (ObjectUtils.isNotEmpty(panelMap.get("resultMode"))) {
             resultMode = panelMap.get("resultMode").toString();
