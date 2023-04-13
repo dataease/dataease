@@ -420,8 +420,11 @@ export default {
         return
       }
       const regep = new RegExp(/^1[3-9]\d{9}$/)
-
-      if (!regep.test(value)) {
+      let phoneNumber = value
+      if (value.length > 3 && value.startsWith('+86')) {
+        phoneNumber = value.substr(3)
+      }
+      if (!regep.test(phoneNumber)) {
         const msg = this.$t('user.phone_format')
         callback(new Error(msg))
       } else {
