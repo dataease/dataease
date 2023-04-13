@@ -141,10 +141,10 @@
         style="position: absolute;right: 70px;top:15px"
       >
         <el-button
-          v-if="showChartInfoType==='enlarge' && hasDataPermission('export',panelInfo.privileges)&& showChartInfo && showChartInfo.type !== 'symbol-map'"
+          v-if="showChartInfoType==='enlarge' && hasDataPermission('export',panelInfo.privileges)&& showChartInfo && !equalsAny(showChartInfo.type, 'symbol-map', 'flow-map')"
           class="el-icon-picture-outline"
           size="mini"
-          :disabled ="imageDownloading"
+          :disabled="imageDownloading"
           @click="exportViewImg"
         >
           {{ $t('chart.export_img') }}
@@ -152,7 +152,7 @@
         <el-button
           v-if="showChartInfoType==='details' && hasDataPermission('export',panelInfo.privileges)"
           size="mini"
-          :disabled="$store.getters.loadingMap[$store.getters.currentPath]"
+          :disabled="$store.getters.loadingMap[$store.getters.currentPath] || dialogLoading"
           @click="exportExcel"
         >
           <svg-icon
@@ -218,6 +218,7 @@ import Vue from 'vue'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 import UserViewMobileDialog from '@/components/canvas/customComponent/UserViewMobileDialog'
+import { equalsAny } from '@/utils/StringUtils'
 
 export default {
   name: 'UserView',
@@ -308,6 +309,7 @@ export default {
   },
   data() {
     return {
+      dialogLoading: false,
       imageDownloading: false,
       innerRefreshTimer: null,
       mobileChartDetailsVisible: false,
@@ -576,6 +578,7 @@ export default {
     }
   },
   methods: {
+    equalsAny,
     tabSwitch(tabCanvasId) {
       if (this.charViewS2ShowFlag && tabCanvasId === this.canvasId && this.$refs[this.element.propValue.id]) {
         this.$refs[this.element.propValue.id].chartResize()
@@ -601,7 +604,10 @@ export default {
       }
     },
     exportExcel() {
-      this.$refs['userViewDialog'].exportExcel()
+      this.dialogLoading = true
+      this.$refs['userViewDialog'].exportExcel(() => {
+        this.dialogLoading = false
+      })
     },
     exportViewImg() {
       this.imageDownloading = true

@@ -19,7 +19,6 @@
             v-for="(item, idx) in container"
             :key="idx"
             style="position: relative;display: block;"
-            :style="{'top': item.isPlugin ? '5px' : '0'}"
           >
             <el-radio
               v-if="item.placeholder"

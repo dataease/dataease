@@ -49,7 +49,7 @@
               <api-variable
                 @editScenarioAdvance="editScenarioAdvance"
                 :scenario-definition="scenarioDefinition"
-                :with-mor-setting="true"
+                :with-more-setting="true"
                 :is-read-only="isReadOnly"
                 :isShowEnable="isShowEnable"
                 :parameters="request.arguments"
