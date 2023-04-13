@@ -722,6 +722,7 @@
       :visible.sync="editCalcField"
       class="de-dialog-form de-center-dialog"
       width="980px"
+      :before-close="closeCalcField"
       :title="
         currEditField.id
           ? $t('dataset.edit_calc_field')
@@ -730,6 +731,7 @@
       append-to-body
     >
       <calc-field-edit
+        ref="calcFieldEdit"
         :param="param"
         :table-fields="tableFields"
         :field="currEditField"
@@ -893,6 +895,7 @@ export default {
 
     closeCalcField() {
       this.editCalcField = false
+      this.$refs.calcFieldEdit.resetField()
       this.initField()
     },
 
