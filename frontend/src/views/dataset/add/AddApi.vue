@@ -420,6 +420,7 @@ export default {
         this.openMessageSuccess('deDataset.cannot_be_duplicate', 'error')
         return
       }
+      if (this.loading) return
       this.loading = true
       const sceneId = this.param.id
       const dataSourceId = this.dataSource
