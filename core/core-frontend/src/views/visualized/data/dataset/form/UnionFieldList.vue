@@ -75,7 +75,10 @@ const emit = defineEmits(['checkedFields'])
         <el-table-column :label="t('panel.column_name')">
           <template #default="scope">
             <el-icon>
-              <Icon :name="`field_${fieldType(scope.row.deType)}`"></Icon>
+              <Icon
+                :className="`field-icon-${fieldType(scope.row.deType)}`"
+                :name="`field_${fieldType(scope.row.deType)}`"
+              ></Icon>
             </el-icon>
             {{ scope.row.originName }}
           </template>

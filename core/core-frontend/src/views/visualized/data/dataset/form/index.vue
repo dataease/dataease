@@ -3,14 +3,14 @@ import { ref, nextTick, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CalcFieldEdit from './CalcFieldEdit.vue'
 import UnionEdit from './UnionEdit.vue'
-
+import { getDatasourceList } from '@/api/dataset'
 import DatasetUnion from './DatasetUnion.vue'
 interface DragEvent extends MouseEvent {
   dataTransfer: DataTransfer
 }
 const { t } = useI18n()
 
-const editCalcField = ref(true)
+const editCalcField = ref(false)
 
 const editUnion = ref(false)
 
@@ -30,6 +30,10 @@ const loading = ref(false)
 const nameExist = ref(false)
 const datasetType = ref('sql')
 const editerName = ref()
+
+const joinEditor = ele => {
+  editUnion.value = true
+}
 
 const state = reactive({
   nameList: [],
@@ -927,6 +931,10 @@ const nameBlur = () => {
 }
 
 const datasetSave = () => {
+  getDatasourceList().then(res => {
+    console.log('res', res)
+  })
+  // editUnion.value = true
   console.log('datasetSave')
 }
 const handleClick = () => {
@@ -1046,7 +1054,12 @@ const handleClick = () => {
         </div>
       </div>
       <div class="drag-right">
-        <dataset-union :maskShow="maskShow" :offsetX="offsetX" :offsetY="offsetY"></dataset-union>
+        <dataset-union
+          @join-editor="joinEditor"
+          :maskShow="maskShow"
+          :offsetX="offsetX"
+          :offsetY="offsetY"
+        ></dataset-union>
       </div>
     </div>
     <el-drawer

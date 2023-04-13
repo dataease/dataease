@@ -2,15 +2,19 @@
 import { Icon } from '@/components/icon-custom'
 import { propTypes } from '@/utils/propTypes'
 import type { Placement } from 'element-plus-secondary'
+import { PropType } from 'vue'
+
+export interface Menu {
+  svgName: string
+  label?: string
+  command: string
+  divided?: boolean
+}
+
 defineProps({
-  menuList: propTypes.arrayOf(
-    propTypes.shape({
-      svgName: propTypes.string,
-      label: propTypes.string,
-      command: propTypes.string,
-      divided: propTypes.bool.def(false)
-    })
-  ),
+  menuList: {
+    type: Array as PropType<Menu[]>
+  },
   placement: {
     type: String as () => Placement,
     default: 'bottom-end'

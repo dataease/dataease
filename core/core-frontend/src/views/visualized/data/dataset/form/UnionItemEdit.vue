@@ -124,7 +124,10 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
                 :value="item.id"
               >
                 <el-icon>
-                  <Icon :name="`field_${fieldType(item.deType)}`"></Icon>
+                  <Icon
+                    :name="`field_${fieldType(item.deType)}`"
+                    :className="`field-icon-${fieldType(item.deType)}`"
+                  ></Icon>
                 </el-icon>
                 <span>
                   {{ item.name }}
@@ -151,7 +154,10 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
                 :value="item.id"
               >
                 <el-icon>
-                  <Icon :name="`field_${fieldType(item.deType)}`"></Icon>
+                  <Icon
+                    :name="`field_${fieldType(item.deType)}`"
+                    :className="`field-icon-${fieldType(item.deType)}`"
+                  ></Icon>
                 </el-icon>
                 <span>
                   {{ item.name }}
@@ -211,9 +217,6 @@ const emit = defineEmits(['changeUnionFields', 'changeUnionType'])
 }
 .union-selector {
   width: 180px;
-  :deep(.el-input__inner) {
-    padding-left: 32px;
-  }
 }
 .union-add {
   margin-left: 12px;

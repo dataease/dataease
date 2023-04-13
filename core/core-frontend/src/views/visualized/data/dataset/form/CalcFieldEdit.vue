@@ -1,18 +1,9 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { minimalSetup } from 'codemirror'
-import {
-  Decoration,
-  DecorationSet,
-  EditorView,
-  ViewPlugin,
-  ViewUpdate,
-  MatchDecorator,
-  WidgetType
-} from '@codemirror/view'
-import { sql } from '@codemirror/lang-sql'
 import { propTypes } from '@/utils/propTypes'
+import CodeMirror from './CodeMirror.vue'
+
 const { t } = useI18n()
 
 const props = defineProps({
@@ -26,66 +17,6 @@ const props = defineProps({
 const myCm = ref()
 const searchField = ref('')
 const searchFunction = ref('')
-
-const placePlugin = () => {
-  class PlaceholderWidget extends WidgetType {
-    name: string
-    constructor(name) {
-      super()
-      this.name = name
-    }
-    eq(other) {
-      return this.name == other.name
-    }
-    toDOM() {
-      let elt = document.createElement('span')
-      elt.style.cssText = `
-      border: 1px solid blue;`
-      elt.textContent = this.name
-      return elt
-    }
-    ignoreEvent() {
-      return true
-    }
-  }
-  const placeholderMatcher = new MatchDecorator({
-    regexp: /\[(\S+)\]/g,
-    decoration: match => {
-      return Decoration.replace({
-        widget: new PlaceholderWidget(match[1])
-      })
-    }
-  })
-  return ViewPlugin.fromClass(
-    class {
-      placeholders: DecorationSet
-      constructor(view: EditorView) {
-        this.placeholders = placeholderMatcher.createDeco(view)
-      }
-      update(update: ViewUpdate) {
-        this.placeholders = placeholderMatcher.updateDeco(update, this.placeholders)
-      }
-    },
-    {
-      decorations: instance => {
-        return instance.placeholders
-      },
-      provide: plugin => {
-        return EditorView.atomicRanges.of(view => {
-          return view.plugin(plugin)?.placeholders || Decoration.none
-        })
-      }
-    }
-  )
-}
-
-onMounted(() => {
-  myCm.value = new EditorView({
-    doc: state.fieldForm.originName,
-    extensions: [placePlugin(), minimalSetup, sql()],
-    parent: document.querySelector('#filed-editor')
-  })
-})
 
 const fields = [
   { label: t('dataset.text'), value: 0 },
@@ -256,16 +187,20 @@ const fieldType = (deType: number) => {
 }
 
 const insertFieldToCodeMirror = (value: string) => {
-  myCm.value.dispatch({
-    changes: { from: myCm.value.viewState.state.selection.ranges[0].from, insert: value },
-    selection: { anchor: 10 }
+  console.log('myCm.value.myCm', myCm.value.myCm)
+
+  const mirror = myCm.value.myCm
+  mirror.dispatch({
+    changes: { from: mirror.viewState.state.selection.ranges[0].from, insert: value },
+    selection: { anchor: mirror.viewState.state.selection.ranges[0].from }
   })
 }
 
 const insertParamToCodeMirror = (value: string) => {
-  myCm.value.dispatch({
-    changes: { from: myCm.value.viewState.state.selection.ranges[0].from, insert: value },
-    selection: { anchor: 10 }
+  const mirror = myCm.value.myCm
+  mirror.dispatch({
+    changes: { from: mirror.viewState.state.selection.ranges[0].from, insert: value },
+    selection: { anchor: mirror.viewState.state.selection.ranges[0].from }
   })
 }
 </script>
@@ -293,7 +228,7 @@ const insertParamToCodeMirror = (value: string) => {
               </el-icon>
             </el-tooltip>
           </span>
-          <div class="codemirror" id="filed-editor"></div>
+          <code-mirror ref="myCm"></code-mirror>
         </div>
         <div style="margin-top: 28px">
           <el-form label-position="top" ref="form" :model="state.fieldForm" class="de-form-item">
@@ -356,7 +291,10 @@ const insertParamToCodeMirror = (value: string) => {
               @click="insertFieldToCodeMirror('[' + item.name + ']')"
             >
               <el-icon>
-                <Icon :name="`field_${fieldType(item.deType)}`"></Icon>
+                <Icon
+                  :name="`field_${fieldType(item.deType)}`"
+                  :className="`field-icon-${fieldType(item.deType)}`"
+                ></Icon>
               </el-icon>
               {{ item.name }}
             </span>
@@ -374,7 +312,10 @@ const insertParamToCodeMirror = (value: string) => {
               @click="insertFieldToCodeMirror('[' + item.name + ']')"
             >
               <el-icon>
-                <Icon :name="`field_${fieldType(item.deType)}`"></Icon>
+                <Icon
+                  :name="`field_${fieldType(item.deType)}`"
+                  :className="`field-icon-${fieldType(item.deType)}`"
+                ></Icon>
               </el-icon>
               <span>{{ item.name }}</span>
             </span>
@@ -473,10 +414,7 @@ const insertParamToCodeMirror = (value: string) => {
 .field-height {
   height: calc(50% - 41px);
   margin-top: 4px;
-}
-.drag-list {
-  height: calc(100% - 26px);
-  overflow: auto;
+  overflow-y: auto;
 }
 .item-dimension {
   padding: 3px 8px;
@@ -613,18 +551,10 @@ const insertParamToCodeMirror = (value: string) => {
 
 <style lang="less">
 .calcu-field {
-  .codemirror {
+  .cm-scroller {
     height: 250px;
-    overflow-y: auto;
-    width: 100%;
-    .cm-editor {
-      border: 1px solid #bbbfc4;
-      border-radius: 4px;
-    }
-  }
-
-  .codemirror .cm-scroller {
-    height: 250px;
+    border: 1px solid #bbbfc4;
+    border-radius: 4px;
     overflow-y: auto;
   }
 
