@@ -1011,6 +1011,7 @@ export default {
         return
       }
       this.parseVariable()
+      if (this.loading) return
       this.loading = true
       const table = {
         id: this.param.tableId,

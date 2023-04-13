@@ -261,6 +261,7 @@ export default {
         this.openMessageSuccess('dataset.char_can_not_more_50', 'error')
         return
       }
+      if (this.loading) return
       this.loading = true
       const table = {
         id: this.param.tableId,
