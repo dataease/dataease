@@ -364,11 +364,25 @@ export function getTooltip(chart) {
                   res = valueFormatter(param.value, formatterItem)
                 }
               }
-            } else if (includesAny(chart.type, 'bar', 'line', 'scatter', 'radar', 'area') && !chart.type.includes('group')) {
+            } else if (includesAny(chart.type, 'bar', 'scatter', 'radar', 'area') && !chart.type.includes('group')) {
               obj = { name: param.category, value: param.value }
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
                 if (f.name === param.category) {
+                  if (f.formatterCfg) {
+                    res = valueFormatter(param.value, f.formatterCfg)
+                  } else {
+                    res = valueFormatter(param.value, formatterItem)
+                  }
+                  break
+                }
+              }
+            } else if (chart.type === 'line') {
+              obj = { name: param.category, value: param.value }
+              const xAxisExt = JSON.parse(chart.xaxisExt)
+              for (let i = 0; i < yAxis.length; i++) {
+                const f = yAxis[i]
+                if (f.name === param.category || (yAxis.length && xAxisExt.length)) {
                   if (f.formatterCfg) {
                     res = valueFormatter(param.value, f.formatterCfg)
                   } else {
