@@ -40,4 +40,6 @@ public class PanelViewDetailsRequest {
     @ApiModelProperty(hidden = true)
     private PermissionProxy proxy;
 
+    private Long userId;
+
 }

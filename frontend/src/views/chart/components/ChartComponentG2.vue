@@ -59,6 +59,7 @@ import { baseMixOptionAntV } from '@/views/chart/chart/mix/mix_antv'
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
 import { equalsAny } from '@/utils/StringUtils'
 import { mapState } from 'vuex'
+import { baseFlowMapOption } from '@/views/chart/chart/map/map_antv'
 
 export default {
   name: 'ChartComponentG2',
@@ -274,6 +275,8 @@ export default {
         this.myChart = baseWordCloudOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'chart-mix') {
         this.myChart = baseMixOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'flow-map') {
+        this.myChart = baseFlowMapOption(this.myChart, this.chartId, chart, this.antVAction)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false
@@ -281,10 +284,10 @@ export default {
         }
       }
 
-      if (this.myChart && chart.type !== 'liquid' && this.searchCount > 0) {
+      if (this.myChart && !equalsAny(chart.type ,'liquid','flow-map') && this.searchCount > 0) {
         this.myChart.options.animation = false
       }
-      if (this.myChart.options.legend) {
+      if (this.myChart?.options?.legend) {
         let pageNavigatorInactiveFill, pageNavigatorFill
         if (this.canvasStyleData.panel.themeColor === 'dark') {
           pageNavigatorFill = '#ffffff'
@@ -401,6 +404,10 @@ export default {
         if (customStyle.background) {
           this.title_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
           this.borderRadius = (customStyle.background.borderRadius || 0) + 'px'
+        }
+        if (this.chart.type === 'flow-map') {
+          this.title_class.zIndex = 4
+          this.title_class.position = 'absolute'
         }
       }
       this.initRemark()

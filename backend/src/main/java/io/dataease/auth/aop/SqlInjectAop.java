@@ -5,6 +5,7 @@ import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.commons.exception.DEException;
 import io.dataease.controller.sys.base.BaseGridRequest;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -63,6 +64,6 @@ public class SqlInjectAop {
         return orderList.stream().anyMatch(exp ->
                 Arrays.stream(exp.toLowerCase().split(",")).anyMatch(word ->
                         Arrays.stream(word.split(" ")).anyMatch(item ->
-                                !wordList.contains(item))));
+                                StringUtils.isNotBlank(item.trim()) && !wordList.contains(item.trim()))));
     }
 }

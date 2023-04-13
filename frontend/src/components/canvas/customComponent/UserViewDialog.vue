@@ -1,6 +1,6 @@
 <template>
   <de-container
-    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
+    v-loading="$store.getters.loadingMap[$store.getters.currentPath] || linkLoading"
     :class="isAbsoluteContainer ? 'abs-container' : ''"
   >
     <de-main-container
@@ -120,7 +120,8 @@ export default {
     return {
       refId: null,
       element: {},
-      lastMapChart: null
+      lastMapChart: null,
+      linkLoading: false
     }
   },
   computed: {
@@ -239,28 +240,28 @@ export default {
   mounted() {
   },
   methods: {
-    exportExcel() {
+    exportExcel(callBack) {
       const _this = this
       if (this.isOnlyDetails) {
-        _this.exportExcelDownload()
+        _this.exportExcelDownload(null, null, null, callBack)
       } else {
         if (this.showChartCanvas) {
           html2canvas(document.getElementById('chartCanvas')).then(canvas => {
             const snapshot = canvas.toDataURL('image/jpeg', 1)
-            _this.exportExcelDownload(snapshot, canvas.width, canvas.height)
+            _this.exportExcelDownload(snapshot, canvas.width, canvas.height, callBack)
           })
         } else {
-          _this.exportExcelDownload()
+          _this.exportExcelDownload(null, null, null, callBack)
         }
       }
     },
-    exportViewImg() {
-      exportImg(this.chart.name)
+    exportViewImg(callback) {
+      exportImg(this.chart.name, callback)
     },
     setLastMapChart(data) {
       this.lastMapChart = JSON.parse(JSON.stringify(data))
     },
-    exportExcelDownload(snapshot, width, height) {
+    exportExcelDownload(snapshot, width, height, callBack) {
       const excelHeader = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.name)
       const excelTypes = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.deType)
       const excelHeaderKeys = JSON.parse(JSON.stringify(this.chart.data.fields)).map(item => item.dataeaseName)
@@ -291,7 +292,7 @@ export default {
         })
       }
       const request = {
-        proxy:null,
+        proxy: null,
         viewId: this.chart.id,
         viewName: excelName,
         header: excelHeader,
@@ -309,6 +310,7 @@ export default {
       const linkToken = this.$store.getters.linkToken || getLinkToken()
       if (!token && linkToken) {
         method = exportDetails
+        this.linkLoading = true
       }
 
       if (this.panelInfo.proxy) {
@@ -323,6 +325,11 @@ export default {
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
+        this.linkLoading = false
+        callBack && callBack()
+      }).catch(() => {
+        this.linkLoading = false
+        callBack && callBack()
       })
     },
 

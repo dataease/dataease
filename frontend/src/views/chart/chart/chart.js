@@ -31,7 +31,11 @@ export const DEFAULT_COLOR_CASE = {
   gradient: false,
   areaBaseColor: '#FFFFFF',
   tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
-  tableScrollBarHoverColor: 'rgba(0, 0, 0, 0.4)'
+  tableScrollBarHoverColor: 'rgba(0, 0, 0, 0.4)',
+  mapStyle: 'normal',
+  mapLineGradient: false,
+  mapLineSourceColor: '#146C94',
+  mapLineTargetColor: '#576CBC',
 }
 
 export const DEFAULT_COLOR_CASE_DARK = {
@@ -49,7 +53,11 @@ export const DEFAULT_COLOR_CASE_DARK = {
   areaBorderColor: '#EBEEF5',
   areaBaseColor: '5470C6',
   tableScrollBarColor: 'rgba(255, 255, 255, 0.5)',
-  tableScrollBarHoverColor: 'rgba(255, 255, 255, 0.8)'
+  tableScrollBarHoverColor: 'rgba(255, 255, 255, 0.8)',
+  mapStyle: 'darkblue',
+  mapLineGradient: false,
+  mapLineSourceColor: '#2F58CD',
+  mapLineTargetColor: '#3795BD',
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -130,7 +138,14 @@ export const DEFAULT_SIZE = {
   showIndex: false,
   indexLabel: '序号',
   hPosition: 'center',
-  vPosition: 'center'
+  vPosition: 'center',
+  mapPitch: 0,
+  mapLineType: 'arc',
+  mapLineWidth: 1,
+  mapLineAnimate: true,
+  mapLineAnimateDuration: 3,
+  mapLineAnimateInterval: 1,
+  mapLineAnimateTrailLength: 1
 }
 export const DEFAULT_SUSPENSION = {
   show: true
@@ -1144,3 +1159,13 @@ export const CHART_FONT_LETTER_SPACE = [
 export const NOT_SUPPORT_PAGE_DATASET = ['kylin', 'sqlServer', 'es', 'presto', 'ds_doris', 'StarRocks', 'impala']
 
 export const SUPPORT_Y_M = ['y', 'y_M', 'y_M_d']
+
+export const DEFAULT_MAP = {
+  mapPitch: 0,
+  lineType: 'line',
+  lineWidth: 1,
+  lineAnimate: true,
+  lineAnimateDuration: 4,
+  lineAnimateInterval: 0.5,
+  lineAnimateTrailLength: 0.1
+}

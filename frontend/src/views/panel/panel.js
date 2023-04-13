@@ -73,7 +73,7 @@ export const CANVAS_STYLE = {
     showPageLine: false,
     proportion: null
   },
-  refreshViewEnable: true, // 开启视图刷新（默认开启）
+  refreshViewEnable: false, // 开启视图刷新（默认关闭）
   refreshViewLoading: true, // 仪表板视图loading提示
   refreshUnit: 'minute', // 仪表板刷新时间带外 默认 分钟
   refreshTime: 5, // 仪表板刷新时间 默认5分钟

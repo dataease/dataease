@@ -138,7 +138,7 @@
 
     <el-empty
       v-else-if="status === 'empty'"
-      description="请在左侧选择区域"
+      :description="$t('sysParams.select_left')"
     />
   </div>
 </template>

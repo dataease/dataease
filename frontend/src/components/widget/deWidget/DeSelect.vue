@@ -16,6 +16,7 @@
     :key-word="keyWord"
     popper-class="coustom-de-select"
     :list="data"
+    @resetKeyWords="filterMethod"
     :custom-style="customStyle"
     @change="changeValue"
     @focus="setOptionWidth"

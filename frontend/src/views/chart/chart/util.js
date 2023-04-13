@@ -1830,6 +1830,49 @@ export const TYPE_CONFIGS = [
       ]
     }
   },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_space',
+    value: 'flow-map',
+    title: 'chart.chart_flow_map',
+    icon: 'flow-map',
+    properties: [
+      'color-selector',
+      'size-selector-ant-v',
+      'title-selector-ant-v'
+    ],
+    propertyInner: {
+      'color-selector': [
+        'alpha',
+        'mapStyle',
+        'mapLineGradient',
+        'mapLineSourceColor',
+        'mapLineTargetColor'
+      ],
+      'size-selector-ant-v': [
+        'mapPitch',
+        'mapLineType',
+        'mapLineWidth',
+        'mapLineAnimate',
+        'mapLineAnimateDuration',
+        'mapLineAnimateInterval',
+        'mapLineAnimateTrailLength',
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'isItalic',
+        'isBolder',
+        'remarkShow',
+        'fontFamily',
+        'letterSpace',
+        'fontShadow'
+      ]
+    }
+  },
   /* 下面是echarts图表类型 */
   {
     render: 'echarts',

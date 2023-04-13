@@ -1355,8 +1355,8 @@ export default {
 }
 
 .chart-icon {
-  width: 200px;
-  height: 200px;
+  width: 200px !important;
+  height: 200px !important;
 }
 
 .chart-box {
