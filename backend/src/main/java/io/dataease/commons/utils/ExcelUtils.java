@@ -8,6 +8,8 @@ import io.dataease.commons.model.excel.ExcelSheetModel;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +31,9 @@ public class ExcelUtils {
             List<List<String>> details = sheet.getData();
             details.add(0, sheet.getHeads());
             String sheetName = sheet.getSheetName();
+            Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
+            Matcher matcher = pattern.matcher(sheetName);
+            sheetName = matcher.replaceAll("-");
             Sheet curSheet = wb.createSheet(sheetName);
             if (StringUtils.isBlank(fileName)) {
                 String cName = sheetName + suffix;
