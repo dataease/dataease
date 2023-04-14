@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { store } from '../index'
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
+import { userInfo } from '@/api/user'
 interface UserState {
   token: string
   uid: string
@@ -38,6 +39,22 @@ export const userStore = defineStore('user', {
     }
   },
   actions: {
+    async setUser() {
+      const res = await userInfo()
+      const data = res.data
+      data.token = wsCache.get('user.token')
+      /* this.token = userInfo.token
+      this.uid = userInfo.uid
+      this.name = userInfo.name
+      this.oid = userInfo.oid
+      this.language = userInfo.language */
+      const keys: string[] = ['token', 'uid', 'name', 'oid', 'language']
+
+      keys.forEach(key => {
+        this[key] = data[key]
+        wsCache.set('user.' + key, this[key])
+      })
+    },
     setToken(token: string) {
       wsCache.set('user.token', token)
       this.token = token

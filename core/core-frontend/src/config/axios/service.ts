@@ -12,8 +12,6 @@ import { config } from './config'
 
 import { ElMessage } from 'element-plus-secondary'
 
-import { useUserStoreWithOut } from '@/store/modules/user'
-const userStore = useUserStoreWithOut()
 const { result_code } = config
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
@@ -38,9 +36,7 @@ service.interceptors.request.use(
     ) {
       config.data = qs.stringify(config.data)
     }
-    if (userStore.getToken) {
-      ;(config.headers as AxiosRequestHeaders)['Authorization'] = userStore.getToken
-    } else if (wsCache.get('user.token')) {
+    if (wsCache.get('user.token')) {
       ;(config.headers as AxiosRequestHeaders)['Authorization'] = wsCache.get('user.token')
     }
     // ;(config.headers as AxiosRequestHeaders)['Token'] = 'test test'
