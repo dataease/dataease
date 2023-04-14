@@ -32,7 +32,7 @@ public class Utils {
             return originField;
         }
         for (DatasetTableFieldDTO ele : calcFields) {
-            if (StringUtils.containsIgnoreCase(originField, ele.getId())) {
+            if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
                 originField = originField.replaceAll("\\[" + ele.getId() + "]",
                         String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
             }

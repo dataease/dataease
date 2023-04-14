@@ -12,22 +12,22 @@ public class DatasetTableFieldDTO implements Serializable {
     /**
      * ID
      */
-    private String id;
+    private Long id;
 
     /**
      * 数据源ID
      */
-    private String datasourceId;
+    private Long datasourceId;
 
     /**
      * 数据表ID
      */
-    private String datasetTableId;
+    private Long datasetTableId;
 
     /**
      * 数据集ID
      */
-    private String datasetGroupId;
+    private Long datasetGroupId;
 
     /**
      * 原始字段名

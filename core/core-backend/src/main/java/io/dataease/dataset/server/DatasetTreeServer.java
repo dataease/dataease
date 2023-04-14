@@ -18,7 +18,7 @@ public class DatasetTreeServer implements DatasetTreeApi {
     private DatasetGroupManage datasetGroupManage;
 
     @Override
-    public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetNodeDTO) {
+    public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetNodeDTO) throws Exception {
         return datasetGroupManage.save(datasetNodeDTO);
     }
 

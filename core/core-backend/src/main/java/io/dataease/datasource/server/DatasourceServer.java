@@ -3,8 +3,8 @@ package io.dataease.datasource.server;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.DatasourceApi;
-import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
+import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.provider.ProviderUtil;
@@ -88,7 +88,7 @@ public class DatasourceServer implements DatasourceApi {
     public List<DatasourceDTO> list() {
         // todo mock,获取数据源列表
         DatasourceDTO dto = new DatasourceDTO();
-        dto.setId("0937b371-f615-43a5-b667-9eadae17984c");
+        dto.setId("1");
         dto.setName("de_demo");
         return Collections.singletonList(dto);
     }
@@ -98,25 +98,25 @@ public class DatasourceServer implements DatasourceApi {
         List<DatasetTableDTO> list = new ArrayList<>();
         // todo mock,获取数据库表格
         DatasetTableDTO t1 = new DatasetTableDTO();
-        t1.setDatasourceId("0937b371-f615-43a5-b667-9eadae17984c");
+        t1.setDatasourceId(1L);
         t1.setName("ds_group测试");
         t1.setTableName("dataset_group");
         t1.setType("db");
 
         DatasetTableDTO t2 = new DatasetTableDTO();
-        t2.setDatasourceId("0937b371-f615-43a5-b667-9eadae17984c");
+        t2.setDatasourceId(1L);
         t2.setName("ds_table测试");
         t2.setTableName("dataset_table");
         t2.setType("db");
 
         DatasetTableDTO t3 = new DatasetTableDTO();
-        t3.setDatasourceId("0937b371-f615-43a5-b667-9eadae17984c");
+        t3.setDatasourceId(1L);
         t3.setName("ds_field测试");
         t3.setTableName("dataset_table_field");
         t3.setType("db");
 
         DatasetTableDTO t4 = new DatasetTableDTO();
-        t4.setDatasourceId("0937b371-f615-43a5-b667-9eadae17984c");
+        t4.setDatasourceId(1L);
         t4.setName("ds_function测试");
         t4.setTableName("dataset_table_function");
         t4.setType("db");

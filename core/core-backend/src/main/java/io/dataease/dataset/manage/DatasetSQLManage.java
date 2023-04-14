@@ -40,7 +40,7 @@ public class DatasetSQLManage {
 
     // 编辑模式下使用
     public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO) {
-        Map<String, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
+        Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         List<UnionDTO> union = dataTableInfoDTO.getUnion();
         // 所有选中的字段，即select后的查询字段
         Map<String, String[]> checkedInfo = new LinkedHashMap<>();
@@ -148,7 +148,7 @@ public class DatasetSQLManage {
     private void getUnionForEdit(DatasetTableDTO parentTable, SQLObj parentSQLObj,
                                  List<UnionDTO> childrenDs, Map<String, String[]> checkedInfo,
                                  List<UnionParamDTO> unionList, List<DatasetTableFieldDTO> checkedFields, int indexPre,
-                                 Map<String, DatasourceSchemaDTO> dsMap) {
+                                 Map<Long, DatasourceSchemaDTO> dsMap) {
         for (int i = 0; i < childrenDs.size(); i++) {
             int index = i + indexPre;
             String tableSchema = String.format(SQLConstants.SCHEMA, index);
@@ -194,7 +194,7 @@ public class DatasetSQLManage {
         for (UnionDTO unionDTO : union) {
             CoreDatasetTable datasetTable = coreDatasetTableMapper.selectById(unionDTO.getCurrentDs().getId());
             String table = JsonUtil.parse(datasetTable.getInfo(), DatasetTableInfoDTO.class).getTable();
-            String tableId = unionDTO.getCurrentDs().getId();
+            Long tableId = unionDTO.getCurrentDs().getId();
             if (ObjectUtils.isEmpty(datasetTable)) {
                 DEException.throwException(
                         Translator.get("i18n_custom_ds_delete") + String.format(":table id [%s]", tableId));
@@ -294,7 +294,7 @@ public class DatasetSQLManage {
                                   List<UnionParamDTO> unionList, List<CoreDatasetTableField> checkedFields) {
         for (UnionDTO unionDTO : childrenDs) {
             CoreDatasetTable datasetTable = coreDatasetTableMapper.selectById(unionDTO.getCurrentDs().getId());
-            String tableId = unionDTO.getCurrentDs().getId();
+            Long tableId = unionDTO.getCurrentDs().getId();
             if (ObjectUtils.isEmpty(datasetTable)) {
                 DEException.throwException(
                         Translator.get("i18n_custom_ds_delete") + String.format(":table id [%s]", tableId));
@@ -360,7 +360,7 @@ public class DatasetSQLManage {
         return tableObj;
     }
 
-    private void putObj2Map(Map<String, DatasourceSchemaDTO> dsMap, String datasourceId, String schemaAlias) {
+    private void putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, Long datasourceId, String schemaAlias) {
         if (!dsMap.containsKey(datasourceId)) {
             CoreDatasource coreDatasource = coreDatasourceMapper.selectById(datasourceId);
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();

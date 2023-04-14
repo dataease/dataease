@@ -1,15 +1,17 @@
 package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
+import io.dataease.utils.BeanUtils;
+import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @Author Junjun
@@ -20,13 +22,23 @@ public class DatasetTableManage {
     private CoreDatasetTableMapper coreDatasetTableMapper;
 
     public void save(CoreDatasetTable coreDatasetTable) {
-        if (StringUtils.isEmpty(coreDatasetTable.getId())) {
-            coreDatasetTable.setId(UUID.randomUUID().toString());
+        if (ObjectUtils.isEmpty(coreDatasetTable.getId())) {
+            coreDatasetTable.setId(IDUtils.snowID());
             coreDatasetTableMapper.insert(coreDatasetTable);
         } else {
             coreDatasetTableMapper.updateById(coreDatasetTable);
         }
-        // todo save field
+    }
+
+    public void save(DatasetTableDTO currentDs) {
+        CoreDatasetTable coreDatasetTable = coreDatasetTableMapper.selectById(currentDs.getId());
+        CoreDatasetTable record = new CoreDatasetTable();
+        BeanUtils.copyBean(record, currentDs);
+        if (ObjectUtils.isEmpty(coreDatasetTable)) {
+            coreDatasetTableMapper.insert(record);
+        } else {
+            coreDatasetTableMapper.updateById(record);
+        }
     }
 
     public List<CoreDatasetTable> selectByDatasetGroupId(String datasetGroupId) {
