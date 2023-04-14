@@ -801,11 +801,11 @@ public class PgQueryProvider extends QueryProvider {
     }
 
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {
-        if(isTable){
+        if (isTable) {
             String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
             String tableWithSchema = String.format(PgConstants.KEYWORD_TABLE, schema) + "." + String.format(PgConstants.KEYWORD_TABLE, sql);
             return "SELECT COUNT(*) from " + tableWithSchema;
-        }else {
+        } else {
             return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
         }
     }
@@ -974,7 +974,7 @@ public class PgQueryProvider extends QueryProvider {
             }
             if (field.getDeType() == 1) {
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    whereName = String.format(PgConstants.STR_TO_DATE, originName,  StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
+                    whereName = String.format(PgConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
                 }
                 if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                     String cast = String.format(PgConstants.CAST, originName, "bigint");
@@ -1074,16 +1074,30 @@ public class PgQueryProvider extends QueryProvider {
                 if (field.getDeType() == 1) {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                        String timestamp = String.format(PgConstants.STR_TO_DATE, originName,  StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
-                        whereName = String.format(PgConstants.DATE_FORMAT, timestamp, format);
+                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                            String timestamp = String.format(PgConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
+                            whereName = String.format(PgConstants.DATE_FORMAT, timestamp, format);
+                        } else {
+                            whereName = String.format(PgConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
+                        }
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        String cast = String.format(PgConstants.CAST, originName, "bigint");
-                        String timestamp = String.format(PgConstants.FROM_UNIXTIME, cast);
-                        whereName = String.format(PgConstants.DATE_FORMAT, timestamp, format);
+                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                            String cast = String.format(PgConstants.CAST, originName, "bigint");
+                            String timestamp = String.format(PgConstants.FROM_UNIXTIME, cast);
+                            whereName = String.format(PgConstants.DATE_FORMAT, timestamp, format);
+                        } else {
+                            String cast = String.format(PgConstants.CAST, originName, "bigint");
+                            whereName = String.format(PgConstants.FROM_UNIXTIME, cast);
+                        }
+
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = String.format(PgConstants.DATE_FORMAT, originName, format);
+                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                            whereName = String.format(PgConstants.DATE_FORMAT, originName, format);
+                        } else {
+                            whereName = originName;
+                        }
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -1191,7 +1205,7 @@ public class PgQueryProvider extends QueryProvider {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
                     fieldName = String.format(PgConstants.DATE_FORMAT,
-                            String.format(PgConstants.STR_TO_DATE, originField,  StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT),
+                            String.format(PgConstants.STR_TO_DATE, originField, StringUtils.isNotEmpty(x.getDateFormat()) ? x.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT),
                             format);
                 } else {
                     String cast = String.format(PgConstants.CAST, originField, "bigint");
