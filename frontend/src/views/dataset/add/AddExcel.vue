@@ -591,6 +591,7 @@ export default {
         }
         this.handlerConfirm(options)
       } else {
+        if (this.loading) return
         this.loading = true
         post('/dataset/table/update', table)
           .then((response) => {
