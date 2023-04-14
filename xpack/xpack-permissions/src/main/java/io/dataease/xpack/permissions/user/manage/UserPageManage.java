@@ -1,22 +1,31 @@
 package io.dataease.xpack.permissions.user.manage;
 
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ArrayUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.permissions.role.dto.UserRequest;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
 import io.dataease.api.permissions.user.vo.CurUserVO;
 import io.dataease.api.permissions.user.vo.UserFormVO;
+import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.api.permissions.user.vo.UserItem;
 import io.dataease.auth.bo.TokenUserBO;
-import io.dataease.utils.AuthUtils;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.IDUtils;
-
-import io.dataease.utils.Md5Utils;
+import io.dataease.exception.DEException;
+import io.dataease.request.BaseGridRequest;
+import io.dataease.request.ConditionEntity;
+import io.dataease.utils.*;
+import io.dataease.xpack.permissions.org.bo.PerOrgItem;
+import io.dataease.xpack.permissions.org.manage.OrgPageManage;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
+import io.dataease.xpack.permissions.user.entity.UserSortEntity;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -36,9 +45,70 @@ public class UserPageManage {
     @Resource
     private RoleManage roleManage;
 
+    @Resource
+    private OrgPageManage orgPageManage;
 
 
     private static final String DEFAULT_PWD = "DataEase123456";
+
+    private List<Long> roleIdsFromCondition(BaseGridRequest request) {
+        if (CollectionUtil.isEmpty(request.getConditions())) return null;
+        List<ConditionEntity> roleConditions = request.getConditions().stream().filter(item -> StringUtils.equals("rid", item.getField()) && StringUtils.equals("in", item.getOperator()) && ObjectUtils.isNotEmpty(item.getValue())).toList();
+        ConditionEntity conditionEntity = roleConditions.stream().findFirst().orElseGet(null);
+        if (ObjectUtils.isEmpty(conditionEntity)) return null;
+        return ((List) conditionEntity.getValue()).stream().map(item -> Long.parseLong(item.toString())).toList();
+    }
+
+    private Boolean stateFromCondition(BaseGridRequest request) {
+        if (CollectionUtil.isEmpty(request.getConditions())) return null;
+        List<ConditionEntity> roleConditions = request.getConditions().stream().filter(item -> StringUtils.equals("state", item.getField()) && StringUtils.equals("eq", item.getOperator()) && ObjectUtils.isNotEmpty(item.getValue())).toList();
+        ConditionEntity conditionEntity = roleConditions.stream().findFirst().orElse(null);
+        if (ObjectUtils.isEmpty(conditionEntity)) return null;
+        return (Boolean) conditionEntity.getValue();
+    }
+
+    private UserSortEntity userSortFromCondition(BaseGridRequest request) {
+        List<String> orders = request.getOrders();
+        if (CollectionUtil.isEmpty(orders))
+            return null;
+        String orderStr = orders.get(0);
+        String[] arr = orderStr.split(" ");
+        if (ArrayUtil.isEmpty(arr)) return null;
+        String columnName = arr[0].trim();
+        if (StringUtils.isBlank(columnName) || !StringUtils.equals("u.create_time", columnName)) {
+            return null;
+        }
+        boolean isAsc = true;
+        if (arr.length > 1 && StringUtils.isNotBlank(arr[1].trim()) && StringUtils.equalsIgnoreCase("desc", arr[1].trim())) {
+            isAsc = false;
+        }
+        UserSortEntity userSortEntity = new UserSortEntity();
+        userSortEntity.setAsc(isAsc);
+        userSortEntity.setColumnName(columnName);
+        return userSortEntity;
+    }
+
+    public IPage<UserGridVO> pager(Page<UserGridVO> page, BaseGridRequest request) {
+        Long oid = AuthUtils.getUser().getDefaultOid();
+        QueryWrapper<UserGridVO> wrapper = new QueryWrapper<>();
+        String keyword = request.getKeyword();
+        wrapper.eq("pur.oid", oid);
+        List<Long> rids = null;
+        Boolean state = null;
+        wrapper.eq(ObjectUtils.isNotEmpty(state = stateFromCondition(request)), "u.enable", state);
+        wrapper.in(CollectionUtil.isNotEmpty(rids = roleIdsFromCondition(request)), "pur.rid", rids);
+
+        wrapper.like(StringUtils.isNotBlank(keyword), "u.name", keyword);
+        UserSortEntity userSortEntity = userSortFromCondition(request);
+        if (ObjectUtils.isEmpty(userSortEntity)) {
+            userSortEntity = new UserSortEntity();
+            userSortEntity.setColumnName("u.create_time");
+            userSortEntity.setAsc(false);
+        }
+        wrapper.orderBy(true, userSortEntity.isAsc(), userSortEntity.getColumnName());
+        IPage<UserGridVO> pager = userExtMapper.pager(page, wrapper);
+        return pager;
+    }
 
     public void save(UserCreator creator) {
         TokenUserBO user = AuthUtils.getUser();
@@ -88,13 +158,12 @@ public class UserPageManage {
 
     public void switchOrg(Long oId) {
         TokenUserBO user = AuthUtils.getUser();
-        // List<PerOrgItem> perOrgItems = orgPageManage.queryByUser(user.getUserId(), null);
-        /*if (CollectionUtil.isNotEmpty(perOrgItems) && perOrgItems.stream().filter(item -> !item.isDisabled()).anyMatch(item -> item.getId() == oId)) {
+        List<PerOrgItem> perOrgItems = orgPageManage.queryByUser(user.getUserId(), null);
+        if (CollectionUtil.isNotEmpty(perOrgItems) && perOrgItems.stream().filter(item -> !item.isDisabled()).anyMatch(item -> item.getId() == oId)) {
             userExtMapper.switchOrg(user.getUserId(), oId);
             return;
-        }*/
-        userExtMapper.switchOrg(user.getUserId(), oId);
-        // DEException.throwException("invalid orgid");
+        }
+        DEException.throwException("invalid orgid");
     }
 
     public CurUserVO getUserInfo() {
@@ -103,7 +172,7 @@ public class UserPageManage {
     }
 
     public void deleteByEmptyRole() {
-       userExtMapper.deleteByEmptyRole();
+        userExtMapper.deleteByEmptyRole();
     }
 
     public void updateDefaultOid(Long oid) {
@@ -117,5 +186,14 @@ public class UserPageManage {
             }
             userExtMapper.updateDefaultOid(uid, oid);
         });
+    }
+
+    public String switchToken() {
+        Long userId = AuthUtils.getUser().getUserId();
+        PerUser perUser = perUserMapper.selectById(userId);
+        TokenUserBO tokenUserBO = new TokenUserBO();
+        tokenUserBO.setUserId(userId);
+        tokenUserBO.setDefaultOid(perUser.getDefaultOid());
+        return TokenUtils.generate(tokenUserBO, perUser.getPwd());
     }
 }

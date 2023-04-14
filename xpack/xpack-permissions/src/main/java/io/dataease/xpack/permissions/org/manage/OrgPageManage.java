@@ -20,6 +20,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -123,9 +124,11 @@ public class OrgPageManage {
         List<PerOrgItem> perOrgItems = convertItems(perOrgs, false);
         if (CollectionUtil.isNotEmpty(perOrgs)) {
             List<Long> matchIds = perOrgs.stream().map(PerOrg::getId).collect(Collectors.toList());
-            List<String> ids = perOrgs.stream().flatMap(item -> Arrays.stream(StringUtils.split(item.getRootWay(), ","))).distinct().filter(item -> !matchIds.contains(item)).collect(Collectors.toList());
+            List<String> ids = perOrgs.stream().filter(item -> StringUtils.isNotBlank(item.getRootWay())).flatMap(item -> Arrays.stream(StringUtils.split(item.getRootWay(), ","))).distinct().filter(item -> !matchIds.contains(item)).collect(Collectors.toList());
+            if (CollectionUtil.isEmpty(ids))  {
+                return perOrgItems;
+            }
             queryWrapper.clear();
-            queryWrapper = new QueryWrapper<>();
             queryWrapper.in(CollectionUtil.isNotEmpty(ids), "id", ids);
             List<PerOrg> orgList = perOrgMapper.selectList(queryWrapper);
             List<PerOrgItem> orgItems = convertItems(orgList, true);
@@ -138,6 +141,7 @@ public class OrgPageManage {
     }
 
 
+    @Transactional
     public void save(String name, Long pid) {
         TokenUserBO user = AuthUtils.getUser();
         if (ObjectUtils.isEmpty(pid))

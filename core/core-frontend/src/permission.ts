@@ -6,6 +6,8 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { getRoleRouters } from '@/api/common'
 import { userInfo } from '@/api/user'
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache()
 const permissionStore = usePermissionStoreWithOut()
 
 const userStore = useUserStoreWithOut()
@@ -20,15 +22,15 @@ router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
 
-  if (userStore.getToken) {
+  if (wsCache.get('user.token')) {
     if (!userStore.getUid) {
-      userInfo().then(res => {
-        const { id, name, oid, language } = res.data
-        userStore.setUid(id)
-        userStore.setName(name)
-        userStore.setOid(oid)
-        userStore.setLanguage(language)
-      })
+      const res = await userInfo()
+      const { id, name, oid, language } = res.data
+      userStore.setToken(wsCache.get('user.token'))
+      userStore.setUid(id)
+      userStore.setName(name)
+      userStore.setOid(oid)
+      userStore.setLanguage(language)
     }
     if (to.path === '/login') {
       next({ path: '/home/index' })

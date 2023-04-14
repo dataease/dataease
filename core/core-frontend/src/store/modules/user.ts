@@ -22,19 +22,19 @@ export const userStore = defineStore('user', {
   },
   getters: {
     getToken(): string {
-      return wsCache.get('user.token') || this.token
+      return this.token
     },
     getUid(): string {
-      return wsCache.get('user.uid') || this.uid
+      return this.uid
     },
     getName(): string {
-      return wsCache.get('user.name') || this.name
+      return this.name
     },
     getOid(): string {
-      return wsCache.get('user.oid') || this.oid
+      return this.oid
     },
     getLanguage(): string {
-      return wsCache.get('user.language') || this.language
+      return this.language
     }
   },
   actions: {
