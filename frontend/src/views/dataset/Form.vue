@@ -1,6 +1,6 @@
 <template>
   <div class="de-dataset-form">
-    <div class="top">
+    <div class="top" v-loading="loading">
       <span class="name">
         <i
           class="el-icon-arrow-left"
@@ -43,7 +43,6 @@
         <deBtn
           :disabled="['db', 'excel', 'api'].includes(datasetType) && !tableNum"
           type="primary"
-          :loading="loading"
           @click="datasetSave"
         >{{
           $t('commons.save')
@@ -58,6 +57,7 @@
         :origin-name="originName"
         :name-list="nameList"
         @setTableNum="(val) => (tableNum = val)"
+        @datasourceLoading="(val) => loading = val"
       />
     </div>
   </div>
@@ -80,9 +80,9 @@ export default {
     return {
       originName: '',
       tableNum: 0,
+      loading: false,
       showInput: false,
       editType: '',
-      loading: false,
       selectDatasets: [],
       tData: [],
       datasetType: '',
@@ -185,7 +185,6 @@ export default {
           return
         }
       }
-      this.loading = true
       this.$refs.addDataset.save()
     },
     handleClick() {
@@ -219,6 +218,7 @@ export default {
       )
     },
     initTable(id) {
+      this.loading = true
       post('/dataset/table/getWithPermission/' + id, null)
         .then((response) => {
           const { sceneId: id, id: tableId, name } = response.data || {}
@@ -234,7 +234,10 @@ export default {
             this.table.editType = +this.editType
           }
         })
-        .catch(() => {})
+        .catch(() => { })
+        .finally(() => {
+          this.loading = false
+        })
     },
     switchComponent(c) {
       switch (c) {
