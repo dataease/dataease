@@ -1208,16 +1208,29 @@ public class OracleQueryProvider extends QueryProvider {
                 String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        whereName = String.format(OracleConstants.TO_DATE, originName, format);
+                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                            whereName = String.format(OracleConstants.TO_CHAR, String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT), format);
+                        }else {
+                            whereName = String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT);
+                        }
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, format);
+                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                            String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
+                            whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, format);
+                        }else {
+                            String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
+                            whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, OracleConstants.DEFAULT_DATE_FORMAT);
+                        }
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = originName;
-//                        whereName = String.format(OracleConstants.TO_CHAR, originName, format);
+                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                            whereName = String.format(OracleConstants.TO_CHAR, originName, format);
+                        }else {
+                            whereName = originName;
+                        }
                     }
+
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                         whereName = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_FLOAT_FORMAT);
