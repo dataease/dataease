@@ -423,7 +423,7 @@ export default {
           try {
             const targetRef = _this.$refs['canvasTabRef-' + _this.activeTabName]
             if (targetRef) {
-              targetRef[0].restore()
+              targetRef[0]?.restore()
             }
             _this.$refs[this.activeTabName][0].resizeChart()
           } catch (e) {
@@ -528,7 +528,7 @@ export default {
             _this.activeTabName = _this.element.options.tabList[nowIndex].name
             const targetRef = _this.$refs['canvasTabRef-' + _this.activeTabName]
             if (targetRef) {
-              targetRef[0].restore()
+              targetRef[0]?.restore()
             }
           });
         }, switchTime)
