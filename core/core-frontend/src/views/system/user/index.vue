@@ -75,7 +75,7 @@ const timestampFormatDate = value => {
   if (!value) {
     return '-'
   }
-  return new Date(value).format()
+  return new Date(value)['format']()
 }
 const edit = row => {
   userFormDialog.value.edit(row.id)
@@ -195,7 +195,6 @@ const saveHandler = () => {
               <div><Icon name="unlock" @click="unlock(scope.row)"></Icon></div>
               <div><Icon name="delete" @click="delHandler(scope.row)"></Icon></div>
             </div>
-
           </template>
         </el-table-column>
       </GridTable>

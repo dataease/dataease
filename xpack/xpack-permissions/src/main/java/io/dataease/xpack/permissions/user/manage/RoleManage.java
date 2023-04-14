@@ -5,6 +5,7 @@ import io.dataease.api.permissions.role.vo.RoleCreator;
 import io.dataease.api.permissions.role.vo.RoleDetailVO;
 import io.dataease.api.permissions.role.vo.RoleEditor;
 import io.dataease.api.permissions.role.vo.RoleVO;
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
@@ -20,6 +21,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -58,6 +60,7 @@ public class RoleManage {
         // 需要验证名称是否重复
     }
 
+    @Transactional
     public void saveWithOrg(Long oid) {
         PerRole po = new PerRole();
         po.setId(IDUtils.snowID());
@@ -75,17 +78,23 @@ public class RoleManage {
         poReadonly.setLevel(1);
         poReadonly.setReadonly(true);
         poReadonly.setOrgId(oid);
-        perRoleMapper.insert(po);
+        perRoleMapper.insert(poReadonly);
 
-        mountOrgAdmin(po.getId());
+        mountOrgAdmin(po.getId(), oid);
     }
 
-    private void mountOrgAdmin(Long rid) {
-        Long userId = AuthUtils.getUser().getUserId();
+    private void mountOrgAdmin(Long rid, Long oid) {
+        if (AuthUtils.isSysAdmin()) {
+            return;
+        }
+        TokenUserBO user = AuthUtils.getUser();
+        Long userId = user.getUserId();
         PerUserRole userRole = new PerUserRole();
         userRole.setUid(userId);
         userRole.setRid(rid);
         userRole.setId(IDUtils.snowID());
+        userRole.setOid(oid);
+        userRole.setCreateTime(System.currentTimeMillis());
         perUserRoleMapper.insert(userRole);
     }
 

@@ -6,7 +6,6 @@
     :render-after-expand="false"
     :props="props"
     @change="changeVal"
-    show-checkbox
   />
 </template>
 
@@ -37,7 +36,7 @@ const changeVal = val => {
   return item
 } */
 
-const switchHandler = (id: number) => {
+const switchHandler = (id: number | string) => {
   switchOrg(id)
 }
 
