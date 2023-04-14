@@ -158,6 +158,10 @@ public class UserPageManage {
 
     public void switchOrg(Long oId) {
         TokenUserBO user = AuthUtils.getUser();
+        if (AuthUtils.isSysAdmin()) {
+            userExtMapper.switchOrg(user.getUserId(), oId);
+            return;
+        }
         List<PerOrgItem> perOrgItems = orgPageManage.queryByUser(user.getUserId(), null);
         if (CollectionUtil.isNotEmpty(perOrgItems) && perOrgItems.stream().filter(item -> !item.isDisabled()).anyMatch(item -> item.getId() == oId)) {
             userExtMapper.switchOrg(user.getUserId(), oId);

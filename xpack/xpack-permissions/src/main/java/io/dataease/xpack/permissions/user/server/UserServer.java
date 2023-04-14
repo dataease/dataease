@@ -13,6 +13,7 @@ import io.dataease.api.permissions.user.vo.UserItem;
 import io.dataease.request.BaseGridRequest;
 import io.dataease.xpack.permissions.user.manage.UserPageManage;
 import jakarta.annotation.Resource;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -63,9 +64,10 @@ public class UserServer implements UserApi {
     }
 
     @Override
-    public void switchOrg(Long oId) {
+    @Transactional
+    public String switchOrg(Long oId) {
         userPageManage.switchOrg(oId);
-        userPageManage.switchToken();
+        return userPageManage.switchToken();
     }
 
     @Override
