@@ -16,8 +16,9 @@ export const isChange = (conditions1, conditions2) => {
   if (conditions1.length !== conditions2.length) return true
   let arr1 = JSON.parse(JSON.stringify(conditions1))
   let arr2 = JSON.parse(JSON.stringify(conditions2))
-  arr1 = arr1.sort((s1, s2) => s1.componentId > s2.componentId)
-  arr2 = arr2.sort((s1, s2) => s1.componentId > s2.componentId)
+  const strCodeAt = (str) => str[0].charCodeAt()
+  arr1 = arr1.sort((s1, s2) => strCodeAt(s1.componentId) - strCodeAt(s2.componentId))
+  arr2 = arr2.sort((s1, s2) => strCodeAt(s1.componentId) - strCodeAt(s2.componentId))
   return JSON.stringify(arr1) !== JSON.stringify(arr2)
 }
 
