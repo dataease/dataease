@@ -106,7 +106,7 @@ public class MysqlDDLProvider extends DDLProvider {
         StringBuilder Column_Fields = new StringBuilder("dataease_uuid  varchar(50), `");
         for (TableField tableField : tableFields) {
             Column_Fields.append(tableField.getDbFieldName()).append("` ");
-            Long size = tableField.getSize() * 4;
+            int size = tableField.getPrecision() * 4;
             switch ((int) tableField.getDeType()) {
                 case 0:
                     Column_Fields.append("longtext").append(",`");
@@ -114,7 +114,7 @@ public class MysqlDDLProvider extends DDLProvider {
                 case 1:
                     size  = size < 50? 50 : size;
                     if (size < 65533) {
-                        Column_Fields.append("varchar(length)".replace("length", String.valueOf(tableField.getSize()))).append(",`");
+                        Column_Fields.append("varchar(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",`");
                     }else {
                         Column_Fields.append("longtext").append(",`");
                     }
@@ -126,11 +126,11 @@ public class MysqlDDLProvider extends DDLProvider {
                     Column_Fields.append("varchar(100)").append(",`");
                     break;
                 case 4:
-                    Column_Fields.append("TINYINT(length)".replace("length", String.valueOf(tableField.getSize()))).append(",`");
+                    Column_Fields.append("TINYINT(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",`");
                     break;
                 default:
                     if (size < 65533) {
-                        Column_Fields.append("varchar(length)".replace("length", String.valueOf(tableField.getSize()))).append(",`");
+                        Column_Fields.append("varchar(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",`");
                     }else {
                         Column_Fields.append("longtext").append(",`");
                     }

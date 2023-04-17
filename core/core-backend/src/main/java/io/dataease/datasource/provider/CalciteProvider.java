@@ -128,9 +128,11 @@ public class CalciteProvider extends Provider {
             for (int i = 0; i < columnCount; i++) {
                 TableField tableField = new TableField();
                 tableField.setFieldName(metaData.getColumnName(i));
+                tableField.setType(metaData.getColumnType(i));
+                tableField.setPrecision(metaData.getPrecision(i));
+                tableField.setScale(metaData.getScale(i));
                 datasetTableFields.add(tableField);
             }
-
             list = getDataResult(resultSet);
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
@@ -168,7 +170,8 @@ public class CalciteProvider extends Provider {
             switch (datasourceRequest.getDatasource().getType()) {
                 case "mysql":
                     schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, rootNode.get("dataBase").asText());
-                    return rootSchema;
+                    rootSchema.add(ds.getSchemaAlias(), schema);
+                    break;
                 default:
                     schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, rootNode.get("dataBase").asText());
                     rootSchema.add(ds.getSchemaAlias(), schema);
