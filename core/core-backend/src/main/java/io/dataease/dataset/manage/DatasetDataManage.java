@@ -7,6 +7,7 @@ import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
+import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.model.TableField;
@@ -19,16 +20,12 @@ import io.dataease.engine.trans.Field2SQLObj;
 import io.dataease.engine.trans.Order2SQLObj;
 import io.dataease.engine.trans.Table2SQLObj;
 import io.dataease.utils.BeanUtils;
-import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,16 +44,7 @@ public class DatasetDataManage {
         List<DatasetTableFieldDTO> list = null;
         String type = datasetTableDTO.getType();
         DatasetTableInfoDTO tableInfoDTO = JsonUtil.parse(datasetTableDTO.getInfo(), DatasetTableInfoDTO.class);
-        if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
-            CoreDatasource coreDatasource = coreDatasourceMapper.selectById(datasetTableDTO.getDatasourceId());
-
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(coreDatasource);
-            datasourceRequest.setTable(tableInfoDTO.getTable());
-            List<TableField> tableFields = calciteProvider.getTableFields(datasourceRequest);
-
-            list = transFields(tableFields);
-        } else if (StringUtils.equalsIgnoreCase(type, DatasetTableType.SQL)) {
+        if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB) || StringUtils.equalsIgnoreCase(type, DatasetTableType.SQL)) {
             CoreDatasource coreDatasource = coreDatasourceMapper.selectById(datasetTableDTO.getDatasourceId());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
@@ -64,7 +52,11 @@ public class DatasetDataManage {
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
-            datasourceRequest.setQuery(tableInfoDTO.getSql());
+            if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
+                datasourceRequest.setQuery(TableUtils.tableName2Sql(tableInfoDTO.getTable()));
+            } else {
+                datasourceRequest.setQuery(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())));
+            }
             List<TableField> tableFields = calciteProvider.fetchResultField(datasourceRequest);
 
             list = transFields(tableFields);
@@ -79,11 +71,14 @@ public class DatasetDataManage {
             DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
             dto.setName(StringUtils.isNotEmpty(ele.getRemarks()) ? ele.getRemarks() : ele.getFieldName());
             // todo trans field
+            dto.setChecked(true);
+            dto.setType(ele.getType());
+            dto.setDescription(ele.getRemarks());
             return dto;
         }).collect(Collectors.toList());
     }
 
-    public Map<String, List> previewData(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+    public Map<String, Object> previewData(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
         String sql = (String) sqlMap.get("sql");
         List<DatasetTableFieldDTO> fields = (List<DatasetTableFieldDTO>) sqlMap.get("field");
@@ -100,7 +95,12 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
-        return calciteProvider.fetchResultAndField(datasourceRequest);
+        Map<String, List> data = calciteProvider.fetchResultAndField(datasourceRequest);
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("data", data);
+        map.put("allFields", fields);
+        map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
+        return map;
     }
 
     public Map<String, List> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, int start, int count) throws Exception {

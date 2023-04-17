@@ -352,7 +352,7 @@ public class DatasetSQLManage {
         if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_DB)) {
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();
         } else if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_SQL)) {
-            tableObj = SQLObj.builder().tableSchema("").tableName("(" + infoDTO.getSql() + ")").tableAlias(tableAlias).build();
+            tableObj = SQLObj.builder().tableSchema("").tableName("(" + new String(Base64.getDecoder().decode(infoDTO.getSql())) + ")").tableAlias(tableAlias).build();
         } else {
             // todo excel,api
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();

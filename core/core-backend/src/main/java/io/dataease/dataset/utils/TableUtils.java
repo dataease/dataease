@@ -41,4 +41,8 @@ public class TableUtils {
         }
         return schema + sqlObj.getTableName() + " " + sqlObj.getTableAlias();
     }
+
+    public static String tableName2Sql(String tableName) {
+        return "SELECT * FROM " + tableName;
+    }
 }

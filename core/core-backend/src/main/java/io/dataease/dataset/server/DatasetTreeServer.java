@@ -23,12 +23,17 @@ public class DatasetTreeServer implements DatasetTreeApi {
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(Long id) {
         datasetGroupManage.delete(id);
     }
 
     @Override
     public List<DatasetTreeNodeVO> tree(DatasetNodeDTO datasetNodeDTO) {
         return datasetGroupManage.tree(datasetNodeDTO);
+    }
+
+    @Override
+    public DatasetGroupInfoDTO get(Long id) throws Exception {
+        return datasetGroupManage.get(id);
     }
 }
