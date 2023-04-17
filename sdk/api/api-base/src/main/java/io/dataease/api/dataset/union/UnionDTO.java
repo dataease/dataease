@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 public class UnionDTO {
     private DatasetTableDTO currentDs;
-    private List<String> currentDsField;
+    private List<Long> currentDsField;
     private List<DatasetTableFieldDTO> currentDsFields;
     private List<UnionDTO> childrenDs;
     private UnionParamDTO unionToParent;

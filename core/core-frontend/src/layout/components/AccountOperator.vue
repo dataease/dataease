@@ -1,15 +1,14 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import router from '@/router'
 const userStore = useUserStoreWithOut()
-const name = ref('admin')
+const name = ref('')
 
 const logout = () => {
-  userStore.setToken(null)
-  userStore.$reset()
   userStore.clear()
+  userStore.$reset()
   let queryRedirectPath = '/home/index'
   // 如果redirect参数中有值
   if (router.currentRoute.value.fullPath) {
@@ -17,6 +16,9 @@ const logout = () => {
   }
   router.push(`/login?redirect=${queryRedirectPath}`)
 }
+onMounted(() => {
+  name.value = userStore.getName
+})
 </script>
 
 <template>

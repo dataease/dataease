@@ -12,7 +12,7 @@ import java.util.List;
 public interface DatasetTreeApi {
 
     @PostMapping("save")
-    DatasetNodeDTO save(@RequestBody DatasetGroupInfoDTO dto);
+    DatasetNodeDTO save(@RequestBody DatasetGroupInfoDTO dto) throws Exception;
 
     @PostMapping("delete/{id}")
     void delete(@PathVariable String id);

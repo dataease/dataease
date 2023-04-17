@@ -1,6 +1,7 @@
 package io.dataease.utils;
 
 import io.dataease.model.ITreeBase;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -26,7 +27,7 @@ public class TreeUtils {
         }
         List<T> result = new ArrayList<>();
         // 构建id-节点map映射
-        Map<String, T> treePidMap = tree.stream().collect(Collectors.toMap(T::getId, t -> t));
+        Map<Long, T> treePidMap = tree.stream().collect(Collectors.toMap(T::getId, t -> t));
         tree.stream().forEach(node -> {
             // 判断根节点
             if (Arrays.asList(rootPid).contains(node.getPid())) {
@@ -64,7 +65,7 @@ public class TreeUtils {
         List<T> result = new ArrayList<>();
         // 构建id-节点map映射
         Map<String, T> treePidMap = tree.stream().collect(Collectors.toMap(node -> node.getNodeType(), t -> t));
-        tree.stream().filter(item -> StringUtils.isNotBlank(item.getId())).forEach(node -> {
+        tree.stream().filter(item -> ObjectUtils.isNotEmpty(item.getId())).forEach(node -> {
 
             String nodeType = node.getNodeType();
             String[] links = nodeType.split(SEPARATOR);

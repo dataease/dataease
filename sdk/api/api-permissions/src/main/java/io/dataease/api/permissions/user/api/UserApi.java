@@ -51,7 +51,7 @@ public interface UserApi {
     List<UserItem> selectedForRole(@RequestBody UserRequest request);
 
     @PostMapping("/switch/{oId}")
-    void switchOrg(@PathVariable("oId") Long oId);
+    String switchOrg(@PathVariable("oId") Long oId);
 
     @GetMapping("/info")
     CurUserVO info();

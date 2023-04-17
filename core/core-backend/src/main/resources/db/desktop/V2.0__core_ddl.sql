@@ -89,7 +89,7 @@ VALUES (1, 0, 2, 'home', 'home', 1, NULL, '/home', 0, 1),
 DROP TABLE IF EXISTS `core_dataset_group`;
 CREATE TABLE `core_dataset_group`
 (
-    `id`               varchar(50) NOT NULL COMMENT 'ID',
+    `id`               bigint NOT NULL COMMENT 'ID',
     `name`             varchar(128)  DEFAULT NULL COMMENT '名称',
     `pid`              varchar(50)   DEFAULT NULL COMMENT '父级ID',
     `level`            int(10) DEFAULT '0' COMMENT '当前分组处于第几级',
@@ -109,7 +109,7 @@ CREATE TABLE `core_dataset_group`
 DROP TABLE IF EXISTS `core_dataset_table`;
 CREATE TABLE `core_dataset_table`
 (
-    `id`                   varchar(50) NOT NULL COMMENT 'ID',
+    `id`                   bigint NOT NULL COMMENT 'ID',
     `name`                 varchar(128) DEFAULT NULL COMMENT '名称',
     `table_name`           varchar(128) DEFAULT NULL COMMENT '物理表名',
     `datasource_id`        varchar(50)  DEFAULT NULL COMMENT '数据源ID',
@@ -123,7 +123,7 @@ CREATE TABLE `core_dataset_table`
 DROP TABLE IF EXISTS `core_dataset_table_field`;
 CREATE TABLE `core_dataset_table_field`
 (
-    `id`               varchar(50)  NOT NULL COMMENT 'ID',
+    `id`               bigint  NOT NULL COMMENT 'ID',
     `datasource_id`    varchar(50)  DEFAULT NULL COMMENT '数据源ID',
     `dataset_table_id` varchar(50)  NOT NULL COMMENT '数据表ID',
     `dataset_group_id` varchar(50)  NOT NULL COMMENT '数据集ID',

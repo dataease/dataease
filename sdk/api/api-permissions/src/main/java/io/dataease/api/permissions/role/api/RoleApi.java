@@ -2,6 +2,7 @@ package io.dataease.api.permissions.role.api;
 
 import io.dataease.api.permissions.role.dto.MountUserRequest;
 import io.dataease.api.permissions.role.dto.RoleRequest;
+import io.dataease.api.permissions.role.dto.UnmountUserRequest;
 import io.dataease.api.permissions.role.vo.RoleCreator;
 import io.dataease.api.permissions.role.vo.RoleDetailVO;
 import io.dataease.api.permissions.role.vo.RoleEditor;
@@ -33,8 +34,8 @@ public interface RoleApi {
     @PostMapping("/mountExternalUser/{uId}")
     void mountExternalUser(@PathVariable("uId") Long uId);
 
-    @PostMapping("/unMountUser/{uId}")
-    void unMountUser(@PathVariable("uId") Long uId);
+    @PostMapping("/unMountUser")
+    void unMountUser(@RequestBody UnmountUserRequest request);
 
     @PostMapping("/user/option")
     List<RoleVO> optionForUser(@RequestBody RoleRequest request);
@@ -47,4 +48,7 @@ public interface RoleApi {
 
     @PostMapping("/delete/{rid}")
     void delete(@PathVariable("rid") Long rid);
+
+    @PostMapping("/beforeUnmountInfo")
+    Integer beforeUnmountInfo(@RequestBody UnmountUserRequest request);
 }

@@ -75,7 +75,7 @@ const timestampFormatDate = value => {
   if (!value) {
     return '-'
   }
-  return new Date(value).format()
+  return new Date(value)['format']()
 }
 const edit = row => {
   userFormDialog.value.edit(row.id)
@@ -161,15 +161,22 @@ const saveHandler = () => {
           width="150"
         />
 
-        <el-table-column prop="roleItems" key="roleItems" :label="t('user.role')" width="200">
+        <el-table-column
+          prop="roleItems"
+          key="roleItems"
+          :label="t('user.role')"
+          width="200"
+          show-overflow-tooltip
+        >
           <template #default="scope">
-            <el-tooltip popper-class="de-table-tooltips" class="item" effect="dark" placement="top">
+            <div class="de-one-line">{{ filterRoles(scope.row.roleItems) }}</div>
+            <!-- <el-tooltip popper-class="de-table-tooltips" class="item" effect="dark" placement="top">
               <template #content>
                 <div v-html="filterRoles(scope.row.roleItems)" />
               </template>
 
               <div class="de-one-line">{{ filterRoles(scope.row.roleItems) }}</div>
-            </el-tooltip>
+            </el-tooltip> -->
           </template>
         </el-table-column>
         <el-table-column prop="email" key="email" :label="t('common.email')" width="200" />
@@ -177,6 +184,7 @@ const saveHandler = () => {
         <el-table-column prop="enable" key="enable" :label="t('user.state')" width="80">
           <template #default="scope">
             <el-switch
+              :disabled="scope.row.id === '1'"
               v-model="scope.row.enable"
               inactive-color="#DCDFE6"
               @change="changeSwitch(scope.row)"
@@ -190,12 +198,11 @@ const saveHandler = () => {
         </el-table-column>
         <el-table-column key="_operation" :label="$t('common.operate')">
           <template #default="scope">
-            <div class="operate-icon-container">
+            <div class="operate-icon-container" v-if="scope.row.id !== '1'">
               <div><Icon name="edit" @click="edit(scope.row)"></Icon></div>
               <div><Icon name="unlock" @click="unlock(scope.row)"></Icon></div>
               <div><Icon name="delete" @click="delHandler(scope.row)"></Icon></div>
             </div>
-
           </template>
         </el-table-column>
       </GridTable>

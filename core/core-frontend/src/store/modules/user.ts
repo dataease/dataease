@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { store } from '../index'
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
+import { userInfo } from '@/api/user'
 interface UserState {
   token: string
   uid: string
@@ -22,22 +23,38 @@ export const userStore = defineStore('user', {
   },
   getters: {
     getToken(): string {
-      return wsCache.get('user.token') || this.token
+      return this.token
     },
     getUid(): string {
-      return wsCache.get('user.uid') || this.uid
+      return this.uid
     },
     getName(): string {
-      return wsCache.get('user.name') || this.name
+      return this.name
     },
     getOid(): string {
-      return wsCache.get('user.oid') || this.oid
+      return this.oid
     },
     getLanguage(): string {
-      return wsCache.get('user.language') || this.language
+      return this.language
     }
   },
   actions: {
+    async setUser() {
+      const res = await userInfo()
+      const data = res.data
+      data.token = wsCache.get('user.token')
+      /* this.token = userInfo.token
+      this.uid = userInfo.uid
+      this.name = userInfo.name
+      this.oid = userInfo.oid
+      this.language = userInfo.language */
+      const keys: string[] = ['token', 'uid', 'name', 'oid', 'language']
+
+      keys.forEach(key => {
+        this[key] = data[key]
+        wsCache.set('user.' + key, this[key])
+      })
+    },
     setToken(token: string) {
       wsCache.set('user.token', token)
       this.token = token

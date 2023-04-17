@@ -37,9 +37,9 @@ public class Quota2SQLObj {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = Utils.calcFieldRegex(y.getOriginName(), tableObj, calcFields);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_COPY)) {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getDataeaseName());
+                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getDataeaseName());
+                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -63,7 +63,7 @@ public class Quota2SQLObj {
 
     private static SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
         String fieldName = "";
-        if (StringUtils.equalsIgnoreCase(y.getDataeaseName(), "*")) {
+        if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
             fieldName = SQLConstants.AGG_COUNT;
         } else if (SQLConstants.DIMENSION_TYPE.contains(y.getDeType())) {
             if (StringUtils.equalsIgnoreCase(y.getSummary(), "count_distinct")) {
