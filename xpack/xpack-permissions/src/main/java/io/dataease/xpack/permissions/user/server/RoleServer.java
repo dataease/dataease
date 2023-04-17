@@ -3,6 +3,7 @@ package io.dataease.xpack.permissions.user.server;
 import io.dataease.api.permissions.role.api.RoleApi;
 import io.dataease.api.permissions.role.dto.MountUserRequest;
 import io.dataease.api.permissions.role.dto.RoleRequest;
+import io.dataease.api.permissions.role.dto.UnmountUserRequest;
 import io.dataease.api.permissions.role.vo.RoleCreator;
 import io.dataease.api.permissions.role.vo.RoleDetailVO;
 import io.dataease.api.permissions.role.vo.RoleEditor;
@@ -49,8 +50,8 @@ public class RoleServer implements RoleApi {
     }
 
     @Override
-    public void unMountUser(Long uId) {
-
+    public void unMountUser(UnmountUserRequest request) {
+        roleManage.unMountUser(request);
     }
 
     @Override
@@ -72,5 +73,10 @@ public class RoleServer implements RoleApi {
     @Override
     public void delete(Long rid) {
         roleManage.deleteRole(rid);
+    }
+
+    @Override
+    public Integer beforeUnmountInfo(UnmountUserRequest request) {
+        return roleManage.beforeUnmountInfo(request);
     }
 }

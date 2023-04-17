@@ -13,7 +13,7 @@ import java.util.List;
 public interface OrgExtMapper extends PerOrgMapper {
 
     @Select("""
-            select po.*
+            select distinct po.*
             from per_org po 
             left join per_user_role pur on pur.oid = po.id 
             ${ew.customSqlSegment} 
