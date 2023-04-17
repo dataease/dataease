@@ -23,7 +23,7 @@ public abstract class Provider {
     abstract public String checkStatus(DatasourceRequest datasourceRequest) throws Exception;
     abstract public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception;
 
-    public Map<String, List> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
+    public Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
         return new HashMap<>();
     }
 

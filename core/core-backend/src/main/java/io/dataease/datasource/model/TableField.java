@@ -7,15 +7,13 @@ import lombok.Data;
 public class TableField {
     private String fieldName;
     private String remarks;
-    private String dbFieldName;     // API、excel 为插入数据库，重命名字段
-
-    private int type;               //SQL type from java.sql.Types
+    private String dbFieldName;         // API、excel 为插入数据库，重命名字段
+    private String type;               //SQL type from java.sql.Types
     private int precision;
     private int scale;
     private boolean checked = false;
     private String fieldType;
-    private long deType;
-    private int accuracy;
+    private int deType;
     private String jsonPath;
 
 

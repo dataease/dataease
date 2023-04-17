@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public interface DatasetDataApi {
     @PostMapping("previewData")
-    Map<String, List> previewData(@RequestBody DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception;
+    Map<String, Object> previewData(@RequestBody DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception;
 
     @PostMapping("tableField")
     List<DatasetTableFieldDTO> tableField(@RequestBody DatasetTableDTO datasetTableDTO) throws Exception;

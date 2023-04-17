@@ -310,8 +310,8 @@ public class DatasourceServer implements DatasourceApi {
 
     private void extractApiData(DatasourceRequest datasourceRequest, UpdateType extractType) throws Exception {
         Provider provider = ProviderUtil.getProvider(datasourceRequest.getDatasource().getType());
-        Map<String, List> result = provider.fetchResultField(datasourceRequest);
-        List<String[]> dataList = result.get("dataList");
+        Map<String, Object> result = provider.fetchResultField(datasourceRequest);
+        List<String[]> dataList = (List<String[]>) result.get("dataList");
         String engineTableName;
         switch (extractType) {
             case all_scope:

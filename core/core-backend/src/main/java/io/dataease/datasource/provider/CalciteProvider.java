@@ -108,7 +108,7 @@ public class CalciteProvider extends Provider {
     }
 
     @Override
-    public Map<String, List> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
+    public Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
         List<TableField> datasetTableFields = new ArrayList<>();
         List<String[]> list = new LinkedList<>();
         Connection connection = null;
@@ -128,7 +128,7 @@ public class CalciteProvider extends Provider {
             for (int i = 0; i < columnCount; i++) {
                 TableField tableField = new TableField();
                 tableField.setFieldName(metaData.getColumnName(i));
-                tableField.setType(metaData.getColumnType(i));
+                tableField.setType(metaData.getColumnTypeName(i));
                 tableField.setPrecision(metaData.getPrecision(i));
                 tableField.setScale(metaData.getScale(i));
                 datasetTableFields.add(tableField);
@@ -143,7 +143,7 @@ public class CalciteProvider extends Provider {
             if (connection != null) connection.close();
             Thread.currentThread().setContextClassLoader(classLoader);
         }
-        Map<String, List> map = new LinkedHashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
         map.put("fields", datasetTableFields);
         map.put("data", list);
         return map;

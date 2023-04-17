@@ -11,6 +11,7 @@ import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
+import io.dataease.utils.JsonUtil;
 import io.dataease.utils.TreeUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -18,9 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -61,15 +62,21 @@ public class DatasetGroupManage {
 
         // node_type=dataset需要创建dataset_table和field
         if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), "dataset")) {
+            List<Long> tableIds = new ArrayList<>();
+            List<Long> fieldIds = new ArrayList<>();
             // 解析tree，保存
-            saveTableAndField(datasetGroupInfoDTO, datasetGroupInfoDTO.getUnion());
+            saveTableAndField(datasetGroupInfoDTO, datasetGroupInfoDTO.getUnion(), tableIds, fieldIds);
+            // 删除不要的table和field
+            datasetTableManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), tableIds);
+            datasetTableFieldManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), fieldIds);
         }
-
         return datasetGroupInfoDTO;
     }
 
-    public void delete(String id) {
+    public void delete(Long id) {
         coreDatasetGroupMapper.deleteById(id);
+        datasetTableManage.deleteByDatasetGroupDelete(id);
+        datasetTableFieldManage.deleteByDatasetGroupDelete(id);
     }
 
     public List<DatasetTreeNodeVO> tree(DatasetNodeDTO datasetNodeDTO) {
@@ -106,7 +113,7 @@ public class DatasetGroupManage {
         }
     }
 
-    public void saveTableAndField(DatasetGroupInfoDTO datasetGroupInfoDTO, List<UnionDTO> union) {
+    public void saveTableAndField(DatasetGroupInfoDTO datasetGroupInfoDTO, List<UnionDTO> union, List<Long> tableIds, List<Long> fieldIds) {
         // table和field均由前端生成id（如果没有id）
         Long datasetGroupId = datasetGroupInfoDTO.getId();
         if (ObjectUtils.isNotEmpty(union)) {
@@ -114,6 +121,7 @@ public class DatasetGroupManage {
                 DatasetTableDTO currentDs = unionDTO.getCurrentDs();
                 currentDs.setDatasetGroupId(datasetGroupId);
                 datasetTableManage.save(currentDs);
+                tableIds.add(currentDs.getId());
 
                 List<DatasetTableFieldDTO> currentDsFields = unionDTO.getCurrentDsFields();
                 if (ObjectUtils.isNotEmpty(currentDsFields)) {
@@ -121,12 +129,31 @@ public class DatasetGroupManage {
                         datasetTableFieldDTO.setDatasourceId(currentDs.getDatasourceId());
                         datasetTableFieldDTO.setDatasetGroupId(datasetGroupId);
                         datasetTableFieldDTO.setDatasetTableId(currentDs.getId());
+                        datasetTableFieldDTO.setDataeaseName(datasetTableFieldDTO.getOriginName());
                         datasetTableFieldManage.save(datasetTableFieldDTO);
+                        fieldIds.add(datasetTableFieldDTO.getId());
                     }
                 }
-
-                saveTableAndField(datasetGroupInfoDTO, unionDTO.getChildrenDs());
+                saveTableAndField(datasetGroupInfoDTO, unionDTO.getChildrenDs(), tableIds, fieldIds);
             }
         }
+    }
+
+    public DatasetGroupInfoDTO get(Long id) throws Exception {
+        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
+        DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
+        BeanUtils.copyBean(dto, coreDatasetGroup);
+        List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), UnionDTO.class);
+        dto.setUnion(unionDTOList);
+
+        // 获取data和field
+        Map<String, Object> map = datasetDataManage.previewData(dto);
+        Map<String, List> data = (Map<String, List>) map.get("data");
+        List<DatasetTableFieldDTO> allFields = (List<DatasetTableFieldDTO>) map.get("allFields");
+        String sql = (String) map.get("sql");
+        dto.setData(data);
+        dto.setAllFields(allFields);
+        dto.setSql(sql);
+        return dto;
     }
 }

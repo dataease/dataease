@@ -14,9 +14,9 @@ public class MybatisPlusGenerator {
      * 第一 我嫌麻烦
      * 第二 后面配置会放到nacos读起来更麻烦了
      */
-    private static final String url = "jdbc:mysql://123.56.8.132:33061/jinlong?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false";
-    private static final String username = "root";
-    private static final String password = "Calong@2015";
+    private static final String url = "jdbc:mysql://127.0.0.1:3306/db?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false";
+    private static final String username = "xxxx";
+    private static final String password = "xxxx";
 
     /**
      * 业务模块例如datasource,dataset,panel等

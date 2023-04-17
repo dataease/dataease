@@ -41,17 +41,17 @@ public class DatasetTableManage {
         }
     }
 
-    public List<CoreDatasetTable> selectByDatasetGroupId(String datasetGroupId) {
+    public List<CoreDatasetTable> selectByDatasetGroupId(Long datasetGroupId) {
         QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", datasetGroupId);
         return coreDatasetTableMapper.selectList(wrapper);
     }
 
-    public CoreDatasetTable selectById(String datasetGroupId) {
-        return coreDatasetTableMapper.selectById(datasetGroupId);
+    public CoreDatasetTable selectById(Long id) {
+        return coreDatasetTableMapper.selectById(id);
     }
 
-    public void deleteByDatasetGroupUpdate(String datasetGroupId, List<String> ids) {
+    public void deleteByDatasetGroupUpdate(Long datasetGroupId, List<Long> ids) {
         if (!CollectionUtils.isEmpty(ids)) {
             QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
             wrapper.eq("dataset_group_id", datasetGroupId);
@@ -60,7 +60,9 @@ public class DatasetTableManage {
         }
     }
 
-    public void deleteByDatasetGroupDelete(String datasetGroupId) {
-        coreDatasetTableMapper.deleteById(datasetGroupId);
+    public void deleteByDatasetGroupDelete(Long datasetGroupId) {
+        QueryWrapper<CoreDatasetTable> wrapper = new QueryWrapper<>();
+        wrapper.eq("dataset_group_id", datasetGroupId);
+        coreDatasetTableMapper.delete(wrapper);
     }
 }

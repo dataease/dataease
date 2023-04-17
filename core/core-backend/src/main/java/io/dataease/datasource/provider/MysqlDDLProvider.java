@@ -43,9 +43,10 @@ public class MysqlDDLProvider extends DDLProvider {
             DataEaseException.throwException(e);
         }
     }
+
     private static final String creatTableSql =
             "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
-            "Column_Fields;" ;
+                    "Column_Fields;";
 
 
     @Override
@@ -72,9 +73,8 @@ public class MysqlDDLProvider extends DDLProvider {
                     .append("','").append(String.join("','", Arrays.asList(strings1)))
                     .append("'),");
         }
-        return (insertSql + values.substring(0, values.length() - 1)).replaceAll(",'null'",  ",null");
+        return (insertSql + values.substring(0, values.length() - 1)).replaceAll(",'null'", ",null");
     }
-
 
 
     @Override
@@ -88,11 +88,11 @@ public class MysqlDDLProvider extends DDLProvider {
     }
 
     @Override
-    public String replaceTable(String name){
+    public String replaceTable(String name) {
         String replaceTableSql = "rename table FROM_TABLE to FROM_TABLE_tmp, TO_TABLE to FROM_TABLE, FROM_TABLE_tmp to TO_TABLE"
                 .replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
         String dropTableSql = "DROP TABLE IF EXISTS " + TableUtils.tmpName(name);
-        return  replaceTableSql + ";" + dropTableSql;
+        return replaceTableSql + ";" + dropTableSql;
     }
 
 
@@ -107,15 +107,15 @@ public class MysqlDDLProvider extends DDLProvider {
         for (TableField tableField : tableFields) {
             Column_Fields.append(tableField.getDbFieldName()).append("` ");
             int size = tableField.getPrecision() * 4;
-            switch ((int) tableField.getDeType()) {
+            switch (tableField.getDeType()) {
                 case 0:
                     Column_Fields.append("longtext").append(",`");
                     break;
                 case 1:
-                    size  = size < 50? 50 : size;
+                    size = size < 50 ? 50 : size;
                     if (size < 65533) {
                         Column_Fields.append("varchar(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",`");
-                    }else {
+                    } else {
                         Column_Fields.append("longtext").append(",`");
                     }
                     break;
@@ -131,7 +131,7 @@ public class MysqlDDLProvider extends DDLProvider {
                 default:
                     if (size < 65533) {
                         Column_Fields.append("varchar(length)".replace("length", String.valueOf(tableField.getPrecision()))).append(",`");
-                    }else {
+                    } else {
                         Column_Fields.append("longtext").append(",`");
                     }
                     break;

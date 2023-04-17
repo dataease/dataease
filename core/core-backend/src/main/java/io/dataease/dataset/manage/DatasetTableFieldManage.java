@@ -50,13 +50,19 @@ public class DatasetTableFieldManage {
         }
     }
 
-    public void deleteByDatasetGroupUpdate(Long datasetGroupId, List<Long> datasetTableIds) {
-        if (!CollectionUtils.isEmpty(datasetTableIds)) {
+    public void deleteByDatasetGroupUpdate(Long datasetGroupId, List<Long> fieldIds) {
+        if (!CollectionUtils.isEmpty(fieldIds)) {
             QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
             wrapper.eq("dataset_group_id", datasetGroupId);
-            wrapper.notIn("dataset_table_id", datasetTableIds);
+            wrapper.notIn("id", fieldIds);
             coreDatasetTableFieldMapper.delete(wrapper);
         }
+    }
+
+    public void deleteByDatasetGroupDelete(Long datasetGroupId) {
+        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
+        wrapper.eq("dataset_group_id", datasetGroupId);
+        coreDatasetTableFieldMapper.delete(wrapper);
     }
 
     public List<CoreDatasetTableField> selectByDatasetTableId(Long id) {
