@@ -34,7 +34,7 @@ public class Utils {
         for (DatasetTableFieldDTO ele : calcFields) {
             if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
                 originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                        String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
+                        String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getOriginName()));
             }
         }
         return originField;
