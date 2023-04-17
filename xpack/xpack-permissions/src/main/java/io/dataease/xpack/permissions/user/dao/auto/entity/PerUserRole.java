@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-31
+ * @since 2023-04-12
  */
 @TableName("per_user_role")
 public class PerUserRole implements Serializable {
@@ -30,6 +30,10 @@ public class PerUserRole implements Serializable {
      * 角色ID
      */
     private Long rid;
+
+    private Long oid;
+
+    private Long createTime;
 
     public Long getId() {
         return id;
@@ -55,12 +59,30 @@ public class PerUserRole implements Serializable {
         this.rid = rid;
     }
 
+    public Long getOid() {
+        return oid;
+    }
+
+    public void setOid(Long oid) {
+        this.oid = oid;
+    }
+
+    public Long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Long createTime) {
+        this.createTime = createTime;
+    }
+
     @Override
     public String toString() {
         return "PerUserRole{" +
         "id = " + id +
         ", uid = " + uid +
         ", rid = " + rid +
+        ", oid = " + oid +
+        ", createTime = " + createTime +
         "}";
     }
 }

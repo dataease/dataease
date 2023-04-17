@@ -6,13 +6,13 @@ public interface ITreeBase<T> {
 
     String getNodeType();
 
-    String getId();
+    Long getId();
 
-    void setId(String id);
+    void setId(Long id);
 
-    String getPid();
+    Long getPid();
 
-    void setPid(String pid);
+    void setPid(Long pid);
 
     List<T> getChildren();
 

@@ -4,7 +4,6 @@ import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.engine.constant.SQLConstants;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.util.CollectionUtils;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -26,6 +25,10 @@ public class SQLProvider {
      */
     public static String createQuerySQLAsTmp(SQLMeta sqlMeta, boolean isGroup) {
         return createQuerySQL(sqlMeta, isGroup);
+    }
+
+    public static String createQuerySQLWithLimit(SQLMeta sqlMeta, boolean isGroup, int start, int count) {
+        return createQuerySQL(sqlMeta, isGroup) + " limit " + count + " offset " + start;
     }
 
     public static String createQuerySQL(SQLMeta sqlMeta, boolean isGroup) {

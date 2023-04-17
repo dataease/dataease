@@ -23,7 +23,7 @@ public class DatasourceRequest {
     private boolean pageable = false;
     private boolean previewData = false;
     private boolean totalPageFlag;
-    private Map<String, DatasourceSchemaDTO> dsList;
+    private Map<Long, DatasourceSchemaDTO> dsList;
 
     public DatasourceRequest() {
     }

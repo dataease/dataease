@@ -1,6 +1,7 @@
 package io.dataease.datasource.provider;
 
 
+import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -17,7 +18,7 @@ import java.util.Map;
 public abstract class Provider {
 
 
-    abstract public List<Map<String, String>> getTables(DatasourceRequest datasourceRequest) throws Exception;
+    abstract public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws Exception;
 
     abstract public String checkStatus(DatasourceRequest datasourceRequest) throws Exception;
     abstract public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception;

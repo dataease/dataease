@@ -14,10 +14,13 @@ import io.dataease.xpack.permissions.org.bo.PerOrgItem;
 import io.dataease.xpack.permissions.org.dao.auto.entity.PerOrg;
 import io.dataease.xpack.permissions.org.dao.auto.mapper.PerOrgMapper;
 import io.dataease.xpack.permissions.org.dao.ext.mapper.OrgExtMapper;
+import io.dataease.xpack.permissions.user.manage.RoleManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -27,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@Lazy
 public class OrgPageManage {
 
     private final static int ROOTID = 0;
@@ -36,6 +40,9 @@ public class OrgPageManage {
 
     @Resource
     private OrgExtMapper orgExtMapper;
+
+    @Resource
+    private RoleManage roleManage;
 
     public List<OrgPageVO> buildTree(List<PerOrgItem> poList) {
         List<OrgTreeNode> orgTreeNodes = poList.stream().map(po -> BeanUtils.copyBean(new OrgTreeNode(), po)).collect(Collectors.toList());
@@ -66,6 +73,7 @@ public class OrgPageManage {
         for (int i = 0; i < roots.size(); i++) {
             OrgTreeNode orgTreeNode = roots.get(i);
             OrgPageVO vo = BeanUtils.copyBean(new OrgPageVO(), orgTreeNode, "children");
+            vo.setReadOnly(orgTreeNode.isDisabled());
             result.add(vo);
             List<OrgTreeNode> children = null;
             if (!CollectionUtils.isEmpty(children = orgTreeNode.getChildren())) {
@@ -117,9 +125,11 @@ public class OrgPageManage {
         List<PerOrgItem> perOrgItems = convertItems(perOrgs, false);
         if (CollectionUtil.isNotEmpty(perOrgs)) {
             List<Long> matchIds = perOrgs.stream().map(PerOrg::getId).collect(Collectors.toList());
-            List<String> ids = perOrgs.stream().flatMap(item -> Arrays.stream(StringUtils.split(item.getRootWay(), ","))).distinct().filter(item -> !matchIds.contains(item)).collect(Collectors.toList());
+            List<String> ids = perOrgs.stream().filter(item -> StringUtils.isNotBlank(item.getRootWay())).flatMap(item -> Arrays.stream(StringUtils.split(item.getRootWay(), ","))).distinct().filter(item -> !matchIds.contains(Long.parseLong(item))).collect(Collectors.toList());
+            if (CollectionUtil.isEmpty(ids))  {
+                return perOrgItems;
+            }
             queryWrapper.clear();
-            queryWrapper = new QueryWrapper<>();
             queryWrapper.in(CollectionUtil.isNotEmpty(ids), "id", ids);
             List<PerOrg> orgList = perOrgMapper.selectList(queryWrapper);
             List<PerOrgItem> orgItems = convertItems(orgList, true);
@@ -131,11 +141,8 @@ public class OrgPageManage {
         return perOrgItems;
     }
 
-    /**
-     * 保存了组织就完了？
-     * 建角色 组织管理员 查看角色
-     * 当前用户挂给组织管理员
-     */
+
+    @Transactional
     public void save(String name, Long pid) {
         TokenUserBO user = AuthUtils.getUser();
         if (ObjectUtils.isEmpty(pid))
@@ -152,6 +159,8 @@ public class OrgPageManage {
         perOrg.setRootWay(newRootWay);
         perOrg.setCreateTime(System.currentTimeMillis());
         perOrgMapper.insert(perOrg);
+
+        roleManage.saveWithOrg(perOrg.getId());
     }
 
     public PerOrg queryOne(Long id) {
@@ -169,7 +178,14 @@ public class OrgPageManage {
         if (hasChildren(id)) {
             DEException.throwException("请先删除子组织");
         }
+        // 删除组织下所有角色
+        // 解绑角色
+        // 删除空角色用户
+        // 删除组织下业务资源
+        // 使用消息事件通知业务系统删除对应业务资源详情
         perOrgMapper.deleteById(id);
+        roleManage.deleteWithOrg(id);
+
     }
 
     public boolean hasChildren(Long id) {

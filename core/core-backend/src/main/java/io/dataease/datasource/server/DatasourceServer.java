@@ -1,15 +1,17 @@
 package io.dataease.datasource.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.DatasourceApi;
-import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.dataset.utils.TableUtils;
+import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
@@ -116,6 +118,32 @@ public class DatasourceServer implements DatasourceApi {
         return datasourceDTO;
     }
 
+    @Override
+    public List<DatasourceDTO> list() {
+        List<DatasourceDTO> datasourceDTOS = new ArrayList<>();
+        Collection<DatasourceConfiguration> datasourceConfigurations = datasourceTypes();
+        datasourceMapper.selectList(null).forEach(coreDatasource -> {
+            DatasourceDTO datasourceDTO = new DatasourceDTO();
+            BeanUtils.copyBean(datasourceDTO, coreDatasource);
+            datasourceConfigurations.forEach(datasourceConfiguration -> {
+                if (datasourceConfiguration.getType().equals(datasourceDTO.getType())) {
+                    datasourceDTO.setTypeAlias(datasourceConfiguration.getName());
+                }
+            });
+
+        });
+        return datasourceDTOS;
+    }
+
+    @Override
+    public List<DatasetTableDTO> getTables(String datasourceId) throws Exception {
+
+        CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(coreDatasource);
+        return ProviderUtil.getProvider(coreDatasource.getType()).getTables(datasourceRequest);
+    }
+
     private void preCheckDs(DatasourceDTO datasource) throws Exception {
         if (!datasourceTypes().stream().map(DatasourceConfiguration::getType).collect(Collectors.toList()).contains(datasource.getType())) {
             throw new Exception("Datasource type not supported.");
@@ -184,11 +212,11 @@ public class DatasourceServer implements DatasourceApi {
         try {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
-            List<Map<String, String>> tables = ProviderUtil.getProvider("API").getTables(datasourceRequest);
+            List<DatasetTableDTO> tables = ProviderUtil.getProvider("API").getTables(datasourceRequest);
             int sucsess = 0;
 
-            for (Map<String, String> api : tables) {
-                datasourceRequest.setTable(api.get("name"));
+            for (DatasetTableDTO api : tables) {
+                datasourceRequest.setTable(api.getTableName());
                 try {
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
@@ -201,7 +229,6 @@ public class DatasourceServer implements DatasourceApi {
                     if (updateType.equals(UpdateType.all_scope)) {
                         replaceTable(datasourceRequest.getTable());
                     }
-
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
                     sucsess++;

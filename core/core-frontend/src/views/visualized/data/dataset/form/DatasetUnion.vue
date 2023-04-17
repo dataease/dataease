@@ -5,7 +5,6 @@ import { HandleMore } from '@/components/handle-more'
 import { propTypes } from '@/utils/propTypes'
 
 const state = reactive({
-  leftList: [],
   nodeList: [],
   pathList: [],
   visualNode: null,
@@ -26,9 +25,17 @@ const handleCommand = (ele, command) => {
 
 const handlePathClick = ele => {
   console.log('ele', ele)
+  emits('joinEditor', ele)
 }
 
+const emits = defineEmits(['joinEditor'])
+
 const menuList = [
+  {
+    svgName: 'join-join',
+    label: '关联',
+    command: 'join'
+  },
   {
     svgName: 'icon_edit_outlined',
     label: '编辑',
@@ -95,12 +102,6 @@ const leafNode = (arr, leafList) => {
   })
 }
 
-// const travelsNode = computed(() => {
-//   let nodeListLocation = []
-//   dfsNode(state.nodeList, nodeListLocation)
-//   return nodeListLocation
-// })
-
 const flatNodeList = computed(() => {
   let flatArr = []
   let nodeListLocation = []
@@ -132,13 +133,19 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
     const pre = nodeListLocation[index - 1]
     if (!ele.children?.length) {
       let idxChild = index + y
+      let maxY = 0
       if (pre) {
-        const last = pre.children?.length ? pre.children[pre.children.length - 1] : { y: 0 }
+        const last = pre.children?.length
+          ? pre.children[pre.children.length - 1]
+          : { y: 0, maxY: 0 }
         idxChild = Math.max(last.y, pre.y) + 1
+        maxY += idxChild
+        idxChild = Math.max(idxChild, last.maxY)
       }
       nodeListLocation.push({
         x,
         y: idxChild,
+        maxY,
         isShadow: !!ele.isShadow,
         label: ele.label
       })
@@ -146,14 +153,21 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
       const children = []
       const pre = nodeListLocation[index - 1]
       let idx = y
+      let maxY = 0
       if (pre) {
-        const last = pre.children?.length ? pre.children[pre.children.length - 1] : { y: 0 }
+        const last = pre.children?.length
+          ? pre.children[pre.children.length - 1]
+          : { y: 0, maxY: 0 }
         idx = Math.max(last.y, pre.y) + 1
+        maxY = last.maxY
       }
-      dfsNode(ele.children, children, x + 1, idx)
+      dfsNode(ele.children, children, x + 1, idx ? Math.max(idx, maxY) : idx)
+      maxY = Math.max(children[children.length - 1].maxY + 1, maxY)
+
       nodeListLocation.push({
         x,
-        y: idx,
+        y: idx ? Math.max(idx, maxY) : idx,
+        maxY,
         isShadow: !!ele.isShadow,
         children,
         label: ele.label
@@ -165,7 +179,7 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
 const dfsNodeShadow = (arr, label, position) => {
   return arr.some((ele, index) => {
     if (ele.label === label) {
-      const flag = label + '_' + position
+      const flag = label + '_&&' + position
       if (ele.isShadow && state.visualNode.flag === flag) return true
       state.visualNode = {
         label: '',
@@ -231,7 +245,7 @@ const dragover_handler = ev => {
     state.visualNode = {
       label: '',
       isShadow: true,
-      flag: '_'
+      flag: '_&&'
     }
 
     state.nodeList[0].children = [state.visualNode]
@@ -260,7 +274,7 @@ const dragover_handler = ev => {
           bottom: toY
         }
       ),
-      isLeaf || state.visualNode?.flag === label + '_r'
+      isLeaf || state.visualNode?.flag === label + '_&&r'
         ? elementInteractArea(
             {
               left: dragOffsetX.value,
@@ -304,7 +318,7 @@ const dragover_handler = ev => {
     const [b, r] = maxArr
 
     if (!isShadow) {
-      dfsNodeShadow(state.nodeList, label, b > r || b === r ? 'b' : 'r')
+      dfsNodeShadow(state.nodeList, label, b >= r ? 'b' : 'r')
     }
   }
 }
@@ -316,26 +330,26 @@ const dragenter_handler = ev => {
 }
 
 const drop_handler = ev => {
-  console.log('Drop')
   ev.preventDefault()
   let data = ev.dataTransfer.getData('text')
+  console.log('Drop', data)
   if (!state.nodeList.length) {
     state.nodeList.push({
-      label: data
+      label: data,
+      id: `${+new Date()}`
     })
     return
   }
+
   if (!state.visualNode) return
-  state.visualNode.label = data
+  emits('joinEditor', {})
+
   state.visualNode.isShadow = false
   delete state.visualNode.flag
+  state.visualNode.label = data
   state.visualNode = null
   state.visualNodeParent = null
 }
-
-state.leftList = Array(15)
-  .fill(1)
-  .map((_, index) => 'test' + index)
 </script>
 
 <template>
@@ -385,7 +399,7 @@ state.leftList = Array(15)
           <handle-more
             style="margin-left: auto"
             v-if="activeNode === ele.label"
-            :menu-list="menuList"
+            :menuList="menuList"
             @handle-command="command => handleCommand(ele, command)"
           ></handle-more>
         </div>
@@ -471,11 +485,12 @@ state.leftList = Array(15)
 }
 
 .drag-mask {
-  flex: 1;
   background: #f5f6f7;
   overflow-x: auto;
   border: 1px solid #ccc;
   position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .mask-dataset {

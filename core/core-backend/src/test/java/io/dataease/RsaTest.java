@@ -2,30 +2,32 @@ package io.dataease;
 
 
 import cn.hutool.core.util.HexUtil;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.RSA;
 import cn.hutool.crypto.symmetric.AES;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
+import io.dataease.datasource.provider.CalciteProvider;
+import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.datasource.type.Mysql;
+import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
-import lombok.Data;
+
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
-import org.apache.calcite.sql.util.SqlBasicVisitor;
 import org.apache.calcite.sql.util.SqlShuttle;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Base64Utils;
-import org.springframework.util.CollectionUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.apache.calcite.sql.SqlKind.*;
 
-
+@SpringBootTest
 public class RsaTest {
 
     private static final String PK_SEPARATOR = "-pk_separator-";
@@ -155,5 +157,28 @@ public class RsaTest {
         };
     }
 
+
+    @Test
+    public void testCalcite() throws Exception{
+        CalciteProvider provider = new CalciteProvider();
+        provider.init();
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        Map<String, DatasourceSchemaDTO> ds = new HashMap<>();
+        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+        datasourceSchemaDTO.setType("mysql");
+        Mysql mysql = new Mysql();
+        mysql.setUsername("root");
+        mysql.setPassword("jinlong");
+        mysql.setHost("localhost");
+        mysql.setPort(3306);
+        mysql.setDataBase("dataease");
+
+//        datasourceSchemaDTO.setConfiguration(JsonUtil.toJSONString(mysql).toString());
+//        ds.put("dataease", datasourceSchemaDTO);
+//        datasourceRequest.setDsList(ds);
+//        datasourceRequest.setQuery("select * from dataease.sys_user");
+
+        System.out.println(JsonUtil.toJSONString(mysql).toString());
+    }
 
 }

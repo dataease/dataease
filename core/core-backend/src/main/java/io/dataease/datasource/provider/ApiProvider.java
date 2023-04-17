@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.JsonPath;
+import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.datasource.model.ApiDefinition;
 import io.dataease.datasource.model.ApiDefinitionRequest;
 import io.dataease.datasource.model.TableField;
@@ -37,16 +38,15 @@ public class ApiProvider extends Provider {
         return fetchResult(response, apiDefinition);
     }
 
-    public List<Map<String, String>> getTables(DatasourceRequest datasourceRequest) throws Exception {
-        List<Map<String, String>> tableDescs = new ArrayList<>();
+    public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws Exception {
+        List<DatasetTableDTO> tableDescs = new ArrayList<>();
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {};
         List<ApiDefinition> lists = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
 
         for (ApiDefinition apiDefinition : lists) {
-            Map<String, String> tableDesc = new HashMap<>();
-            tableDesc.put("name", apiDefinition.getName());
-            tableDesc.put("remark", apiDefinition.getDesc());
-            tableDescs.add(tableDesc);
+            DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
+            datasetTableDTO.setTableName(apiDefinition.getName());
+            datasetTableDTO.setName(apiDefinition.getDesc());
         }
         return tableDescs;
     }

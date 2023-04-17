@@ -1,5 +1,6 @@
 package io.dataease.xpack.permissions.user.dao.auto.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 
@@ -29,6 +30,7 @@ public class PerRole implements Serializable {
     /**
      * 描述
      */
+    @TableField("`desc`")
     private String desc;
 
     /**

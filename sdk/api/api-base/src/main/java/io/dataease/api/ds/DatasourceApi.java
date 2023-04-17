@@ -1,5 +1,6 @@
 package io.dataease.api.ds;
 
+import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,4 +35,10 @@ public interface DatasourceApi {
 
     @GetMapping("/validate/{datasourceId}")
     DatasourceDTO validate(@PathVariable("datasourceId") String datasourceId) throws Exception;
+
+    @PostMapping("list")
+    List<DatasourceDTO> list() throws Exception;
+
+    @PostMapping("getTables/{datasourceId}")
+    List<DatasetTableDTO> getTables(@PathVariable("datasourceId") String datasourceId) throws Exception;
 }

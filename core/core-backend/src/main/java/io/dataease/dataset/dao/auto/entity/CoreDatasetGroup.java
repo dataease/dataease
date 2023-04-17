@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-11
+ * @since 2023-04-14
  */
 @TableName("core_dataset_group")
 public class CoreDatasetGroup implements Serializable {
@@ -19,7 +19,7 @@ public class CoreDatasetGroup implements Serializable {
     /**
      * ID
      */
-    private String id;
+    private Long id;
 
     /**
      * 名称
@@ -29,7 +29,7 @@ public class CoreDatasetGroup implements Serializable {
     /**
      * 父级ID
      */
-    private String pid;
+    private Long pid;
 
     /**
      * 当前分组处于第几级
@@ -83,11 +83,11 @@ public class CoreDatasetGroup implements Serializable {
      */
     private String unionSql;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -99,11 +99,11 @@ public class CoreDatasetGroup implements Serializable {
         this.name = name;
     }
 
-    public String getPid() {
+    public Long getPid() {
         return pid;
     }
 
-    public void setPid(String pid) {
+    public void setPid(Long pid) {
         this.pid = pid;
     }
 

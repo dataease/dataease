@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-27
+ * @since 2023-04-14
  */
 @TableName("core_dataset_table")
 public class CoreDatasetTable implements Serializable {
@@ -19,7 +19,7 @@ public class CoreDatasetTable implements Serializable {
     /**
      * ID
      */
-    private String id;
+    private Long id;
 
     /**
      * 名称
@@ -34,12 +34,12 @@ public class CoreDatasetTable implements Serializable {
     /**
      * 数据源ID
      */
-    private String datasourceId;
+    private Long datasourceId;
 
     /**
      * 数据集ID
      */
-    private String datasetGroupId;
+    private Long datasetGroupId;
 
     /**
      * db,sql,union,excel,api
@@ -56,11 +56,11 @@ public class CoreDatasetTable implements Serializable {
      */
     private String sqlVariableDetails;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -80,19 +80,19 @@ public class CoreDatasetTable implements Serializable {
         this.tableName = tableName;
     }
 
-    public String getDatasourceId() {
+    public Long getDatasourceId() {
         return datasourceId;
     }
 
-    public void setDatasourceId(String datasourceId) {
+    public void setDatasourceId(Long datasourceId) {
         this.datasourceId = datasourceId;
     }
 
-    public String getDatasetGroupId() {
+    public Long getDatasetGroupId() {
         return datasetGroupId;
     }
 
-    public void setDatasetGroupId(String datasetGroupId) {
+    public void setDatasetGroupId(Long datasetGroupId) {
         this.datasetGroupId = datasetGroupId;
     }
 

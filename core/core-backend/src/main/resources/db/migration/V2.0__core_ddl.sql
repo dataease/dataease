@@ -93,9 +93,9 @@ TABLES;
 DROP TABLE IF EXISTS `core_dataset_group`;
 CREATE TABLE `core_dataset_group`
 (
-    `id`               varchar(50) NOT NULL COMMENT 'ID',
+    `id`               bigint NOT NULL COMMENT 'ID',
     `name`             varchar(128)  DEFAULT NULL COMMENT '名称',
-    `pid`              varchar(50)   DEFAULT NULL COMMENT '父级ID',
+    `pid`              bigint   DEFAULT NULL COMMENT '父级ID',
     `level`            int(10) DEFAULT '0' COMMENT '当前分组处于第几级',
     `node_type`        varchar(50) NOT NULL COMMENT 'node类型：folder or dataset',
     `type`             varchar(50) NOT NULL COMMENT 'sql,union',
@@ -113,11 +113,11 @@ CREATE TABLE `core_dataset_group`
 DROP TABLE IF EXISTS `core_dataset_table`;
 CREATE TABLE `core_dataset_table`
 (
-    `id`                   varchar(50) NOT NULL COMMENT 'ID',
+    `id`                   bigint NOT NULL COMMENT 'ID',
     `name`                 varchar(128) DEFAULT NULL COMMENT '名称',
     `table_name`           varchar(128) DEFAULT NULL COMMENT '物理表名',
-    `datasource_id`        varchar(50)  DEFAULT NULL COMMENT '数据源ID',
-    `dataset_group_id`     varchar(50) NOT NULL COMMENT '数据集ID',
+    `datasource_id`        bigint  DEFAULT NULL COMMENT '数据源ID',
+    `dataset_group_id`     bigint NOT NULL COMMENT '数据集ID',
     `type`                 varchar(50)  DEFAULT NULL COMMENT 'db,sql,union,excel,api',
     `info`                 longtext COMMENT '表原始信息,表名,sql等',
     `sql_variable_details` longtext COMMENT 'SQL参数',
@@ -127,10 +127,10 @@ CREATE TABLE `core_dataset_table`
 DROP TABLE IF EXISTS `core_dataset_table_field`;
 CREATE TABLE `core_dataset_table_field`
 (
-    `id`               varchar(50)  NOT NULL COMMENT 'ID',
-    `datasource_id`    varchar(50)  DEFAULT NULL COMMENT '数据源ID',
-    `dataset_table_id` varchar(50)  NOT NULL COMMENT '数据表ID',
-    `dataset_group_id` varchar(50)  NOT NULL COMMENT '数据集ID',
+    `id`               bigint  NOT NULL COMMENT 'ID',
+    `datasource_id`    bigint  DEFAULT NULL COMMENT '数据源ID',
+    `dataset_table_id` bigint  NOT NULL COMMENT '数据表ID',
+    `dataset_group_id` bigint  NOT NULL COMMENT '数据集ID',
     `origin_name`      longtext     NOT NULL COMMENT '原始字段名',
     `name`             longtext     DEFAULT NULL COMMENT '字段名用于展示',
     `description`      longtext     DEFAULT NULL COMMENT '描述',

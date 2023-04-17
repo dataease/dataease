@@ -3,7 +3,9 @@ package io.dataease.datasource.provider;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
+import io.dataease.commons.exception.DataEaseException;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
@@ -62,15 +64,37 @@ public class CalciteProvider extends Provider {
     }
 
     @Override
-    public List<Map<String, String>> getTables(DatasourceRequest datasourceRequest) throws Exception {
-        return null;
+    public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws Exception {
+        List<DatasetTableDTO> tables = new ArrayList<>();
+        List<String> tablesSqls = getTablesSql(datasourceRequest);
+        for (String tablesSql : tablesSqls) {
+            try (Connection con = getConnection(datasourceRequest.getDatasource().getConfiguration()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(tablesSql)) {
+                while (resultSet.next()) {
+                    tables.add(getTableDesc(datasourceRequest, resultSet));
+                }
+            } catch (Exception e) {
+                DataEaseException.throwException(e);
+            }
+        }
+        return tables;
+    }
+
+    private DatasetTableDTO getTableDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws SQLException {
+        DatasetTableDTO tableDesc = new DatasetTableDTO();
+        DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
+        if (datasourceType == DatasourceConfiguration.DatasourceType.oracle) {
+            tableDesc.setName(resultSet.getString(3));
+        }
+        if (datasourceType == DatasourceConfiguration.DatasourceType.mysql) {
+            tableDesc.setName(resultSet.getString(2));
+        }
+        tableDesc.setTableName(resultSet.getString(1));
+        return tableDesc;
     }
 
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String querySql = getTablesSql(datasourceRequest).get(0);
-        DatasourceConfiguration datasourceConfiguration = JsonUtil.parse(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
-        int queryTimeout = datasourceConfiguration.getQueryTimeout() > 0 ? datasourceConfiguration.getQueryTimeout() : 0;
-        try (Connection con = getConnection(datasourceRequest.getDatasource().getConfiguration()); Statement statement = getStatement(con, queryTimeout); ResultSet resultSet = statement.executeQuery(querySql)) {
+        try (Connection con = getConnection(datasourceRequest.getDatasource().getConfiguration()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(querySql)) {
         } catch (Exception e) {
             throw e;
         }
@@ -127,9 +151,9 @@ public class CalciteProvider extends Provider {
     // 构建root schema
     private SchemaPlus buildSchema(DatasourceRequest datasourceRequest, CalciteConnection calciteConnection) throws Exception {
         SchemaPlus rootSchema = calciteConnection.getRootSchema();
-        Map<String, DatasourceSchemaDTO> dsList = datasourceRequest.getDsList();
+        Map<Long, DatasourceSchemaDTO> dsList = datasourceRequest.getDsList();
 
-        for (Map.Entry<String, DatasourceSchemaDTO> next : dsList.entrySet()) {
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsList.entrySet()) {
             DatasourceSchemaDTO ds = next.getValue();
             JsonNode rootNode = objectMapper.readTree(ds.getConfiguration());
 
@@ -156,7 +180,7 @@ public class CalciteProvider extends Provider {
     }
 
     private void registerDriver(DatasourceRequest datasourceRequest) throws Exception {
-        for (Map.Entry<String, DatasourceSchemaDTO> next : datasourceRequest.getDsList().entrySet()) {
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : datasourceRequest.getDsList().entrySet()) {
             DatasourceSchemaDTO ds = next.getValue();
             JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
             Driver driver = (Driver) extendedJdbcClassLoader.loadClass(rootNode.get("driver").asText()).newInstance();

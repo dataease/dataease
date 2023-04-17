@@ -13,10 +13,9 @@ import java.util.List;
 public interface OrgExtMapper extends PerOrgMapper {
 
     @Select("""
-            select po.*
+            select distinct po.*
             from per_org po 
-            left join per_role pr on pr.org_id = po.id 
-            left join per_user_role pur on pur.rid = pr.id 
+            left join per_user_role pur on pur.oid = po.id 
             ${ew.customSqlSegment} 
             """)
     List<PerOrg> queryByUserId(@Param("ew") QueryWrapper queryWrapper);

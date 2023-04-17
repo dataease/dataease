@@ -10,7 +10,7 @@ public class DatasetTableDTO implements Serializable {
     /**
      * ID
      */
-    private String id;
+    private Long id;
 
     /**
      * 名称
@@ -25,12 +25,12 @@ public class DatasetTableDTO implements Serializable {
     /**
      * 数据源ID
      */
-    private String datasourceId;
+    private Long datasourceId;
 
     /**
      * 数据集ID
      */
-    private String datasetGroupId;
+    private Long datasetGroupId;
 
     /**
      * db,sql,union,excel,api

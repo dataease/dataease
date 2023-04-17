@@ -6,7 +6,6 @@
     :render-after-expand="false"
     :props="props"
     @change="changeVal"
-    show-checkbox
   />
 </template>
 
@@ -14,6 +13,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { mountedOrg, switchOrg } from '@/api/user'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import router from '@/router'
 const userStore = useUserStoreWithOut()
 const value = ref()
 const props = {
@@ -27,18 +27,13 @@ const state = reactive({
 const changeVal = val => {
   switchHandler(val)
 }
-/* const getById = (id: number) => {
-  let item = null
-  state.orgOption.forEach(option => {
-    if (option.id === id) {
-      item = option
-    }
-  })
-  return item
-} */
 
-const switchHandler = (id: number) => {
-  switchOrg(id)
+const switchHandler = (id: number | string) => {
+  switchOrg(id).then(res => {
+    const token = res.data
+    userStore.setToken(token)
+    router.go(0)
+  })
 }
 
 onMounted(() => {

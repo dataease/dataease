@@ -1,7 +1,11 @@
 package io.dataease.xpack.permissions.user.server;
 
 import io.dataease.api.permissions.role.api.RoleApi;
+import io.dataease.api.permissions.role.dto.MountUserRequest;
+import io.dataease.api.permissions.role.dto.RoleRequest;
+import io.dataease.api.permissions.role.dto.UnmountUserRequest;
 import io.dataease.api.permissions.role.vo.RoleCreator;
+import io.dataease.api.permissions.role.vo.RoleDetailVO;
 import io.dataease.api.permissions.role.vo.RoleEditor;
 import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.model.KeywordRequest;
@@ -36,9 +40,9 @@ public class RoleServer implements RoleApi {
     }
 
     @Override
-    public void mountUser(List<Long> uIds) {
+    public void mountUser(MountUserRequest request) {
         // 先验证uIds是否属于当前组织
-
+        roleManage.mountUser(request.getRid(), request.getUids());
     }
 
     public void mountExternalUser(Long uId) {
@@ -46,18 +50,33 @@ public class RoleServer implements RoleApi {
     }
 
     @Override
-    public void unMountUser(Long uId) {
-
+    public void unMountUser(UnmountUserRequest request) {
+        roleManage.unMountUser(request);
     }
 
     @Override
-    public List<RoleVO> optionForUser(Long id) {
+    public List<RoleVO> optionForUser(RoleRequest request) {
         Long defaultOid = AuthUtils.getUser().getDefaultOid();
-        return roleManage.optionForUser(null, defaultOid, id);
+        return roleManage.optionForUser(request.getKeyword(), defaultOid, request.getUid());
     }
 
     @Override
-    public List<RoleVO> selectedForUser(Long id) {
+    public List<RoleVO> selectedForUser(RoleRequest request) {
         return null;
+    }
+
+    @Override
+    public RoleDetailVO detail(Long rid) {
+        return roleManage.queryDetail(rid);
+    }
+
+    @Override
+    public void delete(Long rid) {
+        roleManage.deleteRole(rid);
+    }
+
+    @Override
+    public Integer beforeUnmountInfo(UnmountUserRequest request) {
+        return roleManage.beforeUnmountInfo(request);
     }
 }

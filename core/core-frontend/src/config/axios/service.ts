@@ -12,9 +12,9 @@ import { config } from './config'
 
 import { ElMessage } from 'element-plus-secondary'
 
-import { useUserStoreWithOut } from '@/store/modules/user'
-const userStore = useUserStoreWithOut()
 const { result_code } = config
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache()
 
 export const PATH_URL = window.DataEaseBi
   ? window.DataEaseBi?.base_url
@@ -36,8 +36,8 @@ service.interceptors.request.use(
     ) {
       config.data = qs.stringify(config.data)
     }
-    if (userStore.getToken) {
-      ;(config.headers as AxiosRequestHeaders)['Authorization'] = userStore.getToken
+    if (wsCache.get('user.token')) {
+      ;(config.headers as AxiosRequestHeaders)['Authorization'] = wsCache.get('user.token')
     }
     // ;(config.headers as AxiosRequestHeaders)['Token'] = 'test test'
     // get参数编码

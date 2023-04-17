@@ -10,7 +10,7 @@ public class DatasetNodeDTO implements Serializable {
     /**
      * ID
      */
-    private String id;
+    private Long id;
 
     /**
      * 名称
@@ -20,7 +20,7 @@ public class DatasetNodeDTO implements Serializable {
     /**
      * 父级ID
      */
-    private String pid;
+    private Long pid;
 
     /**
      * 当前分组处于第几级
@@ -68,5 +68,10 @@ public class DatasetNodeDTO implements Serializable {
      * 最后同步时间
      */
     private Long lastUpdateTime;
+
+    /**
+     * 关联sql
+     */
+    private String unionSql;
 
 }

@@ -1,6 +1,5 @@
 package io.dataease.xpack.permissions.user.server;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.permissions.role.dto.UserRequest;
@@ -8,16 +7,14 @@ import io.dataease.api.permissions.user.api.UserApi;
 import io.dataease.api.permissions.user.dto.UserCreator;
 import io.dataease.api.permissions.user.dto.UserEditor;
 import io.dataease.api.permissions.user.vo.CurUserVO;
+import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.api.permissions.user.vo.UserItem;
 import io.dataease.request.BaseGridRequest;
-import io.dataease.utils.BeanUtils;
-import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
-import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
-import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
+import io.dataease.utils.AuthUtils;
 import io.dataease.xpack.permissions.user.manage.UserPageManage;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,11 +24,6 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserServer implements UserApi {
 
-    @Resource
-    private PerUserMapper perUserMapper;
-
-    @Resource
-    private UserExtMapper userExtMapper;
 
     @Resource
     private UserPageManage userPageManage;
@@ -39,19 +31,12 @@ public class UserServer implements UserApi {
     @Override
     public IPage<UserGridVO> pager(int goPage, int pageSize, BaseGridRequest request) {
         Page<UserGridVO> page = new Page(goPage, pageSize);
-        QueryWrapper<UserGridVO> wrapper = new QueryWrapper<>();
-        String keyword = request.getKeyword();
-        wrapper.like(StringUtils.isNotBlank(keyword), "u.name", keyword);
-        IPage<UserGridVO> pager = userExtMapper.pager(page, wrapper);
-        return pager;
+        return userPageManage.pager(page, request);
     }
 
     @Override
-    public UserGridVO queryById(Long id) {
-        PerUser perUser = perUserMapper.selectById(id);
-        UserGridVO userGridVO = new UserGridVO();
-        BeanUtils.copyBean(userGridVO, perUser);
-        return userGridVO;
+    public UserFormVO queryById(Long id) {
+        return userPageManage.queryForm(id);
     }
 
     @Override
@@ -80,8 +65,11 @@ public class UserServer implements UserApi {
     }
 
     @Override
-    public void switchOrg(Long oId) {
-        userPageManage.switchOrg(oId);
+    @Transactional
+    public String switchOrg(Long oId) {
+        Long userId = AuthUtils.getUser().getUserId();
+        userPageManage.switchOrg(userId, oId);
+        return userPageManage.switchToken();
     }
 
     @Override

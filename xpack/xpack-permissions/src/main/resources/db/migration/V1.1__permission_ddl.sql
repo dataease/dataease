@@ -16,7 +16,7 @@ CREATE TABLE `per_user`
     `phone_prefix` varchar(15) DEFAULT NULL COMMENT '手机前缀',
     `phone`        varchar(20) DEFAULT NULL COMMENT '手机号',
     `enable`       tinyint(1) NOT NULL COMMENT '启用',
-    `from`         int         DEFAULT NULL COMMENT '来源',
+    `origin`       int         DEFAULT NULL COMMENT '来源',
     `creator_id`   bigint      DEFAULT NULL COMMENT '创建人ID',
     `create_time`  bigint      DEFAULT NULL COMMENT '创建时间',
     `language`     varchar(15) DEFAULT NULL COMMENT '语言',
@@ -31,7 +31,7 @@ CREATE TABLE `per_user`
 LOCK
 TABLES `per_user` WRITE;
 INSERT INTO `per_user`
-VALUES (1, 'admin', '7bc4b3f2d99c56c2d906ba588f589b5f', '系统管理员', 'admin@fit2cloud.com', '+86', NULL, 1, 0, 1,
+VALUES (1, 'admin', '83d923c9f1d8fcaa46cae0ed2aaa81b5', '系统管理员', 'admin@fit2cloud.com', '+86', NULL, 1, 0, 1,
         1677671694000, 'zh-CN', 1);
 UNLOCK
 TABLES;
@@ -76,6 +76,8 @@ CREATE TABLE `per_user_role`
     `id`  bigint NOT NULL COMMENT '关联ID',
     `uid` bigint NOT NULL COMMENT '用户ID',
     `rid` bigint NOT NULL COMMENT '角色ID',
+    `oid` bigint NOT NULL COMMENT '所属组织ID',
+    `create_time` bigint NOT NULL COMMENT '创建时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -86,7 +88,7 @@ CREATE TABLE `per_user_role`
 LOCK
 TABLES `per_user_role` WRITE;
 INSERT INTO `per_user_role`
-VALUES (1, 1, 1);
+VALUES (1, 1, 1, 1, 1681268906000);
 UNLOCK
 TABLES;
 

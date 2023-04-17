@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-27
+ * @since 2023-04-14
  */
 @TableName("core_dataset_table_field")
 public class CoreDatasetTableField implements Serializable {
@@ -19,22 +19,22 @@ public class CoreDatasetTableField implements Serializable {
     /**
      * ID
      */
-    private String id;
+    private Long id;
 
     /**
      * 数据源ID
      */
-    private String datasourceId;
+    private Long datasourceId;
 
     /**
      * 数据表ID
      */
-    private String datasetTableId;
+    private Long datasetTableId;
 
     /**
      * 数据集ID
      */
-    private String datasetGroupId;
+    private Long datasetGroupId;
 
     /**
      * 原始字段名
@@ -110,35 +110,35 @@ public class CoreDatasetTableField implements Serializable {
      */
     private String dateFormatType;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getDatasourceId() {
+    public Long getDatasourceId() {
         return datasourceId;
     }
 
-    public void setDatasourceId(String datasourceId) {
+    public void setDatasourceId(Long datasourceId) {
         this.datasourceId = datasourceId;
     }
 
-    public String getDatasetTableId() {
+    public Long getDatasetTableId() {
         return datasetTableId;
     }
 
-    public void setDatasetTableId(String datasetTableId) {
+    public void setDatasetTableId(Long datasetTableId) {
         this.datasetTableId = datasetTableId;
     }
 
-    public String getDatasetGroupId() {
+    public Long getDatasetGroupId() {
         return datasetGroupId;
     }
 
-    public void setDatasetGroupId(String datasetGroupId) {
+    public void setDatasetGroupId(Long datasetGroupId) {
         this.datasetGroupId = datasetGroupId;
     }
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 @Data
 public class DatasourceConfiguration {
-    private String type;
+    private DatasourceType type;
     private String name;
     private String extraParams;
     private String keywordPrefix = "";
@@ -33,5 +33,9 @@ public class DatasourceConfiguration {
 
     public String getJdbc(){
         return "";
+    }
+
+    static public enum DatasourceType {
+        mysql, oracle
     }
 }

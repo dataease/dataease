@@ -29,6 +29,10 @@ public class DatasourceDTO implements Serializable {
      */
     private String type;
 
+    private String typeAlias;
+
+
+
     /**
      * 详细信息
      */
