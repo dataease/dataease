@@ -12,4 +12,13 @@ public class ProviderUtil {
             return CommonBeanFactory.getBean(CalciteProvider.class);
         }
     }
+
+    public static DDLProvider getDDLProvider(String datasourceType) {
+        if(StringUtils.isNotEmpty(datasourceType)){
+            return (DDLProvider)CommonBeanFactory.getBean(datasourceType + "EngineDDL");
+        }else {
+            return CommonBeanFactory.getBean(MysqlDDLProvider.class);
+        }
+    }
+
 }

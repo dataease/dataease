@@ -12,7 +12,7 @@ public class DriveJarDTO implements Serializable {
     @Serial
     private static final long serialVersionUID = 1175287571828910222L;
 
-    private String id;
+    private Long id;
 
     private String name;
 

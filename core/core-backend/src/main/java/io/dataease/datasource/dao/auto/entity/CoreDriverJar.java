@@ -1,5 +1,7 @@
 package io.dataease.datasource.dao.auto.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 
@@ -9,7 +11,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-22
+ * @since 2023-04-17
  */
 @TableName("core_driver_jar")
 public class CoreDriverJar implements Serializable {
@@ -19,7 +21,8 @@ public class CoreDriverJar implements Serializable {
     /**
      * 主键
      */
-    private String id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
     /**
      * 驱动主键
@@ -45,11 +48,11 @@ public class CoreDriverJar implements Serializable {
 
     private Boolean isTransName;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -39,8 +39,7 @@ public class ApiProvider extends Provider {
 
     public List<Map<String, String>> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<Map<String, String>> tableDescs = new ArrayList<>();
-        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
-        };
+        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {};
         List<ApiDefinition> lists = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
 
         for (ApiDefinition apiDefinition : lists) {
@@ -52,10 +51,6 @@ public class ApiProvider extends Provider {
         return tableDescs;
     }
 
-
-    public List<TableField> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
-        return null;
-    }
 
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
 
@@ -104,7 +99,7 @@ public class ApiProvider extends Provider {
                 apiItemStatuses.put(apiDefinition.getName(), "Error");
             }
         }
-        return apiItemStatuses.toString();
+        return apiItemStatuses.asText();
     }
 
     public String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout) throws Exception {
@@ -148,7 +143,7 @@ public class ApiProvider extends Provider {
                         JsonNode rootNode = objectMapper.readTree(apiDefinitionRequest.getBody().get("kvs"));
                         for (JsonNode jsonNode : rootNode) {
                             if (jsonNode.has("name")) {
-                                body.put(jsonNode.get("name").toString(), jsonNode.get("value").toString());
+                                body.put(jsonNode.get("name").asText(), jsonNode.get("value").toString());
                             }
                         }
                         response = HttpClientUtil.post(apiDefinition.getUrl(), body, httpClientConfig);
@@ -315,6 +310,7 @@ public class ApiProvider extends Provider {
     static private void setProperty(ApiDefinition apiDefinition, Map<String, Object> o, String s) {
         o.put("fieldName", s);
         o.put("remarks", s);
+        o.put("dbFieldName", s);
         o.put("type", "STRING");
         o.put("size", 65535);
         o.put("deExtractType", 0);
@@ -325,6 +321,7 @@ public class ApiProvider extends Provider {
                 if (!ObjectUtils.isEmpty(o.get("jsonPath")) && StringUtils.isNotEmpty(field.getJsonPath()) && field.getJsonPath().equals(o.get("jsonPath").toString())) {
                     o.put("checked", true);
                     o.put("remarks", field.getRemarks());
+                    o.put("dbFieldName", field.getDbFieldName());
                 }
             }
         }

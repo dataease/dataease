@@ -71,7 +71,6 @@ public class DatasourceDriverServer implements DatasourceDriverApi {
 
     @Override
     public DriveDTO save(DriveDTO datasourceDrive){
-        datasourceDrive.setId(UUID.randomUUID().toString());
         CoreDriver coreDriver = new CoreDriver();
         BeanUtils.copyBean(coreDriver, datasourceDrive);
         coreDriverMapper.insert(coreDriver);
@@ -139,7 +138,6 @@ public class DatasourceDriverServer implements DatasourceDriverApi {
         saveJarFile(jarFile, dirPath, filePath);
 
         CoreDriverJar coreDriverJar = new CoreDriverJar();
-        coreDriverJar.setId(UUID.randomUUID().toString());
         coreDriverJar.setDeDriverId(deDriverId);
         coreDriverJar.setVersion("");
         coreDriverJar.setFileName(filename);

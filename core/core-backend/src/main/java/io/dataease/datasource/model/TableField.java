@@ -7,6 +7,7 @@ import lombok.Data;
 public class TableField {
     private String fieldName;
     private String remarks;
+    private String dbFieldName;
     private String type;
     private boolean checked = false;
     private String fieldType;
@@ -14,7 +15,6 @@ public class TableField {
     private long deType;
     private int accuracy;
     private String jsonPath;
-
 
 
 }

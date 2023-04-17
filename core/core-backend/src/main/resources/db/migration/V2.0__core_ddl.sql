@@ -4,7 +4,7 @@
 DROP TABLE IF EXISTS `core_datasource`;
 CREATE TABLE `core_datasource`
 (
-    `id`            varchar(50)                                           NOT NULL DEFAULT '' COMMENT 'ID',
+    `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `name`          varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
     `desc`          varchar(50)                                                    DEFAULT NULL COMMENT '描述',
     `type`          varchar(50)                                           NOT NULL COMMENT '类型',
@@ -13,13 +13,15 @@ CREATE TABLE `core_datasource`
     `update_time`   bigint                                                NOT NULL COMMENT '更新时间',
     `create_by`     varchar(50)                                                    DEFAULT NULL COMMENT '创建人ID',
     `status`        longtext COMMENT '状态',
+    `qrtz_instance`        longtext COMMENT '状态',
+    `task_status`   varchar(50) DEFAULT NULL COMMENT '任务状态',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `core_driver`;
 CREATE TABLE `core_driver`
 (
-    `id`           varchar(50)                                           NOT NULL COMMENT '主键',
+    `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `name`         varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
     `create_time`  bigint(13) NOT NULL COMMENT '创健时间',
     `type`         varchar(255) DEFAULT NULL COMMENT '数据源类型',
@@ -31,7 +33,7 @@ CREATE TABLE `core_driver`
 DROP TABLE IF EXISTS `core_driver_jar`;
 CREATE TABLE `core_driver_jar`
 (
-    `id`            varchar(50) NOT NULL COMMENT '主键',
+    `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `de_driver_id`  varchar(50) NOT NULL COMMENT '驱动主键',
     `file_name`     varchar(255) DEFAULT NULL COMMENT '名称',
     `version`       varchar(255) DEFAULT NULL COMMENT '版本',
@@ -191,3 +193,53 @@ CREATE TABLE `data_visualization_info`
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
+DROP TABLE IF EXISTS `core_datasource_task`;
+CREATE TABLE `core_datasource_task` (
+           `id`        bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+          `table_id` varchar(50) NOT NULL COMMENT '表ID',
+          `name` varchar(255) NOT NULL COMMENT '任务名称',
+          `type` varchar(50) NOT NULL COMMENT '更新方式：0-全量更新 1-增量更新',
+          `start_time` bigint(13) DEFAULT NULL COMMENT '开始时间',
+          `rate` varchar(50) NOT NULL COMMENT '执行频率：0 一次性 1 cron',
+          `cron` varchar(255) DEFAULT NULL COMMENT 'cron表达式',
+          `end` varchar(50) NOT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
+          `end_time` bigint(13) DEFAULT NULL COMMENT '结束时间',
+          `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
+          `last_exec_time` bigint(13) DEFAULT NULL COMMENT '上次执行时间',
+          `last_exec_status` varchar(50) DEFAULT NULL COMMENT '上次执行结果',
+          `extra_data` longtext,
+          `status` varchar(50) DEFAULT NULL COMMENT '任务状态',
+          PRIMARY KEY (`id`),
+          KEY `idx_dataset_table_task_table_id` (`table_id`),
+          KEY `idx_dataset_table_task_name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `core_datasource_task_log`;
+CREATE TABLE `core_datasource_task_log` (
+           `id`        bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+          `table_id` varchar(50) NOT NULL COMMENT '表ID',
+          `task_id` varchar(50) DEFAULT NULL COMMENT '任务ID',
+          `start_time` bigint(13) DEFAULT NULL COMMENT '开始时间',
+          `end_time` bigint(13) DEFAULT NULL COMMENT '结束时间',
+          `status` varchar(50) NOT NULL COMMENT '执行状态',
+          `info` longtext COMMENT '错误信息',
+          `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
+          `trigger_type` varchar(45) DEFAULT NULL,
+          PRIMARY KEY (`id`),
+          KEY `idx_dataset_table_task_log_table_id` (`table_id`),
+          KEY `idx_dataset_table_task_log_task_id` (`task_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `core_de_engine`;
+CREATE TABLE `core_de_engine` (
+          `id`        bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+         `name` varchar(50) DEFAULT NULL COMMENT '名称',
+         `desc` varchar(50) DEFAULT NULL COMMENT '描述',
+         `type` varchar(50) NOT NULL COMMENT '类型',
+         `configuration` longtext NOT NULL COMMENT '详细信息',
+         `create_time` bigint(13) DEFAULT NULL COMMENT 'Create timestamp',
+         `update_time` bigint(13) DEFAULT NULL COMMENT 'Update timestamp',
+         `create_by` varchar(50) DEFAULT NULL COMMENT '创建人ID',
+         `status` varchar(45) DEFAULT NULL COMMENT '状态',
+         PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
