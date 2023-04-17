@@ -149,26 +149,35 @@ public class UserPageManage {
 
     public List<UserItem> optionForRole(UserRequest request) {
         Long defaultOid = AuthUtils.getUser().getDefaultOid();
-        return userExtMapper.optionForRole(request.getRid(), defaultOid, request.getKeyword());
+       /* QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.ne("pur.rid", request.getRid());
+        queryWrapper.eq("pur.oid", defaultOid);
+        queryWrapper.like(StringUtils.isNotBlank(request.getKeyword()), "pu", request.getKeyword());*/
+        return userExtMapper.optionForRole(defaultOid, request.getRid(), request.getKeyword());
     }
 
     public List<UserItem> selectedForRole(UserRequest request) {
-        return userExtMapper.selectedForRole(request.getRid(), request.getKeyword());
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("pur.rid", request.getRid());
+        queryWrapper.like(StringUtils.isNotBlank(request.getKeyword()), "pu", request.getKeyword());
+        List<UserItem> result = userExtMapper.selectedForRole(queryWrapper);
+        return result;
     }
 
-    public void switchOrg(Long oId) {
-        TokenUserBO user = AuthUtils.getUser();
-        if (AuthUtils.isSysAdmin()) {
-            userExtMapper.switchOrg(user.getUserId(), oId);
+    public void switchOrg(Long uid, Long oId) {
+        if (AuthUtils.isSysAdmin(uid)) {
+            userExtMapper.switchOrg(uid, oId);
             return;
         }
-        List<PerOrgItem> perOrgItems = orgPageManage.queryByUser(user.getUserId(), null);
-        if (CollectionUtil.isNotEmpty(perOrgItems) && perOrgItems.stream().filter(item -> !item.isDisabled()).anyMatch(item -> item.getId() == oId)) {
-            userExtMapper.switchOrg(user.getUserId(), oId);
+        List<PerOrgItem> perOrgItems = orgPageManage.queryByUser(uid, null);
+        if (CollectionUtil.isNotEmpty(perOrgItems) && perOrgItems.stream().filter(item -> !item.isDisabled()).anyMatch(item -> item.getId().equals(oId))) {
+            userExtMapper.switchOrg(uid, oId);
             return;
         }
         DEException.throwException("invalid orgid");
     }
+
+
 
     public CurUserVO getUserInfo() {
         Long userId = AuthUtils.getUser().getUserId();

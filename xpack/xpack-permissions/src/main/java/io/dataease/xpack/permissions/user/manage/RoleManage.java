@@ -1,6 +1,8 @@
 package io.dataease.xpack.permissions.user.manage;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.dataease.api.permissions.role.dto.UnmountUserRequest;
 import io.dataease.api.permissions.role.vo.RoleCreator;
 import io.dataease.api.permissions.role.vo.RoleDetailVO;
 import io.dataease.api.permissions.role.vo.RoleEditor;
@@ -24,6 +26,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Lazy
@@ -124,7 +128,7 @@ public class RoleManage {
             PerUserRole userRole = new PerUserRole();
             userRole.setRid(rid);
             userRole.setUid(id);
-            userRole.setUid(IDUtils.snowID());
+            userRole.setId(IDUtils.snowID());
             userRole.setOid(defaultOid);
             userRole.setCreateTime(System.currentTimeMillis());
             return userRole;
@@ -196,5 +200,56 @@ public class RoleManage {
         BeanUtils.copyBean(roleDetailVO, perRole);
         roleDetailVO.setTypeCode(perRole.getReadonly() ? 0 : 1);
         return roleDetailVO;
+    }
+
+    public Integer beforeUnmountInfo(UnmountUserRequest request) {
+        QueryWrapper<PerUserRole> queryWrapper = new QueryWrapper<>();
+        // queryWrapper.eq("rid", request.getRid());
+        queryWrapper.eq("uid", request.getUid());
+        List<PerUserRole> perUserRoles = perUserRoleMapper.selectList(queryWrapper);
+        if (CollectionUtil.isEmpty(perUserRoles) || perUserRoles.size() == 1) {
+            // clear in system
+            return 2;
+        }
+        Long oid = AuthUtils.getUser().getDefaultOid();
+        Map<Boolean, List<PerUserRole>> listMap = perUserRoles.stream().collect(Collectors.groupingBy(item -> innerOrg(item, oid)));
+        if (CollectionUtil.isEmpty(listMap.get(true))) {
+            // clear in org
+            return 1;
+        }
+        // just can unmount
+        return 0;
+    }
+
+    private Boolean innerOrg(PerUserRole userRole, Long oid) {
+        return oid.equals(userRole.getOid());
+    }
+
+    @Transactional
+    public void unMountUser(UnmountUserRequest request) {
+        QueryWrapper<PerUserRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("rid", request.getRid());
+        queryWrapper.eq("uid", request.getUid());
+        perUserRoleMapper.delete(queryWrapper);
+
+        queryWrapper.clear();
+        queryWrapper.eq("uid", request.getUid());
+        queryWrapper.orderByAsc("create_time");
+        List<PerUserRole> perUserRoles = perUserRoleMapper.selectList(queryWrapper);
+        if (CollectionUtil.isEmpty(perUserRoles)) {
+            // 删除无角色用户
+            userPageManage.delete(request.getUid());
+        }
+
+        Long oid = AuthUtils.getUser().getDefaultOid();
+        Map<Boolean, List<PerUserRole>> listMap = perUserRoles.stream().collect(Collectors.groupingBy(item -> innerOrg(item, oid)));
+        if (CollectionUtil.isEmpty(listMap.get(true))) {
+            List<PerUserRole> outOrgMappings = listMap.get(false);
+            if (CollectionUtil.isEmpty(outOrgMappings)) {
+                DEException.throwException("system error");
+            }
+            Long newOid = outOrgMappings.get(0).getOid();
+            userPageManage.switchOrg(request.getUid(), newOid);
+        }
     }
 }

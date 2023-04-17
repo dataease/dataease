@@ -179,35 +179,47 @@ const saveCallBack = () => {
         <el-table-column :label="t('org.name')" prop="name"> </el-table-column>
         <el-table-column :label="t('org.sub_count')" prop="subCount">
           <template v-slot:default="scope">
-            <span>{{ (scope.row.children && scope.row.children.length) || 0 }}</span>
+            <span>{{
+              scope.row.readOnly ? '' : (scope.row.children && scope.row.children.length) || 0
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" :label="t('common.create_time')">
           <template v-slot:default="scope">
-            <span>{{ timestampFormatDate(scope.row.createTime) }}</span>
+            <span>{{ scope.row.readOnly ? '' : timestampFormatDate(scope.row.createTime) }}</span>
           </template>
         </el-table-column>
 
         <el-table-column :label="t('common.operate')" fixed="right" width="186">
           <template #default="scope">
-            <el-button @click="edit(scope.row)" text>{{ t('common.edit') }}</el-button>
+            <span v-if="scope.row.readOnly"></span>
+            <div v-else class="operate-icon-container">
+              <div><Icon name="add" @click="addOrg(scope.row)"></Icon></div>
+              <div><Icon name="edit" @click="edit(scope.row)"></Icon></div>
+              <div :class="scope.row.id === '1' ? 'icon-disabled' : ''">
+                <Icon name="delete" @click="deptIsEmpty(scope.row)"></Icon>
+              </div>
+            </div>
+            <!-- <div v-else>
+              <el-button @click="edit(scope.row)" text>{{ t('common.edit') }}</el-button>
 
-            <template v-if="scope.row.id === '1'">
-              <el-tooltip
-                class="item"
-                effect="dark"
-                :content="t('org.default_cannot_move')"
-                placement="left"
-              >
-                <div class="btn-outer">
-                  <el-button disabled text>{{ t('common.delete') }}</el-button>
-                </div>
-              </el-tooltip>
-            </template>
-            <el-button v-else @click="deptIsEmpty(scope.row)" text>{{
-              t('common.delete')
-            }}</el-button>
-            <el-button @click="addOrg(scope.row)" text>{{ t('org.add_sub') }}</el-button>
+              <template v-if="scope.row.id === '1'">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="t('org.default_cannot_move')"
+                  placement="left"
+                >
+                  <div class="btn-outer">
+                    <el-button disabled text>{{ t('common.delete') }}</el-button>
+                  </div>
+                </el-tooltip>
+              </template>
+              <el-button v-else @click="deptIsEmpty(scope.row)" text>{{
+                t('common.delete')
+              }}</el-button>
+              <el-button @click="addOrg(scope.row)" text>{{ t('org.add_sub') }}</el-button>
+            </div> -->
           </template>
         </el-table-column>
       </el-table>
@@ -240,5 +252,35 @@ const saveCallBack = () => {
   display: inline-block;
   margin-left: 12px;
   margin-right: 6px;
+}
+.operate-icon-container {
+  font-size: 16px;
+  display: flex;
+  div {
+    width: 24px;
+    height: 20px;
+    padding: 0 3px;
+    svg {
+      width: 16px;
+      height: 16px;
+      color: var(--el-text-color-regular);
+      background-color: var(--el-color-white);
+    }
+  }
+
+  div:hover:not(.icon-disabled) {
+    cursor: pointer;
+    svg {
+      color: var(--el-color-primary) !important;
+      background: var(--el-color-primary-light-7) !important;
+    }
+  }
+  .icon-disabled {
+    color: var(--el-button-disabled-text-color);
+    cursor: not-allowed;
+    background-image: none;
+    background-color: var(--el-button-disabled-bg-color);
+    border-color: var(--el-button-disabled-border-color);
+  }
 }
 </style>

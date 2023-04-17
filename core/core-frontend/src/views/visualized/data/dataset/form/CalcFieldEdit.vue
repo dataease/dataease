@@ -118,7 +118,7 @@ const state = reactive({
       tableId: '525bd11c-1b9d-4a41-ac3a-32a85b5d44a6',
       originName: 'is_plugin',
       name: '是否插件',
-      dataeaseName: 'C_79b7dae9e0be6b32227ded3e713704d2',
+      dataeaseName: 'C_79b7dae9e0be6b32227abc3e713704d2',
       groupType: 'q',
       type: 'BIT',
       size: 1,

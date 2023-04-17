@@ -60,7 +60,15 @@ export default {
     org_admin: '组织管理员',
     confirm_delete: '确认删除该角色吗？',
     delete_tips:
-      '<div id="u7755_text" class="text" style="font-size: 12px;"><p><span style="color:#F59A23;">友情提示，角色被删除后，归属于角色的用户将做如下处理：</span></p><p><span style="color:#7F7F7F;">1、用户拥有当前组织的其他角色，那么角色被删除后，将用户从该角色中移除。</span></p><p><span style="color:#7F7F7F;">2、该角色是用户在当前组织下拥有的唯一角色，但用户拥有其他组织下的角色，那么角色被删除后，用户也将从当前组织中移除。</span></p><p><span style="color:#7F7F7F;">3、该角色是用户在当前组织下拥有的唯一角色，用户在系统的其他组织下也没有任何角色，那么角色被删除后，用户也将从当前系统中删除。</span></p><p><span style="color:#7F7F7F;"><br></span></p></div>'
+      '<div id="u7755_text" class="text" style="font-size: 12px;"><p><span style="color:#F59A23;">友情提示，角色被删除后，归属于角色的用户将做如下处理：</span></p><p><span style="color:#7F7F7F;">1、用户拥有当前组织的其他角色，那么角色被删除后，将用户从该角色中移除。</span></p><p><span style="color:#7F7F7F;">2、该角色是用户在当前组织下拥有的唯一角色，但用户拥有其他组织下的角色，那么角色被删除后，用户也将从当前组织中移除。</span></p><p><span style="color:#7F7F7F;">3、该角色是用户在当前组织下拥有的唯一角色，用户在系统的其他组织下也没有任何角色，那么角色被删除后，用户也将从当前系统中删除。</span></p><p><span style="color:#7F7F7F;"><br></span></p></div>',
+    confirm_unbind_user: '确定移除改用户吗',
+    clear_in_system:
+      '友情提示，从当前角色移除后，该用户已没有任何组织的任何角色，用户将从系统中删除。',
+    clear_in_org:
+      '友情提示，从当前角色移除后，该用户已没有当前组织的任何角色，将从当前组织中移除。',
+    add_user: '为角色添加用户({0})',
+    unbind_success: '移除成功',
+    bind_success: '绑定成功'
   },
   org: {
     org_title: '组织管理',

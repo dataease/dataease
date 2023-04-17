@@ -34,3 +34,9 @@ export const roleEditApi = data => request.post({ url: '/role/edit', data })
 export const roleDetailApi = rid => request.get({ url: '/role/detail/' + rid })
 
 export const roleDelApi = rid => request.post({ url: '/role/delete/' + rid })
+
+export const beforeUnmountInfoApi = data => request.post({ url: '/role/beforeUnmountInfo', data })
+
+export const unMountUserApi = data => request.post({ url: '/role/unMountUser', data })
+
+export const mountUserApi = data => request.post({ url: '/role/mountUser', data })

@@ -1,10 +1,19 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, h } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { Icon } from '@/components/icon-custom'
-import { searchRoleApi, userOptionForRoleApi, userSelectedForRoleApi, roleDelApi } from '@/api/user'
+import {
+  searchRoleApi,
+  userOptionForRoleApi,
+  userSelectedForRoleApi,
+  roleDelApi,
+  beforeUnmountInfoApi,
+  unMountUserApi,
+  mountUserApi
+} from '@/api/user'
 import RoleForm from './RoleForm.vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+const selectedRoleId = ref('')
 const roleKeyword = ref('')
 const optionKeyword = ref('')
 const selectedKeyword = ref('')
@@ -19,16 +28,19 @@ interface Tree {
 }
 
 const handleNodeClick = (data: Tree) => {
+  if (data.disabled) {
+    return
+  }
+  selectedRoleId.value = data.id
   optionSearch(data.id)
   selectedSearch(data.id)
 }
 
-const checkList = ref(['test0'])
-
 const state = reactive({
   optionUserList: [],
   addedUserList: [],
-  roleData: []
+  roleData: [],
+  checkList: []
 })
 
 state.roleData = [
@@ -50,7 +62,11 @@ const optionSearch = (rid?: string) => {
   const param = { rid, keyword: optionKeyword.value }
   rid &&
     userOptionForRoleApi(param).then(res => {
-      state.optionUserList = res.data
+      if (res?.data?.length) {
+        state.optionUserList = res.data
+      } else {
+        state.optionUserList = []
+      }
     })
 }
 
@@ -58,7 +74,11 @@ const selectedSearch = (rid?: string) => {
   const param = { rid, keyword: selectedKeyword.value }
   rid &&
     userSelectedForRoleApi(param).then(res => {
-      state.addedUserList = res.data
+      if (res?.data?.length) {
+        state.addedUserList = res.data
+      } else {
+        state.addedUserList = []
+      }
     })
 }
 
@@ -89,7 +109,8 @@ const groupBy = (list: Tree[]) => {
 const defaultProps = {
   children: 'children',
   label: 'name',
-  value: 'id'
+  value: 'id',
+  disabled: 'disabled'
 }
 const roleAdd = () => {
   roleFormRef.value.init()
@@ -117,12 +138,74 @@ const delHandler = row => {
       roleSearch()
     })
   })
-
-  console.log(row.id)
 }
 
 const roleSaved = () => {
   roleSearch()
+}
+const bindUser = () => {
+  const param = { rid: selectedRoleId.value, uids: state.checkList }
+  mountUserApi(param).then(() => {
+    ElMessage({
+      message: t('role.bind_success'),
+      type: 'success'
+    })
+    moveOption2Selected(param.uids)
+    state.checkList = []
+  })
+}
+const unBindUser = (uid: string) => {
+  const param = { uid, rid: selectedRoleId.value }
+  beforeUnmountInfoApi(param).then(res => {
+    if (res.data) {
+      const msg = res.data === 2 ? t('role.clear_in_system') : t('role.clear_in_org')
+      ElMessageBox.confirm(t('role.confirm_unbind_user'), {
+        confirmButtonType: 'danger',
+        type: 'warning',
+        autofocus: false,
+        tip: msg,
+        showClose: false
+      }).then(() => {
+        unMountUserHandler(param)
+      })
+    } else {
+      // 删除用户角色映射
+      unMountUserHandler(param, () => {
+        moveSelected2Option([uid])
+      })
+    }
+  })
+}
+
+const unMountUserHandler = (param: any, callback?) => {
+  unMountUserApi(param).then(() => {
+    ElMessage({
+      message: t('role.unbind_success'),
+      type: 'success'
+    })
+    callback && callback()
+  })
+}
+
+const moveOption2Selected = (uids: string[]) => {
+  let len = state.optionUserList.length
+  while (len--) {
+    const item = state.optionUserList[len]
+    if (uids.includes(item.id)) {
+      state.optionUserList.splice(len, 1)
+      state.addedUserList.push({ ...item })
+    }
+  }
+}
+const moveSelected2Option = (uids: string[]) => {
+  let len = state.addedUserList.length
+  while (len--) {
+    const item = state.addedUserList[len]
+    if (uids.includes(item.id)) {
+      state.addedUserList.splice(len, 1)
+      state.optionUserList.push({ ...item })
+    }
+  }
 }
 
 onMounted(() => {
@@ -175,10 +258,17 @@ onMounted(() => {
         description="description"
       />
       <div v-else :key="ele.id" v-for="ele in state.addedUserList" class="user-list-item">
-        {{ ele.name }}
+        <span>{{ ele.name }}</span>
+        <div>
+          <Icon
+            @click.stop="unBindUser(ele.id)"
+            class="role-remove-icon"
+            name="icon_close_filled"
+          />
+        </div>
       </div>
     </div>
-    <div class="add-user-list role-height">
+    <div class="add-user-list role-height-option">
       <div class="title">
         可添加用户
         <el-icon>
@@ -196,11 +286,21 @@ onMounted(() => {
         v-if="!state.optionUserList || !state.optionUserList.length"
         description="description"
       />
-      <el-checkbox-group v-else v-model="checkList">
-        <div :key="ele.id" v-for="ele in state.optionUserList" class="user-list-item">
-          <el-checkbox :label="ele.name" />
-        </div>
-      </el-checkbox-group>
+      <div v-else class="content">
+        <el-checkbox-group v-model="state.checkList">
+          <div :key="ele.id" v-for="ele in state.optionUserList" class="user-list-item">
+            <el-checkbox :label="ele.id">{{ ele.name }}</el-checkbox>
+          </div>
+        </el-checkbox-group>
+      </div>
+      <div class="foot1" v-if="state.optionUserList && state.optionUserList.length">
+        <el-button
+          :disabled="!state.checkList || !state.checkList.length"
+          @click="bindUser"
+          type="primary"
+          >{{ t('role.add_user', [state.checkList.length]) }}</el-button
+        >
+      </div>
     </div>
   </div>
   <role-form ref="roleFormRef" @saved="roleSaved" />
@@ -216,6 +316,15 @@ onMounted(() => {
     height: calc(100vh - 170px);
     overflow: auto;
     position: relative;
+  }
+  .role-height-option {
+    height: calc(100vh - 170px);
+    position: relative;
+    overflow: hidden;
+    .content {
+      height: calc(100% - 140px);
+      overflow: auto;
+    }
   }
 
   .role-list {
@@ -246,6 +355,13 @@ onMounted(() => {
       z-index: 5;
       left: 0;
       background: white;
+    }
+  }
+  .foot1 {
+    display: flex;
+    margin-top: 10px;
+    button {
+      width: 100%;
     }
   }
 
@@ -283,6 +399,22 @@ onMounted(() => {
       justify-content: center;
       margin: 24px 0 0 24px;
       border: 1px solid #ccc;
+      .role-remove-icon {
+        display: none;
+        top: 0;
+        right: 0;
+        width: 12px;
+        height: 12px;
+        color: var(--el-color-primary);
+        background: var(--el-color-primary-light-7);
+      }
+      &:hover {
+        cursor: pointer;
+        border-color: var(--el-color-primary-light-7);
+        .role-remove-icon {
+          display: block;
+        }
+      }
     }
   }
 
