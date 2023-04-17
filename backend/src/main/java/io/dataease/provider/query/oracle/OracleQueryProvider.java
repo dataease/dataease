@@ -917,7 +917,7 @@ public class OracleQueryProvider extends QueryProvider {
                     continue;
                 }
                 String originField = String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
-                if (xAxis.get(i).getType().equals("DATE")) {
+                if(xAxis.get(i).getType().equals("DATE")){
                     originField = String.format(OracleConstants.TO_CHAR, originField, OracleConstants.DEFAULT_DATE_FORMAT);
                 }
                 String fieldAlias = String.format(OracleConstants.KEYWORD_TABLE, x.getOriginName());
@@ -1210,7 +1210,7 @@ public class OracleQueryProvider extends QueryProvider {
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                         if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                            whereName = String.format(OracleConstants.TO_CHAR, String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT, format));
+                            whereName = String.format(OracleConstants.TO_CHAR, String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT), format);
                         } else {
                             whereName = String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT);
                         }
@@ -1231,6 +1231,7 @@ public class OracleQueryProvider extends QueryProvider {
                             whereName = originName;
                         }
                     }
+
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                         whereName = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_FLOAT_FORMAT);
