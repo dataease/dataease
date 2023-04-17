@@ -2,6 +2,7 @@
 import { ref, nextTick, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CalcFieldEdit from './CalcFieldEdit.vue'
+import AddSql from './AddSql.vue'
 import UnionEdit from './UnionEdit.vue'
 import { getDatasourceList } from '@/api/dataset'
 import DatasetUnion from './DatasetUnion.vue'
@@ -11,7 +12,7 @@ interface DragEvent extends MouseEvent {
 const { t } = useI18n()
 
 const editCalcField = ref(false)
-
+const editSqlField = ref(false)
 const editUnion = ref(false)
 
 const datasetName = ref('新建数据源')
@@ -998,7 +999,6 @@ const handleClick = () => {
           class="ds-list"
           filterable
           :placeholder="t('dataset.pls_slc_data_source')"
-          size="small"
         >
           <el-option
             v-for="item in state.dataSourceList"
@@ -1080,6 +1080,9 @@ const handleClick = () => {
   </div>
   <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
     <calc-field-edit :param="{ id: 0 }" />
+  </el-dialog>
+  <el-dialog fullscreen class="sql-dialog-fullscreen" append-to-body v-model="editSqlField">
+    <add-sql></add-sql>
   </el-dialog>
 </template>
 
@@ -1198,6 +1201,17 @@ const handleClick = () => {
       flex: 1;
       height: calc(100vh - 56px);
     }
+  }
+}
+</style>
+
+<style lang="less">
+.sql-dialog-fullscreen {
+  .el-dialog__header {
+    display: none;
+  }
+  .el-dialog__body {
+    padding: 0;
   }
 }
 </style>

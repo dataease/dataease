@@ -250,6 +250,8 @@ const tableData1: User[] = [
 </template>
 
 <style lang="less" scoped>
+@import '@/style/mixin.less';
+
 @width: 20px;
 @width_table: 30px;
 .user-role {
@@ -274,16 +276,7 @@ const tableData1: User[] = [
       width: 200px;
     }
     .tabs-mr {
-      margin-left: @width;
-      ::before {
-        content: '';
-        position: absolute;
-        left: -@width;
-        bottom: 0;
-        width: @width;
-        height: 1px;
-        background-color: rgba(31, 35, 41, 0.15);
-      }
+      .border-bottom-tab(20px);
     }
   }
 }
@@ -306,16 +299,7 @@ const tableData1: User[] = [
       width: 240px;
     }
     .tabs-mr {
-      margin-left: @width_table;
-      ::before {
-        content: '';
-        position: absolute;
-        left: -@width_table;
-        bottom: 0;
-        width: @width_table;
-        height: 1px;
-        background-color: rgba(31, 35, 41, 0.15);
-      }
+      .border-bottom-tab(30px);
     }
   }
 

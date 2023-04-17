@@ -1,0 +1,923 @@
+<script lang="ts" setup>
+import { ref, reactive, onMounted } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import useClipboard from 'vue-clipboard3'
+import { ElMessage } from 'element-plus-secondary'
+import CodeMirror from './CodeMirror.vue'
+import GridTable from '@/components/grid-table/src/GridTable.vue'
+import { EmptyBackground } from '@/components/empty-background'
+import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util.js'
+const { toClipboard } = useClipboard()
+
+const { t } = useI18n()
+const activeName = ref('')
+const myCm = ref()
+const codeCom = ref()
+const dialogTitle = t('sql_variable.variable_mgm') + ' '
+const tabActive = ref('result')
+const dataSource = ref('')
+const searchTable = ref('')
+const showVariableMgm = ref(false)
+const dsLoading = ref(false)
+const loading = ref(false)
+const LeftWidth = ref(240)
+const showLeft = ref(true)
+const editerName = ref()
+const state = reactive({
+  plxTableData: [],
+  variables: [],
+  fields: [],
+  sqlData: [],
+  variablesTmp: [],
+  dataSourceList: [],
+  tableData: [],
+  table: {
+    name: '',
+    id: ''
+  },
+  param: {
+    tableId: 0
+  }
+})
+
+const paginationConfig = reactive({
+  currentPage: 1,
+  pageSize: 10,
+  total: 0
+})
+
+state.tableData = [
+  {
+    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
+    name: 'area_mapping',
+    remark: '',
+    enableCheck: false,
+    datasetPath: '0-大数据集测试/0wjh4_area_mapping'
+  },
+  {
+    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
+    name: 'area_mapping_global',
+    remark: '',
+    enableCheck: false,
+    datasetPath: '0-大数据集测试/0wjh4_area_mapping_global'
+  },
+  {
+    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
+    name: 'chart_group',
+    remark: '',
+    enableCheck: false,
+    datasetPath: '0-大数据集测试/0wjh4_chart_group'
+  },
+  {
+    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
+    name: 'chart_view',
+    remark: '',
+    enableCheck: false,
+    datasetPath: '0-大数据集测试/0wjh4_chart_view'
+  }
+]
+const setActiveName = ({ name, datasourceId, enableCheck }) => {
+  if (!enableCheck) return
+  activeName.value = name
+}
+const handleSizeChange = pageSize => {
+  paginationConfig.currentPage = 1
+  paginationConfig.pageSize = pageSize
+  listSqlLog()
+}
+const handleCurrentChange = currentPage => {
+  paginationConfig.currentPage = currentPage
+  listSqlLog()
+}
+
+const referenceSetting = () => {
+  showVariableMgm.value = true
+  parseVariable()
+}
+
+onMounted(() => {
+  codeCom.value = myCm.value.codeComInit('SELECT * from area_mapping\n 123')
+})
+
+const getSQLPreview = () => {
+  state.sqlData.unshift({
+    id: null,
+    datasetId: null,
+    startTime: 1681710042973,
+    endTime: 1681710043054,
+    spend: 81,
+    sql: 'SELECT * from area_mapping',
+    status: 'Completed'
+  })
+
+  state.plxTableData = [
+    {
+      city_name: '北京市',
+      county_code: '110101',
+      city_code: '110100',
+      id: '1',
+      province_code: '110000',
+      county_name: '东城区',
+      province_name: '北京市'
+    },
+    {
+      city_name: '北京市',
+      county_code: '110102',
+      city_code: '110100',
+      id: '2',
+      province_code: '110000',
+      county_name: '西城区',
+      province_name: '北京市'
+    },
+    {
+      city_name: '北京市',
+      county_code: '110105',
+      city_code: '110100',
+      id: '3',
+      province_code: '110000',
+      county_name: '朝阳区',
+      province_name: '北京市'
+    },
+    {
+      city_name: '北京市',
+      county_code: '110106',
+      city_code: '110100',
+      id: '4',
+      province_code: '110000',
+      county_name: '丰台区',
+      province_name: '北京市'
+    },
+    {
+      city_name: '北京市',
+      county_code: '110107',
+      city_code: '110100',
+      id: '5',
+      province_code: '110000',
+      county_name: '石景山区',
+      province_name: '北京市'
+    }
+  ]
+  state.fields = [
+    {
+      fieldName: 'id',
+      remarks: 'id',
+      fieldType: 'BIGINT',
+      fieldSize: 20,
+      accuracy: 0
+    },
+    {
+      fieldName: 'province_name',
+      remarks: 'province_name',
+      fieldType: 'VARCHAR',
+      fieldSize: 255,
+      accuracy: 0
+    },
+    {
+      fieldName: 'province_code',
+      remarks: 'province_code',
+      fieldType: 'VARCHAR',
+      fieldSize: 255,
+      accuracy: 0
+    },
+    {
+      fieldName: 'city_name',
+      remarks: 'city_name',
+      fieldType: 'VARCHAR',
+      fieldSize: 255,
+      accuracy: 0
+    },
+    {
+      fieldName: 'city_code',
+      remarks: 'city_code',
+      fieldType: 'VARCHAR',
+      fieldSize: 255,
+      accuracy: 0
+    },
+    {
+      fieldName: 'county_name',
+      remarks: 'county_name',
+      fieldType: 'VARCHAR',
+      fieldSize: 255,
+      accuracy: 0
+    },
+    {
+      fieldName: 'county_code',
+      remarks: 'county_code',
+      fieldType: 'VARCHAR',
+      fieldSize: 255,
+      accuracy: 0
+    }
+  ]
+}
+
+const getIconName = (type: string) => {
+  if (
+    ['DATETIME-YEAR', 'DATETIME-YEAR-MONTH', 'DATETIME', 'DATETIME-YEAR-MONTH-DAY'].includes(type)
+  ) {
+    return 'field_time'
+  }
+
+  if (type === 'TEXT') {
+    return 'field_text'
+  }
+
+  if (['LONG', 'DOUBLE'].includes(type)) {
+    return 'field_value'
+  }
+}
+
+const formatter = (_, __, cellValue) => {
+  return cellValue ? `${cellValue} ${t(`commons.millisecond`)}` : '-'
+}
+
+const listSqlLog = () => {
+  console.log(123)
+}
+const copyInfo = async (value: string) => {
+  try {
+    await toClipboard(value)
+    ElMessage.success('复制成功')
+  } catch (e) {
+    ElMessage.warning('您的浏览器不支持复制：', e)
+  }
+}
+
+const mouseupDrag = () => {
+  document.querySelector('.sql-eidtor').removeEventListener('mousemove', calculateHeight)
+}
+
+const parseVariable = () => {
+  state.variablesTmp = []
+  const reg = new RegExp('\\${(.*?)}', 'gim')
+  const match = codeCom.value.viewState.state.doc.text.join('\n').match(reg)
+  const names = []
+  if (match !== null) {
+    for (let index = 0; index < match.length; index++) {
+      let name = match[index].substring(2, match[index].length - 1)
+      if (names.indexOf(name) < 0) {
+        names.push(name)
+        // eslint-disable-next-line
+            let obj = undefined
+        for (let i = 0; i < state.variables.length; i++) {
+          if (state.variables[i].variableName === name) {
+            obj = state.variables[i]
+            if (!obj.hasOwnProperty('defaultValueScope')) {
+              obj.defaultValueScope = 'EDIT'
+            }
+          }
+        }
+        if (obj === undefined) {
+          obj = {
+            variableName: name,
+            alias: '',
+            type: [],
+            required: false,
+            defaultValue: '',
+            details: '',
+            defaultValueScope: 'EDIT'
+          }
+          obj.type.push('TEXT')
+        }
+        state.variablesTmp.push(obj)
+      }
+    }
+  }
+  state.variables = JSON.parse(JSON.stringify(state.variablesTmp))
+}
+
+const saveVariable = () => {
+  state.variables = JSON.parse(JSON.stringify(state.variablesTmp))
+  showVariableMgm.value = false
+  ElMessage.success('参数设置成功')
+}
+
+const mousedownDrag = () => {
+  document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
+}
+const calculateHeight = (e: MouseEvent) => {
+  if (e.pageX < 240) {
+    LeftWidth.value = 240
+    return
+  }
+  if (e.pageX > 500) {
+    LeftWidth.value = 500
+    return
+  }
+  LeftWidth.value = e.pageX
+}
+</script>
+
+<template>
+  <div class="add-sql-name">
+    <el-input class="name" ref="editerName" v-model="state.table.name" />
+    <div class="run-params-config">
+      <el-button @click="getSQLPreview" text>
+        <template #icon>
+          <el-icon>
+            <Icon name="reference-play"></Icon>
+          </el-icon>
+        </template>
+        运行
+      </el-button>
+      <el-button @click="referenceSetting()" style="color: #1f2329" text>
+        <template #icon>
+          <el-icon>
+            <Icon name="reference-setting"></Icon>
+          </el-icon>
+        </template>
+        参数设置
+      </el-button>
+    </div>
+    <div class="save-or-cancel">
+      <el-button secondary> 取消</el-button>
+      <el-button type="primary"> 保存</el-button>
+      <el-button type="primary"> 保存并返回</el-button>
+    </div>
+  </div>
+
+  <div class="sql-eidtor" @mouseup="mouseupDrag">
+    <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
+      <el-icon>
+        <Icon name="icon_down-right_outlined"></Icon>
+      </el-icon>
+    </p>
+    <div
+      v-show="showLeft"
+      :style="{ left: LeftWidth + 'px' }"
+      class="drag-left"
+      @mousedown="mousedownDrag"
+    />
+    <div
+      v-loading="dsLoading"
+      v-show="showLeft"
+      class="table-list"
+      :style="{ width: LeftWidth + 'px' }"
+    >
+      <p class="select-ds">
+        选择数据源
+        <el-icon @click="showLeft = false">
+          <Icon name="icon_up-left_outlined"></Icon>
+        </el-icon>
+      </p>
+      <el-select
+        v-model="dataSource"
+        class="ds-list"
+        filterable
+        :placeholder="t('dataset.pls_slc_data_source')"
+      >
+        <el-option
+          v-for="item in state.dataSourceList"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
+        />
+      </el-select>
+      <p class="select-ds">{{ t('datasource.data_table') }}</p>
+      <el-input
+        v-model="searchTable"
+        class="search"
+        :placeholder="t('deDataset.by_table_name')"
+        clearable
+      >
+        <template #prefix>
+          <el-icon>
+            <Icon name="icon_search-outline_outlined"></Icon>
+          </el-icon>
+        </template>
+      </el-input>
+      <div v-if="!state.tableData.length && searchTable !== ''" class="el-empty">
+        <div class="el-empty__description" style="margin-top: 80px; color: #5e6d82">
+          没有找到相关内容
+        </div>
+      </div>
+      <div v-else class="table-checkbox-list">
+        <template v-for="ele in state.tableData" :key="ele.name">
+          <el-tooltip
+            :disabled="ele.enableCheck"
+            effect="dark"
+            :content="t('dataset.table_already_add_to') + ': ' + ele.datasetPath"
+            placement="right"
+          >
+            <div
+              :class="[{ active: activeName === ele.name, 'not-allow': !ele.enableCheck }]"
+              class="list-item_primary"
+              :title="ele.name"
+              @click="setActiveName(ele)"
+            >
+              <span class="label">{{ ele.name }}</span>
+              <span class="name-copy">
+                <el-icon @click="copyInfo(ele.name)">
+                  <Icon name="icon_copy_outlined"></Icon>
+                </el-icon>
+              </span>
+            </div>
+          </el-tooltip>
+        </template>
+      </div>
+    </div>
+    <div class="sql-code-right" :style="{ width: `calc(100% - ${LeftWidth}px)` }">
+      <code-mirror dom-id="sql-editor" ref="myCm"></code-mirror>
+      <div class="sql-result">
+        <!-- <div class="sql-title">
+          {{ t(tabActive === 'result' ? 'deDataset.running_results' : 'dataset.task.record') }}
+          <span v-if="tabActive === 'result'" class="result-num">{{
+            `(${t('dataset.preview_show')} 1000 ${t('dataset.preview_item')})`
+          }}</span>
+        </div> -->
+        <div class="padding-24">
+          <el-tabs v-model="tabActive">
+            <el-tab-pane :label="t('deDataset.running_results')" name="result" />
+            <el-tab-pane :label="t('dataset.task.record')" name="execLog" />
+          </el-tabs>
+        </div>
+        <div v-show="tabActive === 'result'" class="table-sql">
+          <div class="table-scroll" v-if="state.fields.length">
+            <el-table
+              style="width: 100%"
+              header-cell-class-name="header-cell"
+              :data="state.plxTableData"
+              border
+            >
+              <el-table-column
+                v-for="field in state.fields"
+                :key="field.fieldName"
+                min-width="200px"
+                :prop="field.fieldName"
+                :label="field.remarks"
+                resizable
+              />
+            </el-table>
+          </div>
+          <template v-else>
+            <empty-background description="点击运行查询" img-type="table">
+              即可查看运行结果
+            </empty-background>
+          </template>
+        </div>
+        <div v-show="tabActive === 'execLog'" class="table-container">
+          <grid-table
+            v-loading="loading"
+            :table-data="state.sqlData"
+            :show-pagination="!!state.param.tableId"
+            :columns="[]"
+            :pagination="paginationConfig"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          >
+            <el-table-column
+              key="startTimeTable"
+              min-width="100px"
+              prop="startTime"
+              :label="t('dataset.start_time')"
+            >
+              <template #default="scope">
+                <span>{{ timestampFormatDate(scope.row.startTime) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column key="sql" prop="sql" show-overflow-tooltip :label="t('dataset.sql')" />
+            <el-table-column
+              key="spend"
+              prop="spend"
+              :formatter="formatter"
+              :label="t('dataset.spend_time')"
+            />
+            <el-table-column key="status" prop="status" :label="t('dataset.sql_result')">
+              <template #default="scope">
+                <span v-if="scope.row.status" :class="[`de-${scope.row.status}-pre`, 'de-status']"
+                  >{{ t(`dataset.${scope.row.status.toLocaleLowerCase()}`) }}
+                </span>
+                <span v-else>-</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              key="__operation"
+              :label="t('commons.operating')"
+              fixed="right"
+              width="100"
+            >
+              <template #default="scope">
+                <el-button text @click="copyInfo(scope.row.sql)">
+                  {{ t('commons.copy') }}
+                </el-button>
+              </template>
+            </el-table-column>
+          </grid-table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <el-drawer
+    :title="dialogTitle"
+    v-model="showVariableMgm"
+    custom-class="sql-dataset-drawer"
+    size="870px"
+    direction="rtl"
+  >
+    <div class="content">
+      <el-icon>
+        <Icon name="icon_info_outlined"></Icon>
+      </el-icon>
+      {{ $t('dataset.sql_variable_limit_1') }}<br />
+      {{ $t('dataset.sql_variable_limit_2') }}<br />
+    </div>
+    <el-table :data="state.variablesTmp">
+      <el-table-column prop="variableName" :label="$t('panel.param_name')" />
+      <el-table-column width="200" :label="$t('deDataset.parameter_type')">
+        <template #default="scope">
+          <el-cascader
+            v-model="scope.row.type"
+            class="select-type"
+            :options="fieldOptions"
+            @change="scope.row = ''"
+          >
+            <template v-slot="{ data }">
+              <el-icon>
+                <Icon :name="getIconName(data.value)"></Icon>
+              </el-icon>
+              <span>{{ data.label }}</span>
+            </template>
+          </el-cascader>
+          <span class="select-svg-icon">
+            <el-icon>
+              <Icon :name="getIconName(scope.row.type[0])"></Icon>
+            </el-icon>
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column min-width="350" prop="defaultValue" :label="$t('commons.params_value')">
+        <template #header>
+          {{ $t('commons.params_value') }}
+        </template>
+        <template #default="scope">
+          <el-input
+            v-if="getIconName(scope.row.type[0]) === 'field_text'"
+            v-model="scope.row.defaultValue"
+            type="text"
+            :placeholder="$t('fu.search_bar.please_input')"
+          >
+            <template #prepend>
+              <el-select v-model="scope.row.defaultValueScope" style="width: 100px">
+                <el-option
+                  v-for="item in defaultValueScopeList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </template>
+          </el-input>
+          <el-input
+            v-if="getIconName(scope.row.type[0]) === 'field_value'"
+            v-model="scope.row.defaultValue"
+            :placeholder="$t('fu.search_bar.please_input')"
+            type="number"
+          >
+            <template #prepend>
+              <el-select v-model="scope.row.defaultValueScope" style="width: 100px">
+                <el-option
+                  v-for="item in defaultValueScopeList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </template>
+          </el-input>
+          <div
+            v-if="getIconName(scope.row.type[0]) === 'field_time'"
+            class="el-input-group el-input-group--prepend de-group__prepend"
+          >
+            <div class="el-input-group__prepend">
+              <el-select v-model="scope.row.defaultValueScope" style="width: 100px" size="small">
+                <el-option
+                  v-for="item in defaultValueScopeList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </div>
+            <el-date-picker
+              v-if="scope.row.type[0] === 'DATETIME-YEAR'"
+              v-model="scope.row.defaultValue"
+              type="year"
+              value-format="yyyy"
+              :placeholder="$t('dataset.select_year')"
+            />
+
+            <el-date-picker
+              v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH'"
+              v-model="scope.row.defaultValue"
+              type="month"
+              :format="scope.row.type[1]"
+              :value-format="scope.row.type[1]"
+              :placeholder="$t('dataset.select_month')"
+            />
+
+            <el-date-picker
+              v-if="scope.row.type[0] === 'DATETIME-YEAR-MONTH-DAY'"
+              v-model="scope.row.defaultValue"
+              type="date"
+              :format="scope.row.type[1]"
+              :value-format="scope.row.type[1]"
+              :placeholder="$t('dataset.select_date')"
+            />
+
+            <el-date-picker
+              v-if="scope.row.type[0] === 'DATETIME'"
+              v-model="scope.row.defaultValue"
+              type="datetime"
+              :format="scope.row.type[1]"
+              :value-format="scope.row.type[1]"
+              :placeholder="$t('dataset.select_time')"
+            />
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
+    <template #footer>
+      <el-button secondary @click="showVariableMgm = false">{{ $t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="saveVariable()">{{ $t('dataset.confirm') }} </el-button>
+    </template>
+  </el-drawer>
+</template>
+
+<style lang="less" scoped>
+@import '@/style/mixin.less';
+.sql-eidtor {
+  width: 100%;
+  height: calc(100vh - 56px);
+  position: relative;
+  .drag-left {
+    position: absolute;
+    height: calc(100vh - 56px);
+    width: 2px;
+    top: 0;
+    z-index: 5;
+    cursor: col-resize;
+  }
+
+  .arrow-right {
+    position: absolute;
+    top: 15px;
+    z-index: 2;
+    cursor: pointer;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    left: 0;
+    height: 24px;
+    width: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--deCardStrokeColor, #dee0e3);
+    border-top-right-radius: 13px;
+    border-bottom-right-radius: 13px;
+  }
+
+  .table-list {
+    height: 100%;
+    width: 240px;
+    float: left;
+    padding: 16px 12px;
+    font-family: PingFang SC;
+    border-right: 1px solid rgba(31, 35, 41, 0.15);
+
+    .select-ds {
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      color: var(--deTextPrimary, #1f2329);
+
+      i {
+        cursor: pointer;
+        font-size: 12px;
+        color: var(--deTextPlaceholder, #8f959e);
+      }
+    }
+
+    .search {
+      margin: 12px 0;
+    }
+
+    .ds-list {
+      margin: 12px 0 24px 0;
+      width: 100%;
+    }
+
+    .table-checkbox-list {
+      height: calc(100% - 190px);
+      overflow-y: auto;
+
+      .not-allow {
+        cursor: not-allowed;
+        color: var(--deTextDisable, #bbbfc4);
+      }
+
+      .name-copy {
+        display: none;
+        line-height: 24px;
+        margin-left: auto;
+      }
+
+      .list-item_primary:hover {
+        .name-copy {
+          display: inline;
+        }
+      }
+    }
+  }
+
+  .sql-code-right {
+    float: right;
+
+    height: calc(100vh - 56px);
+    .sql-result {
+      font-family: PingFang SC;
+      font-size: 14px;
+      overflow-y: auto;
+      box-sizing: border-box;
+      width: 100%;
+      height: calc(100vh - 310px);
+
+      .sql-title {
+        user-select: none;
+        height: 54px;
+        display: flex;
+        align-items: center;
+        padding: 16px 24px;
+        font-weight: 500;
+        position: relative;
+        color: var(--deTextPrimary, #1f2329);
+        border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+
+        .result-num {
+          font-weight: 400;
+          color: var(--deTextSecondary, #646a73);
+          margin-left: 12px;
+        }
+
+        .drag {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          height: 7px;
+          width: 100px;
+          border-radius: 3.5px;
+          background: rgba(31, 35, 41, 0.1);
+          cursor: row-resize;
+        }
+      }
+
+      .padding-24 {
+        .border-bottom-tab(24px);
+      }
+
+      .table-sql {
+        height: calc(100% - 46px);
+        width: 100%;
+        padding: 16px 25px 18px 25px;
+        overflow: auto;
+        box-sizing: border-box;
+
+        .table-scroll {
+          float: left;
+        }
+      }
+
+      .de-status {
+        position: relative;
+        margin-left: 15px;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: -13px;
+          transform: translateY(-50%);
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+        }
+      }
+
+      .de-Pending-result,
+      .de-Underway-result {
+        &::before {
+          background: var(--deTextPlaceholder, #8f959e);
+        }
+      }
+
+      .de-Exec-result,
+      .de-Underway-pre {
+        &::before {
+          background: var(--primary, #3370ff);
+        }
+      }
+
+      .de-Stopped-result,
+      .de-Completed-pre {
+        &::before {
+          background: var(--deSuccess, #34c724);
+        }
+      }
+
+      .de-Error-pre {
+        &::before {
+          background: var(--deDanger, #f54a45);
+        }
+
+        .el-icon-s-order {
+          color: var(--primary, #3370ff);
+          cursor: pointer;
+        }
+      }
+    }
+
+    .table-container {
+      height: calc(100% - 46px);
+      padding: 16px 24px;
+    }
+  }
+}
+
+.add-sql-name {
+  height: 56px;
+  width: 100%;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+  .name {
+    width: 240px;
+    margin: 8px;
+  }
+
+  .save-or-cancel {
+    margin-left: auto;
+  }
+}
+</style>
+<style lang="less">
+.sql-eidtor {
+  .cm-scroller {
+    height: 250px;
+    width: 100%;
+    overflow-y: auto;
+  }
+
+  .cm-focused {
+    outline: none;
+  }
+}
+.sql-dataset-drawer {
+  .de-group__prepend {
+    width: 100%;
+  }
+
+  .el-date-editor {
+    width: 100%;
+    display: inline-block;
+  }
+
+  .select-type {
+    width: 180px;
+
+    .el-input__inner {
+      padding-left: 32px;
+    }
+  }
+
+  .select-svg-icon {
+    position: absolute;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .content {
+    height: 62px;
+    width: 822px;
+    border-radius: 4px;
+    background: #e1eaff;
+    position: relative;
+    padding: 9px 0 9px 40px;
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-weight: 400;
+
+    i {
+      position: absolute;
+      top: 12.6px;
+      left: 16.7px;
+      font-size: 14px;
+      color: var(--primary, #3370ff);
+    }
+
+    margin-bottom: 16px;
+  }
+}
+</style>

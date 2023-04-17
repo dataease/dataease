@@ -1,11 +1,15 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { sql } from '@codemirror/lang-sql'
 import { basicSetup } from 'codemirror'
 import { Decoration, EditorView, ViewPlugin, WidgetType, MatchDecorator } from '@codemirror/view'
+import { propTypes } from '@/utils/propTypes'
 
-const myCm = ref()
-onMounted(() => {
+const props = defineProps({
+  domId: propTypes.string.def('editor')
+})
+
+const codeComInit = (doc: string) => {
   function _optionalChain(ops) {
     let lastAccessLHS = undefined
     let value = ops[0]
@@ -88,20 +92,20 @@ onMounted(() => {
     }
   }
 
-  myCm.value = new EditorView({
-    doc: '',
+  return new EditorView({
+    doc,
     extensions: [basicSetup, sql(), placeholders],
-    parent: document.querySelector('#editor-placeholder')
+    parent: document.querySelector(`#${props.domId}`)
   })
-})
+}
 
 defineExpose({
-  myCm
+  codeComInit
 })
 </script>
 
 <template>
-  <div id="editor-placeholder"></div>
+  <div :id="domId"></div>
 </template>
 
 <style scoped>

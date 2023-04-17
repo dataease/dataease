@@ -6,6 +6,10 @@ defineProps({
     type: String as PropType<'input' | 'select' | 'table'>,
     default: 'table'
   },
+  imageSize: {
+    type: Number,
+    default: 125
+  },
   description: {
     type: String,
     default: ''
@@ -18,7 +22,7 @@ const getAssetsFile = (url: string) => {
 </script>
 
 <template>
-  <el-empty :description="description" :image="getAssetsFile(imgType)">
+  <el-empty :imageSize="imageSize" :description="description" :image="getAssetsFile(imgType)">
     <slot></slot>
   </el-empty>
 </template>

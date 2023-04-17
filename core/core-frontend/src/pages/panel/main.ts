@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import '@/style.less'
+import '@/style/index.less'
 import '@/plugins/svg-icon'
 import 'normalize.css/normalize.css'
 import App from './App.vue'
