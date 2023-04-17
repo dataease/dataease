@@ -42,9 +42,9 @@ public class Order2SQLObj {
             // 解析origin name中有关联的字段生成sql表达式
             originField = Utils.calcFieldRegex(f.getOriginName(), tableObj, calcFields);
         } else if (ObjectUtils.isNotEmpty(f.getExtField()) && Objects.equals(f.getExtField(), ExtFieldConstant.EXT_COPY)) {
-            originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), f.getDataeaseName());
+            originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), f.getOriginName());
         } else {
-            originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), f.getDataeaseName());
+            originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), f.getOriginName());
         }
         String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
         String fieldName = "";
