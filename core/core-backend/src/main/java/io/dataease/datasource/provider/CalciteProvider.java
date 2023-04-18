@@ -131,7 +131,7 @@ public class CalciteProvider extends Provider {
             resultSet = statement.executeQuery(datasourceRequest.getQuery());
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
-            for (int i = 0; i < columnCount; i++) {
+            for (int i = 1; i <= columnCount; i++) {
                 TableField tableField = new TableField();
                 tableField.setFieldName(metaData.getColumnName(i));
                 tableField.setType(metaData.getColumnTypeName(i));
@@ -173,7 +173,7 @@ public class CalciteProvider extends Provider {
             dataSource.setDefaultQueryTimeout(Integer.valueOf(rootNode.get("queryTimeout").asText()));
             Schema schema = null;
 
-            switch (datasourceRequest.getDatasource().getType()) {
+            switch (ds.getType()) {
                 case "mysql":
                     schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, rootNode.get("dataBase").asText());
                     rootSchema.add(ds.getSchemaAlias(), schema);
@@ -191,14 +191,14 @@ public class CalciteProvider extends Provider {
     private void registerDriver(DatasourceRequest datasourceRequest) throws Exception {
         for (Map.Entry<Long, DatasourceSchemaDTO> next : datasourceRequest.getDsList().entrySet()) {
             DatasourceSchemaDTO ds = next.getValue();
-            JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
+            JsonNode rootNode = objectMapper.readTree(ds.getConfiguration());
             Driver driver = (Driver) extendedJdbcClassLoader.loadClass(rootNode.get("driver").asText()).newInstance();
             DriverManager.registerDriver(new DriverShim(driver));
         }
     }
 
     private Connection getCalciteConnection(DatasourceRequest datasourceRequest) throws Exception {
-        registerDriver(datasourceRequest);
+//        registerDriver(datasourceRequest);// todo
         Properties info = new Properties();
         info.setProperty("lex", "JAVA");
         info.setProperty("caseSensitive", "false");
