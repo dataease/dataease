@@ -11,7 +11,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-17
+ * @since 2023-04-18
  */
 @TableName("core_datasource")
 public class CoreDatasource implements Serializable {

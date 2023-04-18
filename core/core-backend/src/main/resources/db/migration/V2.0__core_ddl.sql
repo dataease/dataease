@@ -6,7 +6,7 @@ CREATE TABLE `core_datasource`
 (
     `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `name`          varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
-    `desc`          varchar(50)                                                    DEFAULT NULL COMMENT '描述',
+    `describe`          varchar(50)                                                    DEFAULT NULL COMMENT '描述',
     `type`          varchar(50)                                           NOT NULL COMMENT '类型',
     `configuration` longtext                                              NOT NULL COMMENT '详细信息',
     `create_time`   bigint                                                NOT NULL COMMENT '创健时间',
@@ -26,7 +26,7 @@ CREATE TABLE `core_driver`
     `create_time`  bigint(13) NOT NULL COMMENT '创健时间',
     `type`         varchar(255) DEFAULT NULL COMMENT '数据源类型',
     `driver_class` varchar(255) DEFAULT NULL COMMENT '驱动类',
-    `desc`         varchar(255) DEFAULT NULL COMMENT '描述',
+    `describe`         varchar(255) DEFAULT NULL COMMENT '描述',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='驱动';
 
@@ -234,7 +234,7 @@ DROP TABLE IF EXISTS `core_de_engine`;
 CREATE TABLE `core_de_engine` (
           `id`        bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
          `name` varchar(50) DEFAULT NULL COMMENT '名称',
-         `desc` varchar(50) DEFAULT NULL COMMENT '描述',
+         `describe` varchar(50) DEFAULT NULL COMMENT '描述',
          `type` varchar(50) NOT NULL COMMENT '类型',
          `configuration` longtext NOT NULL COMMENT '详细信息',
          `create_time` bigint(13) DEFAULT NULL COMMENT 'Create timestamp',
