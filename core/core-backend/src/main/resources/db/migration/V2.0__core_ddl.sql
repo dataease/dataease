@@ -6,14 +6,14 @@ CREATE TABLE `core_datasource`
 (
     `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `name`          varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
-    `description`          varchar(50)                                                    DEFAULT NULL COMMENT '描述',
+    `description`   varchar(50) DEFAULT NULL COMMENT '描述',
     `type`          varchar(50)                                           NOT NULL COMMENT '类型',
     `configuration` longtext                                              NOT NULL COMMENT '详细信息',
     `create_time`   bigint                                                NOT NULL COMMENT '创健时间',
     `update_time`   bigint                                                NOT NULL COMMENT '更新时间',
-    `create_by`     varchar(50)                                                    DEFAULT NULL COMMENT '创建人ID',
+    `create_by`     varchar(50) DEFAULT NULL COMMENT '创建人ID',
     `status`        longtext COMMENT '状态',
-    `qrtz_instance`        longtext COMMENT '状态',
+    `qrtz_instance` longtext COMMENT '状态',
     `task_status`   varchar(50) DEFAULT NULL COMMENT '任务状态',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -21,12 +21,12 @@ CREATE TABLE `core_datasource`
 DROP TABLE IF EXISTS `core_driver`;
 CREATE TABLE `core_driver`
 (
-    `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `name`         varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
     `create_time`  bigint(13) NOT NULL COMMENT '创健时间',
     `type`         varchar(255) DEFAULT NULL COMMENT '数据源类型',
     `driver_class` varchar(255) DEFAULT NULL COMMENT '驱动类',
-    `description`         varchar(255) DEFAULT NULL COMMENT '描述',
+    `description`  varchar(255) DEFAULT NULL COMMENT '描述',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='驱动';
 
@@ -93,12 +93,12 @@ TABLES;
 DROP TABLE IF EXISTS `core_dataset_group`;
 CREATE TABLE `core_dataset_group`
 (
-    `id`               bigint NOT NULL COMMENT 'ID',
+    `id`               bigint      NOT NULL COMMENT 'ID',
     `name`             varchar(128)  DEFAULT NULL COMMENT '名称',
-    `pid`              bigint   DEFAULT NULL COMMENT '父级ID',
+    `pid`              bigint        DEFAULT NULL COMMENT '父级ID',
     `level`            int(10) DEFAULT '0' COMMENT '当前分组处于第几级',
     `node_type`        varchar(50) NOT NULL COMMENT 'node类型：folder or dataset',
-    `type`             varchar(50) NOT NULL COMMENT 'sql,union',
+    `type`             varchar(50)   DEFAULT NULL COMMENT 'sql,union',
     `mode`             int           DEFAULT '0' COMMENT '连接模式：0-直连，1-同步(包括excel、api等数据存在de中的表)',
     `info`             longtext COMMENT '关联关系树',
     `create_by`        varchar(50)   DEFAULT NULL COMMENT '创建人ID',
@@ -116,7 +116,7 @@ CREATE TABLE `core_dataset_table`
     `id`                   bigint NOT NULL COMMENT 'ID',
     `name`                 varchar(128) DEFAULT NULL COMMENT '名称',
     `table_name`           varchar(128) DEFAULT NULL COMMENT '物理表名',
-    `datasource_id`        bigint  DEFAULT NULL COMMENT '数据源ID',
+    `datasource_id`        bigint       DEFAULT NULL COMMENT '数据源ID',
     `dataset_group_id`     bigint NOT NULL COMMENT '数据集ID',
     `type`                 varchar(50)  DEFAULT NULL COMMENT 'db,sql,union,excel,api',
     `info`                 longtext COMMENT '表原始信息,表名,sql等',
@@ -127,21 +127,21 @@ CREATE TABLE `core_dataset_table`
 DROP TABLE IF EXISTS `core_dataset_table_field`;
 CREATE TABLE `core_dataset_table_field`
 (
-    `id`               bigint  NOT NULL COMMENT 'ID',
-    `datasource_id`    bigint  DEFAULT NULL COMMENT '数据源ID',
-    `dataset_table_id` bigint  NOT NULL COMMENT '数据表ID',
-    `dataset_group_id` bigint  NOT NULL COMMENT '数据集ID',
+    `id`               bigint       NOT NULL COMMENT 'ID',
+    `datasource_id`    bigint       DEFAULT NULL COMMENT '数据源ID',
+    `dataset_table_id` bigint       NOT NULL COMMENT '数据表ID',
+    `dataset_group_id` bigint       NOT NULL COMMENT '数据集ID',
     `origin_name`      longtext     NOT NULL COMMENT '原始字段名',
     `name`             longtext     DEFAULT NULL COMMENT '字段名用于展示',
     `description`      longtext     DEFAULT NULL COMMENT '描述',
-    `dataease_name`    varchar(255) NOT NULL COMMENT 'de字段名用作唯一标识',
+    `dataease_name`    varchar(255) DEFAULT NULL COMMENT 'de字段名用作唯一标识',
     `group_type`       varchar(50)  DEFAULT NULL COMMENT '维度/指标标识 d:维度，q:指标',
     `type`             varchar(255) NOT NULL COMMENT '原始字段类型',
     `size`             int          DEFAULT NULL,
     `de_type`          int          NOT NULL COMMENT 'dataease字段类型：0-文本，1-时间，2-整型数值，3-浮点数值，4-布尔，5-地理位置，6-二进制',
     `de_extract_type`  int          NOT NULL COMMENT 'de记录的原始类型',
     `ext_field`        int          DEFAULT NULL COMMENT '是否扩展字段 0原始 1复制 2计算字段...',
-    `checked`          tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否选中',
+    `checked`          tinyint(1) DEFAULT NULL DEFAULT '1' COMMENT '是否选中',
     `column_index`     int          DEFAULT NULL COMMENT '列位置',
     `last_sync_time`   bigint       DEFAULT NULL COMMENT '同步时间',
     `accuracy`         int          DEFAULT '0' COMMENT '精度',
@@ -194,52 +194,55 @@ CREATE TABLE `data_visualization_info`
 
 
 DROP TABLE IF EXISTS `core_datasource_task`;
-CREATE TABLE `core_datasource_task` (
-           `id`        bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-          `table_id` varchar(50) NOT NULL COMMENT '表ID',
-          `name` varchar(255) NOT NULL COMMENT '任务名称',
-          `type` varchar(50) NOT NULL COMMENT '更新方式：0-全量更新 1-增量更新',
-          `start_time` bigint(13) DEFAULT NULL COMMENT '开始时间',
-          `rate` varchar(50) NOT NULL COMMENT '执行频率：0 一次性 1 cron',
-          `cron` varchar(255) DEFAULT NULL COMMENT 'cron表达式',
-          `end` varchar(50) NOT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
-          `end_time` bigint(13) DEFAULT NULL COMMENT '结束时间',
-          `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
-          `last_exec_time` bigint(13) DEFAULT NULL COMMENT '上次执行时间',
-          `last_exec_status` varchar(50) DEFAULT NULL COMMENT '上次执行结果',
-          `extra_data` longtext,
-          `status` varchar(50) DEFAULT NULL COMMENT '任务状态',
-          PRIMARY KEY (`id`),
-          KEY `idx_dataset_table_task_table_id` (`table_id`),
-          KEY `idx_dataset_table_task_name` (`name`)
+CREATE TABLE `core_datasource_task`
+(
+    `id`               bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `table_id`         varchar(50)  NOT NULL COMMENT '表ID',
+    `name`             varchar(255) NOT NULL COMMENT '任务名称',
+    `type`             varchar(50)  NOT NULL COMMENT '更新方式：0-全量更新 1-增量更新',
+    `start_time`       bigint(13) DEFAULT NULL COMMENT '开始时间',
+    `rate`             varchar(50)  NOT NULL COMMENT '执行频率：0 一次性 1 cron',
+    `cron`             varchar(255) DEFAULT NULL COMMENT 'cron表达式',
+    `end`              varchar(50)  NOT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
+    `end_time`         bigint(13) DEFAULT NULL COMMENT '结束时间',
+    `create_time`      bigint(13) DEFAULT NULL COMMENT '创建时间',
+    `last_exec_time`   bigint(13) DEFAULT NULL COMMENT '上次执行时间',
+    `last_exec_status` varchar(50)  DEFAULT NULL COMMENT '上次执行结果',
+    `extra_data`       longtext,
+    `status`           varchar(50)  DEFAULT NULL COMMENT '任务状态',
+    PRIMARY KEY (`id`),
+    KEY                `idx_dataset_table_task_table_id` (`table_id`),
+    KEY                `idx_dataset_table_task_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `core_datasource_task_log`;
-CREATE TABLE `core_datasource_task_log` (
-           `id`        bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-          `table_id` varchar(50) NOT NULL COMMENT '表ID',
-          `task_id` varchar(50) DEFAULT NULL COMMENT '任务ID',
-          `start_time` bigint(13) DEFAULT NULL COMMENT '开始时间',
-          `end_time` bigint(13) DEFAULT NULL COMMENT '结束时间',
-          `status` varchar(50) NOT NULL COMMENT '执行状态',
-          `info` longtext COMMENT '错误信息',
-          `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
-          `trigger_type` varchar(45) DEFAULT NULL,
-          PRIMARY KEY (`id`),
-          KEY `idx_dataset_table_task_log_table_id` (`table_id`),
-          KEY `idx_dataset_table_task_log_task_id` (`task_id`)
+CREATE TABLE `core_datasource_task_log`
+(
+    `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `table_id`     varchar(50) NOT NULL COMMENT '表ID',
+    `task_id`      varchar(50) DEFAULT NULL COMMENT '任务ID',
+    `start_time`   bigint(13) DEFAULT NULL COMMENT '开始时间',
+    `end_time`     bigint(13) DEFAULT NULL COMMENT '结束时间',
+    `status`       varchar(50) NOT NULL COMMENT '执行状态',
+    `info`         longtext COMMENT '错误信息',
+    `create_time`  bigint(13) DEFAULT NULL COMMENT '创建时间',
+    `trigger_type` varchar(45) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY            `idx_dataset_table_task_log_table_id` (`table_id`),
+    KEY            `idx_dataset_table_task_log_task_id` (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `core_de_engine`;
-CREATE TABLE `core_de_engine` (
-          `id`        bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-         `name` varchar(50) DEFAULT NULL COMMENT '名称',
-         `description` varchar(50) DEFAULT NULL COMMENT '描述',
-         `type` varchar(50) NOT NULL COMMENT '类型',
-         `configuration` longtext NOT NULL COMMENT '详细信息',
-         `create_time` bigint(13) DEFAULT NULL COMMENT 'Create timestamp',
-         `update_time` bigint(13) DEFAULT NULL COMMENT 'Update timestamp',
-         `create_by` varchar(50) DEFAULT NULL COMMENT '创建人ID',
-         `status` varchar(45) DEFAULT NULL COMMENT '状态',
-         PRIMARY KEY (`id`)
+CREATE TABLE `core_de_engine`
+(
+    `id`            bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `name`          varchar(50) DEFAULT NULL COMMENT '名称',
+    `description`   varchar(50) DEFAULT NULL COMMENT '描述',
+    `type`          varchar(50) NOT NULL COMMENT '类型',
+    `configuration` longtext    NOT NULL COMMENT '详细信息',
+    `create_time`   bigint(13) DEFAULT NULL COMMENT 'Create timestamp',
+    `update_time`   bigint(13) DEFAULT NULL COMMENT 'Update timestamp',
+    `create_by`     varchar(50) DEFAULT NULL COMMENT '创建人ID',
+    `status`        varchar(45) DEFAULT NULL COMMENT '状态',
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
