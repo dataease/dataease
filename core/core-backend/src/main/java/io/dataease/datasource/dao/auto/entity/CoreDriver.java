@@ -47,7 +47,7 @@ public class CoreDriver implements Serializable {
     /**
      * 描述
      */
-    private String desc;
+    private String describe;
 
     public Long getId() {
         return id;
@@ -89,12 +89,12 @@ public class CoreDriver implements Serializable {
         this.driverClass = driverClass;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescribe() {
+        return describe;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescribe(String describe) {
+        this.describe = describe;
     }
 
     @Override
@@ -105,7 +105,7 @@ public class CoreDriver implements Serializable {
         ", createTime = " + createTime +
         ", type = " + type +
         ", driverClass = " + driverClass +
-        ", desc = " + desc +
+        ", describe = " + describe +
         "}";
     }
 }

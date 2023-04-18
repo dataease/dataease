@@ -1,7 +1,6 @@
 package io.dataease.datasource.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,9 +8,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
+import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.dataset.utils.TableUtils;
-import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
@@ -35,7 +34,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -279,7 +277,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public void updateDemoDs() {
-        CoreDatasource datasource = datasourceMapper.selectById("76026997-94f9-4a35-96ca-151084638969");
+        CoreDatasource datasource = datasourceMapper.selectById(1);
         if (datasource == null) {
             return;
         }

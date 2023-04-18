@@ -15,12 +15,13 @@ import io.dataease.request.ConditionEntity;
 import io.dataease.request.GridExample;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
+@Component
 public class DatasourceTaskServer {
 
     @Resource

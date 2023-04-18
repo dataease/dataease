@@ -32,7 +32,7 @@ public class CoreDatasource implements Serializable {
     /**
      * 描述
      */
-    private String desc;
+    private String describe;
 
     /**
      * 类型
@@ -90,12 +90,12 @@ public class CoreDatasource implements Serializable {
         this.name = name;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescribe() {
+        return describe;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescribe(String describe) {
+        this.describe = describe;
     }
 
     public String getType() {
@@ -167,7 +167,7 @@ public class CoreDatasource implements Serializable {
         return "CoreDatasource{" +
         "id = " + id +
         ", name = " + name +
-        ", desc = " + desc +
+        ", describe = " + describe +
         ", type = " + type +
         ", configuration = " + configuration +
         ", createTime = " + createTime +
