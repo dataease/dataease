@@ -20,7 +20,7 @@ public class TreeUtils {
     /**
      * Description: rootPid 是根节点PID
      */
-    public static <T extends ITreeBase> List<T> mergeTree(List<T> tree, String... rootPid) {
+    public static <T extends ITreeBase> List<T> mergeTree(List<T> tree, Long... rootPid) {
         Assert.notNull(rootPid, "Root Pid cannot be null");
         if (CollectionUtils.isEmpty(tree)) {
             return null;
@@ -53,11 +53,11 @@ public class TreeUtils {
      * Description: rootPid 是根节点PID 档期那默认是0
      */
     public static <T extends ITreeBase> List<T> mergeTree(List<T> tree) {
-        return mergeTree(tree, "0");
+        return mergeTree(tree, 0L);
     }
 
 
-    public static <T extends ITreeBase> List<T> mergeDuplicateTree(List<T> tree, String... rootPid) {
+    public static <T extends ITreeBase> List<T> mergeDuplicateTree(List<T> tree, Long... rootPid) {
         Assert.notNull(rootPid, "Root Pid cannot be null");
         if (CollectionUtils.isEmpty(tree)) {
             return null;

@@ -124,11 +124,11 @@ public class DatasourceServer implements DatasourceApi {
             DatasourceDTO datasourceDTO = new DatasourceDTO();
             BeanUtils.copyBean(datasourceDTO, coreDatasource);
             datasourceConfigurations.forEach(datasourceConfiguration -> {
-                if (datasourceConfiguration.getType().equals(datasourceDTO.getType())) {
+                if (StringUtils.equals(datasourceDTO.getType(), datasourceConfiguration.getType().name())) {
                     datasourceDTO.setTypeAlias(datasourceConfiguration.getName());
                 }
             });
-
+            datasourceDTOS.add(datasourceDTO);
         });
         return datasourceDTOS;
     }

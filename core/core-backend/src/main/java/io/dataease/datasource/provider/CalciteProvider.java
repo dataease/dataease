@@ -86,8 +86,14 @@ public class CalciteProvider extends Provider {
             tableDesc.setName(resultSet.getString(3));
         }
         if (datasourceType == DatasourceConfiguration.DatasourceType.mysql) {
-            tableDesc.setName(resultSet.getString(2));
+            try {
+                tableDesc.setName(resultSet.getString(2));
+            } catch (Exception e) {
+                tableDesc.setName(resultSet.getString(1));
+            }
         }
+        tableDesc.setDatasourceId(datasourceRequest.getDatasource().getId());
+        tableDesc.setType("db");
         tableDesc.setTableName(resultSet.getString(1));
         return tableDesc;
     }
@@ -239,7 +245,7 @@ public class CalciteProvider extends Provider {
         JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
         TypeReference<List<String>> listTypeReference = new TypeReference<List<String>>() {
         };
-        return objectMapper.readValue(rootNode.get("showTableSqls").asText(), listTypeReference);
+        return objectMapper.readValue(objectMapper.writeValueAsString(rootNode.get("showTableSqls")), listTypeReference);
     }
 
     public Connection getConnection(String datasourceConfiguration) throws Exception {
