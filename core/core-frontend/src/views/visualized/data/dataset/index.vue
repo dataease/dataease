@@ -5,12 +5,20 @@ import { ElIcon } from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
+import CreatDsGroup from './form/CreatDsGroup.vue'
+import type { Tree } from './form/CreatDsGroup.vue'
+import { getDatasetTree, delDatasetTree } from '@/api/dataset'
 const nickName = ref('')
 const router = useRouter()
-interface Tree {
-  label: string
-  children?: Tree[]
-}
+
+const state = reactive({
+  addedDatasetList: [],
+  datasetTree: [] as Tree[],
+  menuList: [],
+  datasetTypeList: []
+})
+
+const creatDsFolder = ref()
 
 const generateColumns = (length = 10, prefix = 'column-', props?: any) =>
   Array.from({ length }).map((_, columnIndex) => ({
@@ -43,6 +51,14 @@ const generateData = (columns: ReturnType<typeof generateColumns>, length = 200,
     )
   })
 
+const getData = () => {
+  getDatasetTree().then(res => {
+    state.datasetTree = (res as unknown as Tree[]) || []
+  })
+}
+
+getData()
+
 const columns = generateColumns(10)
 const tableData = generateData(columns, 200)
 
@@ -54,21 +70,39 @@ const editorDataset = () => {
   router.push('/dataset-form')
 }
 
+const createDataset = (data?: Tree) => {
+  router.push({
+    path: '/dataset-form',
+    query: {
+      pid: data.id
+    }
+  })
+}
+
 const handleClick = data => {
   console.log(data)
 }
 
-const handleDatasetTree = (cmd: string, data: Tree) => {
-  console.log(cmd, data)
+const operation = (cmd: string, data: Tree, nodeType: string) => {
+  if (cmd === 'delete') {
+    delDatasetTree(data.id).then(() => {
+      getData()
+    })
+  } else {
+    creatDsFolder.value.init(nodeType, data, cmd)
+  }
+}
+
+const handleDatasetTree = (cmd: string, data?: Tree) => {
+  if (cmd === 'dataset') {
+    createDataset(data)
+  }
+  if (cmd === 'folder') {
+    creatDsFolder.value.init(cmd, data || {})
+  }
 }
 
 const activeName = ref('dataPreview')
-
-const state = reactive({
-  addedDatasetList: [],
-  menuList: [],
-  datasetTypeList: []
-})
 
 state.menuList = [
   {
@@ -77,7 +111,7 @@ state.menuList = [
   },
   {
     label: '重命名',
-    command: 'move'
+    command: 'rename'
   },
   {
     label: '删除',
@@ -87,35 +121,15 @@ state.menuList = [
 
 state.datasetTypeList = [
   {
-    label: '数据库数据集',
-    command: 'db',
-    svgName: 'ds-db'
-  },
-  {
-    label: 'SQL数据集',
-    svgName: 'ds-sql',
-    command: 'sql'
-  },
-  {
-    label: 'EXCEL数据集',
-    svgName: 'ds-excel',
-    command: 'excel'
-  },
-  {
-    label: '关联数据集',
-    svgName: 'ds-union',
-    command: 'union'
-  },
-  {
-    label: 'API数据集',
+    label: '数据集',
     svgName: 'ds-api',
-    command: 'api'
+    command: 'dataset'
   },
   {
     label: '新建文件夹',
     divided: true,
     svgName: 'scene',
-    command: 'group'
+    command: 'folder'
   }
 ]
 state.addedDatasetList = Array(40)
@@ -125,79 +139,9 @@ state.addedDatasetList = Array(40)
     nickName: index + 'nickName'
   }))
 
-const data: Tree[] = [
-  {
-    label: 'Level one 1',
-    children: [
-      {
-        label: 'Level two 1-1',
-        children: [
-          {
-            label: 'Level three 1-1-1'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    label: 'Level one 2',
-    children: [
-      {
-        label: 'Level two 2-1',
-        children: [
-          {
-            label: 'Level three 2-1-1'
-          }
-        ]
-      },
-      {
-        label: 'Level two 2-2',
-        children: [
-          {
-            label: 'Level three 2-2-1'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    label: 'Level one 3',
-    children: [
-      {
-        label: 'Level two 3-1',
-        children: [
-          {
-            label: 'Level three 3-1-1'
-          }
-        ]
-      },
-      {
-        label: 'Level two 3-2',
-        children: [
-          {
-            label: 'Level three 3-2-1'
-          },
-          {
-            label: 'Level three 3-2-2'
-          },
-          {
-            label: 'Level three 3-2-3'
-          },
-          {
-            label: 'Level three 3-2-4'
-          },
-          {
-            label: 'Level three 3-2-5'
-          }
-        ]
-      }
-    ]
-  }
-]
-
 const defaultProps = {
   children: 'children',
-  label: 'label'
+  label: 'name'
 }
 </script>
 
@@ -205,10 +149,10 @@ const defaultProps = {
   <div class="dataset-manage">
     <div class="dataset-list dataset-height">
       <div class="title">
-        <el-button secondary>
+        <el-button @click="() => handleDatasetTree('folder')" secondary>
           <template #icon> <Icon name="icon_add_outlined"></Icon> </template>文件夹
         </el-button>
-        <el-button type="primary">
+        <el-button @click="() => createDataset()" type="primary">
           <template #icon> <Icon name="icon_add_outlined"></Icon> </template>数据集
         </el-button>
         <el-input class="m24 w100" v-model="nickName" clearable>
@@ -223,12 +167,15 @@ const defaultProps = {
       <el-tree
         :expand-on-click-node="false"
         menu
-        :data="data"
+        :data="state.datasetTree"
         :props="defaultProps"
         @node-click="handleNodeClick"
       >
         <template #default="{ node, data }">
           <span class="custom-tree-node">
+            <el-icon v-if="data.nodeType === 'folder'">
+              <Icon name="scene"></Icon>
+            </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             <div>
               <handle-more
@@ -238,7 +185,7 @@ const defaultProps = {
                 placement="bottom-start"
               ></handle-more>
               <handle-more
-                @handle-command="cmd => handleDatasetTree(cmd, data)"
+                @handle-command="cmd => operation(cmd, data, data.nodeType)"
                 :menu-list="state.menuList"
               ></handle-more>
             </div>
@@ -284,6 +231,7 @@ const defaultProps = {
         </el-auto-resizer>
       </div>
     </div>
+    <creat-ds-group @finish="getData()" ref="creatDsFolder"></creat-ds-group>
   </div>
 </template>
 

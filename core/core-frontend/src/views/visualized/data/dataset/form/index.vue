@@ -3,18 +3,35 @@ import { ref, nextTick, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CalcFieldEdit from './CalcFieldEdit.vue'
 import AddSql from './AddSql.vue'
+import { useRoute } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
-import { getDatasourceList } from '@/api/dataset'
+import CreatDsGroup from './CreatDsGroup.vue'
+import { getDatasourceList, getTables, getPreviewData } from '@/api/dataset'
+import type { Table } from '@/api/dataset'
 import DatasetUnion from './DatasetUnion.vue'
 interface DragEvent extends MouseEvent {
   dataTransfer: DataTransfer
 }
-const { t } = useI18n()
 
+interface DataSource {
+  id: string
+  name: string
+}
+
+interface Field {
+  fieldShortName: string
+  name: string
+}
+
+const { t } = useI18n()
+const route = useRoute()
+const creatDsFolder = ref()
+const isCreatGroup = ref(false)
 const editCalcField = ref(false)
 const editSqlField = ref(false)
 const editUnion = ref(false)
 
+const datasetDrag = ref()
 const datasetName = ref('新建数据源')
 const originName = ref('')
 const activeName = ref('')
@@ -32,12 +49,29 @@ const nameExist = ref(false)
 const datasetType = ref('sql')
 const editerName = ref()
 
-const joinEditor = ele => {
+// onMounted(() => {
+//   const { pid } = route.query
+//   creatDsFolder.value.init('dataset', { id: pid })
+// })
+const joinEditor = (arr: []) => {
+  state.editArr = arr
   editUnion.value = true
+}
+
+let columns = []
+let tableData = []
+
+const showTable = ref(false)
+
+const addComplete = () => {
+  state.nodeNameList = [...datasetDrag.value.nodeNameList]
 }
 
 const state = reactive({
   nameList: [],
+  nodeNameList: [],
+  editArr: [],
+  nodeList: [],
   dataSourceList: [],
   tableData: [],
   table: {
@@ -46,831 +80,15 @@ const state = reactive({
   }
 })
 
-state.tableData = [
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_column_permissions',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_group',
-    remark: '',
-    enableCheck: false,
-    datasetPath: '0-大数据集测试/test56/0wjh4_dataset_group'
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_row_permissions',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_row_permissions_tree',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_sql_log',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_table',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_table_field',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_table_function',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_table_incremental_config',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_table_task',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_table_task_log',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'dataset_table_union',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'datasource',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'de_driver',
-    remark: '驱动',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'de_driver_details',
-    remark: '驱动详情',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'de_engine',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_alt_4a',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_alt_4a_5a',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_alt_5a',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_alt_region',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_alt_tourist_attractions',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_alt_tourists_total',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_alt_tourists_type',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_domestic_epidemic',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_gdp_2021',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_gdp_by_city',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_gdp_by_city_top10',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_gdp_by_industry',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_gdp_district_top100',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_gdp_history',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_hntv_age',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_hntv_keywords',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_hntv_labels',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_hntv_media',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_hntv_messages',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_hntv_region',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_hntv_shows',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_hntv_topics',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_sales_dashboard',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_stny_carbon dioxide_emissions',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_stny_carbon_emission_trend',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_stny_disposable_energy',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_stny_energy_consumption_proportion',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_stny_energy_consumption_total',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'demo_stny_province_city_index',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'file_content',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'file_metadata',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'license',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'my_plugin',
-    remark: '插件表',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_app_template',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_app_template_log',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_design',
-    remark: '仪表板和组件的关联关系 组件分为普通视图和系统组件',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_group',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_group_extend',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_group_extend_data',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_link',
-    remark: '仪表板链接',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_link_jump',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_link_jump_info',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_link_jump_target_view_info',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_link_mapping',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_outer_params',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_outer_params_info',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_outer_params_target_view_info',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_pdf_template',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_share',
-    remark: '仪表板分享',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_store',
-    remark: '仪表板收藏',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_subject',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_template',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_view',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_view_linkage',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_view_linkage_field',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'panel_watermark',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'plugin_sys_menu',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'qrtz_blob_triggers',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'qrtz_calendars',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'qrtz_cron_triggers',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'qrtz_fired_triggers',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'qrtz_job_details',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'qrtz_locks',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'qrtz_paused_trigger_grps',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'qrtz_scheduler_state',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'qrtz_simple_triggers',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'qrtz_simprop_triggers',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'qrtz_triggers',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'schedule',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_auth',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_auth_detail',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_background_image',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_dept',
-    remark: '组织机构',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_external_token',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_log',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_login_limit',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_menu',
-    remark: '系统菜单',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_msg',
-    remark: '消息通知表',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_msg_channel',
-    remark: '消息渠道表',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_msg_setting',
-    remark: '消息设置表',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_msg_type',
-    remark: '消息类型表',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_param_assist',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_role',
-    remark: '角色表',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_roles_menus',
-    remark: '角色菜单关联',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_startup_job',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_task',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_task_email',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_task_instance',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_theme',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_theme_item',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_user',
-    remark: '系统用户',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_user_assist',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'sys_users_roles',
-    remark: '用户角色关联',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'system_parameter',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'task_instance',
-    remark: '',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'user_key',
-    remark: '用户KEY',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'v_auth_model',
-    remark: 'VIEW',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'v_auth_privilege',
-    remark: 'VIEW',
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'v_history_chart_view',
-    remark: 'VIEW',
-    enableCheck: true,
-    datasetPath: null
-  }
-]
-
 const closeEditUnion = () => {
-  console.log('123')
-  // this.editUnion = false
-  // // 添加关联的时候，如果关闭关联关系设置的界面，则删除子节点，同时向父级传递消息
-  // if (this.unionParam.type === 'add') {
-  //   this.dataset[0].childrenDs.pop()
-  //   this.calc({
-  //     type: 'delete',
-  //     grandParentAdd: true,
-  //     grandParentSub: true,
-  //     subCount: 0
-  //   })
-  // }
+  notConfirmEditUnion()
+  editUnion.value = false
 }
+const fieldUnion = ref()
 const confirmEditUnion = () => {
-  console.log('123')
-
+  const { node, parent } = fieldUnion.value
+  datasetDrag.value.setStateBack(node, parent)
+  editUnion.value = false
   // 校验关联关系与字段，必填
   // if (this.checkUnion()) {
   //   this.editUnion = false
@@ -879,23 +97,19 @@ const confirmEditUnion = () => {
   // }
 }
 
+const notConfirmEditUnion = () => {
+  datasetDrag.value.notConfirm()
+}
+
 const dragstart = (e: DragEvent, ele) => {
   offsetX.value = e.offsetX
   offsetY.value = e.offsetY
-  e.dataTransfer.setData('text/plain', ele.name)
+  e.dataTransfer.setData('text/plain', JSON.stringify(ele))
   maskShow.value = true
 }
-const setActiveName = ({ name, datasourceId, enableCheck }) => {
-  if (!enableCheck) return
-  activeName.value = name
-}
-
-const showTableNameWithComment = t => {
-  if (t.remark) {
-    return `${t.name}(${t.remark})`
-  } else {
-    return `${t.name}`
-  }
+const setActiveName = (data: Table) => {
+  if (data.unableCheck) return
+  activeName.value = data.tableName
 }
 
 const mousedownDrag = () => {
@@ -931,12 +145,70 @@ const nameBlur = () => {
   showInput.value = nameExist.value
 }
 
-const datasetSave = () => {
+const getDatasource = () => {
   getDatasourceList().then(res => {
-    console.log('res', res)
+    state.dataSourceList = (res as unknown as DataSource[]) || []
   })
-  // editUnion.value = true
-  console.log('datasetSave')
+}
+
+getDatasource()
+
+const dsChange = (val: string) => {
+  getTables(val).then(res => {
+    state.tableData = (res as unknown as Table[]) || []
+  })
+}
+const datasetSave = () => {
+  const arr = []
+  dfsNodeList(arr, datasetDrag.value.nodeList)
+  getPreviewData({ union: arr }).then(res => {
+    columns = (res.data.fields as unknown as Field[]).map(ele => {
+      return {
+        key: ele.fieldShortName,
+        dataKey: ele.fieldShortName,
+        title: ele.name,
+        width: 150
+      }
+    })
+    tableData = (res.data.data as unknown as []) || []
+    showTable.value = true
+  })
+}
+
+const dfsNodeList = (arr, list) => {
+  list.forEach(ele => {
+    const childrenDs = []
+    if (ele.children?.length) {
+      dfsNodeList(childrenDs, ele.children)
+    }
+    const {
+      tableName,
+      type,
+      datasourceId,
+      id,
+      info,
+      unionType,
+      unionFields,
+      currentDsFields,
+      sqlVariableDetails
+    } = ele
+    arr.push({
+      currentDs: {
+        sqlVariableDetails,
+        tableName,
+        type,
+        datasourceId,
+        id,
+        info
+      },
+      currentDsFields,
+      childrenDs,
+      unionToParent: {
+        unionType,
+        unionFields
+      }
+    })
+  })
 }
 const handleClick = () => {
   showInput.value = true
@@ -998,6 +270,7 @@ const handleClick = () => {
           v-model="dataSource"
           class="ds-list"
           filterable
+          @change="dsChange"
           :placeholder="t('dataset.pls_slc_data_source')"
         >
           <el-option
@@ -1027,29 +300,22 @@ const handleClick = () => {
         </div>
         <div v-else class="table-checkbox-list">
           <template v-for="ele in state.tableData" :key="ele.name">
-            <el-tooltip
-              :disabled="ele.enableCheck"
-              effect="dark"
-              :content="t('dataset.table_already_add_to') + ': ' + ele.datasetPath"
-              placement="right"
+            <div
+              :class="[
+                {
+                  active: activeName === ele.tableName,
+                  'not-allow': state.nodeNameList.includes(ele.tableName)
+                }
+              ]"
+              class="list-item_primary"
+              :title="ele.name"
+              @dragstart="$event => dragstart($event, ele)"
+              @dragend="maskShow = false"
+              :draggable="!state.nodeNameList.includes(ele.tableName)"
+              @click="setActiveName(ele)"
             >
-              <div
-                :class="[{ active: activeName === ele.name, 'not-allow': !ele.enableCheck }]"
-                class="list-item_primary"
-                :title="ele.name"
-                @dragstart="$event => dragstart($event, ele)"
-                @dragend="maskShow = false"
-                draggable="true"
-                @click="setActiveName(ele)"
-              >
-                <span class="label">{{ showTableNameWithComment(ele) }}</span>
-                <span v-if="ele.nameExist" class="error-name-exist">
-                  <el-icon>
-                    <Icon name="exclamationmark"></Icon>
-                  </el-icon>
-                </span>
-              </div>
-            </el-tooltip>
+              <span class="label">{{ ele.tableName }}</span>
+            </div>
           </template>
         </div>
       </div>
@@ -1059,7 +325,23 @@ const handleClick = () => {
           :maskShow="maskShow"
           :offsetX="offsetX"
           :offsetY="offsetY"
+          ref="datasetDrag"
+          @addComplete="addComplete"
         ></dataset-union>
+        <div v-if="showTable" class="table-preview">
+          <el-auto-resizer>
+            <template #default="{ height, width }">
+              <el-table-v2
+                :columns="columns"
+                header-class="header-cell"
+                :data="tableData"
+                :width="width"
+                :height="height"
+                fixed
+              />
+            </template>
+          </el-auto-resizer>
+        </div>
       </div>
     </div>
     <el-drawer
@@ -1067,9 +349,10 @@ const handleClick = () => {
       v-model="editUnion"
       custom-class="union-dataset-drawer"
       size="840px"
+      :before-close="closeEditUnion"
       direction="rtl"
     >
-      <union-edit />
+      <union-edit ref="fieldUnion" :editArr="state.editArr" />
       <template #footer>
         <el-button secondary @click="closeEditUnion()">{{ t('dataset.cancel') }} </el-button>
         <el-button type="primary" @click="confirmEditUnion()"
@@ -1078,6 +361,7 @@ const handleClick = () => {
       </template>
     </el-drawer>
   </div>
+  <creat-ds-group ref="creatDsFolder"></creat-ds-group>
   <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
     <calc-field-edit :param="{ id: 0 }" />
   </el-dialog>
@@ -1200,6 +484,13 @@ const handleClick = () => {
     .drag-right {
       flex: 1;
       height: calc(100vh - 56px);
+      .table-preview {
+        height: calc(100vh - 500px);
+        position: fixed;
+        width: 907px;
+        bottom: 0;
+        right: 0;
+      }
     }
   }
 }

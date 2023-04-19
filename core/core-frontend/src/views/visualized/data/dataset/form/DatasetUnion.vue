@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, computed, ref } from 'vue'
+import { reactive, computed, ref, nextTick } from 'vue'
 // import { throttle } from 'lodash'
 import { HandleMore } from '@/components/handle-more'
 import { propTypes } from '@/utils/propTypes'
@@ -17,6 +17,27 @@ const props = defineProps({
   offsetY: propTypes.number.def(0)
 })
 
+const iconName = {
+  left: 'icon_left-association',
+  right: 'icon_left-association',
+  inner: 'icon_intersect'
+}
+
+const nodeNameList = computed(() => {
+  const arr = []
+  dfsNodeNameList(state.nodeList, arr)
+  return arr
+})
+
+const dfsNodeNameList = (list, arr) => {
+  return list.forEach(ele => {
+    arr.push(ele.tableName)
+    if (ele.children?.length) {
+      dfsNodeNameList(ele.children, arr)
+    }
+  })
+}
+
 const activeNode = ref('')
 
 const handleCommand = (ele, command) => {
@@ -24,11 +45,36 @@ const handleCommand = (ele, command) => {
 }
 
 const handlePathClick = ele => {
-  console.log('ele', ele)
-  emits('joinEditor', ele)
+  const { from, to } = ele
+  const arr = []
+  const idArr = [from.id, to.id]
+  dfsPath(arr, idArr, state.nodeList)
+  emits('joinEditor', arr)
 }
 
-const emits = defineEmits(['joinEditor'])
+const dfsPath = (arr, idArr, list) => {
+  list.forEach(ele => {
+    if (idArr.includes(ele.id)) {
+      arr.unshift(ele)
+    }
+    if (ele.children?.length) {
+      dfsPath(arr, idArr, ele.children)
+    }
+  })
+}
+
+const dfsNodeBack = (arr, idArr, list) => {
+  list.forEach(ele => {
+    if (idArr.includes(ele.id)) {
+      idArr.shift()
+      const node = arr.shift()
+      Object.assign(ele, node)
+    }
+    if (ele.children?.length) {
+      dfsPath(arr, idArr, ele.children)
+    }
+  })
+}
 
 const menuList = [
   {
@@ -76,27 +122,27 @@ const possibleNodeAreaList = computed(() => {
 })
 
 const leafNode = (arr, leafList) => {
-  arr.forEach(({ x, y, label, children = [], isShadow = false }, index) => {
-    const fromX = x * 300 + 24
-    const fromY = y * 64 + 24
+  arr.forEach((ele, index) => {
+    const fromX = ele.x * 300 + 24
+    const fromY = ele.y * 64 + 24
     let toX = fromX + 200
     let toY = fromY + 64
     const next = arr[index + 1]
     if (next) {
       toY = next.y * 64 + 24
     }
-    if (children?.length) {
-      leafNode(children, leafList)
+    if (ele.children?.length) {
+      leafNode(ele.children, leafList)
     }
-    if (x || y) {
+    if (ele.x || ele.y) {
       leafList.push({
-        isShadow,
-        isLeaf: !children?.length,
+        ...ele,
+        isShadow: ele.isShadow,
+        isLeaf: !ele.children?.length,
         fromX,
         fromY,
         toX,
-        toY,
-        label
+        toY
       })
     }
   })
@@ -143,11 +189,11 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
         idxChild = Math.max(idxChild, last.maxY)
       }
       nodeListLocation.push({
+        ...ele,
         x,
         y: idxChild,
         maxY,
-        isShadow: !!ele.isShadow,
-        label: ele.label
+        isShadow: !!ele.isShadow
       })
     } else {
       const children = []
@@ -165,24 +211,24 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
       maxY = Math.max(children[children.length - 1].maxY + 1, maxY)
 
       nodeListLocation.push({
+        ...ele,
         x,
         y: idx ? Math.max(idx, maxY) : idx,
         maxY,
         isShadow: !!ele.isShadow,
-        children,
-        label: ele.label
+        children
       })
     }
   })
 }
 
-const dfsNodeShadow = (arr, label, position) => {
+const dfsNodeShadow = (arr, tableName, position) => {
   return arr.some((ele, index) => {
-    if (ele.label === label) {
-      const flag = label + '_&&' + position
+    if (ele.tableName === tableName) {
+      const flag = tableName + '_&&' + position
       if (ele.isShadow && state.visualNode.flag === flag) return true
       state.visualNode = {
-        label: '',
+        tableName: '',
         isShadow: true,
         flag
       }
@@ -197,27 +243,25 @@ const dfsNodeShadow = (arr, label, position) => {
       return true
     }
     if (ele.children?.length) {
-      return dfsNodeShadow(ele.children, label, position)
+      return dfsNodeShadow(ele.children, tableName, position)
     }
     return false
   })
 }
 
-const flatLine = ({ x, y, children = [], isShadow, label }, flatNodeList) => {
-  const from = { x, y, d: '', label }
-  children.forEach(ele => {
+const flatLine = (item, flatNodeList) => {
+  const from = { ...item, d: '' }
+  ;(item.children || []).forEach(ele => {
     flatNodeList.push({
       from,
-      isShadow: ele.isShadow || isShadow,
+      isShadow: ele.isShadow || item.isShadow,
       to: {
-        x: ele.x,
-        y: ele.y,
-        label: ele.label
+        ...ele
       },
       d:
         ele.y === from.y
-          ? `M ${x * 300 + 224} ${ele.y * 64 + 44} l 100 0`
-          : `M ${x * 300 + 240} ${from.y * 64 + 44} l 0 ${(ele.y - from.y) * 64} l 84 0`
+          ? `M ${item.x * 300 + 224} ${ele.y * 64 + 44} l 100 0`
+          : `M ${item.x * 300 + 240} ${from.y * 64 + 44} l 0 ${(ele.y - from.y) * 64} l 84 0`
     })
     if (ele.children?.length) {
       flatLine(ele, flatNodeList)
@@ -243,19 +287,20 @@ const dragover_handler = ev => {
   if (!fir.children?.length || obj?.isShadow) {
     if (obj?.isShadow) return
     state.visualNode = {
-      label: '',
+      tableName: '',
       isShadow: true,
       flag: '_&&'
     }
 
     state.nodeList[0].children = [state.visualNode]
+    state.visualNodeParent = state.nodeList[0]
     return
   }
 
   let resultList = possibleNodeAreaList.value.map(ele => {
-    const { fromX, fromY, toX, toY, isLeaf = false, label } = ele
+    const { fromX, fromY, toX, toY, isLeaf = false, tableName } = ele
     // const [k] = (state.visualNode?.flag || '').split('_')
-    // if (k === label) {
+    // if (k === tableName) {
     //   console.log('obj.isShadow', JSON.stringify(ele), JSON.stringify(state.visualNode))
     // }
 
@@ -274,7 +319,7 @@ const dragover_handler = ev => {
           bottom: toY
         }
       ),
-      isLeaf || state.visualNode?.flag === label + '_&&r'
+      isLeaf || state.visualNode?.flag === tableName + '_&&r'
         ? elementInteractArea(
             {
               left: dragOffsetX.value,
@@ -314,11 +359,11 @@ const dragover_handler = ev => {
   }
 
   if (Math.max(...maxArr)) {
-    const { label, isShadow = false } = possibleNodeAreaList.value[maxIndex]
+    const { tableName, isShadow = false } = possibleNodeAreaList.value[maxIndex]
     const [b, r] = maxArr
 
     if (!isShadow) {
-      dfsNodeShadow(state.nodeList, label, b >= r ? 'b' : 'r')
+      dfsNodeShadow(state.nodeList, tableName, b >= r ? 'b' : 'r')
     }
   }
 }
@@ -332,24 +377,88 @@ const dragenter_handler = ev => {
 const drop_handler = ev => {
   ev.preventDefault()
   let data = ev.dataTransfer.getData('text')
-  console.log('Drop', data)
+  const { tableName, type = 'db', datasourceId } = JSON.parse(data)
+  const extraData = {
+    info: JSON.stringify({
+      table: tableName,
+      sql: ''
+    }),
+    unionType: 'left',
+    unionFields: [],
+    currentDsFields: [],
+    sqlVariableDetails: null
+  }
   if (!state.nodeList.length) {
     state.nodeList.push({
-      label: data,
-      id: `${+new Date()}`
+      tableName,
+      type,
+      datasourceId,
+      id: `${+new Date()}`,
+      ...extraData
+    })
+    nextTick(() => {
+      emits('addComplete')
     })
     return
   }
 
-  if (!state.visualNode) return
-  emits('joinEditor', {})
+  nextTick(() => {
+    emits('addComplete')
+  })
 
+  if (!state.visualNode) return
+  nextTick(() => {
+    Object.assign(state.visualNode, {
+      tableName,
+      type,
+      datasourceId,
+      id: `${+new Date()}`,
+      ...extraData
+    })
+    emits('joinEditor', [
+      {
+        tableName,
+        type,
+        datasourceId,
+        id: `${+new Date()}`,
+        ...extraData
+      },
+      state.visualNodeParent
+    ])
+  })
+}
+
+const setStateBack = (node, parent) => {
+  if (state.visualNode) {
+    Object.assign(state.visualNode, node)
+    Object.assign(state.visualNodeParent, parent)
+    confirm()
+  } else {
+    dfsNodeBack([parent, node], [parent.id, node.id], state.nodeList)
+  }
+}
+
+const confirm = () => {
   state.visualNode.isShadow = false
   delete state.visualNode.flag
-  state.visualNode.label = data
   state.visualNode = null
   state.visualNodeParent = null
 }
+
+const notConfirm = () => {
+  if (!state.visualNodeParent) return
+  state.visualNodeParent.children = state.visualNodeParent.children.filter(ele => !ele.isShadow)
+  confirm()
+}
+
+defineExpose({
+  nodeNameList,
+  nodeList: state.nodeList,
+  setStateBack,
+  notConfirm
+})
+
+const emits = defineEmits(['addComplete', 'joinEditor'])
 </script>
 
 <template>
@@ -368,7 +477,6 @@ const drop_handler = ev => {
     >
       <path
         :key="ele.d"
-        @click="handlePathClick(ele)"
         class="path-point"
         v-for="ele in flatPathList"
         :d="ele.d"
@@ -378,7 +486,7 @@ const drop_handler = ev => {
         fill="none"
       />
       <foreignObject
-        :key="ele.label"
+        :key="ele.tableName"
         v-for="ele in flatNodeList"
         :x="ele.x * 300 + 24"
         :y="ele.y * 64 + 24"
@@ -386,19 +494,19 @@ const drop_handler = ev => {
         height="40"
       >
         <div
-          @click="activeNode = ele.label"
+          @click="activeNode = ele.tableName"
           class="node-union"
           :class="[
             {
               'shadow-node': ele.isShadow,
-              'active-node': activeNode === ele.label
+              'active-node': activeNode === ele.tableName
             }
           ]"
         >
-          <span class="label">{{ ele.label }}</span>
+          <span class="tableName">{{ ele.tableName }}</span>
           <handle-more
             style="margin-left: auto"
-            v-if="activeNode === ele.label"
+            v-if="activeNode === ele.tableName"
             :menuList="menuList"
             @handle-command="command => handleCommand(ele, command)"
           ></handle-more>
@@ -415,9 +523,7 @@ const drop_handler = ev => {
       >
         <div @click="handlePathClick(ele)" class="path-union">
           <el-icon>
-            <Icon name="icon_intersect"></Icon>
-            <!-- <Icon name="icon_right-association"></Icon>
-              <Icon name="icon_left-association"></Icon> -->
+            <Icon :name="iconName[ele.to.unionType]"></Icon>
           </el-icon>
         </div>
       </foreignObject>
@@ -454,7 +560,7 @@ const drop_handler = ev => {
   background: #fff;
   cursor: pointer;
   padding-right: 8px;
-  .label {
+  .tableName {
     max-width: 100px;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -478,6 +584,9 @@ const drop_handler = ev => {
   border: 1px dashed;
   border-color: #3370ff;
   background-color: rgba(51, 112, 255, 0.08);
+  span {
+    display: none;
+  }
 }
 
 .active-node {
