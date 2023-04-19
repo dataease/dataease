@@ -22,6 +22,16 @@ public class JsonUtil {
         return t;
     }
 
+    public static <T> T parseObject(String json, Class<T> classOfT) {
+        T t = null;
+        try {
+            t = objectMapper.readValue(json, classOfT);
+        } catch (JsonProcessingException e) {
+            LogUtil.error(e.getMessage(), e);
+        }
+        return t;
+    }
+
     public static <T> List<T> parseList(String json, Class<T> classOfT) {
         List<T> t = null;
         try {

@@ -46,7 +46,7 @@ public class DatasetDataManage {
     public List<DatasetTableFieldDTO> getTableFields(DatasetTableDTO datasetTableDTO) throws Exception {
         List<DatasetTableFieldDTO> list = null;
         String type = datasetTableDTO.getType();
-        DatasetTableInfoDTO tableInfoDTO = JsonUtil.parse(datasetTableDTO.getInfo(), DatasetTableInfoDTO.class);
+        DatasetTableInfoDTO tableInfoDTO = JsonUtil.parseObject(datasetTableDTO.getInfo(), DatasetTableInfoDTO.class);
         if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB) || StringUtils.equalsIgnoreCase(type, DatasetTableType.SQL)) {
             CoreDatasource coreDatasource = coreDatasourceMapper.selectById(datasetTableDTO.getDatasourceId());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
@@ -56,8 +56,10 @@ public class DatasetDataManage {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
-                datasourceRequest.setQuery(TableUtils.tableName2Sql(tableInfoDTO.getTable()));
+                // add table schema
+                datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()));
             } else {
+                // todo add sql table schema
                 datasourceRequest.setQuery(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())));
             }
             List<TableField> tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");

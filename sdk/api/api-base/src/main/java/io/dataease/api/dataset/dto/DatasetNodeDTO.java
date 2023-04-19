@@ -1,5 +1,7 @@
 package io.dataease.api.dataset.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -10,6 +12,7 @@ public class DatasetNodeDTO implements Serializable {
     /**
      * ID
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     /**
@@ -20,6 +23,7 @@ public class DatasetNodeDTO implements Serializable {
     /**
      * 父级ID
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long pid;
 
     /**
@@ -70,7 +74,7 @@ public class DatasetNodeDTO implements Serializable {
     private Long lastUpdateTime;
 
     /**
-     * 关联sql
+     * 关联sql,由tree
      */
     private String unionSql;
 

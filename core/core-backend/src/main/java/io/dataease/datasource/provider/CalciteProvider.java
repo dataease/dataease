@@ -85,8 +85,14 @@ public class CalciteProvider {
             tableDesc.setName(resultSet.getString(3));
         }
         if (datasourceType == DatasourceConfiguration.DatasourceType.mysql) {
-            tableDesc.setName(resultSet.getString(2));
+            try {
+                tableDesc.setName(resultSet.getString(2));
+            } catch (Exception e) {
+                tableDesc.setName(resultSet.getString(1));
+            }
         }
+        tableDesc.setDatasourceId(datasourceRequest.getDatasource().getId());
+        tableDesc.setType("db");
         tableDesc.setTableName(resultSet.getString(1));
         return tableDesc;
     }
@@ -121,7 +127,7 @@ public class CalciteProvider {
             resultSet = statement.executeQuery(datasourceRequest.getQuery());
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
-            for (int i = 0; i < columnCount; i++) {
+            for (int i = 1; i <= columnCount; i++) {
                 TableField tableField = new TableField();
                 tableField.setFieldName(metaData.getColumnName(i));
                 tableField.setType(metaData.getColumnTypeName(i));
@@ -163,7 +169,7 @@ public class CalciteProvider {
             dataSource.setDefaultQueryTimeout(Integer.valueOf(rootNode.get("queryTimeout").asText()));
             Schema schema = null;
 
-            switch (datasourceRequest.getDatasource().getType()) {
+            switch (ds.getType()) {
                 case "mysql":
                     schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, rootNode.get("dataBase").asText());
                     rootSchema.add(ds.getSchemaAlias(), schema);
@@ -181,14 +187,14 @@ public class CalciteProvider {
     private void registerDriver(DatasourceRequest datasourceRequest) throws Exception {
         for (Map.Entry<Long, DatasourceSchemaDTO> next : datasourceRequest.getDsList().entrySet()) {
             DatasourceSchemaDTO ds = next.getValue();
-            JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
+            JsonNode rootNode = objectMapper.readTree(ds.getConfiguration());
             Driver driver = (Driver) extendedJdbcClassLoader.loadClass(rootNode.get("driver").asText()).newInstance();
             DriverManager.registerDriver(new DriverShim(driver));
         }
     }
 
     private Connection getCalciteConnection(DatasourceRequest datasourceRequest) throws Exception {
-        registerDriver(datasourceRequest);
+//        registerDriver(datasourceRequest);// todo
         Properties info = new Properties();
         info.setProperty("lex", "JAVA");
         info.setProperty("caseSensitive", "false");
@@ -235,7 +241,7 @@ public class CalciteProvider {
         JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
         TypeReference<List<String>> listTypeReference = new TypeReference<List<String>>() {
         };
-        return objectMapper.readValue(rootNode.get("showTableSqls").asText(), listTypeReference);
+        return objectMapper.readValue(objectMapper.writeValueAsString(rootNode.get("showTableSqls")), listTypeReference);
     }
 
     public Connection getConnection(String datasourceConfiguration) throws Exception {

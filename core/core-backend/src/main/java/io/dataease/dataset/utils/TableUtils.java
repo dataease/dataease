@@ -1,6 +1,7 @@
 package io.dataease.dataset.utils;
 
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.utils.Md5Utils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -42,7 +43,7 @@ public class TableUtils {
         return schema + sqlObj.getTableName() + " " + sqlObj.getTableAlias();
     }
 
-    public static String tableName2Sql(String tableName) {
-        return "SELECT * FROM " + tableName;
+    public static String tableName2Sql(DatasourceSchemaDTO ds, String tableName) {
+        return "SELECT * FROM " + ds.getSchemaAlias() + "." + tableName;
     }
 }
