@@ -73,7 +73,7 @@ public class DatasetDataManage {
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
-            datasourceRequest.setQuery(TableUtils.tableName2Sql(tableInfoDTO.getTable()));
+            datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()));
             List<TableField> tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
             list = transFields(tableFields);
         }
