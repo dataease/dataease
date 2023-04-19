@@ -10,6 +10,7 @@ import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.api.permissions.user.vo.UserItem;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
+import io.dataease.model.KeywordRequest;
 import io.dataease.request.BaseGridRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,4 +56,7 @@ public interface UserApi {
 
     @GetMapping("/info")
     CurUserVO info();
+
+    @PostMapping("/byCurOrg")
+    List<UserItem> byCurOrg(@RequestBody KeywordRequest request);
 }

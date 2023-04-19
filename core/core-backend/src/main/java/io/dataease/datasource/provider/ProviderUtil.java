@@ -5,11 +5,13 @@ import io.micrometer.common.util.StringUtils;
 
 public class ProviderUtil {
 
-    public static Provider getProvider(String datasourceType) {
-        if(StringUtils.isNotEmpty(datasourceType) && datasourceType.equals("API")){
-            return CommonBeanFactory.getBean(ApiProvider.class);
-        }else {
-            return CommonBeanFactory.getBean(CalciteProvider.class);
+
+    public static EngineProvider getEngineProvider(String datasourceType) {
+        if (StringUtils.isNotEmpty(datasourceType)) {
+            return (EngineProvider) CommonBeanFactory.getBean(datasourceType + "Engine");
+        } else {
+            return CommonBeanFactory.getBean(MysqlEngineProvider.class);
         }
     }
+
 }

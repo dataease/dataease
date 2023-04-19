@@ -25,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author Junjun
@@ -52,26 +53,35 @@ public class DatasetSQLManage {
         String tableSchema = String.format(SQLConstants.SCHEMA, 0);
 
         DatasetTableDTO currentDs = union.get(0).getCurrentDs();
-        DatasetTableInfoDTO infoDTO = JsonUtil.parse(currentDs.getInfo(), DatasetTableInfoDTO.class);
+        DatasetTableInfoDTO infoDTO = JsonUtil.parseObject(currentDs.getInfo(), DatasetTableInfoDTO.class);
         SQLObj tableName = getUnionTable(currentDs, infoDTO, tableSchema, 0);
         // get datasource and schema,put map
         putObj2Map(dsMap, currentDs.getDatasourceId(), tableSchema);
 
         for (int i = 0; i < union.size(); i++) {
-            String schema = String.format(SQLConstants.SCHEMA, i);
-
             UnionDTO unionDTO = union.get(i);
             DatasetTableDTO datasetTable = unionDTO.getCurrentDs();
-            DatasetTableInfoDTO tableInfo = JsonUtil.parse(datasetTable.getInfo(), DatasetTableInfoDTO.class);
+            DatasetTableInfoDTO tableInfo = JsonUtil.parseObject(datasetTable.getInfo(), DatasetTableInfoDTO.class);
+
+            String schema;
+            if (dsMap.containsKey(datasetTable.getDatasourceId())) {
+                schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
+            } else {
+                schema = String.format(SQLConstants.SCHEMA, i);
+                putObj2Map(dsMap, datasetTable.getDatasourceId(), schema);
+            }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i);
-            putObj2Map(dsMap, datasetTable.getDatasourceId(), schema);
 
             // 获取前端传过来选中的字段
             List<DatasetTableFieldDTO> fields = unionDTO.getCurrentDsFields();
+            fields = fields.stream().filter(DatasetTableFieldDTO::getChecked).collect(Collectors.toList());
 
             String[] array = fields.stream()
-                    .map(f -> table.getTableAlias() + "." + f.getOriginName() + " AS "
-                            + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()))
+                    .map(f -> {
+                        f.setFieldShortName(TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()));
+                        return table.getTableAlias() + "." + f.getOriginName() + " AS "
+                                + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
+                    })
                     .toArray(String[]::new);
             checkedInfo.put(table.getTableAlias(), array);
             checkedFields.addAll(fields);
@@ -151,19 +161,29 @@ public class DatasetSQLManage {
                                  Map<Long, DatasourceSchemaDTO> dsMap) {
         for (int i = 0; i < childrenDs.size(); i++) {
             int index = i + indexPre;
-            String tableSchema = String.format(SQLConstants.SCHEMA, index);
 
             UnionDTO unionDTO = childrenDs.get(i);
             DatasetTableDTO datasetTable = unionDTO.getCurrentDs();
-            DatasetTableInfoDTO tableInfo = JsonUtil.parse(datasetTable.getInfo(), DatasetTableInfoDTO.class);
-            SQLObj table = getUnionTable(datasetTable, tableInfo, tableSchema, index);
-            putObj2Map(dsMap, datasetTable.getDatasourceId(), tableSchema);
+            DatasetTableInfoDTO tableInfo = JsonUtil.parseObject(datasetTable.getInfo(), DatasetTableInfoDTO.class);
+
+            String schema;
+            if (dsMap.containsKey(datasetTable.getDatasourceId())) {
+                schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
+            } else {
+                schema = String.format(SQLConstants.SCHEMA, index);
+                putObj2Map(dsMap, datasetTable.getDatasourceId(), schema);
+            }
+            SQLObj table = getUnionTable(datasetTable, tableInfo, schema, index);
 
             List<DatasetTableFieldDTO> fields = unionDTO.getCurrentDsFields();
+            fields = fields.stream().filter(DatasetTableFieldDTO::getChecked).collect(Collectors.toList());
 
             String[] array = fields.stream()
-                    .map(f -> table.getTableAlias() + "." + f.getOriginName() + " AS "
-                            + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()))
+                    .map(f -> {
+                        f.setFieldShortName(TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()));
+                        return table.getTableAlias() + "." + f.getOriginName() + " AS "
+                                + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
+                    })
                     .toArray(String[]::new);
             checkedInfo.put(table.getTableAlias(), array);
             checkedFields.addAll(fields);
@@ -189,11 +209,11 @@ public class DatasetSQLManage {
         List<UnionParamDTO> unionList = new ArrayList<>();
         List<CoreDatasetTableField> checkedFields = new ArrayList<>();
         String sql = "";
-        String tableName = JsonUtil.parse(coreDatasetTableMapper.selectById(union.get(0).getCurrentDs().getId()).getInfo(),
+        String tableName = JsonUtil.parseObject(coreDatasetTableMapper.selectById(union.get(0).getCurrentDs().getId()).getInfo(),
                 DatasetTableInfoDTO.class).getTable();
         for (UnionDTO unionDTO : union) {
             CoreDatasetTable datasetTable = coreDatasetTableMapper.selectById(unionDTO.getCurrentDs().getId());
-            String table = JsonUtil.parse(datasetTable.getInfo(), DatasetTableInfoDTO.class).getTable();
+            String table = JsonUtil.parseObject(datasetTable.getInfo(), DatasetTableInfoDTO.class).getTable();
             Long tableId = unionDTO.getCurrentDs().getId();
             if (ObjectUtils.isEmpty(datasetTable)) {
                 DEException.throwException(
@@ -245,9 +265,9 @@ public class DatasetSQLManage {
                     DEException.throwException(Translator.get("i18n_dataset_field_delete"));
                 }
                 CoreDatasetTable parentTable = coreDatasetTableMapper.selectById(pField.getDatasetTableId());
-                String parentTableName = JsonUtil.parse(parentTable.getInfo(), DatasetTableInfoDTO.class).getTable();
+                String parentTableName = JsonUtil.parseObject(parentTable.getInfo(), DatasetTableInfoDTO.class).getTable();
                 CoreDatasetTable currentTable = coreDatasetTableMapper.selectById(cField.getDatasetTableId());
-                String currentTableName = JsonUtil.parse(currentTable.getInfo(), DatasetTableInfoDTO.class)
+                String currentTableName = JsonUtil.parseObject(currentTable.getInfo(), DatasetTableInfoDTO.class)
                         .getTable();
 
                 // todo
@@ -299,7 +319,7 @@ public class DatasetSQLManage {
                 DEException.throwException(
                         Translator.get("i18n_custom_ds_delete") + String.format(":table id [%s]", tableId));
             }
-            String table = JsonUtil.parse(datasetTable.getInfo(), DatasetTableInfoDTO.class).getTable();
+            String table = JsonUtil.parseObject(datasetTable.getInfo(), DatasetTableInfoDTO.class).getTable();
 
             List<CoreDatasetTableField> fields = datasetTableFieldManage.selectByFieldIds(unionDTO.getCurrentDsField());
 
@@ -352,7 +372,7 @@ public class DatasetSQLManage {
         if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_DB)) {
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();
         } else if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_SQL)) {
-            tableObj = SQLObj.builder().tableSchema("").tableName("(" + infoDTO.getSql() + ")").tableAlias(tableAlias).build();
+            tableObj = SQLObj.builder().tableSchema("").tableName("(" + new String(Base64.getDecoder().decode(infoDTO.getSql())) + ")").tableAlias(tableAlias).build();
         } else {
             // todo excel,api
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();

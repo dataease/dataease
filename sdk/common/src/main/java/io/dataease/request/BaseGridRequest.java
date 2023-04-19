@@ -2,6 +2,7 @@ package io.dataease.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -39,6 +40,21 @@ public class BaseGridRequest implements Serializable {
 
     public void setOrders(List<String> orders) {
         this.orders = orders;
+    }
+
+    public GridExample convertExample(){
+        GridExample gridExample = new GridExample();
+        if (!CollectionUtils.isEmpty(conditions)) {
+            GridExample.Criteria criteria = gridExample.createCriteria();
+            conditions.forEach(criteria::addCondition);
+        }
+
+        if (!CollectionUtils.isEmpty(orders)){
+            String orderByClause = String.join(", ", orders);
+            gridExample.setOrderByClause(orderByClause);
+        }
+
+        return gridExample;
     }
 
 

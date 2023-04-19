@@ -3,13 +3,14 @@ package io.dataease.engine.trans;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dataset.utils.TableUtils;
+import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +35,9 @@ public class Field2SQLObj {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = Utils.calcFieldRegex(x.getOriginName(), tableObj, calcFields);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_COPY)) {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getFieldShortName());
                 } else {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getFieldShortName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段

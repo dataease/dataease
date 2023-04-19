@@ -4,13 +4,14 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * @Author gin
  */
 @Data
-public class UnionDTO {
+public class UnionDTO implements Serializable {
     private DatasetTableDTO currentDs;
     private List<Long> currentDsField;
     private List<DatasetTableFieldDTO> currentDsFields;

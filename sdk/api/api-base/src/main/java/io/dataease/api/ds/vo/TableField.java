@@ -1,4 +1,4 @@
-package io.dataease.datasource.model;
+package io.dataease.api.ds.vo;
 
 import lombok.Data;
 
@@ -7,14 +7,13 @@ import lombok.Data;
 public class TableField {
     private String fieldName;
     private String remarks;
-    private String type;
+    private String type;               //SQL type from java.sql.Types
+    private int precision;
+    private int scale;
     private boolean checked = false;
     private String fieldType;
-    private long size;
-    private long deType;
-    private int accuracy;
+    private int deType;
     private String jsonPath;
-
 
 
 }

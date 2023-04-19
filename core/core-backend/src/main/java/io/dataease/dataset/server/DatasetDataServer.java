@@ -22,8 +22,8 @@ public class DatasetDataServer implements DatasetDataApi {
     private DatasetDataManage datasetDataManage;
 
     @Override
-    public Map<String, List> previewData(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
-        return datasetDataManage.previewData(datasetGroupInfoDTO);
+    public Map<String, Object> previewData(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+        return datasetDataManage.previewDataWithLimit(datasetGroupInfoDTO, 0, 1000);
     }
 
     @Override

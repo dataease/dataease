@@ -1,4 +1,4 @@
-package io.dataease.datasource.model;
+package io.dataease.api.ds.vo;
 
 
 import lombok.Data;
@@ -24,7 +24,6 @@ public class ApiDefinition {
     private int serialNumber;
     private boolean useJsonPath;
     private String jsonPath;
-    private boolean showApiStructure;
     private boolean reName = false;
     private String orgName;
 

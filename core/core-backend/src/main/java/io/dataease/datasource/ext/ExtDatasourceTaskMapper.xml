@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.dataease.datasource.ext.ExtDataSetTaskMapper">
+
+    <resultMap id="BaseResult" type="io.dataease.dto.dataset.DataSetTaskLogDTO"
+               extends="io.dataease.plugins.common.base.mapper.DatasetTableTaskLogMapper.BaseResultMap">
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="dataset_name" jdbcType="VARCHAR" property="datasetName"/>
+    </resultMap>
+
+    <resultMap id="TaskResult" type="io.dataease.datasource.dto.CoreDatasourceTaskDTO"
+               extends="io.dataease.datasource.dao.auto.mapper.CoreDatasourceTaskMapper.BaseResultMap">
+        <result column="datasource_name" jdbcType="VARCHAR" property="datasourceName"/>
+        <result column="NEXT_FIRE_TIME" jdbcType="BIGINT" property="nextExecTime"/>
+    </resultMap>
+
+<!--    <select id="listTaskLog" resultMap="BaseResult"-->
+<!--            parameterType="io.dataease.plugins.common.base.domain.DatasetTableTaskLog">-->
+<!--        SELECT dataset_table_task_log.*, dataset_table_task.name, dataset_table.name as dataset_name-->
+<!--        FROM dataset_table_task_log-->
+<!--        LEFT JOIN dataset_table_task ON dataset_table_task_log.task_id = dataset_table_task.id-->
+<!--        LEFT JOIN dataset_table ON dataset_table_task_log.table_id = dataset_table.id-->
+<!--        <if test="_parameter != null">-->
+<!--            <include refid="io.dataease.ext.query.GridSql.gridCondition"/>-->
+<!--        </if>-->
+<!--        <if test="orderByClause != null">-->
+<!--            order by ${orderByClause}-->
+<!--        </if>-->
+<!--        <if test="orderByClause == null">-->
+<!--            ORDER BY dataset_table_task_log.create_time desc-->
+<!--        </if>-->
+<!--    </select>-->
+
+<!--    <select id="listUserTaskLog" resultMap="BaseResult"-->
+<!--            parameterType="io.dataease.plugins.common.base.domain.DatasetTableTaskLog">-->
+<!--        SELECT dataset_table_task_log.*, dataset_table_task.name, dataset_table.name as dataset_name-->
+<!--        FROM dataset_table_task_log-->
+<!--        LEFT JOIN dataset_table_task ON dataset_table_task_log.task_id = dataset_table_task.id-->
+<!--        LEFT JOIN dataset_table ON dataset_table_task_log.table_id = dataset_table.id-->
+<!--        <if test="_parameter != null">-->
+<!--            <include refid="io.dataease.ext.query.GridSql.taskListGridCondition"/>-->
+<!--        </if>-->
+<!--        <if test="orderByClause != null">-->
+<!--            order by ${orderByClause}-->
+<!--        </if>-->
+<!--        <if test="orderByClause == null">-->
+<!--            ORDER BY dataset_table_task_log.create_time desc-->
+<!--        </if>-->
+<!--    </select>-->
+
+<!--    <select id="taskList" resultMap="TaskResult" parameterType="io.dataease.ext.query.GridExample">-->
+<!--        SELECT dataset_table.name as table_name, 'grant,manage,use' as `privileges`,dataset_table_task.* ,-->
+<!--        qrtz_triggers.NEXT_FIRE_TIME-->
+<!--        FROM dataset_table_task-->
+<!--        left join dataset_table on dataset_table.id=dataset_table_task.table_id-->
+<!--        left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME-->
+<!--        <if test="_parameter != null">-->
+<!--            <include refid="io.dataease.ext.query.GridSql.gridCondition"/>-->
+<!--        </if>-->
+<!--        <if test="orderByClause != null">-->
+<!--            order by ${orderByClause}-->
+<!--        </if>-->
+<!--        <if test="orderByClause == null">-->
+<!--            order by dataset_table_task.create_time desc-->
+<!--        </if>-->
+<!--    </select>-->
+
+<!--    <select id="userTaskList" resultMap="TaskResult" parameterType="io.dataease.ext.query.GridExample">-->
+<!--        SELECT dataset_table.name as table_name, get_auths(dataset_table_task.table_id,'dataset', #{extendCondition}) as-->
+<!--        `privileges`,dataset_table_task.* , qrtz_triggers.NEXT_FIRE_TIME-->
+<!--        FROM dataset_table_task-->
+<!--        left join dataset_table on dataset_table.id=dataset_table_task.table_id-->
+<!--        left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME-->
+<!--        <if test="_parameter != null">-->
+<!--            <include refid="io.dataease.ext.query.GridSql.taskListGridCondition"/>-->
+<!--        </if>-->
+<!--        <if test="orderByClause != null">-->
+<!--            order by ${orderByClause}-->
+<!--        </if>-->
+<!--        <if test="orderByClause == null">-->
+<!--            order by dataset_table_task.create_time desc-->
+<!--        </if>-->
+<!--    </select>-->
+
+<!--    <select id="findByPanelId" resultMap="TaskResult">-->
+<!--        select dataset_table_task.*-->
+<!--        from dataset_table_task-->
+<!--        where id in (SELECT table_id-->
+<!--                     FROM chart_view-->
+<!--                     WHERE id IN (SELECT chart_view_id-->
+<!--                                  FROM panel_view-->
+<!--                                  WHERE panel_id = #{panelId}))-->
+<!--    </select>-->
+
+<!--    <select id="findByTableIds" resultMap="TaskResult">-->
+<!--        select dataset_table_task.*-->
+<!--        from dataset_table_task-->
+<!--        where dataset_table_task.table_id in-->
+<!--        <foreach collection="tableIds" item="item" open="(" separator="," close=")">-->
+<!--            #{item}-->
+<!--        </foreach>-->
+<!--    </select>-->
+
+    <select id="taskWithTriggers" resultMap="TaskResult" parameterType="io.dataease.ext.query.GridExample">
+        SELECT core_datasource.name as datasource_name,core_datasource_task.* , qrtz_triggers.NEXT_FIRE_TIME
+        FROM core_datasource_task
+        left join core_datasource on core_datasource.id=core_datasource_task.target_id
+        left join qrtz_triggers on core_datasource_task.id=qrtz_triggers.TRIGGER_NAME
+        <if test="_parameter != null">
+            <include refid="io.dataease.request.GridSql.gridCondition"/>
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="orderByClause == null">
+            order by core_datasource_task.create_time desc
+        </if>
+    </select>
+
+    <select id="lastId" resultType="Long" >
+        select  LAST_INSERT_ID()
+    </select>
+
+</mapper>

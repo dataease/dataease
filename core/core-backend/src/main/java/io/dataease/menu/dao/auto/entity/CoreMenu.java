@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author fit2cloud
@@ -152,16 +152,16 @@ public class CoreMenu implements Serializable {
     @Override
     public String toString() {
         return "CoreMenu{" +
-        "id = " + id +
-        ", pid = " + pid +
-        ", type = " + type +
-        ", name = " + name +
-        ", component = " + component +
-        ", menuSort = " + menuSort +
-        ", icon = " + icon +
-        ", path = " + path +
-        ", hidden = " + hidden +
-        ", inLayout = " + inLayout +
-        "}";
+                "id = " + id +
+                ", pid = " + pid +
+                ", type = " + type +
+                ", name = " + name +
+                ", component = " + component +
+                ", menuSort = " + menuSort +
+                ", icon = " + icon +
+                ", path = " + path +
+                ", hidden = " + hidden +
+                ", inLayout = " + inLayout +
+                "}";
     }
 }

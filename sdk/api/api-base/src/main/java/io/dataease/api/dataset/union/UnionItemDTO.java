@@ -3,11 +3,13 @@ package io.dataease.api.dataset.union;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @Author gin
  */
 @Data
-public class UnionItemDTO {
+public class UnionItemDTO implements Serializable {
     private DatasetTableFieldDTO parentField;
     private DatasetTableFieldDTO currentField;
 }

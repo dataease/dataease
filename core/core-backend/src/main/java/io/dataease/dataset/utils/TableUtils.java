@@ -1,17 +1,18 @@
 package io.dataease.dataset.utils;
 
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.utils.Md5Utils;
 import org.apache.commons.lang3.StringUtils;
 
 public class TableUtils {
 
-    public static String tableName(String datasetId) {
-        return "ds_" + datasetId.replace("-", "_");
+    public static String tableName(String name) {
+        return "ds_" + name;
     }
 
-    public static String tmpName(String dorisName) {
-        return "tmp_" + dorisName;
+    public static String tmpName(String name) {
+        return "tmp_" + name;
     }
 
     public static String deleteName(String dorisName) {
@@ -40,5 +41,9 @@ public class TableUtils {
             schema = sqlObj.getTableSchema() + ".";
         }
         return schema + sqlObj.getTableName() + " " + sqlObj.getTableAlias();
+    }
+
+    public static String tableName2Sql(DatasourceSchemaDTO ds, String tableName) {
+        return "SELECT * FROM " + ds.getSchemaAlias() + "." + tableName;
     }
 }

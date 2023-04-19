@@ -30,15 +30,31 @@ public class DatasetTableFieldManage {
         }
     }
 
-    public void save(DatasetTableFieldDTO datasetTableFieldDTO) {
-        CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
+    // 数据集保存时使用
+    public DatasetTableFieldDTO save(DatasetTableFieldDTO datasetTableFieldDTO) {
+//        CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
+//        CoreDatasetTableField record = new CoreDatasetTableField();
+//        BeanUtils.copyBean(record, datasetTableFieldDTO);
+//        if (ObjectUtils.isEmpty(coreDatasetTableField)) {
+//            coreDatasetTableFieldMapper.insert(record);
+//        } else {
+//            coreDatasetTableFieldMapper.updateById(record);
+//        }
+
         CoreDatasetTableField record = new CoreDatasetTableField();
-        BeanUtils.copyBean(record, datasetTableFieldDTO);
-        if (ObjectUtils.isEmpty(coreDatasetTableField)) {
+        if (ObjectUtils.isEmpty(datasetTableFieldDTO.getId())) {
+            datasetTableFieldDTO.setId(IDUtils.snowID());
+            BeanUtils.copyBean(record, datasetTableFieldDTO);
             coreDatasetTableFieldMapper.insert(record);
         } else {
+            BeanUtils.copyBean(record, datasetTableFieldDTO);
             coreDatasetTableFieldMapper.updateById(record);
         }
+        return datasetTableFieldDTO;
+    }
+
+    public void deleteById(Long id) {
+        coreDatasetTableFieldMapper.deleteById(id);
     }
 
     public void deleteByDatasetTableUpdate(Long datasetTableId, List<Long> fieldIds) {
@@ -50,13 +66,19 @@ public class DatasetTableFieldManage {
         }
     }
 
-    public void deleteByDatasetGroupUpdate(Long datasetGroupId, List<Long> datasetTableIds) {
-        if (!CollectionUtils.isEmpty(datasetTableIds)) {
+    public void deleteByDatasetGroupUpdate(Long datasetGroupId, List<Long> fieldIds) {
+        if (!CollectionUtils.isEmpty(fieldIds)) {
             QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
             wrapper.eq("dataset_group_id", datasetGroupId);
-            wrapper.notIn("dataset_table_id", datasetTableIds);
+            wrapper.notIn("id", fieldIds);
             coreDatasetTableFieldMapper.delete(wrapper);
         }
+    }
+
+    public void deleteByDatasetGroupDelete(Long datasetGroupId) {
+        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
+        wrapper.eq("dataset_group_id", datasetGroupId);
+        coreDatasetTableFieldMapper.delete(wrapper);
     }
 
     public List<CoreDatasetTableField> selectByDatasetTableId(Long id) {

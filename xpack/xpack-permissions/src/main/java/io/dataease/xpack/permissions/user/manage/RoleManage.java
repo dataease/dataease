@@ -2,10 +2,11 @@ package io.dataease.xpack.permissions.user.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.dataease.api.permissions.role.dto.RoleCopyRequest;
 import io.dataease.api.permissions.role.dto.UnmountUserRequest;
-import io.dataease.api.permissions.role.vo.RoleCreator;
+import io.dataease.api.permissions.role.dto.RoleCreator;
 import io.dataease.api.permissions.role.vo.RoleDetailVO;
-import io.dataease.api.permissions.role.vo.RoleEditor;
+import io.dataease.api.permissions.role.dto.RoleEditor;
 import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
@@ -53,15 +54,37 @@ public class RoleManage {
 
     public void create(RoleCreator creator) {
         Long oid = AuthUtils.getUser().getDefaultOid();
+        QueryWrapper<PerRole> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("org_id", oid);
+        queryWrapper.eq("pid", 0L);
+        queryWrapper.eq("readonly", creator.getTypeCode() != 1);
+        PerRole rootRole = perRoleMapper.selectOne(queryWrapper);
         PerRole po = new PerRole();
         po.setId(IDUtils.snowID());
         po.setName(creator.getName());
         po.setDesc(creator.getDesc());
-        po.setLevel(1);
+        po.setLevel(2);
         po.setReadonly(creator.getTypeCode() != 1);
         po.setOrgId(oid);
+        po.setPid(rootRole.getId());
         perRoleMapper.insert(po);
         // 需要验证名称是否重复
+    }
+
+    public void copy(RoleCopyRequest request) {
+        Long copyId = request.getCopyId();
+        PerRole role = perRoleMapper.selectById(copyId);
+        Long sourceId = role.getId();
+        Long sourcePid = role.getPid();
+        role.setName(request.getName());
+        role.setDesc(request.getDesc());
+        role.setId(IDUtils.snowID());
+        if (sourcePid.equals(0L)) {
+            role.setPid(sourceId);
+        } else {
+            role.setPid(sourcePid);
+        }
+        perRoleMapper.insert(role);
     }
 
     @Transactional
@@ -70,18 +93,20 @@ public class RoleManage {
         po.setId(IDUtils.snowID());
         po.setName(ORG_ADMIN);
         po.setDesc(ORG_ADMIN);
-        po.setLevel(1);
+        po.setLevel(2);
         po.setReadonly(false);
         po.setOrgId(oid);
+        po.setPid(0L);
         perRoleMapper.insert(po);
 
         PerRole poReadonly = new PerRole();
         poReadonly.setId(IDUtils.snowID());
         poReadonly.setName(ORG_READONLY);
         poReadonly.setDesc(ORG_READONLY);
-        poReadonly.setLevel(1);
+        poReadonly.setLevel(2);
         poReadonly.setReadonly(true);
         poReadonly.setOrgId(oid);
+        poReadonly.setPid(0L);
         perRoleMapper.insert(poReadonly);
 
         mountOrgAdmin(po.getId(), oid);
@@ -169,7 +194,11 @@ public class RoleManage {
         queryWrapper.like(StringUtils.isNotBlank(keyword), "name", keyword);
         queryWrapper.eq("org_id", oid);
         List<RolePO> rolePOS = roleExtMapper.selectList(queryWrapper);
-        return rolePOS.stream().map(po -> BeanUtils.copyBean(new RoleVO(), po)).toList();
+        return rolePOS.stream().map(po -> {
+            RoleVO vo = BeanUtils.copyBean(new RoleVO(), po);
+            vo.setRoot(po.getPid().equals(0L));
+            return vo;
+        }).toList();
     }
 
     public List<RoleVO> optionForUser(String keyword, Long oid, Long uid) {

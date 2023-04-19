@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-11
+ * @since 2023-04-18
  */
 @TableName("per_busi_resource")
 public class PerBusiResource implements Serializable {

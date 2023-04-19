@@ -1,5 +1,7 @@
 package io.dataease.api.dataset.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,21 +14,25 @@ public class DatasetTableFieldDTO implements Serializable {
     /**
      * ID
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     /**
      * 数据源ID
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long datasourceId;
 
     /**
      * 数据表ID
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long datasetTableId;
 
     /**
      * 数据集ID
      */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long datasetGroupId;
 
     /**
@@ -38,6 +44,11 @@ public class DatasetTableFieldDTO implements Serializable {
      * 字段名用于展示
      */
     private String name;
+
+    /**
+     * excel、api 写入数据库的字段名
+     */
+    private String dbFieldName;
 
     /**
      * 描述
@@ -59,7 +70,9 @@ public class DatasetTableFieldDTO implements Serializable {
      */
     private String type;
 
-    private Integer size;
+    private Integer precision;
+
+    private Integer scale;
 
     /**
      * dataease字段类型：0-文本，1-时间，2-整型数值，3-浮点数值，4-布尔，5-地理位置，6-二进制
@@ -91,15 +104,15 @@ public class DatasetTableFieldDTO implements Serializable {
      */
     private Long lastSyncTime;
 
-    /**
-     * 精度
-     */
-    private Integer accuracy;
-
     private String dateFormat;
 
     /**
      * 时间格式类型
      */
     private String dateFormatType;
+
+    /**
+     * 字段short name
+     */
+    private String fieldShortName;
 }

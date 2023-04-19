@@ -20,4 +20,6 @@ public class RoleVO implements Serializable {
     private String name;
     @ApiModelProperty("只读")
     private boolean readonly;
+    @ApiModelProperty("是否根角色(组织默认角色)")
+    private boolean root;
 }

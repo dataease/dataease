@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.List;
+
 public class JsonUtil {
 
     private static ObjectMapper objectMapper = new ObjectMapper();
@@ -14,6 +16,26 @@ public class JsonUtil {
         try {
             t = objectMapper.readValue(json, new TypeReference<T>() {
             });
+        } catch (JsonProcessingException e) {
+            LogUtil.error(e.getMessage(), e);
+        }
+        return t;
+    }
+
+    public static <T> T parseObject(String json, Class<T> classOfT) {
+        T t = null;
+        try {
+            t = objectMapper.readValue(json, classOfT);
+        } catch (JsonProcessingException e) {
+            LogUtil.error(e.getMessage(), e);
+        }
+        return t;
+    }
+
+    public static <T> List<T> parseList(String json, TypeReference<List<T>> classOfT) {
+        List<T> t = null;
+        try {
+            t = objectMapper.readValue(json, classOfT);
         } catch (JsonProcessingException e) {
             LogUtil.error(e.getMessage(), e);
         }
