@@ -200,6 +200,17 @@ export function getLabel(chart) {
                 f.formatterCfg.thousandSeparator = false
               }
               res = valueFormatter(param.value, f.formatterCfg)
+            } else if (chart.type === 'bidirectional-bar') {
+              let yaxis = yAxis[0]
+              if (param['series-field-key'] === 'extValue') {
+                yaxis = JSON.parse(chart.yaxisExt)[0]
+              }
+              const value = param[param['series-field-key']]
+              if (yaxis.formatterCfg) {
+                res = valueFormatter(value, yaxis.formatterCfg)
+              } else {
+                res = valueFormatter(value, formatterItem)
+              }
             } else if (equalsAny(chart.type, 'bar-group')) {
               const f = yAxis[0]
               if (f.formatterCfg) {
@@ -343,6 +354,17 @@ export function getTooltip(chart) {
                 } else {
                   res = valueFormatter(param.value, formatterItem)
                 }
+              }
+            } else if (chart.type === 'bidirectional-bar') {
+              let yaxis = yAxis[0]
+              if (param['series-field-key'] === 'extValue') {
+                yaxis = JSON.parse(chart.yaxisExt)[0]
+              }
+              obj = { name: yaxis.name, value: param[param['series-field-key']] }
+              if (yaxis.formatterCfg) {
+                res = valueFormatter(obj.value, yaxis.formatterCfg)
+              } else {
+                res = valueFormatter(obj.value, formatterItem)
               }
             } else if (chart.type.includes('treemap')) {
               obj = { name: param.name, value: param.value }
@@ -506,7 +528,20 @@ export function getLegend(chart) {
           marker: {
             symbol: legendSymbol
           },
-          radio: false // 柱状图图例的聚焦功能，默认先关掉
+          radio: false, // 柱状图图例的聚焦功能，默认先关掉
+          itemName: {
+            formatter: (text, item, index) => {
+              if (chart.type !== 'bidirectional-bar') {
+                return text
+              }
+              const yaxis = JSON.parse(chart.yaxis)[0]
+              const yaxisExt = JSON.parse(chart.yaxisExt)[0]
+              if (index === 0) {
+                return yaxis.name
+              }
+              return yaxisExt.name
+            }
+          }
         }
       } else {
         legend = false
