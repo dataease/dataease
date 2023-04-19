@@ -1,6 +1,7 @@
 package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.dto.DatasetNodeDTO;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
@@ -50,6 +51,7 @@ public class DatasetGroupManage {
             Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
             String sql = (String) sqlMap.get("sql");
             datasetGroupInfoDTO.setUnionSql(sql);
+            datasetGroupInfoDTO.setInfo(JsonUtil.toJSONString(datasetGroupInfoDTO.getUnion()).toString());
         }
         // save dataset/group
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
@@ -154,7 +156,7 @@ public class DatasetGroupManage {
                         datasetTableFieldDTO.setDatasetGroupId(datasetGroupId);
                         datasetTableFieldDTO.setDatasetTableId(currentDs.getId());
                         datasetTableFieldDTO.setDataeaseName(datasetTableFieldDTO.getOriginName());
-                        datasetTableFieldManage.save(datasetTableFieldDTO);
+                        datasetTableFieldDTO = datasetTableFieldManage.save(datasetTableFieldDTO);
                         fieldIds.add(datasetTableFieldDTO.getId());
                     }
                 }
@@ -171,7 +173,8 @@ public class DatasetGroupManage {
         DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
         BeanUtils.copyBean(dto, coreDatasetGroup);
         if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
-            List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), UnionDTO.class);
+            List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
+            });
             dto.setUnion(unionDTOList);
 
             // 获取data和field

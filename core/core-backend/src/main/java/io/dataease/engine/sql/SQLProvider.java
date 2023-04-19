@@ -7,6 +7,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.STGroupString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ public class SQLProvider {
         SQLObj tableObj = sqlMeta.getTable();
         List<SQLObj> xOrders = sqlMeta.getXOrders();
 
-        STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
+        STGroup stg = new STGroupString(SqlTemplate.PREVIEW_SQL);
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", isGroup);
         if (ObjectUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);

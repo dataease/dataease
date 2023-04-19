@@ -25,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author Junjun
@@ -58,20 +59,29 @@ public class DatasetSQLManage {
         putObj2Map(dsMap, currentDs.getDatasourceId(), tableSchema);
 
         for (int i = 0; i < union.size(); i++) {
-            String schema = String.format(SQLConstants.SCHEMA, i);
-
             UnionDTO unionDTO = union.get(i);
             DatasetTableDTO datasetTable = unionDTO.getCurrentDs();
             DatasetTableInfoDTO tableInfo = JsonUtil.parseObject(datasetTable.getInfo(), DatasetTableInfoDTO.class);
+
+            String schema;
+            if (dsMap.containsKey(datasetTable.getDatasourceId())) {
+                schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
+            } else {
+                schema = String.format(SQLConstants.SCHEMA, i);
+                putObj2Map(dsMap, datasetTable.getDatasourceId(), schema);
+            }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i);
-            putObj2Map(dsMap, datasetTable.getDatasourceId(), schema);
 
             // 获取前端传过来选中的字段
             List<DatasetTableFieldDTO> fields = unionDTO.getCurrentDsFields();
+            fields = fields.stream().filter(DatasetTableFieldDTO::getChecked).collect(Collectors.toList());
 
             String[] array = fields.stream()
-                    .map(f -> table.getTableAlias() + "." + f.getOriginName() + " AS "
-                            + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()))
+                    .map(f -> {
+                        f.setFieldShortName(TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()));
+                        return table.getTableAlias() + "." + f.getOriginName() + " AS "
+                                + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
+                    })
                     .toArray(String[]::new);
             checkedInfo.put(table.getTableAlias(), array);
             checkedFields.addAll(fields);
@@ -151,19 +161,29 @@ public class DatasetSQLManage {
                                  Map<Long, DatasourceSchemaDTO> dsMap) {
         for (int i = 0; i < childrenDs.size(); i++) {
             int index = i + indexPre;
-            String tableSchema = String.format(SQLConstants.SCHEMA, index);
 
             UnionDTO unionDTO = childrenDs.get(i);
             DatasetTableDTO datasetTable = unionDTO.getCurrentDs();
             DatasetTableInfoDTO tableInfo = JsonUtil.parseObject(datasetTable.getInfo(), DatasetTableInfoDTO.class);
-            SQLObj table = getUnionTable(datasetTable, tableInfo, tableSchema, index);
-            putObj2Map(dsMap, datasetTable.getDatasourceId(), tableSchema);
+
+            String schema;
+            if (dsMap.containsKey(datasetTable.getDatasourceId())) {
+                schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
+            } else {
+                schema = String.format(SQLConstants.SCHEMA, index);
+                putObj2Map(dsMap, datasetTable.getDatasourceId(), schema);
+            }
+            SQLObj table = getUnionTable(datasetTable, tableInfo, schema, index);
 
             List<DatasetTableFieldDTO> fields = unionDTO.getCurrentDsFields();
+            fields = fields.stream().filter(DatasetTableFieldDTO::getChecked).collect(Collectors.toList());
 
             String[] array = fields.stream()
-                    .map(f -> table.getTableAlias() + "." + f.getOriginName() + " AS "
-                            + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()))
+                    .map(f -> {
+                        f.setFieldShortName(TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()));
+                        return table.getTableAlias() + "." + f.getOriginName() + " AS "
+                                + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
+                    })
                     .toArray(String[]::new);
             checkedInfo.put(table.getTableAlias(), array);
             checkedFields.addAll(fields);

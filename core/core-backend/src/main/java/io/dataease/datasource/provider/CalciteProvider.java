@@ -194,7 +194,10 @@ public class CalciteProvider {
     }
 
     private Connection getCalciteConnection(DatasourceRequest datasourceRequest) throws Exception {
-//        registerDriver(datasourceRequest);// todo
+        try {
+            registerDriver(datasourceRequest);// todo 此处会报错，前后端接口调试用mysql，暂时不需要register driver
+        } catch (Exception e) {
+        }
         Properties info = new Properties();
         info.setProperty("lex", "JAVA");
         info.setProperty("caseSensitive", "false");

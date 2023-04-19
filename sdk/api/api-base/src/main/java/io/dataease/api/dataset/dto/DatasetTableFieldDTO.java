@@ -110,4 +110,9 @@ public class DatasetTableFieldDTO implements Serializable {
      * 时间格式类型
      */
     private String dateFormatType;
+
+    /**
+     * 字段short name
+     */
+    private String fieldShortName;
 }

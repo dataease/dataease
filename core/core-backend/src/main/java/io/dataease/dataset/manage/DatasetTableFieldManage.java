@@ -30,15 +30,26 @@ public class DatasetTableFieldManage {
         }
     }
 
-    public void save(DatasetTableFieldDTO datasetTableFieldDTO) {
-        CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
+    public DatasetTableFieldDTO save(DatasetTableFieldDTO datasetTableFieldDTO) {
+//        CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
+//        CoreDatasetTableField record = new CoreDatasetTableField();
+//        BeanUtils.copyBean(record, datasetTableFieldDTO);
+//        if (ObjectUtils.isEmpty(coreDatasetTableField)) {
+//            coreDatasetTableFieldMapper.insert(record);
+//        } else {
+//            coreDatasetTableFieldMapper.updateById(record);
+//        }
+
         CoreDatasetTableField record = new CoreDatasetTableField();
-        BeanUtils.copyBean(record, datasetTableFieldDTO);
-        if (ObjectUtils.isEmpty(coreDatasetTableField)) {
+        if (ObjectUtils.isEmpty(datasetTableFieldDTO.getId())) {
+            datasetTableFieldDTO.setId(IDUtils.snowID());
+            BeanUtils.copyBean(record, datasetTableFieldDTO);
             coreDatasetTableFieldMapper.insert(record);
         } else {
+            BeanUtils.copyBean(record, datasetTableFieldDTO);
             coreDatasetTableFieldMapper.updateById(record);
         }
+        return datasetTableFieldDTO;
     }
 
     public void deleteByDatasetTableUpdate(Long datasetTableId, List<Long> fieldIds) {
