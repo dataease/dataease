@@ -10,6 +10,7 @@ import io.dataease.api.permissions.user.vo.CurUserVO;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.api.permissions.user.vo.UserItem;
+import io.dataease.model.KeywordRequest;
 import io.dataease.request.BaseGridRequest;
 import io.dataease.utils.AuthUtils;
 import io.dataease.xpack.permissions.user.manage.UserPageManage;
@@ -75,5 +76,11 @@ public class UserServer implements UserApi {
     @Override
     public CurUserVO info() {
         return userPageManage.getUserInfo();
+    }
+
+    @Override
+    public List<UserItem> byCurOrg(KeywordRequest request) {
+        Long oid = AuthUtils.getUser().getDefaultOid();
+        return userPageManage.queryForOrg(request.getKeyword(), oid);
     }
 }

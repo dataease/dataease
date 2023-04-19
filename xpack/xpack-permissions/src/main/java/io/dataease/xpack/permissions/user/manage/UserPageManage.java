@@ -149,10 +149,6 @@ public class UserPageManage {
 
     public List<UserItem> optionForRole(UserRequest request) {
         Long defaultOid = AuthUtils.getUser().getDefaultOid();
-       /* QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.ne("pur.rid", request.getRid());
-        queryWrapper.eq("pur.oid", defaultOid);
-        queryWrapper.like(StringUtils.isNotBlank(request.getKeyword()), "pu", request.getKeyword());*/
         return userExtMapper.optionForRole(defaultOid, request.getRid(), request.getKeyword());
     }
 
@@ -176,7 +172,6 @@ public class UserPageManage {
         }
         DEException.throwException("invalid orgid");
     }
-
 
 
     public CurUserVO getUserInfo() {
@@ -208,5 +203,13 @@ public class UserPageManage {
         tokenUserBO.setUserId(userId);
         tokenUserBO.setDefaultOid(perUser.getDefaultOid());
         return TokenUtils.generate(tokenUserBO, perUser.getPwd());
+    }
+
+    public List<UserItem> queryForOrg(String keyword, Long oid) {
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("pur.oid", oid);
+        queryWrapper.like(StringUtils.isNotBlank(keyword), "pu", keyword);
+        List<UserItem> result = userExtMapper.selectedForRole(queryWrapper);
+        return result;
     }
 }

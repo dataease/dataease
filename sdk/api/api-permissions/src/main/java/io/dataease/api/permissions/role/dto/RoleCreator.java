@@ -1,4 +1,4 @@
-package io.dataease.api.permissions.role.vo;
+package io.dataease.api.permissions.role.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

@@ -87,5 +87,18 @@ export default {
     confirm_content: '友情提示，组织被删除后，组织下的资源也将被删除',
     give_up_resource: '放弃资源，直接删除',
     move_resource_first: '先迁移资源'
+  },
+  auth: {
+    user_dimension: '按用户配置',
+    resource_dimension: '按资源管理',
+    user: '用户',
+    role: '角色',
+    resource: '资源权限',
+    menu: '菜单和操作权限',
+    panel: '仪表板',
+    screen: '数据大屏',
+    dataset: '数据集',
+    datasource: '数据源',
+    empty_desc: '请选择用户/角色以及资源类型'
   }
 }

@@ -1,4 +1,4 @@
-package io.dataease.api.permissions.role.vo;
+package io.dataease.api.permissions.auth.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -7,19 +7,18 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
-public class RoleVO implements Serializable {
+public class ResourceVO implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = 3488550489306534641L;
+    private static final long serialVersionUID = -8523999682424087399L;
     @JsonSerialize(using= ToStringSerializer.class)
-    @ApiModelProperty("ID")
+    @ApiModelProperty("资源ID")
     private Long id;
-    @ApiModelProperty("名称")
+    @ApiModelProperty("资源名称")
     private String name;
-    @ApiModelProperty("只读")
-    private boolean readonly;
-    @ApiModelProperty("是否根角色(组织默认角色)")
-    private boolean root;
+    @ApiModelProperty("子节点")
+    private List<ResourceVO> children;
 }

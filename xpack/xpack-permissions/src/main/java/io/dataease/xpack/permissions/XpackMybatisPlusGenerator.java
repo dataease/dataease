@@ -19,11 +19,11 @@ public class XpackMybatisPlusGenerator {
     /**
      * 业务模块例如datasource,dataset,panel等
      */
-    private static final String busi = "user";
+    private static final String busi = "auth";
     /**
      * 这是要生成代码的表名称
      */
-    private static final String TABLE_NAME = "per_user_role";
+    private static final String TABLE_NAME = "per_auth_busi_role";
 
     /**
      * 下面两个配置基本上不用动

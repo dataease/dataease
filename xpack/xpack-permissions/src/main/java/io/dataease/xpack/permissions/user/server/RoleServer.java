@@ -2,11 +2,12 @@ package io.dataease.xpack.permissions.user.server;
 
 import io.dataease.api.permissions.role.api.RoleApi;
 import io.dataease.api.permissions.role.dto.MountUserRequest;
+import io.dataease.api.permissions.role.dto.RoleCopyRequest;
 import io.dataease.api.permissions.role.dto.RoleRequest;
 import io.dataease.api.permissions.role.dto.UnmountUserRequest;
-import io.dataease.api.permissions.role.vo.RoleCreator;
+import io.dataease.api.permissions.role.dto.RoleCreator;
 import io.dataease.api.permissions.role.vo.RoleDetailVO;
-import io.dataease.api.permissions.role.vo.RoleEditor;
+import io.dataease.api.permissions.role.dto.RoleEditor;
 import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.model.KeywordRequest;
 import io.dataease.utils.AuthUtils;
@@ -78,5 +79,17 @@ public class RoleServer implements RoleApi {
     @Override
     public Integer beforeUnmountInfo(UnmountUserRequest request) {
         return roleManage.beforeUnmountInfo(request);
+    }
+
+    @Override
+    public void copy(RoleCopyRequest request) {
+        roleManage.copy(request);
+    }
+
+    @Override
+    public List<RoleVO> byCurOrg(KeywordRequest request) {
+        Long defaultOid = AuthUtils.getUser().getDefaultOid();
+        String keyword = request.getKeyword();
+        return roleManage.query(keyword, defaultOid);
     }
 }

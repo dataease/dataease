@@ -11,8 +11,8 @@ import java.io.Serializable;
  * @author fit2cloud
  * @since 2023-04-18
  */
-@TableName("per_auth_busi_user")
-public class PerAuthBusiUser implements Serializable {
+@TableName("per_auth_menu")
+public class PerAuthMenu implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -22,9 +22,9 @@ public class PerAuthBusiUser implements Serializable {
     private Long id;
 
     /**
-     * 目标ID
+     * 角色ID
      */
-    private Long uId;
+    private Long rid;
 
     /**
      * 资源ID
@@ -32,12 +32,7 @@ public class PerAuthBusiUser implements Serializable {
     private Long resourceId;
 
     /**
-     * 资源类型
-     */
-    private Integer resourceType;
-
-    /**
-     * 权重
+     * 权重0无1查看2授权
      */
     private Integer weight;
 
@@ -49,12 +44,12 @@ public class PerAuthBusiUser implements Serializable {
         this.id = id;
     }
 
-    public Long getuId() {
-        return uId;
+    public Long getRid() {
+        return rid;
     }
 
-    public void setuId(Long uId) {
-        this.uId = uId;
+    public void setRid(Long rid) {
+        this.rid = rid;
     }
 
     public Long getResourceId() {
@@ -63,14 +58,6 @@ public class PerAuthBusiUser implements Serializable {
 
     public void setResourceId(Long resourceId) {
         this.resourceId = resourceId;
-    }
-
-    public Integer getResourceType() {
-        return resourceType;
-    }
-
-    public void setResourceType(Integer resourceType) {
-        this.resourceType = resourceType;
     }
 
     public Integer getWeight() {
@@ -83,11 +70,10 @@ public class PerAuthBusiUser implements Serializable {
 
     @Override
     public String toString() {
-        return "PerAuthBusiUser{" +
+        return "PerAuthMenu{" +
         "id = " + id +
-        ", uId = " + uId +
+        ", rid = " + rid +
         ", resourceId = " + resourceId +
-        ", resourceType = " + resourceType +
         ", weight = " + weight +
         "}";
     }

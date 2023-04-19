@@ -1,6 +1,6 @@
 package io.dataease.xpack.permissions.auth.dao.auto.mapper;
 
-import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiUser;
+import io.dataease.xpack.permissions.auth.dao.auto.entity.PerMenuResource;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author fit2cloud
  * @since 2023-04-18
  */
-public interface PerAuthBusiUserMapper extends BaseMapper<PerAuthBusiUser> {
+public interface PerMenuResourceMapper extends BaseMapper<PerMenuResource> {
 
 }

@@ -1,9 +1,17 @@
 package io.dataease.xpack.permissions.user.dao.ext.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.dataease.api.permissions.role.vo.RoleVO;
+import lombok.Data;
+
+import java.io.Serializable;
 
 
 @TableName("per_role")
-public class RolePO extends RoleVO {
+@Data
+public class RolePO implements Serializable {
+
+    private Long id;
+    private String name;
+    private boolean readonly;
+    private Long pid;
 }
