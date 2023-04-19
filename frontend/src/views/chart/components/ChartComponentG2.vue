@@ -43,7 +43,7 @@ import { baseLiquid } from '@/views/chart/chart/liquid/liquid'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import { getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
-import { baseBarOptionAntV, hBaseBarOptionAntV } from '@/views/chart/chart/bar/bar_antv'
+import { baseBarOptionAntV, hBaseBarOptionAntV, baseBidirectionalBarOptionAntV } from '@/views/chart/chart/bar/bar_antv'
 import { baseAreaOptionAntV, baseLineOptionAntV } from '@/views/chart/chart/line/line_antv'
 import { basePieOptionAntV, basePieRoseOptionAntV } from '@/views/chart/chart/pie/pie_antv'
 import { baseScatterOptionAntV } from '@/views/chart/chart/scatter/scatter_antv'
@@ -277,6 +277,8 @@ export default {
         this.myChart = baseMixOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'flow-map') {
         this.myChart = baseFlowMapOption(this.myChart, this.chartId, chart, this.antVAction)
+      } else if (chart.type === 'bidirectional-bar') {
+        this.myChart = baseBidirectionalBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else {
         if (this.myChart) {
           this.antVRenderStatus = false
