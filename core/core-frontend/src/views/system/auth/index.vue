@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import UserConfig from './UserConfig.vue'
 import ResourceConfig from './ResourceConfig.vue'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 const activeName = ref('user')
 const handleClick = tab => {
   console.log('tab', tab)
@@ -10,8 +12,8 @@ const handleClick = tab => {
 
 <template>
   <el-tabs v-model="activeName" @tab-click="handleClick">
-    <el-tab-pane label="按用户配置" name="user"></el-tab-pane>
-    <el-tab-pane label="按资源配置" name="resources"></el-tab-pane>
+    <el-tab-pane :label="t('auth.user_dimension')" name="user"></el-tab-pane>
+    <el-tab-pane :label="t('auth.resource_dimension')" name="resources"></el-tab-pane>
   </el-tabs>
   <div class="auth-table__content de-search-table">
     <user-config v-if="activeName === 'user'"></user-config>

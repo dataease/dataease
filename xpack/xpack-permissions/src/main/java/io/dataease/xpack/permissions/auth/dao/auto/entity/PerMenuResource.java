@@ -11,8 +11,8 @@ import java.io.Serializable;
  * @author fit2cloud
  * @since 2023-04-18
  */
-@TableName("per_busi_resource")
-public class PerBusiResource implements Serializable {
+@TableName("per_menu_resource")
+public class PerMenuResource implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -25,16 +25,6 @@ public class PerBusiResource implements Serializable {
      * 名称
      */
     private String name;
-
-    /**
-     * 类型ID
-     */
-    private Long rtId;
-
-    /**
-     * 所属组织ID
-     */
-    private Long orgId;
 
     /**
      * 上级资源ID
@@ -62,22 +52,6 @@ public class PerBusiResource implements Serializable {
         this.name = name;
     }
 
-    public Long getRtId() {
-        return rtId;
-    }
-
-    public void setRtId(Long rtId) {
-        this.rtId = rtId;
-    }
-
-    public Long getOrgId() {
-        return orgId;
-    }
-
-    public void setOrgId(Long orgId) {
-        this.orgId = orgId;
-    }
-
     public Long getPid() {
         return pid;
     }
@@ -96,11 +70,9 @@ public class PerBusiResource implements Serializable {
 
     @Override
     public String toString() {
-        return "PerBusiResource{" +
+        return "PerMenuResource{" +
         "id = " + id +
         ", name = " + name +
-        ", rtId = " + rtId +
-        ", orgId = " + orgId +
         ", pid = " + pid +
         ", rootWay = " + rootWay +
         "}";
