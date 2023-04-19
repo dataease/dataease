@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.DatasourceApi;
+import io.dataease.api.ds.vo.ApiDefinition;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.api.ds.vo.DatasourceDTO;
+import io.dataease.api.ds.vo.TableField;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -16,23 +18,26 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTaskLog;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
-import io.dataease.datasource.model.TableField;
-import io.dataease.datasource.provider.DDLProvider;
-import io.dataease.datasource.provider.Provider;
-import io.dataease.datasource.provider.ProviderUtil;
+import io.dataease.datasource.dto.ExcelSheetData;
+import io.dataease.datasource.provider.*;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.request.EngineRequest;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobExecutionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -46,12 +51,13 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private CoreDatasourceMapper datasourceMapper;
     @Resource
-    private EngineService engineService;
+    private EngineServer engineServer;
     @Resource
     private Environment env;
-
     @Resource
     private DatasourceTaskServer datasourceTaskServer;
+    @Resource
+    private CalciteProvider calciteProvider;
 
     private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -64,6 +70,10 @@ public class DatasourceServer implements DatasourceApi {
         all_scope, add_scope
     }
 
+    public enum SpecialDatasourceType {
+        API, EXCEL
+    }
+
     @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
@@ -73,6 +83,10 @@ public class DatasourceServer implements DatasourceApi {
         coreDatasource.setCreateTime(System.currentTimeMillis());
         checkDatasourceStatus(coreDatasource);
         datasourceMapper.insert(coreDatasource);
+        if (dataSourceDTO.getType().equals(SpecialDatasourceType.EXCEL.name())) {
+            //TODO sync excel at once
+
+        }
         return dataSourceDTO;
     }
 
@@ -135,11 +149,32 @@ public class DatasourceServer implements DatasourceApi {
 
     @Override
     public List<DatasetTableDTO> getTables(String datasourceId) throws Exception {
-
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
-        return ProviderUtil.getProvider(coreDatasource.getType()).getTables(datasourceRequest);
+        if (coreDatasource.getType().equals("API")) {
+            return ApiUtils.getTables(datasourceRequest);
+        }
+        if (coreDatasource.getType().equals("EXCEL")) {
+            return ExcelUtils.getTables(datasourceRequest);
+        }
+        return calciteProvider.getTables(datasourceRequest);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "file", value = "文件", required = true, dataType = "MultipartFile"),
+            @ApiImplicitParam(name = "tableId", value = "数据表ID", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "editType", value = "编辑类型", required = true, dataType = "Integer")
+    })
+    public List<ExcelSheetData> excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("datasourceId") String datasourceId) throws Exception {
+        return ExcelUtils.excelSaveAndParse(file, datasourceId);
+    }
+
+
+    public ApiDefinition checkApiDatasource(@RequestBody Map<String, String> request) throws Exception {
+        ApiDefinition apiDefinition = JsonUtil.parse(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
+        String response = ApiUtils.execHttpRequest(apiDefinition, 10);
+        return ApiUtils.checkApiDefinition(apiDefinition, response);
     }
 
     private void preCheckDs(DatasourceDTO datasource) throws Exception {
@@ -163,15 +198,89 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public void checkDatasourceStatus(CoreDatasource coreDatasource) {
+        if (coreDatasource.getType().equals("EXCEL")) {
+            return;
+        }
         try {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
-            String status = ProviderUtil.getProvider(coreDatasource.getType()).checkStatus(datasourceRequest);
+            String status = null;
+            if (coreDatasource.getType().equals("API")) {
+                status = ApiUtils.checkStatus(datasourceRequest);
+            } else {
+                status = calciteProvider.checkStatus(datasourceRequest);
+            }
             coreDatasource.setStatus(status);
         } catch (Exception e) {
             coreDatasource.setStatus("Error");
         }
     }
+
+    public void extractExcelData(String datasourceId, String type) {
+        CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
+        if (coreDatasource == null) {
+            LogUtil.error("Can not find CoreDatasource: " + datasourceId);
+            return;
+        }
+        Long startTime = System.currentTimeMillis();
+        CoreDatasourceTaskLog datasetTableTaskLog = datasourceTaskServer.initTaskLog(datasourceId, null, startTime, coreDatasource.getName());
+        UpdateType updateType = UpdateType.valueOf(type);
+
+        boolean msg = false;
+
+        Long execTime = System.currentTimeMillis();
+        try {
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(coreDatasource);
+            List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
+            int sucsess = 0;
+            for (DatasetTableDTO api : tables) {
+                datasourceRequest.setTable(api.getTableName());
+                try {
+                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
+                    datasourceTaskServer.saveLog(datasetTableTaskLog);
+                    List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
+                    createEngineTable(datasourceRequest.getTable(), tableFields);
+                    if (updateType.equals(UpdateType.all_scope)) {
+                        createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
+                    }
+                    extractApiData(datasourceRequest, updateType);
+                    if (updateType.equals(UpdateType.all_scope)) {
+                        replaceTable(datasourceRequest.getTable());
+                    }
+                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n End to sync datatable: " + datasourceRequest.getTable());
+                    datasourceTaskServer.saveLog(datasetTableTaskLog);
+                    sucsess++;
+                } catch (Exception e) {
+                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Faild to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
+                    datasourceTaskServer.saveLog(datasetTableTaskLog);
+                }
+            }
+            datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
+            if (sucsess == 0) {
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Faild to sync datasourc.");
+                datasetTableTaskLog.setStatus(TaskStatus.Error.name());
+            }
+            if (sucsess == tables.size()) {
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
+                datasetTableTaskLog.setStatus(TaskStatus.Completed.name());
+            }
+            if (0 < sucsess && sucsess < tables.size()) {
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
+                datasetTableTaskLog.setStatus(TaskStatus.Warning.name());
+            }
+            datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+            datasourceTaskServer.saveLog(datasetTableTaskLog);
+        } catch (Exception e) {
+            datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Faild to sync datasourc.");
+            datasetTableTaskLog.setEndTime(System.currentTimeMillis());
+            datasetTableTaskLog.setStatus(TaskStatus.Error.name());
+            datasourceTaskServer.saveLog(datasetTableTaskLog);
+        } finally {
+            //DELETE
+        }
+    }
+
 
     public void extractData(String datasourceId, String taskId, String type, JobExecutionContext context) {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
@@ -210,7 +319,7 @@ public class DatasourceServer implements DatasourceApi {
         try {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(coreDatasource);
-            List<DatasetTableDTO> tables = ProviderUtil.getProvider("API").getTables(datasourceRequest);
+            List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
             int sucsess = 0;
 
             for (DatasetTableDTO api : tables) {
@@ -218,7 +327,7 @@ public class DatasourceServer implements DatasourceApi {
                 try {
                     datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Begin to sync datatable: " + datasourceRequest.getTable());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
-                    List<TableField> tableFields = ProviderUtil.getProvider("API").getTableFields(datasourceRequest);
+                    List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
                     createEngineTable(datasourceRequest.getTable(), tableFields);
                     if (updateType.equals(UpdateType.all_scope)) {
                         createEngineTable(TableUtils.tmpName(datasourceRequest.getTable()), tableFields);
@@ -268,12 +377,12 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public void createEngineTable(String tableName, List<TableField> tableFields) throws Exception {
-        CoreDeEngine engine = engineService.info();
+        CoreDeEngine engine = engineServer.info();
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
-        DDLProvider ddlProvider = ProviderUtil.getDDLProvider(engine.getType());
-        engineRequest.setQuery(ddlProvider.createTableSql(tableName, tableFields, engine));
-        ddlProvider.exec(engineRequest);
+        EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
+        engineRequest.setQuery(engineProvider.createTableSql(tableName, tableFields, engine));
+        engineProvider.exec(engineRequest);
     }
 
     public void updateDemoDs() {
@@ -302,13 +411,8 @@ public class DatasourceServer implements DatasourceApi {
     }
 
 
-    private void extractDataForSimpleMode(String extractType, String datasetId, List<String[]> dataList) throws Exception {
-
-    }
-
     private void extractApiData(DatasourceRequest datasourceRequest, UpdateType extractType) throws Exception {
-        Provider provider = ProviderUtil.getProvider(datasourceRequest.getDatasource().getType());
-        Map<String, Object> result = provider.fetchResultField(datasourceRequest);
+        Map<String, Object> result = ApiUtils.fetchResultField(datasourceRequest);
         List<String[]> dataList = (List<String[]>) result.get("dataList");
         String engineTableName;
         switch (extractType) {
@@ -319,12 +423,12 @@ public class DatasourceServer implements DatasourceApi {
                 engineTableName = TableUtils.tableName(datasourceRequest.getTable());
                 break;
         }
-        CoreDeEngine engine = engineService.info();
+        CoreDeEngine engine = engineServer.info();
 
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
-        DDLProvider ddlProvider = ProviderUtil.getDDLProvider(engine.getType());
-        int pageNumber = 1000; //一次插入 100条
+        EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
+        int pageNumber = 1000; //一次插入 1000条
         int totalPage;
         if (dataList.size() % pageNumber > 0) {
             totalPage = dataList.size() / pageNumber + 1;
@@ -333,21 +437,21 @@ public class DatasourceServer implements DatasourceApi {
         }
 
         for (int page = 1; page <= totalPage; page++) {
-            engineRequest.setQuery(ddlProvider.insertSql(engineTableName, dataList, page, pageNumber));
-            ddlProvider.exec(engineRequest);
+            engineRequest.setQuery(engineProvider.insertSql(engineTableName, dataList, page, pageNumber));
+            engineProvider.exec(engineRequest);
         }
     }
 
     private void replaceTable(String tableName) throws Exception {
-        CoreDeEngine engine = engineService.info();
+        CoreDeEngine engine = engineServer.info();
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
-        DDLProvider ddlProvider = ProviderUtil.getDDLProvider(engine.getType());
-        String[] replaceTableSql = ddlProvider.replaceTable(tableName).split(";");
+        EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
+        String[] replaceTableSql = engineProvider.replaceTable(tableName).split(";");
         for (int i = 0; i < replaceTableSql.length; i++) {
             if (StringUtils.isNotEmpty(replaceTableSql[i])) {
                 engineRequest.setQuery(replaceTableSql[i]);
-                ddlProvider.exec(engineRequest);
+                engineProvider.exec(engineRequest);
             }
         }
     }

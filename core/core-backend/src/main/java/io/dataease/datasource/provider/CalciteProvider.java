@@ -9,10 +9,9 @@ import io.dataease.commons.exception.DataEaseException;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
-import io.dataease.datasource.model.TableField;
+import io.dataease.api.ds.vo.TableField;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DEException;
-import io.dataease.utils.JsonUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
@@ -32,7 +31,7 @@ import java.util.*;
 
 @Component("calciteProvider")
 
-public class CalciteProvider extends Provider {
+public class CalciteProvider {
 
     @Resource
     protected CoreDriverMapper coreDriverMapper;
@@ -63,7 +62,7 @@ public class CalciteProvider extends Provider {
         });
     }
 
-    @Override
+
     public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<DatasetTableDTO> tables = new ArrayList<>();
         List<String> tablesSqls = getTablesSql(datasourceRequest);
@@ -99,15 +98,12 @@ public class CalciteProvider extends Provider {
             throw e;
         }
         return "Success";
-
     }
 
-    @Override
     public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
         return null;
     }
 
-    @Override
     public Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
         List<TableField> datasetTableFields = new ArrayList<>();
         List<String[]> list = new LinkedList<>();

@@ -3,9 +3,8 @@ package io.dataease.datasource.server;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
-import io.dataease.datasource.dao.auto.entity.CoreDriverJar;
 import io.dataease.datasource.dao.auto.mapper.CoreDeEngineMapper;
-import io.dataease.datasource.provider.Provider;
+import io.dataease.datasource.provider.EngineProvider;
 import io.dataease.datasource.provider.ProviderUtil;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.type.Mysql;
@@ -14,7 +13,6 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +26,7 @@ import static io.dataease.result.ResultCode.DATA_IS_WRONG;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class EngineService {
+public class EngineServer {
     @Resource
     private Environment env;
     @Resource
@@ -43,12 +41,21 @@ public class EngineService {
         return deEngines.get(0);
     }
 
+    public CoreDatasource getDeEngine() throws Exception {
+        List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
+        if (CollectionUtils.isEmpty(deEngines)) {
+            throw new Exception("未完整设置数据引擎");
+        }
+        CoreDatasource coreDatasource = new CoreDatasource();
+        BeanUtils.copyBean(coreDatasource, deEngines.get(0));
+        return coreDatasource;
+    }
     public ResultMessage validate(CoreDeEngine engine) throws Exception {
         if (StringUtils.isEmpty(engine.getType()) || StringUtils.isEmpty(engine.getConfiguration())) {
             throw new Exception("未完整设置数据引擎");
         }
         try {
-            Provider provider = ProviderUtil.getProvider(engine.getType());
+            EngineProvider provider = ProviderUtil.getEngineProvider(engine.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             CoreDatasource datasource = new CoreDatasource();
             BeanUtils.copyBean(datasource, engine);

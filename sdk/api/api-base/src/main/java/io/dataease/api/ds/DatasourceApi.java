@@ -1,15 +1,19 @@
 package io.dataease.api.ds;
 
+import com.google.common.reflect.TypeToken;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.api.ds.vo.ApiDefinition;
 import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface DatasourceApi {
     /**
@@ -41,4 +45,7 @@ public interface DatasourceApi {
 
     @PostMapping("getTables/{datasourceId}")
     List<DatasetTableDTO> getTables(@PathVariable("datasourceId") String datasourceId) throws Exception;
+
+    @PostMapping("/checkApiDatasource")
+    ApiDefinition checkApiDatasource(@RequestBody Map<String, String> data) throws Exception;
 }

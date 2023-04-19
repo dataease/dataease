@@ -5,31 +5,25 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.dataease.commons.exception.DataEaseException;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
-import io.dataease.datasource.model.TableField;
+import io.dataease.api.ds.vo.TableField;
 
-import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.request.EngineRequest;
-import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
  * @Author gin
  * @Date 2021/5/17 4:27 下午
  */
-@Service("mysqlEngineDDL")
-public class MysqlDDLProvider extends DDLProvider {
+@Service("mysqlEngine")
+public class MysqlEngineProvider extends EngineProvider {
 
 
     public void exec(EngineRequest engineRequest) throws Exception {
@@ -105,7 +99,7 @@ public class MysqlDDLProvider extends DDLProvider {
     private String createTableSql(final List<TableField> tableFields) {
         StringBuilder Column_Fields = new StringBuilder("dataease_uuid  varchar(50), `");
         for (TableField tableField : tableFields) {
-            Column_Fields.append(tableField.getDbFieldName()).append("` ");
+            Column_Fields.append(tableField.getFieldName()).append("` ");
             int size = tableField.getPrecision() * 4;
             switch (tableField.getDeType()) {
                 case 0:

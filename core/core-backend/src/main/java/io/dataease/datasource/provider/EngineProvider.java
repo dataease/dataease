@@ -1,7 +1,7 @@
 package io.dataease.datasource.provider;
 
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
-import io.dataease.datasource.model.TableField;
+import io.dataease.api.ds.vo.TableField;
 
 import io.dataease.datasource.request.EngineRequest;
 
@@ -12,7 +12,7 @@ import java.util.List;
  * @Author gin
  * @Date 2021/5/17 4:19 下午
  */
-public abstract class DDLProvider extends CalciteProvider {
+public abstract class EngineProvider extends CalciteProvider {
     public abstract String createView(String name, String viewSQL);
 
     public abstract String dropTable(String name);

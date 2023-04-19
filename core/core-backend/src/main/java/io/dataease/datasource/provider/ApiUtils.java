@@ -8,39 +8,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.JsonPath;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.datasource.model.ApiDefinition;
-import io.dataease.datasource.model.ApiDefinitionRequest;
-import io.dataease.datasource.model.TableField;
+import io.dataease.api.ds.vo.ApiDefinition;
+import io.dataease.api.ds.vo.ApiDefinitionRequest;
+import io.dataease.api.ds.vo.TableField;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.utils.HttpClientConfig;
 import io.dataease.utils.HttpClientUtil;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Component("apiProvider")
-public class ApiProvider extends Provider {
+public class ApiUtils {
 
     private static String path = "['%s']";
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
-    private TypeReference<List<String>> listTypeReference = new TypeReference<List<String>>() {};
-    private TypeReference<List<Map<String, Object>>> listForMapTypeReference = new TypeReference<List<Map<String, Object>>>() {};
+    private static TypeReference<List<String>> listTypeReference = new TypeReference<List<String>>() {
+    };
+    private static TypeReference<List<Map<String, Object>>> listForMapTypeReference = new TypeReference<List<Map<String, Object>>>() {
+    };
 
-    public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
-        ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
-        String response = execHttpRequest(apiDefinition, 10);
-        return fetchResult(response, apiDefinition);
-    }
-
-    public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws Exception {
+    public static List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws Exception {
         List<DatasetTableDTO> tableDescs = new ArrayList<>();
-        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {};
+        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
+        };
         List<ApiDefinition> lists = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
 
         for (ApiDefinition apiDefinition : lists) {
@@ -52,14 +47,12 @@ public class ApiProvider extends Provider {
     }
 
 
-    public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
-
-        Map<String, List> result = new HashMap<>();
+    public static Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
+        Map<String, Object> result = new HashMap<>();
         List<String[]> dataList = new ArrayList<>();
         List<TableField> fieldList = new ArrayList<>();
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
         String response = execHttpRequest(apiDefinition, 10);
-
         fieldList = getTableFields(apiDefinition);
         result.put("fieldList", fieldList);
         dataList = fetchResult(response, apiDefinition);
@@ -68,11 +61,11 @@ public class ApiProvider extends Provider {
     }
 
 
-    private List<TableField> getTableFields(ApiDefinition apiDefinition) throws Exception {
+    private static List<TableField> getTableFields(ApiDefinition apiDefinition) throws Exception {
         return apiDefinition.getFields();
     }
 
-    public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
+    public static List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
         List<ApiDefinition> lists = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
@@ -85,7 +78,7 @@ public class ApiProvider extends Provider {
         return tableFields;
     }
 
-    public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
+    public static String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
         List<ApiDefinition> apiDefinitionList = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
@@ -102,7 +95,14 @@ public class ApiProvider extends Provider {
         return apiItemStatuses.asText();
     }
 
-    public String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout) throws Exception {
+    private static List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
+        ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
+        String response = execHttpRequest(apiDefinition, 10);
+        return fetchResult(response, apiDefinition);
+    }
+
+
+    public static String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout) throws Exception {
         String response = "";
         HttpClientConfig httpClientConfig = new HttpClientConfig();
         httpClientConfig.setSocketTimeout(socketTimeout * 1000);
@@ -157,7 +157,7 @@ public class ApiProvider extends Provider {
     }
 
 
-    public ApiDefinition checkApiDefinition(ApiDefinition apiDefinition, String response) throws Exception {
+    public static ApiDefinition checkApiDefinition(ApiDefinition apiDefinition, String response) throws Exception {
         if (StringUtils.isEmpty(response)) {
             throw new Exception("该请求返回数据为空");
         }
@@ -207,7 +207,6 @@ public class ApiProvider extends Provider {
             apiDefinition.setJsonFields(fields);
             return apiDefinition;
         } else {
-
             String rootPath;
             if (response.startsWith("[")) {
                 rootPath = "$[*]";
@@ -233,7 +232,7 @@ public class ApiProvider extends Provider {
     }
 
 
-    private void handleStr(ApiDefinition apiDefinition, String jsonStr, List<Map<String, Object>> fields, String rootPath) throws Exception {
+    private static void handleStr(ApiDefinition apiDefinition, String jsonStr, List<Map<String, Object>> fields, String rootPath) throws Exception {
         if (jsonStr.startsWith("[")) {
             TypeReference<List<Object>> listTypeReference = new TypeReference<List<Object>>() {
             };
@@ -307,10 +306,9 @@ public class ApiProvider extends Provider {
         }
     }
 
-    static private void setProperty(ApiDefinition apiDefinition, Map<String, Object> o, String s) {
+    private static void setProperty(ApiDefinition apiDefinition, Map<String, Object> o, String s) {
         o.put("fieldName", s);
         o.put("remarks", s);
-        o.put("dbFieldName", s);
         o.put("type", "STRING");
         o.put("size", 65535);
         o.put("deExtractType", 0);
@@ -321,13 +319,12 @@ public class ApiProvider extends Provider {
                 if (!ObjectUtils.isEmpty(o.get("jsonPath")) && StringUtils.isNotEmpty(field.getJsonPath()) && field.getJsonPath().equals(o.get("jsonPath").toString())) {
                     o.put("checked", true);
                     o.put("remarks", field.getRemarks());
-                    o.put("dbFieldName", field.getDbFieldName());
                 }
             }
         }
     }
 
-    private boolean hasItem(ApiDefinition apiDefinition, List<Map<String, Object>> fields, Map<String, Object> item) throws Exception{
+    private static boolean hasItem(ApiDefinition apiDefinition, List<Map<String, Object>> fields, Map<String, Object> item) throws Exception {
         boolean has = false;
         for (Map<String, Object> field : fields) {
             if (field.get("jsonPath").equals(item.get("jsonPath"))) {
@@ -342,7 +339,7 @@ public class ApiProvider extends Provider {
     }
 
 
-    private void mergeField(Map<String, Object> field, Map<String, Object> item) throws JsonProcessingException {
+    private static void mergeField(Map<String, Object> field, Map<String, Object> item) throws JsonProcessingException {
         if (item.get("children") != null) {
             List<Map<String, Object>> fieldChildren = objectMapper.readValue(field.get("children").toString(), listForMapTypeReference);
             List<Map<String, Object>> itemChildren = objectMapper.readValue(item.get("children").toString(), listForMapTypeReference);
@@ -365,7 +362,7 @@ public class ApiProvider extends Provider {
         }
     }
 
-    void mergeValue(Map<String, Object> field, ApiDefinition apiDefinition, Map<String, Object> item) throws Exception {
+    private static void mergeValue(Map<String, Object> field, ApiDefinition apiDefinition, Map<String, Object> item) throws Exception {
         if (!ObjectUtils.isEmpty(field.get("value")) && !ObjectUtils.isEmpty(item.get("value"))) {
             List<String> array = objectMapper.readValue(field.get("value").toString(), listTypeReference);
             array.add(objectMapper.readValue(item.get("value").toString(), listTypeReference).get(0));
@@ -392,7 +389,7 @@ public class ApiProvider extends Provider {
         }
     }
 
-    private List<String[]> fetchResult(String result, ApiDefinition apiDefinition) {
+    private static List<String[]> fetchResult(String result, ApiDefinition apiDefinition) {
         List<String[]> dataList = new LinkedList<>();
         if (apiDefinition.isUseJsonPath()) {
             List<LinkedHashMap> currentData = new ArrayList<>();
@@ -442,7 +439,7 @@ public class ApiProvider extends Provider {
     }
 
 
-    private ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest) throws Exception {
+    private static ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest) throws Exception {
         List<ApiDefinition> apiDefinitionList = new ArrayList<>();
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };

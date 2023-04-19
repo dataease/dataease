@@ -16,7 +16,7 @@ public class ExtractDataJob extends DeScheduleJob{
 
     @Override
     void businessExecute(JobExecutionContext context) {
-//        datasourceServer.extractData(datasetTableId, taskId, updateType, context);
+        datasourceServer.extractData(datasetTableId, taskId, updateType, context);
     }
 
 }

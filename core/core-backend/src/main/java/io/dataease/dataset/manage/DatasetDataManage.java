@@ -10,9 +10,10 @@ import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
-import io.dataease.datasource.model.TableField;
+import io.dataease.api.ds.vo.TableField;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.datasource.server.EngineServer;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.sql.SQLProvider;
@@ -39,6 +40,8 @@ public class DatasetDataManage {
     private CalciteProvider calciteProvider;
     @Resource
     private CoreDatasourceMapper coreDatasourceMapper;
+    @Resource
+    private EngineServer engineServer;
 
     public List<DatasetTableFieldDTO> getTableFields(DatasetTableDTO datasetTableDTO) throws Exception {
         List<DatasetTableFieldDTO> list = null;
@@ -61,6 +64,16 @@ public class DatasetDataManage {
             list = transFields(tableFields);
         } else {
             // todo excel,api
+            CoreDatasource coreDatasource = engineServer.getDeEngine();
+            DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+            BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
+            datasourceRequest.setQuery(TableUtils.tableName2Sql(tableInfoDTO.getTable()));
+            List<TableField> tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+            list = transFields(tableFields);
         }
         return list;
     }
