@@ -30,6 +30,7 @@ public class DatasetTableFieldManage {
         }
     }
 
+    // 数据集保存时使用
     public DatasetTableFieldDTO save(DatasetTableFieldDTO datasetTableFieldDTO) {
 //        CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
 //        CoreDatasetTableField record = new CoreDatasetTableField();
@@ -50,6 +51,10 @@ public class DatasetTableFieldManage {
             coreDatasetTableFieldMapper.updateById(record);
         }
         return datasetTableFieldDTO;
+    }
+
+    public void deleteById(Long id) {
+        coreDatasetTableFieldMapper.deleteById(id);
     }
 
     public void deleteByDatasetTableUpdate(Long datasetTableId, List<Long> fieldIds) {

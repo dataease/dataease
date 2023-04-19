@@ -178,7 +178,7 @@ public class DatasetGroupManage {
             dto.setUnion(unionDTOList);
 
             // 获取data和field
-            Map<String, Object> map = datasetDataManage.previewData(dto);
+            Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 1000);
             Map<String, List> data = (Map<String, List>) map.get("data");
             List<DatasetTableFieldDTO> allFields = (List<DatasetTableFieldDTO>) map.get("allFields");
             String sql = (String) map.get("sql");

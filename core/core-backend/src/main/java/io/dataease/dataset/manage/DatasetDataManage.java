@@ -148,11 +148,13 @@ public class DatasetDataManage {
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         // 调用数据源的calcite获得data
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setQuery(querySQL + " LIMIT 1000 OFFSET 0");
+        datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
         Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
         Map<String, Object> map = new LinkedHashMap<>();
-        map.put("data", data);
+        // 重新构造data
+        Map<String, Object> previewData = buildPreviewData(data, fields);
+        map.put("data", previewData);
         map.put("allFields", fields);
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
         return map;
@@ -175,6 +177,38 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
-        return calciteProvider.fetchResultField(datasourceRequest);
+        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+        Map<String, Object> map = new LinkedHashMap<>();
+        // 重新构造data
+        Map<String, Object> previewData = buildPreviewData(data, fields);
+        map.put("data", previewData);
+        map.put("allFields", fields);
+        map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
+        return map;
+    }
+
+    public Map<String, Object> buildPreviewData(Map<String, Object> data, List<DatasetTableFieldDTO> fields) {
+        Map<String, Object> map = new LinkedHashMap<>();
+
+//        List<TableField> fieldList = (List<TableField>) data.get("fields");
+        List<String[]> dataList = (List<String[]>) data.get("data");
+
+        List<LinkedHashMap<String, Object>> dataObjectList = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(dataList)) {
+            for (int i = 0; i < dataList.size(); i++) {
+                String[] row = dataList.get(i);
+                LinkedHashMap<String, Object> obj = new LinkedHashMap<>();
+                if (row.length > 0) {
+                    for (int j = 0; j < row.length; j++) {
+                        obj.put(fields.get(j).getFieldShortName(), row[j]);
+                    }
+                }
+                dataObjectList.add(obj);
+            }
+        }
+
+        map.put("fields", fields);
+        map.put("data", dataObjectList);
+        return map;
     }
 }
