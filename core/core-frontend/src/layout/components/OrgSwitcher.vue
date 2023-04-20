@@ -13,12 +13,12 @@
 import { ref, reactive, onMounted } from 'vue'
 import { mountedOrg, switchOrg } from '@/api/user'
 import { useUserStoreWithOut } from '@/store/modules/user'
-import router from '@/router'
 const userStore = useUserStoreWithOut()
 const value = ref()
 const props = {
   value: 'id',
-  label: 'name'
+  label: 'name',
+  disabled: 'readOnly'
 }
 const state = reactive({
   orgOption: []
@@ -32,7 +32,7 @@ const switchHandler = (id: number | string) => {
   switchOrg(id).then(res => {
     const token = res.data
     userStore.setToken(token)
-    router.go(0)
+    window.location.reload()
   })
 }
 
