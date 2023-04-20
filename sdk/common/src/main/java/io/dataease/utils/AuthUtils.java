@@ -28,11 +28,5 @@ public class AuthUtils {
         return userId == SYS_ADMIN_UID;
     }
 
-    public static boolean isOrgRoot() {
-        return false;
-    }
 
-    public static boolean isReadonly() {
-        return false;
-    }
 }
