@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author Junjun
@@ -32,15 +33,18 @@ public class DatasetTableFieldManage {
 
     // 数据集保存时使用
     public DatasetTableFieldDTO save(DatasetTableFieldDTO datasetTableFieldDTO) {
-//        CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
-//        CoreDatasetTableField record = new CoreDatasetTableField();
-//        BeanUtils.copyBean(record, datasetTableFieldDTO);
-//        if (ObjectUtils.isEmpty(coreDatasetTableField)) {
-//            coreDatasetTableFieldMapper.insert(record);
-//        } else {
-//            coreDatasetTableFieldMapper.updateById(record);
-//        }
+        CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(datasetTableFieldDTO.getId());
+        CoreDatasetTableField record = new CoreDatasetTableField();
+        BeanUtils.copyBean(record, datasetTableFieldDTO);
+        if (ObjectUtils.isEmpty(coreDatasetTableField)) {
+            coreDatasetTableFieldMapper.insert(record);
+        } else {
+            coreDatasetTableFieldMapper.updateById(record);
+        }
+        return datasetTableFieldDTO;
+    }
 
+    public DatasetTableFieldDTO saveField(DatasetTableFieldDTO datasetTableFieldDTO) {
         CoreDatasetTableField record = new CoreDatasetTableField();
         if (ObjectUtils.isEmpty(datasetTableFieldDTO.getId())) {
             datasetTableFieldDTO.setId(IDUtils.snowID());
@@ -81,25 +85,36 @@ public class DatasetTableFieldManage {
         coreDatasetTableFieldMapper.delete(wrapper);
     }
 
-    public List<CoreDatasetTableField> selectByDatasetTableId(Long id) {
+    public List<DatasetTableFieldDTO> selectByDatasetTableId(Long id) {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_table_id", id);
-        return coreDatasetTableFieldMapper.selectList(wrapper);
+        return transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
     }
 
-    public List<CoreDatasetTableField> selectByDatasetGroupId(Long id) {
+    public List<DatasetTableFieldDTO> selectByDatasetGroupId(Long id) {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
-        return coreDatasetTableFieldMapper.selectList(wrapper);
+        return transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
     }
 
-    public List<CoreDatasetTableField> selectByFieldIds(List<Long> ids) {
+    public List<DatasetTableFieldDTO> selectByFieldIds(List<Long> ids) {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.in("id", ids);
-        return coreDatasetTableFieldMapper.selectList(wrapper);
+        return transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
     }
 
-    public CoreDatasetTableField selectById(Long id) {
-        return coreDatasetTableFieldMapper.selectById(id);
+    public DatasetTableFieldDTO selectById(Long id) {
+        CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(id);
+        DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
+        BeanUtils.copyBean(dto, coreDatasetTableField);
+        return dto;
+    }
+
+    public List<DatasetTableFieldDTO> transDTO(List<CoreDatasetTableField> list) {
+        return list.stream().map(ele -> {
+            DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
+            BeanUtils.copyBean(dto, ele);
+            return dto;
+        }).collect(Collectors.toList());
     }
 }

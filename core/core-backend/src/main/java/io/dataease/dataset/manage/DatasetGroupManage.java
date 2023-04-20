@@ -49,9 +49,12 @@ public class DatasetGroupManage {
         if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), "dataset")) {
             // get union sql
             Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+            if (ObjectUtils.isEmpty(sqlMap)) {
+                DEException.throwException("table error");
+            }
             String sql = (String) sqlMap.get("sql");
             datasetGroupInfoDTO.setUnionSql(sql);
-            datasetGroupInfoDTO.setInfo(JsonUtil.toJSONString(datasetGroupInfoDTO.getUnion()).toString());
+            datasetGroupInfoDTO.setInfo(Objects.requireNonNull(JsonUtil.toJSONString(datasetGroupInfoDTO.getUnion())).toString());
         }
         // save dataset/group
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
@@ -75,7 +78,8 @@ public class DatasetGroupManage {
             List<Long> tableIds = new ArrayList<>();
             List<Long> fieldIds = new ArrayList<>();
             // 解析tree，保存
-            saveTableAndField(datasetGroupInfoDTO, datasetGroupInfoDTO.getUnion(), tableIds, fieldIds);
+            saveTable(datasetGroupInfoDTO, datasetGroupInfoDTO.getUnion(), tableIds);
+            saveField(datasetGroupInfoDTO, fieldIds);
             // 删除不要的table和field
             datasetTableManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), tableIds);
             datasetTableFieldManage.deleteByDatasetGroupUpdate(datasetGroupInfoDTO.getId(), fieldIds);
@@ -139,7 +143,7 @@ public class DatasetGroupManage {
         }
     }
 
-    public void saveTableAndField(DatasetGroupInfoDTO datasetGroupInfoDTO, List<UnionDTO> union, List<Long> tableIds, List<Long> fieldIds) {
+    public void saveTable(DatasetGroupInfoDTO datasetGroupInfoDTO, List<UnionDTO> union, List<Long> tableIds) {
         // table和field均由前端生成id（如果没有id）
         Long datasetGroupId = datasetGroupInfoDTO.getId();
         if (ObjectUtils.isNotEmpty(union)) {
@@ -149,23 +153,37 @@ public class DatasetGroupManage {
                 datasetTableManage.save(currentDs);
                 tableIds.add(currentDs.getId());
 
-                List<DatasetTableFieldDTO> currentDsFields = unionDTO.getCurrentDsFields();
-                if (ObjectUtils.isNotEmpty(currentDsFields)) {
-                    for (DatasetTableFieldDTO datasetTableFieldDTO : currentDsFields) {
-                        datasetTableFieldDTO.setDatasourceId(currentDs.getDatasourceId());
-                        datasetTableFieldDTO.setDatasetGroupId(datasetGroupId);
-                        datasetTableFieldDTO.setDatasetTableId(currentDs.getId());
-                        datasetTableFieldDTO.setDataeaseName(datasetTableFieldDTO.getOriginName());
-                        datasetTableFieldDTO = datasetTableFieldManage.save(datasetTableFieldDTO);
-                        fieldIds.add(datasetTableFieldDTO.getId());
-                    }
-                }
-                saveTableAndField(datasetGroupInfoDTO, unionDTO.getChildrenDs(), tableIds, fieldIds);
+                saveTable(datasetGroupInfoDTO, unionDTO.getChildrenDs(), tableIds);
             }
         }
     }
 
-    public DatasetGroupInfoDTO get(Long id) throws Exception {
+    public void saveField(DatasetGroupInfoDTO datasetGroupInfoDTO, List<Long> fieldIds) {
+        // table和field均由前端生成id（如果没有id）
+        Long datasetGroupId = datasetGroupInfoDTO.getId();
+        List<DatasetTableFieldDTO> allFields = datasetGroupInfoDTO.getAllFields();
+        if (ObjectUtils.isEmpty(allFields)) {
+            DEException.throwException("no fields");
+        }
+        // 获取内层union sql和字段
+        Map<String, Object> map = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
+        List<DatasetTableFieldDTO> unionFields = (List<DatasetTableFieldDTO>) map.get("field");
+
+        for (DatasetTableFieldDTO datasetTableFieldDTO : allFields) {
+            for (DatasetTableFieldDTO fieldDTO : unionFields) {
+                if (Objects.equals(datasetTableFieldDTO.getDatasetTableId(), fieldDTO.getDatasetTableId())
+                        && Objects.equals(datasetTableFieldDTO.getOriginName(), fieldDTO.getOriginName())) {
+                    datasetTableFieldDTO.setDataeaseName(fieldDTO.getDataeaseName());
+                    datasetTableFieldDTO.setFieldShortName(fieldDTO.getFieldShortName());
+                }
+            }
+            datasetTableFieldDTO.setDatasetGroupId(datasetGroupId);
+            datasetTableFieldDTO = datasetTableFieldManage.save(datasetTableFieldDTO);
+            fieldIds.add(datasetTableFieldDTO.getId());
+        }
+    }
+
+    public DatasetGroupInfoDTO get(Long id, String type) throws Exception {
         CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
         if (coreDatasetGroup == null) {
             return null;
@@ -177,14 +195,25 @@ public class DatasetGroupManage {
             });
             dto.setUnion(unionDTOList);
 
-            // 获取data和field
-            Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 1000);
-            Map<String, List> data = (Map<String, List>) map.get("data");
-            List<DatasetTableFieldDTO> allFields = (List<DatasetTableFieldDTO>) map.get("allFields");
-            String sql = (String) map.get("sql");
-            dto.setData(data);
+            // 获取field
+            List<DatasetTableFieldDTO> dsFields = datasetTableFieldManage.selectByDatasetGroupId(id);
+            List<DatasetTableFieldDTO> allFields = dsFields.stream().map(ele -> {
+                DatasetTableFieldDTO datasetTableFieldDTO = new DatasetTableFieldDTO();
+                BeanUtils.copyBean(datasetTableFieldDTO, ele);
+                datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
+                return datasetTableFieldDTO;
+            }).collect(Collectors.toList());
             dto.setAllFields(allFields);
-            dto.setSql(sql);
+
+            if ("preview".equalsIgnoreCase(type)) {
+                // 请求数据
+                Map<String, Object> map = datasetDataManage.previewDataWithLimit(dto, 0, 1000);
+                // 获取data,sql
+                Map<String, List> data = (Map<String, List>) map.get("data");
+                String sql = (String) map.get("sql");
+                dto.setData(data);
+                dto.setSql(sql);
+            }
         }
         return dto;
     }

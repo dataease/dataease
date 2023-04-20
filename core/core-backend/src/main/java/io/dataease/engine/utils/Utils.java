@@ -17,7 +17,7 @@ public class Utils {
         return (StringUtils.equalsIgnoreCase(sort, "asc") || StringUtils.equalsIgnoreCase(sort, "desc"));
     }
 
-    public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> calcFields) {
+    public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields) {
         originField = originField.replaceAll("[\\t\\n\\r]]", "");
         // 正则提取[xxx]
         String regex = "\\[(.*?)]";
@@ -31,10 +31,10 @@ public class Utils {
         if (CollectionUtils.isEmpty(ids)) {
             return originField;
         }
-        for (DatasetTableFieldDTO ele : calcFields) {
+        for (DatasetTableFieldDTO ele : originFields) {
             if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
                 originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                        String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getOriginName()));
+                        String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
             }
         }
         return originField;

@@ -20,7 +20,7 @@ import java.util.Objects;
  */
 public class Order2SQLObj {
 
-    public static void getOrders(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> calcFields, List<DeSortField> sortFields) {
+    public static void getOrders(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> originFields, List<DeSortField> sortFields) {
         SQLObj tableObj = meta.getTable();
         List<SQLObj> xOrders = meta.getXOrders();
         if (ObjectUtils.isEmpty(tableObj) || CollectionUtils.isEmpty(xOrders)) {
@@ -30,17 +30,17 @@ public class Order2SQLObj {
             int step = fields.size();
             for (int i = step; i < (step + sortFields.size()); i++) {
                 DeSortField deSortField = sortFields.get(i - step);
-                SQLObj order = buildSortField(deSortField, tableObj, i, calcFields);
+                SQLObj order = buildSortField(deSortField, tableObj, i, originFields);
                 xOrders.add(order);
             }
         }
     }
 
-    private static SQLObj buildSortField(DeSortField f, SQLObj tableObj, int i, List<DatasetTableFieldDTO> calcFields) {
+    private static SQLObj buildSortField(DeSortField f, SQLObj tableObj, int i, List<DatasetTableFieldDTO> originFields) {
         String originField;
         if (ObjectUtils.isNotEmpty(f.getExtField()) && Objects.equals(f.getExtField(), ExtFieldConstant.EXT_CALC)) {
             // 解析origin name中有关联的字段生成sql表达式
-            originField = Utils.calcFieldRegex(f.getOriginName(), tableObj, calcFields);
+            originField = Utils.calcFieldRegex(f.getOriginName(), tableObj, originFields);
         } else if (ObjectUtils.isNotEmpty(f.getExtField()) && Objects.equals(f.getExtField(), ExtFieldConstant.EXT_COPY)) {
             originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), f.getOriginName());
         } else {

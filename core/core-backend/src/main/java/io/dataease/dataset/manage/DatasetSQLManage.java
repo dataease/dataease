@@ -1,5 +1,6 @@
 package io.dataease.dataset.manage;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.*;
@@ -52,6 +53,10 @@ public class DatasetSQLManage {
         // get table
         String tableSchema = String.format(SQLConstants.SCHEMA, 0);
 
+        if (ObjectUtils.isEmpty(union)) {
+            return null;
+        }
+
         DatasetTableDTO currentDs = union.get(0).getCurrentDs();
         DatasetTableInfoDTO infoDTO = JsonUtil.parseObject(currentDs.getInfo(), DatasetTableInfoDTO.class);
         SQLObj tableName = getUnionTable(currentDs, infoDTO, tableSchema, 0);
@@ -79,6 +84,8 @@ public class DatasetSQLManage {
             String[] array = fields.stream()
                     .map(f -> {
                         f.setFieldShortName(TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()));
+                        f.setDataeaseName(f.getFieldShortName());
+                        f.setDatasetTableId(datasetTable.getId());
                         return table.getTableAlias() + "." + f.getOriginName() + " AS "
                                 + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
                     })
@@ -181,6 +188,8 @@ public class DatasetSQLManage {
             String[] array = fields.stream()
                     .map(f -> {
                         f.setFieldShortName(TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()));
+                        f.setDataeaseName(f.getFieldShortName());
+                        f.setDatasetTableId(datasetTable.getId());
                         return table.getTableAlias() + "." + f.getOriginName() + " AS "
                                 + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
                     })
@@ -207,7 +216,7 @@ public class DatasetSQLManage {
         // 所有选中的字段，即select后的查询字段
         Map<String, String[]> checkedInfo = new LinkedHashMap<>();
         List<UnionParamDTO> unionList = new ArrayList<>();
-        List<CoreDatasetTableField> checkedFields = new ArrayList<>();
+        List<DatasetTableFieldDTO> checkedFields = new ArrayList<>();
         String sql = "";
         String tableName = JsonUtil.parseObject(coreDatasetTableMapper.selectById(union.get(0).getCurrentDs().getId()).getInfo(),
                 DatasetTableInfoDTO.class).getTable();
@@ -231,7 +240,7 @@ public class DatasetSQLManage {
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
             */
             // TODO permission
-            List<CoreDatasetTableField> fields = datasetTableFieldManage.selectByFieldIds(unionDTO.getCurrentDsField());
+            List<DatasetTableFieldDTO> fields = datasetTableFieldManage.selectByFieldIds(unionDTO.getCurrentDsField());
 
             String[] array = fields.stream()
                     .map(f -> table + "." + f.getOriginName() + " AS "
@@ -259,8 +268,8 @@ public class DatasetSQLManage {
             for (UnionParamDTO unionParamDTO : unionList) {
                 String joinType = convertUnionTypeToSQL(unionParamDTO.getUnionType());
                 UnionItemDTO u = unionParamDTO.getUnionFields().get(0);
-                CoreDatasetTableField pField = datasetTableFieldManage.selectById(u.getParentField().getId());
-                CoreDatasetTableField cField = datasetTableFieldManage.selectById(u.getCurrentField().getId());
+                DatasetTableFieldDTO pField = datasetTableFieldManage.selectById(u.getParentField().getId());
+                DatasetTableFieldDTO cField = datasetTableFieldManage.selectById(u.getCurrentField().getId());
                 if (ObjectUtils.isEmpty(pField) || ObjectUtils.isEmpty(cField)) {
                     DEException.throwException(Translator.get("i18n_dataset_field_delete"));
                 }
@@ -276,9 +285,9 @@ public class DatasetSQLManage {
                 for (int i = 0; i < unionParamDTO.getUnionFields().size(); i++) {
                     UnionItemDTO unionItemDTO = unionParamDTO.getUnionFields().get(i);
                     // 通过field id取得field详情，并且以第一组为准，寻找dataset table
-                    CoreDatasetTableField parentField = datasetTableFieldManage
+                    DatasetTableFieldDTO parentField = datasetTableFieldManage
                             .selectById(unionItemDTO.getParentField().getId());
-                    CoreDatasetTableField currentField = datasetTableFieldManage
+                    DatasetTableFieldDTO currentField = datasetTableFieldManage
                             .selectById(unionItemDTO.getCurrentField().getId());
 
                     join.append(parentTableName).append(".")
@@ -311,7 +320,7 @@ public class DatasetSQLManage {
 
     // 递归计算出所有子级的checkedFields和unionParam
     private void getUnionForQuery(List<UnionDTO> childrenDs, Map<String, String[]> checkedInfo,
-                                  List<UnionParamDTO> unionList, List<CoreDatasetTableField> checkedFields) {
+                                  List<UnionParamDTO> unionList, List<DatasetTableFieldDTO> checkedFields) {
         for (UnionDTO unionDTO : childrenDs) {
             CoreDatasetTable datasetTable = coreDatasetTableMapper.selectById(unionDTO.getCurrentDs().getId());
             Long tableId = unionDTO.getCurrentDs().getId();
@@ -321,7 +330,7 @@ public class DatasetSQLManage {
             }
             String table = JsonUtil.parseObject(datasetTable.getInfo(), DatasetTableInfoDTO.class).getTable();
 
-            List<CoreDatasetTableField> fields = datasetTableFieldManage.selectByFieldIds(unionDTO.getCurrentDsField());
+            List<DatasetTableFieldDTO> fields = datasetTableFieldManage.selectByFieldIds(unionDTO.getCurrentDsField());
 
             String[] array = fields.stream()
                     .map(f -> table + "." + f.getOriginName() + " AS "

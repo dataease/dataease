@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 public class Field2SQLObj {
 
-    public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> calcFields) {
+    public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> originFields) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
@@ -33,7 +33,7 @@ public class Field2SQLObj {
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_CALC)) {
                     // 解析origin name中有关联的字段生成sql表达式
-                    originField = Utils.calcFieldRegex(x.getOriginName(), tableObj, calcFields);
+                    originField = Utils.calcFieldRegex(x.getOriginName(), tableObj, originFields);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_COPY)) {
                     originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getFieldShortName());
                 } else {

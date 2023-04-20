@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-14
+ * @since 2023-04-20
  */
 @TableName("core_dataset_table_field")
 public class CoreDatasetTableField implements Serializable {
@@ -55,6 +55,11 @@ public class CoreDatasetTableField implements Serializable {
      * de字段名用作唯一标识
      */
     private String dataeaseName;
+
+    /**
+     * de字段别名
+     */
+    private String fieldShortName;
 
     /**
      * 维度/指标标识 d:维度，q:指标
@@ -174,6 +179,14 @@ public class CoreDatasetTableField implements Serializable {
         this.dataeaseName = dataeaseName;
     }
 
+    public String getFieldShortName() {
+        return fieldShortName;
+    }
+
+    public void setFieldShortName(String fieldShortName) {
+        this.fieldShortName = fieldShortName;
+    }
+
     public String getGroupType() {
         return groupType;
     }
@@ -281,6 +294,7 @@ public class CoreDatasetTableField implements Serializable {
         ", name = " + name +
         ", description = " + description +
         ", dataeaseName = " + dataeaseName +
+        ", fieldShortName = " + fieldShortName +
         ", groupType = " + groupType +
         ", type = " + type +
         ", size = " + size +

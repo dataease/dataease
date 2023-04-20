@@ -34,6 +34,11 @@ public class DatasetTreeServer implements DatasetTreeApi {
 
     @Override
     public DatasetGroupInfoDTO get(Long id) throws Exception {
-        return datasetGroupManage.get(id);
+        return datasetGroupManage.get(id, "preview");
+    }
+
+    @Override
+    public DatasetGroupInfoDTO details(Long id) throws Exception {
+        return datasetGroupManage.get(id, null);
     }
 }

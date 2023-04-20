@@ -22,7 +22,7 @@ import java.util.Objects;
  */
 public class Quota2SQLObj {
 
-    public static void quota2sqlObj(SQLMeta meta, List<ChartViewFieldDTO> fields, List<DatasetTableFieldDTO> calcFields) {
+    public static void quota2sqlObj(SQLMeta meta, List<ChartViewFieldDTO> fields, List<DatasetTableFieldDTO> originFields) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
@@ -36,7 +36,7 @@ public class Quota2SQLObj {
                 String originField;
                 if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_CALC)) {
                     // 解析origin name中有关联的字段生成sql表达式
-                    originField = Utils.calcFieldRegex(y.getOriginName(), tableObj, calcFields);
+                    originField = Utils.calcFieldRegex(y.getOriginName(), tableObj, originFields);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_COPY)) {
                     originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getOriginName());
                 } else {

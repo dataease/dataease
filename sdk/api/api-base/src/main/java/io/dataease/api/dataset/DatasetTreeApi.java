@@ -22,4 +22,7 @@ public interface DatasetTreeApi {
 
     @PostMapping("get/{id}")
     DatasetGroupInfoDTO get(@PathVariable Long id) throws Exception;
+
+    @PostMapping("details/{id}")
+    DatasetGroupInfoDTO details(@PathVariable Long id) throws Exception;
 }

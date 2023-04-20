@@ -8,7 +8,6 @@ import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.ds.vo.TableField;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.dataset.utils.TableUtils;
@@ -23,6 +22,7 @@ import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Field2SQLObj;
 import io.dataease.engine.trans.Order2SQLObj;
 import io.dataease.engine.trans.Table2SQLObj;
+import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -92,13 +92,13 @@ public class DatasetDataManage {
         } else {
             list = transFields(tableFields, false);
             // 获取数据库中保存的字段，与原始字段匹配后，确定字段checked状态
-            List<CoreDatasetTableField> fields = datasetTableFieldManage.selectByDatasetTableId(datasetTableDTO.getId());
+            List<DatasetTableFieldDTO> fields = datasetTableFieldManage.selectByDatasetTableId(datasetTableDTO.getId());
             // originName，type一致即判定为一致
             if (ObjectUtils.isNotEmpty(fields)) {
                 list = list.stream().peek(ele -> {
                     boolean flag = false;
-                    CoreDatasetTableField source = null;
-                    for (CoreDatasetTableField f : fields) {
+                    DatasetTableFieldDTO source = null;
+                    for (DatasetTableFieldDTO f : fields) {
                         // 若为同字段，则checked=true，同时赋id
                         if (StringUtils.equalsIgnoreCase(ele.getOriginName(), f.getOriginName())
                                 && StringUtils.equalsIgnoreCase(ele.getType(), f.getType())) {
@@ -124,11 +124,12 @@ public class DatasetDataManage {
             dto.setOriginName(ele.getFieldName());
             dto.setChecked(defaultStatus);
             dto.setType(ele.getType());
-            dto.setDescription(ele.getRemarks());
+//            dto.setDescription(dto.getName());// todo 字段描述，不一定取的到
             int deType = FieldUtils.transType2DeType(ele.getType());
             dto.setDeExtractType(deType);
             dto.setDeType(deType);
             dto.setGroupType(FieldUtils.transDeType2DQ(deType));
+            dto.setExtField(0);
             return dto;
         }).collect(Collectors.toList());
     }
@@ -136,13 +137,19 @@ public class DatasetDataManage {
     public Map<String, Object> previewData(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
         String sql = (String) sqlMap.get("sql");
-        List<DatasetTableFieldDTO> fields = (List<DatasetTableFieldDTO>) sqlMap.get("field");
-        List<DatasetTableFieldDTO> calcFields = fields.stream().filter(ele -> Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)).collect(Collectors.toList());
+
+        // 获取allFields
+        List<DatasetTableFieldDTO> fields = datasetGroupInfoDTO.getAllFields();
+        if (ObjectUtils.isEmpty(fields)) {
+            DEException.throwException("no fields");
+        }
+        List<DatasetTableFieldDTO> originFields = fields.stream().filter(ele -> Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)).collect(Collectors.toList());
+
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, calcFields);
-        Order2SQLObj.getOrders(sqlMeta, fields, calcFields, datasetGroupInfoDTO.getSortFields());
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, originFields);
+        Order2SQLObj.getOrders(sqlMeta, fields, originFields, datasetGroupInfoDTO.getSortFields());
         String querySQL = SQLProvider.createQuerySQL(sqlMeta, false);
         // 通过数据源请求数据
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
@@ -155,7 +162,12 @@ public class DatasetDataManage {
         // 重新构造data
         Map<String, Object> previewData = buildPreviewData(data, fields);
         map.put("data", previewData);
-        map.put("allFields", fields);
+        if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
+            map.put("allFields", fields);
+        } else {
+            List<DatasetTableFieldDTO> fieldList = datasetTableFieldManage.selectByDatasetGroupId(datasetGroupInfoDTO.getId());
+            map.put("allFields", fieldList);
+        }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
         return map;
     }
@@ -163,13 +175,19 @@ public class DatasetDataManage {
     public Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, int start, int count) throws Exception {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
         String sql = (String) sqlMap.get("sql");
-        List<DatasetTableFieldDTO> fields = (List<DatasetTableFieldDTO>) sqlMap.get("field");
-        List<DatasetTableFieldDTO> calcFields = fields.stream().filter(ele -> Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)).collect(Collectors.toList());
+
+        // 获取allFields
+        List<DatasetTableFieldDTO> fields = datasetGroupInfoDTO.getAllFields();
+        if (ObjectUtils.isEmpty(fields)) {
+            DEException.throwException("no fields");
+        }
+        List<DatasetTableFieldDTO> originFields = fields.stream().filter(ele -> Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)).collect(Collectors.toList());
+
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, calcFields);
-        Order2SQLObj.getOrders(sqlMeta, fields, calcFields, datasetGroupInfoDTO.getSortFields());
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, originFields);
+        Order2SQLObj.getOrders(sqlMeta, fields, originFields, datasetGroupInfoDTO.getSortFields());
         String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, start, count);
         // 通过数据源请求数据
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
@@ -182,7 +200,12 @@ public class DatasetDataManage {
         // 重新构造data
         Map<String, Object> previewData = buildPreviewData(data, fields);
         map.put("data", previewData);
-        map.put("allFields", fields);
+        if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
+            map.put("allFields", fields);
+        } else {
+            List<DatasetTableFieldDTO> fieldList = datasetTableFieldManage.selectByDatasetGroupId(datasetGroupInfoDTO.getId());
+            map.put("allFields", fieldList);
+        }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
         return map;
     }
