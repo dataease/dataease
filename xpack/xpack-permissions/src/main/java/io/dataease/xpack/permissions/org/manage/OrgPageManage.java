@@ -88,6 +88,7 @@ public class OrgPageManage {
         for (int i = 0; i < roots.size(); i++) {
             OrgTreeNode orgTreeNode = roots.get(i);
             MountedVO vo = BeanUtils.copyBean(new MountedVO(), orgTreeNode, "children");
+            vo.setReadOnly(orgTreeNode.isDisabled());
             result.add(vo);
             List<OrgTreeNode> children = null;
             if (!CollectionUtils.isEmpty(children = orgTreeNode.getChildren())) {
