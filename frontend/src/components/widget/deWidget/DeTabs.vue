@@ -768,19 +768,17 @@ export default {
   line-height: 25px;
 }
 
-.tab-head-left ::v-deep .el-tabs__nav-scroll {
-  display: flex;
-  justify-content: flex-start;
+::v-deep .el-tabs__nav{
+  float: unset;
+  width: max-content;
 }
 
 .tab-head-right ::v-deep .el-tabs__nav-scroll {
-  display: flex;
-  justify-content: flex-end;
+  margin-left: auto;
 }
 
 .tab-head-center ::v-deep .el-tabs__nav-scroll {
-  display: flex;
-  justify-content: center;
+  margin: 0 auto;
 }
 
 .frame-mask {
