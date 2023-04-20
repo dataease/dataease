@@ -8,8 +8,11 @@ export interface Tree {
   value?: string | number
   id: string | number
   nodeType: string
+  createBy?: string
   level: number
   pid: string | number
+  union?: Array<{}>
+  allfields?: Array<{}>
   children?: Tree[]
 }
 const { t } = useI18n()
@@ -23,7 +26,8 @@ const nodeType = ref()
 const pid = ref()
 const id = ref()
 const cmd = ref('')
-
+let union = []
+let allfields = []
 const datasetForm = reactive({
   pid: '',
   name: ''
@@ -96,8 +100,12 @@ const dfs = (arr: Tree[]) => {
   })
 }
 
-const init = (type, data: Tree, exec) => {
+const createInit = (type, data: Tree, exec) => {
   nodeType.value = type
+  if (type === 'dataset') {
+    union = data.union
+    allfields = data.allfields
+  }
   if (data.id) {
     getDatasetTree({
       nodeType: 'folder'
@@ -119,6 +127,11 @@ const init = (type, data: Tree, exec) => {
   }
   createDataset.value = true
   datasetFormRules.value = rules
+}
+
+const editeInit = (param: Tree) => {
+  pid.value = param.pid
+  id.value = param.id
 }
 
 const props = {
@@ -152,6 +165,10 @@ const saveDataset = () => {
           params.pid = datasetForm.pid || pid.value || '0'
           break
       }
+      if (nodeType.value === 'dataset') {
+        params.union = union
+        params.allFields = allfields
+      }
       loading.value = true
       saveDatasetTree(params)
         .then(() => {
@@ -167,7 +184,8 @@ const saveDataset = () => {
 }
 
 defineExpose({
-  init
+  createInit,
+  editeInit
 })
 
 const emits = defineEmits(['finish'])

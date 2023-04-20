@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { reactive, computed, ref, nextTick } from 'vue'
 // import { throttle } from 'lodash'
+import { guid } from './util.js'
 import { HandleMore } from '@/components/handle-more'
 import { propTypes } from '@/utils/propTypes'
 
@@ -14,7 +15,8 @@ const state = reactive({
 const props = defineProps({
   maskShow: propTypes.bool.def(false),
   offsetX: propTypes.number.def(0),
-  offsetY: propTypes.number.def(0)
+  offsetY: propTypes.number.def(0),
+  dragHeight: propTypes.number.def(280)
 })
 
 const iconName = {
@@ -36,6 +38,10 @@ const dfsNodeNameList = (list, arr) => {
       dfsNodeNameList(ele.children, arr)
     }
   })
+}
+
+const initState = nodeList => {
+  Object.assign(state.nodeList, nodeList)
 }
 
 const activeNode = ref('')
@@ -269,8 +275,6 @@ const flatLine = (item, flatNodeList) => {
   })
 }
 
-state.nodeList = []
-
 const dragover_handler = ev => {
   ev.preventDefault()
 
@@ -393,7 +397,7 @@ const drop_handler = ev => {
       tableName,
       type,
       datasourceId,
-      id: `${+new Date()}`,
+      id: guid(),
       ...extraData
     })
     nextTick(() => {
@@ -412,7 +416,7 @@ const drop_handler = ev => {
       tableName,
       type,
       datasourceId,
-      id: `${+new Date()}`,
+      id: guid(),
       ...extraData
     })
     emits('joinEditor', [
@@ -420,7 +424,7 @@ const drop_handler = ev => {
         tableName,
         type,
         datasourceId,
-        id: `${+new Date()}`,
+        id: guid(),
         ...extraData
       },
       state.visualNodeParent
@@ -455,7 +459,8 @@ defineExpose({
   nodeNameList,
   nodeList: state.nodeList,
   setStateBack,
-  notConfirm
+  notConfirm,
+  initState
 })
 
 const emits = defineEmits(['addComplete', 'joinEditor'])
@@ -467,6 +472,7 @@ const emits = defineEmits(['addComplete', 'joinEditor'])
     @dragenter="$event => dragenter_handler($event)"
     @dragover="$event => dragover_handler($event)"
     class="drag-mask"
+    :style="{ height: dragHeight + 'px' }"
   >
     <svg
       version="1.1"
@@ -596,18 +602,16 @@ const emits = defineEmits(['addComplete', 'joinEditor'])
 .drag-mask {
   background: #f5f6f7;
   overflow-x: auto;
-  border: 1px solid #ccc;
   position: relative;
   width: 100%;
-  height: 100%;
 }
 
 .mask-dataset {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+  left: 16px;
+  top: 16px;
+  width: calc(100% - 32px);
+  height: calc(100% - 32px);
   z-index: 5;
   user-select: none;
 }

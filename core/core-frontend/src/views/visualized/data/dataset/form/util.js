@@ -1,5 +1,12 @@
 import { useI18n } from '@/hooks/web/useI18n'
+import SnowflakeId from 'snowflake-id'
+
 const { t } = useI18n()
+
+const guid = () => {
+  const snowflake = new SnowflakeId()
+  return snowflake.generate()
+}
 
 const timestampFormatDate = (timestamp, showMs) => {
   if (!timestamp || timestamp === -1) {
@@ -91,4 +98,4 @@ const fieldOptions = [
   }
 ]
 
-export { timestampFormatDate, defaultValueScopeList, fieldOptions }
+export { timestampFormatDate, defaultValueScopeList, fieldOptions, guid }

@@ -1,14 +1,24 @@
-<script lang="ts" setup>
-import { ref, nextTick, reactive } from 'vue'
+<script lang="tsx" setup>
+import { ref, nextTick, reactive, shallowRef, computed, toRaw } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { ElIcon } from 'element-plus-secondary'
+import { Icon } from '@/components/icon-custom'
 import CalcFieldEdit from './CalcFieldEdit.vue'
 import AddSql from './AddSql.vue'
 import { useRoute } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
 import CreatDsGroup from './CreatDsGroup.vue'
-import { getDatasourceList, getTables, getPreviewData } from '@/api/dataset'
+// import { guid } from './util.js'
+import {
+  getDatasourceList,
+  getTables,
+  getPreviewData,
+  getDatasetDetails,
+  saveDatasetTree
+} from '@/api/dataset'
 import type { Table } from '@/api/dataset'
 import DatasetUnion from './DatasetUnion.vue'
+import { clone } from 'lodash-es'
 interface DragEvent extends MouseEvent {
   dataTransfer: DataTransfer
 }
@@ -21,18 +31,20 @@ interface DataSource {
 interface Field {
   fieldShortName: string
   name: string
+  dataeaseName: string
+  originName: string
+  deType: number
 }
 
 const { t } = useI18n()
 const route = useRoute()
 const creatDsFolder = ref()
-const isCreatGroup = ref(false)
 const editCalcField = ref(false)
 const editSqlField = ref(false)
 const editUnion = ref(false)
-
 const datasetDrag = ref()
 const datasetName = ref('新建数据源')
+const tabActive = ref('preview')
 const originName = ref('')
 const activeName = ref('')
 const dataSource = ref('')
@@ -49,20 +61,88 @@ const nameExist = ref(false)
 const datasetType = ref('sql')
 const editerName = ref()
 
-// onMounted(() => {
-//   const { pid } = route.query
-//   creatDsFolder.value.init('dataset', { id: pid })
-// })
+let nodeInfo = {
+  id: '',
+  pid: '',
+  name: ''
+}
+
+const dragHeight = ref(280)
+const fieldType = (deType: number) => {
+  return ['text', 'time', 'value', 'value', 'location'][deType]
+}
+
+const editeSave = () => {
+  const union = []
+  loading.value = true
+  dfsNodeList(union, datasetDrag.value.nodeList)
+  saveDatasetTree({ ...nodeInfo, union, allFields: allfields.value, nodeType: 'dataset' }).finally(
+    () => {
+      loading.value = false
+    }
+  )
+}
+
+const generateColumns = (arr: Field[]) =>
+  arr.map(ele => ({
+    key: ele.fieldShortName,
+    deType: ele.deType,
+    dataKey: ele.fieldShortName,
+    title: ele.name,
+    width: 150,
+    headerCellRenderer: ({ column }) => (
+      <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+        <ElIcon>
+          <Icon
+            name={`field_${fieldType(column.deType)}`}
+            className={`field-icon-${fieldType(column.deType)}`}
+          ></Icon>
+        </ElIcon>
+        {column.title}
+      </div>
+    )
+  }))
+
+const initEdite = () => {
+  const { id } = route.query
+  if (!id) return
+  loading.value = true
+  getDatasetDetails(id)
+    .then(res => {
+      let arr = []
+      const { id, pid, name } = res || {}
+      nodeInfo = {
+        id,
+        pid,
+        name
+      }
+      allfields.value = res.allFields || []
+      dfsUnion(arr, res.union || [])
+      datasetDrag.value.initState(arr)
+    })
+    .finally(() => {
+      showTable.value = true
+      loading.value = false
+    })
+}
+
+initEdite()
+
 const joinEditor = (arr: []) => {
   state.editArr = arr
   editUnion.value = true
 }
 
-let columns = []
-let tableData = []
-
+const columns = shallowRef([])
+const tableData = shallowRef([])
 const showTable = ref(false)
+const quota = computed(() => {
+  return allfields.value.filter(ele => ele.groupType === 'q')
+})
 
+const dimensions = computed(() => {
+  return allfields.value.filter(ele => ele.groupType === 'd')
+})
 const addComplete = () => {
   state.nodeNameList = [...datasetDrag.value.nodeNameList]
 }
@@ -80,6 +160,38 @@ const state = reactive({
   }
 })
 
+const allfields = ref([])
+
+let num = +new Date()
+
+const setGuid = (arr, id, datasourceId) => {
+  arr.forEach(ele => {
+    if (!ele.id) {
+      ele.id = `${++num}`
+      ele.datasetTableId = id
+      ele.datasourceId = datasourceId
+    }
+  })
+}
+
+const dfsFields = (arr, list) => {
+  list.forEach(ele => {
+    if (ele.children?.length) {
+      dfsFields(arr, ele.children)
+    }
+    const { currentDsFields } = ele
+    arr.push(...clone(currentDsFields))
+  })
+}
+
+const diffArr = (newArr, oldArr) => {
+  const idMapNew = newArr.map(ele => ele.id)
+  const idMapOld = oldArr.map(ele => ele.id)
+  return newArr
+    .filter(ele => !idMapOld.includes(ele.id))
+    .concat(oldArr.filter(ele => idMapNew.includes(ele.id)))
+}
+
 const closeEditUnion = () => {
   notConfirmEditUnion()
   editUnion.value = false
@@ -87,7 +199,12 @@ const closeEditUnion = () => {
 const fieldUnion = ref()
 const confirmEditUnion = () => {
   const { node, parent } = fieldUnion.value
+  setGuid(node.currentDsFields, node.id, node.datasourceId)
+  setGuid(parent.currentDsFields, parent.id, parent.datasourceId)
   datasetDrag.value.setStateBack(node, parent)
+  const arr = []
+  dfsFields(arr, datasetDrag.value.nodeList)
+  allfields.value = diffArr(arr, allfields.value)
   editUnion.value = false
   // 校验关联关系与字段，必填
   // if (this.checkUnion()) {
@@ -113,12 +230,14 @@ const setActiveName = (data: Table) => {
 }
 
 const mousedownDrag = () => {
-  document.querySelector('.dataset-db').addEventListener('mousemove', calculateHeight)
+  document.querySelector('.dataset-db').addEventListener('mousemove', calculateWidth)
 }
 const mouseupDrag = () => {
-  document.querySelector('.dataset-db').removeEventListener('mousemove', calculateHeight)
+  const dom = document.querySelector('.dataset-db')
+  dom.removeEventListener('mousemove', calculateWidth)
+  dom.removeEventListener('mousemove', calculateHeight)
 }
-const calculateHeight = (e: MouseEvent) => {
+const calculateWidth = (e: MouseEvent) => {
   if (e.pageX < 240) {
     LeftWidth.value = 240
     return
@@ -128,6 +247,21 @@ const calculateHeight = (e: MouseEvent) => {
     return
   }
   LeftWidth.value = e.pageX
+}
+
+const mousedownDragH = () => {
+  document.querySelector('.dataset-db').addEventListener('mousemove', calculateHeight)
+}
+const calculateHeight = (e: MouseEvent) => {
+  if (e.pageY - 64 < 280) {
+    dragHeight.value = 280
+    return
+  }
+  if (e.pageY - 64 > document.documentElement.clientHeight - 170) {
+    dragHeight.value = document.documentElement.clientHeight - 170
+    return
+  }
+  dragHeight.value = e.pageY - 64
 }
 
 const nameExistValidator = () => {
@@ -159,20 +293,31 @@ const dsChange = (val: string) => {
   })
 }
 const datasetSave = () => {
+  if (nodeInfo.id) {
+    editeSave()
+    return
+  }
+  const union = []
+  dfsNodeList(union, datasetDrag.value.nodeList)
+  const { pid } = route.query
+  if (!pid || !union.length) {
+    return
+  }
+  creatDsFolder.value.createInit('dataset', { id: pid, union, allfields: allfields.value })
+}
+
+const datasetPreview = () => {
   const arr = []
+  showTable.value = false
   dfsNodeList(arr, datasetDrag.value.nodeList)
-  getPreviewData({ union: arr }).then(res => {
-    columns = (res.data.fields as unknown as Field[]).map(ele => {
-      return {
-        key: ele.fieldShortName,
-        dataKey: ele.fieldShortName,
-        title: ele.name,
-        width: 150
-      }
+  getPreviewData({ union: arr, allFields: allfields.value })
+    .then(res => {
+      columns.value = generateColumns((res.data.fields as Field[]) || [])
+      tableData.value = (res.data.data as Array<{}>) || []
     })
-    tableData = (res.data.data as unknown as []) || []
-    showTable.value = true
-  })
+    .finally(() => {
+      showTable.value = true
+    })
 }
 
 const dfsNodeList = (arr, list) => {
@@ -207,6 +352,30 @@ const dfsNodeList = (arr, list) => {
         unionType,
         unionFields
       }
+    })
+  })
+}
+
+const dfsUnion = (arr, list) => {
+  list.forEach(ele => {
+    const children = []
+    if (ele.childrenDs?.length) {
+      dfsUnion(children, ele.childrenDs)
+    }
+    const { unionToParent, currentDsFields, currentDs, sqlVariableDetails } = ele
+    const { tableName, type, datasourceId, id, info } = currentDs || {}
+    const { unionType, unionFields } = unionToParent || {}
+    arr.push({
+      sqlVariableDetails,
+      tableName,
+      type,
+      datasourceId,
+      id,
+      info,
+      currentDsFields,
+      children,
+      unionType,
+      unionFields
     })
   })
 }
@@ -323,24 +492,89 @@ const handleClick = () => {
         <dataset-union
           @join-editor="joinEditor"
           :maskShow="maskShow"
+          :dragHeight="dragHeight"
           :offsetX="offsetX"
           :offsetY="offsetY"
           ref="datasetDrag"
           @addComplete="addComplete"
         ></dataset-union>
-        <div v-if="showTable" class="table-preview">
-          <el-auto-resizer>
-            <template #default="{ height, width }">
-              <el-table-v2
-                :columns="columns"
-                header-class="header-cell"
-                :data="tableData"
-                :width="width"
-                :height="height"
-                fixed
-              />
-            </template>
-          </el-auto-resizer>
+        <div class="sql-result" :style="{ height: `calc(100% - ${dragHeight}px)` }">
+          <div class="sql-title">
+            <span class="drag" @mousedown="mousedownDragH" />
+            <div class="field-data">
+              <el-button @click="datasetPreview" secondary>
+                <template #icon>
+                  <el-icon>
+                    <Icon name="scene"></Icon>
+                  </el-icon>
+                </template>
+                刷新
+              </el-button>
+            </div>
+          </div>
+          <el-tabs class="padding-24" v-model="tabActive">
+            <el-tab-pane :label="$t('deDataset.running_results')" name="preview" />
+            <el-tab-pane :label="$t('dataset.task.record')" name="manage" />
+          </el-tabs>
+          <div v-if="tabActive === 'preview'" class="table-preview">
+            <div class="preview-field">
+              <el-collapse accordion>
+                <el-collapse-item name="1">
+                  <template #title>
+                    维度
+                    <ElIcon>
+                      <Icon name="icon_add_outlined"></Icon>
+                    </ElIcon>
+                  </template>
+                  <div class="field-d">
+                    <div :key="ele.id" v-for="ele in quota" class="list-item_primary">
+                      <el-icon>
+                        <Icon
+                          :name="`field_${fieldType(ele.deType)}`"
+                          :className="`field-icon-${fieldType(ele.deType)}`"
+                        ></Icon>
+                      </el-icon>
+                      {{ ele.name }}
+                    </div>
+                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="Feedback" name="2">
+                  <template #title>
+                    指标
+                    <ElIcon>
+                      <Icon name="icon_add_outlined"></Icon>
+                    </ElIcon>
+                  </template>
+                  <div class="field-q">
+                    <div :key="ele.id" v-for="ele in dimensions" class="list-item_primary">
+                      <el-icon>
+                        <Icon
+                          :name="`field_${fieldType(ele.deType)}`"
+                          :className="`field-icon-${fieldType(ele.deType)}`"
+                        ></Icon>
+                      </el-icon>
+                      {{ ele.name }}
+                    </div>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
+            </div>
+            <div class="preview-data">
+              <el-auto-resizer>
+                <template #default="{ height, width }">
+                  <el-table-v2
+                    :columns="columns"
+                    header-class="header-cell"
+                    :data="tableData"
+                    :width="width"
+                    :height="height"
+                    fixed
+                  />
+                </template>
+              </el-auto-resizer>
+            </div>
+          </div>
+          <div v-else class="table-manage"></div>
         </div>
       </div>
     </div>
@@ -371,6 +605,7 @@ const handleClick = () => {
 </template>
 
 <style lang="less" scoped>
+@import '@/style/mixin.less';
 .de-dataset-form {
   .top {
     height: 56px;
@@ -484,12 +719,68 @@ const handleClick = () => {
     .drag-right {
       flex: 1;
       height: calc(100vh - 56px);
-      .table-preview {
-        height: calc(100vh - 500px);
-        position: fixed;
-        width: 907px;
-        bottom: 0;
-        right: 0;
+      .sql-result {
+        font-family: PingFang SC;
+        font-size: 14px;
+        overflow-y: auto;
+        box-sizing: border-box;
+
+        .sql-title {
+          user-select: none;
+          height: 10px;
+          position: relative;
+          color: var(--deTextPrimary, #1f2329);
+
+          .field-data {
+            position: absolute;
+            right: 24px;
+            top: 13px;
+            width: 50%;
+            z-index: 2;
+            text-align: right;
+          }
+
+          .drag {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 7px;
+            width: 100px;
+            border-radius: 3.5px;
+            background: rgba(31, 35, 41, 0.1);
+            cursor: row-resize;
+          }
+        }
+
+        .padding-24 {
+          .border-bottom-tab(24px);
+        }
+
+        .table-preview {
+          height: calc(100% - 56px);
+          box-sizing: border-box;
+
+          .preview-data {
+            float: right;
+            height: 100%;
+            width: calc(100% - 260px);
+          }
+
+          .preview-field {
+            float: left;
+            width: 260px;
+            height: 100%;
+            border-right: 1px solid rgba(31, 35, 41, 0.15);
+
+            .field-d,
+            .field-q {
+              height: 200px;
+              padding: 0 8px;
+              overflow-y: auto;
+            }
+          }
+        }
       }
     }
   }

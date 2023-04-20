@@ -1,15 +1,32 @@
 <script lang="tsx" setup>
 // import type { HeaderCellSlotProps } from 'element-plus-secondary'
-import { ref, reactive } from 'vue'
+import { ref, reactive, shallowRef } from 'vue'
 import { ElIcon } from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from './form/CreatDsGroup.vue'
-import { getDatasetTree, delDatasetTree } from '@/api/dataset'
+import { getDatasetTree, delDatasetTree, getDatasetPreview } from '@/api/dataset'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import type { TabPaneName } from 'element-plus-secondary'
+interface Field {
+  fieldShortName: string
+  name: string
+  dataeaseName: string
+  originName: string
+  deType: number
+}
+
+interface Node {
+  name: string
+  createBy: string
+  id: string
+  nodeType: string
+}
 const nickName = ref('')
 const router = useRouter()
+const showTable = ref(false)
 
 const state = reactive({
   addedDatasetList: [],
@@ -17,39 +34,62 @@ const state = reactive({
   menuList: [],
   datasetTypeList: []
 })
-
+const fieldType = (deType: number) => {
+  return ['text', 'time', 'value', 'value', 'location'][deType]
+}
 const creatDsFolder = ref()
 
-const generateColumns = (length = 10, prefix = 'column-', props?: any) =>
-  Array.from({ length }).map((_, columnIndex) => ({
-    ...props,
-    key: `${prefix}${columnIndex}`,
-    dataKey: `${prefix}${columnIndex}`,
-    title: `Column ${columnIndex}`,
+const nodeInfo = reactive<Node>({
+  name: '',
+  createBy: '',
+  id: '',
+  nodeType: ''
+})
+
+let allFields = []
+let columnsPreview = []
+let dataPreview = []
+
+const allFieldsColumns = [
+  {
+    key: 'name',
+    dataKey: 'name',
+    title: '字段名称',
+    width: 150
+  },
+  {
+    key: 'deType',
+    dataKey: 'deType',
+    title: '字段类型',
+    width: 150
+  },
+  {
+    key: 'description',
+    dataKey: 'description',
+    title: '备注',
+    width: 150
+  }
+]
+
+const generateColumns = (arr: Field[]) =>
+  arr.map(ele => ({
+    key: ele.fieldShortName,
+    deType: ele.deType,
+    dataKey: ele.fieldShortName,
+    title: ele.name,
     width: 150,
     headerCellRenderer: ({ column }) => (
       <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
         <ElIcon>
-          <Icon name="icon_search-outline_outlined"></Icon>
+          <Icon
+            name={`field_${fieldType(column.deType)}`}
+            className={`field-icon-${fieldType(column.deType)}`}
+          ></Icon>
         </ElIcon>
         {column.title}
       </div>
     )
   }))
-
-const generateData = (columns: ReturnType<typeof generateColumns>, length = 200, prefix = 'row-') =>
-  Array.from({ length }).map((_, rowIndex) => {
-    return columns.reduce(
-      (rowData, column, columnIndex) => {
-        rowData[column.dataKey] = `Row ${rowIndex} - Col ${columnIndex}`
-        return rowData
-      },
-      {
-        id: `${prefix}${rowIndex}`,
-        parentId: null
-      }
-    )
-  })
 
 const getData = () => {
   getDatasetTree().then(res => {
@@ -59,15 +99,23 @@ const getData = () => {
 
 getData()
 
-const columns = generateColumns(10)
-const tableData = generateData(columns, 200)
+const columns = shallowRef([])
+const tableData = shallowRef([])
 
 const handleNodeClick = (data: Tree) => {
-  console.log(data)
+  if (data.nodeType !== 'dataset') return
+  const { name, createBy, id, nodeType } = data
+  Object.assign(nodeInfo, { name, createBy, id, nodeType })
+  handleClick(activeName.value)
 }
 
 const editorDataset = () => {
-  router.push('/dataset-form')
+  router.push({
+    path: '/dataset-form',
+    query: {
+      id: nodeInfo.id
+    }
+  })
 }
 
 const createDataset = (data?: Tree) => {
@@ -79,8 +127,34 @@ const createDataset = (data?: Tree) => {
   })
 }
 
-const handleClick = data => {
-  console.log(data)
+const handleClick = (tabName: TabPaneName) => {
+  showTable.value = false
+  switch (tabName) {
+    case 'dataPreview':
+      if (columnsPreview.length) {
+        columns.value = columnsPreview
+        tableData.value = dataPreview
+        break
+      }
+      getDatasetPreview(nodeInfo.id).then(res => {
+        allFields = (res.allFields as unknown as Field[]) || []
+        columnsPreview = generateColumns((res.data.fields as Field[]) || [])
+        dataPreview = (res.data.data as Array<{}>) || []
+        columns.value = columnsPreview
+        tableData.value = dataPreview
+      })
+      break
+    case 'structPreview':
+      columns.value = allFieldsColumns
+      tableData.value = allFields
+      break
+    default:
+      break
+  }
+
+  setTimeout(() => {
+    showTable.value = true
+  }, 500)
 }
 
 const operation = (cmd: string, data: Tree, nodeType: string) => {
@@ -89,7 +163,7 @@ const operation = (cmd: string, data: Tree, nodeType: string) => {
       getData()
     })
   } else {
-    creatDsFolder.value.init(nodeType, data, cmd)
+    creatDsFolder.value.createInit(nodeType, data, cmd)
   }
 }
 
@@ -98,7 +172,7 @@ const handleDatasetTree = (cmd: string, data?: Tree) => {
     createDataset(data)
   }
   if (cmd === 'folder') {
-    creatDsFolder.value.init(cmd, data || {})
+    creatDsFolder.value.createInit(cmd, data || {})
   }
 }
 
@@ -194,42 +268,47 @@ const defaultProps = {
       </el-tree>
     </div>
     <div class="dataset-content">
-      <div class="info-method">
-        堆叠折线图
-        <el-tag class="mr8" type="warning">定时同步</el-tag>
-        <el-divider direction="vertical" />
-        <span class="create-user"> 创建人：fengyibudaowei </span>
-        <el-icon class="create-user">
-          <Icon name="icon_info_outlined"></Icon>
-        </el-icon>
-        <el-button class="right-btn" type="primary" @click="editorDataset"> 编辑 </el-button>
-      </div>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="数据预览" name="dataPreview"></el-tab-pane>
-        <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
-        <el-tab-pane label="行权限" name="row"></el-tab-pane>
-        <el-tab-pane label="列权限" name="column"></el-tab-pane>
-      </el-tabs>
-      <div class="preview-num">
-        预览 <span>100行</span>
-        <el-icon>
-          <Icon name="icon_edit_outlined"></Icon>
-        </el-icon>
-      </div>
-      <div class="info-table">
-        <el-auto-resizer>
-          <template #default="{ height, width }">
-            <el-table-v2
-              :columns="columns"
-              header-class="header-cell"
-              :data="tableData"
-              :width="width"
-              :height="height"
-              fixed
-            />
-          </template>
-        </el-auto-resizer>
-      </div>
+      <template v-if="!!nodeInfo.id">
+        <div class="info-method">
+          {{ nodeInfo.name }}
+          <!-- <el-tag class="mr8" type="warning">定时同步</el-tag> -->
+          <el-divider direction="vertical" />
+          <span class="create-user"> 创建人：{{ nodeInfo.createBy }} </span>
+          <el-icon class="create-user">
+            <Icon name="icon_info_outlined"></Icon>
+          </el-icon>
+          <el-button class="right-btn" type="primary" @click="editorDataset"> 编辑 </el-button>
+        </div>
+        <el-tabs v-model="activeName" @tab-change="handleClick">
+          <el-tab-pane label="数据预览" name="dataPreview"></el-tab-pane>
+          <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
+          <el-tab-pane label="行权限" name="row"></el-tab-pane>
+          <el-tab-pane label="列权限" name="column"></el-tab-pane>
+        </el-tabs>
+        <div class="preview-num">
+          预览 <span>100行</span>
+          <el-icon>
+            <Icon name="icon_edit_outlined"></Icon>
+          </el-icon>
+        </div>
+        <div class="info-table" v-if="showTable">
+          <el-auto-resizer>
+            <template #default="{ height, width }">
+              <el-table-v2
+                :columns="columns"
+                header-class="header-cell"
+                :data="tableData"
+                :width="width"
+                :height="height"
+                fixed
+              />
+            </template>
+          </el-auto-resizer>
+        </div>
+      </template>
+      <template v-else>
+        <empty-background description="请在左侧选择数据集" img-type="select" />
+      </template>
     </div>
     <creat-ds-group @finish="getData()" ref="creatDsFolder"></creat-ds-group>
   </div>
