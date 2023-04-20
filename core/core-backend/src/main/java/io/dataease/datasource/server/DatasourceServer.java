@@ -252,13 +252,13 @@ public class DatasourceServer implements DatasourceApi {
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
                     sucsess++;
                 } catch (Exception e) {
-                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Faild to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
+                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
                 }
             }
             datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
             if (sucsess == 0) {
-                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Faild to sync datasourc.");
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datasourc.");
                 datasetTableTaskLog.setStatus(TaskStatus.Error.name());
             }
             if (sucsess == tables.size()) {
@@ -272,7 +272,7 @@ public class DatasourceServer implements DatasourceApi {
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             datasourceTaskServer.saveLog(datasetTableTaskLog);
         } catch (Exception e) {
-            datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Faild to sync datasourc.");
+            datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datasourc.");
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             datasetTableTaskLog.setStatus(TaskStatus.Error.name());
             datasourceTaskServer.saveLog(datasetTableTaskLog);
@@ -340,13 +340,13 @@ public class DatasourceServer implements DatasourceApi {
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
                     sucsess++;
                 } catch (Exception e) {
-                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Faild to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
+                    datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datatable: " + datasourceRequest.getTable() + ", " + e.getMessage());
                     datasourceTaskServer.saveLog(datasetTableTaskLog);
                 }
             }
             datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Complete to sync datasourc.");
             if (sucsess == 0) {
-                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Faild to sync datasourc.");
+                datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datasourc.");
                 datasetTableTaskLog.setStatus(TaskStatus.Error.name());
                 lastExecStatus = TaskStatus.Error;
             }
@@ -363,7 +363,7 @@ public class DatasourceServer implements DatasourceApi {
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             datasourceTaskServer.saveLog(datasetTableTaskLog);
         } catch (Exception e) {
-            datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Faild to sync datasourc.");
+            datasetTableTaskLog.setInfo(datasetTableTaskLog.getInfo() + "/n Failed to sync datasourc.");
             datasetTableTaskLog.setEndTime(System.currentTimeMillis());
             datasetTableTaskLog.setStatus(TaskStatus.Error.name());
             datasourceTaskServer.saveLog(datasetTableTaskLog);

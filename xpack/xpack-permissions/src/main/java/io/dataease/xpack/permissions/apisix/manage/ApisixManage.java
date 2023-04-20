@@ -1,6 +1,7 @@
 package io.dataease.xpack.permissions.apisix.manage;
 
 import io.dataease.auth.DePermit;
+import io.dataease.constant.AuthConstant;
 import io.dataease.utils.LogUtil;
 import io.dataease.utils.ServletUtils;
 import io.dataease.xpack.permissions.apisix.proxy.ProxyRequest;
@@ -67,6 +68,7 @@ public class ApisixManage {
         // get userinfo from threadLocal
         Object userinfo = null;
         checkPermission(userinfo, requirePermissions);
+        ServletUtils.response().addHeader(AuthConstant.APISIX_FLAG_KEY, String.valueOf(System.currentTimeMillis()));
     }
 
     public String[] getRequirePermissions(HttpServletRequest request) {

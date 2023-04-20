@@ -9,10 +9,16 @@ spring:
     encoding: UTF-8
   main:
     allow-circular-references: true
-
+  cache:
+    jcache:
+      config: classpath:ehcache/ehcache.xml
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
 logging:
   file:
     path: /opt/dataease2.0/log/${spring.application.name}
+# sql日志生产环境注释掉
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

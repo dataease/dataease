@@ -120,8 +120,8 @@ export default defineConfig({
       },
       // 使用 proxy 实例
       '/api': {
-        target: 'https://www.fastmock.site/mock/750e1fe302dda5186c2adb327a7ae472/_vite',
-        // target: 'http://localhost:8100',
+        // target: 'https://www.fastmock.site/mock/750e1fe302dda5186c2adb327a7ae472/_vite',
+        target: 'http://localhost:8100',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, '')
       }
@@ -133,6 +133,7 @@ export default defineConfig({
     rollupOptions: {
       // 多页支持
       input: PAGES.reduce((map, { name }) => {
+        // @ts-ignore
         map[name] = path.resolve(ROOT_DIR, `${name}.html`)
         return map
       }, {})
