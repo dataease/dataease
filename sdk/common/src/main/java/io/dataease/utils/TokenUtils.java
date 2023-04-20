@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.Verification;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 
 import java.util.Date;
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class TokenUtils {
 
     private static Long expireTime;
+
     public static String generate(TokenUserBO bo, String secret) {
         Algorithm algorithm = Algorithm.HMAC256(secret);
         Long userId = bo.getUserId();
@@ -64,5 +66,17 @@ public class TokenUtils {
         }
         DEException.throwException("Unsupported timeUnit");
         return null;
+    }
+
+    public static TokenUserBO validate(String token) {
+        if (StringUtils.isBlank(token)) {
+            String uri = ServletUtils.request().getRequestURI();
+            DEException.throwException("token is empty for uri {" + uri + "}");
+        }
+        if (StringUtils.length(token) < 100) {
+            DEException.throwException("token is invalid");
+        }
+        TokenUserBO tokenUserBO = userBOByToken(token);
+        return tokenUserBO;
     }
 }

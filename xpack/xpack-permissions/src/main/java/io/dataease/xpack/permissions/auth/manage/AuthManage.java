@@ -60,10 +60,10 @@ public class AuthManage {
     public PermissionVO busiPermission(BusiPermissionRequest request) {
         PermissionVO vo = new PermissionVO();
         TokenUserBO user = AuthUtils.getUser();
-        if (AuthUtils.isOrgRoot()) {
-            vo.setRoot(true);
-            return vo;
-        }
+//        if (AuthUtils.isOrgRoot()) {
+//            vo.setRoot(true);
+//            return vo;
+//        }
         // if (AuthUtils.is)
         return null;
     }
