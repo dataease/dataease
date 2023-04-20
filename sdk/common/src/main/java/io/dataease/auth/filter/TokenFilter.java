@@ -15,7 +15,7 @@ import java.util.List;
 
 
 public class TokenFilter implements Filter {
-    public static List<String> WHITE_PATH = Lists.newArrayList("/login/localLogin","/");
+    public static List<String> WHITE_PATH = Lists.newArrayList("/login/localLogin","/apisix/check", "/dekey");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
