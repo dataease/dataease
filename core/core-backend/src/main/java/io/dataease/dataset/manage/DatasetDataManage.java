@@ -134,7 +134,7 @@ public class DatasetDataManage {
         }).collect(Collectors.toList());
     }
 
-    public Map<String, Object> previewData(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+    public Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, Integer start, Integer count) throws Exception {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
         String sql = (String) sqlMap.get("sql");
 
@@ -151,46 +151,13 @@ public class DatasetDataManage {
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
         Field2SQLObj.field2sqlObj(sqlMeta, fields, originFields);
         Order2SQLObj.getOrders(sqlMeta, fields, originFields, datasetGroupInfoDTO.getSortFields());
-        String querySQL = SQLProvider.createQuerySQL(sqlMeta, false);
-        // 通过数据源请求数据
-        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-        // 调用数据源的calcite获得data
-        DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setQuery(querySQL);
-        datasourceRequest.setDsList(dsMap);
-        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
-        Map<String, Object> map = new LinkedHashMap<>();
-        // 重新构造data
-        Map<String, Object> previewData = buildPreviewData(data, fields);
-        map.put("data", previewData);
-        if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
-            map.put("allFields", fields);
+        String querySQL;
+        if (start == null && count == null) {
+            querySQL = SQLProvider.createQuerySQL(sqlMeta, false);
         } else {
-            List<DatasetTableFieldDTO> fieldList = datasetTableFieldManage.selectByDatasetGroupId(datasetGroupInfoDTO.getId());
-            map.put("allFields", fieldList);
+            querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, start, count);
         }
-        map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
-        return map;
-    }
 
-    public Map<String, Object> previewDataWithLimit(DatasetGroupInfoDTO datasetGroupInfoDTO, int start, int count) throws Exception {
-        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO);
-        String sql = (String) sqlMap.get("sql");
-
-        // 获取allFields
-        List<DatasetTableFieldDTO> fields = datasetGroupInfoDTO.getAllFields();
-        if (ObjectUtils.isEmpty(fields)) {
-            DEException.throwException("no fields");
-        }
-        buildFieldName(sqlMap, fields);
-        List<DatasetTableFieldDTO> originFields = fields.stream().filter(ele -> Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)).collect(Collectors.toList());
-
-        // build query sql
-        SQLMeta sqlMeta = new SQLMeta();
-        Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, originFields);
-        Order2SQLObj.getOrders(sqlMeta, fields, originFields, datasetGroupInfoDTO.getSortFields());
-        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, start, count);
         // 通过数据源请求数据
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         // 调用数据源的calcite获得data

@@ -23,10 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -206,6 +203,7 @@ public class DatasetGroupManage {
         }
         DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
         BeanUtils.copyBean(dto, coreDatasetGroup);
+        dto.setUnionSql(null);
         if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
             List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
             });
@@ -228,7 +226,7 @@ public class DatasetGroupManage {
                 Map<String, List> data = (Map<String, List>) map.get("data");
                 String sql = (String) map.get("sql");
                 dto.setData(data);
-                dto.setSql(sql);
+                dto.setSql(Base64.getEncoder().encodeToString(sql.getBytes()));
             }
         }
         return dto;
