@@ -86,7 +86,8 @@ VALUES (1, 0, 2, 'home', 'home', 1, NULL, '/home', 0, 1),
        (13, 6, 2, 'user', 'system/user', 1, 'peoples', '/user', 0, 1),
        (14, 6, 2, 'org', 'system/org', 2, 'org', '/org', 0, 1),
        (15, 6, 2, 'auth', 'system/auth', 3, 'auth', '/auth', 0, 1),
-       (16, 0, 2, 'dataset-form', 'visualized/data/dataset/form', 7, NULL, '/dataset-form', 1, 0);
+       (16, 0, 2, 'dataset-form', 'visualized/data/dataset/form', 7, NULL, '/dataset-form', 1, 0),
+       (17, 0, 2, 'ds-form', 'visualized/data/datasource/form', 7, NULL, '/ds-form', 1, 0);
 UNLOCK
 TABLES;
 
