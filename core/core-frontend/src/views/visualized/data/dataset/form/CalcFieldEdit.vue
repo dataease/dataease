@@ -1,22 +1,30 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { propTypes } from '@/utils/propTypes'
 import CodeMirror from './CodeMirror.vue'
-
+export interface CalcFieldType {
+  id?: string
+  datasourceId?: string // 数据源id
+  datasetTableId?: string // union node id
+  datasetGroupId?: string // 有就传，没有null
+  originName: string // 物理字段名
+  name: string // 字段显示名
+  dataeaseName?: string // 字段别名
+  groupType: 'd' | 'q' // d=维度，q=指标
+  type: string
+  checked: boolean
+  deType: number // 字段类型
+  deExtractType?: number // 字段原始类型
+  extField?: number // 0=原始字段，2=复制或计算字段
+  fieldShortName?: string // 字段别名
+}
 const { t } = useI18n()
-
-const props = defineProps({
-  param: propTypes.objectOf(
-    propTypes.shape({
-      id: Number
-    })
-  )
-})
 
 const myCm = ref()
 const searchField = ref('')
 const searchFunction = ref('')
+
+const mirror = ref()
 
 const fields = [
   { label: t('dataset.text'), value: 0 },
@@ -30,186 +38,88 @@ const fields = [
 ]
 
 const state = reactive({
-  fieldForm: {
-    id: null,
-    name: '',
-    groupType: 'd',
-    deType: 0,
-    originName: 'Dear [[name]],\nYour [[item]] is on its way. Please see [[order]] for details.\n',
-    tableId: props.param.id,
-    checked: 1,
-    columnIndex: 0,
-    size: 0,
-    extField: 2
-  },
   functionData: [],
   dimensionData: [],
   dimensionList: [],
   quotaList: [],
-  quotaData: [
-    {
-      id: 'b5e574d6-e86a-42da-9d1e-54338e83fb50',
-      tableId: '525bd11c-1b9d-4a41-ac3a-32a85b5d44a6',
-      originName: 'result_count',
-      name: '展示结果',
-      dataeaseName: 'C_49546866e6fc51cc9412b4b12b7f8574',
-      groupType: 'q',
-      type: 'INT',
-      size: 10,
-      deType: 2,
-      deTypeFormat: null,
-      deExtractType: 2,
-      extField: 0,
-      checked: true,
-      columnIndex: 7,
-      lastSyncTime: 1680166956365,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null,
-      jsonPath: null,
-      deTypeCascader: [2]
-    },
-    {
-      id: '8af54084-dd81-47e2-9379-42faa791cbc0',
-      tableId: '525bd11c-1b9d-4a41-ac3a-32a85b5d44a6',
-      originName: 'create_time',
-      name: '创建时间',
-      dataeaseName: 'C_b16a626598674ad426e4b885017906d7',
-      groupType: 'q',
-      type: 'BIGINT',
-      size: 19,
-      deType: 2,
-      deTypeFormat: null,
-      deExtractType: 2,
-      extField: 0,
-      checked: true,
-      columnIndex: 21,
-      lastSyncTime: 1680166956365,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null,
-      jsonPath: null,
-      deTypeCascader: [2]
-    },
-    {
-      id: '94aca56d-c7c3-4509-95dd-804bf521d550',
-      tableId: '525bd11c-1b9d-4a41-ac3a-32a85b5d44a6',
-      originName: 'update_time',
-      name: '更新时间',
-      dataeaseName: 'C_e0df5a999da22bc6fa9e26b115eb4ae4',
-      groupType: 'q',
-      type: 'BIGINT',
-      size: 19,
-      deType: 2,
-      deTypeFormat: null,
-      deExtractType: 2,
-      extField: 0,
-      checked: true,
-      columnIndex: 22,
-      lastSyncTime: 1680166956365,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null,
-      jsonPath: null,
-      deTypeCascader: [2]
-    },
-    {
-      id: '715c196a-b583-4e1a-adc3-1f76bb49312a',
-      tableId: '525bd11c-1b9d-4a41-ac3a-32a85b5d44a6',
-      originName: 'is_plugin',
-      name: '是否插件',
-      dataeaseName: 'C_79b7dae9e0be6b32227abc3e713704d2',
-      groupType: 'q',
-      type: 'BIT',
-      size: 1,
-      deType: 2,
-      deTypeFormat: null,
-      deExtractType: 4,
-      extField: 0,
-      checked: true,
-      columnIndex: 26,
-      lastSyncTime: 1680166956365,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null,
-      jsonPath: null,
-      deTypeCascader: [2]
-    },
-    {
-      id: 'ccf2348d-2cca-43cb-a681-38829dfe6e24',
-      tableId: '525bd11c-1b9d-4a41-ac3a-32a85b5d44a6',
-      originName: 'refresh_view_enable',
-      name: '是否开启刷新',
-      dataeaseName: 'C_89602a9d5037f7fa71cdbab25408fda4',
-      groupType: 'q',
-      type: 'BIT',
-      size: 1,
-      deType: 2,
-      deTypeFormat: null,
-      deExtractType: 4,
-      extField: 0,
-      checked: true,
-      columnIndex: 29,
-      lastSyncTime: 1680166956365,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null,
-      jsonPath: null,
-      deTypeCascader: [2]
-    },
-    {
-      id: '9ba74f05-4e82-44f2-bca4-1ec75e0d5125',
-      tableId: '525bd11c-1b9d-4a41-ac3a-32a85b5d44a6',
-      originName: 'refresh_time',
-      name: '刷新时间',
-      dataeaseName: 'C_0a3af0dc007b4aea737aea55e34b1f93',
-      groupType: 'q',
-      type: 'INT',
-      size: 10,
-      deType: 2,
-      deTypeFormat: null,
-      deExtractType: 2,
-      extField: 0,
-      checked: true,
-      columnIndex: 31,
-      lastSyncTime: 1680166956365,
-      accuracy: 0,
-      dateFormat: null,
-      dateFormatType: null,
-      jsonPath: null,
-      deTypeCascader: [2]
-    }
-  ]
+  quotaData: []
 })
+
+const fieldForm = reactive<CalcFieldType>({
+  originName: '', // 物理字段名
+  name: '', // 字段显示名
+  groupType: 'd', // d=维度，q=指标
+  type: 'VARCHAR',
+  deType: 0, // 字段类型
+  extField: 2,
+  checked: true
+})
+
+const setFieldForm = () => {
+  const str = mirror.value.viewState.state.doc.text.join('\n')
+  const name2Auto = []
+  fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto)
+}
+
+const setNameIdTrans = (from, to, originName, name2Auto) => {
+  let name2Id = originName
+  const nameIdMap = [...state.dimensionData, ...state.quotaData].reduce((pre, next) => {
+    pre[next[from]] = next[to]
+    return pre
+  }, {})
+  const on = originName.match(/\[(.+?)\]/g)
+  if (on) {
+    on.forEach(itm => {
+      const ele = itm.slice(1, -1)
+      if (name2Auto) {
+        name2Auto.push(nameIdMap[ele])
+      }
+      name2Id = name2Id.replace(`[${ele}]`, `[${nameIdMap[ele]}]`)
+    })
+  }
+  return name2Id
+}
+
+const initEdit = (obj, dimensionData, quotaData) => {
+  Object.assign(fieldForm, obj || {})
+  state.dimensionData = dimensionData
+  state.quotaData = quotaData
+}
 
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
 }
 
 const insertFieldToCodeMirror = (value: string) => {
-  console.log('myCm.value.myCm', myCm.value.myCm)
-
-  const mirror = myCm.value.myCm
-  mirror.dispatch({
-    changes: { from: mirror.viewState.state.selection.ranges[0].from, insert: value },
-    selection: { anchor: mirror.viewState.state.selection.ranges[0].from }
+  mirror.value.dispatch({
+    changes: { from: mirror.value.viewState.state.selection.ranges[0].from, insert: value },
+    selection: { anchor: mirror.value.viewState.state.selection.ranges[0].from }
   })
 }
+
+onMounted(() => {
+  mirror.value = myCm.value.codeComInit()
+})
 
 const insertParamToCodeMirror = (value: string) => {
-  const mirror = myCm.value.myCm
-  mirror.dispatch({
-    changes: { from: mirror.viewState.state.selection.ranges[0].from, insert: value },
-    selection: { anchor: mirror.viewState.state.selection.ranges[0].from }
+  mirror.value.dispatch({
+    changes: { from: mirror.value.viewState.state.selection.ranges[0].from, insert: value },
+    selection: { anchor: mirror.value.viewState.state.selection.ranges[0].from }
   })
 }
+
+defineExpose({
+  initEdit,
+  setFieldForm,
+  fieldForm
+})
 </script>
 
 <template>
   <div class="calcu-field">
-    <el-form ref="form" :model="state.fieldForm" label-position="top">
+    <el-form ref="form" :model="fieldForm" label-position="top">
       <el-form-item :label="t('dataset.field_edit_name')">
-        <el-input v-model="state.fieldForm.name" :placeholder="t('dataset.input_edit_name')" />
+        <el-input v-model="fieldForm.name" :placeholder="t('dataset.input_edit_name')" />
       </el-form-item>
     </el-form>
     <div class="calcu-cont" style="height: 544px">
@@ -231,20 +141,18 @@ const insertParamToCodeMirror = (value: string) => {
           <code-mirror ref="myCm"></code-mirror>
         </div>
         <div style="margin-top: 28px">
-          <el-form label-position="top" ref="form" :model="state.fieldForm" class="de-form-item">
+          <el-form label-position="top" ref="form" :model="fieldForm" class="de-form-item">
             <el-form-item :label="t('dataset.data_type')">
-              <el-radio v-model="state.fieldForm.groupType" label="d">{{
+              <el-radio v-model="fieldForm.groupType" label="d">{{
                 t('chart.dimension')
               }}</el-radio>
-              <el-radio v-model="state.fieldForm.groupType" label="q">{{
-                t('chart.quota')
-              }}</el-radio>
+              <el-radio v-model="fieldForm.groupType" label="q">{{ t('chart.quota') }}</el-radio>
             </el-form-item>
             <el-form-item label-position="top" :label="t('dataset.field_type')">
               <el-radio
                 v-for="item in fields"
                 :key="item.value"
-                v-model="state.fieldForm.deType"
+                v-model="fieldForm.deType"
                 :label="item.value"
                 >{{ item.label }}</el-radio
               >

@@ -77,7 +77,7 @@ const dfsNodeBack = (arr, idArr, list) => {
       Object.assign(ele, node)
     }
     if (ele.children?.length) {
-      dfsPath(arr, idArr, ele.children)
+      dfsNodeBack(arr, idArr, ele.children)
     }
   })
 }
@@ -219,7 +219,7 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
       nodeListLocation.push({
         ...ele,
         x,
-        y: idx ? Math.max(idx, maxY) : idx,
+        y: idx ? Math.min(idx, maxY) : idx,
         maxY,
         isShadow: !!ele.isShadow,
         children
@@ -228,7 +228,7 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
   })
 }
 
-const dfsNodeShadow = (arr, tableName, position) => {
+const dfsNodeShadow = (arr, tableName, position, parent) => {
   return arr.some((ele, index) => {
     if (ele.tableName === tableName) {
       const flag = tableName + '_&&' + position
@@ -240,7 +240,7 @@ const dfsNodeShadow = (arr, tableName, position) => {
       }
 
       if (position === 'b') {
-        state.visualNodeParent = arr
+        state.visualNodeParent = parent
         arr.splice(index + 1, 0, state.visualNode)
       } else {
         state.visualNodeParent = ele
@@ -249,7 +249,7 @@ const dfsNodeShadow = (arr, tableName, position) => {
       return true
     }
     if (ele.children?.length) {
-      return dfsNodeShadow(ele.children, tableName, position)
+      return dfsNodeShadow(ele.children, tableName, position, ele)
     }
     return false
   })
@@ -352,14 +352,11 @@ const dragover_handler = ev => {
 
   let maxArr = resultList[maxIndex]
 
-  if (Array.isArray(state.visualNodeParent)) {
-    const shadowIndex = state.visualNodeParent.findIndex(ele => ele.isShadow)
+  if (Array.isArray(state.visualNodeParent?.children)) {
+    const shadowIndex = state.visualNodeParent.children.findIndex(ele => ele.isShadow)
     if (shadowIndex > -1) {
-      state.visualNodeParent.splice(shadowIndex, 1)
+      state.visualNodeParent.children.splice(shadowIndex, 1)
     }
-  } else if (state.visualNodeParent) {
-    state.visualNodeParent.children = []
-    delete state.visualNodeParent.children
   }
 
   if (Math.max(...maxArr)) {
@@ -367,7 +364,7 @@ const dragover_handler = ev => {
     const [b, r] = maxArr
 
     if (!isShadow) {
-      dfsNodeShadow(state.nodeList, tableName, b >= r ? 'b' : 'r')
+      dfsNodeShadow(state.nodeList, tableName, b >= r ? 'b' : 'r', state.nodeList[0])
     }
   }
 }

@@ -64,20 +64,36 @@ const props = defineProps({
   }
 })
 
-Object.assign(node, clone(props.editArr[0]))
-Object.assign(parent, clone(props.editArr[1]))
+const clearState = () => {
+  Object.assign(node, clone(defaultNode))
+  Object.assign(parent, clone(defaultNode))
+  parentField.value = []
+  nodeField.value = []
+}
 
+const initState = () => {
+  Object.assign(node, clone(props.editArr[0]))
+  Object.assign(parent, clone(props.editArr[1]))
+  getFields()
+}
 const getFields = async () => {
-  const [n, p] = props.editArr
+  const [n, p] = props.editArr as Node[]
   const [nr, pr] = await Promise.all([getTableField(n), getTableField(p)])
   parentField.value = pr as unknown as Field[]
+  parentField.value.forEach(ele => {
+    ele.checked = p.currentDsFields.map(ele => ele.originName).includes(ele.originName)
+  })
   nodeField.value = nr as unknown as Field[]
+  nodeField.value.forEach(ele => {
+    ele.checked = n.currentDsFields.map(ele => ele.originName).includes(ele.originName)
+  })
 }
-getFields()
 
 defineExpose({
   node,
-  parent
+  parent,
+  clearState,
+  initState
 })
 </script>
 

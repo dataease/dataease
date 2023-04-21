@@ -1,14 +1,15 @@
 <script lang="tsx" setup>
-import { ref, nextTick, reactive, shallowRef, computed, toRaw } from 'vue'
+import { ref, nextTick, reactive, shallowRef, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon } from 'element-plus-secondary'
+import FieldMore from './FieldMore.vue'
 import { Icon } from '@/components/icon-custom'
 import CalcFieldEdit from './CalcFieldEdit.vue'
 import AddSql from './AddSql.vue'
 import { useRoute } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
 import CreatDsGroup from './CreatDsGroup.vue'
-// import { guid } from './util.js'
+import { guid } from './util.js'
 import {
   getDatasourceList,
   getTables,
@@ -40,6 +41,7 @@ const { t } = useI18n()
 const route = useRoute()
 const creatDsFolder = ref()
 const editCalcField = ref(false)
+const calcEdit = ref()
 const editSqlField = ref(false)
 const editUnion = ref(false)
 const datasetDrag = ref()
@@ -81,6 +83,29 @@ const editeSave = () => {
       loading.value = false
     }
   )
+}
+
+const addCalcField = groupType => {
+  editCalcField.value = true
+  nextTick(() => {
+    calcEdit.value.initEdit({ groupType, id: guid() }, dimensions.value, quota.value)
+  })
+}
+
+const closeEditCalc = () => {
+  editCalcField.value = false
+}
+
+const confirmEditCalc = () => {
+  calcEdit.value.setFieldForm()
+  const obj = calcEdit.value.fieldForm
+  const result = allfields.value.findIndex(ele => obj.id === ele.id)
+  if (result !== -1) {
+    allfields.value.splice(result, 1, obj)
+  } else {
+    allfields.value.push(obj)
+  }
+  editCalcField.value = false
 }
 
 const generateColumns = (arr: Field[]) =>
@@ -129,8 +154,11 @@ const initEdite = () => {
 initEdite()
 
 const joinEditor = (arr: []) => {
-  state.editArr = arr
+  Object.assign(state.editArr, arr)
   editUnion.value = true
+  nextTick(() => {
+    fieldUnion.value.initState()
+  })
 }
 
 const columns = shallowRef([])
@@ -194,6 +222,7 @@ const diffArr = (newArr, oldArr) => {
 
 const closeEditUnion = () => {
   notConfirmEditUnion()
+  fieldUnion.value.clearState()
   editUnion.value = false
 }
 const fieldUnion = ref()
@@ -205,6 +234,7 @@ const confirmEditUnion = () => {
   const arr = []
   dfsFields(arr, datasetDrag.value.nodeList)
   allfields.value = diffArr(arr, allfields.value)
+  fieldUnion.value.clearState()
   editUnion.value = false
   // 校验关联关系与字段，必填
   // if (this.checkUnion()) {
@@ -527,25 +557,6 @@ const handleClick = () => {
                     </ElIcon>
                   </template>
                   <div class="field-d">
-                    <div :key="ele.id" v-for="ele in quota" class="list-item_primary">
-                      <el-icon>
-                        <Icon
-                          :name="`field_${fieldType(ele.deType)}`"
-                          :className="`field-icon-${fieldType(ele.deType)}`"
-                        ></Icon>
-                      </el-icon>
-                      {{ ele.name }}
-                    </div>
-                  </div>
-                </el-collapse-item>
-                <el-collapse-item title="Feedback" name="2">
-                  <template #title>
-                    指标
-                    <ElIcon>
-                      <Icon name="icon_add_outlined"></Icon>
-                    </ElIcon>
-                  </template>
-                  <div class="field-q">
                     <div :key="ele.id" v-for="ele in dimensions" class="list-item_primary">
                       <el-icon>
                         <Icon
@@ -553,7 +564,27 @@ const handleClick = () => {
                           :className="`field-icon-${fieldType(ele.deType)}`"
                         ></Icon>
                       </el-icon>
-                      {{ ele.name }}
+                      <span class="label">{{ ele.name }}</span>
+                      <field-more></field-more>
+                    </div>
+                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="Feedback" name="2">
+                  <template #title>
+                    指标
+                    <ElIcon @click="addCalcField('q')">
+                      <Icon name="icon_add_outlined"></Icon>
+                    </ElIcon>
+                  </template>
+                  <div class="field-q">
+                    <div :key="ele.id" v-for="ele in quota" class="list-item_primary">
+                      <el-icon>
+                        <Icon
+                          :name="`field_${fieldType(ele.deType)}`"
+                          :className="`field-icon-${fieldType(ele.deType)}`"
+                        ></Icon>
+                      </el-icon>
+                      <span class="label">{{ ele.name }}</span>
                     </div>
                   </div>
                 </el-collapse-item>
@@ -597,7 +628,11 @@ const handleClick = () => {
   </div>
   <creat-ds-group ref="creatDsFolder"></creat-ds-group>
   <el-dialog v-model="editCalcField" width="1000px" title="新建计算字段">
-    <calc-field-edit :param="{ id: 0 }" />
+    <calc-field-edit ref="calcEdit" />
+    <template #footer>
+      <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
+    </template>
   </el-dialog>
   <el-dialog fullscreen class="sql-dialog-fullscreen" append-to-body v-model="editSqlField">
     <add-sql></add-sql>
@@ -778,6 +813,11 @@ const handleClick = () => {
               height: 200px;
               padding: 0 8px;
               overflow-y: auto;
+              .list-item_primary {
+                .el-icon {
+                  margin-right: 8px;
+                }
+              }
             }
           }
         }

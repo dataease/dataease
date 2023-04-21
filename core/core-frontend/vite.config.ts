@@ -113,15 +113,15 @@ export default defineConfig({
   server: {
     proxy: {
       '/api/f': {
-        target: 'http://192.168.31.36:8100',
+        target: 'http://192.168.31.42:8100',
         // target: 'http://localhost:8100',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api\/f/, '')
       },
       // 使用 proxy 实例
       '/api': {
-        // target: 'https://www.fastmock.site/mock/750e1fe302dda5186c2adb327a7ae472/_vite',
-        target: 'http://localhost:8100',
+        target: 'https://www.fastmock.site/mock/750e1fe302dda5186c2adb327a7ae472/_vite',
+        // target: 'http://localhost:8100',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, '')
       }

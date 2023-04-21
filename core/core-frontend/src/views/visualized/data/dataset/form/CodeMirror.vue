@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { sql } from '@codemirror/lang-sql'
 import { basicSetup } from 'codemirror'
 import { Decoration, EditorView, ViewPlugin, WidgetType, MatchDecorator } from '@codemirror/view'
@@ -105,11 +104,11 @@ defineExpose({
 </script>
 
 <template>
-  <div :id="domId"></div>
+  <div class="editor-placeholder" :id="domId"></div>
 </template>
 
 <style scoped>
-#editor-placeholder {
+.editor-placeholder {
   width: 100%;
   height: 250px;
 }
