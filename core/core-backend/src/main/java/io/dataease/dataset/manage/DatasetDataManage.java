@@ -143,6 +143,7 @@ public class DatasetDataManage {
         if (ObjectUtils.isEmpty(fields)) {
             DEException.throwException("no fields");
         }
+        buildFieldName(sqlMap, fields);
         List<DatasetTableFieldDTO> originFields = fields.stream().filter(ele -> Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)).collect(Collectors.toList());
 
         // build query sql
@@ -181,6 +182,7 @@ public class DatasetDataManage {
         if (ObjectUtils.isEmpty(fields)) {
             DEException.throwException("no fields");
         }
+        buildFieldName(sqlMap, fields);
         List<DatasetTableFieldDTO> originFields = fields.stream().filter(ele -> Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)).collect(Collectors.toList());
 
         // build query sql
@@ -233,5 +235,33 @@ public class DatasetDataManage {
         map.put("fields", fields);
         map.put("data", dataObjectList);
         return map;
+    }
+
+    public void buildFieldName(Map<String, Object> sqlMap, List<DatasetTableFieldDTO> fields) {
+        // 获取内层union sql和字段
+        List<DatasetTableFieldDTO> unionFields = (List<DatasetTableFieldDTO>) sqlMap.get("field");
+        for (DatasetTableFieldDTO datasetTableFieldDTO : fields) {
+            DatasetTableFieldDTO dto = datasetTableFieldManage.selectById(datasetTableFieldDTO.getId());
+            if (ObjectUtils.isEmpty(dto)) {
+                if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
+                    for (DatasetTableFieldDTO fieldDTO : unionFields) {
+                        if (Objects.equals(datasetTableFieldDTO.getDatasetTableId(), fieldDTO.getDatasetTableId())
+                                && Objects.equals(datasetTableFieldDTO.getOriginName(), fieldDTO.getOriginName())) {
+                            datasetTableFieldDTO.setDataeaseName(fieldDTO.getDataeaseName());
+                            datasetTableFieldDTO.setFieldShortName(fieldDTO.getFieldShortName());
+                        }
+                    }
+                }
+                if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_CALC)) {
+                    String dataeaseName = TableUtils.fieldNameShort(datasetTableFieldDTO.getId() + "_" + datasetTableFieldDTO.getOriginName());
+                    datasetTableFieldDTO.setDataeaseName(dataeaseName);
+                    datasetTableFieldDTO.setFieldShortName(dataeaseName);
+                    datasetTableFieldDTO.setDeExtractType(datasetTableFieldDTO.getDeType());
+                }
+            } else {
+                datasetTableFieldDTO.setDataeaseName(dto.getDataeaseName());
+                datasetTableFieldDTO.setFieldShortName(dto.getFieldShortName());
+            }
+        }
     }
 }

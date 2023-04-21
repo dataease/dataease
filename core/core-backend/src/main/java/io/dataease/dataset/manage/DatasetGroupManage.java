@@ -10,6 +10,8 @@ import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DatasetTreeNodeVO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
+import io.dataease.dataset.utils.TableUtils;
+import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
@@ -170,14 +172,28 @@ public class DatasetGroupManage {
         List<DatasetTableFieldDTO> unionFields = (List<DatasetTableFieldDTO>) map.get("field");
 
         for (DatasetTableFieldDTO datasetTableFieldDTO : allFields) {
-            for (DatasetTableFieldDTO fieldDTO : unionFields) {
-                if (Objects.equals(datasetTableFieldDTO.getDatasetTableId(), fieldDTO.getDatasetTableId())
-                        && Objects.equals(datasetTableFieldDTO.getOriginName(), fieldDTO.getOriginName())) {
-                    datasetTableFieldDTO.setDataeaseName(fieldDTO.getDataeaseName());
-                    datasetTableFieldDTO.setFieldShortName(fieldDTO.getFieldShortName());
+            DatasetTableFieldDTO dto = datasetTableFieldManage.selectById(datasetTableFieldDTO.getId());
+            if (ObjectUtils.isEmpty(dto)) {
+                if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
+                    for (DatasetTableFieldDTO fieldDTO : unionFields) {
+                        if (Objects.equals(datasetTableFieldDTO.getDatasetTableId(), fieldDTO.getDatasetTableId())
+                                && Objects.equals(datasetTableFieldDTO.getOriginName(), fieldDTO.getOriginName())) {
+                            datasetTableFieldDTO.setDataeaseName(fieldDTO.getDataeaseName());
+                            datasetTableFieldDTO.setFieldShortName(fieldDTO.getFieldShortName());
+                        }
+                    }
                 }
+                if (Objects.equals(datasetTableFieldDTO.getExtField(), ExtFieldConstant.EXT_CALC)) {
+                    String dataeaseName = TableUtils.fieldNameShort(datasetTableFieldDTO.getId() + "_" + datasetTableFieldDTO.getOriginName());
+                    datasetTableFieldDTO.setDataeaseName(dataeaseName);
+                    datasetTableFieldDTO.setFieldShortName(dataeaseName);
+                    datasetTableFieldDTO.setDeExtractType(datasetTableFieldDTO.getDeType());
+                }
+                datasetTableFieldDTO.setDatasetGroupId(datasetGroupId);
+            } else {
+                datasetTableFieldDTO.setDataeaseName(dto.getDataeaseName());
+                datasetTableFieldDTO.setFieldShortName(dto.getFieldShortName());
             }
-            datasetTableFieldDTO.setDatasetGroupId(datasetGroupId);
             datasetTableFieldDTO = datasetTableFieldManage.save(datasetTableFieldDTO);
             fieldIds.add(datasetTableFieldDTO.getId());
         }

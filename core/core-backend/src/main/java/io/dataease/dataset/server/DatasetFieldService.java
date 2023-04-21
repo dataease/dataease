@@ -8,12 +8,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author Junjun
  */
 @RestController
-@RequestMapping("datasetTable")
+@RequestMapping("datasetField")
 public class DatasetFieldService implements DatasetTableApi {
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
@@ -36,6 +37,11 @@ public class DatasetFieldService implements DatasetTableApi {
     @Override
     public void delete(Long id) {
         datasetTableFieldManage.deleteById(id);
+    }
+
+    @Override
+    public Map<String, List<DatasetTableFieldDTO>> listByDQ() {
+        return datasetTableFieldManage.listByDQ();
     }
 
 }

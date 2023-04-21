@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author Junjun
@@ -23,4 +24,7 @@ public interface DatasetTableApi {
 
     @PostMapping("delete/{id}")
     void delete(@PathVariable Long id);
+
+    @PostMapping("listByDQ")
+    Map<String, List<DatasetTableFieldDTO>> listByDQ();
 }

@@ -1,12 +1,10 @@
 package io.dataease.dataset.manage;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.*;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
-import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.DatasetTableTypeConstants;
@@ -86,7 +84,7 @@ public class DatasetSQLManage {
                         f.setFieldShortName(TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()));
                         f.setDataeaseName(f.getFieldShortName());
                         f.setDatasetTableId(datasetTable.getId());
-                        return table.getTableAlias() + "." + f.getOriginName() + " AS "
+                        return table.getTableAlias() + ".`" + f.getOriginName() + "` AS "
                                 + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
                     })
                     .toArray(String[]::new);
@@ -133,10 +131,10 @@ public class DatasetSQLManage {
                     DatasetTableFieldDTO currentField = unionItemDTO.getCurrentField();
 
                     join.append(parentSQLObj.getTableAlias()).append(".")
-                            .append(parentField.getOriginName())
+                            .append("`" + parentField.getOriginName() + "`")
                             .append(" = ")
                             .append(currentSQLObj.getTableAlias()).append(".")
-                            .append(currentField.getOriginName());
+                            .append("`" + currentField.getOriginName() + "`");
                     if (i < unionParamDTO.getUnionFields().size() - 1) {
                         join.append(" AND ");
                     }
@@ -190,7 +188,7 @@ public class DatasetSQLManage {
                         f.setFieldShortName(TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName()));
                         f.setDataeaseName(f.getFieldShortName());
                         f.setDatasetTableId(datasetTable.getId());
-                        return table.getTableAlias() + "." + f.getOriginName() + " AS "
+                        return table.getTableAlias() + ".`" + f.getOriginName() + "` AS "
                                 + TableUtils.fieldNameShort(table.getTableAlias() + "_" + f.getOriginName());
                     })
                     .toArray(String[]::new);
