@@ -35,55 +35,55 @@ export interface Table {
 }
 // 获取权限路
 export const saveDatasetTree = async (data: DatesetOrFolder): Promise<IResponse> => {
-  return request.post({ url: '/f/datasetTree/save', data }).then(res => {
+  return request.post({ url: '/datasetTree/save', data }).then(res => {
     return res?.data
   })
 }
 
 export const getDatasetTree = async (data = {}): Promise<IResponse> => {
-  return request.post({ url: '/f/datasetTree/tree', data }).then(res => {
+  return request.post({ url: '/datasetTree/tree', data }).then(res => {
     return res?.data
   })
 }
 
 export const delDatasetTree = async (id): Promise<IResponse> => {
-  return request.post({ url: `/f/datasetTree/delete/${id}`, data: {} }).then(res => {
+  return request.post({ url: `/datasetTree/delete/${id}`, data: {} }).then(res => {
     return res?.data
   })
 }
 
 export const getDatasourceList = async (): Promise<IResponse> => {
-  return request.post({ url: '/f/datasource/list', data: {} }).then(res => {
+  return request.post({ url: '/datasource/list', data: {} }).then(res => {
     return res?.data
   })
 }
 
 export const getTables = async (id): Promise<IResponse> => {
-  return request.post({ url: `/f/datasource/getTables/${id}`, data: {} }).then(res => {
+  return request.post({ url: `/datasource/getTables/${id}`, data: {} }).then(res => {
     return res?.data as Table[]
   })
 }
 
 export const getTableField = async (data): Promise<IResponse> => {
-  return request.post({ url: '/f/datasetData/tableField', data }).then(res => {
+  return request.post({ url: '/datasetData/tableField', data }).then(res => {
     return res?.data
   })
 }
 
 export const getPreviewData = async (data): Promise<IResponse> => {
-  return request.post({ url: '/f/datasetData/previewData', data }).then(res => {
+  return request.post({ url: '/datasetData/previewData', data }).then(res => {
     return res?.data
   })
 }
 
 export const getDatasetPreview = async (id): Promise<FieldData> => {
-  return request.post({ url: `/f/datasetTree/get/${id}`, data: {} }).then(res => {
+  return request.post({ url: `/datasetTree/get/${id}`, data: {} }).then(res => {
     return res?.data
   })
 }
 
 export const getDatasetDetails = async (id): Promise<Dataset> => {
-  return request.post({ url: `/f/datasetTree/details/${id}`, data: {} }).then(res => {
+  return request.post({ url: `/datasetTree/details/${id}`, data: {} }).then(res => {
     return res?.data
   })
 }
