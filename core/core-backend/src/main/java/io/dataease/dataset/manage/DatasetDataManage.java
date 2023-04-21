@@ -152,7 +152,7 @@ public class DatasetDataManage {
         Field2SQLObj.field2sqlObj(sqlMeta, fields, originFields);
         Order2SQLObj.getOrders(sqlMeta, fields, originFields, datasetGroupInfoDTO.getSortFields());
         String querySQL;
-        if (start == null && count == null) {
+        if (start == null || count == null) {
             querySQL = SQLProvider.createQuerySQL(sqlMeta, false);
         } else {
             querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, start, count);
