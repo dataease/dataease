@@ -9,31 +9,25 @@ import java.util.Arrays;
 import java.util.List;
 
 @Data
-@Component("mysql")
-public class Mysql extends DatasourceConfiguration {
-    private String type = DatasourceType.mysql.getType();
-    private String name = DatasourceType.mysql.getName();
+@Component("sqlserver")
+public class Sqlserver extends DatasourceConfiguration {
+    private String type = DatasourceType.sqlserver.getType();
+    private String name = DatasourceType.sqlserver.getName();
     private DatasourceCatalog catalog = DatasourceCatalog.OLAP;
     private String catalogDesc = DatasourceCatalog.OLAP.getDesc();
-    private String driver = "com.mysql.cj.jdbc.Driver";
-    private String extraParams = "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true&zeroDateTimeBehavior=convertToNull";
+    private String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    private String extraParams = "";
     private List<String> illegalParameters = Arrays.asList("autoDeserialize", "queryInterceptors", "statementInterceptors", "detectCustomCollations");
     private List<String> showTableSqls = Arrays.asList("show tables");
 
     public String getJdbc() {
         if (StringUtils.isEmpty(extraParams.trim())) {
-            return "jdbc:mysql://HOSTNAME:PORT/DATABASE"
+            return "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
         } else {
-            for (String illegalParameter : illegalParameters) {
-                if (getExtraParams().contains(illegalParameter)) {
-                    throw new RuntimeException("Illegal parameter: " + illegalParameter);
-                }
-            }
-
-            return "jdbc:mysql://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
+            return "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE;EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim())
