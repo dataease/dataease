@@ -1,10 +1,7 @@
 package io.dataease.xpack.permissions.auth;
 
 import io.dataease.api.permissions.auth.api.AuthApi;
-import io.dataease.api.permissions.auth.dto.BusiPerEditor;
-import io.dataease.api.permissions.auth.dto.BusiPermissionRequest;
-import io.dataease.api.permissions.auth.dto.MenuPerEditor;
-import io.dataease.api.permissions.auth.dto.MenuPermissionRequest;
+import io.dataease.api.permissions.auth.dto.*;
 import io.dataease.api.permissions.auth.vo.PermissionVO;
 import io.dataease.api.permissions.auth.vo.ResourceVO;
 import io.dataease.i18n.I18n;
@@ -52,6 +49,11 @@ public class AuthServer implements AuthApi {
 
     @Override
     public void saveMenuPer(MenuPerEditor editor) {
+
+    }
+
+    @Override
+    public void saveResource(BusiResourceCreator creator) {
 
     }
 }

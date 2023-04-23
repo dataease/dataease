@@ -1,10 +1,7 @@
 package io.dataease.api.permissions.auth.api;
 
 
-import io.dataease.api.permissions.auth.dto.BusiPerEditor;
-import io.dataease.api.permissions.auth.dto.BusiPermissionRequest;
-import io.dataease.api.permissions.auth.dto.MenuPerEditor;
-import io.dataease.api.permissions.auth.dto.MenuPermissionRequest;
+import io.dataease.api.permissions.auth.dto.*;
 import io.dataease.api.permissions.auth.vo.PermissionVO;
 import io.dataease.api.permissions.auth.vo.ResourceVO;
 import io.dataease.auth.DeApiPath;
@@ -14,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 @Api(tags = "系统：权限管理")
@@ -43,5 +41,10 @@ public interface AuthApi {
     @ApiOperation("保存菜单权限")
     @PostMapping("/saveMenuPer")
     void saveMenuPer(@RequestBody MenuPerEditor editor);
+
+    @ApiIgnore
+    @ApiOperation("保存业务资源")
+    @PostMapping("/resource/create")
+    void saveResource(@RequestBody BusiResourceCreator creator);
 
 }
