@@ -110,9 +110,9 @@ const confirmEditCalc = () => {
 
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
-    key: ele.fieldShortName,
+    key: ele.dataeaseName,
     deType: ele.deType,
-    dataKey: ele.fieldShortName,
+    dataKey: ele.dataeaseName,
     title: ele.name,
     width: 150,
     headerCellRenderer: ({ column }) => (
