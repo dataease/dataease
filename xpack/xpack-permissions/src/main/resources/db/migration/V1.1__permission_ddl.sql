@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS `per_auth_busi_role`;
 CREATE TABLE `per_auth_busi_role`
 (
     `id`            bigint NOT NULL COMMENT '授权ID',
-    `r_id`          bigint NOT NULL COMMENT '目标ID',
+    `rid`          bigint NOT NULL COMMENT '目标ID',
     `resource_id`   bigint NOT NULL COMMENT '资源ID',
     `resource_type` int    NOT NULL COMMENT '资源类型',
     `weight`        int    NOT NULL DEFAULT '0' COMMENT '权重',
@@ -22,7 +22,7 @@ DROP TABLE IF EXISTS `per_auth_busi_user`;
 CREATE TABLE `per_auth_busi_user`
 (
     `id`            bigint NOT NULL COMMENT '授权ID',
-    `u_id`          bigint NOT NULL COMMENT '目标ID',
+    `uid`          bigint NOT NULL COMMENT '目标ID',
     `resource_id`   bigint NOT NULL COMMENT '资源ID',
     `resource_type` int    NOT NULL COMMENT '资源类型',
     `weight`        int    NOT NULL DEFAULT '0' COMMENT '权重',
@@ -57,7 +57,7 @@ CREATE TABLE `per_busi_resource`
 (
     `id`       bigint      NOT NULL COMMENT '资源ID',
     `name`     varchar(30) NOT NULL COMMENT '名称',
-    `rt_id`    bigint      NOT NULL COMMENT '类型ID',
+    `rt_id`    int         NOT NULL COMMENT '类型ID',
     `org_id`   bigint       DEFAULT NULL COMMENT '所属组织ID',
     `pid`      bigint      NOT NULL COMMENT '上级资源ID',
     `root_way` varchar(255) DEFAULT NULL COMMENT '寻根路径',

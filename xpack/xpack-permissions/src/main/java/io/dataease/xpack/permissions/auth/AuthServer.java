@@ -6,6 +6,7 @@ import io.dataease.api.permissions.auth.vo.PermissionVO;
 import io.dataease.api.permissions.auth.vo.ResourceVO;
 import io.dataease.i18n.I18n;
 import io.dataease.xpack.permissions.auth.manage.AuthManage;
+import io.dataease.xpack.permissions.auth.manage.SyncAuthManage;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,9 @@ public class AuthServer implements AuthApi {
 
     @Resource
     private AuthManage authManage;
+
+    @Resource
+    private SyncAuthManage syncAuthManage;
     @Override
     public List<ResourceVO> busiResource(String flag) {
         return authManage.resourceTree(flag);
@@ -54,6 +58,6 @@ public class AuthServer implements AuthApi {
 
     @Override
     public void saveResource(BusiResourceCreator creator) {
-
+        syncAuthManage.syncResource(creator);
     }
 }
