@@ -90,7 +90,7 @@ export default defineConfig({
       symbolId: 'icon-[dir]-[name]'
     }),
     VueI18nPlugin({
-      runtimeOnly: true,
+      runtimeOnly: false,
       compositionOnly: true,
       include: [resolve(__dirname, 'src/locales/**')]
     }),
