@@ -6,6 +6,6 @@ import lombok.Data;
 public class ChartFieldCompareDTO {
     private String type;
     private String resultData;
-    private String field;
+    private Long field;
     private ChartFieldCompareCustomDTO custom;
 }

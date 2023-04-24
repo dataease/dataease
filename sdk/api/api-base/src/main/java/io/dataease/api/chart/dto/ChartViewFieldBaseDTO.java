@@ -1,5 +1,6 @@
 package io.dataease.api.chart.dto;
 
+import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -8,36 +9,11 @@ import java.io.Serializable;
  * 视图字段base类，与数据集字段表基本一致
  */
 @Data
-public class ChartViewFieldBaseDTO implements Serializable {
-    private String id;
-
-    private String datasourceId;
-
-    private String datasetTableId;
-
-    private String datasetGroupId;
-
-    private String originName;
-
-    private String dataeaseName;
-
-    private String name;
-
-    private String type;
-
-    private Boolean checked;
-
-    private Integer columnIndex;
-
-    private Long lastSyncTime;
-
-    private Integer deType;
+public class ChartViewFieldBaseDTO extends DatasetTableFieldDTO implements Serializable {
 
     private String summary;
 
     private String sort;
-
-    private Integer deExtractType;
 
     private String dateStyle;
 
@@ -53,7 +29,6 @@ public class ChartViewFieldBaseDTO implements Serializable {
 
     private String filterType;
 
-    private String chartId;
+    private Long chartId;
 
-    private String dateFormat;
 }

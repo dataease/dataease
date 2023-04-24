@@ -1,9 +1,11 @@
 package io.dataease.engine.sql;
 
+import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.engine.constant.SQLConstants;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -29,7 +31,7 @@ public class SQLProvider {
     }
 
     public static String createQuerySQLWithLimit(SQLMeta sqlMeta, boolean isGroup, int start, int count) {
-        return createQuerySQL(sqlMeta, isGroup) + " limit " + count + " offset " + start;
+        return createQuerySQL(sqlMeta, isGroup) + " LIMIT " + count + " OFFSET " + start;
     }
 
     public static String createQuerySQL(SQLMeta sqlMeta, boolean isGroup) {
@@ -54,5 +56,62 @@ public class SQLProvider {
         }
 
         return st_sql.render();
+    }
+
+    public static String createQuerySQL(SQLMeta sqlMeta, boolean isGroup, ChartViewDTO view) {
+        STGroup stg = new STGroupString(SqlTemplate.PREVIEW_SQL);
+        ST st_sql = stg.getInstanceOf("previewSql");
+
+        st_sql.add("isGroup", isGroup);
+
+        SQLObj tableObj = sqlMeta.getTable();
+        if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+
+        List<SQLObj> xFields = sqlMeta.getXFields();
+        List<SQLObj> xOrders = sqlMeta.getXOrders();
+        if (ObjectUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
+
+        List<SQLObj> yFields = sqlMeta.getYFields();
+        List<String> yWheres = sqlMeta.getYWheres();
+        List<SQLObj> yOrders = sqlMeta.getYOrders();
+        if (ObjectUtils.isNotEmpty(yFields)) st_sql.add("aggregators", yFields);
+
+        String customWheres = sqlMeta.getCustomWheres();
+        String extWheres = sqlMeta.getExtWheres();
+        String whereTrees = sqlMeta.getWhereTrees();
+        List<String> wheres = new ArrayList<>();
+        if (customWheres != null) wheres.add(customWheres);
+        if (extWheres != null) wheres.add(extWheres);
+        if (whereTrees != null) wheres.add(whereTrees);
+        if (ObjectUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
+        String sql = st_sql.render();
+
+        ST st = stg.getInstanceOf("previewSql");
+        st_sql.add("isGroup", isGroup);
+
+        SQLObj tableSQL = SQLObj.builder()
+                .tableName(String.format(SQLConstants.BRACKETS, sql))
+                .tableAlias(String.format(SQLConstants.TABLE_ALIAS_PREFIX, 1))
+                .build();
+        if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
+
+        List<String> aggWheres = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(yWheres)) aggWheres.addAll(yWheres);
+        if (ObjectUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
+
+        List<SQLObj> orders = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(xOrders)) orders.addAll(xOrders);
+        if (ObjectUtils.isNotEmpty(yOrders)) orders.addAll(yOrders);
+        if (ObjectUtils.isNotEmpty(orders)) st.add("orders", orders);
+
+        return sqlLimit(st.render(), view);
+    }
+
+    private static String sqlLimit(String sql, ChartViewDTO view) {
+        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+            return sql + " LIMIT " + view.getResultCount() + " OFFSET 0";
+        } else {
+            return sql;
+        }
     }
 }

@@ -13,4 +13,7 @@ public interface BusiAuthExtMapper {
 
     @Select("select id, name, pid from per_busi_resource ${ew.customSqlSegment} ")
     List<BusiResourcePO> query(@Param("ew") QueryWrapper queryWrapper);
+
+    @Select("select root_way from per_busi_resource where id = #{id}")
+    String queryRootWay(@Param("id") Long id);
 }

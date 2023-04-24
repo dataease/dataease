@@ -36,9 +36,9 @@ public class Dimension2SQLObj {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = Utils.calcFieldRegex(x.getOriginName(), tableObj, originFields);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_COPY)) {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getFieldShortName());
                 } else {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getOriginName());
+                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getFieldShortName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 // 处理横轴字段

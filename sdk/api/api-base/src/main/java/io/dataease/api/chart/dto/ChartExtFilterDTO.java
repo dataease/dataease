@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 public class ChartExtFilterDTO {
     @ApiModelProperty("过滤组件ID")
-    private String componentId;
+    private Long componentId;
     @ApiModelProperty("过滤字段ID")
     private String fieldId;
     @ApiModelProperty("过滤操作符")
@@ -17,7 +17,7 @@ public class ChartExtFilterDTO {
     @ApiModelProperty("过滤值")
     private List<String> value;
     @ApiModelProperty("目标视图ID集合")
-    private List<String> viewIds;
+    private List<Long> viewIds;
     @ApiModelProperty("sql 数据集参数")
     private List<String> parameters;
     @ApiModelProperty("过滤字段")

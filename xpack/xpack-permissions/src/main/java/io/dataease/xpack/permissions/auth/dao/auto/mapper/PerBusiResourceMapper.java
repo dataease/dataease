@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-18
+ * @since 2023-04-23
  */
 public interface PerBusiResourceMapper extends BaseMapper<PerBusiResource> {
 

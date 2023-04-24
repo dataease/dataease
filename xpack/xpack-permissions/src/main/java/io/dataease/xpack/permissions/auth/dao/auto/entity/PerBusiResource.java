@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-18
+ * @since 2023-04-23
  */
 @TableName("per_busi_resource")
 public class PerBusiResource implements Serializable {
@@ -29,7 +29,7 @@ public class PerBusiResource implements Serializable {
     /**
      * 类型ID
      */
-    private Long rtId;
+    private Integer rtId;
 
     /**
      * 所属组织ID
@@ -62,11 +62,11 @@ public class PerBusiResource implements Serializable {
         this.name = name;
     }
 
-    public Long getRtId() {
+    public Integer getRtId() {
         return rtId;
     }
 
-    public void setRtId(Long rtId) {
+    public void setRtId(Integer rtId) {
         this.rtId = rtId;
     }
 

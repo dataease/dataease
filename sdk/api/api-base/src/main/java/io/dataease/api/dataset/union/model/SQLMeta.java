@@ -1,6 +1,5 @@
 package io.dataease.api.dataset.union.model;
 
-import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -19,11 +18,11 @@ public class SQLMeta {
 
     private List<SQLObj> xOrders;
 
-    private List<SQLObj> xFieldsExt;
-
-    private List<String> xWheresExt;
-
-    private List<SQLObj> xOrdersExt;
+//    private List<SQLObj> xFieldsExt;
+//
+//    private List<String> xWheresExt;
+//
+//    private List<SQLObj> xOrdersExt;
 
     private List<SQLObj> yFields;
 
@@ -31,21 +30,21 @@ public class SQLMeta {
 
     private List<SQLObj> yOrders;
 
-    private List<SQLObj> yFieldsExt;
+//    private List<SQLObj> yFieldsExt;
+//
+//    private List<String> yWheresExt;
+//
+//    private List<SQLObj> yOrdersExt;
 
-    private List<String> yWheresExt;
-
-    private List<SQLObj> yOrdersExt;
-
-    /**
-     * 堆叠项
-     */
-    private List<SQLObj> extStack;
-
-    /**
-     * 气泡大小
-     */
-    private List<SQLObj> extBubble;
+//    /**
+//     * 堆叠项
+//     */
+//    private List<SQLObj> extStack;
+//
+//    /**
+//     * 气泡大小
+//     */
+//    private List<SQLObj> extBubble;
 
     /**
      * 视图过滤字段
