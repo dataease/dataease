@@ -35,7 +35,7 @@ const emit = defineEmits(['handleCommand'])
     trigger="click"
     @command="handleCommand"
   >
-    <el-icon class="menu-more">
+    <el-icon class="hover-icon">
       <Icon :name="iconName"></Icon>
     </el-icon>
     <template #dropdown>
@@ -56,17 +56,6 @@ const emit = defineEmits(['handleCommand'])
   </el-dropdown>
 </template>
 
-<style lang="less" scoped>
-.menu-more {
-  cursor: pointer;
-  height: 24px;
-  width: 24px;
-  border-radius: 4px;
-  &:hover {
-    background: rgba(31, 35, 41, 0.1);
-  }
-}
-</style>
 <style lang="less">
 .menu-more_popper {
   margin-top: -10px !important;
