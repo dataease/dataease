@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-18
+ * @since 2023-04-23
  */
 @TableName("per_auth_busi_user")
 public class PerAuthBusiUser implements Serializable {
@@ -24,7 +24,7 @@ public class PerAuthBusiUser implements Serializable {
     /**
      * 目标ID
      */
-    private Long uId;
+    private Long uid;
 
     /**
      * 资源ID
@@ -49,12 +49,12 @@ public class PerAuthBusiUser implements Serializable {
         this.id = id;
     }
 
-    public Long getuId() {
-        return uId;
+    public Long getUid() {
+        return uid;
     }
 
-    public void setuId(Long uId) {
-        this.uId = uId;
+    public void setUid(Long uid) {
+        this.uid = uid;
     }
 
     public Long getResourceId() {
@@ -85,7 +85,7 @@ public class PerAuthBusiUser implements Serializable {
     public String toString() {
         return "PerAuthBusiUser{" +
         "id = " + id +
-        ", uId = " + uId +
+        ", uid = " + uid +
         ", resourceId = " + resourceId +
         ", resourceType = " + resourceType +
         ", weight = " + weight +
