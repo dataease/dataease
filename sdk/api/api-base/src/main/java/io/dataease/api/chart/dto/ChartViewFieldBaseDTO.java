@@ -29,6 +29,6 @@ public class ChartViewFieldBaseDTO extends DatasetTableFieldDTO implements Seria
 
     private String filterType;
 
-    private String chartId;
+    private Long chartId;
 
 }

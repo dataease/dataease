@@ -34,12 +34,12 @@ public class CoreChartView implements Serializable {
     /**
      * 场景ID chart_type为private的时候 是仪表板id
      */
-    private String sceneId;
+    private Long sceneId;
 
     /**
      * 数据集表ID
      */
-    private String tableId;
+    private Long tableId;
 
     /**
      * 图表类型
@@ -200,19 +200,19 @@ public class CoreChartView implements Serializable {
         this.title = title;
     }
 
-    public String getSceneId() {
+    public Long getSceneId() {
         return sceneId;
     }
 
-    public void setSceneId(String sceneId) {
+    public void setSceneId(Long sceneId) {
         this.sceneId = sceneId;
     }
 
-    public String getTableId() {
+    public Long getTableId() {
         return tableId;
     }
 
-    public void setTableId(String tableId) {
+    public void setTableId(Long tableId) {
         this.tableId = tableId;
     }
 

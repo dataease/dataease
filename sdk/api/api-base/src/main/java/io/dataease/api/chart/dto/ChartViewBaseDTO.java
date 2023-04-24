@@ -20,7 +20,7 @@ public class ChartViewBaseDTO implements Serializable {
     /**
      * ID
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -36,12 +36,12 @@ public class ChartViewBaseDTO implements Serializable {
     /**
      * 场景ID chart_type为private的时候 是仪表板id
      */
-    private String sceneId;
+    private Long sceneId;
 
     /**
      * 数据集表ID
      */
-    private String tableId;
+    private Long tableId;
 
     /**
      * 图表类型

@@ -4,7 +4,6 @@ import io.dataease.api.chart.dto.ChartViewFieldDTO;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
-
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -38,9 +37,9 @@ public class Quota2SQLObj {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = Utils.calcFieldRegex(y.getOriginName(), tableObj, originFields);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_COPY)) {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getFieldShortName());
                 } else {
-                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getOriginName());
+                    originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getFieldShortName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
@@ -97,7 +96,7 @@ public class Quota2SQLObj {
         List<SQLObj> list = new ArrayList<>();
         if (!CollectionUtils.isEmpty(y.getFilter()) && y.getFilter().size() > 0) {
             y.getFilter().forEach(f -> {
-                String whereTerm = Utils.transMysqlFilterTerm(f.getTerm());
+                String whereTerm = Utils.transFilterTerm(f.getTerm());
                 String whereValue = "";
                 // 原始类型不是时间，在de中被转成时间的字段做处理
                 if (StringUtils.equalsIgnoreCase(f.getTerm(), "null")) {

@@ -88,7 +88,7 @@ public class Utils {
         }
     }
 
-    public static String transMysqlFilterTerm(String term) {
+    public static String transFilterTerm(String term) {
         switch (term) {
             case "eq":
                 return " = ";

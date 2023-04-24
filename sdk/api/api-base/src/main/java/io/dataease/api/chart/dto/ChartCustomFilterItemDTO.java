@@ -9,7 +9,7 @@ import java.io.Serializable;
  */
 @Data
 public class ChartCustomFilterItemDTO implements Serializable {
-    private String fieldId;
+    private Long fieldId;
     private String term;
     private String value;
 }
