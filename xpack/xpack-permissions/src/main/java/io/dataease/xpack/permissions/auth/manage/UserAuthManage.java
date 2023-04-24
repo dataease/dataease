@@ -1,6 +1,7 @@
 package io.dataease.xpack.permissions.auth.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.dataease.constant.AuthEnum;
 import io.dataease.utils.AuthUtils;
@@ -11,6 +12,7 @@ import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,9 +32,9 @@ public class UserAuthManage extends ServiceImpl<PerAuthBusiUserMapper, PerAuthBu
      * @return
      */
     public List<PerAuthBusiUser> uidForRootWay(String rootWay) {
-        if (StringUtils.isBlank(rootWay)) return null;
+        if (StringUtils.isBlank(rootWay)) return ListUtil.empty();
         List<String> ids = Arrays.stream(rootWay.split(",")).toList();
-        if (CollectionUtil.isEmpty(ids)) return null;
+        if (CollectionUtil.isEmpty(ids)) return ListUtil.empty();
         List<PerAuthBusiUser> perAuthBusiUsers = perAuthBusiUserMapper.selectBatchIds(ids);
         return perAuthBusiUsers;
     }

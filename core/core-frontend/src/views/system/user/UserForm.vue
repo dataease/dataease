@@ -59,13 +59,13 @@ const validateUsername = (_, value, callback) => {
   }
 }
 
-const repeatValidator = (_, value, callback) => {
+/* const repeatValidator = (_, value, callback) => {
   if (value !== form.password) {
     callback(new Error(t('member.inconsistent_passwords')))
   } else {
     callback()
   }
-}
+} */
 const validateNickname = (_, value, callback) => {
   const pattern =
     "[\\u00A0\\s\"`~!@#$%^&*()+=|{}':;',\\[\\]<>/?~！@#￥%……&*（）——+|{}【】‘；：”“'。，、？]"

@@ -1,5 +1,6 @@
 package io.dataease.xpack.permissions.auth.manage;
 
+import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.utils.AuthUtils;
@@ -12,9 +13,11 @@ import io.dataease.xpack.permissions.auth.dao.auto.mapper.PerBusiResourceMapper;
 import io.dataease.xpack.permissions.auth.dao.ext.mapper.BusiAuthExtMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -34,6 +37,7 @@ public class SyncAuthManage {
 
     /**
      * 从业务系统同步资源到权限系统
+     *
      * @param creator
      */
     @Transactional
@@ -48,11 +52,11 @@ public class SyncAuthManage {
         perBusiResource.setPid(creator.getPid());
         BusiResourceEnum resourceEnum = BusiResourceEnum.valueOf(creator.getFlag());
         perBusiResource.setRtId(resourceEnum.getFlag());
-        if (ObjectUtils.isEmpty(pid) || pid.equals(0L)) {
-            busiAuthExtMapper.queryRootWay(pid);
+        PerBusiResource parent = null;
+        if (ObjectUtils.isNotEmpty(pid) && !pid.equals(0L) && ObjectUtils.isNotEmpty(parent = perBusiResourceMapper.selectById(pid))) {
+            String rootWay = StringUtils.isBlank(parent.getRootWay()) ? parent.getId().toString() : (parent.getRootWay() + "," + parent.getId());
+            perBusiResource.setRootWay(rootWay);
         }
-        PerBusiResource parent = perBusiResourceMapper.selectById(pid);
-        perBusiResource.setRootWay(parent.getRootWay() + "," + parent.getId());
         perBusiResourceMapper.insert(perBusiResource);
         proxy().syncAuthForResource(perBusiResource.getId(), perBusiResource.getRtId(), perBusiResource.getRootWay());
     }
@@ -64,11 +68,13 @@ public class SyncAuthManage {
     public void syncAuthForResource(Long id, Integer rt, String rootWay) {
         List<PerAuthBusiUser> perAuthBusiUsers = userAuthManage.uidForRootWay(rootWay);
         PerAuthBusiUser authBusiUser = userAuthManage.curUserPer(id, rt);
+        perAuthBusiUsers = ObjectUtils.isEmpty(perAuthBusiUsers) ? new ArrayList<>() : perAuthBusiUsers;
         perAuthBusiUsers.add(authBusiUser);
         userAuthManage.syncCascade(perAuthBusiUsers, id);
 
         List<PerAuthBusiRole> perAuthBusiRoles = roleAuthManage.ridForRootWay(rootWay);
-        roleAuthManage.syncCascade(perAuthBusiRoles, id);
+        if (CollectionUtil.isNotEmpty(perAuthBusiRoles))
+            roleAuthManage.syncCascade(perAuthBusiRoles, id);
     }
 
     private SyncAuthManage proxy() {

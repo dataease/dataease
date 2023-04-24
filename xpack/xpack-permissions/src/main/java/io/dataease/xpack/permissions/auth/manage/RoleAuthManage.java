@@ -1,6 +1,7 @@
 package io.dataease.xpack.permissions.auth.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.dataease.utils.IDUtils;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiRole;
@@ -19,9 +20,9 @@ public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBu
     private PerAuthBusiRoleMapper perAuthBusiRoleMapper;
 
     public List<PerAuthBusiRole> ridForRootWay(String rootWay) {
-        if (StringUtils.isBlank(rootWay)) return null;
+        if (StringUtils.isBlank(rootWay)) return ListUtil.empty();
         List<String> ids = Arrays.stream(rootWay.split(",")).toList();
-        if (CollectionUtil.isEmpty(ids)) return null;
+        if (CollectionUtil.isEmpty(ids)) return ListUtil.empty();
         return perAuthBusiRoleMapper.selectBatchIds(ids);
     }
 
