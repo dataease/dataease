@@ -91,9 +91,9 @@ state.roleList = [
 state.globalColumn = [
   { type: 'datasource, dataset, menu', label: '使用', weight: 1 },
   { type: 'panel, screen', label: '查看', weight: 1 },
-  { type: 'panel, screen', label: '导出', weight: 3 },
-  { type: 'datasource, dataset, panel, screen', label: '管理', weight: 5 },
-  { label: '授权', weight: 7 }
+  { type: 'panel, screen', label: '导出', weight: 4 },
+  { type: 'datasource, dataset, panel, screen', label: '管理', weight: 7 },
+  { label: '授权', weight: 9 }
 ]
 // 选中角色事件
 const roleNodeClick = (data: Tree) => {
@@ -143,7 +143,7 @@ const loadUser = () => {
   const param = { keyword: nickName.value }
   queryUserApi(param).then(res => {
     if (res?.data?.length) {
-      state.userList = res.data
+      state.userList = res.data.filter(item => item.id !== '1')
     } else {
       state.userList = []
     }
@@ -251,46 +251,28 @@ onMounted(() => {
         </div>
       </div>
       <div class="tree-table" :class="activeAuth === 'menu' ? 'full-tree-table' : ''">
-        <!-- <el-empty
-          v-if="!state.tableData || !state.tableData.length"
-          :description="t('auth.empty_desc')"
-        /> -->
         <el-table
           v-if="!tableLoading"
           :data="state.tableData"
           style="width: 100%"
           row-key="id"
+          height="100%"
           header-cell-class-name="header-cell"
           :tree-props="{ children: 'children' }"
         >
-          <el-table-column prop="name" label="资源名称" />
-          <!-- <el-table-column width="1" v-show="false"></el-table-column> -->
+          <el-table-column prop="name" show-overflow-tooltip label="资源名称" />
           <el-table-column
             v-for="item in state.tableColumn"
             :key="item.label"
             align="center"
             prop="name"
+            width="70"
             :label="item.label"
           >
             <template #default="scope">
               <el-checkbox v-model="scope.row.name"></el-checkbox>
             </template>
           </el-table-column>
-          <!-- <el-table-column align="center" prop="name" label="导出">
-            <template #default="scope">
-              <el-checkbox v-model="scope.row.address"></el-checkbox>
-            </template>
-          </el-table-column>
-          <el-table-column align="center" prop="name" label="管理">
-            <template #default="scope">
-              <el-checkbox v-model="scope.row.address"></el-checkbox>
-            </template>
-          </el-table-column>
-          <el-table-column align="center" prop="address" label="授权">
-            <template #default="scope">
-              <el-checkbox v-model="scope.row.address"></el-checkbox>
-            </template>
-          </el-table-column> -->
         </el-table>
       </div>
     </div>
