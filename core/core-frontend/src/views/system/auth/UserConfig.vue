@@ -229,8 +229,10 @@ const loadPermission = (type: number) => {
         emptyDescription.value = type
           ? '组织管理员已拥有所有资源的权限，无需再授权'
           : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+        return
       }
       const permissionMap = groupPermission(vos)
+      resetTableData(state.tableData)
       fillTableData(state.tableData, permissionMap)
     })
     return
@@ -246,8 +248,10 @@ const loadPermission = (type: number) => {
       emptyDescription.value = type
         ? '组织管理员已拥有所有资源的权限，无需再授权'
         : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+      return
     }
     const permissionMap = groupPermission(vos)
+    resetTableData(state.tableData)
     fillTableData(state.tableData, permissionMap)
   })
 }
@@ -261,7 +265,7 @@ const groupPermission = vos => {
         const { id, weight } = item
         const roles = map.get(id)?.roles || new Set()
         origin && roles.add(origin)
-        const obj = { id, weight, roles, showRole: roles?.size }
+        const obj = { id, weight, roles, showRole: roles?.size > 0 }
         map.set(id, obj)
       })
     }
@@ -272,21 +276,19 @@ const groupPermission = vos => {
 }
 
 const fillTableData = (rows, maps) => {
-  if (!maps?.size) {
+  /* if (!maps?.size) {
     return
-  }
+  } */
   rows?.forEach(row => {
-    const temp = maps.get(row.id)
-    if (temp) {
-      state.tableColumn?.forEach(col => {
-        const weight = temp['weight'] || 0
-        const weightLevel = col.weightLevel
-        if (weight >= weightLevel) {
-          temp['value' + weightLevel] = true
-        }
-      })
-      Object.assign(row, temp)
-    }
+    const temp = maps.get(row.id) || {}
+    state.tableColumn?.forEach(col => {
+      const weight = temp['weight'] || 0
+      const weightLevel = col.weightLevel
+      if (weight >= weightLevel) {
+        temp['value' + weightLevel] = true
+      }
+    })
+    Object.assign(row, temp)
     if (row.children?.length) {
       fillTableData(row.children, maps)
     }
@@ -355,7 +357,7 @@ const save = callback => {
   method(param).then(() => {
     ElMessage.success(t('common.save_success'))
     loadPermission(param['type'] || 0)
-    callback && callback()
+    callback && callback instanceof Function && callback()
   })
 }
 
@@ -540,9 +542,9 @@ defineExpose({
           >
             <template #default="scope">
               <el-popover
-                v-if="scope.row.showRole"
+                v-if="scope.row.showRole && scope.row.weight >= item.weightLevel"
                 placement="top-start"
-                title="Title"
+                title=""
                 :width="200"
                 trigger="hover"
               >
@@ -552,12 +554,17 @@ defineExpose({
                     v-model="scope.row['value' + item.weightLevel]"
                   ></el-checkbox>
                 </template>
-                <div>
+                <div class="role-auth-tips">
                   <span>继承自以下角色：</span>
                   <span :key="item.id" v-for="(item, index) in scope.row.roles">{{
-                    index + '、' + item.name
+                    index + 1 + '、' + item.name
                   }}</span>
-                  <span>单独授权<el-switch v-model="scope.row.showRole" /></span>
+                  <span
+                    >单独授权<el-switch
+                      class="independent-auth"
+                      size="small"
+                      v-model="scope.row.showRole"
+                  /></span>
                 </div>
               </el-popover>
               <el-checkbox
@@ -676,5 +683,13 @@ defineExpose({
 }
 .user-role-container {
   margin: 0 24px;
+}
+.role-auth-tips {
+  span {
+    display: block;
+  }
+}
+.independent-auth {
+  margin-left: 5px;
 }
 </style>
