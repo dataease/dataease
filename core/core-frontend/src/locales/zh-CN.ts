@@ -99,6 +99,7 @@ export default {
     screen: '数据大屏',
     dataset: '数据集',
     datasource: '数据源',
-    empty_desc: '请选择用户/角色以及资源类型'
+    empty_desc: '请选择用户/角色以及资源类型',
+    uncommitted_tips: '有未提交的权限变更，是否提交？'
   }
 }

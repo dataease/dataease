@@ -1,5 +1,6 @@
 package io.dataease.api.permissions.auth.dto;
 
+import io.dataease.api.permissions.auth.vo.PermissionItem;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

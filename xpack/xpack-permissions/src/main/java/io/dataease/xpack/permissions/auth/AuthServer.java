@@ -32,7 +32,7 @@ public class AuthServer implements AuthApi {
 
     @Override
     public List<PermissionVO> busiPermission(BusiPermissionRequest request) {
-        return null;
+        return authManage.busiPermission(request);
     }
 
     @I18n
@@ -43,17 +43,17 @@ public class AuthServer implements AuthApi {
 
     @Override
     public List<PermissionVO> menuPermission(MenuPermissionRequest request) {
-        return null;
+        return authManage.menuPermission(request);
     }
 
     @Override
     public void saveBusiPer(BusiPerEditor editor) {
-
+        authManage.saveBusiPer(editor);
     }
 
     @Override
     public void saveMenuPer(MenuPerEditor editor) {
-
+        authManage.saveMenuPer(editor);
     }
 
     @Override

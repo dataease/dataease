@@ -2,7 +2,9 @@ package io.dataease.xpack.permissions.user.dao.ext.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.dataease.xpack.permissions.user.dao.auto.entity.PerRole;
 import io.dataease.xpack.permissions.user.dao.ext.entity.RolePO;
+import io.dataease.xpack.permissions.user.entity.RoleInfo;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -40,5 +42,9 @@ public interface RoleExtMapper extends BaseMapper<RolePO> {
     @Delete("delete from per_user_role pur where EXISTS (select 1 from per_role pr where pr.org_id = #{oid} and pur.rid = pr.id) and pur.uid = #{uid}")
     void deleteUserRole(@Param("oid") Long oid, @Param("uid") Long uid);
 
+    @Select("select id, readonly, pid from per_role where id = #{rid}")
+    PerRole selectRoleInfo(@Param("rid") Long rid);
 
+    @Select("select pr.id, pr.name, pr.readonly, pr.pid from per_user_role pur left join per_role pr on pur.rid = pr.id where pur.uid = #{uid} and pur.oid = #{oid} ")
+    List<PerRole> roleInfoByUid(@Param("uid") Long uid, @Param("oid") Long oid);
 }
