@@ -42,6 +42,9 @@ const setCurComponent = index => {
 
 <template>
   <div class="real-time-component-list">
+    <div class="title">
+      <span>图层管理</span>
+    </div>
     <div
       v-for="(item, index) in componentData"
       :key="index"
@@ -62,13 +65,21 @@ const setCurComponent = index => {
 
 <style lang="less" scoped>
 .real-time-component-list {
-  height: 35%;
-
+  height: 100%;
+  background-color: rgba(37, 45, 54, 1);
+  border: 1px solid rgba(85, 85, 85, 1);
+  color: #fff;
+  .title {
+    height: 45px;
+    border-bottom: 1px solid rgba(85, 85, 85, 1);
+    display: table-cell;
+    width: 200px;
+    vertical-align: middle;
+  }
   .list {
     height: 30px;
     cursor: grab;
     text-align: center;
-    color: #333;
     display: flex;
     align-items: center;
     font-size: 12px;

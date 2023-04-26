@@ -10,12 +10,14 @@ import RealTimeComponentList from '@/components/data-visualization/RealTimeCompo
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { setDefaultComponentData } from '@/store/modules/data-visualization/snapshot'
-import { computed, ref } from 'vue'
+import { computed, getCurrentInstance, onMounted, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
+import DvToolbar from '../../components/data-visualization/DvToolbar.vue'
+import ComponentToolBar from '../../components/data-visualization/ComponentToolBar.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -25,6 +27,7 @@ const activeName = ref('attr')
 const reSelectAnimateIndex = ref(undefined)
 const { componentData, curComponent, isClickComponent, canvasStyleData } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
+const canvasOut = ref(null)
 
 const contentStyle = computed(() => {
   const { width, height, scale } = canvasStyleData.value
@@ -90,19 +93,45 @@ const deselectCurComponent = e => {
 restore()
 // 全局监听按键事件
 listenGlobalKeyDown()
+
+const props = defineProps({
+  dvId: {
+    required: false,
+    type: String
+  }
+})
+
+const { dvId } = toRefs(props)
+
+onMounted(() => {
+  if (dvId.value) {
+    // 从数据库中获取
+  } else {
+    dvMainStore.updateCurDvInfo({
+      id: null,
+      name: '新建仪表板',
+      pid: null,
+      status: null,
+      selfWatermarkStatus: null
+    })
+  }
+  // 设置画布初始滚动条位置
+  // canvasOut.value.nav.scrollLeft += 100
+})
 </script>
 
 <template>
   <div class="home">
-    <Toolbar />
+    <DvToolbar />
     <main>
       <!-- 左侧组件列表 -->
       <section class="left">
-        <ComponentList />
+        <!--        <ComponentList />-->
         <RealTimeComponentList />
       </section>
       <!-- 中间画布 -->
-      <section class="center">
+      <section class="center" ref="canvasOut">
+        <ComponentToolBar></ComponentToolBar>
         <div
           class="content"
           :style="contentStyle"
@@ -132,7 +161,7 @@ listenGlobalKeyDown()
   height: 100vh;
 
   main {
-    height: calc(100% - 64px);
+    height: calc(100% - 43px);
     position: relative;
 
     .left {
@@ -165,10 +194,10 @@ listenGlobalKeyDown()
     .center {
       margin-left: 200px;
       margin-right: 0px;
-      background: #f5f5f5;
       height: 100%;
       overflow: auto;
-      padding: 20px;
+      padding: 0px;
+      background-color: rgba(51, 51, 51, 1);
 
       .content {
         overflow: auto;

@@ -113,7 +113,7 @@ listenGlobalKeyDown()
   height: 100vh;
 
   main {
-    height: calc(100% - 64px);
+    height: calc(100% - 43px);
     position: relative;
 
     .left {
