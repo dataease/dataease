@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 public class PermissionOrigin implements Serializable {
@@ -18,4 +19,6 @@ public class PermissionOrigin implements Serializable {
     private Long id;
     @ApiModelProperty("角色名称")
     private String name;
+    @ApiModelProperty("角色权限")
+    private List<PermissionItem> permissions;
 }
