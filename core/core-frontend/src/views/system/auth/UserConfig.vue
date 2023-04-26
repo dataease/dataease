@@ -283,7 +283,7 @@ const groupPermission = vos => {
 }
 
 const expandNodes = (ids: string[]) => {
-  const datas = state.tableData
+  const datalist = state.tableData
   let result = []
   const match = (list, targetids, parentlist) => {
     if (!targetids?.length) return
@@ -302,7 +302,7 @@ const expandNodes = (ids: string[]) => {
       }
     }
   }
-  match(datas, ids, [])
+  match(datalist, ids, [])
   state.expandedKeys = Array.from(new Set([...result]))
 }
 
