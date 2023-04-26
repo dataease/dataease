@@ -45,7 +45,7 @@ public interface BusiAuthExtMapper {
             </script>
             """)
     @Results(
-            id = "batchPermisionOriginMap",
+            id = "batchPermissionOriginMap",
             value = {
                     @Result(property = "id", column = "rid"),
                     @Result(property = "permissions", many = @Many(resultMap = "originMap"))
