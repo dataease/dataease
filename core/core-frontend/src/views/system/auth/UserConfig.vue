@@ -21,6 +21,7 @@ const selectedTarget = ref('')
 const selectedResourceType = ref('panel')
 const emptyDescription = ref('')
 const authTable = ref(null)
+const roleChecked = ref(true)
 interface Tree {
   id: string
   name: string
@@ -227,14 +228,11 @@ const loadPermission = (type: number) => {
   state.expandedKeys = []
   if (activeAuth.value === 'menu') {
     menuPerApi({ id: selectedTarget.value }).then(res => {
-      const vos = res.data
-      if (vos && vos.some(vo => vo.root && !vo.readonly)) {
-        emptyDescription.value = type
-          ? '组织管理员已拥有所有资源的权限，无需再授权'
-          : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+      const vo = res.data
+      if (isOrgAdminPer(vo, type)) {
         return
       }
-      const permissionMap = groupPermission(vos)
+      const permissionMap = groupPermission(vo)
 
       fillTableData(state.tableData, permissionMap)
     })
@@ -246,39 +244,82 @@ const loadPermission = (type: number) => {
     type
   }
   resourcePerApi(param).then(res => {
-    const vos = res.data
-    if (vos && vos.some(vo => vo.root && !vo.readonly)) {
-      emptyDescription.value = type
-        ? '组织管理员已拥有所有资源的权限，无需再授权'
-        : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+    const vo = res.data
+    if (isOrgAdminPer(vo, type)) {
       return
     }
-    const permissionMap = groupPermission(vos)
+    const permissionMap = groupPermission(vo)
     fillTableData(state.tableData, permissionMap)
   })
 }
-const groupPermission = vos => {
+
+const isOrgAdminPer = (vo, type) => {
+  if (vo?.root && !vo.readonly) {
+    emptyDescription.value = type
+      ? '组织管理员已拥有所有资源的权限，无需再授权'
+      : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+    return true
+  }
+  return false
+}
+
+const groupPermission = vo => {
   const map = new Map()
-  const expandedKeys = []
-  vos?.forEach(vo => {
-    const origin = vo.permissionOrigin
-    const permissions = vo.permissions
-    if (permissions) {
-      permissions.forEach(item => {
+  const expandedKeys = new Set<string>()
+  const origins = vo.permissionOrigins
+  const permissions = vo.permissions
+  const cols = state.tableColumn
+
+  const buildPermissionMap = (type, list, rname) => {
+    list?.length &&
+      list.forEach(item => {
         const { id, weight } = item
-        const roles = map.get(id)?.roles || new Set()
-        origin && roles.add(origin)
-        const obj = { id, weight, roles, showRole: roles?.size > 0 }
+        const originLevelobj = buildCallback(type, item, rname)
+        const obj = Object.assign({ id }, originLevelobj)
         map.set(id, obj)
         if (weight) {
-          expandedKeys.push(id)
+          expandedKeys.add(id)
         }
       })
+  }
+  const buildCallback = (type: number, item, rname: string) => {
+    if (type === 0) {
+      const originLevelobj = {}
+      cols.forEach(col => {
+        originLevelobj['level' + col.weightLevel] = { show: false, roles: new Set<string>() }
+      })
+      originLevelobj['weight'] = item['weight']
+      return originLevelobj
+    } else {
+      const { id, weight } = item
+      const originLevelobj = map.get(id) || { id }
+
+      originLevelobj['weight'] = originLevelobj['weight'] || 0
+      const userWeight = originLevelobj['weight']
+      cols.forEach(col => {
+        const weightLevel = col.weightLevel
+        const temp = originLevelobj['level' + weightLevel] || {}
+        temp['show'] = userWeight < weightLevel && weight >= weightLevel
+        if (temp['show']) {
+          const roles = temp['roles'] || new Set<string>()
+          roles.add(rname)
+          temp['roles'] = roles
+        }
+        originLevelobj['level' + weightLevel] = temp
+      })
+      return originLevelobj
     }
-  })
+  }
+  buildPermissionMap(0, permissions, null)
+
+  origins?.length &&
+    origins.forEach(item => {
+      const pers = item.permissions
+      buildPermissionMap(1, pers, item.name)
+    })
   state.uncommitted = []
   state.sourceData = map
-  expandNodes(expandedKeys)
+  expandNodes(Array.from(expandedKeys))
   return map
 }
 
@@ -578,28 +619,30 @@ defineExpose({
           >
             <template #default="scope">
               <el-popover
-                v-if="scope.row.showRole && scope.row.weight >= item.weightLevel"
+                v-if="
+                  scope.row['level' + item.weightLevel] &&
+                  scope.row['level' + item.weightLevel]['show']
+                "
                 placement="top-start"
                 title=""
                 :width="200"
                 trigger="hover"
               >
                 <template #reference>
-                  <el-checkbox
-                    disabled
-                    v-model="scope.row['value' + item.weightLevel]"
-                  ></el-checkbox>
+                  <el-checkbox disabled v-model="roleChecked"></el-checkbox>
                 </template>
                 <div class="role-auth-tips">
                   <span>继承自以下角色：</span>
-                  <span :key="item.id" v-for="(item, index) in scope.row.roles">{{
-                    index + 1 + '、' + item.name
-                  }}</span>
+                  <span
+                    :key="rname"
+                    v-for="(rname, index) in scope.row['level' + item.weightLevel]['roles']"
+                    >{{ index + 1 + '、' + rname }}</span
+                  >
                   <span
                     >单独授权<el-switch
                       class="independent-auth"
                       size="small"
-                      v-model="scope.row.showRole"
+                      v-model="scope.row['level' + item.weightLevel]['show']"
                   /></span>
                 </div>
               </el-popover>

@@ -31,7 +31,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
-    public List<PermissionVO> busiPermission(BusiPermissionRequest request) {
+    public PermissionVO busiPermission(BusiPermissionRequest request) {
         return authManage.busiPermission(request);
     }
 
@@ -42,7 +42,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
-    public List<PermissionVO> menuPermission(MenuPermissionRequest request) {
+    public PermissionVO menuPermission(MenuPermissionRequest request) {
         return authManage.menuPermission(request);
     }
 
