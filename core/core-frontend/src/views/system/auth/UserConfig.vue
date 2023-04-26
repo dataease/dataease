@@ -303,7 +303,7 @@ const expandNodes = (ids: string[]) => {
     }
   }
   match(datas, ids, [])
-  state.expandedKeys = [...new Set(result)]
+  state.expandedKeys = Array.from(new Set([...result]))
 }
 
 const fillTableData = (rows, maps) => {
