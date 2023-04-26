@@ -20,7 +20,7 @@ const nickName = ref('')
 const selectedTarget = ref('')
 const selectedResourceType = ref('panel')
 const emptyDescription = ref('')
-const authTable = ref('')
+const authTable = ref(null)
 interface Tree {
   id: string
   name: string
@@ -90,7 +90,8 @@ const state = reactive({
   globalColumn: [],
   treeMap: {},
   uncommitted: [],
-  sourceData: {}
+  sourceData: {},
+  expandedKeys: []
 })
 state.roleList = [
   {
@@ -222,6 +223,8 @@ const groupBy = (list: Tree[]) => {
 }
 const loadPermission = (type: number) => {
   emptyDescription.value = ''
+  resetTableData(state.tableData)
+  state.expandedKeys = []
   if (activeAuth.value === 'menu') {
     menuPerApi({ id: selectedTarget.value }).then(res => {
       const vos = res.data
@@ -232,7 +235,7 @@ const loadPermission = (type: number) => {
         return
       }
       const permissionMap = groupPermission(vos)
-      resetTableData(state.tableData)
+
       fillTableData(state.tableData, permissionMap)
     })
     return
@@ -251,12 +254,12 @@ const loadPermission = (type: number) => {
       return
     }
     const permissionMap = groupPermission(vos)
-    resetTableData(state.tableData)
     fillTableData(state.tableData, permissionMap)
   })
 }
 const groupPermission = vos => {
   const map = new Map()
+  const expandedKeys = []
   vos?.forEach(vo => {
     const origin = vo.permissionOrigin
     const permissions = vo.permissions
@@ -267,23 +270,49 @@ const groupPermission = vos => {
         origin && roles.add(origin)
         const obj = { id, weight, roles, showRole: roles?.size > 0 }
         map.set(id, obj)
+        if (weight) {
+          expandedKeys.push(id)
+        }
       })
     }
   })
   state.uncommitted = []
-  state.sourceData = { ...map }
+  state.sourceData = map
+  expandNodes(expandedKeys)
   return map
 }
 
+const expandNodes = (ids: string[]) => {
+  const datalist = state.tableData
+  let result = []
+  const match = (list, targetids, parentlist) => {
+    if (!targetids?.length) return
+    for (let i = 0; i < list.length; i++) {
+      const item = list[i]
+      if (targetids.includes(item.id)) {
+        targetids = targetids.filter(id => id !== item.id)
+        result = [...result, ...parentlist]
+      }
+
+      if (item.children?.length) {
+        parentlist.push(item.id)
+        match(item.children, targetids, parentlist)
+        const len = parentlist.length
+        len && parentlist.splice(len - 1, 1)
+      }
+    }
+  }
+  match(datalist, ids, [])
+  state.expandedKeys = Array.from(new Set([...result]))
+}
+
 const fillTableData = (rows, maps) => {
-  /* if (!maps?.size) {
-    return
-  } */
   rows?.forEach(row => {
-    const temp = maps.get(row.id) || {}
+    const temp = (maps?.get && maps.get(row.id)) || {}
     state.tableColumn?.forEach(col => {
       const weight = temp['weight'] || 0
       const weightLevel = col.weightLevel
+      temp['value' + weightLevel] = false
       if (weight >= weightLevel) {
         temp['value' + weightLevel] = true
       }
@@ -315,10 +344,10 @@ const rowWeightChanged = (row, level) => {
     })
     row['weight'] = finalWeight
   }
-  const item = state.sourceData[row.id]
+  const item = state.sourceData['get'](row.id)
 
-  if (item?.weight === row['weight'] || row['weight']) {
-    state.uncommitted.push({ id: row.id, weight: row['weight'] })
+  if (item?.weight !== row['weight'] || (!item?.weight && row['weight'])) {
+    add2Uncommitted(row.id, row['weight'])
   } else {
     removeFromUncommitted(row.id)
   }
@@ -330,7 +359,17 @@ const rowWeightChanged = (row, level) => {
     })
   }
 }
-
+const add2Uncommitted = (id: string, weight: number) => {
+  let match = false
+  state.uncommitted.forEach(item => {
+    if (item.id === id) {
+      item.weight = weight
+      match = true
+      return false
+    }
+  })
+  match || state.uncommitted.push({ id, weight })
+}
 const removeFromUncommitted = id => {
   let len = state.uncommitted.length
   if (!len) {
@@ -365,10 +404,6 @@ const reset = () => {
   state.uncommitted = []
   resetTableData(state.tableData)
   fillTableData(state.tableData, state.sourceData)
-  emptyDescription.value = 'loading...'
-  setTimeout(() => {
-    emptyDescription.value = ''
-  }, 500)
 }
 
 const uncommittedTips = callback => {
@@ -529,6 +564,7 @@ defineExpose({
           row-key="id"
           height="100%"
           header-cell-class-name="header-cell"
+          :expand-row-keys="state.expandedKeys"
           :tree-props="{ children: 'children' }"
         >
           <el-table-column prop="name" show-overflow-tooltip label="资源名称" />
