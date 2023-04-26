@@ -210,6 +210,6 @@ public class UserPageManage {
         queryWrapper.eq("pur.oid", oid);
         queryWrapper.like(StringUtils.isNotBlank(keyword), "pu", keyword);
         List<UserItem> result = userExtMapper.selectedForRole(queryWrapper);
-        return result.stream().filter(item -> AuthUtils.isSysAdmin(item.getId())).toList();
+        return result.stream().filter(item -> !AuthUtils.isSysAdmin(item.getId())).toList();
     }
 }

@@ -19,6 +19,8 @@ import io.dataease.xpack.permissions.user.dao.auto.mapper.PerRoleMapper;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserRoleMapper;
 import io.dataease.xpack.permissions.user.dao.ext.entity.RolePO;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.RoleExtMapper;
+import io.dataease.xpack.permissions.user.entity.RoleInfo;
+import io.dataease.xpack.permissions.user.entity.UserRole;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -280,5 +282,27 @@ public class RoleManage {
             Long newOid = outOrgMappings.get(0).getOid();
             userPageManage.switchOrg(request.getUid(), newOid);
         }
+    }
+
+    public RoleInfo roleInfo(Long rid) {
+        PerRole role = roleExtMapper.selectRoleInfo(rid);
+        RoleInfo roleInfo = new RoleInfo();
+        roleInfo.setId(role.getId());
+        roleInfo.setReadonly(role.getReadonly());
+        roleInfo.setRoot(role.getPid().equals(0L));
+        return roleInfo;
+    }
+
+    public List<UserRole> userRole(Long uid) {
+        List<PerRole> perRoles = roleExtMapper.roleInfoByUid(uid, AuthUtils.getUser().getDefaultOid());
+        if (CollectionUtil.isEmpty(perRoles)) return null;
+        return perRoles.stream().map(role -> {
+            UserRole roleInfo = new UserRole();
+            roleInfo.setId(role.getId());
+            roleInfo.setReadonly(role.getReadonly());
+            roleInfo.setRoot(role.getPid().equals(0L));
+            roleInfo.setName(role.getName());
+            return roleInfo;
+        }).toList();
     }
 }

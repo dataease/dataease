@@ -2,14 +2,25 @@
 import { ref, reactive, onMounted } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useI18n } from '@/hooks/web/useI18n'
-import { queryUserApi, queryRoleApi, resourceTreeApi, menuTreeApi } from '@/api/auth'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import {
+  queryUserApi,
+  queryRoleApi,
+  resourceTreeApi,
+  menuTreeApi,
+  resourcePerApi,
+  menuPerApi,
+  busiPerSaveApi,
+  menuPerSaveApi
+} from '@/api/auth'
 const { t } = useI18n()
 const activeName = ref('user')
 const activeAuth = ref('resource')
 const nickName = ref('')
 const selectedTarget = ref('')
 const selectedResourceType = ref('panel')
-const tableLoading = ref(false)
+const emptyDescription = ref('')
+const authTable = ref(null)
 interface Tree {
   id: string
   name: string
@@ -17,6 +28,11 @@ interface Tree {
   children?: Tree[]
   disabled: boolean
   root: boolean
+}
+interface PermissionRequest {
+  id: string
+  type: number
+  flag: string
 }
 const activeNameChange = tabName => {
   nickName.value = ''
@@ -72,7 +88,10 @@ const state = reactive({
   tableData: [],
   tableColumn: [],
   globalColumn: [],
-  treeMap: {}
+  treeMap: {},
+  uncommitted: [],
+  sourceData: {},
+  expandedKeys: []
 })
 state.roleList = [
   {
@@ -89,43 +108,70 @@ state.roleList = [
   }
 ]
 state.globalColumn = [
-  { type: 'datasource, dataset, menu', label: '使用', weight: 1 },
-  { type: 'panel, screen', label: '查看', weight: 1 },
-  { type: 'panel, screen', label: '导出', weight: 4 },
-  { type: 'datasource, dataset, panel, screen', label: '管理', weight: 7 },
-  { label: '授权', weight: 9 }
+  { type: 'datasource, dataset, menu', label: '使用', weightLevel: 1 },
+  { type: 'panel, screen', label: '查看', weightLevel: 1 },
+  { type: 'panel, screen', label: '导出', weightLevel: 4 },
+  { type: 'datasource, dataset, panel, screen', label: '管理', weightLevel: 7 },
+  { label: '授权', weightLevel: 9 }
 ]
 // 选中角色事件
 const roleNodeClick = (data: Tree) => {
   if (data.disabled || data.root) {
     return
   }
-  selectedTarget.value = data.id
+  const change = (data: Tree) => {
+    if (selectedTarget.value === data.id) {
+      return
+    }
+    selectedTarget.value = data.id
+    loadPermission(1)
+  }
+
+  if (uncommittedTips(() => change(data))) {
+    change(data)
+  }
 }
 // 选中用户事件
 const targetClick = (id: string) => {
-  selectedTarget.value = id
+  const change = (id: string) => {
+    if (selectedTarget.value === id) {
+      return
+    }
+    selectedTarget.value = id
+    loadPermission(0)
+  }
+  if (uncommittedTips(() => change(id))) {
+    change(id)
+  }
 }
 
 const resourceTypeClick = async (id: string) => {
-  selectedResourceType.value = id
-  if (state.treeMap[id]) {
-    state.tableData = state.treeMap[id]
-  } else {
-    const res = await resourceTreeApi(id)
-    state.tableData = res.data
+  const change = async (id: string) => {
+    if (selectedResourceType.value === id) {
+      return
+    }
+    selectedResourceType.value = id
+    if (state.treeMap[id]) {
+      state.tableData = state.treeMap[id]
+    } else {
+      const res = await resourceTreeApi(id)
+      state.tableData = res.data
+    }
+    getColumn(id)
+    // 如果有selectedTarget 再查权限
+    if (selectedTarget.value) {
+      const type = activeName.value === 'user' ? 0 : 1
+      loadPermission(type)
+    }
   }
-  getColumn(id)
-  // 如果有selectedTarget 再查权限
+  if (uncommittedTips(() => change(id))) {
+    change(id)
+  }
 }
 
 const getColumn = (type: string) => {
-  tableLoading.value = true
   const array = state.globalColumn.filter(item => !item.type || item.type.includes(type))
   state.tableColumn = array
-  setTimeout(() => {
-    tableLoading.value = false
-  }, 500)
 }
 
 const loadResourceTree = () => {
@@ -143,7 +189,7 @@ const loadUser = () => {
   const param = { keyword: nickName.value }
   queryUserApi(param).then(res => {
     if (res?.data?.length) {
-      state.userList = res.data.filter(item => item.id !== '1')
+      state.userList = res.data
     } else {
       state.userList = []
     }
@@ -175,17 +221,262 @@ const groupBy = (list: Tree[]) => {
   })
   return map
 }
+const loadPermission = (type: number) => {
+  emptyDescription.value = ''
+  resetTableData(state.tableData)
+  state.expandedKeys = []
+  if (activeAuth.value === 'menu') {
+    menuPerApi({ id: selectedTarget.value }).then(res => {
+      const vos = res.data
+      if (vos && vos.some(vo => vo.root && !vo.readonly)) {
+        emptyDescription.value = type
+          ? '组织管理员已拥有所有资源的权限，无需再授权'
+          : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+        return
+      }
+      const permissionMap = groupPermission(vos)
+
+      fillTableData(state.tableData, permissionMap)
+    })
+    return
+  }
+  const param: PermissionRequest = {
+    id: selectedTarget.value,
+    flag: selectedResourceType.value.toUpperCase(),
+    type
+  }
+  resourcePerApi(param).then(res => {
+    const vos = res.data
+    if (vos && vos.some(vo => vo.root && !vo.readonly)) {
+      emptyDescription.value = type
+        ? '组织管理员已拥有所有资源的权限，无需再授权'
+        : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+      return
+    }
+    const permissionMap = groupPermission(vos)
+    fillTableData(state.tableData, permissionMap)
+  })
+}
+const groupPermission = vos => {
+  const map = new Map()
+  const expandedKeys = []
+  vos?.forEach(vo => {
+    const origin = vo.permissionOrigin
+    const permissions = vo.permissions
+    if (permissions) {
+      permissions.forEach(item => {
+        const { id, weight } = item
+        const roles = map.get(id)?.roles || new Set()
+        origin && roles.add(origin)
+        const obj = { id, weight, roles, showRole: roles?.size > 0 }
+        map.set(id, obj)
+        if (weight) {
+          expandedKeys.push(id)
+        }
+      })
+    }
+  })
+  state.uncommitted = []
+  state.sourceData = map
+  expandNodes(expandedKeys)
+  return map
+}
+
+const expandNodes = (ids: string[]) => {
+  const datalist = state.tableData
+  let result = []
+  const match = (list, targetids, parentlist) => {
+    if (!targetids?.length) return
+    for (let i = 0; i < list.length; i++) {
+      const item = list[i]
+      if (targetids.includes(item.id)) {
+        targetids = targetids.filter(id => id !== item.id)
+        result = [...result, ...parentlist]
+      }
+
+      if (item.children?.length) {
+        parentlist.push(item.id)
+        match(item.children, targetids, parentlist)
+        const len = parentlist.length
+        len && parentlist.splice(len - 1, 1)
+      }
+    }
+  }
+  match(datalist, ids, [])
+  state.expandedKeys = Array.from(new Set([...result]))
+}
+
+const fillTableData = (rows, maps) => {
+  rows?.forEach(row => {
+    const temp = (maps?.get && maps.get(row.id)) || {}
+    state.tableColumn?.forEach(col => {
+      const weight = temp['weight'] || 0
+      const weightLevel = col.weightLevel
+      temp['value' + weightLevel] = false
+      if (weight >= weightLevel) {
+        temp['value' + weightLevel] = true
+      }
+    })
+    Object.assign(row, temp)
+    if (row.children?.length) {
+      fillTableData(row.children, maps)
+    }
+  })
+}
+
+const rowWeightChanged = (row, level) => {
+  const check = row['value' + level]
+  if (check) {
+    state.tableColumn.forEach(col => {
+      if (level >= col.weightLevel) {
+        row['value' + col.weightLevel] = true
+      }
+    })
+    row['weight'] = level
+  } else {
+    let finalWeight = 0
+    state.tableColumn.forEach(col => {
+      if (col.weightLevel >= level) {
+        row['value' + col.weightLevel] = false
+      } else {
+        finalWeight = col.weightLevel
+      }
+    })
+    row['weight'] = finalWeight
+  }
+  const item = state.sourceData['get'](row.id)
+
+  if (item?.weight !== row['weight'] || (!item?.weight && row['weight'])) {
+    add2Uncommitted(row.id, row['weight'])
+  } else {
+    removeFromUncommitted(row.id)
+  }
+
+  if (row.children?.length) {
+    row.children.forEach(item => {
+      item['value' + level] = check
+      rowWeightChanged(item, level)
+    })
+  }
+}
+const add2Uncommitted = (id: string, weight: number) => {
+  let match = false
+  state.uncommitted.forEach(item => {
+    if (item.id === id) {
+      item.weight = weight
+      match = true
+      return false
+    }
+  })
+  match || state.uncommitted.push({ id, weight })
+}
+const removeFromUncommitted = id => {
+  let len = state.uncommitted.length
+  if (!len) {
+    return
+  }
+  while (len--) {
+    const item = state.uncommitted[len]
+    if (item.id === id) {
+      state.uncommitted.splice(len, 1)
+    }
+  }
+}
+const save = callback => {
+  const param = {
+    permissions: state.uncommitted,
+    id: selectedTarget.value
+  }
+  let method = menuPerSaveApi
+  if (activeAuth.value !== 'menu') {
+    method = busiPerSaveApi
+    param['type'] = activeName.value === 'user' ? 0 : 1
+    param['flag'] = selectedResourceType.value
+  }
+  method(param).then(() => {
+    ElMessage.success(t('common.save_success'))
+    loadPermission(param['type'] || 0)
+    callback && callback instanceof Function && callback()
+  })
+}
+
+const reset = () => {
+  state.uncommitted = []
+  resetTableData(state.tableData)
+  fillTableData(state.tableData, state.sourceData)
+}
+
+const uncommittedTips = callback => {
+  if (!state.uncommitted.length) {
+    callback && callback()
+    return true
+  }
+  ElMessageBox.confirm(t('auth.uncommitted_tips'), {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  })
+    .then(() => {
+      save(callback)
+    })
+    .catch(() => {
+      reset()
+      callback && callback()
+    })
+  return false
+}
+
+const beforeActiveNameChange = (newName, oldName) => {
+  if (newName !== oldName) {
+    return uncommittedTips(() => {
+      activeName.value = newName
+    })
+  }
+  return true
+}
+const beforeActiveAuthChange = (newName, oldName) => {
+  if (newName !== oldName) {
+    return uncommittedTips(() => {
+      activeAuth.value = newName
+    })
+  }
+  return true
+}
+
+const resetTableData = rows => {
+  const keys: string[] = ['id', 'name', 'children']
+  rows.forEach(item => {
+    for (const key in item) {
+      if (Object.prototype.hasOwnProperty.call(item, key) && !keys.includes(key)) {
+        delete item[key]
+      }
+    }
+    if (item.children?.length) {
+      resetTableData(item.children)
+    }
+  })
+}
 onMounted(() => {
   loadUser()
   loadRole()
   loadResourceTree()
+})
+
+defineExpose({
+  uncommittedTips
 })
 </script>
 
 <template>
   <div class="user-role">
     <div class="filter-user-role">
-      <el-tabs class="tabs-mr" v-model="activeName" @tab-change="activeNameChange">
+      <el-tabs
+        class="tabs-mr"
+        v-model="activeName"
+        @tab-change="activeNameChange"
+        :before-leave="beforeActiveNameChange"
+      >
         <el-tab-pane :label="t('auth.user')" name="user"></el-tab-pane>
         <el-tab-pane :label="t('auth.role')" name="role"></el-tab-pane>
       </el-tabs>
@@ -226,7 +517,12 @@ onMounted(() => {
   </div>
   <div class="resource-panel">
     <div class="tab-search">
-      <el-tabs class="tabs-mr" v-model="activeAuth" @tab-change="authActiveChange">
+      <el-tabs
+        class="tabs-mr"
+        v-model="activeAuth"
+        @tab-change="authActiveChange"
+        :before-leave="beforeActiveAuthChange"
+      >
         <el-tab-pane label="资源权限" name="resource"></el-tab-pane>
         <el-tab-pane v-if="activeName === 'role'" label="菜单和操作权限" name="menu"></el-tab-pane>
       </el-tabs>
@@ -237,6 +533,14 @@ onMounted(() => {
           </el-icon>
         </template>
       </el-input>
+      <div class="search-table-bt">
+        <el-button :disabled="!state.uncommitted.length" @click="save" type="primary">{{
+          t('common.sure')
+        }}</el-button>
+        <el-button :disabled="!state.uncommitted.length" @click="reset">{{
+          t('common.cancel')
+        }}</el-button>
+      </div>
     </div>
     <div class="resource-table">
       <div class="resource-type" v-if="activeAuth === 'resource'">
@@ -251,13 +555,16 @@ onMounted(() => {
         </div>
       </div>
       <div class="tree-table" :class="activeAuth === 'menu' ? 'full-tree-table' : ''">
+        <el-empty v-if="emptyDescription" :description="emptyDescription" />
         <el-table
-          v-if="!tableLoading"
+          v-else
+          ref="authTable"
           :data="state.tableData"
           style="width: 100%"
           row-key="id"
           height="100%"
           header-cell-class-name="header-cell"
+          :expand-row-keys="state.expandedKeys"
           :tree-props="{ children: 'children' }"
         >
           <el-table-column prop="name" show-overflow-tooltip label="资源名称" />
@@ -270,7 +577,37 @@ onMounted(() => {
             :label="item.label"
           >
             <template #default="scope">
-              <el-checkbox v-model="scope.row.name"></el-checkbox>
+              <el-popover
+                v-if="scope.row.showRole && scope.row.weight >= item.weightLevel"
+                placement="top-start"
+                title=""
+                :width="200"
+                trigger="hover"
+              >
+                <template #reference>
+                  <el-checkbox
+                    disabled
+                    v-model="scope.row['value' + item.weightLevel]"
+                  ></el-checkbox>
+                </template>
+                <div class="role-auth-tips">
+                  <span>继承自以下角色：</span>
+                  <span :key="item.id" v-for="(item, index) in scope.row.roles">{{
+                    index + 1 + '、' + item.name
+                  }}</span>
+                  <span
+                    >单独授权<el-switch
+                      class="independent-auth"
+                      size="small"
+                      v-model="scope.row.showRole"
+                  /></span>
+                </div>
+              </el-popover>
+              <el-checkbox
+                v-else
+                v-model="scope.row['value' + item.weightLevel]"
+                @change="rowWeightChanged(scope.row, item.weightLevel)"
+              ></el-checkbox>
             </template>
           </el-table-column>
         </el-table>
@@ -321,15 +658,20 @@ onMounted(() => {
   overflow-y: auto;
 
   .tab-search {
-    height: 65px;
+    height: 50px;
     position: relative;
-    padding-top: 18px;
 
     .search-table-input {
       position: absolute;
       right: 24px;
-      top: 16px;
+      top: 7px;
       width: 240px;
+    }
+    .search-table-bt {
+      position: absolute;
+      right: 280px;
+      top: 7px;
+      width: 190px;
     }
     .tabs-mr {
       margin-left: @width_table;
@@ -347,12 +689,12 @@ onMounted(() => {
 
   .resource-table {
     width: 100%;
-    height: calc(100% - 65px);
+    height: calc(100% - 50px);
     .resource-type {
       float: left;
       width: 140px;
       height: 100%;
-      padding-top: 24px;
+      padding-top: 12px;
     }
 
     .tree-table {
@@ -377,5 +719,13 @@ onMounted(() => {
 }
 .user-role-container {
   margin: 0 24px;
+}
+.role-auth-tips {
+  span {
+    display: block;
+  }
+}
+.independent-auth {
+  margin-left: 5px;
 }
 </style>

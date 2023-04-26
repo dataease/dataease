@@ -40,8 +40,8 @@ public class DatasetFieldService implements DatasetTableApi {
     }
 
     @Override
-    public Map<String, List<DatasetTableFieldDTO>> listByDQ() {
-        return datasetTableFieldManage.listByDQ();
+    public Map<String, List<DatasetTableFieldDTO>> listByDQ(Long id) {
+        return datasetTableFieldManage.listByDQ(id);
     }
 
 }

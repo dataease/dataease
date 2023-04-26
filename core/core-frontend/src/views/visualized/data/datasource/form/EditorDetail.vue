@@ -359,7 +359,6 @@ defineExpose({
             </div>
           </template>
         </template>
-
         <template v-if="notapiexcelconfig">
           <el-form-item :label="t('datasource.host')" prop="configuration.host">
             <el-input

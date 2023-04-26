@@ -18,4 +18,6 @@ public class PermissionVO implements Serializable {
     private boolean readonly;
     @ApiModelProperty("权限集合")
     private List<PermissionItem> permissions;
+    @ApiModelProperty("权限来源")
+    private PermissionOrigin permissionOrigin;
 }

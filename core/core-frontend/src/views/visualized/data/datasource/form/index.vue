@@ -6,6 +6,7 @@ import type { DsType } from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import DsTypeList from './DsTypeList.vue'
 import EditorDetail from './EditorDetail.vue'
+import ExcelDetail from './ExcelDetail.vue'
 interface Node {
   name: string
   id: string
@@ -81,7 +82,7 @@ const handleNodeClick = (data: Node) => {
     </div>
     <div class="ds-editor">
       <div class="editor-step flex-center">
-        <el-steps :active="activeStep" align-center :space="144">
+        <el-steps :active="activeStep" align-center>
           <el-step title="选择数据源类型" />
           <el-step title="录入数据源信息" />
         </el-steps>
@@ -92,7 +93,13 @@ const handleNodeClick = (data: Node) => {
           @select-ds-type="selectDsType"
           :current-type="currentType"
         ></ds-type-list>
-        <editor-detail ref="detail" v-show="currentDsType"></editor-detail>
+        <editor-detail
+          ref="detail"
+          v-show="currentDsType && currentDsType !== 'Db2'"
+        ></editor-detail>
+        <template v-if="currentDsType == 'Db2'">
+          <excel-detail></excel-detail>
+        </template>
       </div>
       <div class="editor-footer">
         <el-button secondary> 取消 </el-button>

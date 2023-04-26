@@ -87,3 +87,9 @@ export const getDatasetDetails = async (id): Promise<Dataset> => {
     return res?.data
   })
 }
+
+export const tableUpdate = async (data): Promise<IResponse> => {
+  return request.post({ url: '/dataset/table/update', data }).then(res => {
+    return res?.data
+  })
+}

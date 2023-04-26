@@ -343,7 +343,7 @@ const defaultProps = {
       <div class="title">
         数据源
         <el-button @click="() => createDatasource()" type="primary">
-          <template #icon> <Icon name="icon_add_outlined"></Icon> </template>新建数据集
+          <template #icon> <Icon name="icon_add_outlined"></Icon> </template>新建数据源
         </el-button>
         <el-input class="m24 w100" v-model="nickName" clearable>
           <template #prefix>

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { ref, reactive } from 'vue'
 import { Icon } from '@/components/icon-custom'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
 interface Tree {
   label: string
   children?: Tree[]
@@ -8,6 +10,7 @@ interface Tree {
 const activeName = ref('user')
 const activeAuth = ref('resource')
 const nickName = ref('')
+const { t } = useI18n()
 const handleClick = tab => {
   console.log('tab', tab)
 }
@@ -96,7 +99,8 @@ const resourceList = [
   }
 ]
 const state = reactive({
-  userList: []
+  userList: [],
+  uncommitted: []
 })
 state.userList = Array(40)
   .fill(1)
@@ -167,6 +171,41 @@ const tableData1: User[] = [
     address: true
   }
 ]
+
+const save = callback => {
+  console.log('save')
+  callback && callback()
+}
+
+const reset = () => {
+  state.uncommitted = []
+  console.log('save')
+}
+
+const uncommittedTips = callback => {
+  if (!state.uncommitted.length) {
+    callback && callback()
+    return true
+  }
+  ElMessageBox.confirm(t('auth.uncommitted_tips'), {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  })
+    .then(() => {
+      save(callback)
+    })
+    .catch(() => {
+      reset()
+      callback && callback()
+    })
+  return false
+}
+
+defineExpose({
+  uncommittedTips
+})
 </script>
 
 <template>
