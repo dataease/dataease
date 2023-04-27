@@ -72,6 +72,7 @@ public class MysqlQueryProvider extends QueryProvider {
             case "MEDIUMINT":
             case "INTEGER":
             case "BIGINT":
+            case "BIGINT UNSIGNED":
             case "LONG": //增加了LONG类型
                 return 2;// 整型
             case "FLOAT":
