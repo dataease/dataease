@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -299,8 +299,9 @@ const groupPermission = vo => {
       cols.forEach(col => {
         const weightLevel = col.weightLevel
         const temp = originLevelobj['level' + weightLevel] || {}
-        temp['show'] = userWeight < weightLevel && weight >= weightLevel
-        if (temp['show']) {
+        const roleMatch = weight >= weightLevel
+        temp['show'] = userWeight < weightLevel && roleMatch
+        if (roleMatch) {
           const roles = temp['roles'] || new Set<string>()
           roles.add(rname)
           temp['roles'] = roles
@@ -364,7 +365,14 @@ const fillTableData = (rows, maps) => {
     }
   })
 }
-
+const independentAuth = (row, level) => {
+  row['independent' + level] = true
+  nextTick(() => {
+    row['value' + level] = true
+    rowWeightChanged(row, level)
+    row['independent' + level] = false
+  })
+}
 const rowWeightChanged = (row, level) => {
   const check = row['value' + level]
   if (check) {
@@ -376,14 +384,22 @@ const rowWeightChanged = (row, level) => {
     row['weight'] = level
   } else {
     let finalWeight = 0
+    let index = state.tableColumn.indexOf(level)
+    if (index--) {
+      finalWeight = state.tableColumn[index]
+    }
+    row['weight'] = finalWeight
     state.tableColumn.forEach(col => {
-      if (col.weightLevel >= level) {
-        row['value' + col.weightLevel] = false
-      } else {
-        finalWeight = col.weightLevel
+      const curLevel = col.weightLevel
+      if (curLevel >= level) {
+        row['value' + curLevel] = false
+        // 下面3行用作取消用户授权之后 恢复角色覆盖效果
+        const levelObj = row['level' + curLevel]
+        if (levelObj && levelObj['roles'] && levelObj['roles'].size) {
+          row['level' + curLevel]['show'] = true
+        }
       }
     })
-    row['weight'] = finalWeight
   }
   const item = state.sourceData['get'](row.id)
 
@@ -621,7 +637,8 @@ defineExpose({
               <el-popover
                 v-if="
                   scope.row['level' + item.weightLevel] &&
-                  scope.row['level' + item.weightLevel]['show']
+                  scope.row['level' + item.weightLevel]['show'] &&
+                  !scope.row['value' + item.weightLevel]
                 "
                 placement="top-start"
                 title=""
@@ -629,7 +646,11 @@ defineExpose({
                 trigger="hover"
               >
                 <template #reference>
-                  <el-checkbox disabled v-model="roleChecked"></el-checkbox>
+                  <el-checkbox
+                    class="user-role-per-checked"
+                    disabled
+                    v-model="roleChecked"
+                  ></el-checkbox>
                 </template>
                 <div class="role-auth-tips">
                   <span>继承自以下角色：</span>
@@ -642,12 +663,19 @@ defineExpose({
                     >单独授权<el-switch
                       class="independent-auth"
                       size="small"
-                      v-model="scope.row['level' + item.weightLevel]['show']"
+                      v-model="scope.row['independent' + item.weightLevel]"
+                      @change="independentAuth(scope.row, item.weightLevel)"
                   /></span>
                 </div>
               </el-popover>
               <el-checkbox
-                v-else
+                v-show="
+                  !(
+                    scope.row['level' + item.weightLevel] &&
+                    scope.row['level' + item.weightLevel]['show'] &&
+                    !scope.row['value' + item.weightLevel]
+                  )
+                "
                 v-model="scope.row['value' + item.weightLevel]"
                 @change="rowWeightChanged(scope.row, item.weightLevel)"
               ></el-checkbox>
@@ -770,5 +798,8 @@ defineExpose({
 }
 .independent-auth {
   margin-left: 5px;
+}
+.user-role-per-checked {
+  margin-right: 0;
 }
 </style>
