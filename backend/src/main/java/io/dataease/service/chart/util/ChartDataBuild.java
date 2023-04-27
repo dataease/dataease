@@ -1199,4 +1199,63 @@ public class ChartDataBuild {
             return map;
         }
     }
+
+    public static Map<String, Object> transBidirectionalBarData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
+        Map<String, Object> map = new HashMap<>();
+
+        List<AxisChartDataAntVDTO> dataList = new ArrayList<>();
+        for (int i1 = 0; i1 < data.size(); i1++) {
+            String[] row = data.get(i1);
+
+            StringBuilder a = new StringBuilder();
+            if (isDrill) {
+                a.append(row[xAxis.size() - 1]);
+            } else {
+                for (int i = 0; i < xAxis.size(); i++) {
+                    if (i == xAxis.size() - 1) {
+                        a.append(row[i]);
+                    } else {
+                        a.append(row[i]).append("\n");
+                    }
+                }
+            }
+
+            AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
+            axisChartDataDTO.setField(a.toString());
+            axisChartDataDTO.setName(a.toString());
+
+            List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+
+            for (int j = 0; j < xAxis.size(); j++) {
+                ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                chartDimensionDTO.setId(xAxis.get(j).getId());
+                chartDimensionDTO.setValue(row[j]);
+                dimensionList.add(chartDimensionDTO);
+            }
+            axisChartDataDTO.setDimensionList(dimensionList);
+            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+                List<ChartQuotaDTO> quotaList = new ArrayList<>();
+                int j = i - xAxis.size();
+                ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                chartQuotaDTO.setId(yAxis.get(j).getId());
+                quotaList.add(chartQuotaDTO);
+                axisChartDataDTO.setQuotaList(quotaList);
+            }
+            if (yAxis.size() == 2){
+                try {
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(row[xAxis.size()]) ? null : new BigDecimal(row[xAxis.size()]));
+                } catch (Exception e) {
+                    axisChartDataDTO.setValue(new BigDecimal(0));
+                }
+                try {
+                    axisChartDataDTO.setExtValue(StringUtils.isEmpty(row[xAxis.size() + yAxis.size() - 1]) ? null : new BigDecimal(row[xAxis.size() + yAxis.size() - 1]));
+                } catch (Exception e) {
+                    axisChartDataDTO.setExtValue(new BigDecimal(0));
+                }
+                dataList.add(axisChartDataDTO);
+            }
+        }
+        map.put("data", dataList);
+        return map;
+    }
 }

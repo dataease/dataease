@@ -1,4 +1,4 @@
-import { Column, Bar } from '@antv/g2plot'
+import { Column, Bar, BidirectionalBar } from '@antv/g2plot'
 import {
   getTheme,
   getLabel,
@@ -234,6 +234,113 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
     plot.destroy()
   }
   plot = new Bar(container, options)
+
+  plot.off('interval:click')
+  plot.on('interval:click', action)
+
+  return plot
+}
+
+export function baseBidirectionalBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
+  // theme
+  const theme = getTheme(chart)
+  // attr
+  const label = getLabel(chart)
+  const tooltip = getTooltip(chart)
+  // style
+  const legend = getLegend(chart)
+  const xAxis = getXAxis(chart)
+  const yAxis = getYAxis(chart)
+  // data
+  const data = _.cloneDeep(chart.data.data)
+  // options
+  const options = {
+    theme: theme,
+    data: data,
+    xField: 'field',
+    yField: ['value', 'extValue'],
+    appendPadding: getPadding(chart),
+    label: label,
+    tooltip: tooltip,
+    legend: legend,
+    xAxis: xAxis,
+    yAxis: {
+      value: yAxis,
+      extValue: yAxis
+    },
+    interactions: [
+      {
+        type: 'legend-active', cfg: {
+          start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
+          end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
+        }
+      },
+      {
+        type: 'legend-filter', cfg: {
+          start: [{ trigger: 'legend-item:click', action: ['list-unchecked:toggle', 'data-filter:filter', 'element-active:reset', 'element-highlight:reset'] }]
+        }
+      },
+      {
+        type: 'tooltip', cfg: {
+          start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
+          end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
+        }
+      },
+      {
+        type: 'active-region', cfg: {
+          start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
+          end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
+        }
+      }
+    ]
+  }
+  // size
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.size) {
+      const s = JSON.parse(JSON.stringify(customAttr.size))
+      if (s.barDefault) {
+        delete options.marginRatio
+      } else {
+        options.marginRatio = s.barGap
+      }
+    }
+  }
+  // group
+  if (isGroup) {
+    options.isGroup = true
+  } else {
+    delete options.isGroup
+  }
+  // stack
+  if (isStack) {
+    options.isStack = true
+  } else {
+    delete options.isStack
+  }
+  options.isPercent = chart.type.includes('percentage')
+  // custom color
+  options.color = antVCustomColor(chart)
+  if (customAttr.color.gradient) {
+    options.color = options.color.map((ele, index) => {
+      return setGradientColor(ele, customAttr.color.gradient, 180 - index * 180)
+    })
+  }
+  // 处理空值
+  if (chart.senior) {
+    let emptyDataStrategy = JSON.parse(chart.senior)?.functionCfg?.emptyDataStrategy
+    if (!emptyDataStrategy) {
+      emptyDataStrategy = 'breakLine'
+    }
+    handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
+  }
+
+  // 开始渲染
+  if (plot) {
+    plot.destroy()
+  }
+  plot = new BidirectionalBar(container, options)
 
   plot.off('interval:click')
   plot.on('interval:click', action)

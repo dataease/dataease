@@ -152,7 +152,7 @@
           <el-collapse-item
             v-show="showPropertiesCollapse(['x-axis-selector', 'x-axis-selector-ant-v'])"
             name="xAxis"
-            :title="$t('chart.xAxis')"
+            :title="xAisTitle"
           >
             <x-axis-selector
               v-if="showProperties('x-axis-selector')"
@@ -174,7 +174,7 @@
           <el-collapse-item
             v-show="showPropertiesCollapse(['y-axis-selector', 'y-axis-selector-ant-v'])"
             name="yAxis"
-            :title="view.type === 'chart-mix' ? $t('chart.yAxis_main') : $t('chart.yAxis')"
+            :title="yAxisTitle"
           >
             <y-axis-selector
               v-if="showProperties('y-axis-selector')"
@@ -469,6 +469,21 @@ export default {
         }
       }
       return false
+    },
+    xAisTitle() {
+      if (this.chart.type === 'bidirectional-bar') {
+        return this.$t('chart.yAxis')
+      }
+      return this.$t('chart.xAxis')
+    },
+    yAxisTitle() {
+      if (this.chart.type === 'bidirectional-bar') {
+        return this.$t('chart.xAxis')
+      }
+      if (this.chart.type === 'chart-mix') {
+        return this.$t('chart.yAxis_main')
+      }
+      return this.$t('chart.yAxis')
     },
     ...mapState([
       'batchOptStatus'

@@ -28,8 +28,14 @@
               size="mini"
               @change="changeYAxisStyle('position')"
             >
-              <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
-              <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
+              <div v-if="chart.type !== 'bidirectional-bar'">
+                <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
+                <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
+              </div>
+              <div v-else-if="chart.type === 'bidirectional-bar'">
+                <el-radio-button label="right">{{ $t('chart.text_pos_top') }}</el-radio-button>
+                <el-radio-button label="left">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
+              </div>
             </el-radio-group>
           </el-form-item>
           <el-form-item

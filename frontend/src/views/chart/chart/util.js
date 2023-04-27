@@ -1546,6 +1546,81 @@ export const TYPE_CONFIGS = [
       ]
     }
   },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_compare',
+    value: 'bidirectional-bar',
+    title: 'chart.chart_bidirectional_bar',
+    icon: 'bidirectional-bar',
+    properties: [
+      'color-selector',
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'colorPanel',
+        'customColor',
+        'gradient',
+        'alpha'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position-h'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'axisValue',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'isItalic',
+        'isBolder',
+        'remarkShow',
+        'fontFamily',
+        'letterSpace',
+        'fontShadow'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
+  },
 
   {
     render: 'antv',
@@ -1856,7 +1931,7 @@ export const TYPE_CONFIGS = [
         'mapLineAnimate',
         'mapLineAnimateDuration',
         'mapLineAnimateInterval',
-        'mapLineAnimateTrailLength',
+        'mapLineAnimateTrailLength'
       ],
       'title-selector-ant-v': [
         'show',
@@ -3348,6 +3423,23 @@ export function getColors(chart, colors, reset) {
           isCustom: false
         })
       }
+    }
+  } else if (chart.type === 'bidirectional-bar') {
+    const yaxis = JSON.parse(chart.yaxis)[0]
+    const yaxisExt = JSON.parse(chart.yaxisExt)[0]
+    if (yaxis) {
+      seriesColors.push({
+        name: yaxis.name,
+        color: colors[0],
+        isCustom: false
+      })
+    }
+    if (yaxisExt) {
+      seriesColors.push({
+        name: yaxisExt.name,
+        color: colors[1],
+        isCustom: false
+      })
     }
   } else if (includesAny(chart.type, 'bar', 'scatter', 'radar', 'area') && !chart.type.includes('group')) {
     if (Object.prototype.toString.call(chart.yaxis) === '[object Array]') {

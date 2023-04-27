@@ -7,68 +7,70 @@
         label-width="80px"
         size="mini"
       >
+        <div v-if="showSlider">
+          <el-form-item
+            :label="$t('chart.slider')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="functionForm.sliderShow"
+              @change="changeFunctionCfg"
+            >{{ $t('chart.show') }}</el-checkbox>
+          </el-form-item>
+          <el-form-item
+            v-show="functionForm.sliderShow"
+            :label="$t('chart.slider_range')+'(%)'"
+            class="form-item form-item-slider"
+          >
+            <el-slider
+              v-model="functionForm.sliderRange"
+              style="width: 90%"
+              :min="0"
+              :max="100"
+              input-size="mini"
+              range
+              @change="changeFunctionCfg"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="functionForm.sliderShow"
+            :label="$t('chart.slider_bg')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="functionForm.sliderBg"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeFunctionCfg"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="functionForm.sliderShow"
+            :label="$t('chart.slider_fill_bg')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="functionForm.sliderFillBg"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeFunctionCfg"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="functionForm.sliderShow"
+            :label="$t('chart.slider_text_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="functionForm.sliderTextClolor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeFunctionCfg"
+            />
+          </el-form-item>
+        </div>
         <el-form-item
-          :label="$t('chart.slider')"
-          class="form-item"
-        >
-          <el-checkbox
-            v-model="functionForm.sliderShow"
-            @change="changeFunctionCfg"
-          >{{ $t('chart.show') }}</el-checkbox>
-        </el-form-item>
-        <el-form-item
-          v-show="functionForm.sliderShow"
-          :label="$t('chart.slider_range')+'(%)'"
-          class="form-item form-item-slider"
-        >
-          <el-slider
-            v-model="functionForm.sliderRange"
-            style="width: 90%"
-            :min="0"
-            :max="100"
-            input-size="mini"
-            range
-            @change="changeFunctionCfg"
-          />
-        </el-form-item>
-        <el-form-item
-          v-show="functionForm.sliderShow"
-          :label="$t('chart.slider_bg')"
-          class="form-item"
-        >
-          <el-color-picker
-            v-model="functionForm.sliderBg"
-            class="color-picker-style"
-            :predefine="predefineColors"
-            @change="changeFunctionCfg"
-          />
-        </el-form-item>
-        <el-form-item
-          v-show="functionForm.sliderShow"
-          :label="$t('chart.slider_fill_bg')"
-          class="form-item"
-        >
-          <el-color-picker
-            v-model="functionForm.sliderFillBg"
-            class="color-picker-style"
-            :predefine="predefineColors"
-            @change="changeFunctionCfg"
-          />
-        </el-form-item>
-        <el-form-item
-          v-show="functionForm.sliderShow"
-          :label="$t('chart.slider_text_color')"
-          class="form-item"
-        >
-          <el-color-picker
-            v-model="functionForm.sliderTextClolor"
-            class="color-picker-style"
-            :predefine="predefineColors"
-            @change="changeFunctionCfg"
-          />
-        </el-form-item>
-        <el-form-item
-          v-show="chart.render === 'antv' && (chart.type.includes('line') || chart.type.includes('bar') || chart.type.includes('area'))"
+          v-show="showEmptyStrategy"
           :label="$t('chart.empty_data_strategy')"
           class="form-item"
         >
@@ -88,6 +90,7 @@
 
 <script>
 import { DEFAULT_FUNCTION_CFG, COLOR_PANEL } from '../../chart/chart'
+import { includesAny } from '@/utils/StringUtils'
 
 export default {
   name: 'FunctionCfg',
@@ -101,6 +104,14 @@ export default {
     return {
       functionForm: JSON.parse(JSON.stringify(DEFAULT_FUNCTION_CFG)),
       predefineColors: COLOR_PANEL
+    }
+  },
+  computed: {
+    showSlider() {
+      return this.chart.type !== 'bidirectional-bar'
+    },
+    showEmptyStrategy() {
+      return this.chart.render === 'antv' && includesAny(this.chart.type, 'line', 'bar', 'area')
     }
   },
   watch: {
