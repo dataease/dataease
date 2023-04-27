@@ -41,9 +41,6 @@ const activeNameChange = tabName => {
   if (activeAuth.value === 'menu' && tabName === 'user') {
     activeAuth.value = 'resource'
   }
-  /* if (tabName === 'role') {
-    selectedResourceType.value = ''
-  } */
 }
 
 const authActiveChange = tabName => {
@@ -177,13 +174,11 @@ const getColumn = (type: string) => {
 
 const loadResourceTree = () => {
   const id = selectedResourceType.value
-  if (activeAuth.value === 'resource' && id) {
-    resourceTreeApi(id).then(res => {
-      getColumn(id)
-      state.tableData = res.data
-      state.treeMap[id] = res.data
-    })
-  }
+  resourceTreeApi(id).then(res => {
+    getColumn(id)
+    state.tableData = res.data
+    state.treeMap[id] = res.data
+  })
 }
 
 const loadUser = () => {
@@ -545,7 +540,7 @@ defineExpose({
         </template>
       </el-input>
     </div>
-    <div v-if="activeName === 'user'">
+    <el-scrollbar class="role-tree-container" v-if="activeName === 'user'">
       <div
         :key="ele.id"
         v-for="ele in state.userList"
@@ -555,8 +550,8 @@ defineExpose({
       >
         {{ ele.name }}
       </div>
-    </div>
-    <div v-else>
+    </el-scrollbar>
+    <el-scrollbar class="role-tree-container" v-else>
       <el-tree
         class="user-role-container"
         menu
@@ -570,7 +565,7 @@ defineExpose({
           </span>
         </template>
       </el-tree>
-    </div>
+    </el-scrollbar>
   </div>
   <div class="resource-panel">
     <div class="tab-search">
@@ -720,6 +715,9 @@ defineExpose({
       }
     }
   }
+  .role-tree-container {
+    height: calc(100% - 101px);
+  }
 }
 .resource-panel {
   width: calc(100% - 250px);
@@ -801,5 +799,15 @@ defineExpose({
 }
 .user-role-per-checked {
   margin-right: 0;
+}
+
+.custom-tree-node {
+  display: flex;
+  span {
+    width: 120px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 }
 </style>
