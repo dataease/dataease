@@ -2,7 +2,7 @@
   "compilerOptions": {
     "jsx": "preserve",
     "composite": true,
-    "module": "ESNext",
+    "module": "es2020",
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,

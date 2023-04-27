@@ -44,5 +44,33 @@ export default {
     edit: 'Edit',
     parent: 'Superior',
     default_cannot_move: 'The default organization cannot be deleted'
+  },
+  auth: {
+    row_column: 'Row and column permission settings',
+    row_permission: 'Row permission rules',
+    enable_row: 'Enable row permissions',
+    white_list: 'White list',
+    white_user_not: 'The above permission rules do not take effect for white list users',
+    organization_or_role: 'Please select an organization or role',
+    column_permission: 'Column permission rule',
+    enable_column: 'Enable column permissions',
+    search_by_field: 'Search by field name',
+    add_condition: 'Add condition',
+    add_relationship: 'Add relationship',
+    filter_fields: 'Filter fields',
+    selct_filter_fields: 'Please select a filter field',
+    enter_keywords: 'Please enter keywords',
+    screen_method: 'Screening method',
+    select: 'Please select',
+    fixed_value: 'Fixed value',
+    default_method: 'Default condition',
+    select_all: 'Select all',
+    added: 'Added',
+    manual_input: 'Manual input',
+    please_fill:
+      'Please fill in one line and add 500 at most. Duplicate options and added options will be automatically filtered when identifying and entering',
+    close: 'close',
+    add: 'add to',
+    sure: 'determine'
   }
 }

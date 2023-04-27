@@ -12,6 +12,7 @@ export interface Tree {
   level: number
   pid: string | number
   union?: Array<{}>
+  createTime: number
   allfields?: Array<{}>
   children?: Tree[]
 }
