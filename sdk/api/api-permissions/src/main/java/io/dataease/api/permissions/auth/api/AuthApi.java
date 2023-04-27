@@ -24,7 +24,7 @@ public interface AuthApi {
 
     @ApiOperation("查询资源权限")
     @PostMapping("/busiPermission")
-    List<PermissionVO> busiPermission(@RequestBody BusiPermissionRequest request);
+    PermissionVO busiPermission(@RequestBody BusiPermissionRequest request);
 
     @ApiOperation("查询菜单树")
     @GetMapping("/menuResource")
@@ -32,7 +32,7 @@ public interface AuthApi {
 
     @ApiOperation("查询菜单权限")
     @PostMapping("/menuPermission")
-    List<PermissionVO> menuPermission(@RequestBody MenuPermissionRequest request);
+    PermissionVO menuPermission(@RequestBody MenuPermissionRequest request);
 
     @ApiOperation("保存资源权限")
     @PostMapping("/saveBusiPer")

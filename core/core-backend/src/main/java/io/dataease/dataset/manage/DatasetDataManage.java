@@ -192,7 +192,7 @@ public class DatasetDataManage {
                 LinkedHashMap<String, Object> obj = new LinkedHashMap<>();
                 if (row.length > 0) {
                     for (int j = 0; j < row.length; j++) {
-                        obj.put(fields.get(j).getFieldShortName(), row[j]);
+                        obj.put(fields.get(j).getDataeaseName(), row[j]);
                     }
                 }
                 dataObjectList.add(obj);

@@ -48,9 +48,9 @@ public class ExtWhere2Str {
                         // 解析origin name中有关联的字段生成sql表达式
                         originName = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields);
                     } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
-                        originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
+                        originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
                     } else {
-                        originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getOriginName());
+                        originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
                     }
 
                     if (field.getDeType() == 1) {

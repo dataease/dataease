@@ -25,6 +25,6 @@ public interface DatasetTableApi {
     @PostMapping("delete/{id}")
     void delete(@PathVariable Long id);
 
-    @PostMapping("listByDQ")
-    Map<String, List<DatasetTableFieldDTO>> listByDQ();
+    @PostMapping("listByDQ/{id}")
+    Map<String, List<DatasetTableFieldDTO>> listByDQ(@PathVariable Long id);
 }

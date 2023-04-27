@@ -124,6 +124,13 @@ export default {
     please_fill: '请一行填一个，最多添加500个,识别录入时会自动过滤重复的选项和已经添加过的选项',
     close: '关 闭',
     add: '添 加',
-    sure: '确 定'
+    sure: '确 定',
+    uncommitted_tips: '有未提交的权限变更，是否提交？'
+  },
+  chart: {
+    draw_back: '收回',
+    chart_data: '数据',
+    chart_style: '样式',
+    senior: '高级'
   }
 }
