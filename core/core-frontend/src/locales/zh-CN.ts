@@ -100,6 +100,13 @@ export default {
     dataset: '数据集',
     datasource: '数据源',
     empty_desc: '请选择用户/角色以及资源类型',
-    uncommitted_tips: '有未提交的权限变更，是否提交？'
+    uncommitted_tips: '有未提交的权限变更，是否提交？',
+    empty_desc: '请选择用户/角色以及资源类型'
+  },
+  chart: {
+    draw_back: '收回',
+    chart_data: '数据',
+    chart_style: '样式',
+    senior: '高级'
   }
 }
