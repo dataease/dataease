@@ -27,20 +27,28 @@ interface RowForm {
 }
 
 const { t } = useI18n()
-
+const defaultForm = {
+  authTargetId: '',
+  authTargetType: 'user',
+  datasetId: '',
+  whiteListUser: [],
+  enable: true
+}
 const paginationConfig = reactive<Pagination>({
   currentPage: 1,
   pageSize: 10,
   total: 0
 })
 
-const rowPermissionForm = reactive<RowForm>({
-  enable: false,
-  authTargetType: 'user',
-  whiteListUser: [],
-  authTargetId: '',
-  datasetId: ''
-})
+const rowPermissionForm = reactive<RowForm>(
+  clone({
+    enable: false,
+    authTargetType: 'user',
+    whiteListUser: [],
+    authTargetId: '',
+    datasetId: ''
+  })
+)
 
 const state = reactive({
   rowList: []
@@ -58,14 +66,6 @@ const emptyTips = computed(() => {
 
 provide('filedList', () => [])
 provide('getAuthTargetType', () => rowPermissionForm.authTargetType)
-
-const defaultForm = {
-  authTargetId: '',
-  authTargetType: 'user',
-  datasetId: '',
-  whiteListUser: [],
-  enable: true
-}
 
 const typeList = ['role', 'user', 'sysParams']
 

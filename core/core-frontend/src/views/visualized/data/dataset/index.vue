@@ -12,6 +12,7 @@ import { getDatasetTree, delDatasetTree, getDatasetPreview } from '@/api/dataset
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import DatasetDetail from './DatasetDetail.vue'
 import RowPermissions from './RowPermissions.vue'
+import ColumnPermissions from './ColumnPermissions.vue'
 import type { TabPaneName } from 'element-plus-secondary'
 import { timestampFormatDate } from './form/util.js'
 interface Field {
@@ -369,7 +370,8 @@ const defaultProps = {
             {{ t(`dataset.${activeName}`) }}
           </el-button>
           <div class="table-row-column">
-            <row-permissions></row-permissions>
+            <row-permissions v-if="activeName === 'row'"></row-permissions>
+            <column-permissions v-else></column-permissions>
           </div>
         </template>
       </template>
