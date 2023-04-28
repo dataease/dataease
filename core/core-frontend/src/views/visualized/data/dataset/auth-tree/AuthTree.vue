@@ -5,10 +5,9 @@ export default {
 </script>
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { PropType, computed, ref } from 'vue'
+import { PropType, computed, toRefs } from 'vue'
 import FilterFiled from './FilterFiled.vue'
 import type { Item } from './FilterFiled.vue'
-import { clone } from 'lodash'
 export type Logic = 'or' | 'and'
 export type Relation = {
   child?: Relation[]
@@ -42,66 +41,25 @@ const emits = defineEmits([
   'addCondReal',
   'changeAndOrDfs',
   'update:logic',
-  'changeRelationList',
   'removeRelationList',
   'del'
 ])
 
-const authRelationList = ref<Relation[]>([])
+const { relationList } = toRefs(props)
 
-const initList = () => {
-  authRelationList.value = clone(props.relationList)
-  console.log('props.relationList', props.relationList.length)
-}
 const handleCommand = type => {
   emits('update:logic', type)
   emits('changeAndOrDfs', type)
 }
+
 const removeRelationList = index => {
-  emits('changeRelationList', index)
+  relationList.value.splice(index, 1)
 }
 const addCondReal = type => {
-  const obj =
-    type === 'condition'
-      ? {
-          fieldId: '',
-          value: '',
-          enumValue: '',
-          term: '',
-          filterType: 'logic',
-          name: '',
-          deType: ''
-        }
-      : { child: [], logic: props.logic === 'or' ? 'and' : 'or' }
-
-  authRelationList.value.push(obj as Relation)
-  emits('changeRelationList', authRelationList.value.length - 1, obj)
+  emits('addCondReal', type, props.logic === 'or' ? 'and' : 'or')
 }
-
-const updateItem = (val: Relation, index: number) => {
-  authRelationList.value[index] = val
-  emits('changeRelationList', index, val)
-}
-
-const changeRelationList = (index, idx, obj) => {
-  if (obj) {
-    authRelationList.value[index].child.push(obj as Relation)
-    return
-  }
-
-  if (!isNaN(idx)) {
-    authRelationList.value[index].child.splice(idx, 1, obj as Relation)
-  } else {
-    authRelationList.value[index].child.splice(idx, 1)
-    emits('changeRelationList', index, obj)
-    return
-  }
-
-  emits('changeRelationList', index, obj)
-}
-
 const add = (type, child, logic) => {
-  const obj =
+  child.push(
     type === 'condition'
       ? {
           fieldId: '',
@@ -113,23 +71,15 @@ const add = (type, child, logic) => {
           deType: ''
         }
       : { child: [], logic }
-
-  authRelationList.value.push(obj as Relation)
-  emits('changeRelationList', authRelationList.value.length - 1, obj)
+  )
 }
-const del = (arr, index) => {
-  authRelationList.value[index].child = arr
-  emits('changeRelationList', authRelationList.value.length - 1, arr)
+const del = (index, child) => {
+  child.splice(index, 1)
 }
 
-const delItem = index => {
-  authRelationList.value.splice(index, 1)
-  emits('del', index, authRelationList.value)
-}
-
-defineExpose({
-  initList
-})
+// defineExpose({
+//   initList
+// })
 </script>
 
 <template>
@@ -161,25 +111,18 @@ defineExpose({
       </span>
     </div>
     <div class="logic-right">
-      <template :key="index" v-for="(item, index) in authRelationList">
+      <template :key="index" v-for="(item, index) in relationList">
         <logic-relation
           v-if="item.child"
           :x="item.x"
-          @del="(_, arr) => del(arr, index)"
+          @del="idx => del(idx, item.child)"
           @addCondReal="(type, logic) => add(type, item.child, logic)"
           :logic="item.logic"
-          @changeRelationList="(idx, obj) => changeRelationList(index, idx, obj)"
           @removeRelationList="removeRelationList(index)"
           :relationList="item.child"
         >
         </logic-relation>
-        <filter-filed
-          v-else
-          :item="item"
-          @update:item="val => updateItem(val, index)"
-          @del="delItem(index)"
-          :index="index"
-        ></filter-filed>
+        <filter-filed v-else :item="item" @del="emits('del', index)" :index="index"></filter-filed>
       </template>
       <div class="logic-right-add">
         <button @click="addCondReal('condition')" class="operand-btn">
@@ -287,7 +230,6 @@ defineExpose({
       align-items: center;
       justify-content: center;
       line-height: 1;
-      -webkit-appearance: button;
       cursor: pointer;
       height: 28px;
       padding: 0 10px;
