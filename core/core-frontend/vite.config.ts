@@ -101,6 +101,16 @@ export default defineConfig({
     viteStylelint(),
     isDesktop && electronRenderer()
   ],
+  css: {
+    preprocessorOptions: {
+      less: {
+        modifyVars: {
+          hack: `true; @import (reference) "${path.resolve('src/style/variable.less')}";`,
+        },
+        javascriptEnabled: true
+      }
+    }
+  },
   resolve: {
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.less', '.css'],
     alias: [

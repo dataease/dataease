@@ -161,7 +161,7 @@ onMounted(() => {
   height: 100vh;
 
   main {
-    height: calc(100% - 43px);
+    height: calc(100% - @component-toolbar-height);
     position: relative;
 
     .left {
@@ -170,14 +170,6 @@ onMounted(() => {
       width: 200px;
       left: 0;
       top: 0;
-
-      & > div {
-        overflow: auto;
-
-        &:first-child {
-          border-bottom: 1px solid #ddd;
-        }
-      }
     }
 
     .right {

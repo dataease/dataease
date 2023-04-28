@@ -149,41 +149,38 @@ eventBus.on('clearCanvas', clearCanvas)
 </script>
 
 <template>
-  <div>
-    <div class="toolbar">
-      <el-icon class="custom-el-icon" @click="backToMain()">
-        <Icon class="toolbar-icon" name="icon_left_outlined" />
+  <div class="toolbar">
+    <el-icon class="custom-el-icon" @click="backToMain()">
+      <Icon class="toolbar-icon" name="icon_left_outlined" />
+    </el-icon>
+    <span class="name-area">{{ dvInfo.name }}</span>
+    <div style="display: table-cell; float: right; width: 75%; vertical-align: middle">
+      <el-divider direction="vertical" />
+      <el-icon class="custom-el-icon" @click="undo()">
+        <Icon class="toolbar-icon" name="icon_undo_outlined"></Icon>
       </el-icon>
-      <span class="name-area">{{ dvInfo.name }}</span>
-      <div style="display: table-cell; float: right; width: 75%; vertical-align: middle">
-        <el-divider direction="vertical" />
-        <el-icon class="custom-el-icon" @click="undo()">
-          <Icon class="toolbar-icon" name="icon_undo_outlined"></Icon>
-        </el-icon>
-        <el-icon class="custom-el-icon" @click="redo()">
-          <Icon class="toolbar-icon" name="icon_redo_outlined"></Icon>
-        </el-icon>
+      <el-icon class="custom-el-icon" @click="redo()">
+        <Icon class="toolbar-icon" name="icon_redo_outlined"></Icon>
+      </el-icon>
 
-        <div class="canvas-config">
-          <span>画布大小</span>
-          <input v-model="canvasStyleData.width" />
-          <span>*</span>
-          <input v-model="canvasStyleData.height" />
-        </div>
-        <div class="canvas-config">
-          <span>画布比例</span>
-          <input v-model="scale" @input="handleScaleChange" /> %
-        </div>
-        <el-button @click="save()" style="float: right; margin-right: 12px" type="primary"
-          >保存</el-button
-        >
-        <el-button @click="preview()" style="float: right; margin-right: 12px">预览</el-button>
+      <div class="canvas-config">
+        <span>画布大小</span>
+        <input v-model="canvasStyleData.width" />
+        <span>*</span>
+        <input v-model="canvasStyleData.height" />
       </div>
+      <div class="canvas-config">
+        <span>画布比例</span>
+        <input v-model="scale" @input="handleScaleChange" /> %
+      </div>
+      <el-button @click="save()" style="float: right; margin-right: 12px" type="primary"
+        >保存</el-button
+      >
+      <el-button @click="preview()" style="float: right; margin-right: 12px">预览</el-button>
     </div>
-
-    <!-- 预览 -->
-    <Preview v-if="isShowPreview" :is-screenshot="isScreenshot" @close="handlePreviewChange" />
   </div>
+  <!-- 预览 -->
+  <Preview v-if="isShowPreview" :is-screenshot="isScreenshot" @close="handlePreviewChange" />
 </template>
 
 <style lang="less" scoped>
@@ -194,6 +191,7 @@ eventBus.on('clearCanvas', clearCanvas)
   overflow-x: auto;
   background: rgba(0, 21, 41, 1);
   color: #ffffff;
+  border-bottom: 1px solid rgba(85, 85, 85, 1);
   .name-area {
     margin: 0 10px;
   }
