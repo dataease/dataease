@@ -3,6 +3,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { storeToRefs } from 'pinia'
+import { ElIcon } from 'element-plus-secondary'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const layerStore = layerStoreWithOut()
@@ -44,6 +45,9 @@ const setCurComponent = index => {
   <div class="real-time-component-list">
     <div class="title">
       <span>图层管理</span>
+      <el-icon size="20">
+        <Expand />
+      </el-icon>
     </div>
     <div
       v-for="(item, index) in componentData"
@@ -67,13 +71,19 @@ const setCurComponent = index => {
 .real-time-component-list {
   height: 100%;
   background-color: rgba(37, 45, 54, 1);
-  border: 1px solid rgba(85, 85, 85, 1);
+  border-right: 1px solid rgba(85, 85, 85, 1);
+  border-left: 1px solid rgba(85, 85, 85, 1);
+  border-bottom: 1px solid rgba(85, 85, 85, 1);
+  overflow: hidden;
   color: #fff;
   .title {
-    height: 45px;
+    padding: 0 10px;
+    height: @component-toolbar-height;
     border-bottom: 1px solid rgba(85, 85, 85, 1);
-    display: table-cell;
-    width: 200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: @component-list-width;
     vertical-align: middle;
   }
   .list {
@@ -86,6 +96,8 @@ const setCurComponent = index => {
     padding: 0 10px;
     position: relative;
     user-select: none;
+    overflow-x: hidden;
+    overflow-y: auto;
 
     &:active {
       cursor: grabbing;
