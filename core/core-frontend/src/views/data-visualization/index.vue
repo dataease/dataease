@@ -33,8 +33,8 @@ const contentStyle = computed(() => {
   const { width, height, scale } = canvasStyleData.value
   return {
     width: width * 1.5 + 'px',
-    height: height * 2 + 'px',
-    paddingTop: height * (1 - scale / 200) + 'px'
+    height: (height * 2 * scale) / 100 + 'px',
+    paddingTop: (height * scale) / 200 + 'px'
   }
 })
 
@@ -144,14 +144,14 @@ onMounted(() => {
         </div>
       </section>
       <!--右侧属性列表-->
-      <!--      <section class="right">-->
-      <!--        <el-tabs v-if="curComponent" v-model="activeName">-->
-      <!--          <el-tab-pane label="属性" name="attr">-->
-      <!--            <component :is="curComponent['component'] + '-attr'" />-->
-      <!--          </el-tab-pane>-->
-      <!--        </el-tabs>-->
-      <!--        <CanvasAttr v-else></CanvasAttr>-->
-      <!--      </section>-->
+      <section class="right">
+        <el-tabs v-if="curComponent" v-model="activeName">
+          <el-tab-pane label="属性" name="attr">
+            <component :is="curComponent['component'] + '-attr'" />
+          </el-tab-pane>
+        </el-tabs>
+        <CanvasAttr v-else></CanvasAttr>
+      </section>
     </main>
   </div>
 </template>
@@ -186,6 +186,7 @@ onMounted(() => {
       width: 288px;
       right: 0;
       top: 0;
+      z-index: 20;
       .el-select {
         width: 100%;
       }

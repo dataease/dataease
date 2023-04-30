@@ -164,16 +164,12 @@ eventBus.on('clearCanvas', clearCanvas)
           <Icon class="toolbar-icon" name="icon_redo_outlined"></Icon>
         </el-icon>
 
-        <div class="canvas-config">
-          <span>画布大小</span>
-          <input v-model="canvasStyleData.width" />
-          <span>*</span>
-          <input v-model="canvasStyleData.height" />
-        </div>
-        <div class="canvas-config">
-          <span>画布比例</span>
-          <input v-model="scale" @input="handleScaleChange" /> %
-        </div>
+        <!--        <div class="canvas-config">-->
+        <!--          <span>画布大小</span>-->
+        <!--          <input v-model="canvasStyleData.width" />-->
+        <!--          <span>*</span>-->
+        <!--          <input v-model="canvasStyleData.height" />-->
+        <!--        </div>-->
         <el-button @click="save()" style="float: right; margin-right: 12px" type="primary"
           >保存</el-button
         >

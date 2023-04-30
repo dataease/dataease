@@ -3,9 +3,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 const dvMainStore = dvMainStoreWithOut()
-
 const { canvasStyleData } = storeToRefs(dvMainStore)
-
 const options = ref({
   color: '颜色',
   opacity: '不透明度',
@@ -13,38 +11,86 @@ const options = ref({
   fontSize: '字体大小'
 })
 
-const isIncludesColor = str => {
-  return str.toLowerCase().includes('color')
-}
+const canvasAttrActiveNames = ref(['size', 'background', 'color'])
 </script>
 
 <template>
   <div class="attr-container">
-    <p class="title">画布属性</p>
-    <el-form style="padding: 20px">
-      <el-form-item v-for="(key, index) in Object.keys(options)" :key="index" :label="options[key]">
-        <el-color-picker
-          v-if="isIncludesColor(key)"
-          v-model="canvasStyleData[key]"
-          show-alpha
-        ></el-color-picker>
-        <el-input v-else v-model.number="canvasStyleData[key]" type="number" />
-      </el-form-item>
-    </el-form>
+    <el-row class="title">
+      <span>大屏配置</span>
+    </el-row>
+    <el-row>
+      <el-collapse v-model="canvasAttrActiveNames">
+        <el-collapse-item title="尺寸" name="size">
+          <el-row style="display: flex; padding-top: 10px">
+            <span>W</span>
+            <el-input-number
+              style="margin-left: 5px"
+              v-model="canvasStyleData.width"
+              :min="600"
+              :max="4096"
+              size="small"
+              controls-position="right"
+            />
+
+            <span style="margin-left: 10px">H</span>
+            <el-input-number
+              style="margin-left: 5px"
+              v-model="canvasStyleData.height"
+              :min="600"
+              :max="4096"
+              size="small"
+              controls-position="right"
+            />
+          </el-row>
+        </el-collapse-item>
+        <el-collapse-item title="背景" name="background">
+          <el-row>
+            <el-radio-group v-model="canvasStyleData.backgroundType">
+              <el-radio label="color">颜色</el-radio>
+              <el-radio label="image">图片</el-radio>
+            </el-radio-group>
+          </el-row>
+          <el-row v-show="canvasStyleData.backgroundType === 'color'">
+            <el-color-picker v-model="canvasStyleData.background" show-alpha></el-color-picker>
+          </el-row>
+          <el-row v-show="canvasStyleData.backgroundType === 'image'"> 图片上传 </el-row>
+        </el-collapse-item>
+        <el-collapse-item title="配色方案" name="color">
+          <div>配色方案设置</div>
+        </el-collapse-item>
+      </el-collapse>
+    </el-row>
   </div>
 </template>
 
 <style lang="less">
 .attr-container {
+  background-color: rgba(37, 45, 54, 1);
+  border: 1px solid rgba(85, 85, 85, 1);
+  color: #fff;
+  z-index: 20;
+  height: 100%;
   .title {
     text-align: center;
     margin-bottom: 10px;
-    height: 40px;
-    line-height: 40px;
-    border-bottom: 2px solid #e4e7ed;
-    font-size: 14px;
+    height: 44px;
+    line-height: 44px;
+    font-size: 12px;
     font-weight: 500;
-    color: #303133;
+    border-bottom: 1px solid rgba(85, 85, 85, 1);
   }
+}
+
+.el-collapse-item__header {
+  background-color: rgba(29, 36, 42, 1) !important;
+  color: #ffffff;
+}
+.el-collapse-item__content {
+  background-color: rgba(37, 45, 54, 1);
+  color: #ffffff;
+}
+.el-collapse-item__wrap {
+  border: 1px solid rgba(85, 85, 85, 1);
 }
 </style>
