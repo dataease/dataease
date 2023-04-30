@@ -1,17 +1,13 @@
 <script lang="ts" setup>
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import rowAuthTree from './RowAuthTree.vue'
-import type { Item } from './FilterFiled.vue'
-import type { Relation } from './RowAuthTree.vue'
+import AuthTree from './AuthTree.vue'
 
 const { t } = useI18n()
 
 const errorMessage = ref('')
 const logic = ref<'or' | 'and'>('or')
 const relationList = ref([])
-
-const authTree = ref()
 
 const svgRealinePath = computed(() => {
   const lg = relationList.value.length
@@ -35,9 +31,6 @@ const init = expressionTree => {
   const { logic: lg = 'or', items = [] } = expressionTree
   logic.value = lg
   relationList.value = dfsInit(items)
-  nextTick(() => {
-    authTree.value.initList()
-  })
 }
 const submit = () => {
   errorMessage.value = ''
@@ -270,14 +263,6 @@ const del = index => {
   relationList.value.splice(index, 1)
 }
 
-const changeRelationList = (index, arr?: Item & Relation[]) => {
-  if (Array.isArray(arr)) {
-    relationList.value.splice(index, 1, { ...relationList.value[index], child: arr })
-  } else {
-    relationList.value.splice(index, 1, arr)
-  }
-}
-
 defineExpose({
   init,
   submit
@@ -287,14 +272,12 @@ const emits = defineEmits(['save'])
 
 <template>
   <div class="rowAuth">
-    <row-auth-tree
+    <auth-tree
       @del="idx => del(idx)"
       @addCondReal="addCondReal"
       @removeRelationList="removeRelationList"
       @changeAndOrDfs="type => changeAndOrDfs(relationList, type)"
       :relationList="relationList"
-      ref="authTree"
-      @changeRelationList="changeRelationList"
       v-model:logic="logic"
     />
     <svg width="388" height="100%" class="real-line">

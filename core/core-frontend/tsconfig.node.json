@@ -2,7 +2,8 @@
   "compilerOptions": {
     "jsx": "preserve",
     "composite": true,
-    "module": "es2020",
+    "module": "ES6",
+    "target": "ES6",
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,

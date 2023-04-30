@@ -52,10 +52,9 @@ const handleScaleChange = () => {
   display: flex;
   position: absolute;
   z-index: 10;
-  height: 45px;
+  height: @component-toolbar-height;
   background-color: rgba(37, 45, 54, 1);
   border-bottom: 1px solid rgba(85, 85, 85, 1);
-  border-top: 1px solid rgba(85, 85, 85, 1);
   color: #fff;
 }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, inject, computed, watch, onBeforeMount, reactive, nextTick } from 'vue'
+import { ref, inject, computed, watch, onBeforeMount, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   textOptions,
@@ -53,15 +53,7 @@ const checklist = ref([])
 const filterList = ref([])
 const textareaValue = ref('')
 
-const authItem = reactive<Item>({
-  term: '',
-  fieldId: '',
-  filterType: '',
-  deType: 0,
-  enumValue: '',
-  name: '',
-  value: null
-})
+const { item } = toRefs(props)
 
 const getAuthTargetType = inject(
   'getAuthTargetType',
@@ -116,23 +108,7 @@ watch(checkResult, () => {
   cancelfixValue()
 })
 
-let loading = false
-
-watch(
-  authItem,
-  () => {
-    if (loading) return
-    emits('update:item', { ...authItem })
-  },
-  { deep: true }
-)
-
 onBeforeMount(() => {
-  loading = true
-  Object.assign(authItem, props.item)
-  nextTick(() => {
-    loading = false
-  })
   initNameEnumName()
   filterListInit(props.item.deType)
   sysParamsIlnJudge(props.item.term)
@@ -155,16 +131,12 @@ const initNameEnumName = () => {
 const cancelKeyDow = () => {
   if (!showTextArea.value && !keydownCanceled.value) {
     keydownCanceled.value = true
-    // console.log(deElDropdownMenuFixed.value, 'deElDropdownMenuFixed.value')
-
-    // const { dropdownElm, handleItemKeyDown } = deElDropdownMenuFixed.value
-    // dropdownElm.removeEventListener('keydown', handleItemKeyDown, true)
   }
   showTextArea.value = true
 }
 const filterTypeChange = () => {
-  authItem.term = ''
-  authItem.value = null
+  item.value.term = ''
+  item.value.value = null
   initEnumOptions()
 }
 const initEnumOptions = () => {
@@ -194,7 +166,7 @@ const sysParamsIlnJudge = term => {
   }
 }
 const onOptionsChange = term => {
-  authItem.value = null
+  item.value = null
   sysParamsIlnJudge(term)
 }
 const optionData = data => {
@@ -202,10 +174,10 @@ const optionData = data => {
   return data.filter(item => !!item)
 }
 const cancel = () => {
-  authItem.name = activeName.value || ''
+  item.value.name = activeName.value || ''
 }
 const cancelfixValue = () => {
-  authItem.enumValue = checkResult.value || ''
+  item.value.enumValue = checkResult.value || ''
 }
 const delChecks = idx => {
   checklist.value.splice(idx, 1)
@@ -286,7 +258,7 @@ const emits = defineEmits(['update:item', 'del'])
       <el-dropdown trigger="click" :hide-on-click="false">
         <el-input
           :placeholder="t('auth.selct_filter_fields')"
-          v-model="authItem.name"
+          v-model="item.name"
           size="small"
           @input="cancel"
         >
@@ -324,7 +296,7 @@ const emits = defineEmits(['update:item', 'del'])
         <el-select
           size="small"
           @change="filterTypeChange"
-          v-model="authItem.filterType"
+          v-model="item.filterType"
           :placeholder="t('auth.select')"
         >
           <el-option
@@ -336,12 +308,12 @@ const emits = defineEmits(['update:item', 'del'])
           </el-option>
         </el-select>
         <span class="filed-title">{{ t('auth.fixed_value') }}</span>
-        <template v-if="authItem.filterType === 'logic'">
+        <template v-if="item.filterType === 'logic'">
           <el-select
             class="w100"
             size="small"
             @change="onOptionsChange"
-            v-model="authItem.term"
+            v-model="item.term"
             :placeholder="t('auth.default_method')"
           >
             <el-option
@@ -356,7 +328,7 @@ const emits = defineEmits(['update:item', 'del'])
             v-if="authTargetType === 'sysParams'"
             class="w70 mar5"
             size="small"
-            v-model="authItem.value"
+            v-model="item.value"
           >
             <el-option
               v-for="item in sysParamsIln"
@@ -368,20 +340,20 @@ const emits = defineEmits(['update:item', 'del'])
           </el-select>
           <template
             v-else-if="
-              [2, 3].includes(authItem.deType) &&
-              !['null', 'empty', 'not_null', 'not_empty'].includes(authItem.term)
+              [2, 3].includes(item.deType) &&
+              !['null', 'empty', 'not_null', 'not_empty'].includes(item.term)
             "
           >
             <el-input-number
               class="w70 mar5"
               size="small"
-              v-model="authItem.value"
+              v-model="item.value"
               controls-position="right"
             ></el-input-number>
             <div class="bottom-line"></div>
           </template>
           <template v-else-if="!['null', 'empty', 'not_null', 'not_empty'].includes(item.term)">
-            <el-input class="w70 mar5" size="small" v-model="authItem.value" />
+            <el-input class="w70 mar5" size="small" v-model="item.value" />
             <div class="bottom-line"></div>
           </template>
         </template>
@@ -396,7 +368,7 @@ const emits = defineEmits(['update:item', 'del'])
         >
           <template #reference>
             <el-input
-              v-model="authItem.enumValue"
+              v-model="item.enumValue"
               ref="enumInput"
               size="small"
               @input="cancelfixValue"
