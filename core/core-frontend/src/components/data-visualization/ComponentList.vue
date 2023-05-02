@@ -14,7 +14,7 @@ const handleDragStart = e => {
       draggable="true"
       :data-index="index"
     >
-      test
+      {{ item.label }}
     </div>
   </div>
 </template>

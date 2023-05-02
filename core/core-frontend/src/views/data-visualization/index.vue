@@ -18,6 +18,7 @@ import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
 import DvToolbar from '../../components/data-visualization/DvToolbar.vue'
 import ComponentToolBar from '../../components/data-visualization/ComponentToolBar.vue'
+import eventBus from '../../utils/eventBus'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -47,6 +48,33 @@ const restore = () => {
 
   if (localStorage.getItem('canvasStyle')) {
     dvMainStore.setCanvasStyle(JSON.parse(localStorage.getItem('canvasStyle')))
+  }
+}
+
+const findNewComponent = componentName => {
+  let newComponent
+  componentList.forEach(component => {
+    if (componentName === component.component) {
+      newComponent = deepCopy(component)
+    }
+  })
+  return newComponent
+}
+
+// 通过实时监听的方式直接添加组件
+const handleNew = newComponentInfo => {
+  const { componentName, innerType } = newComponentInfo
+  if (componentName) {
+    const component = findNewComponent(componentName)
+    if (componentName === 'UserView' && innerType) {
+      // do something
+    }
+    component.style.top = 0
+    component.style.left = 0
+    component.id = generateID()
+    changeComponentSizeWithScale(component)
+    dvMainStore.addComponent({ component: component, index: undefined })
+    snapshotStore.recordSnapshot()
   }
 }
 
@@ -118,6 +146,8 @@ onMounted(() => {
   // 设置画布初始滚动条位置
   // canvasOut.value.nav.scrollLeft += 100
 })
+
+eventBus.on('handleNew', handleNew)
 </script>
 
 <template>

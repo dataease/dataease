@@ -31,6 +31,7 @@ const list = [
     label: '矩形',
     propValue: '&nbsp;',
     icon: 'juxing',
+    innerType: 'RectShape',
     style: {
       width: 200,
       height: 200,
@@ -53,6 +54,7 @@ const list = [
     label: '文字',
     propValue: '双击编辑文字',
     icon: 'wenben',
+    innerType: 'RectShape',
     request: {
       method: 'GET',
       data: [],
@@ -71,6 +73,22 @@ const list = [
       letterSpacing: 0,
       textAlign: '',
       color: ''
+    }
+  },
+  {
+    component: 'UserView',
+    label: '视图',
+    propValue: '',
+    icon: 'view',
+    innerType: 'bar',
+    style: {
+      width: 200,
+      height: 200,
+      borderColor: '#fff',
+      borderWidth: 1,
+      backgroundColor: '',
+      borderStyle: 'solid',
+      borderRadius: ''
     }
   }
 ]
