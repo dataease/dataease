@@ -151,7 +151,7 @@ const createDataset = (data?: Tree) => {
   router.push({
     path: '/dataset-form',
     query: {
-      pid: data.id
+      pid: data?.id
     }
   })
 }
@@ -297,6 +297,7 @@ const defaultProps = {
                 :menu-list="state.datasetTypeList"
                 icon-name="icon_add_outlined"
                 placement="bottom-start"
+                v-if="data.nodeType === 'folder'"
               ></handle-more>
               <handle-more
                 @handle-command="cmd => operation(cmd, data, data.nodeType)"

@@ -1,6 +1,6 @@
 .border-bottom-tab(@width) {
     margin-left: @width;
-    ::before {
+    :deep(.el-tabs__header::before) {
       content: '';
       position: absolute;
       left: -@width;

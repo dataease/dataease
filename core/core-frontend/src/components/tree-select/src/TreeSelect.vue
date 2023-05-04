@@ -5,6 +5,7 @@ import { propTypes } from '@/utils/propTypes'
 interface Tree {
   deptId: number
   pid: number
+  value?: number
   subCount: number
   name: string
   deptSort: number
@@ -18,18 +19,13 @@ interface Tree {
 }
 const tree = ref()
 const currentSelect = ref()
-const selectList = ref([])
 
 defineProps({
   width: propTypes.string.def('200px')
 })
-const filterMethod = val => {
-  tree.value.filter(val)
-}
-const filterNode = (value, data) => {
-  if (!value) return true
-  return data.name.indexOf(value) !== -1
-}
+
+const filterNodeMethod = (value, data) => data.name.includes(value)
+
 const treeDefaultProps = {
   children: 'children',
   label: 'name',
@@ -44,6 +40,7 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
           deptId: 2,
           pid: 0,
           subCount: 2,
+          value: 2,
           name: 'wei的组织',
           deptSort: null,
           createBy: null,
@@ -57,6 +54,7 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
         {
           deptId: 5,
           pid: 0,
+          value: 5,
           subCount: 0,
           name: 'jinlong',
           deptSort: null,
@@ -73,6 +71,7 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
           pid: 0,
           subCount: 0,
           name: '默认组织1121',
+          value: 1,
           deptSort: 0,
           createBy: null,
           updateBy: null,
@@ -95,6 +94,7 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
         deptId: 3,
         pid: 2,
         subCount: 1,
+        value: 3,
         name: 'wei的二级组织',
         deptSort: null,
         createBy: null,
@@ -109,6 +109,7 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
         deptId: 4,
         pid: 2,
         subCount: 0,
+        value: 4,
         name: 'yyp',
         deptSort: null,
         createBy: null,
@@ -127,50 +128,17 @@ const loadNode = (node: Node, resolve: (data: Tree[]) => void) => {
 </script>
 
 <template>
-  <el-popover placement="bottom" popper-class="tree-popper" :width="width" trigger="click">
-    <template #reference>
-      <el-select
-        v-model="currentSelect"
-        filterable
-        :style="{ width: width }"
-        :filter-method="filterMethod"
-        clearable
-        popper-class="tree-select"
-      >
-        <el-option
-          v-for="item in selectList"
-          :key="item.name"
-          :label="item.name"
-          :value="item.deptId"
-        />
-      </el-select>
-    </template>
-    <el-tree
-      :load="loadNode"
-      lazy
-      ref="tree"
-      :expand-on-click-node="false"
-      check-on-click-node
-      :filter-node-method="filterNode"
-      :props="treeDefaultProps"
-    ></el-tree>
-  </el-popover>
+  <el-tree-select
+    :load="loadNode"
+    lazy
+    v-model="currentSelect"
+    filterable
+    check-strictly
+    :filter-node-method="filterNodeMethod"
+    clearable
+    ref="tree"
+    :expand-on-click-node="false"
+    check-on-click-node
+    :props="treeDefaultProps"
+  />
 </template>
-
-<style lang="less">
-.tree-popper {
-  padding: 0;
-  max-height: 300px;
-  overflow: auto;
-  .popper__arrow {
-    display: none;
-  }
-}
-.tree-select {
-  display: none;
-  .el-select-dropdown__empty,
-  .popper__arrow {
-    display: none;
-  }
-}
-</style>

@@ -368,7 +368,7 @@ const defaultProps = {
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             <div>
-              <el-icon>
+              <el-icon class="hover-icon">
                 <Icon name="icon_add_outlined"></Icon>
               </el-icon>
             </div>

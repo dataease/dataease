@@ -683,8 +683,8 @@ defineExpose({
 </template>
 
 <style lang="less" scoped>
-@width: 30px;
-@width_table: 30px;
+@import '@/style/mixin.less';
+
 .user-role {
   width: 250px;
   float: left;
@@ -703,16 +703,7 @@ defineExpose({
       width: 200px;
     }
     .tabs-mr {
-      margin-left: @width;
-      ::before {
-        content: '';
-        position: absolute;
-        left: -@width;
-        bottom: 0;
-        width: @width;
-        height: 1px;
-        background-color: rgba(31, 35, 41, 0.15);
-      }
+      .border-bottom-tab(30px);
     }
   }
   .role-tree-container {
@@ -743,16 +734,7 @@ defineExpose({
       width: 190px;
     }
     .tabs-mr {
-      margin-left: @width_table;
-      ::before {
-        content: '';
-        position: absolute;
-        left: -@width_table;
-        bottom: 0;
-        width: @width_table;
-        height: 1px;
-        background-color: rgba(31, 35, 41, 0.15);
-      }
+      .border-bottom-tab(30px);
     }
   }
 

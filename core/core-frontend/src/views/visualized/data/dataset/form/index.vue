@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { ref, nextTick, reactive, shallowRef, computed } from 'vue'
+import { ref, nextTick, reactive, shallowRef, computed, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElIcon } from 'element-plus-secondary'
 import FieldMore from './FieldMore.vue'
@@ -69,11 +69,21 @@ let nodeInfo = {
   name: ''
 }
 
+const defaultProps = {
+  children: 'children',
+  label: 'label'
+}
+
+let tableList = []
+
 const dragHeight = ref(280)
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
 }
 
+watch(searchTable, val => {
+  state.tableData = tableList.filter(ele => ele.name.includes(val))
+})
 const editeSave = () => {
   const union = []
   loading.value = true
@@ -171,6 +181,7 @@ const quota = computed(() => {
 const dimensions = computed(() => {
   return allfields.value.filter(ele => ele.groupType === 'd')
 })
+
 const addComplete = () => {
   state.nodeNameList = [...datasetDrag.value.nodeNameList]
 }
@@ -192,6 +203,8 @@ const allfields = ref([])
 
 let num = +new Date()
 
+const expandedD = ref(false)
+const expandedQ = ref(false)
 const setGuid = (arr, id, datasourceId) => {
   arr.forEach(ele => {
     if (!ele.id) {
@@ -319,7 +332,8 @@ getDatasource()
 
 const dsChange = (val: string) => {
   getTables(val).then(res => {
-    state.tableData = (res as unknown as Table[]) || []
+    tableList = (res as unknown as Table[]) || []
+    state.tableData = [...tableList]
   })
 }
 const datasetSave = () => {
@@ -479,7 +493,15 @@ const handleClick = () => {
             :value="item.id"
           />
         </el-select>
-        <p class="select-ds">{{ t('datasource.data_table') }}</p>
+        <p class="select-ds table-num">
+          {{ t('datasource.data_table') }}
+          <span class="num">
+            <el-icon>
+              <Icon name="reference-table"></Icon>
+            </el-icon>
+            {{ state.tableData.length }}
+          </span>
+        </p>
         <el-input
           v-model="searchTable"
           class="search"
@@ -513,6 +535,9 @@ const handleClick = () => {
               :draggable="!state.nodeNameList.includes(ele.tableName)"
               @click="setActiveName(ele)"
             >
+              <el-icon>
+                <Icon name="reference-table"></Icon>
+              </el-icon>
               <span class="label">{{ ele.tableName }}</span>
             </div>
           </template>
@@ -548,47 +573,70 @@ const handleClick = () => {
           </el-tabs>
           <div v-if="tabActive === 'preview'" class="table-preview">
             <div class="preview-field">
-              <el-collapse accordion>
-                <el-collapse-item name="1">
-                  <template #title>
-                    维度
-                    <ElIcon>
-                      <Icon name="icon_add_outlined"></Icon>
-                    </ElIcon>
-                  </template>
-                  <div class="field-d">
-                    <div :key="ele.id" v-for="ele in dimensions" class="list-item_primary">
+              <div class="field-d">
+                <div :class="['title', { expanded: expandedD }]" @click="expandedD = !expandedD">
+                  <ElIcon class="expand">
+                    <Icon name="icon_expand-right_filled"></Icon>
+                  </ElIcon>
+                  &nbsp;维度
+                  <ElIcon class="add hover-icon" @click="addCalcField('d')">
+                    <Icon name="icon_add_outlined"></Icon>
+                  </ElIcon>
+                </div>
+                <el-tree v-if="expandedD" :data="dimensions" :props="defaultProps">
+                  <template #default="{ data }">
+                    <span class="custom-tree-node">
                       <el-icon>
                         <Icon
-                          :name="`field_${fieldType(ele.deType)}`"
-                          :className="`field-icon-${fieldType(ele.deType)}`"
+                          :name="`field_${fieldType(data.deType)}`"
+                          :className="`field-icon-${fieldType(data.deType)}`"
                         ></Icon>
                       </el-icon>
-                      <span class="label">{{ ele.name }}</span>
-                      <field-more></field-more>
-                    </div>
-                  </div>
-                </el-collapse-item>
-                <el-collapse-item title="Feedback" name="2">
-                  <template #title>
-                    指标
-                    <ElIcon @click="addCalcField('q')">
-                      <Icon name="icon_add_outlined"></Icon>
-                    </ElIcon>
+                      <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
+                      <div class="operate">
+                        <el-tooltip class="box-item" effect="dark" content="显示" placement="top">
+                          <ElIcon class="hover-icon">
+                            <Icon name="icon_visible_outlined"></Icon>
+                          </ElIcon>
+                        </el-tooltip>
+                        <field-more></field-more>
+                      </div>
+                    </span>
                   </template>
-                  <div class="field-q">
-                    <div :key="ele.id" v-for="ele in quota" class="list-item_primary">
+                </el-tree>
+              </div>
+              <div class="field-q">
+                <div :class="['title', { expanded: expandedQ }]" @click="expandedQ = !expandedQ">
+                  <ElIcon class="expand">
+                    <Icon name="icon_expand-right_filled"></Icon>
+                  </ElIcon>
+                  &nbsp;指标
+                  <ElIcon class="add hover-icon" @click="addCalcField('d')">
+                    <Icon name="icon_add_outlined"></Icon>
+                  </ElIcon>
+                </div>
+                <el-tree v-if="expandedQ" :data="quota" :props="defaultProps">
+                  <template #default="{ data }">
+                    <span class="custom-tree-node">
                       <el-icon>
                         <Icon
-                          :name="`field_${fieldType(ele.deType)}`"
-                          :className="`field-icon-${fieldType(ele.deType)}`"
+                          :name="`field_${fieldType(data.deType)}`"
+                          :className="`field-icon-${fieldType(data.deType)}`"
                         ></Icon>
                       </el-icon>
-                      <span class="label">{{ ele.name }}</span>
-                    </div>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
+                      <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
+                      <div class="operate">
+                        <el-tooltip class="box-item" effect="dark" content="显示" placement="top">
+                          <ElIcon class="hover-icon">
+                            <Icon name="icon_visible_outlined"></Icon>
+                          </ElIcon>
+                        </el-tooltip>
+                        <field-more></field-more>
+                      </div>
+                    </span>
+                  </template>
+                </el-tree>
+              </div>
             </div>
             <div class="preview-data">
               <el-auto-resizer>
@@ -719,11 +767,31 @@ const handleClick = () => {
         font-weight: 500;
         display: flex;
         justify-content: space-between;
+        align-items: center;
         color: var(--deTextPrimary, #1f2329);
 
         i {
           cursor: pointer;
           font-size: 12px;
+          color: var(--deTextPlaceholder, #8f959e);
+        }
+      }
+
+      .table-num {
+        .num {
+          display: flex;
+          align-items: center;
+          font-weight: 400;
+          font-size: 14px;
+          color: #646a73;
+          .el-icon {
+            margin-right: 5.33px;
+          }
+        }
+
+        i {
+          cursor: none;
+          font-size: 13.3px;
           color: var(--deTextPlaceholder, #8f959e);
         }
       }
@@ -808,16 +876,76 @@ const handleClick = () => {
             height: 100%;
             border-right: 1px solid rgba(31, 35, 41, 0.15);
 
+            .custom-tree-node {
+              flex: 1;
+              display: flex;
+              align-items: center;
+              padding-right: 8px;
+              box-sizing: content-box;
+
+              .label-tooltip {
+                margin-left: 5.33px;
+                width: 60%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+              }
+
+              .operate {
+                margin-left: auto;
+              }
+            }
+
+            @keyframes hg {
+              from {
+                height: 0;
+              }
+
+              to {
+                height: 30px;
+              }
+            }
+
             .field-d,
             .field-q {
-              height: 200px;
               padding: 0 8px;
-              overflow-y: auto;
-              .list-item_primary {
-                .el-icon {
-                  margin-right: 8px;
+              position: relative;
+              .title {
+                cursor: pointer;
+                position: sticky;
+                top: 0;
+                height: 49px;
+                font-family: 'PingFang SC';
+                font-style: normal;
+                font-weight: 500;
+                font-size: 14px;
+                line-height: 22px;
+                color: #1f2329;
+                display: flex;
+                align-items: center;
+
+                .add {
+                  margin-left: auto;
+                }
+                i {
+                  color: #646a73;
+                }
+
+                &.expanded {
+                  .expand {
+                    transform: rotate(90deg);
+                  }
                 }
               }
+              max-height: 200px;
+              overflow-y: auto;
+              .el-tree {
+                animation: hg 0.5s;
+              }
+            }
+
+            .field-d {
+              border-bottom: 1px solid rgba(31, 35, 41, 0.15);
             }
           }
         }
