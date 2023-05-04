@@ -79,14 +79,13 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 2. 以 root 用户执行如下命令一键安装 DataEase。
 
 ```sh
-curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start.sh | sh
+curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start.sh | bash
 ```
 
 **学习资料**
 
 -   [在线文档](https://dataease.io/docs/)
--   [教学视频](https://dataease.io/video.html)
--   [在线学习班](https://edu.fit2cloud.com/page/2635362?navIndex=0)
+-   [社区论坛](https://bbs.fit2cloud.com/c/de/6)
 
 **加入微信交流群**
 
