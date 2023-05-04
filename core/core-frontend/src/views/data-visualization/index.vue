@@ -193,7 +193,7 @@ eventBus.on('handleNew', handleNew)
   height: 100vh;
 
   main {
-    height: calc(100% - @component-toolbar-height);
+    height: calc(100% - @top-bar-height);
     position: relative;
 
     .left {

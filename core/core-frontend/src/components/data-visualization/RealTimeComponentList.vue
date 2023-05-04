@@ -1,9 +1,12 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { storeToRefs } from 'pinia'
-import { ElIcon } from 'element-plus-secondary'
+import { ElCol, ElIcon, ElRow } from 'element-plus-secondary'
+import Icon from '../icon-custom/src/Icon.vue'
+import { nextTick, ref } from 'vue'
+
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const layerStore = layerStoreWithOut()
@@ -39,102 +42,196 @@ const downComponent = (number: number) => {
 const setCurComponent = index => {
   dvMainStore.setCurComponent({ component: componentData.value[index], index })
 }
+
+const toggleComponentList = () => {
+  console.log(111)
+}
+
+let nameEdit = ref(false)
+let editComponentId = ref('')
+let inputName = ref('')
+let nameInput = ref(null)
+const editComponentName = item => {
+  editComponentId.value = `#component-label-${item.id}`
+  nameEdit.value = true
+  inputName.value = item.name
+  nextTick(() => {
+    nameInput.value.focus()
+  })
+}
+const closeEditComponentName = () => {
+  nameEdit.value = false
+  if (!inputName.value || !inputName.value.trim()) {
+    return
+  }
+  if (inputName.value.trim() === curComponent.value.name) {
+    return
+  }
+  curComponent.value.name = inputName.value
+  inputName.value = ''
+}
+
+const toggleComponentVisible = () => {
+  console.log(111)
+}
+const toggleComponentLock = () => {
+  console.log(1)
+}
 </script>
 
 <template>
-  <div class="real-time-component-list">
-    <div class="title">
+  <el-col class="real-time-component-list">
+    <el-row align="middle" class="banner" justify="space-between">
       <span>图层管理</span>
-      <el-icon size="20">
+      <el-icon size="20px" @click="toggleComponentList">
         <Expand />
       </el-icon>
-    </div>
-    <div
-      v-for="(item, index) in componentData"
-      :key="index"
-      class="list"
-      :class="{ activated: transformIndex(index) === curComponentIndex }"
-      @click="onClick(transformIndex(index))"
-    >
-      <span class="iconfont" :class="'icon-' + getComponent(index).icon"></span>
-      <span>{{ getComponent(index).label }}</span>
-      <div class="icon-container">
-        <span class="iconfont icon-shangyi" @click="upComponent(transformIndex(index))"></span>
-        <span class="iconfont icon-xiayi" @click="downComponent(transformIndex(index))"></span>
-        <span class="iconfont icon-shanchu" @click="deleteComponent(transformIndex(index))"></span>
+    </el-row>
+    <el-row class="list-wrap">
+      <div class="list-container">
+        <div
+          v-for="(item, index) in componentData"
+          :key="index"
+          :class="{ activated: transformIndex(index) === curComponentIndex }"
+          class="component-item"
+          @click="onClick(transformIndex(index))"
+          @dblclick="editComponentName(getComponent(index))"
+        >
+          <el-icon class="component-icon">
+            <Icon :name="getComponent(index).icon"></Icon>
+          </el-icon>
+          <span
+            :id="`component-label-${getComponent(index).id}`"
+            :title="getComponent(index).name"
+            class="component-label"
+          >
+            {{ getComponent(index).name }}
+          </span>
+          <div
+            v-show="!nameEdit || (nameEdit && curComponent.id !== getComponent(index).id)"
+            class="icon-container"
+          >
+            <el-icon v-show="getComponent(index).show" @click="toggleComponentVisible">
+              <Hide />
+            </el-icon>
+            <el-icon v-show="!getComponent(index).show" @click="toggleComponentVisible">
+              <View />
+            </el-icon>
+            <el-icon v-show="!getComponent(index).isLock" @click="toggleComponentLock">
+              <Lock />
+            </el-icon>
+            <el-icon v-show="getComponent(index).isLock" @click="toggleComponentLock">
+              <Unlock />
+            </el-icon>
+            <el-dropdown trigger="click">
+              <el-icon @click="onClick(transformIndex(index))">
+                <MoreFilled />
+              </el-icon>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item>Action 1</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+    </el-row>
+    <Teleport v-if="editComponentId && nameEdit" :to="editComponentId">
+      <input ref="nameInput" v-model="inputName" @blur="closeEditComponentName" />
+    </Teleport>
+  </el-col>
 </template>
 
 <style lang="less" scoped>
 .real-time-component-list {
+  color: white;
+  background-color: #232c31;
+  border-right: #525552 1px solid;
+  border-bottom: #525552 1px solid;
+  white-space: nowrap;
   height: 100%;
-  background-color: rgba(37, 45, 54, 1);
-  border-right: 1px solid rgba(85, 85, 85, 1);
-  border-left: 1px solid rgba(85, 85, 85, 1);
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
-  overflow: hidden;
-  color: #fff;
-  .title {
-    padding: 0 10px;
+
+  .banner {
+    border-bottom: 1px solid #7b797b;
     height: @component-toolbar-height;
-    border-bottom: 1px solid rgba(85, 85, 85, 1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: @component-list-width;
-    vertical-align: middle;
+    padding: 8px 10px 8px 8px;
   }
-  .list {
-    height: 30px;
-    cursor: grab;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    font-size: 12px;
-    padding: 0 10px;
-    position: relative;
-    user-select: none;
-    overflow-x: hidden;
+
+  .list-wrap {
+    max-height: calc(100% - @component-toolbar-height);
     overflow-y: auto;
+    width: 100%;
+    .list-container {
+      width: 100%;
+      .component-item {
+        position: relative;
+        height: 30px;
+        width: 100%;
+        cursor: grab;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        font-size: 12px;
+        padding: 0 10px;
+        user-select: none;
 
-    &:active {
-      cursor: grabbing;
-    }
+        .component-icon {
+          color: #4772f1;
+          font-size: 20px;
+        }
 
-    &:hover {
-      background-color: rgba(200, 200, 200, 0.2);
+        > span.component-label {
+          font-size: 14px;
+          margin-left: 10px;
+          position: relative;
+          width: 60%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          input {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            outline: none;
+            border: none;
+            border-radius: 2px;
+            padding: 0 4px;
+            height: 100%;
+          }
+        }
 
-      .icon-container {
-        display: block;
+        &:active {
+          cursor: grabbing;
+        }
+
+        &:hover {
+          background-color: rgba(200, 200, 200, 0.4);
+
+          .icon-container {
+            display: flex;
+          }
+        }
+
+        .icon-container {
+          display: none;
+          justify-content: space-around;
+          align-items: center;
+          flex-grow: 1;
+          cursor: none;
+
+          i {
+            font-size: 16px;
+            cursor: pointer;
+          }
+        }
+      }
+      .activated {
+        background-color: rgba(200, 200, 200, 0.2);
       }
     }
-
-    .iconfont {
-      margin-right: 4px;
-      font-size: 16px;
-    }
-
-    .icon-wenben,
-    .icon-tupian {
-      font-size: 14px;
-    }
-
-    .icon-container {
-      position: absolute;
-      right: 10px;
-      display: none;
-
-      .iconfont {
-        cursor: pointer;
-      }
-    }
-  }
-
-  .activated {
-    background: #ecf5ff;
-    color: #409eff;
   }
 }
 </style>
