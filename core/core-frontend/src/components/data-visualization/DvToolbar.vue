@@ -184,6 +184,7 @@ eventBus.on('clearCanvas', clearCanvas)
 
 <style lang="less" scoped>
 .toolbar {
+  height: @top-bar-height;
   padding: 5px 10px;
   line-height: 33px;
   white-space: nowrap;

@@ -77,9 +77,10 @@ const list = [
   },
   {
     component: 'UserView',
+    name: '视图',
     label: '视图',
     propValue: '',
-    icon: 'view',
+    icon: 'bar',
     innerType: 'bar',
     style: {
       width: 200,
