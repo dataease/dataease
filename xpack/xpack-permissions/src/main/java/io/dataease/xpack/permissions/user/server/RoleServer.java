@@ -1,5 +1,6 @@
 package io.dataease.xpack.permissions.user.server;
 
+import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.api.permissions.role.api.RoleApi;
 import io.dataease.api.permissions.role.dto.MountUserRequest;
 import io.dataease.api.permissions.role.dto.RoleCopyRequest;
@@ -90,6 +91,10 @@ public class RoleServer implements RoleApi {
     public List<RoleVO> byCurOrg(KeywordRequest request) {
         Long defaultOid = AuthUtils.getUser().getDefaultOid();
         String keyword = request.getKeyword();
-        return roleManage.query(keyword, defaultOid);
+        List<RoleVO> vos = roleManage.query(keyword, defaultOid);
+        if (CollectionUtil.isNotEmpty(vos)) {
+            vos = vos.stream().filter(item -> !item.isRoot()).toList();
+        }
+        return vos;
     }
 }
