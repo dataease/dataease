@@ -7,7 +7,8 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { ElDivider, ElIcon } from 'element-plus-secondary'
 const dvMainStore = dvMainStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -42,6 +43,13 @@ const copy = () => {
   copyStore.copy()
 }
 
+const hide = () => {
+  console.log('hide')
+}
+
+const rename = () => {
+  console.log('rename')
+}
 const paste = () => {
   copyStore.paste(true)
   snapshotStore.recordSnapshot()
@@ -87,6 +95,13 @@ const handleComposeMouseDown = e => {
   e.preventDefault()
   e.stopPropagation()
 }
+
+const composeDivider = computed(() => {
+  return (
+    areaData.value.components.length ||
+    !(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')
+  )
+})
 </script>
 
 <template>
@@ -96,21 +111,6 @@ const handleComposeMouseDown = e => {
     :style="{ top: menuTop + 'px', left: menuLeft + 'px' }"
   >
     <ul @mouseup="handleMouseUp">
-      <template v-if="curComponent">
-        <template v-if="!curComponent['isLock']">
-          <li @click="copy">复制</li>
-          <li @click="paste">粘贴</li>
-          <li @click="cut">剪切</li>
-          <li @click="deleteComponent">删除</li>
-          <li @click="lock">锁定</li>
-          <li @click="topComponent">置顶</li>
-          <li @click="bottomComponent">置底</li>
-          <li @click="upComponent">上移</li>
-          <li @click="downComponent">下移</li>
-        </template>
-        <li v-else @click="unlock">解锁</li>
-      </template>
-      <li v-else @click="paste">粘贴</li>
       <li
         v-show="areaData.components.length"
         @mousedown="handleComposeMouseDown"
@@ -122,8 +122,34 @@ const handleComposeMouseDown = e => {
         v-show="!(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')"
         @click="decompose()"
       >
-        拆分
+        取消组合
       </li>
+      <el-divider v-show="composeDivider" />
+      <template v-if="curComponent">
+        <template v-if="!curComponent['isLock']">
+          <li @click="upComponent">
+            <el-icon><ArrowUpBold /></el-icon>
+            上移
+          </li>
+          <li @click="downComponent">
+            <el-icon><ArrowDownBold /></el-icon>
+            下移
+          </li>
+          <li @click="topComponent">置于顶层</li>
+          <li @click="bottomComponent">置于底层</li>
+          <el-divider />
+          <li @click="hide">隐藏</li>
+          <li @click="lock">锁定</li>
+          <el-divider />
+          <li @click="rename">重命名</li>
+          <li @click="copy">复制</li>
+          <li @click="paste">粘贴</li>
+          <li @click="cut">剪切</li>
+          <li @click="deleteComponent">删除</li>
+        </template>
+        <li v-else @click="unlock">解锁</li>
+      </template>
+      <li v-else @click="paste">粘贴</li>
     </ul>
   </div>
 </template>
@@ -132,31 +158,39 @@ const handleComposeMouseDown = e => {
 .contextmenu {
   position: absolute;
   z-index: 1000;
+  border: #bbb 1px solid;
 
   ul {
-    border: 1px solid #e4e7ed;
-    border-radius: 4px;
-    background-color: #fff;
+    padding: 4px 0;
+    background-color: #000;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
-    margin: 5px 0;
-    padding: 6px 0;
+    ::v-deep(.el-divider) {
+      margin: 8px 0;
+    }
 
     li {
       font-size: 14px;
-      padding: 0 20px;
+      padding: 0 60px;
       position: relative;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      color: #606266;
+      color: #fff;
       height: 34px;
       line-height: 34px;
       box-sizing: border-box;
       cursor: pointer;
 
+      i {
+        position: absolute;
+        left: 30px;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+
       &:hover {
-        background-color: #f5f7fa;
+        background-color: #333;
       }
     }
   }

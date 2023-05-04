@@ -1,4 +1,4 @@
-import { Column } from '@antv/g2plot'
+import { Column } from '@antv/g2plot/lib/plots/column'
 
 const data = [
   {

@@ -18,6 +18,8 @@ import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
 import DvToolbar from '../../components/data-visualization/DvToolbar.vue'
 import ComponentToolBar from '../../components/data-visualization/ComponentToolBar.vue'
+import eventBus from '../../utils/eventBus'
+import findComponent from '../../utils/components'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -33,8 +35,8 @@ const contentStyle = computed(() => {
   const { width, height, scale } = canvasStyleData.value
   return {
     width: width * 1.5 + 'px',
-    height: height * 2 + 'px',
-    paddingTop: height * (1 - scale / 200) + 'px'
+    height: (height * 2 * scale) / 100 + 'px',
+    paddingTop: (height * scale) / 200 + 'px'
   }
 })
 
@@ -47,6 +49,33 @@ const restore = () => {
 
   if (localStorage.getItem('canvasStyle')) {
     dvMainStore.setCanvasStyle(JSON.parse(localStorage.getItem('canvasStyle')))
+  }
+}
+
+const findNewComponent = componentName => {
+  let newComponent
+  componentList.forEach(component => {
+    if (componentName === component.component) {
+      newComponent = deepCopy(component)
+    }
+  })
+  return newComponent
+}
+
+// 通过实时监听的方式直接添加组件
+const handleNew = newComponentInfo => {
+  const { componentName, innerType } = newComponentInfo
+  if (componentName) {
+    const component = findNewComponent(componentName)
+    if (componentName === 'UserView' && innerType) {
+      // do something
+    }
+    component.style.top = 0
+    component.style.left = 0
+    component.id = generateID()
+    changeComponentSizeWithScale(component)
+    dvMainStore.addComponent({ component: component, index: undefined })
+    snapshotStore.recordSnapshot()
   }
 }
 
@@ -80,7 +109,7 @@ const handleMouseDown = e => {
 }
 
 const deselectCurComponent = e => {
-  if (!isClickComponent) {
+  if (!isClickComponent.value) {
     dvMainStore.setCurComponent({ component: null, index: null })
   }
 
@@ -118,6 +147,8 @@ onMounted(() => {
   // 设置画布初始滚动条位置
   // canvasOut.value.nav.scrollLeft += 100
 })
+
+eventBus.on('handleNew', handleNew)
 </script>
 
 <template>
@@ -144,14 +175,15 @@ onMounted(() => {
         </div>
       </section>
       <!--右侧属性列表-->
-      <!--      <section class="right">-->
-      <!--        <el-tabs v-if="curComponent" v-model="activeName">-->
-      <!--          <el-tab-pane label="属性" name="attr">-->
-      <!--            <component :is="curComponent['component'] + '-attr'" />-->
-      <!--          </el-tab-pane>-->
-      <!--        </el-tabs>-->
-      <!--        <CanvasAttr v-else></CanvasAttr>-->
-      <!--      </section>-->
+      <section class="right">
+        <el-tabs v-if="curComponent" v-model="activeName">
+          <el-tab-pane label="属性" name="attr">
+            <component :is="findComponent(curComponent['component'] + 'Attr')" />
+          </el-tab-pane>
+        </el-tabs>
+        <component v-if="curComponent" :is="findComponent(curComponent['component'] + 'Attr')" />
+        <CanvasAttr v-else></CanvasAttr>
+      </section>
     </main>
   </div>
 </template>
@@ -161,7 +193,7 @@ onMounted(() => {
   height: 100vh;
 
   main {
-    height: calc(100% - @component-toolbar-height);
+    height: calc(100% - @top-bar-height);
     position: relative;
 
     .left {
@@ -178,6 +210,7 @@ onMounted(() => {
       width: 288px;
       right: 0;
       top: 0;
+      z-index: 20;
       .el-select {
         width: 100%;
       }

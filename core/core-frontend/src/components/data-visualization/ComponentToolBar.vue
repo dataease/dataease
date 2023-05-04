@@ -1,10 +1,25 @@
 <script setup lang="ts">
 import ComponentGroup from '../visualization/ComponentGroup.vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
+import changeComponentsSizeWithScale from '../../utils/changeComponentsSizeWithScale'
+import UserViewGroup from '../../custom-component/component-group/UserViewGroup.vue'
+const dvMainStore = dvMainStoreWithOut()
+const { canvasStyleData } = storeToRefs(dvMainStore)
+let scale = ref(canvasStyleData.value.scale)
+let timer = null
+
+const handleScaleChange = () => {
+  // 画布比例设一个最小值，不能为 0
+  scale.value = ~~scale.value || 10
+  changeComponentsSizeWithScale(scale.value)
+}
 </script>
 <template>
-  <template class="custom-main">
+  <el-row class="custom-main">
     <component-group icon-name="chart_pie" title="图表">
-      <div>this is chart_pie test</div>
+      <user-view-group></user-view-group>
     </component-group>
     <component-group icon-name="other_text" title="文本">
       <div>this is other_text test</div>
@@ -19,12 +34,17 @@ import ComponentGroup from '../visualization/ComponentGroup.vue'
       <div>setting</div>
     </component-group>
 
-    <!--    <el-icon><Histogram>图表</Histogram></el-icon>-->
-    <!--    <el-icon><Filter>过滤组件</Filter></el-icon>-->
-    <!--    <el-icon><Document>富文本</Document></el-icon>-->
-    <!--    <el-icon><VideoCameraFilled>视频</VideoCameraFilled></el-icon>-->
-    <!--    <el-icon><PictureFilled>图片</PictureFilled></el-icon>-->
-  </template>
+    <div style="display: flex; padding-top: 10px; margin-left: 150px">
+      <el-slider
+        style="width: 300px"
+        v-model="scale"
+        @change="handleScaleChange()"
+        show-input
+        size="small"
+      />
+      <span style="margin-left: 5px">%</span>
+    </div>
+  </el-row>
 </template>
 
 <style lang="less">
