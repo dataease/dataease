@@ -22,6 +22,7 @@ const selectedResourceType = ref('panel')
 const emptyDescription = ref('')
 const authTable = ref(null)
 const roleChecked = ref(true)
+const selectedRoleRootReadonly = ref(false)
 interface Tree {
   id: string
   name: string
@@ -121,7 +122,9 @@ const roleNodeClick = (data: Tree) => {
     if (selectedTarget.value === data.id) {
       return
     }
+    selectedRoleRootReadonly.value = data.readonly
     selectedTarget.value = data.id
+    getColumn(activeAuth.value === 'resource' ? selectedResourceType.value : 'menu')
     loadPermission(1)
   }
 
@@ -135,6 +138,8 @@ const targetClick = (id: string) => {
     if (selectedTarget.value === id) {
       return
     }
+    selectedRoleRootReadonly.value = false
+    getColumn(activeAuth.value === 'resource' ? selectedResourceType.value : 'menu')
     selectedTarget.value = id
     loadPermission(0)
   }
@@ -168,7 +173,10 @@ const resourceTypeClick = async (id: string) => {
 }
 
 const getColumn = (type: string) => {
-  const array = state.globalColumn.filter(item => !item.type || item.type.includes(type))
+  let array = state.globalColumn.filter(item => !item.type || item.type.includes(type))
+  if (selectedRoleRootReadonly.value && array?.length) {
+    array = array.filter(item => selectedRoleRootReadonly.value >= item.weightLevel)
+  }
   state.tableColumn = array
 }
 
@@ -295,7 +303,7 @@ const groupPermission = vo => {
         const weightLevel = col.weightLevel
         const temp = originLevelobj['level' + weightLevel] || {}
         const roleMatch = weight >= weightLevel
-        temp['show'] = userWeight < weightLevel && roleMatch
+        temp['show'] = temp['show'] || (userWeight < weightLevel && roleMatch)
         if (roleMatch) {
           const roles = temp['roles'] || new Set<string>()
           roles.add(rname)
@@ -498,16 +506,17 @@ const beforeActiveAuthChange = (newName, oldName) => {
 
 const resetTableData = rows => {
   const keys: string[] = ['id', 'name', 'children']
-  rows.forEach(item => {
-    for (const key in item) {
-      if (Object.prototype.hasOwnProperty.call(item, key) && !keys.includes(key)) {
-        delete item[key]
+  rows?.length &&
+    rows.forEach(item => {
+      for (const key in item) {
+        if (Object.prototype.hasOwnProperty.call(item, key) && !keys.includes(key)) {
+          delete item[key]
+        }
       }
-    }
-    if (item.children?.length) {
-      resetTableData(item.children)
-    }
-  })
+      if (item.children?.length) {
+        resetTableData(item.children)
+      }
+    })
 }
 onMounted(() => {
   loadUser()

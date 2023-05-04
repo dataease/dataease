@@ -153,6 +153,41 @@ public class AuthManage {
         }
     }
 
+    public PermissionVO busiTargetPermission(BusiPermissionRequest request) {
+        PermissionVO vo = new PermissionVO();
+        Long resourceId = request.getId();
+        Integer type = request.getType();
+        BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getFlag().toUpperCase());
+        if (ObjectUtils.isEmpty(busiResourceEnum)) {
+            DEException.throwException("invalid flag value");
+        }
+        if (type == 0) {
+            // 资源授权给了哪些用户？
+            List<PermissionItem> userPermissionItems = busiAuthExtMapper.busiUserPermission(resourceId, busiResourceEnum.getFlag());
+            List<PermissionOrigin> permissionOrigins = busiAuthExtMapper.batchUserRolePermission(resourceId, busiResourceEnum.getFlag());
+            vo.setPermissions(filterValid(userPermissionItems));
+            if (CollectionUtil.isNotEmpty(permissionOrigins)) {
+                List<PermissionOrigin> origins = permissionOrigins.stream().map(origin -> {
+                    origin.setPermissions(filterValid(origin.getPermissions()));
+                    return origin;
+                }).toList();
+                vo.setPermissionOrigins(origins);
+            }
+        } else {
+            // 资源授权给了哪些角色？
+            List<PermissionItem> permissionItems = busiAuthExtMapper.busiRolePermission(resourceId, busiResourceEnum.getFlag());
+            vo.setPermissions(filterValid(permissionItems));
+        }
+        return vo;
+    }
+
+    public PermissionVO menuTargetPermission(MenuPermissionRequest request) {
+        PermissionVO vo = new PermissionVO();
+        List<PermissionItem> permissionItems = menuAuthExtMapper.menuTargetPermission(request.getId());
+        vo.setPermissions(filterValid(permissionItems));
+        return vo;
+    }
+
     private boolean weightValid(int weight) {
         return weight > 0;
     }

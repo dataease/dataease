@@ -13,3 +13,8 @@ export const menuPerApi = data => request.post({ url: '/auth/menuPermission', da
 
 export const busiPerSaveApi = data => request.post({ url: '/auth/saveBusiPer', data })
 export const menuPerSaveApi = data => request.post({ url: '/auth/saveMenuPer', data })
+
+export const resourceTargetPerApi = data =>
+  request.post({ url: '/auth/busiTargetPermission', data })
+
+export const menuTargetPerApi = data => request.post({ url: '/auth/menuTargetPermission', data })

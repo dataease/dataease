@@ -53,5 +53,33 @@ public interface BusiAuthExtMapper {
     )
     List<PermissionOrigin> batchRolePermission(@Param("rids") List<Long> rids, @Param("rt") Integer rt);
 
+    @Select("select rid as id, weight from per_auth_busi_role where resource_id = #{resourceId} and resource_type = #{resourceType}")
+    List<PermissionItem> busiRolePermission(@Param("resourceId") Long resourceId, @Param("resourceType") Integer resourceType);
 
+    @Select("select uid as id, weight from per_auth_busi_user where resource_id = #{resourceId} and resource_type = #{resourceType}")
+    List<PermissionItem> busiUserPermission(@Param("resourceId") Long resourceId, @Param("resourceType") Integer resourceType);
+
+
+    @Select("""
+            select pabr.rid as id, pr.name, pur.uid, pabr.weight
+            from per_auth_busi_role pabr
+            left join per_role pr on pr.id = pabr.rid
+            left join per_user_role pur on pur.rid = pr.id
+            """)
+    @Results(id = "batchUserPermissionMap", value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "permissions", many = @Many(resultMap = "originUserMap"))
+    })
+    List<PermissionOrigin> batchUserRolePermission(@Param("resourceId") Long resourceId, @Param("resourceType") Integer resourceType);
+
+
+    @Results(
+            id = "originUserMap", value = {
+            @Result(property = "id", column = "uid"),
+            @Result(property = "weight", column = "weight")
+    }
+    )
+    @Select("select uid, weight from per_auth_busi_user where resource_id = #{resourceId} and resource_type = #{resourceType}")
+    List<PermissionItem> originVoidQuery(@Param("resourceId") Long resourceId, @Param("resourceType") Integer resourceType);
 }

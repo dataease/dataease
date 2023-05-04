@@ -60,4 +60,14 @@ public class AuthServer implements AuthApi {
     public void saveResource(BusiResourceCreator creator) {
         syncAuthManage.syncResource(creator);
     }
+
+    @Override
+    public PermissionVO busiTargetPermission(BusiPermissionRequest request) {
+        return authManage.busiTargetPermission(request);
+    }
+
+    @Override
+    public PermissionVO menuTargetPermission(MenuPermissionRequest request) {
+        return authManage.menuTargetPermission(request);
+    }
 }
