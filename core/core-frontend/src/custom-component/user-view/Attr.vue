@@ -2,6 +2,7 @@
 import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import UserViewEditor from '@/views/chart/components/editor/index.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
@@ -10,10 +11,6 @@ const { curComponent } = storeToRefs(dvMainStore)
 <template>
   <div class="attr-list">
     <CommonAttr></CommonAttr>
-    <el-form>
-      <el-form-item label="内容">
-        <el-input v-model="curComponent['propValue']" type="textarea" :rows="3" />
-      </el-form-item>
-    </el-form>
+    <!--    <user-view-editor></user-view-editor>-->
   </div>
 </template>

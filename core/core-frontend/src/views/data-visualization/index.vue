@@ -19,6 +19,7 @@ import { storeToRefs } from 'pinia'
 import DvToolbar from '../../components/data-visualization/DvToolbar.vue'
 import ComponentToolBar from '../../components/data-visualization/ComponentToolBar.vue'
 import eventBus from '../../utils/eventBus'
+import findComponent from '../../utils/components'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -108,7 +109,7 @@ const handleMouseDown = e => {
 }
 
 const deselectCurComponent = e => {
-  if (!isClickComponent) {
+  if (!isClickComponent.value) {
     dvMainStore.setCurComponent({ component: null, index: null })
   }
 
@@ -177,9 +178,10 @@ eventBus.on('handleNew', handleNew)
       <section class="right">
         <el-tabs v-if="curComponent" v-model="activeName">
           <el-tab-pane label="属性" name="attr">
-            <component :is="curComponent['component'] + '-attr'" />
+            <component :is="findComponent(curComponent['component'] + 'Attr')" />
           </el-tab-pane>
         </el-tabs>
+        <component v-if="curComponent" :is="findComponent(curComponent['component'] + 'Attr')" />
         <CanvasAttr v-else></CanvasAttr>
       </section>
     </main>
