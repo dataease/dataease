@@ -1,4 +1,5 @@
 import { Column } from '@antv/g2plot/lib/plots/column'
+import _ from 'lodash'
 
 const data = [
   {
@@ -35,35 +36,96 @@ const data = [
   }
 ]
 
-export function baseBarOption(container) {
-  const columnPlot = new Column(container, {
-    data,
-    xField: 'type',
-    yField: 'sales',
-    label: {
-      // 可手动配置 label 数据标签位置
-      position: 'middle', // 'top', 'bottom', 'middle',
-      // 配置样式
-      style: {
-        fill: '#FFFFFF',
-        opacity: 0.6
-      }
-    },
-    xAxis: {
+export function baseBarOption(plot, container, chart) {
+  if (chart) {
+    // data
+    const data = _.cloneDeep(chart?.data?.data)
+    if (!data) return plot
+    const options = {
+      data: data,
+      xField: 'field',
+      yField: 'value',
+      seriesField: 'category',
+      interactions: [
+        {
+          type: 'legend-active',
+          cfg: {
+            start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
+            end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
+          }
+        },
+        {
+          type: 'legend-filter',
+          cfg: {
+            start: [
+              {
+                trigger: 'legend-item:click',
+                action: [
+                  'list-unchecked:toggle',
+                  'data-filter:filter',
+                  'element-active:reset',
+                  'element-highlight:reset'
+                ]
+              }
+            ]
+          }
+        },
+        {
+          type: 'tooltip',
+          cfg: {
+            start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
+            end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
+          }
+        },
+        {
+          type: 'active-region',
+          cfg: {
+            start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
+            end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
+          }
+        }
+      ]
+    }
+
+    if (plot) {
+      plot.destroy()
+    }
+    plot = new Column(container, options)
+    return plot
+  } else {
+    const options = {
+      data: data,
+      xField: 'type',
+      yField: 'sales',
       label: {
-        autoHide: true,
-        autoRotate: false
-      }
-    },
-    meta: {
-      type: {
-        alias: '类别'
+        // 可手动配置 label 数据标签位置
+        position: 'middle', // 'top', 'bottom', 'middle',
+        // 配置样式
+        style: {
+          fill: '#FFFFFF',
+          opacity: 0.6
+        }
       },
-      sales: {
-        alias: '销售额'
+      xAxis: {
+        label: {
+          autoHide: true,
+          autoRotate: false
+        }
+      },
+      meta: {
+        type: {
+          alias: '类别'
+        },
+        sales: {
+          alias: '销售额'
+        }
       }
     }
-  })
 
-  columnPlot.render()
+    if (plot) {
+      plot.destroy()
+    }
+    plot = new Column(container, options)
+    return plot
+  }
 }

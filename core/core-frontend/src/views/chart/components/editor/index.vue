@@ -6,6 +6,16 @@ import { Field, getFieldByDQ } from '@/api/chart'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import draggable from 'vuedraggable'
 import DimensionLabel from './drag-label/DimensionLabel.vue'
+import DimensionItem from './drag-item/DimensionItem.vue'
+import QuotaLabel from './drag-label/QuotaLabel.vue'
+import {
+  DEFAULT_COLOR_CASE,
+  DEFAULT_SIZE,
+  DEFAULT_LABEL,
+  DEFAULT_TOOLTIP,
+  DEFAULT_TOTAL
+} from './util/chart'
+import { useEmitt } from '../../../../hooks/web/useEmitt'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -21,6 +31,8 @@ const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
 }
 
+const dsFieldDragOptions = { group: { name: 'drag', pull: 'clone' }, sort: true }
+
 const state = reactive({
   view: {
     id: '',
@@ -33,7 +45,15 @@ const state = reactive({
     refreshViewEnable: false,
     refreshTime: 5,
     refreshUnit: 'minute',
-    xAxisArray: [{ name: 'test' }, { name: 'test1' }]
+    xaxis: [],
+    yaxis: [],
+    customAttr: {
+      color: DEFAULT_COLOR_CASE,
+      size: DEFAULT_SIZE,
+      label: DEFAULT_LABEL,
+      tooltip: DEFAULT_TOOLTIP,
+      totalCfg: DEFAULT_TOTAL
+    }
   },
   datasetTree: [],
   dimensionData: [],
@@ -50,6 +70,8 @@ const getFields = id => {
   getFieldByDQ(id).then(res => {
     state.dimensionData = (res.dimensionList as unknown as Field[]) || []
     state.quotaData = (res.quotaList as unknown as Field[]) || []
+
+    state.view.tableId = id
   })
 }
 
@@ -61,6 +83,38 @@ const dsClick = (data: Tree) => {
 
 const reset = () => {
   console.log('click reset')
+}
+
+const dimensionItemChange = item => {
+  // this.calcData(true)
+  console.log(item)
+  console.log(state.view.xaxis)
+}
+
+const addXaxis = e => {
+  // if (this.view.type !== 'table-info') {
+  //   this.dragCheckType(this.view.xaxis, 'd')
+  // }
+  // this.dragMoveDuplicate(this.view.xaxis, e)
+  // if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'label') && this.view.xaxis.length > 1) {
+  //   this.view.xaxis = [this.view.xaxis[0]]
+  // }
+  // this.calcData(true)
+  notifyChart(state.view)
+}
+
+const addYaxis = e => {
+  // this.dragCheckType(this.view.yaxis, 'q')
+  // this.dragMoveDuplicate(this.view.yaxis, e)
+  // if ((this.view.type === 'waterfall' || this.view.type === 'word-cloud' || this.view.type.includes('group')) && this.view.yaxis.length > 1) {
+  //   this.view.yaxis = [this.view.yaxis[0]]
+  // }
+  // this.calcData(true)
+  notifyChart(state.view)
+}
+
+const notifyChart = view => {
+  useEmitt().emitter.emit('calcData', view)
 }
 
 initDataset()
@@ -113,7 +167,12 @@ initDataset()
               <div style="height: calc(100vh - 120px)">
                 <div class="padding-lr field-height">
                   <span>{{ $t('chart.dimension') }}</span>
-                  <draggable :list="state.dimensionData" animation="300" class="drag-list">
+                  <draggable
+                    :list="state.dimensionData"
+                    :group="dsFieldDragOptions.group"
+                    animation="300"
+                    class="drag-list"
+                  >
                     <template #item="{ element }">
                       <span class="item-dimension father" :title="element.name">
                         <el-icon>
@@ -129,7 +188,12 @@ initDataset()
                 </div>
                 <div class="padding-lr field-height">
                   <span>{{ $t('chart.quota') }}</span>
-                  <draggable :list="state.quotaData" animation="300" class="drag-list">
+                  <draggable
+                    :list="state.quotaData"
+                    :group="dsFieldDragOptions.group"
+                    animation="300"
+                    class="drag-list"
+                  >
                     <template #item="{ element }">
                       <span class="item-dimension father" :title="element.name">
                         <el-icon>
@@ -179,7 +243,7 @@ initDataset()
               </div>
 
               <div
-                style="overflow: auto; border-top: 1px solid #e6e6e6"
+                :style="{ overflow: 'auto', height: '100%', borderTop: '1px solid #e6e6e6' }"
                 class="attr-style theme-border-class"
               >
                 <el-row style="height: 100%">
@@ -260,18 +324,43 @@ initDataset()
                       </el-select>
                     </el-row>
                   </el-row>
+                  <!--xAxis-->
                   <el-row class="padding-lr">
                     <span class="data-area-label">
                       <dimension-label :view="state.view" />
                     </span>
                     <draggable
-                      :list="state.view.xAxisArray"
+                      :list="state.view.xaxis"
                       group="drag"
                       animation="300"
                       class="drag-block-style"
+                      @add="addXaxis"
                     >
                       <template #item="{ element }">
-                        <span>{{ element.name }}</span>
+                        <dimension-item
+                          :item="element"
+                          @onDimensionItemChange="dimensionItemChange"
+                        />
+                      </template>
+                    </draggable>
+                  </el-row>
+                  <!--yAxis-->
+                  <el-row class="padding-lr">
+                    <span class="data-area-label">
+                      <quota-label :view="state.view" />
+                    </span>
+                    <draggable
+                      :list="state.view.yaxis"
+                      group="drag"
+                      animation="300"
+                      class="drag-block-style"
+                      @add="addYaxis"
+                    >
+                      <template #item="{ element }">
+                        <dimension-item
+                          :item="element"
+                          @onDimensionItemChange="dimensionItemChange"
+                        />
                       </template>
                     </draggable>
                   </el-row>
@@ -305,6 +394,7 @@ initDataset()
 .el-row {
   display: block;
 }
+
 .de-chart-editor {
   height: 100%;
   overflow-y: hidden;
@@ -435,6 +525,7 @@ initDataset()
 
   .result-count {
     width: 50px;
+
     :deep(.el-input__wrapper) {
       padding: 0;
     }
@@ -458,7 +549,7 @@ initDataset()
     border-radius: 4px;
     border: 1px solid #dcdfe6;
     overflow-x: hidden;
-    display: flex;
+    display: block;
     align-items: center;
     background-color: white;
   }
