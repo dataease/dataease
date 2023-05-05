@@ -8,8 +8,8 @@ import {
   queryRoleApi,
   resourceTreeApi,
   menuTreeApi,
-  resourcePerApi,
-  menuPerApi,
+  resourceTargetPerApi,
+  menuTargetPerApi,
   busiPerSaveApi,
   menuPerSaveApi
 } from '@/api/auth'
@@ -21,14 +21,19 @@ interface Tree {
   disabled: boolean
   root: boolean
 }
-
+interface PermissionRequest {
+  id: string
+  type: number
+  flag: string
+}
 const { t } = useI18n()
 const activeName = ref('user')
 const activeAuth = ref('resource')
 const nickName = ref('')
 const roleChecked = ref(true)
 const selectedResourceType = ref('panel')
-
+const selectedResourceId = ref('')
+const selectedMenuId = ref('')
 const resourceList = [
   {
     id: 'panel',
@@ -51,7 +56,6 @@ const state = reactive({
   treeMap: {},
   uncommitted: [],
   sourceData: {},
-  expandedKeys: [],
   resourceTreeData: [],
   resourceBaseMap: {}
 })
@@ -68,19 +72,31 @@ const baseRoles = [
     id: 'admin',
     name: '组织管理员',
     children: null,
+    readonly: false,
     disabled: true
   },
   {
     id: 'readonly',
     name: '普通用户',
     children: null,
+    readonly: true,
     disabled: true
   }
 ]
 
-const activeNameChange = tabName => {
-  nickName.value = ''
-  console.log(tabName)
+const activeNameChange = async tabName => {
+  if (tabName === 'role' && !state.treeMap[tabName]) {
+    const param = { keyword: nickName.value }
+    const res = await queryRoleApi(param)
+    const roles = res.data || []
+    const map = groupBy(roles)
+    /* const root = JSON.parse(JSON.stringify(baseRoles))
+    root[0].children = map.get(false)
+    root[1].children = map.get(true)
+    state.treeMap[tabName] = root */
+    state.treeMap[tabName] = [...map.get(false), ...map.get(true)]
+  }
+  state.tableData = state.treeMap[tabName]
 }
 
 const activeAuthChange = tabName => {
@@ -88,27 +104,51 @@ const activeAuthChange = tabName => {
     const id = 'menu'
     if (state.resourceBaseMap[id]) {
       getColumn(id)
-      state.resourceTreeData = state.treeMap[id]
+      state.resourceTreeData = state.resourceBaseMap[id]
     } else {
       menuTreeApi().then(res => {
-        getColumn('menu')
+        getColumn(id)
         state.resourceTreeData = res.data
-        state.resourceBaseMap['menu'] = res.data
+        state.resourceBaseMap[id] = res.data
       })
     }
+    activeName.value = 'role'
   }
 
   if (tabName === 'resource') {
     const id = selectedResourceType.value
     getColumn(id)
     state.resourceTreeData = state.resourceBaseMap[id]
+    activeName.value = 'user'
   }
 }
 const menuIdChange = data => {
-  console.log(data)
+  const change = (id: string) => {
+    if (id === selectedMenuId.value) {
+      return
+    }
+    selectedMenuId.value = id
+    const type = activeName.value === 'user' ? 0 : 1
+    loadPermission(type)
+  }
+
+  if (uncommittedTips(() => change(data.id))) {
+    change(data.id)
+  }
 }
 const resourceIdChange = data => {
-  console.log(data)
+  const change = (id: string) => {
+    if (id === selectedResourceId.value) {
+      return
+    }
+    selectedResourceId.value = id
+    const type = activeName.value === 'user' ? 0 : 1
+    loadPermission(type)
+  }
+
+  if (uncommittedTips(() => change(data.id))) {
+    change(data.id)
+  }
 }
 const resourceTypeClick = async (id: string) => {
   const change = async (id: string) => {
@@ -124,15 +164,122 @@ const resourceTypeClick = async (id: string) => {
       state.resourceBaseMap[id] = res.data
     }
     getColumn(id)
-    // 如果有selectedTarget 再查权限
-    /* if (selectedTarget.value) {
-      const type = activeName.value === 'user' ? 0 : 1
-      loadPermission(type)
-    } */
   }
   if (uncommittedTips(() => change(id))) {
     change(id)
   }
+}
+
+const loadPermission = (type: number) => {
+  resetTableData(state.tableData)
+  if (activeAuth.value === 'menu') {
+    menuTargetPerApi({ id: selectedMenuId.value }).then(res => {
+      const vo = res.data
+
+      const permissionMap = groupPermission(vo)
+
+      fillTableData(state.tableData, permissionMap)
+    })
+    return
+  }
+  const param: PermissionRequest = {
+    id: selectedResourceId.value,
+    flag: selectedResourceType.value.toUpperCase(),
+    type
+  }
+  resourceTargetPerApi(param).then(res => {
+    const vo = res.data
+
+    const permissionMap = groupPermission(vo)
+    fillTableData(state.tableData, permissionMap)
+  })
+}
+const groupPermission = vo => {
+  const map = new Map()
+  const origins = vo.permissionOrigins
+  const permissions = vo.permissions
+  const cols = state.tableColumn
+
+  const buildPermissionMap = (type, list, rname) => {
+    list?.length &&
+      list.forEach(item => {
+        const { id } = item
+        const originLevelobj = buildCallback(type, item, rname)
+        const obj = Object.assign({ id }, originLevelobj)
+        map.set(id, obj)
+      })
+  }
+  const buildCallback = (type: number, item, rname: string) => {
+    if (type === 0) {
+      const originLevelobj = {}
+      cols.forEach(col => {
+        originLevelobj['level' + col.weightLevel] = { show: false, roles: new Set<string>() }
+      })
+      originLevelobj['weight'] = item['weight']
+      return originLevelobj
+    } else {
+      const { id, weight } = item
+      const originLevelobj = map.get(id) || { id }
+
+      originLevelobj['weight'] = originLevelobj['weight'] || 0
+      const userWeight = originLevelobj['weight']
+      cols.forEach(col => {
+        const weightLevel = col.weightLevel
+        const temp = originLevelobj['level' + weightLevel] || {}
+        const roleMatch = weight >= weightLevel
+        temp['show'] = temp['show'] || (userWeight < weightLevel && roleMatch)
+        if (roleMatch) {
+          const roles = temp['roles'] || new Set<string>()
+          roles.add(rname)
+          temp['roles'] = roles
+        }
+        originLevelobj['level' + weightLevel] = temp
+      })
+      return originLevelobj
+    }
+  }
+  buildPermissionMap(0, permissions, null)
+
+  origins?.length &&
+    origins.forEach(item => {
+      const pers = item.permissions
+      buildPermissionMap(1, pers, item.name)
+    })
+  state.uncommitted = []
+  state.sourceData = map
+  return map
+}
+
+const fillTableData = (rows, maps) => {
+  rows?.forEach(row => {
+    const temp = (maps?.get && maps.get(row.id)) || {}
+    state.tableColumn?.forEach(col => {
+      const weight = temp['weight'] || 0
+      const weightLevel = col.weightLevel
+      temp['value' + weightLevel] = false
+      if (weight >= weightLevel) {
+        temp['value' + weightLevel] = true
+      }
+    })
+    Object.assign(row, temp)
+    if (row.children?.length) {
+      fillTableData(row.children, maps)
+    }
+  })
+}
+const resetTableData = rows => {
+  const keys: string[] = ['id', 'name', 'children']
+  rows?.length &&
+    rows.forEach(item => {
+      for (const key in item) {
+        if (Object.prototype.hasOwnProperty.call(item, key) && !keys.includes(key)) {
+          delete item[key]
+        }
+      }
+      if (item.children?.length) {
+        resetTableData(item.children)
+      }
+    })
 }
 
 const save = callback => {
@@ -273,20 +420,7 @@ const groupBy = (list: Tree[]) => {
   })
   return map
 }
-const loadRole = () => {
-  const param = { keyword: nickName.value }
-  queryRoleApi(param).then(res => {
-    if (res?.data?.length) {
-      const roles = res.data
-      const map = groupBy(roles)
-      const root = JSON.parse(JSON.stringify(baseRoles))
-      root[0].children = map.get(false)
-      root[1].children = map.get(true)
-      state.tableData = root
-      state.treeMap['role'] = root
-    }
-  })
-}
+
 onMounted(() => {
   loadResourceTree()
   loadUser()
@@ -377,9 +511,11 @@ defineExpose({
         <el-table
           :data="state.tableData"
           style="width: 100%"
+          height="100%"
           row-key="id"
           header-cell-class-name="header-cell"
-          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+          default-expand-all
+          :tree-props="{ children: 'children' }"
         >
           <el-table-column prop="name" label="名称" />
           <el-table-column
@@ -391,51 +527,54 @@ defineExpose({
             :label="item.label"
           >
             <template #default="scope">
-              <el-popover
-                v-if="
-                  scope.row['level' + item.weightLevel] &&
-                  scope.row['level' + item.weightLevel]['show'] &&
-                  !scope.row['value' + item.weightLevel]
-                "
-                placement="top-start"
-                title=""
-                :width="200"
-                trigger="hover"
-              >
-                <template #reference>
-                  <el-checkbox
-                    class="user-role-per-checked"
-                    disabled
-                    v-model="roleChecked"
-                  ></el-checkbox>
-                </template>
-                <div class="role-auth-tips">
-                  <span>继承自以下角色：</span>
-                  <span
-                    :key="rname"
-                    v-for="(rname, index) in scope.row['level' + item.weightLevel]['roles']"
-                    >{{ index + 1 + '、' + rname }}</span
-                  >
-                  <span
-                    >单独授权<el-switch
-                      class="independent-auth"
-                      size="small"
-                      v-model="scope.row['independent' + item.weightLevel]"
-                      @change="independentAuth(scope.row, item.weightLevel)"
-                  /></span>
-                </div>
-              </el-popover>
-              <el-checkbox
-                v-show="
-                  !(
+              <div v-if="activeName === 'role' && item.weightLevel > 1 && scope.row.readonly" />
+              <div v-else>
+                <el-popover
+                  v-if="
                     scope.row['level' + item.weightLevel] &&
                     scope.row['level' + item.weightLevel]['show'] &&
                     !scope.row['value' + item.weightLevel]
-                  )
-                "
-                v-model="scope.row['value' + item.weightLevel]"
-                @change="rowWeightChanged(scope.row, item.weightLevel)"
-              ></el-checkbox>
+                  "
+                  placement="top-start"
+                  title=""
+                  :width="200"
+                  trigger="hover"
+                >
+                  <template #reference>
+                    <el-checkbox
+                      class="user-role-per-checked"
+                      disabled
+                      v-model="roleChecked"
+                    ></el-checkbox>
+                  </template>
+                  <div class="role-auth-tips">
+                    <span>继承自以下角色：</span>
+                    <span
+                      :key="rname"
+                      v-for="(rname, index) in scope.row['level' + item.weightLevel]['roles']"
+                      >{{ index + 1 + '、' + rname }}</span
+                    >
+                    <span
+                      >单独授权<el-switch
+                        class="independent-auth"
+                        size="small"
+                        v-model="scope.row['independent' + item.weightLevel]"
+                        @change="independentAuth(scope.row, item.weightLevel)"
+                    /></span>
+                  </div>
+                </el-popover>
+                <el-checkbox
+                  v-show="
+                    !(
+                      scope.row['level' + item.weightLevel] &&
+                      scope.row['level' + item.weightLevel]['show'] &&
+                      !scope.row['value' + item.weightLevel]
+                    )
+                  "
+                  v-model="scope.row['value' + item.weightLevel]"
+                  @change="rowWeightChanged(scope.row, item.weightLevel)"
+                ></el-checkbox>
+              </div>
             </template>
           </el-table-column>
         </el-table>
@@ -544,5 +683,16 @@ defineExpose({
 }
 .is-active {
   color: var(--el-menu-active-color);
+}
+.role-auth-tips {
+  span {
+    display: block;
+  }
+}
+.independent-auth {
+  margin-left: 5px;
+}
+.user-role-per-checked {
+  margin-right: 0;
 }
 </style>

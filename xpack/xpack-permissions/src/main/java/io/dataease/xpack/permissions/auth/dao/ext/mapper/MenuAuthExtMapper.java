@@ -17,4 +17,7 @@ public interface MenuAuthExtMapper {
 
     @Select("select resource_id as id, weight from per_auth_menu where rid = #{rid} ")
     List<PermissionItem> rolePermission(@Param("rid") Long rid);
+
+    @Select("select rid as id, weight from per_auth_menu where resource_id = #{menuId}")
+    List<PermissionItem> menuTargetPermission(@Param("menuId") Long menuId);
 }

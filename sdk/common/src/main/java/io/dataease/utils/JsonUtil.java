@@ -4,7 +4,9 @@ package io.dataease.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.ObjectUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 public class JsonUtil {
@@ -23,6 +25,7 @@ public class JsonUtil {
     }
 
     public static <T> T parseObject(String json, Class<T> classOfT) {
+        if (json == null) return null;
         T t = null;
         try {
             t = objectMapper.readValue(json, classOfT);
@@ -33,6 +36,7 @@ public class JsonUtil {
     }
 
     public static <T> List<T> parseList(String json, TypeReference<List<T>> classOfT) {
+        if (ObjectUtils.isEmpty(json)) return Collections.emptyList();
         List<T> t = null;
         try {
             t = objectMapper.readValue(json, classOfT);

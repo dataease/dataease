@@ -45,7 +45,10 @@ public class Quota2SQLObj {
                 // 处理纵轴字段
                 yFields.add(getYFields(y, originField, fieldAlias));
                 // 处理纵轴过滤
-                yWheres.add(getYWheres(y, originField, fieldAlias));
+                String wheres = getYWheres(y, originField, fieldAlias);
+                if (ObjectUtils.isNotEmpty(wheres)) {
+                    yWheres.add(wheres);
+                }
                 // 处理纵轴排序
                 if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
                     yOrders.add(SQLObj.builder()

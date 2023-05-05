@@ -1,5 +1,6 @@
 package io.dataease.api.chart.dto;
 
+import io.dataease.api.chart.request.ChartExtRequest;
 import lombok.Data;
 
 import java.util.List;
@@ -23,4 +24,7 @@ public class ChartViewDTO extends ChartViewBaseDTO {
     private long totalItems;
     private int datasetMode;
     private String datasourceType;
+
+    private ChartExtRequest chartExtRequest;
+    private boolean cache;
 }
