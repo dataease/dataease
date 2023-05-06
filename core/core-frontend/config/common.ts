@@ -17,7 +17,7 @@ import Components from 'unplugin-vue-components-secondary/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components-secondary/resolvers'
 const root = process.cwd()
 
-function pathResolve(dir: string) {
+export function pathResolve(dir: string) {
   return resolve(root, '.', dir)
 }
 export default {

@@ -2,8 +2,8 @@
   "compilerOptions": {
     "jsx": "preserve",
     "composite": true,
-    "module": "ES6",
-    "target": "ES6",
+    "module": "esnext",
+    "target": "esnext",
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
@@ -30,6 +30,7 @@
   ],
   "exclude": [
     "dist",
+    "lib",
     "node_modules"
   ]
 }

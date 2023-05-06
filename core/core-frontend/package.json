@@ -9,6 +9,7 @@
     "dev:desktop": "vite --mode desktop",
     "ts:check": "vue-tsc --noEmit",
     "build:base": "vite build --mode base",
+    "build:lib": "vite build --mode lib",
     "build:desktop": "npm run ts:check && vite --mode desktop && electron-builder",
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
     "lint:stylelint": "stylelint --fix \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/",
