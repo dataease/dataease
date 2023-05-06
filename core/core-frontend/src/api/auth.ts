@@ -18,3 +18,6 @@ export const resourceTargetPerApi = data =>
   request.post({ url: '/auth/busiTargetPermission', data })
 
 export const menuTargetPerApi = data => request.post({ url: '/auth/menuTargetPermission', data })
+
+export const busiTargetPerSaveApi = data => request.post({ url: '/auth/saveBusiTargetPer', data })
+export const menuTargetPerSaveApi = data => request.post({ url: '/auth/saveMenuTargetPer', data })

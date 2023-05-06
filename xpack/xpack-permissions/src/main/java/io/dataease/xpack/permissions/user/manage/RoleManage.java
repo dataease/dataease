@@ -305,4 +305,11 @@ public class RoleManage {
             return roleInfo;
         }).toList();
     }
+
+    public Long adminId(Long oid) {
+        return roleExtMapper.adminRoleId(oid);
+    }
+    public Long readonlyId(Long oid) {
+        return roleExtMapper.readonlyRoleId(oid);
+    }
 }
