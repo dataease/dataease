@@ -1414,7 +1414,7 @@ public class ExtractDataService {
             "            }catch (Exception e){}\n" +
             "        }";
 
-    private final static String handleMysqlBIGINTUNSIGNED = "if(filed.equalsIgnoreCase(BIGINTUNSIGNEDFIELD)){\n" +
+    private final static String handleMysqlBIGINTUNSIGNED = "if(filed.equalsIgnoreCase(\"BIGINTUNSIGNEDFIELD\")){\n" +
             "\t\t\tif(tmp != null && tmp.endsWith(\".0\")){\n" +
             "            \ttry {\n" +
             "                Long.valueOf(tmp.substring(0, tmp.length()-2));\n" +
