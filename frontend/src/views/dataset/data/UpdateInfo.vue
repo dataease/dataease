@@ -909,7 +909,6 @@ export default {
           }
           this.incrementalConfig.tableId = this.table.id
           task.startTime = new Date(task.startTime).getTime()
-          console.log(task.endTime)
           task.endTime = new Date(task.endTime).getTime()
           task.tableId = this.table.id
           const form = JSON.parse(JSON.stringify(task))
