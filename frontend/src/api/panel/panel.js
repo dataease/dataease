@@ -97,7 +97,7 @@ export function viewPanelLog(data) {
   return request({
     url: 'panel/group/viewLog',
     method: 'post',
-    loading: true,
+    loading: false,
     data
   })
 }
