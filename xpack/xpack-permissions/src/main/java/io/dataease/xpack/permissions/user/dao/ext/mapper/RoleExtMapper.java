@@ -47,4 +47,10 @@ public interface RoleExtMapper extends BaseMapper<RolePO> {
 
     @Select("select pr.id, pr.name, pr.readonly, pr.pid from per_user_role pur left join per_role pr on pur.rid = pr.id where pur.uid = #{uid} and pur.oid = #{oid} ")
     List<PerRole> roleInfoByUid(@Param("uid") Long uid, @Param("oid") Long oid);
+
+    @Select("select id from per_role where org_id = #{oid} and pid = 0 and readonly = 0")
+    Long adminRoleId(@Param("oid") Long oid);
+
+    @Select("select id from per_role where org_id = #{oid} and pid = 0 and readonly = 1")
+    Long readonlyRoleId(@Param("oid") Long oid);
 }

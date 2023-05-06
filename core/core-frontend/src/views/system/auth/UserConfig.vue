@@ -263,7 +263,28 @@ const isOrgAdminPer = (vo, type) => {
       : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
     return true
   }
+  fillOrgReadonly(vo)
   return false
+}
+
+const fillOrgReadonly = vo => {
+  const result = vo?.root && vo.readonly
+  if (result) {
+    const id = activeAuth.value === 'menu' ? 'menu' : selectedResourceType.value
+    const data = state.treeMap[id]
+    const origin = { name: '普通员工', permissions: [] }
+    const stack = [...data]
+    while (stack.length > 0) {
+      const node = stack.pop()
+      origin.permissions.push({ id: node.id, weight: 1 })
+      if (node.children?.length) {
+        node.children.forEach(item => stack.push(item))
+      }
+    }
+
+    vo.permissionOrigins.push(origin)
+  }
+  return result
 }
 
 const groupPermission = vo => {
@@ -384,12 +405,12 @@ const rowWeightChanged = (row, level) => {
         row['value' + col.weightLevel] = true
       }
     })
-    row['weight'] = level
+    row['weight'] = Math.max(row?.weight || 0, level)
   } else {
     let finalWeight = 0
-    let index = state.tableColumn.indexOf(level)
+    let index = state.tableColumn.findIndex(col => level === col.weightLevel)
     if (index--) {
-      finalWeight = state.tableColumn[index]
+      finalWeight = state.tableColumn[index]['weightLevel']
     }
     row['weight'] = finalWeight
     state.tableColumn.forEach(col => {
@@ -566,6 +587,8 @@ defineExpose({
         menu
         :data="state.roleList"
         :props="defaultProps"
+        :highlight-current="true"
+        :expand-on-click-node="false"
         @node-click="roleNodeClick"
       >
         <template #default="{ node, data }">
@@ -738,7 +761,7 @@ defineExpose({
     }
     .search-table-bt {
       position: absolute;
-      right: 280px;
+      right: 250px;
       top: 7px;
       width: 190px;
     }

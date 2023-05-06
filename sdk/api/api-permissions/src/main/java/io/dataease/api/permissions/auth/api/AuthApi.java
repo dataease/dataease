@@ -46,9 +46,17 @@ public interface AuthApi {
     @PostMapping("/saveBusiPer")
     void saveBusiPer(@RequestBody BusiPerEditor editor);
 
+    @ApiOperation("资源维度保存权限")
+    @PostMapping("/saveBusiTargetPer")
+    void saveBusiTargetPer(@RequestBody BusiTargetPerCreator creator);
+
     @ApiOperation("保存菜单权限")
     @PostMapping("/saveMenuPer")
     void saveMenuPer(@RequestBody MenuPerEditor editor);
+
+    @ApiOperation("菜单维度保存权限")
+    @PostMapping("/saveMenuTargetPer")
+    void saveMenuTargetPer(@RequestBody MenuTargetPerCreator creator);
 
     @ApiIgnore
     @ApiOperation("保存业务资源")

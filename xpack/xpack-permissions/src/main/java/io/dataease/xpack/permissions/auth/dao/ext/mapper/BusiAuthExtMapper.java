@@ -1,6 +1,7 @@
 package io.dataease.xpack.permissions.auth.dao.ext.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.dataease.api.permissions.auth.dto.PermissionBO;
 import io.dataease.api.permissions.auth.vo.PermissionItem;
 import io.dataease.api.permissions.auth.vo.PermissionOrigin;
 import io.dataease.xpack.permissions.auth.dao.ext.entity.BusiResourcePO;
@@ -61,7 +62,7 @@ public interface BusiAuthExtMapper {
 
 
     @Select("""
-            select pabr.rid as id, pr.name, pur.uid, pabr.weight
+            select distinct pabr.rid as id, pr.name, pur.uid, pabr.weight
             from per_auth_busi_role pabr
             left join per_role pr on pr.id = pabr.rid
             left join per_user_role pur on pur.rid = pr.id
@@ -82,4 +83,57 @@ public interface BusiAuthExtMapper {
     )
     @Select("select uid, weight from per_auth_busi_user where resource_id = #{resourceId} and resource_type = #{resourceType}")
     List<PermissionItem> originVoidQuery(@Param("resourceId") Long resourceId, @Param("resourceType") Integer resourceType);
+
+    @Select("select pr.id, pr.name, pur.uid, 9 as weight from per_user_role pur left join per_role pr on pr.id = pur.rid where pr.org_id = #{oid} and pr.pid = 0 and pr.readonly = 0")
+    @Results(id = "adminOriginMap", value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "permissions", many = @Many(resultMap = "originUserMap"))
+    })
+    PermissionOrigin adminOrigin(@Param("oid") Long oid);
+
+    @Select("select pr.id, pr.name, pur.uid, 1 as weight from per_user_role pur left join per_role pr on pr.id = pur.rid where pr.org_id = #{oid} and pr.pid = 0 and pr.readonly = 1")
+    @Results(id = "readonlyOriginMap", value = {
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "permissions", many = @Many(resultMap = "originUserMap"))
+    })
+    PermissionOrigin readonlyOrigin(@Param("oid") Long oid);
+
+    @Select("""
+            <script>
+            select resource_id, uid as id, weight from per_auth_busi_user where resource_type = #{resourceType} and resource_id in 
+            
+            <foreach item='resourceId' index='index' collection='resourceIds' open='(' separator=',' close=')'>
+            #{resourceId}
+            </foreach>
+            
+            and uid in 
+            
+            <foreach item='uid' index='index' collection='uids' open='(' separator=',' close=')'>
+            #{uid}
+            </foreach>           
+            </script>
+            """)
+    List<PermissionBO> queryExistUserPer(@Param("resourceIds") List<Long> resourceIds, @Param("resourceType") Integer resourceType, @Param("uids") List<Long> uids);
+
+
+    @Select("""
+            <script>
+            select resource_id, rid as id, weight from per_auth_busi_role where resource_type = #{resourceType} and resource_id in 
+            
+            <foreach item='resourceId' index='index' collection='resourceIds' open='(' separator=',' close=')'>
+            #{resourceId}
+            </foreach>
+            
+            and rid in 
+            
+            <foreach item='rid' index='index' collection='rids' open='(' separator=',' close=')'>
+            #{rid}
+            </foreach>           
+            </script>
+            """)
+    List<PermissionBO> queryExistRolePer(@Param("resourceIds") List<Long> resourceIds, @Param("resourceType") Integer resourceType, @Param("rids") List<Long> rids);
+
+
 }

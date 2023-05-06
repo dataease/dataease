@@ -10,8 +10,8 @@ import {
   menuTreeApi,
   resourceTargetPerApi,
   menuTargetPerApi,
-  busiPerSaveApi,
-  menuPerSaveApi
+  busiTargetPerSaveApi,
+  menuTargetPerSaveApi
 } from '@/api/auth'
 interface Tree {
   id: string
@@ -34,6 +34,8 @@ const roleChecked = ref(true)
 const selectedResourceType = ref('panel')
 const selectedResourceId = ref('')
 const selectedMenuId = ref('')
+const resourceTreeRef = ref(null)
+const menuTreeRef = ref(null)
 const resourceList = [
   {
     id: 'panel',
@@ -90,13 +92,19 @@ const activeNameChange = async tabName => {
     const res = await queryRoleApi(param)
     const roles = res.data || []
     const map = groupBy(roles)
-    /* const root = JSON.parse(JSON.stringify(baseRoles))
+    const root = JSON.parse(JSON.stringify(baseRoles))
     root[0].children = map.get(false)
     root[1].children = map.get(true)
-    state.treeMap[tabName] = root */
-    state.treeMap[tabName] = [...map.get(false), ...map.get(true)]
+    state.treeMap[tabName] = root
   }
   state.tableData = state.treeMap[tabName]
+  const type = tabName === 'user' ? 0 : 1
+  if (
+    (selectedMenuId.value && activeAuth.value === 'menu') ||
+    (selectedResourceId.value && activeAuth.value === 'resource')
+  ) {
+    loadPermission(type)
+  }
 }
 
 const activeAuthChange = tabName => {
@@ -268,7 +276,7 @@ const fillTableData = (rows, maps) => {
   })
 }
 const resetTableData = rows => {
-  const keys: string[] = ['id', 'name', 'children']
+  const keys: string[] = ['id', 'name', 'children', 'readonly']
   rows?.length &&
     rows.forEach(item => {
       for (const key in item) {
@@ -283,13 +291,51 @@ const resetTableData = rows => {
 }
 
 const save = callback => {
-  console.log('save')
-  callback && callback()
+  const param = {
+    permissions: state.uncommitted
+  }
+  let method = menuTargetPerSaveApi
+  let treeRef = menuTreeRef.value
+  if (activeAuth.value !== 'menu') {
+    method = busiTargetPerSaveApi
+    param['type'] = activeName.value === 'user' ? 0 : 1
+    param['flag'] = selectedResourceType.value
+    treeRef = resourceTreeRef.value
+  }
+  const ids = getChildrenIds(treeRef)
+  if (!ids?.size) {
+    ElMessage.error('未获取到资源节点')
+    return
+  }
+  param['ids'] = Array.from(ids)
+  method(param).then(() => {
+    ElMessage.success(t('common.save_success'))
+    loadPermission(param['type'] || 0)
+    callback && callback instanceof Function && callback()
+  })
+}
+
+const getChildrenIds = treeRef => {
+  const node = treeRef.getCurrentNode()
+  if (!node) {
+    return null
+  }
+  const stack = [node]
+  const ids = new Set()
+  while (stack.length) {
+    const item = stack.pop()
+    ids.add(item.id)
+    if (item.children?.length) {
+      item.children.forEach(kid => stack.push(kid))
+    }
+  }
+  return ids
 }
 
 const reset = () => {
   state.uncommitted = []
-  console.log('save')
+  resetTableData(state.tableData)
+  fillTableData(state.tableData, state.sourceData)
 }
 const independentAuth = (row, level) => {
   row['independent' + level] = true
@@ -307,12 +353,12 @@ const rowWeightChanged = (row, level) => {
         row['value' + col.weightLevel] = true
       }
     })
-    row['weight'] = level
+    row['weight'] = Math.max(row?.weight || 0, level)
   } else {
     let finalWeight = 0
-    let index = state.tableColumn.indexOf(level)
+    let index = state.tableColumn.findIndex(col => level === col.weightLevel)
     if (index--) {
-      finalWeight = state.tableColumn[index]
+      finalWeight = state.tableColumn[index]['weightLevel']
     }
     row['weight'] = finalWeight
     state.tableColumn.forEach(col => {
@@ -447,7 +493,15 @@ defineExpose({
       </el-input>
     </div>
     <el-scrollbar v-if="activeAuth === 'menu'" class="menu-tree">
-      <el-tree menu :data="state.resourceTreeData" :props="defaultProps" @node-click="menuIdChange">
+      <el-tree
+        menu
+        ref="menuTreeRef"
+        :data="state.resourceTreeData"
+        :props="defaultProps"
+        @node-click="menuIdChange"
+        :highlight-current="true"
+        :expand-on-click-node="false"
+      >
         <template #default="{ node, data }">
           <span class="custom-tree-node" :class="{ 'is-disabled': node.disabled || data.root }">
             <span :title="data.name">{{ node.label }}</span>
@@ -481,8 +535,11 @@ defineExpose({
     <el-divider class="resource-divider" />
     <el-tree
       menu
+      ref="resourceTreeRef"
       :data="state.resourceTreeData"
       :props="defaultProps"
+      :expand-on-click-node="false"
+      :highlight-current="true"
       @node-click="resourceIdChange"
     >
       <template #default="{ node, data }">
@@ -505,6 +562,14 @@ defineExpose({
           </el-icon>
         </template>
       </el-input>
+      <div class="search-table-bt">
+        <el-button :disabled="!state.uncommitted.length" @click="save" type="primary">{{
+          t('common.sure')
+        }}</el-button>
+        <el-button :disabled="!state.uncommitted.length" @click="reset">{{
+          t('common.cancel')
+        }}</el-button>
+      </div>
     </div>
     <div class="resource-table">
       <div class="tree-table">
@@ -632,6 +697,12 @@ defineExpose({
       right: 24px;
       top: 7px;
       width: 240px;
+    }
+    .search-table-bt {
+      position: absolute;
+      right: 250px;
+      top: 7px;
+      width: 190px;
     }
     .tabs-mr {
       .border-bottom-tab(30px);
