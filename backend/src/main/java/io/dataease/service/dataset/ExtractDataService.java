@@ -1310,6 +1310,17 @@ public class ExtractDataService {
                     .replace("ExcelCompletion", "");
         }
 
+        String handleMysqlBIGINTUNSIGNEDStr = "";
+        if (datasourceType.equals(DatasourceTypes.mysql)) {
+            for (DatasetTableField datasetTableField : datasetTableFields) {
+                if(datasetTableField.getType().equalsIgnoreCase("BIGINT UNSIGNED")){
+                    handleMysqlBIGINTUNSIGNEDStr = handleMysqlBIGINTUNSIGNEDStr + handleMysqlBIGINTUNSIGNED.replace("BIGINTUNSIGNEDFIELD", datasetTableField.getDataeaseName()) + "; \n";
+                }
+            }
+        }
+        tmp_code = tmp_code.replace("handleMysqlBIGINTUNSIGNED", handleMysqlBIGINTUNSIGNEDStr);
+
+
         UserDefinedJavaClassDef userDefinedJavaClassDef = new UserDefinedJavaClassDef(UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Processor", tmp_code);
 
         userDefinedJavaClassDef.setActive(true);
@@ -1403,6 +1414,16 @@ public class ExtractDataService {
             "            }catch (Exception e){}\n" +
             "        }";
 
+    private final static String handleMysqlBIGINTUNSIGNED = "if(filed.equalsIgnoreCase(\"BIGINTUNSIGNEDFIELD\")){\n" +
+            "\t\t\tif(tmp != null && tmp.endsWith(\".0\")){\n" +
+            "            \ttry {\n" +
+            "                Long.valueOf(tmp.substring(0, tmp.length()-2));\n" +
+            "                get(Fields.Out, filed).setValue(r, tmp.substring(0, tmp.length()-2));\n" +
+            "                get(Fields.Out, filed).getValueMeta().setType(2);\n" +
+            "            }catch (Exception e){}\n" +
+            "       \t\t}\n" +
+            "\t\t}";
+
     private final static String handleWraps = "        if(tmp != null && ( tmp.contains(\"\\r\") || tmp.contains(\"\\n\"))){\n" +
             "\t\t\ttmp = tmp.trim();\n" +
             "            tmp = tmp.replaceAll(\"\\r\",\" \");\n" +
@@ -1445,6 +1466,7 @@ public class ExtractDataService {
             "    List<String> fields = Arrays.asList(\"Column_Fields\".split(\",\"));\n" +
             "    for (String filed : fields) {\n" +
             "        String tmp = get(Fields.In, filed).getString(r);\n" +
+            "handleMysqlBIGINTUNSIGNED \n" +
             "handleCharset \n" +
             "handleWraps \n" +
             "ExcelCompletion \n" +
