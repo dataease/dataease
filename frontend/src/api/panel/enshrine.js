@@ -29,6 +29,6 @@ export function starStatus(panelId) {
   return request({
     url: '/api/store/status/' + panelId,
     method: 'post',
-    loading: true
+    loading: false
   })
 }

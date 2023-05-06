@@ -33,6 +33,7 @@ export function queryTargetPanelJumpInfo(requestInfo) {
 export function queryPanelJumpInfo(panelId) {
   return request({
     url: '/linkJump/queryPanelJumpInfo/' + panelId,
-    method: 'get'
+    method: 'get',
+    loading: false
   })
 }
