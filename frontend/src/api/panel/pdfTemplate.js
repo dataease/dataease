@@ -4,6 +4,6 @@ export function queryAll() {
   return request({
     url: '/pdf-template/queryAll',
     method: 'get',
-    loading: true
+    loading: false
   })
 }
