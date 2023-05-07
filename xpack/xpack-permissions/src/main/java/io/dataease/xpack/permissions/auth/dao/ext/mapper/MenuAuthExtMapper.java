@@ -1,6 +1,7 @@
 package io.dataease.xpack.permissions.auth.dao.ext.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.dataease.api.permissions.auth.dto.PermissionBO;
 import io.dataease.api.permissions.auth.vo.PermissionItem;
 import io.dataease.xpack.permissions.auth.dao.ext.entity.BusiResourcePO;
 import org.apache.ibatis.annotations.Mapper;
@@ -17,4 +18,24 @@ public interface MenuAuthExtMapper {
 
     @Select("select resource_id as id, weight from per_auth_menu where rid = #{rid} ")
     List<PermissionItem> rolePermission(@Param("rid") Long rid);
+
+    @Select("select rid as id, weight from per_auth_menu where resource_id = #{menuId}")
+    List<PermissionItem> menuTargetPermission(@Param("menuId") Long menuId);
+
+    @Select("""
+            <script>
+            select resource_id, rid as id, weight from per_auth_busi_role where resource_type = #{resourceType} and resource_id in 
+            
+            <foreach item='menuId' index='index' collection='menuIds' open='(' separator=',' close=')'>
+            #{menuId}
+            </foreach>
+            
+            and rid in 
+            
+            <foreach item='rid' index='index' collection='rids' open='(' separator=',' close=')'>
+            #{rid}
+            </foreach>           
+            </script>
+            """)
+    List<PermissionBO> queryExistPer(@Param("menuIds") List<Long> menuIds, @Param("rids") List<Long> rids);
 }

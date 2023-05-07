@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { reactive, computed, ref, nextTick } from 'vue'
 // import { throttle } from 'lodash'
+import zeroNodeImg from '@/assets/img/drag.png'
 import { guid } from './util.js'
 import { HandleMore } from '@/components/handle-more'
 import { propTypes } from '@/utils/propTypes'
@@ -130,12 +131,12 @@ const possibleNodeAreaList = computed(() => {
 const leafNode = (arr, leafList) => {
   arr.forEach((ele, index) => {
     const fromX = ele.x * 300 + 24
-    const fromY = ele.y * 64 + 24
+    const fromY = ele.y * 56 + 24
     let toX = fromX + 200
-    let toY = fromY + 64
+    let toY = fromY + 56
     const next = arr[index + 1]
     if (next) {
-      toY = next.y * 64 + 24
+      toY = next.y * 56 + 24
     }
     if (ele.children?.length) {
       leafNode(ele.children, leafList)
@@ -266,8 +267,8 @@ const flatLine = (item, flatNodeList) => {
       },
       d:
         ele.y === from.y
-          ? `M ${item.x * 300 + 224} ${ele.y * 64 + 44} l 100 0`
-          : `M ${item.x * 300 + 240} ${from.y * 64 + 44} l 0 ${(ele.y - from.y) * 64} l 84 0`
+          ? `M ${item.x * 300 + 224} ${ele.y * 56 + 40} l 100 0`
+          : `M ${item.x * 300 + 240} ${from.y * 56 + 40} l 0 ${(ele.y - from.y) * 56} l 84 0`
     })
     if (ele.children?.length) {
       flatLine(ele, flatNodeList)
@@ -314,7 +315,7 @@ const dragover_handler = ev => {
           left: dragOffsetX.value,
           right: dragOffsetX.value + 200,
           top: dragOffsetY.value,
-          bottom: dragOffsetY.value + 40
+          bottom: dragOffsetY.value + 32
         },
         {
           left: fromX,
@@ -329,13 +330,13 @@ const dragover_handler = ev => {
               left: dragOffsetX.value,
               right: dragOffsetX.value + 200,
               top: dragOffsetY.value,
-              bottom: dragOffsetY.value + 40
+              bottom: dragOffsetY.value + 32
             },
             {
               left: fromX + 200,
               right: toX + 100,
               top: fromY,
-              bottom: fromY + 40
+              bottom: fromY + 32
             }
           )
         : 0
@@ -492,9 +493,9 @@ const emits = defineEmits(['addComplete', 'joinEditor'])
         :key="ele.tableName"
         v-for="ele in flatNodeList"
         :x="ele.x * 300 + 24"
-        :y="ele.y * 64 + 24"
+        :y="ele.y * 56 + 24"
         width="200"
-        height="40"
+        height="32"
       >
         <div
           @click="activeNode = ele.tableName"
@@ -506,7 +507,11 @@ const emits = defineEmits(['addComplete', 'joinEditor'])
             }
           ]"
         >
+          <el-icon>
+            <Icon name="reference-table"></Icon>
+          </el-icon>
           <span class="tableName">{{ ele.tableName }}</span>
+          <span class="placeholder">拖拽表或自定义SQL至此处</span>
           <handle-more
             style="margin-left: auto"
             v-if="activeNode === ele.tableName"
@@ -520,11 +525,11 @@ const emits = defineEmits(['addComplete', 'joinEditor'])
         :key="ele.d"
         v-for="ele in flatPathList"
         :x="ele.from.x * 300 + 272"
-        :y="ele.to.y * 64 + 28"
+        :y="ele.to.y * 56 + 24"
         width="32"
         height="32"
       >
-        <div @click="handlePathClick(ele)" class="path-union">
+        <div v-if="!ele.isShadow" @click="handlePathClick(ele)" class="path-union">
           <el-icon>
             <Icon :name="iconName[ele.to.unionType]"></Icon>
           </el-icon>
@@ -540,6 +545,11 @@ const emits = defineEmits(['addComplete', 'joinEditor'])
       ]"
       v-if="maskShow"
     ></div>
+    <div class="zero" v-if="!state.nodeList.length">
+      <img :src="zeroNodeImg" alt="" />
+      <p>将左侧的数据表、自定义SQL</p>
+      <p>拖拽到这里创建数据集</p>
+    </div>
   </div>
 </template>
 
@@ -557,17 +567,38 @@ const emits = defineEmits(['addComplete', 'joinEditor'])
   font-size: 14px;
   font-weight: 400;
   color: #1f2329;
-  padding-left: 15.75px;
+  padding-left: 10.33px;
   display: flex;
   align-items: center;
   background: #fff;
+  position: relative;
   cursor: pointer;
   padding-right: 8px;
+
+  .placeholder {
+    display: none;
+  }
+
+  .el-icon {
+    font-size: 13.3px;
+    margin-right: 9.33px;
+  }
   .tableName {
-    max-width: 100px;
+    max-width: 125px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+  }
+
+  &:not(.shadow-node)::before {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 32px;
+    left: -1px;
+    top: -1px;
+    background: #3370ff;
+    border-radius: 4px 0px 0px 4px;
   }
 }
 
@@ -587,8 +618,13 @@ const emits = defineEmits(['addComplete', 'joinEditor'])
   border: 1px dashed;
   border-color: #3370ff;
   background-color: rgba(51, 112, 255, 0.08);
-  span {
+  .el-icon,
+  .tableName {
     display: none;
+  }
+
+  .placeholder {
+    display: inline-block;
   }
 }
 
@@ -617,5 +653,34 @@ const emits = defineEmits(['addComplete', 'joinEditor'])
   background-color: #e5ebf8;
   border: 1px dashed;
   border-color: #3370ff;
+}
+
+.zero {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  width: calc(100% - 32px);
+  height: calc(100% - 32px);
+  z-index: 6;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 42px;
+  img {
+    width: 125px;
+    height: 125px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-family: 'PingFang SC';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    text-align: center;
+    color: #646a73;
+  }
 }
 </style>

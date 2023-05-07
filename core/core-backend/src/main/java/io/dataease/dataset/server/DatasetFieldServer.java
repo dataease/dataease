@@ -15,7 +15,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("datasetField")
-public class DatasetFieldService implements DatasetTableApi {
+public class DatasetFieldServer implements DatasetTableApi {
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
 

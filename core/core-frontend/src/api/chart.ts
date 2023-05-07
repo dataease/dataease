@@ -18,7 +18,13 @@ export interface Field {
 }
 
 export const getFieldByDQ = async (id): Promise<IResponse> => {
-  return request.post({ url: `/f/datasetField/listByDQ/${id}`, data: {} }).then(res => {
+  return request.post({ url: `/datasetField/listByDQ/${id}`, data: {} }).then(res => {
+    return res?.data
+  })
+}
+
+export const getData = async (data): Promise<IResponse> => {
+  return request.post({ url: '/chartData/getData', data }).then(res => {
     return res?.data
   })
 }

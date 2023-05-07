@@ -11,7 +11,7 @@ public class BusiPermissionRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -2424587989223319563L;
 
-    @ApiModelProperty("用户/角色ID")
+    @ApiModelProperty("对象ID/资源ID")
     private Long id;
     @ApiModelProperty("类型(0用户1角色)")
     private Integer type;

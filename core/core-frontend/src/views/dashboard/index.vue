@@ -32,6 +32,12 @@ onMounted(() => {
 })
 </script>
 
+<script lang="ts">
+export default {
+  name: 'DeDashboard'
+}
+</script>
+
 <template>
   <div id="demo">
     <div class="head">

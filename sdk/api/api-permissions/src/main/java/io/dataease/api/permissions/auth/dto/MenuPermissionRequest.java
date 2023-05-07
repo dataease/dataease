@@ -12,7 +12,7 @@ public class MenuPermissionRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = -7609671259840867561L;
 
-    @ApiModelProperty("角色ID")
+    @ApiModelProperty("角色ID/菜单ID")
     private Long id;
 
 }

@@ -45,13 +45,10 @@ const treeDefaultProps = {
   label: 'name',
   isLeaf: 'leaf'
 }
-const filterMethod = val => {
-  tree.value.filter(val)
+const filterMethod = value => {
+  treeDataFormat.value = [...treeDataFormat.value].filter(item => item.label.includes(value))
 }
-const filterNode = (value, data) => {
-  if (!value) return true
-  return data.name.indexOf(value) !== -1
-}
+
 const initTree = () => {
   treeDataFormat.value = props.treeData.map(dept => {
     return normalizer(dept)
@@ -370,38 +367,20 @@ const buildTree = arrs => {
   <el-row class="top-operate">
     <el-col :span="8">
       组织: &nbsp;
-      <el-popover placement="bottom" popper-class="dept-popper dept" width="200" trigger="click">
-        <template #reference>
-          <el-select
-            v-model="orgId"
-            filterable
-            style="width: 200px"
-            :filter-method="filterMethod"
-            clearable
-            popper-class="tree-select"
-            :placeholder="t('fu.search_bar.please_input')"
-          >
-            <el-option
-              v-for="item in selectDepts"
-              :key="item.name"
-              :label="item.name"
-              :value="item.deptId"
-            />
-          </el-select>
-        </template>
-        <el-tree
-          :load="loadNode"
-          :lazy="true"
-          ref="tree"
-          :expand-on-click-node="false"
-          :data="treeDataFormat"
-          :highlight-current="!!orgId"
-          check-on-click-node
-          :filter-node-method="filterNode"
-          :props="treeDefaultProps"
-          @node-click="handleNodeClick"
-        ></el-tree>
-      </el-popover>
+      <el-tree-select
+        ref="tree"
+        :expand-on-click-node="false"
+        :data="treeDataFormat"
+        :highlight-current="!!orgId"
+        check-on-click-node
+        :props="treeDefaultProps"
+        @node-click="handleNodeClick"
+        v-model="orgId"
+        filterable
+        :filter-method="filterMethod"
+        lazy
+        :load="loadNode"
+      />
     </el-col>
     <el-col :span="16" class="right-filter">
       资源类型:&nbsp;

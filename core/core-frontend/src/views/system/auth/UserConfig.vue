@@ -22,6 +22,7 @@ const selectedResourceType = ref('panel')
 const emptyDescription = ref('')
 const authTable = ref(null)
 const roleChecked = ref(true)
+const selectedRoleRootReadonly = ref(false)
 interface Tree {
   id: string
   name: string
@@ -121,7 +122,9 @@ const roleNodeClick = (data: Tree) => {
     if (selectedTarget.value === data.id) {
       return
     }
+    selectedRoleRootReadonly.value = data.readonly
     selectedTarget.value = data.id
+    getColumn(activeAuth.value === 'resource' ? selectedResourceType.value : 'menu')
     loadPermission(1)
   }
 
@@ -135,6 +138,8 @@ const targetClick = (id: string) => {
     if (selectedTarget.value === id) {
       return
     }
+    selectedRoleRootReadonly.value = false
+    getColumn(activeAuth.value === 'resource' ? selectedResourceType.value : 'menu')
     selectedTarget.value = id
     loadPermission(0)
   }
@@ -168,7 +173,10 @@ const resourceTypeClick = async (id: string) => {
 }
 
 const getColumn = (type: string) => {
-  const array = state.globalColumn.filter(item => !item.type || item.type.includes(type))
+  let array = state.globalColumn.filter(item => !item.type || item.type.includes(type))
+  if (selectedRoleRootReadonly.value && array?.length) {
+    array = array.filter(item => selectedRoleRootReadonly.value >= item.weightLevel)
+  }
   state.tableColumn = array
 }
 
@@ -255,7 +263,28 @@ const isOrgAdminPer = (vo, type) => {
       : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
     return true
   }
+  fillOrgReadonly(vo)
   return false
+}
+
+const fillOrgReadonly = vo => {
+  const result = vo?.root && vo.readonly
+  if (result) {
+    const id = activeAuth.value === 'menu' ? 'menu' : selectedResourceType.value
+    const data = state.treeMap[id]
+    const origin = { name: '普通员工', permissions: [] }
+    const stack = [...data]
+    while (stack.length > 0) {
+      const node = stack.pop()
+      origin.permissions.push({ id: node.id, weight: 1 })
+      if (node.children?.length) {
+        node.children.forEach(item => stack.push(item))
+      }
+    }
+
+    vo.permissionOrigins.push(origin)
+  }
+  return result
 }
 
 const groupPermission = vo => {
@@ -295,7 +324,7 @@ const groupPermission = vo => {
         const weightLevel = col.weightLevel
         const temp = originLevelobj['level' + weightLevel] || {}
         const roleMatch = weight >= weightLevel
-        temp['show'] = userWeight < weightLevel && roleMatch
+        temp['show'] = temp['show'] || (userWeight < weightLevel && roleMatch)
         if (roleMatch) {
           const roles = temp['roles'] || new Set<string>()
           roles.add(rname)
@@ -376,12 +405,12 @@ const rowWeightChanged = (row, level) => {
         row['value' + col.weightLevel] = true
       }
     })
-    row['weight'] = level
+    row['weight'] = Math.max(row?.weight || 0, level)
   } else {
     let finalWeight = 0
-    let index = state.tableColumn.indexOf(level)
+    let index = state.tableColumn.findIndex(col => level === col.weightLevel)
     if (index--) {
-      finalWeight = state.tableColumn[index]
+      finalWeight = state.tableColumn[index]['weightLevel']
     }
     row['weight'] = finalWeight
     state.tableColumn.forEach(col => {
@@ -498,16 +527,17 @@ const beforeActiveAuthChange = (newName, oldName) => {
 
 const resetTableData = rows => {
   const keys: string[] = ['id', 'name', 'children']
-  rows.forEach(item => {
-    for (const key in item) {
-      if (Object.prototype.hasOwnProperty.call(item, key) && !keys.includes(key)) {
-        delete item[key]
+  rows?.length &&
+    rows.forEach(item => {
+      for (const key in item) {
+        if (Object.prototype.hasOwnProperty.call(item, key) && !keys.includes(key)) {
+          delete item[key]
+        }
       }
-    }
-    if (item.children?.length) {
-      resetTableData(item.children)
-    }
-  })
+      if (item.children?.length) {
+        resetTableData(item.children)
+      }
+    })
 }
 onMounted(() => {
   loadUser()
@@ -557,6 +587,8 @@ defineExpose({
         menu
         :data="state.roleList"
         :props="defaultProps"
+        :highlight-current="true"
+        :expand-on-click-node="false"
         @node-click="roleNodeClick"
       >
         <template #default="{ node, data }">
@@ -683,8 +715,8 @@ defineExpose({
 </template>
 
 <style lang="less" scoped>
-@width: 30px;
-@width_table: 30px;
+@import '@/style/mixin.less';
+
 .user-role {
   width: 250px;
   float: left;
@@ -703,16 +735,7 @@ defineExpose({
       width: 200px;
     }
     .tabs-mr {
-      margin-left: @width;
-      ::before {
-        content: '';
-        position: absolute;
-        left: -@width;
-        bottom: 0;
-        width: @width;
-        height: 1px;
-        background-color: rgba(31, 35, 41, 0.15);
-      }
+      .border-bottom-tab(30px);
     }
   }
   .role-tree-container {
@@ -738,21 +761,12 @@ defineExpose({
     }
     .search-table-bt {
       position: absolute;
-      right: 280px;
+      right: 250px;
       top: 7px;
       width: 190px;
     }
     .tabs-mr {
-      margin-left: @width_table;
-      ::before {
-        content: '';
-        position: absolute;
-        left: -@width_table;
-        bottom: 0;
-        width: @width_table;
-        height: 1px;
-        background-color: rgba(31, 35, 41, 0.15);
-      }
+      .border-bottom-tab(30px);
     }
   }
 
