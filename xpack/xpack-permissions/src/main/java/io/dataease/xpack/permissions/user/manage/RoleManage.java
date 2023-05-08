@@ -295,6 +295,10 @@ public class RoleManage {
 
     public List<UserRole> userRole(Long uid) {
         List<PerRole> perRoles = roleExtMapper.roleInfoByUid(uid, AuthUtils.getUser().getDefaultOid());
+        return buildResult(perRoles);
+    }
+
+    private List<UserRole> buildResult(List<PerRole> perRoles) {
         if (CollectionUtil.isEmpty(perRoles)) return null;
         return perRoles.stream().map(role -> {
             UserRole roleInfo = new UserRole();
@@ -304,6 +308,14 @@ public class RoleManage {
             roleInfo.setName(role.getName());
             return roleInfo;
         }).toList();
+    }
+
+    public List<UserRole> userAdminRole() {
+        TokenUserBO user = AuthUtils.getUser();
+        Long uid = user.getUserId();
+        Long oid = user.getDefaultOid();
+        List<PerRole> perRoles = roleExtMapper.adminRoleInfoByUid(uid, oid);
+        return buildResult(perRoles);
     }
 
     public Long adminId(Long oid) {
