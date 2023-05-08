@@ -163,20 +163,12 @@ eventBus.on('clearCanvas', clearCanvas)
         <el-icon class="custom-el-icon" @click="redo()">
           <Icon class="toolbar-icon" name="icon_redo_outlined"></Icon>
         </el-icon>
-
-        <!--        <div class="canvas-config">-->
-        <!--          <span>画布大小</span>-->
-        <!--          <input v-model="canvasStyleData.width" />-->
-        <!--          <span>*</span>-->
-        <!--          <input v-model="canvasStyleData.height" />-->
-        <!--        </div>-->
         <el-button @click="save()" style="float: right; margin-right: 12px" type="primary"
           >保存</el-button
         >
         <el-button @click="preview()" style="float: right; margin-right: 12px">预览</el-button>
       </div>
     </div>
-
     <!-- 预览 -->
     <Preview v-if="isShowPreview" :is-screenshot="isScreenshot" @close="handlePreviewChange" />
   </div>

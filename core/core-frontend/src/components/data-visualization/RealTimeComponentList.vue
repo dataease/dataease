@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia'
 import { ElCol, ElIcon, ElRow } from 'element-plus-secondary'
 import Icon from '../icon-custom/src/Icon.vue'
 import { nextTick, ref } from 'vue'
+import draggable from 'vuedraggable'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -77,87 +78,81 @@ const toggleComponentVisible = () => {
 const toggleComponentLock = () => {
   console.log(1)
 }
+const dragOnEnd = ({ oldIndex, newIndex }) => {
+  const source = componentData.value[newIndex]
+  const comLength = componentData.value.length
+  // 还原数组
+  componentData.value.splice(newIndex, 1)
+  componentData.value.splice(oldIndex, 0, source)
+  const target = componentData.value[comLength - 1 - oldIndex]
+  // 反向移动数组
+  componentData.value.splice(comLength - 1 - oldIndex, 1)
+  componentData.value.splice(comLength - 1 - newIndex, 0, target)
+  dvMainStore.setCurComponent({ component: target, index: transformIndex(comLength - oldIndex) })
+}
 </script>
 
 <template>
-  <el-col class="real-time-component-list">
-    <el-row align="middle" class="banner" justify="space-between">
-      <span>图层管理</span>
-      <el-icon size="20px" @click="toggleComponentList">
-        <Expand />
-      </el-icon>
-    </el-row>
+  <!--为了保持图层视觉上的一致性 这里进行数组的倒序排列 相应的展示和移动按照倒序处理-->
+  <div class="real-time-component-list">
     <el-row class="list-wrap">
       <div class="list-container">
-        <div
-          v-for="(item, index) in componentData"
-          :key="index"
-          :class="{ activated: transformIndex(index) === curComponentIndex }"
-          class="component-item"
-          @click="onClick(transformIndex(index))"
-          @dblclick="editComponentName(getComponent(index))"
-        >
-          <el-icon class="component-icon">
-            <Icon :name="getComponent(index).icon"></Icon>
-          </el-icon>
-          <span
-            :id="`component-label-${getComponent(index).id}`"
-            :title="getComponent(index).name"
-            class="component-label"
-          >
-            {{ getComponent(index).name }}
-          </span>
-          <div
-            v-show="!nameEdit || (nameEdit && curComponent.id !== getComponent(index).id)"
-            class="icon-container"
-          >
-            <el-icon v-show="getComponent(index).show" @click="toggleComponentVisible">
-              <Hide />
-            </el-icon>
-            <el-icon v-show="!getComponent(index).show" @click="toggleComponentVisible">
-              <View />
-            </el-icon>
-            <el-icon v-show="!getComponent(index).isLock" @click="toggleComponentLock">
-              <Lock />
-            </el-icon>
-            <el-icon v-show="getComponent(index).isLock" @click="toggleComponentLock">
-              <Unlock />
-            </el-icon>
-            <el-dropdown trigger="click">
-              <el-icon @click="onClick(transformIndex(index))">
-                <MoreFilled />
+        <draggable @end="dragOnEnd" :list="componentData" animation="100" class="drag-list">
+          <template #item="{ index }">
+            <div
+              :title="getComponent(index).name"
+              :class="{ activated: transformIndex(index) === curComponentIndex }"
+              class="component-item"
+              @click="onClick(transformIndex(index))"
+              @dblclick="editComponentName(getComponent(index))"
+            >
+              <el-icon class="component-icon">
+                <Icon :name="getComponent(index).icon"></Icon>
               </el-icon>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item>Action 1</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div>
-        </div>
+              <span :id="`component-label-${getComponent(index).id}`" class="component-label">
+                {{ getComponent(index).name }}
+              </span>
+              <div
+                v-show="!nameEdit || (nameEdit && curComponent.id !== getComponent(index).id)"
+                class="icon-container"
+              >
+                <el-icon v-show="getComponent(index).show" @click="toggleComponentVisible">
+                  <Hide />
+                </el-icon>
+                <el-icon v-show="!getComponent(index).show" @click="toggleComponentVisible">
+                  <View />
+                </el-icon>
+                <el-icon v-show="!getComponent(index).isLock" @click="toggleComponentLock">
+                  <Lock />
+                </el-icon>
+                <el-icon v-show="getComponent(index).isLock" @click="toggleComponentLock">
+                  <Unlock />
+                </el-icon>
+                <el-dropdown trigger="click">
+                  <el-icon @click="onClick(transformIndex(index))">
+                    <MoreFilled />
+                  </el-icon>
+                  <template #dropdown>
+                    <el-dropdown-menu>
+                      <el-dropdown-item>Action 1</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </template>
+                </el-dropdown>
+              </div>
+            </div>
+          </template>
+        </draggable>
       </div>
     </el-row>
     <Teleport v-if="editComponentId && nameEdit" :to="editComponentId">
       <input ref="nameInput" v-model="inputName" @blur="closeEditComponentName" />
     </Teleport>
-  </el-col>
+  </div>
 </template>
 
 <style lang="less" scoped>
 .real-time-component-list {
-  color: white;
-  background-color: #232c31;
-  border-right: #525552 1px solid;
-  border-bottom: #525552 1px solid;
   white-space: nowrap;
-  height: 100%;
-
-  .banner {
-    border-bottom: 1px solid #7b797b;
-    height: @component-toolbar-height;
-    padding: 8px 10px 8px 8px;
-  }
-
   .list-wrap {
     max-height: calc(100% - @component-toolbar-height);
     overflow-y: auto;

@@ -49,10 +49,8 @@ const handleScaleChange = () => {
 
 <style lang="less">
 .custom-main {
-  width: calc(100% - 200px);
   display: flex;
-  position: absolute;
-  z-index: 10;
+  width: 100%;
   height: @component-toolbar-height;
   background-color: rgba(37, 45, 54, 1);
   border-bottom: 1px solid rgba(85, 85, 85, 1);

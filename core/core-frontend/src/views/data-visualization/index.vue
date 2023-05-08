@@ -20,6 +20,7 @@ import DvToolbar from '../../components/data-visualization/DvToolbar.vue'
 import ComponentToolBar from '../../components/data-visualization/ComponentToolBar.vue'
 import eventBus from '../../utils/eventBus'
 import findComponent from '../../utils/components'
+import DvSidebar from '../../components/visualization/DvSidebar.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -152,92 +153,64 @@ eventBus.on('handleNew', handleNew)
 </script>
 
 <template>
-  <div class="home">
+  <div class="dv-common-layout">
     <DvToolbar />
-    <main>
+    <el-container class="dv-layout-container">
       <!-- 左侧组件列表 -->
-      <section class="left">
-        <!--        <ComponentList />-->
+      <dv-sidebar title="图层管理" class="left-sidebar">
         <RealTimeComponentList />
-      </section>
+      </dv-sidebar>
       <!-- 中间画布 -->
-      <section class="center" ref="canvasOut">
+      <main class="center" ref="canvasOut">
         <ComponentToolBar></ComponentToolBar>
-        <div
-          class="content"
-          :style="contentStyle"
-          @drop="handleDrop"
-          @dragover="handleDragOver"
-          @mousedown="handleMouseDown"
-          @mouseup="deselectCurComponent"
-        >
-          <DvCanvas />
+        <div class="content">
+          <div
+            :style="contentStyle"
+            @drop="handleDrop"
+            @dragover="handleDragOver"
+            @mousedown="handleMouseDown"
+            @mouseup="deselectCurComponent"
+          >
+            <DvCanvas />
+          </div>
         </div>
-      </section>
-      <!--右侧属性列表-->
-      <section class="right">
-        <el-tabs v-if="curComponent" v-model="activeName">
-          <el-tab-pane label="属性" name="attr">
-            <component :is="findComponent(curComponent['component'] + 'Attr')" />
-          </el-tab-pane>
-        </el-tabs>
-        <component v-if="curComponent" :is="findComponent(curComponent['component'] + 'Attr')" />
-        <CanvasAttr v-else></CanvasAttr>
-      </section>
-    </main>
+      </main>
+    </el-container>
   </div>
 </template>
 
 <style lang="less">
-.home {
+.dv-common-layout {
   height: 100vh;
-
-  main {
-    height: calc(100% - @top-bar-height);
-    position: relative;
-
-    .left {
-      position: absolute;
+  width: 100vw;
+  .dv-layout-container {
+    height: calc(100vh - @top-bar-height);
+    .left-sidebar {
       height: 100%;
-      width: 200px;
-      left: 0;
-      top: 0;
     }
-
+    .center {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex: 1;
+      position: relative;
+      background-color: rgba(51, 51, 51, 1);
+      overflow: auto;
+      .content {
+        flex: 1;
+        width: 100%;
+        overflow: auto;
+        margin: auto;
+      }
+    }
     .right {
-      position: absolute;
       height: 100%;
       width: 288px;
-      right: 0;
-      top: 0;
       z-index: 20;
       .el-select {
         width: 100%;
       }
     }
-
-    .center {
-      margin-left: 200px;
-      margin-right: 0px;
-      height: 100%;
-      overflow: auto;
-      padding: 0px;
-      background-color: rgba(51, 51, 51, 1);
-
-      .content {
-        overflow: auto;
-        margin: auto;
-      }
-    }
-  }
-
-  .placeholder {
-    text-align: center;
-    color: #333;
-  }
-
-  .global-attr {
-    padding: 10px;
   }
 }
 </style>
