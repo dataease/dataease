@@ -1,9 +1,9 @@
 export const styleData = [
-  { key: 'left', label: 'x 坐标' },
-  { key: 'top', label: 'y 坐标' },
-  { key: 'rotate', label: '旋转角度' },
-  { key: 'width', label: '宽' },
-  { key: 'height', label: '高' },
+  { key: 'left', label: 'X' },
+  { key: 'top', label: 'Y' },
+  { key: 'width', label: 'W' },
+  { key: 'height', label: 'H' },
+  { key: 'opacity', label: 'O' },
   { key: 'color', label: '颜色' },
   { key: 'backgroundColor', label: '背景色' },
   { key: 'borderWidth', label: '边框宽度' },
@@ -15,8 +15,7 @@ export const styleData = [
   { key: 'lineHeight', label: '行高' },
   { key: 'letterSpacing', label: '字间距' },
   { key: 'textAlign', label: '左右对齐' },
-  { key: 'verticalAlign', label: '上下对齐' },
-  { key: 'opacity', label: '不透明度' }
+  { key: 'verticalAlign', label: '上下对齐' }
 ]
 
 export const styleMap = {

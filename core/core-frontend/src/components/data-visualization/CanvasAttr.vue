@@ -16,15 +16,13 @@ const canvasAttrActiveNames = ref(['size', 'background', 'color'])
 
 <template>
   <div class="attr-container">
-    <el-row class="title">
-      <span>大屏配置</span>
-    </el-row>
     <el-row>
       <el-collapse v-model="canvasAttrActiveNames">
         <el-collapse-item title="尺寸" name="size">
           <el-row style="display: flex; padding-top: 10px">
             <span>W</span>
             <el-input-number
+              class="input-border-style"
               style="margin-left: 5px"
               v-model="canvasStyleData.width"
               :min="600"
@@ -32,7 +30,6 @@ const canvasAttrActiveNames = ref(['size', 'background', 'color'])
               size="small"
               controls-position="right"
             />
-
             <span style="margin-left: 10px">H</span>
             <el-input-number
               style="margin-left: 5px"
@@ -64,33 +61,47 @@ const canvasAttrActiveNames = ref(['size', 'background', 'color'])
   </div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
 .attr-container {
   background-color: rgba(37, 45, 54, 1);
-  border: 1px solid rgba(85, 85, 85, 1);
   color: #fff;
   z-index: 20;
   height: 100%;
-  .title {
-    text-align: center;
-    margin-bottom: 10px;
-    height: 44px;
-    line-height: 44px;
-    font-size: 12px;
-    font-weight: 500;
-    border-bottom: 1px solid rgba(85, 85, 85, 1);
-  }
+  width: 100%;
+  min-width: 300px;
 }
 
-.el-collapse-item__header {
+:deep(.el-collapse-item__header) {
   background-color: rgba(29, 36, 42, 1) !important;
   color: #ffffff;
+  border-bottom: 1px solid rgba(85, 85, 85, 1);
 }
-.el-collapse-item__content {
+:deep(.el-collapse-item__content) {
+  background-color: rgba(37, 45, 54, 1);
+  color: #ffffff;
+  padding-left: 5px;
+}
+
+:deep(.el-collapse-item__wrap) {
+  border-bottom: 1px solid rgba(85, 85, 85, 1);
+}
+:deep(.el-collapse) {
+  width: 100%;
+}
+:deep(.el-input__wrapper) {
+  background-color: rgba(37, 45, 54, 1);
+}
+
+:deep(.el-input__inner) {
+  color: #ffffff;
+}
+
+:deep(.el-input-number__decrease) {
   background-color: rgba(37, 45, 54, 1);
   color: #ffffff;
 }
-.el-collapse-item__wrap {
-  border: 1px solid rgba(85, 85, 85, 1);
+:deep(.el-input-number__increase) {
+  background-color: rgba(37, 45, 54, 1);
+  color: #ffffff;
 }
 </style>

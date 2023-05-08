@@ -59,8 +59,9 @@ export const composeStore = defineStore('compose', {
       const groupComponent = {
         id: generateID(),
         component: 'Group',
+        name: '组合',
         label: '组合',
-        icon: 'zuhe',
+        icon: 'group',
         ...commonAttr,
         style: {
           ...commonStyle,

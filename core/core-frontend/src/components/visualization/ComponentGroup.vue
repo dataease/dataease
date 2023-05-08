@@ -37,7 +37,7 @@ const { title, iconName, baseWidth } = toRefs(props)
     <slot></slot>
   </el-popover>
 </template>
-<style lang="less">
+<style lang="less" scoped>
 .group_icon {
   margin-left: 35px;
   cursor: pointer;

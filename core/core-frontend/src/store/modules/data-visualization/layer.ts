@@ -49,6 +49,19 @@ export const layerStore = defineStore('layer', {
       } else {
         toast('已经到底了')
       }
+    },
+
+    hideComponent() {
+      // 隐藏
+      if (curComponent && curComponent.value) {
+        curComponent.value.isShow = false
+      }
+    },
+    showComponent() {
+      // 显示
+      if (curComponent && curComponent.value) {
+        curComponent.value.isShow = true
+      }
     }
   }
 })
