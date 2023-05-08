@@ -246,8 +246,14 @@ public class AuthManage {
             // 资源授权给了哪些用户？
             List<PermissionItem> userPermissionItems = busiAuthExtMapper.busiUserPermission(resourceId, busiResourceEnum.getFlag());
             List<PermissionOrigin> permissionOrigins = busiAuthExtMapper.batchUserRolePermission(resourceId, busiResourceEnum.getFlag());
-            permissionOrigins.add(defaultAdminOrigin());
-            permissionOrigins.add(defaultReadonlyOrigin());
+            PermissionOrigin adminOrigin = null;
+            PermissionOrigin readonlyOrigin = null;
+            if (ObjectUtils.isNotEmpty(adminOrigin = defaultAdminOrigin())) {
+                permissionOrigins.add(adminOrigin);
+            }
+            if (ObjectUtils.isNotEmpty(readonlyOrigin = defaultReadonlyOrigin())) {
+                permissionOrigins.add(readonlyOrigin);
+            }
             vo.setPermissions(filterValid(userPermissionItems));
             if (CollectionUtil.isNotEmpty(permissionOrigins)) {
                 List<PermissionOrigin> origins = permissionOrigins.stream().map(origin -> {

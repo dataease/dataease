@@ -5,6 +5,7 @@ import io.dataease.api.permissions.auth.dto.PermissionBO;
 import io.dataease.api.permissions.auth.vo.PermissionItem;
 import io.dataease.api.permissions.auth.vo.PermissionOrigin;
 import io.dataease.xpack.permissions.auth.dao.ext.entity.BusiResourcePO;
+import io.dataease.xpack.permissions.auth.dao.ext.entity.ResourcePO;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.mapping.FetchType;
 
@@ -153,4 +154,7 @@ public interface BusiAuthExtMapper {
             ${ew.customSqlSegment} 
             """)
     List<BusiResourcePO> resourceByRid(@Param("ew") QueryWrapper queryWrapper);
+
+    @Select("select rt_id type, id from per_busi_resource")
+    List<ResourcePO> resourceIds();
 }

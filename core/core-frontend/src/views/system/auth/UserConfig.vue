@@ -818,7 +818,7 @@ defineExpose({
 .custom-tree-node {
   display: flex;
   span {
-    width: 120px;
+    width: 140px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;

@@ -46,4 +46,7 @@ public interface MenuAuthExtMapper {
             ${ew.customSqlSegment} 
             """)
     List<BusiResourcePO> menusByRids(@Param("ew") QueryWrapper queryWrapper);
+
+    @Select("select id from per_menu_resource")
+    List<Long> menuIds();
 }

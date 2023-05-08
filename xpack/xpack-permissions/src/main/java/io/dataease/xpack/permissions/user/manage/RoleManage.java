@@ -13,6 +13,7 @@ import io.dataease.exception.DEException;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
+import io.dataease.xpack.permissions.auth.manage.RoleAuthManage;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerRole;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerUserRole;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerRoleMapper;
@@ -54,6 +55,10 @@ public class RoleManage {
     @Resource
     private UserPageManage userPageManage;
 
+    @Resource
+    private RoleAuthManage roleAuthManage;
+
+    @Transactional
     public void create(RoleCreator creator) {
         Long oid = AuthUtils.getUser().getDefaultOid();
         QueryWrapper<PerRole> queryWrapper = new QueryWrapper<>();
@@ -70,6 +75,7 @@ public class RoleManage {
         po.setOrgId(oid);
         po.setPid(rootRole.getId());
         perRoleMapper.insert(po);
+        roleAuthManage.syncForRoleCreate(po);
         // 需要验证名称是否重复
     }
 
@@ -213,7 +219,11 @@ public class RoleManage {
         } else {
             rolePOS = roleExtMapper.selectOptionForUser(uid, queryWrapper);
         }
-        return rolePOS.stream().map(po -> BeanUtils.copyBean(new RoleVO(), po)).toList();
+        return rolePOS.stream().map(po -> {
+            RoleVO roleVO = BeanUtils.copyBean(new RoleVO(), po);
+            roleVO.setRoot(ObjectUtils.isEmpty(po.getPid()) || po.getPid().equals(0L));
+            return roleVO;
+        }).toList();
     }
 
     public List<RoleVO> selectedForUser(String keyword, Long oid, Long uid) {

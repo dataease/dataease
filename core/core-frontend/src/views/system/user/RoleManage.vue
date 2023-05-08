@@ -230,7 +230,13 @@ onMounted(() => {
         </el-input>
       </div>
       <el-scrollbar class="role-tree-container">
-        <el-tree menu :data="state.roleData" :props="defaultProps" @node-click="handleNodeClick">
+        <el-tree
+          menu
+          :data="state.roleData"
+          :highlight-current="true"
+          :props="defaultProps"
+          @node-click="handleNodeClick"
+        >
           <template #default="{ node, data }">
             <span class="custom-tree-node">
               <span :title="node.label">{{ node.label }}</span>
@@ -438,7 +444,7 @@ onMounted(() => {
 .custom-tree-node {
   display: flex;
   span {
-    width: 150px;
+    width: 160px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -448,7 +454,7 @@ onMounted(() => {
   }
   &:hover {
     span {
-      width: 135px;
+      width: 120px;
     }
     .operate-icon-container {
       text-align: end;
