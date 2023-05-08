@@ -212,4 +212,11 @@ public class UserPageManage {
         List<UserItem> result = userExtMapper.selectedForRole(queryWrapper);
         return result.stream().filter(item -> !AuthUtils.isSysAdmin(item.getId())).toList();
     }
+
+    public List<Long> uidsForAdmin(Long oid) {
+        return userExtMapper.uidsForAdmin(oid);
+    }
+    public List<Long> uidsForReadonly(Long oid) {
+        return userExtMapper.uidsForReadonly(oid);
+    }
 }

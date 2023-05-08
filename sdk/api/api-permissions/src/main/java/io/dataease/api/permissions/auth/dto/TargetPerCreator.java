@@ -1,4 +1,4 @@
-package io.dataease.api.permissions.auth.vo;
+package io.dataease.api.permissions.auth.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -7,15 +7,14 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
-public class PermissionItem implements Serializable {
+public class TargetPerCreator implements Serializable {
 
     @Serial
-    private static final long serialVersionUID = -6537851979745319692L;
-    @ApiModelProperty("资源/对象ID")
+    private static final long serialVersionUID = 6469957337188015981L;
     @JsonSerialize(using= ToStringSerializer.class)
-    private Long id;
-    @ApiModelProperty("权重")
-    private int weight;
+    @ApiModelProperty("资源ID集合")
+    private List<Long> ids;
 }

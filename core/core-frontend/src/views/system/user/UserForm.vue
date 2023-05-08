@@ -14,7 +14,15 @@ interface UserForm {
   enable: boolean
   phone?: string | number
   phonePrefix: '+86'
-  roleIds: number[]
+  roleIds: string[]
+}
+interface Tree {
+  id: string
+  name: string
+  readonly: boolean
+  children?: Tree[]
+  disabled: boolean
+  root: boolean
 }
 
 const { toClipboard } = useClipboard()
@@ -26,8 +34,9 @@ const formType = ref('add')
 const defaultPWD = ref('DataEase123..')
 
 const createUserForm = ref<FormInstance>()
+
 const state = reactive({
-  roles: [],
+  roleList: [],
   form: reactive<UserForm>({
     id: null,
     account: null,
@@ -36,9 +45,36 @@ const state = reactive({
     enable: true,
     phone: null,
     phonePrefix: '+86',
-    roleIds: null
+    roleIds: []
   })
 })
+state.roleList = [
+  {
+    value: 'admin',
+    label: '组织管理员',
+    children: null,
+    disabled: true
+  },
+  {
+    value: 'readonly',
+    label: '普通用户',
+    children: null,
+    disabled: true
+  }
+]
+const groupBy = (list: Tree[]) => {
+  const map = new Map()
+  list.forEach(item => {
+    const readonly = item.readonly
+    let arr = map.get(readonly)
+    if (!arr) {
+      arr = []
+    }
+    arr.push({ value: item.id, label: item.name, disabled: false })
+    map.set(readonly, arr)
+  })
+  return map
+}
 const copyInfo = async () => {
   try {
     await toClipboard(defaultPWD.value)
@@ -193,7 +229,10 @@ const queryRole = () => {
     uid: state.form.id
   }
   roleOptionForUserApi(param).then(res => {
-    state.roles = res.data
+    const roles = res.data
+    const map = groupBy(roles)
+    state.roleList[0].children = map.get(false)
+    state.roleList[1].children = map.get(true)
   })
 }
 defineExpose({
@@ -276,21 +315,17 @@ onMounted(() => {
       </el-row>
 
       <el-form-item :label="$t('user.role')" prop="roleIds">
-        <el-select
-          ref="roleSelect"
-          v-model="state.form.roleIds"
+        <el-tree-select
           style="width: 100%"
+          v-model="state.form.roleIds"
+          :data="state.roleList"
+          :highlight-current="true"
           multiple
-          filterable
+          :render-after-expand="false"
           :placeholder="$t('common.please_select') + $t('user.role')"
-        >
-          <el-option
-            v-for="item in state.roles"
-            :key="item.name"
-            :label="item.name"
-            :value="item.id"
-          />
-        </el-select>
+          show-checkbox
+          check-on-click-node
+        />
       </el-form-item>
 
       <el-form-item :label="$t('user.state')" prop="enabled">

@@ -70,4 +70,14 @@ public class AuthServer implements AuthApi {
     public PermissionVO menuTargetPermission(MenuPermissionRequest request) {
         return authManage.menuTargetPermission(request);
     }
+
+    @Override
+    public void saveBusiTargetPer(BusiTargetPerCreator creator) {
+        authManage.saveBusiTargetPer(creator);
+    }
+
+    @Override
+    public void saveMenuTargetPer(MenuTargetPerCreator creator) {
+        authManage.saveMenuTargetPer(creator);
+    }
 }
