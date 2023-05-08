@@ -17,6 +17,7 @@ const calcData = view => {
   })
   v.xaxis = JSON.stringify(v.xaxis)
   v.yaxis = JSON.stringify(v.yaxis)
+  v.customFilter = JSON.stringify(v.customFilter)
   v.customAttr = JSON.stringify(v.customAttr)
   console.log(v)
   getData(v).then(res => {
@@ -27,7 +28,7 @@ const calcData = view => {
 
 const renderChart = view => {
   state.myChart = baseBarOption(state.myChart, 'container', view)
-  state.myChart.render()
+  state.myChart?.render()
 }
 
 onMounted(() => {

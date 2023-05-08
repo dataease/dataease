@@ -16,7 +16,7 @@ import java.util.List;
 public interface RoleExtMapper extends BaseMapper<RolePO> {
 
     @Select("""
-            select pr.id, pr.name
+            select pr.id, pr.name, pr.pid, pr.readonly
             from per_role pr 
             where NOT EXISTS( 
                 select 1 from per_user_role pur where pur.uid = #{uid} and pur.rid = pr.id
@@ -25,7 +25,7 @@ public interface RoleExtMapper extends BaseMapper<RolePO> {
             """)
     List<RolePO> selectOptionForUser(@Param("uid") Long uid, @Param("ew") QueryWrapper queryWrapper);
 
-    @Select("select id, name from per_role ${ew.customSqlSegment} ")
+    @Select("select id, name, pid, readonly from per_role ${ew.customSqlSegment} ")
     List<RolePO> selectOptionForOrg(@Param("ew") QueryWrapper queryWrapper);
 
     @Select("""
@@ -47,6 +47,9 @@ public interface RoleExtMapper extends BaseMapper<RolePO> {
 
     @Select("select pr.id, pr.name, pr.readonly, pr.pid from per_user_role pur left join per_role pr on pur.rid = pr.id where pur.uid = #{uid} and pur.oid = #{oid} ")
     List<PerRole> roleInfoByUid(@Param("uid") Long uid, @Param("oid") Long oid);
+
+    @Select("select pr.id, pr.name, pr.readonly, pr.pid from per_user_role pur left join per_role pr on pur.rid = pr.id where pur.uid = #{uid} and pur.oid = #{oid} and pr.readonly = 0")
+    List<PerRole> adminRoleInfoByUid(@Param("uid") Long uid, @Param("oid") Long oid);
 
     @Select("select id from per_role where org_id = #{oid} and pid = 0 and readonly = 0")
     Long adminRoleId(@Param("oid") Long oid);

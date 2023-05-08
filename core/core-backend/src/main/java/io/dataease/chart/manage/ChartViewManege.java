@@ -42,6 +42,13 @@ public class ChartViewManege {
         coreChartViewMapper.deleteById(id);
     }
 
+    public void deleteByPanel(Long panelId, List<Long> chartIds) {
+        QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
+        wrapper.eq("scene_id", panelId);
+        wrapper.notIn("id", chartIds);
+        coreChartViewMapper.delete(wrapper);
+    }
+
     public ChartViewDTO getDetails(Long id) {
         CoreChartView coreChartView = coreChartViewMapper.selectById(id);
         if (ObjectUtils.isEmpty(coreChartView)) {

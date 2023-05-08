@@ -38,4 +38,15 @@ public interface MenuAuthExtMapper {
             </script>
             """)
     List<PermissionBO> queryExistPer(@Param("menuIds") List<Long> menuIds, @Param("rids") List<Long> rids);
+
+    @Select("""
+            select distinct pmr.id, pmr.name, pmr.pid 
+            from per_menu_resource pmr
+            left join per_auth_menu pam on pam.resource_id = pmr.id
+            ${ew.customSqlSegment} 
+            """)
+    List<BusiResourcePO> menusByRids(@Param("ew") QueryWrapper queryWrapper);
+
+    @Select("select id from per_menu_resource")
+    List<Long> menuIds();
 }

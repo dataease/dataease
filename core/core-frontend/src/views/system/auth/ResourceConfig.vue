@@ -186,7 +186,7 @@ const loadPermission = (type: number) => {
 
       const permissionMap = groupPermission(vo)
 
-      fillTableData(state.tableData, permissionMap)
+      fillTableData(state.tableData, permissionMap, null)
     })
     return
   }
@@ -199,7 +199,7 @@ const loadPermission = (type: number) => {
     const vo = res.data
 
     const permissionMap = groupPermission(vo)
-    fillTableData(state.tableData, permissionMap)
+    fillTableData(state.tableData, permissionMap, null)
   })
 }
 const groupPermission = vo => {
@@ -258,20 +258,36 @@ const groupPermission = vo => {
   return map
 }
 
-const fillTableData = (rows, maps) => {
+const fillTableData = (rows, maps, pmap) => {
   rows?.forEach(row => {
     const temp = (maps?.get && maps.get(row.id)) || {}
     state.tableColumn?.forEach(col => {
       const weight = temp['weight'] || 0
       const weightLevel = col.weightLevel
       temp['value' + weightLevel] = false
+
       if (weight >= weightLevel) {
         temp['value' + weightLevel] = true
+        if (pmap) {
+          pmap[weightLevel] = pmap[weightLevel] || 0
+          pmap[weightLevel]++
+        }
       }
     })
     Object.assign(row, temp)
     if (row.children?.length) {
-      fillTableData(row.children, maps)
+      const parentMap = {}
+      fillTableData(row.children, maps, parentMap)
+
+      const len = row.children.length
+      for (const key in parentMap) {
+        if (Object.prototype.hasOwnProperty.call(parentMap, key)) {
+          const element = parentMap[key]
+          if (element && element === len) {
+            row['value' + key] = true
+          }
+        }
+      }
     }
   })
 }
@@ -335,7 +351,7 @@ const getChildrenIds = treeRef => {
 const reset = () => {
   state.uncommitted = []
   resetTableData(state.tableData)
-  fillTableData(state.tableData, state.sourceData)
+  fillTableData(state.tableData, state.sourceData, null)
 }
 const independentAuth = (row, level) => {
   row['independent' + level] = true
@@ -389,6 +405,10 @@ const rowWeightChanged = (row, level) => {
   }
 }
 const add2Uncommitted = (id: string, weight: number) => {
+  const baseIdList = ['admin', 'readonly']
+  if (baseIdList.includes(id)) {
+    return
+  }
   let match = false
   state.uncommitted.forEach(item => {
     if (item.id === id) {
@@ -400,6 +420,10 @@ const add2Uncommitted = (id: string, weight: number) => {
   match || state.uncommitted.push({ id, weight })
 }
 const removeFromUncommitted = id => {
+  const baseIdList = ['admin', 'readonly']
+  if (baseIdList.includes(id)) {
+    return
+  }
   let len = state.uncommitted.length
   if (!len) {
     return

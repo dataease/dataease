@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Component
@@ -81,16 +82,88 @@ public class AuthManage {
             DEException.throwException("invalid flag value");
         }
         TokenUserBO user = AuthUtils.getUser();
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("org_id", user.getDefaultOid());
-        queryWrapper.eq("rt_id", busiResourceEnum.getFlag());
-        List<BusiResourcePO> pos = busiAuthExtMapper.query(queryWrapper);
+        // 判断是否包含组织默认管理员角色
+        List<UserRole> userRoles = null;
+        AtomicBoolean rootAdmin = new AtomicBoolean(AuthUtils.isSysAdmin());
+        if (!rootAdmin.get() && CollectionUtil.isNotEmpty(userRoles = roleManage.userAdminRole()))
+        userRoles = userRoles.stream().filter(role -> {
+            if (role.isRoot()) {
+                rootAdmin.set(true);
+                return false;
+            }
+            return true;
+        }).toList();
+        List<BusiResourcePO> pos = null;
+        if (rootAdmin.get()) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("org_id", user.getDefaultOid());
+            queryWrapper.eq("rt_id", busiResourceEnum.getFlag());
+            pos = busiAuthExtMapper.query(queryWrapper);
+        } else {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("pbr.org_id", user.getDefaultOid());
+            queryWrapper.eq("pbr.rt_id", busiResourceEnum.getFlag());
+            queryWrapper.eq("pabu.uid", user.getUserId());
+            queryWrapper.eq("pabu.weight", 9);
+            queryWrapper.eq("pabu.resource_type", busiResourceEnum.getFlag());
+            pos = busiAuthExtMapper.resourceByUid(queryWrapper);
+
+            if (CollectionUtil.isNotEmpty(userRoles)) {
+                queryWrapper.clear();
+                List<Long> rids = userRoles.stream().map(UserRole::getId).toList();
+                queryWrapper.eq("pbr.org_id", user.getDefaultOid());
+                queryWrapper.eq("pbr.rt_id", busiResourceEnum.getFlag());
+                queryWrapper.eq("pabr.weight", 9);
+                queryWrapper.eq("pabr.resource_type", busiResourceEnum.getFlag());
+                queryWrapper.in("pabr.rid", rids);
+                List<BusiResourcePO> rolePos = null;
+                if (CollectionUtil.isNotEmpty((rolePos = busiAuthExtMapper.resourceByRid(queryWrapper)))) {
+                    pos.addAll(rolePos);
+                }
+            }
+            if (CollectionUtil.isNotEmpty(pos)) {
+                pos = CollectionUtil.distinct(pos);
+            } else {
+                return null;
+            }
+        }
         return authManageUtil.convertPos(pos, false);
     }
 
     public List<ResourceVO> menuTree() {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        List<BusiResourcePO> pos = menuAuthExtMapper.query(queryWrapper);
+        AtomicBoolean rootAdmin = new AtomicBoolean(AuthUtils.isSysAdmin());
+        List<BusiResourcePO> pos = null;
+        List<UserRole> userRoles = null;
+        if (CollectionUtil.isEmpty(userRoles)) return null;
+
+        if (!rootAdmin.get() && CollectionUtil.isNotEmpty(userRoles = roleManage.userAdminRole()))
+        userRoles = userRoles.stream().filter(role -> {
+            if (role.isRoot()) {
+                rootAdmin.set(true);
+                return false;
+            }
+            return true;
+        }).toList();
+
+        if (rootAdmin.get()) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            pos = menuAuthExtMapper.query(queryWrapper);
+        } else if (CollectionUtil.isNotEmpty(userRoles)) {
+
+            List<Long> rids = userRoles.stream().map(UserRole::getId).toList();
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("pam.weight", 9);
+            queryWrapper.in("pam.rid", rids);
+            pos = menuAuthExtMapper.menusByRids(queryWrapper);
+        } else {
+            return null;
+        }
+
+        if (CollectionUtil.isNotEmpty(pos)) {
+            pos = CollectionUtil.distinct(pos);
+        } else {
+            return null;
+        }
         return authManageUtil.convertPos(pos, true);
     }
 
@@ -173,8 +246,14 @@ public class AuthManage {
             // 资源授权给了哪些用户？
             List<PermissionItem> userPermissionItems = busiAuthExtMapper.busiUserPermission(resourceId, busiResourceEnum.getFlag());
             List<PermissionOrigin> permissionOrigins = busiAuthExtMapper.batchUserRolePermission(resourceId, busiResourceEnum.getFlag());
-            permissionOrigins.add(defaultAdminOrigin());
-            permissionOrigins.add(defaultReadonlyOrigin());
+            PermissionOrigin adminOrigin = null;
+            PermissionOrigin readonlyOrigin = null;
+            if (ObjectUtils.isNotEmpty(adminOrigin = defaultAdminOrigin())) {
+                permissionOrigins.add(adminOrigin);
+            }
+            if (ObjectUtils.isNotEmpty(readonlyOrigin = defaultReadonlyOrigin())) {
+                permissionOrigins.add(readonlyOrigin);
+            }
             vo.setPermissions(filterValid(userPermissionItems));
             if (CollectionUtil.isNotEmpty(permissionOrigins)) {
                 List<PermissionOrigin> origins = permissionOrigins.stream().map(origin -> {
