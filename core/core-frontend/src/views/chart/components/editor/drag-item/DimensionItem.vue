@@ -1,7 +1,8 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { reactive, ref, toRefs } from 'vue'
+import { reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '../util/formatter'
+import { getItemType } from './utils'
 
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
@@ -47,6 +48,14 @@ const emit = defineEmits(['onDimensionItemRemove', 'onCustomSort', 'onDimensionI
 
 const { item } = toRefs(props)
 
+watch(
+  [props.dimensionData, props.item],
+  () => {
+    getItemTagType()
+  },
+  { deep: true }
+)
+
 const sort = param => {
   if (param.type === 'custom_sort') {
     const item = {
@@ -73,6 +82,12 @@ const removeItem = () => {
   item.value.removeType = 'dimension'
   emit('onDimensionItemRemove', item.value)
 }
+
+const getItemTagType = () => {
+  tagType.value = getItemType(props.dimensionData, props.quotaData, props.item)
+}
+
+getItemTagType()
 </script>
 
 <template>
