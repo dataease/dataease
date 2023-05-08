@@ -1,9 +1,9 @@
-<script lang="tsx" setup>
-import { ref } from 'vue'
+<script lang="ts" setup>
+import FilterConfig from './filter-config/index.vue'
 </script>
 
 <template>
-  <div>panel</div>
+  <FilterConfig></FilterConfig>
 </template>
 
 <style lang="less" scoped></style>
