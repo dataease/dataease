@@ -197,7 +197,7 @@ public class ExtractDataService {
                         generateJobFile("all_scope", datasetTable, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")));
                         extractData(datasetTable, "all_scope");
                     } else {
-                        extractExcelDataForSimpleMode(datasetTable, "all_scope");
+                        extractExcelDataForSimpleMode(datasetTable, "all_scope", datasetTableFields);
                     }
                     replaceTable(TableUtils.tableName(datasetTableId));
                     saveSuccessLog(datasetTableTaskLog, false);
@@ -250,7 +250,7 @@ public class ExtractDataService {
                         generateJobFile("incremental_add", datasetTable, datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")));
                         extractData(datasetTable, "incremental_add");
                     } else {
-                        extractExcelDataForSimpleMode(datasetTable, "incremental_add");
+                        extractExcelDataForSimpleMode(datasetTable, "incremental_add", datasetTableFields);
                     }
                     saveSuccessLog(datasetTableTaskLog, false);
                     updateTableStatus(datasetTableId, JobStatus.Completed, execTime);
@@ -724,7 +724,7 @@ public class ExtractDataService {
         return datasetTableTaskLog;
     }
 
-    private void extractExcelDataForSimpleMode(DatasetTable datasetTable, String extractType) throws Exception {
+    private void extractExcelDataForSimpleMode(DatasetTable datasetTable, String extractType, List<DatasetTableField> datasetTableFields) throws Exception {
         List<String[]> data = new ArrayList<>();
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
         List<ExcelSheetData> excelSheetDataList = dataTableInfoDTO.getExcelSheetDataList();
@@ -738,6 +738,7 @@ public class ExtractDataService {
             }
             if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
                 ExcelXlsxReader excelXlsxReader = new ExcelXlsxReader();
+                excelXlsxReader.setDatasetTableFields(datasetTableFields);
                 excelXlsxReader.process(new FileInputStream(excelSheetData.getPath()));
                 totalSheets = excelXlsxReader.totalSheets;
             }

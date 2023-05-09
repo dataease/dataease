@@ -2,6 +2,7 @@ package io.dataease.commons.utils;
 
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -108,6 +109,16 @@ public class ExcelXlsxReader extends DefaultHandler {
 
     //定义该文档一行最大的单元格数，用来补全一行最后可能缺失的单元格
     private String maxRef = null;
+
+    public List<DatasetTableField> getDatasetTableFields() {
+        return datasetTableFields;
+    }
+
+    public void setDatasetTableFields(List<DatasetTableField> datasetTableFields) {
+        this.datasetTableFields = datasetTableFields;
+    }
+
+    private List<DatasetTableField> datasetTableFields = null;
 
     /**
      * 单元格
@@ -418,10 +429,10 @@ public class ExcelXlsxReader extends DefaultHandler {
                 break;
             case NUMBER: //数字
                 if (formatString != null && isDateFormat) {
-                    if (obtainedNum != null) {
-                        thisStr = formatter.formatRawCellContents(Double.parseDouble(value), formatIndex, formatString).trim();
-                    } else {
+                    if (getDatasetTableFields() != null && getDatasetTableFields().get(curCol).getDeExtractType() == 1) {
                         thisStr = formatter.formatRawCellContents(Double.parseDouble(value), formatIndex, "yyyy-mm-dd hh:mm:ss").trim();
+                    } else {
+                        thisStr = formatter.formatRawCellContents(Double.parseDouble(value), formatIndex, formatString).trim();
                     }
                 } else {
                     thisStr = value;
