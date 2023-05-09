@@ -1,5 +1,6 @@
 import { Column } from '@antv/g2plot/lib/plots/column'
 import _ from 'lodash'
+import { getTheme } from '@/views/chart/components/js/panel/common/common_antv'
 
 const data = [
   {
@@ -38,10 +39,13 @@ const data = [
 
 export function baseBarOption(plot, container, chart) {
   if (chart) {
+    // theme
+    const theme = getTheme(chart)
     // data
     const data = _.cloneDeep(chart?.data?.data)
     if (!data) return plot
     const options = {
+      theme: theme,
       data: data,
       xField: 'field',
       yField: 'value',

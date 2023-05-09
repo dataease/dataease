@@ -128,6 +128,7 @@ export default {
     uncommitted_tips: '有未提交的权限变更，是否提交？'
   },
   chart: {
+    reset: '重置',
     chart_refresh_tips: '视图刷新设置优先于仪表板刷新设置',
     '1-trend': '趋势',
     '2-state': '状态',
