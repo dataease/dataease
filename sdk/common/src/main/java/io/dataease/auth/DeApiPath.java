@@ -14,4 +14,6 @@ public @interface DeApiPath {
 
     @AliasFor("value")
     String[] path() default {};
+
+    String rt() default "";
 }
