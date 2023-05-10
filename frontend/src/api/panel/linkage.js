@@ -21,6 +21,7 @@ export function saveLinkage(requestInfo) {
 export function getPanelAllLinkageInfo(panelId) {
   return request({
     url: '/linkage/getPanelAllLinkageInfo/' + panelId,
-    method: 'get'
+    method: 'get',
+    loading: false
   })
 }
