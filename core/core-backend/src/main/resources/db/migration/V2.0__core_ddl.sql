@@ -253,8 +253,7 @@ DROP TABLE IF EXISTS `core_chart_view`;
 CREATE TABLE `core_chart_view`
 (
     `id`                  bigint      NOT NULL COMMENT 'ID',
-    `name`                varchar(1024) DEFAULT NULL COMMENT '名称',
-    `title`               varchar(1024) DEFAULT NULL COMMENT 'EChart标题',
+    `title`               varchar(1024) DEFAULT NULL COMMENT '标题',
     `scene_id`            bigint NOT NULL COMMENT '场景ID chart_type为private的时候 是仪表板id',
     `table_id`            bigint NOT NULL COMMENT '数据集表ID',
     `type`                varchar(50)   DEFAULT NULL COMMENT '图表类型',
