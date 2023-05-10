@@ -52,10 +52,11 @@ const list = [
   },
   {
     component: 'VText',
-    label: '文字',
+    name: '文本',
+    label: '文本',
     propValue: '双击编辑文字',
-    icon: 'wenben',
-    innerType: 'RectShape',
+    icon: 'other_text',
+    innerType: 'VText',
     request: {
       method: 'GET',
       data: [],
@@ -67,12 +68,12 @@ const list = [
     },
     style: {
       width: 200,
-      height: 28,
-      fontSize: '',
+      height: 100,
+      fontSize: 14,
       fontWeight: 400,
-      lineHeight: '',
+      lineHeight: 1,
       letterSpacing: 0,
-      textAlign: '',
+      textAlign: 'center',
       color: ''
     }
   },
@@ -90,6 +91,24 @@ const list = [
       borderWidth: 1,
       backgroundColor: '',
       borderStyle: 'solid',
+      borderRadius: ''
+    }
+  },
+  {
+    component: 'Picture',
+    name: '图片',
+    label: '图片',
+    icon: 'other_media',
+    propValue: {
+      url: null,
+      flip: {
+        horizontal: false,
+        vertical: false
+      }
+    },
+    style: {
+      width: 300,
+      height: 200,
       borderRadius: ''
     }
   }

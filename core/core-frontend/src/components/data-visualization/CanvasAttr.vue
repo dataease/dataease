@@ -2,6 +2,7 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
+import DeInputNum from '@/custom-component/common/DeInputNum.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const options = ref({
@@ -19,26 +20,11 @@ const canvasAttrActiveNames = ref(['size', 'background', 'color'])
     <el-row>
       <el-collapse v-model="canvasAttrActiveNames">
         <el-collapse-item title="尺寸" name="size">
-          <el-row style="display: flex; padding-top: 10px">
-            <span>W</span>
-            <el-input-number
-              class="input-border-style"
-              style="margin-left: 5px"
-              v-model="canvasStyleData.width"
-              :min="600"
-              :max="4096"
-              size="small"
-              controls-position="right"
-            />
-            <span style="margin-left: 10px">H</span>
-            <el-input-number
-              style="margin-left: 5px"
-              v-model="canvasStyleData.height"
-              :min="600"
-              :max="4096"
-              size="small"
-              controls-position="right"
-            />
+          <el-row class="item-show">
+            <span style="margin-left: 30px" title="宽">W</span>
+            <de-input-num v-model="canvasStyleData.width" :min="600" :max="4096"></de-input-num>
+            <span style="margin-left: 30px" title="高">H</span>
+            <de-input-num v-model="canvasStyleData.height" :min="600" :max="4096"></de-input-num>
           </el-row>
         </el-collapse-item>
         <el-collapse-item title="背景" name="background">
@@ -62,6 +48,12 @@ const canvasAttrActiveNames = ref(['size', 'background', 'color'])
 </template>
 
 <style lang="less" scoped>
+.item-show {
+  display: flex;
+  text-align: center;
+  padding-top: 10px;
+}
+
 .attr-container {
   background-color: rgba(37, 45, 54, 1);
   color: #fff;
@@ -87,21 +79,5 @@ const canvasAttrActiveNames = ref(['size', 'background', 'color'])
 }
 :deep(.el-collapse) {
   width: 100%;
-}
-:deep(.el-input__wrapper) {
-  background-color: rgba(37, 45, 54, 1);
-}
-
-:deep(.el-input__inner) {
-  color: #ffffff;
-}
-
-:deep(.el-input-number__decrease) {
-  background-color: rgba(37, 45, 54, 1);
-  color: #ffffff;
-}
-:deep(.el-input-number__increase) {
-  background-color: rgba(37, 45, 54, 1);
-  color: #ffffff;
 }
 </style>

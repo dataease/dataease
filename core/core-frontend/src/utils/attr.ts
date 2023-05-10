@@ -3,19 +3,19 @@ export const styleData = [
   { key: 'top', label: 'Y' },
   { key: 'width', label: 'W' },
   { key: 'height', label: 'H' },
-  { key: 'opacity', label: 'O' },
-  { key: 'color', label: '颜色' },
-  { key: 'backgroundColor', label: '背景色' },
+  { key: 'lineHeight', label: '行高' },
+  { key: 'opacity', label: '透明度' },
   { key: 'borderWidth', label: '边框宽度' },
   { key: 'borderStyle', label: '边框风格' },
   { key: 'borderColor', label: '边框颜色' },
   { key: 'borderRadius', label: '边框半径' },
+  { key: 'letterSpacing', label: '字间距' },
   { key: 'fontSize', label: '字体大小' },
   { key: 'fontWeight', label: '字体粗细' },
-  { key: 'lineHeight', label: '行高' },
-  { key: 'letterSpacing', label: '字间距' },
   { key: 'textAlign', label: '左右对齐' },
-  { key: 'verticalAlign', label: '上下对齐' }
+  { key: 'verticalAlign', label: '上下对齐' },
+  { key: 'color', label: '颜色' },
+  { key: 'backgroundColor', label: '背景色' }
 ]
 
 export const styleMap = {

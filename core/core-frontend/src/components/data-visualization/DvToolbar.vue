@@ -16,6 +16,7 @@ import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
+import { update, save } from '@/api/dataVisualization'
 
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -122,10 +123,16 @@ const preview = isScreenshotFlag => {
   dvMainStore.setEditMode('preview')
 }
 
-const save = () => {
-  localStorage.setItem('canvasData', JSON.stringify(componentData.value))
-  localStorage.setItem('canvasStyle', JSON.stringify(canvasStyleData.value))
-  ElMessage.success('保存成功')
+const saveCanvas = () => {
+  const canvasInfo = {
+    canvasStyleData: JSON.stringify(canvasStyleData.value),
+    componentData: JSON.stringify(componentData.value),
+    ...dvInfo.value
+  }
+  const method = dvInfo.value.id ? update : save
+  method(canvasInfo).then(res => {
+    ElMessage.success('保存成功')
+  })
 }
 
 const clearCanvas = () => {
@@ -144,7 +151,7 @@ const backToMain = () => {
 }
 
 eventBus.on('preview', preview)
-eventBus.on('save', save)
+eventBus.on('save', saveCanvas)
 eventBus.on('clearCanvas', clearCanvas)
 </script>
 
@@ -163,7 +170,7 @@ eventBus.on('clearCanvas', clearCanvas)
         <el-icon class="custom-el-icon" @click="redo()">
           <Icon class="toolbar-icon" name="icon_redo_outlined"></Icon>
         </el-icon>
-        <el-button @click="save()" style="float: right; margin-right: 12px" type="primary"
+        <el-button @click="saveCanvas()" style="float: right; margin-right: 12px" type="primary"
           >保存</el-button
         >
         <el-button @click="preview()" style="float: right; margin-right: 12px">预览</el-button>

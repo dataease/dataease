@@ -6,6 +6,8 @@ import Group from '@/custom-component/group/Component.vue'
 import GroupAttr from '@/custom-component/group/Attr.vue'
 import UserView from '@/custom-component/user-view/Component.vue'
 import UserViewAttr from '@/custom-component/user-view/Attr.vue'
+import Picture from '@/custom-component/picture/Component.vue'
+import PictureAttr from '@/custom-component/picture/Attr.vue'
 
 export const componentsMap = {
   RectShape: RectShape,
@@ -15,7 +17,9 @@ export const componentsMap = {
   Group: Group,
   GroupAttr: GroupAttr,
   UserView: UserView,
-  UserViewAttr: UserViewAttr
+  UserViewAttr: UserViewAttr,
+  Picture: Picture,
+  PictureAttr: PictureAttr
 }
 
 export default function findComponent(key) {

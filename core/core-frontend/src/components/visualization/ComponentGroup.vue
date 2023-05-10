@@ -20,7 +20,7 @@ const { title, iconName, baseWidth } = toRefs(props)
 <template>
   <el-popover
     placement="bottom-start"
-    :width="300"
+    :width="baseWidth"
     trigger="click"
     effect="dark"
     :show-arrow="false"

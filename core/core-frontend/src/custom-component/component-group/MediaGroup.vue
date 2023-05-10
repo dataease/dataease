@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
+import DragComponent from '@/custom-component/component-group/DragComponent.vue'
 
 const props = defineProps({
   propValue: {
@@ -30,30 +31,11 @@ const handleDragStart = e => {
 
 <template>
   <div class="group" @dragstart="handleDragStart">
-    <el-tabs v-model="currentPane" tab-position="left" style="height: 200px" class="demo-tabs">
-      <el-tab-pane label="常见图标" name="common"></el-tab-pane>
-      <el-tab-pane label="指标图" name="quota"></el-tab-pane>
-      <el-tab-pane label="线/面图" name="line-surface"></el-tab-pane>
-      <el-tab-pane label="柱形图" name="column"></el-tab-pane>
-      <div>
-        <img
-          class="custom_img"
-          src="@/assets/img/demo_bar.png"
-          :data-id="'UserView&bar'"
-          alt=""
-          v-on:click="newComponent"
-        />
-      </div>
-    </el-tabs>
+    <drag-component icon="other_media" label="图片" drag-info="Picture&Picture"></drag-component>
   </div>
 </template>
 
 <style lang="less" scoped>
 .group {
-}
-.custom_img {
-  width: 100px;
-  height: 70px;
-  cursor: pointer;
 }
 </style>
