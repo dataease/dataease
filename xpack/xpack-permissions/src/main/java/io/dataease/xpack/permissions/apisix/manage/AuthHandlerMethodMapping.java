@@ -3,7 +3,6 @@ package io.dataease.xpack.permissions.apisix.manage;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
@@ -152,7 +151,7 @@ public class AuthHandlerMethodMapping<T> extends RequestMappingHandlerMapping {
     }
 
     protected RequestMappingInfo createRequestMappingInfo(DeApiPath deApiPath, RequestCondition<?> customCondition) {
-        RequestMethod[] method  = {};
+        RequestMethod[] method = {};
         String[] emptyArr = {};
         String name = "";
         RequestMappingInfo.Builder builder = RequestMappingInfo

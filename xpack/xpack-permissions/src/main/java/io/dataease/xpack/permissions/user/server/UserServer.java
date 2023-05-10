@@ -1,5 +1,6 @@
 package io.dataease.xpack.permissions.user.server;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.permissions.role.dto.UserRequest;
@@ -57,12 +58,16 @@ public class UserServer implements UserApi {
 
     @Override
     public List<UserItem> optionForRole(UserRequest request) {
-        return userPageManage.optionForRole(request);
+        List<UserItem> userItems = userPageManage.optionForRole(request);
+        if (CollectionUtil.isEmpty(userItems)) return userItems;
+        return userItems.stream().filter(user -> !AuthUtils.isSysAdmin(user.getId())).toList();
     }
 
     @Override
     public List<UserItem> selectedForRole(UserRequest request) {
-        return userPageManage.selectedForRole(request);
+        List<UserItem> userItems = userPageManage.selectedForRole(request);
+        if (CollectionUtil.isEmpty(userItems)) return userItems;
+        return userItems.stream().filter(user -> !AuthUtils.isSysAdmin(user.getId())).toList();
     }
 
     @Override

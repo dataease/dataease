@@ -5,10 +5,12 @@ import { getData } from '../../../../api/chart'
 import { useEmitt } from '../../../../hooks/web/useEmitt'
 
 const state = reactive({
-  myChart: null
+  myChart: null,
+  loading: false
 })
 
 const calcData = view => {
+  state.loading = true
   const v = { ...view }
   v.yaxis.forEach(ele => {
     if (!ele.summary) {
@@ -23,6 +25,7 @@ const calcData = view => {
   getData(v).then(res => {
     console.log(res)
     renderChart(res)
+    state.loading = false
   })
 }
 
@@ -38,7 +41,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div v-loading="state.loading">
     <div id="container"></div>
   </div>
 </template>

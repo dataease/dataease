@@ -19,6 +19,7 @@ import { useEmitt } from '../../../../hooks/web/useEmitt'
 import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 import FilterItem from '@/views/chart/components/editor/drag-item/FilterItem.vue'
+import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -127,6 +128,11 @@ const addYaxis = e => {
 
 const notifyChart = view => {
   useEmitt().emitter.emit('calcData', view)
+}
+
+const onColorChange = val => {
+  state.view.customAttr.color = val
+  useEmitt().emitter.emit('calcData', state.view)
 }
 
 initDataset()
@@ -419,7 +425,7 @@ initDataset()
             class="padding-tab"
             style="width: 100%"
           >
-            style
+            <chart-style :chart="state.view" @onColorChange="onColorChange" />
           </el-tab-pane>
           <el-tab-pane
             name="senior"

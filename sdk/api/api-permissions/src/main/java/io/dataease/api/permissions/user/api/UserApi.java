@@ -20,34 +20,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 
-@DeApiPath("/user")
+@DeApiPath(value = "/user", rt = "user")
 public interface UserApi {
 
-    @DePermit("read")
+    @DePermit("m:read")
     @PostMapping("/pager/{goPage}/{pageSize}")
     IPage<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody BaseGridRequest request);
 
-    @DePermit("#p0+':read'")
+    @DePermit("m:read")
     @GetMapping("/queryById/{id}")
     UserFormVO queryById(@PathVariable("id") Long id);
 
 
-    @DePermit("read")
+    @DePermit("m:read")
     @PostMapping("/create")
     void create(@RequestBody UserCreator creator);
 
-    @DePermit("read")
+    @DePermit("m:read")
     @PostMapping("/edit")
     void edit(@RequestBody UserEditor editor);
 
-    @DePermit("read")
+    @DePermit("m:read")
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 
 
+    @DePermit("m:read")
     @PostMapping("/role/option")
     List<UserItem> optionForRole(@RequestBody UserRequest request);
 
+    @DePermit("m:read")
     @PostMapping("/role/selected")
     List<UserItem> selectedForRole(@RequestBody UserRequest request);
 

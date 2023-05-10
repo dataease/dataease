@@ -14,25 +14,25 @@ public class DatasetTableFieldDTO implements Serializable {
     /**
      * ID
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
      * 数据源ID
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long datasourceId;
 
     /**
      * 数据表ID
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long datasetTableId;
 
     /**
      * 数据集ID
      */
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long datasetGroupId;
 
     /**
