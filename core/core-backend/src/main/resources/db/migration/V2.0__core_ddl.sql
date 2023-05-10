@@ -9,7 +9,7 @@ CREATE TABLE `core_datasource`
     `description`   varchar(50) DEFAULT NULL COMMENT '描述',
     `type`          varchar(50)                                           NOT NULL COMMENT '类型',
     `configuration` longtext                                              NOT NULL COMMENT '详细信息',
-    `create_time`   bigint                                                NOT NULL COMMENT '创健时间',
+    `create_time`   bigint                                                NOT NULL COMMENT '创建时间',
     `update_time`   bigint                                                NOT NULL COMMENT '更新时间',
     `create_by`     varchar(50) DEFAULT NULL COMMENT '创建人ID',
     `status`        longtext COMMENT '状态',
@@ -23,7 +23,7 @@ CREATE TABLE `core_driver`
 (
     `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `name`         varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL COMMENT '名称',
-    `create_time`  bigint(13) NOT NULL COMMENT '创健时间',
+    `create_time`  bigint(13) NOT NULL COMMENT '创建时间',
     `type`         varchar(255) DEFAULT NULL COMMENT '数据源类型',
     `driver_class` varchar(255) DEFAULT NULL COMMENT '驱动类',
     `description`  varchar(255) DEFAULT NULL COMMENT '描述',
