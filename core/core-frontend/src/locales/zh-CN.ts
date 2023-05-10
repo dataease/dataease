@@ -48,7 +48,9 @@ export default {
     role: '角色',
     state: '状态',
     default_pwd: '默认密码',
-    confirm_delete: '确认删除该用户吗？'
+    confirm_delete: '确认删除该用户吗？',
+    add_title: '添加用户',
+    edit_title: '编辑用户'
   },
   role: {
     add_title: '添加角色',

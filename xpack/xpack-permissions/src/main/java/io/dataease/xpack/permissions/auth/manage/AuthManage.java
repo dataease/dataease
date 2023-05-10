@@ -86,13 +86,13 @@ public class AuthManage {
         List<UserRole> userRoles = null;
         AtomicBoolean rootAdmin = new AtomicBoolean(AuthUtils.isSysAdmin());
         if (!rootAdmin.get() && CollectionUtil.isNotEmpty(userRoles = roleManage.userAdminRole()))
-        userRoles = userRoles.stream().filter(role -> {
-            if (role.isRoot()) {
-                rootAdmin.set(true);
-                return false;
-            }
-            return true;
-        }).toList();
+            userRoles = userRoles.stream().filter(role -> {
+                if (role.isRoot()) {
+                    rootAdmin.set(true);
+                    return false;
+                }
+                return true;
+            }).toList();
         List<BusiResourcePO> pos = null;
         if (rootAdmin.get()) {
             QueryWrapper queryWrapper = new QueryWrapper();
@@ -134,16 +134,16 @@ public class AuthManage {
         AtomicBoolean rootAdmin = new AtomicBoolean(AuthUtils.isSysAdmin());
         List<BusiResourcePO> pos = null;
         List<UserRole> userRoles = null;
-        if (CollectionUtil.isEmpty(userRoles)) return null;
+
 
         if (!rootAdmin.get() && CollectionUtil.isNotEmpty(userRoles = roleManage.userAdminRole()))
-        userRoles = userRoles.stream().filter(role -> {
-            if (role.isRoot()) {
-                rootAdmin.set(true);
-                return false;
-            }
-            return true;
-        }).toList();
+            userRoles = userRoles.stream().filter(role -> {
+                if (role.isRoot()) {
+                    rootAdmin.set(true);
+                    return false;
+                }
+                return true;
+            }).toList();
 
         if (rootAdmin.get()) {
             QueryWrapper queryWrapper = new QueryWrapper();
