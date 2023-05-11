@@ -32,7 +32,7 @@ const changeColorOption = () => {
   const items = colorCases.filter(ele => {
     return ele.value === state.colorForm.value
   })
-  state.colorForm.colors = JSON.parse(JSON.stringify(items[0].colors))
+  state.colorForm.colors = [...items[0].colors]
 
   state.customColor = state.colorForm.colors[0]
   state.colorIndex = 0
@@ -107,7 +107,7 @@ init()
                   <el-select
                     v-model="state.colorForm.value"
                     :placeholder="t('chart.pls_slc_color_case')"
-                    size="mini"
+                    size="small"
                     @change="changeColorOption('value')"
                   >
                     <el-option
@@ -133,7 +133,7 @@ init()
                     </el-option>
                   </el-select>
                   <el-button
-                    size="mini"
+                    size="small"
                     type="text"
                     style="margin-left: 2px"
                     @click="resetCustomColor"
@@ -221,7 +221,7 @@ init()
               v-model="state.colorForm.alpha"
               show-input
               :show-input-controls="false"
-              input-size="mini"
+              input-size="small"
               @change="changeColorCase('alpha')"
             />
           </el-form-item>
