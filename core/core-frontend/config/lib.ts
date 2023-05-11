@@ -11,13 +11,14 @@ export default {
         globals: {
           vue: 'Vue'
         },
-        dir: 'lib'
+        dir: 'lib',
+        entryFileNames: '[name].mjs',
+        // preserveModules: true,
+        exports: 'named'
       }
     },
     lib: {
       entry: pathResolve('src/pages/lib/main.ts'),
-      name: 'index',
-      fileName: 'index',
       formats: ['es']
     }
   }
