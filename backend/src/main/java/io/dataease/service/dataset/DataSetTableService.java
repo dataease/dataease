@@ -1279,7 +1279,6 @@ public class DataSetTableService {
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
         datasourceRequest.setQuery(sqlAsTable);
-        System.out.println(sqlAsTable);
         Map<String, List> result;
         try {
             datasetSqlLog.setStartTime(System.currentTimeMillis());
