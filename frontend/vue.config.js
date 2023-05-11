@@ -2,6 +2,8 @@
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
 
+const pkg = require('./package.json')
+
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 // const CompressionPlugin = require('compression-webpack-plugin')
 const webpack = require('webpack')
@@ -47,6 +49,11 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
+    },
+    output: {
+      filename: `js/[name].[contenthash:8].${pkg.version}.js`,
+      publicPath: '/',
+      chunkFilename: `js/[name].[contenthash:8].${pkg.version}.js`
     },
     plugins: [
       new CopyWebpackPlugin([

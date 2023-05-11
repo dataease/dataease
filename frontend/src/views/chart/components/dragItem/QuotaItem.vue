@@ -324,6 +324,21 @@ export default {
       const t1 = xAxis.filter(ele => {
         return ele.deType === 1 && SUPPORT_Y_M.includes(ele.dateStyle)
       })
+
+      if (this.chart.type === 'table-pivot') {
+        let xAxisExt = null
+        if (Object.prototype.toString.call(this.chart.xaxisExt) === '[object Array]') {
+          xAxisExt = JSON.parse(JSON.stringify(this.chart.xaxisExt))
+        } else {
+          xAxisExt = JSON.parse(this.chart.xaxisExt)
+        }
+        const t2 = xAxisExt.filter(ele => {
+          return ele.deType === 1 && SUPPORT_Y_M.includes(ele.dateStyle)
+        })
+
+        t1.push(...t2)
+      }
+
       // 暂时只支持类别轴/维度的时间类型字段
       if (t1.length > 0 && this.chart.type !== 'text' && this.chart.type !== 'label' && this.chart.type !== 'gauge' && this.chart.type !== 'liquid') {
         this.disableEditCompare = false

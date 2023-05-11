@@ -787,7 +787,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 if(redshiftConfiguration.getDataBase().length() > 64 || redshiftConfiguration.getDataBase().length() < 1){
                     throw new Exception("Invalid database name");
                 }
-                if(!redshiftConfiguration.getDataBase().matches("\"^[a-z][a-z0-9_+.@-]*$\"")){
+                if(!redshiftConfiguration.getDataBase().matches("^[a-z][a-z0-9_+.@-]*$")){
                     throw new Exception("Invalid database name");
                 }
                 break;

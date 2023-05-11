@@ -56,6 +56,7 @@
 
 <script>
 import { compareDayList, compareMonthList, compareYearList } from '@/views/chart/chart/compare'
+import { SUPPORT_Y_M } from '@/views/chart/chart/chart'
 
 export default {
   name: 'CompareEdit',
@@ -95,6 +96,19 @@ export default {
         xAxis = JSON.parse(this.chart.xaxis)
       }
       const t1 = xAxis.filter(ele => { return ele.deType === 1 })
+
+      if (this.chart.type === 'table-pivot') {
+        let xAxisExt = null
+        if (Object.prototype.toString.call(this.chart.xaxisExt) === '[object Array]') {
+          xAxisExt = JSON.parse(JSON.stringify(this.chart.xaxisExt))
+        } else {
+          xAxisExt = JSON.parse(this.chart.xaxisExt)
+        }
+        const t2 = xAxisExt.filter(ele => { return ele.deType === 1 })
+
+        t1.push(...t2)
+      }
+
       this.fieldList = t1
       // 如果没有选中字段，则默认选中第一个
       if ((!this.compareItem.compareCalc.field || this.compareItem.compareCalc.field === '') && this.fieldList.length > 0) {
