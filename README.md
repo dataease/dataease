@@ -9,6 +9,9 @@
 </p>
 <hr/>
 
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataease%2Fdataease.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataease%2Fdataease?ref=badge_large)
+
 ## 什么是 DataEase？
 
 DataEase 是开源的数据可视化分析工具，帮助用户快速分析数据并洞察业务趋势，从而实现业务的改进与优化。DataEase 支持丰富的数据源连接，能够通过拖拉拽方式快速制作图表，并可以方便的与他人分享。
@@ -103,6 +106,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start.sh | bash
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=dataease/dataease&type=Date)](https://star-history.com/#dataease/dataease&Date)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataease%2Fdataease.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataease%2Fdataease?ref=badge_shield)
 
 ## License
 
