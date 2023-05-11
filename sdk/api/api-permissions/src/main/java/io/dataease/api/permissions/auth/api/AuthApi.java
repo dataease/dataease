@@ -58,9 +58,23 @@ public interface AuthApi {
     @PostMapping("/saveMenuTargetPer")
     void saveMenuTargetPer(@RequestBody MenuTargetPerCreator creator);
 
+    /**
+     * 下面3个接口为内部调用接口不对外开放
+     * @param creator
+     */
     @ApiIgnore
     @ApiOperation("保存业务资源")
     @PostMapping("/resource/create")
     void saveResource(@RequestBody BusiResourceCreator creator);
+
+    @ApiIgnore
+    @ApiOperation("更新业务资源")
+    @PostMapping("/resource/edit")
+    void editResource(@RequestBody BusiResourceEditor editor);
+
+    @ApiIgnore
+    @ApiOperation("删除业务资源")
+    @GetMapping("/resource/del/{id}")
+    void delResource(@PathVariable("id") Long id);
 
 }

@@ -7,15 +7,14 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Data
-public class BusiResourceCreator implements Serializable {
+public class BusiResourceEditor implements Serializable {
+
     @Serial
-    private static final long serialVersionUID = 3656747026193567757L;
+    private static final long serialVersionUID = 5193320462388120821L;
     @ApiModelProperty("资源ID")
     private Long id;
     @ApiModelProperty("资源名称")
     private String name;
     @ApiModelProperty("类型")
     private String flag;
-    @ApiModelProperty("上级ID")
-    private Long pid = 0L;
 }

@@ -62,6 +62,16 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
+    public void editResource(BusiResourceEditor editor) {
+
+    }
+
+    @Override
+    public void delResource(Long id) {
+
+    }
+
+    @Override
     public PermissionVO busiTargetPermission(BusiPermissionRequest request) {
         return authManage.busiTargetPermission(request);
     }
