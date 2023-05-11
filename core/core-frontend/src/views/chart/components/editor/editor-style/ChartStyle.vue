@@ -35,21 +35,48 @@ const onColorChange = val => {
     >
       <el-row class="de-collapse-style">
         <span class="padding-lr">{{ t('chart.shape_attr') }}</span>
+
+        <el-collapse v-model="state.attrActiveNames" class="style-collapse">
+          <el-collapse-item name="color" :title="t('chart.color')">
+            <color-selector
+              class="attr-selector"
+              :chart="props.chart"
+              @onColorChange="onColorChange"
+            />
+          </el-collapse-item>
+
+          <el-collapse-item
+            name="size"
+            :title="
+              props.chart.type && props.chart.type.includes('table')
+                ? t('chart.table_config')
+                : t('chart.size')
+            "
+          >
+            size
+          </el-collapse-item>
+        </el-collapse>
       </el-row>
-      <el-collapse v-model="state.attrActiveNames" class="style-collapse">
-        <el-collapse-item name="color" :title="t('chart.color')">
-          <color-selector
-            class="attr-selector"
-            :chart="props.chart"
-            @onColorChange="onColorChange"
-          />
-        </el-collapse-item>
-      </el-collapse>
+
+      <el-row class="de-collapse-style">
+        <span class="padding-lr">{{ t('chart.module_style') }}</span>
+        <el-collapse v-model="state.styleActiveNames" class="style-collapse">
+          <el-collapse-item name="xAxis" :title="t('chart.xAxis')"> xaxis </el-collapse-item>
+        </el-collapse>
+      </el-row>
     </div>
   </el-row>
 </template>
 
 <style lang="less" scoped>
+.el-row {
+  display: block;
+}
+
+span {
+  font-size: 14px;
+}
+
 .view-panel {
   display: flex;
   height: 100%;
@@ -59,5 +86,15 @@ const onColorChange = val => {
 
 .attr-style {
   height: 100%;
+}
+
+.de-collapse-style {
+  :deep(.el-collapse-item__header) {
+    height: 34px !important;
+    line-height: 34px !important;
+    padding: 0 0 0 6px !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+  }
 }
 </style>

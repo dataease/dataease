@@ -2,7 +2,7 @@ import { Column } from '@antv/g2plot/lib/plots/column'
 import _ from 'lodash'
 import { getTheme } from '@/views/chart/components/js/panel/common/common_antv'
 
-const data = [
+const data1 = [
   {
     type: '家具家电',
     sales: 38
@@ -47,6 +47,7 @@ export function baseBarOption(plot, container, chart) {
     const options = {
       theme: theme,
       data: data,
+      isGroup: true,
       xField: 'field',
       yField: 'value',
       seriesField: 'category',
@@ -98,7 +99,7 @@ export function baseBarOption(plot, container, chart) {
     return plot
   } else {
     const options = {
-      data: data,
+      data: data1,
       xField: 'type',
       yField: 'sales',
       label: {

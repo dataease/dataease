@@ -6,30 +6,35 @@ import { useEmitt } from '../../../../hooks/web/useEmitt'
 
 const state = reactive({
   myChart: null,
-  loading: false
+  loading: false,
+  data: null // 图表数据
 })
 
 const calcData = view => {
   state.loading = true
-  const v = { ...view }
+  const v = JSON.parse(JSON.stringify(view))
+  // todo 后续放到其他地方
   v.yaxis.forEach(ele => {
     if (!ele.summary) {
       ele.summary = 'sum'
     }
+    if (!ele.sort) {
+      ele.sort = 'none'
+    }
   })
-  v.xaxis = JSON.stringify(v.xaxis)
-  v.yaxis = JSON.stringify(v.yaxis)
-  v.customFilter = JSON.stringify(v.customFilter)
-  v.customAttr = JSON.stringify(v.customAttr)
-  console.log(v)
+  // console.log(v)
   getData(v).then(res => {
-    console.log(res)
+    // console.log(res)
+    state.data = res?.data
     renderChart(res)
     state.loading = false
   })
 }
 
 const renderChart = view => {
+  if (view && !view.data) {
+    view.data = state.data
+  }
   state.myChart = baseBarOption(state.myChart, 'container', view)
   state.myChart?.render()
 }
@@ -37,11 +42,12 @@ const renderChart = view => {
 onMounted(() => {
   renderChart(null)
   useEmitt({ name: 'calcData', callback: calcData })
+  useEmitt({ name: 'renderChart', callback: renderChart })
 })
 </script>
 
 <template>
-  <div v-loading="state.loading">
+  <div v-loading="state.loading" style="border: 1px solid #cccccc">
     <div id="container"></div>
   </div>
 </template>

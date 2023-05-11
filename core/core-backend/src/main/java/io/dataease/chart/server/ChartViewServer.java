@@ -2,10 +2,14 @@ package io.dataease.chart.server;
 
 import io.dataease.api.chart.ChartViewApi;
 import io.dataease.api.chart.dto.ChartViewDTO;
+import io.dataease.api.chart.dto.ChartViewFieldDTO;
 import io.dataease.chart.manage.ChartViewManege;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author Junjun
@@ -19,5 +23,10 @@ public class ChartViewServer implements ChartViewApi {
     @Override
     public ChartViewDTO getData(Long id) throws Exception {
         return chartViewManege.getChart(id);
+    }
+
+    @Override
+    public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id) {
+        return chartViewManege.listByDQ(id);
     }
 }

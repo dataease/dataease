@@ -20,7 +20,7 @@ export function getTheme(chart) {
     legendFontsize
   let customAttr = {}
   if (chart.customAttr) {
-    customAttr = JSON.parse(chart.customAttr)
+    customAttr = chart.customAttr
     // color
     if (customAttr.color) {
       const c = JSON.parse(JSON.stringify(customAttr.color))
@@ -45,14 +45,14 @@ export function getTheme(chart) {
 
   let customStyle
   if (chart.customStyle) {
-    customStyle = JSON.parse(chart.customStyle)
+    customStyle = chart.customStyle
     // bg
     if (customStyle.background) {
       bgColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
     // legend
     if (customStyle.legend) {
-      const l = JSON.parse(JSON.stringify(customStyle.legend))
+      const l = customStyle.legend
       legendColor = l.textStyle.color
       legendFontsize = l.textStyle.fontSize
     }

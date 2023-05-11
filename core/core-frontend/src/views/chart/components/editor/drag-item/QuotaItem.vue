@@ -108,7 +108,7 @@ getItemTagType()
         style="position: absolute; top: 6px; right: 24px; color: #878d9f; cursor: pointer"
         @click="removeItem"
       />
-      <el-dropdown trigger="click" size="mini" @command="clickItem">
+      <el-dropdown trigger="click" size="small" @command="clickItem">
         <el-tag size="small" class="item-axis" :type="tagType">
           <span style="float: left">
             <el-icon>
@@ -143,7 +143,7 @@ getItemTagType()
             >
               <el-dropdown
                 placement="right-start"
-                size="mini"
+                size="small"
                 style="width: 100%"
                 @command="summary"
               >
@@ -231,7 +231,7 @@ getItemTagType()
             </el-dropdown-item>
 
             <el-dropdown-item :divided="!item.chartId && chart.type !== 'table-info'">
-              <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="sort">
+              <el-dropdown placement="right-start" size="small" style="width: 100%" @command="sort">
                 <span class="el-dropdown-link inner-dropdown-menu">
                   <span>
                     <i class="el-icon-sort" />
@@ -263,7 +263,7 @@ getItemTagType()
             <!--          <el-dropdown-item v-show="item.deType === 1" divided>-->
             <!--            <el-dropdown-->
             <!--              placement="right-start"-->
-            <!--              size="mini"-->
+            <!--              size="small"-->
             <!--              style="width: 100%"-->
             <!--              @command="dateStyle"-->
             <!--            >-->
@@ -308,7 +308,7 @@ getItemTagType()
             <!--          <el-dropdown-item v-show="item.deType === 1">-->
             <!--            <el-dropdown-->
             <!--              placement="right-start"-->
-            <!--              size="mini"-->
+            <!--              size="small"-->
             <!--              style="width: 100%"-->
             <!--              @command="datePattern"-->
             <!--            >-->

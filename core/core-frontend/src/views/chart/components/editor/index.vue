@@ -1,21 +1,29 @@
 <script lang="tsx" setup>
-import { reactive, ref } from 'vue'
-import { useI18n } from '@/hooks/web/useI18n'
-import { getDatasetTree } from '@/api/dataset'
-import { Field, getFieldByDQ } from '@/api/chart'
-import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
-import draggable from 'vuedraggable'
-import DimensionLabel from './drag-label/DimensionLabel.vue'
-import DimensionItem from './drag-item/DimensionItem.vue'
-import QuotaLabel from './drag-label/QuotaLabel.vue'
 import {
   DEFAULT_COLOR_CASE,
   DEFAULT_SIZE,
   DEFAULT_LABEL,
   DEFAULT_TOOLTIP,
-  DEFAULT_TOTAL
+  DEFAULT_TOTAL,
+  DEFAULT_TITLE_STYLE,
+  DEFAULT_LEGEND_STYLE,
+  DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_STYLE,
+  DEFAULT_YAXIS_EXT_STYLE,
+  DEFAULT_SPLIT,
+  DEFAULT_FUNCTION_CFG,
+  DEFAULT_THRESHOLD
 } from './util/chart'
-import { useEmitt } from '../../../../hooks/web/useEmitt'
+import { reactive, ref } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import { getDatasetTree } from '@/api/dataset'
+import { Field, getFieldByDQ } from '@/api/chart'
+import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import draggable from 'vuedraggable'
+import DimensionLabel from './drag-label/DimensionLabel.vue'
+import DimensionItem from './drag-item/DimensionItem.vue'
+import QuotaLabel from './drag-label/QuotaLabel.vue'
 import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 import FilterItem from '@/views/chart/components/editor/drag-item/FilterItem.vue'
@@ -50,7 +58,13 @@ const state = reactive({
     refreshTime: 5,
     refreshUnit: 'minute',
     xaxis: [],
+    xaxisExt: [],
     yaxis: [],
+    yaxisExt: [],
+    extStack: [],
+    drillFields: [],
+    viewFields: [],
+    extBubble: [],
     customFilter: [],
     customAttr: {
       color: DEFAULT_COLOR_CASE,
@@ -58,6 +72,19 @@ const state = reactive({
       label: DEFAULT_LABEL,
       tooltip: DEFAULT_TOOLTIP,
       totalCfg: DEFAULT_TOTAL
+    },
+    customStyle: {
+      text: DEFAULT_TITLE_STYLE,
+      legend: DEFAULT_LEGEND_STYLE,
+      xAxis: DEFAULT_XAXIS_STYLE,
+      yAxis: DEFAULT_YAXIS_STYLE,
+      yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
+      split: DEFAULT_SPLIT
+    },
+    senior: {
+      functionCfg: DEFAULT_FUNCTION_CFG,
+      assistLine: [],
+      threshold: DEFAULT_THRESHOLD
     }
   },
   datasetTree: [],
@@ -92,16 +119,16 @@ const reset = () => {
 
 const dimensionItemChange = item => {
   // this.calcData(true)
-  console.log(item)
-  console.log(state.view.xaxis)
-  notifyChart(state.view)
+  // console.log(item)
+  // console.log(state.view.xaxis)
+  calcData(state.view)
 }
 
 const quotaItemChange = item => {
   // this.calcData(true)
-  console.log(item)
-  console.log(state.view.xaxis)
-  notifyChart(state.view)
+  // console.log(item)
+  // console.log(state.view.xaxis)
+  calcData(state.view)
 }
 
 const addXaxis = e => {
@@ -113,7 +140,7 @@ const addXaxis = e => {
   //   this.view.xaxis = [this.view.xaxis[0]]
   // }
   // this.calcData(true)
-  notifyChart(state.view)
+  calcData(state.view)
 }
 
 const addYaxis = e => {
@@ -123,16 +150,20 @@ const addYaxis = e => {
   //   this.view.yaxis = [this.view.yaxis[0]]
   // }
   // this.calcData(true)
-  notifyChart(state.view)
+  calcData(state.view)
 }
 
-const notifyChart = view => {
+const calcData = view => {
   useEmitt().emitter.emit('calcData', view)
+}
+
+const renderChart = view => {
+  useEmitt().emitter.emit('renderChart', view)
 }
 
 const onColorChange = val => {
   state.view.customAttr.color = val
-  useEmitt().emitter.emit('calcData', state.view)
+  renderChart(state.view)
 }
 
 initDataset()
@@ -205,7 +236,7 @@ initDataset()
                   </draggable>
                 </div>
                 <div class="padding-lr field-height">
-                  <span>{{ $t('chart.quota') }}</span>
+                  <span>{{ t('chart.quota') }}</span>
                   <draggable
                     :list="state.quotaData"
                     :group="dsFieldDragOptions.group"
@@ -231,7 +262,7 @@ initDataset()
             <el-col :span="13" style="border-left: 1px solid #e6e6e6">
               <div style="height: 60px; overflow: auto" class="padding-lr theme-border-class">
                 <span class="theme-border-class">
-                  <span>{{ $t('chart.chart_type') }}</span>
+                  <span>{{ t('chart.chart_type') }}</span>
                   <el-row style="padding: 4px 0 4px 10px">
                     <span>
                       <div>svg</div>
@@ -245,13 +276,13 @@ initDataset()
                       >
                         <template #reference>
                           <el-button size="small" style="padding: 6px">
-                            {{ $t('chart.change_chart_type') }}
+                            {{ t('chart.change_chart_type') }}
                             <i class="el-icon-caret-bottom" />
                           </el-button>
                         </template>
                         <div class="padding-lr">
                           <el-row>
-                            <div>chart type</div>
+                            <div>todo chart type</div>
                           </el-row>
                         </div>
                       </el-popover>
@@ -282,7 +313,7 @@ initDataset()
                       <el-radio-group
                         v-model="state.view.resultMode"
                         class="radio-span"
-                        size="mini"
+                        size="small"
                       >
                         <el-radio label="all"
                           ><span>{{ t('chart.result_mode_all') }}</span></el-radio
@@ -291,7 +322,7 @@ initDataset()
                           <el-input
                             v-model="state.view.resultCount"
                             class="result-count"
-                            size="mini"
+                            size="small"
                           />
                         </el-radio>
                       </el-radio-group>
@@ -300,12 +331,12 @@ initDataset()
 
                   <el-row class="padding-lr">
                     <span style="width: 80px; text-align: right">
-                      {{ t('panel.refresh_frequency') }}
+                      {{ t('chart.refresh_frequency') }}
                     </span>
                     <!--                    <el-tooltip class="item" effect="dark" placement="bottom">-->
                     <!--                      <template #slot>-->
                     <!--                        <div>-->
-                    <!--                          {{ $t('chart.chart_refresh_tips') }}-->
+                    <!--                          {{ t('chart.chart_refresh_tips') }}-->
                     <!--                        </div>-->
                     <!--                      </template>-->
                     <!--                      <i-->
@@ -318,14 +349,14 @@ initDataset()
                         v-model="state.view.refreshViewEnable"
                         class="el-input-refresh-loading"
                       />
-                      {{ t('panel.enable_refresh_view') }}
+                      {{ t('chart.enable_refresh_view') }}
                     </span>
                     <el-row>
                       <el-input
                         v-model="state.view.refreshTime"
                         class="el-input-refresh-time"
                         type="number"
-                        size="mini"
+                        size="small"
                         controls-position="right"
                         :min="1"
                         :max="3600"
@@ -334,17 +365,17 @@ initDataset()
                       <el-select
                         v-model="state.view.refreshUnit"
                         class="el-input-refresh-unit margin-left8"
-                        size="mini"
+                        size="small"
                         :disabled="!state.view.refreshViewEnable"
                       >
-                        <el-option :label="t('panel.minute')" :value="'minute'" />
-                        <el-option :label="t('panel.second')" :value="'second'" />
+                        <el-option :label="t('chart.minute')" :value="'minute'" />
+                        <el-option :label="t('chart.second')" :value="'second'" />
                       </el-select>
                     </el-row>
                   </el-row>
 
                   <!--xAxis-->
-                  <el-row class="padding-lr">
+                  <el-row class="padding-lr drag-data">
                     <span class="data-area-label">
                       <dimension-label :view="state.view" />
                     </span>
@@ -370,7 +401,7 @@ initDataset()
                   </el-row>
 
                   <!--yAxis-->
-                  <el-row class="padding-lr">
+                  <el-row class="padding-lr drag-data">
                     <span class="data-area-label">
                       <quota-label :view="state.view" />
                     </span>
@@ -396,8 +427,8 @@ initDataset()
                   </el-row>
 
                   <!--filter-->
-                  <el-row class="padding-lr">
-                    <span>{{ $t('chart.result_filter') }}</span>
+                  <el-row class="padding-lr drag-data">
+                    <span>{{ t('chart.result_filter') }}</span>
                     <draggable
                       :list="state.view.customFilter"
                       group="drag"
@@ -444,6 +475,10 @@ initDataset()
 <style lang="less" scoped>
 .el-row {
   display: block;
+}
+
+span {
+  font-size: 14px;
 }
 
 .de-chart-editor {
@@ -623,6 +658,10 @@ initDataset()
   .el-input-refresh-loading {
     margin-left: 4px;
     font-size: 12px !important;
+  }
+
+  .drag-data {
+    margin-top: 6px;
   }
 }
 </style>
