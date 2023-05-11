@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, shallowRef } from 'vue'
+import { ref, reactive, shallowRef, provide } from 'vue'
 import draggable from 'vuedraggable'
 import FilterHead from './FilterHead.vue'
 const initials = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
@@ -10,7 +10,6 @@ const options = Array.from({ length: 10 }).map((_, idx) => ({
   label: `${initials[idx % 10]}${idx}`
 }))
 const multiple = ref(false)
-const color = ref()
 const activeName = ref('setting')
 const activeNameData = ref('dataset')
 const allParams = shallowRef([])
@@ -23,7 +22,12 @@ const widget = reactive({
   isTimeWidget: () => true,
   isSortWidget: () => true
 })
-
+const customStyle = reactive({
+  border: '',
+  background: '',
+  text: ''
+})
+provide('$custom-style-filter', customStyle)
 const expandedD = ref(false)
 const expandedQ = ref(false)
 
@@ -252,9 +256,13 @@ const handleTabClick = () => {
             <el-checkbox v-model="attrs.enableRange">颜色</el-checkbox>
           </div>
           <div class="value">
-            <div class="color">背景: <el-color-picker v-model="color" show-alpha /></div>
-            <div class="color">边框: <el-color-picker v-model="color" show-alpha /></div>
-            <div class="color">颜色: <el-color-picker v-model="color" show-alpha /></div>
+            <div class="color">
+              背景: <el-color-picker v-model="customStyle.background" show-alpha />
+            </div>
+            <div class="color">
+              边框: <el-color-picker v-model="customStyle.border" show-alpha />
+            </div>
+            <div class="color">颜色: <el-color-picker v-model="customStyle.text" show-alpha /></div>
           </div>
         </div>
         <div class="setting-item">

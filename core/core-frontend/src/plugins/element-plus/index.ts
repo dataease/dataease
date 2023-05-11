@@ -2,7 +2,7 @@ import type { App } from 'vue'
 
 // 需要全局引入一些组件，如ElScrollbar，不然一些下拉项样式有问题
 import { ElLoading, ElScrollbar } from 'element-plus-secondary'
-
+import 'element-plus-secondary/es/css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 const plugins = [ElLoading]

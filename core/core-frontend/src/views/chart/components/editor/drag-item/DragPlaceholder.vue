@@ -19,6 +19,10 @@ const props = defineProps({
 </template>
 
 <style lang="less" scoped>
+span {
+  font-size: 14px;
+}
+
 .drag-placeholder-style {
   position: absolute;
   top: calc(50% - 2px);

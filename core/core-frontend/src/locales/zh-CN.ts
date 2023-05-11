@@ -751,6 +751,11 @@ export default {
     map_line_type_great_circle: '大圆弧',
     map_line_color_source_color: '起始颜色',
     map_line_color_target_color: '结束颜色',
-    map_line_theta_offset: '弧度'
+    map_line_theta_offset: '弧度',
+    refresh_frequency: '刷新频率',
+    enable_refresh_view: '开启刷新',
+    enable_view_loading: '视图加载提示',
+    minute: '分',
+    second: '秒'
   }
 }

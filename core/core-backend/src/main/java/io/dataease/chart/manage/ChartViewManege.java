@@ -1,17 +1,24 @@
 package io.dataease.chart.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.dataease.api.chart.dto.ChartFieldCompareDTO;
 import io.dataease.api.chart.dto.ChartViewDTO;
+import io.dataease.api.chart.dto.ChartViewFieldDTO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -21,6 +28,10 @@ import java.util.stream.Collectors;
 public class ChartViewManege {
     @Resource
     private CoreChartViewMapper coreChartViewMapper;
+    @Resource
+    private ChartDataManage chartDataManage;
+    @Resource
+    private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
 
     public ChartViewDTO save(ChartViewDTO chartViewDTO) {
         Long id = chartViewDTO.getId();
@@ -78,4 +89,73 @@ public class ChartViewManege {
             return dto;
         }).collect(Collectors.toList());
     }
+
+    public ChartViewDTO getChart(Long id) throws Exception {
+        ChartViewDTO details = getDetails(id);
+        if (details == null) {
+            return null;
+        }
+        return chartDataManage.calcData(details);
+    }
+
+    public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id) {
+        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
+        wrapper.eq("dataset_group_id", id);
+        List<ChartViewFieldDTO> list = transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
+        List<ChartViewFieldDTO> dimensionList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).collect(Collectors.toList());
+        List<ChartViewFieldDTO> quotaList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).collect(Collectors.toList());
+
+        quotaList.add(createCountField(id));
+
+        Map<String, List<ChartViewFieldDTO>> map = new LinkedHashMap<>();
+        map.put("dimensionList", dimensionList);
+        map.put("quotaList", quotaList);
+        return map;
+    }
+
+    public ChartViewFieldDTO createCountField(Long id) {
+        ChartViewFieldDTO dto = new ChartViewFieldDTO();
+        dto.setId(-1L);
+        dto.setDatasetGroupId(id);
+        dto.setOriginName("*");
+        dto.setName("记录数*");
+        dto.setDataeaseName("*");
+        dto.setType("INT");
+        dto.setChecked(true);
+        dto.setColumnIndex(999);
+        dto.setDeType(2);
+        dto.setExtField(1);
+        dto.setGroupType("q");
+        dto.setSummary("count");
+        return dto;
+    }
+
+    public List<ChartViewFieldDTO> transDTO(List<CoreDatasetTableField> list) {
+        return list.stream().map(ele -> {
+            ChartViewFieldDTO dto = new ChartViewFieldDTO();
+            if (ele == null) return null;
+            BeanUtils.copyBean(dto, ele);
+            if (StringUtils.equalsIgnoreCase("d", dto.getGroupType())) {
+                dto.setDateStyle("y_M_d");
+                dto.setDatePattern("date_sub");
+            }
+            if (StringUtils.equalsIgnoreCase("q", dto.getGroupType())) {
+                dto.setChartType("bar");
+                if (dto.getId() == -1L || dto.getDeType() == 0 || dto.getDeType() == 1) {
+                    dto.setSummary("count");
+                } else {
+                    dto.setSummary("sum");
+                }
+
+                ChartFieldCompareDTO chartFieldCompareDTO = new ChartFieldCompareDTO();
+                chartFieldCompareDTO.setType("none");
+                dto.setCompareCalc(chartFieldCompareDTO);
+            }
+
+            dto.setSort("none");
+            dto.setFilter(Collections.emptyList());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
 }
