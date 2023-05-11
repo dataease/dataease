@@ -1122,8 +1122,7 @@ public class DataSetTableService {
             SelectBody selectBody = ((SubSelect) fromItem).getSelectBody();
             SubSelect subSelect = new SubSelect();
             Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
-            PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
-            subSelect.setSelectBody(subPlainSelect);
+            subSelect.setSelectBody(subSelectTmp.getSelectBody());
             if (dsType.equals(DatasourceTypes.oracle.getType())) {
                 subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
             } else {
@@ -1280,7 +1279,7 @@ public class DataSetTableService {
         QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
         String sqlAsTable = qp.createSQLPreview(sql, null);
         datasourceRequest.setQuery(sqlAsTable);
-
+        System.out.println(sqlAsTable);
         Map<String, List> result;
         try {
             datasetSqlLog.setStartTime(System.currentTimeMillis());
