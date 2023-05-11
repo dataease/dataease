@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 public class ChartViewManege {
     @Resource
     private CoreChartViewMapper coreChartViewMapper;
+    @Resource
+    private ChartDataManage chartDataManage;
 
     public ChartViewDTO save(ChartViewDTO chartViewDTO) {
         Long id = chartViewDTO.getId();
@@ -74,6 +76,14 @@ public class ChartViewManege {
             BeanUtils.copyBean(dto, ele);
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    public ChartViewDTO getChart(Long id) throws Exception {
+        ChartViewDTO details = getDetails(id);
+        if (details == null) {
+            return null;
+        }
+        return chartDataManage.calcData(details);
     }
 
 }
