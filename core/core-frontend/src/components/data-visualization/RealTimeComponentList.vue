@@ -7,6 +7,9 @@ import { ElCol, ElIcon, ElRow } from 'element-plus-secondary'
 import Icon from '../icon-custom/src/Icon.vue'
 import { nextTick, ref } from 'vue'
 import draggable from 'vuedraggable'
+import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
+import ContextMenu from '@/components/data-visualization/canvas/ContextMenu.vue'
+const lockStore = lockStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -75,9 +78,35 @@ const closeEditComponentName = () => {
 const toggleComponentVisible = () => {
   console.log(111)
 }
-const toggleComponentLock = () => {
-  console.log(1)
+
+const lock = () => {
+  setTimeout(() => {
+    lockStore.lock()
+    snapshotStore.recordSnapshot()
+  })
 }
+
+const unlock = () => {
+  setTimeout(() => {
+    lockStore.unlock()
+    snapshotStore.recordSnapshot()
+  })
+}
+
+const hideComponent = () => {
+  setTimeout(() => {
+    layerStore.hideComponent()
+    snapshotStore.recordSnapshot()
+  })
+}
+
+const showComponent = () => {
+  setTimeout(() => {
+    layerStore.showComponent()
+    snapshotStore.recordSnapshot()
+  })
+}
+
 const dragOnEnd = ({ oldIndex, newIndex }) => {
   const source = componentData.value[newIndex]
   const comLength = componentData.value.length
@@ -116,26 +145,24 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
                 v-show="!nameEdit || (nameEdit && curComponent.id !== getComponent(index).id)"
                 class="icon-container"
               >
-                <el-icon v-show="getComponent(index).show" @click="toggleComponentVisible">
+                <el-icon v-show="!getComponent(index).isShow" @click="showComponent">
                   <Hide />
                 </el-icon>
-                <el-icon v-show="!getComponent(index).show" @click="toggleComponentVisible">
+                <el-icon v-show="getComponent(index).isShow" @click="hideComponent">
                   <View />
                 </el-icon>
-                <el-icon v-show="!getComponent(index).isLock" @click="toggleComponentLock">
-                  <Lock />
-                </el-icon>
-                <el-icon v-show="getComponent(index).isLock" @click="toggleComponentLock">
+                <el-icon v-show="!getComponent(index).isLock" @click="lock">
                   <Unlock />
+                </el-icon>
+                <el-icon v-show="getComponent(index).isLock" @click="unlock">
+                  <Lock />
                 </el-icon>
                 <el-dropdown trigger="click">
                   <el-icon @click="onClick(transformIndex(index))">
                     <MoreFilled />
                   </el-icon>
                   <template #dropdown>
-                    <el-dropdown-menu>
-                      <el-dropdown-item>Action 1</el-dropdown-item>
-                    </el-dropdown-menu>
+                    <div>More Action</div>
                   </template>
                 </el-dropdown>
               </div>
@@ -228,5 +255,9 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
       }
     }
   }
+}
+
+.real-time-component-list :deep(.el-popper) {
+  background: #303133 !important;
 }
 </style>

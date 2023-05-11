@@ -21,6 +21,9 @@ import ComponentToolBar from '../../components/data-visualization/ComponentToolB
 import eventBus from '../../utils/eventBus'
 import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
+import { getData } from '@/api/chart'
+import { findById } from '@/api/dataVisualization'
+import router from '@/router'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -41,23 +44,17 @@ const contentStyle = computed(() => {
   }
 })
 
-const restore = () => {
-  // 用保存的数据恢复画布
-  if (localStorage.getItem('canvasData')) {
-    setDefaultComponentData(JSON.parse(localStorage.getItem('canvasData')))
-    dvMainStore.setComponentData(JSON.parse(localStorage.getItem('canvasData')))
-  }
-
-  if (localStorage.getItem('canvasStyle')) {
-    dvMainStore.setCanvasStyle(JSON.parse(localStorage.getItem('canvasStyle')))
-  }
+const restore = (canvasData, canvasStyle) => {
+  dvMainStore.setComponentData(JSON.parse(canvasData))
+  dvMainStore.setCanvasStyle(JSON.parse(canvasStyle))
 }
 
-const findNewComponent = componentName => {
+const findNewComponent = (componentName, innerType) => {
   let newComponent
-  componentList.forEach(component => {
-    if (componentName === component.component) {
-      newComponent = deepCopy(component)
+  componentList.forEach(comp => {
+    if (comp.component === componentName) {
+      newComponent = deepCopy(comp)
+      newComponent.innerType = innerType
     }
   })
   return newComponent
@@ -67,10 +64,7 @@ const findNewComponent = componentName => {
 const handleNew = newComponentInfo => {
   const { componentName, innerType } = newComponentInfo
   if (componentName) {
-    const component = findNewComponent(componentName)
-    if (componentName === 'UserView' && innerType) {
-      // do something
-    }
+    const component = findNewComponent(componentName, innerType)
     component.style.top = 0
     component.style.left = 0
     component.id = generateID()
@@ -80,14 +74,23 @@ const handleNew = newComponentInfo => {
   }
 }
 
+const findDragComponent = componentInfo => {
+  const componentInfoArray = componentInfo.split('&')
+  const componentName = componentInfoArray[0]
+  const innerType = componentInfoArray[1]
+  return findNewComponent(componentName, innerType)
+}
+
 const handleDrop = e => {
   e.preventDefault()
   e.stopPropagation()
 
-  const index = e.dataTransfer.getData('index')
+  const componentInfo = e.dataTransfer.getData('id')
+
+  console.log('componentInfo=' + componentInfo)
   const rectInfo = editor.value.getBoundingClientRect()
-  if (index) {
-    const component = deepCopy(componentList[index])
+  if (componentInfo) {
+    const component = findDragComponent(componentInfo)
     component.style.top = e.clientY - rectInfo.y
     component.style.left = e.clientX - rectInfo.x
     component.id = generateID()
@@ -120,22 +123,28 @@ const deselectCurComponent = e => {
   }
 }
 
-restore()
 // 全局监听按键事件
 listenGlobalKeyDown()
 
-const props = defineProps({
-  dvId: {
-    required: false,
-    type: String
-  }
-})
-
-const { dvId } = toRefs(props)
-
 onMounted(() => {
-  if (dvId.value) {
+  console.log('routerInfo=' + JSON.stringify(router.currentRoute.value.query))
+  const { dvId } = router.currentRoute.value.query
+  if (dvId) {
     // 从数据库中获取
+    findById(dvId).then(res => {
+      console.log(res)
+      const canvasInfo = res.data
+      const bashInfo = {
+        id: canvasInfo.id,
+        name: canvasInfo.name,
+        pid: canvasInfo.pid,
+        status: canvasInfo.status,
+        selfWatermarkStatus: canvasInfo.selfWatermarkStatus
+      }
+      dvMainStore.updateCurDvInfo(bashInfo)
+      //恢复画布数据
+      restore(canvasInfo.canvasData, canvasInfo.canvasStyle)
+    })
   } else {
     dvMainStore.updateCurDvInfo({
       id: null,
@@ -145,8 +154,12 @@ onMounted(() => {
       selfWatermarkStatus: null
     })
   }
+  const { width, height, scale } = canvasStyleData.value
   // 设置画布初始滚动条位置
-  // canvasOut.value.nav.scrollLeft += 100
+  canvasOut.value.scrollTo(
+    (width * 1.5 - (width * scale) / 100) / 2 - 20,
+    (height * scale) / 200 - 20
+  )
 })
 
 eventBus.on('handleNew', handleNew)
@@ -157,13 +170,13 @@ eventBus.on('handleNew', handleNew)
     <DvToolbar />
     <el-container class="dv-layout-container">
       <!-- 左侧组件列表 -->
-      <dv-sidebar title="图层管理" class="left-sidebar">
+      <dv-sidebar title="图层" aside-position="left" class="left-sidebar">
         <RealTimeComponentList />
       </dv-sidebar>
       <!-- 中间画布 -->
-      <main class="center" ref="canvasOut">
+      <main class="center">
         <ComponentToolBar></ComponentToolBar>
-        <div class="content">
+        <div ref="canvasOut" class="content">
           <div
             :style="contentStyle"
             @drop="handleDrop"
@@ -175,6 +188,34 @@ eventBus.on('handleNew', handleNew)
           </div>
         </div>
       </main>
+      <!-- 右侧侧组件列表 -->
+      <dv-sidebar
+        v-if="curComponent"
+        title="属性"
+        width="300"
+        aside-position="right"
+        class="left-sidebar"
+      >
+        <component :is="findComponent(curComponent['component'] + 'Attr')" />
+      </dv-sidebar>
+      <dv-sidebar
+        v-if="!curComponent"
+        title="全局配置"
+        width="300"
+        aside-position="right"
+        class="left-sidebar"
+      >
+        <CanvasAttr></CanvasAttr>
+      </dv-sidebar>
+      <dv-sidebar
+        v-if="curComponent && curComponent.component === 'UserView'"
+        title="数据集"
+        width="150"
+        aside-position="right"
+        class="left-sidebar"
+      >
+        <div>数据集</div>
+      </dv-sidebar>
     </el-container>
   </div>
 </template>
@@ -203,13 +244,8 @@ eventBus.on('handleNew', handleNew)
         margin: auto;
       }
     }
-    .right {
+    .right-sidebar {
       height: 100%;
-      width: 288px;
-      z-index: 20;
-      .el-select {
-        width: 100%;
-      }
     }
   }
 }

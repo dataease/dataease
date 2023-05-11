@@ -16,6 +16,10 @@ import {
   DEFAULT_TOTAL
 } from './util/chart'
 import { useEmitt } from '../../../../hooks/web/useEmitt'
+import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
+import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
+import FilterItem from '@/views/chart/components/editor/drag-item/FilterItem.vue'
+import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -47,6 +51,7 @@ const state = reactive({
     refreshUnit: 'minute',
     xaxis: [],
     yaxis: [],
+    customFilter: [],
     customAttr: {
       color: DEFAULT_COLOR_CASE,
       size: DEFAULT_SIZE,
@@ -89,6 +94,14 @@ const dimensionItemChange = item => {
   // this.calcData(true)
   console.log(item)
   console.log(state.view.xaxis)
+  notifyChart(state.view)
+}
+
+const quotaItemChange = item => {
+  // this.calcData(true)
+  console.log(item)
+  console.log(state.view.xaxis)
+  notifyChart(state.view)
 }
 
 const addXaxis = e => {
@@ -115,6 +128,11 @@ const addYaxis = e => {
 
 const notifyChart = view => {
   useEmitt().emitter.emit('calcData', view)
+}
+
+const onColorChange = val => {
+  state.view.customAttr.color = val
+  useEmitt().emitter.emit('calcData', state.view)
 }
 
 initDataset()
@@ -324,6 +342,7 @@ initDataset()
                       </el-select>
                     </el-row>
                   </el-row>
+
                   <!--xAxis-->
                   <el-row class="padding-lr">
                     <span class="data-area-label">
@@ -336,14 +355,20 @@ initDataset()
                       class="drag-block-style"
                       @add="addXaxis"
                     >
-                      <template #item="{ element }">
+                      <template #item="{ element, index }">
                         <dimension-item
+                          :dimension-data="state.dimensionData"
+                          :quota-data="state.quotaData"
+                          :chart="state.view"
                           :item="element"
+                          :index="index"
                           @onDimensionItemChange="dimensionItemChange"
                         />
                       </template>
                     </draggable>
+                    <drag-placeholder :drag-list="state.view.xaxis" />
                   </el-row>
+
                   <!--yAxis-->
                   <el-row class="padding-lr">
                     <span class="data-area-label">
@@ -356,13 +381,39 @@ initDataset()
                       class="drag-block-style"
                       @add="addYaxis"
                     >
-                      <template #item="{ element }">
-                        <dimension-item
+                      <template #item="{ element, index }">
+                        <quota-item
+                          :dimension-data="state.dimensionData"
+                          :quota-data="state.quotaData"
+                          :chart="state.view"
                           :item="element"
-                          @onDimensionItemChange="dimensionItemChange"
+                          :index="index"
+                          @onQuotaItemChange="quotaItemChange"
                         />
                       </template>
                     </draggable>
+                    <drag-placeholder :drag-list="state.view.yaxis" />
+                  </el-row>
+
+                  <!--filter-->
+                  <el-row class="padding-lr">
+                    <span>{{ $t('chart.result_filter') }}</span>
+                    <draggable
+                      :list="state.view.customFilter"
+                      group="drag"
+                      animation="300"
+                      class="drag-block-style"
+                    >
+                      <template #item="{ element, index }">
+                        <filter-item
+                          :dimension-data="state.dimensionData"
+                          :quota-data="state.quotaData"
+                          :item="element"
+                          :index="index"
+                        />
+                      </template>
+                    </draggable>
+                    <drag-placeholder :drag-list="state.view.customFilter" />
                   </el-row>
                 </el-row>
               </div>
@@ -374,7 +425,7 @@ initDataset()
             class="padding-tab"
             style="width: 100%"
           >
-            style
+            <chart-style :chart="state.view" @onColorChange="onColorChange" />
           </el-tab-pane>
           <el-tab-pane
             name="senior"
@@ -558,6 +609,20 @@ initDataset()
     display: block;
     width: 100%;
     height: calc(100% - 6px);
+  }
+
+  .el-input-refresh-time {
+    width: calc(50% - 4px) !important;
+  }
+
+  .el-input-refresh-unit {
+    margin-left: 8px;
+    width: calc(50% - 4px) !important;
+  }
+
+  .el-input-refresh-loading {
+    margin-left: 4px;
+    font-size: 12px !important;
   }
 }
 </style>

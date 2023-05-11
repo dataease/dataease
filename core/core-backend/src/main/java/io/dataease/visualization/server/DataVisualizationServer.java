@@ -44,8 +44,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         BeanUtils.copyBean(visualizationInfo,request);
         visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
         visualizationInfo.setId(UUIDUtils.getUUID());
+        visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.DV);
         visualizationInfo.setCreateBy("");
-        visualizationInfo.setUpdateTime(System.currentTimeMillis());
+        visualizationInfo.setCreateTime(System.currentTimeMillis());
         visualizationInfoMapper.insert(visualizationInfo);
     }
 

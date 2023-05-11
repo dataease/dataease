@@ -44,7 +44,7 @@ const copy = () => {
 }
 
 const hide = () => {
-  console.log('hide')
+  layerStore.hideComponent()
 }
 
 const rename = () => {

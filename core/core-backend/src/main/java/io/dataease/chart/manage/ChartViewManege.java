@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 public class ChartViewManege {
     @Resource
     private CoreChartViewMapper coreChartViewMapper;
+    @Resource
+    private ChartDataManage chartDataManage;
 
     public ChartViewDTO save(ChartViewDTO chartViewDTO) {
         Long id = chartViewDTO.getId();
@@ -40,6 +42,13 @@ public class ChartViewManege {
 
     public void delete(Long id) {
         coreChartViewMapper.deleteById(id);
+    }
+
+    public void deleteByPanel(Long panelId, List<Long> chartIds) {
+        QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
+        wrapper.eq("scene_id", panelId);
+        wrapper.notIn("id", chartIds);
+        coreChartViewMapper.delete(wrapper);
     }
 
     public ChartViewDTO getDetails(Long id) {
@@ -67,6 +76,14 @@ public class ChartViewManege {
             BeanUtils.copyBean(dto, ele);
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    public ChartViewDTO getChart(Long id) throws Exception {
+        ChartViewDTO details = getDetails(id);
+        if (details == null) {
+            return null;
+        }
+        return chartDataManage.calcData(details);
     }
 
 }

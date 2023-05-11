@@ -24,11 +24,6 @@ public class ChartViewBaseDTO implements Serializable {
     private Long id;
 
     /**
-     * 名称
-     */
-    private String name;
-
-    /**
      * EChart标题
      */
     private String title;

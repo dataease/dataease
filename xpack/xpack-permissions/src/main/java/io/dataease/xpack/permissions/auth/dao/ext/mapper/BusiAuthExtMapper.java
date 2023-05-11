@@ -157,4 +157,11 @@ public interface BusiAuthExtMapper {
 
     @Select("select rt_id type, id from per_busi_resource")
     List<ResourcePO> resourceIds();
+
+
+    @Delete("delete from per_auth_busi_user where resource_id = #{resourceId} ")
+    int delUserPerByResource(@Param("resourceId") Long resourceId);
+
+    @Delete("delete from per_auth_busi_role where resource_id = #{resourceId} ")
+    int delRolePerByResource(@Param("resourceId") Long resourceId);
 }

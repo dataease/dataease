@@ -5,6 +5,8 @@ import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import changeComponentsSizeWithScale from '../../utils/changeComponentsSizeWithScale'
 import UserViewGroup from '../../custom-component/component-group/UserViewGroup.vue'
+import TextGroup from '@/custom-component/component-group/TextGroup.vue'
+import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 let scale = ref(canvasStyleData.value.scale)
@@ -18,14 +20,14 @@ const handleScaleChange = () => {
 </script>
 <template>
   <el-row class="custom-main">
-    <component-group icon-name="chart_pie" title="图表">
+    <component-group base-width="300" icon-name="chart_pie" title="图表">
       <user-view-group></user-view-group>
     </component-group>
-    <component-group icon-name="other_text" title="文本">
-      <div>this is other_text test</div>
+    <component-group base-width="148" icon-name="other_text" title="文本">
+      <text-group></text-group>
     </component-group>
     <component-group icon-name="other_media" title="媒体">
-      <div>this is media test</div>
+      <media-group></media-group>
     </component-group>
     <component-group icon-name="other_material" title="素材">
       <div>this is material test</div>

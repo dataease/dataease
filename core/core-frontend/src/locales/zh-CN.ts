@@ -48,7 +48,9 @@ export default {
     role: '角色',
     state: '状态',
     default_pwd: '默认密码',
-    confirm_delete: '确认删除该用户吗？'
+    confirm_delete: '确认删除该用户吗？',
+    add_title: '添加用户',
+    edit_title: '编辑用户'
   },
   role: {
     add_title: '添加角色',
@@ -128,6 +130,7 @@ export default {
     uncommitted_tips: '有未提交的权限变更，是否提交？'
   },
   chart: {
+    reset: '重置',
     chart_refresh_tips: '视图刷新设置优先于仪表板刷新设置',
     '1-trend': '趋势',
     '2-state': '状态',

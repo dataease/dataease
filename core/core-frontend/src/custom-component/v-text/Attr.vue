@@ -10,10 +10,21 @@ const { curComponent } = storeToRefs(dvMainStore)
 <template>
   <div class="attr-list">
     <CommonAttr></CommonAttr>
-    <el-form>
-      <el-form-item label="内容">
-        <el-input v-model="curComponent['propValue']" type="textarea" :rows="3" />
-      </el-form-item>
-    </el-form>
+    <div class="content">
+      <span>内容</span>
+      <el-input v-model="curComponent['propValue']" type="textarea" :rows="3" />
+    </div>
   </div>
 </template>
+
+<style lang="less" scoped>
+.content {
+  width: 100%;
+  font-size: 12px;
+  padding: 10px;
+}
+:deep(.el-textarea__inner) {
+  color: #ffffff;
+  background-color: #000000;
+}
+</style>

@@ -2,6 +2,7 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
+import DeInputNum from '@/custom-component/common/DeInputNum.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData } = storeToRefs(dvMainStore)
 const options = ref({
@@ -16,32 +17,14 @@ const canvasAttrActiveNames = ref(['size', 'background', 'color'])
 
 <template>
   <div class="attr-container">
-    <el-row class="title">
-      <span>大屏配置</span>
-    </el-row>
     <el-row>
       <el-collapse v-model="canvasAttrActiveNames">
         <el-collapse-item title="尺寸" name="size">
-          <el-row style="display: flex; padding-top: 10px">
-            <span>W</span>
-            <el-input-number
-              style="margin-left: 5px"
-              v-model="canvasStyleData.width"
-              :min="600"
-              :max="4096"
-              size="small"
-              controls-position="right"
-            />
-
-            <span style="margin-left: 10px">H</span>
-            <el-input-number
-              style="margin-left: 5px"
-              v-model="canvasStyleData.height"
-              :min="600"
-              :max="4096"
-              size="small"
-              controls-position="right"
-            />
+          <el-row class="item-show">
+            <span style="margin-left: 30px" title="宽">W</span>
+            <de-input-num v-model="canvasStyleData.width" :min="600" :max="4096"></de-input-num>
+            <span style="margin-left: 30px" title="高">H</span>
+            <de-input-num v-model="canvasStyleData.height" :min="600" :max="4096"></de-input-num>
           </el-row>
         </el-collapse-item>
         <el-collapse-item title="背景" name="background">
@@ -64,33 +47,37 @@ const canvasAttrActiveNames = ref(['size', 'background', 'color'])
   </div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
+.item-show {
+  display: flex;
+  text-align: center;
+  padding-top: 10px;
+}
+
 .attr-container {
   background-color: rgba(37, 45, 54, 1);
-  border: 1px solid rgba(85, 85, 85, 1);
   color: #fff;
   z-index: 20;
   height: 100%;
-  .title {
-    text-align: center;
-    margin-bottom: 10px;
-    height: 44px;
-    line-height: 44px;
-    font-size: 12px;
-    font-weight: 500;
-    border-bottom: 1px solid rgba(85, 85, 85, 1);
-  }
+  width: 100%;
+  min-width: 300px;
 }
 
-.el-collapse-item__header {
+:deep(.el-collapse-item__header) {
   background-color: rgba(29, 36, 42, 1) !important;
   color: #ffffff;
+  border-bottom: 1px solid rgba(85, 85, 85, 1);
 }
-.el-collapse-item__content {
+:deep(.el-collapse-item__content) {
   background-color: rgba(37, 45, 54, 1);
   color: #ffffff;
+  padding-left: 5px;
 }
-.el-collapse-item__wrap {
-  border: 1px solid rgba(85, 85, 85, 1);
+
+:deep(.el-collapse-item__wrap) {
+  border-bottom: 1px solid rgba(85, 85, 85, 1);
+}
+:deep(.el-collapse) {
+  width: 100%;
 }
 </style>

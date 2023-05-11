@@ -13,6 +13,7 @@ const handleDragStart = e => {
       class="list"
       draggable="true"
       :data-index="index"
+      :data-id="item.component"
     >
       {{ item.label }}
     </div>

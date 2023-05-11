@@ -9,6 +9,7 @@ export const commonAttr = {
   events: {},
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
   isLock: false, // 是否锁定组件
+  isShow: true, // 是否显示组件
   collapseName: 'style', // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
   linkage: {
     duration: 0, // 过渡持续时间
@@ -51,10 +52,11 @@ const list = [
   },
   {
     component: 'VText',
-    label: '文字',
+    name: '文本',
+    label: '文本',
     propValue: '双击编辑文字',
-    icon: 'wenben',
-    innerType: 'RectShape',
+    icon: 'other_text',
+    innerType: 'VText',
     request: {
       method: 'GET',
       data: [],
@@ -66,12 +68,12 @@ const list = [
     },
     style: {
       width: 200,
-      height: 28,
-      fontSize: '',
+      height: 100,
+      fontSize: 14,
       fontWeight: 400,
-      lineHeight: '',
+      lineHeight: 1,
       letterSpacing: 0,
-      textAlign: '',
+      textAlign: 'center',
       color: ''
     }
   },
@@ -89,6 +91,24 @@ const list = [
       borderWidth: 1,
       backgroundColor: '',
       borderStyle: 'solid',
+      borderRadius: ''
+    }
+  },
+  {
+    component: 'Picture',
+    name: '图片',
+    label: '图片',
+    icon: 'other_media',
+    propValue: {
+      url: null,
+      flip: {
+        horizontal: false,
+        vertical: false
+      }
+    },
+    style: {
+      width: 300,
+      height: 200,
       borderRadius: ''
     }
   }

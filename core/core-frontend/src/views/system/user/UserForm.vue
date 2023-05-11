@@ -31,7 +31,7 @@ const { t } = useI18n()
 const dialogVisible = ref(false)
 const loading = ref(false)
 const formType = ref('add')
-const defaultPWD = ref('DataEase123..')
+const defaultPWD = ref('DataEase123456')
 
 const createUserForm = ref<FormInstance>()
 
@@ -249,7 +249,7 @@ onMounted(() => {
     v-loading="loading"
     :before-close="reset"
     v-model="dialogVisible"
-    title="Tips"
+    :title="formType === 'add' ? t('user.add_title') : t('user.edit_title')"
     width="840px"
   >
     <div v-if="formType === 'add'" class="editer-form-title">

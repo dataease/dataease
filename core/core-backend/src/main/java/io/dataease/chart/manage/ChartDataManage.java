@@ -857,10 +857,12 @@ public class ChartDataManage {
         List<ChartSeniorAssistDTO> list = new ArrayList<>();
 
         String senior = view.getSenior();
-        if (ObjectUtils.isEmpty(senior)) {
+        JsonNode jsonNode = objectMapper.readTree(senior);
+        JsonNode assistLine = jsonNode.get("assistLine");
+        if (ObjectUtils.isEmpty(senior) || StringUtils.isEmpty(assistLine.asText())) {
             return list;
         }
-        List<ChartSeniorAssistDTO> assistLines = JsonUtil.parseList(senior, new TypeReference<>() {
+        List<ChartSeniorAssistDTO> assistLines = JsonUtil.parseList(assistLine.asText(), new TypeReference<>() {
         });
         if (ObjectUtils.isEmpty(assistLines)) {
             return list;

@@ -5,10 +5,12 @@ import { getData } from '../../../../api/chart'
 import { useEmitt } from '../../../../hooks/web/useEmitt'
 
 const state = reactive({
-  myChart: null
+  myChart: null,
+  loading: false
 })
 
 const calcData = view => {
+  state.loading = true
   const v = { ...view }
   v.yaxis.forEach(ele => {
     if (!ele.summary) {
@@ -17,17 +19,19 @@ const calcData = view => {
   })
   v.xaxis = JSON.stringify(v.xaxis)
   v.yaxis = JSON.stringify(v.yaxis)
+  v.customFilter = JSON.stringify(v.customFilter)
   v.customAttr = JSON.stringify(v.customAttr)
   console.log(v)
   getData(v).then(res => {
     console.log(res)
     renderChart(res)
+    state.loading = false
   })
 }
 
 const renderChart = view => {
   state.myChart = baseBarOption(state.myChart, 'container', view)
-  state.myChart.render()
+  state.myChart?.render()
 }
 
 onMounted(() => {
@@ -37,7 +41,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div v-loading="state.loading">
     <div id="container"></div>
   </div>
 </template>

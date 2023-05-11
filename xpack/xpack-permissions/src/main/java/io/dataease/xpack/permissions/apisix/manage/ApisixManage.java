@@ -1,9 +1,9 @@
 package io.dataease.xpack.permissions.apisix.manage;
 
 import io.dataease.auth.DePermit;
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.AuthConstant;
-import io.dataease.utils.LogUtil;
-import io.dataease.utils.ServletUtils;
+import io.dataease.utils.*;
 import io.dataease.xpack.permissions.apisix.proxy.ProxyRequest;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,6 +50,8 @@ public class ApisixManage {
     public void checkAuthenticationInfo(HttpServletRequest request) {
         String token = request.getHeader(TOKEN_KEY);
         LogUtil.info("current token is {}", token);
+        TokenUserBO userBO = TokenUtils.validate(token);
+        UserUtils.setUserInfo(userBO);
         // get user info and put it in threadLocal
     }
 
@@ -66,8 +68,8 @@ public class ApisixManage {
     public void checkAuthorizationInfo(HttpServletRequest request) {
         String[] requirePermissions = getRequirePermissions(request);
         // get userinfo from threadLocal
-        Object userinfo = null;
-        checkPermission(userinfo, requirePermissions);
+        TokenUserBO user = AuthUtils.getUser();
+        checkPermission(user, requirePermissions);
         ServletUtils.response().addHeader(AuthConstant.APISIX_FLAG_KEY, String.valueOf(System.currentTimeMillis()));
     }
 
@@ -134,6 +136,13 @@ public class ApisixManage {
      * @param requirePermissions
      */
     protected void checkPermission(Object userInfo, String requirePermissions[]) {
+
+    }
+
+    private void checkMenuAuth() {
+
+    }
+    private void checkBusiAuth() {
 
     }
 }
