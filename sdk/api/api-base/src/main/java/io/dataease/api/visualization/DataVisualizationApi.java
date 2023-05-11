@@ -10,7 +10,7 @@ public interface DataVisualizationApi {
      * @return
      */
     @GetMapping("/findById/{dvId}")
-    DataVisualizationVO findById(@PathVariable("dvId") String dvId);
+    DataVisualizationVO findById(@PathVariable("dvId") Long dvId);
 
     @PostMapping("/save")
     void save(@RequestBody DataVisualizationBaseRequest request);
@@ -19,6 +19,6 @@ public interface DataVisualizationApi {
     void update(@RequestBody DataVisualizationBaseRequest request);
 
     @DeleteMapping("/deleteLogic/{dvId}")
-    void deleteLogic(@PathVariable("dvId") String dvId);
+    void deleteLogic(@PathVariable("dvId") Long dvId);
 
 }

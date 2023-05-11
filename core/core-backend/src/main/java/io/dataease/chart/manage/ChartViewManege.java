@@ -59,9 +59,12 @@ public class ChartViewManege {
         return dto;
     }
 
-    public List<ChartViewDTO> listByPanelId(Long id) {
+    /**
+     * sceneId 为仪表板或者数据大屏id
+     * */
+    public List<ChartViewDTO> listBySceneId(Long sceneId) {
         QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
-        wrapper.eq("scene_id", id);
+        wrapper.eq("scene_id", sceneId);
         return transChart(coreChartViewMapper.selectList(wrapper));
     }
 
@@ -75,5 +78,4 @@ public class ChartViewManege {
             return dto;
         }).collect(Collectors.toList());
     }
-
 }

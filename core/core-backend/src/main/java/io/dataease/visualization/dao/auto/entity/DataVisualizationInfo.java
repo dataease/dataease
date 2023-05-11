@@ -9,14 +9,14 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-04
+ * @since 2023-05-11
  */
 @TableName("data_visualization_info")
 public class DataVisualizationInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String id;
+    private Long id;
 
     /**
      * 名称
@@ -123,11 +123,11 @@ public class DataVisualizationInfo implements Serializable {
      */
     private String deleteBy;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

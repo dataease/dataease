@@ -1,12 +1,14 @@
 package io.dataease.api.visualization.vo;
 
+import io.dataease.api.chart.dto.ChartViewDTO;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 public class DataVisualizationVO  implements Serializable {
-    private String id;
+    private Long id;
 
     /**
      * 名称
@@ -16,12 +18,12 @@ public class DataVisualizationVO  implements Serializable {
     /**
      * 父id
      */
-    private String pid;
+    private Long pid;
 
     /**
      * 所属组织id
      */
-    private String orgId;
+    private Long orgId;
 
     /**
      * 层级
@@ -97,4 +99,9 @@ public class DataVisualizationVO  implements Serializable {
      * 数据来源
      */
     private String source;
+
+    /**
+     * 视图基本信息
+     */
+    private List<ChartViewDTO> chartViewInfo;
 }
