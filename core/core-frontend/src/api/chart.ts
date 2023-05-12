@@ -40,6 +40,7 @@ export const getChart = async (id): Promise<IResponse> => {
 
 // 单个视图保存测试
 export const saveChart = async (data): Promise<IResponse> => {
+  delete data.data
   return request.post({ url: '/chart/save', data }).then(res => {
     return res?.data
   })

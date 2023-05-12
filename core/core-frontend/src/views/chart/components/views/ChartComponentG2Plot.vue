@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from 'vue'
-import { getData } from '../../../../api/chart'
-import { useEmitt } from '../../../../hooks/web/useEmitt'
+import { getData } from '@/api/chart'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import { ChartRenderType, G2PlotChartView } from '@/views/chart/components/js/panel/types'
 import chartViewManager from '@/views/chart/components/js/panel'
 

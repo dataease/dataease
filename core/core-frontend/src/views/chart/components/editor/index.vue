@@ -177,300 +177,324 @@ initDataset()
 <template>
   <div>
     <el-row v-loading="loading" class="de-chart-editor">
-      <el-tooltip :content="t('chart.draw_back')">
-        <el-button circle secondary class="back-button">
-          <template #icon>
-            <el-icon>
-              <Icon name="icon_down-right_outlined"></Icon>
-            </el-icon>
-          </template>
-        </el-button>
-      </el-tooltip>
+      <!--      <el-tooltip :content="t('chart.draw_back')">-->
+      <!--        <el-button circle secondary class="back-button">-->
+      <!--          <template #icon>-->
+      <!--            <el-icon>-->
+      <!--              <Icon name="icon_down-right_outlined"></Icon>-->
+      <!--            </el-icon>-->
+      <!--          </template>-->
+      <!--        </el-button>-->
+      <!--      </el-tooltip>-->
 
-      <el-row style="height: 40px" class="padding-lr">
-        <span class="title-text view-title-name" style="line-height: 40px">{{
-          state.view.name
-        }}</span>
-        <span :style="{ float: 'right', lineHeight: '40px' }">
-          <el-button secondary round @click="save"> {{ $t('chart.recover') }}(当保存用) </el-button>
-        </span>
-      </el-row>
+      <!--      <el-row style="height: 40px" class="padding-lr">-->
+      <!--        <span class="title-text view-title-name" style="line-height: 40px">{{-->
+      <!--          state.view.name-->
+      <!--        }}</span>-->
+      <!--        <span :style="{ float: 'right', lineHeight: '40px' }">-->
+      <!--          <el-button secondary round @click="save"> {{ $t('chart.recover') }}(当保存用) </el-button>-->
+      <!--        </span>-->
+      <!--      </el-row>-->
 
-      <el-row class="view-panel-row">
-        <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
-          <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
-            <el-col :span="11">
-              <div>
-                <el-tree-select
-                  v-model="state.view.tableId"
-                  :data="state.datasetTree"
-                  :props="props"
-                  filterable
-                  @node-click="dsClick"
-                >
-                  <template #default="{ data: { name } }">
-                    <el-icon>
-                      <Icon name="scene"></Icon>
-                    </el-icon>
-                    <span :title="name">{{ name }}</span>
-                  </template>
-                </el-tree-select>
-              </div>
-              <div style="height: calc(100vh - 120px)">
-                <div class="padding-lr field-height">
-                  <span>{{ $t('chart.dimension') }}</span>
-                  <draggable
-                    :list="state.dimensionData"
-                    :group="dsFieldDragOptions.group"
-                    animation="300"
-                    class="drag-list"
+      <el-col style="display: flex; height: 100%">
+        <div style="width: 280px" class="view-panel-row">
+          <el-row class="editor-title">
+            <span>chart</span>
+            <span @click="save">
+              <el-icon>
+                <Icon name="icon_down-right_outlined"></Icon>
+              </el-icon>
+            </span>
+          </el-row>
+
+          <el-row :style="{ borderTop: '1px solid #e6e6e6' }">
+            <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
+              <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
+                <el-col>
+                  <div style="height: 60px; overflow: auto" class="padding-lr theme-border-class">
+                    <span class="theme-border-class">
+                      <span>{{ t('chart.chart_type') }}</span>
+                      <el-row style="padding: 4px 0 4px 10px">
+                        <span>
+                          <div>svg</div>
+                        </span>
+                        <span style="float: right">
+                          <el-popover
+                            placement="bottom-end"
+                            width="400"
+                            trigger="click"
+                            :append-to-body="true"
+                          >
+                            <template #reference>
+                              <el-button size="small" style="padding: 6px">
+                                {{ t('chart.change_chart_type') }}
+                                <i class="el-icon-caret-bottom" />
+                              </el-button>
+                            </template>
+                            <div class="padding-lr">
+                              <el-row>
+                                <div>todo chart type</div>
+                              </el-row>
+                            </div>
+                          </el-popover>
+                        </span>
+                      </el-row>
+                    </span>
+                  </div>
+
+                  <div
+                    :style="{ overflow: 'auto', height: '100%', borderTop: '1px solid #e6e6e6' }"
+                    class="attr-style theme-border-class"
                   >
-                    <template #item="{ element }">
-                      <span class="item-dimension father" :title="element.name">
-                        <el-icon>
-                          <Icon
-                            :className="`field-icon-${fieldType(element.deType)}`"
-                            :name="`field_${fieldType(element.deType)}`"
-                          ></Icon>
-                        </el-icon>
-                        <span class="field-name">{{ element.name }}</span>
-                      </span>
-                    </template>
-                  </draggable>
-                </div>
-                <div class="padding-lr field-height">
-                  <span>{{ t('chart.quota') }}</span>
-                  <draggable
-                    :list="state.quotaData"
-                    :group="dsFieldDragOptions.group"
-                    animation="300"
-                    class="drag-list"
-                  >
-                    <template #item="{ element }">
-                      <span class="item-dimension father" :title="element.name">
-                        <el-icon>
-                          <Icon
-                            :className="`field-icon-${fieldType(element.deType)}`"
-                            :name="`field_${fieldType(element.deType)}`"
-                          ></Icon>
-                        </el-icon>
-                        <span class="field-name">{{ element.name }}</span>
-                      </span>
-                    </template>
-                  </draggable>
-                </div>
-              </div>
-            </el-col>
-
-            <el-col :span="13" style="border-left: 1px solid #e6e6e6">
-              <div style="height: 60px; overflow: auto" class="padding-lr theme-border-class">
-                <span class="theme-border-class">
-                  <span>{{ t('chart.chart_type') }}</span>
-                  <el-row style="padding: 4px 0 4px 10px">
-                    <span>
-                      <div>svg</div>
-                    </span>
-                    <span style="float: right">
-                      <el-popover
-                        placement="bottom-end"
-                        width="400"
-                        trigger="click"
-                        :append-to-body="true"
-                      >
-                        <template #reference>
-                          <el-button size="small" style="padding: 6px">
-                            {{ t('chart.change_chart_type') }}
-                            <i class="el-icon-caret-bottom" />
-                          </el-button>
-                        </template>
-                        <div class="padding-lr">
-                          <el-row>
-                            <div>todo chart type</div>
-                          </el-row>
-                        </div>
-                      </el-popover>
-                    </span>
-                  </el-row>
-                </span>
-              </div>
-
-              <div
-                :style="{ overflow: 'auto', height: '100%', borderTop: '1px solid #e6e6e6' }"
-                class="attr-style theme-border-class"
-              >
-                <el-row style="height: 100%">
-                  <el-row class="padding-lr">
-                    <!--                    <span-->
-                    <!--                      v-show="view.type === 'richTextView'"-->
-                    <!--                      style="color: #909399; font-size: 8px; width: 80px; text-align: right"-->
-                    <!--                    >-->
-                    <!--                      Tips:{{ t('chart.rich_text_view_result_tips') }}-->
-                    <!--                    </span>-->
-                    <span
-                      v-show="state.view.type !== 'richTextView'"
-                      style="width: 80px; text-align: right"
-                    >
-                      {{ t('chart.result_count') }}
-                    </span>
-                    <el-row v-show="state.view.type !== 'richTextView'">
-                      <el-radio-group
-                        v-model="state.view.resultMode"
-                        class="radio-span"
-                        size="small"
-                      >
-                        <el-radio label="all"
-                          ><span>{{ t('chart.result_mode_all') }}</span></el-radio
+                    <el-row style="height: 100%">
+                      <el-row class="padding-lr">
+                        <!--                    <span-->
+                        <!--                      v-show="view.type === 'richTextView'"-->
+                        <!--                      style="color: #909399; font-size: 8px; width: 80px; text-align: right"-->
+                        <!--                    >-->
+                        <!--                      Tips:{{ t('chart.rich_text_view_result_tips') }}-->
+                        <!--                    </span>-->
+                        <span
+                          v-show="state.view.type !== 'richTextView'"
+                          style="width: 80px; text-align: right"
                         >
-                        <el-radio label="custom">
-                          <el-input
-                            v-model="state.view.resultCount"
-                            class="result-count"
+                          {{ t('chart.result_count') }}
+                        </span>
+                        <el-row v-show="state.view.type !== 'richTextView'">
+                          <el-radio-group
+                            v-model="state.view.resultMode"
+                            class="radio-span"
                             size="small"
+                          >
+                            <el-radio label="all"
+                              ><span>{{ t('chart.result_mode_all') }}</span></el-radio
+                            >
+                            <el-radio label="custom">
+                              <el-input
+                                v-model="state.view.resultCount"
+                                class="result-count"
+                                size="small"
+                              />
+                            </el-radio>
+                          </el-radio-group>
+                        </el-row>
+                      </el-row>
+
+                      <el-row class="padding-lr">
+                        <span style="width: 80px; text-align: right">
+                          {{ t('chart.refresh_frequency') }}
+                        </span>
+                        <!--                    <el-tooltip class="item" effect="dark" placement="bottom">-->
+                        <!--                      <template #slot>-->
+                        <!--                        <div>-->
+                        <!--                          {{ t('chart.chart_refresh_tips') }}-->
+                        <!--                        </div>-->
+                        <!--                      </template>-->
+                        <!--                      <i-->
+                        <!--                        class="el-icon-info"-->
+                        <!--                        style="cursor: pointer; color: #606266; font-size: 12px"-->
+                        <!--                      />-->
+                        <!--                    </el-tooltip>-->
+                        <span class="padding-lr">
+                          <el-checkbox
+                            v-model="state.view.refreshViewEnable"
+                            class="el-input-refresh-loading"
                           />
-                        </el-radio>
-                      </el-radio-group>
+                          {{ t('chart.enable_refresh_view') }}
+                        </span>
+                        <el-row>
+                          <el-input
+                            v-model="state.view.refreshTime"
+                            class="el-input-refresh-time"
+                            type="number"
+                            size="small"
+                            controls-position="right"
+                            :min="1"
+                            :max="3600"
+                            :disabled="!state.view.refreshViewEnable"
+                          />
+                          <el-select
+                            v-model="state.view.refreshUnit"
+                            class="el-input-refresh-unit margin-left8"
+                            size="small"
+                            :disabled="!state.view.refreshViewEnable"
+                          >
+                            <el-option :label="t('chart.minute')" :value="'minute'" />
+                            <el-option :label="t('chart.second')" :value="'second'" />
+                          </el-select>
+                        </el-row>
+                      </el-row>
+
+                      <!--xAxis-->
+                      <el-row class="padding-lr drag-data">
+                        <span class="data-area-label">
+                          <dimension-label :view="state.view" />
+                        </span>
+                        <draggable
+                          :list="state.view.xaxis"
+                          group="drag"
+                          animation="300"
+                          class="drag-block-style"
+                          @add="addXaxis"
+                        >
+                          <template #item="{ element, index }">
+                            <dimension-item
+                              :dimension-data="state.dimensionData"
+                              :quota-data="state.quotaData"
+                              :chart="state.view"
+                              :item="element"
+                              :index="index"
+                              @onDimensionItemChange="dimensionItemChange"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="state.view.xaxis" />
+                      </el-row>
+
+                      <!--yAxis-->
+                      <el-row class="padding-lr drag-data">
+                        <span class="data-area-label">
+                          <quota-label :view="state.view" />
+                        </span>
+                        <draggable
+                          :list="state.view.yaxis"
+                          group="drag"
+                          animation="300"
+                          class="drag-block-style"
+                          @add="addYaxis"
+                        >
+                          <template #item="{ element, index }">
+                            <quota-item
+                              :dimension-data="state.dimensionData"
+                              :quota-data="state.quotaData"
+                              :chart="state.view"
+                              :item="element"
+                              :index="index"
+                              @onQuotaItemChange="quotaItemChange"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="state.view.yaxis" />
+                      </el-row>
+
+                      <!--filter-->
+                      <el-row class="padding-lr drag-data">
+                        <span>{{ t('chart.result_filter') }}</span>
+                        <draggable
+                          :list="state.view.customFilter"
+                          group="drag"
+                          animation="300"
+                          class="drag-block-style"
+                        >
+                          <template #item="{ element, index }">
+                            <filter-item
+                              :dimension-data="state.dimensionData"
+                              :quota-data="state.quotaData"
+                              :item="element"
+                              :index="index"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="state.view.customFilter" />
+                      </el-row>
                     </el-row>
-                  </el-row>
+                  </div>
+                </el-col>
+              </el-tab-pane>
 
-                  <el-row class="padding-lr">
-                    <span style="width: 80px; text-align: right">
-                      {{ t('chart.refresh_frequency') }}
-                    </span>
-                    <!--                    <el-tooltip class="item" effect="dark" placement="bottom">-->
-                    <!--                      <template #slot>-->
-                    <!--                        <div>-->
-                    <!--                          {{ t('chart.chart_refresh_tips') }}-->
-                    <!--                        </div>-->
-                    <!--                      </template>-->
-                    <!--                      <i-->
-                    <!--                        class="el-icon-info"-->
-                    <!--                        style="cursor: pointer; color: #606266; font-size: 12px"-->
-                    <!--                      />-->
-                    <!--                    </el-tooltip>-->
-                    <span class="padding-lr">
-                      <el-checkbox
-                        v-model="state.view.refreshViewEnable"
-                        class="el-input-refresh-loading"
-                      />
-                      {{ t('chart.enable_refresh_view') }}
-                    </span>
-                    <el-row>
-                      <el-input
-                        v-model="state.view.refreshTime"
-                        class="el-input-refresh-time"
-                        type="number"
-                        size="small"
-                        controls-position="right"
-                        :min="1"
-                        :max="3600"
-                        :disabled="!state.view.refreshViewEnable"
-                      />
-                      <el-select
-                        v-model="state.view.refreshUnit"
-                        class="el-input-refresh-unit margin-left8"
-                        size="small"
-                        :disabled="!state.view.refreshViewEnable"
-                      >
-                        <el-option :label="t('chart.minute')" :value="'minute'" />
-                        <el-option :label="t('chart.second')" :value="'second'" />
-                      </el-select>
-                    </el-row>
-                  </el-row>
+              <el-tab-pane
+                name="style"
+                :label="t('chart.chart_style')"
+                class="padding-tab"
+                style="width: 100%"
+              >
+                <chart-style :chart="state.view" @onColorChange="onColorChange" />
+              </el-tab-pane>
 
-                  <!--xAxis-->
-                  <el-row class="padding-lr drag-data">
-                    <span class="data-area-label">
-                      <dimension-label :view="state.view" />
-                    </span>
-                    <draggable
-                      :list="state.view.xaxis"
-                      group="drag"
-                      animation="300"
-                      class="drag-block-style"
-                      @add="addXaxis"
-                    >
-                      <template #item="{ element, index }">
-                        <dimension-item
-                          :dimension-data="state.dimensionData"
-                          :quota-data="state.quotaData"
-                          :chart="state.view"
-                          :item="element"
-                          :index="index"
-                          @onDimensionItemChange="dimensionItemChange"
-                        />
-                      </template>
-                    </draggable>
-                    <drag-placeholder :drag-list="state.view.xaxis" />
-                  </el-row>
+              <el-tab-pane
+                name="senior"
+                :label="t('chart.senior')"
+                class="padding-tab"
+                style="width: 100%"
+              >
+                senior
+              </el-tab-pane>
+            </el-tabs>
+          </el-row>
+        </div>
 
-                  <!--yAxis-->
-                  <el-row class="padding-lr drag-data">
-                    <span class="data-area-label">
-                      <quota-label :view="state.view" />
-                    </span>
-                    <draggable
-                      :list="state.view.yaxis"
-                      group="drag"
-                      animation="300"
-                      class="drag-block-style"
-                      @add="addYaxis"
-                    >
-                      <template #item="{ element, index }">
-                        <quota-item
-                          :dimension-data="state.dimensionData"
-                          :quota-data="state.quotaData"
-                          :chart="state.view"
-                          :item="element"
-                          :index="index"
-                          @onQuotaItemChange="quotaItemChange"
-                        />
-                      </template>
-                    </draggable>
-                    <drag-placeholder :drag-list="state.view.yaxis" />
-                  </el-row>
+        <div :style="{ borderLeft: '1px solid #e6e6e6', width: '200px' }" class="view-panel-row">
+          <el-row class="editor-title">
+            <span>chart</span>
+            <span>
+              <el-icon>
+                <Icon name="icon_down-right_outlined"></Icon>
+              </el-icon>
+            </span>
+          </el-row>
 
-                  <!--filter-->
-                  <el-row class="padding-lr drag-data">
-                    <span>{{ t('chart.result_filter') }}</span>
-                    <draggable
-                      :list="state.view.customFilter"
-                      group="drag"
-                      animation="300"
-                      class="drag-block-style"
-                    >
-                      <template #item="{ element, index }">
-                        <filter-item
-                          :dimension-data="state.dimensionData"
-                          :quota-data="state.quotaData"
-                          :item="element"
-                          :index="index"
-                        />
-                      </template>
-                    </draggable>
-                    <drag-placeholder :drag-list="state.view.customFilter" />
-                  </el-row>
-                </el-row>
-              </div>
-            </el-col>
-          </el-tab-pane>
-          <el-tab-pane
-            name="style"
-            :label="t('chart.chart_style')"
-            class="padding-tab"
-            style="width: 100%"
-          >
-            <chart-style :chart="state.view" @onColorChange="onColorChange" />
-          </el-tab-pane>
-          <el-tab-pane
-            name="senior"
-            :label="t('chart.senior')"
-            class="padding-tab"
-            style="width: 100%"
-          >
-            senior
-          </el-tab-pane>
-        </el-tabs>
-      </el-row>
+          <el-row :style="{ borderTop: '1px solid #e6e6e6' }">
+            <el-tree-select
+              v-model="state.view.tableId"
+              :data="state.datasetTree"
+              :props="props"
+              filterable
+              @node-click="dsClick"
+            >
+              <template #default="{ data: { name } }">
+                <el-icon>
+                  <Icon name="scene"></Icon>
+                </el-icon>
+                <span :title="name">{{ name }}</span>
+              </template>
+            </el-tree-select>
+          </el-row>
+          <div style="height: 100%">
+            <div class="padding-lr field-height">
+              <span>{{ $t('chart.dimension') }}</span>
+              <draggable
+                :list="state.dimensionData"
+                :group="dsFieldDragOptions.group"
+                animation="300"
+                class="drag-list"
+              >
+                <template #item="{ element }">
+                  <span class="item-dimension father" :title="element.name">
+                    <el-icon>
+                      <Icon
+                        :className="`field-icon-${fieldType(element.deType)}`"
+                        :name="`field_${fieldType(element.deType)}`"
+                      ></Icon>
+                    </el-icon>
+                    <span class="field-name">{{ element.name }}</span>
+                  </span>
+                </template>
+              </draggable>
+            </div>
+            <div class="padding-lr field-height">
+              <span>{{ t('chart.quota') }}</span>
+              <draggable
+                :list="state.quotaData"
+                :group="dsFieldDragOptions.group"
+                animation="300"
+                class="drag-list"
+              >
+                <template #item="{ element }">
+                  <span class="item-dimension father" :title="element.name">
+                    <el-icon>
+                      <Icon
+                        :className="`field-icon-${fieldType(element.deType)}`"
+                        :name="`field_${fieldType(element.deType)}`"
+                      ></Icon>
+                    </el-icon>
+                    <span class="field-name">{{ element.name }}</span>
+                  </span>
+                </template>
+              </draggable>
+            </div>
+          </div>
+        </div>
+      </el-col>
     </el-row>
   </div>
 </template>
@@ -665,6 +689,14 @@ span {
 
   .drag-data {
     margin-top: 6px;
+  }
+
+  .editor-title {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
   }
 }
 </style>

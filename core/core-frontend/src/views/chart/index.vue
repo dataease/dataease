@@ -5,7 +5,7 @@ import ChartComponentG2Plot from '@/views/chart/components/views/ChartComponentG
 <!--调试测试页面-->
 <template>
   <div>
-    <editor :style="{ width: '350px', position: 'absolute', height: '100%', right: 0 }"></editor>
+    <editor :style="{ position: 'absolute', height: '100%', right: 0 }"></editor>
     <chart-component-g2-plot :style="{ width: '500px', height: '500px' }" />
   </div>
 </template>
