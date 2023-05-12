@@ -17,7 +17,7 @@ import {
 import { reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getDatasetTree } from '@/api/dataset'
-import { Field, getFieldByDQ } from '@/api/chart'
+import { Field, getFieldByDQ, saveChart } from '@/api/chart'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import draggable from 'vuedraggable'
@@ -47,9 +47,10 @@ const dsFieldDragOptions = { group: { name: 'drag', pull: 'clone' }, sort: true 
 
 const state = reactive({
   view: {
-    id: '',
-    name: '图表',
-    tableId: '',
+    id: '1683789298247', // 视图id
+    title: '图表',
+    sceneId: 0, // 仪表板id
+    tableId: '', // 数据集id
     type: 'bar',
     render: 'antv',
     resultCount: 100,
@@ -166,6 +167,10 @@ const onColorChange = val => {
   renderChart(state.view)
 }
 
+const save = () => {
+  saveChart(state.view)
+}
+
 initDataset()
 </script>
 
@@ -187,9 +192,7 @@ initDataset()
           state.view.name
         }}</span>
         <span :style="{ float: 'right', lineHeight: '40px' }">
-          <el-button secondary round @click="reset">
-            {{ $t('chart.recover') }}
-          </el-button>
+          <el-button secondary round @click="save"> {{ $t('chart.recover') }}(当保存用) </el-button>
         </span>
       </el-row>
 

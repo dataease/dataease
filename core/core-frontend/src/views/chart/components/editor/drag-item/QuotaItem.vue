@@ -159,7 +159,7 @@ getItemTagType()
                   <el-dropdown-menu>
                     <el-dropdown-item
                       v-if="
-                        item.id !== 'count' &&
+                        item.id !== '-1' &&
                         item.deType !== 0 &&
                         item.deType !== 1 &&
                         item.deType !== 5
@@ -169,7 +169,7 @@ getItemTagType()
                     >
                     <el-dropdown-item
                       v-if="
-                        item.id !== 'count' &&
+                        item.id !== '-1' &&
                         item.deType !== 0 &&
                         item.deType !== 1 &&
                         item.deType !== 5
@@ -179,7 +179,7 @@ getItemTagType()
                     >
                     <el-dropdown-item
                       v-if="
-                        item.id !== 'count' &&
+                        item.id !== '-1' &&
                         item.deType !== 0 &&
                         item.deType !== 1 &&
                         item.deType !== 5
@@ -189,7 +189,7 @@ getItemTagType()
                     >
                     <el-dropdown-item
                       v-if="
-                        item.id !== 'count' &&
+                        item.id !== '-1' &&
                         item.deType !== 0 &&
                         item.deType !== 1 &&
                         item.deType !== 5
@@ -199,7 +199,7 @@ getItemTagType()
                     >
                     <el-dropdown-item
                       v-if="
-                        item.id !== 'count' &&
+                        item.id !== '-1' &&
                         item.deType !== 0 &&
                         item.deType !== 1 &&
                         item.deType !== 5
@@ -209,7 +209,7 @@ getItemTagType()
                     >
                     <el-dropdown-item
                       v-if="
-                        item.id !== 'count' &&
+                        item.id !== '-1' &&
                         item.deType !== 0 &&
                         item.deType !== 1 &&
                         item.deType !== 5
@@ -221,7 +221,7 @@ getItemTagType()
                       $t('chart.count')
                     }}</el-dropdown-item>
                     <el-dropdown-item
-                      v-if="item.id !== 'count'"
+                      v-if="item.id !== '-1'"
                       :command="beforeSummary('count_distinct')"
                       >{{ $t('chart.count_distinct') }}</el-dropdown-item
                     >

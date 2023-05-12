@@ -19,6 +19,7 @@ declare module '@vue/runtime-core' {
     ComponentWrapper: typeof import('./src/components/data-visualization/canvas/ComponentWrapper.vue')['default']
     ConfigGlobal: typeof import('./src/components/config-global/src/ConfigGlobal.vue')['default']
     ContextMenu: typeof import('./src/components/data-visualization/canvas/ContextMenu.vue')['default']
+    DePreview: typeof import('./src/components/data-visualization/canvas/DePreview.vue')['default']
     DrawerFilter: typeof import('./src/components/drawer-filter/src/DrawerFilter.vue')['default']
     DrawerMain: typeof import('./src/components/drawer-main/src/DrawerMain.vue')['default']
     DvSidebar: typeof import('./src/components/visualization/DvSidebar.vue')['default']

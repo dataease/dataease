@@ -13,15 +13,6 @@ const state = reactive({
 const calcData = view => {
   state.loading = true
   const v = JSON.parse(JSON.stringify(view))
-  // todo 后续放到其他地方
-  v.yaxis.forEach(ele => {
-    if (!ele.summary) {
-      ele.summary = 'sum'
-    }
-    if (!ele.sort) {
-      ele.sort = 'none'
-    }
-  })
   // console.log(v)
   getData(v).then(res => {
     // console.log(res)
