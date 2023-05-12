@@ -710,7 +710,7 @@ export default {
     clearPanelLinkage(param) {
       if (param.viewId === 'all' || param.viewId === this.element.propValue.viewId) {
         try {
-          this.$refs[this.element.propValue.id].reDrawView()
+          this.$refs[this.element.propValue.id]?.reDrawView()
         } catch (e) {
           console.error('reDrawView-error：', this.element.propValue.id)
         }
