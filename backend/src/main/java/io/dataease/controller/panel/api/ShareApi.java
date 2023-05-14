@@ -56,6 +56,7 @@ public interface ShareApi {
     @PostMapping("/removeShares")
     void removeShares(PanelShareRemoveRequest request);
 
+    @DePermission(type = DePermissionType.PANEL)
     @ApiOperation("删除仪表板所有分享")
     @PostMapping("/removePanelShares/{panelId}")
     void removePanelShares(@PathVariable("panelId") String panelId);
