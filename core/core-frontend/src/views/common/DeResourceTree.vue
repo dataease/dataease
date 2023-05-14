@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { findById, findTree } from '@/api/dataVisualization'
 const searchMap = {
   all: '全部',
   folder: '文件夹'
@@ -9,44 +10,7 @@ const searchPids = [] // 查询命中的pid
 const filterText = ref(null)
 const searchType = ref('all')
 const expandedArray = ref([])
-const resourceData = ref([
-  {
-    label: 'Level one 1',
-    name: 'Level one 1',
-    children: [
-      {
-        label: 'Level two 1-1',
-        name: 'Level two 1-1',
-        children: [
-          {
-            label: 'Level three 1-1-1'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    label: 'Level one 2',
-    children: [
-      {
-        label: 'Level two 2-1',
-        children: [
-          {
-            label: 'Level three 2-1-1'
-          }
-        ]
-      },
-      {
-        label: 'Level two 2-2',
-        children: [
-          {
-            label: 'Level three 2-2-1'
-          }
-        ]
-      }
-    ]
-  }
-])
+let resourceData = ref([])
 
 const nodeExpand = data => {
   if (data.id) {
@@ -81,9 +45,23 @@ const filterNode = (value, data) => {
 }
 
 const nodeClick = (data, node) => {
-  console.log('do something=' + JSON.stringify(data))
-  //do something
+  if (data.nodeType !== 'folder') {
+    emit('nodeClick', data.id)
+  }
 }
+
+const getTree = () => {
+  // 从数据库中获取
+  findTree().then(res => {
+    resourceData.value = res.data
+  })
+}
+
+const emit = defineEmits(['nodeClick'])
+
+onMounted(() => {
+  getTree()
+})
 </script>
 
 <template>

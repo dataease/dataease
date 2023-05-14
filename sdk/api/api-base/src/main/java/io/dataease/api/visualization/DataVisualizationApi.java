@@ -1,8 +1,11 @@
 package io.dataease.api.visualization;
 
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
+import io.dataease.api.visualization.vo.DataVisualizationBaseVO;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 public interface DataVisualizationApi {
     /**
@@ -20,5 +23,8 @@ public interface DataVisualizationApi {
 
     @DeleteMapping("/deleteLogic/{dvId}")
     void deleteLogic(@PathVariable("dvId") Long dvId);
+
+    @GetMapping("/findTree")
+    List<DataVisualizationBaseVO> findTree();
 
 }

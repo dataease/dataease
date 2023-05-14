@@ -1,15 +1,43 @@
 <script setup lang="ts">
 import { ElAside, ElContainer } from 'element-plus-secondary'
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
+import { findById } from '@/api/dataVisualization'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { ref } from 'vue'
+import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
+
+const dvMainStore = dvMainStoreWithOut()
+const canvasDataPreview = ref(null)
+const canvasStylePreview = ref(null)
+
+const loadCanvasData = dvId => {
+  findById(dvId).then(res => {
+    const canvasInfo = res.data
+    const bashInfo = {
+      id: canvasInfo.id,
+      name: canvasInfo.name,
+      pid: canvasInfo.pid,
+      status: canvasInfo.status,
+      selfWatermarkStatus: canvasInfo.selfWatermarkStatus
+    }
+    canvasDataPreview.value = JSON.parse(canvasInfo.componentData)
+    canvasStylePreview.value = JSON.parse(canvasInfo.canvasStyleData)
+    dvMainStore.updateCurDvInfo(bashInfo)
+  })
+}
 </script>
 
 <template>
   <div class="dv-preview">
     <el-aside class="resource-area">
-      <de-resource-tree></de-resource-tree>
+      <de-resource-tree @node-click="loadCanvasData"></de-resource-tree>
     </el-aside>
     <el-container class="preview-area">
-      <span>大屏预览区</span>
+      <de-preview
+        v-if="canvasStylePreview"
+        :component-data="canvasDataPreview"
+        :canvas-style-data="canvasStylePreview"
+      ></de-preview>
     </el-container>
   </div>
 </template>
