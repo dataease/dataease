@@ -14,18 +14,18 @@ public class MybatisPlusGenerator {
      * 第一 我嫌麻烦
      * 第二 后面配置会放到nacos读起来更麻烦了
      */
-    private static final String url = "jdbc:mysql://127.0.0.1:3306/db?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false";
-    private static final String username = "xxxx";
-    private static final String password = "xxxx";
+    private static final String url = "jdbc:mysql://123.56.8.132:33061/dataease2-sl?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false";
+    private static final String username = "root";
+    private static final String password = "Calong@2015";
 
     /**
      * 业务模块例如datasource,dataset,panel等
      */
-    private static final String busi = "datasource";
+    private static final String busi = "visualization";
     /**
      * 这是要生成代码的表名称
      */
-    private static final String TABLE_NAME = "core_de_engine";
+    private static final String TABLE_NAME = "data_visualization_info";
 
     /**
      * 下面两个配置基本上不用动

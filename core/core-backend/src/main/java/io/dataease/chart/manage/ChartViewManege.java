@@ -1,7 +1,10 @@
 package io.dataease.chart.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.dto.ChartFieldCompareDTO;
+import io.dataease.api.chart.dto.ChartFieldCustomFilterDTO;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ChartViewFieldDTO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
@@ -10,6 +13,7 @@ import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,14 +37,15 @@ public class ChartViewManege {
     @Resource
     private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
 
-    public ChartViewDTO save(ChartViewDTO chartViewDTO) {
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    public ChartViewDTO save(ChartViewDTO chartViewDTO) throws Exception {
         Long id = chartViewDTO.getId();
         if (id == null) {
             DEException.throwException("no chart id");
         }
         CoreChartView coreChartView = coreChartViewMapper.selectById(id);
-        CoreChartView record = new CoreChartView();
-        BeanUtils.copyBean(record, chartViewDTO);
+        CoreChartView record = transDTO2Record(chartViewDTO);
         if (ObjectUtils.isEmpty(coreChartView)) {
             coreChartViewMapper.insert(record);
         } else {
@@ -65,14 +70,16 @@ public class ChartViewManege {
         if (ObjectUtils.isEmpty(coreChartView)) {
             return null;
         }
-        ChartViewDTO dto = new ChartViewDTO();
-        BeanUtils.copyBean(dto, coreChartView);
+        ChartViewDTO dto = transRecord2DTO(coreChartView);
         return dto;
     }
 
-    public List<ChartViewDTO> listByPanelId(Long id) {
+    /**
+     * sceneId 为仪表板或者数据大屏id
+     * */
+    public List<ChartViewDTO> listBySceneId(Long sceneId) {
         QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
-        wrapper.eq("scene_id", id);
+        wrapper.eq("scene_id", sceneId);
         return transChart(coreChartViewMapper.selectList(wrapper));
     }
 
@@ -81,8 +88,7 @@ public class ChartViewManege {
             return Collections.emptyList();
         }
         return list.stream().map(ele -> {
-            ChartViewDTO dto = new ChartViewDTO();
-            BeanUtils.copyBean(dto, ele);
+            ChartViewDTO dto = transRecord2DTO(ele);
             return dto;
         }).collect(Collectors.toList());
     }
@@ -98,11 +104,13 @@ public class ChartViewManege {
     public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id) {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
-        List<ChartViewFieldDTO> list = transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
+
+        List<CoreDatasetTableField> fields = coreDatasetTableFieldMapper.selectList(wrapper);
+        fields.add(createCountField(id));
+        List<ChartViewFieldDTO> list = transFieldDTO(fields);
+
         List<ChartViewFieldDTO> dimensionList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).collect(Collectors.toList());
         List<ChartViewFieldDTO> quotaList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).collect(Collectors.toList());
-
-        quotaList.add(createCountField(id));
 
         Map<String, List<ChartViewFieldDTO>> map = new LinkedHashMap<>();
         map.put("dimensionList", dimensionList);
@@ -110,8 +118,8 @@ public class ChartViewManege {
         return map;
     }
 
-    public ChartViewFieldDTO createCountField(Long id) {
-        ChartViewFieldDTO dto = new ChartViewFieldDTO();
+    public CoreDatasetTableField createCountField(Long id) {
+        CoreDatasetTableField dto = new CoreDatasetTableField();
         dto.setId(-1L);
         dto.setDatasetGroupId(id);
         dto.setOriginName("*");
@@ -123,11 +131,10 @@ public class ChartViewManege {
         dto.setDeType(2);
         dto.setExtField(1);
         dto.setGroupType("q");
-        dto.setSummary("count");
         return dto;
     }
 
-    public List<ChartViewFieldDTO> transDTO(List<CoreDatasetTableField> list) {
+    public List<ChartViewFieldDTO> transFieldDTO(List<CoreDatasetTableField> list) {
         return list.stream().map(ele -> {
             ChartViewFieldDTO dto = new ChartViewFieldDTO();
             if (ele == null) return null;
@@ -138,6 +145,7 @@ public class ChartViewManege {
             }
             if (StringUtils.equalsIgnoreCase("q", dto.getGroupType())) {
                 dto.setChartType("bar");
+
                 if (dto.getId() == -1L || dto.getDeType() == 0 || dto.getDeType() == 1) {
                     dto.setSummary("count");
                 } else {
@@ -153,6 +161,52 @@ public class ChartViewManege {
             dto.setFilter(Collections.emptyList());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    public CoreChartView transDTO2Record(ChartViewDTO dto) throws Exception {
+        CoreChartView record = new CoreChartView();
+        BeanUtils.copyBean(record, dto);
+
+        record.setxAxis(objectMapper.writeValueAsString(dto.getXAxis()));
+        record.setxAxisExt(objectMapper.writeValueAsString(dto.getXAxisExt()));
+        record.setyAxis(objectMapper.writeValueAsString(dto.getYAxis()));
+        record.setyAxisExt(objectMapper.writeValueAsString(dto.getYAxisExt()));
+        record.setExtStack(objectMapper.writeValueAsString(dto.getExtStack()));
+        record.setExtBubble(objectMapper.writeValueAsString(dto.getExtBubble()));
+        record.setCustomAttr(objectMapper.writeValueAsString(dto.getCustomAttr()));
+        record.setCustomStyle(objectMapper.writeValueAsString(dto.getCustomStyle()));
+        record.setSenior(objectMapper.writeValueAsString(dto.getSenior()));
+        record.setDrillFields(objectMapper.writeValueAsString(dto.getDrillFields()));
+        record.setCustomFilter(objectMapper.writeValueAsString(dto.getCustomFilter()));
+        record.setViewFields(objectMapper.writeValueAsString(dto.getViewFields()));
+
+        return record;
+    }
+
+    public ChartViewDTO transRecord2DTO(CoreChartView record) {
+        ChartViewDTO dto = new ChartViewDTO();
+        BeanUtils.copyBean(dto, record);
+
+        TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {
+        };
+        TypeReference<List<ChartFieldCustomFilterDTO>> filterTokenType = new TypeReference<>() {
+        };
+
+        dto.setXAxis(JsonUtil.parseList(record.getxAxis(), tokenType));
+        dto.setXAxisExt(JsonUtil.parseList(record.getxAxisExt(), tokenType));
+        dto.setYAxis(JsonUtil.parseList(record.getyAxis(), tokenType));
+        dto.setYAxisExt(JsonUtil.parseList(record.getyAxisExt(), tokenType));
+        dto.setExtStack(JsonUtil.parseList(record.getExtStack(), tokenType));
+        dto.setExtBubble(JsonUtil.parseList(record.getExtBubble(), tokenType));
+        dto.setCustomAttr(JsonUtil.parse(record.getCustomAttr(), Map.class));
+        dto.setCustomStyle(JsonUtil.parse(record.getCustomStyle(), Map.class));
+        dto.setSenior(JsonUtil.parse(record.getSenior(), Map.class));
+        dto.setDrillFields(JsonUtil.parseList(record.getDrillFields(), tokenType));
+        dto.setCustomFilter(JsonUtil.parseList(record.getCustomFilter(), filterTokenType));
+        dto.setViewFields(JsonUtil.parseList(record.getViewFields(), tokenType));
+
+        return dto;
+
     }
 
 }

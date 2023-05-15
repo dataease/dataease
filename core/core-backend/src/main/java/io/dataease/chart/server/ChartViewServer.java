@@ -29,4 +29,11 @@ public class ChartViewServer implements ChartViewApi {
     public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id) {
         return chartViewManege.listByDQ(id);
     }
+
+    @Override
+    public ChartViewDTO save(ChartViewDTO dto) throws Exception {
+        return chartViewManege.save(dto);
+    }
+
+
 }

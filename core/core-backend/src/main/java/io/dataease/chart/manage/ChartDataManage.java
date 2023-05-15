@@ -1,7 +1,6 @@
 package io.dataease.chart.manage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.dto.*;
 import io.dataease.api.chart.request.ChartDrillRequest;
@@ -28,7 +27,6 @@ import io.dataease.engine.utils.SQLUtils;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
-import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -61,7 +59,7 @@ public class ChartDataManage {
     @Resource
     private CalciteProvider calciteProvider;
     @Resource
-    private ChartDataManage chartDataManage;
+    private ChartViewManege chartViewManege;
 
     public ChartViewDTO calcData(ChartViewDTO view) throws Exception {
         ChartExtRequest chartExtRequest = view.getChartExtRequest();
@@ -79,7 +77,7 @@ public class ChartDataManage {
         TypeReference<List<ChartFieldCustomFilterDTO>> filterTokenType = new TypeReference<>() {
         };
 
-        List<ChartViewFieldDTO> viewFields = JsonUtil.parseList(view.getViewFields(), tokenType);
+        List<ChartViewFieldDTO> viewFields = new ArrayList<>(view.getViewFields());
         final Map<String, List<ChartViewFieldDTO>> extFieldsMap = new LinkedHashMap<>();
         if (ObjectUtils.isNotEmpty(viewFields)) {
             viewFields.forEach(field -> {
@@ -90,28 +88,28 @@ public class ChartDataManage {
             });
         }
 
-        List<ChartViewFieldDTO> xAxisBase = JsonUtil.parseList(view.getXAxis(), tokenType);
-        List<ChartViewFieldDTO> xAxis = JsonUtil.parseList(view.getXAxis(), tokenType);
-        List<ChartViewFieldDTO> xAxisExt = JsonUtil.parseList(view.getXAxisExt(), tokenType);
+        List<ChartViewFieldDTO> xAxisBase = new ArrayList<>(view.getXAxis());
+        List<ChartViewFieldDTO> xAxis = new ArrayList<>(view.getXAxis());
+        List<ChartViewFieldDTO> xAxisExt = new ArrayList<>(view.getXAxisExt());
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot")
                 || StringUtils.containsIgnoreCase(view.getType(), "group")
                 || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
                 || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")) {
             xAxis.addAll(xAxisExt);
         }
-        List<ChartViewFieldDTO> yAxis = JsonUtil.parseList(view.getYAxis(), tokenType);
+        List<ChartViewFieldDTO> yAxis = new ArrayList<>(view.getYAxis());
         if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")) {
-            List<ChartViewFieldDTO> yAxisExt = JsonUtil.parseList(view.getYAxisExt(), tokenType);
+            List<ChartViewFieldDTO> yAxisExt = new ArrayList<>(view.getYAxisExt());
             yAxis.addAll(yAxisExt);
         }
         if (StringUtils.equalsIgnoreCase(view.getRender(), "antv") && StringUtils.equalsAnyIgnoreCase(view.getType(), "gauge", "liquid")) {
             List<ChartViewFieldDTO> sizeField = getSizeField(view);
             yAxis.addAll(sizeField);
         }
-        List<ChartViewFieldDTO> extStack = JsonUtil.parseList(view.getExtStack(), tokenType);
-        List<ChartViewFieldDTO> extBubble = JsonUtil.parseList(view.getExtBubble(), tokenType);
-        List<ChartFieldCustomFilterDTO> fieldCustomFilter = JsonUtil.parseList(view.getCustomFilter(), filterTokenType);
-        List<ChartViewFieldDTO> drill = JsonUtil.parseList(view.getDrillFields(), tokenType);
+        List<ChartViewFieldDTO> extStack = new ArrayList<>(view.getExtStack());
+        List<ChartViewFieldDTO> extBubble = new ArrayList<>(view.getExtBubble());
+        List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<>(view.getCustomFilter());
+        List<ChartViewFieldDTO> drill = new ArrayList<>(view.getDrillFields());
 
         // 视图计算字段，用fieldShortName作为唯一标识
 //        ChartViewFieldDTO chartViewField = new ChartViewFieldDTO();
@@ -153,7 +151,7 @@ public class ChartDataManage {
         }
 
         // 直连明细表分页
-        Map<String, Object> mapAttr = JsonUtil.parseObject(view.getCustomAttr(), Map.class);
+        Map<String, Object> mapAttr = view.getCustomAttr();
         Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("size");
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0) {
             if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page") && !chartExtRequest.getExcelExportFlag()) {
@@ -771,10 +769,9 @@ public class ChartDataManage {
 
     private List<ChartViewFieldDTO> getSizeField(ChartViewDTO view) throws Exception {
         List<ChartViewFieldDTO> list = new ArrayList<>();
-        String customAttr = view.getCustomAttr();
+        Map<String, Object> customAttr = view.getCustomAttr();
 
-        JsonNode jsonNode = objectMapper.readTree(customAttr);
-        JsonNode size = jsonNode.get("size");
+        Map<String, Object> size = (Map<String, Object>) customAttr.get("size");
 
         ChartViewFieldDTO gaugeMinViewField = getDynamicField(size, "gaugeMinType", "gaugeMinField");
         if (gaugeMinViewField != null) {
@@ -792,12 +789,12 @@ public class ChartDataManage {
         return list;
     }
 
-    private ChartViewFieldDTO getDynamicField(JsonNode sizeObj, String type, String field) {
-        String maxType = sizeObj.get(type).asText();
+    private ChartViewFieldDTO getDynamicField(Map<String, Object> sizeObj, String type, String field) {
+        String maxType = (String) sizeObj.get(type);
         if (StringUtils.equalsIgnoreCase("dynamic", maxType)) {
-            JsonNode maxField = sizeObj.get(field);
-            Long id = maxField.get("id").asLong();
-            String summary = maxField.get("summary").asText();
+            Map<String, Object> maxField = (Map<String, Object>) sizeObj.get(field);
+            Long id = (Long) maxField.get("id");
+            String summary = (String) maxField.get("summary");
             DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(id);
             if (ObjectUtils.isNotEmpty(datasetTableField)) {
                 if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
@@ -856,14 +853,13 @@ public class ChartDataManage {
     private List<ChartSeniorAssistDTO> getDynamicAssistFields(ChartViewDTO view) throws Exception {
         List<ChartSeniorAssistDTO> list = new ArrayList<>();
 
-        String senior = view.getSenior();
-        JsonNode jsonNode = objectMapper.readTree(senior);
-        JsonNode assistLine = jsonNode.get("assistLine");
-        if (ObjectUtils.isEmpty(senior) || StringUtils.isEmpty(assistLine.asText())) {
+        Map<String, Object> senior = view.getSenior();
+        if (ObjectUtils.isEmpty(senior)) {
             return list;
         }
-        List<ChartSeniorAssistDTO> assistLines = JsonUtil.parseList(assistLine.asText(), new TypeReference<>() {
-        });
+
+        List<ChartSeniorAssistDTO> assistLines = (List<ChartSeniorAssistDTO>) senior.get("assistLine");
+
         if (ObjectUtils.isEmpty(assistLines)) {
             return list;
         }

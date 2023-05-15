@@ -3,6 +3,7 @@ import { getStyle, getSVGStyle } from '@/utils/style'
 import runAnimation from '@/utils/runAnimation'
 import eventBus from '@/utils/eventBus'
 import { ref, onMounted, toRefs, getCurrentInstance } from 'vue'
+import findComponent from '@/utils/components'
 
 const props = defineProps({
   config: {
@@ -48,7 +49,7 @@ const onMouseEnter = () => {
 <template>
   <div @click="onClick" @mouseenter="onMouseEnter">
     <component
-      :is="config['component']"
+      :is="findComponent(config['component'])"
       v-if="config?.component.startsWith('SVG')"
       ref="component"
       class="component"
@@ -60,7 +61,7 @@ const onMouseEnter = () => {
     />
 
     <component
-      :is="config['component']"
+      :is="findComponent(config['component'])"
       v-else
       ref="component"
       class="component"

@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-04
+ * @since 2023-05-11
  */
 public interface DataVisualizationInfoMapper extends BaseMapper<DataVisualizationInfo> {
 

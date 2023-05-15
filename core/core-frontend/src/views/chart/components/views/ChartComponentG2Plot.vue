@@ -1,27 +1,18 @@
 <script lang="ts" setup>
-import { onMounted, ref, reactive } from 'vue'
-import { baseBarOption } from '../js/panel/bar/bar'
-import { getData } from '../../../../api/chart'
-import { useEmitt } from '../../../../hooks/web/useEmitt'
+import { onMounted, reactive, ref } from 'vue'
+import { getData } from '@/api/chart'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { ChartRenderType, G2PlotChartView } from '@/views/chart/components/js/panel/types'
+import chartViewManager from '@/views/chart/components/js/panel'
 
 const state = reactive({
   myChart: null,
   loading: false,
   data: null // 图表数据
 })
-
 const calcData = view => {
   state.loading = true
   const v = JSON.parse(JSON.stringify(view))
-  // todo 后续放到其他地方
-  v.yaxis.forEach(ele => {
-    if (!ele.summary) {
-      ele.summary = 'sum'
-    }
-    if (!ele.sort) {
-      ele.sort = 'none'
-    }
-  })
   // console.log(v)
   getData(v).then(res => {
     // console.log(res)
@@ -30,17 +21,26 @@ const calcData = view => {
     state.loading = false
   })
 }
-
+const action = param => {
+  console.log(param)
+}
 const renderChart = view => {
   if (view && !view.data) {
     view.data = state.data
   }
-  state.myChart = baseBarOption(state.myChart, 'container', view)
+  state.myChart = (
+    chartViewManager.getChartView(view.render, view.type) as G2PlotChartView<any, any>
+  ).drawChart({
+    chartObj: state.myChart,
+    container: 'container',
+    chart: view,
+    action
+  })
   state.myChart?.render()
 }
 
 onMounted(() => {
-  renderChart(null)
+  renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
   useEmitt({ name: 'calcData', callback: calcData })
   useEmitt({ name: 'renderChart', callback: renderChart })
 })

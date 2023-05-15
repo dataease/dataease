@@ -36,7 +36,7 @@ const handleScaleChange = () => {
       <div>setting</div>
     </component-group>
 
-    <div style="display: flex; padding-top: 10px; margin-left: 150px">
+    <div style="display: flex; padding-top: 10px; margin-left: 50px">
       <el-slider
         style="width: 300px"
         v-model="scale"

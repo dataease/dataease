@@ -132,7 +132,6 @@ onMounted(() => {
   if (dvId) {
     // 从数据库中获取
     findById(dvId).then(res => {
-      console.log(res)
       const canvasInfo = res.data
       const bashInfo = {
         id: canvasInfo.id,
@@ -143,7 +142,7 @@ onMounted(() => {
       }
       dvMainStore.updateCurDvInfo(bashInfo)
       //恢复画布数据
-      restore(canvasInfo.canvasData, canvasInfo.canvasStyle)
+      restore(JSON.parse(canvasInfo.canvasData), JSON.parse(canvasInfo.canvasStyle))
     })
   } else {
     dvMainStore.updateCurDvInfo({

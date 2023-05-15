@@ -2,6 +2,8 @@ import request from '@/config/axios'
 
 export const findById = dvId => request.get({ url: '/dataVisualization/findById/' + dvId })
 
+export const findTree = () => request.get({ url: '/dataVisualization/findTree' })
+
 export const save = data => request.post({ url: '/dataVisualization/save', data })
 
 export const update = data => request.post({ url: '/dataVisualization/update', data })
