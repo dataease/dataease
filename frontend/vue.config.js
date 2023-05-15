@@ -50,7 +50,7 @@ module.exports = {
         '@': resolve('src')
       }
     },
-    output: {
+    output: process.env.NODE_ENV === 'development' ? {} : {
       filename: `js/[name].[contenthash:8].${pkg.version}.js`,
       publicPath: '/',
       chunkFilename: `js/[name].[contenthash:8].${pkg.version}.js`
