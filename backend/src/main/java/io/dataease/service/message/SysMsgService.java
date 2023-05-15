@@ -109,7 +109,7 @@ public class SysMsgService {
     }
 
     public void batchDelete(List<Long> msgIds) {
-        extSysMsgMapper.batchDelete(msgIds);
+        extSysMsgMapper.batchDelete(msgIds, AuthUtils.getUser().getUserId());
     }
 
     public void save(SysMsg sysMsg) {
