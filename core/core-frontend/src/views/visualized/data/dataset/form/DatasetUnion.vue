@@ -1,10 +1,16 @@
 <script lang="ts" setup>
 import { reactive, computed, ref, nextTick } from 'vue'
 // import { throttle } from 'lodash'
+import { useI18n } from '@/hooks/web/useI18n'
 import zeroNodeImg from '@/assets/img/drag.png'
 import { guid } from './util.js'
 import { HandleMore } from '@/components/handle-more'
 import { propTypes } from '@/utils/propTypes'
+import UnionFieldList from './UnionFieldList.vue'
+import type { Node } from './UnionEdit.vue'
+import { getTableField } from '@/api/dataset'
+import type { Field } from './UnionFieldList.vue'
+import { clone } from 'lodash'
 
 const state = reactive({
   nodeList: [],
@@ -17,13 +23,32 @@ const props = defineProps({
   maskShow: propTypes.bool.def(false),
   offsetX: propTypes.number.def(0),
   offsetY: propTypes.number.def(0),
-  dragHeight: propTypes.number.def(280)
+  dragHeight: propTypes.number.def(280),
+  getDsName: propTypes.func
 })
 
 const iconName = {
   left: 'icon_left-association',
   right: 'icon_left-association',
   inner: 'icon_intersect'
+}
+const { t } = useI18n()
+
+const nodeField = ref<Field[]>([])
+
+const currentNode = ref<Node>()
+
+const getNodeField = ({ datasourceId, id, info, tableName, type, currentDsFields }) => {
+  getTableField({ datasourceId, id, info, tableName, type })
+    .then(res => {
+      nodeField.value = res as unknown as Field[]
+      nodeField.value.forEach(ele => {
+        ele.checked = currentDsFields.map(ele => ele.originName).includes(ele.originName)
+      })
+    })
+    .finally(() => {
+      editUnion.value = true
+    })
 }
 
 const nodeNameList = computed(() => {
@@ -47,8 +72,63 @@ const initState = nodeList => {
 
 const activeNode = ref('')
 
+const editUnion = ref(false)
+
+const delNode = (id, arr) => {
+  arr.some((ele, index) => {
+    if (id === ele.id) {
+      arr.splice(index, 1)
+      return true
+    }
+    if (ele.children?.length) {
+      delNode(id, ele.children)
+    }
+    return false
+  })
+}
+
+const changeNodeFields = val => {
+  currentNode.value.currentDsFields = val
+}
+
+const closeEditUnion = () => {
+  editUnion.value = false
+}
+
+const delUpdateDsFields = (id, arr: Node[]) => {
+  arr.some(ele => {
+    if (id === ele.id) {
+      ele.currentDsFields = currentNode.value.currentDsFields
+      return true
+    }
+    if (ele.children?.length) {
+      delUpdateDsFields(id, ele.children)
+    }
+    return false
+  })
+}
+
+const confirmEditUnion = () => {
+  delUpdateDsFields(currentNode.value.id, state.nodeList)
+  closeEditUnion()
+  nextTick(() => {
+    emits('updateAllfields')
+  })
+}
+
 const handleCommand = (ele, command) => {
-  console.log('ele, command', ele, command)
+  if (command === 'editer') {
+    currentNode.value = clone(ele)
+    getNodeField(ele)
+  }
+
+  if (command === 'del') {
+    delNode(ele.id, state.nodeList)
+    nextTick(() => {
+      emits('addComplete')
+      emits('updateAllfields')
+    })
+  }
 }
 
 const handlePathClick = ele => {
@@ -84,11 +164,6 @@ const dfsNodeBack = (arr, idArr, list) => {
 }
 
 const menuList = [
-  {
-    svgName: 'join-join',
-    label: '关联',
-    command: 'join'
-  },
   {
     svgName: 'icon_edit_outlined',
     label: '编辑',
@@ -461,7 +536,7 @@ defineExpose({
   initState
 })
 
-const emits = defineEmits(['addComplete', 'joinEditor'])
+const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
 </script>
 
 <template>
@@ -551,11 +626,79 @@ const emits = defineEmits(['addComplete', 'joinEditor'])
       <p>拖拽到这里创建数据集</p>
     </div>
   </div>
+  <el-drawer v-model="editUnion" custom-class="union-item-drawer" size="600px" direction="rtl">
+    <template #header v-if="currentNode">
+      <div class="info">
+        <span class="name">{{ currentNode.tableName }}</span>
+        <span class="ds">{{ getDsName(currentNode.datasourceId) }}</span>
+      </div>
+      <div class="operate">
+        <el-button text>
+          <template #icon>
+            <Icon name="icon_edit_outlined"></Icon>
+          </template>
+          编辑SQL</el-button
+        >
+        <el-button text
+          ><template #icon> <Icon name="icon_delete-trash_outlined"></Icon> </template
+          >删除</el-button
+        >
+      </div>
+    </template>
+    <union-field-list
+      :field-list="nodeField"
+      :node="currentNode"
+      v-if="nodeField.length"
+      @checkedFields="changeNodeFields"
+    />
+    <template #footer>
+      <el-button secondary @click="closeEditUnion">{{ t('dataset.cancel') }} </el-button>
+      <el-button type="primary" @click="confirmEditUnion">{{ t('dataset.confirm') }} </el-button>
+    </template>
+  </el-drawer>
 </template>
 
 <style lang="less">
 .path-point {
   cursor: pointer;
+}
+
+.union-item-drawer {
+  .el-drawer__header {
+    height: 82px;
+    font-family: 'PingFang SC';
+
+    .el-drawer__close-btn {
+      top: 26px;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+      .name {
+        font-weight: 500;
+        font-size: 16px;
+        color: #1f2329;
+      }
+      .ds {
+        font-weight: 400;
+        font-size: 14px;
+        color: #646a73;
+      }
+    }
+
+    .operate {
+      margin-left: auto;
+      margin-right: 30px;
+
+      .is-text {
+        color: #1f2329;
+      }
+    }
+  }
+  .field-block-body {
+    height: calc(100% - 70px) !important;
+  }
 }
 
 .node-union {

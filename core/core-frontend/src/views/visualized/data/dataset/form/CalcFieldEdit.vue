@@ -61,7 +61,7 @@ const setFieldForm = () => {
   fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto)
 }
 
-const setNameIdTrans = (from, to, originName, name2Auto) => {
+const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
   let name2Id = originName
   const nameIdMap = [...state.dimensionData, ...state.quotaData].reduce((pre, next) => {
     pre[next[from]] = next[to]
@@ -84,6 +84,14 @@ const initEdit = (obj, dimensionData, quotaData) => {
   Object.assign(fieldForm, obj || {})
   state.dimensionData = dimensionData
   state.quotaData = quotaData
+  if (!obj.originName) return
+  mirror.value.dispatch({
+    changes: {
+      from: 0,
+      to: mirror.value.viewState.state.doc.length,
+      insert: setNameIdTrans('id', 'name', obj.originName)
+    }
+  })
 }
 
 const fieldType = (deType: number) => {

@@ -31,6 +31,14 @@ provide('$custom-style-filter', customStyle)
 const expandedD = ref(false)
 const expandedQ = ref(false)
 
+const loading = ref(true)
+
+const visibleChange = (val: boolean) => {
+  setTimeout(() => {
+    loading.value = !val
+  }, 50)
+}
+
 const quota = shallowRef([])
 const dimensions = shallowRef([])
 
@@ -85,6 +93,8 @@ const handleTabClick = () => {
   <el-select-v2
     v-model="selectValue"
     filterable
+    @visible-change="visibleChange"
+    :popper-class="loading ? 'load-select' : ''"
     :show-checked="multiple"
     :multiple="multiple"
     :collapse-tags="multiple"
@@ -380,6 +390,27 @@ const handleTabClick = () => {
 
   .field-d {
     border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+  }
+}
+</style>
+
+<style lang="less">
+.load-select {
+  .el-select-dropdown__list {
+    & > div {
+      &:nth-child(1) {
+        .el-radio__inner::after {
+          display: none !important;
+        }
+      }
+    }
+  }
+  .el-select-dropdown {
+    &:nth-child(1) {
+      .el-checkbox__inner::after {
+        display: none !important;
+      }
+    }
   }
 }
 </style>
