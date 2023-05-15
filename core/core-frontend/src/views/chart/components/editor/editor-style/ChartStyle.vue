@@ -1,6 +1,13 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import ColorSelector from '@/views/chart/components/editor/editor-style/components/ColorSelector.vue'
+import SizeSelector from '@/views/chart/components/editor/editor-style/components/SizeSelector.vue'
+import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
+import TooltipSelector from '@/views/chart/components/editor/editor-style/components/TooltipSelector.vue'
+import XAxisSelector from '@/views/chart/components/editor/editor-style/components/XAxisSelector.vue'
+import YAxisSelector from '@/views/chart/components/editor/editor-style/components/YAxisSelector.vue'
+import TitleSelector from '@/views/chart/components/editor/editor-style/components/TitleSelector.vue'
+import LegendSelector from '@/views/chart/components/editor/editor-style/components/LegendSelector.vue'
 
 const { t } = useI18n()
 
@@ -53,7 +60,15 @@ const onColorChange = val => {
                 : t('chart.size')
             "
           >
-            size
+            <size-selector />
+          </el-collapse-item>
+
+          <el-collapse-item name="label" :title="$t('chart.label')">
+            <label-selector />
+          </el-collapse-item>
+
+          <el-collapse-item name="tooltip" :title="$t('chart.tooltip')">
+            <tooltip-selector />
           </el-collapse-item>
         </el-collapse>
       </el-row>
@@ -61,7 +76,21 @@ const onColorChange = val => {
       <el-row class="de-collapse-style">
         <span class="padding-lr">{{ t('chart.module_style') }}</span>
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
-          <el-collapse-item name="xAxis" :title="t('chart.xAxis')"> xaxis </el-collapse-item>
+          <el-collapse-item name="xAxis" :title="t('chart.xAxis')">
+            <x-axis-selector />
+          </el-collapse-item>
+
+          <el-collapse-item name="yAxis" :title="$t('chart.xAxis')">
+            <y-axis-selector />
+          </el-collapse-item>
+
+          <el-collapse-item name="title" :title="$t('chart.title')">
+            <title-selector />
+          </el-collapse-item>
+
+          <el-collapse-item name="legend" :title="$t('chart.legend')">
+            <legend-selector />
+          </el-collapse-item>
         </el-collapse>
       </el-row>
     </div>

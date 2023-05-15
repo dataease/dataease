@@ -28,6 +28,7 @@ import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 import FilterItem from '@/views/chart/components/editor/drag-item/FilterItem.vue'
 import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
+import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -200,7 +201,7 @@ initDataset()
         <div style="width: 280px" class="view-panel-row">
           <el-row class="editor-title">
             <span>chart</span>
-            <span @click="save">
+            <span>
               <el-icon>
                 <Icon name="icon_down-right_outlined"></Icon>
               </el-icon>
@@ -417,7 +418,7 @@ initDataset()
                 class="padding-tab"
                 style="width: 100%"
               >
-                senior
+                <senior />
               </el-tab-pane>
             </el-tabs>
           </el-row>
@@ -425,7 +426,7 @@ initDataset()
 
         <div :style="{ borderLeft: '1px solid #e6e6e6', width: '200px' }" class="view-panel-row">
           <el-row class="editor-title">
-            <span>chart</span>
+            <span>dataset</span>
             <span>
               <el-icon>
                 <Icon name="icon_down-right_outlined"></Icon>
