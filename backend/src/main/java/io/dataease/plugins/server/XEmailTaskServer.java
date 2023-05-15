@@ -18,6 +18,7 @@ import io.dataease.plugins.common.entity.XpackConditionEntity;
 import io.dataease.plugins.common.entity.XpackGridRequest;
 import io.dataease.plugins.config.SpringContextUtil;
 import io.dataease.plugins.xpack.email.dto.request.*;
+import io.dataease.plugins.xpack.email.dto.response.XpackTaskEntity;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskGridDTO;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskInstanceDTO;
 import io.dataease.plugins.xpack.email.service.EmailXpackService;
@@ -35,6 +36,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -42,10 +46,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 @ApiIgnore
 @RequestMapping("/plugin/task")
@@ -108,8 +108,8 @@ public class XEmailTaskServer {
     @PostMapping("/fireNow/{taskId}")
     public void fireNow(@PathVariable("taskId") Long taskId) throws Exception {
         EmailXpackService emailXpackService = SpringContextUtil.getBean(EmailXpackService.class);
-        XpackEmailTaskRequest request = emailXpackService.taskForm(taskId);
-        GlobalTaskEntity globalTaskEntity = BeanUtils.copyBean(new GlobalTaskEntity(), request);
+        XpackTaskEntity xpackTaskEntity = emailXpackService.taskDetail(taskId);
+        GlobalTaskEntity globalTaskEntity = BeanUtils.copyBean(new GlobalTaskEntity(), xpackTaskEntity);
         Boolean invalid = false;
         if (CronUtils.taskExpire(globalTaskEntity.getEndTime())) {
             globalTaskEntity.setEndTime(null);
