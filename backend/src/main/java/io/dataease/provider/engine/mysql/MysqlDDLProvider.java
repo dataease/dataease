@@ -20,7 +20,7 @@ public class MysqlDDLProvider extends DDLProviderImpl {
 
     private static final String creatTableSql =
             "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
-            "Column_Fields;" ;
+            "Column_Fields" + " ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;" ;
 
 
     @Override
