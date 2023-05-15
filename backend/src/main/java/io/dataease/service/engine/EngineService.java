@@ -227,6 +227,9 @@ public class EngineService {
         mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
         mysqlConfiguration.setDataBase(matcher.group(3).split("\\?")[0]);
         mysqlConfiguration.setExtraParams(matcher.group(3).split("\\?")[1]);
+        if(StringUtils.isNotEmpty(mysqlConfiguration.getExtraParams()) && !mysqlConfiguration.getExtraParams().contains("connectionCollation")){
+            mysqlConfiguration.setExtraParams(mysqlConfiguration.getExtraParams() + "&connectionCollation=utf8mb4_general_ci");
+        }
         mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
         mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
         engine.setConfiguration(new Gson().toJson(mysqlConfiguration));
