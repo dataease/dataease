@@ -1,16 +1,16 @@
 package io.dataease.service.message;
 
-import io.dataease.commons.utils.LogUtil;
-import io.dataease.ext.ExtSysMsgMapper;
 import io.dataease.commons.constants.SysMsgConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.sys.request.BatchSettingRequest;
 import io.dataease.controller.sys.request.MsgRequest;
 import io.dataease.controller.sys.request.MsgSettingRequest;
 import io.dataease.controller.sys.response.MsgGridDto;
 import io.dataease.controller.sys.response.SettingTreeNode;
 import io.dataease.controller.sys.response.SubscribeNode;
+import io.dataease.ext.ExtSysMsgMapper;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.SysMsgChannelMapper;
 import io.dataease.plugins.common.base.mapper.SysMsgMapper;
@@ -105,7 +105,7 @@ public class SysMsgService {
     }
 
     public void setBatchRead(List<Long> msgIds) {
-        extSysMsgMapper.batchStatus(msgIds, System.currentTimeMillis());
+        extSysMsgMapper.batchStatus(msgIds, System.currentTimeMillis(), AuthUtils.getUser().getUserId());
     }
 
     public void batchDelete(List<Long> msgIds) {
