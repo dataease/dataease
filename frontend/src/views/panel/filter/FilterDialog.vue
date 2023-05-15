@@ -755,7 +755,7 @@ export default {
         type = 'NUM'
       }
       datasetParams(tableId, type).then(res => {
-        this.datasetParams = res.data
+        this.datasetParams = res.data || []
       })
     },
     comLoadField(tableId) {
