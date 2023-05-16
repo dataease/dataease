@@ -251,6 +251,8 @@ export function baseBidirectionalBarOptionAntV(plot, container, chart, action, i
   const legend = getLegend(chart)
   const xAxis = getXAxis(chart)
   const yAxis = getYAxis(chart)
+  // 处理横轴标题方向不对
+  yAxis?.title && (yAxis.title.autoRotate = false)
   // data
   const data = _.cloneDeep(chart.data.data)
   // options
@@ -281,12 +283,6 @@ export function baseBidirectionalBarOptionAntV(plot, container, chart, action, i
         }
       },
       {
-        type: 'tooltip', cfg: {
-          start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
-          end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
-        }
-      },
-      {
         type: 'active-region', cfg: {
           start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
           end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
@@ -307,19 +303,6 @@ export function baseBidirectionalBarOptionAntV(plot, container, chart, action, i
       }
     }
   }
-  // group
-  if (isGroup) {
-    options.isGroup = true
-  } else {
-    delete options.isGroup
-  }
-  // stack
-  if (isStack) {
-    options.isStack = true
-  } else {
-    delete options.isStack
-  }
-  options.isPercent = chart.type.includes('percentage')
   // custom color
   options.color = antVCustomColor(chart)
   if (customAttr.color.gradient) {

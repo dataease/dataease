@@ -193,7 +193,8 @@ export default {
         'text',
         'label',
         'word-cloud',
-        'flow-map'
+        'flow-map',
+        'bidirectional-bar'
       ],
       linkageExcludeViewType: [
         'richTextView',
@@ -202,7 +203,8 @@ export default {
         'text',
         'label',
         'word-cloud',
-        'flow-map'
+        'flow-map',
+        'bidirectional-bar'
       ],
       copyData: null,
       hyperlinksSetVisible: false,
