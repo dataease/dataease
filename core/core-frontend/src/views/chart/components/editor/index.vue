@@ -104,9 +104,14 @@ const getFields = id => {
   getFieldByDQ(id).then(res => {
     state.dimensionData = (res.dimensionList as unknown as Field[]) || []
     state.quotaData = (res.quotaList as unknown as Field[]) || []
-
-    state.view.tableId = id
   })
+}
+
+const dsSelectProps = {
+  label: 'name',
+  children: 'children',
+  value: 'id',
+  isLeaf: node => !node.children?.length
 }
 
 const dsClick = (data: Tree) => {
@@ -459,7 +464,7 @@ initDataset()
             <el-tree-select
               v-model="state.view.tableId"
               :data="state.datasetTree"
-              :props="props"
+              :props="dsSelectProps"
               filterable
               @node-click="dsClick"
             >
