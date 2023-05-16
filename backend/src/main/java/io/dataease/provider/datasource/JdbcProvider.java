@@ -657,8 +657,8 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 if (StringUtils.isEmpty(oracleConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
-                return "select table_name, owner, comments from all_tab_comments where owner='OWNER' AND table_type = 'TABLE' AND table_name in (select table_name from all_tables where owner='OWNER')".replaceAll("OWNER", oracleConfiguration.getSchema());
-            case pg:
+                return "select table_name, owner, comments from all_tab_comments where owner='" + oracleConfiguration.getSchema() + "' AND table_type = 'TABLE'";
+      case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
                 if (StringUtils.isEmpty(pgConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
