@@ -5,6 +5,7 @@ import { findById } from '@/api/dataVisualization'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
+import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const canvasDataPreview = ref(null)
@@ -33,11 +34,14 @@ const loadCanvasData = dvId => {
       <de-resource-tree @node-click="loadCanvasData"></de-resource-tree>
     </el-aside>
     <el-container class="preview-area">
-      <de-preview
-        v-if="canvasStylePreview"
-        :component-data="canvasDataPreview"
-        :canvas-style-data="canvasStylePreview"
-      ></de-preview>
+      <preview-head></preview-head>
+      <div class="content">
+        <de-preview
+          v-if="canvasStylePreview"
+          :component-data="canvasDataPreview"
+          :canvas-style-data="canvasStylePreview"
+        ></de-preview>
+      </div>
     </el-container>
   </div>
 </template>
@@ -55,6 +59,18 @@ const loadCanvasData = dvId => {
   }
   .preview-area {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    .content {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      align-items: center;
+    }
   }
 }
 </style>

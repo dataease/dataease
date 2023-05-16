@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { EditPen } from '@element-plus/icons-vue'
 import { onMounted, ref } from 'vue'
 import { findById, findTree } from '@/api/dataVisualization'
 const searchMap = {
@@ -59,6 +60,18 @@ const getTree = () => {
 
 const emit = defineEmits(['nodeClick'])
 
+const clickMore = () => {
+  //do something
+}
+
+const beforeClickEdit = (optType, data, node) => {
+  return {
+    data: data,
+    node: node,
+    optType: optType
+  }
+}
+
 onMounted(() => {
   getTree()
 })
@@ -96,6 +109,25 @@ onMounted(() => {
         <span class="custom-tree-node-list">
           <span class="title-area-outer">
             <span class="title-area" :title="data.label">{{ data.label }}</span>
+          </span>
+        </span>
+        <span class="father">
+          <span v-on:click.stop class="child">
+            <el-button :icon="EditPen" type="primary" text></el-button>
+          </span>
+          <span style="margin-left: 12px" class="child" v-on:click.stop>
+            <el-dropdown trigger="click" size="small" @command="clickMore">
+              <span class="el-dropdown-link">
+                <el-button icon="el-icon-more" type="text" size="small" />
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item>
+                    {{ $t('panel.edit') }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </span>
         </span>
       </template>
