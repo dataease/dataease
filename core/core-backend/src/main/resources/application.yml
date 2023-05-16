@@ -10,8 +10,19 @@ spring:
   main:
     allow-circular-references: true
   cache:
+    type: jcache
     jcache:
       config: classpath:ehcache/ehcache.xml
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: 123456
+      database: 0
+management:
+  health:
+    redis:
+      enabled: false
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
