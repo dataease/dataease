@@ -2,29 +2,31 @@ package io.dataease.utils;
 
 
 import io.dataease.cache.DECacheService;
-import jakarta.annotation.Resource;
-import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.ObjectUtils;
+
+import java.util.concurrent.TimeUnit;
 
 
-@Component
 public class CacheUtils {
 
+    private static DECacheService deCacheService;
 
-    /*private static DECacheService deCacheService;
-
-    @Resource
-    public void setDeCacheService(DECacheService deCacheService) {
-        CacheUtils.deCacheService = deCacheService;
+    private DECacheService getService() {
+        if (ObjectUtils.isEmpty(deCacheService)) {
+            deCacheService = CommonBeanFactory.getBean(DECacheService.class);
+        }
+        return deCacheService;
     }
 
     public static void put(String cacheName, String key, Object val) {
-        if (!deCacheService.cacheExist(cacheName)) {
-            deCacheService.create(cacheName, 0L, null);
-        }
-        deCacheService.put(cacheName, key, val);
+        deCacheService.put(cacheName, key, val, 0L, null);
+    }
+
+    public static void put(String cacheName, String key, Object val, Long expTime, TimeUnit unit) {
+        deCacheService.put(cacheName, key, val, expTime, unit);
     }
 
     public static Object get(String cacheName, String key) {
         return deCacheService.get(cacheName, key);
-    }*/
+    }
 }
