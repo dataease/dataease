@@ -10,9 +10,11 @@ import OrgSwicther from '@/layout/components/OrgSwitcher.vue'
 import LangSelector from '@/layout/components/LangSelector.vue'
 import TopDoc from '@/layout/components/TopDoc.vue'
 import AccountOperator from '@/layout/components/AccountOperator.vue'
+import { isDesktop } from '@/utils/ModelUtil'
 const { push } = useRouter()
 const route = useRoute()
 
+const desktop = isDesktop()
 const activeIndex = computed(() => {
   if (route.path.includes('system')) {
     return '/system/user'
@@ -49,7 +51,7 @@ const handleSelect = (index: string) => {
         {{ item.meta.title }}
       </el-menu-item>
     </el-menu>
-    <div class="operate-setting">
+    <div class="operate-setting" v-if="!desktop">
       <OrgSwicther />
       <LangSelector />
       <TopDoc />

@@ -14,7 +14,7 @@ import java.util.List;
 
 
 public class TokenFilter implements Filter {
-    public static List<String> WHITE_PATH = Lists.newArrayList("/login/localLogin", "/apisix/check", "/dekey", "/");
+    public static List<String> WHITE_PATH = Lists.newArrayList("/login/localLogin", "/apisix/check", "/dekey", "/model", "/");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -26,6 +26,7 @@ public class TokenFilter implements Filter {
         String requestURI = request.getRequestURI();
         if (ModelUtils.isDesktop()) {
             UserUtils.setDesktopUser();
+            filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
 

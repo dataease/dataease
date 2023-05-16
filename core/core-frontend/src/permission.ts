@@ -1,5 +1,6 @@
 import router from './router'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import type { RouteRecordRaw } from 'vue-router'
 import { useNProgress } from '@/hooks/web/useNProgress'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
@@ -10,6 +11,7 @@ const { wsCache } = useCache()
 const permissionStore = usePermissionStoreWithOut()
 
 const userStore = useUserStoreWithOut()
+const appStore = useAppStoreWithOut()
 
 const { start, done } = useNProgress()
 
@@ -20,8 +22,12 @@ const whiteList = ['/login'] // 不重定向白名单
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
-
-  if (wsCache.get('user.token')) {
+  let isDesktop = wsCache.get('app.desktop')
+  if (!isDesktop) {
+    await appStore.setAppModel()
+    isDesktop = appStore.getDesktop
+  }
+  if (wsCache.get('user.token') || isDesktop) {
     if (!userStore.getUid) {
       await userStore.setUser()
     }
@@ -33,7 +39,10 @@ router.beforeEach(async (to, from, next) => {
         return
       }
 
-      const roleRouters = (await getRoleRouters()) || []
+      let roleRouters = (await getRoleRouters()) || []
+      if (isDesktop) {
+        roleRouters = roleRouters.filter(item => item.name !== 'system')
+      }
       const routers: any[] = roleRouters as AppCustomRouteRecordRaw[]
       routers.forEach(item => (item['top'] = true))
       await permissionStore.generateRoutes(routers as AppCustomRouteRecordRaw[])
