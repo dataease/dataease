@@ -40,14 +40,13 @@ export const userStore = defineStore('user', {
   },
   actions: {
     async setUser() {
-      const res = await userInfo()
+      const desktop = wsCache.get('app.desktop')
+      const res = desktop
+        ? { data: { uid: '1', name: 'admin', oid: '1', language: 'zh-CN' } }
+        : await userInfo()
       const data = res.data
       data.token = wsCache.get('user.token')
-      /* this.token = userInfo.token
-      this.uid = userInfo.uid
-      this.name = userInfo.name
-      this.oid = userInfo.oid
-      this.language = userInfo.language */
+
       const keys: string[] = ['token', 'uid', 'name', 'oid', 'language']
 
       keys.forEach(key => {

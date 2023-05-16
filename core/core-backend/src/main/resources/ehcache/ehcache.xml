@@ -20,7 +20,11 @@
     </cache-template>
     <cache alias="menu" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
-        <value-type>java.lang.String</value-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+    <cache alias="rsa" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>io.dataease.rsa.dao.entity.CoreRsa</value-type>
     </cache>
 <!--    <cache alias="person">-->
 <!--        <key-type>java.lang.Long</key-type>-->

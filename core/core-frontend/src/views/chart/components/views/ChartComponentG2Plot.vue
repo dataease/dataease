@@ -25,9 +25,7 @@ const action = param => {
   console.log(param)
 }
 const renderChart = view => {
-  if (view && !view.data) {
-    view.data = state.data
-  }
+  view.data = state.data
   state.myChart = (
     chartViewManager.getChartView(view.render, view.type) as G2PlotChartView<any, any>
   ).drawChart({

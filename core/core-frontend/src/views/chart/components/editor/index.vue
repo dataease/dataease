@@ -28,6 +28,7 @@ import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
 import FilterItem from '@/views/chart/components/editor/drag-item/FilterItem.vue'
 import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
+import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -103,9 +104,14 @@ const getFields = id => {
   getFieldByDQ(id).then(res => {
     state.dimensionData = (res.dimensionList as unknown as Field[]) || []
     state.quotaData = (res.quotaList as unknown as Field[]) || []
-
-    state.view.tableId = id
   })
+}
+
+const dsSelectProps = {
+  label: 'name',
+  children: 'children',
+  value: 'id',
+  isLeaf: node => !node.children?.length
 }
 
 const dsClick = (data: Tree) => {
@@ -167,6 +173,21 @@ const onColorChange = val => {
   renderChart(state.view)
 }
 
+const onSizeChange = val => {
+  state.view.customAttr.size = val
+  renderChart(state.view)
+}
+
+const onLabelChange = val => {
+  state.view.customAttr.label = val
+  renderChart(state.view)
+}
+
+const onTooltipChange = val => {
+  state.view.customAttr.tooltip = val
+  renderChart(state.view)
+}
+
 const save = () => {
   saveChart(state.view)
 }
@@ -200,7 +221,7 @@ initDataset()
         <div style="width: 280px" class="view-panel-row">
           <el-row class="editor-title">
             <span>chart</span>
-            <span @click="save">
+            <span>
               <el-icon>
                 <Icon name="icon_down-right_outlined"></Icon>
               </el-icon>
@@ -408,7 +429,13 @@ initDataset()
                 class="padding-tab"
                 style="width: 100%"
               >
-                <chart-style :chart="state.view" @onColorChange="onColorChange" />
+                <chart-style
+                  :chart="state.view"
+                  @onColorChange="onColorChange"
+                  @onSizeChange="onSizeChange"
+                  @onLabelChange="onLabelChange"
+                  @onTooltipChange="onTooltipChange"
+                />
               </el-tab-pane>
 
               <el-tab-pane
@@ -417,7 +444,7 @@ initDataset()
                 class="padding-tab"
                 style="width: 100%"
               >
-                senior
+                <senior />
               </el-tab-pane>
             </el-tabs>
           </el-row>
@@ -425,7 +452,7 @@ initDataset()
 
         <div :style="{ borderLeft: '1px solid #e6e6e6', width: '200px' }" class="view-panel-row">
           <el-row class="editor-title">
-            <span>chart</span>
+            <span>dataset</span>
             <span>
               <el-icon>
                 <Icon name="icon_down-right_outlined"></Icon>
@@ -437,7 +464,7 @@ initDataset()
             <el-tree-select
               v-model="state.view.tableId"
               :data="state.datasetTree"
-              :props="props"
+              :props="dsSelectProps"
               filterable
               @node-click="dsClick"
             >

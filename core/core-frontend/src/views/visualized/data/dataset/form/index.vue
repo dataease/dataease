@@ -1,7 +1,8 @@
 <script lang="tsx" setup>
 import { ref, nextTick, reactive, shallowRef, computed, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElIcon } from 'element-plus-secondary'
+import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
+import type { Action } from 'element-plus-secondary'
 import FieldMore from './FieldMore.vue'
 import { Icon } from '@/components/icon-custom'
 import CalcFieldEdit from './CalcFieldEdit.vue'
@@ -9,7 +10,7 @@ import AddSql from './AddSql.vue'
 import { useRoute } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
 import CreatDsGroup from './CreatDsGroup.vue'
-import { guid } from './util.js'
+import { guid, getFieldName } from './util.js'
 import {
   getDatasourceList,
   getTables,
@@ -81,6 +82,10 @@ const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
 }
 
+const getDsName = (id: string) => {
+  return (state.dataSourceList.find(ele => ele.id === id) || {}).name
+}
+
 watch(searchTable, val => {
   state.tableData = tableList.filter(ele => ele.name.includes(val))
 })
@@ -95,10 +100,83 @@ const editeSave = () => {
   )
 }
 
+const handleFieldMore = (ele, type) => {
+  const arr = ['text', 'time', 'number', 'float', '', 'location']
+  if (arr.includes(type as string)) {
+    ele.deType = arr.indexOf(type)
+    return
+  }
+  switch (type) {
+    case 'copy':
+      copyField(ele)
+      break
+    case 'delete':
+      deleteField(ele)
+      break
+    case 'translate':
+      dqTrans(ele, ele.groupType)
+      break
+    case 'editor':
+      editField(ele)
+      break
+    default:
+      break
+  }
+}
+
+const dqTrans = (item, val) => {
+  item.groupType = val === 'd' ? 'q' : 'd'
+}
+
+const copyField = item => {
+  const param = { ...item }
+  param.id = guid()
+  param.extField = 2
+  param.originName = item.extField === 2 ? item.originName : '[' + item.id + ']'
+  param.name = getFieldName(dimensions.value.concat(quota.value), item.name)
+  param.dataeaseName = null
+  param.lastSyncTime = null
+  allfields.value.push(param)
+}
+
+const deleteField = item => {
+  ElMessageBox.confirm(t('dataset.confirm_delete'), {
+    confirmButtonText: t('dataset.confirm'),
+    cancelButtonText: t('common.cancel'),
+    showCancelButton: true,
+    tip: t('chart.tips'),
+    confirmButtonType: 'primary',
+    type: 'warning',
+    autofocus: false,
+    showClose: false,
+    callback: (action: Action) => {
+      if (action === 'confirm') {
+        const idx = allfields.value.indexOf(item.id)
+        allfields.value.splice(idx, 1)
+        ElMessage({
+          message: t('chart.delete_success'),
+          type: 'success'
+        })
+      }
+    }
+  })
+}
+
 const addCalcField = groupType => {
   editCalcField.value = true
   nextTick(() => {
     calcEdit.value.initEdit({ groupType, id: guid() }, dimensions.value, quota.value)
+  })
+}
+
+const editField = item => {
+  editCalcField.value = true
+  nextTick(() => {
+    calcEdit.value.initEdit(
+      item,
+      dimensions.value.filter(ele => ele.extField !== 2),
+      quota.value.filter(ele => ele.extField !== 2)
+    )
   })
 }
 
@@ -175,11 +253,11 @@ const columns = shallowRef([])
 const tableData = shallowRef([])
 const showTable = ref(false)
 const quota = computed(() => {
-  return allfields.value.filter(ele => ele.groupType === 'q')
+  return clone(allfields.value.filter(ele => ele.groupType === 'q'))
 })
 
 const dimensions = computed(() => {
-  return allfields.value.filter(ele => ele.groupType === 'd')
+  return clone(allfields.value.filter(ele => ele.groupType === 'd'))
 })
 
 const addComplete = () => {
@@ -255,6 +333,13 @@ const confirmEditUnion = () => {
   // } else {
   //   this.openMessageSuccess('dataset.union_error')
   // }
+}
+
+const updateAllfields = () => {
+  const arr = []
+  dfsFields(arr, datasetDrag.value.nodeList)
+  allfields.value = diffArr(arr, allfields.value)
+  fieldUnion.value?.clearState()
 }
 
 const notConfirmEditUnion = () => {
@@ -548,9 +633,11 @@ const handleClick = () => {
           @join-editor="joinEditor"
           :maskShow="maskShow"
           :dragHeight="dragHeight"
+          :getDsName="getDsName"
           :offsetX="offsetX"
           :offsetY="offsetY"
           ref="datasetDrag"
+          @updateAllfields="updateAllfields"
           @addComplete="addComplete"
         ></dataset-union>
         <div class="sql-result" :style="{ height: `calc(100% - ${dragHeight}px)` }">
@@ -594,12 +681,10 @@ const handleClick = () => {
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
                       <div class="operate">
-                        <el-tooltip class="box-item" effect="dark" content="显示" placement="top">
-                          <ElIcon class="hover-icon">
-                            <Icon name="icon_visible_outlined"></Icon>
-                          </ElIcon>
-                        </el-tooltip>
-                        <field-more></field-more>
+                        <field-more
+                          :extField="data.extField"
+                          @handle-command="type => handleFieldMore(data, type)"
+                        ></field-more>
                       </div>
                     </span>
                   </template>
@@ -626,12 +711,10 @@ const handleClick = () => {
                       </el-icon>
                       <span :title="data.name" class="label-tooltip">{{ data.name }}</span>
                       <div class="operate">
-                        <el-tooltip class="box-item" effect="dark" content="显示" placement="top">
-                          <ElIcon class="hover-icon">
-                            <Icon name="icon_visible_outlined"></Icon>
-                          </ElIcon>
-                        </el-tooltip>
-                        <field-more></field-more>
+                        <field-more
+                          :extField="data.extField"
+                          @handle-command="type => handleFieldMore(data, type)"
+                        ></field-more>
                       </div>
                     </span>
                   </template>
@@ -893,6 +976,9 @@ const handleClick = () => {
 
               .operate {
                 margin-left: auto;
+                position: relative;
+                z-index: 5;
+                background: #fff;
               }
             }
 
