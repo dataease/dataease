@@ -23,10 +23,22 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['onColorChange'])
+const emit = defineEmits(['onColorChange', 'onSizeChange', 'onLabelChange', 'onTooltipChange'])
 
 const onColorChange = val => {
   emit('onColorChange', val)
+}
+
+const onSizeChange = val => {
+  emit('onSizeChange', val)
+}
+
+const onLabelChange = val => {
+  emit('onLabelChange', val)
+}
+
+const onTooltipChange = val => {
+  emit('onTooltipChange', val)
 }
 </script>
 
@@ -60,15 +72,27 @@ const onColorChange = val => {
                 : t('chart.size')
             "
           >
-            <size-selector />
+            <size-selector
+              class="attr-selector"
+              :chart="props.chart"
+              @onSizeChange="onSizeChange"
+            />
           </el-collapse-item>
 
           <el-collapse-item name="label" :title="$t('chart.label')">
-            <label-selector />
+            <label-selector
+              class="attr-selector"
+              :chart="props.chart"
+              @onLabelChange="onLabelChange"
+            />
           </el-collapse-item>
 
           <el-collapse-item name="tooltip" :title="$t('chart.tooltip')">
-            <tooltip-selector />
+            <tooltip-selector
+              class="attr-selector"
+              :chart="props.chart"
+              @onTooltipChange="onTooltipChange"
+            />
           </el-collapse-item>
         </el-collapse>
       </el-row>
@@ -80,7 +104,7 @@ const onColorChange = val => {
             <x-axis-selector />
           </el-collapse-item>
 
-          <el-collapse-item name="yAxis" :title="$t('chart.xAxis')">
+          <el-collapse-item name="yAxis" :title="$t('chart.yAxis')">
             <y-axis-selector />
           </el-collapse-item>
 

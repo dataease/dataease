@@ -29,9 +29,6 @@ span {
   left: 0;
   width: 100%;
   color: #cccccc;
-}
-
-.drag-placeholder-style-span {
-  padding-left: 16px;
+  text-align: center;
 }
 </style>

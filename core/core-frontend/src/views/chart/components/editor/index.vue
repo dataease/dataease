@@ -168,6 +168,21 @@ const onColorChange = val => {
   renderChart(state.view)
 }
 
+const onSizeChange = val => {
+  state.view.customAttr.size = val
+  renderChart(state.view)
+}
+
+const onLabelChange = val => {
+  state.view.customAttr.label = val
+  renderChart(state.view)
+}
+
+const onTooltipChange = val => {
+  state.view.customAttr.tooltip = val
+  renderChart(state.view)
+}
+
 const save = () => {
   saveChart(state.view)
 }
@@ -409,7 +424,13 @@ initDataset()
                 class="padding-tab"
                 style="width: 100%"
               >
-                <chart-style :chart="state.view" @onColorChange="onColorChange" />
+                <chart-style
+                  :chart="state.view"
+                  @onColorChange="onColorChange"
+                  @onSizeChange="onSizeChange"
+                  @onLabelChange="onLabelChange"
+                  @onTooltipChange="onTooltipChange"
+                />
               </el-tab-pane>
 
               <el-tab-pane
