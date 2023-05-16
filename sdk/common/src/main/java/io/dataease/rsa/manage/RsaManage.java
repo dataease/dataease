@@ -37,7 +37,7 @@ public class RsaManage {
         coreRsaMapper.insert(coreRsa);
     }
 
-    @Cacheable(value = "rsa", key = "#root.methodName")
+    // @Cacheable(value = "rsa", key = "#root.methodName")
     public CoreRsa query() {
         CoreRsa coreRsa = coreRsaMapper.selectById(1);
         return coreRsa;
