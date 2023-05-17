@@ -12,4 +12,6 @@ public interface DECacheService<T> {
     boolean cacheExist(String cacheName);
 
     boolean keyExist(String cacheName, String key);
+
+    void keyRemove(String cacheName, String key);
 }

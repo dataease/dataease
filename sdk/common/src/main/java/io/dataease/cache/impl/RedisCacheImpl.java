@@ -4,7 +4,6 @@ import io.dataease.cache.DECacheService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -13,8 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.TimeUnit;
 
 @ConditionalOnExpression("'${spring.cache.type}'.equals('redis')")
-@Component
-@Qualifier
+@Component("dECacheService")
 public class RedisCacheImpl implements DECacheService {
 
     private static final String SEPARATOR = "::";
@@ -55,6 +53,11 @@ public class RedisCacheImpl implements DECacheService {
     @Override
     public boolean keyExist(String cacheName, String key) {
         return redisTemplate.hasKey(cacheName + SEPARATOR + key);
+    }
+
+    @Override
+    public void keyRemove(String cacheName, String key) {
+        redisTemplate.delete(cacheName + SEPARATOR + key);
     }
 
     @PostConstruct

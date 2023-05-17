@@ -11,9 +11,13 @@ public class CacheUtils {
 
     private static DECacheService deCacheService;
 
-    private DECacheService getService() {
+    static {
+        getService();
+    }
+
+    private static DECacheService getService() {
         if (ObjectUtils.isEmpty(deCacheService)) {
-            deCacheService = CommonBeanFactory.getBean(DECacheService.class);
+            deCacheService = (DECacheService) CommonBeanFactory.getBean("dECacheService");
         }
         return deCacheService;
     }
@@ -28,5 +32,13 @@ public class CacheUtils {
 
     public static Object get(String cacheName, String key) {
         return deCacheService.get(cacheName, key);
+    }
+
+    public static Boolean keyExist(String cacheName, String key) {
+        return deCacheService.keyExist(cacheName, key);
+    }
+
+    public static void keyRemove(String cacheName, String key) {
+        deCacheService.keyRemove(cacheName, key);
     }
 }
