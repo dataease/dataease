@@ -142,7 +142,7 @@ onMounted(() => {
       }
       dvMainStore.updateCurDvInfo(bashInfo)
       //恢复画布数据
-      restore(JSON.parse(canvasInfo.canvasData), JSON.parse(canvasInfo.canvasStyle))
+      restore(canvasInfo.componentData, canvasInfo.canvasStyleData)
     })
   } else {
     dvMainStore.updateCurDvInfo({

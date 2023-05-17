@@ -49,8 +49,9 @@ const loadCanvasData = dvId => {
 <style lang="less">
 .dv-preview {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   display: flex;
+  background: #ffffff;
   .resource-area {
     height: 100%;
     width: 300px;

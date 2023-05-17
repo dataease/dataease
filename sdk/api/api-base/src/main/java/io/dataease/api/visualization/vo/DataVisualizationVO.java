@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import lombok.Data;
 
@@ -8,6 +10,8 @@ import java.util.List;
 
 @Data
 public class DataVisualizationVO  implements Serializable {
+
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -18,11 +22,13 @@ public class DataVisualizationVO  implements Serializable {
     /**
      * 父id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long pid;
 
     /**
      * 所属组织id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long orgId;
 
     /**
