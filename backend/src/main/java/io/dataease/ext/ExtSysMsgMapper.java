@@ -19,9 +19,10 @@ public interface ExtSysMsgMapper {
             "<foreach collection='msgIds' item='msgId' open='(' separator=',' close=')' >",
             " #{msgId}",
             "</foreach>",
+            " and user_id = #{uid}",
             "</script>"
     })
-    int batchStatus(@Param("msgIds") List<Long> msgIds, @Param("time") Long time);
+    int batchStatus(@Param("msgIds") List<Long> msgIds, @Param("time") Long time, @Param("uid") Long uid);
 
     @Delete({
             "<script>",
@@ -29,9 +30,10 @@ public interface ExtSysMsgMapper {
             "<foreach collection='msgIds' item='msgId' open='(' separator=',' close=')' >",
             " #{msgId}",
             "</foreach>",
+            " and user_id = #{uid} ",
             "</script>"
     })
-    int batchDelete(@Param("msgIds") List<Long> msgIds);
+    int batchDelete(@Param("msgIds") List<Long> msgIds, @Param("uid") Long uid);
 
     int batchInsert(@Param("settings") List<SysMsgSetting> settings);
 

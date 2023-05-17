@@ -712,8 +712,8 @@ export function getYAxis(chart) {
         const axisValue = a.axisValue
         if (!chart.type.includes('horizontal')) {
           if (axisValue && !axisValue.auto) {
-            axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
-            axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
+            axisValue.min && (axis.minLimit = axis.min = parseFloat(axisValue.min))
+            axisValue.max && (axis.maxLimit = axis.max = parseFloat(axisValue.max))
             axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
           }
         }
