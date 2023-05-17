@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { saveDatasetTree, getDatasetTree } from '@/api/dataset'
 import type { DatesetOrFolder } from '@/api/dataset'
@@ -43,6 +43,12 @@ const filterNode = (value: string, data: Tree) => {
 
 watch(filterText, val => {
   treeRef.value.filter(val)
+  nextTick(() => {
+    document.querySelectorAll('.node-text').forEach(ele => {
+      const content = ele.getAttribute('title')
+      ele.innerHTML = content.replace(val, `<span class="hightLight">${val}</span>`)
+    })
+  })
 })
 
 const nameRepeat = value => {
@@ -263,7 +269,7 @@ const emits = defineEmits(['finish'])
                 <el-icon>
                   <Icon name="scene"></Icon>
                 </el-icon>
-                <span :title="data.name">{{ data.name }}</span>
+                <span class="node-text" :title="data.name">{{ data.name }}</span>
               </span>
             </template>
           </el-tree>
@@ -286,12 +292,15 @@ const emits = defineEmits(['finish'])
   padding: 8px;
   .custom-tree-node {
     display: flex;
-    span {
+    .node-text {
       margin-left: 8.75px;
       width: 120px;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+      :deep(.hightLight) {
+        color: var(--el-color-primary, #3370ff);
+      }
     }
   }
 }
