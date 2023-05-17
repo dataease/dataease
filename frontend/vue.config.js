@@ -1,6 +1,7 @@
 'use strict'
 const path = require('path')
 const defaultSettings = require('./src/settings.js')
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const pkg = require('./package.json')
 
@@ -56,6 +57,7 @@ module.exports = {
       chunkFilename: `js/[name].[contenthash:8].${pkg.version}.js`
     },
     plugins: [
+      // new BundleAnalyzerPlugin(),
       new CopyWebpackPlugin([
         {
           from: path.join(__dirname, 'static'),
@@ -75,7 +77,18 @@ module.exports = {
         // dll最终输出的目录
         outputPath: './vendor'
       })
-    ]
+    ],
+    optimization: {
+      splitChunks: {
+        cacheGroups: {
+          brace: {
+            name: 'chunk-brace',
+            priority: 20,
+            test: /[\\/]node_modules[\\/]brace/
+          }
+        }
+      },
+    },
   },
   chainWebpack: config => {
     config.module.rules.delete('svg') // 删除默认配置中处理svg,
@@ -111,6 +124,9 @@ module.exports = {
       .options({
         symbolId: '[name]'
       })
+      // 删除预加载  针对请求 删除预加载 数进行优化
+    config.plugins.delete('prefetch-index')
+    config.plugins.delete('preload-index')
   },
   css: {
     loaderOptions: {

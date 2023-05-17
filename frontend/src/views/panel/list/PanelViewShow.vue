@@ -368,6 +368,9 @@
   </el-row>
 </template>
 <script>
+import Vue from 'vue'
+import fullscreen from 'vue-fullscreen'
+Vue.use(fullscreen)
 import PDFPreExport from '@/views/panel/export/PDFPreExport'
 import Preview from '@/components/canvas/components/editor/Preview'
 import SaveToTemplate from '@/views/panel/list/SaveToTemplate'
@@ -388,6 +391,7 @@ import AppExportForm from '@/views/panel/list/AppExportForm'
 import GrantAuth from '../grantAuth'
 import msgCfm from '@/components/msgCfm/index'
 import { inOtherPlatform } from '@/utils/index'
+
 export default {
   name: 'PanelViewShow',
   components: { AppExportForm, PanelDetailInfo, Preview, SaveToTemplate, PDFPreExport, ShareHead, GrantAuth },

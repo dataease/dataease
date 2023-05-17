@@ -228,9 +228,11 @@ import cancelMix from './cancelMix'
 
 import { pySort } from './util'
 import { updateCacheTree } from '@/components/canvas/utils/utils'
+import { UxGrid, UxTableColumn } from 'umy-ui'
 
 export default {
   name: 'AddDB',
+  components: { UxGrid, UxTableColumn },
   mixins: [msgCfm, cancelMix],
   props: {
     param: {

@@ -536,7 +536,12 @@ import TextAttr from '@/components/canvas/components/TextAttr'
 import { userLoginInfo } from '@/api/systemInfo/userLogin'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
+import fullscreen from 'vue-fullscreen'
+import proportion from 'vue-proportion-directive'
+import Vue from 'vue'
+Vue.use(proportion)
 
+Vue.use(fullscreen)
 export default {
   name: 'PanelEdit',
   components: {
