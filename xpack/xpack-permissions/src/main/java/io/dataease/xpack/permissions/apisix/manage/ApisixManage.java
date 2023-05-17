@@ -1,11 +1,13 @@
 package io.dataease.xpack.permissions.apisix.manage;
 
+import cn.hutool.core.util.ArrayUtil;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.AuthConstant;
 import io.dataease.utils.*;
 import io.dataease.xpack.permissions.apisix.proxy.ProxyRequest;
+import io.dataease.xpack.permissions.auth.manage.ApiAuthManage;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.ObjectUtils;
@@ -37,6 +39,9 @@ public class ApisixManage {
 
     @Resource
     private AuthMappingHandlerAdapter authMappingHandlerAdapter;
+
+    @Resource
+    private ApiAuthManage apiAuthManage;
 
     /**
      * 认证校验
@@ -129,14 +134,22 @@ public class ApisixManage {
      * @param requirePermissions
      */
     protected void checkPermission(TokenUserBO userInfo, String requirePermissions[]) {
-
+        if (ArrayUtil.isEmpty(requirePermissions)) return;
+        for (int i = 0; i < requirePermissions.length; i++) {
+            String permission = requirePermissions[i];
+            if (StringUtils.contains(permission, ":m:")) {
+                checkMenuAuth(permission, userInfo);
+            } else {
+                checkBusiAuth(permission, userInfo);
+            }
+        }
     }
 
-    private void checkMenuAuth() {
-
+    private void checkMenuAuth(String permission, TokenUserBO userInfo) {
+        // apiAuthManage.checkMenu();
     }
 
-    private void checkBusiAuth() {
+    private void checkBusiAuth(String permission, TokenUserBO userInfo) {
 
     }
 }
