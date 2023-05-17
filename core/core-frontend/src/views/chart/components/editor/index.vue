@@ -188,6 +188,26 @@ const onTooltipChange = val => {
   renderChart(state.view)
 }
 
+const onChangeXAxisForm = val => {
+  state.view.customStyle.xAxis = val
+  renderChart(state.view)
+}
+
+const onChangeYAxisForm = val => {
+  state.view.customStyle.yAxis = val
+  renderChart(state.view)
+}
+
+const onTextChange = val => {
+  state.view.customStyle.text = val
+  renderChart(state.view)
+}
+
+const onLegendChange = val => {
+  state.view.customStyle.legend = val
+  renderChart(state.view)
+}
+
 const save = () => {
   saveChart(state.view)
 }
@@ -435,6 +455,10 @@ initDataset()
                   @onSizeChange="onSizeChange"
                   @onLabelChange="onLabelChange"
                   @onTooltipChange="onTooltipChange"
+                  @onChangeXAxisForm="onChangeXAxisForm"
+                  @onChangeYAxisForm="onChangeYAxisForm"
+                  @onTextChange="onTextChange"
+                  @onLegendChange="onLegendChange"
                 />
               </el-tab-pane>
 

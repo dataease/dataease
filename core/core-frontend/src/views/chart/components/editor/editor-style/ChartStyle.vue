@@ -23,7 +23,16 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['onColorChange', 'onSizeChange', 'onLabelChange', 'onTooltipChange'])
+const emit = defineEmits([
+  'onColorChange',
+  'onSizeChange',
+  'onLabelChange',
+  'onTooltipChange',
+  'onChangeXAxisForm',
+  'onChangeYAxisForm',
+  'onTextChange',
+  'onLegendChange'
+])
 
 const onColorChange = val => {
   emit('onColorChange', val)
@@ -39,6 +48,22 @@ const onLabelChange = val => {
 
 const onTooltipChange = val => {
   emit('onTooltipChange', val)
+}
+
+const onChangeXAxisForm = val => {
+  emit('onChangeXAxisForm', val)
+}
+
+const onChangeYAxisForm = val => {
+  emit('onChangeYAxisForm', val)
+}
+
+const onTextChange = val => {
+  emit('onTextChange', val)
+}
+
+const onLegendChange = val => {
+  emit('onLegendChange', val)
 }
 </script>
 
@@ -101,19 +126,35 @@ const onTooltipChange = val => {
         <span class="padding-lr">{{ t('chart.module_style') }}</span>
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
           <el-collapse-item name="xAxis" :title="t('chart.xAxis')">
-            <x-axis-selector />
+            <x-axis-selector
+              class="attr-selector"
+              :chart="props.chart"
+              @onChangeXAxisForm="onChangeXAxisForm"
+            />
           </el-collapse-item>
 
           <el-collapse-item name="yAxis" :title="$t('chart.yAxis')">
-            <y-axis-selector />
+            <y-axis-selector
+              class="attr-selector"
+              :chart="props.chart"
+              @onChangeYAxisForm="onChangeYAxisForm"
+            />
           </el-collapse-item>
 
           <el-collapse-item name="title" :title="$t('chart.title')">
-            <title-selector />
+            <title-selector
+              class="attr-selector"
+              :chart="props.chart"
+              @onTextChange="onTextChange"
+            />
           </el-collapse-item>
 
           <el-collapse-item name="legend" :title="$t('chart.legend')">
-            <legend-selector />
+            <legend-selector
+              class="attr-selector"
+              :chart="props.chart"
+              @onLegendChange="onLegendChange"
+            />
           </el-collapse-item>
         </el-collapse>
       </el-row>
