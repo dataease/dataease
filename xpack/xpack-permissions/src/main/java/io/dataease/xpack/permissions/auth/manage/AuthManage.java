@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Component
+@Transactional
 public class AuthManage {
     private final static int ROOTID = 0;
 
@@ -188,9 +189,11 @@ public class AuthManage {
         if (ObjectUtils.isEmpty(busiResourceEnum)) {
             DEException.throwException("invalid flag value");
         }
+        Long oid = AuthUtils.getUser().getDefaultOid();
+        int flag = busiResourceEnum.getFlag();
         PermissionVO vo = new PermissionVO();
         if (request.getType() == 0) {
-            List<UserRole> userRoles = roleManage.userRole(request.getId());
+            List<UserRole> userRoles = roleManage.userRole(request.getId(), oid);
 
             if (CollectionUtil.isNotEmpty(userRoles)) {
                 for (int i = 0; i < userRoles.size(); i++) {
@@ -205,7 +208,7 @@ public class AuthManage {
                 }
                 userRoles = userRoles.stream().filter(item -> !item.isRoot()).toList();
             }
-            List<PermissionItem> permissionItems = userAuthManage.permissionItems(request.getId(), busiResourceEnum.getFlag());
+            List<PermissionItem> permissionItems = userAuthManage.permissionItems(request.getId(), oid, flag);
             vo.setPermissions(permissionItems);
 
             if (CollectionUtil.isNotEmpty(userRoles)) {
@@ -213,8 +216,8 @@ public class AuthManage {
                 String cacheName = "role_busi_pers";
                 List<PermissionOrigin> cachePermissionOrigins = new ArrayList<>();
                 rids = rids.stream().filter(rid -> {
-                    if (CacheUtils.keyExist(cacheName, rid.toString())) {
-                        Object o = CacheUtils.get(cacheName, rid.toString());
+                    if (CacheUtils.keyExist(cacheName, rid.toString() + flag)) {
+                        Object o = CacheUtils.get(cacheName, rid.toString() + flag);
                         PermissionOrigin origin = new PermissionOrigin();
                         origin.setId(rid);
                         origin.setPermissions((List<PermissionItem>) o);
@@ -225,7 +228,7 @@ public class AuthManage {
                 }).toList();
                 List<PermissionOrigin> permissionOrigins = new ArrayList<>();
                 if (CollectionUtil.isNotEmpty(rids)) {
-                    permissionOrigins = busiAuthExtMapper.batchRolePermission(rids, busiResourceEnum.getFlag());
+                    permissionOrigins = busiAuthExtMapper.batchRolePermission(rids, flag);
                 }
                 permissionOrigins = CollectionUtil.addAllIfNotContains(permissionOrigins, cachePermissionOrigins);
                 if (CollectionUtil.isNotEmpty(permissionOrigins)) {
@@ -235,7 +238,7 @@ public class AuthManage {
                         List<UserRole> roles = roleMap.get(rid);
                         permissionOrigin.setName(roles.get(0).getName());
                         permissionOrigin.setPermissions(authWeightService.filterValid(permissionOrigin.getPermissions()));
-                        CacheUtils.put(cacheName, rid.toString(), permissionOrigin.getPermissions());
+                        CacheUtils.put(cacheName, rid.toString() + flag, permissionOrigin.getPermissions());
                     });
                 }
                 vo.setPermissionOrigins(permissionOrigins);
@@ -247,7 +250,7 @@ public class AuthManage {
                 BeanUtils.copyBean(vo, roleInfo, "permissions");
                 return vo;
             }
-            List<PermissionItem> permissionItems = roleAuthManage.permissionItems(request.getId(), busiResourceEnum.getFlag());
+            List<PermissionItem> permissionItems = roleAuthManage.permissionItems(request.getId(), flag);
             vo.setPermissions(permissionItems);
             return vo;
         }
@@ -315,6 +318,7 @@ public class AuthManage {
         deleteBusiPer(flag, id, permissions, type);
         permissions = authWeightService.filterValid(permissions);
         if (CollectionUtil.isEmpty(permissions)) return;
+        Long oid = AuthUtils.getUser().getDefaultOid();
         if (type == 0) {
             List<PerAuthBusiUser> busiUsers = permissions.stream().map(per -> {
                 PerAuthBusiUser userPermission = new PerAuthBusiUser();
@@ -325,7 +329,9 @@ public class AuthManage {
                 userPermission.setResourceType(flag);
                 return userPermission;
             }).toList();
-            userAuthManage.saveBatch(busiUsers);
+            CacheUtils.remove("user_busi_pers", id.toString() + oid + flag, t -> {
+                userAuthManage.saveBatch(busiUsers);
+            });
         } else {
             List<PerAuthBusiRole> busiRoles = permissions.stream().map(per -> {
                 PerAuthBusiRole rolePermission = new PerAuthBusiRole();
@@ -336,7 +342,9 @@ public class AuthManage {
                 rolePermission.setResourceType(flag);
                 return rolePermission;
             }).toList();
-            roleAuthManage.saveBatch(busiRoles);
+            CacheUtils.remove("role_busi_pers", id.toString() + flag, t -> {
+                roleAuthManage.saveBatch(busiRoles);
+            });
         }
     }
 
@@ -405,7 +413,10 @@ public class AuthManage {
             perAuthMenu.setRid(id);
             return perAuthMenu;
         }).toList();
-        menuAuthManage.saveBatch(perAuthMenus);
+        CacheUtils.remove("role_menu_pers", id.toString(), t -> {
+            menuAuthManage.saveBatch(perAuthMenus);
+        });
+
     }
 
     @Transactional
@@ -439,8 +450,11 @@ public class AuthManage {
                     return busiUser;
                 });
             }).toList();
-            deleteBusiTargetPer(flag, ids, permissions, type);
-            userAuthManage.saveBatch(busiUsers);
+            Long oid = AuthUtils.getUser().getDefaultOid();
+            CacheUtils.remove("user_busi_pers", uids.stream().map(uid -> uid.toString() + oid + flag).toList(), t -> {
+                deleteBusiTargetPer(flag, ids, permissions, type);
+                userAuthManage.saveBatch(busiUsers);
+            });
         } else {
             List<Long> rids = permissions.stream().map(PermissionItem::getId).toList();
             List<PermissionBO> permissionBOS = busiAuthExtMapper.queryExistRolePer(ids, flag, rids);
@@ -462,8 +476,11 @@ public class AuthManage {
                     return busiRole;
                 });
             }).toList();
-            deleteBusiTargetPer(flag, ids, permissions, type);
-            roleAuthManage.saveBatch(busiRoles);
+            CacheUtils.remove("role_busi_pers", rids.stream().map(rid -> rid.toString() + flag).toList(), t -> {
+                deleteBusiTargetPer(flag, ids, permissions, type);
+                roleAuthManage.saveBatch(busiRoles);
+            });
+
         }
     }
 
@@ -490,8 +507,10 @@ public class AuthManage {
                 return menuRole;
             });
         }).toList();
-        deleteMenuTargetPer(ids, permissions);
-        menuAuthManage.saveBatch(menuRoles);
+        CacheUtils.remove("role_menu_pers", rids.stream().map(rid -> rid.toString()).toList(), t -> {
+            deleteMenuTargetPer(ids, permissions);
+            menuAuthManage.saveBatch(menuRoles);
+        });
     }
 
     private Map<Long, Map<Long, Integer>> formatMap(List<PermissionBO> list) {

@@ -109,7 +109,7 @@ public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBu
         return menuAuthExtMapper.menuIds();
     }
 
-    @Cacheable(value = "user_busi_pers", key = "#rid.toString() + #flag.toString()")
+    @Cacheable(value = "role_busi_pers", key = "#rid.toString() + #flag.toString()")
     public List<PermissionItem> permissionItems(Long rid, Integer flag) {
         List<PermissionItem> permissionItems = busiAuthExtMapper.rolePermission(rid, flag);
         permissionItems = authWeightService.filterValid(permissionItems);
