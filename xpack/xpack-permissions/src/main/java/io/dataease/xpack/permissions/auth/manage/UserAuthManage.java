@@ -35,6 +35,7 @@ public class UserAuthManage extends ServiceImpl<PerAuthBusiUserMapper, PerAuthBu
 
     /**
      * 对rootWay有权限的
+     *
      * @param rootWay
      * @return
      */
@@ -67,8 +68,8 @@ public class UserAuthManage extends ServiceImpl<PerAuthBusiUserMapper, PerAuthBu
         saveBatch(busiUsers);
     }
 
-    @Cacheable(value = "user_busi_pers", key = "#uid.toString() + #flag.toString()")
-    public List<PermissionItem> permissionItems(Long uid, Integer flag) {
+    @Cacheable(value = "user_busi_pers", key = "#uid.toString() + #oid.toString() + #flag.toString()")
+    public List<PermissionItem> permissionItems(Long uid, Long oid, Integer flag) {
         List<PermissionItem> permissionItems = busiAuthExtMapper.userPermission(uid, flag);
         permissionItems = authWeightService.filterValid(permissionItems);
         return permissionItems;

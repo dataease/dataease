@@ -2,9 +2,12 @@ package io.dataease.utils;
 
 
 import io.dataease.cache.DECacheService;
+import io.dataease.exception.DEException;
 import org.apache.commons.lang3.ObjectUtils;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 
 public class CacheUtils {
@@ -40,5 +43,27 @@ public class CacheUtils {
 
     public static void keyRemove(String cacheName, String key) {
         deCacheService.keyRemove(cacheName, key);
+    }
+
+    public static void remove(String cacheName, String key, Consumer consumer) {
+        deCacheService.keyRemove(cacheName, key);
+        consumer.accept(null);
+        try {
+            TimeUnit.MILLISECONDS.sleep(1000L);
+            deCacheService.keyRemove(cacheName, key);
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+    }
+
+    public static void remove(String cacheName, List<String> keys, Consumer consumer) {
+        keys.forEach(key -> deCacheService.keyRemove(cacheName, key));
+        consumer.accept(null);
+        try {
+            TimeUnit.MILLISECONDS.sleep(1000L);
+            keys.forEach(key -> deCacheService.keyRemove(cacheName, key));
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
     }
 }
