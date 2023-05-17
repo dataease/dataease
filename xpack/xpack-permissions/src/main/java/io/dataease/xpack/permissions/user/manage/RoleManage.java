@@ -3,15 +3,16 @@ package io.dataease.xpack.permissions.user.manage;
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.permissions.role.dto.RoleCopyRequest;
-import io.dataease.api.permissions.role.dto.UnmountUserRequest;
 import io.dataease.api.permissions.role.dto.RoleCreator;
-import io.dataease.api.permissions.role.vo.RoleDetailVO;
 import io.dataease.api.permissions.role.dto.RoleEditor;
+import io.dataease.api.permissions.role.dto.UnmountUserRequest;
+import io.dataease.api.permissions.role.vo.RoleDetailVO;
 import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.CacheUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.xpack.permissions.auth.manage.RoleAuthManage;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerRole;
@@ -25,6 +26,7 @@ import io.dataease.xpack.permissions.user.entity.UserRole;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Lazy
+@Transactional
 public class RoleManage {
 
     private static final String ORG_ADMIN = "组织管理员";
@@ -147,41 +150,52 @@ public class RoleManage {
     public void deleteRole(Long rid) {
         QueryWrapper<PerUserRole> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("rid", rid);
-        Long count = perUserRoleMapper.selectCount(queryWrapper);
-        if (count > 0) {
-            perUserRoleMapper.delete(queryWrapper);
+        List<PerUserRole> perUserRoles = perUserRoleMapper.selectList(queryWrapper);
+        if (CollectionUtil.isNotEmpty(perUserRoles)) {
+            Long oid = AuthUtils.getUser().getDefaultOid();
+            List<String> uids = perUserRoles.stream().map(item -> item.getUid().toString() + oid).toList();
+            CacheUtils.remove("user_roles", uids, t -> {
+                perUserRoleMapper.delete(queryWrapper);
+            });
         }
         perRoleMapper.deleteById(rid);
         userPageManage.deleteByEmptyRole();
     }
 
     public void mountUser(Long rid, List<Long> uids) {
+        Long oid = AuthUtils.getUser().getDefaultOid();
+        CacheUtils.remove("user_roles", uids.stream().map(uid -> uid.toString() + oid).toList(), t -> {
+            List<PerUserRole> mappings = uids.stream().map(id -> buildUserRole(rid, id)).toList();
+            roleBatchManage.save(mappings);
+        });
+    }
+
+    private PerUserRole buildUserRole(Long rid, Long uid) {
         Long defaultOid = AuthUtils.getUser().getDefaultOid();
-        List<PerUserRole> mappings = uids.stream().map(id -> {
-            PerUserRole userRole = new PerUserRole();
-            userRole.setRid(rid);
-            userRole.setUid(id);
-            userRole.setId(IDUtils.snowID());
-            userRole.setOid(defaultOid);
-            userRole.setCreateTime(System.currentTimeMillis());
-            return userRole;
-        }).toList();
-        roleBatchManage.save(mappings);
+        PerUserRole userRole = new PerUserRole();
+        userRole.setRid(rid);
+        userRole.setUid(uid);
+        userRole.setId(IDUtils.snowID());
+        userRole.setOid(defaultOid);
+        userRole.setCreateTime(System.currentTimeMillis());
+        return userRole;
     }
 
     public void mountWithUserSave(Long uid, List<Long> rids) {
         Long defaultOid = AuthUtils.getUser().getDefaultOid();
-        roleExtMapper.deleteUserRole(defaultOid, uid);
-        List<PerUserRole> mappings = rids.stream().map(rid -> {
-            PerUserRole userRole = new PerUserRole();
-            userRole.setRid(rid);
-            userRole.setUid(uid);
-            userRole.setId(IDUtils.snowID());
-            userRole.setOid(defaultOid);
-            userRole.setCreateTime(System.currentTimeMillis());
-            return userRole;
-        }).toList();
-        roleBatchManage.save(mappings);
+        List<PerRole> perRoles = roleExtMapper.roleInfoByUid(uid, defaultOid);
+        List<Long> existRids = null;
+        if (CollectionUtil.isNotEmpty(perRoles)) {
+            existRids = perRoles.stream().map(PerRole::getId).toList();
+            if (CollectionUtil.isEqualList(existRids.stream().sorted().toList(), rids.stream().sorted().toList())) {
+                return;
+            }
+        }
+        CacheUtils.remove("user_roles", uid.toString() + defaultOid, p -> {
+            roleExtMapper.deleteUserRole(defaultOid, uid);
+            List<PerUserRole> mappings = rids.stream().map(rid -> buildUserRole(rid, uid)).toList();
+            roleBatchManage.save(mappings);
+        });
     }
 
     public void edit(RoleEditor editor) {
@@ -266,32 +280,36 @@ public class RoleManage {
         return oid.equals(userRole.getOid());
     }
 
-    @Transactional
     public void unMountUser(UnmountUserRequest request) {
-        QueryWrapper<PerUserRole> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("rid", request.getRid());
-        queryWrapper.eq("uid", request.getUid());
-        perUserRoleMapper.delete(queryWrapper);
-
-        queryWrapper.clear();
-        queryWrapper.eq("uid", request.getUid());
-        queryWrapper.orderByAsc("create_time");
-        List<PerUserRole> perUserRoles = perUserRoleMapper.selectList(queryWrapper);
-        if (CollectionUtil.isEmpty(perUserRoles)) {
-            // 删除无角色用户
-            userPageManage.delete(request.getUid());
-        }
-
+        Long uid = request.getUid();
         Long oid = AuthUtils.getUser().getDefaultOid();
-        Map<Boolean, List<PerUserRole>> listMap = perUserRoles.stream().collect(Collectors.groupingBy(item -> innerOrg(item, oid)));
-        if (CollectionUtil.isEmpty(listMap.get(true))) {
-            List<PerUserRole> outOrgMappings = listMap.get(false);
-            if (CollectionUtil.isEmpty(outOrgMappings)) {
-                DEException.throwException("system error");
+        CacheUtils.remove("user_roles", uid.toString() + oid, t -> {
+            QueryWrapper<PerUserRole> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("rid", request.getRid());
+            queryWrapper.eq("uid", uid);
+            perUserRoleMapper.delete(queryWrapper);
+
+            queryWrapper.clear();
+            queryWrapper.eq("uid", uid);
+            queryWrapper.orderByAsc("create_time");
+            List<PerUserRole> perUserRoles = perUserRoleMapper.selectList(queryWrapper);
+            if (CollectionUtil.isEmpty(perUserRoles)) {
+                // 删除无角色用户
+                userPageManage.delete(uid);
             }
-            Long newOid = outOrgMappings.get(0).getOid();
-            userPageManage.switchOrg(request.getUid(), newOid);
-        }
+
+
+            Map<Boolean, List<PerUserRole>> listMap = perUserRoles.stream().collect(Collectors.groupingBy(item -> innerOrg(item, oid)));
+            if (CollectionUtil.isEmpty(listMap.get(true))) {
+                List<PerUserRole> outOrgMappings = listMap.get(false);
+                if (CollectionUtil.isEmpty(outOrgMappings)) {
+                    DEException.throwException("system error");
+                }
+                Long newOid = outOrgMappings.get(0).getOid();
+                userPageManage.switchOrg(uid, newOid);
+            }
+        });
+
     }
 
     public RoleInfo roleInfo(Long rid) {
@@ -303,8 +321,9 @@ public class RoleManage {
         return roleInfo;
     }
 
-    public List<UserRole> userRole(Long uid) {
-        List<PerRole> perRoles = roleExtMapper.roleInfoByUid(uid, AuthUtils.getUser().getDefaultOid());
+    @Cacheable(value = "user_roles", key = "#uid.toString() + #oid.toString()")
+    public List<UserRole> userRole(Long uid, Long oid) {
+        List<PerRole> perRoles = roleExtMapper.roleInfoByUid(uid, oid);
         return buildResult(perRoles);
     }
 
@@ -331,6 +350,7 @@ public class RoleManage {
     public Long adminId(Long oid) {
         return roleExtMapper.adminRoleId(oid);
     }
+
     public Long readonlyId(Long oid) {
         return roleExtMapper.readonlyRoleId(oid);
     }

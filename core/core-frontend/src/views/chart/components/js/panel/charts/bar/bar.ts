@@ -1,6 +1,13 @@
 import { Column, ColumnOptions } from '@antv/g2plot/lib/plots/column'
 import _ from 'lodash'
-import { getTheme } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  getLabel,
+  getTheme,
+  getTooltip,
+  getLegend,
+  getXAxis,
+  getYAxis
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { G2PlotDrawOptions, G2PlotChartView } from '@/views/chart/components/js/panel/types'
 
 const DEFAULT_DATA_BAR: any[] = [
@@ -41,12 +48,27 @@ const DEFAULT_DATA_BAR: any[] = [
 export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   drawChart(drawOptions: G2PlotDrawOptions<Column>): Column {
     if (drawOptions.chart?.data) {
+      // theme
       const theme = getTheme(drawOptions.chart)
+      // label
+      const label = getLabel(drawOptions.chart)
+      // tooltip
+      const tooltip = getTooltip(drawOptions.chart)
+      // style
+      const legend = getLegend(drawOptions.chart)
+      const xAxis = getXAxis(drawOptions.chart)
+      const yAxis = getYAxis(drawOptions.chart)
+
       // data
       const data = _.cloneDeep(drawOptions?.chart?.data?.data)
       if (!data) return drawOptions.chartObj
       const options: ColumnOptions = {
         theme: theme,
+        label: label,
+        tooltip: tooltip,
+        legend: legend,
+        xAxis: xAxis,
+        yAxis: yAxis,
         data: data,
         xField: 'field',
         yField: 'value',

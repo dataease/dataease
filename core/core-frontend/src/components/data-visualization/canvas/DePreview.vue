@@ -2,7 +2,8 @@
 import { getStyle, getCanvasStyle } from '@/utils/style'
 import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
-import { computed, ref, toRefs } from 'vue'
+import { computed, nextTick, onMounted, ref, toRefs } from 'vue'
+import { changeRefComponentsSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 
 const props = defineProps({
   canvasStyleData: {
@@ -12,26 +13,52 @@ const props = defineProps({
   componentData: {
     type: Object,
     required: true
+  },
+  canvasId: {
+    type: String,
+    required: false,
+    default: 'canvas-main'
   }
 })
 
-const { canvasStyleData, componentData } = toRefs(props)
+const { canvasStyleData, componentData, canvasId } = toRefs(props)
+const domId = 'preview-' + canvasId.value
+const scaleWidth = ref(100)
+const previewCanvas = ref(null)
+const domWidth = ref()
+const domHeight = ref()
 
 const canvasStyle = computed(() => {
   if (canvasStyleData.value && canvasStyleData.value.width) {
     return {
       ...getCanvasStyle(canvasStyleData.value),
-      width: changeStyleWithScale(canvasStyleData.value?.width) + 'px',
-      height: changeStyleWithScale(canvasStyleData.value?.height) + 'px'
+      height: changeStyleWithScale(canvasStyleData.value?.height, scaleWidth.value) + 'px'
     }
   } else {
     return {}
   }
 })
+
+const restore = () => {
+  nextTick(() => {
+    if (previewCanvas.value) {
+      //div容器获取tableBox.value.clientWidth
+      let canvasWidth = previewCanvas.value.clientWidth
+      scaleWidth.value = (canvasWidth * 100) / canvasStyleData.value.width
+      changeRefComponentsSizeWithScale(componentData.value, canvasStyleData.value, scaleWidth.value)
+      console.log('test==' + JSON.stringify(componentData.value))
+    }
+  })
+}
+
+onMounted(() => {
+  restore()
+  window.addEventListener('resize', restore)
+})
 </script>
 
 <template>
-  <div class="canvas-container" :style="canvasStyle">
+  <div class="canvas-container" :style="canvasStyle" ref="previewCanvas">
     <ComponentWrapper v-for="(item, index) in componentData" :key="index" :config="item" />
   </div>
 </template>
@@ -39,8 +66,7 @@ const canvasStyle = computed(() => {
 <style lang="less" scoped>
 .canvas-container {
   width: 100%;
-  height: 100%;
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: auto;
   position: relative;
 }

@@ -1,4 +1,9 @@
 import { hexColorToRGBA } from '../../util.js'
+import { equalsAny } from '@/views/chart/components/editor/util/StringUtils'
+import {
+  DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_STYLE
+} from '@/views/chart/components/editor/util/chart'
 
 export function getPadding(chart) {
   if (chart.drill) {
@@ -116,627 +121,627 @@ export function getTheme(chart) {
   return theme
 }
 // 通用label
-// export function getLabel(chart) {
-//   let label = {}
-//   let customAttr = {}
-//   if (chart.customAttr) {
-//     customAttr = JSON.parse(chart.customAttr)
-//     // label
-//     if (customAttr.label) {
-//       const l = JSON.parse(JSON.stringify(customAttr.label))
-//       if (l.show) {
-//         if (equalsAny(chart.type, 'pie', 'pie-donut')) {
-//           label = {
-//             type: l.position,
-//             autoRotate: false
-//           }
-//           if (l.position === 'outer') {
-//             label.type = 'spider'
-//           }
-//         } else if (chart.type.includes('line') || chart.type.includes('area')) {
-//           label = {
-//             position: l.position,
-//             offsetY: -8
-//           }
-//         } else if (equalsAny(chart.type, 'pie-rose', 'pie-donut-rose')) {
-//           label = {
-//             autoRotate: true
-//           }
-//           if (l.position === 'inner') {
-//             label.offset = -10
-//           }
-//         } else {
-//           label = {
-//             position: l.position
-//           }
-//         }
-//         label.style = {
-//           fill: l.color,
-//           fontSize: parseInt(l.fontSize)
-//         }
-//         // label value formatter
-//         if (chart.type && chart.type !== 'waterfall') {
-//           label.formatter = function (param) {
-//             let yAxis, extStack, xaxisExt
-//             let res = param.value
-//             try {
-//               yAxis = JSON.parse(chart.yaxis)
-//             } catch (e) {
-//               yAxis = JSON.parse(JSON.stringify(chart.yaxis))
-//             }
-//             try {
-//               extStack = JSON.parse(chart.extStack)
-//             } catch (e) {
-//               extStack = JSON.parse(JSON.stringify(chart.extStack))
-//             }
-//             try {
-//               xaxisExt = JSON.parse(chart.xaxisExt)
-//             } catch (e) {
-//               xaxisExt = JSON.parse(JSON.stringify(chart.xaxisExt))
-//             }
-//
-//             if (
-//               equalsAny(
-//                 chart.type,
-//                 'line',
-//                 'bar-stack',
-//                 'line-stack',
-//                 'bar-stack-horizontal',
-//                 'percentage-bar-stack',
-//                 'percentage-bar-stack-horizontal'
-//               )
-//             ) {
-//               let f
-//               if (extStack?.length > 0 || xaxisExt?.length > 0) {
-//                 f = yAxis[0]
-//               } else {
-//                 for (let i = 0; i < yAxis.length; i++) {
-//                   if (yAxis[i].name === param.category) {
-//                     f = yAxis[i]
-//                     break
-//                   }
-//                 }
-//               }
-//               if (!f) {
-//                 return res
-//               }
-//               if (!f.formatterCfg) {
-//                 f.formatterCfg = formatterItem
-//               }
-//               // 百分比堆叠柱状图保留小数处理
-//               if (chart.type.includes('percentage')) {
-//                 if (!param.value) {
-//                   return
-//                 }
-//                 f.formatterCfg.type = 'percent'
-//                 f.formatterCfg.decimalCount = l.reserveDecimalCount
-//                 f.formatterCfg.thousandSeparator = false
-//               }
-//               res = valueFormatter(param.value, f.formatterCfg)
-//             } else if (equalsAny(chart.type, 'bar-group')) {
-//               const f = yAxis[0]
-//               if (f.formatterCfg) {
-//                 res = valueFormatter(param.value, f.formatterCfg)
-//               } else {
-//                 res = valueFormatter(param.value, formatterItem)
-//               }
-//             } else if (equalsAny(chart.type, 'bar-group-stack')) {
-//               const f = yAxis[0]
-//               let formatterCfg = formatterItem
-//               if (f.formatterCfg) {
-//                 formatterCfg = f.formatterCfg
-//               }
-//               const labelContent = l.labelContent ?? ['quota']
-//               const contentItems = []
-//               if (labelContent.includes('group')) {
-//                 contentItems.push(param.group)
-//               }
-//               if (labelContent.includes('stack')) {
-//                 contentItems.push(param.category)
-//               }
-//               if (labelContent.includes('quota')) {
-//                 contentItems.push(valueFormatter(param.value, formatterCfg))
-//               }
-//               res = contentItems.join('\n')
-//             } else {
-//               for (let i = 0; i < yAxis.length; i++) {
-//                 const f = yAxis[i]
-//                 if (f.name === param.category) {
-//                   let formatterCfg = formatterItem
-//                   if (f.formatterCfg) {
-//                     formatterCfg = f.formatterCfg
-//                   }
-//                   // 饼图和环形图格式优化
-//                   if (equalsAny(chart.type, 'pie', 'pie-donut')) {
-//                     // 这边默认值取指标是为了兼容存量的视图
-//                     const labelContent = l.labelContent ?? ['quota']
-//                     const contentItems = []
-//                     if (labelContent.includes('dimension')) {
-//                       contentItems.push(param.field)
-//                     }
-//                     if (labelContent.includes('quota')) {
-//                       contentItems.push(valueFormatter(param.value, formatterCfg))
-//                     }
-//                     if (labelContent.includes('proportion')) {
-//                       const percentage = `${(Math.round(param.percent * 10000) / 100).toFixed(
-//                         l.reserveDecimalCount
-//                       )}%`
-//                       if (labelContent.length === 3) {
-//                         contentItems.push(`(${percentage})`)
-//                       } else {
-//                         contentItems.push(percentage)
-//                       }
-//                     }
-//                     res = contentItems.join(' ')
-//                   } else if (equalsAny(chart.type, 'pie-rose', 'pie-donut-rose')) {
-//                     const quotaValue = valueFormatter(param.value, formatterCfg)
-//                     res = [param.field, quotaValue].join(' ')
-//                   } else {
-//                     res = valueFormatter(param.value, formatterCfg)
-//                   }
-//                   break
-//                 }
-//               }
-//             }
-//             return res
-//           }
-//         }
-//       } else {
-//         label = false
-//       }
-//     }
-//   }
-//   return label
-// }
-// // 通用tooltip
-// export function getTooltip(chart) {
-//   let tooltip = {}
-//   let customAttr = {}
-//   if (chart.customAttr) {
-//     customAttr = JSON.parse(chart.customAttr)
-//     // tooltip
-//     if (customAttr.tooltip) {
-//       const t = JSON.parse(JSON.stringify(customAttr.tooltip))
-//       if (t.show) {
-//         tooltip = {}
-//         // tooltip value formatter
-//         if (chart.type && chart.type !== 'waterfall') {
-//           tooltip.formatter = function (param) {
-//             let yAxis, extStack
-//             let res = param.value
-//             try {
-//               yAxis = JSON.parse(chart.yaxis)
-//             } catch (e) {
-//               yAxis = JSON.parse(JSON.stringify(chart.yaxis))
-//             }
-//             try {
-//               extStack = JSON.parse(chart.extStack)
-//             } catch (e) {
-//               extStack = JSON.parse(JSON.stringify(chart.extStack))
-//             }
-//
-//             let obj
-//             if (
-//               equalsAny(
-//                 chart.type,
-//                 'bar-stack',
-//                 'line-stack',
-//                 'bar-stack-horizontal',
-//                 'percentage-bar-stack',
-//                 'percentage-bar-stack-horizontal'
-//               )
-//             ) {
-//               let f
-//               if (extStack && extStack.length > 0) {
-//                 obj = { name: param.category, value: param.value }
-//                 f = yAxis[0]
-//               } else {
-//                 obj = { name: param.category, value: param.value }
-//                 for (let i = 0; i < yAxis.length; i++) {
-//                   if (yAxis[i].name === param.category) {
-//                     f = yAxis[i]
-//                     break
-//                   }
-//                 }
-//               }
-//               if (!f) {
-//                 return res
-//               }
-//               if (!f.formatterCfg) {
-//                 f.formatterCfg = formatterItem
-//               }
-//               if (chart.type.includes('percentage')) {
-//                 if (!param.value) {
-//                   obj.value = 0
-//                   return obj
-//                 }
-//                 // 保留小数位数和标签保持一致，这边拿一下标签的配置
-//                 const l = JSON.parse(JSON.stringify(customAttr.label))
-//                 f.formatterCfg.type = 'percent'
-//                 f.formatterCfg.decimalCount = l.reserveDecimalCount
-//                 f.formatterCfg.thousandSeparator = false
-//               }
-//               res = valueFormatter(param.value, f.formatterCfg)
-//             } else if (chart.type === 'word-cloud') {
-//               obj = { name: param.text, value: param.value }
-//               for (let i = 0; i < yAxis.length; i++) {
-//                 const f = yAxis[i]
-//                 if (f.formatterCfg) {
-//                   res = valueFormatter(param.value, f.formatterCfg)
-//                 } else {
-//                   res = valueFormatter(param.value, formatterItem)
-//                 }
-//               }
-//             } else if (chart.type.includes('treemap')) {
-//               obj = { name: param.name, value: param.value }
-//               for (let i = 0; i < yAxis.length; i++) {
-//                 const f = yAxis[i]
-//                 if (f.formatterCfg) {
-//                   res = valueFormatter(param.value, f.formatterCfg)
-//                 } else {
-//                   res = valueFormatter(param.value, formatterItem)
-//                 }
-//               }
-//             } else if (includesAny(chart.type, 'pie', 'funnel')) {
-//               obj = { name: param.field, value: param.value }
-//               for (let i = 0; i < yAxis.length; i++) {
-//                 const f = yAxis[i]
-//                 if (f.formatterCfg) {
-//                   res = valueFormatter(param.value, f.formatterCfg)
-//                 } else {
-//                   res = valueFormatter(param.value, formatterItem)
-//                 }
-//               }
-//             } else if (
-//               includesAny(chart.type, 'bar', 'scatter', 'radar', 'area') &&
-//               !chart.type.includes('group')
-//             ) {
-//               obj = { name: param.category, value: param.value }
-//               for (let i = 0; i < yAxis.length; i++) {
-//                 const f = yAxis[i]
-//                 if (f.name === param.category) {
-//                   if (f.formatterCfg) {
-//                     res = valueFormatter(param.value, f.formatterCfg)
-//                   } else {
-//                     res = valueFormatter(param.value, formatterItem)
-//                   }
-//                   break
-//                 }
-//               }
-//             } else if (chart.type === 'line') {
-//               obj = { name: param.category, value: param.value }
-//               const xAxisExt = JSON.parse(chart.xaxisExt)
-//               for (let i = 0; i < yAxis.length; i++) {
-//                 const f = yAxis[i]
-//                 if (f.name === param.category || (yAxis.length && xAxisExt.length)) {
-//                   if (f.formatterCfg) {
-//                     res = valueFormatter(param.value, f.formatterCfg)
-//                   } else {
-//                     res = valueFormatter(param.value, formatterItem)
-//                   }
-//                   break
-//                 }
-//               }
-//             } else if (chart.type.includes('group')) {
-//               if (chart.type === 'bar-group') {
-//                 obj = { name: param.category, value: param.value }
-//               } else {
-//                 let name = ''
-//                 if (param.group) {
-//                   name = param.name + '-'
-//                 }
-//                 if (param.category) {
-//                   name += param.category
-//                 }
-//                 obj = { name: name, value: param.value }
-//               }
-//               for (let i = 0; i < yAxis.length; i++) {
-//                 const f = yAxis[i]
-//                 if (f.formatterCfg) {
-//                   res = valueFormatter(param.value, f.formatterCfg)
-//                 } else {
-//                   res = valueFormatter(param.value, formatterItem)
-//                 }
-//               }
-//             } else {
-//               res = param.value
-//             }
-//             obj.value = res === null ? '' : res
-//             return obj
-//           }
-//         }
-//       } else {
-//         // 百分比堆叠柱状图隐藏 tooltip 设置 show 为 false 或者直接设置 tooltip 为 false 都无效，会变成分组显示，
-//         // 需要将容器(container)或者内容框(showContent)设置为 false 或者 null 才可以隐藏
-//         if (chart.type.includes('percentage')) {
-//           tooltip.showContent = false
-//         } else {
-//           tooltip = false
-//         }
-//       }
-//     }
-//   }
-//   return tooltip
-// }
-// // 通用legend
-// export function getLegend(chart) {
-//   let legend = {}
-//   let customStyle
-//   if (chart.customStyle) {
-//     customStyle = JSON.parse(chart.customStyle)
-//     // legend
-//     if (customStyle.legend) {
-//       const l = JSON.parse(JSON.stringify(customStyle.legend))
-//       if (l.show) {
-//         let offsetX, offsetY, position
-//         const orient = l.orient
-//         const legendSymbol = l.icon
-//         // fix position
-//         if (l.hPosition === 'center') {
-//           position = l.vPosition === 'center' ? 'top' : l.vPosition
-//         } else if (l.vPosition === 'center') {
-//           position = l.hPosition === 'center' ? 'left' : l.hPosition
-//         } else {
-//           if (orient === 'horizontal') {
-//             position = l.vPosition + '-' + l.hPosition
-//           } else {
-//             position = l.hPosition + '-' + l.vPosition
-//           }
-//         }
-//         // fix offset
-//         if (orient === 'horizontal') {
-//           if (l.hPosition === 'left') {
-//             offsetX = 16
-//           } else if (l.hPosition === 'right') {
-//             offsetX = -16
-//           } else {
-//             offsetX = 0
-//           }
-//           if (l.vPosition === 'top') {
-//             offsetY = 0
-//           } else if (l.vPosition === 'bottom') {
-//             if (chart.drill) {
-//               offsetY = -16
-//             } else {
-//               offsetY = -4
-//             }
-//           } else {
-//             offsetY = 0
-//           }
-//         } else {
-//           if (l.hPosition === 'left') {
-//             offsetX = 10
-//           } else if (l.hPosition === 'right') {
-//             offsetX = -10
-//           } else {
-//             offsetX = 0
-//           }
-//           if (l.vPosition === 'top') {
-//             offsetY = 0
-//           } else if (l.vPosition === 'bottom') {
-//             if (chart.drill) {
-//               offsetY = -22
-//             } else {
-//               offsetY = -10
-//             }
-//           } else {
-//             offsetY = 0
-//           }
-//         }
-//
-//         legend = {
-//           layout: orient,
-//           position: position,
-//           offsetX: offsetX,
-//           offsetY: offsetY,
-//           marker: {
-//             symbol: legendSymbol
-//           },
-//           radio: false // 柱状图图例的聚焦功能，默认先关掉
-//         }
-//       } else {
-//         legend = false
-//       }
-//     }
-//   }
-//   return legend
-// }
-// // xAxis
-// export function getXAxis(chart) {
-//   let axis = {}
-//   let customStyle
-//   if (chart.customStyle) {
-//     customStyle = JSON.parse(chart.customStyle)
-//     // legend
-//     if (customStyle.xAxis) {
-//       const a = JSON.parse(JSON.stringify(customStyle.xAxis))
-//       if (a.show) {
-//         const title =
-//           a.name && a.name !== ''
-//             ? {
-//                 text: a.name,
-//                 style: {
-//                   fill: a.nameTextStyle.color,
-//                   fontSize: parseInt(a.nameTextStyle.fontSize)
-//                 },
-//                 spacing: 8
-//               }
-//             : null
-//         const grid = a.splitLine.show
-//           ? {
-//               line: {
-//                 style: {
-//                   stroke: a.splitLine.lineStyle.color,
-//                   lineWidth: parseInt(a.splitLine.lineStyle.width)
-//                 }
-//               }
-//             }
-//           : null
-//         const axisCfg = a.axisLine ? a.axisLine : DEFAULT_XAXIS_STYLE.axisLine
-//         const axisLine = axisCfg.show
-//           ? {
-//               style: {
-//                 stroke: axisCfg.lineStyle.color,
-//                 lineWidth: parseInt(axisCfg.lineStyle.width)
-//               }
-//             }
-//           : null
-//         const tickLine = axisCfg.show
-//           ? {
-//               style: {
-//                 stroke: axisCfg.lineStyle.color
-//               }
-//             }
-//           : null
-//         const label = a.axisLabel.show
-//           ? {
-//               rotate: (parseInt(a.axisLabel.rotate) * Math.PI) / 180,
-//               style: {
-//                 fill: a.axisLabel.color,
-//                 fontSize: parseInt(a.axisLabel.fontSize)
-//               },
-//               formatter: function (value) {
-//                 if (chart.type.includes('horizontal')) {
-//                   if (!a.axisLabelFormatter) {
-//                     return valueFormatter(value, formatterItem)
-//                   } else {
-//                     return valueFormatter(value, a.axisLabelFormatter)
-//                   }
-//                 } else {
-//                   return value
-//                 }
-//               }
-//             }
-//           : null
-//
-//         axis = {
-//           position: transAxisPosition(chart, a),
-//           title: title,
-//           grid: grid,
-//           label: label,
-//           line: axisLine,
-//           tickLine: tickLine
-//         }
-//
-//         // 轴值设置
-//         delete axis.minLimit
-//         delete axis.maxLimit
-//         delete axis.tickCount
-//         const axisValue = a.axisValue
-//         if (chart.type.includes('horizontal')) {
-//           if (axisValue && !axisValue.auto) {
-//             axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
-//             axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
-//             axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
-//           }
-//         }
-//       } else {
-//         axis = false
-//       }
-//     }
-//   }
-//   return axis
-// }
-// // yAxis
-// export function getYAxis(chart) {
-//   let axis = {}
-//   let customStyle
-//   if (chart.customStyle) {
-//     customStyle = JSON.parse(chart.customStyle)
-//     // legend
-//     if (customStyle.yAxis) {
-//       const a = JSON.parse(JSON.stringify(customStyle.yAxis))
-//       if (a.show) {
-//         const title =
-//           a.name && a.name !== ''
-//             ? {
-//                 text: a.name,
-//                 style: {
-//                   fill: a.nameTextStyle.color,
-//                   fontSize: parseInt(a.nameTextStyle.fontSize)
-//                 },
-//                 spacing: 8
-//               }
-//             : null
-//         const grid = a.splitLine.show
-//           ? {
-//               line: {
-//                 style: {
-//                   stroke: a.splitLine.lineStyle.color,
-//                   lineWidth: parseInt(a.splitLine.lineStyle.width)
-//                 }
-//               }
-//             }
-//           : null
-//         const axisCfg = a.axisLine ? a.axisLine : DEFAULT_YAXIS_STYLE.axisLine
-//         const axisLine = axisCfg.show
-//           ? {
-//               style: {
-//                 stroke: axisCfg.lineStyle.color,
-//                 lineWidth: parseInt(axisCfg.lineStyle.width)
-//               }
-//             }
-//           : null
-//         const tickLine = axisCfg.show
-//           ? {
-//               style: {
-//                 stroke: axisCfg.lineStyle.color
-//               }
-//             }
-//           : null
-//         const label = a.axisLabel.show
-//           ? {
-//               rotate: (parseInt(a.axisLabel.rotate) * Math.PI) / 180,
-//               style: {
-//                 fill: a.axisLabel.color,
-//                 fontSize: parseInt(a.axisLabel.fontSize)
-//               },
-//               formatter: function (value) {
-//                 if (chart.type === 'waterfall') {
-//                   return value
-//                 } else {
-//                   if (!chart.type.includes('horizontal')) {
-//                     if (!a.axisLabelFormatter) {
-//                       return valueFormatter(value, formatterItem)
-//                     } else {
-//                       return valueFormatter(value, a.axisLabelFormatter)
-//                     }
-//                   } else {
-//                     return value
-//                   }
-//                 }
-//               }
-//             }
-//           : null
-//
-//         axis = {
-//           position: transAxisPosition(chart, a),
-//           title: title,
-//           grid: grid,
-//           label: label,
-//           line: axisLine,
-//           tickLine: tickLine
-//         }
-//
-//         // 轴值设置
-//         delete axis.minLimit
-//         delete axis.maxLimit
-//         delete axis.tickCount
-//         const axisValue = a.axisValue
-//         if (!chart.type.includes('horizontal')) {
-//           if (axisValue && !axisValue.auto) {
-//             axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
-//             axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
-//             axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
-//           }
-//         }
-//       } else {
-//         axis = false
-//       }
-//     }
-//   }
-//   return axis
-// }
+export function getLabel(chart) {
+  let label = {}
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = chart.customAttr
+    // label
+    if (customAttr.label) {
+      const l = JSON.parse(JSON.stringify(customAttr.label))
+      if (l.show) {
+        if (equalsAny(chart.type, 'pie', 'pie-donut')) {
+          label = {
+            type: l.position,
+            autoRotate: false
+          }
+          if (l.position === 'outer') {
+            label.type = 'spider'
+          }
+        } else if (chart.type.includes('line') || chart.type.includes('area')) {
+          label = {
+            position: l.position,
+            offsetY: -8
+          }
+        } else if (equalsAny(chart.type, 'pie-rose', 'pie-donut-rose')) {
+          label = {
+            autoRotate: true
+          }
+          if (l.position === 'inner') {
+            label.offset = -10
+          }
+        } else {
+          label = {
+            position: l.position
+          }
+        }
+        label.style = {
+          fill: l.color,
+          fontSize: parseInt(l.fontSize)
+        }
+        // label value formatter
+        // if (chart.type && chart.type !== 'waterfall') {
+        //   label.formatter = function (param) {
+        //     let yAxis, extStack, xaxisExt
+        //     let res = param.value
+        //     try {
+        //       yAxis = JSON.parse(chart.yaxis)
+        //     } catch (e) {
+        //       yAxis = JSON.parse(JSON.stringify(chart.yaxis))
+        //     }
+        //     try {
+        //       extStack = JSON.parse(chart.extStack)
+        //     } catch (e) {
+        //       extStack = JSON.parse(JSON.stringify(chart.extStack))
+        //     }
+        //     try {
+        //       xaxisExt = JSON.parse(chart.xaxisExt)
+        //     } catch (e) {
+        //       xaxisExt = JSON.parse(JSON.stringify(chart.xaxisExt))
+        //     }
+        //
+        //     if (
+        //       equalsAny(
+        //         chart.type,
+        //         'line',
+        //         'bar-stack',
+        //         'line-stack',
+        //         'bar-stack-horizontal',
+        //         'percentage-bar-stack',
+        //         'percentage-bar-stack-horizontal'
+        //       )
+        //     ) {
+        //       let f
+        //       if (extStack?.length > 0 || xaxisExt?.length > 0) {
+        //         f = yAxis[0]
+        //       } else {
+        //         for (let i = 0; i < yAxis.length; i++) {
+        //           if (yAxis[i].name === param.category) {
+        //             f = yAxis[i]
+        //             break
+        //           }
+        //         }
+        //       }
+        //       if (!f) {
+        //         return res
+        //       }
+        //       if (!f.formatterCfg) {
+        //         f.formatterCfg = formatterItem
+        //       }
+        //       // 百分比堆叠柱状图保留小数处理
+        //       if (chart.type.includes('percentage')) {
+        //         if (!param.value) {
+        //           return
+        //         }
+        //         f.formatterCfg.type = 'percent'
+        //         f.formatterCfg.decimalCount = l.reserveDecimalCount
+        //         f.formatterCfg.thousandSeparator = false
+        //       }
+        //       res = valueFormatter(param.value, f.formatterCfg)
+        //     } else if (equalsAny(chart.type, 'bar-group')) {
+        //       const f = yAxis[0]
+        //       if (f.formatterCfg) {
+        //         res = valueFormatter(param.value, f.formatterCfg)
+        //       } else {
+        //         res = valueFormatter(param.value, formatterItem)
+        //       }
+        //     } else if (equalsAny(chart.type, 'bar-group-stack')) {
+        //       const f = yAxis[0]
+        //       let formatterCfg = formatterItem
+        //       if (f.formatterCfg) {
+        //         formatterCfg = f.formatterCfg
+        //       }
+        //       const labelContent = l.labelContent ?? ['quota']
+        //       const contentItems = []
+        //       if (labelContent.includes('group')) {
+        //         contentItems.push(param.group)
+        //       }
+        //       if (labelContent.includes('stack')) {
+        //         contentItems.push(param.category)
+        //       }
+        //       if (labelContent.includes('quota')) {
+        //         contentItems.push(valueFormatter(param.value, formatterCfg))
+        //       }
+        //       res = contentItems.join('\n')
+        //     } else {
+        //       for (let i = 0; i < yAxis.length; i++) {
+        //         const f = yAxis[i]
+        //         if (f.name === param.category) {
+        //           let formatterCfg = formatterItem
+        //           if (f.formatterCfg) {
+        //             formatterCfg = f.formatterCfg
+        //           }
+        //           // 饼图和环形图格式优化
+        //           if (equalsAny(chart.type, 'pie', 'pie-donut')) {
+        //             // 这边默认值取指标是为了兼容存量的视图
+        //             const labelContent = l.labelContent ?? ['quota']
+        //             const contentItems = []
+        //             if (labelContent.includes('dimension')) {
+        //               contentItems.push(param.field)
+        //             }
+        //             if (labelContent.includes('quota')) {
+        //               contentItems.push(valueFormatter(param.value, formatterCfg))
+        //             }
+        //             if (labelContent.includes('proportion')) {
+        //               const percentage = `${(Math.round(param.percent * 10000) / 100).toFixed(
+        //                 l.reserveDecimalCount
+        //               )}%`
+        //               if (labelContent.length === 3) {
+        //                 contentItems.push(`(${percentage})`)
+        //               } else {
+        //                 contentItems.push(percentage)
+        //               }
+        //             }
+        //             res = contentItems.join(' ')
+        //           } else if (equalsAny(chart.type, 'pie-rose', 'pie-donut-rose')) {
+        //             const quotaValue = valueFormatter(param.value, formatterCfg)
+        //             res = [param.field, quotaValue].join(' ')
+        //           } else {
+        //             res = valueFormatter(param.value, formatterCfg)
+        //           }
+        //           break
+        //         }
+        //       }
+        //     }
+        //     return res
+        //   }
+        // }
+      } else {
+        label = false
+      }
+    }
+  }
+  return label
+}
+// 通用tooltip
+export function getTooltip(chart) {
+  let tooltip = {}
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = chart.customAttr
+    // tooltip
+    if (customAttr.tooltip) {
+      const t = JSON.parse(JSON.stringify(customAttr.tooltip))
+      if (t.show) {
+        tooltip = {}
+        // tooltip value formatter
+        // if (chart.type && chart.type !== 'waterfall') {
+        //   tooltip.formatter = function (param) {
+        //     let yAxis, extStack
+        //     let res = param.value
+        //     try {
+        //       yAxis = JSON.parse(chart.yaxis)
+        //     } catch (e) {
+        //       yAxis = JSON.parse(JSON.stringify(chart.yaxis))
+        //     }
+        //     try {
+        //       extStack = JSON.parse(chart.extStack)
+        //     } catch (e) {
+        //       extStack = JSON.parse(JSON.stringify(chart.extStack))
+        //     }
+        //
+        //     let obj
+        //     if (
+        //       equalsAny(
+        //         chart.type,
+        //         'bar-stack',
+        //         'line-stack',
+        //         'bar-stack-horizontal',
+        //         'percentage-bar-stack',
+        //         'percentage-bar-stack-horizontal'
+        //       )
+        //     ) {
+        //       let f
+        //       if (extStack && extStack.length > 0) {
+        //         obj = { name: param.category, value: param.value }
+        //         f = yAxis[0]
+        //       } else {
+        //         obj = { name: param.category, value: param.value }
+        //         for (let i = 0; i < yAxis.length; i++) {
+        //           if (yAxis[i].name === param.category) {
+        //             f = yAxis[i]
+        //             break
+        //           }
+        //         }
+        //       }
+        //       if (!f) {
+        //         return res
+        //       }
+        //       if (!f.formatterCfg) {
+        //         f.formatterCfg = formatterItem
+        //       }
+        //       if (chart.type.includes('percentage')) {
+        //         if (!param.value) {
+        //           obj.value = 0
+        //           return obj
+        //         }
+        //         // 保留小数位数和标签保持一致，这边拿一下标签的配置
+        //         const l = JSON.parse(JSON.stringify(customAttr.label))
+        //         f.formatterCfg.type = 'percent'
+        //         f.formatterCfg.decimalCount = l.reserveDecimalCount
+        //         f.formatterCfg.thousandSeparator = false
+        //       }
+        //       res = valueFormatter(param.value, f.formatterCfg)
+        //     } else if (chart.type === 'word-cloud') {
+        //       obj = { name: param.text, value: param.value }
+        //       for (let i = 0; i < yAxis.length; i++) {
+        //         const f = yAxis[i]
+        //         if (f.formatterCfg) {
+        //           res = valueFormatter(param.value, f.formatterCfg)
+        //         } else {
+        //           res = valueFormatter(param.value, formatterItem)
+        //         }
+        //       }
+        //     } else if (chart.type.includes('treemap')) {
+        //       obj = { name: param.name, value: param.value }
+        //       for (let i = 0; i < yAxis.length; i++) {
+        //         const f = yAxis[i]
+        //         if (f.formatterCfg) {
+        //           res = valueFormatter(param.value, f.formatterCfg)
+        //         } else {
+        //           res = valueFormatter(param.value, formatterItem)
+        //         }
+        //       }
+        //     } else if (includesAny(chart.type, 'pie', 'funnel')) {
+        //       obj = { name: param.field, value: param.value }
+        //       for (let i = 0; i < yAxis.length; i++) {
+        //         const f = yAxis[i]
+        //         if (f.formatterCfg) {
+        //           res = valueFormatter(param.value, f.formatterCfg)
+        //         } else {
+        //           res = valueFormatter(param.value, formatterItem)
+        //         }
+        //       }
+        //     } else if (
+        //       includesAny(chart.type, 'bar', 'scatter', 'radar', 'area') &&
+        //       !chart.type.includes('group')
+        //     ) {
+        //       obj = { name: param.category, value: param.value }
+        //       for (let i = 0; i < yAxis.length; i++) {
+        //         const f = yAxis[i]
+        //         if (f.name === param.category) {
+        //           if (f.formatterCfg) {
+        //             res = valueFormatter(param.value, f.formatterCfg)
+        //           } else {
+        //             res = valueFormatter(param.value, formatterItem)
+        //           }
+        //           break
+        //         }
+        //       }
+        //     } else if (chart.type === 'line') {
+        //       obj = { name: param.category, value: param.value }
+        //       const xAxisExt = JSON.parse(chart.xaxisExt)
+        //       for (let i = 0; i < yAxis.length; i++) {
+        //         const f = yAxis[i]
+        //         if (f.name === param.category || (yAxis.length && xAxisExt.length)) {
+        //           if (f.formatterCfg) {
+        //             res = valueFormatter(param.value, f.formatterCfg)
+        //           } else {
+        //             res = valueFormatter(param.value, formatterItem)
+        //           }
+        //           break
+        //         }
+        //       }
+        //     } else if (chart.type.includes('group')) {
+        //       if (chart.type === 'bar-group') {
+        //         obj = { name: param.category, value: param.value }
+        //       } else {
+        //         let name = ''
+        //         if (param.group) {
+        //           name = param.name + '-'
+        //         }
+        //         if (param.category) {
+        //           name += param.category
+        //         }
+        //         obj = { name: name, value: param.value }
+        //       }
+        //       for (let i = 0; i < yAxis.length; i++) {
+        //         const f = yAxis[i]
+        //         if (f.formatterCfg) {
+        //           res = valueFormatter(param.value, f.formatterCfg)
+        //         } else {
+        //           res = valueFormatter(param.value, formatterItem)
+        //         }
+        //       }
+        //     } else {
+        //       res = param.value
+        //     }
+        //     obj.value = res === null ? '' : res
+        //     return obj
+        //   }
+        // }
+      } else {
+        // 百分比堆叠柱状图隐藏 tooltip 设置 show 为 false 或者直接设置 tooltip 为 false 都无效，会变成分组显示，
+        // 需要将容器(container)或者内容框(showContent)设置为 false 或者 null 才可以隐藏
+        if (chart.type.includes('percentage')) {
+          tooltip.showContent = false
+        } else {
+          tooltip = false
+        }
+      }
+    }
+  }
+  return tooltip
+}
+// 通用legend
+export function getLegend(chart) {
+  let legend = {}
+  let customStyle
+  if (chart.customStyle) {
+    customStyle = chart.customStyle
+    // legend
+    if (customStyle.legend) {
+      const l = JSON.parse(JSON.stringify(customStyle.legend))
+      if (l.show) {
+        let offsetX, offsetY, position
+        const orient = l.orient
+        const legendSymbol = l.icon
+        // fix position
+        if (l.hPosition === 'center') {
+          position = l.vPosition === 'center' ? 'top' : l.vPosition
+        } else if (l.vPosition === 'center') {
+          position = l.hPosition === 'center' ? 'left' : l.hPosition
+        } else {
+          if (orient === 'horizontal') {
+            position = l.vPosition + '-' + l.hPosition
+          } else {
+            position = l.hPosition + '-' + l.vPosition
+          }
+        }
+        // fix offset
+        if (orient === 'horizontal') {
+          if (l.hPosition === 'left') {
+            offsetX = 16
+          } else if (l.hPosition === 'right') {
+            offsetX = -16
+          } else {
+            offsetX = 0
+          }
+          if (l.vPosition === 'top') {
+            offsetY = 0
+          } else if (l.vPosition === 'bottom') {
+            if (chart.drill) {
+              offsetY = -16
+            } else {
+              offsetY = -4
+            }
+          } else {
+            offsetY = 0
+          }
+        } else {
+          if (l.hPosition === 'left') {
+            offsetX = 10
+          } else if (l.hPosition === 'right') {
+            offsetX = -10
+          } else {
+            offsetX = 0
+          }
+          if (l.vPosition === 'top') {
+            offsetY = 0
+          } else if (l.vPosition === 'bottom') {
+            if (chart.drill) {
+              offsetY = -22
+            } else {
+              offsetY = -10
+            }
+          } else {
+            offsetY = 0
+          }
+        }
+
+        legend = {
+          layout: orient,
+          position: position,
+          offsetX: offsetX,
+          offsetY: offsetY,
+          marker: {
+            symbol: legendSymbol
+          },
+          radio: false // 柱状图图例的聚焦功能，默认先关掉
+        }
+      } else {
+        legend = false
+      }
+    }
+  }
+  return legend
+}
+// xAxis
+export function getXAxis(chart) {
+  let axis = {}
+  let customStyle
+  if (chart.customStyle) {
+    customStyle = chart.customStyle
+    // legend
+    if (customStyle.xAxis) {
+      const a = JSON.parse(JSON.stringify(customStyle.xAxis))
+      if (a.show) {
+        const title =
+          a.name && a.name !== ''
+            ? {
+                text: a.name,
+                style: {
+                  fill: a.nameTextStyle.color,
+                  fontSize: parseInt(a.nameTextStyle.fontSize)
+                },
+                spacing: 8
+              }
+            : null
+        const grid = a.splitLine.show
+          ? {
+              line: {
+                style: {
+                  stroke: a.splitLine.lineStyle.color,
+                  lineWidth: parseInt(a.splitLine.lineStyle.width)
+                }
+              }
+            }
+          : null
+        const axisCfg = a.axisLine ? a.axisLine : DEFAULT_XAXIS_STYLE.axisLine
+        const axisLine = axisCfg.show
+          ? {
+              style: {
+                stroke: axisCfg.lineStyle.color,
+                lineWidth: parseInt(axisCfg.lineStyle.width)
+              }
+            }
+          : null
+        const tickLine = axisCfg.show
+          ? {
+              style: {
+                stroke: axisCfg.lineStyle.color
+              }
+            }
+          : null
+        const label = a.axisLabel.show
+          ? {
+              rotate: (parseInt(a.axisLabel.rotate) * Math.PI) / 180,
+              style: {
+                fill: a.axisLabel.color,
+                fontSize: parseInt(a.axisLabel.fontSize)
+              }
+              // formatter: function (value) {
+              //   if (chart.type.includes('horizontal')) {
+              //     if (!a.axisLabelFormatter) {
+              //       return valueFormatter(value, formatterItem)
+              //     } else {
+              //       return valueFormatter(value, a.axisLabelFormatter)
+              //     }
+              //   } else {
+              //     return value
+              //   }
+              // }
+            }
+          : null
+
+        axis = {
+          position: transAxisPosition(chart, a),
+          title: title,
+          grid: grid,
+          label: label,
+          line: axisLine,
+          tickLine: tickLine
+        }
+
+        // 轴值设置
+        delete axis.minLimit
+        delete axis.maxLimit
+        delete axis.tickCount
+        const axisValue = a.axisValue
+        if (chart.type.includes('horizontal')) {
+          if (axisValue && !axisValue.auto) {
+            axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
+            axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
+            axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
+          }
+        }
+      } else {
+        axis = false
+      }
+    }
+  }
+  return axis
+}
+// yAxis
+export function getYAxis(chart) {
+  let axis = {}
+  let customStyle
+  if (chart.customStyle) {
+    customStyle = chart.customStyle
+    // legend
+    if (customStyle.yAxis) {
+      const a = JSON.parse(JSON.stringify(customStyle.yAxis))
+      if (a.show) {
+        const title =
+          a.name && a.name !== ''
+            ? {
+                text: a.name,
+                style: {
+                  fill: a.nameTextStyle.color,
+                  fontSize: parseInt(a.nameTextStyle.fontSize)
+                },
+                spacing: 8
+              }
+            : null
+        const grid = a.splitLine.show
+          ? {
+              line: {
+                style: {
+                  stroke: a.splitLine.lineStyle.color,
+                  lineWidth: parseInt(a.splitLine.lineStyle.width)
+                }
+              }
+            }
+          : null
+        const axisCfg = a.axisLine ? a.axisLine : DEFAULT_YAXIS_STYLE.axisLine
+        const axisLine = axisCfg.show
+          ? {
+              style: {
+                stroke: axisCfg.lineStyle.color,
+                lineWidth: parseInt(axisCfg.lineStyle.width)
+              }
+            }
+          : null
+        const tickLine = axisCfg.show
+          ? {
+              style: {
+                stroke: axisCfg.lineStyle.color
+              }
+            }
+          : null
+        const label = a.axisLabel.show
+          ? {
+              rotate: (parseInt(a.axisLabel.rotate) * Math.PI) / 180,
+              style: {
+                fill: a.axisLabel.color,
+                fontSize: parseInt(a.axisLabel.fontSize)
+              }
+              // formatter: function (value) {
+              //   if (chart.type === 'waterfall') {
+              //     return value
+              //   } else {
+              //     if (!chart.type.includes('horizontal')) {
+              //       if (!a.axisLabelFormatter) {
+              //         return valueFormatter(value, formatterItem)
+              //       } else {
+              //         return valueFormatter(value, a.axisLabelFormatter)
+              //       }
+              //     } else {
+              //       return value
+              //     }
+              //   }
+              // }
+            }
+          : null
+
+        axis = {
+          position: transAxisPosition(chart, a),
+          title: title,
+          grid: grid,
+          label: label,
+          line: axisLine,
+          tickLine: tickLine
+        }
+
+        // 轴值设置
+        delete axis.minLimit
+        delete axis.maxLimit
+        delete axis.tickCount
+        const axisValue = a.axisValue
+        if (!chart.type.includes('horizontal')) {
+          if (axisValue && !axisValue.auto) {
+            axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
+            axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
+            axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
+          }
+        }
+      } else {
+        axis = false
+      }
+    }
+  }
+  return axis
+}
 // // yAxisExt
 // export function getYAxisExt(chart) {
 //   let axis = {}
@@ -838,24 +843,24 @@ export function getTheme(chart) {
 //   return axis
 // }
 //
-// function transAxisPosition(chart, axis) {
-//   if (chart.type.includes('horizontal')) {
-//     switch (axis.position) {
-//       case 'top':
-//         return 'left'
-//       case 'bottom':
-//         return 'right'
-//       case 'left':
-//         return 'bottom'
-//       case 'right':
-//         return 'top'
-//       default:
-//         return axis.position
-//     }
-//   } else {
-//     return axis.position
-//   }
-// }
+function transAxisPosition(chart, axis) {
+  if (chart.type.includes('horizontal')) {
+    switch (axis.position) {
+      case 'top':
+        return 'left'
+      case 'bottom':
+        return 'right'
+      case 'left':
+        return 'bottom'
+      case 'right':
+        return 'top'
+      default:
+        return axis.position
+    }
+  } else {
+    return axis.position
+  }
+}
 //
 // export function getSlider(chart) {
 //   let senior = {}

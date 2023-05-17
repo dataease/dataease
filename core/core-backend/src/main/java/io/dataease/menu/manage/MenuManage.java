@@ -28,7 +28,7 @@ public class MenuManage {
     @Resource
     private CoreMenuMapper coreMenuMapper;
 
-    @Cacheable("menu")
+    @Cacheable(value = "menu", key = "#root.methodName")
     public List<MenuVO> query() {
         QueryWrapper<CoreMenu> wrapper = new QueryWrapper<>();
         List<CoreMenu> coreMenus = coreMenuMapper.selectList(wrapper);
