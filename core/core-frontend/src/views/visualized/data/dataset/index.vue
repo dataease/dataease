@@ -91,6 +91,8 @@ const allFieldsColumns = [
   }
 ]
 
+const dataPreviewLoading = ref(false)
+
 const infoList = computed(() => {
   return ['name', 'createBy', 'nodeType', 'createTime'].map(ele => {
     return {
@@ -135,6 +137,8 @@ const handleNodeClick = (data: Tree) => {
   if (data.nodeType !== 'dataset') return
   const { name, createBy, id, nodeType, createTime } = data
   Object.assign(nodeInfo, { name, createBy, id, nodeType, createTime })
+  columnsPreview = []
+  dataPreview = []
   handleClick(activeName.value)
 }
 
@@ -164,13 +168,18 @@ const handleClick = (tabName: TabPaneName) => {
         tableData.value = dataPreview
         break
       }
-      getDatasetPreview(nodeInfo.id).then(res => {
-        allFields = (res.allFields as unknown as Field[]) || []
-        columnsPreview = generateColumns((res.data.fields as Field[]) || [])
-        dataPreview = (res.data.data as Array<{}>) || []
-        columns.value = columnsPreview
-        tableData.value = dataPreview
-      })
+      dataPreviewLoading.value = true
+      getDatasetPreview(nodeInfo.id)
+        .then(res => {
+          allFields = (res.allFields as unknown as Field[]) || []
+          columnsPreview = generateColumns((res.data.fields as Field[]) || [])
+          dataPreview = (res.data.data as Array<{}>) || []
+          columns.value = columnsPreview
+          tableData.value = dataPreview
+        })
+        .finally(() => {
+          dataPreviewLoading.value = false
+        })
       break
     case 'structPreview':
       columns.value = allFieldsColumns
@@ -353,6 +362,7 @@ const defaultProps = {
               <template #default="{ height, width }">
                 <el-table-v2
                   :columns="columns"
+                  v-loading="dataPreviewLoading"
                   header-class="header-cell"
                   :data="tableData"
                   :width="width"

@@ -3,7 +3,10 @@ import _ from 'lodash'
 import {
   getLabel,
   getTheme,
-  getTooltip
+  getTooltip,
+  getLegend,
+  getXAxis,
+  getYAxis
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { G2PlotDrawOptions, G2PlotChartView } from '@/views/chart/components/js/panel/types'
 
@@ -51,6 +54,11 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       const label = getLabel(drawOptions.chart)
       // tooltip
       const tooltip = getTooltip(drawOptions.chart)
+      // style
+      const legend = getLegend(drawOptions.chart)
+      const xAxis = getXAxis(drawOptions.chart)
+      const yAxis = getYAxis(drawOptions.chart)
+
       // data
       const data = _.cloneDeep(drawOptions?.chart?.data?.data)
       if (!data) return drawOptions.chartObj
@@ -58,6 +66,9 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
         theme: theme,
         label: label,
         tooltip: tooltip,
+        legend: legend,
+        xAxis: xAxis,
+        yAxis: yAxis,
         data: data,
         xField: 'field',
         yField: 'value',

@@ -29,11 +29,13 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
 @Lazy
+@Transactional
 public class UserPageManage {
 
     @Resource
@@ -131,15 +133,18 @@ public class UserPageManage {
     }
 
     public void delete(Long id) {
-        int rCount = userExtMapper.userRoleMappingCount(id);
-        if (rCount > 0) {
-            Long oid = AuthUtils.getUser().getDefaultOid();
-            userExtMapper.deleteUserRoleMapping(id, oid);
-            rCount = userExtMapper.userRoleMappingCount(id);
-        }
-        if (rCount == 0) {
-            perUserMapper.deleteById(id);
-        }
+        Long oid = AuthUtils.getUser().getDefaultOid();
+        CacheUtils.remove("user_roles", id.toString() + oid, t -> {
+            int rCount = userExtMapper.userRoleMappingCount(id);
+            if (rCount > 0) {
+                userExtMapper.deleteUserRoleMapping(id, oid);
+                rCount = userExtMapper.userRoleMappingCount(id);
+            }
+            if (rCount == 0) {
+                perUserMapper.deleteById(id);
+            }
+        });
+
     }
 
     public UserFormVO queryForm(Long uid) {
@@ -216,6 +221,7 @@ public class UserPageManage {
     public List<Long> uidsForAdmin(Long oid) {
         return userExtMapper.uidsForAdmin(oid);
     }
+
     public List<Long> uidsForReadonly(Long oid) {
         return userExtMapper.uidsForReadonly(oid);
     }

@@ -3,6 +3,7 @@ package io.dataease.xpack.permissions.auth.manage;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.dataease.api.permissions.auth.vo.PermissionItem;
 import io.dataease.utils.IDUtils;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiRole;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthMenu;
@@ -13,6 +14,7 @@ import io.dataease.xpack.permissions.auth.dao.ext.mapper.MenuAuthExtMapper;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerRole;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +41,9 @@ public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBu
 
     @Resource
     private MenuAuthManage menuAuthManage;
+
+    @Resource
+    private AuthWeightService authWeightService;
 
     public List<PerAuthBusiRole> ridForRootWay(String rootWay) {
         if (StringUtils.isBlank(rootWay)) return ListUtil.empty();
@@ -102,6 +107,13 @@ public class RoleAuthManage extends ServiceImpl<PerAuthBusiRoleMapper, PerAuthBu
     public List<Long> queryMenuIds() {
         // 这里是固定的后面记得加上缓存
         return menuAuthExtMapper.menuIds();
+    }
+
+    @Cacheable(value = "role_busi_pers", key = "#rid.toString() + #flag.toString()")
+    public List<PermissionItem> permissionItems(Long rid, Integer flag) {
+        List<PermissionItem> permissionItems = busiAuthExtMapper.rolePermission(rid, flag);
+        permissionItems = authWeightService.filterValid(permissionItems);
+        return permissionItems;
     }
 
     private void initWeightMap() {

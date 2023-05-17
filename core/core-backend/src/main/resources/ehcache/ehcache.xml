@@ -26,6 +26,34 @@
         <key-type>java.lang.String</key-type>
         <value-type>io.dataease.rsa.dao.entity.CoreRsa</value-type>
     </cache>
+
+    <!--以下属于权限系统缓存-->
+    <!--用户角色缓存-->
+    <cache alias="user_roles" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+    <!--用户资源权限缓存-->
+    <cache alias="user_busi_pers" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+    <!--角色资源权限缓存-->
+    <cache alias="role_busi_pers" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+    <!--角色菜单权限缓存-->
+    <cache alias="role_menu_pers" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+    <!--组织内所有资源缓存 包括 用户 角色 数据源 数据集 仪表板 大屏 key由什么组成？组织id+flag 例如orgid + '1'-->
+    <cache alias="org_global_resource" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+
 <!--    <cache alias="person">-->
 <!--        <key-type>java.lang.Long</key-type>-->
 <!--        <value-type>com.ramostear.cache.entity.Person</value-type>-->
