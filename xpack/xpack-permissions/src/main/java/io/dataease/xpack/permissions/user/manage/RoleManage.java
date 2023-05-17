@@ -25,6 +25,7 @@ import io.dataease.xpack.permissions.user.entity.UserRole;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -303,6 +304,7 @@ public class RoleManage {
         return roleInfo;
     }
 
+    @Cacheable(value = "user_roles", key = "#uid.toString()")
     public List<UserRole> userRole(Long uid) {
         List<PerRole> perRoles = roleExtMapper.roleInfoByUid(uid, AuthUtils.getUser().getDefaultOid());
         return buildResult(perRoles);

@@ -16,7 +16,7 @@ import javax.cache.expiry.ModifiedExpiryPolicy;
 import java.util.concurrent.TimeUnit;
 
 @ConditionalOnExpression("'${spring.cache.type}'.equals('jcache')")
-@Component
+@Component("dECacheService")
 public class DefaultCacheImpl implements DECacheService {
 
 
@@ -79,6 +79,12 @@ public class DefaultCacheImpl implements DECacheService {
                         .setStoreByValue(false)
                         .setExpiryPolicyFactory(ModifiedExpiryPolicy.factoryOf(new Duration(unit, expTime)));
         return configuration;
+    }
+
+    @Override
+    public void keyRemove(String cacheName, String key) {
+        Cache<Object, Object> cache = cacheManager.getCache(cacheName);
+        cache.remove(key);
     }
 
     @PostConstruct
