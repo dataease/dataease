@@ -6,15 +6,15 @@ import { ElIcon } from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
-import CreatDsGroup from './form/CreatDsGroup.vue'
-import type { Tree } from './form/CreatDsGroup.vue'
+import CreatDsGroup from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
+import type { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { getDatasetTree, delDatasetTree, getDatasetPreview } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
 import RowPermissions from '@/views/visualized/data/dataset/RowPermissions.vue'
 import ColumnPermissions from '@/views/visualized/data/dataset/ColumnPermissions.vue'
 import type { TabPaneName } from 'element-plus-secondary'
-import { timestampFormatDate } from './form/util.js'
+import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util.js'
 
 interface Field {
   fieldShortName: string
