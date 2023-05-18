@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Search } from '@element-plus/icons-vue'
 import { onMounted, reactive, ref, watch } from 'vue'
-import { findById, findTree } from '@/api/dataVisualization'
-import { ElIcon } from 'element-plus-secondary'
+import { deleteLogic, findById, findTree } from '@/api/dataVisualization'
+import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt, { ResourceTree } from '@/views/common/DeResourceGroupOpt.vue'
@@ -101,7 +101,10 @@ const beforeClickEdit = (optType, data, node) => {
 
 const operation = (cmd: string, data: ResourceTree, nodeType: string) => {
   if (cmd === 'delete') {
-    //do delete
+    deleteLogic(data.id).then(res => {
+      ElMessage.success('删除成功')
+      getTree()
+    })
   } else {
     resourceGroupOpt.value.optInit(nodeType, data, cmd)
   }
@@ -109,7 +112,7 @@ const operation = (cmd: string, data: ResourceTree, nodeType: string) => {
 
 const addOperation = (cmd: string, data?: ResourceTree) => {
   if (cmd === 'dv') {
-    //do create dv
+    dvCreate(data.id)
   }
   if (cmd === 'folder') {
     resourceGroupOpt.value.optInit(cmd, data || {})
@@ -118,6 +121,11 @@ const addOperation = (cmd: string, data?: ResourceTree) => {
 
 const dvEdit = dvId => {
   const url = '#/dvCanvas/?dvId=' + dvId
+  window.open(url, '_blank')
+}
+
+const dvCreate = pid => {
+  const url = '#/dvCanvas/?pid=' + pid
   window.open(url, '_blank')
 }
 
@@ -141,6 +149,13 @@ onMounted(() => {
 
 <template>
   <div class="resource-tree">
+    <div class="icon-methods">
+      <span class="title"> 数据大屏 </span>
+      <el-tooltip class="box-item" effect="dark" content="新建文件夹" placement="top">
+        <el-button type="primary" @click="addOperation('folder')"> 新建文件夹 </el-button>
+      </el-tooltip>
+    </div>
+
     <el-input
       v-model="filterText"
       size="small"
@@ -211,7 +226,21 @@ onMounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  .icon-methods {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-family: PingFang SC;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--TextPrimary, #1f2329);
+    padding-bottom: 10px;
+    .title {
+      margin-right: auto;
+    }
+  }
   .search-bar {
+    padding-bottom: 10px;
   }
 }
 .title-area {

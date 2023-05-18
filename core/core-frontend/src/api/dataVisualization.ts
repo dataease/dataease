@@ -19,4 +19,4 @@ export const savaOrUpdateBase = data =>
 
 export const update = data => request.post({ url: '/dataVisualization/update', data })
 
-export const deleteLogic = dvId => request.delete({ url: '/dataVisualization/delete/' + dvId })
+export const deleteLogic = dvId => request.delete({ url: '/dataVisualization/deleteLogic/' + dvId })

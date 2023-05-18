@@ -55,7 +55,7 @@ const nameRepeat = value => {
 }
 const nameValidator = (_, value, callback) => {
   if (nameRepeat(value)) {
-    callback(new Error(t('deDataset.already_exists')))
+    callback(new Error('名称重复'))
   } else {
     callback()
   }

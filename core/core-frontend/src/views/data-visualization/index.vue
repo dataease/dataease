@@ -127,8 +127,7 @@ const deselectCurComponent = e => {
 listenGlobalKeyDown()
 
 onMounted(() => {
-  console.log('routerInfo=' + JSON.stringify(router.currentRoute.value.query))
-  const { dvId } = router.currentRoute.value.query
+  const { dvId, pid } = router.currentRoute.value.query
   if (dvId) {
     // 从数据库中获取
     findById(dvId).then(res => {
@@ -148,7 +147,7 @@ onMounted(() => {
     dvMainStore.updateCurDvInfo({
       id: null,
       name: '新建仪表板',
-      pid: null,
+      pid: pid,
       status: null,
       selfWatermarkStatus: null
     })

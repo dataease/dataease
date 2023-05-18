@@ -25,9 +25,18 @@ const getAssetsFile = {
 </script>
 
 <template>
-  <el-empty :imageSize="imageSize" :description="description" :image="getAssetsFile[imgType]">
+  <el-empty
+    class="empty-info"
+    :imageSize="imageSize"
+    :description="description"
+    :image="getAssetsFile[imgType]"
+  >
     <slot></slot>
   </el-empty>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.empty-info {
+  height: 100%;
+}
+</style>
