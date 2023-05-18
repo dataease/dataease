@@ -10,11 +10,12 @@ import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from './form/CreatDsGroup.vue'
 import { getDatasetTree, delDatasetTree, getDatasetPreview } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
-import DatasetDetail from './DatasetDetail.vue'
-import RowPermissions from './RowPermissions.vue'
-import ColumnPermissions from './ColumnPermissions.vue'
+import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
+import RowPermissions from '@/views/visualized/data/dataset/RowPermissions.vue'
+import ColumnPermissions from '@/views/visualized/data/dataset/ColumnPermissions.vue'
 import type { TabPaneName } from 'element-plus-secondary'
 import { timestampFormatDate } from './form/util.js'
+
 interface Field {
   fieldShortName: string
   name: string
