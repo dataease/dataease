@@ -5,11 +5,14 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.AuthConstant;
+import io.dataease.constant.AuthEnum;
+import io.dataease.constant.AuthResourceEnum;
 import io.dataease.utils.*;
 import io.dataease.xpack.permissions.apisix.proxy.ProxyRequest;
 import io.dataease.xpack.permissions.auth.manage.ApiAuthManage;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.expression.EvaluationContext;
@@ -83,14 +86,13 @@ public class ApisixManage {
             if (ObjectUtils.isEmpty(handlerMethod) || !handlerMethod.hasMethodAnnotation(DePermit.class)) return null;
             DePermit dePermit = handlerMethod.getMethodAnnotation(DePermit.class);
             DeApiPath deApiPath = handlerMethod.getClass().getAnnotation(DeApiPath.class);
-            String rt = deApiPath.rt();
+            AuthResourceEnum rt = deApiPath.rt();
             String[] valueArray = dePermit.value();
 
             request.setAttribute(PATH, attribute);
             Object[] params = authMappingHandlerAdapter.getParams(proxy, ServletUtils.response(), handlerMethod);
 
             String[] requirePermissions = methodAuth(params, valueArray, rt);
-            LogUtil.info("current url [{}] require permssion [{}]", proxy.getServletPath(), StringUtils.join(requirePermissions, ", "));
             return requirePermissions;
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,7 +101,7 @@ public class ApisixManage {
     }
 
 
-    private String[] methodAuth(Object[] params, String[] expArray, String rt) {
+    private String[] methodAuth(Object[] params, String[] expArray, AuthResourceEnum rt) {
         StandardEvaluationContext context = new StandardEvaluationContext();
         if (params != null && params.length == 1) {
             context.setRootObject(params[0]);
@@ -111,7 +113,7 @@ public class ApisixManage {
         }
         int len = expArray.length;
         String[] result = new String[len];
-        String prefix = StringUtils.isBlank(rt) ? "" : (rt + ":");
+        String prefix = rt.name() + ":";
         for (int i = 0; i < len; i++) {
             result[i] = prefix + resolveValue(expArray[i], context);
         }
@@ -137,19 +139,37 @@ public class ApisixManage {
         if (ArrayUtil.isEmpty(requirePermissions)) return;
         for (int i = 0; i < requirePermissions.length; i++) {
             String permission = requirePermissions[i];
+            PerFormatter formatter = formatPer(permission);
+            AuthResourceEnum resourceEnum = formatter.getAuthResourceEnum();
             if (StringUtils.contains(permission, ":m:")) {
-                checkMenuAuth(permission, userInfo);
+                apiAuthManage.checkMenu(resourceEnum.getMenuId(), formatter.getWeight(), userInfo);
             } else {
-                checkBusiAuth(permission, userInfo);
+                apiAuthManage.checkResource(Long.parseLong(formatter.getId()), resourceEnum.getFlag(), formatter.getWeight(), userInfo);
             }
         }
     }
 
-    private void checkMenuAuth(String permission, TokenUserBO userInfo) {
-        // apiAuthManage.checkMenu();
+    private PerFormatter formatPer(String permission) {
+        String[] flags = permission.split(":");
+        String name = flags[0];
+        AuthResourceEnum anEnum = AuthResourceEnum.valueOf(name);
+        String weightFlag = flags[2];
+        AuthEnum authEnum = AuthEnum.valueOf(weightFlag.toUpperCase());
+        Integer weight = authEnum.getWeight();
+        return new PerFormatter(anEnum, weight, flags[1]);
     }
 
-    private void checkBusiAuth(String permission, TokenUserBO userInfo) {
+    @Data
+    class PerFormatter {
+        private AuthResourceEnum authResourceEnum;
+        private Integer weight;
+        private String id;
 
+        public PerFormatter(AuthResourceEnum authResourceEnum, Integer weight, String id) {
+            this.authResourceEnum = authResourceEnum;
+            this.weight = weight;
+            this.id = id;
+        }
     }
+
 }

@@ -4,7 +4,6 @@ import io.dataease.api.permissions.org.dto.OrgCreator;
 import io.dataease.api.permissions.org.dto.OrgEditor;
 import io.dataease.api.permissions.org.vo.MountedVO;
 import io.dataease.api.permissions.org.vo.OrgPageVO;
-import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.KeywordRequest;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@DeApiPath("/org")
 public interface OrgApi {
 
     @PostMapping("/page/tree")

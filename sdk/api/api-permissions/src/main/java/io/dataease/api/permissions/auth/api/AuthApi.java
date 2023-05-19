@@ -4,7 +4,6 @@ package io.dataease.api.permissions.auth.api;
 import io.dataease.api.permissions.auth.dto.*;
 import io.dataease.api.permissions.auth.vo.PermissionVO;
 import io.dataease.api.permissions.auth.vo.ResourceVO;
-import io.dataease.auth.DeApiPath;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
+
 @Api(tags = "系统：权限管理")
-@DeApiPath("/auth")
 public interface AuthApi {
 
     @ApiOperation("查询资源树")
@@ -60,6 +59,7 @@ public interface AuthApi {
 
     /**
      * 下面3个接口为内部调用接口不对外开放
+     *
      * @param creator
      */
     @ApiIgnore
