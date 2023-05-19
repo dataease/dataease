@@ -212,35 +212,7 @@ public class AuthManage {
             vo.setPermissions(permissionItems);
 
             if (CollectionUtil.isNotEmpty(userRoles)) {
-                List<Long> rids = userRoles.stream().map(UserRole::getId).toList();
-                String cacheName = "role_busi_pers";
-                List<PermissionOrigin> cachePermissionOrigins = new ArrayList<>();
-                rids = rids.stream().filter(rid -> {
-                    if (CacheUtils.keyExist(cacheName, rid.toString() + flag)) {
-                        Object o = CacheUtils.get(cacheName, rid.toString() + flag);
-                        PermissionOrigin origin = new PermissionOrigin();
-                        origin.setId(rid);
-                        origin.setPermissions((List<PermissionItem>) o);
-                        cachePermissionOrigins.add(origin);
-                        return false;
-                    }
-                    return true;
-                }).toList();
-                List<PermissionOrigin> permissionOrigins = new ArrayList<>();
-                if (CollectionUtil.isNotEmpty(rids)) {
-                    permissionOrigins = busiAuthExtMapper.batchRolePermission(rids, flag);
-                }
-                permissionOrigins = CollectionUtil.addAllIfNotContains(permissionOrigins, cachePermissionOrigins);
-                if (CollectionUtil.isNotEmpty(permissionOrigins)) {
-                    Map<Long, List<UserRole>> roleMap = userRoles.stream().collect(Collectors.groupingBy(UserRole::getId));
-                    permissionOrigins.forEach(permissionOrigin -> {
-                        Long rid = permissionOrigin.getId();
-                        List<UserRole> roles = roleMap.get(rid);
-                        permissionOrigin.setName(roles.get(0).getName());
-                        permissionOrigin.setPermissions(authWeightService.filterValid(permissionOrigin.getPermissions()));
-                        CacheUtils.put(cacheName, rid.toString() + flag, permissionOrigin.getPermissions());
-                    });
-                }
+                List<PermissionOrigin> permissionOrigins = roleAuthManage.roleOrigin(userRoles, flag);
                 vo.setPermissionOrigins(permissionOrigins);
             }
             return vo;

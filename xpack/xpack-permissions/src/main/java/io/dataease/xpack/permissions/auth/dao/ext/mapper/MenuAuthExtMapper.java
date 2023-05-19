@@ -3,10 +3,9 @@ package io.dataease.xpack.permissions.auth.dao.ext.mapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.permissions.auth.dto.PermissionBO;
 import io.dataease.api.permissions.auth.vo.PermissionItem;
+import io.dataease.api.permissions.auth.vo.PermissionOrigin;
 import io.dataease.xpack.permissions.auth.dao.ext.entity.BusiResourcePO;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -49,4 +48,32 @@ public interface MenuAuthExtMapper {
 
     @Select("select id from per_menu_resource")
     List<Long> menuIds();
+
+    @Select("""
+            <script>
+            select rid, resource_id, weight
+            from per_auth_menu 
+            where rid in 
+            <foreach item='rid' index='index' collection='rids' open='(' separator=',' close=')'>
+            #{rid}
+            </foreach>
+            </script>
+            """)
+    @Results(
+            id = "batchPermissionOriginMap",
+            value = {
+                    @Result(property = "id", column = "rid"),
+                    @Result(property = "permissions", many = @Many(resultMap = "originMap"))
+            }
+    )
+    List<PermissionOrigin> batchRolePermission(@Param("rids") List<Long> rids);
+
+    @Results(
+            id = "originMap", value = {
+            @Result(property = "id", column = "resource_id"),
+            @Result(property = "weight", column = "weight")
+    }
+    )
+    @Select("select resource_id, weight from per_auth_menu where rid = #{rid}")
+    List<PermissionItem> voidQuery(@Param("rid") Long rid);
 }

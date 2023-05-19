@@ -1,6 +1,7 @@
 package io.dataease.xpack.permissions.auth.manage;
 
 import io.dataease.api.permissions.auth.vo.PermissionItem;
+import io.dataease.api.permissions.auth.vo.PermissionOrigin;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.exception.DEException;
 import io.dataease.utils.CommonBeanFactory;
@@ -20,9 +21,6 @@ public class ApiAuthManage extends OrgResourceManage {
     private RoleManage roleManage;
 
     @Resource
-    private MenuAuthManage menuAuthManage;
-
-    @Resource
     private UserAuthManage userAuthManage;
 
     @Resource
@@ -39,8 +37,10 @@ public class ApiAuthManage extends OrgResourceManage {
         if (isRootReadonly(userRoles) && weight == 1) {
             return;
         }
-        List<Long> rids = userRoles.stream().filter(item -> !item.isRoot()).map(UserRole::getId).toList();
-        if (rids.stream().anyMatch(rid -> menuAuthManage.permissionItems(rid).stream().anyMatch(per -> menuId.equals(per.getId()) && per.getWeight() >= weight))) return;
+        List<PermissionOrigin> permissionOrigins = roleAuthManage.roleOrigin(userRoles, 0);
+        if (permissionOrigins.stream().anyMatch(origin -> origin.getPermissions().stream().anyMatch(per -> per.getId().equals(menuId) && per.getWeight() >= weight))) {
+            return;
+        }
         DEException.throwException(ERROR_MSG);
     }
 
@@ -53,7 +53,6 @@ public class ApiAuthManage extends OrgResourceManage {
             DEException.throwException(ERROR_MSG);
         }
         if (flag > 4) return;
-        List<Long> rids = userRoles.stream().filter(item -> !item.isRoot()).map(UserRole::getId).toList();
         if (isRootAdmin(userRoles)) {
             return;
         }
@@ -64,7 +63,10 @@ public class ApiAuthManage extends OrgResourceManage {
         if (userPers.stream().anyMatch(per -> per.getId().equals(resourceId) && per.getWeight() >= weight)) {
             return;
         }
-        if (rids.stream().anyMatch(rid -> roleAuthManage.permissionItems(rid, flag).stream().anyMatch(per -> resourceId.equals(per.getId()) && per.getWeight() >= weight))) return;
+        List<PermissionOrigin> permissionOrigins = roleAuthManage.roleOrigin(userRoles, flag);
+        if (permissionOrigins.stream().anyMatch(origin -> origin.getPermissions().stream().anyMatch(per -> per.getId().equals(resourceId) && per.getWeight() >= weight))) {
+            return;
+        }
         DEException.throwException(ERROR_MSG);
     }
 
