@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
+import static io.dataease.constant.AuthResourceEnum.USER;
 
-@DeApiPath(value = "/user", rt = "user")
+
+@DeApiPath(value = "/user", rt = USER)
 public interface UserApi {
 
     @DePermit("m:read")

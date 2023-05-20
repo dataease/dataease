@@ -46,7 +46,7 @@ watch(filterText, val => {
   nextTick(() => {
     document.querySelectorAll('.node-text').forEach(ele => {
       const content = ele.getAttribute('title')
-      ele.innerHTML = content.replace(val, `<span class="hightLight">${val}</span>`)
+      ele.innerHTML = content.replace(val, `<span class="highLight">${val}</span>`)
     })
   })
 })
@@ -298,7 +298,7 @@ const emits = defineEmits(['finish'])
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      :deep(.hightLight) {
+      :deep(.highLight) {
         color: var(--el-color-primary, #3370ff);
       }
     }
