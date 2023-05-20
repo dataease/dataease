@@ -6,22 +6,43 @@
     @mouseup="endMove($event)"
     @mousemove="moving($event)"
   >
-    this id canvas
     <div v-if="renderOk">
       <div
         :class="{
+          active: isActive(item),
           item: true,
           moveAnimation: moveAnimate,
           movingItem: item['isPlayer'],
           canNotDrag: !draggable
         }"
-        @mousedown="startMove($event, item, index)"
         :ref="'item' + index"
         v-for="(item, index) in yourList"
+        @mousedown="startMove($event, item, index)"
         :key="'item' + index"
         :style="nowItemStyle(item, index)"
       >
-        <slot :name="'slot' + index"></slot>
+        <component
+          :is="findComponent(item.component)"
+          v-if="item.component != 'VText'"
+          :id="'component' + item.id"
+          class="component"
+          :style="getComponentStyle(item.style)"
+          :prop-value="item.propValue"
+          :element="item"
+          :request="item.request"
+        />
+
+        <component
+          :is="findComponent(item.component)"
+          v-else
+          :id="'component' + item.id"
+          class="component"
+          :style="getComponentStyle(item.style)"
+          :prop-value="item.propValue"
+          :element="item"
+          :request="item.request"
+          @input="handleInput"
+        />
         <span
           class="resizeHandle"
           v-show="resizable"
@@ -36,6 +57,11 @@
 import _ from 'lodash'
 import $ from 'jquery'
 import { toRefs, ref, onMounted, nextTick, getCurrentInstance } from 'vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+import findComponent from '@/utils/components'
+import { getStyle } from '@/utils/style'
+const dvMainStore = dvMainStoreWithOut()
 
 let positionBox = []
 let coordinates = [] //坐标点集合
@@ -151,6 +177,44 @@ const {
   resizing,
   resizeEnd
 } = toRefs(props)
+
+const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
+
+const { curComponent, isClickComponent } = storeToRefs(dvMainStore)
+
+const getTextareaHeight = (element, text) => {
+  let { lineHeight, fontSize, height } = element.style
+  if (lineHeight === '') {
+    lineHeight = 1.5
+  }
+
+  const newHeight = (text.split('<br>').length - 1) * lineHeight * fontSize
+  return height > newHeight ? height : newHeight
+}
+
+const handleInput = (element, value) => {
+  // 根据文本组件高度调整 shape 高度
+  dvMainStore.setShapeStyle({
+    top: null,
+    left: null,
+    width: null,
+    height: getTextareaHeight(element, value),
+    rotate: null
+  })
+}
+const getComponentStyle = style => {
+  return getStyle(style, svgFilterAttrs)
+}
+
+const selectCurComponent = e => {
+  // 阻止向父组件冒泡
+  e.stopPropagation()
+  e.preventDefault()
+}
+
+const isActive = item => {
+  return curComponent.value === item
+}
 
 onMounted(() => {
   currentInstance = getCurrentInstance()
@@ -624,6 +688,12 @@ const containerMouseDown = e => {
   infoBox.value.startY = e.pageY
 }
 
+const endItemMove = (e, item, index) => {
+  dvMainStore.setCurComponent({ component: item, index: index })
+  dvMainStore.setClickComponentStatus(true)
+  dvMainStore.setInEditorStatus(true)
+}
+
 const startMove = (e, item, index) => {
   // e.preventDefault();
   if (!infoBox.value) {
@@ -780,6 +850,8 @@ const startMove = (e, item, index) => {
   }
 
   const up = () => {
+    // startMove 中组织冒泡会导致移动事件无法传播，在这里设置（鼠标抬起）效果一致
+    endItemMove(e, item, index)
     if (_.isEmpty(infoBox.value)) return
     if (infoBox.value.cloneItem) {
       infoBox.value.cloneItem.remove()
@@ -804,6 +876,10 @@ const startMove = (e, item, index) => {
 }
 
 const endMove = e => {
+  return {}
+}
+
+const endMoveI = e => {
   return {}
 }
 
@@ -901,6 +977,11 @@ defineExpose({
 </script>
 
 <style lang="less">
+.active {
+  outline: 1px solid #70c0ff;
+  user-select: none;
+}
+
 .dragAndResize {
   position: relative;
 

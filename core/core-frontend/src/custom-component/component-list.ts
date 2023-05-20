@@ -33,6 +33,10 @@ const list = [
     propValue: '&nbsp;',
     icon: 'juxing',
     innerType: 'RectShape',
+    x: 1,
+    y: 1,
+    sizeX: 20,
+    sizeY: 20,
     style: {
       width: 200,
       height: 200,
@@ -48,7 +52,8 @@ const list = [
       borderStyle: 'solid',
       borderRadius: '',
       verticalAlign: 'middle'
-    }
+    },
+    matrixStyle: {}
   },
   {
     component: 'VText',
@@ -57,6 +62,10 @@ const list = [
     propValue: '双击编辑文字',
     icon: 'other_text',
     innerType: 'VText',
+    x: 1,
+    y: 1,
+    sizeX: 20,
+    sizeY: 20,
     request: {
       method: 'GET',
       data: [],
@@ -75,7 +84,8 @@ const list = [
       letterSpacing: 0,
       textAlign: 'center',
       color: ''
-    }
+    },
+    matrixStyle: {}
   },
   {
     component: 'UserView',
@@ -84,6 +94,10 @@ const list = [
     propValue: '',
     icon: 'bar',
     innerType: 'bar',
+    x: 1,
+    y: 1,
+    sizeX: 20,
+    sizeY: 20,
     style: {
       width: 200,
       height: 200,
@@ -92,13 +106,18 @@ const list = [
       backgroundColor: '',
       borderStyle: 'solid',
       borderRadius: ''
-    }
+    },
+    matrixStyle: {}
   },
   {
     component: 'Picture',
     name: '图片',
     label: '图片',
     icon: 'other_media',
+    x: 1,
+    y: 1,
+    sizeX: 20,
+    sizeY: 20,
     propValue: {
       url: null,
       flip: {
@@ -110,7 +129,8 @@ const list = [
       width: 300,
       height: 200,
       borderRadius: ''
-    }
+    },
+    matrixStyle: {}
   }
 ]
 

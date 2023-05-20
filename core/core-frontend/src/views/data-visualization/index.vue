@@ -84,10 +84,7 @@ const findDragComponent = componentInfo => {
 const handleDrop = e => {
   e.preventDefault()
   e.stopPropagation()
-
   const componentInfo = e.dataTransfer.getData('id')
-
-  console.log('componentInfo=' + componentInfo)
   const rectInfo = editor.value.getBoundingClientRect()
   if (componentInfo) {
     const component = findDragComponent(componentInfo)
