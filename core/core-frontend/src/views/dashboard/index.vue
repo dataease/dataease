@@ -72,6 +72,9 @@ const handleNew = newComponentInfo => {
     component.id = generateID()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
+    nextTick(() => {
+      cyGridster.value.addItemBox(component) //在适当的时候初始化布局组件
+    })
     snapshotStore.recordSnapshot()
   }
 }

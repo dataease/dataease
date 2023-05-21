@@ -20,17 +20,18 @@ const props = defineProps({
 
 const { propValue, element } = toRefs(props)
 const currentPane = ref('common')
-const newComponent = innerType => {
-  eventBus.emit('handleNew', { componentName: 'UserView', innerType: 'bar' })
-}
 
 const handleDragStart = e => {
   e.dataTransfer.setData('id', e.target.dataset.id)
 }
+
+const newComponent = componentName => {
+  eventBus.emit('handleNew', { componentName: componentName, innerType: componentName })
+}
 </script>
 
 <template>
-  <div class="group" @dragstart="handleDragStart">
+  <div class="group" @dragstart="handleDragStart" v-on:click="newComponent('VText')">
     <drag-component name="Text" label="文本" drag-info="VText&VText"></drag-component>
   </div>
 </template>
