@@ -18,7 +18,7 @@
           >{{ $t('chart.show') }}
           </el-checkbox>
         </el-form-item>
-        <div v-show="titleForm.show">
+        <div v-show="titleForm.show || chart.type ==='richTextView'">
           <el-form-item
             v-show="showProperty('title')"
             v-if="!batchOptStatus"
