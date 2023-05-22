@@ -1169,7 +1169,9 @@ public class Db2QueryProvider extends QueryProvider {
                     whereValue = "('" + StringUtils.join(value, "','") + "')";
                 }
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
-                whereValue = "'%" + value.get(0) + "%'";
+                String keyword = value.get(0).toUpperCase();
+                whereValue = "'%" + keyword + "%'";
+                whereName = "upper(" + whereName + ")";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                 if (request.getDatasetTableField().getDeType() == DeTypeConstants.DE_TIME) {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
