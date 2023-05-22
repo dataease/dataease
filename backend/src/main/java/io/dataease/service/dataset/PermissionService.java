@@ -208,7 +208,10 @@ public class PermissionService {
         dataSetColumnPermissionsDTO.setDatasetId(datasetId);
         dataSetColumnPermissionsDTO.setAuthTargetIds(Collections.singletonList(userId));
         dataSetColumnPermissionsDTO.setAuthTargetType("user");
-        datasetColumnPermissions.addAll(columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO));
+        List<DataSetColumnPermissionsDTO> dataSetColumnPermissionsDTOS = columnPermissionService.searchPermissions(dataSetColumnPermissionsDTO);
+        if(CollectionUtils.isNotEmpty(dataSetColumnPermissionsDTOS)){
+            datasetColumnPermissions.addAll(dataSetColumnPermissionsDTOS);
+        }
         if (CollectionUtils.isNotEmpty(roleIds)) {
             DataSetColumnPermissionsDTO request = new DataSetColumnPermissionsDTO();
             request.setDatasetId(datasetId);
