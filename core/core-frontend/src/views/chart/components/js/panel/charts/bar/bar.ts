@@ -10,40 +10,7 @@ import {
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { G2PlotDrawOptions, G2PlotChartView } from '@/views/chart/components/js/panel/types'
 
-const DEFAULT_DATA_BAR: any[] = [
-  {
-    type: '家具家电',
-    sales: 38
-  },
-  {
-    type: '粮油副食',
-    sales: 52
-  },
-  {
-    type: '生鲜水果',
-    sales: 61
-  },
-  {
-    type: '美容洗护',
-    sales: 145
-  },
-  {
-    type: '母婴用品',
-    sales: 48
-  },
-  {
-    type: '进口食品',
-    sales: 38
-  },
-  {
-    type: '食品饮料',
-    sales: 38
-  },
-  {
-    type: '家庭清洁',
-    sales: 38
-  }
-]
+const DEFAULT_DATA_BAR: any[] = []
 
 export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   drawChart(drawOptions: G2PlotDrawOptions<Column>): Column {
@@ -112,41 +79,6 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
             }
           }
         ]
-      }
-
-      if (drawOptions.chartObj) {
-        drawOptions.chartObj.destroy()
-      }
-      drawOptions.chartObj = new Column(drawOptions.container, options)
-      return drawOptions.chartObj
-    } else {
-      const options: ColumnOptions = {
-        data: this.defaultData,
-        xField: 'type',
-        yField: 'sales',
-        label: {
-          // 可手动配置 label 数据标签位置
-          position: 'middle', // 'top', 'bottom', 'middle',
-          // 配置样式
-          style: {
-            fill: '#FFFFFF',
-            opacity: 0.6
-          }
-        },
-        xAxis: {
-          label: {
-            autoHide: true,
-            autoRotate: false
-          }
-        },
-        meta: {
-          type: {
-            alias: '类别'
-          },
-          sales: {
-            alias: '销售额'
-          }
-        }
       }
 
       if (drawOptions.chartObj) {
