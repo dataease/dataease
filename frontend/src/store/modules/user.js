@@ -109,6 +109,13 @@ const actions = {
         if (!data) {
           reject('Verification failed, please Login again.')
         }
+        const historyUserId = localStorage.getItem('userId')
+        if(historyUserId && historyUserId !== data.userId+''){
+          const clearLocalStorage = [ 'panel-main-tree', 'panel-default-tree','chart-tree','dataset-tree']
+          clearLocalStorage.forEach((item) => {
+            localStorage.removeItem(item)
+          })
+        }
         localStorage.setItem('userId', data.userId)
         const currentUser = data
         commit('SET_USER', currentUser)
