@@ -23,9 +23,11 @@
 <script>
 import { post } from '@/api/dataset/dataset'
 import _ from 'lodash'
+import { UxGrid, UxTableColumn } from 'umy-ui'
 
 export default {
   name: 'UnionPreview',
+  components: { UxGrid, UxTableColumn },
   props: {
     table: {
       type: Object,

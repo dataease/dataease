@@ -1763,7 +1763,7 @@ import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny, includesAny } from '@/utils/StringUtils'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
-
+import FuSplitPane from './FuSplitPane.vue'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1801,7 +1801,8 @@ export default {
     DrillPath,
     PluginCom,
     MapMapping,
-    MarkMapDataEditor
+    MarkMapDataEditor,
+    FuSplitPane
   },
   props: {
     param: {

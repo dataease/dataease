@@ -239,6 +239,7 @@ import msgCfm from '@/components/msgCfm/index'
 import cancelMix from './cancelMix'
 import Config from "@/settings";
 import { updateCacheTree } from '@/components/canvas/utils/utils'
+import { UxGrid, UxTableColumn } from 'umy-ui'
 
 const token = getToken()
 const RefreshTokenKey = Config.RefreshTokenKey
@@ -246,6 +247,7 @@ const RefreshTokenKey = Config.RefreshTokenKey
 export default {
   name: 'AddExcel',
   mixins: [msgCfm, cancelMix],
+  components: { UxGrid, UxTableColumn },
   props: {
     param: {
       type: Object,

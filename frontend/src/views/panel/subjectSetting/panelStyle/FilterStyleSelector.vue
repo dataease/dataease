@@ -154,6 +154,7 @@ export default {
     },
     themeChange(styleKey) {
       adaptCurThemeFilterStyleAll(styleKey)
+      this.$store.commit('recordSnapshot')
     }
   }
 }

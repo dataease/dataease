@@ -109,10 +109,11 @@ import { getTable, post } from '@/api/dataset/dataset'
 import DatasetGroupSelector from '../common/DatasetGroupSelector'
 import DatasetCustomField from '../common/DatasetCustomField'
 import { updateCacheTree } from '@/components/canvas/utils/utils'
+import { UxGrid, UxTableColumn } from 'umy-ui'
 
 export default {
   name: 'AddCustom',
-  components: { DatasetCustomField, DatasetGroupSelector },
+  components: { DatasetCustomField, DatasetGroupSelector, UxGrid, UxTableColumn },
   props: {
     param: {
       type: Object,

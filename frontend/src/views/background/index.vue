@@ -50,6 +50,8 @@
           style="padding-top: 5px"
         >
           <el-color-picker
+            ref="colorPicker"
+            @change="colorChange"
             v-model="curComponent.commonBackground.color"
             :disabled="!curComponent.commonBackground.backgroundColorSelect"
             size="mini"
@@ -312,6 +314,12 @@ export default {
     this.init()
   },
   methods: {
+    colorChange(val) {
+      if (val === null) {
+        this.$refs.colorPicker.color.value = ''
+        this.curComponent.commonBackground.color = ''
+      }
+    },
     init() {
       if (this.curComponent && this.curComponent.commonBackground && this.curComponent.commonBackground.outerImage && typeof (this.curComponent.commonBackground.outerImage) === 'string') {
         this.fileList.push({ url: imgUrlTrans(this.curComponent.commonBackground.outerImage) })

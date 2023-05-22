@@ -226,9 +226,11 @@
 import { CHART_FONT_FAMILY, CHART_FONT_LETTER_SPACE, COLOR_PANEL, DEFAULT_TITLE_STYLE } from '../../chart/chart'
 import { checkViewTitle } from '@/components/canvas/utils/utils'
 import { mapState } from 'vuex'
+import RemarkEditor from '@/views/chart/components/componentStyle/dialog/RemarkEditor'
 
 export default {
   name: 'TitleSelectorAntV',
+  components: { RemarkEditor },
   props: {
     param: {
       type: Object,
