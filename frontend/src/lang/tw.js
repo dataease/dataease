@@ -2779,6 +2779,7 @@ export default {
     email: '郵箱：',
     tel: '電話：',
     web: '網址：',
+    bbs: '論壇：',
     apply: '免費試用申請',
     more: '更多',
     weChat_official_account: '微信公眾號',

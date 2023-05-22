@@ -2785,6 +2785,7 @@ export default {
     email: 'Email:',
     tel: 'Tel:',
     web: 'Web:',
+    bbs: 'BBS:',
     apply: 'Free Trial Application',
     more: 'More',
     weChat_official_account: 'WeChat official account',
