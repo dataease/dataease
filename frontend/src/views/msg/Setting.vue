@@ -91,8 +91,6 @@ export default {
   computed: {},
   mounted() {},
   beforeCreate() {
-    // this.loadChannelData()
-
     channelList().then((res) => {
       this.msg_channels = res.data
     })
@@ -152,12 +150,6 @@ export default {
         })
         // this.checkBoxStatus(node, )
       }
-    },
-    // 加载消息渠道
-    loadChannelData() {
-      channelList().then((res) => {
-        this.msg_channels = res.data
-      })
     },
     // 加载用户设置信息
     loadSettingData(callBack) {
