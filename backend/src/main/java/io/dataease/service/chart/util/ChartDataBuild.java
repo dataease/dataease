@@ -1,8 +1,8 @@
 package io.dataease.service.chart.util;
 
 import cn.hutool.core.util.ArrayUtil;
-import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.dto.chart.*;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import org.apache.commons.collections4.CollectionUtils;
@@ -1071,11 +1071,11 @@ public class ChartDataBuild {
                         break;
                     }
                     if (originStr.length() >= columnPermissionItem.getDesensitizationRule().getM() && originStr.length() >= columnPermissionItem.getDesensitizationRule().getN()) {
-                        desensitizationStr = "***" + StringUtils.substring(originStr, columnPermissionItem.getDesensitizationRule().getM() - 1, columnPermissionItem.getDesensitizationRule().getN()) + "***";
+                        desensitizationStr = buildPrefix(columnPermissionItem.getDesensitizationRule().getM()) + StringUtils.substring(originStr, columnPermissionItem.getDesensitizationRule().getM() - 1, columnPermissionItem.getDesensitizationRule().getN()) + "***";
                         break;
                     }
                     if (originStr.length() >= columnPermissionItem.getDesensitizationRule().getM() && originStr.length() < columnPermissionItem.getDesensitizationRule().getN()) {
-                        desensitizationStr = "***" + StringUtils.substring(originStr, columnPermissionItem.getDesensitizationRule().getM() - 1, originStr.length());
+                        desensitizationStr = buildPrefix(columnPermissionItem.getDesensitizationRule().getM()) + StringUtils.substring(originStr, columnPermissionItem.getDesensitizationRule().getM() - 1, originStr.length());
                     }
                     break;
                 default:
@@ -1084,6 +1084,18 @@ public class ChartDataBuild {
             }
         }
         return desensitizationStr;
+    }
+
+
+    private static String buildPrefix(Integer integer) {
+        String prefix = "";
+        if (integer <= 1) {
+            return prefix;
+        }
+        for (int i = 0; i < integer - 1; i++) {
+            prefix = prefix + "*";
+        }
+        return prefix;
     }
 
     private static Map<String, Object> transTableNormal(List<ChartViewFieldDTO> fields, ChartViewWithBLOBs view, List<String[]> data, Map<String, ColumnPermissionItem> desensitizationList) {

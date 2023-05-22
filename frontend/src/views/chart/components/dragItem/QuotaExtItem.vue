@@ -319,10 +319,10 @@ export default {
     },
     isEnableCompare() {
       let xAxis = null
-      if (Object.prototype.toString.call(this.chart.xaxisExt) === '[object Array]') {
-        xAxis = JSON.parse(JSON.stringify(this.chart.xaxisExt))
+      if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
+        xAxis = JSON.parse(JSON.stringify(this.chart.xaxis))
       } else {
-        xAxis = JSON.parse(this.chart.xaxisExt)
+        xAxis = JSON.parse(this.chart.xaxis)
       }
       const t1 = xAxis.filter(ele => {
         return ele.deType === 1 && SUPPORT_Y_M.includes(ele.dateStyle)

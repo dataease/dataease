@@ -454,6 +454,7 @@
       size="840px"
       :before-close="closeEditItem"
       direction="rtl"
+      :wrapper-closable="false"
     >
       <el-steps
         :active="active"
@@ -795,11 +796,13 @@ import ApiHttpRequestForm from '@/views/system/datasource/ApiHttpRequestForm'
 import dePwd from '@/components/deCustomCm/DePwd.vue'
 import msgCfm from '@/components/msgCfm'
 import { Base64 } from 'js-base64'
+import { UxGrid, UxTableColumn } from 'umy-ui'
 export default {
   name: 'DsConfiguration',
   components: {
     ApiHttpRequestForm,
-    dePwd
+    dePwd,
+    UxGrid, UxTableColumn
   },
   mixins: [msgCfm],
   props: {

@@ -1091,7 +1091,7 @@ public class CKQueryProvider extends QueryProvider {
             return null;
         }
 
-        AtomicReference<ChartExtFilterRequest> atomicReference = new AtomicReference<>();
+        List<ChartExtFilterRequest> chartExtFilterRequests = new ArrayList<>();
         requestList.forEach(request -> {
             DatasetTableField datasetTableField = request.getDatasetTableField();
             List<String> requestValue = request.getValue();
@@ -1106,12 +1106,12 @@ public class CKQueryProvider extends QueryProvider {
                 requestCopy.setValue(new ArrayList<String>() {{
                     add(String.format(toDateTime64, "'" + simpleDateFormat.format(new Date(Long.parseLong(requestValue.get(1)))) + "'"));
                 }});
-                atomicReference.set(requestCopy);
+                chartExtFilterRequests.add(requestCopy);
             }
         });
 
-        if (ObjectUtils.isNotEmpty(atomicReference.get())) {
-            requestList.add(atomicReference.get());
+        if (CollectionUtils.isNotEmpty(chartExtFilterRequests)) {
+            requestList.addAll(chartExtFilterRequests);
         }
         List<SQLObj> list = new ArrayList<>();
         for (ChartExtFilterRequest request : requestList) {
@@ -1181,7 +1181,9 @@ public class CKQueryProvider extends QueryProvider {
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
-                whereValue = "'%" + value.get(0) + "%'";
+                String keyword = value.get(0).toUpperCase();
+                whereValue = "'%" + keyword + "%'";
+                whereName = "upper(" + whereName + ")";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                 if (request.getDatasetTableField().getDeType() == DeTypeConstants.DE_TIME) {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");

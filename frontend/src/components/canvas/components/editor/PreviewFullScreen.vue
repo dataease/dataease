@@ -17,7 +17,9 @@
 </template>
 
 <script>
-
+import fullscreen from 'vue-fullscreen'
+import Vue from 'vue'
+Vue.use(fullscreen)
 import Preview from './Preview'
 import bus from '@/utils/bus'
 import { mapState } from 'vuex'

@@ -1,5 +1,6 @@
 .vjs-custom-skin > .video-js {
   width: 100%;
+  background-color: rgba(0, 0, 0, 0);
   font-family: "PingFang SC","Helvetica Neue","Hiragino Sans GB","Segoe UI","Microsoft YaHei","微软雅黑",sans-serif;
 }
 
@@ -111,7 +112,7 @@
 }
 
 .vjs-custom-skin > .video-js .vjs-time-tooltip,
-.vjs-custom-skin > .video-js .vjs-mouse-display:after, 
+.vjs-custom-skin > .video-js .vjs-mouse-display:after,
 .vjs-custom-skin > .video-js .vjs-play-progress:after {
   border-radius: 0;
   font-size: 1em;

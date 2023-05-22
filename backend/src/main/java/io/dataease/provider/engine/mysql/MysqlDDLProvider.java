@@ -39,8 +39,11 @@ public class MysqlDDLProvider extends DDLProviderImpl {
             for (int i = 0; i < strings.length; i++) {
                 if (StringUtils.isEmpty(strings[i])) {
                     strings1[i] = null;
-                } else {
-                    strings1[i] = strings[i].replace("'", "\\'");
+                    continue;
+                }
+                strings1[i] = strings[i].replace("'", "\\'");
+                if(strings1[i].equals("/")){
+                    strings1[i] = "//";
                 }
             }
             values.append("('").append(UUID.randomUUID())

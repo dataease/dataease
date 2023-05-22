@@ -2794,6 +2794,7 @@ export default {
     email: '邮箱：',
     tel: '电话：',
     web: '网址：',
+    bbs: '论坛：',
     apply: '免费试用申请',
     more: '更多',
     weChat_official_account: '微信公众号',
