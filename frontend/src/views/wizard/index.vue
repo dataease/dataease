@@ -402,7 +402,7 @@ export default {
 .content_bottom_contact {
   float: left;
   margin-left: 278px;
-  width: 300px;
+  width: 200px;
   margin-top: 40px;
 }
 
@@ -410,7 +410,7 @@ export default {
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
-  line-height: 22px;
+  line-height: 20px;
   color: var(--TextPrimary, #1F2329);
   margin-bottom: 16px;
 }
@@ -418,8 +418,8 @@ export default {
 .contact_content {
   font-style: normal;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 22px;
+  font-size: 12px;
+  line-height: 16px;
   color: #646A73;
   margin-top: 8px;
 }
@@ -429,11 +429,12 @@ export default {
 }
 
 .content_bottom_qr_code {
-  width: 400px;
+  width: 500px;
   float: right;
   text-align: right;
   margin-right: 180px;
   margin-top: 40px;
+  padding-right: 100px;
 }
 
 .contact_title_qr {
