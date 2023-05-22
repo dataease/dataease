@@ -98,6 +98,13 @@
               href="https://www.dataease.io"
             >www.dataease.io</a>
             </el-row>
+            <el-row class="contact_content">
+              {{ $t('wizard.bbs') }}<a
+              style="text-decoration:underline;"
+              target="_blank"
+              href="https://bbs.fit2cloud.com/c/de"
+            >https://bbs.fit2cloud.com/c/de</a>
+            </el-row>
           </div>
 
           <div class="content_bottom_qr_code">
