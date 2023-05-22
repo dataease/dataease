@@ -454,6 +454,7 @@
       size="840px"
       :before-close="closeEditItem"
       direction="rtl"
+      :wrapper-closable="false"
     >
       <el-steps
         :active="active"
