@@ -15,6 +15,7 @@ import {
   DEFAULT_THRESHOLD
 } from './util/chart'
 import { reactive, ref } from 'vue'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getDatasetTree } from '@/api/dataset'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -34,6 +35,8 @@ const { t } = useI18n()
 const loading = ref(false)
 const tabActive = ref('data')
 
+const renameForm = ref<FormInstance>()
+
 const props = {
   label: 'name',
   children: 'children',
@@ -45,6 +48,13 @@ const fieldType = (deType: number) => {
 }
 
 const dsFieldDragOptions = { group: { name: 'drag', pull: 'clone' }, sort: true }
+
+const itemFormRules = reactive<FormRules>({
+  chartShowName: [
+    { required: true, message: t('commons.input_content'), trigger: 'change' },
+    { max: 50, message: t('commons.char_can_not_more_50'), trigger: 'change' }
+  ]
+})
 
 const state = reactive({
   view: {
@@ -91,7 +101,12 @@ const state = reactive({
   },
   datasetTree: [],
   dimensionData: [],
-  quotaData: []
+  quotaData: [],
+  renameItem: false,
+  itemForm: {
+    name: '',
+    chartShowName: ''
+  }
 })
 
 const initDataset = () => {
@@ -208,6 +223,39 @@ const onLegendChange = val => {
   renderChart(state.view)
 }
 
+const showRename = val => {
+  state.itemForm = JSON.parse(JSON.stringify(val))
+  if (!state.itemForm.chartShowName) {
+    state.itemForm.chartShowName = state.itemForm.name
+  }
+  state.renameItem = true
+}
+
+const closeRename = () => {
+  state.renameItem = false
+}
+
+const saveRename = ref => {
+  if (!ref) return
+  ref.validate(valid => {
+    if (valid) {
+      if (state.itemForm.renameType === 'quota') {
+        state.view.yaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+      } else if (state.itemForm.renameType === 'dimension') {
+        state.view.xaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+      } else if (state.itemForm.renameType === 'quotaExt') {
+        state.view.yaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+      } else if (state.itemForm.renameType === 'dimensionExt') {
+        state.view.xaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+      }
+      // this.calcData(true)
+      closeRename()
+    } else {
+      return false
+    }
+  })
+}
+
 const save = () => {
   saveChart(state.view)
 }
@@ -233,7 +281,7 @@ initDataset()
       <!--          state.view.name-->
       <!--        }}</span>-->
       <!--        <span :style="{ float: 'right', lineHeight: '40px' }">-->
-      <!--          <el-button secondary round @click="save"> {{ $t('chart.recover') }}(当保存用) </el-button>-->
+      <!--          <el-button secondary round @click="save"> {{ t('chart.recover') }}(当保存用) </el-button>-->
       <!--        </span>-->
       <!--      </el-row>-->
 
@@ -386,6 +434,7 @@ initDataset()
                               :item="element"
                               :index="index"
                               @onDimensionItemChange="dimensionItemChange"
+                              @onNameEdit="showRename"
                             />
                           </template>
                         </draggable>
@@ -412,6 +461,7 @@ initDataset()
                               :item="element"
                               :index="index"
                               @onQuotaItemChange="quotaItemChange"
+                              @onNameEdit="showRename"
                             />
                           </template>
                         </draggable>
@@ -468,7 +518,7 @@ initDataset()
                 class="padding-tab"
                 style="width: 100%"
               >
-                <senior />
+                <senior :chart="state.view" :quota-data="state.view.yaxis" />
               </el-tab-pane>
             </el-tabs>
           </el-row>
@@ -502,7 +552,7 @@ initDataset()
           </el-row>
           <div style="height: 100%">
             <div class="padding-lr field-height">
-              <span>{{ $t('chart.dimension') }}</span>
+              <span>{{ t('chart.dimension') }}</span>
               <draggable
                 :list="state.dimensionData"
                 :group="dsFieldDragOptions.group"
@@ -547,6 +597,40 @@ initDataset()
         </div>
       </el-col>
     </el-row>
+
+    <!--显示名修改-->
+    <el-dialog
+      v-dialogDrag
+      :title="t('chart.show_name_set')"
+      :visible="state.renameItem"
+      v-model="state.renameItem"
+      :show-close="false"
+      width="30%"
+    >
+      <el-form ref="renameForm" label-width="80px" :model="state.itemForm" :rules="itemFormRules">
+        <el-form-item :label="t('dataset.field_origin_name')" class="form-item">
+          <span style="padding: 0 16px">{{ state.itemForm.name }}</span>
+        </el-form-item>
+        <el-form-item :label="t('chart.show_name')" class="form-item" prop="chartShowName">
+          <el-input
+            v-model="state.itemForm.chartShowName"
+            style="width: 200px"
+            size="small"
+            clearable
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button size="mini" @click="closeRename(renameForm)"
+            >{{ t('chart.cancel') }}
+          </el-button>
+          <el-button type="primary" size="mini" @click="saveRename(renameForm)"
+            >{{ t('chart.confirm') }}
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
