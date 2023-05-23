@@ -2,17 +2,16 @@ package io.dataease.auth.filter;
 
 import io.dataease.auth.entity.ASKToken;
 import io.dataease.auth.entity.JWTToken;
-
 import io.dataease.auth.handler.ApiKeyHandler;
-
+import io.dataease.commons.license.DefaultLicenseService;
+import io.dataease.commons.license.F2CLicenseResponse;
+import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.TokenCacheUtils;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -26,6 +25,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 
 
     public final static String expireMessage = "Login token is expire.";
+    public final static String licMessage = "license invalid";
 
 
     /**
@@ -48,6 +48,17 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 
 
         if (ApiKeyHandler.isApiKeyCall(httpServletRequest)) {
+
+            DefaultLicenseService licenseService = CommonBeanFactory.getBean(DefaultLicenseService.class);
+            F2CLicenseResponse licenseResponse = null;
+            try {
+                licenseResponse = licenseService.validateLicense();
+            } catch (Exception e) {
+                throw new AuthenticationException(licMessage);
+            }
+            if (licenseResponse.getStatus() != F2CLicenseResponse.Status.valid) {
+                throw new AuthenticationException(licMessage);
+            }
 
             ASKToken askToken = ApiKeyHandler.buildToken(httpServletRequest);
 
@@ -87,6 +98,8 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
                 LogUtil.error(e);
                 if (e instanceof AuthenticationException && StringUtils.equals(e.getMessage(), expireMessage)) {
                     responseExpire(request, response, e);
+                } else if (StringUtils.equals(licMessage, e.getMessage())) {
+                    responseLicError(request, response, e);
                 } else {
                     tokenError(request, response, e);
                 }
@@ -125,6 +138,12 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
         httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
         httpServletResponse.setHeader("authentication-status", "login_expire");
+    }
+
+    private void responseLicError(ServletRequest req, ServletResponse resp, Exception e1) {
+        HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
+        httpServletResponse.addHeader("Access-Control-Expose-Headers", "authentication-status");
+        httpServletResponse.setHeader("authentication-status", licMessage);
     }
 
 }

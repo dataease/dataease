@@ -17,7 +17,7 @@
         style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;"
       >
         <div style="height: 100%;">
-          <share-head />
+          <share-head/>
         </div>
       </el-row>
       <el-row
@@ -29,21 +29,26 @@
         <div style="height: 100%;">
           <el-col
             :span="12"
-            style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px"
+            style="font-size: 14px;display: flex"
           >
-            <span class="panel-name">{{ panelInfo.name || '测试仪表板' }}</span>
-            <span
-              v-if="panelInfo.isDefault"
-              style="color: green;font-size: 12px"
-            >({{ $t('panel.default_panel_name') }}:{{ panelInfo.defaultPanelName }})</span>
-            <span
-              v-if="panelInfo.sourcePanelName"
-              style="color: green;font-size: 12px"
-            >&nbsp;({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
-            <span
-              v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
-              style="margin-left: 9px"
+            <div :title="showName" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px;max-width: 300px"><span
+              class="panel-name"
             >
+              {{ panelInfo.name || '测试仪表板' }}</span>
+              <span
+                v-if="panelInfo.isDefault"
+                style="color: green;font-size: 12px"
+              >({{ $t('panel.default_panel_name') }}:{{ panelInfo.defaultPanelName }})</span>
+              <span
+                v-if="panelInfo.sourcePanelName"
+                style="color: green;font-size: 12px"
+              >&nbsp;({{ $t('panel.source_panel_name') }}:{{ panelInfo.sourcePanelName }})</span>
+            </div>
+            <div style="width: 200px">
+              <span
+                v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
+                style="margin-left: 9px"
+              >
               <el-tooltip :content="$t('panel.store')">
                 <i
                   class="el-icon-star-off"
@@ -51,10 +56,10 @@
                 />
               </el-tooltip>
             </span>
-            <span
-              v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
-              style="margin-left: 9px"
-            >
+              <span
+                v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
+                style="margin-left: 9px"
+              >
               <el-tooltip :content="$t('commons.cancel') + $t('panel.store')">
                 <i
                   class="el-icon-star-on"
@@ -62,23 +67,27 @@
                 />
               </el-tooltip>
             </span>
-            <template v-if="panelInfo.creatorName">
-              <el-divider
-                style="margin: 0 16px;"
-                direction="vertical"
-              />
-              <span class="panel-create">
+              <template v-if="panelInfo.creatorName">
+                <el-divider
+                  style="margin: 0 16px;"
+                  direction="vertical"
+                />
+                <span class="panel-create">
                 {{ $t('panel.create_by') + ':' + panelInfo.creatorName }}
               </span>
-            </template>
-            <el-popover
-              placement="right-start"
-              width="400"
-              trigger="click"
-            >
-              <panel-detail-info />
-              <svg-icon slot="reference" style="margin-left: 4px;cursor: pointer;font-size: 14px;" class="icon-class" icon-class="icon_info_outlined" />
-            </el-popover>
+              </template>
+              <el-popover
+                placement="right-start"
+                width="400"
+                trigger="click"
+              >
+                <panel-detail-info/>
+                <svg-icon slot="reference" style="margin-left: 4px;cursor: pointer;font-size: 14px;" class="icon-class"
+                          icon-class="icon_info_outlined"
+                />
+              </el-popover>
+            </div>
+
           </el-col>
           <el-col :span="12">
 
@@ -427,6 +436,17 @@ export default {
     }
   },
   computed: {
+    showName(){
+      let name = this.panelInfo.name || '测试仪表板'
+      if(this.panelInfo.isDefault){
+        name = name +'('+ this.$t('panel.default_panel_name') +':'+ this.panelInfo.defaultPanelName +')'
+      }
+
+      if(this.panelInfo.sourcePanelName){
+        name = name +'('+ this.$t('panel.source_panel_name') +':'+ this.panelInfo.sourcePanelName +')'
+      }
+      return name
+    },
     mainCanvasComponentData() {
       return getNowCanvasComponentData(this.canvasId)
     },
@@ -841,6 +861,7 @@ export default {
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
+    flex: 1;
     color: var(--deTextPrimary, #1F2329);
 
   }

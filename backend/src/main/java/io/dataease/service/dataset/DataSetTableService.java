@@ -1070,7 +1070,7 @@ public class DataSetTableService {
                         defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE) && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
                     sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
                 }
-                if (isEdit && defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())){
+                if (isEdit && defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
                     sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
                 }
             }
@@ -1170,7 +1170,7 @@ public class DataSetTableService {
         if (binaryExpression != null) {
             if (!(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && hasVariable(binaryExpression.getRightExpression().toString())) {
                 stringBuilder.append(SubstitutedSql);
-            }else {
+            } else {
                 expr.accept(getExpressionDeParser(stringBuilder));
             }
         } else {
@@ -1257,7 +1257,7 @@ public class DataSetTableService {
             throw new Exception(Translator.get("i18n_invalid_ds"));
         }
         String tmpSql = removeVariables(sql, ds.getType());
-        if(!realData){
+        if (!realData) {
             tmpSql.replaceAll(SubstitutedSql, SubstitutedSqlVirtualData);
         }
         if (dataSetTableRequest.getMode() == 1 && (tmpSql.contains(SubstitutedParams) || tmpSql.contains(SubstitutedSql.trim()))) {
@@ -2021,7 +2021,9 @@ public class DataSetTableService {
                 // custom 创建doris视图
                 createDorisView(TableUtils.tableName(datasetTable.getId()), sql);
 
-                datasourceRequest.setQuery(sql);
+                // getQuerySql to get field
+                QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+                datasourceRequest.setQuery(qp.createSQLPreview(sql, null));
                 fields = datasourceProvider.fetchResultField(datasourceRequest);
                 for (DatasetTableField field : fieldList) {
                     for (TableField tableField : fields) {
@@ -2044,8 +2046,9 @@ public class DataSetTableService {
                 String sql = (String) sqlMap.get("sql");
                 List<DatasetTableField> fieldList = (List<DatasetTableField>) sqlMap.get("field");
 
-
-                datasourceRequest.setQuery(sql);
+                // getQuerySql to get field
+                QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
+                datasourceRequest.setQuery(qp.createSQLPreview(sql, null));
                 fields = datasourceProvider.fetchResultField(datasourceRequest);
 
                 for (DatasetTableField field : fieldList) {
