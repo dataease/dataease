@@ -202,6 +202,10 @@
         ORDER BY panel_group.node_type desc, CONVERT(panel_group.name using gbk)
     </select>
 
+    <delete id="deleteLinkDefaultCircle">
+        delete from panel_group where FIND_IN_SET(panel_group.source, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
+    </delete>
+
     <delete id="deleteCircle">
         delete
         from panel_group
@@ -211,7 +215,6 @@
         panel_group.source = #{pid}
         <if test="nodeType == 'folder'">
             or FIND_IN_SET(panel_group.id, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
-            or FIND_IN_SET(panel_group.source, GET_PANEL_GROUP_WITH_CHILDREN(#{pid}))
         </if>
     </delete>
 
