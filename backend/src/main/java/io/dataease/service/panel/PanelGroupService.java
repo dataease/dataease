@@ -305,6 +305,7 @@ public class PanelGroupService {
         extPanelGroupMapper.deleteCircleView(id, nodeType);
         extPanelGroupMapper.deleteCircleViewCache(id, nodeType);
         // 同时会删除对应默认仪表盘
+        extPanelGroupMapper.deleteLinkDefaultCircle(id);
         extPanelGroupMapper.deleteCircle(id, nodeType);
         storeService.removeByPanelId(id);
         shareService.delete(id, null);
