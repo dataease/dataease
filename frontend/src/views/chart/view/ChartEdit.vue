@@ -2952,7 +2952,7 @@ export default {
 
     // 更换数据集
     changeChart() {
-      const optType = this.view.tableId === this.changeTable.id ? 'same' : 'change'
+      const optType = this.view.tableId === this.changeTable.id && this.view.dataFrom!=='template' ? 'same' : 'change'
       // 更换数据集后清空视图字段，并重新请求数据；否则没有操作
       if (optType === 'change') {
         this.view.dataFrom = 'dataset'
