@@ -725,7 +725,9 @@ public class ChartViewService {
                 xAxis = xAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
                 yAxis = yAxis.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
         }
-
+        Map<String, ChartViewFieldDTO> chartFieldMap = Stream.of(xAxisBase, xAxisExt, extStack)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toMap(ChartViewFieldDTO::getId, o -> o, ((p, n) -> p)));
         // 过滤来自仪表板的条件
         List<ChartExtFilterRequest> extFilterList = new ArrayList<>();
         //组件过滤条件
@@ -834,6 +836,14 @@ public class ChartViewService {
                 if (!desensitizationList.keySet().contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
                     request.setDatasetTableField(datasetTableField);
                     if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
+//                         设置日期格式，以视图字段设置的格式为准，先不处理组件的条件，因为格式无法统一。
+                        if (request.getDatasetTableField() != null) {
+                            ChartViewFieldDTO chartViewFieldDTO = chartFieldMap.get(request.getDatasetTableField().getId());
+                            if (chartViewFieldDTO != null) {
+                                request.setDatePattern(chartViewFieldDTO.getDatePattern());
+                                request.setDateStyle(chartViewFieldDTO.getDateStyle());
+                            }
+                        }
                         if (CollectionUtils.isNotEmpty(request.getViewIds())) {
                             if (request.getViewIds().contains(view.getId())) {
                                 extFilterList.add(request);
@@ -883,9 +893,6 @@ public class ChartViewService {
             ChartDrillRequest head = drillRequestList.get(0);
             Map<String, String> dimValMap = new HashMap<>();
             head.getDimensionList().forEach(item -> dimValMap.put(item.getId(), item.getValue()));
-            Map<String, ChartViewFieldDTO> fieldMap = Stream.of(xAxisBase, xAxisExt, extStack)
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toMap(ChartViewFieldDTO::getId, o -> o, ((p, n) -> p)));
             for (int i = 0; i < drillRequestList.size(); i++) {
                 ChartDrillRequest request = drillRequestList.get(i);
                 ChartViewFieldDTO chartViewFieldDTO = drill.get(i);
@@ -896,7 +903,7 @@ public class ChartViewService {
                         fieldsToFilter.add(chartViewFieldDTO);
                         dimValMap.put(requestDimension.getId(), requestDimension.getValue());
                         if (!checkDrillExist(xAxis, extStack, requestDimension.getId(), view)) {
-                            fieldMap.put(chartViewFieldDTO.getId(), chartViewFieldDTO);
+                            chartFieldMap.put(chartViewFieldDTO.getId(), chartViewFieldDTO);
                             xAxis.add(chartViewFieldDTO);
                         }
                         if (i == drillRequestList.size() - 1) {
@@ -916,8 +923,8 @@ public class ChartViewService {
                 DatasetTableField datasetTableField = dataSetTableFieldsService.get(tmpField.getId());
                 tmpFilter.setDatasetTableField(datasetTableField);
                 tmpFilter.setOperator("in");
-                tmpFilter.setDateStyle(fieldMap.get(tmpField.getId()).getDateStyle());
-                tmpFilter.setDatePattern(fieldMap.get(tmpField.getId()).getDatePattern());
+                tmpFilter.setDateStyle(chartFieldMap.get(tmpField.getId()).getDateStyle());
+                tmpFilter.setDatePattern(chartFieldMap.get(tmpField.getId()).getDatePattern());
                 tmpFilter.setFieldId(tmpField.getId());
                 tmpFilter.setValue(Collections.singletonList(dimValMap.get(tmpField.getId())));
                 extFilterList.add(tmpFilter);
