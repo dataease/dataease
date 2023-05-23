@@ -150,13 +150,13 @@ export default {
           }
         })
         chartBatchCopy({ 'sourceAndTargetIds': sourceAndTargetIds }, state.panel.panelInfo.id).then((rsp) => {
-          needAdaptor && adaptCurThemeCommonStyle(newCop)
+          needAdaptor && adaptCurThemeCommonStyle(newCop,'copy')
           store.commit('addComponent', { component: newCop })
         })
       } else {
         const newCop = deepCopy(data)
         newCop.id = uuid.v1()
-        needAdaptor && adaptCurThemeCommonStyle(newCop)
+        needAdaptor && adaptCurThemeCommonStyle(newCop,'copy')
         store.commit('addComponent', { component: newCop })
       }
       if (state.isCut) {
