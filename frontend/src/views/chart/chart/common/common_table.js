@@ -62,6 +62,11 @@ export function getCustomTheme(chart) {
         fill: DEFAULT_COLOR_CASE.tableHeaderFontColor,
         fontSize: DEFAULT_SIZE.tableTitleFontSize,
         textAlign: headerAlign
+      },
+      seriesText: {
+        fill: DEFAULT_COLOR_CASE.tableItemBgColor,
+        fontSize: DEFAULT_SIZE.tableItemFontSize,
+        textAlign: itemAlign
       }
     },
     colCell: {
@@ -140,6 +145,7 @@ export function getCustomTheme(chart) {
         theme.rowCell.bolderText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
         theme.rowCell.text.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
         theme.rowCell.measureText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
+        theme.rowCell.seriesText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
       } else {
         theme.rowCell.cell.backgroundColor = i_c // 这个参数其实只对开启序号列的行头生效
         theme.rowCell.cell.horizontalBorderColor = i_c
@@ -147,6 +153,7 @@ export function getCustomTheme(chart) {
         theme.rowCell.bolderText.fill = c.tableFontColor
         theme.rowCell.text.fill = c.tableFontColor
         theme.rowCell.measureText.fill = c.tableFontColor
+        theme.rowCell.seriesText.fill = c.tableFontColor
       }
 
       theme.colCell.cell.backgroundColor = h_c
@@ -187,6 +194,8 @@ export function getCustomTheme(chart) {
         theme.rowCell.text.textAlign = h_a
         theme.rowCell.measureText.fontSize = parseInt(s.tableTitleFontSize)
         theme.rowCell.measureText.textAlign = h_a
+        theme.rowCell.seriesText.fontSize = parseInt(s.tableTitleFontSize)
+        theme.rowCell.seriesText.textAlign = h_a
       } else {
         // 序号列的数字单元格内容样式使用指标的内容样式而不是表头的内容样式
         theme.rowCell.bolderText.fontSize = parseInt(s.tableItemFontSize)
@@ -195,6 +204,8 @@ export function getCustomTheme(chart) {
         theme.rowCell.text.textAlign = i_a
         theme.rowCell.measureText.fontSize = parseInt(s.tableItemFontSize)
         theme.rowCell.measureText.textAlign = i_a
+        theme.rowCell.seriesText.fontSize = parseInt(s.tableItemFontSize)
+        theme.rowCell.seriesText.textAlign = i_a
       }
       theme.rowCell.seriesNumberWidth = parseInt(s.tableColumnWidth)
 
