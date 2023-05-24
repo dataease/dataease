@@ -4,6 +4,7 @@ import {
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
+import { valueFormatter } from '@/views/chart/components/editor/util/formatter'
 
 export function getPadding(chart) {
   if (chart.drill) {
@@ -861,152 +862,152 @@ function transAxisPosition(chart, axis) {
     return axis.position
   }
 }
-//
-// export function getSlider(chart) {
-//   let senior = {}
-//   let cfg = false
-//   if (
-//     chart.senior &&
-//     chart.type &&
-//     (chart.type.includes('bar') ||
-//       chart.type.includes('line') ||
-//       chart.type.includes('mix') ||
-//       chart.type.includes('area'))
-//   ) {
-//     senior = JSON.parse(chart.senior)
-//     if (senior.functionCfg) {
-//       if (senior.functionCfg.sliderShow) {
-//         cfg = {
-//           start: parseInt(senior.functionCfg.sliderRange[0]) / 100,
-//           end: parseInt(senior.functionCfg.sliderRange[1]) / 100
-//         }
-//
-//         if (senior.functionCfg.sliderBg) {
-//           cfg.backgroundStyle = {
-//             fill: senior.functionCfg.sliderBg,
-//             stroke: senior.functionCfg.sliderBg,
-//             lineWidth: 1,
-//             strokeOpacity: 0.5
-//           }
-//         }
-//         if (senior.functionCfg.sliderFillBg) {
-//           cfg.foregroundStyle = {
-//             fill: senior.functionCfg.sliderFillBg,
-//             fillOpacity: 0.5
-//           }
-//         }
-//         if (senior.functionCfg.sliderTextClolor) {
-//           cfg.textStyle = {
-//             fill: senior.functionCfg.sliderTextClolor
-//           }
-//           cfg.handlerStyle = {
-//             fill: senior.functionCfg.sliderTextClolor,
-//             fillOpacity: 0.5,
-//             highLightFill: senior.functionCfg.sliderTextClolor
-//           }
-//         }
-//       }
-//     }
-//   }
-//   return cfg
-// }
-//
-// export function getAnalyse(chart) {
-//   let senior = {}
-//   const assistLine = []
-//   if (
-//     chart.senior &&
-//     chart.type &&
-//     (chart.type.includes('bar') ||
-//       chart.type.includes('line') ||
-//       chart.type.includes('mix') ||
-//       chart.type.includes('area'))
-//   ) {
-//     senior = JSON.parse(chart.senior)
-//     if (senior.assistLine && senior.assistLine.length > 0) {
-//       const customStyle = JSON.parse(chart.customStyle)
-//       let xAxisPosition, yAxisPosition, axisFormatterCfg
-//       if (customStyle.xAxis) {
-//         const a = JSON.parse(JSON.stringify(customStyle.xAxis))
-//         xAxisPosition = transAxisPosition(chart, a)
-//         if (chart.type.includes('horizontal')) {
-//           axisFormatterCfg = a.axisLabelFormatter
-//             ? a.axisLabelFormatter
-//             : DEFAULT_XAXIS_STYLE.axisLabelFormatter
-//         }
-//       }
-//       if (customStyle.yAxis) {
-//         const a = JSON.parse(JSON.stringify(customStyle.yAxis))
-//         yAxisPosition = transAxisPosition(chart, a)
-//         if (!chart.type.includes('horizontal')) {
-//           axisFormatterCfg = a.axisLabelFormatter
-//             ? a.axisLabelFormatter
-//             : DEFAULT_YAXIS_STYLE.axisLabelFormatter
-//         }
-//       }
-//
-//       const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
-//       const dynamicLines = chart.data.dynamicAssistLines
-//       const lines = fixedLines.concat(dynamicLines)
-//
-//       lines.forEach(ele => {
-//         const value = parseFloat(ele.value)
-//         const content = ele.name + ' : ' + valueFormatter(value, axisFormatterCfg)
-//         assistLine.push({
-//           type: 'line',
-//           start: ['start', value],
-//           end: ['end', value],
-//           style: {
-//             stroke: ele.color,
-//             lineDash: getLineDash(ele.lineType)
-//           }
-//         })
-//         if (!chart.type.includes('horizontal')) {
-//           assistLine.push({
-//             type: 'text',
-//             position: [yAxisPosition === 'left' ? 'start' : 'end', value],
-//             content: content,
-//             offsetY: -2,
-//             offsetX: yAxisPosition === 'left' ? 2 : -10 * (content.length - 2),
-//             style: {
-//               textBaseline: 'bottom',
-//               fill: ele.color,
-//               fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
-//             }
-//           })
-//         } else {
-//           assistLine.push({
-//             type: 'text',
-//             position: [xAxisPosition === 'left' ? 'start' : 'end', value],
-//             content: content,
-//             offsetY: xAxisPosition === 'left' ? -2 : -10 * (content.length - 2),
-//             offsetX: 2,
-//             rotate: Math.PI / 2,
-//             style: {
-//               textBaseline: 'bottom',
-//               fill: ele.color,
-//               fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
-//             }
-//           })
-//         }
-//       })
-//     }
-//   }
-//   return assistLine
-// }
-//
-// function getLineDash(type) {
-//   switch (type) {
-//     case 'solid':
-//       return [0, 0]
-//     case 'dashed':
-//       return [10, 8]
-//     case 'dotted':
-//       return [2, 2]
-//     default:
-//       return [0, 0]
-//   }
-// }
+
+export function getSlider(chart) {
+  let senior = {}
+  let cfg = false
+  if (
+    chart.senior &&
+    chart.type &&
+    (chart.type.includes('bar') ||
+      chart.type.includes('line') ||
+      chart.type.includes('mix') ||
+      chart.type.includes('area'))
+  ) {
+    senior = chart.senior
+    if (senior.functionCfg) {
+      if (senior.functionCfg.sliderShow) {
+        cfg = {
+          start: parseInt(senior.functionCfg.sliderRange[0]) / 100,
+          end: parseInt(senior.functionCfg.sliderRange[1]) / 100
+        }
+
+        if (senior.functionCfg.sliderBg) {
+          cfg.backgroundStyle = {
+            fill: senior.functionCfg.sliderBg,
+            stroke: senior.functionCfg.sliderBg,
+            lineWidth: 1,
+            strokeOpacity: 0.5
+          }
+        }
+        if (senior.functionCfg.sliderFillBg) {
+          cfg.foregroundStyle = {
+            fill: senior.functionCfg.sliderFillBg,
+            fillOpacity: 0.5
+          }
+        }
+        if (senior.functionCfg.sliderTextClolor) {
+          cfg.textStyle = {
+            fill: senior.functionCfg.sliderTextClolor
+          }
+          cfg.handlerStyle = {
+            fill: senior.functionCfg.sliderTextClolor,
+            fillOpacity: 0.5,
+            highLightFill: senior.functionCfg.sliderTextClolor
+          }
+        }
+      }
+    }
+  }
+  return cfg
+}
+
+export function getAnalyse(chart) {
+  let senior = {}
+  const assistLine = []
+  if (
+    chart.senior &&
+    chart.type &&
+    (chart.type.includes('bar') ||
+      chart.type.includes('line') ||
+      chart.type.includes('mix') ||
+      chart.type.includes('area'))
+  ) {
+    senior = chart.senior
+    if (senior.assistLine && senior.assistLine.length > 0) {
+      const customStyle = chart.customStyle
+      let xAxisPosition, yAxisPosition, axisFormatterCfg
+      if (customStyle.xAxis) {
+        const a = JSON.parse(JSON.stringify(customStyle.xAxis))
+        xAxisPosition = transAxisPosition(chart, a)
+        if (chart.type.includes('horizontal')) {
+          axisFormatterCfg = a.axisLabelFormatter
+            ? a.axisLabelFormatter
+            : DEFAULT_XAXIS_STYLE.axisLabelFormatter
+        }
+      }
+      if (customStyle.yAxis) {
+        const a = JSON.parse(JSON.stringify(customStyle.yAxis))
+        yAxisPosition = transAxisPosition(chart, a)
+        if (!chart.type.includes('horizontal')) {
+          axisFormatterCfg = a.axisLabelFormatter
+            ? a.axisLabelFormatter
+            : DEFAULT_YAXIS_STYLE.axisLabelFormatter
+        }
+      }
+
+      const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
+      const dynamicLines = chart.data.dynamicAssistLines
+      const lines = fixedLines.concat(dynamicLines)
+
+      lines.forEach(ele => {
+        const value = parseFloat(ele.value)
+        const content = ele.name + ' : ' + valueFormatter(value, axisFormatterCfg)
+        assistLine.push({
+          type: 'line',
+          start: ['start', value],
+          end: ['end', value],
+          style: {
+            stroke: ele.color,
+            lineDash: getLineDash(ele.lineType)
+          }
+        })
+        if (!chart.type.includes('horizontal')) {
+          assistLine.push({
+            type: 'text',
+            position: [yAxisPosition === 'left' ? 'start' : 'end', value],
+            content: content,
+            offsetY: -2,
+            offsetX: yAxisPosition === 'left' ? 2 : -10 * (content.length - 2),
+            style: {
+              textBaseline: 'bottom',
+              fill: ele.color,
+              fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
+            }
+          })
+        } else {
+          assistLine.push({
+            type: 'text',
+            position: [xAxisPosition === 'left' ? 'start' : 'end', value],
+            content: content,
+            offsetY: xAxisPosition === 'left' ? -2 : -10 * (content.length - 2),
+            offsetX: 2,
+            rotate: Math.PI / 2,
+            style: {
+              textBaseline: 'bottom',
+              fill: ele.color,
+              fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
+            }
+          })
+        }
+      })
+    }
+  }
+  return assistLine
+}
+
+function getLineDash(type) {
+  switch (type) {
+    case 'solid':
+      return [0, 0]
+    case 'dashed':
+      return [10, 8]
+    case 'dotted':
+      return [2, 2]
+    default:
+      return [0, 0]
+  }
+}
 //
 // export function setGradientColor(rawColor, show = false, angle = 0) {
 //   const item = rawColor.split(',')
