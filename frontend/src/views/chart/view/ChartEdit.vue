@@ -983,12 +983,7 @@
                       </div>
                     </el-row>
                     <el-row
-                      v-if="view.type
-                        && !(view.type.includes('table') && view.render === 'echarts')
-                        && !view.type.includes('text') && !view.type.includes('gauge')
-                        && view.type !== 'liquid' && view.type !== 'word-cloud'
-                        && view.type !== 'table-pivot' && view.type !=='label'
-                        && view.type !=='richTextView' && view.type !== 'flow-map'"
+                      v-if="showDrill"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -1989,6 +1984,13 @@ export default {
       return includesAny(this.view.type, 'gauge') ||
         equalsAny(this.view.type, 'text', 'label') ||
         (this.view.render === 'antv' && this.view.type.includes('table'))
+    },
+    showDrill() {
+      return this.view.type &&
+        !(this.view.type.includes('table') && this.view.render === 'echarts') &&
+        !includesAny(this.view.type, 'text', 'gauge') &&
+        !equalsAny(this.view.type, 'liquid', 'bidirectional-bar',
+          'word-cloud', 'table-pivot', 'label', 'richTextView', 'flow-map')
     },
     ...mapState([
       'curComponent',

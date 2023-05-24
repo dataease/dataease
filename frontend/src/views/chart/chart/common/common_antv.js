@@ -966,3 +966,20 @@ export function setGradientColor(rawColor, show = false, angle = 0) {
   item.splice(3, 1, '0.3)')
   return show ? `l(${angle}) 0:${item.join(',')} 1:${rawColor}` : rawColor
 }
+
+export function getMeta(chart) {
+  let meta
+  if (chart.type === 'bidirectional-bar') {
+    const xAxis = JSON.parse(chart.xaxis)
+    if (xAxis?.length === 1 && xAxis[0].deType === 1) {
+      const values = chart.data.data.map(item => item.field)
+      meta = {
+        field: {
+          type: 'cat',
+          values: values.reverse()
+        }
+      }
+    }
+  }
+  return meta
+}
