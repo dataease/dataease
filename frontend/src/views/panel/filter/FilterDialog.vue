@@ -470,7 +470,7 @@ export default {
         const stack = [...list]
         while (stack.length) {
           const item = stack.pop()
-          if (item.id === fieldId) {
+          if (fieldId.includes(item.id)) {
             fieldValid = true
             break
           }
