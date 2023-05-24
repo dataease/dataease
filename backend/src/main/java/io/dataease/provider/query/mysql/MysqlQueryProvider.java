@@ -1089,7 +1089,7 @@ public class MysqlQueryProvider extends QueryProvider {
                                         String.format(MysqlConstants.DATE_FORMAT, cast, "%Y"),
                                         String.format(MysqlConstants.QUARTER, String.format(MysqlConstants.DATE_FORMAT, field, MysqlConstants.DEFAULT_DATE_FORMAT)));
                             } else {
-                                whereName = String.format(MySQLConstants.DATE_FORMAT, cast, format);
+                                whereName = String.format(MySQLConstants.FROM_UNIXTIME, cast, format);
                             }
                         }
                     }
