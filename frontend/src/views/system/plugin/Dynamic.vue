@@ -47,11 +47,18 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import Fit2CloudUI from 'fit2cloud-ui'
 import DeLayoutContent from '@/components/business/DeLayoutContent'
 import AsyncComponent from '@/components/asyncComponent'
 import i18n from '@/lang'
 import bus from '@/utils/bus'
 import { execute } from '@/api/system/dynamic'
+import RemarkEditor from '@/views/chart/components/componentStyle/dialog/RemarkEditor'
+import DeRichText from '@/components/canvas/customComponent/DeRichText'
+Vue.component('DeRichText', DeRichText)
+Vue.component('RemarkEditor', RemarkEditor)
+Vue.use(Fit2CloudUI)
 
 export default {
   name: 'Dynamic',
