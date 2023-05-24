@@ -20,6 +20,7 @@ declare module '@vue/runtime-core' {
     ConfigGlobal: typeof import('./src/components/config-global/src/ConfigGlobal.vue')['default']
     ContextMenu: typeof import('./src/components/data-visualization/canvas/ContextMenu.vue')['default']
     DbComponentToolBar: typeof import('./src/components/dashboard/DbComponentToolBar.vue')['default']
+    DbDragArea: typeof import('./src/components/dashboard/DbDragArea.vue')['default']
     DbShape: typeof import('./src/components/dashboard/DbShape.vue')['default']
     DbToolbar: typeof import('./src/components/dashboard/DbToolbar.vue')['default']
     DePreview: typeof import('./src/components/data-visualization/canvas/DePreview.vue')['default']

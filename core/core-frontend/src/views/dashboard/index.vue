@@ -262,7 +262,7 @@ eventBus.on('handleNew', handleNew)
       </dv-sidebar>
       <dv-sidebar
         v-if="!curComponent"
-        title="全局配置"
+        title="大屏配置"
         width="300"
         aside-position="right"
         class="left-sidebar"
