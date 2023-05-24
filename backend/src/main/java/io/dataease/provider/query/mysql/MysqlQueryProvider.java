@@ -1065,16 +1065,33 @@ public class MysqlQueryProvider extends QueryProvider {
                 if (field.getDeType() == 1) {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                        if (StringUtils.equalsIgnoreCase(request.getDateStyle(), "y_Q")) {
-                            whereName = String.format(format,
-                                    String.format(MysqlConstants.DATE_FORMAT, originName, "%Y"),
-                                    String.format(MysqlConstants.QUARTER, String.format(MysqlConstants.DATE_FORMAT, originName, MysqlConstants.DEFAULT_DATE_FORMAT)));
-                        } else {
-                            whereName = String.format(MySQLConstants.DATE_FORMAT, originName, format);
+                        String date = String.format(MySQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
+                        if(request.getOperator().equals("between")){
+                            whereName = date;
+                        }else {
+                            if (StringUtils.equalsIgnoreCase(request.getDateStyle(), "y_Q")) {
+                                whereName = String.format(format,
+                                        String.format(MysqlConstants.DATE_FORMAT, originName, "%Y"),
+                                        String.format(MysqlConstants.QUARTER, String.format(MysqlConstants.DATE_FORMAT, originName, MysqlConstants.DEFAULT_DATE_FORMAT)));
+                            } else {
+                                whereName = String.format(MySQLConstants.DATE_FORMAT, date, format);
+                            }
                         }
+
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        whereName = originName;
+                        if(request.getOperator().equals("between")){
+                            whereName = originName;
+                        }else {
+                            String cast = String.format(MySQLConstants.CAST, originName, MySQLConstants.DEFAULT_INT_FORMAT) + "/1000";
+                            if (StringUtils.equalsIgnoreCase(request.getDateStyle(),"y_Q")){
+                                whereName = String.format(format,
+                                        String.format(MysqlConstants.DATE_FORMAT, cast, "%Y"),
+                                        String.format(MysqlConstants.QUARTER, String.format(MysqlConstants.DATE_FORMAT, field, MysqlConstants.DEFAULT_DATE_FORMAT)));
+                            } else {
+                                whereName = String.format(MySQLConstants.DATE_FORMAT, cast, format);
+                            }
+                        }
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {

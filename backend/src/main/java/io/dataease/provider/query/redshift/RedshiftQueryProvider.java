@@ -1070,15 +1070,27 @@ public class RedshiftQueryProvider extends QueryProvider {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                         String timestamp = String.format(PgConstants.STR_TO_DATE, originName,  StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
-                        whereName = String.format(PgConstants.DATE_FORMAT, timestamp, format);
+                        if(request.getOperator().equals("between")){
+                            whereName = timestamp;
+                        }else {
+                            whereName = String.format(PgConstants.DATE_FORMAT, timestamp, format);
+                        }
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(PgConstants.CAST, originName, "bigint");
                         String timestamp = String.format(PgConstants.FROM_UNIXTIME, cast);
-                        whereName = String.format(PgConstants.DATE_FORMAT, timestamp, format);
+                        if(request.getOperator().equals("between")){
+                            whereName = timestamp;
+                        }else {
+                            whereName = String.format(PgConstants.DATE_FORMAT, timestamp, format);
+                        }
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = String.format(PgConstants.DATE_FORMAT, originName, format);
+                        if(request.getOperator().equals("between")){
+                            whereName = originName;
+                        }else {
+                            whereName = String.format(PgConstants.DATE_FORMAT, originName, format);
+                        }
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
