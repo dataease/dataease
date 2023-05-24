@@ -1209,14 +1209,14 @@ public class OracleQueryProvider extends QueryProvider {
                 String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                        if(!request.getOperator().equals("between")){
                             whereName = String.format(OracleConstants.TO_CHAR, String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT), format);
                         } else {
                             whereName = String.format(OracleConstants.TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : OracleConstants.DEFAULT_DATE_FORMAT);
                         }
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                        if(!request.getOperator().equals("between")){
                             String cast = String.format(OracleConstants.CAST, originName, OracleConstants.DEFAULT_INT_FORMAT) + "/1000";
                             whereName = String.format(OracleConstants.FROM_UNIXTIME, cast, format);
                         } else {
@@ -1225,7 +1225,7 @@ public class OracleQueryProvider extends QueryProvider {
                         }
                     }
                     if (field.getDeExtractType() == 1) {
-                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                        if(!request.getOperator().equals("between")){
                             whereName = String.format(OracleConstants.TO_CHAR, originName, format);
                         } else {
                             whereName = originName;

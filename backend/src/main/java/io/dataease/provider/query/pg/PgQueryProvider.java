@@ -1074,30 +1074,29 @@ public class PgQueryProvider extends QueryProvider {
                 if (field.getDeType() == 1) {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                            String timestamp = String.format(PgConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
+                        String timestamp = String.format(PgConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
+                        if(request.getOperator().equals("between")){
+                            whereName = timestamp;
+                        }else {
                             whereName = String.format(PgConstants.DATE_FORMAT, timestamp, format);
-                        } else {
-                            whereName = String.format(PgConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : PgConstants.DEFAULT_DATE_FORMAT);
                         }
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                            String cast = String.format(PgConstants.CAST, originName, "bigint");
-                            String timestamp = String.format(PgConstants.FROM_UNIXTIME, cast);
+                        String cast = String.format(PgConstants.CAST, originName, "bigint");
+                        String timestamp = String.format(PgConstants.FROM_UNIXTIME, cast);
+                        if(request.getOperator().equals("between")){
+                            whereName = timestamp;
+                        }else {
                             whereName = String.format(PgConstants.DATE_FORMAT, timestamp, format);
-                        } else {
-                            String cast = String.format(PgConstants.CAST, originName, "bigint");
-                            whereName = String.format(PgConstants.FROM_UNIXTIME, cast);
                         }
-
                     }
                     if (field.getDeExtractType() == 1) {
-                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                            whereName = String.format(PgConstants.DATE_FORMAT, originName, format);
-                        } else {
+                        if(request.getOperator().equals("between")){
                             whereName = originName;
+                        }else {
+                            whereName = String.format(PgConstants.DATE_FORMAT, originName, format);
                         }
+
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {

@@ -1098,14 +1098,14 @@ public class SqlserverQueryProvider extends QueryProvider {
 
                 if (field.getDeType() == 1) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                        if (!StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                             whereName = transDateFormat(request.getDateStyle(), request.getDatePattern(), String.format(SqlServerSQLConstants.STRING_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SqlServerSQLConstants.DEFAULT_DATE_FORMAT));
                         }else {
                             whereName = String.format(SqlServerSQLConstants.STRING_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
                         }
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                        if (!StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                             String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originName + "/1000");
                             whereName = transDateFormat(request.getDateStyle(), request.getDatePattern(), cast);
                         }else {
@@ -1114,7 +1114,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                         }
                     }
                     if (field.getDeExtractType() == 1) {
-                        if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                        if (!StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                             whereName = transDateFormat(request.getDateStyle(), request.getDatePattern(), originName);
                         }else {
                             whereName = originName;
