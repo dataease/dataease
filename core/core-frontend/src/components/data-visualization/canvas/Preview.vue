@@ -4,7 +4,6 @@ import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
 import { toPng } from 'html-to-image'
 import { deepCopy } from '@/utils/utils'
-import { getCurrentInstance } from 'vue'
 
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -18,7 +17,6 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['close'])
-const currentInstance = getCurrentInstance()
 
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, componentData } = storeToRefs(dvMainStore)

@@ -91,12 +91,28 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     @Override
-    public List<DataVisualizationBaseVO> findTree() {
-        List<DataVisualizationBaseVO> result = dvMapper.findBashInfo();
+    public List<DataVisualizationBaseVO> findTree(DataVisualizationBaseRequest request) {
+        List<DataVisualizationBaseVO> result = dvMapper.findBashInfo(request.getNodeType(),request.getType());
         if(CollectionUtils.isEmpty(result)){
             return new ArrayList<>();
         }else{
             return TreeUtils.mergeTree(result,0l);
+        }
+    }
+
+    @Override
+    public void savaOrUpdateBase(DataVisualizationBaseRequest request) {
+        DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
+        BeanUtils.copyBean(visualizationInfo, request);
+        if(request.getId() == null){
+            visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
+            visualizationInfo.setId(IDUtils.snowID());
+            visualizationInfo.setCreateBy("");
+            visualizationInfo.setCreateTime(System.currentTimeMillis());
+            visualizationInfoMapper.insert(visualizationInfo);
+        }else{
+            visualizationInfo.setUpdateTime(System.currentTimeMillis());
+            visualizationInfoMapper.updateById(visualizationInfo);
         }
     }
 }

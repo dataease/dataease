@@ -15,7 +15,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-@DeApiPath(value = "/datasource", rt = "datasource")
+import static io.dataease.constant.AuthResourceEnum.DATASOURCE;
+
+@DeApiPath(value = "/datasource", rt = DATASOURCE)
 public interface DatasourceApi {
     /**
      * 查询数据源树

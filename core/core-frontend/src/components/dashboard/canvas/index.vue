@@ -6,22 +6,23 @@
     @mouseup="endMove($event)"
     @mousemove="moving($event)"
   >
-    this id canvas
     <div v-if="renderOk">
       <div
         :class="{
+          active: isActive(item),
           item: true,
           moveAnimation: moveAnimate,
           movingItem: item['isPlayer'],
           canNotDrag: !draggable
         }"
-        @mousedown="startMove($event, item, index)"
         :ref="'item' + index"
         v-for="(item, index) in yourList"
+        @mousedown="startMove($event, item, index)"
         :key="'item' + index"
         :style="nowItemStyle(item, index)"
       >
-        <slot :name="'slot' + index"></slot>
+        <db-drag-area></db-drag-area>
+        <db-shape :index="index" :item="item"></db-shape>
         <span
           class="resizeHandle"
           v-show="resizable"
@@ -36,6 +37,13 @@
 import _ from 'lodash'
 import $ from 'jquery'
 import { toRefs, ref, onMounted, nextTick, getCurrentInstance } from 'vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+import findComponent from '@/utils/components'
+import { getStyle } from '@/utils/style'
+import DbShape from '@/components/dashboard/DbShape.vue'
+import DbDragArea from '@/components/dashboard/DbDragArea.vue'
+const dvMainStore = dvMainStoreWithOut()
 
 let positionBox = []
 let coordinates = [] //坐标点集合
@@ -151,6 +159,44 @@ const {
   resizing,
   resizeEnd
 } = toRefs(props)
+
+const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
+
+const { curComponent, isClickComponent } = storeToRefs(dvMainStore)
+
+const getTextareaHeight = (element, text) => {
+  let { lineHeight, fontSize, height } = element.style
+  if (lineHeight === '') {
+    lineHeight = 1.5
+  }
+
+  const newHeight = (text.split('<br>').length - 1) * lineHeight * fontSize
+  return height > newHeight ? height : newHeight
+}
+
+const handleInput = (element, value) => {
+  // 根据文本组件高度调整 shape 高度
+  dvMainStore.setShapeStyle({
+    top: null,
+    left: null,
+    width: null,
+    height: getTextareaHeight(element, value),
+    rotate: null
+  })
+}
+const getComponentStyle = style => {
+  return getStyle(style, svgFilterAttrs)
+}
+
+const selectCurComponent = e => {
+  // 阻止向父组件冒泡
+  e.stopPropagation()
+  e.preventDefault()
+}
+
+const isActive = item => {
+  return curComponent.value === item
+}
 
 onMounted(() => {
   currentInstance = getCurrentInstance()
@@ -624,6 +670,12 @@ const containerMouseDown = e => {
   infoBox.value.startY = e.pageY
 }
 
+const endItemMove = (e, item, index) => {
+  dvMainStore.setCurComponent({ component: item, index: index })
+  dvMainStore.setClickComponentStatus(true)
+  dvMainStore.setInEditorStatus(true)
+}
+
 const startMove = (e, item, index) => {
   // e.preventDefault();
   if (!infoBox.value) {
@@ -780,6 +832,8 @@ const startMove = (e, item, index) => {
   }
 
   const up = () => {
+    // startMove 中组织冒泡会导致移动事件无法传播，在这里设置（鼠标抬起）效果一致
+    endItemMove(e, item, index)
     if (_.isEmpty(infoBox.value)) return
     if (infoBox.value.cloneItem) {
       infoBox.value.cloneItem.remove()
@@ -804,6 +858,10 @@ const startMove = (e, item, index) => {
 }
 
 const endMove = e => {
+  return {}
+}
+
+const endMoveI = e => {
   return {}
 }
 
@@ -888,7 +946,7 @@ const afterInitOk = func => {
   }, 100)
 }
 const addItemBox = item => {
-  yourList.value.push(item)
+  // yourList.value.push(item)
   nextTick(function () {
     addItem(item, yourList.value.length - 1)
   })
@@ -896,41 +954,38 @@ const addItemBox = item => {
 
 defineExpose({
   canvasInit,
-  afterInitOk
+  afterInitOk,
+  addItemBox
 })
 </script>
 
 <style lang="less">
+.active {
+  outline: 1px solid #70c0ff;
+  user-select: none;
+}
+
 .dragAndResize {
   position: relative;
 
   user-select: none;
 
   * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
   }
 
   .item {
     position: absolute;
-
     width: 100px;
     height: 100px;
-
-    cursor: move;
-
-    border: 1px solid;
-    background-color: #fff;
-
+    z-index: 11;
     .resizeHandle {
       position: absolute;
       right: 2px;
       bottom: 2px;
-
       width: 0;
       height: 0;
-
       cursor: nw-resize;
 
       opacity: 0.5;
@@ -949,27 +1004,23 @@ defineExpose({
 
   .cloneNode {
     z-index: 3;
-
     transition: none;
-
     opacity: 0.5;
+    background: #fff;
   }
 
   .movingItem {
     position: absolute;
-
     border: none;
     &:before {
       position: absolute;
       z-index: 2;
       top: 0;
       left: 0;
-
       width: 100%;
       height: 100%;
-
       content: '';
-
+      opacity: 0.5;
       background-color: #bbb;
     }
   }
@@ -978,26 +1029,18 @@ defineExpose({
     position: fixed;
     top: 0;
     right: 100px;
-
     overflow: auto;
-
     width: 500px;
     height: 500px;
-
-    border: 1px solid;
   }
 
   .coords {
     position: fixed;
     right: 100px;
     bottom: 200px;
-
     overflow: auto;
-
     width: 200px;
     height: 200px;
-
-    border: 1px solid;
   }
 }
 </style>

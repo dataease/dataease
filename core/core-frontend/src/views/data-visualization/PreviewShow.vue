@@ -6,10 +6,16 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
+import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import { storeToRefs } from 'pinia'
+import { toPng } from 'html-to-image'
 
 const dvMainStore = dvMainStoreWithOut()
 const canvasDataPreview = ref(null)
 const canvasStylePreview = ref(null)
+
+const { dvInfo } = storeToRefs(dvMainStore)
+const previewCanvasContainer = ref(null)
 
 const loadCanvasData = dvId => {
   findById(dvId).then(res => {
@@ -26,6 +32,19 @@ const loadCanvasData = dvId => {
     dvMainStore.updateCurDvInfo(bashInfo)
   })
 }
+
+const htmlToImage = () => {
+  toPng(previewCanvasContainer.value.querySelector('.canvas-container'))
+    .then(dataUrl => {
+      const a = document.createElement('a')
+      a.setAttribute('download', dvInfo.value.name)
+      a.href = dataUrl
+      a.click()
+    })
+    .catch(error => {
+      console.error('oops, something went wrong!', error)
+    })
+}
 </script>
 
 <template>
@@ -34,14 +53,19 @@ const loadCanvasData = dvId => {
       <de-resource-tree @node-click="loadCanvasData"></de-resource-tree>
     </el-aside>
     <el-container class="preview-area">
-      <preview-head></preview-head>
-      <div class="content">
-        <de-preview
-          v-if="canvasStylePreview"
-          :component-data="canvasDataPreview"
-          :canvas-style-data="canvasStylePreview"
-        ></de-preview>
-      </div>
+      <template v-if="dvInfo.name">
+        <preview-head @reload="loadCanvasData" @download="htmlToImage"></preview-head>
+        <div ref="previewCanvasContainer" class="content">
+          <de-preview
+            v-if="canvasStylePreview"
+            :component-data="canvasDataPreview"
+            :canvas-style-data="canvasStylePreview"
+          ></de-preview>
+        </div>
+      </template>
+      <template v-else>
+        <empty-background description="请在左侧选择数据大屏" img-type="select" />
+      </template>
     </el-container>
   </div>
 </template>
@@ -49,8 +73,9 @@ const loadCanvasData = dvId => {
 <style lang="less">
 .dv-preview {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   display: flex;
+  background: #ffffff;
   .resource-area {
     height: 100%;
     width: 300px;

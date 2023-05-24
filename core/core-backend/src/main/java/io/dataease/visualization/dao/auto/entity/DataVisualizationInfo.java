@@ -26,12 +26,12 @@ public class DataVisualizationInfo implements Serializable {
     /**
      * 父id
      */
-    private String pid;
+    private Long pid;
 
     /**
      * 所属组织id
      */
-    private String orgId;
+    private Long orgId;
 
     /**
      * 层级
@@ -139,19 +139,19 @@ public class DataVisualizationInfo implements Serializable {
         this.name = name;
     }
 
-    public String getPid() {
+    public Long getPid() {
         return pid;
     }
 
-    public void setPid(String pid) {
+    public void setPid(Long pid) {
         this.pid = pid;
     }
 
-    public String getOrgId() {
+    public Long getOrgId() {
         return orgId;
     }
 
-    public void setOrgId(String orgId) {
+    public void setOrgId(Long orgId) {
         this.orgId = orgId;
     }
 

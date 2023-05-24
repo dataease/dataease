@@ -48,6 +48,11 @@
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
     </cache>
+    <!--组织内所有资源缓存 包括 用户 角色 数据源 数据集 仪表板 大屏 key由什么组成？组织id+flag 例如orgid + '1'-->
+    <cache alias="org_global_resource" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
 
 <!--    <cache alias="person">-->
 <!--        <key-type>java.lang.Long</key-type>-->

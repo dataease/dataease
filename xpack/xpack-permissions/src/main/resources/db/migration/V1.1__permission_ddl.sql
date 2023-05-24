@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS `per_auth_busi_role`;
 CREATE TABLE `per_auth_busi_role`
 (
     `id`            bigint NOT NULL COMMENT '授权ID',
-    `rid`          bigint NOT NULL COMMENT '目标ID',
+    `rid`           bigint NOT NULL COMMENT '目标ID',
     `resource_id`   bigint NOT NULL COMMENT '资源ID',
     `resource_type` int    NOT NULL COMMENT '资源类型',
     `weight`        int    NOT NULL DEFAULT '0' COMMENT '权重',
@@ -22,7 +22,7 @@ DROP TABLE IF EXISTS `per_auth_busi_user`;
 CREATE TABLE `per_auth_busi_user`
 (
     `id`            bigint NOT NULL COMMENT '授权ID',
-    `uid`          bigint NOT NULL COMMENT '目标ID',
+    `uid`           bigint NOT NULL COMMENT '目标ID',
     `resource_id`   bigint NOT NULL COMMENT '资源ID',
     `resource_type` int    NOT NULL COMMENT '资源类型',
     `weight`        int    NOT NULL DEFAULT '0' COMMENT '权重',
@@ -88,21 +88,16 @@ CREATE TABLE `per_menu_resource`
 LOCK
 TABLES `per_menu_resource` WRITE;
 INSERT INTO `per_menu_resource`
-VALUES (1, 'home', 0, '0'),
-       (2, 'workbranch', 0, '0'),
-       (3, 'visualized', 0, '0'),
-       (4, 'template', 0, '0'),
-       (5, 'application', 0, '0'),
-       (6, 'system', 0, '0'),
-       (7, 'view', 3, '3'),
-       (8, 'data', 3, '3'),
-       (9, 'panel', 7, '3,7'),
-       (10, 'screen', 7, '3,7'),
-       (11, 'dataset', 8, '3,8'),
-       (12, 'datasource', 8, '3,8'),
-       (13, 'user', 6, '6'),
-       (14, 'org', 6, '6'),
-       (15, 'auth', 6, '6');
+VALUES (1, 'workbranch', 0, NULL),
+       (2, 'panel', 0, NULL),
+       (3, 'screen', 0, NULL),
+       (4, 'data', 0, NULL),
+       (5, 'dataset', 4, '4'),
+       (6, 'datasource', 4, '4'),
+       (7, 'system', 0, NULL),
+       (8, 'user', 7, '7'),
+       (9, 'org', 7, '7'),
+       (10, 'auth', 7, '7');
 UNLOCK
 TABLES;
 

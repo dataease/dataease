@@ -46,7 +46,6 @@ const restore = () => {
       let canvasWidth = previewCanvas.value.clientWidth
       scaleWidth.value = (canvasWidth * 100) / canvasStyleData.value.width
       changeRefComponentsSizeWithScale(componentData.value, canvasStyleData.value, scaleWidth.value)
-      console.log('test==' + JSON.stringify(componentData.value))
     }
   })
 }

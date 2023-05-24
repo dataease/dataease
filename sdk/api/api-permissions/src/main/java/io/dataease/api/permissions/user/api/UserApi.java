@@ -19,15 +19,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
+import static io.dataease.constant.AuthResourceEnum.USER;
 
-@DeApiPath(value = "/user", rt = "user")
+
+@DeApiPath(value = "/user", rt = USER)
 public interface UserApi {
 
     @DePermit("m:read")
     @PostMapping("/pager/{goPage}/{pageSize}")
     IPage<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody BaseGridRequest request);
 
-    @DePermit("m:read")
+    @DePermit({"m:read", "#p0 + ':read'"})
     @GetMapping("/queryById/{id}")
     UserFormVO queryById(@PathVariable("id") Long id);
 
@@ -36,20 +38,18 @@ public interface UserApi {
     @PostMapping("/create")
     void create(@RequestBody UserCreator creator);
 
-    @DePermit("m:read")
+    @DePermit({"m:read", "#p0.id + ':read'"})
     @PostMapping("/edit")
     void edit(@RequestBody UserEditor editor);
 
-    @DePermit("m:read")
+    @DePermit({"m:read", "#p0 + ':read'"})
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 
 
-    @DePermit("m:read")
     @PostMapping("/role/option")
     List<UserItem> optionForRole(@RequestBody UserRequest request);
 
-    @DePermit("m:read")
     @PostMapping("/role/selected")
     List<UserItem> selectedForRole(@RequestBody UserRequest request);
 

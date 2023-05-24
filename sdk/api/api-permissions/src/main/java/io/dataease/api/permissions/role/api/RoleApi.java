@@ -1,14 +1,8 @@
 package io.dataease.api.permissions.role.api;
 
-import io.dataease.api.permissions.role.dto.MountUserRequest;
-import io.dataease.api.permissions.role.dto.RoleCopyRequest;
-import io.dataease.api.permissions.role.dto.RoleRequest;
-import io.dataease.api.permissions.role.dto.UnmountUserRequest;
-import io.dataease.api.permissions.role.dto.RoleCreator;
+import io.dataease.api.permissions.role.dto.*;
 import io.dataease.api.permissions.role.vo.RoleDetailVO;
-import io.dataease.api.permissions.role.dto.RoleEditor;
 import io.dataease.api.permissions.role.vo.RoleVO;
-import io.dataease.auth.DeApiPath;
 import io.dataease.model.KeywordRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@DeApiPath("/role")
 public interface RoleApi {
 
     @PostMapping("/query")

@@ -4,6 +4,25 @@ import { storeToRefs } from 'pinia'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
+const emit = defineEmits(['reload', 'download'])
+
+const preview = () => {
+  const url = '#/preview/?dvId=' + dvInfo.value.id
+  window.open(url, '_blank')
+}
+
+const reload = () => {
+  emit('reload', dvInfo.value.id)
+}
+
+const download = () => {
+  emit('download')
+}
+
+const dvEdit = () => {
+  const url = '#/dvCanvas/?dvId=' + dvInfo.value.id
+  window.open(url, '_blank')
+}
 </script>
 
 <template>
@@ -12,12 +31,12 @@ const { dvInfo } = storeToRefs(dvMainStore)
     <div class="canvas-opt-icon">
       <el-icon class="custom-icon"><Star /></el-icon>
       <el-icon class="custom-icon"><Share /></el-icon>
-      <el-icon class="custom-icon"><Refresh /></el-icon>
+      <el-icon class="custom-icon" @click="reload()"><Refresh /></el-icon>
     </div>
     <div class="canvas-opt-button">
-      <el-button type="primary">导出</el-button>
-      <el-button type="primary">预览</el-button>
-      <el-button>编辑</el-button>
+      <el-button type="primary" @click="download()">导出</el-button>
+      <el-button type="primary" @click="preview()">预览</el-button>
+      <el-button @click="dvEdit()">编辑</el-button>
     </div>
   </div>
 </template>

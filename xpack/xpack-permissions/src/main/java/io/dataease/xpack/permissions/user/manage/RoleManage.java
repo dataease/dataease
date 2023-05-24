@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -328,7 +329,7 @@ public class RoleManage {
     }
 
     private List<UserRole> buildResult(List<PerRole> perRoles) {
-        if (CollectionUtil.isEmpty(perRoles)) return null;
+        if (CollectionUtil.isEmpty(perRoles)) return new ArrayList<>();
         return perRoles.stream().map(role -> {
             UserRole roleInfo = new UserRole();
             roleInfo.setId(role.getId());

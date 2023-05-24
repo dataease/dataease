@@ -212,35 +212,7 @@ public class AuthManage {
             vo.setPermissions(permissionItems);
 
             if (CollectionUtil.isNotEmpty(userRoles)) {
-                List<Long> rids = userRoles.stream().map(UserRole::getId).toList();
-                String cacheName = "role_busi_pers";
-                List<PermissionOrigin> cachePermissionOrigins = new ArrayList<>();
-                rids = rids.stream().filter(rid -> {
-                    if (CacheUtils.keyExist(cacheName, rid.toString() + flag)) {
-                        Object o = CacheUtils.get(cacheName, rid.toString() + flag);
-                        PermissionOrigin origin = new PermissionOrigin();
-                        origin.setId(rid);
-                        origin.setPermissions((List<PermissionItem>) o);
-                        cachePermissionOrigins.add(origin);
-                        return false;
-                    }
-                    return true;
-                }).toList();
-                List<PermissionOrigin> permissionOrigins = new ArrayList<>();
-                if (CollectionUtil.isNotEmpty(rids)) {
-                    permissionOrigins = busiAuthExtMapper.batchRolePermission(rids, flag);
-                }
-                permissionOrigins = CollectionUtil.addAllIfNotContains(permissionOrigins, cachePermissionOrigins);
-                if (CollectionUtil.isNotEmpty(permissionOrigins)) {
-                    Map<Long, List<UserRole>> roleMap = userRoles.stream().collect(Collectors.groupingBy(UserRole::getId));
-                    permissionOrigins.forEach(permissionOrigin -> {
-                        Long rid = permissionOrigin.getId();
-                        List<UserRole> roles = roleMap.get(rid);
-                        permissionOrigin.setName(roles.get(0).getName());
-                        permissionOrigin.setPermissions(authWeightService.filterValid(permissionOrigin.getPermissions()));
-                        CacheUtils.put(cacheName, rid.toString() + flag, permissionOrigin.getPermissions());
-                    });
-                }
+                List<PermissionOrigin> permissionOrigins = roleAuthManage.roleOrigin(userRoles, flag);
                 vo.setPermissionOrigins(permissionOrigins);
             }
             return vo;
@@ -313,37 +285,40 @@ public class AuthManage {
         String flagName = editor.getFlag().toUpperCase();
         int flag = BusiResourceEnum.valueOf(flagName).getFlag();
         Long id = editor.getId();
-        List<PermissionItem> permissions = editor.getPermissions();
+        List<PermissionItem> paramPermissions = editor.getPermissions();
         Integer type = editor.getType();
-        deleteBusiPer(flag, id, permissions, type);
-        permissions = authWeightService.filterValid(permissions);
-        if (CollectionUtil.isEmpty(permissions)) return;
+        deleteBusiPer(flag, id, paramPermissions, type);
+        List<PermissionItem> permissions = authWeightService.filterValid(paramPermissions);
         Long oid = AuthUtils.getUser().getDefaultOid();
         if (type == 0) {
-            List<PerAuthBusiUser> busiUsers = permissions.stream().map(per -> {
-                PerAuthBusiUser userPermission = new PerAuthBusiUser();
-                userPermission.setId(IDUtils.snowID());
-                userPermission.setResourceId(per.getId());
-                userPermission.setWeight(per.getWeight());
-                userPermission.setUid(id);
-                userPermission.setResourceType(flag);
-                return userPermission;
-            }).toList();
             CacheUtils.remove("user_busi_pers", id.toString() + oid + flag, t -> {
-                userAuthManage.saveBatch(busiUsers);
+                if (CollectionUtil.isNotEmpty(permissions)) {
+                    List<PerAuthBusiUser> busiUsers = permissions.stream().map(per -> {
+                        PerAuthBusiUser userPermission = new PerAuthBusiUser();
+                        userPermission.setId(IDUtils.snowID());
+                        userPermission.setResourceId(per.getId());
+                        userPermission.setWeight(per.getWeight());
+                        userPermission.setUid(id);
+                        userPermission.setResourceType(flag);
+                        return userPermission;
+                    }).toList();
+                    userAuthManage.saveBatch(busiUsers);
+                }
             });
         } else {
-            List<PerAuthBusiRole> busiRoles = permissions.stream().map(per -> {
-                PerAuthBusiRole rolePermission = new PerAuthBusiRole();
-                rolePermission.setId(IDUtils.snowID());
-                rolePermission.setResourceId(per.getId());
-                rolePermission.setWeight(per.getWeight());
-                rolePermission.setRid(id);
-                rolePermission.setResourceType(flag);
-                return rolePermission;
-            }).toList();
             CacheUtils.remove("role_busi_pers", id.toString() + flag, t -> {
-                roleAuthManage.saveBatch(busiRoles);
+                if (CollectionUtil.isNotEmpty(permissions)) {
+                    List<PerAuthBusiRole> busiRoles = permissions.stream().map(per -> {
+                        PerAuthBusiRole rolePermission = new PerAuthBusiRole();
+                        rolePermission.setId(IDUtils.snowID());
+                        rolePermission.setResourceId(per.getId());
+                        rolePermission.setWeight(per.getWeight());
+                        rolePermission.setRid(id);
+                        rolePermission.setResourceType(flag);
+                        return rolePermission;
+                    }).toList();
+                    roleAuthManage.saveBatch(busiRoles);
+                }
             });
         }
     }
@@ -403,18 +378,20 @@ public class AuthManage {
         queryWrapper.eq("rid", id);
         queryWrapper.in("resource_id", ids);
         perAuthMenuMapper.delete(queryWrapper);
-        permissionItems = authWeightService.filterValid(permissionItems);
-        if (CollectionUtil.isEmpty(permissionItems)) return;
-        List<PerAuthMenu> perAuthMenus = permissionItems.stream().map(per -> {
-            PerAuthMenu perAuthMenu = new PerAuthMenu();
-            perAuthMenu.setId(IDUtils.snowID());
-            perAuthMenu.setResourceId(per.getId());
-            perAuthMenu.setWeight(per.getWeight());
-            perAuthMenu.setRid(id);
-            return perAuthMenu;
-        }).toList();
+        List<PermissionItem> realPermissionItems = authWeightService.filterValid(permissionItems);
+
         CacheUtils.remove("role_menu_pers", id.toString(), t -> {
-            menuAuthManage.saveBatch(perAuthMenus);
+            if (CollectionUtil.isEmpty(realPermissionItems)) {
+                List<PerAuthMenu> perAuthMenus = realPermissionItems.stream().map(per -> {
+                    PerAuthMenu perAuthMenu = new PerAuthMenu();
+                    perAuthMenu.setId(IDUtils.snowID());
+                    perAuthMenu.setResourceId(per.getId());
+                    perAuthMenu.setWeight(per.getWeight());
+                    perAuthMenu.setRid(id);
+                    return perAuthMenu;
+                }).toList();
+                menuAuthManage.saveBatch(perAuthMenus);
+            }
         });
 
     }

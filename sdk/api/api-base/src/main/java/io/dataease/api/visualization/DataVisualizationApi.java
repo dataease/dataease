@@ -24,7 +24,10 @@ public interface DataVisualizationApi {
     @DeleteMapping("/deleteLogic/{dvId}")
     void deleteLogic(@PathVariable("dvId") Long dvId);
 
-    @GetMapping("/findTree")
-    List<DataVisualizationBaseVO> findTree();
+    @PostMapping("/findTree")
+    List<DataVisualizationBaseVO> findTree(@RequestBody DataVisualizationBaseRequest request);
+
+    @PostMapping("/savaOrUpdateBase")
+    void savaOrUpdateBase(@RequestBody DataVisualizationBaseRequest request);
 
 }

@@ -1,20 +1,24 @@
 <script lang="ts" setup>
-import { ref, reactive, computed, watch, nextTick } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { saveDatasetTree, getDatasetTree } from '@/api/dataset'
-import type { DatesetOrFolder } from '@/api/dataset'
-export interface Tree {
-  name: string
-  value?: string | number
+import { DvOrFolder, findTree, savaOrUpdateBase } from '@/api/dataVisualization'
+export interface ResourceTree {
   id: string | number
-  nodeType: string
-  createBy?: string
-  level: number
   pid: string | number
-  union?: Array<{}>
-  createTime: number
-  allfields?: Array<{}>
-  children?: Tree[]
+  name: string
+  label: string
+  value?: string | number
+  nodeType: string
+  type?: string
+  mobileLayout?: string
+  remark?: string
+  source?: string
+  level?: number
+  createTime?: number
+  createBy?: string
+  updateTime?: number
+  updateBy?: string
+  children?: ResourceTree[]
 }
 const { t } = useI18n()
 
@@ -29,26 +33,18 @@ const id = ref()
 const cmd = ref('')
 const treeRef = ref()
 const filterText = ref('')
-let union = []
-let allfields = []
-const datasetForm = reactive({
+const dvForm = reactive({
   pid: '',
   name: ''
 })
 
-const filterNode = (value: string, data: Tree) => {
+const filterNode = (value: string, data: ResourceTree) => {
   if (!value) return true
   return data.name.includes(value)
 }
 
 watch(filterText, val => {
   treeRef.value.filter(val)
-  nextTick(() => {
-    document.querySelectorAll('.node-text').forEach(ele => {
-      const content = ele.getAttribute('title')
-      ele.innerHTML = content.replace(val, `<span class="highLight">${val}</span>`)
-    })
-  })
 })
 
 const nameRepeat = value => {
@@ -59,7 +55,7 @@ const nameRepeat = value => {
 }
 const nameValidator = (_, value, callback) => {
   if (nameRepeat(value)) {
-    callback(new Error(t('deDataset.already_exists')))
+    callback(new Error('名称重复'))
   } else {
     callback()
   }
@@ -96,21 +92,21 @@ const rules = {
   ]
 }
 let nameList = []
-const datasetFormRules = ref()
+const dvFormRules = ref()
 
-const dataset = ref()
+const dv = ref()
 const loading = ref(false)
-const createDataset = ref(false)
+const resourceDialogShow = ref(false)
 const dialogTitle = ref('新建文件夹')
 const filterMethod = value => {
   state.tData = [...state.tData].filter(item => item.name.includes(value))
 }
 const resetForm = () => {
-  dataset.value.clearValidate()
-  createDataset.value = false
+  dv.value.clearValidate()
+  resourceDialogShow.value = false
 }
 
-const dfs = (arr: Tree[]) => {
+const dfs = (arr: ResourceTree[]) => {
   arr.forEach(ele => {
     ele.value = ele.id
     if (ele.children?.length) {
@@ -119,36 +115,32 @@ const dfs = (arr: Tree[]) => {
   })
 }
 
-const createInit = (type, data: Tree, exec) => {
+const optInit = (type, data: ResourceTree, exec) => {
   nodeType.value = type
-  if (type === 'dataset') {
-    union = data.union
-    allfields = data.allfields
-  }
   if (data.id) {
-    getDatasetTree({
+    findTree({
       nodeType: 'folder'
     }).then(res => {
-      dfs(res as unknown as Tree[])
-      state.tData = (res as unknown as Tree[]) || []
+      const resultTree = res.data
+      dfs(resultTree as unknown as ResourceTree[])
+      state.tData = (resultTree as unknown as ResourceTree[]) || []
       if (exec) {
         pid.value = data.pid
         id.value = data.id
-        datasetForm.pid = data.pid as string
-        datasetForm.name = data.name
+        dvForm.pid = data.pid as string
+        dvForm.name = data.name
       } else {
-        datasetForm.pid = data.id as string
+        dvForm.pid = data.id as string
         pid.value = data.id
       }
     })
-
     cmd.value = exec
   }
-  createDataset.value = true
-  datasetFormRules.value = rules
+  resourceDialogShow.value = true
+  dvFormRules.value = rules
 }
 
-const editeInit = (param: Tree) => {
+const editeInit = (param: ResourceTree) => {
   pid.value = param.pid
   id.value = param.id
 }
@@ -159,21 +151,22 @@ const props = {
   isLeaf: node => !node.children?.length
 }
 
-const nodeClick = (data: Tree) => {
-  datasetForm.pid = data.id as string
+const nodeClick = (data: ResourceTree) => {
+  dvForm.pid = data.id as string
 }
 
-const saveDataset = () => {
-  dataset.value.validate(result => {
+const saveDv = () => {
+  dv.value.validate(result => {
     if (result) {
-      const params: DatesetOrFolder = {
-        nodeType: nodeType.value as 'folder' | 'dataset',
-        name: datasetForm.name
+      const params: DvOrFolder = {
+        nodeType: nodeType.value as 'folder' | 'dv',
+        name: dvForm.name,
+        type: 'dataV'
       }
 
       switch (cmd.value) {
         case 'move':
-          params.pid = datasetForm.pid as string
+          params.pid = dvForm.pid as string
           params.id = id.value
           break
         case 'rename':
@@ -181,18 +174,13 @@ const saveDataset = () => {
           params.id = id.value
           break
         default:
-          params.pid = datasetForm.pid || pid.value || '0'
+          params.pid = dvForm.pid || pid.value || '0'
           break
       }
-      if (nodeType.value === 'dataset') {
-        params.union = union
-        params.allFields = allfields
-      }
       loading.value = true
-      saveDatasetTree(params)
+      savaOrUpdateBase(params)
         .then(() => {
-          dataset.value.resetFields()
-          createDataset.value = false
+          resourceDialogShow.value = false
           emits('finish')
         })
         .finally(() => {
@@ -203,7 +191,7 @@ const saveDataset = () => {
 }
 
 defineExpose({
-  createInit,
+  optInit,
   editeInit
 })
 
@@ -214,23 +202,23 @@ const emits = defineEmits(['finish'])
   <el-dialog
     v-loading="loading"
     :title="dialogTitle"
-    v-model="createDataset"
+    v-model="resourceDialogShow"
     width="600px"
     :before-close="resetForm"
   >
     <el-form
       label-position="top"
       require-asterisk-position="right"
-      ref="dataset"
-      :model="datasetForm"
-      :rules="datasetFormRules"
+      ref="dv"
+      :model="dvForm"
+      :rules="dvFormRules"
     >
-      <el-form-item v-if="showName" :label="t('dataset.name')" prop="name">
-        <el-input v-model="datasetForm.name" />
+      <el-form-item v-if="showName" :label="'名称'" prop="name">
+        <el-input v-model="dvForm.name" />
       </el-form-item>
-      <el-form-item v-if="showPid" :label="t('deDataset.folder')" prop="pid">
+      <el-form-item v-if="showPid" :label="'目录'" prop="pid">
         <el-tree-select
-          v-model="datasetForm.pid"
+          v-model="dvForm.pid"
           :data="state.tData"
           :props="props"
           @node-click="nodeClick"
@@ -258,7 +246,7 @@ const emits = defineEmits(['finish'])
             ref="treeRef"
             :filter-node-method="filterNode"
             filterable
-            v-model="datasetForm.pid"
+            v-model="dvForm.pid"
             menu
             :data="state.tData"
             :props="props"
@@ -269,7 +257,7 @@ const emits = defineEmits(['finish'])
                 <el-icon>
                   <Icon name="scene"></Icon>
                 </el-icon>
-                <span class="node-text" :title="data.name">{{ data.name }}</span>
+                <span :title="data.name">{{ data.name }}</span>
               </span>
             </template>
           </el-tree>
@@ -277,8 +265,8 @@ const emits = defineEmits(['finish'])
       </div>
     </el-form>
     <template #footer>
-      <el-button secondary @click="resetForm">{{ t('dataset.cancel') }} </el-button>
-      <el-button type="primary" @click="saveDataset">{{ t('dataset.confirm') }} </el-button>
+      <el-button secondary @click="resetForm()">取消 </el-button>
+      <el-button type="primary" @click="saveDv()">确认 </el-button>
     </template>
   </el-dialog>
 </template>
@@ -292,15 +280,13 @@ const emits = defineEmits(['finish'])
   padding: 8px;
   .custom-tree-node {
     display: flex;
-    .node-text {
+    align-items: center;
+    span {
       margin-left: 8.75px;
       width: 120px;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-      :deep(.highLight) {
-        color: var(--el-color-primary, #3370ff);
-      }
     }
   }
 }
