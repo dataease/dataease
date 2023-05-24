@@ -57,6 +57,7 @@ declare module '@vue/runtime-core' {
     ElRadioButton: typeof import('element-plus-secondary/es')['ElRadioButton']
     ElRadioGroup: typeof import('element-plus-secondary/es')['ElRadioGroup']
     ElRow: typeof import('element-plus-secondary/es')['ElRow']
+    ElScrollbar: typeof import('element-plus-secondary/es')['ElScrollbar']
     ElSelect: typeof import('element-plus-secondary/es')['ElSelect']
     ElSelectV2: typeof import('element-plus-secondary/es')['ElSelectV2']
     ElSlider: typeof import('element-plus-secondary/es')['ElSlider']

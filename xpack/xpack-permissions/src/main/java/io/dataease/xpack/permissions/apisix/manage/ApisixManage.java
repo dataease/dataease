@@ -7,7 +7,10 @@ import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.AuthConstant;
 import io.dataease.constant.AuthEnum;
 import io.dataease.constant.AuthResourceEnum;
-import io.dataease.utils.*;
+import io.dataease.utils.AuthUtils;
+import io.dataease.utils.ServletUtils;
+import io.dataease.utils.TokenUtils;
+import io.dataease.utils.UserUtils;
 import io.dataease.xpack.permissions.apisix.proxy.ProxyRequest;
 import io.dataease.xpack.permissions.auth.manage.ApiAuthManage;
 import jakarta.annotation.Resource;
@@ -85,7 +88,7 @@ public class ApisixManage {
             HandlerMethod handlerMethod = authHandlerMethodMapping.getHandlerMethod(proxy);
             if (ObjectUtils.isEmpty(handlerMethod) || !handlerMethod.hasMethodAnnotation(DePermit.class)) return null;
             DePermit dePermit = handlerMethod.getMethodAnnotation(DePermit.class);
-            DeApiPath deApiPath = handlerMethod.getClass().getAnnotation(DeApiPath.class);
+            DeApiPath deApiPath = handlerMethod.getBeanType().getAnnotation(DeApiPath.class);
             AuthResourceEnum rt = deApiPath.rt();
             String[] valueArray = dePermit.value();
 
@@ -136,7 +139,7 @@ public class ApisixManage {
      * @param requirePermissions
      */
     protected void checkPermission(TokenUserBO userInfo, String requirePermissions[]) {
-        if (ArrayUtil.isEmpty(requirePermissions)) return;
+        if (ArrayUtil.isEmpty(requirePermissions) || AuthUtils.isSysAdmin(userInfo.getUserId())) return;
         for (int i = 0; i < requirePermissions.length; i++) {
             String permission = requirePermissions[i];
             PerFormatter formatter = formatPer(permission);
