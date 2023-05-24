@@ -375,7 +375,7 @@ export function adaptCurTheme(customStyle, customAttr, chartType) {
   }
 }
 
-export function adaptCurThemeCommonStyle(component) {
+export function adaptCurThemeCommonStyle(component,adaptFrom = 'them') {
   const commonStyle = store.state.canvasStyleData.chartInfo.chartCommonStyle
   for (const key in commonStyle) {
     Vue.set(component.commonBackground, key, commonStyle[key])
@@ -383,8 +383,10 @@ export function adaptCurThemeCommonStyle(component) {
   if (isFilterComponent(component.component)) {
     const filterStyle = store.state.canvasStyleData.chartInfo.filterStyle
     for (const styleKey in filterStyle) {
-      // 位置属性不修改
-      if (styleKey !== 'horizontal' && styleKey !== 'vertical') {
+      if(adaptFrom === 'copy'){
+        Vue.set(component.style, styleKey, filterStyle[styleKey])
+      }else if (adaptFrom === 'them' && styleKey !== 'horizontal' && styleKey !== 'vertical') {
+        // 主题变化位置属性不修改
         Vue.set(component.style, styleKey, filterStyle[styleKey])
       }
     }

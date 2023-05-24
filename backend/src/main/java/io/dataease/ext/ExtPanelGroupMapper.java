@@ -17,6 +17,8 @@ public interface ExtPanelGroupMapper {
     //会级联删除pid 下的所有数据
     int deleteCircle(@Param("pid") String pid, @Param("nodeType") String nodeType);
 
+    int deleteLinkDefaultCircle(@Param("pid") String pid);
+
     int deleteCircleView(@Param("pid") String pid, @Param("nodeType") String nodeType);
 
     int deleteCircleViewCache(@Param("pid") String pid, @Param("nodeType") String nodeType);

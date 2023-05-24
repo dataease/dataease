@@ -85,6 +85,7 @@ export default {
     }
   },
   mounted() {
+    this.$store.commit('setMobileLayoutStatus', false)
     // init all views (include plugins) base info
     localStorage.removeItem('plugin-views')
     pluginTypes().then(res => {

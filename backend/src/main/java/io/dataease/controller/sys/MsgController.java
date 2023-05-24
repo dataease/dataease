@@ -131,6 +131,9 @@ public class MsgController {
             if (msgChannelId == 5L) {
                 return authUserService.supportLark();
             }
+            if (msgChannelId == 6L) {
+                return authUserService.supportLarksuite();
+            }
             return true;
         }).collect(Collectors.toList());
     }

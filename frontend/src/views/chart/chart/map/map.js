@@ -83,9 +83,9 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
       chart_option.tooltip.borderColor = bgColor
     }
   }
+  chart_option.title.text = chart.title
   // 处理data
   if (chart.data) {
-    chart_option.title.text = chart.title
     if (chart.data.series && chart.data.series.length > 0) {
       chart_option.series[0].name = chart.data.series[seriesIndex].name
       chart_option.series[0].selectedMode = true
