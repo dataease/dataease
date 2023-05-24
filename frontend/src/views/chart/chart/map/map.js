@@ -2,6 +2,7 @@
 import { componentStyle } from '../common/common'
 import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 import { isGradientValue } from '@/components/gradientColorSelector/base'
+import _ from 'lodash'
 const linearCOlor = (start, end) => {
   return {
     type: 'linear',
@@ -146,20 +147,38 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
         }
       }
 
+      let senior = chart.senior
+      if (senior) {
+        senior = JSON.parse(senior)
+      }
+      // 空值处理，echarts 对于值为 null 的默认策略是不展示，也就是保持为空，所以只需要处理忽略数据和置为 0 就行
+      // 隐藏和不展示的区别是隐藏不会参与颜色分布的计算，而不展示会参与颜色计算
+      let emptyDataStrategy = senior?.functionCfg?.emptyDataStrategy
+      if (!emptyDataStrategy) {
+        emptyDataStrategy = 'breakLine'
+      }
       for (let i = 0; i < valueArr.length; i++) {
         const y = valueArr[i]
+        if (y.value === null && emptyDataStrategy === 'ignoreData') {
+          continue
+        }
         y.name = chart.data.x[i]
+        if (y.value === null && emptyDataStrategy === 'setZero') {
+          const tmp = _.clone(y)
+          tmp.value = 0
+          chart_option.series[0].data.push(tmp)
+          continue
+        }
         chart_option.series[0].data.push(y)
       }
+
       if (isGradient) {
         chart_option.series[0].data = fillGradientColor(chart_option.series[0].data, customAttr.color.colors)
         delete chart_option.visualMap
       }
 
-      if (chart.senior) {
-        const senior = JSON.parse(chart.senior)
-
-        senior && senior.mapMapping && senior.mapMapping[curAreaCode] && (chart_option.geo.nameMap = senior.mapMapping[curAreaCode])
+      if (senior) {
+        senior.mapMapping && senior.mapMapping[curAreaCode] && (chart_option.geo.nameMap = senior.mapMapping[curAreaCode])
       }
 
       if (chart.data?.detailFields?.length > 1) {

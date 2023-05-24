@@ -1958,10 +1958,10 @@ export default {
     },
     showSeniorCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'mix') ||
-        equalsAny(this.view.type, 'table-normal', 'table-info')
+        equalsAny(this.view.type, 'table-normal', 'table-info', 'map')
     },
     showFunctionCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix')
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'map')
     },
     showScrollCfg() {
       return equalsAny(this.view.type, 'table-normal', 'table-info')
