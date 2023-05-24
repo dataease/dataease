@@ -71,23 +71,18 @@ CREATE TABLE `core_menu`
 LOCK
 TABLES `core_menu` WRITE;
 INSERT INTO `core_menu`
-VALUES (1, 0, 2, 'home', 'home', 1, NULL, '/home', 0, 1),
-       (2, 0, 2, 'workbranch', 'workbranch', 2, NULL, '/workbranch', 0, 1),
-       (3, 0, 1, 'visualized', NULL, 3, NULL, '/visualized', 0, 1),
-       (4, 0, 2, 'template', 'template', 4, NULL, '/template', 0, 1),
-       (5, 0, 2, 'application', 'application', 5, NULL, '/application', 0, 1),
-       (6, 0, 1, 'system', NULL, 6, NULL, '/system', 0, 1),
-       (7, 3, 1, 'view', NULL, 1, NULL, '/view', 0, 1),
-       (8, 3, 1, 'data', NULL, 2, NULL, '/data', 0, 1),
-       (9, 7, 2, 'panel', 'visualized/view/panel', 1, NULL, '/panel', 0, 1),
-       (10, 7, 2, 'screen', 'visualized/view/screen', 2, NULL, '/screen', 0, 1),
-       (11, 8, 2, 'dataset', 'visualized/data/dataset', 1, NULL, '/dataset', 0, 1),
-       (12, 8, 2, 'datasource', 'visualized/data/datasource', 2, NULL, '/datasource', 0, 1),
-       (13, 6, 2, 'user', 'system/user', 1, 'peoples', '/user', 0, 1),
-       (14, 6, 2, 'org', 'system/org', 2, 'org', '/org', 0, 1),
-       (15, 6, 2, 'auth', 'system/auth', 3, 'auth', '/auth', 0, 1),
-       (16, 0, 2, 'dataset-form', 'visualized/data/dataset/form', 7, NULL, '/dataset-form', 1, 0),
-       (17, 0, 2, 'ds-form', 'visualized/data/datasource/form', 7, NULL, '/ds-form', 1, 0);
+VALUES (1, 0, 2, 'workbranch', 'workbranch', 1, NULL, '/workbranch', 0, 1),
+       (2, 0, 1, 'panel', 'visualized/view/panel', 2, NULL, '/panel', 0, 1),
+       (3, 0, 2, 'screen', 'visualized/view/screen', 3, NULL, '/screen', 0, 1),
+       (4, 0, 1, 'data', NULL, 4, NULL, '/data', 0, 1),
+       (5, 4, 2, 'dataset', 'visualized/data/dataset', 1, NULL, '/dataset', 0, 1),
+       (6, 4, 2, 'datasource', 'visualized/data/datasource', 2, NULL, '/datasource', 0, 1),
+       (7, 0, 1, 'system', NULL, 6, NULL, '/system', 1, 1),
+       (8, 7, 2, 'user', 'system/user', 1, 'peoples', '/user', 1, 1),
+       (9, 7, 2, 'org', 'system/org', 2, 'org', '/org', 1, 1),
+       (10, 7, 2, 'auth', 'system/auth', 3, 'auth', '/auth', 1, 1),
+       (11, 0, 2, 'dataset-form', 'visualized/data/dataset/form', 7, NULL, '/dataset-form', 1, 0),
+       (12, 0, 2, 'datasource-form', 'visualized/data/datasource/form', 7, NULL, '/ds-form', 1, 0);
 UNLOCK
 TABLES;
 
@@ -252,7 +247,7 @@ CREATE TABLE `core_de_engine`
 DROP TABLE IF EXISTS `core_chart_view`;
 CREATE TABLE `core_chart_view`
 (
-    `id`                  bigint      NOT NULL COMMENT 'ID',
+    `id`                  bigint NOT NULL COMMENT 'ID',
     `title`               varchar(1024) DEFAULT NULL COMMENT '标题',
     `scene_id`            bigint NOT NULL COMMENT '场景ID chart_type为private的时候 是仪表板id',
     `table_id`            bigint NOT NULL COMMENT '数据集表ID',
