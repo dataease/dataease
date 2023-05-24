@@ -1,4 +1,5 @@
 import { isExternal } from '@/utils/validate'
+import { cloneDeep } from 'lodash'
 
 const modules = import.meta.glob('../views/**/*.vue')
 export const Layout = () => import('@/layout/index.vue')
@@ -51,16 +52,35 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
   return res
 }
 
+export const formatRoute = (arr: AppCustomRouteRecordRaw[]): AppCustomRouteRecordRaw[] => {
+  return arr.map(ele => {
+    const router = cloneDeep(ele)
+    const { path, children = [] } = router
+    if (path === '/system') {
+      router.children = []
+      router.path = '/system/user'
+      return router
+    }
+
+    if (children?.length === 1) {
+      const [route] = children
+      router.path = `${path}/${route.path}`
+      router.children = []
+    }
+    return router
+  })
+}
+
 // 包装一层父级目录
 export const decorate = (router: AppCustomRouteRecordRaw): AppCustomRouteRecordRaw => {
-  const { path, meta, children = [], inLayout } = router
+  const { path, meta, children = [], inLayout, hidden } = router
   const parent = {
     path,
     meta,
     inLayout,
     component: 'Layout',
     children,
-    hidden: false
+    hidden
   }
 
   const current = { ...router }
