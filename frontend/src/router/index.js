@@ -44,7 +44,7 @@ export const constantRoutes = [
   },
   {
     path: '/login',
-    component: () => import(/* webpackChunkName:"login" */'@/views/login/index'),
+    component: () => import('@/views/login/index'),
     hidden: true
   },
 
@@ -67,29 +67,29 @@ export const constantRoutes = [
     children: [
       {
         path: 'edit',
-        component: () => import(/* webpackChunkName:"panelEdit" */'@/views/panel/edit')
+        component: () => import('@/views/panel/edit')
       }
     ]
   },
   {
     path: '/delink',
-    component: () => import(/* webpackChunkName:"link" */'@/views/link'),
+    component: () => import('@/views/link'),
     hidden: true
   },
 
   {
     path: '/preview/:reportId',
-    component: () => import(/* webpackChunkName:"preview" */'@/components/canvas/components/editor/PreviewEject'),
+    component: () => import('@/components/canvas/components/editor/PreviewEject'),
     hidden: true
   },
   {
     path: '/previewScreenShot/:reportId/:backScreenShot',
-    component: () => import(/* webpackChunkName:"PreviewEject" */'@/components/canvas/components/editor/PreviewEject'),
+    component: () => import('@/components/canvas/components/editor/PreviewEject'),
     hidden: true
   },
   {
     path: '/previewFullScreen',
-    component: () => import(/* webpackChunkName:"previewFullScreen" */'@/components/canvas/components/editor/PreviewFullScreen'),
+    component: () => import('@/components/canvas/components/editor/PreviewFullScreen'),
     hidden: true
   },
   {
