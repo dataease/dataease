@@ -80,8 +80,31 @@
           >
             <el-radio :label="'breakLine'">{{ $t('chart.break_line') }}</el-radio>
             <el-radio :label="'setZero'">{{ $t('chart.set_zero') }}</el-radio>
-            <el-radio :label="'ignoreData'">{{ $t('chart.ignore_data') }}</el-radio>
+            <el-radio
+              v-show="showIgnoreOption"
+              :label="'ignoreData'"
+            >
+              {{ $t('chart.ignore_data') }}
+            </el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item
+          v-show="showEmptyDataFieldCtrl"
+          :label="$t('chart.empty_data_field_ctrl')"
+          class="form-item"
+        >
+          <el-select
+            v-model="functionForm.emptyDataFieldCtrl"
+            multiple
+            @change="changeFunctionCfg"
+          >
+            <el-option
+              v-for="option in fieldOptions"
+              :key="option.value"
+              :label="option.label"
+              :value="option.value"
+            />
+          </el-select>
         </el-form-item>
       </el-form>
     </el-col>
@@ -103,7 +126,8 @@ export default {
   data() {
     return {
       functionForm: JSON.parse(JSON.stringify(DEFAULT_FUNCTION_CFG)),
-      predefineColors: COLOR_PANEL
+      predefineColors: COLOR_PANEL,
+      fieldOptions: []
     }
   },
   computed: {
@@ -111,8 +135,18 @@ export default {
       return this.chart.type !== 'bidirectional-bar' && !equalsAny(this.chart.type, 'map')
     },
     showEmptyStrategy() {
-      return (this.chart.render === 'antv' && includesAny(this.chart.type, 'line', 'bar', 'area')) ||
-      this.chart.render === 'echarts' && equalsAny(this.chart.type, 'map')
+      return (this.chart.render === 'antv' &&
+        (includesAny(this.chart.type, 'line', 'bar', 'area') ||
+          equalsAny(this.chart.type, 'table-normal'))) ||
+        (this.chart.render === 'echarts' && equalsAny(this.chart.type, 'map'))
+    },
+    showIgnoreOption() {
+      return !equalsAny(this.chart.type, 'map')
+    },
+    showEmptyDataFieldCtrl() {
+      return this.showEmptyStrategy &&
+        this.functionForm.emptyDataStrategy !== 'breakLine' &&
+        equalsAny(this.chart.type, 'table-normal')
     }
   },
   watch: {
@@ -139,6 +173,26 @@ export default {
           this.functionForm = { ...DEFAULT_FUNCTION_CFG, ...senior.functionCfg }
         } else {
           this.functionForm = JSON.parse(JSON.stringify(DEFAULT_FUNCTION_CFG))
+        }
+        this.initFieldCtrl()
+      }
+    },
+    initFieldCtrl() {
+      if (this.showEmptyDataFieldCtrl) {
+        this.fieldOptions = []
+        let yAxis = []
+        if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
+          yAxis = this.chart.yaxis
+        } else {
+          yAxis = JSON.parse(this.chart.yaxis)
+        }
+        if (this.chart.type === 'table-normal') {
+          yAxis.forEach(item => {
+            this.fieldOptions.push({
+              label: item.name,
+              value: item.dataeaseName
+            })
+          })
         }
       }
     },

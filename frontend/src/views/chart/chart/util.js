@@ -3690,3 +3690,38 @@ export function resetRgbOpacity(sourceColor, times) {
   }
   return sourceColor
 }
+
+export function handleTableEmptyStrategy(tableData, chart) {
+  let newData = tableData
+  let intersection = []
+  let senior = chart.senior
+  if (senior) {
+    senior = JSON.parse(senior)
+  }
+  let emptyDataStrategy = senior?.functionCfg?.emptyDataStrategy
+  if (!emptyDataStrategy) {
+    emptyDataStrategy = 'breakLine'
+  }
+  const emptyDataFieldCtrl = senior?.functionCfg?.emptyDataFieldCtrl
+  if (emptyDataStrategy !== 'breakLine' && emptyDataFieldCtrl?.length && tableData?.length) {
+    const deNames = _.keys(tableData[0])
+    intersection = _.intersection(deNames, emptyDataFieldCtrl)
+  }
+  if (intersection.length) {
+    newData = _.clone(tableData)
+    for (let i = 0; i < newData.length; i++) {
+      for (let j = 0, tmp = intersection.length; j < tmp; j++) {
+        const deName = intersection[j]
+        if (newData[i][deName] === null) {
+          if (emptyDataStrategy === 'setZero') {
+            newData[i][deName] = 0
+          }
+          if (emptyDataStrategy === 'ignoreData') {
+            newData = _.filter(newData, (_, index) => index !== i)
+          }
+        }
+      }
+    }
+  }
+  return newData
+}
