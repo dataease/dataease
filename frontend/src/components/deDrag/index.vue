@@ -1544,8 +1544,6 @@ export default {
         } else {
           this.element.style.left = 0
           this.element.style.top = 0
-          this.element.style.width = this.element.style.width * this.curCanvasScaleSelf.matrixStyleWidth / targetCanvasScale.matrixStyleWidth
-          this.element.style.height = this.element.style.height * this.curCanvasScaleSelf.matrixStyleHeight / targetCanvasScale.matrixStyleHeight
         }
         this.element.canvasId = targetCanvasId
       }
