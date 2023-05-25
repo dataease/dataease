@@ -13,7 +13,7 @@ public class PermissionItem implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -6537851979745319692L;
-    @ApiModelProperty("资源ID")
+    @ApiModelProperty("资源/对象ID")
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
     @ApiModelProperty("权重")

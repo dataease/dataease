@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-23
+ * @since 2023-05-10
  */
 @TableName("core_chart_view")
 public class CoreChartView implements Serializable {
@@ -22,12 +22,7 @@ public class CoreChartView implements Serializable {
     private Long id;
 
     /**
-     * 名称
-     */
-    private String name;
-
-    /**
-     * EChart标题
+     * 标题
      */
     private String title;
 
@@ -182,14 +177,6 @@ public class CoreChartView implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getTitle() {
@@ -436,7 +423,6 @@ public class CoreChartView implements Serializable {
     public String toString() {
         return "CoreChartView{" +
         "id = " + id +
-        ", name = " + name +
         ", title = " + title +
         ", sceneId = " + sceneId +
         ", tableId = " + tableId +

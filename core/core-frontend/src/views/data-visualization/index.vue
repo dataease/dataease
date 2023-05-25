@@ -10,12 +10,20 @@ import RealTimeComponentList from '@/components/data-visualization/RealTimeCompo
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { setDefaultComponentData } from '@/store/modules/data-visualization/snapshot'
-import { computed, ref } from 'vue'
+import { computed, getCurrentInstance, onMounted, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
+import DvToolbar from '../../components/data-visualization/DvToolbar.vue'
+import ComponentToolBar from '../../components/data-visualization/ComponentToolBar.vue'
+import eventBus from '../../utils/eventBus'
+import findComponent from '../../utils/components'
+import DvSidebar from '../../components/visualization/DvSidebar.vue'
+import { getData } from '@/api/chart'
+import { findById } from '@/api/dataVisualization'
+import router from '@/router'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -25,36 +33,61 @@ const activeName = ref('attr')
 const reSelectAnimateIndex = ref(undefined)
 const { componentData, curComponent, isClickComponent, canvasStyleData } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
+const canvasOut = ref(null)
 
 const contentStyle = computed(() => {
   const { width, height, scale } = canvasStyleData.value
   return {
     width: width * 1.5 + 'px',
-    height: height * 2 + 'px',
-    paddingTop: height * (1 - scale / 200) + 'px'
+    height: (height * 2 * scale) / 100 + 'px',
+    paddingTop: (height * scale) / 200 + 'px'
   }
 })
 
-const restore = () => {
-  // 用保存的数据恢复画布
-  if (localStorage.getItem('canvasData')) {
-    setDefaultComponentData(JSON.parse(localStorage.getItem('canvasData')))
-    dvMainStore.setComponentData(JSON.parse(localStorage.getItem('canvasData')))
-  }
+const restore = (canvasData, canvasStyle) => {
+  dvMainStore.setComponentData(JSON.parse(canvasData))
+  dvMainStore.setCanvasStyle(JSON.parse(canvasStyle))
+}
 
-  if (localStorage.getItem('canvasStyle')) {
-    dvMainStore.setCanvasStyle(JSON.parse(localStorage.getItem('canvasStyle')))
+const findNewComponent = (componentName, innerType) => {
+  let newComponent
+  componentList.forEach(comp => {
+    if (comp.component === componentName) {
+      newComponent = deepCopy(comp)
+      newComponent.innerType = innerType
+    }
+  })
+  return newComponent
+}
+
+// 通过实时监听的方式直接添加组件
+const handleNew = newComponentInfo => {
+  const { componentName, innerType } = newComponentInfo
+  if (componentName) {
+    const component = findNewComponent(componentName, innerType)
+    component.style.top = 0
+    component.style.left = 0
+    component.id = generateID()
+    changeComponentSizeWithScale(component)
+    dvMainStore.addComponent({ component: component, index: undefined })
+    snapshotStore.recordSnapshot()
   }
+}
+
+const findDragComponent = componentInfo => {
+  const componentInfoArray = componentInfo.split('&')
+  const componentName = componentInfoArray[0]
+  const innerType = componentInfoArray[1]
+  return findNewComponent(componentName, innerType)
 }
 
 const handleDrop = e => {
   e.preventDefault()
   e.stopPropagation()
-
-  const index = e.dataTransfer.getData('index')
+  const componentInfo = e.dataTransfer.getData('id')
   const rectInfo = editor.value.getBoundingClientRect()
-  if (index) {
-    const component = deepCopy(componentList[index])
+  if (componentInfo) {
+    const component = findDragComponent(componentInfo)
     component.style.top = e.clientY - rectInfo.y
     component.style.left = e.clientX - rectInfo.x
     component.id = generateID()
@@ -77,7 +110,7 @@ const handleMouseDown = e => {
 }
 
 const deselectCurComponent = e => {
-  if (!isClickComponent) {
+  if (!isClickComponent.value) {
     dvMainStore.setCurComponent({ component: null, index: null })
   }
 
@@ -87,103 +120,128 @@ const deselectCurComponent = e => {
   }
 }
 
-restore()
 // 全局监听按键事件
 listenGlobalKeyDown()
+
+onMounted(() => {
+  const { dvId, pid } = router.currentRoute.value.query
+  if (dvId) {
+    // 从数据库中获取
+    findById(dvId).then(res => {
+      const canvasInfo = res.data
+      const bashInfo = {
+        id: canvasInfo.id,
+        name: canvasInfo.name,
+        pid: canvasInfo.pid,
+        status: canvasInfo.status,
+        selfWatermarkStatus: canvasInfo.selfWatermarkStatus
+      }
+      dvMainStore.updateCurDvInfo(bashInfo)
+      //恢复画布数据
+      restore(canvasInfo.componentData, canvasInfo.canvasStyleData)
+    })
+  } else {
+    dvMainStore.updateCurDvInfo({
+      id: null,
+      name: '新建仪表板',
+      pid: pid,
+      status: null,
+      selfWatermarkStatus: null
+    })
+  }
+  const { width, height, scale } = canvasStyleData.value
+  // 设置画布初始滚动条位置
+  canvasOut.value.scrollTo(
+    (width * 1.5 - (width * scale) / 100) / 2 - 20,
+    (height * scale) / 200 - 20
+  )
+})
+
+eventBus.on('handleNew', handleNew)
 </script>
 
 <template>
-  <div class="home">
-    <Toolbar />
-    <main>
+  <div class="dv-common-layout">
+    <DvToolbar />
+    <el-container class="dv-layout-container">
       <!-- 左侧组件列表 -->
-      <section class="left">
-        <ComponentList />
+      <dv-sidebar title="图层" width="180" aside-position="left" class="left-sidebar">
         <RealTimeComponentList />
-      </section>
+      </dv-sidebar>
       <!-- 中间画布 -->
-      <section class="center">
-        <div
-          class="content"
-          :style="contentStyle"
-          @drop="handleDrop"
-          @dragover="handleDragOver"
-          @mousedown="handleMouseDown"
-          @mouseup="deselectCurComponent"
-        >
-          <DvCanvas />
+      <main class="center">
+        <div ref="canvasOut" class="content">
+          <div
+            :style="contentStyle"
+            @drop="handleDrop"
+            @dragover="handleDragOver"
+            @mousedown="handleMouseDown"
+            @mouseup="deselectCurComponent"
+          >
+            <DvCanvas />
+          </div>
         </div>
-      </section>
-      <!--右侧属性列表-->
-      <!--      <section class="right">-->
-      <!--        <el-tabs v-if="curComponent" v-model="activeName">-->
-      <!--          <el-tab-pane label="属性" name="attr">-->
-      <!--            <component :is="curComponent['component'] + '-attr'" />-->
-      <!--          </el-tab-pane>-->
-      <!--        </el-tabs>-->
-      <!--        <CanvasAttr v-else></CanvasAttr>-->
-      <!--      </section>-->
-    </main>
+        <ComponentToolBar></ComponentToolBar>
+      </main>
+      <!-- 右侧侧组件列表 -->
+      <dv-sidebar
+        v-if="curComponent"
+        title="属性"
+        width="240"
+        aside-position="right"
+        class="left-sidebar"
+      >
+        <component :is="findComponent(curComponent['component'] + 'Attr')" />
+      </dv-sidebar>
+      <dv-sidebar
+        v-if="!curComponent"
+        title="大屏配置"
+        width="240"
+        aside-position="right"
+        class="left-sidebar"
+      >
+        <CanvasAttr></CanvasAttr>
+      </dv-sidebar>
+      <dv-sidebar
+        v-if="curComponent && curComponent.component === 'UserView'"
+        title="数据集"
+        width="180"
+        aside-position="right"
+        class="left-sidebar"
+      >
+        <div>数据集</div>
+      </dv-sidebar>
+    </el-container>
   </div>
 </template>
 
 <style lang="less">
-.home {
+.dv-common-layout {
   height: 100vh;
-
-  main {
-    height: calc(100% - 64px);
-    position: relative;
-
-    .left {
-      position: absolute;
+  width: 100vw;
+  .dv-layout-container {
+    height: calc(100vh - @top-bar-height);
+    .left-sidebar {
       height: 100%;
-      width: 200px;
-      left: 0;
-      top: 0;
-
-      & > div {
-        overflow: auto;
-
-        &:first-child {
-          border-bottom: 1px solid #ddd;
-        }
-      }
     }
-
-    .right {
-      position: absolute;
-      height: 100%;
-      width: 288px;
-      right: 0;
-      top: 0;
-      .el-select {
-        width: 100%;
-      }
-    }
-
     .center {
-      margin-left: 200px;
-      margin-right: 0px;
-      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
       height: 100%;
+      flex: 1;
+      position: relative;
+      background-color: rgba(51, 51, 51, 1);
       overflow: auto;
-      padding: 20px;
-
       .content {
+        flex: 1;
+        width: 100%;
         overflow: auto;
         margin: auto;
       }
     }
-  }
-
-  .placeholder {
-    text-align: center;
-    color: #333;
-  }
-
-  .global-attr {
-    padding: 10px;
+    .right-sidebar {
+      height: 100%;
+    }
   }
 }
 </style>

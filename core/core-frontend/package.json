@@ -8,7 +8,8 @@
     "build:flush": "cd ./flushbonading && rimraf ./demo.html && npm i && node ./index.js",
     "dev:desktop": "vite --mode desktop",
     "ts:check": "vue-tsc --noEmit",
-    "build:base": "vite build --mode base && npm run build:flush",
+    "build:base": "NODE_OPTIONS=--max_old_space_size=4096 vite build --mode base",
+    "build:lib": "vite build --mode lib",
     "build:desktop": "npm run ts:check && vite --mode desktop && electron-builder",
     "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
     "lint:stylelint": "stylelint --fix \"**/*.{vue,less,postcss,css,scss}\" --cache --cache-location node_modules/.cache/stylelint/",
@@ -57,6 +58,7 @@
     }
   },
   "dependencies": {
+    "@antv/g2plot": "^2.4.29",
     "@codemirror/lang-sql": "^6.4.0",
     "@vueuse/core": "^9.13.0",
     "ace-builds": "^1.15.3",
@@ -64,7 +66,7 @@
     "crypto-js": "^4.1.1",
     "deepmerge": "^4.3.1",
     "electron-devtools-installer": "^3.2.0",
-    "element-plus-secondary": "^0.0.10",
+    "element-plus-secondary": "^0.0.16",
     "highcharts": "^10.3.3",
     "html-to-image": "^1.11.11",
     "js-base64": "^3.7.5",
@@ -87,6 +89,7 @@
     "vue-router": "^4.1.6",
     "vue-types": "^5.0.2",
     "vue3-ace-editor": "^2.2.2",
+    "vuedraggable": "^4.1.0",
     "web-storage-cache": "^1.1.1"
   },
   "devDependencies": {
@@ -122,6 +125,7 @@
     "unplugin-auto-import": "^0.15.1",
     "unplugin-vue-components-secondary": "^0.24.6",
     "vite": "^4.1.3",
+    "vite-plugin-compression": "^0.5.1",
     "vite-plugin-electron": "^0.11.1",
     "vite-plugin-electron-renderer": "^0.11.4",
     "vite-plugin-eslint": "^1.8.1",

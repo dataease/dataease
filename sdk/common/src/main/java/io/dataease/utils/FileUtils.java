@@ -1,13 +1,26 @@
 package io.dataease.utils;
 
+import org.springframework.lang.NonNull;
+import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class FileUtils {
 
+    public static void createIfAbsent(@NonNull Path path) throws IOException {
+        Assert.notNull(path, "Path must not be null");
+
+        if (Files.notExists(path)) {
+            // Create directories
+            Files.createDirectories(path);
+            LogUtil.debug("Created directory: [{}]", path);
+        }
+    }
 
 
     /**

@@ -40,6 +40,41 @@ export const routes: AppRouteRecordRaw[] = [
     hidden: true,
     meta: {},
     component: () => import('@/views/dashboard/index.vue')
+  },
+  {
+    path: '/chart',
+    name: 'chart',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/chart/index.vue')
+  },
+  {
+    path: '/previewShow',
+    name: 'previewShow',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/data-visualization/PreviewShow.vue')
+  },
+  {
+    path: '/DeResourceTree',
+    name: 'DeResourceTree',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/common/DeResourceTree.vue')
+  },
+  {
+    path: '/dataset',
+    name: 'dataset',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/visualized/data/dataset/form/index.vue')
+  },
+  {
+    path: '/preview',
+    name: 'preview',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/data-visualization/PreviewCanvas.vue')
   }
 ]
 

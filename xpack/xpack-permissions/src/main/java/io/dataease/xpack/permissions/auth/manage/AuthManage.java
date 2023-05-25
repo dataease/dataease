@@ -2,10 +2,7 @@ package io.dataease.xpack.permissions.auth.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.api.permissions.auth.dto.BusiPerEditor;
-import io.dataease.api.permissions.auth.dto.BusiPermissionRequest;
-import io.dataease.api.permissions.auth.dto.MenuPerEditor;
-import io.dataease.api.permissions.auth.dto.MenuPermissionRequest;
+import io.dataease.api.permissions.auth.dto.*;
 import io.dataease.api.permissions.auth.vo.PermissionItem;
 import io.dataease.api.permissions.auth.vo.PermissionOrigin;
 import io.dataease.api.permissions.auth.vo.PermissionVO;
@@ -15,6 +12,7 @@ import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.CacheUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.xpack.permissions.auth.bo.ResourceTreeNode;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiRole;
@@ -37,11 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Component
+@Transactional
 public class AuthManage {
     private final static int ROOTID = 0;
 
@@ -74,7 +75,11 @@ public class AuthManage {
     @Resource
     private MenuAuthManage menuAuthManage;
 
+
     private AuthManageUtil authManageUtil;
+
+    @Resource
+    private AuthWeightService authWeightService;
 
     public List<ResourceVO> resourceTree(String flag) {
         BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(flag.toUpperCase());
@@ -82,80 +87,196 @@ public class AuthManage {
             DEException.throwException("invalid flag value");
         }
         TokenUserBO user = AuthUtils.getUser();
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("org_id", user.getDefaultOid());
-        queryWrapper.eq("rt_id", busiResourceEnum.getFlag());
-        List<BusiResourcePO> pos = busiAuthExtMapper.query(queryWrapper);
+        // 判断是否包含组织默认管理员角色
+        List<UserRole> userRoles = null;
+        AtomicBoolean rootAdmin = new AtomicBoolean(AuthUtils.isSysAdmin());
+        if (!rootAdmin.get() && CollectionUtil.isNotEmpty(userRoles = roleManage.userAdminRole()))
+            userRoles = userRoles.stream().filter(role -> {
+                if (role.isRoot()) {
+                    rootAdmin.set(true);
+                    return false;
+                }
+                return true;
+            }).toList();
+        List<BusiResourcePO> pos = null;
+        if (rootAdmin.get()) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("org_id", user.getDefaultOid());
+            queryWrapper.eq("rt_id", busiResourceEnum.getFlag());
+            pos = busiAuthExtMapper.query(queryWrapper);
+        } else {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("pbr.org_id", user.getDefaultOid());
+            queryWrapper.eq("pbr.rt_id", busiResourceEnum.getFlag());
+            queryWrapper.eq("pabu.uid", user.getUserId());
+            queryWrapper.eq("pabu.weight", 9);
+            queryWrapper.eq("pabu.resource_type", busiResourceEnum.getFlag());
+            pos = busiAuthExtMapper.resourceByUid(queryWrapper);
+
+            if (CollectionUtil.isNotEmpty(userRoles)) {
+                queryWrapper.clear();
+                List<Long> rids = userRoles.stream().map(UserRole::getId).toList();
+                queryWrapper.eq("pbr.org_id", user.getDefaultOid());
+                queryWrapper.eq("pbr.rt_id", busiResourceEnum.getFlag());
+                queryWrapper.eq("pabr.weight", 9);
+                queryWrapper.eq("pabr.resource_type", busiResourceEnum.getFlag());
+                queryWrapper.in("pabr.rid", rids);
+                List<BusiResourcePO> rolePos = null;
+                if (CollectionUtil.isNotEmpty((rolePos = busiAuthExtMapper.resourceByRid(queryWrapper)))) {
+                    pos.addAll(rolePos);
+                }
+            }
+            if (CollectionUtil.isNotEmpty(pos)) {
+                pos = CollectionUtil.distinct(pos);
+            } else {
+                return null;
+            }
+        }
         return authManageUtil.convertPos(pos, false);
     }
 
     public List<ResourceVO> menuTree() {
-        QueryWrapper queryWrapper = new QueryWrapper();
-        List<BusiResourcePO> pos = menuAuthExtMapper.query(queryWrapper);
+        AtomicBoolean rootAdmin = new AtomicBoolean(AuthUtils.isSysAdmin());
+        List<BusiResourcePO> pos = null;
+        List<UserRole> userRoles = null;
+
+
+        if (!rootAdmin.get() && CollectionUtil.isNotEmpty(userRoles = roleManage.userAdminRole()))
+            userRoles = userRoles.stream().filter(role -> {
+                if (role.isRoot()) {
+                    rootAdmin.set(true);
+                    return false;
+                }
+                return true;
+            }).toList();
+
+        if (rootAdmin.get()) {
+            QueryWrapper queryWrapper = new QueryWrapper();
+            pos = menuAuthExtMapper.query(queryWrapper);
+        } else if (CollectionUtil.isNotEmpty(userRoles)) {
+
+            List<Long> rids = userRoles.stream().map(UserRole::getId).toList();
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.eq("pam.weight", 9);
+            queryWrapper.in("pam.rid", rids);
+            pos = menuAuthExtMapper.menusByRids(queryWrapper);
+        } else {
+            return null;
+        }
+
+        if (CollectionUtil.isNotEmpty(pos)) {
+            pos = CollectionUtil.distinct(pos);
+        } else {
+            return null;
+        }
         return authManageUtil.convertPos(pos, true);
     }
 
-    public List<PermissionVO> menuPermission(MenuPermissionRequest request) {
-        List<PermissionVO> result = new ArrayList<>();
+    public PermissionVO menuPermission(MenuPermissionRequest request) {
         PermissionVO vo = new PermissionVO();
         RoleInfo roleInfo = roleManage.roleInfo(request.getId());
         if (roleInfo.isRoot()) {
             BeanUtils.copyBean(vo, roleInfo, "permissions");
-            result.add(vo);
-            return result;
+            return vo;
         }
-        List<PermissionItem> permissionItems = menuAuthExtMapper.rolePermission(request.getId());
+        List<PermissionItem> permissionItems = menuAuthManage.permissionItems(request.getId());
         vo.setPermissions(permissionItems);
-        result.add(vo);
-        return result;
+        return vo;
     }
 
-    public List<PermissionVO> busiPermission(BusiPermissionRequest request) {
-        List<PermissionVO> result = new ArrayList<>();
+    public PermissionVO busiPermission(BusiPermissionRequest request) {
         BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getFlag().toUpperCase());
         if (ObjectUtils.isEmpty(busiResourceEnum)) {
             DEException.throwException("invalid flag value");
         }
+        Long oid = AuthUtils.getUser().getDefaultOid();
+        int flag = busiResourceEnum.getFlag();
         PermissionVO vo = new PermissionVO();
         if (request.getType() == 0) {
-            List<UserRole> userRoles = roleManage.userRole(request.getId());
-            if (CollectionUtil.isNotEmpty(userRoles) && userRoles.stream().anyMatch(item -> item.isRoot() && !item.isReadonly())) {
-                vo.setRoot(true);
-                vo.setReadonly(false);
-                result.add(vo);
-                return result;
-            }
-            List<PermissionItem> permissionItems = busiAuthExtMapper.userPermission(request.getId(), busiResourceEnum.getFlag());
-            vo.setPermissions(permissionItems);
-            result.add(vo);
+            List<UserRole> userRoles = roleManage.userRole(request.getId(), oid);
+
             if (CollectionUtil.isNotEmpty(userRoles)) {
-                List<PermissionVO> permissionVOS = userRoles.stream().map(role -> {
-                    List<PermissionItem> permission = busiAuthExtMapper.rolePermission(role.getId(), busiResourceEnum.getFlag());
-                    PermissionVO temp = new PermissionVO();
-                    temp.setRoot(role.isRoot());
-                    temp.setReadonly(role.isReadonly());
-                    temp.setPermissions(permission);
-                    PermissionOrigin origin = new PermissionOrigin();
-                    origin.setId(role.getId());
-                    origin.setName(role.getName());
-                    temp.setPermissionOrigin(origin);
-                    return temp;
-                }).toList();
-                result.addAll(permissionVOS);
+                for (int i = 0; i < userRoles.size(); i++) {
+                    UserRole item = userRoles.get(i);
+                    if (item.isRoot()) {
+                        vo.setRoot(true);
+                        vo.setReadonly(item.isReadonly());
+                        if (!item.isReadonly()) {
+                            return vo;
+                        }
+                    }
+                }
+                userRoles = userRoles.stream().filter(item -> !item.isRoot()).toList();
             }
+            List<PermissionItem> permissionItems = userAuthManage.permissionItems(request.getId(), oid, flag);
+            vo.setPermissions(permissionItems);
+
+            if (CollectionUtil.isNotEmpty(userRoles)) {
+                List<PermissionOrigin> permissionOrigins = roleAuthManage.roleOrigin(userRoles, flag);
+                vo.setPermissionOrigins(permissionOrigins);
+            }
+            return vo;
         } else {
             RoleInfo roleInfo = roleManage.roleInfo(request.getId());
             if (roleInfo.isRoot()) {
                 BeanUtils.copyBean(vo, roleInfo, "permissions");
-                result.add(vo);
-                return result;
+                return vo;
             }
-
-            List<PermissionItem> permissionItems = busiAuthExtMapper.rolePermission(request.getId(), busiResourceEnum.getFlag());
+            List<PermissionItem> permissionItems = roleAuthManage.permissionItems(request.getId(), flag);
             vo.setPermissions(permissionItems);
-            result.add(vo);
+            return vo;
         }
-        return result;
+    }
+
+    public PermissionVO busiTargetPermission(BusiPermissionRequest request) {
+        PermissionVO vo = new PermissionVO();
+        Long resourceId = request.getId();
+        Integer type = request.getType();
+        BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(request.getFlag().toUpperCase());
+        if (ObjectUtils.isEmpty(busiResourceEnum)) {
+            DEException.throwException("invalid flag value");
+        }
+        if (type == 0) {
+            // 资源授权给了哪些用户？
+            List<PermissionItem> userPermissionItems = busiAuthExtMapper.busiUserPermission(resourceId, busiResourceEnum.getFlag());
+            List<PermissionOrigin> permissionOrigins = busiAuthExtMapper.batchUserRolePermission(resourceId, busiResourceEnum.getFlag());
+            PermissionOrigin adminOrigin = null;
+            PermissionOrigin readonlyOrigin = null;
+            if (ObjectUtils.isNotEmpty(adminOrigin = defaultAdminOrigin())) {
+                permissionOrigins.add(adminOrigin);
+            }
+            if (ObjectUtils.isNotEmpty(readonlyOrigin = defaultReadonlyOrigin())) {
+                permissionOrigins.add(readonlyOrigin);
+            }
+            vo.setPermissions(authWeightService.filterValid(userPermissionItems));
+            if (CollectionUtil.isNotEmpty(permissionOrigins)) {
+                List<PermissionOrigin> origins = permissionOrigins.stream().map(origin -> {
+                    origin.setPermissions(authWeightService.filterValid(origin.getPermissions()));
+                    return origin;
+                }).toList();
+                vo.setPermissionOrigins(origins);
+            }
+        } else {
+            // 资源授权给了哪些角色？
+            List<PermissionItem> permissionItems = busiAuthExtMapper.busiRolePermission(resourceId, busiResourceEnum.getFlag());
+            vo.setPermissions(authWeightService.filterValid(permissionItems));
+        }
+        return vo;
+    }
+
+    private PermissionOrigin defaultAdminOrigin() {
+        return busiAuthExtMapper.adminOrigin(AuthUtils.getUser().getDefaultOid());
+    }
+
+    private PermissionOrigin defaultReadonlyOrigin() {
+        return busiAuthExtMapper.readonlyOrigin(AuthUtils.getUser().getDefaultOid());
+    }
+
+    public PermissionVO menuTargetPermission(MenuPermissionRequest request) {
+        PermissionVO vo = new PermissionVO();
+        List<PermissionItem> permissionItems = menuAuthExtMapper.menuTargetPermission(request.getId());
+        vo.setPermissions(authWeightService.filterValid(permissionItems));
+        return vo;
     }
 
     @Transactional
@@ -164,31 +285,41 @@ public class AuthManage {
         String flagName = editor.getFlag().toUpperCase();
         int flag = BusiResourceEnum.valueOf(flagName).getFlag();
         Long id = editor.getId();
-        List<PermissionItem> permissions = editor.getPermissions();
+        List<PermissionItem> paramPermissions = editor.getPermissions();
         Integer type = editor.getType();
-        deleteBusiPer(flag, id, permissions, type);
+        deleteBusiPer(flag, id, paramPermissions, type);
+        List<PermissionItem> permissions = authWeightService.filterValid(paramPermissions);
+        Long oid = AuthUtils.getUser().getDefaultOid();
         if (type == 0) {
-            List<PerAuthBusiUser> busiUsers = permissions.stream().map(per -> {
-                PerAuthBusiUser userPermission = new PerAuthBusiUser();
-                userPermission.setId(IDUtils.snowID());
-                userPermission.setResourceId(per.getId());
-                userPermission.setWeight(per.getWeight());
-                userPermission.setUid(id);
-                userPermission.setResourceType(flag);
-                return userPermission;
-            }).toList();
-            userAuthManage.saveBatch(busiUsers);
+            CacheUtils.remove("user_busi_pers", id.toString() + oid + flag, t -> {
+                if (CollectionUtil.isNotEmpty(permissions)) {
+                    List<PerAuthBusiUser> busiUsers = permissions.stream().map(per -> {
+                        PerAuthBusiUser userPermission = new PerAuthBusiUser();
+                        userPermission.setId(IDUtils.snowID());
+                        userPermission.setResourceId(per.getId());
+                        userPermission.setWeight(per.getWeight());
+                        userPermission.setUid(id);
+                        userPermission.setResourceType(flag);
+                        return userPermission;
+                    }).toList();
+                    userAuthManage.saveBatch(busiUsers);
+                }
+            });
         } else {
-            List<PerAuthBusiRole> busiRoles = permissions.stream().map(per -> {
-                PerAuthBusiRole rolePermission = new PerAuthBusiRole();
-                rolePermission.setId(IDUtils.snowID());
-                rolePermission.setResourceId(per.getId());
-                rolePermission.setWeight(per.getWeight());
-                rolePermission.setRid(id);
-                rolePermission.setResourceType(flag);
-                return rolePermission;
-            }).toList();
-            roleAuthManage.saveBatch(busiRoles);
+            CacheUtils.remove("role_busi_pers", id.toString() + flag, t -> {
+                if (CollectionUtil.isNotEmpty(permissions)) {
+                    List<PerAuthBusiRole> busiRoles = permissions.stream().map(per -> {
+                        PerAuthBusiRole rolePermission = new PerAuthBusiRole();
+                        rolePermission.setId(IDUtils.snowID());
+                        rolePermission.setResourceId(per.getId());
+                        rolePermission.setWeight(per.getWeight());
+                        rolePermission.setRid(id);
+                        rolePermission.setResourceType(flag);
+                        return rolePermission;
+                    }).toList();
+                    roleAuthManage.saveBatch(busiRoles);
+                }
+            });
         }
     }
 
@@ -210,6 +341,32 @@ public class AuthManage {
         }
     }
 
+    @Transactional
+    public void deleteBusiTargetPer(int flag, List<Long> resourceIds, List<PermissionItem> permissions, int type) {
+        List<Long> ids = permissions.stream().map(PermissionItem::getId).toList();
+        if (type == 0) {
+            QueryWrapper<PerAuthBusiUser> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("resource_type", flag);
+            queryWrapper.in("resource_id", resourceIds);
+            queryWrapper.in("uid", ids);
+            perAuthBusiUserMapper.delete(queryWrapper);
+        } else {
+            QueryWrapper<PerAuthBusiRole> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("resource_type", flag);
+            queryWrapper.in("resource_id", resourceIds);
+            queryWrapper.in("rid", ids);
+            perAuthBusiRoleMapper.delete(queryWrapper);
+        }
+    }
+
+    public void deleteMenuTargetPer(List<Long> resourceIds, List<PermissionItem> permissions) {
+        List<Long> ids = permissions.stream().map(PermissionItem::getId).toList();
+        QueryWrapper<PerAuthMenu> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("rid", ids);
+        queryWrapper.in("resource_id", resourceIds);
+        perAuthMenuMapper.delete(queryWrapper);
+    }
+
     public void saveMenuPer(MenuPerEditor editor) {
         List<PermissionItem> permissionItems = null;
         if (CollectionUtil.isEmpty((permissionItems = editor.getPermissions()))) {
@@ -221,27 +378,138 @@ public class AuthManage {
         queryWrapper.eq("rid", id);
         queryWrapper.in("resource_id", ids);
         perAuthMenuMapper.delete(queryWrapper);
+        List<PermissionItem> realPermissionItems = authWeightService.filterValid(permissionItems);
 
-        List<PerAuthMenu> perAuthMenus = permissionItems.stream().map(per -> {
-            PerAuthMenu perAuthMenu = new PerAuthMenu();
-            perAuthMenu.setId(IDUtils.snowID());
-            perAuthMenu.setResourceId(per.getId());
-            perAuthMenu.setWeight(per.getWeight());
-            perAuthMenu.setRid(id);
-            return perAuthMenu;
+        CacheUtils.remove("role_menu_pers", id.toString(), t -> {
+            if (CollectionUtil.isEmpty(realPermissionItems)) {
+                List<PerAuthMenu> perAuthMenus = realPermissionItems.stream().map(per -> {
+                    PerAuthMenu perAuthMenu = new PerAuthMenu();
+                    perAuthMenu.setId(IDUtils.snowID());
+                    perAuthMenu.setResourceId(per.getId());
+                    perAuthMenu.setWeight(per.getWeight());
+                    perAuthMenu.setRid(id);
+                    return perAuthMenu;
+                }).toList();
+                menuAuthManage.saveBatch(perAuthMenus);
+            }
+        });
+
+    }
+
+    @Transactional
+    public void saveBusiTargetPer(BusiTargetPerCreator creator) {
+        if (CollectionUtil.isEmpty(creator.getPermissions())) return;
+        String flagName = creator.getFlag().toUpperCase();
+        int flag = BusiResourceEnum.valueOf(flagName).getFlag();
+        List<Long> ids = creator.getIds();
+        List<PermissionItem> permissions = creator.getPermissions();
+        Integer type = creator.getType();
+        if (0 == type) {
+            List<Long> uids = permissions.stream().map(PermissionItem::getId).toList();
+            List<PermissionBO> permissionBOS = busiAuthExtMapper.queryExistUserPer(ids, flag, uids);
+            Map<Long, Map<Long, Integer>> mappingMap = formatMap(permissionBOS);
+            Long dirId = ids.get(0);
+
+            Map<Long, Integer> dirMap = mappingMap.getOrDefault(dirId, new HashMap<>());
+            List<PerAuthBusiUser> busiUsers = permissions.stream().flatMap(per -> {
+                Long uid = per.getId();
+                int weight = per.getWeight();
+                Integer dirSourceWeight = dirMap.getOrDefault(uid, 0);
+                boolean asc = weight > dirSourceWeight;
+
+                return ids.stream().map(resourceId -> {
+                    PerAuthBusiUser busiUser = new PerAuthBusiUser();
+                    busiUser.setResourceType(flag);
+                    busiUser.setUid(uid);
+                    busiUser.setWeight(asc ? Math.max(weight, mappingMap.getOrDefault(resourceId, new HashMap<>()).getOrDefault(uid, 0)) : weight);
+                    busiUser.setResourceId(resourceId);
+                    busiUser.setId(IDUtils.snowID());
+                    return busiUser;
+                });
+            }).toList();
+            Long oid = AuthUtils.getUser().getDefaultOid();
+            CacheUtils.remove("user_busi_pers", uids.stream().map(uid -> uid.toString() + oid + flag).toList(), t -> {
+                deleteBusiTargetPer(flag, ids, permissions, type);
+                userAuthManage.saveBatch(busiUsers);
+            });
+        } else {
+            List<Long> rids = permissions.stream().map(PermissionItem::getId).toList();
+            List<PermissionBO> permissionBOS = busiAuthExtMapper.queryExistRolePer(ids, flag, rids);
+            Map<Long, Map<Long, Integer>> mappingMap = formatMap(permissionBOS);
+            Map<Long, Integer> dirMap = mappingMap.getOrDefault(ids.get(0), new HashMap<>());
+            List<PerAuthBusiRole> busiRoles = permissions.stream().flatMap(per -> {
+                Long rid = per.getId();
+                int weight = per.getWeight();
+                Integer dirSourceWeight = dirMap.getOrDefault(rid, 0);
+                boolean asc = weight > dirSourceWeight;
+
+                return ids.stream().map(resourceId -> {
+                    PerAuthBusiRole busiRole = new PerAuthBusiRole();
+                    busiRole.setResourceType(flag);
+                    busiRole.setRid(rid);
+                    busiRole.setWeight(asc ? Math.max(weight, mappingMap.getOrDefault(resourceId, new HashMap<>()).getOrDefault(rid, 0)) : weight);
+                    busiRole.setResourceId(resourceId);
+                    busiRole.setId(IDUtils.snowID());
+                    return busiRole;
+                });
+            }).toList();
+            CacheUtils.remove("role_busi_pers", rids.stream().map(rid -> rid.toString() + flag).toList(), t -> {
+                deleteBusiTargetPer(flag, ids, permissions, type);
+                roleAuthManage.saveBatch(busiRoles);
+            });
+
+        }
+    }
+
+    public void saveMenuTargetPer(MenuTargetPerCreator creator) {
+
+        List<PermissionItem> permissions = creator.getPermissions();
+        List<Long> ids = creator.getIds();
+        List<Long> rids = permissions.stream().map(PermissionItem::getId).toList();
+        List<PermissionBO> permissionBOS = menuAuthExtMapper.queryExistPer(ids, rids);
+        Map<Long, Map<Long, Integer>> mappingMap = formatMap(permissionBOS);
+        Map<Long, Integer> dirMap = mappingMap.getOrDefault(ids.get(0), new HashMap<>());
+        List<PerAuthMenu> menuRoles = permissions.stream().flatMap(per -> {
+            Long rid = per.getId();
+            int weight = per.getWeight();
+            Integer dirSourceWeight = dirMap.getOrDefault(rid, 0);
+            boolean asc = weight > dirSourceWeight;
+
+            return ids.stream().map(resourceId -> {
+                PerAuthMenu menuRole = new PerAuthMenu();
+                menuRole.setWeight(asc ? Math.max(weight, mappingMap.getOrDefault(resourceId, new HashMap<>()).getOrDefault(rid, 0)) : weight);
+                menuRole.setResourceId(resourceId);
+                menuRole.setId(IDUtils.snowID());
+                menuRole.setRid(rid);
+                return menuRole;
+            });
         }).toList();
-        menuAuthManage.saveBatch(perAuthMenus);
+        CacheUtils.remove("role_menu_pers", rids.stream().map(rid -> rid.toString()).toList(), t -> {
+            deleteMenuTargetPer(ids, permissions);
+            menuAuthManage.saveBatch(menuRoles);
+        });
+    }
+
+    private Map<Long, Map<Long, Integer>> formatMap(List<PermissionBO> list) {
+        Map<Long, Map<Long, Integer>> result = new HashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            PermissionBO bo = list.get(i);
+            Map<Long, Integer> innerMap = result.getOrDefault(bo.getResourceId(), new HashMap<>());
+            innerMap.put(bo.getId(), bo.getWeight());
+            result.put(bo.getResourceId(), innerMap);
+        }
+        return result;
     }
 
 
-     private class AuthManageUtil {
+    private class AuthManageUtil {
         public List<ResourceVO> convertPos(List<BusiResourcePO> pos, boolean appendI18nPrefix) {
             List<ResourceTreeNode> nodes = pos.stream().map(po -> BeanUtils.copyBean(new ResourceTreeNode(), po)).collect(Collectors.toList());
             List<ResourceTreeNode> treeNodes = poTree(nodes);
             return convertTree(treeNodes, appendI18nPrefix);
         }
 
-         private List<ResourceTreeNode> poTree(List<ResourceTreeNode> nodeList) {
+        private List<ResourceTreeNode> poTree(List<ResourceTreeNode> nodeList) {
             List<ResourceTreeNode> result = new ArrayList<>();
             Map<Long, List<ResourceTreeNode>> childMap = nodeList.stream().collect(Collectors.groupingBy(ResourceTreeNode::getPid));
             nodeList.forEach(po -> {
@@ -253,7 +521,7 @@ public class AuthManage {
             return result;
         }
 
-         private List<ResourceVO> convertTree(List<ResourceTreeNode> roots, boolean appendI18nPrefix) {
+        private List<ResourceVO> convertTree(List<ResourceTreeNode> roots, boolean appendI18nPrefix) {
             List<ResourceVO> result = new ArrayList<>();
             for (int i = 0; i < roots.size(); i++) {
                 ResourceTreeNode node = roots.get(i);
@@ -275,7 +543,6 @@ public class AuthManage {
     public void init() {
         authManageUtil = new AuthManageUtil();
     }
-
 
 
 }

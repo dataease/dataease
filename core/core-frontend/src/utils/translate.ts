@@ -133,8 +133,8 @@ export function mod360(deg) {
   return (deg + 360) % 360
 }
 
-export function changeStyleWithScale(value) {
-  return multiply(value, divide(parseInt(canvasStyleData.value.scale + ''), 100))
+export function changeStyleWithScale(value, scale = canvasStyleData.value.scale) {
+  return multiply(value, divide(parseInt(scale + ''), 100))
 }
 
 export function toPercent(val) {

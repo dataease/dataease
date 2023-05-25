@@ -2,17 +2,21 @@
 import { computed } from 'vue'
 import { usePermissionStore } from '@/store/modules/permission'
 import { isExternal } from '@/utils/validate'
-import { resolvePath } from '@/router/establish'
+import { formatRoute } from '@/router/establish'
+import HeaderMenuItem from './HeaderMenuItem.vue'
 import { Icon } from '@/components/icon-custom'
-import { ElHeader, ElMenu, ElMenuItem } from 'element-plus-secondary'
+import { ElHeader, ElMenu } from 'element-plus-secondary'
+import SystemCfg from './SystemCfg.vue'
 import { useRouter, useRoute } from 'vue-router'
 import OrgSwicther from '@/layout/components/OrgSwitcher.vue'
 import LangSelector from '@/layout/components/LangSelector.vue'
 import TopDoc from '@/layout/components/TopDoc.vue'
 import AccountOperator from '@/layout/components/AccountOperator.vue'
+import { isDesktop } from '@/utils/ModelUtil'
 const { push } = useRouter()
 const route = useRoute()
 
+const desktop = isDesktop()
 const activeIndex = computed(() => {
   if (route.path.includes('system')) {
     return '/system/user'
@@ -21,9 +25,7 @@ const activeIndex = computed(() => {
 })
 const permissionStore = usePermissionStore()
 
-const routers = permissionStore.getRoutersNotHidden
-
-console.log('routers', routers)
+const routers = formatRoute(permissionStore.getRoutersNotHidden as AppCustomRouteRecordRaw[])
 
 const handleSelect = (index: string) => {
   // 自定义事件
@@ -45,14 +47,13 @@ const handleSelect = (index: string) => {
       :ellipsis="false"
       @select="handleSelect"
     >
-      <el-menu-item v-for="item in routers" :key="item.path" :index="resolvePath(item)">
-        {{ item.meta.title }}
-      </el-menu-item>
+      <HeaderMenuItem v-for="menu in routers" :key="menu.path" :menu="menu"></HeaderMenuItem>
     </el-menu>
-    <div class="operate-setting">
+    <div class="operate-setting" v-if="!desktop">
       <OrgSwicther />
       <LangSelector />
       <TopDoc />
+      <SystemCfg />
       <AccountOperator />
     </div>
   </el-header>
@@ -62,28 +63,68 @@ const handleSelect = (index: string) => {
 .header-flex {
   display: flex;
   align-items: center;
+  height: 50px;
+  background-color: #050e21;
+  padding: 0 24px;
   .operate-setting {
     margin-left: auto;
-    float: right;
-    height: 56px;
     display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: center;
     &:focus {
       outline: none;
     }
-    div {
-      padding: 0 10px;
+  }
+
+  .el-menu {
+    background-color: #050e21;
+  }
+
+  .el-menu--horizontal {
+    border: none;
+    .el-menu-item,
+    :deep(.el-sub-menu__title) {
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 50px;
+      border-bottom: none;
+
+      &.is-active {
+        border-bottom: none;
+        color: #ffffff !important;
+        background-color: #245bdb;
+      }
+    }
+
+    > .is-active {
+      :deep(.el-sub-menu__title) {
+        color: #ffffff !important;
+        background-color: #245bdb;
+      }
+    }
+
+    .el-menu-item:not(.is-disabled):hover,
+    :deep(.el-sub-menu__title):not(.is-disabled):hover {
+      color: #ffffff;
+      background-color: #245bdb;
     }
   }
 }
-.flex-grow {
-  flex-grow: 1;
-}
+
 .logo {
-  width: 140px;
-  height: 45px;
-  margin-right: 100px;
+  width: 134px;
+  height: 34px;
+  margin-right: 48px;
+}
+</style>
+
+<style lang="less">
+.header-flex {
+  .operate-setting {
+    .el-icon {
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.8);
+      margin: 0 11px;
+      font-size: 18px;
+    }
+  }
 }
 </style>

@@ -1,0 +1,89 @@
+<script lang="tsx" setup>
+import { reactive, toRefs } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
+
+const { t } = useI18n()
+
+const props = defineProps({
+  chart: {
+    type: Object,
+    required: true
+  }
+})
+
+const predefineColors = COLOR_PANEL
+
+const emit = defineEmits(['onTooltipChange'])
+
+const state = reactive({
+  tooltipForm: JSON.parse(JSON.stringify(DEFAULT_TOOLTIP)),
+  fontSize: []
+})
+
+const initFontSize = () => {
+  const arr = []
+  for (let i = 10; i <= 40; i = i + 2) {
+    arr.push({
+      name: i + '',
+      value: i + ''
+    })
+  }
+  state.fontSize = arr
+}
+
+const changeTooltipAttr = () => {
+  emit('onTooltipChange', state.tooltipForm)
+}
+
+initFontSize()
+</script>
+
+<template>
+  <div style="width: 100%">
+    <el-col>
+      <el-form ref="tooltipForm" :model="state.tooltipForm" label-width="80px" size="mini">
+        <el-form-item :label="t('chart.show')" class="form-item">
+          <el-checkbox v-model="state.tooltipForm.show" @change="changeTooltipAttr('show')">{{
+            t('chart.show')
+          }}</el-checkbox>
+        </el-form-item>
+        <div v-show="state.tooltipForm.show">
+          <el-form-item :label="t('chart.text_fontsize')" class="form-item">
+            <el-select
+              v-model="state.tooltipForm.textStyle.fontSize"
+              :placeholder="t('chart.text_fontsize')"
+              size="mini"
+              @change="changeTooltipAttr('textStyle')"
+            >
+              <el-option
+                v-for="option in state.fontSize"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="t('chart.text_color')" class="form-item">
+            <el-color-picker
+              v-model="state.tooltipForm.textStyle.color"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeTooltipAttr('textStyle')"
+            />
+          </el-form-item>
+          <el-form-item :label="t('chart.background')" class="form-item">
+            <el-color-picker
+              v-model="state.tooltipForm.backgroundColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeTooltipAttr('backgroundColor')"
+            />
+          </el-form-item>
+        </div>
+      </el-form>
+    </el-col>
+  </div>
+</template>
+
+<style lang="less" scoped></style>

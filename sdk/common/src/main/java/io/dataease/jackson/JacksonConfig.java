@@ -19,7 +19,7 @@ public class JacksonConfig {
         /*SimpleModule simpleModule = new SimpleModule();
         simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
         objectMapper.registerModule(simpleModule);*/
-        objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_EMPTY);
+        objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS);
         return objectMapper;
     }
 

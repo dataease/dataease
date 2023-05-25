@@ -1,9 +1,9 @@
-<script lang="ts" setup>
-import { ref } from 'vue'
+<script lang="tsx" setup>
+import PreviewShow from '@/views/data-visualization/PreviewShow.vue'
 </script>
-
+<!--调试测试页面-->
 <template>
-  <div>screen</div>
+  <preview-show></preview-show>
 </template>
 
 <style lang="less" scoped></style>

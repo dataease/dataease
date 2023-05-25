@@ -151,7 +151,13 @@ const saveHandler = () => {
         :table-data="state.userList"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="account" key="account" label="ID" width="100" />
+        <el-table-column
+          prop="account"
+          key="account"
+          label="ID"
+          show-overflow-tooltip
+          width="120"
+        />
         <el-table-column
           key="name"
           show-overflow-tooltip
@@ -170,16 +176,15 @@ const saveHandler = () => {
         >
           <template #default="scope">
             <div class="de-one-line">{{ filterRoles(scope.row.roleItems) }}</div>
-            <!-- <el-tooltip popper-class="de-table-tooltips" class="item" effect="dark" placement="top">
-              <template #content>
-                <div v-html="filterRoles(scope.row.roleItems)" />
-              </template>
-
-              <div class="de-one-line">{{ filterRoles(scope.row.roleItems) }}</div>
-            </el-tooltip> -->
           </template>
         </el-table-column>
-        <el-table-column prop="email" key="email" :label="t('common.email')" width="200" />
+        <el-table-column
+          prop="email"
+          show-overflow-tooltip
+          key="email"
+          :label="t('common.email')"
+          width="200"
+        />
 
         <el-table-column prop="enable" key="enable" :label="t('user.state')" width="80">
           <template #default="scope">

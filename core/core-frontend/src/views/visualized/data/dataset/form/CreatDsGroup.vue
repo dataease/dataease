@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { saveDatasetTree, getDatasetTree } from '@/api/dataset'
 import type { DatesetOrFolder } from '@/api/dataset'
@@ -12,6 +12,7 @@ export interface Tree {
   level: number
   pid: string | number
   union?: Array<{}>
+  createTime: number
   allfields?: Array<{}>
   children?: Tree[]
 }
@@ -26,12 +27,30 @@ const nodeType = ref()
 const pid = ref()
 const id = ref()
 const cmd = ref('')
+const treeRef = ref()
+const filterText = ref('')
 let union = []
 let allfields = []
 const datasetForm = reactive({
   pid: '',
   name: ''
 })
+
+const filterNode = (value: string, data: Tree) => {
+  if (!value) return true
+  return data.name.includes(value)
+}
+
+watch(filterText, val => {
+  treeRef.value.filter(val)
+  nextTick(() => {
+    document.querySelectorAll('.node-text').forEach(ele => {
+      const content = ele.getAttribute('title')
+      ele.innerHTML = content.replace(val, `<span class="highLight">${val}</span>`)
+    })
+  })
+})
+
 const nameRepeat = value => {
   if (!nameList || nameList.length === 0) {
     return false
@@ -47,7 +66,7 @@ const nameValidator = (_, value, callback) => {
 }
 
 const showPid = computed(() => {
-  return cmd.value !== 'rename' && !!pid.value
+  return !['rename', 'move'].includes(cmd.value) && !!pid.value
 })
 
 const showName = computed(() => {
@@ -226,6 +245,36 @@ const emits = defineEmits(['finish'])
           </template>
         </el-tree-select>
       </el-form-item>
+      <div v-if="cmd === 'move'">
+        <el-input style="margin-bottom: 12px" v-model="filterText" clearable>
+          <template #prefix>
+            <el-icon>
+              <Icon name="icon_search-outline_outlined"></Icon>
+            </el-icon>
+          </template>
+        </el-input>
+        <div class="tree-content">
+          <el-tree
+            ref="treeRef"
+            :filter-node-method="filterNode"
+            filterable
+            v-model="datasetForm.pid"
+            menu
+            :data="state.tData"
+            :props="props"
+            @node-click="nodeClick"
+          >
+            <template #default="{ data }">
+              <span class="custom-tree-node">
+                <el-icon>
+                  <Icon name="scene"></Icon>
+                </el-icon>
+                <span class="node-text" :title="data.name">{{ data.name }}</span>
+              </span>
+            </template>
+          </el-tree>
+        </div>
+      </div>
     </el-form>
     <template #footer>
       <el-button secondary @click="resetForm">{{ t('dataset.cancel') }} </el-button>
@@ -234,4 +283,25 @@ const emits = defineEmits(['finish'])
   </el-dialog>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.tree-content {
+  width: 552px;
+  height: 380px;
+  border: 1px solid #dee0e3;
+  border-radius: 4px;
+  padding: 8px;
+  .custom-tree-node {
+    display: flex;
+    .node-text {
+      margin-left: 8.75px;
+      width: 120px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      :deep(.highLight) {
+        color: var(--el-color-primary, #3370ff);
+      }
+    }
+  }
+}
+</style>

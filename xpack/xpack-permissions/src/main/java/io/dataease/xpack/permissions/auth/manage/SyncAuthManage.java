@@ -2,10 +2,10 @@ package io.dataease.xpack.permissions.auth.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
+import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.CommonBeanFactory;
-import io.dataease.utils.IDUtils;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiRole;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiUser;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerBusiResource;
@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class SyncAuthManage {
@@ -46,11 +47,11 @@ public class SyncAuthManage {
         Long oid = AuthUtils.getUser().getDefaultOid();
 
         PerBusiResource perBusiResource = new PerBusiResource();
-        perBusiResource.setId(IDUtils.snowID());
+        perBusiResource.setId(creator.getId());
         perBusiResource.setName(creator.getName());
         perBusiResource.setOrgId(oid);
         perBusiResource.setPid(creator.getPid());
-        BusiResourceEnum resourceEnum = BusiResourceEnum.valueOf(creator.getFlag());
+        BusiResourceEnum resourceEnum = BusiResourceEnum.valueOf(creator.getFlag().toUpperCase());
         perBusiResource.setRtId(resourceEnum.getFlag());
         PerBusiResource parent = null;
         if (ObjectUtils.isNotEmpty(pid) && !pid.equals(0L) && ObjectUtils.isNotEmpty(parent = perBusiResourceMapper.selectById(pid))) {
@@ -79,6 +80,25 @@ public class SyncAuthManage {
 
     private SyncAuthManage proxy() {
         return CommonBeanFactory.getBean(SyncAuthManage.class);
+    }
+
+    public void editResourceName(BusiResourceEditor editor) {
+        /*QueryWrapper<PerBusiResource> queryWrapper = new QueryWrapper<>();
+        BusiResourceEnum resourceEnum = BusiResourceEnum.valueOf(editor.getFlag().toUpperCase());
+        queryWrapper.eq("id", editor.getId());
+        queryWrapper.eq("rt_id", resourceEnum.getFlag());
+        PerBusiResource perBusiResource = perBusiResourceMapper.selectOne(queryWrapper);*/
+        Optional.ofNullable(perBusiResourceMapper.selectById(editor.getId())).ifPresent(resource -> {
+            resource.setName(editor.getName());
+            perBusiResourceMapper.updateById(resource);
+        });
+    }
+
+    @Transactional
+    public void delResource(Long id) {
+        busiAuthExtMapper.delUserPerByResource(id);
+        busiAuthExtMapper.delRolePerByResource(id);
+        perBusiResourceMapper.deleteById(id);
     }
 
 }

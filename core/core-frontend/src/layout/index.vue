@@ -28,16 +28,18 @@ const systemMenu = computed(
 .common-layout {
   width: 100vw;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
 
   .layout-container {
     .layout-sidebar {
-      height: calc(100vh - 60px);
+      height: calc(100vh - 50px);
     }
 
     .layout-main {
       flex: 1;
-      padding: 24px;
       background-color: var(--MainBG, #f5f6f7);
+      padding: 0;
     }
   }
 }

@@ -9,14 +9,14 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-04
+ * @since 2023-05-11
  */
 @TableName("data_visualization_info")
 public class DataVisualizationInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String id;
+    private Long id;
 
     /**
      * 名称
@@ -26,12 +26,12 @@ public class DataVisualizationInfo implements Serializable {
     /**
      * 父id
      */
-    private String pid;
+    private Long pid;
 
     /**
      * 所属组织id
      */
-    private String orgId;
+    private Long orgId;
 
     /**
      * 层级
@@ -123,11 +123,11 @@ public class DataVisualizationInfo implements Serializable {
      */
     private String deleteBy;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -139,19 +139,19 @@ public class DataVisualizationInfo implements Serializable {
         this.name = name;
     }
 
-    public String getPid() {
+    public Long getPid() {
         return pid;
     }
 
-    public void setPid(String pid) {
+    public void setPid(Long pid) {
         this.pid = pid;
     }
 
-    public String getOrgId() {
+    public Long getOrgId() {
         return orgId;
     }
 
-    public void setOrgId(String orgId) {
+    public void setOrgId(Long orgId) {
         this.orgId = orgId;
     }
 

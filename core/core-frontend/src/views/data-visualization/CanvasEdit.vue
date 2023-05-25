@@ -16,6 +16,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { storeToRefs } from 'pinia'
+import eventBus from '@/utils/eventBus'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -56,6 +57,34 @@ const handleDrop = e => {
   }
 }
 
+const findNewComponent = componentName => {
+  let newComponent
+  componentList.forEach(component => {
+    if (componentName === component.component) {
+      newComponent = deepCopy(component)
+    }
+  })
+  return newComponent
+}
+
+// 通过实时监听的方式直接添加组件
+const handleNew = newComponentInfo => {
+  console.log('handleNew')
+  const { componentName, innerType } = newComponentInfo
+  if (componentName) {
+    const component = findNewComponent(componentName)
+    if (componentName === 'UserView' && innerType) {
+      // do something
+    }
+    component.style.top = 0
+    component.style.left = 0
+    component.id = generateID()
+    changeComponentSizeWithScale(component)
+    dvMainStore.addComponent({ component: component, index: undefined })
+    snapshotStore.recordSnapshot()
+  }
+}
+
 const handleDragOver = e => {
   e.preventDefault()
   e.dataTransfer.dropEffect = 'copy'
@@ -81,6 +110,7 @@ const deselectCurComponent = e => {
 restore()
 // 全局监听按键事件
 listenGlobalKeyDown()
+eventBus.on('handleNew', handleNew)
 </script>
 
 <template>
@@ -113,25 +143,18 @@ listenGlobalKeyDown()
   height: 100vh;
 
   main {
-    height: calc(100% - 64px);
+    height: calc(100% - 43px);
     position: relative;
-
     .left {
-      position: absolute;
       height: 100%;
       width: 200px;
-      left: 0;
-      top: 0;
-
       & > div {
         overflow: auto;
-
         &:first-child {
           border-bottom: 1px solid #ddd;
         }
       }
     }
-
     .right {
       position: absolute;
       height: 100%;

@@ -191,3 +191,16 @@ watch(
   }
 }
 </style>
+
+<style lang="less">
+.field-block-body {
+  .cell {
+    display: flex;
+    align-items: center;
+    .el-icon {
+      font-size: 14px;
+      margin-right: 5.25px;
+    }
+  }
+}
+</style>

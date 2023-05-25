@@ -64,6 +64,10 @@ body {
   display: flex;
   align-items: center;
 
+  .el-icon + .label {
+    margin-left: 5.33px;
+  }
+
   .label {
     width: 85%;
     .ellipsis
@@ -90,7 +94,7 @@ body {
   font-size: 14px;
   color: #1f2329;
   position: relative;
-  padding-left: 10px;
+  padding-left: 8px;
 
   &::before {
     content: '';
@@ -100,7 +104,7 @@ body {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    left: -10px;
+    left: 0;
   }
 }
 

@@ -1,6 +1,7 @@
 <script lang="tsx" setup>
 // import type { HeaderCellSlotProps } from 'element-plus-secondary'
-import { ref, reactive, shallowRef } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
+import { ref, reactive, shallowRef, computed } from 'vue'
 import { ElIcon } from 'element-plus-secondary'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
@@ -9,7 +10,11 @@ import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from './form/CreatDsGroup.vue'
 import { getDatasetTree, delDatasetTree, getDatasetPreview } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import DatasetDetail from './DatasetDetail.vue'
+import RowPermissions from './RowPermissions.vue'
+import ColumnPermissions from './ColumnPermissions.vue'
 import type { TabPaneName } from 'element-plus-secondary'
+import { timestampFormatDate } from './form/util.js'
 interface Field {
   fieldShortName: string
   name: string
@@ -23,27 +28,31 @@ interface Node {
   createBy: string
   id: string
   nodeType: string
+  createTime: number
 }
 const nickName = ref('')
 const router = useRouter()
-const showTable = ref(false)
-
+const { t } = useI18n()
 const state = reactive({
-  addedDatasetList: [],
   datasetTree: [] as Tree[],
   menuList: [],
   datasetTypeList: []
 })
+
+const fieldMap = ['text', 'time', 'value', 'value', 'location']
+
 const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
+  return fieldMap[deType]
 }
+
 const creatDsFolder = ref()
 
 const nodeInfo = reactive<Node>({
   name: '',
   createBy: '',
   id: '',
-  nodeType: ''
+  nodeType: '',
+  createTime: 0
 })
 
 let allFields = []
@@ -55,21 +64,43 @@ const allFieldsColumns = [
     key: 'name',
     dataKey: 'name',
     title: '字段名称',
-    width: 150
+    width: 250
   },
   {
     key: 'deType',
     dataKey: 'deType',
     title: '字段类型',
-    width: 150
+    width: 250,
+    cellRenderer: ({ cellData: deType }) => (
+      <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
+        <ElIcon style={{ marginRight: '6px' }}>
+          <Icon
+            name={`field_${fieldType(deType)}`}
+            className={`field-icon-${fieldType(deType)}`}
+          ></Icon>
+        </ElIcon>
+        {t(`dataset.${fieldMap[deType]}`)}
+      </div>
+    )
   },
   {
     key: 'description',
     dataKey: 'description',
     title: '备注',
-    width: 150
+    width: 250
   }
 ]
+
+const dataPreviewLoading = ref(false)
+
+const infoList = computed(() => {
+  return ['name', 'createBy', 'nodeType', 'createTime'].map(ele => {
+    return {
+      name: ele,
+      value: ele === 'createTime' ? timestampFormatDate(nodeInfo[ele]) : nodeInfo[ele]
+    }
+  })
+})
 
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
@@ -80,7 +111,7 @@ const generateColumns = (arr: Field[]) =>
     width: 150,
     headerCellRenderer: ({ column }) => (
       <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-        <ElIcon>
+        <ElIcon style={{ marginRight: '6px' }}>
           <Icon
             name={`field_${fieldType(column.deType)}`}
             className={`field-icon-${fieldType(column.deType)}`}
@@ -104,8 +135,10 @@ const tableData = shallowRef([])
 
 const handleNodeClick = (data: Tree) => {
   if (data.nodeType !== 'dataset') return
-  const { name, createBy, id, nodeType } = data
-  Object.assign(nodeInfo, { name, createBy, id, nodeType })
+  const { name, createBy, id, nodeType, createTime } = data
+  Object.assign(nodeInfo, { name, createBy, id, nodeType, createTime })
+  columnsPreview = []
+  dataPreview = []
   handleClick(activeName.value)
 }
 
@@ -122,13 +155,12 @@ const createDataset = (data?: Tree) => {
   router.push({
     path: '/dataset-form',
     query: {
-      pid: data.id
+      pid: data?.id
     }
   })
 }
 
 const handleClick = (tabName: TabPaneName) => {
-  showTable.value = false
   switch (tabName) {
     case 'dataPreview':
       if (columnsPreview.length) {
@@ -136,25 +168,30 @@ const handleClick = (tabName: TabPaneName) => {
         tableData.value = dataPreview
         break
       }
-      getDatasetPreview(nodeInfo.id).then(res => {
-        allFields = (res.allFields as unknown as Field[]) || []
-        columnsPreview = generateColumns((res.data.fields as Field[]) || [])
-        dataPreview = (res.data.data as Array<{}>) || []
-        columns.value = columnsPreview
-        tableData.value = dataPreview
-      })
+      dataPreviewLoading.value = true
+      getDatasetPreview(nodeInfo.id)
+        .then(res => {
+          allFields = (res.allFields as unknown as Field[]) || []
+          columnsPreview = generateColumns((res.data.fields as Field[]) || [])
+          dataPreview = (res.data.data as Array<{}>) || []
+          columns.value = columnsPreview
+          tableData.value = dataPreview
+        })
+        .finally(() => {
+          dataPreviewLoading.value = false
+        })
       break
     case 'structPreview':
       columns.value = allFieldsColumns
       tableData.value = allFields
       break
+    case 'row':
+      break
+    case 'column':
+      break
     default:
       break
   }
-
-  setTimeout(() => {
-    showTable.value = true
-  }, 500)
 }
 
 const operation = (cmd: string, data: Tree, nodeType: string) => {
@@ -206,12 +243,6 @@ state.datasetTypeList = [
     command: 'folder'
   }
 ]
-state.addedDatasetList = Array(40)
-  .fill(1)
-  .map((_, index) => ({
-    datasetname: 'test' + index,
-    nickName: index + 'nickName'
-  }))
 
 const defaultProps = {
   children: 'children',
@@ -222,20 +253,38 @@ const defaultProps = {
 <template>
   <div class="dataset-manage">
     <div class="dataset-list dataset-height">
-      <div class="title">
-        <el-button @click="() => handleDatasetTree('folder')" secondary>
-          <template #icon> <Icon name="icon_add_outlined"></Icon> </template>文件夹
-        </el-button>
-        <el-button @click="() => createDataset()" type="primary">
-          <template #icon> <Icon name="icon_add_outlined"></Icon> </template>数据集
-        </el-button>
-        <el-input class="m24 w100" v-model="nickName" clearable>
-          <template #prefix>
+      <div class="filter-dataset">
+        <div class="icon-methods">
+          <span class="title"> 数据集 </span>
+          <el-tooltip class="box-item" effect="dark" content="新建文件夹" placement="top">
+            <el-button @click="() => handleDatasetTree('folder')" text>
+              <template #icon>
+                <Icon name="icon_search-outline_outlined"></Icon>
+              </template>
+            </el-button>
+          </el-tooltip>
+          <el-tooltip class="box-item" effect="dark" content="新建数据集" placement="top">
+            <el-button @click="() => createDataset()" text>
+              <template #icon>
+                <Icon name="icon_search-outline_outlined"></Icon>
+              </template>
+            </el-button>
+          </el-tooltip>
+        </div>
+        <div class="search-input">
+          <el-input v-model="nickName" clearable>
+            <template #prefix>
+              <el-icon>
+                <Icon name="icon_search-outline_outlined"></Icon>
+              </el-icon>
+            </template>
+          </el-input>
+          <span class="filter-button">
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
             </el-icon>
-          </template>
-        </el-input>
+          </span>
+        </div>
       </div>
 
       <el-tree
@@ -251,12 +300,13 @@ const defaultProps = {
               <Icon name="scene"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
-            <div>
+            <div class="icon-more">
               <handle-more
                 @handle-command="cmd => handleDatasetTree(cmd, data)"
                 :menu-list="state.datasetTypeList"
                 icon-name="icon_add_outlined"
                 placement="bottom-start"
+                v-if="data.nodeType === 'folder'"
               ></handle-more>
               <handle-more
                 @handle-command="cmd => operation(cmd, data, data.nodeType)"
@@ -271,40 +321,70 @@ const defaultProps = {
       <template v-if="!!nodeInfo.id">
         <div class="info-method">
           {{ nodeInfo.name }}
-          <!-- <el-tag class="mr8" type="warning">定时同步</el-tag> -->
           <el-divider direction="vertical" />
           <span class="create-user"> 创建人：{{ nodeInfo.createBy }} </span>
-          <el-icon class="create-user">
-            <Icon name="icon_info_outlined"></Icon>
-          </el-icon>
-          <el-button class="right-btn" type="primary" @click="editorDataset"> 编辑 </el-button>
+
+          <el-popover placement="bottom" width="420" trigger="hover">
+            <template #reference>
+              <el-icon class="create-user">
+                <Icon name="icon_info_outlined"></Icon>
+              </el-icon>
+            </template>
+            <dataset-detail :info-list="infoList" title-type="数据集"></dataset-detail>
+          </el-popover>
+          <div class="right-btn">
+            <el-button secondary> 新建数据大屏 </el-button>
+            <el-button type="primary" @click="editorDataset">
+              <template #icon>
+                <Icon name="icon_edit_outlined"></Icon>
+              </template>
+              编辑
+            </el-button>
+          </div>
         </div>
-        <el-tabs v-model="activeName" @tab-change="handleClick">
-          <el-tab-pane label="数据预览" name="dataPreview"></el-tab-pane>
-          <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
-          <el-tab-pane label="行权限" name="row"></el-tab-pane>
-          <el-tab-pane label="列权限" name="column"></el-tab-pane>
-        </el-tabs>
-        <div class="preview-num">
-          预览 <span>100行</span>
+        <div class="tab-border">
+          <el-tabs v-model="activeName" @tab-change="handleClick">
+            <el-tab-pane label="数据预览" name="dataPreview"></el-tab-pane>
+            <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
+            <el-tab-pane label="行权限" name="row"></el-tab-pane>
+            <el-tab-pane label="列权限" name="column"></el-tab-pane>
+          </el-tabs>
+        </div>
+        <div v-if="activeName === 'dataPreview'" class="preview-num">
+          显示 100 条数据，共 1000 条 &nbsp;
           <el-icon>
             <Icon name="icon_edit_outlined"></Icon>
           </el-icon>
         </div>
-        <div class="info-table" v-if="showTable">
-          <el-auto-resizer>
-            <template #default="{ height, width }">
-              <el-table-v2
-                :columns="columns"
-                header-class="header-cell"
-                :data="tableData"
-                :width="width"
-                :height="height"
-                fixed
-              />
+        <template v-if="['dataPreview', 'structPreview'].includes(activeName)">
+          <div class="info-table" :class="[{ 'struct-preview': activeName === 'structPreview' }]">
+            <el-auto-resizer>
+              <template #default="{ height, width }">
+                <el-table-v2
+                  :columns="columns"
+                  v-loading="dataPreviewLoading"
+                  header-class="header-cell"
+                  :data="tableData"
+                  :width="width"
+                  :height="height"
+                  fixed
+                />
+              </template>
+            </el-auto-resizer>
+          </div>
+        </template>
+        <template v-if="['row', 'column'].includes(activeName)">
+          <el-button class="add-row-column" secondary>
+            <template #icon>
+              <Icon name="icon_add_outlined"></Icon>
             </template>
-          </el-auto-resizer>
-        </div>
+            {{ t(`dataset.${activeName}`) }}
+          </el-button>
+          <div class="table-row-column">
+            <row-permissions v-if="activeName === 'row'"></row-permissions>
+            <column-permissions v-else></column-permissions>
+          </div>
+        </template>
       </template>
       <template v-else>
         <empty-background description="请在左侧选择数据集" img-type="select" />
@@ -315,6 +395,7 @@ const defaultProps = {
 </template>
 
 <style lang="less" scoped>
+@import '@/style/mixin.less';
 .dataset-manage {
   display: flex;
   width: 100%;
@@ -323,69 +404,86 @@ const defaultProps = {
 
   .dataset-height,
   .dataset-content {
-    height: calc(100vh - 110px);
+    height: calc(100vh - 50px);
     overflow: auto;
     position: relative;
   }
 
   .dataset-list {
-    width: 269px;
-    padding: 24px;
+    width: 279px;
+    padding: 16px;
   }
 
-  .title {
-    display: flex;
-    justify-content: space-between;
-    font-family: PingFang SC;
-    font-size: 20px;
-    font-weight: 500;
-    color: var(--TextPrimary, #1f2329);
-    box-sizing: border-box;
-    flex-wrap: wrap;
+  .filter-dataset {
     position: sticky;
     top: 0;
-    left: 24px;
+    left: 16px;
     z-index: 5;
     background: white;
     &::before {
       content: '';
       width: 100%;
-      height: 24px;
-      top: -24px;
+      height: 16px;
+      top: -16px;
       position: absolute;
       z-index: 5;
       left: 0;
       background: white;
     }
-  }
 
-  .m24 {
-    margin: 24px 0;
-  }
-  .w100 {
-    width: 100%;
+    .icon-methods {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      font-family: PingFang SC;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--TextPrimary, #1f2329);
+
+      .title {
+        margin-right: auto;
+      }
+      .el-button.is-text {
+        line-height: 28px;
+        height: 28px;
+        width: 28px;
+      }
+    }
+
+    .search-input {
+      margin: 16px 8px 8px 8px;
+      display: flex;
+      justify-content: space-between;
+      .el-input {
+        flex: 1;
+      }
+
+      .filter-button {
+        width: 32px;
+        height: 32px;
+        margin-left: 8px;
+        border: 1px solid #bbbfc4;
+        border-radius: 4px;
+        line-height: 32px;
+        text-align: center;
+        cursor: pointer;
+      }
+    }
   }
 
   .dataset-content {
     flex: 1;
-    padding: 24px;
-    padding-top: 58px;
+    padding: 12px 24px 0 24px;
     border-left: 1px solid rgba(31, 35, 41, 0.15);
     position: relative;
 
     .info-method {
-      position: absolute;
-      left: 0;
-      top: 0;
       width: 100%;
-      padding: 20px 24px;
-      // border-bottom: 1px solid rgba(31, 35, 41, 0.15);
       display: flex;
       align-items: center;
       font-family: PingFang SC;
       font-size: 16px;
       font-weight: 500;
-      line-height: 24px;
 
       .create-user {
         font-size: 14px;
@@ -404,6 +502,10 @@ const defaultProps = {
       }
     }
 
+    .tab-border {
+      .border-bottom-tab(24px);
+    }
+
     .preview-num {
       color: var(--deTextSecondary, #606266);
       font-family: PingFang SC;
@@ -411,13 +513,26 @@ const defaultProps = {
       font-weight: 400;
       line-height: 22px;
       margin: 4px 0;
-      margin-top: 16px;
+      margin: 16px 0;
       display: flex;
       align-items: center;
     }
 
     .info-table {
-      height: calc(100% - 100px);
+      height: calc(100% - 130px);
+    }
+
+    .struct-preview {
+      height: calc(100% - 92px);
+      margin-top: 16px;
+    }
+
+    .table-row-column {
+      height: calc(100% - 155px);
+    }
+
+    .add-row-column {
+      margin: 16px 0;
     }
   }
 }
@@ -431,15 +546,18 @@ const defaultProps = {
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding-right: 8px;
   box-sizing: content-box;
+  padding-right: 4px;
 
   .label-tooltip {
-    width: 60%;
+    width: calc(100% - 66px);
+    margin-left: 8.75px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  .icon-more {
+    margin-left: auto;
   }
 }
 </style>

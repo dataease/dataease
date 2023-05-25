@@ -10,7 +10,8 @@ import java.io.Serializable;
 public class BusiResourceCreator implements Serializable {
     @Serial
     private static final long serialVersionUID = 3656747026193567757L;
-
+    @ApiModelProperty("资源ID")
+    private Long id;
     @ApiModelProperty("资源名称")
     private String name;
     @ApiModelProperty("类型")

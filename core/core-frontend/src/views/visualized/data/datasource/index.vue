@@ -267,7 +267,7 @@ const defaultProps = {
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             <div>
-              <el-icon>
+              <el-icon class="hover-icon">
                 <Icon name="icon_add_outlined"></Icon>
               </el-icon>
             </div>
@@ -397,14 +397,14 @@ const defaultProps = {
 
   .datasource-height,
   .datasource-content {
-    height: calc(100vh - 110px);
+    height: calc(100vh - 50px);
     overflow: auto;
     position: relative;
   }
 
   .datasource-list {
     width: 269px;
-    padding: 24px;
+    padding: 16px;
   }
 
   .title {
@@ -418,15 +418,15 @@ const defaultProps = {
     flex-wrap: wrap;
     position: sticky;
     top: 0;
-    left: 24px;
+    left: 16px;
     z-index: 5;
     background: white;
 
     &::before {
       content: '';
       width: 100%;
-      height: 24px;
-      top: -24px;
+      height: 16px;
+      top: -16px;
       position: absolute;
       z-index: 5;
       left: 0;

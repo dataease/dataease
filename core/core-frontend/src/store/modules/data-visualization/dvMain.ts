@@ -4,15 +4,18 @@ import { store } from '../../index'
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
     return {
+      staticResourcePath: '/static-resource/',
       editMode: 'edit', // 编辑器模式 edit preview
       canvasStyleData: {
         // 页面全局数据
-        width: 1600,
-        height: 900,
-        scale: 100,
-        color: '#000',
+        width: 1920,
+        height: 1080,
+        backgroundType: 'backgroundColor',
+        background: '',
+        scale: 60,
+        color: '#fff',
         opacity: 1,
-        background: '#fff',
+        backgroundColor: '#000',
         fontSize: 14
       },
       isInEditor: false, // 是否在编辑器中，用于判断复制、粘贴组件时是否生效，如果在编辑器外，则无视这些操作
@@ -21,7 +24,15 @@ export const dvMainStore = defineStore('dataVisualization', {
       curComponentIndex: null,
       // 点击画布时是否点中组件，主要用于取消选中组件用。
       // 如果没点中组件，并且在画布空白处弹起鼠标，则取消当前组件的选中状态
-      isClickComponent: false
+      isClickComponent: false,
+      // 大屏基础信息
+      dvInfo: {
+        id: null,
+        name: null,
+        pid: null,
+        status: null,
+        selfWatermarkStatus: null
+      }
     }
   },
   actions: {
@@ -29,7 +40,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.canvasStyleData = value
     },
 
-    aceSetcurComponent(value) {
+    aceSetCurComponent(value) {
       for (let i = 0; i < this.componentData.length; i++) {
         if (this.componentData[i].id === value.id) {
           this.componentData.splice(i, 1)
@@ -97,6 +108,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       if (/\d/.test(index)) {
         this.componentData.splice(index, 1)
       }
+    },
+    updateCurDvInfo(dvInfo) {
+      this.dvInfo = dvInfo
     }
   }
 })

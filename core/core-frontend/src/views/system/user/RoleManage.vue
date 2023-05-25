@@ -229,18 +229,25 @@ onMounted(() => {
           </template>
         </el-input>
       </div>
-
-      <el-tree menu :data="state.roleData" :props="defaultProps" @node-click="handleNodeClick">
-        <template #default="{ node, data }">
-          <span class="custom-tree-node">
-            <span :title="node.label">{{ node.label }}</span>
-            <div v-if="!data.disabled" class="operate-icon-container">
-              <div><Icon name="edit" @click.stop="roleEdit(data)"></Icon></div>
-              <div><Icon name="delete" @click.stop="delHandler(data)"></Icon></div>
-            </div>
-          </span>
-        </template>
-      </el-tree>
+      <el-scrollbar class="role-tree-container">
+        <el-tree
+          menu
+          :data="state.roleData"
+          :highlight-current="true"
+          :props="defaultProps"
+          @node-click="handleNodeClick"
+        >
+          <template #default="{ node, data }">
+            <span class="custom-tree-node">
+              <span :title="node.label">{{ node.label }}</span>
+              <div v-if="!data.disabled" class="operate-icon-container">
+                <div><Icon name="edit" @click.stop="roleEdit(data)"></Icon></div>
+                <div><Icon name="delete" @click.stop="delHandler(data)"></Icon></div>
+              </div>
+            </span>
+          </template>
+        </el-tree>
+      </el-scrollbar>
     </div>
     <div class="added-user-list role-height">
       <div class="title">
@@ -330,6 +337,9 @@ onMounted(() => {
   .role-list {
     width: 269px;
     padding: 24px;
+    .role-tree-container {
+      height: calc(100% - 112px);
+    }
   }
 
   .title {
@@ -434,7 +444,7 @@ onMounted(() => {
 .custom-tree-node {
   display: flex;
   span {
-    width: 150px;
+    width: 160px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -444,7 +454,7 @@ onMounted(() => {
   }
   &:hover {
     span {
-      width: 135px;
+      width: 120px;
     }
     .operate-icon-container {
       text-align: end;

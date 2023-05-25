@@ -19,28 +19,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
+import static io.dataease.constant.AuthResourceEnum.USER;
 
-@DeApiPath("/user")
+
+@DeApiPath(value = "/user", rt = USER)
 public interface UserApi {
 
-    @DePermit("read")
+    @DePermit("m:read")
     @PostMapping("/pager/{goPage}/{pageSize}")
     IPage<UserGridVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody BaseGridRequest request);
 
-    @DePermit("#p0+':read'")
+    @DePermit({"m:read", "#p0 + ':read'"})
     @GetMapping("/queryById/{id}")
     UserFormVO queryById(@PathVariable("id") Long id);
 
 
-    @DePermit("read")
+    @DePermit("m:read")
     @PostMapping("/create")
     void create(@RequestBody UserCreator creator);
 
-    @DePermit("read")
+    @DePermit({"m:read", "#p0.id + ':read'"})
     @PostMapping("/edit")
     void edit(@RequestBody UserEditor editor);
 
-    @DePermit("read")
+    @DePermit({"m:read", "#p0 + ':read'"})
     @PostMapping("/delete/{id}")
     void delete(@PathVariable("id") Long id);
 

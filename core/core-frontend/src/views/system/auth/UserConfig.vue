@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
@@ -21,6 +21,8 @@ const selectedTarget = ref('')
 const selectedResourceType = ref('panel')
 const emptyDescription = ref('')
 const authTable = ref(null)
+const roleChecked = ref(true)
+const selectedRoleRootReadonly = ref(false)
 interface Tree {
   id: string
   name: string
@@ -40,9 +42,6 @@ const activeNameChange = tabName => {
   if (activeAuth.value === 'menu' && tabName === 'user') {
     activeAuth.value = 'resource'
   }
-  /* if (tabName === 'role') {
-    selectedResourceType.value = ''
-  } */
 }
 
 const authActiveChange = tabName => {
@@ -123,7 +122,9 @@ const roleNodeClick = (data: Tree) => {
     if (selectedTarget.value === data.id) {
       return
     }
+    selectedRoleRootReadonly.value = data.readonly
     selectedTarget.value = data.id
+    getColumn(activeAuth.value === 'resource' ? selectedResourceType.value : 'menu')
     loadPermission(1)
   }
 
@@ -137,6 +138,8 @@ const targetClick = (id: string) => {
     if (selectedTarget.value === id) {
       return
     }
+    selectedRoleRootReadonly.value = false
+    getColumn(activeAuth.value === 'resource' ? selectedResourceType.value : 'menu')
     selectedTarget.value = id
     loadPermission(0)
   }
@@ -170,19 +173,20 @@ const resourceTypeClick = async (id: string) => {
 }
 
 const getColumn = (type: string) => {
-  const array = state.globalColumn.filter(item => !item.type || item.type.includes(type))
+  let array = state.globalColumn.filter(item => !item.type || item.type.includes(type))
+  if (selectedRoleRootReadonly.value && array?.length) {
+    array = array.filter(item => selectedRoleRootReadonly.value >= item.weightLevel)
+  }
   state.tableColumn = array
 }
 
 const loadResourceTree = () => {
   const id = selectedResourceType.value
-  if (activeAuth.value === 'resource' && id) {
-    resourceTreeApi(id).then(res => {
-      getColumn(id)
-      state.tableData = res.data
-      state.treeMap[id] = res.data
-    })
-  }
+  resourceTreeApi(id).then(res => {
+    getColumn(id)
+    state.tableData = res.data
+    state.treeMap[id] = res.data
+  })
 }
 
 const loadUser = () => {
@@ -227,14 +231,11 @@ const loadPermission = (type: number) => {
   state.expandedKeys = []
   if (activeAuth.value === 'menu') {
     menuPerApi({ id: selectedTarget.value }).then(res => {
-      const vos = res.data
-      if (vos && vos.some(vo => vo.root && !vo.readonly)) {
-        emptyDescription.value = type
-          ? '组织管理员已拥有所有资源的权限，无需再授权'
-          : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+      const vo = res.data
+      if (isOrgAdminPer(vo, type)) {
         return
       }
-      const permissionMap = groupPermission(vos)
+      const permissionMap = groupPermission(vo)
 
       fillTableData(state.tableData, permissionMap)
     })
@@ -246,39 +247,104 @@ const loadPermission = (type: number) => {
     type
   }
   resourcePerApi(param).then(res => {
-    const vos = res.data
-    if (vos && vos.some(vo => vo.root && !vo.readonly)) {
-      emptyDescription.value = type
-        ? '组织管理员已拥有所有资源的权限，无需再授权'
-        : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+    const vo = res.data
+    if (isOrgAdminPer(vo, type)) {
       return
     }
-    const permissionMap = groupPermission(vos)
+    const permissionMap = groupPermission(vo)
     fillTableData(state.tableData, permissionMap)
   })
 }
-const groupPermission = vos => {
+
+const isOrgAdminPer = (vo, type) => {
+  if (vo?.root && !vo.readonly) {
+    emptyDescription.value = type
+      ? '组织管理员已拥有所有资源的权限，无需再授权'
+      : '该用户是组织管理员，已拥有所有资源的权限，无需再授权'
+    return true
+  }
+  fillOrgReadonly(vo)
+  return false
+}
+
+const fillOrgReadonly = vo => {
+  const result = vo?.root && vo.readonly
+  if (result) {
+    const id = activeAuth.value === 'menu' ? 'menu' : selectedResourceType.value
+    const data = state.treeMap[id]
+    const origin = { name: '普通员工', permissions: [] }
+    const stack = [...data]
+    while (stack.length > 0) {
+      const node = stack.pop()
+      origin.permissions.push({ id: node.id, weight: 1 })
+      if (node.children?.length) {
+        node.children.forEach(item => stack.push(item))
+      }
+    }
+
+    vo.permissionOrigins.push(origin)
+  }
+  return result
+}
+
+const groupPermission = vo => {
   const map = new Map()
-  const expandedKeys = []
-  vos?.forEach(vo => {
-    const origin = vo.permissionOrigin
-    const permissions = vo.permissions
-    if (permissions) {
-      permissions.forEach(item => {
+  const expandedKeys = new Set<string>()
+  const origins = vo.permissionOrigins
+  const permissions = vo.permissions
+  const cols = state.tableColumn
+
+  const buildPermissionMap = (type, list, rname) => {
+    list?.length &&
+      list.forEach(item => {
         const { id, weight } = item
-        const roles = map.get(id)?.roles || new Set()
-        origin && roles.add(origin)
-        const obj = { id, weight, roles, showRole: roles?.size > 0 }
+        const originLevelobj = buildCallback(type, item, rname)
+        const obj = Object.assign({ id }, originLevelobj)
         map.set(id, obj)
         if (weight) {
-          expandedKeys.push(id)
+          expandedKeys.add(id)
         }
       })
+  }
+  const buildCallback = (type: number, item, rname: string) => {
+    if (type === 0) {
+      const originLevelobj = {}
+      cols.forEach(col => {
+        originLevelobj['level' + col.weightLevel] = { show: false, roles: new Set<string>() }
+      })
+      originLevelobj['weight'] = item['weight']
+      return originLevelobj
+    } else {
+      const { id, weight } = item
+      const originLevelobj = map.get(id) || { id }
+
+      originLevelobj['weight'] = originLevelobj['weight'] || 0
+      const userWeight = originLevelobj['weight']
+      cols.forEach(col => {
+        const weightLevel = col.weightLevel
+        const temp = originLevelobj['level' + weightLevel] || {}
+        const roleMatch = weight >= weightLevel
+        temp['show'] = temp['show'] || (userWeight < weightLevel && roleMatch)
+        if (roleMatch) {
+          const roles = temp['roles'] || new Set<string>()
+          roles.add(rname)
+          temp['roles'] = roles
+        }
+        originLevelobj['level' + weightLevel] = temp
+      })
+      return originLevelobj
     }
-  })
+  }
+  buildPermissionMap(0, permissions, null)
+
+  origins?.length &&
+    origins.forEach(item => {
+      const pers = item.permissions
+      buildPermissionMap(1, pers, item.name)
+    })
   state.uncommitted = []
   state.sourceData = map
-  expandNodes(expandedKeys)
+  expandNodes(Array.from(expandedKeys))
   return map
 }
 
@@ -323,7 +389,14 @@ const fillTableData = (rows, maps) => {
     }
   })
 }
-
+const independentAuth = (row, level) => {
+  row['independent' + level] = true
+  nextTick(() => {
+    row['value' + level] = true
+    rowWeightChanged(row, level)
+    row['independent' + level] = false
+  })
+}
 const rowWeightChanged = (row, level) => {
   const check = row['value' + level]
   if (check) {
@@ -332,17 +405,25 @@ const rowWeightChanged = (row, level) => {
         row['value' + col.weightLevel] = true
       }
     })
-    row['weight'] = level
+    row['weight'] = Math.max(row?.weight || 0, level)
   } else {
     let finalWeight = 0
+    let index = state.tableColumn.findIndex(col => level === col.weightLevel)
+    if (index--) {
+      finalWeight = state.tableColumn[index]['weightLevel']
+    }
+    row['weight'] = finalWeight
     state.tableColumn.forEach(col => {
-      if (col.weightLevel >= level) {
-        row['value' + col.weightLevel] = false
-      } else {
-        finalWeight = col.weightLevel
+      const curLevel = col.weightLevel
+      if (curLevel >= level) {
+        row['value' + curLevel] = false
+        // 下面3行用作取消用户授权之后 恢复角色覆盖效果
+        const levelObj = row['level' + curLevel]
+        if (levelObj && levelObj['roles'] && levelObj['roles'].size) {
+          row['level' + curLevel]['show'] = true
+        }
       }
     })
-    row['weight'] = finalWeight
   }
   const item = state.sourceData['get'](row.id)
 
@@ -446,16 +527,17 @@ const beforeActiveAuthChange = (newName, oldName) => {
 
 const resetTableData = rows => {
   const keys: string[] = ['id', 'name', 'children']
-  rows.forEach(item => {
-    for (const key in item) {
-      if (Object.prototype.hasOwnProperty.call(item, key) && !keys.includes(key)) {
-        delete item[key]
+  rows?.length &&
+    rows.forEach(item => {
+      for (const key in item) {
+        if (Object.prototype.hasOwnProperty.call(item, key) && !keys.includes(key)) {
+          delete item[key]
+        }
       }
-    }
-    if (item.children?.length) {
-      resetTableData(item.children)
-    }
-  })
+      if (item.children?.length) {
+        resetTableData(item.children)
+      }
+    })
 }
 onMounted(() => {
   loadUser()
@@ -488,7 +570,7 @@ defineExpose({
         </template>
       </el-input>
     </div>
-    <div v-if="activeName === 'user'">
+    <el-scrollbar class="role-tree-container" v-if="activeName === 'user'">
       <div
         :key="ele.id"
         v-for="ele in state.userList"
@@ -498,13 +580,15 @@ defineExpose({
       >
         {{ ele.name }}
       </div>
-    </div>
-    <div v-else>
+    </el-scrollbar>
+    <el-scrollbar class="role-tree-container" v-else>
       <el-tree
         class="user-role-container"
         menu
         :data="state.roleList"
         :props="defaultProps"
+        :highlight-current="true"
+        :expand-on-click-node="false"
         @node-click="roleNodeClick"
       >
         <template #default="{ node, data }">
@@ -513,7 +597,7 @@ defineExpose({
           </span>
         </template>
       </el-tree>
-    </div>
+    </el-scrollbar>
   </div>
   <div class="resource-panel">
     <div class="tab-search">
@@ -578,7 +662,11 @@ defineExpose({
           >
             <template #default="scope">
               <el-popover
-                v-if="scope.row.showRole && scope.row.weight >= item.weightLevel"
+                v-if="
+                  scope.row['level' + item.weightLevel] &&
+                  scope.row['level' + item.weightLevel]['show'] &&
+                  !scope.row['value' + item.weightLevel]
+                "
                 placement="top-start"
                 title=""
                 :width="200"
@@ -586,25 +674,35 @@ defineExpose({
               >
                 <template #reference>
                   <el-checkbox
+                    class="user-role-per-checked"
                     disabled
-                    v-model="scope.row['value' + item.weightLevel]"
+                    v-model="roleChecked"
                   ></el-checkbox>
                 </template>
                 <div class="role-auth-tips">
                   <span>继承自以下角色：</span>
-                  <span :key="item.id" v-for="(item, index) in scope.row.roles">{{
-                    index + 1 + '、' + item.name
-                  }}</span>
+                  <span
+                    :key="rname"
+                    v-for="(rname, index) in scope.row['level' + item.weightLevel]['roles']"
+                    >{{ index + 1 + '、' + rname }}</span
+                  >
                   <span
                     >单独授权<el-switch
                       class="independent-auth"
                       size="small"
-                      v-model="scope.row.showRole"
+                      v-model="scope.row['independent' + item.weightLevel]"
+                      @change="independentAuth(scope.row, item.weightLevel)"
                   /></span>
                 </div>
               </el-popover>
               <el-checkbox
-                v-else
+                v-show="
+                  !(
+                    scope.row['level' + item.weightLevel] &&
+                    scope.row['level' + item.weightLevel]['show'] &&
+                    !scope.row['value' + item.weightLevel]
+                  )
+                "
                 v-model="scope.row['value' + item.weightLevel]"
                 @change="rowWeightChanged(scope.row, item.weightLevel)"
               ></el-checkbox>
@@ -617,8 +715,8 @@ defineExpose({
 </template>
 
 <style lang="less" scoped>
-@width: 30px;
-@width_table: 30px;
+@import '@/style/mixin.less';
+
 .user-role {
   width: 250px;
   float: left;
@@ -637,17 +735,11 @@ defineExpose({
       width: 200px;
     }
     .tabs-mr {
-      margin-left: @width;
-      ::before {
-        content: '';
-        position: absolute;
-        left: -@width;
-        bottom: 0;
-        width: @width;
-        height: 1px;
-        background-color: rgba(31, 35, 41, 0.15);
-      }
+      .border-bottom-tab(30px);
     }
+  }
+  .role-tree-container {
+    height: calc(100% - 101px);
   }
 }
 .resource-panel {
@@ -669,21 +761,12 @@ defineExpose({
     }
     .search-table-bt {
       position: absolute;
-      right: 280px;
+      right: 250px;
       top: 7px;
       width: 190px;
     }
     .tabs-mr {
-      margin-left: @width_table;
-      ::before {
-        content: '';
-        position: absolute;
-        left: -@width_table;
-        bottom: 0;
-        width: @width_table;
-        height: 1px;
-        background-color: rgba(31, 35, 41, 0.15);
-      }
+      .border-bottom-tab(30px);
     }
   }
 
@@ -727,5 +810,18 @@ defineExpose({
 }
 .independent-auth {
   margin-left: 5px;
+}
+.user-role-per-checked {
+  margin-right: 0;
+}
+
+.custom-tree-node {
+  display: flex;
+  span {
+    width: 140px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 }
 </style>

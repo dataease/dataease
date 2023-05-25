@@ -9,6 +9,7 @@ export const commonAttr = {
   events: {},
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
   isLock: false, // 是否锁定组件
+  isShow: true, // 是否显示组件
   collapseName: 'style', // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
   linkage: {
     duration: 0, // 过渡持续时间
@@ -31,6 +32,11 @@ const list = [
     label: '矩形',
     propValue: '&nbsp;',
     icon: 'juxing',
+    innerType: 'RectShape',
+    x: 1,
+    y: 1,
+    sizeX: 20,
+    sizeY: 20,
     style: {
       width: 200,
       height: 200,
@@ -40,13 +46,91 @@ const list = [
       letterSpacing: 0,
       textAlign: 'center',
       color: '',
-      borderColor: '#000',
+      borderColor: '#fff',
       borderWidth: 1,
       backgroundColor: '',
       borderStyle: 'solid',
       borderRadius: '',
       verticalAlign: 'middle'
-    }
+    },
+    matrixStyle: {}
+  },
+  {
+    component: 'VText',
+    name: '文本',
+    label: '文本',
+    propValue: '双击编辑文字',
+    icon: 'other_text',
+    innerType: 'VText',
+    x: 1,
+    y: 1,
+    sizeX: 20,
+    sizeY: 20,
+    request: {
+      method: 'GET',
+      data: [],
+      url: '',
+      series: false, // 是否定时发送请求
+      time: 1000, // 定时更新时间
+      paramType: '', // string object array
+      requestCount: 0 // 请求次数限制，0 为无限
+    },
+    style: {
+      width: 200,
+      height: 100,
+      fontSize: 14,
+      fontWeight: 400,
+      lineHeight: 1,
+      letterSpacing: 0,
+      textAlign: 'center',
+      color: ''
+    },
+    matrixStyle: {}
+  },
+  {
+    component: 'UserView',
+    name: '视图',
+    label: '视图',
+    propValue: '',
+    icon: 'bar',
+    innerType: 'bar',
+    x: 1,
+    y: 1,
+    sizeX: 20,
+    sizeY: 20,
+    style: {
+      width: 200,
+      height: 200,
+      borderColor: '#fff',
+      borderWidth: 1,
+      backgroundColor: '',
+      borderStyle: 'solid',
+      borderRadius: ''
+    },
+    matrixStyle: {}
+  },
+  {
+    component: 'Picture',
+    name: '图片',
+    label: '图片',
+    icon: 'other_media',
+    x: 1,
+    y: 1,
+    sizeX: 20,
+    sizeY: 20,
+    propValue: {
+      url: null,
+      flip: {
+        horizontal: false,
+        vertical: false
+      }
+    },
+    style: {
+      width: 300,
+      height: 200,
+      borderRadius: ''
+    },
+    matrixStyle: {}
   }
 ]
 

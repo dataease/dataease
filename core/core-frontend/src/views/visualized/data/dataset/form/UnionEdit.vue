@@ -13,7 +13,7 @@ interface UnionField {
 type NodeType = 'db' | 'sql'
 type UnionType = 'left' | 'right' | 'inner'
 
-interface Node {
+export interface Node {
   tableName: string
   type: NodeType
   datasourceId: string
@@ -23,6 +23,7 @@ interface Node {
   info: string
   sqlVariableDetails: string
   currentDsFields: Field[]
+  children?: Node[]
 }
 const changeParentFields = val => {
   parent.currentDsFields = val
@@ -76,9 +77,16 @@ const initState = () => {
   Object.assign(parent, clone(props.editArr[1]))
   getFields()
 }
+
+const getParams = (obj: Node) => {
+  return ['datasourceId', 'id', 'info', 'tableName', 'type'].reduce((pre, next) => {
+    pre[next] = obj[next]
+    return pre
+  }, {})
+}
 const getFields = async () => {
   const [n, p] = props.editArr as Node[]
-  const [nr, pr] = await Promise.all([getTableField(n), getTableField(p)])
+  const [nr, pr] = await Promise.all([getTableField(getParams(n)), getTableField(getParams(p))])
   parentField.value = pr as unknown as Field[]
   parentField.value.forEach(ele => {
     ele.checked = p.currentDsFields.map(ele => ele.originName).includes(ele.originName)

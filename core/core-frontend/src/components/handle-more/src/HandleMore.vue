@@ -35,7 +35,7 @@ const emit = defineEmits(['handleCommand'])
     trigger="click"
     @command="handleCommand"
   >
-    <el-icon class="hover-icon">
+    <el-icon class="hover-icon" @click.stop>
       <Icon :name="iconName"></Icon>
     </el-icon>
     <template #dropdown>

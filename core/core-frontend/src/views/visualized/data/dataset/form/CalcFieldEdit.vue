@@ -61,7 +61,7 @@ const setFieldForm = () => {
   fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto)
 }
 
-const setNameIdTrans = (from, to, originName, name2Auto) => {
+const setNameIdTrans = (from, to, originName, name2Auto?: string[]) => {
   let name2Id = originName
   const nameIdMap = [...state.dimensionData, ...state.quotaData].reduce((pre, next) => {
     pre[next[from]] = next[to]
@@ -84,6 +84,14 @@ const initEdit = (obj, dimensionData, quotaData) => {
   Object.assign(fieldForm, obj || {})
   state.dimensionData = dimensionData
   state.quotaData = quotaData
+  if (!obj.originName) return
+  mirror.value.dispatch({
+    changes: {
+      from: 0,
+      to: mirror.value.viewState.state.doc.length,
+      insert: setNameIdTrans('id', 'name', obj.originName)
+    }
+  })
 }
 
 const fieldType = (deType: number) => {
@@ -225,7 +233,7 @@ defineExpose({
                   :className="`field-icon-${fieldType(item.deType)}`"
                 ></Icon>
               </el-icon>
-              <span>{{ item.name }}</span>
+              {{ item.name }}
             </span>
           </div>
           <div v-else class="class-na">{{ t('dataset.na') }}</div>
@@ -332,7 +340,12 @@ defineExpose({
   color: #606266;
   /*background-color: rgba(35,46,64,.05);*/
   background-color: white;
-  display: block;
+  display: flex;
+  align-items: center;
+  .el-icon {
+    font-size: 14px;
+    margin-right: 5.25px;
+  }
   word-break: break-all;
   border-radius: 2px;
   overflow: hidden;
@@ -376,6 +389,10 @@ defineExpose({
   background-color: white;
   display: flex;
   align-items: center;
+  .el-icon {
+    font-size: 14px;
+    margin-right: 5.25px;
+  }
   border-radius: 2px;
   word-break: break-all;
   overflow: hidden;

@@ -10,5 +10,15 @@ public class DataVisualizationConstants {
 
     }
 
+    //节点类型
+    public static final class NODE_TYPE {
+        //目录
+        public static final String FOLDER = "folder";
+        //数据大屏
+        public static final String DV = "dv";
+        //仪表板
+        public static final String DASHBOARD = "dashboard";
+    }
+
 
 }

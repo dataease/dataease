@@ -31,7 +31,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
-    public List<PermissionVO> busiPermission(BusiPermissionRequest request) {
+    public PermissionVO busiPermission(BusiPermissionRequest request) {
         return authManage.busiPermission(request);
     }
 
@@ -42,7 +42,7 @@ public class AuthServer implements AuthApi {
     }
 
     @Override
-    public List<PermissionVO> menuPermission(MenuPermissionRequest request) {
+    public PermissionVO menuPermission(MenuPermissionRequest request) {
         return authManage.menuPermission(request);
     }
 
@@ -59,5 +59,35 @@ public class AuthServer implements AuthApi {
     @Override
     public void saveResource(BusiResourceCreator creator) {
         syncAuthManage.syncResource(creator);
+    }
+
+    @Override
+    public void editResource(BusiResourceEditor editor) {
+
+    }
+
+    @Override
+    public void delResource(Long id) {
+
+    }
+
+    @Override
+    public PermissionVO busiTargetPermission(BusiPermissionRequest request) {
+        return authManage.busiTargetPermission(request);
+    }
+
+    @Override
+    public PermissionVO menuTargetPermission(MenuPermissionRequest request) {
+        return authManage.menuTargetPermission(request);
+    }
+
+    @Override
+    public void saveBusiTargetPer(BusiTargetPerCreator creator) {
+        authManage.saveBusiTargetPer(creator);
+    }
+
+    @Override
+    public void saveMenuTargetPer(MenuTargetPerCreator creator) {
+        authManage.saveMenuTargetPer(creator);
     }
 }

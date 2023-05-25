@@ -37,3 +37,5 @@ core/core-frontend/.stylelintcache
 /core/core-backend/src/main/resources/static/
 /core/core-backend/src/test
 /core/core-frontend/node/
+/core/core-frontend/lib/
+/core/core-frontend/components.d.ts

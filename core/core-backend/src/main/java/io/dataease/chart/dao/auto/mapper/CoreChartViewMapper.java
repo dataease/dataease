@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-23
+ * @since 2023-05-10
  */
 public interface CoreChartViewMapper extends BaseMapper<CoreChartView> {
 

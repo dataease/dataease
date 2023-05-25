@@ -1,17 +1,23 @@
 package io.dataease.xpack.permissions.apisix.manage;
 
+import cn.hutool.core.util.ArrayUtil;
+import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.AuthConstant;
-import io.dataease.utils.LogUtil;
+import io.dataease.constant.AuthEnum;
+import io.dataease.constant.AuthResourceEnum;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.ServletUtils;
+import io.dataease.utils.TokenUtils;
+import io.dataease.utils.UserUtils;
 import io.dataease.xpack.permissions.apisix.proxy.ProxyRequest;
+import io.dataease.xpack.permissions.auth.manage.ApiAuthManage;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.ArrayUtils;
+import lombok.Data;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -22,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.util.ServletRequestPathUtils;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 @Service
@@ -41,6 +46,9 @@ public class ApisixManage {
     @Resource
     private AuthMappingHandlerAdapter authMappingHandlerAdapter;
 
+    @Resource
+    private ApiAuthManage apiAuthManage;
+
     /**
      * 认证校验
      * 从请求头获取token进行解析验证并存放在threadLocal中
@@ -49,8 +57,8 @@ public class ApisixManage {
      */
     public void checkAuthenticationInfo(HttpServletRequest request) {
         String token = request.getHeader(TOKEN_KEY);
-        LogUtil.info("current token is {}", token);
-        // get user info and put it in threadLocal
+        TokenUserBO userBO = TokenUtils.validate(token);
+        UserUtils.setUserInfo(userBO);
     }
 
     /**
@@ -65,9 +73,8 @@ public class ApisixManage {
      */
     public void checkAuthorizationInfo(HttpServletRequest request) {
         String[] requirePermissions = getRequirePermissions(request);
-        // get userinfo from threadLocal
-        Object userinfo = null;
-        checkPermission(userinfo, requirePermissions);
+        TokenUserBO user = AuthUtils.getUser();
+        checkPermission(user, requirePermissions);
         ServletUtils.response().addHeader(AuthConstant.APISIX_FLAG_KEY, String.valueOf(System.currentTimeMillis()));
     }
 
@@ -81,17 +88,14 @@ public class ApisixManage {
             HandlerMethod handlerMethod = authHandlerMethodMapping.getHandlerMethod(proxy);
             if (ObjectUtils.isEmpty(handlerMethod) || !handlerMethod.hasMethodAnnotation(DePermit.class)) return null;
             DePermit dePermit = handlerMethod.getMethodAnnotation(DePermit.class);
+            DeApiPath deApiPath = handlerMethod.getBeanType().getAnnotation(DeApiPath.class);
+            AuthResourceEnum rt = deApiPath.rt();
             String[] valueArray = dePermit.value();
-            Method method = handlerMethod.getMethod();
-            LogUtil.info("custom mapping is [{} -> {}]", proxy.getServletPath(), method.getName());
-            LogUtil.info("method auth perExp is {}", StringUtils.join(valueArray, ", "));
+
             request.setAttribute(PATH, attribute);
             Object[] params = authMappingHandlerAdapter.getParams(proxy, ServletUtils.response(), handlerMethod);
-            if (ArrayUtils.isNotEmpty(params)) {
-                LogUtil.info("api param size is {}", params.length);
-            }
-            String[] requirePermissions = methodAuth(params, valueArray);
-            LogUtil.info("current url [{}] require permssion [{}]", proxy.getServletPath(), StringUtils.join(requirePermissions, ", "));
+
+            String[] requirePermissions = methodAuth(params, valueArray, rt);
             return requirePermissions;
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,7 +104,7 @@ public class ApisixManage {
     }
 
 
-    private String[] methodAuth(Object[] params, String[] expArray) {
+    private String[] methodAuth(Object[] params, String[] expArray, AuthResourceEnum rt) {
         StandardEvaluationContext context = new StandardEvaluationContext();
         if (params != null && params.length == 1) {
             context.setRootObject(params[0]);
@@ -112,8 +116,9 @@ public class ApisixManage {
         }
         int len = expArray.length;
         String[] result = new String[len];
+        String prefix = rt.name() + ":";
         for (int i = 0; i < len; i++) {
-            result[i] = resolveValue(expArray[i], context);
+            result[i] = prefix + resolveValue(expArray[i], context);
         }
         return result;
     }
@@ -133,7 +138,41 @@ public class ApisixManage {
      * @param userInfo
      * @param requirePermissions
      */
-    protected void checkPermission(Object userInfo, String requirePermissions[]) {
-
+    protected void checkPermission(TokenUserBO userInfo, String requirePermissions[]) {
+        if (ArrayUtil.isEmpty(requirePermissions) || AuthUtils.isSysAdmin(userInfo.getUserId())) return;
+        for (int i = 0; i < requirePermissions.length; i++) {
+            String permission = requirePermissions[i];
+            PerFormatter formatter = formatPer(permission);
+            AuthResourceEnum resourceEnum = formatter.getAuthResourceEnum();
+            if (StringUtils.contains(permission, ":m:")) {
+                apiAuthManage.checkMenu(resourceEnum.getMenuId(), formatter.getWeight(), userInfo);
+            } else {
+                apiAuthManage.checkResource(Long.parseLong(formatter.getId()), resourceEnum.getFlag(), formatter.getWeight(), userInfo);
+            }
+        }
     }
+
+    private PerFormatter formatPer(String permission) {
+        String[] flags = permission.split(":");
+        String name = flags[0];
+        AuthResourceEnum anEnum = AuthResourceEnum.valueOf(name);
+        String weightFlag = flags[2];
+        AuthEnum authEnum = AuthEnum.valueOf(weightFlag.toUpperCase());
+        Integer weight = authEnum.getWeight();
+        return new PerFormatter(anEnum, weight, flags[1]);
+    }
+
+    @Data
+    class PerFormatter {
+        private AuthResourceEnum authResourceEnum;
+        private Integer weight;
+        private String id;
+
+        public PerFormatter(AuthResourceEnum authResourceEnum, Integer weight, String id) {
+            this.authResourceEnum = authResourceEnum;
+            this.weight = weight;
+            this.id = id;
+        }
+    }
+
 }

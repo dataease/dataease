@@ -31,4 +31,6 @@ public class ChartViewFieldBaseDTO extends DatasetTableFieldDTO implements Seria
 
     private Long chartId;
 
+    private Integer index;
+
 }

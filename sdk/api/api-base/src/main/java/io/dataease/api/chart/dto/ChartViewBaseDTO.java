@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 视图base dto，与core_table_view一致
@@ -24,12 +26,7 @@ public class ChartViewBaseDTO implements Serializable {
     private Long id;
 
     /**
-     * 名称
-     */
-    private String name;
-
-    /**
-     * EChart标题
+     * 标题
      */
     private String title;
 
@@ -66,57 +63,57 @@ public class ChartViewBaseDTO implements Serializable {
     /**
      * 横轴field
      */
-    private String xAxis;
+    private List<ChartViewFieldDTO> xAxis;
 
     /**
-     * table-row
+     * 横轴field ext
      */
-    private String xAxisExt;
+    private List<ChartViewFieldDTO> xAxisExt;
 
     /**
      * 纵轴field
      */
-    private String yAxis;
+    private List<ChartViewFieldDTO> yAxis;
 
     /**
      * 副轴
      */
-    private String yAxisExt;
+    private List<ChartViewFieldDTO> yAxisExt;
 
     /**
      * 堆叠项
      */
-    private String extStack;
+    private List<ChartViewFieldDTO> extStack;
 
     /**
      * 气泡大小
      */
-    private String extBubble;
+    private List<ChartViewFieldDTO> extBubble;
 
     /**
      * 图形属性
      */
-    private String customAttr;
+    private Map<String, Object> customAttr;
 
     /**
      * 组件样式
      */
-    private String customStyle;
+    private Map<String, Object> customStyle;
 
     /**
      * 结果过滤
      */
-    private String customFilter;
+    private List<ChartFieldCustomFilterDTO> customFilter;
 
     /**
      * 钻取字段
      */
-    private String drillFields;
+    private List<ChartViewFieldDTO> drillFields;
 
     /**
      * 高级
      */
-    private String senior;
+    private Map<String, Object> senior;
 
     /**
      * 创建人ID
@@ -161,7 +158,7 @@ public class ChartViewBaseDTO implements Serializable {
     /**
      * 视图字段集合
      */
-    private String viewFields;
+    private List<ChartViewFieldDTO> viewFields;
 
     /**
      * 是否开启刷新

@@ -1,5 +1,6 @@
 package io.dataease.auth;
 
+import io.dataease.constant.AuthResourceEnum;
 import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
@@ -14,4 +15,6 @@ public @interface DeApiPath {
 
     @AliasFor("value")
     String[] path() default {};
+
+    AuthResourceEnum rt();
 }

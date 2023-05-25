@@ -331,8 +331,8 @@ onMounted(() => {
 <style lang="less" scoped>
 .editor {
   position: relative;
-  background: #fff;
   margin: auto;
+  background-size: 100% 100% !important;
   .lock {
     opacity: 0.5;
     &:hover {
