@@ -57,11 +57,9 @@
 
 <script>
 import { post } from '@/api/dataset/dataset'
-import { UxGrid, UxTableColumn } from 'umy-ui'
 
 export default {
   name: 'DatasetTableData',
-  components: { UxGrid, UxTableColumn },
   props: {
     table: {
       type: Object,

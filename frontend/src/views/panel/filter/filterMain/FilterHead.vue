@@ -16,13 +16,20 @@
                 style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;overflow-x: auto;display: flex;align-items: center;"
                 @end="end2"
               >
-              <drag-item
-                  :key="item.id"
-                  :item="item"
-                  :index="index"
+
+                <v-flex
                   v-for="(item,index) in element.options.attrs.dragItems"
-                  @closeItem="closeItem"
-                />
+                  :key="item.id"
+                >
+                  <drag-item
+                    :key="item.id"
+                    :item="item"
+                    :index="index"
+
+                    @closeItem="closeItem"
+                  />
+                </v-flex>
+
                 <span solt="footer">{{ $t('panel.drag_here') }}</span>
               </draggable>
             </el-row>
@@ -127,20 +134,6 @@ export default {
       padding: 4px 0 0 0;
       height: 100%;
       line-height: 100%;
-      .v-flex {
-        font-variant: tabular-nums;
-        font-feature-settings: "tnum";
-        text-rendering: optimizeLegibility;
-        font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, FangSong, SimHei, STHeiti, STKaiti, STSong, STFangsong sans-serif;
-        font-size: 14px;
-        word-break: break-all;
-        white-space: nowrap;
-        color: #9ea6b2;
-        line-height: 100%;
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
     }
   }
 

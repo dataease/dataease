@@ -37,11 +37,8 @@
 import '@/custom-theme.css'
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
-import { videoPlayer } from 'vue-video-player'
-import 'video.js/dist/video-js.css'
 
 export default {
-  components: { videoPlayer },
   props: {
     propValue: {
       type: String,

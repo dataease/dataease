@@ -220,11 +220,9 @@ import cancelMix from './cancelMix'
 import msgCfm from '@/components/msgCfm/index'
 import { pySort } from './util'
 import { updateCacheTree } from '@/components/canvas/utils/utils'
-import { UxGrid, UxTableColumn } from 'umy-ui'
 
 export default {
   name: 'AddApi',
-  components: { UxGrid, UxTableColumn },
   mixins: [cancelMix, msgCfm],
   props: {
     param: {
