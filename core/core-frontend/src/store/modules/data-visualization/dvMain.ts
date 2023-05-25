@@ -4,17 +4,18 @@ import { store } from '../../index'
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
     return {
+      staticResourcePath: '/static-resource/',
       editMode: 'edit', // 编辑器模式 edit preview
       canvasStyleData: {
         // 页面全局数据
         width: 1920,
         height: 1080,
-        backgroundType: 'color',
-        imgUrl: '',
+        backgroundType: 'backgroundColor',
+        background: '',
         scale: 60,
         color: '#fff',
         opacity: 1,
-        background: '#000',
+        backgroundColor: '#000',
         fontSize: 14
       },
       isInEditor: false, // 是否在编辑器中，用于判断复制、粘贴组件时是否生效，如果在编辑器外，则无视这些操作

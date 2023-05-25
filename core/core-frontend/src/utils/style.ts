@@ -107,10 +107,20 @@ export function getComponentRotatedStyle(style) {
 const filterKeys = ['width', 'height', 'scale']
 export function getCanvasStyle(canvasStyleData) {
   const result = {}
+  const backgroundType = canvasStyleData.backgroundType
   Object.keys(canvasStyleData)
     .filter(key => !filterKeys.includes(key))
     .forEach(key => {
-      result[key] = canvasStyleData[key]
+      if (key === 'background' || key === 'backgroundColor') {
+        result[backgroundType] = canvasStyleData[backgroundType]
+        if (backgroundType === 'background') {
+          result[backgroundType] = `url(/api${canvasStyleData[backgroundType]}) no-repeat`
+        } else {
+          result[backgroundType] = canvasStyleData[backgroundType]
+        }
+      } else {
+        result[key] = canvasStyleData[key]
+      }
       if (key === 'fontSize') {
         result[key] += 'px'
       }
