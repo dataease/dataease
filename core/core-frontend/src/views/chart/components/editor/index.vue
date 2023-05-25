@@ -12,7 +12,8 @@ import {
   DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_SPLIT,
   DEFAULT_FUNCTION_CFG,
-  DEFAULT_THRESHOLD
+  DEFAULT_THRESHOLD,
+  DEFAULT_SCROLL
 } from './util/chart'
 import { reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
@@ -30,6 +31,7 @@ import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlace
 import FilterItem from '@/views/chart/components/editor/drag-item/FilterItem.vue'
 import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
 import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
+import { any } from 'vue-types'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -96,7 +98,8 @@ const state = reactive({
     senior: {
       functionCfg: DEFAULT_FUNCTION_CFG,
       assistLine: [],
-      threshold: DEFAULT_THRESHOLD
+      threshold: DEFAULT_THRESHOLD,
+      scrollCfg: DEFAULT_SCROLL
     }
   },
   datasetTree: [],
@@ -106,7 +109,9 @@ const state = reactive({
   itemForm: {
     name: '',
     chartShowName: ''
-  }
+  },
+  quotaFilterEdit: false,
+  quotaItem: {}
 })
 
 const initDataset = () => {
@@ -223,6 +228,26 @@ const onLegendChange = val => {
   renderChart(state.view)
 }
 
+const onFunctionCfgChange = val => {
+  state.view.senior.functionCfg = val
+  renderChart(state.view)
+}
+
+const onAssistLineChange = val => {
+  state.view.senior.assistLine = val
+  renderChart(state.view)
+}
+
+const onThresholdChange = val => {
+  state.view.senior.threshold = val
+  renderChart(state.view)
+}
+
+const onScrollChange = val => {
+  state.view.senior.scrollCfg = val
+  renderChart(state.view)
+}
+
 const showRename = val => {
   state.itemForm = JSON.parse(JSON.stringify(val))
   if (!state.itemForm.chartShowName) {
@@ -258,6 +283,14 @@ const saveRename = ref => {
 
 const save = () => {
   saveChart(state.view)
+}
+
+const showQuotaEditFilter = item => {
+  state.quotaItem = JSON.parse(JSON.stringify(item))
+  if (!state.quotaItem.logic) {
+    state.quotaItem.logic = 'and'
+  }
+  state.quotaFilterEdit = true
 }
 
 initDataset()
@@ -462,6 +495,7 @@ initDataset()
                               :index="index"
                               @onQuotaItemChange="quotaItemChange"
                               @onNameEdit="showRename"
+                              @editItemFilter="showQuotaEditFilter"
                             />
                           </template>
                         </draggable>
@@ -518,7 +552,12 @@ initDataset()
                 class="padding-tab"
                 style="width: 100%"
               >
-                <senior :chart="state.view" :quota-data="state.view.yaxis" />
+                <senior
+                  :chart="state.view"
+                  :quota-data="state.view.yaxis"
+                  @onFunctionCfgChange="onFunctionCfgChange"
+                  @onAssistLineChange="onAssistLineChange"
+                />
               </el-tab-pane>
             </el-tabs>
           </el-row>

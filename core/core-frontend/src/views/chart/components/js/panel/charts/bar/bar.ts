@@ -6,7 +6,9 @@ import {
   getTooltip,
   getLegend,
   getXAxis,
-  getYAxis
+  getYAxis,
+  getSlider,
+  getAnalyse
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { G2PlotDrawOptions, G2PlotChartView } from '@/views/chart/components/js/panel/types'
 
@@ -26,6 +28,10 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       const xAxis = getXAxis(drawOptions.chart)
       const yAxis = getYAxis(drawOptions.chart)
 
+      // config
+      const slider = getSlider(drawOptions.chart)
+      const analyse = getAnalyse(drawOptions.chart)
+
       // data
       const data = _.cloneDeep(drawOptions?.chart?.data?.data)
       if (!data) return drawOptions.chartObj
@@ -36,6 +42,8 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
         legend: legend,
         xAxis: xAxis,
         yAxis: yAxis,
+        slider: slider,
+        annotations: analyse,
         data: data,
         xField: 'field',
         yField: 'value',

@@ -44,7 +44,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['onQuotaItemRemove', 'onCustomSort', 'onQuotaItemChange', 'onNameEdit'])
+const emit = defineEmits([
+  'onQuotaItemRemove',
+  'onCustomSort',
+  'onQuotaItemChange',
+  'onNameEdit',
+  'editItemFilter'
+])
 
 const { item } = toRefs(props)
 
@@ -68,7 +74,7 @@ const clickItem = param => {
       removeItem()
       break
     case 'filter':
-      // editFilter()
+      editFilter()
       break
     case 'formatter':
       // valueFormatter()
@@ -153,6 +159,12 @@ const removeItem = () => {
 
 const getItemTagType = () => {
   tagType.value = getItemType(props.dimensionData, props.quotaData, props.item)
+}
+
+const editFilter = () => {
+  item.value.index = props.index
+  item.value.filterType = 'quota'
+  emit('editItemFilter', item.value)
 }
 
 getItemTagType()
@@ -401,6 +413,10 @@ getItemTagType()
             <!--          >-->
             <!--            <span>{{ t('chart.value_formatter') }}...</span>-->
             <!--          </el-dropdown-item>-->
+            <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
+              <span>{{ t('chart.filter') }}...</span>
+            </el-dropdown-item>
+
             <el-dropdown-item
               icon="el-icon-edit-outline"
               divided
