@@ -79,7 +79,7 @@ const htmlToImage = () => {
   .resource-area {
     height: 100%;
     width: 300px;
-    padding: 10px;
+    padding: 16px;
     border-right: 1px solid #d7d7d7;
   }
   .preview-area {

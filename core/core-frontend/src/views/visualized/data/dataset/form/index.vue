@@ -1050,4 +1050,13 @@ const handleClick = () => {
     padding: 0;
   }
 }
+
+.el-select-dropdown__item {
+  display: flex;
+  align-items: center;
+  .el-icon {
+    font-size: 14px;
+    margin-right: 5.25px;
+  }
+}
 </style>
