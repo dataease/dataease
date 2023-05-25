@@ -38,7 +38,7 @@ const fillGradientColor = (data, colors) => {
   })
   return data
 }
-export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seriesId) {
+export function baseMapOption(chart_option, geoJson, chart, themeStyle, curAreaCode, seriesId) {
   // 处理shape attr
   let customAttr = {}
   let isGradient = false
@@ -151,18 +151,16 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
       if (senior) {
         senior = JSON.parse(senior)
       }
-      // 空值处理，echarts 对于值为 null 的默认策略是不展示，也就是保持为空，所以只需要处理忽略数据和置为 0 就行
-      // 隐藏和不展示的区别是隐藏不会参与颜色分布的计算，而不展示会参与颜色计算
+      // 空值处理，echarts 对于值为 null 的默认策略是不展示，也就是保持为空，所以只需要处理置为 0 就行
       let emptyDataStrategy = senior?.functionCfg?.emptyDataStrategy
       if (!emptyDataStrategy) {
         emptyDataStrategy = 'breakLine'
       }
+      const subArea = new Set(geoJson.features.map(item => item.properties.name))
       for (let i = 0; i < valueArr.length; i++) {
         const y = valueArr[i]
-        if (y.value === null && emptyDataStrategy === 'ignoreData') {
-          continue
-        }
         y.name = chart.data.x[i]
+        subArea.delete(y.name)
         if (y.value === null && emptyDataStrategy === 'setZero') {
           const tmp = _.clone(y)
           tmp.value = 0
@@ -170,6 +168,14 @@ export function baseMapOption(chart_option, chart, themeStyle, curAreaCode, seri
           continue
         }
         chart_option.series[0].data.push(y)
+      }
+      if (emptyDataStrategy === 'setZero' && subArea.size > 0) {
+        subArea.forEach(item => {
+          chart_option.series[0].data.push({
+            name: item,
+            value: 0
+          })
+        })
       }
 
       if (isGradient) {

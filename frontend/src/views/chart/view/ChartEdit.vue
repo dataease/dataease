@@ -1955,11 +1955,12 @@ export default {
         equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map')
     },
     showSeniorCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix') ||
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'table') ||
         equalsAny(this.view.type, 'table-normal', 'table-info', 'map')
     },
     showFunctionCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'map')
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'table') ||
+        equalsAny(this.view.type, 'map')
     },
     showScrollCfg() {
       return equalsAny(this.view.type, 'table-normal', 'table-info')

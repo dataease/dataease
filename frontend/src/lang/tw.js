@@ -1491,6 +1491,7 @@ export default {
     break_line: '保持為空',
     set_zero: '置為0',
     ignore_data: '隱藏空值',
+    empty_data_field_ctrl: '字段設置',
     sub_dimension_tip: '該字段為必填項，且不應使用類別軸中的字段，若無需該字段，請選擇基礎圖表進行展示，否則展示效果不理想',
     drill_dimension_tip: '鑽取字段僅支持數據集中的字段',
     table_scroll_tip: '明細表僅在分頁模式為"下拉"時生效。',
