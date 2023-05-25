@@ -899,7 +899,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_empty")) {
                 whereValue = "''";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in") || StringUtils.containsIgnoreCase(item.getTerm(), "not in")) {
-                if(field.getType().equals("NVARCHAR")){
+                if(field.getType().equalsIgnoreCase("NVARCHAR")){
                     whereValue =  Arrays.asList(value.split(",")).stream().map(str ->{return "N"+ str;}).collect(Collectors.joining(","));
                 }else {
                     whereValue = "('" + String.join("','", value.split(",")) + "')";
@@ -907,7 +907,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
-                if(field.getType().equals("NVARCHAR")){
+                if(field.getType().equalsIgnoreCase("NVARCHAR")){
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, value);
                 }else {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, value);
@@ -1034,7 +1034,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                     } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_empty")) {
                         whereValue = "''";
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in") || StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "not in")) {
-                        if(field.getType().equals("NVARCHAR")){
+                        if(field.getType().equalsIgnoreCase("NVARCHAR")){
                             whereValue =  Arrays.asList(value.split(",")).stream().map(str ->{return "N"+ str;}).collect(Collectors.joining(","));
                         }else {
                             whereValue = "('" + String.join("','", value.split(",")) + "')";
@@ -1042,7 +1042,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                         whereValue = "'%" + value + "%'";
                     } else {
-                        if(field.getType().equals("NVARCHAR")){
+                        if(field.getType().equalsIgnoreCase("NVARCHAR")){
                             whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, value);
                         }else {
                             whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, value);
@@ -1146,7 +1146,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereValue = "";
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                if(request.getDatasetTableField().getType().equals("NVARCHAR")){
+                if(request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")){
                     whereValue =  value.stream().map(str ->{return "N"+ str;}).collect(Collectors.joining(","));
                 }else {
                     whereValue = "('" + StringUtils.join(value, "','") + "')";
@@ -1166,7 +1166,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 }
             } else {
 
-                if(request.getDatasetTableField().getType().equals("NVARCHAR")){
+                if(request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")){
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                 }else {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, value.get(0));
@@ -1328,7 +1328,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_empty")) {
                     whereValue = "''";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
-                    if(y.getType().equals("NVARCHAR")){
+                    if(y.getType().equalsIgnoreCase("NVARCHAR")){
                         whereValue =  Arrays.asList(f.getValue().split(",")).stream().map(str ->{return "N"+ str;}).collect(Collectors.joining(","));
                     }else {
                         whereValue = "('" + String.join("','", f.getValue().split(",")) + "')";
@@ -1336,7 +1336,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
                 } else {
-                    if(y.getType().equals("NVARCHAR")){
+                    if(y.getType().equalsIgnoreCase("NVARCHAR")){
                         whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, f.getValue());
                     }else {
                         whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, f.getValue());
