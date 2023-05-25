@@ -13,6 +13,6 @@ import java.util.List;
 public class Api extends DatasourceConfiguration {
     private String type = DatasourceType.API.getType();
     private String name = DatasourceType.API.getName();
-    private DatasourceCatalog catalog = DatasourceCatalog.API;
+    private String catalog = DatasourceCatalog.API.getType();
     private String catalogDesc = DatasourceCatalog.API.getDesc();
 }

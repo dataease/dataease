@@ -199,22 +199,20 @@ DROP TABLE IF EXISTS `core_datasource_task`;
 CREATE TABLE `core_datasource_task`
 (
     `id`               bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `table_id`         varchar(50)  NOT NULL COMMENT '表ID',
+    `ds_id`            bigint  NOT NULL COMMENT '数据源ID',
     `name`             varchar(255) NOT NULL COMMENT '任务名称',
-    `type`             varchar(50)  NOT NULL COMMENT '更新方式：0-全量更新 1-增量更新',
+    `update_type`      varchar(50)  NOT NULL COMMENT '更新方式',
     `start_time`       bigint(13) DEFAULT NULL COMMENT '开始时间',
-    `rate`             varchar(50)  NOT NULL COMMENT '执行频率：0 一次性 1 cron',
+    `sync_rate`        varchar(50)  NOT NULL COMMENT '执行频率：0 一次性 1 cron',
     `cron`             varchar(255) DEFAULT NULL COMMENT 'cron表达式',
-    `end`              varchar(50)  NOT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
+    `end_limit`        bigint(13) NOT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
     `end_time`         bigint(13) DEFAULT NULL COMMENT '结束时间',
     `create_time`      bigint(13) DEFAULT NULL COMMENT '创建时间',
     `last_exec_time`   bigint(13) DEFAULT NULL COMMENT '上次执行时间',
     `last_exec_status` varchar(50)  DEFAULT NULL COMMENT '上次执行结果',
     `extra_data`       longtext,
     `status`           varchar(50)  DEFAULT NULL COMMENT '任务状态',
-    PRIMARY KEY (`id`),
-    KEY                `idx_dataset_table_task_table_id` (`table_id`),
-    KEY                `idx_dataset_table_task_name` (`name`)
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 DROP TABLE IF EXISTS `core_datasource_task_log`;
@@ -222,7 +220,7 @@ CREATE TABLE `core_datasource_task_log`
 (
     `id`           bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
     `table_id`     varchar(50) NOT NULL COMMENT '表ID',
-    `task_id`      varchar(50) DEFAULT NULL COMMENT '任务ID',
+    `task_id`      bigint(13) DEFAULT NULL COMMENT '任务ID',
     `start_time`   bigint(13) DEFAULT NULL COMMENT '开始时间',
     `end_time`     bigint(13) DEFAULT NULL COMMENT '结束时间',
     `status`       varchar(50) NOT NULL COMMENT '执行状态',

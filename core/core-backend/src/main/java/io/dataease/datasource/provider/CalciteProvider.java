@@ -4,14 +4,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.api.ds.vo.Configuration;
+import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.api.ds.vo.DatasourceConfiguration.DatasourceType;
 import io.dataease.api.ds.vo.TableField;
 import io.dataease.commons.exception.DataEaseException;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
+import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.datasource.type.Mysql;
+import io.dataease.datasource.type.Sqlserver;
 import io.dataease.exception.DEException;
+import io.dataease.utils.BeanUtils;
+import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.JsonUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
@@ -65,11 +73,11 @@ public class CalciteProvider {
     }
 
 
-    public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws Exception {
+    public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws DEException {
         List<DatasetTableDTO> tables = new ArrayList<>();
         List<String> tablesSqls = getTablesSql(datasourceRequest);
         for (String tablesSql : tablesSqls) {
-            try (Connection con = getConnection(datasourceRequest.getDatasource().getConfiguration()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(tablesSql)) {
+            try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(tablesSql)) {
                 while (resultSet.next()) {
                     tables.add(getTableDesc(datasourceRequest, resultSet));
                 }
@@ -101,7 +109,7 @@ public class CalciteProvider {
 
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String querySql = getTablesSql(datasourceRequest).get(0);
-        try (Connection con = getConnection(datasourceRequest.getDatasource().getConfiguration()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(querySql)) {
+        try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(querySql)) {
         } catch (Exception e) {
             throw e;
         }
@@ -112,7 +120,7 @@ public class CalciteProvider {
         return null;
     }
 
-    public Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
+    public Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException {
         List<TableField> datasetTableFields = new ArrayList<>();
         List<String[]> list = new LinkedList<>();
         Statement statement = null;
@@ -125,7 +133,7 @@ public class CalciteProvider {
             int columnCount = metaData.getColumnCount();
             for (int i = 1; i <= columnCount; i++) {
                 TableField tableField = new TableField();
-                tableField.setFieldName(metaData.getColumnName(i));
+                tableField.setOriginName(metaData.getColumnName(i));
                 tableField.setType(metaData.getColumnTypeName(i));
                 tableField.setPrecision(metaData.getPrecision(i));
                 tableField.setScale(metaData.getScale(i));
@@ -135,8 +143,10 @@ public class CalciteProvider {
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
         } finally {
-            if (resultSet != null) resultSet.close();
-            if (statement != null) statement.close();
+           try {
+               if (resultSet != null) resultSet.close();
+               if (statement != null) statement.close();
+           }catch ( Exception e) {}
         }
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("fields", datasetTableFields);
@@ -190,27 +200,37 @@ public class CalciteProvider {
 
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsList.entrySet()) {
             DatasourceSchemaDTO ds = next.getValue();
-            JsonNode rootNode = objectMapper.readTree(ds.getConfiguration());
             // build schema
             BasicDataSource dataSource = new BasicDataSource();
-            dataSource.setUrl(rootNode.get("jdbc").asText());
-            dataSource.setUsername(rootNode.get("username").asText());
-            dataSource.setPassword(rootNode.get("password").asText());
-            dataSource.setDefaultQueryTimeout(Integer.valueOf(rootNode.get("queryTimeout").asText()));
             Schema schema = null;
-
+            DatasourceConfiguration configuration = null;
             DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
             switch (datasourceType) {
                 case mysql:
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, rootNode.get("dataBase").asText());
+                    configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
+                    dataSource.setUrl(configuration.getJdbc());
+                    dataSource.setUsername(configuration.getUsername());
+                    dataSource.setPassword(configuration.getPassword());
+                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                     rootSchema.add(ds.getSchemaAlias(), schema);
                     break;
                 case sqlserver:
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, rootNode.get("schema").asText());
+                    configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Sqlserver.class);
+                    dataSource.setUrl(configuration.getJdbc());
+                    dataSource.setUsername(configuration.getUsername());
+                    dataSource.setPassword(configuration.getPassword());
+                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                     rootSchema.add(ds.getSchemaAlias(), schema);
                     break;
                 default:
-                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, rootNode.get("dataBase").asText());
+                    configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
+                    dataSource.setUrl(configuration.getJdbc());
+                    dataSource.setUsername(configuration.getUsername());
+                    dataSource.setPassword(configuration.getPassword());
+                    dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                    schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                     rootSchema.add(ds.getSchemaAlias(), schema);
             }
         }
@@ -248,42 +268,42 @@ public class CalciteProvider {
         return list;
     }
 
-    private List<String> getTablesSql(DatasourceRequest datasourceRequest) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(datasourceRequest.getDatasource().getConfiguration());
-        TypeReference<List<String>> listTypeReference = new TypeReference<List<String>>() {};
-        return objectMapper.readValue(objectMapper.writeValueAsString(rootNode.get("showTableSqls")), listTypeReference);
+    private List<String> getTablesSql(DatasourceRequest datasourceRequest) throws DEException {
+        DatasourceConfiguration configuration = (DatasourceConfiguration)CommonBeanFactory.getBean(datasourceRequest.getDatasource().getType());
+        return configuration.getShowTableSqls();
     }
 
-    public Connection getConnection(String datasourceConfiguration) throws Exception {
-        JsonNode rootNode = objectMapper.readTree(datasourceConfiguration);
-        Properties props = new Properties();
-        if (StringUtils.isNotBlank(rootNode.get("username").asText())) {
-            props.setProperty("user", rootNode.get("username").asText());
-            if (StringUtils.isNotBlank(rootNode.get("password").asText())) {
-                props.setProperty("password", rootNode.get("password").asText());
-            }
-        }
+    public Connection getConnection(CoreDatasource coreDatasource) throws Exception {
 
-        Connection conn;
-        CoreDriver coreDriver = null;
-        String driverClassName;
-        ExtendedJdbcClassLoader jdbcClassLoader;
-        if (isDefaultClassLoader(rootNode.get("customDriver").asText())) {
-            driverClassName = rootNode.get("driver").asText();
-            jdbcClassLoader = extendedJdbcClassLoader;
-        } else {
-            if (coreDriver == null) {
-                coreDriver = coreDriverMapper.selectById(rootNode.get("customDriver").asText());
+        DatasourceConfiguration configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
+        Properties props = new Properties();
+        if (StringUtils.isNotBlank(configuration.getUsername())) {
+            props.setProperty("user", configuration.getUsername());
+            if (StringUtils.isNotBlank(configuration.getPassword())) {
+                props.setProperty("password", configuration.getPassword());
             }
-            driverClassName = coreDriver.getDriverClass();
-            jdbcClassLoader = getCustomJdbcClassLoader(coreDriver);
         }
+        String driverClassName = configuration.getDriver();
+        ExtendedJdbcClassLoader jdbcClassLoader = extendedJdbcClassLoader;
+
+        //        CoreDriver coreDriver = null;
+//        if (isDefaultClassLoader(rootNode.get("customDriver").asText())) {
+//            driverClassName = rootNode.get("driver").asText();
+//            jdbcClassLoader = extendedJdbcClassLoader;
+//        } else {
+//            if (coreDriver == null) {
+//                coreDriver = coreDriverMapper.selectById(rootNode.get("customDriver").asText());
+//            }
+//            driverClassName = coreDriver.getDriverClass();
+//            jdbcClassLoader = getCustomJdbcClassLoader(coreDriver);
+//        }
 
         Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).newInstance();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        Connection conn;
         try {
             Thread.currentThread().setContextClassLoader(jdbcClassLoader);
-            conn = driverClass.connect(rootNode.get("jdbc").asText(), props);
+            conn = driverClass.connect(configuration.getJdbc(), props);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

@@ -2,16 +2,15 @@ package io.dataease.datasource.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.DatasourceApi;
-import io.dataease.api.ds.vo.ApiDefinition;
-import io.dataease.api.ds.vo.DatasourceConfiguration;
-import io.dataease.api.ds.vo.DatasourceDTO;
-import io.dataease.api.ds.vo.TableField;
+import io.dataease.api.ds.vo.*;
 import io.dataease.commons.constants.TaskStatus;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
@@ -22,6 +21,10 @@ import io.dataease.datasource.dto.ExcelSheetData;
 import io.dataease.datasource.provider.*;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.request.EngineRequest;
+import io.dataease.engine.constant.SQLConstants;
+import io.dataease.exception.DEException;
+import io.dataease.job.sechedule.ExtractDataJob;
+import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
@@ -31,12 +34,12 @@ import io.swagger.annotations.ApiImplicitParams;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobKey;
+import org.quartz.TriggerKey;
 import org.springframework.core.env.Environment;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
@@ -47,6 +50,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/datasource")
+@Transactional
 public class DatasourceServer implements DatasourceApi {
     @Resource
     private CoreDatasourceMapper datasourceMapper;
@@ -60,6 +64,9 @@ public class DatasourceServer implements DatasourceApi {
     private CalciteProvider calciteProvider;
 
     private static ObjectMapper objectMapper = new ObjectMapper();
+
+    @Resource
+    private ScheduleManager scheduleManager;
 
     @Override
     public List<DatasourceDTO> query(String keyWord) {
@@ -76,16 +83,30 @@ public class DatasourceServer implements DatasourceApi {
 
     @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws Exception {
-        dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
+        if (dataSourceDTO.getId() != null) {
+            return update(dataSourceDTO);
+        }
+        if (StringUtils.isNotEmpty(dataSourceDTO.getConfiguration())) {
+            dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
+        }
         preCheckDs(dataSourceDTO);
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         coreDatasource.setCreateTime(System.currentTimeMillis());
+        coreDatasource.setUpdateTime(System.currentTimeMillis());
         checkDatasourceStatus(coreDatasource);
-        datasourceMapper.insert(coreDatasource);
+       datasourceMapper.insert(coreDatasource);
         if (dataSourceDTO.getType().equals(SpecialDatasourceType.EXCEL.name())) {
             //TODO sync excel at once
 
+        }
+        if (dataSourceDTO.getType().equals(SpecialDatasourceType.API.name())) {
+            CoreDatasourceTask coreDatasourceTask = new CoreDatasourceTask();
+            BeanUtils.copyBean(coreDatasourceTask, dataSourceDTO.getSyncSetting());
+            coreDatasourceTask.setName(coreDatasource.getName() + "-task");
+            coreDatasourceTask.setDsId(coreDatasource.getId());
+            datasourceTaskServer.insert(coreDatasourceTask);
+            addSchedule(coreDatasourceTask);
         }
         return dataSourceDTO;
     }
@@ -112,7 +133,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public DatasourceDTO validate(DatasourceDTO dataSourceDTO) throws Exception {
+    public DatasourceDTO validate(DatasourceDTO dataSourceDTO) throws DEException {
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
@@ -122,7 +143,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public DatasourceDTO validate(String datasourceId) throws Exception {
+    public DatasourceDTO validate(Long datasourceId) throws DEException {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         checkDatasourceStatus(coreDatasource);
         DatasourceDTO datasourceDTO = new DatasourceDTO();
@@ -140,15 +161,58 @@ public class DatasourceServer implements DatasourceApi {
             datasourceConfigurations.forEach(datasourceConfiguration -> {
                 if (StringUtils.equals(datasourceDTO.getType(), datasourceConfiguration.getType())) {
                     datasourceDTO.setTypeAlias(datasourceConfiguration.getName());
+                    datasourceDTO.setCatalog(datasourceConfiguration.getCatalog());
+                    datasourceDTO.setCatalogDesc(datasourceConfiguration.getCatalogDesc());
                 }
             });
+            TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
+            };
+            if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
+                List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
+                List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
+                int success = 0;
+                for (int i = 0; i < apiDefinitionList.size(); i++) {
+                    String status = null;
+                    if (StringUtils.isNotEmpty(datasourceDTO.getStatus())) {
+                        JsonNode jsonNode = null;
+                        try {
+                            jsonNode = objectMapper.readTree(datasourceDTO.getStatus());
+                        } catch (Exception e) {
+                            DEException.throwException(e);
+                        }
+                        if (jsonNode.get(apiDefinitionList.get(i).getName()) != null) {
+                            status = jsonNode.get(apiDefinitionList.get(i).getName()).asText();
+                        }
+                        apiDefinitionList.get(i).setStatus(status);
+                    }
+                    if (StringUtils.isNotEmpty(status) && status.equalsIgnoreCase("Success")) {
+                        success++;
+                    }
+                    apiDefinitionListWithStatus.add(apiDefinitionList.get(i));
+                }
+                datasourceDTO.setApiConfigurationStr(new String(Base64.getEncoder().encode(JsonUtil.toJSONString(apiDefinitionListWithStatus).toString().getBytes())));
+                if (success == apiDefinitionList.size()) {
+                    datasourceDTO.setStatus("Success");
+                } else {
+                    if (success > 0 && success < apiDefinitionList.size()) {
+                        datasourceDTO.setStatus("Warning");
+                    } else {
+                        datasourceDTO.setStatus("Error");
+                    }
+                }
+                CoreDatasourceTask coreDatasourceTask = datasourceTaskServer.selectByDSId(datasourceDTO.getId());
+                TaskDTO taskDTO = new TaskDTO();
+                BeanUtils.copyBean(taskDTO, coreDatasourceTask);
+                datasourceDTO.setSyncSetting(taskDTO);
+            }
+            datasourceDTO.setConfiguration(new String(Base64.getEncoder().encode(coreDatasource.getConfiguration().getBytes())));
             datasourceDTOS.add(datasourceDTO);
         });
         return datasourceDTOS;
     }
 
     @Override
-    public List<DatasetTableDTO> getTables(String datasourceId) throws Exception {
+    public List<DatasetTableDTO> getTables(String datasourceId) throws DEException {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
@@ -161,43 +225,65 @@ public class DatasourceServer implements DatasourceApi {
         return calciteProvider.getTables(datasourceRequest);
     }
 
+    @Override
+    public List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws DEException {
+        CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(coreDatasource);
+        if (coreDatasource.getType().equals("API")) {
+
+        }
+        if (coreDatasource.getType().equals("EXCEL")) {
+
+        }
+
+        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+        datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
+        datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
+        return (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+    }
+
+    ;
+
     @ApiImplicitParams({
             @ApiImplicitParam(name = "file", value = "文件", required = true, dataType = "MultipartFile"),
             @ApiImplicitParam(name = "tableId", value = "数据表ID", required = true, dataType = "String"),
             @ApiImplicitParam(name = "editType", value = "编辑类型", required = true, dataType = "Integer")
     })
-    public List<ExcelSheetData> excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("datasourceId") String datasourceId) throws Exception {
+    public List<ExcelSheetData> excelUpload(@RequestParam("file") MultipartFile file, @RequestParam("datasourceId") String datasourceId) throws DEException {
         return ExcelUtils.excelSaveAndParse(file, datasourceId);
     }
 
 
-    public ApiDefinition checkApiDatasource(@RequestBody Map<String, String> request) throws Exception {
-        ApiDefinition apiDefinition = JsonUtil.parse(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
+    public ApiDefinition checkApiDatasource(@RequestBody Map<String, String> request) throws DEException {
+        ApiDefinition apiDefinition = JsonUtil.parseObject(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
         String response = ApiUtils.execHttpRequest(apiDefinition, 10);
         return ApiUtils.checkApiDefinition(apiDefinition, response);
     }
 
-    private void preCheckDs(DatasourceDTO datasource) throws Exception {
+    private void preCheckDs(DatasourceDTO datasource) throws DEException {
         if (!datasourceTypes().stream().map(DatasourceConfiguration::getType).collect(Collectors.toList()).contains(datasource.getType())) {
-            throw new Exception("Datasource type not supported.");
+            DEException.throwException("Datasource type not supported.");
         }
         //TODO check Configuration
         checkName(datasource.getName(), datasource.getType(), datasource.getId());
     }
 
-    private void checkName(String name, String type, Long id) throws Exception {
+    private void checkName(String name, String type, Long id) throws DEException {
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("name", name);
         queryWrapper.eq("type", type);
         if (id != null) {
             queryWrapper.ne("id", id);
         }
-        if (CollectionUtils.isEmpty(datasourceMapper.selectList(queryWrapper))) {
-            throw new Exception("ds_name_exists");
+        if (!CollectionUtils.isEmpty(datasourceMapper.selectList(queryWrapper))) {
+            DEException.throwException("ds_name_exists");
         }
     }
 
-    public void checkDatasourceStatus(CoreDatasource coreDatasource) {
+    public void checkDatasourceStatus(CoreDatasource coreDatasource) throws DEException {
         if (coreDatasource.getType().equals("EXCEL")) {
             return;
         }
@@ -213,6 +299,7 @@ public class DatasourceServer implements DatasourceApi {
             coreDatasource.setStatus(status);
         } catch (Exception e) {
             coreDatasource.setStatus("Error");
+            DEException.throwException("校验失败: " + e.getMessage());
         }
     }
 
@@ -282,7 +369,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
 
-    public void extractData(String datasourceId, String taskId, String type, JobExecutionContext context) {
+    public void extractData(String datasourceId, Long taskId, String type, JobExecutionContext context) {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         if (coreDatasource == null) {
             LogUtil.error("Can not find DatasetTable: " + datasourceId);
@@ -454,6 +541,46 @@ public class DatasourceServer implements DatasourceApi {
                 engineProvider.exec(engineRequest);
             }
         }
+    }
+
+
+    public void addSchedule(CoreDatasourceTask datasourceTask) throws Exception {
+        if (StringUtils.equalsIgnoreCase(datasourceTask.getSyncRate(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
+            scheduleManager.addOrUpdateSingleJob(new JobKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()),
+                    new TriggerKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()),
+                    ExtractDataJob.class,
+                    new Date(datasourceTask.getStartTime()),
+                    scheduleManager.getDefaultJobDataMap(datasourceTask.getDsId().toString(), datasourceTask.getCron(), datasourceTask.getId().toString(), datasourceTask.getUpdateType()));
+        } else {
+            Date endTime;
+            if (StringUtils.equalsIgnoreCase(datasourceTask.getEndLimit().toString(), "1")) {
+                if (datasourceTask.getEndTime() == null || datasourceTask.getEndTime() == 0) {
+                    endTime = null;
+                } else {
+                    endTime = new Date(datasourceTask.getEndTime());
+                    if (endTime.before(new Date())) {
+                        deleteSchedule(datasourceTask);
+                        return;
+                    }
+                }
+            } else {
+                endTime = null;
+            }
+
+            scheduleManager.addOrUpdateCronJob(new JobKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()),
+                    new TriggerKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()),
+                    ExtractDataJob.class,
+                    datasourceTask.getCron(), new Date(datasourceTask.getStartTime()), endTime,
+                    scheduleManager.getDefaultJobDataMap(datasourceTask.getDsId().toString(), datasourceTask.getCron(), datasourceTask.getId().toString(), datasourceTask.getUpdateType()));
+        }
+    }
+
+    public void deleteSchedule(CoreDatasourceTask datasourceTask) {
+        scheduleManager.removeJob(new JobKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()), new TriggerKey(datasourceTask.getId().toString(), datasourceTask.getDsId().toString()));
+    }
+
+    public void fireNow(CoreDatasourceTask datasourceTask) throws Exception {
+        scheduleManager.fireNow(datasourceTask.getId().toString(), datasourceTask.getDsId().toString());
     }
 
 }

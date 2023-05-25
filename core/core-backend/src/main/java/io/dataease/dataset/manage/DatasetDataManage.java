@@ -120,8 +120,8 @@ public class DatasetDataManage {
         return tableFields.stream().map(ele -> {
             DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
 //            dto.setId(IDUtils.snowID());
-            dto.setName(StringUtils.isNotEmpty(ele.getRemarks()) ? ele.getRemarks() : ele.getFieldName());
-            dto.setOriginName(ele.getFieldName());
+            dto.setName(StringUtils.isNotEmpty(ele.getName()) ? ele.getName() : ele.getOriginName());
+            dto.setOriginName(ele.getOriginName());
             dto.setChecked(defaultStatus);
             dto.setType(ele.getType());
 //            dto.setDescription(dto.getName());// todo 字段描述，不一定取的到

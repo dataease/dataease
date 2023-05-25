@@ -1,12 +1,17 @@
 package io.dataease.listener;
 
+import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.server.DatasourceServer;
+import io.dataease.datasource.server.DatasourceTaskServer;
 import io.dataease.datasource.server.EngineServer;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 
 @Component
@@ -14,6 +19,8 @@ import org.springframework.stereotype.Component;
 public class DataSourceInitStartListener implements ApplicationListener<ApplicationReadyEvent> {
     @Resource
     private DatasourceServer datasourceServer;
+    @Resource
+    private DatasourceTaskServer datasourceTaskServer;
 
     @Resource
     private EngineServer engineServer;
@@ -22,7 +29,29 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         engineServer.initSimpleEngine();
         datasourceServer.updateDemoDs();
+
+        List<CoreDatasourceTask> list = datasourceTaskServer.listAll();
+        for (CoreDatasourceTask task : list) {
+            try {
+                if (!StringUtils.equalsIgnoreCase(task.getUpdateType(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
+                    if (StringUtils.equalsIgnoreCase(task.getEndLimit().toString(), "1")) {
+                        if (task.getEndTime() != null && task.getEndTime() > 0) {
+                            if (task.getEndTime() > System.currentTimeMillis()) {
+                                datasourceServer.addSchedule(task);
+                            }
+                        } else {
+                            datasourceServer.addSchedule(task);
+                        }
+                    } else {
+                        datasourceServer.addSchedule(task);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
+
 
 
 }

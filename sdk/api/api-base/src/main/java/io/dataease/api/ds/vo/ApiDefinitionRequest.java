@@ -11,7 +11,8 @@ import java.util.Map;
 @Data
 public class ApiDefinitionRequest {
     private List<Map<String, String>> headers = new ArrayList<>();
-    private Map<String, String> body = new HashMap<>();
+    private Map<String, Object> body = new HashMap<>();
+    private Map<String, String> arguments = new HashMap<>();
     private AuthManager authManager = new AuthManager();
 
 

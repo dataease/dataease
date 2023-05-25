@@ -14,11 +14,12 @@ public class ApiDefinition {
     private String url;
     private String method = "GET";
     private List<TableField> fields;
+    private List<Map<String, Object>> jsonFields =new ArrayList<>();
     private ApiDefinitionRequest request;
     private String status;
     private List<Map<String, Object>> data = new ArrayList<>();
 
-    private List<Map<String, Object>> jsonFields =new ArrayList<>();
+
     private int previewNum = 10;
     private int maxPreviewNum = 10;
     private int serialNumber;
@@ -26,5 +27,6 @@ public class ApiDefinition {
     private String jsonPath;
     private boolean reName = false;
     private String orgName;
+    private boolean showApiStructure;
 
 }

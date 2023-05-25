@@ -885,7 +885,7 @@ const save = () => {
 
   if (props.param.editType === 0 && props.param.tableId && (effectExtField || changeFiled)) {
     ElMessageBox.confirm(t('deDataset.replace_the_data'), {
-      confirmButtonText: t('commons.confirm'),
+      confirmButtonText: t('common.confirm'),
       tip: '替换可能会影响自定义数据集、关联数据集、仪表板等，是否替换？',
       cancelButtonText: 'Cancel',
       confirmButtonType: 'primary',
@@ -1042,7 +1042,7 @@ defineExpose({
             <span class="name">{{ t('dataset.name') }}</span>
             <el-input
               v-model="sheetObj.datasetName"
-              :placeholder="t('commons.name')"
+              :placeholder="t('common.name')"
               size="small"
               @change="changeDatasetName"
             />

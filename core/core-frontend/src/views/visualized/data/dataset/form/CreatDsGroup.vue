@@ -58,12 +58,12 @@ const rules = {
   name: [
     {
       required: true,
-      message: t('commons.input_content'),
+      message: t('common.input_content'),
       trigger: 'change'
     },
     {
       max: 50,
-      message: t('commons.char_can_not_more_50'),
+      message: t('common.char_can_not_more_50'),
       trigger: 'change'
     },
     { required: true, trigger: 'blur', validator: nameValidator }
