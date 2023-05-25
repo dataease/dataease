@@ -395,27 +395,27 @@ const defaultProps = {
 
   .dataset-height,
   .dataset-content {
-    height: calc(100vh - 110px);
+    height: calc(100vh - 50px);
     overflow: auto;
     position: relative;
   }
 
   .dataset-list {
     width: 279px;
-    padding: 16px 8px;
+    padding: 16px;
   }
 
   .filter-dataset {
     position: sticky;
     top: 0;
-    left: 24px;
+    left: 16px;
     z-index: 5;
     background: white;
     &::before {
       content: '';
       width: 100%;
-      height: 24px;
-      top: -24px;
+      height: 16px;
+      top: -16px;
       position: absolute;
       z-index: 5;
       left: 0;

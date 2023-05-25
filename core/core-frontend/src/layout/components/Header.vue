@@ -63,28 +63,68 @@ const handleSelect = (index: string) => {
 .header-flex {
   display: flex;
   align-items: center;
+  height: 50px;
+  background-color: #050e21;
+  padding: 0 24px;
   .operate-setting {
     margin-left: auto;
-    float: right;
-    height: 56px;
     display: flex;
-    flex-direction: row;
     align-items: center;
-    justify-content: center;
     &:focus {
       outline: none;
     }
-    div {
-      padding: 0 10px;
+  }
+
+  .el-menu {
+    background-color: #050e21;
+  }
+
+  .el-menu--horizontal {
+    border: none;
+    .el-menu-item,
+    :deep(.el-sub-menu__title) {
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 50px;
+      border-bottom: none;
+
+      &.is-active {
+        border-bottom: none;
+        color: #ffffff !important;
+        background-color: #245bdb;
+      }
+    }
+
+    > .is-active {
+      :deep(.el-sub-menu__title) {
+        color: #ffffff !important;
+        background-color: #245bdb;
+      }
+    }
+
+    .el-menu-item:not(.is-disabled):hover,
+    :deep(.el-sub-menu__title):not(.is-disabled):hover {
+      color: #ffffff;
+      background-color: #245bdb;
     }
   }
 }
-.flex-grow {
-  flex-grow: 1;
-}
+
 .logo {
-  width: 140px;
-  height: 45px;
-  margin-right: 100px;
+  width: 134px;
+  height: 34px;
+  margin-right: 48px;
+}
+</style>
+
+<style lang="less">
+.header-flex {
+  .operate-setting {
+    .el-icon {
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.8);
+      margin: 0 11px;
+      font-size: 18px;
+    }
+  }
 }
 </style>

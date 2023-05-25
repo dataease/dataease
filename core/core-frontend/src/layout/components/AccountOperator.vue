@@ -23,13 +23,11 @@ onMounted(() => {
 
 <template>
   <el-dropdown ref="my-drop" class="top-dropdown" trigger="click">
-    <div class="el-dropdown-link">
-      <span>{{ name }}</span>
-      <span>
-        <el-icon>
-          <Icon name="icon_right_outlined" />
-        </el-icon>
-      </span>
+    <div class="my-drop-link">
+      {{ name }}
+      <el-icon class="el-icon-animate">
+        <Icon name="icon_expand-down_filled" />
+      </el-icon>
     </div>
     <template #dropdown>
       <el-dropdown-menu>
@@ -60,27 +58,32 @@ onMounted(() => {
 </template>
 
 <style lang="less">
-.operator-container {
-  display: flex;
-  align-items: center;
-  width: 100px;
-}
-.operator-name {
-  display: flex;
-  color: var(--TopTextColor);
-  font-size: 14px;
-  width: 100%;
-  .name-span {
-    max-width: 80px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-}
 .logout {
   display: block;
 }
 .top-dropdown-link {
   text-decoration: none;
+}
+
+.my-drop-link {
+  cursor: pointer;
+  margin-left: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  .el-icon {
+    margin: 0 5.25px !important;
+    font-size: 9.5px !important;
+  }
+}
+@keyframes iconSelect {
+  from {
+    transform: rotateZ(0);
+  }
+  to {
+    transform: rotateZ(-180deg);
+  }
+}
+[aria-expanded='true'] > .el-icon-animate {
+  animation: iconSelect 0.6s;
+  transform: rotateZ(-180deg);
 }
 </style>

@@ -13,9 +13,9 @@ const handleSetLanguage = lang => {
     class="international"
     @command="handleSetLanguage"
   >
-    <div>
-      <Icon class="international-icon lang-icon" name="language" />
-    </div>
+    <el-icon>
+      <Icon name="language" />
+    </el-icon>
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item :disabled="language === 'zh_CN'" command="zh_CN">
@@ -37,7 +37,6 @@ const handleSetLanguage = lang => {
   display: inline-block;
   padding: 10px 8px;
   height: 100%;
-  font-size: 18px;
 
   vertical-align: text-bottom;
 
@@ -49,9 +48,5 @@ const handleSetLanguage = lang => {
       background-color: rgba(0, 0, 0, 0.025);
     }
   }
-}
-.lang-icon {
-  width: 18px;
-  height: 18px;
 }
 </style>

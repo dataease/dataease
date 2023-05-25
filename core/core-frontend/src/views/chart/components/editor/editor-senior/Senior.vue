@@ -7,6 +7,27 @@ import Threshold from '@/views/chart/components/editor/editor-senior/components/
 const state = {
   attrActiveNames: []
 }
+
+const emit = defineEmits(['onFunctionCfgChange', 'onAssistLineChange'])
+
+const props = defineProps({
+  chart: {
+    type: Object,
+    required: true
+  },
+  quotaData: {
+    type: Array,
+    required: true
+  }
+})
+
+const onFunctionCfgChange = val => {
+  emit('onFunctionCfgChange', val)
+}
+
+const onAssistLineChange = val => {
+  emit('onAssistLineChange', val)
+}
 </script>
 
 <template>
@@ -23,12 +44,12 @@ const state = {
         <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
           <el-collapse-item name="function" :title="$t('chart.function_cfg')">
-            <function-cfg />
+            <function-cfg :chart="props.chart" @onFunctionCfgChange="onFunctionCfgChange" />
           </el-collapse-item>
 
-          <el-collapse-item name="scroll" :title="$t('chart.scroll_cfg')">
-            <scroll-cfg />
-          </el-collapse-item>
+          <!--          <el-collapse-item name="scroll" :title="$t('chart.scroll_cfg')">-->
+          <!--            <scroll-cfg />-->
+          <!--          </el-collapse-item>-->
         </el-collapse>
       </el-row>
 
@@ -36,12 +57,16 @@ const state = {
         <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
         <el-collapse v-model="styleActiveNames" class="style-collapse">
           <el-collapse-item name="analyse" :title="$t('chart.assist_line')">
-            <assist-line />
+            <assist-line
+              :chart="props.chart"
+              :quota-data="props.quotaData"
+              @onAssistLineChange="onAssistLineChange"
+            />
           </el-collapse-item>
 
-          <el-collapse-item name="threshold" :title="$t('chart.threshold')"
-            ><threshold />
-          </el-collapse-item>
+          <!--          <el-collapse-item name="threshold" :title="$t('chart.threshold')">-->
+          <!--            <threshold />-->
+          <!--          </el-collapse-item>-->
         </el-collapse>
       </el-row>
     </div>
