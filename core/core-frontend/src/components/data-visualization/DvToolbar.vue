@@ -17,6 +17,10 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
 import { update, save } from '@/api/dataVisualization'
+import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
+import UserViewGroup from '@/custom-component/component-group/UserViewGroup.vue'
+import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
+import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 
 const isShowPreview = ref(false)
 const isScreenshot = ref(false)
@@ -158,22 +162,47 @@ eventBus.on('clearCanvas', clearCanvas)
 <template>
   <div>
     <div class="toolbar">
-      <el-icon class="custom-el-icon" @click="backToMain()">
+      <el-icon class="custom-el-icon back-icon" @click="backToMain()">
         <Icon class="toolbar-icon" name="icon_left_outlined" />
       </el-icon>
-      <span class="name-area">{{ dvInfo.name }}</span>
-      <div style="display: table-cell; float: right; width: 75%; vertical-align: middle">
-        <el-divider direction="vertical" />
-        <el-icon class="custom-el-icon" @click="undo()">
-          <Icon class="toolbar-icon" name="icon_undo_outlined"></Icon>
-        </el-icon>
-        <el-icon class="custom-el-icon" @click="redo()">
-          <Icon class="toolbar-icon" name="icon_redo_outlined"></Icon>
-        </el-icon>
+      <div class="left-area">
+        <span class="name-area">{{ dvInfo.name }}</span>
+        <div class="opt-area">
+          <el-icon class="opt-icon-undo" @click="undo()">
+            <Icon class="toolbar-icon" name="icon_undo_outlined"></Icon>
+          </el-icon>
+          <el-icon class="opt-icon-redo" @click="redo()">
+            <Icon class="toolbar-icon" name="icon_redo_outlined"></Icon>
+          </el-icon>
+        </div>
+      </div>
+      <div class="middle-area">
+        <component-group base-width="300" icon-name="dv-view" title="图表">
+          <user-view-group></user-view-group>
+        </component-group>
+        <component-group base-width="148" icon-name="dv-text" title="文本">
+          <text-group></text-group>
+        </component-group>
+        <component-group icon-name="dv-media" title="媒体">
+          <media-group></media-group>
+        </component-group>
+        <component-group icon-name="dv-material" title="素材">
+          <div>this is material test</div>
+        </component-group>
+        <component-group icon-name="dv-params" title="参数">
+          <div>setting</div>
+        </component-group>
+      </div>
+      <div class="right-area">
+        <el-button
+          class="custom-normal-button"
+          @click="preview()"
+          style="float: right; margin-right: 12px"
+          >预览</el-button
+        >
         <el-button @click="saveCanvas()" style="float: right; margin-right: 12px" type="primary"
           >保存</el-button
         >
-        <el-button @click="preview()" style="float: right; margin-right: 12px">预览</el-button>
       </div>
     </div>
     <!-- 预览 -->
@@ -184,14 +213,53 @@ eventBus.on('clearCanvas', clearCanvas)
 <style lang="less" scoped>
 .toolbar {
   height: @top-bar-height;
-  padding: 5px 10px;
-  line-height: 33px;
   white-space: nowrap;
   overflow-x: auto;
-  background: rgba(0, 21, 41, 1);
+  background: #050e21;
   color: #ffffff;
-  .name-area {
-    margin: 0 10px;
+  display: flex;
+  .back-icon {
+    margin-left: 20px;
+    margin-top: 22px;
+    font-size: 20px;
+  }
+  .left-area {
+    margin-top: 8px;
+    margin-left: 14px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    .name-area {
+      line-height: 24px;
+      height: 24px;
+      font-size: 16px;
+      width: 300px;
+      overflow: hidden;
+    }
+    .opt-area {
+      width: 300px;
+      text-align: left;
+      color: #a6a6a6;
+      .opt-icon-undo {
+        font-size: 18px;
+      }
+      .opt-icon-redo {
+        margin-left: 12px;
+        font-size: 18px;
+      }
+    }
+  }
+  .middle-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .right-area {
+    width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: right;
   }
   .custom-el-icon {
     margin-left: 15px;
@@ -200,59 +268,16 @@ eventBus.on('clearCanvas', clearCanvas)
     vertical-align: -0.2em;
   }
   .toolbar-icon {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
   }
-  .canvas-config {
-    display: inline-block;
-    margin-left: 10px;
-    font-size: 14px;
-    color: #606266;
-
-    input {
-      width: 50px;
-      margin-left: 4px;
-      outline: none;
-      padding: 0 5px;
-      border: 1px solid #ddd;
-      color: #606266;
-    }
-
-    span {
-      margin-left: 10px;
-    }
-  }
-
-  .insert {
-    display: inline-block;
-    line-height: 1;
-    white-space: nowrap;
-    cursor: pointer;
-    background: #fff;
-    border: 1px solid #dcdfe6;
-    color: #606266;
-    appearance: none;
-    text-align: center;
-    box-sizing: border-box;
-    outline: 0;
-    margin: 0;
-    transition: 0.1s;
-    font-weight: 500;
-    padding: 9px 15px;
-    font-size: 12px;
-    border-radius: 3px;
-    margin-left: 10px;
-
-    &:active {
-      color: #3a8ee6;
-      border-color: #3a8ee6;
-      outline: 0;
-    }
-
-    &:hover {
-      background-color: #ecf5ff;
-      color: #3a8ee6;
-    }
+}
+.custom-normal-button {
+  background-color: rgba(0, 0, 0, 0);
+  border-color: #a6a6a6;
+  color: #ffffff;
+  &:hover {
+    color: #3370ff;
   }
 }
 </style>

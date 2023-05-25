@@ -20,22 +20,6 @@ const handleScaleChange = () => {
 </script>
 <template>
   <el-row class="custom-main">
-    <component-group base-width="300" icon-name="chart_pie" title="图表">
-      <user-view-group></user-view-group>
-    </component-group>
-    <component-group base-width="148" icon-name="other_text" title="文本">
-      <text-group></text-group>
-    </component-group>
-    <component-group icon-name="other_media" title="媒体">
-      <media-group></media-group>
-    </component-group>
-    <component-group icon-name="other_material" title="素材">
-      <div>this is material test</div>
-    </component-group>
-    <component-group icon-name="other_setting" title="参数">
-      <div>setting</div>
-    </component-group>
-
     <div style="display: flex; padding-top: 10px; margin-left: 50px">
       <el-slider
         style="width: 300px"
@@ -53,9 +37,10 @@ const handleScaleChange = () => {
 .custom-main {
   display: flex;
   width: 100%;
+  justify-content: right;
   height: @component-toolbar-height;
-  background-color: rgba(37, 45, 54, 1);
-  border-bottom: 1px solid rgba(85, 85, 85, 1);
+  background-color: @side-area-background;
+  border-top: 1px solid @side-outline-border-color;
   color: #fff;
 }
 </style>

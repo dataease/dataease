@@ -53,8 +53,7 @@ const widthShow = computed(() => `${isCollapse.value ? 36 : width.value}px`)
   position: relative;
   transition: 0.5s;
   color: white;
-  background-color: #232c31;
-  border-bottom: #525552 1px solid;
+  background-color: @side-area-background;
   .title {
     border-bottom: #525552 1px solid;
     height: 45px;
@@ -80,9 +79,9 @@ const widthShow = computed(() => `${isCollapse.value ? 36 : width.value}px`)
   }
 }
 .aside-left {
-  border-right: #525552 1px solid;
+  border-right: @side-outline-border-color 1px solid;
 }
 .aside-right {
-  border-left: #525552 1px solid;
+  border-left: @side-outline-border-color 1px solid;
 }
 </style>

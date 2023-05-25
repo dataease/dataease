@@ -30,7 +30,7 @@ const { title, iconName, baseWidth } = toRefs(props)
         <el-col :span="24">
           <Icon class="toolbar-icon" :name="iconName" />
           <br />
-          <span style="float: left; font-size: 12px">{{ title }}</span>
+          <span style="float: left; font-size: 12px; color: #a6a6a6">{{ title }}</span>
         </el-col>
       </el-row>
     </template>
@@ -44,7 +44,7 @@ const { title, iconName, baseWidth } = toRefs(props)
 }
 .toolbar-icon {
   float: left;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 </style>
