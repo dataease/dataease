@@ -467,7 +467,8 @@ export const DEFAULT_FUNCTION_CFG = {
   sliderBg: '#FFFFFF',
   sliderFillBg: '#BCD6F1',
   sliderTextClolor: '#999999',
-  emptyDataStrategy: 'breakLine'
+  emptyDataStrategy: 'breakLine',
+  emptyDataFieldCtrl: []
 }
 export const DEFAULT_THRESHOLD = {
   gaugeThreshold: '',

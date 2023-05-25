@@ -1487,6 +1487,7 @@ export default {
     total_sort_desc: '降序',
     total_sort_field: '排序字段',
     empty_data_strategy: '空值处理',
+    empty_data_field_ctrl: '字段设置',
     break_line: '保持为空',
     set_zero: '置为0',
     ignore_data: '隐藏空值',
