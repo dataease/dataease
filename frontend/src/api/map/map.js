@@ -4,7 +4,7 @@ export const areaMapping = () => {
   return request({
     url: '/api/map/globalEntitys/0',
     method: 'get',
-    loading: true
+    loading: false
   })
 }
 
@@ -12,7 +12,7 @@ export const globalMapping = () => {
   return request({
     url: '/api/map/globalEntitys/0',
     method: 'get',
-    loading: true
+    loading: false
   })
 }
 
@@ -21,7 +21,7 @@ export function geoJson(areaCode) {
   return request({
     url: '/geo/full/' + countryCode + '/' + areaCode + '_full.json',
     method: 'get',
-    loading: true
+    loading: false
   })
 }
 
