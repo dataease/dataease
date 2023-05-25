@@ -983,12 +983,7 @@
                       </div>
                     </el-row>
                     <el-row
-                      v-if="view.type
-                        && !(view.type.includes('table') && view.render === 'echarts')
-                        && !view.type.includes('text') && !view.type.includes('gauge')
-                        && view.type !== 'liquid' && view.type !== 'word-cloud'
-                        && view.type !== 'table-pivot' && view.type !=='label'
-                        && view.type !=='richTextView' && view.type !== 'flow-map'"
+                      v-if="showDrill"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -1763,7 +1758,6 @@ import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny, includesAny } from '@/utils/StringUtils'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
-import FuSplitPane from './FuSplitPane.vue'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1802,7 +1796,6 @@ export default {
     PluginCom,
     MapMapping,
     MarkMapDataEditor,
-    FuSplitPane
   },
   props: {
     param: {
@@ -1963,10 +1956,10 @@ export default {
     },
     showSeniorCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'mix') ||
-        equalsAny(this.view.type, 'table-normal', 'table-info')
+        equalsAny(this.view.type, 'table-normal', 'table-info', 'map')
     },
     showFunctionCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix')
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'map')
     },
     showScrollCfg() {
       return equalsAny(this.view.type, 'table-normal', 'table-info')
@@ -1989,6 +1982,13 @@ export default {
       return includesAny(this.view.type, 'gauge') ||
         equalsAny(this.view.type, 'text', 'label') ||
         (this.view.render === 'antv' && this.view.type.includes('table'))
+    },
+    showDrill() {
+      return this.view.type &&
+        !(this.view.type.includes('table') && this.view.render === 'echarts') &&
+        !includesAny(this.view.type, 'text', 'gauge') &&
+        !equalsAny(this.view.type, 'liquid', 'bidirectional-bar',
+          'word-cloud', 'table-pivot', 'label', 'richTextView', 'flow-map')
     },
     ...mapState([
       'curComponent',

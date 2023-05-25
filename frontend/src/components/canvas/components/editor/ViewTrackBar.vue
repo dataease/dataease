@@ -66,8 +66,7 @@ export default {
   }
 
   ::v-deep.el-popper[x-placement^=bottom] .popper__arrow {
-    transform: rotate(180deg) !important;
-    top: 75px !important;
+    display: none;
   }
 
   ::v-deep.el-popper[x-placement^=bottom] {

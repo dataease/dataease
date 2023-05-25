@@ -1582,7 +1582,6 @@ export const TYPE_CONFIGS = [
       'x-axis-selector-ant-v': [
         'show',
         'position',
-        'name',
         'nameTextStyle',
         'splitLine',
         'axisForm',

@@ -9,7 +9,8 @@ import {
   getPadding,
   getSlider,
   getAnalyse,
-  setGradientColor
+  setGradientColor,
+  getMeta
 } from '@/views/chart/chart/common/common_antv'
 import { antVCustomColor, handleEmptyDataStrategy } from '@/views/chart/chart/util'
 import _ from 'lodash'
@@ -319,6 +320,11 @@ export function baseBidirectionalBarOptionAntV(plot, container, chart, action, i
     handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
   }
 
+  // meta，处理类别轴数据类型为时间时排序失效
+  const meta = getMeta(chart)
+  if (meta) {
+    options.meta = meta
+  }
   // 开始渲染
   if (plot) {
     plot.destroy()

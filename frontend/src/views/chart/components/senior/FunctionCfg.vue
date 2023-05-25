@@ -90,7 +90,7 @@
 
 <script>
 import { DEFAULT_FUNCTION_CFG, COLOR_PANEL } from '../../chart/chart'
-import { includesAny } from '@/utils/StringUtils'
+import { equalsAny, includesAny } from '@/utils/StringUtils'
 
 export default {
   name: 'FunctionCfg',
@@ -108,10 +108,11 @@ export default {
   },
   computed: {
     showSlider() {
-      return this.chart.type !== 'bidirectional-bar'
+      return this.chart.type !== 'bidirectional-bar' && !equalsAny(this.chart.type, 'map')
     },
     showEmptyStrategy() {
-      return this.chart.render === 'antv' && includesAny(this.chart.type, 'line', 'bar', 'area')
+      return (this.chart.render === 'antv' && includesAny(this.chart.type, 'line', 'bar', 'area')) ||
+      this.chart.render === 'echarts' && equalsAny(this.chart.type, 'map')
     }
   },
   watch: {

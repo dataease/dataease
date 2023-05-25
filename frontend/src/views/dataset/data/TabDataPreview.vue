@@ -81,10 +81,8 @@
 
 <script>
 import _ from 'lodash'
-import { UxGrid, UxTableColumn } from 'umy-ui'
 export default {
   name: 'TabDataPreview',
-  components: { UxGrid, UxTableColumn },
   props: {
     table: {
       type: Object,

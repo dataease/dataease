@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Cookies from 'js-cookie'
 import '@/styles/index.scss' // global css
 import ElementUI from 'element-ui'
+import Vuetify from 'vuetify'
+import Fit2CloudUI from 'fit2cloud-ui'
 
 import i18n from './lang' // internationalization
 import App from './App'
@@ -14,12 +16,16 @@ import api from '@/api/index.js'
 import filter from '@/filter/filter'
 import directives from './directive'
 import VueClipboard from 'vue-clipboard2'
+import widgets from '@/components/widget'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import './utils/dialog'
 import DeComplexInput from '@/components/business/conditionTable/DeComplexInput'
 import DeComplexSelect from '@/components/business/conditionTable/DeComplexSelect'
 import DeViewSelect from '@/components/deViewSelect'
+import RemarkEditor from '@/views/chart/components/componentStyle/dialog/RemarkEditor'
+import TitleRemark from '@/views/chart/view/TitleRemark'
+import '@/components/canvas/customComponent' // 注册自定义组件
 import deBtn from '@/components/deCustomCm/DeBtn.vue'
 
 import '@/utils/DateUtil'
@@ -27,11 +33,15 @@ import draggable from 'vuedraggable'
 import deWebsocket from '@/websocket'
 import { GaodeMap } from '@antv/l7-maps'
 import * as echarts from 'echarts'
+import UmyUi from 'umy-ui'
 // 全屏插件
+import fullscreen from 'vue-fullscreen'
 import VueFriendlyIframe from 'vue-friendly-iframe'
 import vueToPdf from 'vue-to-pdf'
-
+import VueVideoPlayer from 'vue-video-player'
+import 'video.js/dist/video-js.css'
 // 控制标签宽高成比例的指令
+import proportion from 'vue-proportion-directive'
 
 import xss from 'xss'
 // 定义全局XSS解决方法
@@ -41,13 +51,19 @@ Object.defineProperty(Vue.prototype, '$xss', {
 
 Vue.config.productionTip = false
 Vue.use(VueClipboard)
+Vue.use(widgets)
 Vue.component('Draggable', draggable)
 Vue.prototype.$api = api
 
 Vue.prototype.$echarts = echarts
 Vue.prototype.$gaodeMap = GaodeMap
 
+Vue.use(UmyUi)
+
+Vue.use(fullscreen)
+
 Vue.use(VueFriendlyIframe)
+Vue.use(Vuetify)
 // import TEditor from '@/components/Tinymce/index.vue'
 // Vue.component('TEditor', TEditor)
 
@@ -73,6 +89,9 @@ Vue.use(ElementUI, {
   size: Cookies.get('size') || 'medium', // set element-ui default size
   i18n: (key, value) => i18n.t(key, value)
 })
+Vue.use(Fit2CloudUI, {
+  i18n: (key, value) => i18n.t(key, value)
+})
 // Vue.use(VueAxios, axios)
 Vue.use(filter)
 Vue.use(directives)
@@ -81,11 +100,17 @@ Vue.component('Treeselect', Treeselect)
 Vue.component('DeComplexInput', DeComplexInput)
 Vue.component('DeComplexSelect', DeComplexSelect)
 Vue.component('DeViewSelect', DeViewSelect)
+Vue.component('RemarkEditor', RemarkEditor)
+Vue.component('TitleRemark', TitleRemark)
 Vue.component('DeBtn', deBtn)
 
 Vue.config.productionTip = false
 
 Vue.use(vueToPdf)
+
+Vue.use(VueVideoPlayer)
+
+Vue.use(proportion)
 
 Vue.prototype.hasDataPermission = function(pTarget, pSource) {
   if (this.$store.state.user.user.isAdmin || pSource === 'ignore') {
