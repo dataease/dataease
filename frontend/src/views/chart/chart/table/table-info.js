@@ -127,14 +127,15 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
       })
     })
   }
-
+  // 空值处理
+  const newData = handleTableEmptyStrategy(tableData, chart)
   // data config
   const s2DataConfig = {
     fields: {
       columns: columns
     },
     meta: meta,
-    data: tableData
+    data: newData
   }
 
   const customAttr = JSON.parse(chart.customAttr)
@@ -494,7 +495,8 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
     }
     sortParams.push(sort)
   }
-
+  // 空值处理
+  const newData = handleTableEmptyStrategy(tableData, chart)
   // data config
   const s2DataConfig = {
     fields: {
@@ -503,7 +505,7 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
       values: v
     },
     meta: meta,
-    data: tableData,
+    data: newData,
     sortParams: sortParams
   }
 
