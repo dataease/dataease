@@ -139,7 +139,7 @@
 import { filterDatasetRecord, dateFormat } from './options'
 import { queryAuthModel } from '@/api/authModel/authModel'
 import DeDatePick from '@/components/deCustomCm/DeDatePick.vue'
-
+import _ from 'lodash'
 export default {
   components: {
     DeDatePick
@@ -162,7 +162,7 @@ export default {
   },
   computed: {
     datasetComputed() {
-      return this.dfs(this.treeData)
+      return this.dfs(_.cloneDeep(this.treeData), this.activeDataset)
     }
   },
   watch: {
@@ -194,14 +194,13 @@ export default {
           this.treeLoading = false
         })
     },
-    dfs(arr) {
+    dfs(arr, target) {
       return arr.reduce((pre, ele) => {
-        if (!this.activeDataset.includes(ele.id)) {
+        if (!target.includes(ele.id)) {
           if (ele.children?.length) {
-            pre.push(this.dfs(ele.children))
-          } else {
-            pre.push(ele)
+            ele.children = this.dfs(ele.children, target)
           }
+          pre.push(ele)
         }
         return pre
       }, [])
