@@ -439,7 +439,7 @@ export default {
           this.buttonTextColor = null
         }
       }
-      const chart_option = baseMapOption(base_json, chart, this.buttonTextColor, curAreaCode, this.currentSeriesId)
+      const chart_option = baseMapOption(base_json, geoJson, chart, this.buttonTextColor, curAreaCode, this.currentSeriesId)
       this.myEcharts(chart_option)
       const opt = this.myChart.getOption()
       if (opt && opt.series) {

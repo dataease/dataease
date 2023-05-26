@@ -2,7 +2,7 @@ import { TableSheet, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE } f
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
-import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { handleTableEmptyStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
 export function baseTableInfo(s2, container, chart, action, tableData, pageInfo) {
   const containerDom = document.getElementById(container)
 
@@ -127,14 +127,15 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
       })
     })
   }
-
+  // 空值处理
+  const newData = handleTableEmptyStrategy(tableData, chart)
   // data config
   const s2DataConfig = {
     fields: {
       columns: columns
     },
     meta: meta,
-    data: tableData
+    data: newData
   }
 
   const customAttr = JSON.parse(chart.customAttr)
@@ -300,13 +301,15 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
     })
   }
 
+  // 空值处理
+  const newData = handleTableEmptyStrategy(tableData, chart)
   // data config
   const s2DataConfig = {
     fields: {
       columns: columns
     },
     meta: meta,
-    data: tableData
+    data: newData
   }
 
   const customAttr = JSON.parse(chart.customAttr)
@@ -492,7 +495,8 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
     }
     sortParams.push(sort)
   }
-
+  // 空值处理
+  const newData = handleTableEmptyStrategy(tableData, chart)
   // data config
   const s2DataConfig = {
     fields: {
@@ -501,7 +505,7 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
       values: v
     },
     meta: meta,
-    data: tableData,
+    data: newData,
     sortParams: sortParams
   }
 

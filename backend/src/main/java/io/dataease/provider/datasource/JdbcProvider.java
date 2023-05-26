@@ -781,6 +781,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
             case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);
                 mysqlConfiguration.getJdbc();
+                if(!mysqlConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                    throw new Exception("Invalid database name");
+                }
                 break;
             case redshift:
                 RedshiftConfiguration redshiftConfiguration = new Gson().fromJson(datasource.getConfiguration(), RedshiftConfiguration.class);
@@ -788,6 +791,48 @@ public class JdbcProvider extends DefaultJdbcProvider {
                     throw new Exception("Invalid database name");
                 }
                 if(!redshiftConfiguration.getDataBase().matches("^[a-z][a-z0-9_+.@-]*$")){
+                    throw new Exception("Invalid database name");
+                }
+                break;
+            case sqlServer:
+                SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfiguration.class);
+                if(!sqlServerConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                    throw new Exception("Invalid database name");
+                }
+                break;
+            case pg:
+                PgConfiguration pgConfiguration = new Gson().fromJson(datasource.getConfiguration(), PgConfiguration.class);
+                if(!pgConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                    throw new Exception("Invalid database name");
+                }
+                break;
+            case oracle:
+                OracleConfiguration oracleConfiguration = new Gson().fromJson(datasource.getConfiguration(), OracleConfiguration.class);
+                if(!oracleConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$") && !oracleConfiguration.getConnectionType().equalsIgnoreCase("serviceName")){
+                    throw new Exception("Invalid database name");
+                }
+                break;
+            case mongo:
+                MongodbConfiguration mongodbConfiguration = new Gson().fromJson(datasource.getConfiguration(), MongodbConfiguration.class);
+                if(!mongodbConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                    throw new Exception("Invalid database name");
+                }
+                break;
+            case impala:
+                ImpalaConfiguration impalaConfiguration = new Gson().fromJson(datasource.getConfiguration(), ImpalaConfiguration.class);
+                if(!impalaConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                    throw new Exception("Invalid database name");
+                }
+                break;
+            case hive:
+                HiveConfiguration hiveConfiguration = new Gson().fromJson(datasource.getConfiguration(), HiveConfiguration.class);
+                if(!hiveConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                    throw new Exception("Invalid database name");
+                }
+                break;
+            case db2:
+                Db2Configuration db2Configuration = new Gson().fromJson(datasource.getConfiguration(), Db2Configuration.class);
+                if(!db2Configuration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
                     throw new Exception("Invalid database name");
                 }
                 break;

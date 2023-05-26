@@ -72,6 +72,8 @@ import javax.annotation.Resource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -758,13 +760,20 @@ public class ExtractDataService {
                 List<List<String>> csvData = new ArrayList<>();
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if(line.endsWith(",")){
-                        List<String> list = new ArrayList<>(Arrays.asList(line.split(",")));
-                        list.add("");
-                        csvData.add(list);
-                    }else {
-                        csvData.add(Arrays.asList(line.split(",")));
+
+                    String str;
+                    line += ",";
+                    Pattern pCells = Pattern.compile("(\"[^\"]*(\"{2})*[^\"]*\")*[^,]*,");
+                    Matcher mCells = pCells.matcher(line);
+                    List<String> cells = new ArrayList();//每行记录一个list
+                    //读取每个单元格
+                    while (mCells.find()) {
+                        str = mCells.group();
+                        str = str.replaceAll("(?sm)\"?([^\"]*(\"{2})*[^\"]*)\"?.*,", "$1");
+                        str = str.replaceAll("(?sm)(\"(\"))", "$2");
+                        cells.add(str);
                     }
+                    csvData.add(cells);
                 }
                 ExcelSheetData csvSheetData = new ExcelSheetData();
                 String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);

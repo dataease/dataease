@@ -1489,6 +1489,7 @@ export default {
     total_sort_desc: 'DESC',
     total_sort_field: 'Sort Field',
     empty_data_strategy: 'Empty Data Strategy',
+    empty_data_field_ctrl: 'Field Control',
     break_line: 'Keep',
     set_zero: 'Set Zero',
     ignore_data: 'Hide Data',
