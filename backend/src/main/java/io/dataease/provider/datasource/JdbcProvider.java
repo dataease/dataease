@@ -808,7 +808,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 break;
             case oracle:
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasource.getConfiguration(), OracleConfiguration.class);
-                if(!oracleConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                if(!oracleConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$") && !oracleConfiguration.getConnectionType().equalsIgnoreCase("serviceName")){
                     throw new Exception("Invalid database name");
                 }
                 break;
