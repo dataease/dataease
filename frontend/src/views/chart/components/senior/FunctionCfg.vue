@@ -132,21 +132,21 @@ export default {
   },
   computed: {
     showSlider() {
-      return this.chart.type !== 'bidirectional-bar' && !equalsAny(this.chart.type, 'map')
+      return this.chart.type !== 'bidirectional-bar' &&
+        !equalsAny(this.chart.type, 'map') &&
+        !includesAny(this.chart.type, 'table')
     },
     showEmptyStrategy() {
       return (this.chart.render === 'antv' &&
-        (includesAny(this.chart.type, 'line', 'bar', 'area') ||
-          equalsAny(this.chart.type, 'table-normal'))) ||
+        includesAny(this.chart.type, 'line', 'bar', 'area', 'table')) ||
         (this.chart.render === 'echarts' && equalsAny(this.chart.type, 'map'))
     },
     showIgnoreOption() {
-      return !equalsAny(this.chart.type, 'map')
+      return !equalsAny(this.chart.type, 'map', 'table-pivot', 'table-info')
     },
     showEmptyDataFieldCtrl() {
       return this.showEmptyStrategy &&
-        this.functionForm.emptyDataStrategy !== 'breakLine' &&
-        equalsAny(this.chart.type, 'table-normal')
+        this.functionForm.emptyDataStrategy !== 'breakLine'
     }
   },
   watch: {
@@ -180,20 +180,27 @@ export default {
     initFieldCtrl() {
       if (this.showEmptyDataFieldCtrl) {
         this.fieldOptions = []
-        let yAxis = []
-        if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
-          yAxis = this.chart.yaxis
-        } else {
-          yAxis = JSON.parse(this.chart.yaxis)
+        let axis
+        if (equalsAny(this.chart.type, 'table-normal', 'table-pivot')) {
+          axis = this.chart.yaxis
         }
-        if (this.chart.type === 'table-normal') {
-          yAxis.forEach(item => {
+        if (this.chart.type === 'table-info') {
+          axis = this.chart.xaxis
+        }
+        let axisArr = []
+        if (Object.prototype.toString.call(axis) === '[object Array]') {
+          axisArr = axisArr.concat(axis)
+        } else {
+          axisArr = axisArr.concat(JSON.parse(axis))
+        }
+        axisArr.forEach(item => {
+          if (item.groupType === 'q') {
             this.fieldOptions.push({
               label: item.name,
               value: item.dataeaseName
             })
-          })
-        }
+          }
+        })
       }
     },
     changeFunctionCfg() {
