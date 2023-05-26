@@ -2452,7 +2452,19 @@ public class DataSetTableService {
                 if (num > 1000) {
                     break;
                 }
-                data.add(Arrays.asList(line.split(",")));
+                String str;
+                line += ",";
+                Pattern pCells = Pattern.compile("(\"[^\"]*(\"{2})*[^\"]*\")*[^,]*,");
+                Matcher mCells = pCells.matcher(line);
+                List<String> cells = new ArrayList();//每行记录一个list
+                //读取每个单元格
+                while (mCells.find()) {
+                    str = mCells.group();
+                    str = str.replaceAll("(?sm)\"?([^\"]*(\"{2})*[^\"]*)\"?.*,", "$1");
+                    str = str.replaceAll("(?sm)(\"(\"))", "$2");
+                    cells.add(str);
+                }
+                data.add(cells);
                 num++;
             }
             ExcelSheetData excelSheetData = new ExcelSheetData();
