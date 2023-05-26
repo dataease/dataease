@@ -3363,6 +3363,10 @@ export default {
         this.view.senior.functionCfg.emptyDataStrategy = 'ignoreData'
       } else if (type.includes('line')) {
         this.view.customAttr.label.position = 'top'
+      } else if (equalsAny(type, 'table-info', 'table-pivot')) {
+        if (this.view?.senior?.functionCfg?.emptyDataStrategy === 'ignoreData') {
+          this.view.senior.functionCfg.emptyDataStrategy = 'breakLine'
+        }
       }
       // reset custom colors
       this.view.customAttr.color.seriesColors = []
