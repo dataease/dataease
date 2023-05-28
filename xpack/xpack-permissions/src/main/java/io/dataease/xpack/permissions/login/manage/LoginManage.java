@@ -21,7 +21,7 @@ public class LoginManage {
         String name = dto.getName();
         //        name = RsaUtils.decryptStr(name);
         name = "admin";
-        name = RsaUtils.decryptStr(name);
+//        name = RsaUtils.decryptStr(name);
         String pwd = dto.getPwd();
 //        pwd = RsaUtils.decryptStr(pwd);
         pwd = "DataEase123456";

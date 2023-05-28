@@ -69,17 +69,11 @@ const onLegendChange = val => {
 
 <template>
   <el-row class="view-panel">
-    <div
-      :style="{
-        overflow: 'auto',
-        height: '100%',
-        width: '100%'
-      }"
-      class="attr-style"
-    >
+    <div class="attr-style">
       <el-row class="de-collapse-style">
-        <span class="padding-lr">{{ t('chart.shape_attr') }}</span>
-
+        <el-row class="prop prop-top">
+          <span class="padding-lr">{{ t('chart.shape_attr') }}</span>
+        </el-row>
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
           <el-collapse-item name="color" :title="t('chart.color')">
             <color-selector
@@ -123,7 +117,9 @@ const onLegendChange = val => {
       </el-row>
 
       <el-row class="de-collapse-style">
-        <span class="padding-lr">{{ t('chart.module_style') }}</span>
+        <el-row class="prop">
+          <span class="padding-lr">{{ t('chart.module_style') }}</span>
+        </el-row>
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
           <el-collapse-item name="xAxis" :title="t('chart.xAxis')">
             <x-axis-selector
@@ -167,6 +163,13 @@ const onLegendChange = val => {
   display: block;
 }
 
+.prop {
+  border-bottom: 1px solid @side-outline-border-color;
+}
+.prop-top {
+  border-top: 1px solid @side-outline-border-color;
+}
+
 span {
   font-size: 14px;
 }
@@ -174,12 +177,13 @@ span {
 .view-panel {
   display: flex;
   height: 100%;
-  background-color: #f7f8fa;
   width: 100%;
 }
 
 .attr-style {
+  overflow-y: auto;
   height: 100%;
+  width: 100%;
 }
 
 .de-collapse-style {
