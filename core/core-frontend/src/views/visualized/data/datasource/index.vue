@@ -1,42 +1,40 @@
 <script lang="ts" setup>
-import { ref, reactive, shallowRef, computed } from 'vue'
+import { computed, reactive, ref, shallowRef } from 'vue'
+import type { TabPaneName } from 'element-plus-secondary'
 import { ElIcon } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { Icon } from '@/components/icon-custom'
 import { useRouter } from 'vue-router'
 import { useI18n } from '@/hooks/web/useI18n'
-// import type { Tree } from './form/CreatDsGroup.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
-import type { TabPaneName } from 'element-plus-secondary'
-
+import { listDatasources, getTableField, listDatasourceTables } from '../../../../api/datasource.ts'
+import { Base64 } from 'js-base64'
+import { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
+import EditorDetail from './form/EditorDetail.vue'
 interface DsType {
   type: string
   name: string
   id?: string
-  isPlugin: boolean
-  calculationMode: string
-  databaseClassification: string
+  catalog: string
   extraParams: string
-  charset: null
-  targetCharset: null
-  isJdbc: boolean
-  keywordPrefix: string
-  keywordSuffix: string
-  aliasPrefix: string
-  aliasSuffix: string
-  jdbc: boolean
-  plugin: boolean
   children?: Array<{}>
 }
 
 interface Node {
   name: string
   createBy: string
-  id: string
+  id: number
   type: string
   nodeType: string
+  syncSetting?: SyncSetting
+
+  configuration?: Configuration
+  apiConfiguration?: ApiConfiguration[]
 }
+
 const { t } = useI18n()
+
+const detail = ref()
 
 const state = reactive({
   addeddatasourceList: [],
@@ -52,78 +50,22 @@ const state = reactive({
 })
 
 const dsTableDetail = reactive({
-  apiConfiguration: null,
-  apiConfigurationStr: null,
-  calculationMode: 'DIRECT',
-  configuration:
-    'eyJpbml0aWFsUG9vbFNpemUiOjUsImV4dHJhUGFyYW1zIjoiIiwibWluUG9vbFNpemUiOjUsIm1heFBvb2xTaXplIjo1MCwibWF4SWRsZVRpbWUiOjMwLCJhY3F1aXJlSW5jcmVtZW50Ijo1LCJpZGxlQ29ubmVjdGlvblRlc3RQZXJpb2QiOjUsImNvbm5lY3RUaW1lb3V0Ijo1LCJjdXN0b21Ecml2ZXIiOiJkZWZhdWx0IiwicXVlcnlUaW1lb3V0IjozMCwidXNlcm5hbWUiOiJoaXZlIiwicGFzc3dvcmQiOiJoaXZlIiwiaG9zdCI6IjEyMy41Ni44LjEzMiIsImRhdGFCYXNlIjoidGVzdGRiIiwiYXV0aE1ldGhvZCI6InBhc3N3ZCIsInBvcnQiOiIxMDAwMCJ9',
-  configurationEncryption: false,
-  createBy: 'zyy',
-  createTime: 1664447626978,
-  desc: null,
-  id: '0f239be3-5aa2-4a9a-9d35-7e1f510ea344',
-  name: 'zyy-hive',
-  privileges: null,
-  status: 'Success',
-  type: 'hive',
-  typeDesc: 'Apache Hive',
-  remark: '',
-  updateTime: 1664447626978
+  tableName: ''
 })
-
+const True = ref(true)
 const nickName = ref('')
+const dsName = ref('')
 const router = useRouter()
 const userDrawer = ref(false)
-
-state.dsTableData = [
-  {
-    fieldName: 'id',
-    remarks: 'id',
-    fieldType: 'VARCHAR',
-    fieldSize: 50,
-    accuracy: 0
-  },
-  {
-    fieldName: 'name',
-    remarks: 'name',
-    fieldType: 'VARCHAR',
-    fieldSize: 16,
-    accuracy: 0
-  },
-  {
-    fieldName: 'longitude',
-    remarks: 'longitude',
-    fieldType: 'VARCHAR',
-    fieldSize: 50,
-    accuracy: 0
-  },
-  {
-    fieldName: 'latitude',
-    remarks: 'latitude',
-    fieldType: 'VARCHAR',
-    fieldSize: 50,
-    accuracy: 0
-  },
-  {
-    fieldName: 'unit_price',
-    remarks: 'unit_price',
-    fieldType: 'VARCHAR',
-    fieldSize: 50,
-    accuracy: 0
-  },
-  {
-    fieldName: 'count',
-    remarks: 'count',
-    fieldType: 'TINYINT',
-    fieldSize: 3,
-    accuracy: 0
-  }
-]
+const rawDatasourceList = ref([])
 const selectDataset = row => {
   Object.assign(dsTableDetail, row)
   userDrawer.value = true
   let table = { dataSourceId: nodeInfo.id, info: '' }
   table.info = JSON.stringify({ table: row.name })
+  getTableField(nodeInfo.id, row.tableName).then(res => {
+    state.dsTableData = res.data
+  })
 }
 const handleSizeChange = pageSize => {
   state.paginationConfig.currentPage = 1
@@ -141,9 +83,14 @@ const getFieldType = (fieldType: string | number) => {
     t('dataset.value') + '(' + t('dataset.float') + ')'
   ][fieldType]
 }
+
+const searchDs = () => {
+  buildTree(rawDatasourceList.value.filter(ele => ele.name.includes(dsName.value)))
+}
+
 const initSearch = () => {
   handleCurrentChange(1)
-  state.filterTable = tableData.value.filter(ele => ele.name.includes(nickName.value))
+  state.filterTable = tableData.value.filter(ele => ele.tableName.includes(nickName.value))
   state.paginationConfig.total = state.filterTable.length
 }
 
@@ -154,9 +101,12 @@ const pagingTable = computed(() => {
 const nodeInfo = reactive<Node>({
   name: '',
   createBy: '',
-  id: '',
+  id: 0,
   nodeType: '',
-  type: ''
+  type: '',
+  configuration: {},
+  syncSetting: {},
+  apiConfiguration: []
 })
 
 let allFields = []
@@ -184,143 +134,89 @@ const allFieldsColumns = [
   }
 ]
 
-const dsType: DsType[] = [
-  {
-    type: 'mysql',
-    name: 'MySQL',
-    isPlugin: false,
-    calculationMode: 'DIRECT_AND_SYNC',
-    databaseClassification: 'OLTP',
-    extraParams:
-      'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true',
-    charset: null,
-    targetCharset: null,
-    isJdbc: true,
-    keywordPrefix: '`',
-    keywordSuffix: '`',
-    aliasPrefix: '',
-    aliasSuffix: '',
-    jdbc: true,
-    plugin: false
-  },
-  {
-    type: 'TiDB',
-    name: 'TiDB',
-    isPlugin: false,
-    calculationMode: 'DIRECT_AND_SYNC',
-    databaseClassification: 'OLTP',
-    extraParams:
-      'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true',
-    charset: null,
-    targetCharset: null,
-    isJdbc: true,
-    keywordPrefix: '`',
-    keywordSuffix: '`',
-    aliasPrefix: '',
-    aliasSuffix: '',
-    jdbc: true,
-    plugin: false
-  },
-  {
-    type: 'hive',
-    name: 'Apache Hive',
-    isPlugin: false,
-    calculationMode: 'DIRECT',
-    databaseClassification: 'DL',
-    extraParams: '',
-    charset: null,
-    targetCharset: null,
-    isJdbc: true,
-    keywordPrefix: '`',
-    keywordSuffix: '`',
-    aliasPrefix: '',
-    aliasSuffix: '',
-    jdbc: true,
-    plugin: false
+listDatasources().then(array => {
+  for (let index = 0; index < array.length; index++) {
+    const element = array[index]
+    if (element.configuration) {
+      element.configuration = JSON.parse(Base64.decode(element.configuration))
+    }
+    if (element.apiConfigurationStr) {
+      element.apiConfiguration = JSON.parse(Base64.decode(element.apiConfigurationStr))
+    }
+    rawDatasourceList.value.push(element)
   }
-]
-const dsTypeMap = dsType.reduce((pre, next, index) => {
-  pre[next.type] = index
-  return pre
-}, {})
-
-const datasourceList = [
-  {
-    apiConfiguration: null,
-    apiConfigurationStr: null,
-    calculationMode: 'DIRECT',
-    configuration:
-      'eyJpbml0aWFsUG9vbFNpemUiOjUsImV4dHJhUGFyYW1zIjoiIiwibWluUG9vbFNpemUiOjUsIm1heFBvb2xTaXplIjo1MCwibWF4SWRsZVRpbWUiOjMwLCJhY3F1aXJlSW5jcmVtZW50Ijo1LCJpZGxlQ29ubmVjdGlvblRlc3RQZXJpb2QiOjUsImNvbm5lY3RUaW1lb3V0Ijo1LCJjdXN0b21Ecml2ZXIiOiJkZWZhdWx0IiwicXVlcnlUaW1lb3V0IjozMCwidXNlcm5hbWUiOiJoaXZlIiwicGFzc3dvcmQiOiJoaXZlIiwiaG9zdCI6IjEyMy41Ni44LjEzMiIsImRhdGFCYXNlIjoidGVzdGRiIiwiYXV0aE1ldGhvZCI6InBhc3N3ZCIsInBvcnQiOiIxMDAwMCJ9',
-    configurationEncryption: false,
-    createBy: 'zyy',
-    createTime: 1664447626978,
-    desc: null,
-    id: '0f239be3-5aa2-4a9a-9d35-7e1f510ea344',
-    name: 'zyy-hive',
-    privileges: null,
-    status: 'Success',
-    type: 'hive',
-    typeDesc: 'Apache Hive',
-    updateTime: 1664447626978
-  }
-]
-
-datasourceList.forEach(ele => {
-  const index = dsTypeMap[ele.type]
-  if (index !== undefined) {
-    dsType[index].children = [...(dsType[index]?.children || []), ele]
-  }
+  buildTree(rawDatasourceList.value)
 })
 
-state.datasourceTree = dsType
-
-const columns = shallowRef([])
-const tableData = shallowRef([
-  {
-    datasourceId: '5f6c9416-9aac-4396-bf1d-36423c1fa62e',
-    name: 'employee',
-    remark: null,
-    enableCheck: true,
-    datasetPath: null
-  },
-  {
-    datasourceId: '5f6c9416-9aac-4396-bf1d-36423c1fa62e',
-    name: 'report_csv',
-    remark: null,
-    enableCheck: true,
-    datasetPath: null
+const buildTree = array => {
+  const types = {}
+  const dsType = []
+  for (let index = 0; index < array.length; index++) {
+    const element = array[index]
+    if (!(element.type in types)) {
+      types[element.type] = []
+      dsType.push({
+        type: element.type,
+        databaseClassification: element.catalog,
+        name: element.typeAlias
+      })
+    }
+    types[element.type].push(element)
   }
-])
-
-const handleNodeClick = data => {
-  if (data.databaseClassification) return
-  const { name, createBy, id, type } = data
-  Object.assign(nodeInfo, { name, createBy, id, type })
-  initSearch()
+  const dsTypeMap = dsType.reduce((pre, next, index) => {
+    pre[next.type] = index
+    return pre
+  }, {})
+  array.forEach(ele => {
+    const index = dsTypeMap[ele.type]
+    if (index !== undefined) {
+      dsType[index].children = [...(dsType[index]?.children || []), ele]
+    }
+  })
+  state.datasourceTree = dsType
 }
 
+const columns = shallowRef([])
+const tableData = shallowRef([])
+const handleNodeClick = data => {
+  if (data.databaseClassification) return
+  const { name, createBy, id, type, configuration, syncSetting, apiConfiguration } = data
+  Object.assign(nodeInfo, {
+    name,
+    createBy,
+    id,
+    type,
+    configuration,
+    syncSetting,
+    apiConfiguration
+  })
+  initSearch()
+  if (activeName.value === 'config') {
+    detail.value.initEditForm()
+  }
+  handleClick(activeName.value)
+}
 const createDatasource = (data?: DsType) => {
   router.push({
     path: '/ds-form',
     query: {}
   })
 }
-
 const handleClick = (tabName: TabPaneName) => {
   switch (tabName) {
     case 'config':
-      if (columnsPreview.length) {
-        columns.value = columnsPreview
-        tableData.value = dataPreview
-        break
-      }
       break
     case 'table':
+      listDatasourceTables(nodeInfo.id).then(res => {
+        tableData.value = res.data
+      })
       columns.value = allFieldsColumns
-      tableData.value = allFields
       break
     default:
       break
+  }
+  if (activeName.value === 'config') {
+    detail.value.initEditForm()
   }
 }
 const activeName = ref('table')
@@ -341,11 +237,14 @@ const defaultProps = {
   <div class="datasource-manage">
     <div class="datasource-list datasource-height">
       <div class="title">
-        数据源
+        {{ t('datasource.datasource') }}
         <el-button @click="() => createDatasource()" type="primary">
-          <template #icon> <Icon name="icon_add_outlined"></Icon> </template>新建数据源
+          <template #icon>
+            <Icon name="icon_add_outlined"></Icon>
+          </template>
+          {{ t('datasource.create') }}
         </el-button>
-        <el-input class="m24 w100" v-model="nickName" clearable>
+        <el-input class="m24 w100" v-model="dsName" clearable @blur="searchDs" @clear="searchDs">
           <template #prefix>
             <el-icon>
               <Icon name="icon_search-outline_outlined"></Icon>
@@ -379,8 +278,8 @@ const defaultProps = {
     <div class="datasource-content">
       <template v-if="!!nodeInfo.id">
         <el-tabs v-model="activeName" @tab-change="handleClick">
-          <el-tab-pane label="数据源配置" name="config"></el-tab-pane>
-          <el-tab-pane label="数据源表" name="table"></el-tab-pane>
+          <el-tab-pane :label="t('datasource.config')" name="config"></el-tab-pane>
+          <el-tab-pane :label="t('datasource.table')" name="table"></el-tab-pane>
         </el-tabs>
         <div class="info-table de-search-table" v-if="activeName === 'table'">
           <el-row class="top-operate">
@@ -391,7 +290,7 @@ const defaultProps = {
               <el-input
                 ref="search"
                 v-model="nickName"
-                :placeholder="t('system_parameter_setting.search_keywords')"
+                :placeholder="t('common.search_keywords')"
                 clearable
                 style="width: 240px"
                 @blur="initSearch"
@@ -411,30 +310,37 @@ const defaultProps = {
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
           >
-            <el-table-column key="name" prop="name" :label="t('datasource.table_name')" />
-            <el-table-column key="description" prop="description" label="备注" />
+            <el-table-column key="tableName" prop="tableName" :label="t('datasource.table_name')" />
+            <el-table-column key="description" prop="description" :label="t('common.label')" />
             <el-table-column
               key="__operation"
-              :label="t('commons.operating')"
+              :label="t('common.operating')"
               fixed="right"
               width="108"
             >
               <template #default="scope">
                 <el-button text @click="selectDataset(scope.row)"
-                  >{{ t('dataset.detail') }}
+                  >{{ t('common.detail') }}
                 </el-button>
               </template>
             </el-table-column>
           </grid-table>
         </div>
-        <div v-else class="form-editor"></div>
+        <div v-else class="form-editor">
+          <editor-detail
+            ref="detail"
+            :form="nodeInfo"
+            :ds-form-disabled="True"
+            :edit-ds="True"
+          ></editor-detail>
+        </div>
       </template>
       <template v-else>
-        <empty-background description="请在左侧选择数据源" img-type="select" />
+        <empty-background :description="t('datasource.select_ds')" img-type="select" />
       </template>
     </div>
     <el-dialog
-      :title="t('dataset.detail')"
+      :title="t('common.detail')"
       v-model="userDrawer"
       class="ds-table-drawer"
       width="840px"
@@ -445,12 +351,12 @@ const defaultProps = {
             {{ t('datasource.table_name') }}
           </p>
           <p class="table-value">
-            {{ dsTableDetail.name }}
+            {{ dsTableDetail.tableName }}
           </p>
         </el-col>
         <el-col :span="12">
           <p class="table-name">
-            {{ t('datasource.table_description') }}
+            {{ t('datasource.remark') }}
           </p>
           <p class="table-value">
             {{ dsTableDetail.remark || '-' }}
@@ -463,8 +369,8 @@ const defaultProps = {
         stripe
         style="width: 100%"
       >
-        <el-table-column prop="fieldName" :label="t('panel.column_name')" />
-        <el-table-column prop="fieldType" :label="t('dataset.field_type')">
+        <el-table-column prop="fieldName" :label="t('datasource.column_name')" />
+        <el-table-column prop="fieldType" :label="t('datasource.field_type')">
           <template #default="scope">
             <span v-if="nodeInfo.type !== 'api'">
               {{ scope.row.fieldType }}
@@ -515,6 +421,7 @@ const defaultProps = {
     left: 16px;
     z-index: 5;
     background: white;
+
     &::before {
       content: '';
       width: 100%;
@@ -530,6 +437,7 @@ const defaultProps = {
   .m24 {
     margin: 24px 0;
   }
+
   .w100 {
     width: 100%;
   }
@@ -555,6 +463,7 @@ const defaultProps = {
         line-height: 24px;
         color: var(--deTextPrimary, #1f2329);
       }
+
       height: calc(100% - 100px);
     }
   }

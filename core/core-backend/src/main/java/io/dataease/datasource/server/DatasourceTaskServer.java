@@ -1,5 +1,6 @@
 package io.dataease.datasource.server;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -14,7 +15,6 @@ import io.dataease.request.BaseGridRequest;
 import io.dataease.request.ConditionEntity;
 import io.dataease.request.GridExample;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -34,13 +34,27 @@ public class DatasourceTaskServer {
     private CoreDatasourceTaskLogMapper coreDatasourceTaskLogMapper;
 
 
-    public CoreDatasourceTask selectById(String taskId) {
+    public CoreDatasourceTask selectById(Long taskId) {
         return datasourceTaskMapper.selectById(taskId);
     }
 
+    public List<CoreDatasourceTask> listAll() {
+        return datasourceTaskMapper.selectList(null);
+    }
+
+    public CoreDatasourceTask selectByDSId(Long dsId) {
+        QueryWrapper<CoreDatasourceTask> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("ds_id", dsId);
+        List<CoreDatasourceTask> coreDatasourceTasks = datasourceTaskMapper.selectList(queryWrapper);
+        return CollectionUtils.isEmpty(coreDatasourceTasks) ? new CoreDatasourceTask() : coreDatasourceTasks.get(0);
+    }
+
+    public void insert(CoreDatasourceTask coreDatasourceTask) {
+        datasourceTaskMapper.insert(coreDatasourceTask);
+    }
 
     public void checkTaskIsStopped(CoreDatasourceTask coreDatasourceTask) {
-        if (StringUtils.isNotEmpty(coreDatasourceTask.getEnd()) && coreDatasourceTask.getEnd().equalsIgnoreCase("1")) {  // 结束限制 0 无限制 1 设定结束时间'
+        if (coreDatasourceTask.getEndLimit() != null && coreDatasourceTask.getEndLimit().compareTo(1L) == 0) {  // 结束限制 0 无限制 1 设定结束时间'
             BaseGridRequest request = new BaseGridRequest();
             ConditionEntity conditionEntity = new ConditionEntity();
             conditionEntity.setField("dataset_table_task.id");
@@ -90,7 +104,7 @@ public class DatasourceTaskServer {
         return existSyncTask;
     }
 
-    public CoreDatasourceTaskLog initTaskLog(String datasourceId, String taskId, Long startTime, String datasourceName) {
+    public CoreDatasourceTaskLog initTaskLog(String datasourceId, Long taskId, Long startTime, String datasourceName) {
         CoreDatasourceTaskLog coreDatasourceTaskLog = new CoreDatasourceTaskLog();
         coreDatasourceTaskLog.setTableId(datasourceId);
         coreDatasourceTaskLog.setTaskId(taskId);
@@ -109,10 +123,10 @@ public class DatasourceTaskServer {
     public void updateTaskStatus(CoreDatasourceTask coreDatasourceTask, TaskStatus taskStatus) {
         CoreDatasourceTask record = new CoreDatasourceTask();
         record.setLastExecStatus(taskStatus.name());
-        if (coreDatasourceTask.getRate().equalsIgnoreCase(ScheduleType.SIMPLE.name())) {
+        if (coreDatasourceTask.getSyncRate().equalsIgnoreCase(ScheduleType.RIGHTNOW.name())) {
             record.setStatus(TaskStatus.Stopped.name());
         } else {
-            if (StringUtils.isNotEmpty(coreDatasourceTask.getEnd()) && coreDatasourceTask.getEnd().equalsIgnoreCase("1")) {
+            if (coreDatasourceTask.getEndLimit() != null && coreDatasourceTask.getEndLimit().compareTo(1L) == 0) {
                 BaseGridRequest request = new BaseGridRequest();
                 ConditionEntity conditionEntity = new ConditionEntity();
                 conditionEntity.setField("core_datasource_task.id");
@@ -143,6 +157,6 @@ public class DatasourceTaskServer {
     }
 
     public enum ScheduleType {
-        CRON, SIMPLE, SIMPLE_CRON
+        CRON, RIGHTNOW, SIMPLE_CRON
     }
 }

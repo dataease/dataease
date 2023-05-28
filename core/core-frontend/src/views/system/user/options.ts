@@ -4,7 +4,7 @@ export const columnNames = [
     props: 'username'
   },
   {
-    label: 'commons.nick_name',
+    label: 'common.nick_name',
     props: 'nickName'
   },
   {
@@ -12,23 +12,23 @@ export const columnNames = [
     props: 'from'
   },
   {
-    label: 'commons.email',
+    label: 'common.email',
     props: 'email'
   },
   {
-    label: 'commons.organization',
+    label: 'common.organization',
     props: 'dept'
   },
   {
-    label: 'commons.role',
+    label: 'common.role',
     props: 'roles'
   },
   {
-    label: 'commons.status',
+    label: 'common.status',
     props: 'status'
   },
   {
-    label: 'commons.create_time',
+    label: 'common.create_time',
     props: 'createTime'
   }
 ]

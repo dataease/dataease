@@ -13,7 +13,7 @@ import java.util.List;
 public class Sqlserver extends DatasourceConfiguration {
     private String type = DatasourceType.sqlserver.getType();
     private String name = DatasourceType.sqlserver.getName();
-    private DatasourceCatalog catalog = DatasourceCatalog.OLAP;
+    private String catalog = DatasourceCatalog.OLAP.getType();
     private String catalogDesc = DatasourceCatalog.OLAP.getDesc();
     private String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private String extraParams = "";

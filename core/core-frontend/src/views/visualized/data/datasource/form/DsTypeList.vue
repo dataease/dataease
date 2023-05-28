@@ -21,167 +21,66 @@ const getDatasourceTypes = () => {
     {
       type: 'mysql',
       name: 'MySQL',
-      isPlugin: false,
-      calculationMode: 'DIRECT_AND_SYNC',
-      databaseClassification: 'OLTP',
+      catalog: 'OLTP',
       extraParams:
-        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '`',
-      keywordSuffix: '`',
-      aliasPrefix: '',
-      aliasSuffix: '',
-      jdbc: true,
-      plugin: false
+        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
     },
     {
       type: 'TiDB',
       name: 'TiDB',
-      isPlugin: false,
-      calculationMode: 'DIRECT_AND_SYNC',
-      databaseClassification: 'OLTP',
+      catalog: 'OLTP',
       extraParams:
-        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '`',
-      keywordSuffix: '`',
-      aliasPrefix: '',
-      aliasSuffix: '',
-      jdbc: true,
-      plugin: false
+        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
     },
     {
       type: 'hive',
       name: 'Apache Hive',
-      isPlugin: false,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'DL',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '`',
-      keywordSuffix: '`',
-      aliasPrefix: '',
-      aliasSuffix: '',
-      jdbc: true,
-      plugin: false
+      catalog: 'DL',
+      extraParams: ''
     },
     {
       type: 'impala',
       name: 'Apache Impala',
-      isPlugin: false,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'OLAP',
-      extraParams: 'AuthMech=0',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '`',
-      keywordSuffix: '`',
-      aliasPrefix: "'",
-      aliasSuffix: "'",
-      jdbc: true,
-      plugin: false
+      catalog: 'OLAP',
+      extraParams: 'AuthMech=0'
     },
     {
       type: 'mariadb',
       name: 'MariaDB',
-      isPlugin: false,
-      calculationMode: 'DIRECT_AND_SYNC',
-      databaseClassification: 'OLTP',
+      catalog: 'OLTP',
       extraParams:
-        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '`',
-      keywordSuffix: '`',
-      aliasPrefix: "'",
-      aliasSuffix: "'",
-      jdbc: true,
-      plugin: false
+        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
     },
     {
       type: 'StarRocks',
       name: 'StarRocks',
-      isPlugin: false,
-      calculationMode: 'DIRECT_AND_SYNC',
-      databaseClassification: 'OLAP',
+      catalog: 'OLAP',
       extraParams:
-        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '`',
-      keywordSuffix: '`',
-      aliasPrefix: "'",
-      aliasSuffix: "'",
-      jdbc: true,
-      plugin: false
+        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
     },
     {
       type: 'ds_doris',
       name: 'Doris',
-      isPlugin: false,
-      calculationMode: 'DIRECT_AND_SYNC',
-      databaseClassification: 'OLAP',
+      catalog: 'OLAP',
       extraParams:
-        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '`',
-      keywordSuffix: '`',
-      aliasPrefix: "'",
-      aliasSuffix: "'",
-      jdbc: true,
-      plugin: false
+        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true'
     },
     {
       type: 'pg',
       name: 'PostgreSQL',
-      isPlugin: false,
-      calculationMode: 'DIRECT_AND_SYNC',
-      databaseClassification: 'OLTP',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: true,
-      plugin: false
+      catalog: 'OLTP',
+      extraParams: ''
     },
     {
       type: 'sqlServer',
       name: 'SQL Server',
-      isPlugin: false,
-      calculationMode: 'DIRECT_AND_SYNC',
-      databaseClassification: 'OLTP',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: true,
-      plugin: false
+      catalog: 'OLTP',
+      extraParams: ''
     },
     {
       type: 'oracle',
       name: 'Oracle',
-      isPlugin: false,
-      calculationMode: 'DIRECT_AND_SYNC',
-      databaseClassification: 'OLTP',
+      catalog: 'OLTP',
       extraParams: '',
       charset: [
         'Default',
@@ -194,258 +93,97 @@ const getDatasourceTypes = () => {
         'EUC_JP',
         'EUC_KR'
       ],
-      targetCharset: ['Default', 'GBK', 'UTF-8'],
-      isJdbc: true,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: true,
-      plugin: false
+      targetCharset: ['Default', 'GBK', 'UTF-8']
     },
     {
       type: 'mongo',
       name: 'MongoDB',
-      isPlugin: false,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'OLTP',
-      extraParams: 'rebuildschema=true&authSource=admin',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '`',
-      keywordSuffix: '`',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: true,
-      plugin: false
+      catalog: 'OLTP',
+      extraParams: 'rebuildschema=true&authSource=admin'
     },
     {
       type: 'ck',
       name: 'ClickHouse',
-      isPlugin: false,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'OLAP',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '`',
-      keywordSuffix: '`',
-      aliasPrefix: '',
-      aliasSuffix: '',
-      jdbc: true,
-      plugin: false
+      catalog: 'OLAP',
+      extraParams: ''
     },
     {
       type: 'db2',
       name: 'Db2',
-      isPlugin: false,
-      calculationMode: 'DIRECT_AND_SYNC',
-      databaseClassification: 'OLTP',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: true,
-      plugin: false
+      catalog: 'OLTP',
+      extraParams: ''
     },
     {
       type: 'redshift',
       name: 'AWS Redshift',
-      isPlugin: false,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'DL',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: true,
-      plugin: false
+      catalog: 'DL',
+      extraParams: ''
     },
     {
       type: 'es',
       name: 'Elasticsearch',
-      isPlugin: false,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'OLAP',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: false,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: false,
-      plugin: false
+      catalog: 'OLAP',
+      extraParams: ''
     },
     {
-      type: 'api',
+      type: 'API',
       name: 'API',
-      isPlugin: false,
-      calculationMode: 'SYNC',
-      databaseClassification: 'OTHER',
-      extraParams: 'rebuildschema=true&authSource=admin',
-      charset: null,
-      targetCharset: null,
-      isJdbc: false,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: false,
-      plugin: false
+      catalog: 'OTHER',
+      extraParams: 'rebuildschema=true&authSource=admin'
     },
     {
       type: 'influxdb',
       name: 'InfluxDB',
-      isPlugin: true,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'OTHER',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: true,
-      plugin: true
+      catalog: 'OTHER',
+      extraParams: ''
     },
     {
       type: 'sls',
       name: 'SLS',
-      isPlugin: true,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'OTHER',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: true,
-      plugin: true
+      catalog: 'OTHER',
+      extraParams: ''
     },
     {
       type: 'kingbase',
       name: 'KingBase',
-      isPlugin: true,
-      calculationMode: 'DIRECT_AND_SYNC',
-      databaseClassification: 'OLTP',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: true,
-      plugin: true
+      catalog: 'OLTP',
+      extraParams: ''
     },
     {
       type: 'mongobi',
       name: 'Mongodb-BI',
-      isPlugin: true,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'OLTP',
+      catalog: 'OLTP',
       extraParams:
-        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=true&allowPublicKeyRetrieval=true&verifyServerCertificate=false',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '`',
-      keywordSuffix: '`',
-      aliasPrefix: '',
-      aliasSuffix: '',
-      jdbc: true,
-      plugin: true
+        'characterEncoding=UTF-8&connectTimeout=5000&useSSL=true&allowPublicKeyRetrieval=true&verifyServerCertificate=false'
     },
     {
       type: 'maxcompute',
       name: 'Maxcompute',
-      isPlugin: true,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'DL',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: true,
-      plugin: true
+      catalog: 'DL',
+      extraParams: ''
     },
     {
       type: 'presto',
       name: 'Presto',
-      isPlugin: true,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'OLAP',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '',
-      keywordSuffix: '',
-      aliasPrefix: '',
-      aliasSuffix: '',
-      jdbc: true,
-      plugin: true
+      catalog: 'OLAP',
+      extraParams: ''
     },
     {
       type: 'dm',
       name: 'DM',
-      isPlugin: true,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'OLTP',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '"',
-      keywordSuffix: '"',
-      aliasPrefix: '"',
-      aliasSuffix: '"',
-      jdbc: true,
-      plugin: true
+      catalog: 'OLTP',
+      extraParams: ''
     },
     {
       type: 'kylin',
       name: 'Kylin',
-      isPlugin: true,
-      calculationMode: 'DIRECT',
-      databaseClassification: 'DL',
-      extraParams: '',
-      charset: null,
-      targetCharset: null,
-      isJdbc: true,
-      keywordPrefix: '',
-      keywordSuffix: '',
-      aliasPrefix: '',
-      aliasSuffix: '',
-      jdbc: true,
-      plugin: true
+      catalog: 'DL',
+      extraParams: ''
     }
   ]
   const arr = [[], [], [], []]
   dsTypes.forEach(item => {
-    const index = typeList.findIndex(ele => ele === item.databaseClassification)
+    const index = typeList.findIndex(ele => ele === item.catalog)
     if (index !== -1) {
       arr[index].push(item)
     }
@@ -458,8 +196,8 @@ const getDatasourceTypes = () => {
 }
 getDatasourceTypes()
 const emits = defineEmits(['selectDsType'])
-const selectDs = ({ name }) => {
-  emits('selectDsType', name)
+const selectDs = ({ type }) => {
+  emits('selectDsType', type)
 }
 </script>
 

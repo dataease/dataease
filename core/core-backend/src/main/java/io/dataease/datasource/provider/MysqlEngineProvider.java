@@ -4,10 +4,12 @@ package io.dataease.datasource.provider;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.dataease.commons.exception.DataEaseException;
 import io.dataease.dataset.utils.TableUtils;
+import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.api.ds.vo.TableField;
 
 import io.dataease.datasource.request.EngineRequest;
+import io.dataease.utils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,9 @@ public class MysqlEngineProvider extends EngineProvider {
     public void exec(EngineRequest engineRequest) throws Exception {
         JsonNode rootNode = objectMapper.readTree(engineRequest.getEngine().getConfiguration());
         int queryTimeout = Integer.valueOf(rootNode.get("queryTimeout").asText());
-        try (Connection connection = getConnection(engineRequest.getEngine().getConfiguration()); Statement stat = getStatement(connection, queryTimeout)) {
+        CoreDatasource datasource = new CoreDatasource();
+        BeanUtils.copyBean(datasource, engineRequest.getEngine());
+        try (Connection connection = getConnection(datasource); Statement stat = getStatement(connection, queryTimeout)) {
             Boolean result = stat.execute(engineRequest.getQuery());
         } catch (SQLException e) {
             DataEaseException.throwException(e);
@@ -99,7 +103,7 @@ public class MysqlEngineProvider extends EngineProvider {
     private String createTableSql(final List<TableField> tableFields) {
         StringBuilder Column_Fields = new StringBuilder("dataease_uuid  varchar(50), `");
         for (TableField tableField : tableFields) {
-            Column_Fields.append(tableField.getFieldName()).append("` ");
+            Column_Fields.append(tableField.getName()).append("` ");
             int size = tableField.getPrecision() * 4;
             switch (tableField.getDeType()) {
                 case 0:
