@@ -122,7 +122,9 @@ const showApiData = () => {
       apiItem.showApiStructure = true
       const data = Base64.encode(JSON.stringify(apiItem))
       loading.value = true
-      checkApiItem({ data: data }).then(response => {})
+      // checkApiItem({ data: data }).then(response => {
+      //
+      // })
       loading.value = false
       // res.data.jsonFields.forEach(((item) => {
       //       item.checked = false
