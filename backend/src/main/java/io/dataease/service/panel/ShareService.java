@@ -4,12 +4,11 @@ import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentRoleDto;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.commons.utils.DeLogUtils;
-import io.dataease.ext.ExtPanelShareMapper;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.controller.request.panel.PanelShareFineDto;
 import io.dataease.controller.request.panel.PanelShareRemoveRequest;
 import io.dataease.controller.request.panel.PanelShareRequest;
@@ -18,6 +17,7 @@ import io.dataease.controller.sys.base.BaseGridRequest;
 import io.dataease.dto.panel.PanelShareDto;
 import io.dataease.dto.panel.PanelShareOutDTO;
 import io.dataease.dto.panel.PanelSharePo;
+import io.dataease.ext.ExtPanelShareMapper;
 import io.dataease.plugins.common.base.domain.PanelGroup;
 import io.dataease.plugins.common.base.domain.PanelShare;
 import io.dataease.plugins.common.base.domain.PanelShareExample;
@@ -390,8 +390,11 @@ public class ShareService {
         PanelShareRemoveRequest request = new PanelShareRemoveRequest();
         request.setPanelId(panelId);
         List<PanelShareOutDTO> panelShareOutDTOS = queryTargets(panelId);
+        if (CollectionUtils.isEmpty(panelShareOutDTOS) || ObjectUtils.isEmpty(panelGroup)) {
+            return;
+        }
         extPanelShareMapper.removeShares(request);
-        if (CollectionUtils.isEmpty(panelShareOutDTOS) || ObjectUtils.isEmpty(panelGroup) || StringUtils.isBlank(panelGroup.getName())) {
+        if (StringUtils.isBlank(panelGroup.getName())) {
             return;
         }
         panelShareOutDTOS.forEach(shareOut -> {
