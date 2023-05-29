@@ -664,11 +664,11 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
 }
 
 .union-item-drawer {
-  .el-drawer__header {
+  .ed-drawer__header {
     height: 82px;
     font-family: 'PingFang SC';
 
-    .el-drawer__close-btn {
+    .ed-drawer__close-btn {
       top: 26px;
     }
 
@@ -722,7 +722,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
     display: none;
   }
 
-  .el-icon {
+  .ed-icon {
     font-size: 13.3px;
     margin-right: 9.33px;
   }
@@ -761,7 +761,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   border: 1px dashed;
   border-color: #3370ff;
   background-color: rgba(51, 112, 255, 0.08);
-  .el-icon,
+  .ed-icon,
   .tableName {
     display: none;
   }

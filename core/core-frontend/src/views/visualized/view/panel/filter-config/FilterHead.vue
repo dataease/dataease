@@ -43,7 +43,7 @@ const handleClose = index => {
     overflow-x: auto;
     display: flex;
     align-items: center;
-    .el-tag + .el-tag {
+    .ed-tag + .ed-tag {
       margin-left: 8px;
     }
     :deep(.filter-db-row) {

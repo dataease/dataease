@@ -1096,18 +1096,18 @@ defineExpose({
 .excel-detail {
   display: flex;
   justify-content: center;
-  .el-form {
+  .ed-form {
     width: 50%;
     .upload-excel {
-      .el-form-item__content > div,
-      .el-upload {
+      .ed-form-item__content > div,
+      .ed-upload {
         width: 100% !important;
       }
     }
   }
 }
 .excel-dialog-fullscreen {
-  .el-dialog__body::after {
+  .ed-dialog__body::after {
     content: '';
     display: block;
     visibility: hidden;
@@ -1157,7 +1157,7 @@ defineExpose({
         color: var(--primary, #3370ff);
       }
 
-      .el-checkbox__label {
+      .ed-checkbox__label {
         overflow: hidden;
       }
     }
@@ -1182,7 +1182,7 @@ defineExpose({
         color: var(--deTextPrimary, #1f2329);
       }
 
-      .el-input {
+      .ed-input {
         width: 420px;
         margin-left: 12px;
       }

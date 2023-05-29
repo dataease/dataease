@@ -674,7 +674,7 @@ initDataset()
 </template>
 
 <style lang="less" scoped>
-.el-row {
+.ed-row {
   display: block;
 }
 
@@ -719,7 +719,7 @@ span {
     height: 100%;
   }
 
-  .view-panel-row :deep(.el-collapse-item__header) {
+  .view-panel-row :deep(.ed-collapse-item__header) {
     height: 34px !important;
     line-height: 34px !important;
     padding: 0 0 0 6px !important;
@@ -727,29 +727,29 @@ span {
     font-weight: 400 !important;
   }
 
-  .tab-header :deep(.el-tabs__header) {
+  .tab-header :deep(.ed-tabs__header) {
     border-top: solid 1px #eee;
     border-right: solid 1px #eee;
   }
 
-  .tab-header :deep(.el-tabs__item) {
+  .tab-header :deep(.ed-tabs__item) {
     font-size: 12px;
     padding: 0 20px !important;
   }
 
-  .blackTheme .tab-header :deep(.el-tabs__item) {
+  .blackTheme .tab-header :deep(.ed-tabs__item) {
     background-color: var(--MainBG);
   }
 
-  .tab-header :deep(.el-tabs__nav-scroll) {
+  .tab-header :deep(.ed-tabs__nav-scroll) {
     padding-left: 0 !important;
   }
 
-  .tab-header :deep(.el-tabs__header) {
+  .tab-header :deep(.ed-tabs__header) {
     margin: 0 !important;
   }
 
-  .tab-header :deep(.el-tabs__content) {
+  .tab-header :deep(.ed-tabs__content) {
     height: calc(100% - 40px);
   }
 
@@ -806,14 +806,14 @@ span {
     display: flex;
   }
 
-  .radio-span :deep(.el-radio__label) {
+  .radio-span :deep(.ed-radio__label) {
     margin-left: 4px;
   }
 
   .result-count {
     width: 50px;
 
-    :deep(.el-input__wrapper) {
+    :deep(.ed-input__wrapper) {
       padding: 0;
     }
   }
@@ -847,16 +847,16 @@ span {
     height: calc(100% - 6px);
   }
 
-  .el-input-refresh-time {
+  .ed-input-refresh-time {
     width: calc(50% - 4px) !important;
   }
 
-  .el-input-refresh-unit {
+  .ed-input-refresh-unit {
     margin-left: 8px;
     width: calc(50% - 4px) !important;
   }
 
-  .el-input-refresh-loading {
+  .ed-input-refresh-loading {
     margin-left: 4px;
     font-size: 12px !important;
   }

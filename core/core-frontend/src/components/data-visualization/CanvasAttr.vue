@@ -63,21 +63,21 @@ const canvasAttrActiveNames = ref(['size', 'background', 'color'])
   min-width: 300px;
 }
 
-:deep(.el-collapse-item__header) {
+:deep(.ed-collapse-item__header) {
   background-color: rgba(29, 36, 42, 1) !important;
   color: #ffffff;
   border-bottom: 1px solid rgba(85, 85, 85, 1);
 }
-:deep(.el-collapse-item__content) {
+:deep(.ed-collapse-item__content) {
   background-color: rgba(37, 45, 54, 1);
   color: #ffffff;
   padding-left: 5px;
 }
 
-:deep(.el-collapse-item__wrap) {
+:deep(.ed-collapse-item__wrap) {
   border-bottom: 1px solid rgba(85, 85, 85, 1);
 }
-:deep(.el-collapse) {
+:deep(.ed-collapse) {
   width: 100%;
 }
 </style>

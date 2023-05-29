@@ -69,7 +69,7 @@ onMounted(() => {
   cursor: pointer;
   margin-left: 11px;
   color: rgba(255, 255, 255, 0.8);
-  .el-icon {
+  .ed-icon {
     margin: 0 5.25px !important;
     font-size: 9.5px !important;
   }
@@ -82,7 +82,7 @@ onMounted(() => {
     transform: rotateZ(-180deg);
   }
 }
-[aria-expanded='true'] > .el-icon-animate {
+[aria-expanded='true'] > .ed-icon-animate {
   animation: iconSelect 0.6s;
   transform: rotateZ(-180deg);
 }

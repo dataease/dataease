@@ -372,11 +372,11 @@ onMounted(() => {
   }
 }
 .input-with-select {
-  :deep(.el-input-group__prepend) {
+  :deep(.ed-input-group__prepend) {
     background-color: #fff;
   }
-  .el-select {
-    :deep(.el-input__wrapper) {
+  .ed-select {
+    :deep(.ed-input__wrapper) {
       width: 72px;
     }
   }

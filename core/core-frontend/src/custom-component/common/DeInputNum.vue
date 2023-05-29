@@ -27,21 +27,21 @@ const { name, value, min, max } = toRefs(props)
   margin-left: 5px;
   width: 80px;
 }
-:deep(.el-input__wrapper) {
+:deep(.ed-input__wrapper) {
   background-color: rgba(37, 45, 54, 1);
   padding-left: 5px !important;
   padding-right: 30px !important;
 }
 
-:deep(.el-input__inner) {
+:deep(.ed-input__inner) {
   color: #ffffff;
 }
 
-:deep(.el-input-number__decrease) {
+:deep(.ed-input-number__decrease) {
   background-color: rgba(37, 45, 54, 1);
   color: #ffffff;
 }
-:deep(.el-input-number__increase) {
+:deep(.ed-input-number__increase) {
   background-color: rgba(37, 45, 54, 1);
   color: #ffffff;
 }

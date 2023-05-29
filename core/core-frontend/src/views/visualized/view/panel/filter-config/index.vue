@@ -396,18 +396,18 @@ const handleTabClick = () => {
 
 <style lang="less">
 .load-select {
-  .el-select-dropdown__list {
+  .ed-select-dropdown__list {
     & > div {
       &:nth-child(1) {
-        .el-radio__inner::after {
+        .ed-radio__inner::after {
           display: none !important;
         }
       }
     }
   }
-  .el-select-dropdown {
+  .ed-select-dropdown {
     &:nth-child(1) {
-      .el-checkbox__inner::after {
+      .ed-checkbox__inner::after {
         display: none !important;
       }
     }

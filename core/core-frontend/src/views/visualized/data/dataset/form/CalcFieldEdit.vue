@@ -342,7 +342,7 @@ defineExpose({
   background-color: white;
   display: flex;
   align-items: center;
-  .el-icon {
+  .ed-icon {
     font-size: 14px;
     margin-right: 5.25px;
   }
@@ -389,7 +389,7 @@ defineExpose({
   background-color: white;
   display: flex;
   align-items: center;
-  .el-icon {
+  .ed-icon {
     font-size: 14px;
     margin-right: 5.25px;
   }
@@ -453,7 +453,7 @@ defineExpose({
   overflow: auto;
   margin-top: 4px;
 }
-.function-pop :deep(.el-popover) {
+.function-pop :deep(.ed-popover) {
   padding: 6px !important;
 }
 .pop-title {

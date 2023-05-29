@@ -830,7 +830,7 @@ const calculateHeight = (e: MouseEvent) => {
           background: var(--deDanger, #f54a45);
         }
 
-        .el-icon-s-order {
+        .ed-icon-s-order {
           color: var(--primary, #3370ff);
           cursor: pointer;
         }
@@ -878,7 +878,7 @@ const calculateHeight = (e: MouseEvent) => {
     width: 100%;
   }
 
-  .el-date-editor {
+  .ed-date-editor {
     width: 100%;
     display: inline-block;
   }
@@ -886,7 +886,7 @@ const calculateHeight = (e: MouseEvent) => {
   .select-type {
     width: 180px;
 
-    .el-input__inner {
+    .ed-input__inner {
       padding-left: 32px;
     }
   }

@@ -552,10 +552,10 @@ defineExpose({
 <style lang="less">
 .api-datasource-drawer {
   .input-with-select {
-    .el-input-group__prepend {
+    .ed-input-group__prepend {
       background-color: #fff;
       border-color: #bbbfc4;
-      .el-select {
+      .ed-select {
         width: 84px !important;
       }
     }

@@ -434,7 +434,7 @@ const defaultProps = {
       .title {
         margin-right: auto;
       }
-      .el-button.is-text {
+      .ed-button.is-text {
         line-height: 28px;
         height: 28px;
         width: 28px;
@@ -445,7 +445,7 @@ const defaultProps = {
       margin: 16px 8px 8px 8px;
       display: flex;
       justify-content: space-between;
-      .el-input {
+      .ed-input {
         flex: 1;
       }
 
@@ -530,7 +530,7 @@ const defaultProps = {
 </style>
 
 <style lang="less">
-.el-table-v2__header-cell {
+.ed-table-v2__header-cell {
   background-color: #f5f6f7;
 }
 .custom-tree-node {

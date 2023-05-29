@@ -232,12 +232,12 @@ init()
 </template>
 
 <style lang="less" scoped>
-.form-item-slider :deep(.el-form-item__label) {
+.form-item-slider :deep(.ed-form-item__label) {
   font-size: 12px;
   line-height: 38px;
 }
 
-.form-item :deep(.el-form-item__label) {
+.form-item :deep(.ed-form-item__label) {
   font-size: 12px;
 }
 
@@ -251,20 +251,20 @@ init()
   width: 60px;
 }
 
-.color-type :deep(.el-radio__input) {
+.color-type :deep(.ed-radio__input) {
   display: none;
 }
 
-.el-radio {
+.ed-radio {
   margin: 0 2px 0 0 !important;
   border: 1px solid transparent;
 }
 
-.el-radio :deep(.el-radio__label) {
+.ed-radio :deep(.ed-radio__label) {
   padding-left: 0;
 }
 
-.el-radio.is-checked {
+.ed-radio.is-checked {
   border: 1px solid #0a7be0;
 }
 

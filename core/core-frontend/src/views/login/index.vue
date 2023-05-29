@@ -367,10 +367,10 @@ onMounted(() => {
     @media only screen and (max-width: 1280px) {
       margin-top: 40px;
     }
-    & :deep(.el-input) {
+    & :deep(.ed-input) {
       margin: 6px 0;
     }
-    /*  & :deep(.el-input__inner) {
+    /*  & :deep(.ed-input__inner) {
       border-radius: 20px;
       border: 1px solid transparent;
       background: rgba(10, 123, 224, 0.1);

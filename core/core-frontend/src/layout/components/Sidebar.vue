@@ -17,7 +17,7 @@ const width = computed(() => `${asideWidth.value || 260}px`)
 </template>
 
 <style lang="less">
-.el-aside {
+.ed-aside {
   position: relative;
 }
 .sidebar-move-line {

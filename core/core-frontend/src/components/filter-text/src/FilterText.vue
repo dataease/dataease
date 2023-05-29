@@ -137,11 +137,11 @@ watch(
     border-radius: 4px;
   }
 
-  .el-icon-arrow-right.arrow-filter {
+  .ed-icon-arrow-right.arrow-filter {
     margin-left: 5px;
   }
 
-  .el-icon-arrow-left.arrow-filter {
+  .ed-icon-arrow-left.arrow-filter {
     margin-right: 5px;
   }
 

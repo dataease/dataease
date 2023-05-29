@@ -59,7 +59,7 @@ const emit = defineEmits(['handleCommand'])
 <style lang="less">
 .menu-more_popper {
   margin-top: -10px !important;
-  .el-popper__arrow {
+  .ed-popper__arrow {
     display: none;
   }
 }

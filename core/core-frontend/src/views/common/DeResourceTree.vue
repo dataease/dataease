@@ -272,7 +272,7 @@ onMounted(() => {
   visibility: visible;
 }
 
-:deep(.el-input__wrapper) {
+:deep(.ed-input__wrapper) {
   width: 80px;
 }
 

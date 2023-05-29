@@ -498,11 +498,11 @@ const emits = defineEmits(['update:item', 'del'])
     cursor: pointer;
   }
 
-  .el-input {
+  .ed-input {
     width: 170px;
   }
 
-  .w100.el-select {
+  .w100.ed-select {
     width: 100px;
   }
 
@@ -513,8 +513,8 @@ const emits = defineEmits(['update:item', 'del'])
   .mar5 {
     margin-left: -5px;
   }
-  :deep(.el-input-number__decrease),
-  :deep(.el-input-number__increase) {
+  :deep(.ed-input-number__decrease),
+  :deep(.ed-input-number__increase) {
     width: 20px;
     height: 12px;
     display: flex;
@@ -524,15 +524,15 @@ const emits = defineEmits(['update:item', 'del'])
     display: none;
   }
 
-  :deep(.el-input-number__decrease:hover) {
+  :deep(.ed-input-number__decrease:hover) {
     height: 16px;
-    & + .el-input-number__increase {
+    & + .ed-input-number__increase {
       height: 8px;
     }
   }
-  :deep(.el-input-number__increase:hover) {
+  :deep(.ed-input-number__increase:hover) {
     height: 16px;
-    & + .el-input-number__decrease {
+    & + .ed-input-number__decrease {
       height: 8px;
     }
   }
@@ -558,29 +558,29 @@ const emits = defineEmits(['update:item', 'del'])
     z-index: 10;
   }
 
-  :deep(.el-input-number.is-controls-right .el-input__inner) {
+  :deep(.ed-input-number.is-controls-right .ed-input__inner) {
     padding-right: 20px;
   }
 
-  .el-input-number {
+  .ed-input-number {
     line-height: 26px;
     height: 27px;
   }
 
-  :deep(.el-select) {
-    :deep(.el-input__suffix-inner) {
+  :deep(.ed-select) {
+    :deep(.ed-input__suffix-inner) {
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
 
-      .el-input__icon {
+      .ed-input__icon {
         height: auto;
       }
     }
   }
 
-  :deep(.el-input__wrapper) {
+  :deep(.ed-input__wrapper) {
     background-color: #f8f8fa;
     border: none;
     border-radius: 0;
@@ -602,9 +602,9 @@ const emits = defineEmits(['update:item', 'del'])
     text-overflow: ellipsis;
     opacity: 1;
   }
-  :deep(.el-select .el-input.is-focus .el-input__wrapper),
-  :deep(.el-select:hover:not(.el-select--disabled) .el-input__wrapper),
-  :deep(.el-select .el-input__wrapper.is-focus) {
+  :deep(.ed-select .ed-input.is-focus .ed-input__wrapper),
+  :deep(.ed-select:hover:not(.ed-select--disabled) .ed-input__wrapper),
+  :deep(.ed-select .ed-input__wrapper.is-focus) {
     box-shadow: none !important;
   }
 
@@ -615,8 +615,8 @@ const emits = defineEmits(['update:item', 'del'])
 }
 .filed:hover {
   background-color: #e9eaef;
-  :deep(.el-input-number__decrease),
-  :deep(.el-input-number__increase) {
+  :deep(.ed-input-number__decrease),
+  :deep(.ed-input-number__increase) {
     display: flex;
   }
 }
@@ -659,7 +659,7 @@ const emits = defineEmits(['update:item', 'del'])
     }
   }
 
-  .el-input {
+  .ed-input {
     font-family: inherit;
     overflow: visible;
     box-sizing: border-box;
@@ -686,7 +686,7 @@ const emits = defineEmits(['update:item', 'del'])
     border-radius: 0;
     padding-left: 26px;
 
-    .el-input__wrapper {
+    .ed-input__wrapper {
       box-shadow: none;
       border-bottom: 1px solid #e5e5e5;
       &:focus {
@@ -698,7 +698,7 @@ const emits = defineEmits(['update:item', 'del'])
     }
   }
 
-  .el-input {
+  .ed-input {
     font-family: Alibaba-PuHuiTi-Regular, Helvetica Neue, Helvetica, Arial, PingFang SC,
       Hiragino Sans GB, Microsoft YaHei, sans-serif;
     box-sizing: border-box;
@@ -742,7 +742,7 @@ const emits = defineEmits(['update:item', 'del'])
       height: 300px;
       float: left;
       box-sizing: border-box;
-      .el-input__wrapper {
+      .ed-input__wrapper {
         font-family: inherit;
         overflow: visible;
         box-sizing: border-box;

@@ -72,37 +72,37 @@ const isIncludesColor = str => {
 
 <style lang="less" scoped>
 .v-common-attr {
-  .el-input-group__prepend {
+  .ed-input-group__prepend {
     padding: 0 10px;
   }
 }
 
-:deep(.el-collapse-item__header) {
+:deep(.ed-collapse-item__header) {
   background-color: rgba(29, 36, 42, 1) !important;
   color: #ffffff;
   border-bottom: 1px solid rgba(85, 85, 85, 1);
 }
-:deep(.el-collapse-item__content) {
+:deep(.ed-collapse-item__content) {
   background-color: rgba(37, 45, 54, 1);
   color: #ffffff;
   padding-left: 5px;
 }
 
-:deep(.el-collapse-item__wrap) {
+:deep(.ed-collapse-item__wrap) {
   border-bottom: 1px solid rgba(85, 85, 85, 1);
   background-color: rgba(37, 45, 54, 1) !important;
   padding: 10px 0px 10px 0px;
 }
-:deep(.el-collapse) {
+:deep(.ed-collapse) {
   width: 100%;
 }
-:deep(.el-input__wrapper) {
+:deep(.ed-input__wrapper) {
   background-color: rgba(37, 45, 54, 1);
 }
-:deep(.el-input__inner) {
+:deep(.ed-input__inner) {
   color: #ffffff;
 }
-:deep(.el-form-item__label) {
+:deep(.ed-form-item__label) {
   color: #ffffff;
 }
 </style>

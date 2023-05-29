@@ -163,7 +163,7 @@ const onLegendChange = val => {
 </template>
 
 <style lang="less" scoped>
-.el-row {
+.ed-row {
   display: block;
 }
 
@@ -183,7 +183,7 @@ span {
 }
 
 .de-collapse-style {
-  :deep(.el-collapse-item__header) {
+  :deep(.ed-collapse-item__header) {
     height: 34px !important;
     line-height: 34px !important;
     padding: 0 0 0 6px !important;

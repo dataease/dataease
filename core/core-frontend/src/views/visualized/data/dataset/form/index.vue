@@ -790,9 +790,9 @@ const handleClick = () => {
       width: 50%;
       position: relative;
 
-      .el-input {
+      .ed-input {
         min-width: 96px;
-        .el-input__inner {
+        .ed-input__inner {
           line-height: 24px;
           height: 24px;
         }
@@ -867,7 +867,7 @@ const handleClick = () => {
           font-weight: 400;
           font-size: 14px;
           color: #646a73;
-          .el-icon {
+          .ed-icon {
             margin-right: 5.33px;
           }
         }
@@ -1025,7 +1025,7 @@ const handleClick = () => {
               }
               max-height: 200px;
               overflow-y: auto;
-              .el-tree {
+              .ed-tree {
                 animation: hg 0.5s;
               }
             }
@@ -1043,18 +1043,18 @@ const handleClick = () => {
 
 <style lang="less">
 .sql-dialog-fullscreen {
-  .el-dialog__header {
+  .ed-dialog__header {
     display: none;
   }
-  .el-dialog__body {
+  .ed-dialog__body {
     padding: 0;
   }
 }
 
-.el-select-dropdown__item {
+.ed-select-dropdown__item {
   display: flex;
   align-items: center;
-  .el-icon {
+  .ed-icon {
     font-size: 14px;
     margin-right: 5.25px;
   }

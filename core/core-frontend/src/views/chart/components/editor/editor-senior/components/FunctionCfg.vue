@@ -114,20 +114,20 @@ const changeFunctionCfg = () => {
   justify-content: space-between;
   align-items: center;
 }
-.form-item-slider :deep(.el-form-item__label) {
+.form-item-slider :deep(.ed-form-item__label) {
   font-size: 12px;
   line-height: 38px;
 }
-.form-item :deep(.el-form-item__label) {
+.form-item :deep(.ed-form-item__label) {
   font-size: 12px;
 }
-.el-select-dropdown__item {
+.ed-select-dropdown__item {
   padding: 0 20px;
 }
 span {
   font-size: 12px;
 }
-.el-form-item {
+.ed-form-item {
   margin-bottom: 6px;
 }
 
@@ -140,7 +140,7 @@ span {
   cursor: pointer;
   z-index: 1003;
 }
-.form-item :deep(.el-radio-group) {
+.form-item :deep(.ed-radio-group) {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;

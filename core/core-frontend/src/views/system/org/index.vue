@@ -243,7 +243,7 @@ const saveCallBack = () => {
 .table-container-org {
   height: calc(100vh - 260px);
 
-  :deep(.el-icon-arrow-right::before) {
+  :deep(.ed-icon-arrow-right::before) {
     content: '\E791' !important;
   }
 }

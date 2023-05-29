@@ -158,20 +158,20 @@ const changeLine = () => {
   justify-content: space-between;
   align-items: center;
 }
-.form-item-slider :deep(.el-form-item__label) {
+.form-item-slider :deep(.ed-form-item__label) {
   font-size: 12px;
   line-height: 38px;
 }
-.form-item ::v-deep .el-form-item__label {
+.form-item ::v-deep .ed-form-item__label {
   font-size: 12px;
 }
-.el-select-dropdown__item {
+.ed-select-dropdown__item {
   padding: 0 20px;
 }
 span {
   font-size: 12px;
 }
-.el-form-item {
+.ed-form-item {
   margin-bottom: 6px;
 }
 
@@ -196,15 +196,15 @@ span {
   padding: 0 10px;
 }
 
-.dialog-css :deep(.el-dialog__title) {
+.dialog-css :deep(.ed-dialog__title) {
   font-size: 14px;
 }
 
-.dialog-css :deep(.el-dialog__header) {
+.dialog-css :deep(.ed-dialog__header) {
   padding: 20px 20px 0;
 }
 
-.dialog-css :deep(.el-dialog__body) {
+.dialog-css :deep(.ed-dialog__body) {
   padding: 10px 20px 20px;
 }
 </style>

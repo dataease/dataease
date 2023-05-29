@@ -23,7 +23,7 @@ const { curComponent } = storeToRefs(dvMainStore)
   font-size: 12px;
   padding: 10px;
 }
-:deep(.el-textarea__inner) {
+:deep(.ed-textarea__inner) {
   color: #ffffff;
   background-color: #000000;
 }

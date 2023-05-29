@@ -161,7 +161,7 @@ eventBus.on('handleNew', handleNew)
       width: 288px;
       right: 0;
       top: 0;
-      .el-select {
+      .ed-select {
         width: 100%;
       }
     }

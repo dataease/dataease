@@ -175,7 +175,7 @@ const emit = defineEmits(['handleCommand'])
 .menu-more_popper_two,
 .menu-more_popper_three {
   margin-top: -10px !important;
-  .el-popper__arrow {
+  .ed-popper__arrow {
     display: none;
   }
 }
@@ -205,7 +205,7 @@ const emit = defineEmits(['handleCommand'])
   .time-col {
     padding: 0;
 
-    .el-dropdown {
+    .ed-dropdown {
       width: 100%;
     }
   }

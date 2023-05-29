@@ -254,7 +254,7 @@ init()
   align-items: center;
 }
 
-.form-item :deep(.el-form-item__label) {
+.form-item :deep(.ed-form-item__label) {
   font-size: 12px;
 }
 
@@ -274,7 +274,7 @@ span {
   width: 100px !important;
 }
 
-.el-select-dropdown__item {
+.ed-select-dropdown__item {
   padding: 0 20px;
   font-size: 12px;
 }
@@ -287,7 +287,7 @@ span {
   margin-top: 6px;
 }
 
-.color-picker-style :deep(.el-color-picker__trigger) {
+.color-picker-style :deep(.ed-color-picker__trigger) {
   width: 28px;
   height: 28px;
 }
