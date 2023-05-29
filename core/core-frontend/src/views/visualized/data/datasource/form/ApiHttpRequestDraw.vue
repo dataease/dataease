@@ -1,13 +1,14 @@
 <script lang="tsx" setup>
 import { ref, reactive, shallowRef, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElIcon } from 'element-plus-secondary'
+import { ElIcon, ElMessage } from 'element-plus-secondary'
 import ApiHttpRequestForm from './ApiHttpRequestForm.vue'
 import { Icon } from '@/components/icon-custom'
 import type { ApiRequest } from './ApiHttpRequestForm.vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { Base64 } from 'js-base64'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import { checkApiItem } from '../../../../../api/datasource.ts'
 export interface Field {
   name: string
   value: Array<{}>
@@ -19,12 +20,13 @@ export interface ApiItem {
   name: string
   url: string
   method: string
-  dataPath: string
   request: ApiRequest
   fields: Field[]
   jsonFields: JsonField[]
   useJsonPath: boolean
+  showApiStructure: boolean
   jsonPath: string
+  serialNumber: number
 }
 
 export interface JsonField {
@@ -51,7 +53,6 @@ const apiItem = reactive<ApiItem>({
   name: '',
   url: '',
   method: 'GET',
-  dataPath: '',
   request: {
     changeId: '',
     rest: [],
@@ -69,22 +70,11 @@ const apiItem = reactive<ApiItem>({
     }
   },
   fields: [],
-  jsonFields: [
-    {
-      deType: 0,
-      size: 65535,
-      children: null,
-      name: 'comments',
-      checked: false,
-      extField: 0,
-      jsonPath: '$[*].comments',
-      type: 'STRING',
-      originName: 'comments',
-      deExtractType: 0
-    }
-  ],
+  jsonFields: [],
   useJsonPath: false,
-  jsonPath: ''
+  showApiStructure: false,
+  jsonPath: '',
+  serialNumber: -1
 })
 let errMsg = []
 const api_table_title = ref('')
@@ -120,18 +110,22 @@ const rule = reactive<FormRules>({
 const fieldType = (deType: number) => {
   return ['text', '', 'value', 'value'][deType]
 }
-
 const initApiItem = (val: ApiItem) => {
   Object.assign(apiItem, val)
   edit_api_item.value = true
+  active.value = 1
 }
 
 const showApiData = () => {
   apiItemBasicInfo.value.validate(valid => {
     if (valid) {
+      apiItem.showApiStructure = true
       const data = Base64.encode(JSON.stringify(apiItem))
       loading.value = true
-      console.log('data', data)
+      // checkApiItem({ data: data }).then(response => {
+      //
+      // })
+      loading.value = false
       // res.data.jsonFields.forEach(((item) => {
       //       item.checked = false
       //     }))
@@ -167,8 +161,8 @@ const reqOptions = [
 ]
 
 const isUseJsonPath = [
-  { id: true, label: t('commons.yes') },
-  { id: false, label: t('commons.no') }
+  { id: true, label: t('common.yes') },
+  { id: false, label: t('common.no') }
 ]
 
 const fieldOptions = [
@@ -181,12 +175,28 @@ const fieldOptions = [
 ]
 const disabledNext = ref(false)
 const saveItem = () => {
-  console.log('saveItem')
+  if (apiItem.fields.length === 0) {
+    ElMessage.warning(t('datasource.api_field_not_empty'))
+    return
+  }
+  for (let i = 0; i < apiItem.fields.length - 1; i++) {
+    for (let j = i + 1; j < apiItem.fields.length; j++) {
+      if (apiItem.fields[i].name === apiItem.fields[j].name) {
+        ElMessage.warning(apiItem.fields[i].name + ', ' + t('datasource.has_repeat_field_name'))
+        return
+      }
+    }
+  }
+  returnAPIItem('returnItem', apiItem)
+  edit_api_item.value = false
 }
 const before = () => {
   active.value -= 1
 }
 const next = () => {
+  checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
+    apiItem.jsonFields = response.jsonFields
+  })
   active.value += 1
 }
 const closeEditItem = () => {
@@ -195,6 +205,7 @@ const closeEditItem = () => {
 const previewData = () => {
   showEmpty.value = false
   const data = []
+  const columnTmp = []
   let maxPreviewNum = 0
   for (let j = 0; j < apiItem.fields.length; j++) {
     if (apiItem.fields[j].value && apiItem.fields[j].value.length > maxPreviewNum) {
@@ -207,9 +218,19 @@ const previewData = () => {
   for (let i = 0; i < apiItem.fields.length; i++) {
     for (let j = 0; j < apiItem.fields[i].value.length; j++) {
       data[j][apiItem.fields[i].name] = apiItem.fields[i].value[j]
+      data[j]['id'] = apiItem.fields[i].name
     }
+    columnTmp.push({
+      key: apiItem.fields[i].name,
+      dataKey: apiItem.fields[i].name,
+      title: apiItem.fields[i].name,
+      width: 150
+    })
     nextTick(() => {
       tableData.value = data
+    })
+    nextTick(() => {
+      columns.value = columnTmp
     })
   }
   showEmpty.value = apiItem.fields.length === 0
@@ -268,7 +289,6 @@ const handleCheckAllChange = row => {
     //            i18n.t('datasource.has_repeat_field_name')
     // )
   }
-  console.log('handleCheckAllChange')
 }
 const changeId = (val: string) => {
   apiItem.request.body.typeChange = val
@@ -292,6 +312,8 @@ const authConfigChange = val => {
 const kvsChange = val => {
   apiItem.request.body.kvs = val
 }
+
+const returnAPIItem = defineEmits(['returnItem'])
 
 defineExpose({
   initApiItem
@@ -326,10 +348,10 @@ defineExpose({
         <div class="title-form_primary">
           <span>{{ t('datasource.base_info') }}</span>
         </div>
-        <el-form-item :label="t('commons.name')" prop="name">
+        <el-form-item :label="t('common.name')" prop="name">
           <el-input
             v-model="apiItem.name"
-            :placeholder="t('commons.input_name')"
+            :placeholder="t('common.input_name')"
             autocomplete="off"
           />
         </el-form-item>
@@ -510,7 +532,7 @@ defineExpose({
         </div>
 
         <div class="title-form_primary">
-          <span>{{ t('dataset.data_preview') }}</span>
+          <span>{{ t('datasource.data_preview') }}</span>
         </div>
         <empty-background
           v-if="showEmpty"
@@ -535,15 +557,15 @@ defineExpose({
       </el-form>
     </el-row>
     <template #footer>
-      <el-button @click="closeEditItem">{{ t('commons.cancel') }}</el-button>
+      <el-button @click="closeEditItem">{{ t('common.cancel') }}</el-button>
       <el-button v-show="active === 1" type="primary" :disabled="disabledNext" @click="next"
-        >{{ t('fu.steps.next') }}
+        >{{ t('common.next') }}
       </el-button>
       <el-button v-show="active === 2" type="primary" @click="before"
-        >{{ t('fu.steps.prev') }}
+        >{{ t('common.prev') }}
       </el-button>
       <el-button v-show="active === 2" type="primary" @click="saveItem"
-        >{{ t('commons.save') }}
+        >{{ t('common.save') }}
       </el-button>
     </template>
   </el-drawer>

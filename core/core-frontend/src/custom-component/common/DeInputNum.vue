@@ -28,7 +28,7 @@ const { name, value, min, max } = toRefs(props)
   width: 80px;
 }
 :deep(.ed-input__wrapper) {
-  background-color: rgba(37, 45, 54, 1);
+  background-color: rgba(0, 0, 0, 0);
   padding-left: 5px !important;
   padding-right: 30px !important;
 }
@@ -38,11 +38,11 @@ const { name, value, min, max } = toRefs(props)
 }
 
 :deep(.ed-input-number__decrease) {
-  background-color: rgba(37, 45, 54, 1);
+  background-color: rgba(0, 0, 0, 0);
   color: #ffffff;
 }
 :deep(.ed-input-number__increase) {
-  background-color: rgba(37, 45, 54, 1);
+  background-color: rgba(0, 0, 0, 0);
   color: #ffffff;
 }
 </style>

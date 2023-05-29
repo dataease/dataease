@@ -32,16 +32,11 @@ const onAssistLineChange = val => {
 
 <template>
   <el-row class="view-panel">
-    <div
-      :style="{
-        overflow: 'auto',
-        height: '100%',
-        width: '100%'
-      }"
-      class="attr-style"
-    >
+    <div class="attr-style">
       <el-row class="de-collapse-style">
-        <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
+        <el-row class="prop prop-top">
+          <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
+        </el-row>
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
           <el-collapse-item name="function" :title="$t('chart.function_cfg')">
             <function-cfg :chart="props.chart" @onFunctionCfgChange="onFunctionCfgChange" />
@@ -54,7 +49,9 @@ const onAssistLineChange = val => {
       </el-row>
 
       <el-row class="de-collapse-style">
-        <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
+        <el-row class="prop">
+          <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
+        </el-row>
         <el-collapse v-model="styleActiveNames" class="style-collapse">
           <el-collapse-item name="analyse" :title="$t('chart.assist_line')">
             <assist-line
@@ -85,7 +82,6 @@ span {
 .view-panel {
   display: flex;
   height: 100%;
-  background-color: #f7f8fa;
   width: 100%;
 }
 
@@ -97,5 +93,11 @@ span {
     font-size: 12px !important;
     font-weight: 400 !important;
   }
+}
+.prop {
+  border-bottom: 1px solid @side-outline-border-color;
+}
+.prop-top {
+  border-top: 1px solid @side-outline-border-color;
 }
 </style>

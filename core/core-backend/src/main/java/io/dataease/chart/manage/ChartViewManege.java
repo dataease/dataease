@@ -18,6 +18,7 @@ import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -39,6 +40,7 @@ public class ChartViewManege {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    @Transactional
     public ChartViewDTO save(ChartViewDTO chartViewDTO) throws Exception {
         Long id = chartViewDTO.getId();
         if (id == null) {

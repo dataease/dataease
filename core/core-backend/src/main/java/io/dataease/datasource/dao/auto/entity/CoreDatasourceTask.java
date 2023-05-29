@@ -11,7 +11,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-04-17
+ * @since 2023-05-25
  */
 @TableName("core_datasource_task")
 public class CoreDatasourceTask implements Serializable {
@@ -25,9 +25,9 @@ public class CoreDatasourceTask implements Serializable {
     private Long id;
 
     /**
-     * 表ID
+     * 数据源ID
      */
-    private String tableId;
+    private Long dsId;
 
     /**
      * 任务名称
@@ -35,9 +35,9 @@ public class CoreDatasourceTask implements Serializable {
     private String name;
 
     /**
-     * 更新方式：0-全量更新 1-增量更新
+     * 更新方式
      */
-    private String type;
+    private String updateType;
 
     /**
      * 开始时间
@@ -47,7 +47,7 @@ public class CoreDatasourceTask implements Serializable {
     /**
      * 执行频率：0 一次性 1 cron
      */
-    private String rate;
+    private String syncRate;
 
     /**
      * cron表达式
@@ -57,7 +57,7 @@ public class CoreDatasourceTask implements Serializable {
     /**
      * 结束限制 0 无限制 1 设定结束时间
      */
-    private String end;
+    private Long endLimit;
 
     /**
      * 结束时间
@@ -94,12 +94,12 @@ public class CoreDatasourceTask implements Serializable {
         this.id = id;
     }
 
-    public String getTableId() {
-        return tableId;
+    public Long getDsId() {
+        return dsId;
     }
 
-    public void setTableId(String tableId) {
-        this.tableId = tableId;
+    public void setDsId(Long dsId) {
+        this.dsId = dsId;
     }
 
     public String getName() {
@@ -110,12 +110,12 @@ public class CoreDatasourceTask implements Serializable {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getUpdateType() {
+        return updateType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setUpdateType(String updateType) {
+        this.updateType = updateType;
     }
 
     public Long getStartTime() {
@@ -126,12 +126,12 @@ public class CoreDatasourceTask implements Serializable {
         this.startTime = startTime;
     }
 
-    public String getRate() {
-        return rate;
+    public String getSyncRate() {
+        return syncRate;
     }
 
-    public void setRate(String rate) {
-        this.rate = rate;
+    public void setSyncRate(String syncRate) {
+        this.syncRate = syncRate;
     }
 
     public String getCron() {
@@ -142,12 +142,12 @@ public class CoreDatasourceTask implements Serializable {
         this.cron = cron;
     }
 
-    public String getEnd() {
-        return end;
+    public Long getEndLimit() {
+        return endLimit;
     }
 
-    public void setEnd(String end) {
-        this.end = end;
+    public void setEndLimit(Long endLimit) {
+        this.endLimit = endLimit;
     }
 
     public Long getEndTime() {
@@ -202,13 +202,13 @@ public class CoreDatasourceTask implements Serializable {
     public String toString() {
         return "CoreDatasourceTask{" +
         "id = " + id +
-        ", tableId = " + tableId +
+        ", dsId = " + dsId +
         ", name = " + name +
-        ", type = " + type +
+        ", updateType = " + updateType +
         ", startTime = " + startTime +
-        ", rate = " + rate +
+        ", syncRate = " + syncRate +
         ", cron = " + cron +
-        ", end = " + end +
+        ", endLimit = " + endLimit +
         ", endTime = " + endTime +
         ", createTime = " + createTime +
         ", lastExecTime = " + lastExecTime +

@@ -1,17 +1,21 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
-import { ElIcon } from 'element-plus-secondary'
+import { reactive, ref } from 'vue'
+import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import type { DsType } from './DsTypeList.vue'
-import { useI18n } from '@/hooks/web/useI18n'
 import DsTypeList from './DsTypeList.vue'
+import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
+import { validate, save } from '../../../../../api/datasource.ts'
+import { Base64 } from 'js-base64'
+
 interface Node {
   name: string
   id: string
   type: DsType
 }
+
 const { t } = useI18n()
 
 const dsType = ['OLTP', 'OLAP', 'dataWarehouseLake', 'OTHER']
@@ -19,10 +23,10 @@ const dsType = ['OLTP', 'OLAP', 'dataWarehouseLake', 'OTHER']
 const nameMap = {
   OLTP: 'OLTP',
   OLAP: 'OLAP',
-  dataWarehouseLake: t('datasource.data_warehouse_lake'),
+  dataWarehouseLake: t('datasource.dl'),
   OTHER: t('datasource.other'),
-  LOCAL: '本地文件',
-  API: 'API数据'
+  LOCAL: t('datasource.local_file'),
+  API: 'API:'
 }
 
 const state = reactive({
@@ -44,6 +48,37 @@ state.datasourceTree = dsType.map(ele => {
   }
 })
 
+export interface Configuration {
+  dataBase: string
+  extraParams: string
+  username: string
+  password: string
+  host: string
+  authMethod: string
+  port: string
+}
+
+export interface ApiConfiguration {
+  id: string
+  name: string
+  method: string
+  url: string
+  status: string
+  useJsonPath: boolean
+  serialNumber: number
+}
+
+export interface SyncSetting {
+  updateType: string
+  syncRate: string
+  simple_cron_value: number
+  simple_cron_type: string
+  startTime: number
+  endTime: number
+  endLimit: number
+  cron: string
+}
+
 const activeStep = ref(1)
 const detail = ref()
 const currentType = ref<DsType>('OLTP')
@@ -56,13 +91,70 @@ const selectDsType = (type: string) => {
 const handleNodeClick = (data: Node) => {
   currentType.value = data.type
 }
+
+const next = () => {
+  activeStep.value = activeStep.value + 1
+}
+const prev = () => {
+  activeStep.value = activeStep.value - 1
+}
+
+const validateDS = () => {
+  const request = JSON.parse(JSON.stringify(form))
+  if (form.type === 'API') {
+    if (form.apiConfiguration.length == 0) {
+      return
+    }
+    request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
+  } else {
+    request.configuration = Base64.encode(JSON.stringify(request.configuration))
+  }
+  validate(request).then(res => {
+    ElMessage.success(t('datasource.validate_success'))
+  })
+}
+
+const saveDS = () => {
+  const request = JSON.parse(JSON.stringify(form))
+  if (form.type === 'API') {
+    if (form.apiConfiguration.length == 0) {
+      return
+    }
+    request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
+    request.syncSetting.startTime = new Date(request.syncSetting.startTime).getTime()
+    request.syncSetting.endTime = new Date(request.syncSetting.endTime).getTime()
+  } else {
+    request.configuration = Base64.encode(JSON.stringify(request.configuration))
+  }
+
+  save(request).then(res => {
+    ElMessage.success(t('common.save_success'))
+  })
+}
+
+// const save = (data: Node) => {
+//   currentType.value = data.type
+// }
+const form = reactive<{
+  name: string
+  description: string
+  type: string
+  configuration?: Configuration
+  apiConfiguration?: ApiConfiguration[]
+  syncSetting?: SyncSetting
+}>({
+  name: '',
+  description: '',
+  type: 'API',
+  apiConfiguration: []
+})
 </script>
 
 <template>
   <div class="datasource">
     <div class="ds-type-select">
       <div class="title">
-        新建数据源
+        {{ t('datasource.create') }}
         <el-input class="m24 w100" v-model="nickName" clearable>
           <template #prefix>
             <el-icon>
@@ -83,8 +175,9 @@ const handleNodeClick = (data: Node) => {
     <div class="ds-editor">
       <div class="editor-step flex-center">
         <el-steps :active="activeStep" align-center>
-          <el-step title="选择数据源类型" />
-          <el-step title="录入数据源信息" />
+          <el-step :title="t('datasource.select_ds_type')" />
+          <el-step :title="t('datasource.ds_info')" />
+          <el-step v-show="currentDsType === 'API'" :title="t('datasource.sync_info')" />
         </el-steps>
       </div>
       <div class="editor-content">
@@ -95,6 +188,8 @@ const handleNodeClick = (data: Node) => {
         ></ds-type-list>
         <editor-detail
           ref="detail"
+          :form="form"
+          :active-step="activeStep"
           v-show="currentDsType && currentDsType !== 'Db2'"
         ></editor-detail>
         <template v-if="currentDsType == 'Db2'">
@@ -102,10 +197,11 @@ const handleNodeClick = (data: Node) => {
         </template>
       </div>
       <div class="editor-footer">
-        <el-button secondary> 取消 </el-button>
-        <el-button type="primary"> 上一步 </el-button>
-        <el-button type="primary"> 下一步 </el-button>
-        <el-button type="primary"> 确定 </el-button>
+        <el-button secondary> {{ t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="next"> {{ t('common.next') }}</el-button>
+        <el-button type="primary" @click="prev"> {{ t('common.prev') }}</el-button>
+        <el-button type="primary" @click="validateDS"> {{ t('datasource.validate') }}</el-button>
+        <el-button type="primary" @click="saveDS"> {{ t('common.sure') }}</el-button>
       </div>
     </div>
   </div>

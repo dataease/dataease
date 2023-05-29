@@ -25,7 +25,7 @@ public class DatasourceDTO implements Serializable {
     /**
      * 描述
      */
-    private String desc;
+    private String description;
 
     /**
      * 类型
@@ -34,12 +34,16 @@ public class DatasourceDTO implements Serializable {
 
     private String typeAlias;
 
+    private String catalog;
 
+    private String catalogDesc;
 
     /**
      * 详细信息
      */
     private String configuration;
+
+    private String apiConfigurationStr;
 
     /**
      * Create timestamp
@@ -60,4 +64,6 @@ public class DatasourceDTO implements Serializable {
      * 状态
      */
     private String status;
+
+    private TaskDTO syncSetting;
 }

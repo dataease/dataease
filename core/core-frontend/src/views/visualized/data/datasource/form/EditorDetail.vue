@@ -1,43 +1,55 @@
 <script lang="ts" setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { clone } from 'lodash-es'
 import ApiHttpRequestDraw from './ApiHttpRequestDraw.vue'
+import { Configuration, ApiConfiguration, SyncSetting } from './index.vue'
+import { validateById, save, validate } from '../../../../../api/datasource.ts'
+import { Base64 } from 'js-base64'
+import { ElForm, ElMessage } from 'element-plus-secondary'
+// import cron from './Cron.vue'
+
 const { t } = useI18n()
-interface Configuration {
-  dataBase: string
-  extraParams: string
-  username: string
-  password: string
-  host: string
-  authMethod: string
-  port: string
-}
 
-interface ApiConfiguration {
-  id: string
-  name: string
-  method: string
-  url: string
-  status: string
-  useJsonPath: boolean
-  serialNumber: number
-}
-
-const form = reactive<{
-  name: string
-  desc: string
-  type: string
-  configuration?: Configuration
-  apiConfiguration?: ApiConfiguration[]
-}>({
-  name: '',
-  desc: '',
-  type: 'API',
-  apiConfiguration: []
+const prop = defineProps({
+  form: {
+    required: false,
+    default() {
+      return reactive<{
+        id: number
+        name: string
+        desc: string
+        type: string
+        syncSetting?: SyncSetting
+        configuration?: Configuration
+        apiConfiguration?: ApiConfiguration[]
+      }>({
+        id: 0,
+        name: '',
+        desc: '',
+        type: 'API',
+        apiConfiguration: []
+      })
+    },
+    type: Object
+  },
+  editDs: {
+    required: false,
+    default: false,
+    type: Boolean
+  },
+  activeStep: {
+    required: false,
+    default: 1,
+    type: Number
+  }
 })
+
+const { form, editDs, activeStep } = toRefs(prop)
+
+const dsFormDisabled = ref(false)
 
 const state = reactive({
   apiItem: {
@@ -45,6 +57,8 @@ const state = reactive({
   }
 })
 const dsForm = ref<FormInstance>()
+
+const cronEdit = ref(true)
 
 const rule = reactive<FormRules>({
   name: [
@@ -60,7 +74,7 @@ const rule = reactive<FormRules>({
       trigger: 'blur'
     }
   ],
-  desc: [
+  description: [
     {
       required: true,
       trigger: 'blur'
@@ -88,7 +102,7 @@ const defaultApiItem = {
 
 const initForm = type => {
   if (type !== 'API') {
-    form.configuration = {
+    form.value.configuration = {
       dataBase: '',
       extraParams: '',
       username: '',
@@ -99,14 +113,32 @@ const initForm = type => {
     }
     setRules()
   }
-  form.type = type
-
+  if (type === 'API') {
+    form.value.syncSetting = {
+      updateType: 'all_scope',
+      syncRate: 'CRON',
+      simple_cron_value: '',
+      simple_cron_type: '',
+      startTime: '',
+      endTime: '',
+      endLimit: '',
+      cron: ''
+    }
+  }
+  form.value.type = type
   setTimeout(() => {
     dsForm.value.clearValidate()
   }, 0)
 }
 
-const notapiexcelconfig = computed(() => form.type !== 'API')
+const initEditForm = () => {
+  if (editDs.value) {
+    dsFormDisabled.value = true
+  }
+}
+
+const notapiexcelconfig = computed(() => form.value.type !== 'API')
+
 const authMethodList = [
   {
     id: 'passwd',
@@ -156,7 +188,7 @@ const setRules = () => {
     ],
     'configuration.extraParams': [
       {
-        required: true,
+        required: false,
         message: t('datasource.please_input_url'),
         trigger: 'blur'
       }
@@ -171,8 +203,6 @@ const setRules = () => {
   }
   Object.assign(rule, configRules)
 }
-
-const dsFormDisabled = ref(false)
 
 const copyItem = (item?: ApiConfiguration) => {
   if (dsFormDisabled.value) {
@@ -201,24 +231,41 @@ const copyItem = (item?: ApiConfiguration) => {
   //   this.form.apiConfiguration.push(newItem)
   //   this.openMessageSuccess('datasource.success_copy')
 }
-const addApiItem = (item?: ApiConfiguration) => {
-  if (dsFormDisabled.value) {
-    return
-  }
+const addApiItem = item => {
   api_table_title.value = t('datasource.data_table')
   if (item) {
     state.apiItem = clone(item)
   } else {
     state.apiItem = clone(defaultApiItem)
     state.apiItem.serialNumber =
-      form.apiConfiguration.length > 0
-        ? form.apiConfiguration[form.apiConfiguration.length - 1].serialNumber + 1
+      form.value.apiConfiguration.length > 0
+        ? form.value.apiConfiguration[form.value.apiConfiguration.length - 1].serialNumber + 1
         : 0
   }
   editApiItem.value.initApiItem(state.apiItem)
 }
+
+// const addApiItem = (item?: ApiConfiguration) => {
+//   console.log(form.value.apiConfiguration)
+//   if (dsFormDisabled.value) {
+//     return
+//   }
+//   api_table_title.value = t('datasource.data_table')
+//   if (item) {
+//     state.apiItem = clone(item)
+//     console.log(item)
+//     console.log(state.apiItem)
+//   } else {
+//     state.apiItem = clone(defaultApiItem)
+//     state.apiItem.serialNumber =
+//       form.value.apiConfiguration.length > 0
+//         ? form.value.apiConfiguration[form.value.apiConfiguration.length - 1].serialNumber + 1
+//         : 0
+//   }
+//   editApiItem.value.initApiItem(state.apiItem)
+// }
 const deleteItem = item => {
-  form.apiConfiguration.splice(form.apiConfiguration.indexOf(item), 1)
+  form.value.apiConfiguration.splice(form.value.apiConfiguration.indexOf(item), 1)
 }
 const cancelItem = ({ name }) => {
   //   this.$refs[`apiTable${name}`][0].doClose()
@@ -226,27 +273,150 @@ const cancelItem = ({ name }) => {
 const submitForm = () => {
   dsForm.value.validate((valid, fields) => {
     if (valid) {
-      console.log('submit!')
     } else {
       console.log('error submit!', fields)
     }
   })
+  return form
 }
 
 const resetForm = () => {
   dsForm.value.resetFields()
 }
 
+const returnItem = apiItem => {
+  var find = false
+  for (let i = 0; i < form.value.apiConfiguration.length; i++) {
+    if (form.value.apiConfiguration[i].serialNumber === apiItem.serialNumber) {
+      find = true
+      form.value.apiConfiguration[i] = JSON.parse(JSON.stringify(apiItem))
+    }
+  }
+  if (!find) {
+    form.value.apiConfiguration.push(apiItem)
+  }
+}
+
+const onRateChange = () => {
+  if (form.value.syncSetting.syncRate === 'SIMPLE') {
+    form.value.syncSetting.endLimit = 0
+    form.value.syncSetting.endTime = 0
+    form.value.syncSetting.cron = ''
+  }
+  if (form.value.syncSetting.syncRate === 'SIMPLE_CRON') {
+    form.value.syncSetting.cron = '0 0 0/1 *  * ? *'
+  }
+  if (form.value.syncSetting.syncRate === 'CRON') {
+    form.value.syncSetting.cron = '00 00 * ? * * *'
+  }
+}
+
+const onSimpleCronChange = () => {
+  if (form.value.syncSetting.simple_cron_type === 'minute') {
+    if (
+      form.value.syncSetting.simple_cron_value < 1 ||
+      form.value.syncSetting.simple_cron_value > 59
+    ) {
+      ElMessage.warning(t('cron.minute_limit'))
+      form.value.syncSetting.simple_cron_value = 59
+    }
+    form.value.syncSetting.cron = '0 0/' + form.value.syncSetting.simple_cron_value + ' * * * ? *'
+    return
+  }
+  if (form.value.syncSetting.simple_cron_type === 'hour') {
+    if (
+      form.value.syncSetting.simple_cron_value < 1 ||
+      form.value.syncSetting.simple_cron_value > 23
+    ) {
+      ElMessage.warning(t('cron.hour_limit'))
+      form.value.syncSetting.simple_cron_value = 23
+    }
+    form.value.syncSetting.cron = '0 0 0/' + form.value.syncSetting.simple_cron_value + ' * * ? *'
+    return
+  }
+  if (form.value.syncSetting.simple_cron_type === 'day') {
+    if (
+      form.value.syncSetting.simple_cron_value < 1 ||
+      form.value.syncSetting.simple_cron_value > 31
+    ) {
+      ElMessage.warning(t('cron.day_limit'))
+      form.value.syncSetting.simple_cron_value = 31
+    }
+    form.value.syncSetting.cron = '0 0 0 1/' + form.value.syncSetting.simple_cron_value + ' * ? *'
+    return
+  }
+}
+
+const editForm = () => {
+  dsFormDisabled.value = false
+}
+
+const cancel = () => {
+  dsFormDisabled.value = true
+}
+
+const saveDs = () => {
+  const request = JSON.parse(JSON.stringify(form.value))
+  if (form.value.type === 'API') {
+    if (form.value.apiConfiguration.length == 0) {
+      return
+    }
+    request.syncSetting.startTime = new Date(request.syncSetting.startTime).getTime()
+    request.syncSetting.endTime = new Date(request.syncSetting.endTime).getTime()
+    request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
+  } else {
+    request.configuration = Base64.encode(JSON.stringify(request.configuration))
+  }
+  save(request).then(res => {
+    ElMessage.success(t('common.save_success'))
+  })
+}
+
+const validateDS = () => {
+  const request = JSON.parse(JSON.stringify(form.value))
+  if (form.value.type === 'API') {
+    if (form.value.apiConfiguration.length == 0) {
+      return
+    }
+    request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
+  } else {
+    request.configuration = Base64.encode(JSON.stringify(request.configuration))
+  }
+
+  if (editDs.value && dsFormDisabled.value) {
+    validateById(form.value.id).then(res => {
+      ElMessage.success(t('datasource.validate_success'))
+    })
+  } else {
+    validate(request).then(res => {
+      ElMessage.success(t('datasource.validate_success'))
+    })
+  }
+}
+
 defineExpose({
   submitForm,
   resetForm,
-  initForm
+  initForm,
+  initEditForm
 })
 </script>
 
 <template>
   <div class="editor-detail">
-    <div class="detail-inner">
+    <div class="detail-inner" v-show="activeStep != 2">
+      <div v-show="editDs">
+        <el-button v-show="!dsFormDisabled" @click="() => cancel()">{{
+          t('common.cancel')
+        }}</el-button>
+        <el-button @click="() => validateDS()">{{ t('datasource.validate') }}</el-button>
+        <el-button v-show="dsFormDisabled" type="primary" @click="() => editForm()">{{
+          t('common.edit')
+        }}</el-button>
+        <el-button v-show="!dsFormDisabled" type="primary" @click="() => saveDs()">{{
+          t('common.sure')
+        }}</el-button>
+      </div>
       <div class="title-form_primary">
         {{ t('datasource.basic_info') }}
       </div>
@@ -266,8 +436,14 @@ defineExpose({
             :placeholder="t('datasource.input_name')"
           />
         </el-form-item>
-        <el-form-item :label="t('commons.description')" prop="desc">
-          <el-input type="textarea" v-model="form.desc" :row="5" :maxlength="50" show-word-limit />
+        <el-form-item :label="t('common.description')" prop="description">
+          <el-input
+            type="textarea"
+            v-model="form.description"
+            :row="5"
+            :maxlength="50"
+            show-word-limit
+          />
         </el-form-item>
         <template v-if="form.type == 'API'">
           <div class="title-form_primary flex-space">
@@ -276,7 +452,7 @@ defineExpose({
               <template #icon>
                 <Icon name="icon_search-outline_outlined"></Icon>
               </template>
-              {{ t('commons.add') }}
+              {{ t('common.add') }}
             </el-button>
           </div>
           <empty-background
@@ -368,14 +544,6 @@ defineExpose({
             />
           </el-form-item>
 
-          <el-form-item :label="t('datasource.datasource_url')" prop="configuration.host">
-            <el-input
-              v-model="form.configuration.host"
-              :placeholder="t('datasource.please_input_datasource_url')"
-              autocomplete="off"
-            />
-          </el-form-item>
-
           <el-form-item :label="t('datasource.data_base')" prop="configuration.dataBase">
             <el-input
               v-model="form.configuration.dataBase"
@@ -384,7 +552,11 @@ defineExpose({
             />
           </el-form-item>
 
-          <el-form-item :label="t('datasource.auth_method')" prop="configuration.authMethod">
+          <el-form-item
+            :label="t('datasource.auth_method')"
+            prop="configuration.authMethod"
+            v-if="form.type === 'presto'"
+          >
             <el-select
               style="width: 100%"
               v-model="form.configuration.authMethod"
@@ -399,35 +571,159 @@ defineExpose({
             </el-select>
           </el-form-item>
 
-          <el-form-item :label="t('datasource.client_principal')" prop="configuration.username">
+          <el-form-item
+            :label="t('datasource.client_principal')"
+            prop="configuration.username"
+            v-if="form.type === 'presto'"
+          >
             <el-input v-model="form.configuration.username" autocomplete="off" />
           </el-form-item>
 
-          <el-form-item :label="t('datasource.keytab_Key_path')" prop="configuration.password">
+          <el-form-item
+            :label="t('datasource.keytab_Key_path')"
+            prop="configuration.password"
+            v-if="form.type === 'presto'"
+          >
             <el-input type="password" v-model="form.configuration.password" />
             <p>
               {{ t('datasource.kerbers_info') }}
             </p>
           </el-form-item>
-          <el-form-item prop="configuration.extraParams" :label="t('datasource.extra_params')">
-            <el-input
-              v-model="form.configuration.extraParams"
-              :placeholder="t('fu.search_bar.please_input') + t('datasource.extra_params')"
-              autocomplete="off"
-            />
+
+          <el-form-item
+            :label="t('datasource.user_name')"
+            prop="configuration.username"
+            v-if="form.type !== 'presto'"
+          >
+            <el-input v-model="form.configuration.username" autocomplete="off" />
+          </el-form-item>
+
+          <el-form-item
+            :label="t('datasource.password')"
+            prop="configuration.password"
+            v-if="form.type !== 'presto'"
+          >
+            <el-input type="password" v-model="form.configuration.password" />
+          </el-form-item>
+          <el-form-item :label="t('datasource.extra_params')">
+            <el-input v-model="form.configuration.extraParams" autocomplete="off" />
           </el-form-item>
           <el-form-item :label="t('datasource.port')" prop="configuration.port">
-            <el-input
-              v-model="form.configuration.port"
-              autocomplete="off"
-              type="number"
-              :placeholder="t('components.enter_the_port')"
-              min="0"
-            />
+            <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
           </el-form-item>
         </template>
       </el-form>
-      <api-http-request-draw ref="editApiItem"></api-http-request-draw>
+      <api-http-request-draw @return-item="returnItem" ref="editApiItem"></api-http-request-draw>
+    </div>
+    <div v-if="activeStep === 2 || (editDs && form.type === 'API')">
+      <el-form
+        ref="dsForm"
+        :model="form"
+        :rules="rule"
+        :disabled="dsFormDisabled"
+        label-width="180px"
+        label-position="top"
+        require-asterisk-position="right"
+      >
+        <el-form-item :label="$t('datasource.update_type')" prop="type">
+          <el-radio-group v-model="form.syncSetting.updateType">
+            <el-radio label="all_scope">{{ $t('datasource.all_scope') }}</el-radio>
+            <el-radio label="add_scope"> {{ $t('datasource.add_scope') }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item :label="$t('datasource.execute_rate')" prop="rate">
+          <el-radio-group v-model="form.syncSetting.syncRate" @change="onRateChange">
+            <el-radio label="RIGHTNOW">{{ $t('datasource.execute_once') }}</el-radio>
+            <el-radio label="CRON">{{ $t('datasource.cron_config') }}</el-radio>
+            <el-radio label="SIMPLE_CRON">{{ $t('datasource.simple_cron') }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <div v-if="form.syncSetting.syncRate !== 'RIGHTNOW'" class="execute-rate-cont">
+          <el-form-item
+            v-if="form.syncSetting.syncRate === 'SIMPLE_CRON'"
+            :label="$t('datasource.execute_rate')"
+            prop="rate"
+          >
+            <div class="simple-cron">
+              {{ $t('common.every') }}
+              <el-input-number
+                v-model="form.syncSetting.simple_cron_value"
+                controls-position="right"
+                :min="1"
+                size="small"
+                @change="onSimpleCronChange()"
+              />
+              <el-select
+                v-model="form.syncSetting.simple_cron_type"
+                filterable
+                size="small"
+                @change="onSimpleCronChange()"
+              >
+                <el-option :label="$t('common.minute')" value="minute" />
+                <el-option :label="$t('common.hour')" value="hour" />
+                <el-option :label="$t('common.day')" value="day" />
+              </el-select>
+              {{ $t('common.every_exec') }}
+            </div>
+          </el-form-item>
+          <el-form-item
+            v-if="form.syncSetting.syncRate === 'CRON'"
+            prop="cron"
+            :label="$t('common.cron_exp')"
+          >
+            <el-popover v-model="cronEdit">
+              <!--              <cron-->
+              <!--                v-model="form.cron"-->
+              <!--                :is-rate="form.syncRate === 'CRON'"-->
+              <!--                @close="cronEdit = false"-->
+              <!--              />-->
+              <el-input
+                v-model="form.syncSetting.cron"
+                size="small"
+                style="width: 50%"
+                @click="cronEdit = true"
+              />
+            </el-popover>
+          </el-form-item>
+          <el-form-item
+            v-if="form.syncSetting.syncRate !== 'RIGHTNOW'"
+            :label="$t('datasource.start_time')"
+            prop="startTime"
+          >
+            <el-date-picker
+              v-model="form.syncSetting.startTime"
+              class="de-date-picker"
+              type="datetime"
+              :placeholder="$t('datasource.start_time')"
+              size="small"
+            />
+            <svg-icon icon-class="icon_calendar_outlined" class="icon-calendar-outlined" />
+          </el-form-item>
+          <el-form-item
+            v-if="form.syncSetting.syncRate !== 'RIGHTNOW'"
+            :label="$t('datasource.end_time')"
+            prop="end"
+          >
+            <el-radio-group v-model="form.syncSetting.endLimit">
+              <el-radio label="0">{{ $t('datasource.no_limit') }}</el-radio>
+              <el-radio label="1"> {{ $t('datasource.set_end_time') }}</el-radio>
+            </el-radio-group>
+            <el-date-picker
+              v-if="form.syncSetting.endLimit === '1'"
+              v-model="form.syncSetting.endTime"
+              class="de-date-picker"
+              type="datetime"
+              :placeholder="$t('datasource.end_time')"
+              size="small"
+            />
+            <svg-icon
+              v-if="form.syncSetting.endLimit === '1'"
+              icon-class="icon_calendar_outlined"
+              class="icon-calendar-outlined"
+            />
+          </el-form-item>
+        </div>
+      </el-form>
     </div>
   </div>
 </template>

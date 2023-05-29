@@ -70,7 +70,7 @@ service.interceptors.response.use(
     } else if (response.data.code === result_code) {
       return response.data
     } else {
-      ElMessage.error(response.data.message)
+      ElMessage.error(response.data.msg)
     }
   },
   (error: AxiosError) => {

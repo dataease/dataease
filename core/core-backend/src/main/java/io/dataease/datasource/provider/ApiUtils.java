@@ -1,7 +1,6 @@
 package io.dataease.datasource.provider;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,8 +11,10 @@ import io.dataease.api.ds.vo.ApiDefinition;
 import io.dataease.api.ds.vo.ApiDefinitionRequest;
 import io.dataease.api.ds.vo.TableField;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.exception.DEException;
 import io.dataease.utils.HttpClientConfig;
 import io.dataease.utils.HttpClientUtil;
+import io.dataease.utils.JsonUtil;
 import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -32,13 +33,12 @@ public class ApiUtils {
     private static TypeReference<List<Map<String, Object>>> listForMapTypeReference = new TypeReference<List<Map<String, Object>>>() {
     };
 
-    public static List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws Exception {
+    public static List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) throws DEException {
         List<DatasetTableDTO> tableDescs = new ArrayList<>();
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
-        List<ApiDefinition> lists = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
-
-        for (ApiDefinition apiDefinition : lists) {
+        List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
+        for (ApiDefinition apiDefinition : apiDefinitionList) {
             DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
             datasetTableDTO.setTableName(apiDefinition.getName());
             datasetTableDTO.setName(apiDefinition.getDesc());
@@ -47,11 +47,14 @@ public class ApiUtils {
     }
 
 
-    public static Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws Exception {
+    public static Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException {
         Map<String, Object> result = new HashMap<>();
         List<String[]> dataList = new ArrayList<>();
         List<TableField> fieldList = new ArrayList<>();
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
+        if(apiDefinition == null){
+            DEException.throwException("未找到");
+        }
         String response = execHttpRequest(apiDefinition, 10);
         fieldList = getTableFields(apiDefinition);
         result.put("fieldList", fieldList);
@@ -61,7 +64,7 @@ public class ApiUtils {
     }
 
 
-    private static List<TableField> getTableFields(ApiDefinition apiDefinition) throws Exception {
+    private static List<TableField> getTableFields(ApiDefinition apiDefinition) throws DEException {
         return apiDefinition.getFields();
     }
 
@@ -81,7 +84,7 @@ public class ApiUtils {
     public static String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
-        List<ApiDefinition> apiDefinitionList = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
+        List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
         ObjectNode apiItemStatuses = objectMapper.createObjectNode();
         for (ApiDefinition apiDefinition : apiDefinitionList) {
             datasourceRequest.setTable(apiDefinition.getName());
@@ -97,12 +100,15 @@ public class ApiUtils {
 
     private static List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
+        if(apiDefinition == null){
+            DEException.throwException("未找到");
+        }
         String response = execHttpRequest(apiDefinition, 10);
         return fetchResult(response, apiDefinition);
     }
 
 
-    public static String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout) throws Exception {
+    public static String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout) throws DEException {
         String response = "";
         HttpClientConfig httpClientConfig = new HttpClientConfig();
         httpClientConfig.setSocketTimeout(socketTimeout * 1000);
@@ -127,9 +133,9 @@ public class ApiUtils {
                 break;
             case "POST":
                 if (!apiDefinitionRequest.getBody().keySet().contains("type")) {
-                    throw new Exception("请求类型不能为空");
+                    DEException.throwException("请求类型不能为空");
                 }
-                String type = apiDefinitionRequest.getBody().get("type");
+                String type = apiDefinitionRequest.getBody().get("type").toString();
                 if (StringUtils.equalsAny(type, "JSON", "XML", "Raw")) {
                     String raw = null;
                     if (apiDefinitionRequest.getBody().get("raw") != null) {
@@ -140,7 +146,12 @@ public class ApiUtils {
                 if (StringUtils.equalsAny(type, "Form_Data", "WWW_FORM")) {
                     if (apiDefinitionRequest.getBody().get("kvs") != null) {
                         Map<String, String> body = new HashMap<>();
-                        JsonNode rootNode = objectMapper.readTree(apiDefinitionRequest.getBody().get("kvs"));
+                        JsonNode rootNode = null;
+                        try {
+                            rootNode = objectMapper.readTree(apiDefinitionRequest.getBody().get("kvs").toString());
+                        } catch (Exception e) {
+                            DEException.throwException(e);
+                        }
                         for (JsonNode jsonNode : rootNode) {
                             if (jsonNode.has("name")) {
                                 body.put(jsonNode.get("name").asText(), jsonNode.get("value").toString());
@@ -157,9 +168,9 @@ public class ApiUtils {
     }
 
 
-    public static ApiDefinition checkApiDefinition(ApiDefinition apiDefinition, String response) throws Exception {
+    public static ApiDefinition checkApiDefinition(ApiDefinition apiDefinition, String response) throws DEException {
         if (StringUtils.isEmpty(response)) {
-            throw new Exception("该请求返回数据为空");
+            DEException.throwException("该请求返回数据为空");
         }
         List<Map<String, Object>> fields = new ArrayList<>();
         if (apiDefinition.isUseJsonPath()) {
@@ -194,7 +205,11 @@ public class ApiUtils {
                     if (field.get("value") != null) {
                         TypeReference<List<Object>> listTypeReference = new TypeReference<List<Object>>() {
                         };
-                        array = objectMapper.readValue(field.get("value").toString(), listTypeReference);
+                        try {
+                            array = objectMapper.readValue(field.get("value").toString(), listTypeReference);
+                        } catch (Exception e) {
+                            DEException.throwException(e);
+                        }
                         array.add(Optional.ofNullable(data.get(field.get("originName"))).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " "));
                     } else {
                         array = new ArrayList();
@@ -210,7 +225,12 @@ public class ApiUtils {
             String rootPath;
             if (response.startsWith("[")) {
                 rootPath = "$[*]";
-                JsonNode jsonArray = objectMapper.readTree(response);
+                JsonNode jsonArray = null;
+                try {
+                    jsonArray = objectMapper.readTree(response);
+                } catch (Exception e) {
+                    DEException.throwException(e);
+                }
                 for (Object o : jsonArray) {
                     handleStr(apiDefinition, o.toString(), fields, rootPath);
                 }
@@ -232,16 +252,27 @@ public class ApiUtils {
     }
 
 
-    private static void handleStr(ApiDefinition apiDefinition, String jsonStr, List<Map<String, Object>> fields, String rootPath) throws Exception {
+    private static void handleStr(ApiDefinition apiDefinition, String jsonStr, List<Map<String, Object>> fields, String rootPath) throws DEException {
         if (jsonStr.startsWith("[")) {
             TypeReference<List<Object>> listTypeReference = new TypeReference<List<Object>>() {
             };
-            List<Object> jsonArray = objectMapper.readValue(jsonStr, listTypeReference);
+            List<Object> jsonArray = null;
+
+            try {
+                jsonArray = objectMapper.readValue(jsonStr, listTypeReference);
+            } catch (Exception e) {
+                DEException.throwException(e);
+            }
             for (Object o : jsonArray) {
                 handleStr(apiDefinition, o.toString(), fields, rootPath);
             }
         } else {
-            JsonNode jsonNode = objectMapper.readTree(jsonStr);
+            JsonNode jsonNode = null;
+            try {
+                jsonNode = objectMapper.readTree(jsonStr);
+            } catch (Exception e) {
+                DEException.throwException(e);
+            }
             Iterator<String> fieldNames = jsonNode.fieldNames();
             while (fieldNames.hasNext()) {
                 String fieldName = fieldNames.next();
@@ -307,8 +338,8 @@ public class ApiUtils {
     }
 
     private static void setProperty(ApiDefinition apiDefinition, Map<String, Object> o, String s) {
-        o.put("fieldName", s);
-        o.put("remarks", s);
+        o.put("originName", s);
+        o.put("name", s);
         o.put("type", "STRING");
         o.put("size", 65535);
         o.put("deExtractType", 0);
@@ -318,13 +349,13 @@ public class ApiUtils {
             for (TableField field : apiDefinition.getFields()) {
                 if (!ObjectUtils.isEmpty(o.get("jsonPath")) && StringUtils.isNotEmpty(field.getJsonPath()) && field.getJsonPath().equals(o.get("jsonPath").toString())) {
                     o.put("checked", true);
-                    o.put("remarks", field.getRemarks());
+                    o.put("name", field.getName());
                 }
             }
         }
     }
 
-    private static boolean hasItem(ApiDefinition apiDefinition, List<Map<String, Object>> fields, Map<String, Object> item) throws Exception {
+    private static boolean hasItem(ApiDefinition apiDefinition, List<Map<String, Object>> fields, Map<String, Object> item) throws DEException {
         boolean has = false;
         for (Map<String, Object> field : fields) {
             if (field.get("jsonPath").equals(item.get("jsonPath"))) {
@@ -339,11 +370,17 @@ public class ApiUtils {
     }
 
 
-    private static void mergeField(Map<String, Object> field, Map<String, Object> item) throws JsonProcessingException {
+    private static void mergeField(Map<String, Object> field, Map<String, Object> item) throws DEException {
         if (item.get("children") != null) {
-            List<Map<String, Object>> fieldChildren = objectMapper.readValue(field.get("children").toString(), listForMapTypeReference);
-            List<Map<String, Object>> itemChildren = objectMapper.readValue(item.get("children").toString(), listForMapTypeReference);
+            List<Map<String, Object>> fieldChildren = null;
+            List<Map<String, Object>> itemChildren = null;
+            try {
+                fieldChildren = objectMapper.readValue(field.get("children").toString(), listForMapTypeReference);
+                itemChildren = objectMapper.readValue(item.get("children").toString(), listForMapTypeReference);
 
+            } catch (Exception e) {
+                DEException.throwException(e);
+            }
             if (fieldChildren == null) {
                 fieldChildren = new ArrayList<>();
             }
@@ -362,31 +399,36 @@ public class ApiUtils {
         }
     }
 
-    private static void mergeValue(Map<String, Object> field, ApiDefinition apiDefinition, Map<String, Object> item) throws Exception {
-        if (!ObjectUtils.isEmpty(field.get("value")) && !ObjectUtils.isEmpty(item.get("value"))) {
-            List<String> array = objectMapper.readValue(field.get("value").toString(), listTypeReference);
-            array.add(objectMapper.readValue(item.get("value").toString(), listTypeReference).get(0));
-            field.put("value", array);
-        }
-        if (!ObjectUtils.isEmpty(field.get("children")) && !ObjectUtils.isEmpty(item.get("children"))) {
-            List<Map<String, Object>> fieldChildren = objectMapper.readValue(field.get("children").toString(), listForMapTypeReference);
-            List<Map<String, Object>> itemChildren = objectMapper.readValue(item.get("children").toString(), listForMapTypeReference);
-
-            List<Map<String, Object>> fieldArrayChildren = new ArrayList<>();
-            for (Map<String, Object> fieldChild : fieldChildren) {
-                Map<String, Object> find = null;
-                for (Map<String, Object> itemChild : itemChildren) {
-                    if (fieldChild.get("jsonPath").toString().equals(itemChild.get("jsonPath").toString())) {
-                        find = itemChild;
-                    }
-                }
-                if (find != null) {
-                    mergeValue(fieldChild, apiDefinition, find);
-                }
-                fieldArrayChildren.add(fieldChild);
+    private static void mergeValue(Map<String, Object> field, ApiDefinition apiDefinition, Map<String, Object> item) throws DEException {
+        try {
+            if (!ObjectUtils.isEmpty(field.get("value")) && !ObjectUtils.isEmpty(item.get("value"))) {
+                List<String> array = objectMapper.readValue(field.get("value").toString(), listTypeReference);
+                array.add(objectMapper.readValue(item.get("value").toString(), listTypeReference).get(0));
+                field.put("value", array);
             }
-            field.put("children", fieldArrayChildren);
+            if (!ObjectUtils.isEmpty(field.get("children")) && !ObjectUtils.isEmpty(item.get("children"))) {
+                List<Map<String, Object>> fieldChildren = objectMapper.readValue(field.get("children").toString(), listForMapTypeReference);
+                List<Map<String, Object>> itemChildren = objectMapper.readValue(item.get("children").toString(), listForMapTypeReference);
+
+                List<Map<String, Object>> fieldArrayChildren = new ArrayList<>();
+                for (Map<String, Object> fieldChild : fieldChildren) {
+                    Map<String, Object> find = null;
+                    for (Map<String, Object> itemChild : itemChildren) {
+                        if (fieldChild.get("jsonPath").toString().equals(itemChild.get("jsonPath").toString())) {
+                            find = itemChild;
+                        }
+                    }
+                    if (find != null) {
+                        mergeValue(fieldChild, apiDefinition, find);
+                    }
+                    fieldArrayChildren.add(fieldChild);
+                }
+                field.put("children", fieldArrayChildren);
+            }
+        } catch (Exception e) {
+            DEException.throwException(e);
         }
+
     }
 
     private static List<String[]> fetchResult(String result, ApiDefinition apiDefinition) {
@@ -403,7 +445,7 @@ public class ApiUtils {
                 String[] row = new String[apiDefinition.getFields().size()];
                 int i = 0;
                 for (TableField field : apiDefinition.getFields()) {
-                    row[i] = Optional.ofNullable(data.get(field.getFieldName())).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " ");
+                    row[i] = Optional.ofNullable(data.get(field.getName())).orElse("").toString().replaceAll("\n", " ").replaceAll("\r", " ");
                     i++;
                 }
                 dataList.add(row);
@@ -439,11 +481,16 @@ public class ApiUtils {
     }
 
 
-    private static ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest) throws Exception {
+    private static ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest) throws DEException {
         List<ApiDefinition> apiDefinitionList = new ArrayList<>();
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
-        List<ApiDefinition> apiDefinitionListTemp = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
+        List<ApiDefinition> apiDefinitionListTemp = null;
+        try {
+            apiDefinitionListTemp = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
         if (!CollectionUtils.isEmpty(apiDefinitionListTemp)) {
             for (ApiDefinition apiDefinition : apiDefinitionListTemp) {
                 if (apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable())) {
@@ -453,17 +500,18 @@ public class ApiUtils {
             }
         }
         if (CollectionUtils.isEmpty(apiDefinitionList)) {
-            throw new Exception("未找到API数据表");
+            DEException.throwException("未找到API数据表");
         }
         if (apiDefinitionList.size() > 1) {
-            throw new Exception("存在重名的API数据表");
+            DEException.throwException("存在重名的API数据表");
         }
+        ApiDefinition find = null;
         for (ApiDefinition apiDefinition : apiDefinitionList) {
             if (apiDefinition.getName().equalsIgnoreCase(datasourceRequest.getTable())) {
-                return apiDefinition;
+                find = apiDefinition;
             }
         }
-        throw new Exception("未找到API数据表");
+        return find;
     }
 
 }

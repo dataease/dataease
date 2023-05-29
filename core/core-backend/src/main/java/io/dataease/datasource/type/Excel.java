@@ -13,6 +13,6 @@ import java.util.List;
 public class Excel extends DatasourceConfiguration {
     private String type = DatasourceType.Excel.getType();
     private String name = DatasourceType.Excel.getName();
-    private DatasourceCatalog catalog = DatasourceCatalog.LOCALFILE;
+    private String catalog = DatasourceCatalog.LOCALFILE.getType();
     private String catalogDesc = DatasourceCatalog.LOCALFILE.getDesc();
 }

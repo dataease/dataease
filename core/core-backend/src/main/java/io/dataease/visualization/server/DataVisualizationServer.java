@@ -16,6 +16,7 @@ import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.ext.ExtDataVisualizationMapper;
 import jakarta.annotation.Resource;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,6 +57,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     }
 
     @Override
+    @Transactional
     public void save(DataVisualizationBaseRequest request) {
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
@@ -65,6 +67,18 @@ public class DataVisualizationServer implements DataVisualizationApi {
         visualizationInfo.setCreateBy("");
         visualizationInfo.setCreateTime(System.currentTimeMillis());
         visualizationInfoMapper.insert(visualizationInfo);
+        //保存视图信
+        List<ChartViewDTO> chartViewsInfo = request.getChartViewInfo();
+        if(!CollectionUtils.isEmpty(chartViewsInfo)){
+            chartViewsInfo.stream().forEach(chartViewDTO -> {
+                try {
+                    chartViewManege.save(chartViewDTO);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+        // TODO 清理无用的视图
     }
 
     @Override

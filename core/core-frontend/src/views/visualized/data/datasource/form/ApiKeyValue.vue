@@ -126,7 +126,7 @@ const emits = defineEmits(['changeHeaders', 'moveHeaders'])
             v-if="!needMock"
             v-model="item.value"
             :disabled="isReadOnly"
-            :placeholder="unShowSelect ? t('commons.description') : valueText"
+            :placeholder="unShowSelect ? t('common.description') : valueText"
             show-word-limit
             @change="change"
           />
@@ -136,7 +136,7 @@ const emits = defineEmits(['changeHeaders', 'moveHeaders'])
           <el-input
             v-model="item.description"
             maxlength="200"
-            :placeholder="t('commons.description')"
+            :placeholder="t('common.description')"
             show-word-limit
           />
         </el-col>

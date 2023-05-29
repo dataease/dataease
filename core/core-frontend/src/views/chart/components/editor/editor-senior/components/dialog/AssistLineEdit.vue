@@ -107,7 +107,7 @@ init()
 
 <template>
   <el-col>
-    <el-button circle size="mini" style="margin-bottom: 10px" @click="addLine">
+    <el-button circle size="small" style="margin-bottom: 10px" @click="addLine">
       <template #icon>
         <Icon name="icon_add_outlined"></Icon>
       </template>

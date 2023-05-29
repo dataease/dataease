@@ -492,13 +492,13 @@ const calculateHeight = (e: MouseEvent) => {
 
             <el-table-column
               key="__operation"
-              :label="t('commons.operating')"
+              :label="t('common.operating')"
               fixed="right"
               width="100"
             >
               <template #default="scope">
                 <el-button text @click="copyInfo(scope.row.sql)">
-                  {{ t('commons.copy') }}
+                  {{ t('common.copy') }}
                 </el-button>
               </template>
             </el-table-column>
@@ -545,9 +545,9 @@ const calculateHeight = (e: MouseEvent) => {
           </span>
         </template>
       </el-table-column>
-      <el-table-column min-width="350" prop="defaultValue" :label="$t('commons.params_value')">
+      <el-table-column min-width="350" prop="defaultValue" :label="$t('common.params_value')">
         <template #header>
-          {{ $t('commons.params_value') }}
+          {{ $t('common.params_value') }}
         </template>
         <template #default="scope">
           <el-input
