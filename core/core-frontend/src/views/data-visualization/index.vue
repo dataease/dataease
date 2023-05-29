@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import DvCanvas from '@/components/data-visualization/canvas/index.vue'
-import ComponentList from '@/components/data-visualization/ComponentList.vue' // 左侧列表组件
 import componentList from '@/custom-component/component-list' // 左侧列表数据
-import Toolbar from '@/components/data-visualization/Toolbar.vue'
 import { deepCopy } from '@/utils/utils'
 import generateID from '@/utils/generateID'
 import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 import RealTimeComponentList from '@/components/data-visualization/RealTimeComponentList.vue'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
-import { setDefaultComponentData } from '@/store/modules/data-visualization/snapshot'
 import { computed, getCurrentInstance, onMounted, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -24,13 +21,13 @@ import DvSidebar from '../../components/visualization/DvSidebar.vue'
 import { getData } from '@/api/chart'
 import { findById } from '@/api/dataVisualization'
 import router from '@/router'
+import Editor from '@/views/chart/components/editor/index.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 const activeName = ref('attr')
-const reSelectAnimateIndex = ref(undefined)
 const { componentData, curComponent, isClickComponent, canvasStyleData } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const canvasOut = ref(null)
@@ -185,7 +182,7 @@ eventBus.on('handleNew', handleNew)
       </main>
       <!-- 右侧侧组件列表 -->
       <dv-sidebar
-        v-if="curComponent"
+        v-if="curComponent && curComponent.component !== 'UserView'"
         title="属性"
         width="240"
         aside-position="right"
@@ -202,15 +199,7 @@ eventBus.on('handleNew', handleNew)
       >
         <CanvasAttr></CanvasAttr>
       </dv-sidebar>
-      <dv-sidebar
-        v-if="curComponent && curComponent.component === 'UserView'"
-        title="数据集"
-        width="180"
-        aside-position="right"
-        class="left-sidebar"
-      >
-        <div>数据集</div>
-      </dv-sidebar>
+      <editor v-if="curComponent && curComponent.component === 'UserView'"></editor>
     </el-container>
   </div>
 </template>

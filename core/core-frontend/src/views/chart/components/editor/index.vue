@@ -31,7 +31,7 @@ import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlace
 import FilterItem from '@/views/chart/components/editor/drag-item/FilterItem.vue'
 import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
 import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
-import { any } from 'vue-types'
+import { ElIcon, ElRow } from 'element-plus-secondary'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -59,6 +59,8 @@ const itemFormRules = reactive<FormRules>({
 })
 
 const state = reactive({
+  chartAreaCollapse: false,
+  datasetAreaCollapse: false,
   view: {
     id: '1683789298247', // 视图id
     title: '图表',
@@ -293,47 +295,38 @@ const showQuotaEditFilter = item => {
   state.quotaFilterEdit = true
 }
 
+const collapseChange = type => {
+  state[type] = !state[type]
+}
+
 initDataset()
 </script>
 
 <template>
-  <div>
+  <div class="chart-edit">
     <el-row v-loading="loading" class="de-chart-editor">
-      <!--      <el-tooltip :content="t('chart.draw_back')">-->
-      <!--        <el-button circle secondary class="back-button">-->
-      <!--          <template #icon>-->
-      <!--            <el-icon>-->
-      <!--              <Icon name="icon_down-right_outlined"></Icon>-->
-      <!--            </el-icon>-->
-      <!--          </template>-->
-      <!--        </el-button>-->
-      <!--      </el-tooltip>-->
-
-      <!--      <el-row style="height: 40px" class="padding-lr">-->
-      <!--        <span class="title-text view-title-name" style="line-height: 40px">{{-->
-      <!--          state.view.name-->
-      <!--        }}</span>-->
-      <!--        <span :style="{ float: 'right', lineHeight: '40px' }">-->
-      <!--          <el-button secondary round @click="save"> {{ t('chart.recover') }}(当保存用) </el-button>-->
-      <!--        </span>-->
-      <!--      </el-row>-->
-
-      <el-col style="display: flex; height: 100%">
-        <div style="width: 280px" class="view-panel-row">
+      <div style="position: relative">
+        <el-icon
+          :title="state.view.title"
+          class="custom-icon"
+          size="20px"
+          @click="collapseChange('chartAreaCollapse')"
+        >
+          <Fold v-if="state.chartAreaCollapse" />
+          <Expand v-else />
+        </el-icon>
+        <div class="collapse-title" v-show="state.chartAreaCollapse">
+          <span>{{ state.view.title }}</span>
+        </div>
+        <div v-show="!state.chartAreaCollapse" style="width: 280px" class="view-panel-row">
           <el-row class="editor-title">
-            <span>chart</span>
-            <span>
-              <el-icon>
-                <Icon name="icon_down-right_outlined"></Icon>
-              </el-icon>
-            </span>
+            <span>{{ state.view.title }}</span>
           </el-row>
-
-          <el-row :style="{ borderTop: '1px solid #e6e6e6' }">
+          <el-row>
             <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-col>
-                  <div style="height: 60px; overflow: auto" class="padding-lr theme-border-class">
+                  <div class="chart_type_area padding-lr theme-border-class">
                     <span class="theme-border-class">
                       <span>{{ t('chart.chart_type') }}</span>
                       <el-row style="padding: 4px 0 4px 10px">
@@ -363,19 +356,9 @@ initDataset()
                       </el-row>
                     </span>
                   </div>
-
-                  <div
-                    :style="{ overflow: 'auto', height: '100%', borderTop: '1px solid #e6e6e6' }"
-                    class="attr-style theme-border-class"
-                  >
+                  <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
                       <el-row class="padding-lr">
-                        <!--                    <span-->
-                        <!--                      v-show="view.type === 'richTextView'"-->
-                        <!--                      style="color: #909399; font-size: 8px; width: 80px; text-align: right"-->
-                        <!--                    >-->
-                        <!--                      Tips:{{ t('chart.rich_text_view_result_tips') }}-->
-                        <!--                    </span>-->
                         <span
                           v-show="state.view.type !== 'richTextView'"
                           style="width: 80px; text-align: right"
@@ -562,17 +545,24 @@ initDataset()
             </el-tabs>
           </el-row>
         </div>
-
-        <div :style="{ borderLeft: '1px solid #e6e6e6', width: '200px' }" class="view-panel-row">
+      </div>
+      <div class="dataset-main">
+        <el-icon
+          :title="'数据集'"
+          class="custom-icon"
+          size="20px"
+          @click="collapseChange('datasetAreaCollapse')"
+        >
+          <Fold v-if="state.datasetAreaCollapse" />
+          <Expand v-else />
+        </el-icon>
+        <div class="collapse-title" v-show="state.datasetAreaCollapse">
+          <span>数据集</span>
+        </div>
+        <div v-show="!state.datasetAreaCollapse" class="dataset-area view-panel-row">
           <el-row class="editor-title">
-            <span>dataset</span>
-            <span>
-              <el-icon>
-                <Icon name="icon_down-right_outlined"></Icon>
-              </el-icon>
-            </span>
+            <span>数据集</span>
           </el-row>
-
           <el-row :style="{ borderTop: '1px solid #e6e6e6' }">
             <el-tree-select
               v-model="state.view.tableId"
@@ -634,7 +624,7 @@ initDataset()
             </div>
           </div>
         </div>
-      </el-col>
+      </div>
     </el-row>
 
     <!--显示名修改-->
@@ -674,6 +664,14 @@ initDataset()
 </template>
 
 <style lang="less" scoped>
+.chart-edit {
+  position: relative;
+  transition: 0.5s;
+  color: white;
+  background-color: @side-area-background;
+  border-left: 1px solid @side-outline-border-color;
+  height: 100%;
+}
 .el-row {
   display: block;
 }
@@ -685,23 +683,12 @@ span {
 .de-chart-editor {
   height: 100%;
   overflow-y: hidden;
-  border-left: 1px solid #e6e6e6;
   width: 100%;
-
-  .back-button {
-    width: 28px;
-    height: 28px;
-    min-width: auto;
-    position: absolute;
-    left: 4px;
-    top: 5px;
-    z-index: 1;
-  }
-
+  display: flex;
+  transition: 0.5s;
   .padding-lr {
     padding: 0 6px;
   }
-
   .view-title-name {
     display: -moz-inline-box;
     display: inline-block;
@@ -713,32 +700,31 @@ span {
   }
 
   .view-panel-row {
-    background-color: #f7f8fa;
     overflow-y: hidden;
     overflow-x: hidden;
     height: 100%;
   }
 
   .view-panel-row :deep(.el-collapse-item__header) {
-    height: 34px !important;
-    line-height: 34px !important;
+    height: 35px !important;
+    line-height: 35px !important;
     padding: 0 0 0 6px !important;
     font-size: 12px !important;
     font-weight: 400 !important;
   }
 
   .tab-header :deep(.el-tabs__header) {
-    border-top: solid 1px #eee;
-    border-right: solid 1px #eee;
+    border-top: solid 1px @side-outline-border-color;
+    border-right: solid 1px @side-outline-border-color;
   }
 
   .tab-header :deep(.el-tabs__item) {
     font-size: 12px;
     padding: 0 20px !important;
+    color: @canvas-main-font-color;
   }
-
-  .blackTheme .tab-header :deep(.el-tabs__item) {
-    background-color: var(--MainBG);
+  .tab-header :deep(.is-active) {
+    color: #3370ff;
   }
 
   .tab-header :deep(.el-tabs__nav-scroll) {
@@ -750,7 +736,7 @@ span {
   }
 
   .tab-header :deep(.el-tabs__content) {
-    height: calc(100% - 40px);
+    height: calc(100vh - 155px);
   }
 
   .field-height {
@@ -770,8 +756,6 @@ span {
     border: solid 1px #eee;
     text-align: left;
     color: #606266;
-    /*background-color: rgba(35,46,64,.05);*/
-    background-color: white;
     display: block;
     word-break: break-all;
     overflow: hidden;
@@ -838,7 +822,6 @@ span {
     overflow-x: hidden;
     display: block;
     align-items: center;
-    background-color: white;
   }
 
   .draggable-group {
@@ -866,11 +849,72 @@ span {
   }
 
   .editor-title {
-    height: 40px;
+    height: @component-toolbar-height;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 10px;
   }
+}
+
+.chart_type_area {
+  height: 80px;
+  border-top: 1px solid @side-outline-border-color;
+  overflow: auto;
+}
+
+.drag_main_area {
+  border-top: 1px solid @side-outline-border-color;
+  overflow: auto;
+}
+
+.collapse-title {
+  width: 35px;
+  text-align: center;
+  padding: 5px;
+  margin-top: 30px;
+}
+
+.custom-icon {
+  position: absolute;
+  right: 5px;
+  top: 12px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+:deep(.el-collapse-item__header) {
+  background-color: @side-area-background !important;
+  color: #ffffff;
+  padding-left: 5px;
+  border-bottom: 1px solid rgba(85, 85, 85, 1);
+  height: 38px !important;
+}
+:deep(.el-collapse-item__content) {
+  background-color: @side-content-background;
+  color: #ffffff;
+  padding-left: 5px;
+}
+
+:deep(.el-collapse-item__wrap) {
+  border-bottom: 1px solid rgba(85, 85, 85, 1);
+}
+:deep(.el-collapse) {
+  width: 100%;
+}
+:deep(.el-form-item__label) {
+  color: @canvas-main-font-color;
+  font-size: 12px;
+}
+:deep(.el-checkbox) {
+  color: @canvas-main-font-color;
+  font-size: 12px;
+}
+.dataset-area {
+  width: 180px;
+  position: relative;
+}
+.dataset-main {
+  border-left: 1px solid @side-outline-border-color;
 }
 </style>
