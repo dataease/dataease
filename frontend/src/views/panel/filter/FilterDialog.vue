@@ -463,7 +463,7 @@ export default {
     bus.$off('valid-values-change', this.validateFilterValue)
   },
   methods: {
-    checkSuperior(list) {
+    async checkSuperior(list, anotherTableIds) {
       let fieldValid = false
       const fieldId = this.myAttrs?.fieldId
       if (fieldId && list?.length) {
@@ -479,6 +479,17 @@ export default {
           }
         }
       }
+      if (!fieldValid && anotherTableIds?.length) {
+        const ps = await Promise.all(anotherTableIds.map(id => fieldListWithPermission(id)))
+        let anotherList = []
+        ps.forEach(p => {
+          anotherList = [...anotherList, ...p.data]
+        })
+
+        if (anotherList?.length && this.checkSuperior(anotherList, null)) {
+          fieldValid = true
+        }
+      }
       if (!fieldValid) {
         this.myAttrs.fieldId = null
         this.myAttrs.dragItems = []
@@ -486,6 +497,7 @@ export default {
       }
       return fieldValid
     },
+
     treeNode(cache) {
       const modelInfo = localStorage.getItem('dataset-tree')
       const userCache = (modelInfo && cache)
@@ -759,11 +771,16 @@ export default {
       this.viewKeyWord = ''
       this.comRemoveTail()
     },
-
+    anotherTableInfo(tableId) {
+      if (this.myAttrs?.dragItems?.length) {
+        return this.myAttrs.dragItems.filter(item => item.tableId !== tableId).map(item => item.tableId)
+      }
+      return null
+    },
     async loadField(tableId, init) {
       const res = await fieldListWithPermission(tableId)
       let data = res.data || []
-      if (init && !this.checkSuperior(data)) {
+      if (init && !this.checkSuperior(data, this.anotherTableInfo(tableId))) {
         this.backToLink()
       }
       if (this.widget && this.widget.filterFieldMethod) {
@@ -787,7 +804,7 @@ export default {
     async comLoadField(tableId, init) {
       const res = await fieldListWithPermission(tableId)
       let data = res.data || []
-      if (init && !this.checkSuperior(data)) {
+      if (init && !this.checkSuperior(data, this.anotherTableInfo(tableId))) {
         this.comBackLink()
       }
       if (this.widget && this.widget.filterFieldMethod) {
