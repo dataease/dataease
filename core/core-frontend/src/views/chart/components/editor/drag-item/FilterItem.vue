@@ -10,11 +10,11 @@ const fieldType = (deType: number) => {
 
 const { t } = useI18n()
 
-const tagType = ref('success')
 const showDateExt = ref(false)
 
 const state = reactive({
-  formatterItem: formatterItem
+  formatterItem: formatterItem,
+  tagColor: '#3370ff'
 })
 
 const props = defineProps({
@@ -45,9 +45,9 @@ const emit = defineEmits(['onFilterItemRemove', 'editItemFilter'])
 const { item } = toRefs(props)
 
 watch(
-  [props.dimensionData, props.quotaData, props.item],
+  [props.dimensionData, props.quotaData, props.item, item],
   () => {
-    getItemTagType()
+    getItemTagColor()
   },
   { deep: true }
 )
@@ -84,64 +84,85 @@ const removeItem = () => {
   emit('onFilterItemRemove', item.value)
 }
 
-const getItemTagType = () => {
-  tagType.value = getItemType(props.dimensionData, props.quotaData, props.item)
+const getItemTagColor = () => {
+  state.tagColor = getItemType(props.dimensionData, props.quotaData, props.item)
 }
 
-getItemTagType()
+getItemTagColor()
 </script>
 
 <template>
-  <div>
-    <span style="position: relative; display: inline-block">
-      <i
-        class="el-icon-arrow-down el-icon-delete"
-        style="position: absolute; top: 6px; right: 24px; color: #878d9f; cursor: pointer"
-        @click="removeItem"
-      />
-      <el-dropdown trigger="click" size="small" @command="clickItem">
-        <el-tag size="small" class="item-axis" :type="tagType">
-          <span style="float: left">
-            <el-icon>
-              <Icon
-                :className="`field-icon-${fieldType(item.deType)}`"
-                :name="`field_${fieldType(item.deType)}`"
-              ></Icon>
-            </el-icon>
-          </span>
-          <span class="item-span-style" :title="item.name">{{ item.name }}</span>
-        </el-tag>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
-              <span>{{ $t('chart.filter') }}...</span>
-            </el-dropdown-item>
-            <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
-              <span>{{ $t('chart.delete') }}</span>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </span>
-  </div>
+  <span class="item-style">
+    <el-dropdown trigger="click" size="small" @command="clickItem">
+      <el-tag
+        class="item-axis"
+        :style="{ backgroundColor: state.tagColor + '0a', border: '1px solid ' + state.tagColor }"
+      >
+        <span style="display: flex">
+          <el-icon>
+            <Icon
+              :className="`field-icon-${fieldType(item.deType)}`"
+              :name="`field_${fieldType(item.deType)}`"
+            ></Icon>
+          </el-icon>
+        </span>
+        <span class="item-span-style" :title="item.name">{{ item.name }}</span>
+        <el-icon style="position: absolute; top: 7px; right: 24px; color: #a6a6a6; cursor: pointer">
+          <Icon
+            name="icon_delete-trash_outlined"
+            class="el-icon-arrow-down el-icon-delete"
+            @click="removeItem"
+          ></Icon>
+        </el-icon>
+        <el-icon style="position: absolute; top: 7px; right: 8px; color: #a6a6a6; cursor: pointer">
+          <Icon name="icon_down_outlined-1" class="el-icon-arrow-down el-icon-delete"></Icon>
+        </el-icon>
+      </el-tag>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
+            <span>{{ $t('chart.filter') }}...</span>
+          </el-dropdown-item>
+          <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
+            <span>{{ $t('chart.delete') }}</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
+  </span>
 </template>
 
 <style lang="less" scoped>
+.item-style {
+  position: relative;
+  width: 100%;
+  display: block;
+  .el-dropdown {
+    display: flex;
+  }
+  :deep(.el-tag__content) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
 .item-axis {
   padding: 1px 6px;
   margin: 0 3px 2px 3px;
-  text-align: left;
-  height: 24px;
-  line-height: 22px;
+  height: 28px;
+  line-height: 28px;
   display: flex;
   border-radius: 4px;
   box-sizing: border-box;
   white-space: nowrap;
-  width: 159px;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .item-axis:hover {
-  background-color: #fdfdfd;
+  background-color: #3370ff20;
   cursor: pointer;
 }
 
@@ -167,5 +188,7 @@ span {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  color: #ffffff;
+  margin-left: 4px;
 }
 </style>

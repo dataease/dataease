@@ -480,11 +480,11 @@ initDataset()
           <Expand v-else />
         </el-icon>
         <div class="collapse-title" v-show="state.chartAreaCollapse">
-          <span>{{ state.view.title }}</span>
+          <span style="font-size: 14px">{{ state.view.title }}</span>
         </div>
         <div v-show="!state.chartAreaCollapse" style="width: 280px" class="view-panel-row">
           <el-row class="editor-title">
-            <span>{{ state.view.title }}</span>
+            <span style="font-size: 14px">{{ state.view.title }}</span>
           </el-row>
           <el-row>
             <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
@@ -732,13 +732,13 @@ initDataset()
           <Expand v-else />
         </el-icon>
         <div class="collapse-title" v-show="state.datasetAreaCollapse">
-          <span>数据集</span>
+          <span style="font-size: 14px">数据集</span>
         </div>
         <div v-show="!state.datasetAreaCollapse" class="dataset-area view-panel-row">
           <el-row class="editor-title">
-            <span>数据集</span>
+            <span style="font-size: 14px">数据集</span>
           </el-row>
-          <el-row :style="{ borderTop: '1px solid #e6e6e6' }">
+          <el-row :style="{ borderTop: '1px solid #363636' }">
             <el-tree-select
               v-model="state.view.tableId"
               :data="state.datasetTree"
@@ -754,7 +754,7 @@ initDataset()
               </template>
             </el-tree-select>
           </el-row>
-          <div style="height: 100%">
+          <div style="height: calc(100% - 78px)">
             <div class="padding-lr field-height">
               <span>{{ t('chart.dimension') }}</span>
               <draggable
@@ -917,11 +917,11 @@ span {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    margin-left: 45px;
+    margin-left: 38px;
   }
 
   .view-panel-row {
-    overflow-y: hidden;
+    overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
   }
@@ -957,12 +957,14 @@ span {
   }
 
   .tab-header :deep(.el-tabs__content) {
-    height: calc(100vh - 155px);
+    height: calc(100vh - 150px);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .field-height {
     height: 50%;
-    border-top: 1px solid #e6e6e6;
+    border-top: 1px solid #363636;
   }
 
   .drag-list {
@@ -972,9 +974,8 @@ span {
   }
 
   .item-dimension {
-    padding: 2px 10px;
+    padding: 4px 10px;
     margin: 2px 2px 0 2px;
-    border: solid 1px #eee;
     text-align: left;
     color: #606266;
     display: block;
@@ -983,6 +984,7 @@ span {
     white-space: nowrap;
     text-overflow: ellipsis;
     position: relative;
+    cursor: pointer;
   }
 
   .father .child {
@@ -1002,6 +1004,7 @@ span {
     text-overflow: ellipsis;
     position: absolute;
     top: 2px;
+    color: #a6a6a6;
   }
 
   .padding-tab {
@@ -1039,10 +1042,13 @@ span {
     width: 100%;
     min-height: 32px;
     border-radius: 4px;
-    border: 1px solid #dcdfe6;
+    border: 1px dashed #5f5f5f;
     overflow-x: hidden;
+    overflow-y: hidden;
     display: block;
     align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    margin-top: 8px;
   }
 
   .draggable-group {
@@ -1066,7 +1072,7 @@ span {
   }
 
   .drag-data {
-    margin-top: 6px;
+    margin-top: 12px;
   }
 
   .editor-title {
@@ -1075,6 +1081,10 @@ span {
     align-items: center;
     justify-content: space-between;
     padding: 0 10px;
+  }
+
+  .el-tabs {
+    --el-tabs-header-height: 38px !important;
   }
 }
 
@@ -1099,7 +1109,7 @@ span {
 .custom-icon {
   position: absolute;
   right: 5px;
-  top: 12px;
+  top: 10px;
   cursor: pointer;
   z-index: 2;
 }
