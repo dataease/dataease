@@ -1,7 +1,6 @@
 package io.dataease.provider.query.sqlserver;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
@@ -900,7 +899,9 @@ public class SqlserverQueryProvider extends QueryProvider {
                 whereValue = "''";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in") || StringUtils.containsIgnoreCase(item.getTerm(), "not in")) {
                 if(field.getType().equalsIgnoreCase("NVARCHAR")){
-                    whereValue =  Arrays.asList(value.split(",")).stream().map(str ->{return "N"+ str;}).collect(Collectors.joining(","));
+                    whereValue = Arrays.asList(value.split(",")).stream().map(str -> {
+                        return "N" + "'" + str + "'";
+                    }).collect(Collectors.joining(","));
                 }else {
                     whereValue = "('" + String.join("','", value.split(",")) + "')";
                 }
@@ -1034,8 +1035,10 @@ public class SqlserverQueryProvider extends QueryProvider {
                     } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_empty")) {
                         whereValue = "''";
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in") || StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "not in")) {
-                        if(field.getType().equalsIgnoreCase("NVARCHAR")){
-                            whereValue =  Arrays.asList(value.split(",")).stream().map(str ->{return "N"+ str;}).collect(Collectors.joining(","));
+                        if(field.getType().equalsIgnoreCase("NVARCHAR")) {
+                            whereValue = Arrays.asList(value.split(",")).stream().map(str -> {
+                                return "N" + "'" + str + "'";
+                            }).collect(Collectors.joining(","));
                         }else {
                             whereValue = "('" + String.join("','", value.split(",")) + "')";
                         }
@@ -1146,8 +1149,10 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereValue = "";
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                if(request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")){
-                    whereValue =  value.stream().map(str ->{return "N"+ str;}).collect(Collectors.joining(","));
+                if(request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) {
+                    whereValue = value.stream().map(str -> {
+                        return "N" + "'" + str + "'";
+                    }).collect(Collectors.joining(","));
                 }else {
                     whereValue = "('" + StringUtils.join(value, "','") + "')";
                 }
@@ -1329,7 +1334,9 @@ public class SqlserverQueryProvider extends QueryProvider {
                     whereValue = "''";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
                     if(y.getType().equalsIgnoreCase("NVARCHAR")){
-                        whereValue =  Arrays.asList(f.getValue().split(",")).stream().map(str ->{return "N"+ str;}).collect(Collectors.joining(","));
+                        whereValue = Arrays.asList(f.getValue().split(",")).stream().map(str -> {
+                            return "N" + "'" + str + "'";
+                        }).collect(Collectors.joining(","));
                     }else {
                         whereValue = "('" + String.join("','", f.getValue().split(",")) + "')";
                     }
