@@ -56,7 +56,6 @@ export const listDatasourceTables = async (id): Promise<IResponse> => {
 }
 
 export const validate = (data = {}) => {
-  console.log(data)
   return request.post({ url: '/datasource/validate', data })
 }
 

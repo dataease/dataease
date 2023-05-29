@@ -369,6 +369,7 @@ const saveDs = () => {
   }
   save(request).then(res => {
     ElMessage.success(t('common.save_success'))
+    dsFormDisabled.value = true
   })
 }
 

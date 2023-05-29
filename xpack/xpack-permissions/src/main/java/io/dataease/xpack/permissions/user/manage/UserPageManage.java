@@ -22,6 +22,7 @@ import io.dataease.xpack.permissions.org.bo.PerOrgItem;
 import io.dataease.xpack.permissions.org.manage.OrgPageManage;
 import io.dataease.xpack.permissions.user.dao.auto.entity.PerUser;
 import io.dataease.xpack.permissions.user.dao.auto.mapper.PerUserMapper;
+import io.dataease.xpack.permissions.user.dao.ext.entity.UserInfoPO;
 import io.dataease.xpack.permissions.user.dao.ext.mapper.UserExtMapper;
 import io.dataease.xpack.permissions.user.entity.UserSortEntity;
 import jakarta.annotation.Resource;
@@ -180,8 +181,10 @@ public class UserPageManage {
 
 
     public CurUserVO getUserInfo() {
-        Long userId = AuthUtils.getUser().getUserId();
-        return userExtMapper.userInfo(userId);
+        Long userId = 1L;
+        UserInfoPO userInfoPO = userExtMapper.userInfo(userId);
+        System.out.println(JsonUtil.toJSONString(userInfoPO));
+        return userInfoPO;
     }
 
     public void deleteByEmptyRole() {
@@ -202,7 +205,7 @@ public class UserPageManage {
     }
 
     public String switchToken() {
-        Long userId = AuthUtils.getUser().getUserId();
+        Long userId = 1L ;//AuthUtils.getUser().getUserId();
         PerUser perUser = perUserMapper.selectById(userId);
         TokenUserBO tokenUserBO = new TokenUserBO();
         tokenUserBO.setUserId(userId);

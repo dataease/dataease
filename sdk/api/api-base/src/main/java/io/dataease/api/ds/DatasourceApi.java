@@ -56,11 +56,11 @@ public interface DatasourceApi {
     List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws DEException;
 
     @DePermit("m:read")
-    @PostMapping("list")
+    @GetMapping("list")
     List<DatasourceDTO> list() throws DEException;
 
     @DePermit({"m:read", "#p0+':manage'"})
-    @PostMapping("getTables/{datasourceId}")
+    @GetMapping("getTables/{datasourceId}")
     List<DatasetTableDTO> getTables(@PathVariable("datasourceId") String datasourceId) throws DEException;
 
     @PostMapping("/checkApiDatasource")

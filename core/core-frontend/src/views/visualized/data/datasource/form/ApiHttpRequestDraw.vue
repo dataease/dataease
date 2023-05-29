@@ -8,7 +8,7 @@ import type { ApiRequest } from './ApiHttpRequestForm.vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { Base64 } from 'js-base64'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
-import { checkApiItem } from '../../../../../api/datasource.ts'
+import { checkApiItem } from '@/api/datasource'
 export interface Field {
   name: string
   value: Array<{}>
@@ -122,8 +122,9 @@ const showApiData = () => {
       apiItem.showApiStructure = true
       const data = Base64.encode(JSON.stringify(apiItem))
       loading.value = true
-      checkApiItem({ data: data }).then(response => {
-      })
+      // checkApiItem({ data: data }).then(response => {
+      //
+      // })
       loading.value = false
       // res.data.jsonFields.forEach(((item) => {
       //       item.checked = false
@@ -193,9 +194,9 @@ const before = () => {
   active.value -= 1
 }
 const next = () => {
-  checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
-    apiItem.jsonFields = response.jsonFields
-  })
+  // checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
+  //   apiItem.jsonFields = response.jsonFields
+  // })
   active.value += 1
 }
 const closeEditItem = () => {
