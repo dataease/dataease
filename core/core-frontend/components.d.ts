@@ -52,6 +52,7 @@ declare module '@vue/runtime-core' {
     ElInput: typeof import('element-plus-secondary/es')['ElInput']
     ElInputNumber: typeof import('element-plus-secondary/es')['ElInputNumber']
     ElOption: typeof import('element-plus-secondary/es')['ElOption']
+    ElOptionGroup: typeof import('element-plus-secondary/es')['ElOptionGroup']
     ElPopover: typeof import('element-plus-secondary/es')['ElPopover']
     ElRadio: typeof import('element-plus-secondary/es')['ElRadio']
     ElRadioButton: typeof import('element-plus-secondary/es')['ElRadioButton']

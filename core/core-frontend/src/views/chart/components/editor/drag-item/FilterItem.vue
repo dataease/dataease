@@ -40,7 +40,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['onFilterItemRemove'])
+const emit = defineEmits(['onFilterItemRemove', 'editItemFilter'])
 
 const { item } = toRefs(props)
 
@@ -61,7 +61,7 @@ const clickItem = param => {
       removeItem()
       break
     case 'filter':
-      // this.editFilter()
+      editFilter()
       break
     default:
       break
@@ -72,6 +72,11 @@ const beforeClickItem = type => {
   return {
     type: type
   }
+}
+
+const editFilter = () => {
+  item.value.index = props.index
+  emit('editItemFilter', item.value)
 }
 
 const removeItem = () => {

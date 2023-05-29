@@ -22,6 +22,7 @@ import { getDatasetTree } from '@/api/dataset'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { ElMessage } from 'element-plus-secondary'
 import draggable from 'vuedraggable'
 import DimensionLabel from './drag-label/DimensionLabel.vue'
 import DimensionItem from './drag-item/DimensionItem.vue'
@@ -31,6 +32,8 @@ import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlace
 import FilterItem from '@/views/chart/components/editor/drag-item/FilterItem.vue'
 import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
 import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
+import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilterEditor.vue'
+import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
 import { ElIcon, ElRow } from 'element-plus-secondary'
 
 const { t } = useI18n()
@@ -61,6 +64,7 @@ const itemFormRules = reactive<FormRules>({
 const state = reactive({
   chartAreaCollapse: false,
   datasetAreaCollapse: false,
+  moveId: -1,
   view: {
     id: '1683789298247', // 视图id
     title: '图表',
@@ -113,7 +117,10 @@ const state = reactive({
     chartShowName: ''
   },
   quotaFilterEdit: false,
-  quotaItem: {}
+  quotaItem: {},
+  resultFilterEdit: false,
+  filterItem: {},
+  chartForFilter: {}
 })
 
 const initDataset = () => {
@@ -152,6 +159,14 @@ const dimensionItemChange = item => {
   // console.log(state.view.xaxis)
   calcData(state.view)
 }
+const dimensionItemRemove = item => {
+  if (item.removeType === 'dimension') {
+    state.view.xaxis.splice(item.index, 1)
+  } else if (item.removeType === 'dimensionExt') {
+    state.view.xaxisExt.splice(item.index, 1)
+  }
+  calcData(state.view)
+}
 
 const quotaItemChange = item => {
   // this.calcData(true)
@@ -159,26 +174,107 @@ const quotaItemChange = item => {
   // console.log(state.view.xaxis)
   calcData(state.view)
 }
+const quotaItemRemove = item => {
+  if (item.removeType === 'quota') {
+    state.view.yaxis.splice(item.index, 1)
+  } else if (item.removeType === 'quotaExt') {
+    state.view.yaxisExt.splice(item.index, 1)
+  }
+  calcData(state.view)
+}
+
+const onMove = (e, originalEvent) => {
+  state.moveId = e.draggedContext.element.id
+  return true
+}
+// drag
+const dragCheckType = (list, type) => {
+  if (list && list.length > 0) {
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].groupType !== type) {
+        list.splice(i, 1)
+      }
+    }
+  }
+}
+const dragMoveDuplicate = (list, e, mode) => {
+  if (mode === 'ds') {
+    list.splice(e.newDraggableIndex, 1)
+  } else {
+    const dup = list.filter(function (m) {
+      return m.id === state.moveId
+    })
+    if (dup && dup.length > 1) {
+      list.splice(e.newDraggableIndex, 1)
+    }
+  }
+}
+const dragRemoveChartField = (list, e) => {
+  const dup = list.filter(function (m) {
+    return m.id === state.moveId
+  })
+  if (dup && dup.length > 0) {
+    if (dup[0].chartId) {
+      list.splice(e.newDraggableIndex, 1)
+    }
+  }
+}
 
 const addXaxis = e => {
-  // if (this.view.type !== 'table-info') {
-  //   this.dragCheckType(this.view.xaxis, 'd')
-  // }
-  // this.dragMoveDuplicate(this.view.xaxis, e)
-  // if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'label') && this.view.xaxis.length > 1) {
-  //   this.view.xaxis = [this.view.xaxis[0]]
-  // }
-  // this.calcData(true)
+  if (state.view.type !== 'table-info') {
+    dragCheckType(state.view.xaxis, 'd')
+  }
+  dragMoveDuplicate(state.view.xaxis, e, 'chart')
+  if (
+    (state.view.type === 'map' ||
+      state.view.type === 'word-cloud' ||
+      state.view.type === 'label') &&
+    state.view.xaxis.length > 1
+  ) {
+    state.view.xaxis = [state.view.xaxis[0]]
+  }
   calcData(state.view)
 }
 
 const addYaxis = e => {
-  // this.dragCheckType(this.view.yaxis, 'q')
-  // this.dragMoveDuplicate(this.view.yaxis, e)
-  // if ((this.view.type === 'waterfall' || this.view.type === 'word-cloud' || this.view.type.includes('group')) && this.view.yaxis.length > 1) {
-  //   this.view.yaxis = [this.view.yaxis[0]]
-  // }
-  // this.calcData(true)
+  dragCheckType(state.view.yaxis, 'q')
+  dragMoveDuplicate(state.view.yaxis, e, '')
+  if (
+    (state.view.type === 'waterfall' ||
+      state.view.type === 'word-cloud' ||
+      state.view.type.includes('group')) &&
+    state.view.yaxis.length > 1
+  ) {
+    state.view.yaxis = [state.view.yaxis[0]]
+  }
+  calcData(state.view)
+}
+
+const addCustomFilter = e => {
+  // 记录数等自动生成字段不做为过滤条件
+  if (state.view.customFilter && state.view.customFilter.length > 0) {
+    for (let i = 0; i < state.view.customFilter.length; i++) {
+      if (state.view.customFilter[i].id === 'count') {
+        state.view.customFilter.splice(i, 1)
+      }
+    }
+  }
+  state.view.customFilter[e.newDraggableIndex].filter = []
+  dragMoveDuplicate(state.view.customFilter, e, '')
+  dragRemoveChartField(state.view.customFilter, e)
+  calcData(state.view)
+}
+const filterItemRemove = item => {
+  state.view.customFilter.splice(item.index, 1)
+  calcData(state.view)
+}
+
+const moveToDimension = e => {
+  dragMoveDuplicate(state.dimensionData, e, 'ds')
+  calcData(state.view)
+}
+const moveToQuota = e => {
+  dragMoveDuplicate(state.quotaData, e, 'ds')
   calcData(state.view)
 }
 
@@ -283,16 +379,84 @@ const saveRename = ref => {
   })
 }
 
-const save = () => {
-  saveChart(state.view)
-}
-
 const showQuotaEditFilter = item => {
   state.quotaItem = JSON.parse(JSON.stringify(item))
   if (!state.quotaItem.logic) {
     state.quotaItem.logic = 'and'
   }
   state.quotaFilterEdit = true
+}
+const closeQuotaFilter = () => {
+  state.quotaFilterEdit = false
+}
+const saveQuotaFilter = () => {
+  for (let i = 0; i < state.quotaItem.filter.length; i++) {
+    const f = state.quotaItem.filter[i]
+    if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
+      ElMessage.error(t('chart.filter_value_can_null'))
+      return
+    }
+    if (isNaN(f.value)) {
+      ElMessage.error(t('chart.filter_value_can_not_str'))
+      return
+    }
+  }
+  if (state.quotaItem.filterType === 'quota') {
+    state.view.yaxis[state.quotaItem.index].filter = state.quotaItem.filter
+    state.view.yaxis[state.quotaItem.index].logic = state.quotaItem.logic
+  } else if (state.quotaItem.filterType === 'quotaExt') {
+    state.view.yaxisExt[state.quotaItem.index].filter = state.quotaItem.filter
+    state.view.yaxisExt[state.quotaItem.index].logic = state.quotaItem.logic
+  }
+  calcData(state.view)
+  closeQuotaFilter()
+}
+
+const showEditFilter = item => {
+  state.filterItem = JSON.parse(JSON.stringify(item))
+  state.chartForFilter = JSON.parse(JSON.stringify(state.view))
+  if (!state.filterItem.logic) {
+    state.filterItem.logic = 'and'
+  }
+  if (!state.filterItem.filterType) {
+    state.filterItem.filterType = 'logic'
+  }
+  if (!state.filterItem.enumCheckField) {
+    state.filterItem.enumCheckField = []
+  }
+  state.resultFilterEdit = true
+}
+const closeResultFilter = () => {
+  state.resultFilterEdit = false
+}
+const saveResultFilter = () => {
+  if (
+    ((state.filterItem.deType === 0 || state.filterItem.deType === 5) &&
+      state.filterItem.filterType !== 'enum') ||
+    state.filterItem.deType === 1 ||
+    state.filterItem.deType === 2 ||
+    state.filterItem.deType === 3
+  ) {
+    for (let i = 0; i < state.filterItem.filter.length; i++) {
+      const f = state.filterItem.filter[i]
+      if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
+        ElMessage.error(t('chart.filter_value_can_null'))
+        return
+      }
+      if (state.filterItem.deType === 2 || state.filterItem.deType === 3) {
+        if (isNaN(f.value)) {
+          ElMessage.error(t('chart.filter_value_can_not_str'))
+          return
+        }
+      }
+    }
+  }
+  state.view.customFilter[state.filterItem.index].filter = state.filterItem.filter
+  state.view.customFilter[state.filterItem.index].logic = state.filterItem.logic
+  state.view.customFilter[state.filterItem.index].filterType = state.filterItem.filterType
+  state.view.customFilter[state.filterItem.index].enumCheckField = state.filterItem.enumCheckField
+  calcData(state.view)
+  closeResultFilter()
 }
 
 const collapseChange = type => {
@@ -437,10 +601,12 @@ initDataset()
                         </span>
                         <draggable
                           :list="state.view.xaxis"
+                          :move="onMove"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
                           @add="addXaxis"
+                          @update="calcData(state.view)"
                         >
                           <template #item="{ element, index }">
                             <dimension-item
@@ -450,6 +616,7 @@ initDataset()
                               :item="element"
                               :index="index"
                               @onDimensionItemChange="dimensionItemChange"
+                              @onDimensionItemRemove="dimensionItemRemove"
                               @onNameEdit="showRename"
                             />
                           </template>
@@ -464,10 +631,12 @@ initDataset()
                         </span>
                         <draggable
                           :list="state.view.yaxis"
+                          :move="onMove"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
                           @add="addYaxis"
+                          @update="calcData(state.view)"
                         >
                           <template #item="{ element, index }">
                             <quota-item
@@ -477,6 +646,7 @@ initDataset()
                               :item="element"
                               :index="index"
                               @onQuotaItemChange="quotaItemChange"
+                              @onQuotaItemRemove="quotaItemRemove"
                               @onNameEdit="showRename"
                               @editItemFilter="showQuotaEditFilter"
                             />
@@ -490,9 +660,12 @@ initDataset()
                         <span>{{ t('chart.result_filter') }}</span>
                         <draggable
                           :list="state.view.customFilter"
+                          :move="onMove"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
+                          @add="addCustomFilter"
+                          @update="calcData(state.view)"
                         >
                           <template #item="{ element, index }">
                             <filter-item
@@ -500,6 +673,8 @@ initDataset()
                               :quota-data="state.quotaData"
                               :item="element"
                               :index="index"
+                              @onFilterItemRemove="filterItemRemove"
+                              @editItemFilter="showEditFilter"
                             />
                           </template>
                         </draggable>
@@ -585,8 +760,10 @@ initDataset()
               <draggable
                 :list="state.dimensionData"
                 :group="dsFieldDragOptions.group"
+                :move="onMove"
                 animation="300"
                 class="drag-list"
+                @add="moveToDimension"
               >
                 <template #item="{ element }">
                   <span class="item-dimension father" :title="element.name">
@@ -606,8 +783,10 @@ initDataset()
               <draggable
                 :list="state.quotaData"
                 :group="dsFieldDragOptions.group"
+                :move="onMove"
                 animation="300"
                 class="drag-list"
+                @add="moveToQuota"
               >
                 <template #item="{ element }">
                   <span class="item-dimension father" :title="element.name">
@@ -634,7 +813,7 @@ initDataset()
       :visible="state.renameItem"
       v-model="state.renameItem"
       :show-close="false"
-      width="30%"
+      width="600px"
     >
       <el-form ref="renameForm" label-width="80px" :model="state.itemForm" :rules="itemFormRules">
         <el-form-item :label="t('dataset.field_origin_name')" class="form-item">
@@ -660,6 +839,48 @@ initDataset()
         </div>
       </template>
     </el-dialog>
+
+    <!--指标过滤器-->
+    <el-dialog
+      v-model="state.quotaFilterEdit"
+      v-if="state.quotaFilterEdit"
+      v-dialogDrag
+      :title="t('chart.add_filter')"
+      :visible="state.quotaFilterEdit"
+      :show-close="false"
+      width="800px"
+      class="dialog-css"
+    >
+      <quota-filter-editor :item="state.quotaItem" />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button size="mini" @click="closeQuotaFilter">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" size="mini" @click="saveQuotaFilter"
+            >{{ t('chart.confirm') }}
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+    <el-dialog
+      v-model="state.resultFilterEdit"
+      v-if="state.resultFilterEdit"
+      v-dialogDrag
+      :title="t('chart.add_filter')"
+      :visible="state.resultFilterEdit"
+      :show-close="false"
+      width="800px"
+      class="dialog-css"
+    >
+      <result-filter-editor :chart="state.chartForFilter" :item="state.filterItem" />
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button size="mini" @click="closeResultFilter">{{ t('chart.cancel') }} </el-button>
+          <el-button type="primary" size="mini" @click="saveResultFilter"
+            >{{ t('chart.confirm') }}
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -677,7 +898,7 @@ initDataset()
 }
 
 span {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .de-chart-editor {
