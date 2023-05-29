@@ -164,7 +164,7 @@
               @click="typeSwitch(ele)"
             >
             <span
-              :title="ele.remark"
+              :title="`${ele.name}${ele.remark ? ':' + ele.remark : ''}`"
               class="name"
             >{{ ele.name }}</span>
               <i
@@ -187,7 +187,7 @@
               class="table-or-field field"
             >
             <span
-              :title="ele.remarks"
+              :title="`${ele.fieldName}${ele.remark ? ':' + ele.remark : ''}`"
               class="name"
             >{{ ele.fieldName }}</span>
               <i

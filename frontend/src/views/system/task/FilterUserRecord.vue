@@ -221,7 +221,6 @@ export default {
       this.dataRange = []
       this.activeDataset = []
       this.selectDatasets = ''
-      this.datasetCache = []
       this.selectDatasetsCache = []
       this.$refs.datasetTreeRef.filter()
       this.$emit('search', [], [])
@@ -270,7 +269,7 @@ export default {
       if (this.activeDataset.length) {
         const str = `${this.$t('dataset.datalist')}:${this.activeDataset.reduce(
           (pre, next) =>
-            (this.datasetCache.find((ele) => ele.id === next) || {}).name +
+            (this.selectDatasetsCache.find((ele) => ele.id === next) || {}).name +
             '、' +
             pre,
           ''
