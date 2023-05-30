@@ -146,6 +146,7 @@ export default {
     },
     showEmptyDataFieldCtrl() {
       return this.showEmptyStrategy &&
+        includesAny(this.chart.type, 'table') &&
         this.functionForm.emptyDataStrategy !== 'breakLine'
     }
   },
