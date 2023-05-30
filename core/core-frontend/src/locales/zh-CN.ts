@@ -955,7 +955,9 @@ export default {
     enable_refresh_view: '开启刷新',
     enable_view_loading: '视图加载提示',
     minute: '分',
-    second: '秒'
+    second: '秒',
+    switch_chart: '切换图表',
+    update_chart_data: '更新图表数据'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
