@@ -183,6 +183,7 @@ export default {
     }
   },
   beforeDestroy() {
+    this.timer && clearInterval(this.timer)
     bus.$off('onScroll', this.onScroll)
     bus.$off('reset-default-value', this.resetDefaultValue)
   },
