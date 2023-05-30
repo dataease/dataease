@@ -546,7 +546,7 @@ initDataset()
               </span>
             </span>
           </el-row>
-          <el-row>
+          <el-row style="height: calc(100% - 121px)">
             <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-col>
@@ -782,7 +782,7 @@ initDataset()
               </template>
             </el-input>
           </el-row>
-          <div style="height: calc(100% - 124px)">
+          <div style="height: calc(100% - 121px)">
             <div class="padding-lr field-height">
               <span>{{ t('chart.dimension') }}</span>
               <draggable
@@ -961,8 +961,11 @@ span {
     font-weight: 400 !important;
   }
 
-  .tab-header :deep(.ed-tabs__header) {
-    border-top: solid 1px @side-outline-border-color;
+  .tab-header {
+    height: 100%;
+    :deep(.ed-tabs__header) {
+      border-top: solid 1px @side-outline-border-color;
+    }
   }
 
   .tab-header :deep(.ed-tabs__item) {
@@ -983,7 +986,7 @@ span {
   }
 
   .tab-header :deep(.ed-tabs__content) {
-    height: calc(100vh - 120px);
+    height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
   }
