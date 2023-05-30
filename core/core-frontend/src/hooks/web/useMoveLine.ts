@@ -1,13 +1,13 @@
-import { ref, onBeforeUnmount } from 'vue'
+import { ref, onBeforeUnmount, onMounted, Ref } from 'vue'
 
 import { useCache } from '@/hooks/web/useCache'
 
 type Sidebar = 'DATASET' | 'DASHBOARD' | 'DATASOURCE'
 
-export const useMoveLine = (type: Sidebar, node: HTMLElement, width) => {
-  const ele = ref<null | HTMLDivElement>(null)
+export const useMoveLine = (type: Sidebar, node: Ref) => {
   const { wsCache } = useCache('localStorage')
-  width.value = wsCache.get(type) || 260
+
+  const width = ref(wsCache.get(type) || 260)
 
   const getCoordinates = () => {
     document.addEventListener('mousemove', setCoordinates)
@@ -18,32 +18,38 @@ export const useMoveLine = (type: Sidebar, node: HTMLElement, width) => {
   const setCoordinates = (e: MouseEvent) => {
     const x = e.clientX
     if (x > 401 || x < 259) {
-      cancelEvent()
+      width.value = Math.max(Math.min(401, x), 259)
+      ele.style.left = width.value - 2 + 'px'
       return
     }
+    ele.style.left = width.value - 2 + 'px'
     width.value = x
-    ele.value.style.left = width.value - 2 + 'px'
   }
 
   const cancelEvent = () => {
-    if (!ele.value) return
     document.querySelector('body').style['user-select'] = 'auto'
     wsCache.set(type, width.value)
     document.removeEventListener('mousemove', setCoordinates)
   }
 
-  ele.value = document.createElement('div')
-  ele.value.className = 'sidebar-move-line'
-  ele.value.style.top = '0'
-  ele.value.style.left = width.value - 2 + 'px'
-  node.appendChild(ele.value)
-  ele.value.addEventListener('mousedown', getCoordinates)
+  const ele = document.createElement('div')
+  ele.className = 'sidebar-move-line'
+  ele.style.top = '0'
+  ele.style.left = width.value - 2 + 'px'
+  ele.addEventListener('mousedown', getCoordinates)
+
+  onMounted(() => {
+    node.value.$el.appendChild(ele)
+  })
 
   onBeforeUnmount(() => {
     cancelEvent()
-    ele.value.removeEventListener('mousedown', getCoordinates)
-    node?.removeChild(ele.value)
-    ele.value = null
+    ele.removeEventListener('mousedown', getCoordinates)
+    node.value.$el?.removeChild?.(ele)
     width.value = null
   })
+
+  return {
+    width
+  }
 }
