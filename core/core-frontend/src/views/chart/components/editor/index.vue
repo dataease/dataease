@@ -664,7 +664,9 @@ initDataset()
                           </span>
                         </div>
                         <el-button class="result-style-button">
-                          {{ t('chart.update_chart_data') }}
+                          <span style="font-size: 12px">
+                            {{ t('chart.update_chart_data') }}
+                          </span>
                         </el-button>
                       </el-row>
                     </el-row>

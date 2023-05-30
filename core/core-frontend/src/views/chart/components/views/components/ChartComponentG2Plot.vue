@@ -37,15 +37,18 @@ const renderChart = view => {
   state.myChart?.render()
 }
 
+defineExpose({
+  calcData,
+  renderChart
+})
+
 onMounted(() => {
   renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
-  useEmitt({ name: 'calcData', callback: calcData })
-  useEmitt({ name: 'renderChart', callback: renderChart })
 })
 </script>
 
 <template>
-  <div v-loading="state.loading" style="border: 1px solid #cccccc">
+  <div v-loading="state.loading">
     <div id="container"></div>
   </div>
 </template>
