@@ -15,7 +15,7 @@ import {
   DEFAULT_THRESHOLD,
   DEFAULT_SCROLL
 } from './util/chart'
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getDatasetTree } from '@/api/dataset'
@@ -109,6 +109,8 @@ const state = reactive({
     }
   },
   datasetTree: [],
+  dimension: [],
+  quota: [],
   dimensionData: [],
   quotaData: [],
   renameItem: false,
@@ -120,8 +122,17 @@ const state = reactive({
   quotaItem: {},
   resultFilterEdit: false,
   filterItem: {},
-  chartForFilter: {}
+  chartForFilter: {},
+  searchField: ''
 })
+
+watch(
+  [() => state.searchField],
+  (newVal, oldVal) => {
+    fieldFilter(newVal[0])
+  },
+  { deep: true }
+)
 
 const initDataset = () => {
   getDatasetTree({}).then(res => {
@@ -131,9 +142,33 @@ const initDataset = () => {
 
 const getFields = id => {
   getFieldByDQ(id).then(res => {
-    state.dimensionData = (res.dimensionList as unknown as Field[]) || []
-    state.quotaData = (res.quotaList as unknown as Field[]) || []
+    state.dimension = (res.dimensionList as unknown as Field[]) || []
+    state.quota = (res.quotaList as unknown as Field[]) || []
+    state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
+    state.quotaData = JSON.parse(JSON.stringify(state.quota))
   })
+}
+
+const fieldFilter = val => {
+  if (val && val !== '') {
+    state.dimensionData = JSON.parse(
+      JSON.stringify(
+        state.dimension.filter(ele => {
+          return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
+        })
+      )
+    )
+    state.quotaData = JSON.parse(
+      JSON.stringify(
+        state.quota.filter(ele => {
+          return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
+        })
+      )
+    )
+  } else {
+    state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
+    state.quotaData = JSON.parse(JSON.stringify(state.quota))
+  }
 }
 
 const dsSelectProps = {
@@ -482,118 +517,41 @@ initDataset()
         <div class="collapse-title" v-show="state.chartAreaCollapse">
           <span style="font-size: 14px">{{ state.view.title }}</span>
         </div>
-        <div v-show="!state.chartAreaCollapse" style="width: 280px" class="view-panel-row">
+        <div v-show="!state.chartAreaCollapse" style="width: 240px" class="view-panel-row">
           <el-row class="editor-title">
             <span style="font-size: 14px">{{ state.view.title }}</span>
+          </el-row>
+          <el-row class="chart_type_area padding-lr">
+            <span class="switch-chart">
+              <span>{{ t('chart.switch_chart') }}</span>
+              <span style="float: right; width: 140px">
+                <el-popover
+                  placement="bottom-end"
+                  width="400"
+                  trigger="click"
+                  :append-to-body="true"
+                >
+                  <template #reference>
+                    <el-button size="small" style="width: 100%; padding: 0">
+                      {{ t('chart.change_chart_type') }}
+                      <i class="el-icon-caret-bottom" />
+                    </el-button>
+                  </template>
+                  <div class="padding-lr">
+                    <el-row>
+                      <div>todo chart type(大屏不能切换图表类型)</div>
+                    </el-row>
+                  </div>
+                </el-popover>
+              </span>
+            </span>
           </el-row>
           <el-row>
             <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-col>
-                  <div class="chart_type_area padding-lr theme-border-class">
-                    <span class="theme-border-class">
-                      <span>{{ t('chart.chart_type') }}</span>
-                      <el-row style="padding: 4px 0 4px 10px">
-                        <span>
-                          <div>svg</div>
-                        </span>
-                        <span style="float: right">
-                          <el-popover
-                            placement="bottom-end"
-                            width="400"
-                            trigger="click"
-                            :append-to-body="true"
-                          >
-                            <template #reference>
-                              <el-button size="small" style="padding: 6px">
-                                {{ t('chart.change_chart_type') }}
-                                <i class="el-icon-caret-bottom" />
-                              </el-button>
-                            </template>
-                            <div class="padding-lr">
-                              <el-row>
-                                <div>todo chart type</div>
-                              </el-row>
-                            </div>
-                          </el-popover>
-                        </span>
-                      </el-row>
-                    </span>
-                  </div>
                   <div class="drag_main_area attr-style theme-border-class">
                     <el-row style="height: 100%">
-                      <el-row class="padding-lr">
-                        <span
-                          v-show="state.view.type !== 'richTextView'"
-                          style="width: 80px; text-align: right"
-                        >
-                          {{ t('chart.result_count') }}
-                        </span>
-                        <el-row v-show="state.view.type !== 'richTextView'">
-                          <el-radio-group
-                            v-model="state.view.resultMode"
-                            class="radio-span"
-                            size="small"
-                          >
-                            <el-radio label="all"
-                              ><span>{{ t('chart.result_mode_all') }}</span></el-radio
-                            >
-                            <el-radio label="custom">
-                              <el-input
-                                v-model="state.view.resultCount"
-                                class="result-count"
-                                size="small"
-                              />
-                            </el-radio>
-                          </el-radio-group>
-                        </el-row>
-                      </el-row>
-
-                      <el-row class="padding-lr">
-                        <span style="width: 80px; text-align: right">
-                          {{ t('chart.refresh_frequency') }}
-                        </span>
-                        <!--                    <el-tooltip class="item" effect="dark" placement="bottom">-->
-                        <!--                      <template #slot>-->
-                        <!--                        <div>-->
-                        <!--                          {{ t('chart.chart_refresh_tips') }}-->
-                        <!--                        </div>-->
-                        <!--                      </template>-->
-                        <!--                      <i-->
-                        <!--                        class="el-icon-info"-->
-                        <!--                        style="cursor: pointer; color: #606266; font-size: 12px"-->
-                        <!--                      />-->
-                        <!--                    </el-tooltip>-->
-                        <span class="padding-lr">
-                          <el-checkbox
-                            v-model="state.view.refreshViewEnable"
-                            class="el-input-refresh-loading"
-                          />
-                          {{ t('chart.enable_refresh_view') }}
-                        </span>
-                        <el-row>
-                          <el-input
-                            v-model="state.view.refreshTime"
-                            class="el-input-refresh-time"
-                            type="number"
-                            size="small"
-                            controls-position="right"
-                            :min="1"
-                            :max="3600"
-                            :disabled="!state.view.refreshViewEnable"
-                          />
-                          <el-select
-                            v-model="state.view.refreshUnit"
-                            class="el-input-refresh-unit margin-left8"
-                            size="small"
-                            :disabled="!state.view.refreshViewEnable"
-                          >
-                            <el-option :label="t('chart.minute')" :value="'minute'" />
-                            <el-option :label="t('chart.second')" :value="'second'" />
-                          </el-select>
-                        </el-row>
-                      </el-row>
-
                       <!--xAxis-->
                       <el-row class="padding-lr drag-data">
                         <span class="data-area-label">
@@ -680,6 +638,37 @@ initDataset()
                         </draggable>
                         <drag-placeholder :drag-list="state.view.customFilter" />
                       </el-row>
+
+                      <el-row class="result-style">
+                        <div class="result-style-input">
+                          <span v-show="state.view.type !== 'richTextView'">
+                            {{ t('chart.result_count') }}
+                          </span>
+                          <span v-show="state.view.type !== 'richTextView'">
+                            <el-radio-group
+                              v-model="state.view.resultMode"
+                              class="radio-span"
+                              size="small"
+                            >
+                              <el-radio label="all"
+                                ><span>{{ t('chart.result_mode_all') }}</span></el-radio
+                              >
+                              <el-radio label="custom">
+                                <el-input
+                                  v-model="state.view.resultCount"
+                                  class="result-count"
+                                  size="small"
+                                />
+                              </el-radio>
+                            </el-radio-group>
+                          </span>
+                        </div>
+                        <el-button class="result-style-button">
+                          <span style="font-size: 12px">
+                            {{ t('chart.update_chart_data') }}
+                          </span>
+                        </el-button>
+                      </el-row>
                     </el-row>
                   </div>
                 </el-col>
@@ -738,13 +727,21 @@ initDataset()
           <el-row class="editor-title">
             <span style="font-size: 14px">数据集</span>
           </el-row>
-          <el-row :style="{ borderTop: '1px solid #363636' }">
+          <el-row
+            :style="{
+              padding: '2px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }"
+          >
             <el-tree-select
               v-model="state.view.tableId"
               :data="state.datasetTree"
               :props="dsSelectProps"
               filterable
               @node-click="dsClick"
+              class="dataset-selector"
             >
               <template #default="{ data: { name } }">
                 <el-icon>
@@ -753,8 +750,39 @@ initDataset()
                 <span :title="name">{{ name }}</span>
               </template>
             </el-tree-select>
+            <el-icon :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '8px' }">
+              <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+            </el-icon>
           </el-row>
-          <div style="height: calc(100% - 78px)">
+          <el-row class="dataset-search padding-lr">
+            <div class="dataset-search-label">
+              <span>{{ t('chart.field') }}</span>
+              <span>
+                <el-icon :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }">
+                  <Icon
+                    name="icon_refresh_outlined"
+                    class="el-icon-arrow-down el-icon-delete"
+                  ></Icon>
+                </el-icon>
+                <el-icon :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }">
+                  <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                </el-icon>
+              </span>
+            </div>
+            <el-input
+              v-model="state.searchField"
+              class="dataset-search-input"
+              :placeholder="t('chart.search') + t('chart.field')"
+              clearable
+            >
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <Icon name="icon_search-outline_outlined"></Icon>
+                </el-icon>
+              </template>
+            </el-input>
+          </el-row>
+          <div style="height: calc(100% - 124px)">
             <div class="padding-lr field-height">
               <span>{{ t('chart.dimension') }}</span>
               <draggable
@@ -890,7 +918,6 @@ initDataset()
   transition: 0.5s;
   color: white;
   background-color: @side-area-background;
-  border-left: 1px solid @side-outline-border-color;
   height: 100%;
 }
 .ed-row {
@@ -908,7 +935,7 @@ span {
   display: flex;
   transition: 0.5s;
   .padding-lr {
-    padding: 0 6px;
+    padding: 0 8px;
   }
   .view-title-name {
     display: -moz-inline-box;
@@ -936,7 +963,6 @@ span {
 
   .tab-header :deep(.ed-tabs__header) {
     border-top: solid 1px @side-outline-border-color;
-    border-right: solid 1px @side-outline-border-color;
   }
 
   .tab-header :deep(.ed-tabs__item) {
@@ -957,13 +983,15 @@ span {
   }
 
   .tab-header :deep(.ed-tabs__content) {
-    height: calc(100vh - 150px);
+    height: calc(100vh - 120px);
     overflow-y: auto;
     overflow-x: hidden;
   }
 
   .field-height {
     height: 50%;
+  }
+  .field-height:nth-child(n + 2) {
     border-top: 1px solid #363636;
   }
 
@@ -1014,15 +1042,11 @@ span {
     display: flex;
   }
 
-  .radio-span :deep(.ed-radio__label) {
-    margin-left: 4px;
-  }
-
   .result-count {
-    width: 50px;
+    width: 60px;
 
     :deep(.ed-input__wrapper) {
-      padding: 0;
+      padding: 1px 2px;
     }
   }
 
@@ -1072,7 +1096,12 @@ span {
   }
 
   .drag-data {
-    margin-top: 12px;
+    padding-top: 8px;
+    padding-bottom: 16px;
+  }
+
+  .drag-data:nth-child(n + 2) {
+    border-top: 1px solid @side-outline-border-color;
   }
 
   .editor-title {
@@ -1080,23 +1109,104 @@ span {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 10px;
+    padding: 0 8px;
   }
 
   .ed-tabs {
     --el-tabs-header-height: 38px !important;
   }
+
+  .switch-chart {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    justify-content: space-between;
+    padding: 0 4px;
+  }
+
+  .dataset-selector :deep(.ed-input__inner) {
+    height: 24px;
+    width: 110px;
+  }
+
+  .result-style {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid @side-outline-border-color;
+    :deep(.ed-button) {
+      color: #ffffff;
+      background-color: var(--ed-color-primary);
+      border: none;
+      border-radius: 0;
+    }
+    :deep(.ed-button:hover) {
+      background-color: var(--ed-color-primary-light-3);
+    }
+    :deep(.ed-button:active) {
+      background-color: var(--ed-color-primary);
+    }
+  }
+  .result-style-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 40px;
+    padding: 0 6px;
+  }
+  .result-style-button {
+    height: 40px;
+    width: 100%;
+  }
+
+  .switch-chart {
+    :deep(.ed-button) {
+      color: #ffffff;
+      background-color: #1a1a1a;
+      border: 1px solid hsla(0, 0%, 100%, 0.15);
+      border-radius: 2px;
+    }
+    :deep(.ed-button:hover) {
+      border: 1px solid #3370ff;
+    }
+  }
+
+  .dataset-search {
+    height: 46px;
+    width: 100%;
+  }
+  .dataset-search-label {
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dataset-search-input {
+    height: 22px;
+    background-color: @side-area-background;
+    :deep(.ed-input__inner) {
+      height: 20px;
+      background-color: @side-area-background;
+    }
+    :deep(.ed-input__wrapper) {
+      box-shadow: none !important;
+      border-bottom: 1px solid hsla(0, 0%, 100%, 0.15);
+      background-color: @side-area-background;
+      border-radius: 0;
+      padding: 1px 4px;
+    }
+  }
 }
 
 .chart_type_area {
-  height: 80px;
-  border-top: 1px solid @side-outline-border-color;
+  height: 30px;
   overflow: auto;
 }
 
 .drag_main_area {
   border-top: 1px solid @side-outline-border-color;
   overflow: auto;
+  height: 100%;
 }
 
 .collapse-title {
@@ -1147,5 +1257,29 @@ span {
 }
 .dataset-main {
   border-left: 1px solid @side-outline-border-color;
+}
+
+// editor form 全局样式
+:deep(.ed-radio__label) {
+  color: var(--ed-color-white);
+}
+:deep(.ed-input__inner),
+:deep(.ed-input__wrapper),
+:deep(.ed-input.is-disabled .ed-input__wrapper) {
+  color: var(--ed-color-white);
+  background-color: @side-content-background;
+  border: none;
+}
+:deep(.ed-input__inner) {
+  border: none;
+}
+:deep(.ed-input__wrapper) {
+  box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
+}
+:deep(.ed-input__wrapper:hover) {
+  box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
+}
+:deep(input) {
+  font-size: 12px !important;
 }
 </style>

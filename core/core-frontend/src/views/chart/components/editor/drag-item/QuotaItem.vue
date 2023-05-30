@@ -438,10 +438,10 @@ getItemTagType()
   position: relative;
   width: 100%;
   display: block;
-  .el-dropdown {
+  .ed-dropdown {
     display: flex;
   }
-  :deep(.el-tag__content) {
+  :deep(.ed-tag__content) {
     display: flex;
     align-items: center;
     justify-content: space-between;
