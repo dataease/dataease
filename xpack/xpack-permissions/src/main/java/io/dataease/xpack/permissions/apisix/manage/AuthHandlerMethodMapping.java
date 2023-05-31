@@ -2,6 +2,7 @@ package io.dataease.xpack.permissions.apisix.manage;
 
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
+import io.dataease.feign.DeFeign;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.MethodIntrospector;
@@ -93,6 +94,7 @@ public class AuthHandlerMethodMapping<T> extends RequestMappingHandlerMapping {
 
         if (handlerType != null) {
             Class<?> userType = ClassUtils.getUserClass(handlerType);
+            if (userType.isAnnotationPresent(DeFeign.class)) return;
             Map<Method, RequestMappingInfo> methods = MethodIntrospector.selectMethods(userType,
                     (MethodIntrospector.MetadataLookup<RequestMappingInfo>) method -> {
                         try {

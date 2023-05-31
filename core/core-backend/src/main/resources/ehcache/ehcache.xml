@@ -54,6 +54,11 @@
         <value-type>java.util.List</value-type>
     </cache>
 
+    <cache alias="user_count" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.lang.Integer</value-type>
+    </cache>
+
 <!--    <cache alias="person">-->
 <!--        <key-type>java.lang.Long</key-type>-->
 <!--        <value-type>com.ramostear.cache.entity.Person</value-type>-->
