@@ -773,6 +773,7 @@ const handleClick = () => {
 <style lang="less" scoped>
 @import '@/style/mixin.less';
 .de-dataset-form {
+  color: #1f2329;
   .top {
     height: 56px;
     display: flex;
