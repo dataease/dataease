@@ -37,3 +37,6 @@ mybatis-plus:
 quartz:
   enabled: true
   scheduler-name: deSyncJob
+
+dataease:
+  version: '@project.version@'
