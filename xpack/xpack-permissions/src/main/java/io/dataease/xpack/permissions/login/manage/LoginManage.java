@@ -19,12 +19,9 @@ public class LoginManage {
 
     public TokenUserBO localBuild(PwdLoginDTO dto) {
         String name = dto.getName();
-        //        name = RsaUtils.decryptStr(name);
-        name = "admin";
-//        name = RsaUtils.decryptStr(name);
+        name = RsaUtils.decryptStr(name);
         String pwd = dto.getPwd();
-//        pwd = RsaUtils.decryptStr(pwd);
-        pwd = "DataEase123456";
+        pwd = RsaUtils.decryptStr(pwd);
         String md5Pwd = Md5Utils.md5(pwd);
         QueryWrapper<LoginUserPO> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("account", name).eq("pwd", md5Pwd);

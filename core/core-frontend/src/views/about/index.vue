@@ -87,7 +87,7 @@ import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 const userStore = useUserStoreWithOut()
-let license: F2CLicense = reactive({
+const license: F2CLicense = reactive({
   status: '',
   corporation: '',
   expired: '',
@@ -100,20 +100,17 @@ let license: F2CLicense = reactive({
 const build = ref('')
 const isAdmin = ref(false)
 const fileList = reactive([])
-const dynamicCardClass = ref('about-card-medium')
-const licenseKey = ref(null)
-const updateLicense = ref(null)
+const dynamicCardClass = ref('')
 onMounted(() => {
   isAdmin.value = userStore.getUid === '1'
   initVersion()
+  getLicenseInfo()
 })
 
 const initVersion = () => {
-  build.value = '2.0'
-  // console.log('')
-  /* buildVersionApi().then(res => {
+  buildVersionApi().then(res => {
     build.value = res.data
-  }) */
+  })
 }
 const beforeUpload = file => {
   importLic(file)
@@ -125,13 +122,33 @@ const support = () => {
   window.open(url, '_blank')
 }
 
+const getLicenseInfo = () => {
+  validateHandler({}, res => {
+    const info = getLicense(res.data)
+    setLicense(info)
+  })
+}
+const setLicense = lic => {
+  for (const key in license) {
+    if (Object.prototype.hasOwnProperty.call(license, key)) {
+      license[key] = lic[key]
+    }
+  }
+  if (license?.serialNo && license?.remark) {
+    dynamicCardClass.value = 'about-card-max'
+  } else if (!license?.serialNo && !license?.remark) {
+    dynamicCardClass.value = ''
+  } else {
+    dynamicCardClass.value = 'about-card-medium'
+  }
+}
+
 const importLic = file => {
   const reader = new FileReader()
   reader.onload = function (e) {
-    licenseKey.value = e.target.result
-    validateHandler({ license: licenseKey }, response => {
-      updateLicense.value = getLicense(response.data)
-      update()
+    const licKey = e.target.result
+    validateHandler({ license: licKey }, () => {
+      update(licKey)
     })
   }.bind(this)
   reader.readAsText(file)
@@ -151,13 +168,13 @@ const getLicense = result => {
     remark: result.license ? result.license.remark : ''
   }
 }
-const update = () => {
-  const param = { license: licenseKey }
+const update = (licKey: string) => {
+  const param = { license: licKey }
   updateInfoApi(param).then(response => {
     if (response.data.status === 'valid') {
       ElMessage.success(t('about.update_success'))
       const info = getLicense(response.data)
-      license = { ...license, ...info }
+      setLicense(info)
     } else {
       ElMessage.warning(response.data.message)
     }
@@ -206,6 +223,9 @@ const update = () => {
   td {
     display: table-cell;
     vertical-align: inherit;
+    label {
+      font-weight: 700;
+    }
   }
 }
 .md-padding {
