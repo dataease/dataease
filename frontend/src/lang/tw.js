@@ -2343,7 +2343,7 @@ export default {
     expand: '展開',
     pdf_export: 'PDF 導出',
     switch_pdf_template: '切換 PDF 模板',
-    pdf_template_with_params: '默認模板(加參數樣式)',
+    pdf_template_with_params: '默認模闆(加儀錶闆描述)',
     pdf_template_only_pic: '默認模板(只截圖)',
     panel_name: '儀錶板名稱',
     export_user: '導出用戶',
