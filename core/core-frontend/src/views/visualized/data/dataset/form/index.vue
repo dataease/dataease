@@ -6,7 +6,6 @@ import type { Action } from 'element-plus-secondary'
 import FieldMore from './FieldMore.vue'
 import { Icon } from '@/components/icon-custom'
 import CalcFieldEdit from './CalcFieldEdit.vue'
-import AddSql from './AddSql.vue'
 import { useRoute } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
 import CreatDsGroup from './CreatDsGroup.vue'
@@ -25,7 +24,7 @@ interface DragEvent extends MouseEvent {
   dataTransfer: DataTransfer
 }
 
-interface DataSource {
+export interface DataSource {
   id: string
   name: string
 }
@@ -43,7 +42,6 @@ const route = useRoute()
 const creatDsFolder = ref()
 const editCalcField = ref(false)
 const calcEdit = ref()
-const editSqlField = ref(false)
 const editUnion = ref(false)
 const datasetDrag = ref()
 const datasetName = ref('新建数据源')
@@ -63,6 +61,13 @@ const loading = ref(false)
 const nameExist = ref(false)
 const datasetType = ref('sql')
 const editerName = ref()
+
+const sqlNode = reactive<Table>({
+  datasourceId: '',
+  name: '',
+  tableName: '自定义SQL',
+  type: 'sql'
+})
 
 let nodeInfo = {
   id: '',
@@ -417,6 +422,7 @@ getDatasource()
 
 const dsChange = (val: string) => {
   getTables(val).then(res => {
+    sqlNode.datasourceId = dataSource.value
     tableList = (res as unknown as Table[]) || []
     state.tableData = [...tableList]
   })
@@ -605,6 +611,19 @@ const handleClick = () => {
           </div>
         </div>
         <div v-else class="table-checkbox-list">
+          <div
+            class="list-item_primary"
+            v-if="dataSource"
+            @dragstart="$event => dragstart($event, sqlNode)"
+            @dragend="maskShow = false"
+            :draggable="true"
+            @click="setActiveName(sqlNode)"
+          >
+            <el-icon>
+              <Icon name="reference-table"></Icon>
+            </el-icon>
+            <span class="label">自定义SQL</span>
+          </div>
           <template v-for="ele in state.tableData" :key="ele.name">
             <div
               :class="[
@@ -644,7 +663,7 @@ const handleClick = () => {
           <div class="sql-title">
             <span class="drag" @mousedown="mousedownDragH" />
             <div class="field-data">
-              <el-button @click="datasetPreview" secondary>
+              <el-button :disabled="!allfields.length" @click="datasetPreview" secondary>
                 <template #icon>
                   <el-icon>
                     <Icon name="scene"></Icon>
@@ -764,9 +783,6 @@ const handleClick = () => {
       <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
     </template>
-  </el-dialog>
-  <el-dialog fullscreen class="sql-dialog-fullscreen" append-to-body v-model="editSqlField">
-    <add-sql></add-sql>
   </el-dialog>
 </template>
 
@@ -952,6 +968,10 @@ const handleClick = () => {
             float: right;
             height: 100%;
             width: calc(100% - 260px);
+
+            :deep(.ed-table-v2__header-cell) {
+              background-color: #f5f6f7 !important;
+            }
           }
 
           .preview-field {
@@ -1043,15 +1063,6 @@ const handleClick = () => {
 </style>
 
 <style lang="less">
-.sql-dialog-fullscreen {
-  .ed-dialog__header {
-    display: none;
-  }
-  .ed-dialog__body {
-    padding: 0;
-  }
-}
-
 .ed-select-dropdown__item {
   display: flex;
   align-items: center;

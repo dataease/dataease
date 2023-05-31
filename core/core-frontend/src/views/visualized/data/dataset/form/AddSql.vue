@@ -1,21 +1,39 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, PropType, toRefs, onBeforeUpdate } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { Base64 } from 'js-base64'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage } from 'element-plus-secondary'
 import CodeMirror from './CodeMirror.vue'
+import { getDatasourceList, getTables, getPreviewSql } from '@/api/dataset'
+import type { Table } from '@/api/dataset'
+import type { DataSource } from './index.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util.js'
-const { toClipboard } = useClipboard()
 
+export interface SqlNode {
+  sql: string
+  tableName: string
+  datasourceId: string
+  id: string
+}
+
+const props = defineProps({
+  sqlNode: {
+    type: Object as PropType<SqlNode>,
+    default: () => ({})
+  }
+})
+
+const { sqlNode } = toRefs(props)
+const { toClipboard } = useClipboard()
 const { t } = useI18n()
 const activeName = ref('')
 const myCm = ref()
 const codeCom = ref()
 const dialogTitle = t('sql_variable.variable_mgm') + ' '
 const tabActive = ref('result')
-const dataSource = ref('')
 const searchTable = ref('')
 const showVariableMgm = ref(false)
 const dsLoading = ref(false)
@@ -46,37 +64,7 @@ const paginationConfig = reactive({
   total: 0
 })
 
-state.tableData = [
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'area_mapping',
-    remark: '',
-    enableCheck: false,
-    datasetPath: '0-大数据集测试/0wjh4_area_mapping'
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'area_mapping_global',
-    remark: '',
-    enableCheck: false,
-    datasetPath: '0-大数据集测试/0wjh4_area_mapping_global'
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'chart_group',
-    remark: '',
-    enableCheck: false,
-    datasetPath: '0-大数据集测试/0wjh4_chart_group'
-  },
-  {
-    datasourceId: '986e4e63-bdb9-41fc-9695-512cea79ae59',
-    name: 'chart_view',
-    remark: '',
-    enableCheck: false,
-    datasetPath: '0-大数据集测试/0wjh4_chart_view'
-  }
-]
-const setActiveName = ({ name, datasourceId, enableCheck }) => {
+const setActiveName = ({ name, enableCheck }) => {
   if (!enableCheck) return
   activeName.value = name
 }
@@ -96,118 +84,48 @@ const referenceSetting = () => {
 }
 
 onMounted(() => {
-  codeCom.value = myCm.value.codeComInit('SELECT * from area_mapping\n 123')
+  dsChange(sqlNode.value.datasourceId)
+  codeCom.value = myCm.value.codeComInit(Base64.decode(sqlNode.value.sql))
 })
 
-const getSQLPreview = () => {
-  state.sqlData.unshift({
-    id: null,
-    datasetId: null,
-    startTime: 1681710042973,
-    endTime: 1681710043054,
-    spend: 81,
-    sql: 'SELECT * from area_mapping',
-    status: 'Completed'
+const getDatasource = () => {
+  getDatasourceList().then(res => {
+    state.dataSourceList = (res as unknown as DataSource[]) || []
   })
+}
 
-  state.plxTableData = [
-    {
-      city_name: '北京市',
-      county_code: '110101',
-      city_code: '110100',
-      id: '1',
-      province_code: '110000',
-      county_name: '东城区',
-      province_name: '北京市'
-    },
-    {
-      city_name: '北京市',
-      county_code: '110102',
-      city_code: '110100',
-      id: '2',
-      province_code: '110000',
-      county_name: '西城区',
-      province_name: '北京市'
-    },
-    {
-      city_name: '北京市',
-      county_code: '110105',
-      city_code: '110100',
-      id: '3',
-      province_code: '110000',
-      county_name: '朝阳区',
-      province_name: '北京市'
-    },
-    {
-      city_name: '北京市',
-      county_code: '110106',
-      city_code: '110100',
-      id: '4',
-      province_code: '110000',
-      county_name: '丰台区',
-      province_name: '北京市'
-    },
-    {
-      city_name: '北京市',
-      county_code: '110107',
-      city_code: '110100',
-      id: '5',
-      province_code: '110000',
-      county_name: '石景山区',
-      province_name: '北京市'
-    }
-  ]
-  state.fields = [
-    {
-      fieldName: 'id',
-      remarks: 'id',
-      fieldType: 'BIGINT',
-      fieldSize: 20,
-      accuracy: 0
-    },
-    {
-      fieldName: 'province_name',
-      remarks: 'province_name',
-      fieldType: 'VARCHAR',
-      fieldSize: 255,
-      accuracy: 0
-    },
-    {
-      fieldName: 'province_code',
-      remarks: 'province_code',
-      fieldType: 'VARCHAR',
-      fieldSize: 255,
-      accuracy: 0
-    },
-    {
-      fieldName: 'city_name',
-      remarks: 'city_name',
-      fieldType: 'VARCHAR',
-      fieldSize: 255,
-      accuracy: 0
-    },
-    {
-      fieldName: 'city_code',
-      remarks: 'city_code',
-      fieldType: 'VARCHAR',
-      fieldSize: 255,
-      accuracy: 0
-    },
-    {
-      fieldName: 'county_name',
-      remarks: 'county_name',
-      fieldType: 'VARCHAR',
-      fieldSize: 255,
-      accuracy: 0
-    },
-    {
-      fieldName: 'county_code',
-      remarks: 'county_code',
-      fieldType: 'VARCHAR',
-      fieldSize: 255,
-      accuracy: 0
-    }
-  ]
+onBeforeUpdate(() => {
+  // codeCom.value = myCm.value.codeComInit(sqlNode.value.sql)
+  // dsChange(sqlNode.value.datasourceId)
+})
+
+getDatasource()
+
+const emits = defineEmits(['close', 'save'])
+
+const saveClose = () => {
+  save()
+  close()
+}
+
+const save = () => {
+  emits('save', {
+    ...sqlNode.value,
+    sql: Base64.encodeURI(codeCom.value.viewState.state.doc.text.join('\n'))
+  })
+}
+
+const close = () => {
+  emits('close')
+}
+const getSQLPreview = () => {
+  getPreviewSql({
+    sql: Base64.encodeURI(codeCom.value.viewState.state.doc.text.join('\n')),
+    datasourceId: sqlNode.value.datasourceId
+  }).then(res => {
+    state.plxTableData = res.data.data
+    state.fields = res.data.fields
+  })
 }
 
 const getIconName = (type: string) => {
@@ -228,6 +146,12 @@ const getIconName = (type: string) => {
 
 const formatter = (_, __, cellValue) => {
   return cellValue ? `${cellValue} ${t(`commons.millisecond`)}` : '-'
+}
+
+const dsChange = (val: string) => {
+  getTables(val).then(res => {
+    state.tableData = (res as unknown as Table[]) || []
+  })
 }
 
 const listSqlLog = () => {
@@ -309,7 +233,7 @@ const calculateHeight = (e: MouseEvent) => {
 
 <template>
   <div class="add-sql-name">
-    <el-input class="name" ref="editerName" v-model="state.table.name" />
+    <el-input class="name" ref="editerName" v-model="sqlNode.tableName" />
     <div class="run-params-config">
       <el-button @click="getSQLPreview" text>
         <template #icon>
@@ -329,9 +253,9 @@ const calculateHeight = (e: MouseEvent) => {
       </el-button>
     </div>
     <div class="save-or-cancel">
-      <el-button secondary> 取消</el-button>
-      <el-button type="primary"> 保存</el-button>
-      <el-button type="primary"> 保存并返回</el-button>
+      <el-button @click="close" secondary> 取消</el-button>
+      <el-button @click="save" type="primary"> 保存</el-button>
+      <el-button @click="saveClose" type="primary"> 保存并关闭</el-button>
     </div>
   </div>
 
@@ -360,8 +284,9 @@ const calculateHeight = (e: MouseEvent) => {
         </el-icon>
       </p>
       <el-select
-        v-model="dataSource"
+        v-model="sqlNode.datasourceId"
         class="ds-list"
+        @change="dsChange"
         filterable
         :placeholder="t('dataset.pls_slc_data_source')"
       >
@@ -392,26 +317,19 @@ const calculateHeight = (e: MouseEvent) => {
       </div>
       <div v-else class="table-checkbox-list">
         <template v-for="ele in state.tableData" :key="ele.name">
-          <el-tooltip
-            :disabled="ele.enableCheck"
-            effect="dark"
-            :content="t('dataset.table_already_add_to') + ': ' + ele.datasetPath"
-            placement="right"
+          <div
+            :class="[{ active: activeName === ele.name }]"
+            class="list-item_primary"
+            :title="ele.name"
+            @click="setActiveName(ele)"
           >
-            <div
-              :class="[{ active: activeName === ele.name, 'not-allow': !ele.enableCheck }]"
-              class="list-item_primary"
-              :title="ele.name"
-              @click="setActiveName(ele)"
-            >
-              <span class="label">{{ ele.name }}</span>
-              <span class="name-copy">
-                <el-icon @click="copyInfo(ele.name)">
-                  <Icon name="icon_copy_outlined"></Icon>
-                </el-icon>
-              </span>
-            </div>
-          </el-tooltip>
+            <span class="label">{{ ele.name }}</span>
+            <span class="name-copy">
+              <el-icon @click="copyInfo(ele.name)">
+                <Icon name="icon_copy_outlined"></Icon>
+              </el-icon>
+            </span>
+          </div>
         </template>
       </div>
     </div>
@@ -440,10 +358,10 @@ const calculateHeight = (e: MouseEvent) => {
             >
               <el-table-column
                 v-for="field in state.fields"
-                :key="field.fieldName"
+                :key="field.originName"
                 min-width="200px"
-                :prop="field.fieldName"
-                :label="field.remarks"
+                :prop="field.originName"
+                :label="field.originName"
                 resizable
               />
             </el-table>

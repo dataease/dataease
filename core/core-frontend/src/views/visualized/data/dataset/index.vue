@@ -139,6 +139,7 @@ const handleNodeClick = (data: Tree) => {
   Object.assign(nodeInfo, { name, createBy, id, nodeType, createTime })
   columnsPreview = []
   dataPreview = []
+  activeName.value = 'dataPreview'
   handleClick(activeName.value)
 }
 
@@ -504,6 +505,7 @@ const defaultProps = {
 
     .tab-border {
       .border-bottom-tab(24px);
+      margin-left: 0;
     }
 
     .preview-num {

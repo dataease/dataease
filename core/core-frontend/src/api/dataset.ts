@@ -53,13 +53,13 @@ export const delDatasetTree = async (id): Promise<IResponse> => {
 }
 
 export const getDatasourceList = async (): Promise<IResponse> => {
-  return request.post({ url: '/datasource/list', data: {} }).then(res => {
+  return request.get({ url: '/datasource/list' }).then(res => {
     return res?.data
   })
 }
 
 export const getTables = async (id): Promise<IResponse> => {
-  return request.post({ url: `/datasource/getTables/${id}`, data: {} }).then(res => {
+  return request.get({ url: `/datasource/getTables/${id}` }).then(res => {
     return res?.data as Table[]
   })
 }
@@ -90,6 +90,12 @@ export const getDatasetDetails = async (id): Promise<Dataset> => {
 
 export const tableUpdate = async (data): Promise<IResponse> => {
   return request.post({ url: '/dataset/table/update', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const getPreviewSql = async (data): Promise<IResponse> => {
+  return request.post({ url: '/datasetData/previewSql', data }).then(res => {
     return res?.data
   })
 }

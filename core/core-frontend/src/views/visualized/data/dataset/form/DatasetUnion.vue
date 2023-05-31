@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { reactive, computed, ref, nextTick } from 'vue'
 // import { throttle } from 'lodash'
+import AddSql from './AddSql.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import zeroNodeImg from '@/assets/img/drag.png'
 import { guid } from './util.js'
@@ -10,6 +11,7 @@ import UnionFieldList from './UnionFieldList.vue'
 import type { Node } from './UnionEdit.vue'
 import { getTableField } from '@/api/dataset'
 import type { Field } from './UnionFieldList.vue'
+import type { SqlNode } from './AddSql.vue'
 import { clone } from 'lodash'
 
 const state = reactive({
@@ -33,10 +35,13 @@ const iconName = {
   inner: 'icon_intersect'
 }
 const { t } = useI18n()
+const editSqlField = ref(false)
 
 const nodeField = ref<Field[]>([])
 
 const currentNode = ref<Node>()
+
+const sqlNode = ref<SqlNode>()
 
 const getNodeField = ({ datasourceId, id, info, tableName, type, currentDsFields }) => {
   getTableField({ datasourceId, id, info, tableName, type })
@@ -87,6 +92,12 @@ const delNode = (id, arr) => {
   })
 }
 
+const saveSqlNode = (val: SqlNode) => {
+  const { tableName, id, sql } = val
+  const obj = { info: JSON.stringify({ table: tableName, sql }), id, tableName }
+  dfsNodeBack([obj], [id], state.nodeList)
+}
+
 const changeNodeFields = val => {
   currentNode.value.currentDsFields = val
 }
@@ -94,10 +105,22 @@ const changeNodeFields = val => {
 const closeEditUnion = () => {
   editUnion.value = false
 }
+let num = +new Date()
+
+const setGuid = (arr, id, datasourceId) => {
+  arr.forEach(ele => {
+    if (!ele.id) {
+      ele.id = `${++num}`
+      ele.datasetTableId = id
+      ele.datasourceId = datasourceId
+    }
+  })
+}
 
 const delUpdateDsFields = (id, arr: Node[]) => {
   arr.some(ele => {
     if (id === ele.id) {
+      setGuid(currentNode.value.currentDsFields, ele.id, ele.datasourceId)
       ele.currentDsFields = currentNode.value.currentDsFields
       return true
     }
@@ -119,6 +142,17 @@ const confirmEditUnion = () => {
 const handleCommand = (ele, command) => {
   if (command === 'editer') {
     currentNode.value = clone(ele)
+    const { tableName, datasourceId, info, id } = ele
+    if (ele.type === 'sql') {
+      sqlNode.value = {
+        sql: (JSON.parse(info) || {}).sql,
+        tableName,
+        id,
+        datasourceId
+      }
+      editSqlField.value = true
+      return
+    }
     getNodeField(ele)
   }
 
@@ -656,11 +690,26 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
       <el-button type="primary" @click="confirmEditUnion">{{ t('dataset.confirm') }} </el-button>
     </template>
   </el-drawer>
+  <el-drawer
+    direction="btt"
+    size="90%"
+    :with-header="false"
+    modal-class="sql-drawer-fullscreen"
+    v-model="editSqlField"
+  >
+    <add-sql @save="saveSqlNode" @close="editSqlField = false" :sqlNode="sqlNode"></add-sql>
+  </el-drawer>
 </template>
 
 <style lang="less">
 .path-point {
   cursor: pointer;
+}
+
+.sql-drawer-fullscreen {
+  .ed-drawer__body {
+    padding: 0;
+  }
 }
 
 .union-item-drawer {

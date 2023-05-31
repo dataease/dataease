@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 const { push } = useRouter()
-const route = useRoute()
 const redirectUser = () => {
-  console.log('route', route)
   push('/system/user')
 }
 </script>

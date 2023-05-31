@@ -3,6 +3,7 @@ import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { saveDatasetTree, getDatasetTree } from '@/api/dataset'
 import type { DatesetOrFolder } from '@/api/dataset'
+import nothingTree from '@/assets/img/nothing-tree.png'
 export interface Tree {
   name: string
   value?: string | number
@@ -35,8 +36,12 @@ const datasetForm = reactive({
   pid: '',
   name: ''
 })
+const searchEmpty = ref(false)
 
 const filterNode = (value: string, data: Tree) => {
+  nextTick(() => {
+    searchEmpty.value = treeRef.value.isEmpty
+  })
   if (!value) return true
   return data.name.includes(value)
 }
@@ -260,6 +265,7 @@ const emits = defineEmits(['finish'])
             filterable
             v-model="datasetForm.pid"
             menu
+            empty-text=""
             :data="state.tData"
             :props="props"
             @node-click="nodeClick"
@@ -273,6 +279,10 @@ const emits = defineEmits(['finish'])
               </span>
             </template>
           </el-tree>
+          <div v-if="searchEmpty" class="empty-search">
+            <img :src="nothingTree" />
+            <span>没有找到相关内容</span>
+          </div>
         </div>
       </div>
     </el-form>
@@ -301,6 +311,26 @@ const emits = defineEmits(['finish'])
       :deep(.highLight) {
         color: var(--el-color-primary, #3370ff);
       }
+    }
+  }
+
+  .empty-search {
+    width: 100%;
+    margin-top: 57px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    img {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 8px;
+    }
+    span {
+      font-family: PingFang SC;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 22px;
+      color: #646a73;
     }
   }
 }

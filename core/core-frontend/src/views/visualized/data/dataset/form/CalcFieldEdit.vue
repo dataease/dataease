@@ -95,7 +95,7 @@ const initEdit = (obj, dimensionData, quotaData) => {
 }
 
 const fieldType = (deType: number) => {
-  return ['text', 'time', 'value', 'value', 'location'][deType]
+  return ['text', 'time', 'value', 'value', '', 'location'][deType]
 }
 
 const insertFieldToCodeMirror = (value: string) => {
@@ -125,14 +125,66 @@ defineExpose({
 
 <template>
   <div class="calcu-field">
-    <el-form ref="form" :model="fieldForm" label-position="top">
-      <el-form-item :label="t('dataset.field_edit_name')">
-        <el-input v-model="fieldForm.name" :placeholder="t('dataset.input_edit_name')" />
-      </el-form-item>
-    </el-form>
     <div class="calcu-cont" style="height: 544px">
       <div style="flex: 1">
-        <div style="max-width: 480px">
+        <div style="max-width: 488px">
+          <el-form ref="form" :model="fieldForm" label-position="top">
+            <el-form-item :label="t('dataset.field_edit_name')">
+              <el-input v-model="fieldForm.name" :placeholder="t('dataset.input_edit_name')" />
+            </el-form-item>
+          </el-form>
+          <div>
+            <el-form label-position="top" ref="form" inline :model="fieldForm">
+              <el-form-item class="mr12" :label="t('dataset.data_type')">
+                <div class="btn-select">
+                  <el-button
+                    @click="fieldForm.groupType = 'd'"
+                    :class="[fieldForm.groupType === 'd' && 'is-active']"
+                    text
+                  >
+                    {{ t('chart.dimension') }}
+                  </el-button>
+                  <el-button
+                    @click="fieldForm.groupType = 'q'"
+                    :class="[fieldForm.groupType === 'q' && 'is-active']"
+                    text
+                  >
+                    {{ t('chart.quota') }}
+                  </el-button>
+                </div>
+              </el-form-item>
+              <el-form-item class="mr0" :label="t('dataset.field_type')">
+                <el-select v-model="fieldForm.deType" style="width: 376px">
+                  <template #prefix>
+                    <el-icon>
+                      <Icon
+                        :name="`field_${fieldType(fieldForm.deType)}`"
+                        :className="`field-icon-${fieldType(fieldForm.deType)}`"
+                      ></Icon>
+                    </el-icon>
+                  </template>
+                  <el-option
+                    v-for="item in fields"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                    <span style="display: flex; align-items: center">
+                      <el-icon>
+                        <Icon
+                          :name="`field_${fieldType(item.value)}`"
+                          :className="`field-icon-${fieldType(item.value)}`"
+                        ></Icon>
+                      </el-icon>
+                    </span>
+                    <span style="margin-left: 5px; font-size: 12px; color: #8492a6">{{
+                      item.label
+                    }}</span>
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </div>
           <span class="mb8">
             {{ t('dataset.field_exp') }}
             <el-tooltip class="item" effect="dark" placement="bottom">
@@ -147,25 +199,6 @@ defineExpose({
             </el-tooltip>
           </span>
           <code-mirror ref="myCm"></code-mirror>
-        </div>
-        <div style="margin-top: 28px">
-          <el-form label-position="top" ref="form" :model="fieldForm" class="de-form-item">
-            <el-form-item :label="t('dataset.data_type')">
-              <el-radio v-model="fieldForm.groupType" label="d">{{
-                t('chart.dimension')
-              }}</el-radio>
-              <el-radio v-model="fieldForm.groupType" label="q">{{ t('chart.quota') }}</el-radio>
-            </el-form-item>
-            <el-form-item label-position="top" :label="t('dataset.field_type')">
-              <el-radio
-                v-for="item in fields"
-                :key="item.value"
-                v-model="fieldForm.deType"
-                :label="item.value"
-                >{{ item.label }}</el-radio
-              >
-            </el-form-item>
-          </el-form>
         </div>
       </div>
       <div class="padding-lr">
@@ -307,6 +340,37 @@ defineExpose({
     height: 544px;
   }
 
+  .mr12 {
+    margin-right: 12px;
+  }
+
+  .mr0 {
+    margin-right: 0;
+  }
+
+  .btn-select {
+    width: 100px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid #bbbfc4;
+    border-radius: 4px;
+
+    .is-active {
+      background: rgba(51, 112, 255, 0.1);
+    }
+    .ed-button.is-text {
+      height: 24px;
+      width: 44px;
+      line-height: 24px;
+    }
+    .ed-button + .ed-button {
+      margin-left: 4px;
+    }
+  }
+
   .mb8 {
     margin-bottom: 8px;
     display: inline-flex;
@@ -318,7 +382,7 @@ defineExpose({
   }
 }
 .padding-lr {
-  height: calc(100% - 80px);
+  height: 500px;
   border: 1px solid var(--deCardStrokeColor, #dee0e3);
   border-radius: 4px;
   padding: 12px;
@@ -477,7 +541,7 @@ defineExpose({
 <style lang="less">
 .calcu-field {
   .cm-scroller {
-    height: 250px;
+    height: 320px;
     border: 1px solid #bbbfc4;
     border-radius: 4px;
     overflow-y: auto;
