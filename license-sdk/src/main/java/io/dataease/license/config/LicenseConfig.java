@@ -1,19 +1,20 @@
-package io.dataease.auth.filter;
+package io.dataease.license.config;
 
+import io.dataease.auth.filter.TokenFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class FilterConfig {
+public class LicenseConfig {
 
     @Bean
-    public FilterRegistrationBean orderFilter() {
+    public FilterRegistrationBean licenseOrderFilter() {
         FilterRegistrationBean filter = new FilterRegistrationBean<>();
-        filter.setName("tokenFilter");
-        filter.setFilter(new TokenFilter());
+        filter.setName("licenseFilter");
+        filter.setFilter(new LicenseFilter());
         filter.addUrlPatterns("/*");
-        filter.setOrder(0);
+        filter.setOrder(2);
         return filter;
     }
 }
