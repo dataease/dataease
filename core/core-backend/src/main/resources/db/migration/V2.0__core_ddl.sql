@@ -82,7 +82,8 @@ VALUES (1, 0, 2, 'workbranch', 'workbranch', 1, NULL, '/workbranch', 0, 1),
        (9, 7, 2, 'org', 'system/org', 2, 'org', '/org', 0, 1),
        (10, 7, 2, 'auth', 'system/auth', 3, 'auth', '/auth', 0, 1),
        (11, 0, 2, 'dataset-form', 'visualized/data/dataset/form', 7, NULL, '/dataset-form', 1, 0),
-       (12, 0, 2, 'datasource-form', 'visualized/data/datasource/form', 7, NULL, '/ds-form', 1, 0);
+       (12, 0, 2, 'datasource-form', 'visualized/data/datasource/form', 7, NULL, '/ds-form', 1, 0),
+       (13, 0, 2, 'about', 'about', 7, NULL, '/about', 1, 1);
 UNLOCK
 TABLES;
 
@@ -194,7 +195,7 @@ DROP TABLE IF EXISTS `core_datasource_task`;
 CREATE TABLE `core_datasource_task`
 (
     `id`               bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `ds_id`            bigint  NOT NULL COMMENT '数据源ID',
+    `ds_id`            bigint       NOT NULL COMMENT '数据源ID',
     `name`             varchar(255) NOT NULL COMMENT '任务名称',
     `update_type`      varchar(50)  NOT NULL COMMENT '更新方式',
     `start_time`       bigint(13) DEFAULT NULL COMMENT '开始时间',
