@@ -24,6 +24,8 @@ import org.springframework.util.Base64Utils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.apache.calcite.sql.SqlKind.*;
 
@@ -36,15 +38,30 @@ public class RsaTest {
 
     @Test
     public void test() {
-        RSA rsa = new RSA();
-        String privateKeyBase64 = rsa.getPrivateKeyBase64();
-        String publicKeyBase64 = rsa.getPublicKeyBase64();
-        LogUtil.info("private is {}", privateKeyBase64);
-        LogUtil.info("public is {}", publicKeyBase64);
-        String data = "my name is cyw";
-        String s = rsa.encryptBase64(data, KeyType.PublicKey);
-        String s1 = rsa.decryptStr(s, KeyType.PrivateKey);
-        LogUtil.info(s1);
+//        RSA rsa = new RSA();
+//        String privateKeyBase64 = rsa.getPrivateKeyBase64();
+//        String publicKeyBase64 = rsa.getPublicKeyBase64();
+//        LogUtil.info("private is {}", privateKeyBase64);
+//        LogUtil.info("public is {}", publicKeyBase64);
+//        String data = "my name is cyw";
+//        String s = rsa.encryptBase64(data, KeyType.PublicKey);
+//        String s1 = rsa.decryptStr(s, KeyType.PrivateKey);
+//        LogUtil.info(s1);
+
+        String jdbc = "jdbc:mysql://47.93.185.197:3306/dataease_new?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull";
+        Mysql mysqlConfiguration = new Mysql();
+        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+        Matcher matcher = WITH_SQL_FRAGMENT.matcher(jdbc);
+        if (!matcher.find()) {
+            return;
+        }
+        mysqlConfiguration.setHost(matcher.group(1));
+        mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
+        mysqlConfiguration.setDataBase(matcher.group(3).split("\\?")[0]);
+        mysqlConfiguration.setExtraParams(matcher.group(3).split("\\?")[1]);
+        mysqlConfiguration.setUsername(jdbc);
+        mysqlConfiguration.setPassword(jdbc);
+        System.out.println(mysqlConfiguration.toString());
     }
 
     @Test

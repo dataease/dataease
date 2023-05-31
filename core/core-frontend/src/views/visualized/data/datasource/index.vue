@@ -327,12 +327,7 @@ const defaultProps = {
           </grid-table>
         </div>
         <div v-else class="form-editor">
-          <editor-detail
-            ref="detail"
-            :form="nodeInfo"
-            :ds-form-disabled="True"
-            :edit-ds="True"
-          ></editor-detail>
+          <editor-detail ref="detail" :form="nodeInfo" :edit-ds="true"></editor-detail>
         </div>
       </template>
       <template v-else>
@@ -369,11 +364,11 @@ const defaultProps = {
         stripe
         style="width: 100%"
       >
-        <el-table-column prop="fieldName" :label="t('datasource.column_name')" />
-        <el-table-column prop="fieldType" :label="t('datasource.field_type')">
+        <el-table-column prop="originName" :label="t('datasource.column_name')" />
+        <el-table-column prop="type" :label="t('datasource.field_type')">
           <template #default="scope">
             <span v-if="nodeInfo.type !== 'api'">
-              {{ scope.row.fieldType }}
+              {{ scope.row.type }}
             </span>
             <span v-if="nodeInfo.type === 'api'">{{ getFieldType(scope.row.fieldType) }}</span>
           </template>

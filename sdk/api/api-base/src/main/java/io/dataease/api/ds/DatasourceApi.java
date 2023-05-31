@@ -53,7 +53,7 @@ public interface DatasourceApi {
     DatasourceDTO validate(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
     @GetMapping("getTableField/{datasourceId}/{tableName}")
-    List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws DEException;
+    List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws Exception;
 
     @DePermit("m:read")
     @GetMapping("list")

@@ -1,5 +1,4 @@
 spring:
-
   datasource:
     url: jdbc:mysql://123.56.8.132:33061/jinlong?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false
     username: root

@@ -69,7 +69,7 @@ export const save = async (data = {}): Promise<IResponse> => {
 
 export const checkApiItem = async (data = {}): Promise<IResponse> => {
   return request.post({ url: '/datasource/checkApiDatasource', data }).then(res => {
-    return res?.data
+    return res
   })
 }
 
