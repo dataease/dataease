@@ -76,7 +76,7 @@ const handleLogin = () => {
   loginApi(param).then(res => {
     const token = res.data
     userStore.setToken(token)
-    let queryRedirectPath = '/home/index'
+    let queryRedirectPath = '/workbranch/index'
     if (router.currentRoute.value.query.redirect) {
       queryRedirectPath = router.currentRoute.value.query.redirect as string
     }
