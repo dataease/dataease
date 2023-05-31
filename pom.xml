@@ -11,6 +11,7 @@
         <module>sdk</module>
         <module>xpack</module>
         <module>core</module>
+        <module>license-sdk</module>
     </modules>
 
     <properties>
