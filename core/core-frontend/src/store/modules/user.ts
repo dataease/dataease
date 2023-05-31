@@ -50,7 +50,8 @@ export const userStore = defineStore('user', {
       const keys: string[] = ['token', 'uid', 'name', 'oid', 'language']
 
       keys.forEach(key => {
-        this[key] = data[key]
+        const dkey = key === 'uid' ? 'id' : key
+        this[key] = data[dkey]
         wsCache.set('user.' + key, this[key])
       })
     },
