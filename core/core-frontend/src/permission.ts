@@ -32,7 +32,7 @@ router.beforeEach(async (to, from, next) => {
       await userStore.setUser()
     }
     if (to.path === '/login') {
-      next({ path: '/home/index' })
+      next({ path: '/workbranch/index' })
     } else {
       if (permissionStore.getIsAddRouters) {
         next()

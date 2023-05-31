@@ -9,7 +9,7 @@ const name = ref('')
 const logout = () => {
   userStore.clear()
   userStore.$reset()
-  let queryRedirectPath = '/home/index'
+  let queryRedirectPath = '/workbranch/index'
   // 如果redirect参数中有值
   if (router.currentRoute.value.fullPath) {
     queryRedirectPath = router.currentRoute.value.fullPath as string

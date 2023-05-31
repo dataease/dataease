@@ -4,7 +4,7 @@ const { push } = useRouter()
 </script>
 
 <template>
-  <el-icon @click="push('system/user')">
+  <el-icon @click="push('/system/user')">
     <Icon class="icon-setting" name="icon-setting" />
   </el-icon>
 </template>
