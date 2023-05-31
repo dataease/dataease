@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/datasource")
-@Transactional
+//@Transactional
 public class DatasourceServer implements DatasourceApi {
     @Resource
     private CoreDatasourceMapper datasourceMapper;
@@ -95,7 +95,8 @@ public class DatasourceServer implements DatasourceApi {
         coreDatasource.setCreateTime(System.currentTimeMillis());
         coreDatasource.setUpdateTime(System.currentTimeMillis());
         checkDatasourceStatus(coreDatasource);
-       datasourceMapper.insert(coreDatasource);
+        coreDatasource.setTaskStatus( TaskStatus.WaitingForExecution.name());
+        datasourceMapper.insert(coreDatasource);
         if (dataSourceDTO.getType().equals(SpecialDatasourceType.EXCEL.name())) {
             //TODO sync excel at once
 
@@ -107,6 +108,14 @@ public class DatasourceServer implements DatasourceApi {
             coreDatasourceTask.setDsId(coreDatasource.getId());
             datasourceTaskServer.insert(coreDatasourceTask);
             addSchedule(coreDatasourceTask);
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(coreDatasource);
+            List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
+            for (DatasetTableDTO api : tables) {
+                datasourceRequest.setTable(api.getTableName());
+                List<TableField> tableFields = ApiUtils.getTableFields(datasourceRequest);
+                createEngineTable(datasourceRequest.getTable(), tableFields);
+            }
         }
         return dataSourceDTO;
     }
@@ -226,12 +235,21 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws DEException {
+    public List<TableField> getTableField(@PathVariable("datasourceId") String datasourceId, @PathVariable("tableName") String tableName) throws Exception {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
         if (coreDatasource.getType().equals("API")) {
-
+            datasourceRequest.setDatasource(engineServer.getDeEngine());
+            DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+            BeanUtils.copyBean(datasourceSchemaDTO, engineServer.getDeEngine());
+            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+            datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
+            datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName));
+            List<TableField> tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+            return tableFields.stream().filter(tableField -> {
+                return !tableField.getOriginName().equalsIgnoreCase("dataease_uuid");
+            }).collect(Collectors.toList());
         }
         if (coreDatasource.getType().equals("EXCEL")) {
 
@@ -379,9 +397,9 @@ public class DatasourceServer implements DatasourceApi {
         if (coreDatasourceTask == null) {
             return;
         }
-        if (coreDatasourceTask.getStatus().equalsIgnoreCase(TaskStatus.Stopped.name()) || coreDatasourceTask.getStatus().equalsIgnoreCase(TaskStatus.Suspend.name())) {
+        datasourceTaskServer.checkTaskIsStopped(coreDatasourceTask);
+        if (StringUtils.isNotEmpty(coreDatasourceTask.getStatus()) && (coreDatasourceTask.getStatus().equalsIgnoreCase(TaskStatus.Stopped.name()) || coreDatasourceTask.getStatus().equalsIgnoreCase(TaskStatus.Suspend.name()))) {
             LogUtil.info("Skip synchronization task: {} ,due to task status is {}", coreDatasourceTask.getId(), coreDatasourceTask.getStatus());
-            datasourceTaskServer.checkTaskIsStopped(coreDatasourceTask);
             return;
         }
 
@@ -457,6 +475,11 @@ public class DatasourceServer implements DatasourceApi {
         } finally {
             try {
                 datasourceTaskServer.updateTaskStatus(coreDatasourceTask, lastExecStatus);
+                UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id", datasourceId);
+                CoreDatasource record = new CoreDatasource();
+                record.setTaskStatus(TaskStatus.WaitingForExecution.name());
+                datasourceMapper.update(record, updateWrapper);
             } catch (Exception ignore) {
                 LogUtil.error(ignore);
             }
@@ -473,28 +496,28 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public void updateDemoDs() {
-        CoreDatasource datasource = datasourceMapper.selectById(1);
-        if (datasource == null) {
-            return;
-        }
-        JsonNode rootNode = null;
-        try {
-            rootNode = objectMapper.readTree(datasource.getConfiguration());
-        } catch (Exception e) {
-        }
-        ObjectNode objectNode = (ObjectNode) rootNode;
-        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-        Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
-        if (!matcher.find()) {
-            return;
-        }
-        objectNode.put("port", Integer.valueOf(matcher.group(2)));
-        objectNode.put("dataBase", matcher.group(3).split("\\?")[0]);
-        objectNode.put("extraParams", matcher.group(3).split("\\?")[1]);
-        objectNode.put("username", env.getProperty("spring.datasource.username"));
-        objectNode.put("password", env.getProperty("spring.datasource.password"));
-        datasource.setConfiguration(JsonUtil.toJSONString(objectNode).toString());
-        datasourceMapper.updateById(datasource);
+//        CoreDatasource datasource = datasourceMapper.selectById(1);
+//        if (datasource == null) {
+//            return;
+//        }
+//        JsonNode rootNode = null;
+//        try {
+//            rootNode = objectMapper.readTree(datasource.getConfiguration());
+//        } catch (Exception e) {
+//        }
+//        ObjectNode objectNode = (ObjectNode) rootNode;
+//        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+//        Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
+//        if (!matcher.find()) {
+//            return;
+//        }
+//        objectNode.put("port", Integer.valueOf(matcher.group(2)));
+//        objectNode.put("dataBase", matcher.group(3).split("\\?")[0]);
+//        objectNode.put("extraParams", matcher.group(3).split("\\?")[1]);
+//        objectNode.put("username", env.getProperty("spring.datasource.username"));
+//        objectNode.put("password", env.getProperty("spring.datasource.password"));
+//        datasource.setConfiguration(JsonUtil.toJSONString(objectNode).toString());
+//        datasourceMapper.updateById(datasource);
     }
 
 

@@ -275,7 +275,6 @@ public class CalciteProvider {
     }
 
     public Connection getConnection(CoreDatasource coreDatasource) throws Exception {
-
         DatasourceConfiguration configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
         Properties props = new Properties();
         if (StringUtils.isNotBlank(configuration.getUsername())) {

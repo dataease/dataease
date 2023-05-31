@@ -326,7 +326,9 @@ export default {
     set_end_time: '设定结束时间',
     exec_time: '执行时间',
     start_time: '开始时间',
-    end_time: '结束时间'
+    end_time: '结束时间',
+    parse_filed: '解析字段',
+    field_rename: '重命名'
   },
   chart: {
     reset: '重置',
@@ -955,9 +957,9 @@ export default {
     enable_refresh_view: '开启刷新',
     enable_view_loading: '视图加载提示',
     minute: '分',
-    second: '秒',
     switch_chart: '切换图表',
-    update_chart_data: '更新图表数据'
+    update_chart_data: '更新图表数据',
+    second: '秒'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

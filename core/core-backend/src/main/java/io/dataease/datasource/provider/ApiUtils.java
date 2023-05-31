@@ -42,6 +42,7 @@ public class ApiUtils {
             DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
             datasetTableDTO.setTableName(apiDefinition.getName());
             datasetTableDTO.setName(apiDefinition.getDesc());
+            tableDescs.add(datasetTableDTO);
         }
         return tableDescs;
     }
@@ -239,12 +240,12 @@ public class ApiUtils {
                 handleStr(apiDefinition, response, fields, rootPath);
             }
             for (Map<String, Object> field : fields) {
-                if (field.containsKey("children")) {
-                    field.put("disabled", false);
-                }
-                if (field.containsKey("children")) {
-                    field.put("disabled", true);
-                }
+//                if (field.containsKey("children")) {
+//                    field.put("disabled", false);
+//                }
+//                if (field.containsKey("children")) {
+//                    field.put("disabled", true);
+//                }
             }
             apiDefinition.setJsonFields(fields);
             return apiDefinition;
@@ -350,6 +351,7 @@ public class ApiUtils {
                 if (!ObjectUtils.isEmpty(o.get("jsonPath")) && StringUtils.isNotEmpty(field.getJsonPath()) && field.getJsonPath().equals(o.get("jsonPath").toString())) {
                     o.put("checked", true);
                     o.put("name", field.getName());
+                    o.put("deExtractType", field.getDeExtractType());
                 }
             }
         }
