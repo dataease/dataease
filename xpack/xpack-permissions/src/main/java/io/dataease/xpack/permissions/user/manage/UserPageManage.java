@@ -27,6 +27,8 @@ import io.dataease.xpack.permissions.user.entity.UserSortEntity;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,6 +114,7 @@ public class UserPageManage {
         return pager;
     }
 
+    @CacheEvict(cacheNames = "user_count", key = "'de'")
     public void save(UserCreator creator) {
         TokenUserBO user = AuthUtils.getUser();
         PerUser perUser = BeanUtils.copyBean(new PerUser(), creator);
@@ -132,6 +135,7 @@ public class UserPageManage {
         roleManage.mountWithUserSave(perUser.getId(), editor.getRoleIds());
     }
 
+    @CacheEvict(cacheNames = "user_count", key = "'de'")
     public void delete(Long id) {
         Long oid = AuthUtils.getUser().getDefaultOid();
         CacheUtils.remove("user_roles", id.toString() + oid, t -> {
@@ -184,6 +188,7 @@ public class UserPageManage {
         return userExtMapper.userInfo(userId);
     }
 
+    @CacheEvict(cacheNames = "user_count", key = "'de'")
     public void deleteByEmptyRole() {
         userExtMapper.deleteByEmptyRole();
     }
@@ -224,5 +229,11 @@ public class UserPageManage {
 
     public List<Long> uidsForReadonly(Long oid) {
         return userExtMapper.uidsForReadonly(oid);
+    }
+
+    @Cacheable(cacheNames = "user_count", key = "'de'")
+    public int userCount() {
+        QueryWrapper<PerUser> queryWrapper = new QueryWrapper<>();
+        return perUserMapper.selectCount(queryWrapper).intValue();
     }
 }

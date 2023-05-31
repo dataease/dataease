@@ -64,6 +64,9 @@ public class F2CLicManage {
     }
 
     public F2CLicResult validate(String product, String licenseKey) {
+        if (StringUtils.isBlank(licenseKey)) {
+            return F2CLicResult.noRecord();
+        }
         List<String> command = new ArrayList<String>();
         StringBuilder result = new StringBuilder();
         command.add(validatorUtil);

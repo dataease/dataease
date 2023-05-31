@@ -16,6 +16,7 @@ import io.dataease.request.BaseGridRequest;
 import io.dataease.utils.AuthUtils;
 import io.dataease.xpack.permissions.user.manage.UserPageManage;
 import jakarta.annotation.Resource;
+import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@Primary
 public class UserServer implements UserApi {
 
 
@@ -87,5 +89,10 @@ public class UserServer implements UserApi {
     public List<UserItem> byCurOrg(KeywordRequest request) {
         Long oid = AuthUtils.getUser().getDefaultOid();
         return userPageManage.queryForOrg(request.getKeyword(), oid);
+    }
+
+    @Override
+    public int userCount() {
+        return userPageManage.userCount();
     }
 }
