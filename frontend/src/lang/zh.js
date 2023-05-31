@@ -2358,7 +2358,7 @@ export default {
     expand: '展开',
     pdf_export: 'PDF 导出',
     switch_pdf_template: '切换 PDF 模板',
-    pdf_template_with_params: '默认模板(加参数样式)',
+    pdf_template_with_params: '默认模板(加仪表板描述)',
     pdf_template_only_pic: '默认模板(只截图)',
     panel_name: '仪表板名称',
     export_user: '导出用户',
