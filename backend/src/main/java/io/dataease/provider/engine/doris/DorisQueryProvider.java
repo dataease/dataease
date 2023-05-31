@@ -1072,12 +1072,13 @@ public class DorisQueryProvider extends QueryProvider {
                 }
 
                 if (field.getDeType() == 1) {
+                    String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
-                        whereName = String.format(DorisConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : DorisConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(DorisConstants.STR_TO_DATE, originName, format);
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         String cast = String.format(DorisConstants.CAST, originName, DorisConstants.DEFAULT_INT_FORMAT) + "/1000";
-                        whereName = String.format(DorisConstants.FROM_UNIXTIME, cast, DorisConstants.DEFAULT_DATE_FORMAT);
+                        whereName = String.format(DorisConstants.FROM_UNIXTIME, cast, format);
                     }
                 } else if (field.getDeType() == 0) {
                     whereName = String.format(DorisConstants.CAST, originName, DorisConstants.VARCHAR);
