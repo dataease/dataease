@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted, PropType, toRefs, onBeforeUpdate } from 'vue'
+import { ref, reactive, onMounted, PropType, toRefs, watch, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Base64 } from 'js-base64'
 import useClipboard from 'vue-clipboard3'
@@ -88,16 +88,58 @@ onMounted(() => {
   codeCom.value = myCm.value.codeComInit(Base64.decode(sqlNode.value.sql))
 })
 
+onBeforeUnmount(() => {
+  codeCom.value.destroy?.()
+})
+
 const getDatasource = () => {
   getDatasourceList().then(res => {
     state.dataSourceList = (res as unknown as DataSource[]) || []
   })
 }
+const dragHeight = ref(280)
 
-onBeforeUpdate(() => {
-  // codeCom.value = myCm.value.codeComInit(sqlNode.value.sql)
-  // dsChange(sqlNode.value.datasourceId)
-})
+const mousedownDragH = () => {
+  document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
+}
+
+const calculateHeight = (e: MouseEvent) => {
+  if (e.pageY - 164 < 280) {
+    dragHeight.value = 280
+    return
+  }
+  if (e.pageY - 164 > document.documentElement.clientHeight - 270) {
+    dragHeight.value = document.documentElement.clientHeight - 270
+    return
+  }
+  dragHeight.value = e.pageY - 164
+}
+
+const insertParamToCodeMirror = (value: string) => {
+  codeCom.value.dispatch({
+    changes: { from: 0, to: codeCom.value.state.doc.toString().length, insert: '' }
+  })
+  codeCom.value.dispatch({
+    changes: { from: codeCom.value.viewState.state.selection.ranges[0].from, insert: value },
+    selection: { anchor: codeCom.value.viewState.state.selection.ranges[0].from }
+  })
+}
+
+watch(
+  () => sqlNode.value.datasourceId,
+  val => {
+    dsChange(val)
+  }
+)
+
+watch(
+  () => sqlNode.value.id,
+  () => {
+    if (codeCom.value) {
+      insertParamToCodeMirror(Base64.decode(sqlNode.value.sql))
+    }
+  }
+)
 
 getDatasource()
 
@@ -111,7 +153,7 @@ const saveClose = () => {
 const save = () => {
   emits('save', {
     ...sqlNode.value,
-    sql: Base64.encodeURI(codeCom.value.viewState.state.doc.text.join('\n'))
+    sql: Base64.encodeURI(codeCom.value.state.doc.toString())
   })
 }
 
@@ -120,7 +162,7 @@ const close = () => {
 }
 const getSQLPreview = () => {
   getPreviewSql({
-    sql: Base64.encodeURI(codeCom.value.viewState.state.doc.text.join('\n')),
+    sql: Base64.encodeURI(codeCom.value.state.doc.toString()),
     datasourceId: sqlNode.value.datasourceId
   }).then(res => {
     state.plxTableData = res.data.data
@@ -132,15 +174,15 @@ const getIconName = (type: string) => {
   if (
     ['DATETIME-YEAR', 'DATETIME-YEAR-MONTH', 'DATETIME', 'DATETIME-YEAR-MONTH-DAY'].includes(type)
   ) {
-    return 'field_time'
+    return 'time'
   }
 
   if (type === 'TEXT') {
-    return 'field_text'
+    return 'text'
   }
 
   if (['LONG', 'DOUBLE'].includes(type)) {
-    return 'field_value'
+    return 'value'
   }
 }
 
@@ -167,13 +209,14 @@ const copyInfo = async (value: string) => {
 }
 
 const mouseupDrag = () => {
-  document.querySelector('.sql-eidtor').removeEventListener('mousemove', calculateHeight)
+  const dom = document.querySelector('.sql-eidtor')
+  dom.removeEventListener('mousemove', calculateHeight)
 }
 
 const parseVariable = () => {
   state.variablesTmp = []
   const reg = new RegExp('\\${(.*?)}', 'gim')
-  const match = codeCom.value.viewState.state.doc.text.join('\n').match(reg)
+  const match = codeCom.value.state.doc.toString().match(reg)
   const names = []
   if (match !== null) {
     for (let index = 0; index < match.length; index++) {
@@ -217,17 +260,6 @@ const saveVariable = () => {
 
 const mousedownDrag = () => {
   document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
-}
-const calculateHeight = (e: MouseEvent) => {
-  if (e.pageX < 240) {
-    LeftWidth.value = 240
-    return
-  }
-  if (e.pageX > 500) {
-    LeftWidth.value = 500
-    return
-  }
-  LeftWidth.value = e.pageX
 }
 </script>
 
@@ -286,7 +318,6 @@ const calculateHeight = (e: MouseEvent) => {
       <el-select
         v-model="sqlNode.datasourceId"
         class="ds-list"
-        @change="dsChange"
         filterable
         :placeholder="t('dataset.pls_slc_data_source')"
       >
@@ -334,14 +365,11 @@ const calculateHeight = (e: MouseEvent) => {
       </div>
     </div>
     <div class="sql-code-right" :style="{ width: `calc(100% - ${LeftWidth}px)` }">
-      <code-mirror dom-id="sql-editor" ref="myCm"></code-mirror>
-      <div class="sql-result">
-        <!-- <div class="sql-title">
-          {{ t(tabActive === 'result' ? 'deDataset.running_results' : 'dataset.task.record') }}
-          <span v-if="tabActive === 'result'" class="result-num">{{
-            `(${t('dataset.preview_show')} 1000 ${t('dataset.preview_item')})`
-          }}</span>
-        </div> -->
+      <code-mirror :height="`${dragHeight}px`" dom-id="sql-editor" ref="myCm"></code-mirror>
+      <div class="sql-result" :style="{ height: `calc(100% - ${dragHeight}px)` }">
+        <div class="sql-title">
+          <span class="drag" @mousedown="mousedownDragH" />
+        </div>
         <div class="padding-24">
           <el-tabs v-model="tabActive">
             <el-tab-pane :label="t('deDataset.running_results')" name="result" />
@@ -444,21 +472,28 @@ const calculateHeight = (e: MouseEvent) => {
       <el-table-column width="200" :label="$t('deDataset.parameter_type')">
         <template #default="scope">
           <el-cascader
-            v-model="scope.row.type"
             class="select-type"
+            popper-class="cascader-panel"
+            v-model="scope.row.type"
             :options="fieldOptions"
             @change="scope.row = ''"
           >
             <template v-slot="{ data }">
               <el-icon>
-                <Icon :name="getIconName(data.value)"></Icon>
+                <Icon
+                  :className="`field-icon-${getIconName(data.value)}`"
+                  :name="`field_${getIconName(data.value)}`"
+                ></Icon>
               </el-icon>
               <span>{{ data.label }}</span>
             </template>
           </el-cascader>
           <span class="select-svg-icon">
             <el-icon>
-              <Icon :name="getIconName(scope.row.type[0])"></Icon>
+              <Icon
+                :className="`field-icon-${getIconName(scope.row.type[0])}`"
+                :name="`field_${getIconName(scope.row.type[0])}`"
+              ></Icon>
             </el-icon>
           </span>
         </template>
@@ -469,7 +504,7 @@ const calculateHeight = (e: MouseEvent) => {
         </template>
         <template #default="scope">
           <el-input
-            v-if="getIconName(scope.row.type[0]) === 'field_text'"
+            v-if="getIconName(scope.row.type[0]) === 'text'"
             v-model="scope.row.defaultValue"
             type="text"
             :placeholder="$t('fu.search_bar.please_input')"
@@ -486,7 +521,7 @@ const calculateHeight = (e: MouseEvent) => {
             </template>
           </el-input>
           <el-input
-            v-if="getIconName(scope.row.type[0]) === 'field_value'"
+            v-if="getIconName(scope.row.type[0]) === 'value'"
             v-model="scope.row.defaultValue"
             :placeholder="$t('fu.search_bar.please_input')"
             type="number"
@@ -503,7 +538,7 @@ const calculateHeight = (e: MouseEvent) => {
             </template>
           </el-input>
           <div
-            v-if="getIconName(scope.row.type[0]) === 'field_time'"
+            v-if="getIconName(scope.row.type[0]) === 'time'"
             class="el-input-group el-input-group--prepend de-group__prepend"
           >
             <div class="el-input-group__prepend">
@@ -565,11 +600,11 @@ const calculateHeight = (e: MouseEvent) => {
 @import '@/style/mixin.less';
 .sql-eidtor {
   width: 100%;
-  height: calc(100vh - 56px);
+  height: calc(100vh - 156px);
   position: relative;
   .drag-left {
     position: absolute;
-    height: calc(100vh - 56px);
+    height: calc(100vh - 156px);
     width: 2px;
     top: 0;
     z-index: 5;
@@ -650,33 +685,20 @@ const calculateHeight = (e: MouseEvent) => {
 
   .sql-code-right {
     float: right;
-
-    height: calc(100vh - 56px);
+    height: calc(100vh - 156px);
     .sql-result {
       font-family: PingFang SC;
       font-size: 14px;
       overflow-y: auto;
       box-sizing: border-box;
       width: 100%;
-      height: calc(100vh - 310px);
 
       .sql-title {
         user-select: none;
-        height: 54px;
         display: flex;
         align-items: center;
-        padding: 16px 24px;
-        font-weight: 500;
         position: relative;
-        color: var(--deTextPrimary, #1f2329);
-        border-bottom: 1px solid rgba(31, 35, 41, 0.15);
-
-        .result-num {
-          font-weight: 400;
-          color: var(--deTextSecondary, #646a73);
-          margin-left: 12px;
-        }
-
+        z-index: 5;
         .drag {
           position: absolute;
           top: 0;
@@ -802,18 +824,15 @@ const calculateHeight = (e: MouseEvent) => {
   }
 
   .select-type {
-    width: 180px;
-
-    .ed-input__inner {
-      padding-left: 32px;
+    .ed-input__wrapper {
+      padding-left: 32px !important;
     }
   }
 
   .select-svg-icon {
     position: absolute;
     left: 24px;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 15px;
   }
 
   .content {
@@ -836,6 +855,15 @@ const calculateHeight = (e: MouseEvent) => {
     }
 
     margin-bottom: 16px;
+  }
+}
+.cascader-panel {
+  .ed-cascader-node__label {
+    display: flex;
+    align-items: center;
+    .ed-icon {
+      margin-right: 5px;
+    }
   }
 }
 </style>

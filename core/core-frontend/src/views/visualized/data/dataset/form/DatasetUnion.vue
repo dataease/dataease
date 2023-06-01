@@ -480,7 +480,6 @@ const dragover_handler = ev => {
 }
 
 const dragenter_handler = ev => {
-  console.log('dragenter')
   // prevent Default event
   ev.preventDefault()
 }
@@ -692,7 +691,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   </el-drawer>
   <el-drawer
     direction="btt"
-    size="90%"
+    size="calc(100% - 100px)"
     :with-header="false"
     modal-class="sql-drawer-fullscreen"
     v-model="editSqlField"
@@ -707,7 +706,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
 }
 
 .sql-drawer-fullscreen {
-  .ed-drawer__body {
+  .ed-drawer.btt > .ed-drawer__body {
     padding: 0;
   }
 }
