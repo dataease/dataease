@@ -1,10 +1,16 @@
 package io.dataease.commons.utils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import io.dataease.commons.exception.DataEaseException;
+import io.dataease.dataset.dto.SqlVariableDetails;
+import io.dataease.i18n.Translator;
+import io.dataease.utils.JsonUtil;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.util.SqlShuttle;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
@@ -12,7 +18,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.apache.calcite.sql.SqlKind.*;
-import static org.apache.calcite.sql.SqlKind.SELECT;
 
 public class SqlparserUtils {
     public static final String regex = "\\$\\{(.*?)\\}";
@@ -38,17 +43,16 @@ public class SqlparserUtils {
                         .setLex(Lex.JAVA)
                         .setIdentifierMaxLength(256)
                         .build();
-        SqlParser sqlParser = SqlParser.create(sql, config);
+        SqlParser sqlParser = SqlParser.create(tmpSql, config);
         SqlNode sqlNode;
         try {
             sqlNode = sqlParser.parseStmt();
         } catch (SqlParseException e) {
             throw new RuntimeException("使用 Calcite 进行语法分析发生了异常", e);
         }
-
         // 递归遍历语法树
         getDependencies(sqlNode, false);
-        return sql;
+        return sqlNode.toString();
     }
 
     private static void getDependencies(SqlNode sqlNode, Boolean fromOrJoin) {
@@ -92,5 +96,42 @@ public class SqlparserUtils {
                 return argHandler.result();
             }
         };
+    }
+
+    public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit) {
+        if (StringUtils.isEmpty(sql)) {
+            DataEaseException.throwException(Translator.get("i18n_sql_not_empty"));
+        }
+        if (StringUtils.isNotEmpty(sqlVariableDetails)) {
+            TypeReference<List<SqlVariableDetails>> listTypeReference = new TypeReference<List<SqlVariableDetails>>() {
+            };
+            List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(sqlVariableDetails, listTypeReference);
+
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(sql);
+            while (matcher.find()) {
+                SqlVariableDetails defaultsSqlVariableDetail = null;
+                for (SqlVariableDetails sqlVariableDetail : defaultsSqlVariableDetails) {
+                    if (matcher.group().substring(2, matcher.group().length() - 1).equalsIgnoreCase(sqlVariableDetail.getVariableName())) {
+                        defaultsSqlVariableDetail = sqlVariableDetail;
+                        break;
+                    }
+                }
+                if (defaultsSqlVariableDetail != null && StringUtils.isNotEmpty(defaultsSqlVariableDetail.getDefaultValue())) {
+                    if (!isEdit && defaultsSqlVariableDetail.getDefaultValueScope().equals(SqlVariableDetails.DefaultValueScope.ALLSCOPE)) {
+                        sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
+                    }
+                    if (isEdit) {
+                        sql = sql.replace(matcher.group(), defaultsSqlVariableDetail.getDefaultValue());
+                    }
+                }
+            }
+        }
+        try {
+            sql = removeVariables(sql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sql;
     }
 }
