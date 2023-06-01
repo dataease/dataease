@@ -14,6 +14,14 @@ const props = defineProps({
         propValue: null
       }
     }
+  },
+  viewInfo: {
+    type: Object,
+    default() {
+      return {
+        propValue: null
+      }
+    }
   }
 })
 

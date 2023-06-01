@@ -1,6 +1,9 @@
-<script setup lang="ts">
-import { ref, toRefs } from 'vue'
+<script setup lang="tsx">
+import { reactive, ref, toRefs } from 'vue'
 import eventBus from '@/utils/eventBus'
+import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
+import { ElCol, ElRow } from 'element-plus-secondary'
+import Icon from '@/components/icon-custom/src/Icon.vue'
 
 const props = defineProps({
   propValue: {
@@ -19,6 +22,25 @@ const props = defineProps({
 
 const { propValue, element } = toRefs(props)
 const currentPane = ref('common')
+
+const state = reactive({
+  curCategory: 'quota',
+  chartGroupList: CHART_TYPE_CONFIGS
+})
+
+const scrollTo = offsetTop => {
+  const parent = document.querySelector('#userViewGroup')
+  parent.scrollTo({
+    top: offsetTop,
+    behavior: 'smooth'
+  })
+}
+
+const anchorPosition = anchor => {
+  const element = document.querySelector(anchor)
+  scrollTo(element.offsetTop)
+}
+
 const newComponent = innerType => {
   eventBus.emit('handleNew', { componentName: 'UserView', innerType: 'bar' })
 }
@@ -26,34 +48,140 @@ const newComponent = innerType => {
 const handleDragStart = e => {
   e.dataTransfer.setData('id', e.target.dataset.id)
 }
+
+const groupActiveChange = category => {
+  state.curCategory = category
+  anchorPosition('#' + category)
+}
 </script>
 
 <template>
-  <div class="group" @dragstart="handleDragStart">
-    <el-tabs v-model="currentPane" tab-position="left" style="height: 200px" class="demo-tabs">
-      <el-tab-pane label="常见图标" name="common"></el-tab-pane>
-      <el-tab-pane label="指标图" name="quota"></el-tab-pane>
-      <el-tab-pane label="线/面图" name="line-surface"></el-tab-pane>
-      <el-tab-pane label="柱形图" name="column"></el-tab-pane>
-      <div>
-        <img
-          class="custom_img"
-          src="@/assets/img/demo_bar.png"
-          :data-id="'UserView&bar'"
-          alt=""
-          v-on:click="newComponent"
-        />
-      </div>
-    </el-tabs>
-  </div>
+  <el-row class="group" @dragstart="handleDragStart">
+    <div class="group-left">
+      <ul class="ul-custom">
+        <li
+          class="li-custom"
+          :class="{ 'li-custom-active': state.curCategory === chartGroupInfo.category }"
+          v-for="chartGroupInfo in state.chartGroupList"
+          :key="chartGroupInfo.category"
+          @click="groupActiveChange(chartGroupInfo.category)"
+        >
+          {{ chartGroupInfo.title }}
+        </li>
+      </ul>
+    </div>
+    <div id="userViewGroup" class="group-right">
+      <el-row
+        :id="chartGroupInfo.category"
+        v-for="chartGroupInfo in state.chartGroupList"
+        :key="chartGroupInfo.title"
+      >
+        <el-col
+          class="item"
+          :span="8"
+          v-for="chartInfo in chartGroupInfo.details"
+          :key="chartInfo.title"
+        >
+          <div
+            v-on:click="newComponent(chartInfo.value)"
+            class="item-top"
+            draggable="true"
+            :data-id="'UserView&' + chartInfo.value"
+          >
+            <Icon class-name="item-top-icon" :name="chartInfo.icon" />
+          </div>
+          <div class="item-bottom">
+            <span>{{ chartInfo.title }}</span>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+  </el-row>
 </template>
 
 <style lang="less" scoped>
 .group {
+  display: flex;
+  max-height: 400px;
+  height: 100%;
+  .group-left {
+    width: 100px;
+    height: 100%;
+    .ul-custom {
+      padding-inline-start: 0px;
+      color: @canvas-main-font-color;
+      .li-custom {
+        margin-top: 1px;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 32px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        list-style-type: none;
+        list-style-position: inside;
+        border-radius: 4px;
+        padding-left: 8px;
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+          cursor: pointer;
+        }
+      }
+
+      .li-custom a:hover {
+        background: none;
+      }
+
+      .li-a {
+        color: #1f2329;
+      }
+    }
+  }
+  .group-right {
+    max-height: 400px;
+    overflow-y: auto;
+    border-left: 1px solid @side-outline-border-color;
+    flex: 1;
+    padding: 4px 0px 0 12px;
+  }
 }
 .custom_img {
   width: 100px;
   height: 70px;
   cursor: pointer;
+}
+
+.li-custom-active {
+  background: rgba(51, 112, 255, 0.1);
+  color: #3370ff !important;
+  .li-a {
+    color: #3370ff !important;
+  }
+}
+
+.item {
+  margin-bottom: 12px;
+  .item-top {
+    width: 88px;
+    height: 64px;
+    background: #1a1a1a;
+    border-radius: 4px;
+    cursor: pointer;
+    &:hover {
+      border: 1px solid #3370ff;
+    }
+    .item-top-icon {
+      width: 86px;
+      height: 62px;
+      color: @canvas-main-font-color;
+    }
+  }
+  .item-bottom {
+    height: 20px;
+    line-height: 20px;
+    color: #a6a6a6;
+    font-size: 12px;
+    text-align: center;
+  }
 }
 </style>

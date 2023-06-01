@@ -1,24 +1,7 @@
 <script lang="tsx" setup>
-import {
-  DEFAULT_COLOR_CASE,
-  DEFAULT_SIZE,
-  DEFAULT_LABEL,
-  DEFAULT_TOOLTIP,
-  DEFAULT_TOTAL,
-  DEFAULT_TITLE_STYLE,
-  DEFAULT_LEGEND_STYLE,
-  DEFAULT_XAXIS_STYLE,
-  DEFAULT_YAXIS_STYLE,
-  DEFAULT_YAXIS_EXT_STYLE,
-  DEFAULT_SPLIT,
-  DEFAULT_FUNCTION_CFG,
-  DEFAULT_THRESHOLD,
-  DEFAULT_SCROLL
-} from './util/chart'
-import { reactive, ref } from 'vue'
+import { PropType, reactive, ref, toRefs } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { getDatasetTree } from '@/api/dataset'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -39,11 +22,18 @@ const tabActive = ref('data')
 
 const renameForm = ref<FormInstance>()
 
-const props = {
-  label: 'name',
-  children: 'children',
-  isLeaf: node => !node.children?.length
-}
+const props = defineProps({
+  view: {
+    type: Object,
+    required: true
+  },
+  datasetTree: {
+    type: Array as PropType<Tree[]>,
+    default: () => []
+  }
+})
+
+const { view, datasetTree } = toRefs(props)
 
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
@@ -61,50 +51,6 @@ const itemFormRules = reactive<FormRules>({
 const state = reactive({
   chartAreaCollapse: false,
   datasetAreaCollapse: false,
-  view: {
-    id: '1683789298247', // 视图id
-    title: '图表',
-    sceneId: 0, // 仪表板id
-    tableId: '', // 数据集id
-    type: 'bar',
-    render: 'antv',
-    resultCount: 100,
-    resultMode: 'all',
-    refreshViewEnable: false,
-    refreshTime: 5,
-    refreshUnit: 'minute',
-    xaxis: [],
-    xaxisExt: [],
-    yaxis: [],
-    yaxisExt: [],
-    extStack: [],
-    drillFields: [],
-    viewFields: [],
-    extBubble: [],
-    customFilter: [],
-    customAttr: {
-      color: DEFAULT_COLOR_CASE,
-      size: DEFAULT_SIZE,
-      label: DEFAULT_LABEL,
-      tooltip: DEFAULT_TOOLTIP,
-      totalCfg: DEFAULT_TOTAL
-    },
-    customStyle: {
-      text: DEFAULT_TITLE_STYLE,
-      legend: DEFAULT_LEGEND_STYLE,
-      xAxis: DEFAULT_XAXIS_STYLE,
-      yAxis: DEFAULT_YAXIS_STYLE,
-      yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-      split: DEFAULT_SPLIT
-    },
-    senior: {
-      functionCfg: DEFAULT_FUNCTION_CFG,
-      assistLine: [],
-      threshold: DEFAULT_THRESHOLD,
-      scrollCfg: DEFAULT_SCROLL
-    }
-  },
-  datasetTree: [],
   dimensionData: [],
   quotaData: [],
   renameItem: false,
@@ -115,12 +61,6 @@ const state = reactive({
   quotaFilterEdit: false,
   quotaItem: {}
 })
-
-const initDataset = () => {
-  getDatasetTree({}).then(res => {
-    state.datasetTree = (res as unknown as Tree[]) || []
-  })
-}
 
 const getFields = id => {
   getFieldByDQ(id).then(res => {
@@ -149,15 +89,15 @@ const reset = () => {
 const dimensionItemChange = item => {
   // this.calcData(true)
   // console.log(item)
-  // console.log(state.view.xaxis)
-  calcData(state.view)
+  // console.log(view.value.xaxis)
+  calcData(view.value)
 }
 
 const quotaItemChange = item => {
   // this.calcData(true)
   // console.log(item)
-  // console.log(state.view.xaxis)
-  calcData(state.view)
+  // console.log(view.value.xaxis)
+  calcData(view.value)
 }
 
 const addXaxis = e => {
@@ -169,7 +109,7 @@ const addXaxis = e => {
   //   this.view.xaxis = [this.view.xaxis[0]]
   // }
   // this.calcData(true)
-  calcData(state.view)
+  calcData(view.value)
 }
 
 const addYaxis = e => {
@@ -179,7 +119,7 @@ const addYaxis = e => {
   //   this.view.yaxis = [this.view.yaxis[0]]
   // }
   // this.calcData(true)
-  calcData(state.view)
+  calcData(view.value)
 }
 
 const calcData = view => {
@@ -191,63 +131,63 @@ const renderChart = view => {
 }
 
 const onColorChange = val => {
-  state.view.customAttr.color = val
-  renderChart(state.view)
+  view.value.customAttr.color = val
+  renderChart(view.value)
 }
 
 const onSizeChange = val => {
-  state.view.customAttr.size = val
-  renderChart(state.view)
+  view.value.customAttr.size = val
+  renderChart(view.value)
 }
 
 const onLabelChange = val => {
-  state.view.customAttr.label = val
-  renderChart(state.view)
+  view.value.customAttr.label = val
+  renderChart(view.value)
 }
 
 const onTooltipChange = val => {
-  state.view.customAttr.tooltip = val
-  renderChart(state.view)
+  view.value.customAttr.tooltip = val
+  renderChart(view.value)
 }
 
 const onChangeXAxisForm = val => {
-  state.view.customStyle.xAxis = val
-  renderChart(state.view)
+  view.value.customStyle.xAxis = val
+  renderChart(view.value)
 }
 
 const onChangeYAxisForm = val => {
-  state.view.customStyle.yAxis = val
-  renderChart(state.view)
+  view.value.customStyle.yAxis = val
+  renderChart(view.value)
 }
 
 const onTextChange = val => {
-  state.view.customStyle.text = val
-  renderChart(state.view)
+  view.value.customStyle.text = val
+  renderChart(view.value)
 }
 
 const onLegendChange = val => {
-  state.view.customStyle.legend = val
-  renderChart(state.view)
+  view.value.customStyle.legend = val
+  renderChart(view.value)
 }
 
 const onFunctionCfgChange = val => {
-  state.view.senior.functionCfg = val
-  renderChart(state.view)
+  view.value.senior.functionCfg = val
+  renderChart(view.value)
 }
 
 const onAssistLineChange = val => {
-  state.view.senior.assistLine = val
-  renderChart(state.view)
+  view.value.senior.assistLine = val
+  renderChart(view.value)
 }
 
 const onThresholdChange = val => {
-  state.view.senior.threshold = val
-  renderChart(state.view)
+  view.value.senior.threshold = val
+  renderChart(view.value)
 }
 
 const onScrollChange = val => {
-  state.view.senior.scrollCfg = val
-  renderChart(state.view)
+  view.value.senior.scrollCfg = val
+  renderChart(view.value)
 }
 
 const showRename = val => {
@@ -267,13 +207,13 @@ const saveRename = ref => {
   ref.validate(valid => {
     if (valid) {
       if (state.itemForm.renameType === 'quota') {
-        state.view.yaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.yaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'dimension') {
-        state.view.xaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.xaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'quotaExt') {
-        state.view.yaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.yaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'dimensionExt') {
-        state.view.xaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.xaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       }
       // this.calcData(true)
       closeRename()
@@ -284,7 +224,7 @@ const saveRename = ref => {
 }
 
 const save = () => {
-  saveChart(state.view)
+  saveChart(view.value)
 }
 
 const showQuotaEditFilter = item => {
@@ -298,8 +238,6 @@ const showQuotaEditFilter = item => {
 const collapseChange = type => {
   state[type] = !state[type]
 }
-
-initDataset()
 </script>
 
 <template>
@@ -307,7 +245,7 @@ initDataset()
     <el-row v-loading="loading" class="de-chart-editor">
       <div style="position: relative">
         <el-icon
-          :title="state.view.title"
+          :title="view.title"
           class="custom-icon"
           size="20px"
           @click="collapseChange('chartAreaCollapse')"
@@ -316,11 +254,11 @@ initDataset()
           <Expand v-else />
         </el-icon>
         <div class="collapse-title" v-show="state.chartAreaCollapse">
-          <span>{{ state.view.title }}</span>
+          <span>{{ view.title }}</span>
         </div>
         <div v-show="!state.chartAreaCollapse" style="width: 280px" class="view-panel-row">
           <el-row class="editor-title">
-            <span>{{ state.view.title }}</span>
+            <span>{{ view.title }}</span>
           </el-row>
           <el-row>
             <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
@@ -360,23 +298,19 @@ initDataset()
                     <el-row style="height: 100%">
                       <el-row class="padding-lr">
                         <span
-                          v-show="state.view.type !== 'richTextView'"
+                          v-show="view.type !== 'richTextView'"
                           style="width: 80px; text-align: right"
                         >
                           {{ t('chart.result_count') }}
                         </span>
-                        <el-row v-show="state.view.type !== 'richTextView'">
-                          <el-radio-group
-                            v-model="state.view.resultMode"
-                            class="radio-span"
-                            size="small"
-                          >
+                        <el-row v-show="view.type !== 'richTextView'">
+                          <el-radio-group v-model="view.resultMode" class="radio-span" size="small">
                             <el-radio label="all"
                               ><span>{{ t('chart.result_mode_all') }}</span></el-radio
                             >
                             <el-radio label="custom">
                               <el-input
-                                v-model="state.view.resultCount"
+                                v-model="view.resultCount"
                                 class="result-count"
                                 size="small"
                               />
@@ -402,27 +336,27 @@ initDataset()
                         <!--                    </el-tooltip>-->
                         <span class="padding-lr">
                           <el-checkbox
-                            v-model="state.view.refreshViewEnable"
+                            v-model="view.refreshViewEnable"
                             class="el-input-refresh-loading"
                           />
                           {{ t('chart.enable_refresh_view') }}
                         </span>
                         <el-row>
                           <el-input
-                            v-model="state.view.refreshTime"
+                            v-model="view.refreshTime"
                             class="el-input-refresh-time"
                             type="number"
                             size="small"
                             controls-position="right"
                             :min="1"
                             :max="3600"
-                            :disabled="!state.view.refreshViewEnable"
+                            :disabled="!view.refreshViewEnable"
                           />
                           <el-select
-                            v-model="state.view.refreshUnit"
+                            v-model="view.refreshUnit"
                             class="el-input-refresh-unit margin-left8"
                             size="small"
-                            :disabled="!state.view.refreshViewEnable"
+                            :disabled="!view.refreshViewEnable"
                           >
                             <el-option :label="t('chart.minute')" :value="'minute'" />
                             <el-option :label="t('chart.second')" :value="'second'" />
@@ -433,10 +367,10 @@ initDataset()
                       <!--xAxis-->
                       <el-row class="padding-lr drag-data">
                         <span class="data-area-label">
-                          <dimension-label :view="state.view" />
+                          <dimension-label :view="view" />
                         </span>
                         <draggable
-                          :list="state.view.xaxis"
+                          :list="view.xaxis"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
@@ -446,7 +380,7 @@ initDataset()
                             <dimension-item
                               :dimension-data="state.dimensionData"
                               :quota-data="state.quotaData"
-                              :chart="state.view"
+                              :chart="view"
                               :item="element"
                               :index="index"
                               @onDimensionItemChange="dimensionItemChange"
@@ -454,16 +388,16 @@ initDataset()
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="state.view.xaxis" />
+                        <drag-placeholder :drag-list="view.xaxis" />
                       </el-row>
 
                       <!--yAxis-->
                       <el-row class="padding-lr drag-data">
                         <span class="data-area-label">
-                          <quota-label :view="state.view" />
+                          <quota-label :view="view" />
                         </span>
                         <draggable
-                          :list="state.view.yaxis"
+                          :list="view.yaxis"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
@@ -473,7 +407,7 @@ initDataset()
                             <quota-item
                               :dimension-data="state.dimensionData"
                               :quota-data="state.quotaData"
-                              :chart="state.view"
+                              :chart="view"
                               :item="element"
                               :index="index"
                               @onQuotaItemChange="quotaItemChange"
@@ -482,14 +416,14 @@ initDataset()
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="state.view.yaxis" />
+                        <drag-placeholder :drag-list="view.yaxis" />
                       </el-row>
 
                       <!--filter-->
                       <el-row class="padding-lr drag-data">
                         <span>{{ t('chart.result_filter') }}</span>
                         <draggable
-                          :list="state.view.customFilter"
+                          :list="view.customFilter"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
@@ -503,7 +437,7 @@ initDataset()
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="state.view.customFilter" />
+                        <drag-placeholder :drag-list="view.customFilter" />
                       </el-row>
                     </el-row>
                   </div>
@@ -517,7 +451,7 @@ initDataset()
                 style="width: 100%"
               >
                 <chart-style
-                  :chart="state.view"
+                  :chart="view"
                   @onColorChange="onColorChange"
                   @onSizeChange="onSizeChange"
                   @onLabelChange="onLabelChange"
@@ -536,8 +470,8 @@ initDataset()
                 style="width: 100%"
               >
                 <senior
-                  :chart="state.view"
-                  :quota-data="state.view.yaxis"
+                  :chart="view"
+                  :quota-data="view.yaxis"
                   @onFunctionCfgChange="onFunctionCfgChange"
                   @onAssistLineChange="onAssistLineChange"
                 />
@@ -565,8 +499,8 @@ initDataset()
           </el-row>
           <el-row :style="{ borderTop: '1px solid #e6e6e6' }">
             <el-tree-select
-              v-model="state.view.tableId"
-              :data="state.datasetTree"
+              v-model="view.tableId"
+              :data="datasetTree"
               :props="dsSelectProps"
               filterable
               @node-click="dsClick"

@@ -7,7 +7,7 @@ import { listenGlobalKeyDown } from '@/utils/shortcutKey'
 import RealTimeComponentList from '@/components/data-visualization/RealTimeComponentList.vue'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
-import { computed, getCurrentInstance, onMounted, ref, toRefs } from 'vue'
+import { computed, getCurrentInstance, onMounted, reactive, ref, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -22,15 +22,23 @@ import { getData } from '@/api/chart'
 import { findById } from '@/api/dataVisualization'
 import router from '@/router'
 import Editor from '@/views/chart/components/editor/index.vue'
+import { guid } from '@/views/visualized/data/dataset/form/util.js'
+import { getDatasetTree } from '@/api/dataset'
+import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 const activeName = ref('attr')
-const { componentData, curComponent, isClickComponent, canvasStyleData } = storeToRefs(dvMainStore)
+const { componentData, curComponent, isClickComponent, canvasStyleData, canvasViewInfo } =
+  storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const canvasOut = ref(null)
+
+const state = reactive({
+  datasetTree: []
+})
 
 const contentStyle = computed(() => {
   const { width, height, scale } = canvasStyleData.value
@@ -41,9 +49,10 @@ const contentStyle = computed(() => {
   }
 })
 
-const restore = (canvasData, canvasStyle) => {
+const restore = (canvasData, canvasStyle, canvasViewInfo) => {
   dvMainStore.setComponentData(JSON.parse(canvasData))
   dvMainStore.setCanvasStyle(JSON.parse(canvasStyle))
+  dvMainStore.setCanvasViewInfo(canvasViewInfo)
 }
 
 const findNewComponent = (componentName, innerType) => {
@@ -64,7 +73,7 @@ const handleNew = newComponentInfo => {
     const component = findNewComponent(componentName, innerType)
     component.style.top = 0
     component.style.left = 0
-    component.id = generateID()
+    component.id = guid()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
     snapshotStore.recordSnapshot()
@@ -87,8 +96,7 @@ const handleDrop = e => {
     const component = findDragComponent(componentInfo)
     component.style.top = e.clientY - rectInfo.y
     component.style.left = e.clientX - rectInfo.x
-    component.id = generateID()
-
+    component.id = guid()
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
     snapshotStore.recordSnapshot()
@@ -117,10 +125,17 @@ const deselectCurComponent = e => {
   }
 }
 
+const initDataset = () => {
+  getDatasetTree({}).then(res => {
+    state.datasetTree = (res as unknown as Tree[]) || []
+  })
+}
+
 // 全局监听按键事件
-listenGlobalKeyDown()
+// listenGlobalKeyDown()
 
 onMounted(() => {
+  initDataset()
   const { dvId, pid } = router.currentRoute.value.query
   if (dvId) {
     // 从数据库中获取
@@ -135,7 +150,7 @@ onMounted(() => {
       }
       dvMainStore.updateCurDvInfo(bashInfo)
       //恢复画布数据
-      restore(canvasInfo.componentData, canvasInfo.canvasStyleData)
+      restore(canvasInfo.componentData, canvasInfo.canvasStyleData, canvasInfo.canvasViewInfo)
     })
   } else {
     dvMainStore.updateCurDvInfo({
@@ -199,7 +214,11 @@ eventBus.on('handleNew', handleNew)
       >
         <CanvasAttr></CanvasAttr>
       </dv-sidebar>
-      <editor v-if="curComponent && curComponent.component === 'UserView'"></editor>
+      <editor
+        v-if="curComponent && curComponent.component === 'UserView'"
+        :view="canvasViewInfo[curComponent.id]"
+        :dataset-tree="state.datasetTree"
+      ></editor>
     </el-container>
   </div>
 </template>

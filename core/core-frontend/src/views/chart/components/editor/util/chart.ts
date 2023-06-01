@@ -1,5 +1,4 @@
 import { useI18n } from '@/hooks/web/useI18n'
-
 const { t } = useI18n()
 
 export const DEFAULT_TAB_COLOR_CASE_DARK = {
@@ -1443,4 +1442,252 @@ export const DEFAULT_MAP = {
   lineAnimateDuration: 4,
   lineAnimateInterval: 0.5,
   lineAnimateTrailLength: 0.1
+}
+
+export const NEW_CHART = {
+  id: null, // 视图id
+  title: '图表',
+  sceneId: 0, // 仪表板id
+  tableId: '', // 数据集id
+  type: 'bar',
+  render: 'antv',
+  resultCount: 100,
+  resultMode: 'all',
+  refreshViewEnable: false,
+  refreshTime: 5,
+  refreshUnit: 'minute',
+  xaxis: [],
+  xaxisExt: [],
+  yaxis: [],
+  yaxisExt: [],
+  extStack: [],
+  drillFields: [],
+  viewFields: [],
+  extBubble: [],
+  customFilter: [],
+  customAttr: {
+    color: DEFAULT_COLOR_CASE,
+    size: DEFAULT_SIZE,
+    label: DEFAULT_LABEL,
+    tooltip: DEFAULT_TOOLTIP,
+    totalCfg: DEFAULT_TOTAL
+  },
+  customStyle: {
+    text: DEFAULT_TITLE_STYLE,
+    legend: DEFAULT_LEGEND_STYLE,
+    xAxis: DEFAULT_XAXIS_STYLE,
+    yAxis: DEFAULT_YAXIS_STYLE,
+    yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
+    split: DEFAULT_SPLIT
+  },
+  senior: {
+    functionCfg: DEFAULT_FUNCTION_CFG,
+    assistLine: [],
+    threshold: DEFAULT_THRESHOLD,
+    scrollCfg: DEFAULT_SCROLL
+  }
+}
+
+export const CHART_TYPE_CONFIGS = [
+  {
+    category: 'quota',
+    title: t('chart.chart_type_quota'),
+    details: [
+      {
+        render: 'antv',
+        category: 'quota',
+        value: 'label',
+        title: t('chart.chart_label'),
+        icon: 'label'
+      },
+      {
+        render: 'antv',
+        category: 'quota',
+        value: 'text',
+        title: t('chart.chart_card'),
+        icon: 'text'
+      },
+      {
+        render: 'antv',
+        category: 'quota',
+        value: 'gauge',
+        title: t('chart.chart_gauge'),
+        icon: 'gauge'
+      },
+      {
+        render: 'antv',
+        category: 'quota',
+        value: 'liquid',
+        title: t('chart.chart_liquid'),
+        icon: 'liquid'
+      },
+      {
+        render: 'antv',
+        category: 'quota',
+        value: 'richTextView',
+        title: t('chart.rich_text_view'),
+        icon: 'richTextView'
+      }
+    ]
+  },
+  {
+    category: 'table',
+    title: t('chart.chart_type_table'),
+    details: [
+      {
+        render: 'antv',
+        category: 'table',
+        value: 'table-normal',
+        title: t('chart.chart_table_normal'),
+        icon: 'table-normal'
+      },
+      {
+        render: 'antv',
+        category: 'table',
+        value: 'table-info',
+        title: t('chart.chart_table_info'),
+        icon: 'table-info'
+      },
+      {
+        render: 'antv',
+        category: 'table',
+        value: 'table-pivot',
+        title: t('chart.chart_table_pivot'),
+        icon: 'table-pivot'
+      }
+    ]
+  },
+  {
+    category: 'trend',
+    title: t('chart.chart_type_trend'),
+    details: [
+      {
+        render: 'antv',
+        category: 'trend',
+        value: 'line',
+        title: t('chart.chart_line'),
+        icon: 'line'
+      },
+      {
+        render: 'antv',
+        category: 'trend',
+        value: 'area',
+        title: t('chart.chart_area'),
+        icon: 'area'
+      },
+      {
+        render: 'antv',
+        category: 'trend',
+        value: 'line-stack',
+        title: t('chart.chart_line_stack'),
+        icon: 'line-stack'
+      }
+    ]
+  },
+  {
+    category: 'compare',
+    title: t('chart.chart_type_compare'),
+    details: [
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bar',
+        title: t('chart.chart_bar'),
+        icon: 'bar'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bar-group',
+        title: t('chart.chart_bar_group'),
+        icon: 'bar-group'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bar-stack',
+        title: t('chart.chart_bar_stack'),
+        icon: 'bar-stack'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bar-group-stack',
+        title: t('chart.chart_bar_group_stack'),
+        icon: 'bar-group-stack'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'waterfall',
+        title: t('chart.chart_waterfall'),
+        icon: 'waterfall'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bar-horizontal',
+        title: t('chart.chart_bar_horizontal'),
+        icon: 'bar-horizontal'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bar-stack-horizontal',
+        title: t('chart.chart_bar_stack_horizontal'),
+        icon: 'bar-stack-horizontal'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'percentage-bar-stack-horizontal',
+        title: t('chart.chart_percentage_bar_stack_horizontal'),
+        icon: 'percentage-bar-stack-horizontal'
+      }
+    ]
+  }
+]
+
+export const BASE_VIEW_CONFIG = {
+  id: '', // 视图id
+  title: '图表',
+  sceneId: 0, // 仪表板id
+  tableId: '', // 数据集id
+  type: 'bar',
+  render: 'antv',
+  resultCount: 100,
+  resultMode: 'all',
+  refreshViewEnable: false,
+  refreshTime: 5,
+  refreshUnit: 'minute',
+  xaxis: [],
+  xaxisExt: [],
+  yaxis: [],
+  yaxisExt: [],
+  extStack: [],
+  drillFields: [],
+  viewFields: [],
+  extBubble: [],
+  customFilter: [],
+  customAttr: {
+    color: DEFAULT_COLOR_CASE,
+    size: DEFAULT_SIZE,
+    label: DEFAULT_LABEL,
+    tooltip: DEFAULT_TOOLTIP,
+    totalCfg: DEFAULT_TOTAL
+  },
+  customStyle: {
+    text: DEFAULT_TITLE_STYLE,
+    legend: DEFAULT_LEGEND_STYLE,
+    xAxis: DEFAULT_XAXIS_STYLE,
+    yAxis: DEFAULT_YAXIS_STYLE,
+    yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
+    split: DEFAULT_SPLIT
+  },
+  senior: {
+    functionCfg: DEFAULT_FUNCTION_CFG,
+    assistLine: [],
+    threshold: DEFAULT_THRESHOLD,
+    scrollCfg: DEFAULT_SCROLL
+  }
 }
