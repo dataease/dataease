@@ -215,7 +215,7 @@ const emits = defineEmits(['changeParameters', 'moveParameters'])
   width: 60px;
 }
 
-.el-autocomplete {
+.ed-autocomplete {
   width: 100%;
 }
 </style>

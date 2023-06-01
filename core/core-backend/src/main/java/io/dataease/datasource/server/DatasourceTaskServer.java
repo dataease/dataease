@@ -88,10 +88,10 @@ public class DatasourceTaskServer {
     public synchronized boolean existUnderExecutionTask(String datasourceId, Long taskId, Long startTime) {
         UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", datasourceId);
-        updateWrapper.ne("taskStatus", TaskStatus.UnderExecution.name());
+        updateWrapper.ne("task_status", TaskStatus.UnderExecution.name());
         CoreDatasource coreDatasource = new CoreDatasource();
         coreDatasource.setTaskStatus(TaskStatus.UnderExecution.name());
-        Boolean existSyncTask = coreDatasourceMapper.update(coreDatasource, updateWrapper) == 0;
+        Boolean existSyncTask = coreDatasourceMapper.update(coreDatasource, updateWrapper) != 0;
         if (!existSyncTask) {
             UpdateWrapper<CoreDatasourceTask> updateTaskWrapper = new UpdateWrapper<>();
             updateWrapper.eq("id", taskId);
@@ -113,7 +113,7 @@ public class DatasourceTaskServer {
         coreDatasourceTaskLog.setStartTime(startTime);
         coreDatasourceTaskLog.setInfo("Begain to sync datasource: " + datasourceName);
         coreDatasourceTaskLogMapper.insert(coreDatasourceTaskLog);
-        return coreDatasourceTaskLogMapper.selectById(extDatasourceTaskMapper.lastId().get(0));
+        return coreDatasourceTaskLog;
     }
 
     public void saveLog(CoreDatasourceTaskLog coreDatasourceTaskLog) {

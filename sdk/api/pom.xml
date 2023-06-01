@@ -28,9 +28,15 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>io.dataease</groupId>
             <artifactId>common</artifactId>
+            <version>${project.version}</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>io.dataease</groupId>
+            <artifactId>license-sdk</artifactId>
             <version>${project.version}</version>
         </dependency>
 

@@ -154,7 +154,7 @@ const emits = defineEmits(['changeHeaders', 'moveHeaders'])
 </template>
 
 <style lang="less" scoped>
-.el-autocomplete {
+.ed-autocomplete {
   width: 100%;
 }
 </style>

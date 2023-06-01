@@ -1,12 +1,16 @@
 <script lang="ts">
 import { h } from 'vue'
 import { ElMenuItem, ElSubMenu } from 'element-plus-secondary'
+import Icon from '@/components/icon-custom/src/Icon.vue'
 
 const title = props => {
   const { title } = props.menu?.meta || {}
   return [h('span', null, { default: () => title })]
 }
 
+const expandIcon = (name: string) => {
+  return h(Icon, { className: '', name })
+}
 const HeaderMenuItem = props => {
   const { children = [], hidden, path } = props.menu
   if (hidden) {
@@ -16,7 +20,11 @@ const HeaderMenuItem = props => {
   if (children?.length) {
     return h(
       ElSubMenu,
-      { index: path },
+      {
+        index: path,
+        expandCloseIcon: expandIcon('icon_expand-down_filled'),
+        expandOpenIcon: expandIcon('icon_expand-right_filled')
+      },
       {
         title: () => title(props),
         default: () => children.map(ele => h(HeaderMenuItem, { menu: ele, index: path }))

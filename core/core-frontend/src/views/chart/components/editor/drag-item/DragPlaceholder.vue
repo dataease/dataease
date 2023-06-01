@@ -20,7 +20,7 @@ const props = defineProps({
 
 <style lang="less" scoped>
 span {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .drag-placeholder-style {
@@ -28,7 +28,8 @@ span {
   top: calc(50% - 2px);
   left: 0;
   width: 100%;
-  color: #cccccc;
-  text-align: center;
+  color: #757575;
+  text-align: left;
+  padding: 0 14px;
 }
 </style>

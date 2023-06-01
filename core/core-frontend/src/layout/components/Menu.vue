@@ -36,7 +36,7 @@ const menuSelect = (index: string, indexPath: string[]) => {
 </template>
 
 <style lang="less" scoped>
-.el-menu-vertical:not(.el-menu--collapse) {
+.ed-menu-vertical:not(.ed-menu--collapse) {
   width: 100%;
   min-height: 400px;
 }

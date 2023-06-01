@@ -56,7 +56,6 @@ export const listDatasourceTables = async (id): Promise<IResponse> => {
 }
 
 export const validate = (data = {}) => {
-  console.log(data)
   return request.post({ url: '/datasource/validate', data })
 }
 
@@ -70,7 +69,7 @@ export const save = async (data = {}): Promise<IResponse> => {
 
 export const checkApiItem = async (data = {}): Promise<IResponse> => {
   return request.post({ url: '/datasource/checkApiDatasource', data }).then(res => {
-    return res?.data
+    return res
   })
 }
 

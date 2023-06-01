@@ -56,11 +56,6 @@ export const formatRoute = (arr: AppCustomRouteRecordRaw[]): AppCustomRouteRecor
   return arr.map(ele => {
     const router = cloneDeep(ele)
     const { path, children = [] } = router
-    if (path === '/system') {
-      router.children = []
-      router.path = '/system/user'
-      return router
-    }
 
     if (children?.length === 1) {
       const [route] = children

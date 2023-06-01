@@ -387,7 +387,7 @@ onMounted(() => {
     border-right: 2px solid var(--MainBG, #f5f6f7);
     border-left: 2px solid var(--MainBG, #f5f6f7);
 
-    .el-input {
+    .ed-input {
       width: 120px;
       height: 32px;
     }

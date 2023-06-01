@@ -1,20 +1,22 @@
 <script lang="tsx" setup>
-import { ref, reactive, shallowRef, nextTick } from 'vue'
+import { nextTick, reactive, ref, shallowRef } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
+import type { ApiRequest } from './ApiHttpRequestForm.vue'
 import ApiHttpRequestForm from './ApiHttpRequestForm.vue'
 import { Icon } from '@/components/icon-custom'
-import type { ApiRequest } from './ApiHttpRequestForm.vue'
-import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { Base64 } from 'js-base64'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
-import { checkApiItem } from '../../../../../api/datasource.ts'
+import { checkApiItem } from '@/api/datasource'
+
 export interface Field {
   name: string
   value: Array<{}>
   checked: boolean
   children?: Array<{}>
 }
+
 export interface ApiItem {
   status: string
   name: string
@@ -123,6 +125,7 @@ const showApiData = () => {
       const data = Base64.encode(JSON.stringify(apiItem))
       loading.value = true
       checkApiItem({ data: data }).then(response => {
+        originFieldItem.jsonFields = response.data.jsonFields
       })
       loading.value = false
       // res.data.jsonFields.forEach(((item) => {
@@ -194,12 +197,23 @@ const before = () => {
 }
 const next = () => {
   checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
-    apiItem.jsonFields = response.jsonFields
+    apiItem.jsonFields = response.data.jsonFields
+    apiItem.fields = []
+    handleFiledChange(apiItem)
+    previewData()
   })
   active.value += 1
 }
 const closeEditItem = () => {
   edit_api_item.value = false
+}
+
+const disabledByChildren = item => {
+  if (item.hasOwnProperty('children') && item.children.length > 0) {
+    return true
+  } else {
+    return false
+  }
 }
 const previewData = () => {
   showEmpty.value = false
@@ -225,14 +239,11 @@ const previewData = () => {
       title: apiItem.fields[i].name,
       width: 150
     })
-    nextTick(() => {
-      tableData.value = data
-    })
-    nextTick(() => {
-      columns.value = columnTmp
-    })
   }
+  tableData.value = data
+  columns.value = columnTmp
   showEmpty.value = apiItem.fields.length === 0
+  console.log(apiItem.fields)
 }
 
 const handleCheckChange = (apiItem, node) => {
@@ -282,11 +293,7 @@ const handleCheckAllChange = row => {
   previewData()
 
   if (errMsg.length) {
-    // $message.error(
-    //   [...new Set(errMsg)].join(',') +
-    //            ', ' +
-    //            i18n.t('datasource.has_repeat_field_name')
-    // )
+    ElMessage.error([...new Set(errMsg)].join(',') + ', ' + t('datasource.has_repeat_field_name'))
   }
 }
 const changeId = (val: string) => {
@@ -431,7 +438,7 @@ defineExpose({
             <el-table-column
               class-name="checkbox-table"
               prop="originName"
-              :label="t('dataset.parse_filed')"
+              :label="t('datasource.parse_filed')"
               show-overflow-tooltip
             >
               <template #default="scope">
@@ -464,7 +471,7 @@ defineExpose({
             <el-table-column
               class-name="checkbox-table"
               prop="originName"
-              :label="t('dataset.parse_filed')"
+              :label="t('datasource.parse_filed')"
               :show-overflow-tooltip="true"
               width="255"
             >
@@ -472,25 +479,25 @@ defineExpose({
                 <el-checkbox
                   :key="scope.row.jsonPath"
                   v-model="scope.row.checked"
-                  :disabled="scope.row.disabled || apiItem.useJsonPath"
+                  :disabled="apiItem.useJsonPath"
                   @change="handleCheckAllChange(scope.row)"
                 >
                   {{ scope.row.originName }}
                 </el-checkbox>
               </template>
             </el-table-column>
-            <el-table-column prop="name" :label="t('dataset.field_rename')">
+            <el-table-column prop="name" :label="t('datasource.field_rename')">
               <template #default="scope">
                 <el-input
                   v-model="scope.row.name"
-                  :disabled="scope.row.children"
+                  :disabled="disabledByChildren(scope.row)"
                   text
                   @change="previewData()"
                 />
               </template>
             </el-table-column>
 
-            <el-table-column prop="deExtractType" :label="t('dataset.field_type')">
+            <el-table-column prop="deExtractType" :label="t('datasource.field_type')">
               <template #default="scope">
                 <el-select
                   v-model="scope.row.deExtractType"
@@ -573,10 +580,10 @@ defineExpose({
 <style lang="less">
 .api-datasource-drawer {
   .input-with-select {
-    .el-input-group__prepend {
+    .ed-input-group__prepend {
       background-color: #fff;
       border-color: #bbbfc4;
-      .el-select {
+      .ed-select {
         width: 84px !important;
       }
     }

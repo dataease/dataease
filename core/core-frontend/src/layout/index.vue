@@ -30,6 +30,8 @@ const systemMenu = computed(
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background: #fff;
+  color: #1f2329;
 
   .layout-container {
     .layout-sidebar {

@@ -33,3 +33,10 @@ logging:
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+quartz:
+  enabled: true
+  scheduler-name: deSyncJob
+
+dataease:
+  version: '@project.version@'

@@ -132,9 +132,8 @@ const initForm = type => {
 }
 
 const initEditForm = () => {
-  if (editDs.value) {
-    dsFormDisabled.value = true
-  }
+  dsFormDisabled.value = true
+  console.log(dsFormDisabled.value)
 }
 
 const notapiexcelconfig = computed(() => form.value.type !== 'API')
@@ -369,6 +368,7 @@ const saveDs = () => {
   }
   save(request).then(res => {
     ElMessage.success(t('common.save_success'))
+    dsFormDisabled.value = true
   })
 }
 
@@ -404,7 +404,7 @@ defineExpose({
 
 <template>
   <div class="editor-detail">
-    <div class="detail-inner" v-show="activeStep != 2">
+    <div class="detail-inner">
       <div v-show="editDs">
         <el-button v-show="!dsFormDisabled" @click="() => cancel()">{{
           t('common.cancel')
@@ -612,33 +612,34 @@ defineExpose({
             <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
           </el-form-item>
         </template>
-      </el-form>
-      <api-http-request-draw @return-item="returnItem" ref="editApiItem"></api-http-request-draw>
-    </div>
-    <div v-if="activeStep === 2 || (editDs && form.type === 'API')">
-      <el-form
-        ref="dsForm"
-        :model="form"
-        :rules="rule"
-        :disabled="dsFormDisabled"
-        label-width="180px"
-        label-position="top"
-        require-asterisk-position="right"
-      >
-        <el-form-item :label="$t('datasource.update_type')" prop="type">
+        <el-form-item
+          :label="$t('datasource.update_type')"
+          prop="type"
+          v-if="activeStep === 2 || (editDs && form.type === 'API')"
+        >
           <el-radio-group v-model="form.syncSetting.updateType">
             <el-radio label="all_scope">{{ $t('datasource.all_scope') }}</el-radio>
             <el-radio label="add_scope"> {{ $t('datasource.add_scope') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="$t('datasource.execute_rate')" prop="rate">
+        <el-form-item
+          :label="$t('datasource.execute_rate')"
+          prop="rate"
+          v-if="activeStep === 2 || (editDs && form.type === 'API')"
+        >
           <el-radio-group v-model="form.syncSetting.syncRate" @change="onRateChange">
             <el-radio label="RIGHTNOW">{{ $t('datasource.execute_once') }}</el-radio>
             <el-radio label="CRON">{{ $t('datasource.cron_config') }}</el-radio>
             <el-radio label="SIMPLE_CRON">{{ $t('datasource.simple_cron') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <div v-if="form.syncSetting.syncRate !== 'RIGHTNOW'" class="execute-rate-cont">
+        <div
+          v-if="
+            (activeStep === 2 || (editDs && form.type === 'API')) &&
+            form.syncSetting.syncRate !== 'RIGHTNOW'
+          "
+          class="execute-rate-cont"
+        >
           <el-form-item
             v-if="form.syncSetting.syncRate === 'SIMPLE_CRON'"
             :label="$t('datasource.execute_rate')"
@@ -724,6 +725,7 @@ defineExpose({
           </el-form-item>
         </div>
       </el-form>
+      <api-http-request-draw @return-item="returnItem" ref="editApiItem"></api-http-request-draw>
     </div>
   </div>
 </template>

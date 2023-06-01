@@ -6,16 +6,16 @@ export const routes: AppRouteRecordRaw[] = [
   {
     path: '/',
     name: 'index',
-    redirect: '/home',
+    redirect: '/workbranch',
     component: () => import('@/layout/index.vue'),
     hidden: true,
     meta: {},
     children: [
       {
-        path: 'home',
-        name: 'home',
+        path: 'workbranch',
+        name: 'workbranch',
         hidden: true,
-        component: () => import('@/views/home/index.vue'),
+        component: () => import('@/views/workbranch/index.vue'),
         meta: { hidden: true }
       }
     ]

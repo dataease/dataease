@@ -75,14 +75,14 @@ const handleSelect = (index: string) => {
     }
   }
 
-  .el-menu {
+  .ed-menu {
     background-color: #050e21;
   }
 
-  .el-menu--horizontal {
+  .ed-menu--horizontal {
     border: none;
-    .el-menu-item,
-    :deep(.el-sub-menu__title) {
+    .ed-menu-item,
+    :deep(.ed-sub-menu__title) {
       color: rgba(255, 255, 255, 0.8);
       line-height: 50px;
       border-bottom: none;
@@ -95,14 +95,14 @@ const handleSelect = (index: string) => {
     }
 
     > .is-active {
-      :deep(.el-sub-menu__title) {
+      :deep(.ed-sub-menu__title) {
         color: #ffffff !important;
         background-color: #245bdb;
       }
     }
 
-    .el-menu-item:not(.is-disabled):hover,
-    :deep(.el-sub-menu__title):not(.is-disabled):hover {
+    .ed-menu-item:not(.is-disabled):hover,
+    :deep(.ed-sub-menu__title):not(.is-disabled):hover {
       color: #ffffff;
       background-color: #245bdb;
     }
@@ -119,7 +119,7 @@ const handleSelect = (index: string) => {
 <style lang="less">
 .header-flex {
   .operate-setting {
-    .el-icon {
+    .ed-icon {
       cursor: pointer;
       color: rgba(255, 255, 255, 0.8);
       margin: 0 11px;

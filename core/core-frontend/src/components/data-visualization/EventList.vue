@@ -76,12 +76,12 @@ const removeEvent = event => {
     text-align: center;
     padding: 0 20px;
 
-    .el-button {
+    .ed-button {
       display: inline-block;
       margin-bottom: 10px;
     }
 
-    .el-tag {
+    .ed-tag {
       display: block;
       width: 50%;
       margin: auto;

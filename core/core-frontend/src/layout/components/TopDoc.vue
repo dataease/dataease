@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { Icon } from '@/components/icon-custom'
-const helpLink = ref(null)
+const helpLink = ref('https://dataease.io/docs/')
 const openBlank = () => {
   window.open(helpLink.value)
 }

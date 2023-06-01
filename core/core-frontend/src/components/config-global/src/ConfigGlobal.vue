@@ -10,7 +10,7 @@ const currentLocale = computed(() => localeStore.currentLocale)
 </script>
 
 <template>
-  <ElConfigProvider :locale="currentLocale.elLocale">
+  <ElConfigProvider :locale="currentLocale.elLocale" namespace="ed">
     <slot></slot>
   </ElConfigProvider>
 </template>

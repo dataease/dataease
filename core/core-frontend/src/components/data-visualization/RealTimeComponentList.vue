@@ -257,7 +257,7 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
   }
 }
 
-.real-time-component-list :deep(.el-popper) {
+.real-time-component-list :deep(.ed-popper) {
   background: #303133 !important;
 }
 </style>

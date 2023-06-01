@@ -61,4 +61,7 @@ public interface UserApi {
 
     @PostMapping("/byCurOrg")
     List<UserItem> byCurOrg(@RequestBody KeywordRequest request);
+
+    @GetMapping("/userCount")
+    int userCount();
 }

@@ -15,6 +15,7 @@ public class Configuration {
     private String keywordSuffix = "";
     private String aliasPrefix = "";
     private String aliasSuffix = "";
+    private String jdbc;
     private String host;
     private Integer port;
     private String username;

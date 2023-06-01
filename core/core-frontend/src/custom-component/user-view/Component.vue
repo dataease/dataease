@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { toRefs } from 'vue'
-import ChartComponentG2Plot from '../../views/chart/components/views/ChartComponentG2Plot.vue'
+import Chart from '@/views/chart/components/views/index.vue'
+
 const props = defineProps({
   propValue: {
     type: String,
@@ -30,7 +31,7 @@ const { propValue, element } = toRefs(props)
 
 <template>
   <div class="bash-shape">
-    <chart-component-g2-plot></chart-component-g2-plot>
+    <chart></chart>
   </div>
 </template>
 

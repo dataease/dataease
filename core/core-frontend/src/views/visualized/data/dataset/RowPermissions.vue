@@ -442,7 +442,7 @@ const handleCurrentChange = (currentPage: number) => {
   }
 }
 .role-add-name {
-  .el-select-dropdown__item {
+  .ed-select-dropdown__item {
     height: 50px;
     padding: 4px 11px 4px 11px;
     p {

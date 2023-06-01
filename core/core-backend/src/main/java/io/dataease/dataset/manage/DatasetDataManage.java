@@ -2,6 +2,7 @@ package io.dataease.dataset.manage;
 
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
+import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
@@ -10,6 +11,7 @@ import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.FieldUtils;
+import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
@@ -68,8 +70,8 @@ public class DatasetDataManage {
                 // add table schema
                 datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()));
             } else {
-                // todo add sql table schema
-                datasourceRequest.setQuery(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())));
+                // add sql table schema
+                datasourceRequest.setQuery(SqlUtils.addSchema(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasourceSchemaDTO.getSchemaAlias()));
             }
             // 获取数据源表的原始字段
             tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
@@ -179,6 +181,28 @@ public class DatasetDataManage {
         return map;
     }
 
+    public Map<String, Object> previewSql(PreviewSqlDTO dto) {
+        String alias = "SQL_ALIAS";
+        CoreDatasource coreDatasource = coreDatasourceMapper.selectById(dto.getDatasourceId());
+        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+        datasourceSchemaDTO.setSchemaAlias(alias);
+        String sql = SqlUtils.addSchema(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), alias);
+        Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
+        dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setQuery(sql);
+        datasourceRequest.setDsList(dsMap);
+        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+        // 重新构造data
+        List<TableField> fList = (List<TableField>) data.get("fields");
+        List<DatasetTableFieldDTO> fields = transFields(fList, false);
+        Map<String, Object> previewData = buildPreviewData(data, fields);
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("data", previewData);
+        return map;
+    }
+
     public Map<String, Object> buildPreviewData(Map<String, Object> data, List<DatasetTableFieldDTO> fields) {
         Map<String, Object> map = new LinkedHashMap<>();
 
@@ -192,7 +216,8 @@ public class DatasetDataManage {
                 LinkedHashMap<String, Object> obj = new LinkedHashMap<>();
                 if (row.length > 0) {
                     for (int j = 0; j < row.length; j++) {
-                        obj.put(fields.get(j).getDataeaseName(), row[j]);
+                        obj.put(ObjectUtils.isNotEmpty(fields.get(j).getDataeaseName()) ?
+                                fields.get(j).getDataeaseName() : fields.get(j).getOriginName(), row[j]);
                     }
                 }
                 dataObjectList.add(obj);

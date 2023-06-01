@@ -288,23 +288,23 @@ const sizeMessage = () => {
   width: 100%;
 }
 
-:deep(.el-collapse-item__header) {
+:deep(.ed-collapse-item__header) {
   background-color: @side-area-background !important;
   color: #ffffff;
   padding-left: 5px;
   border-bottom: 1px solid rgba(85, 85, 85, 1);
   height: 38px !important;
 }
-:deep(.el-collapse-item__content) {
+:deep(.ed-collapse-item__content) {
   background-color: @side-content-background;
   color: #ffffff;
   padding-left: 5px;
 }
 
-:deep(.el-collapse-item__wrap) {
+:deep(.ed-collapse-item__wrap) {
   border-bottom: 1px solid rgba(85, 85, 85, 1);
 }
-:deep(.el-collapse) {
+:deep(.ed-collapse) {
   width: 100%;
 }
 

@@ -28,9 +28,11 @@ const state = reactive({
   fontSize: []
 })
 
+const { chart } = toRefs(props)
+
 const initFontSize = () => {
   const arr = []
-  for (let i = 10; i <= 40; i = i + 2) {
+  for (let i = 12; i <= 40; i = i + 2) {
     arr.push({
       name: i + '',
       value: i + ''
@@ -58,7 +60,7 @@ initFontSize()
         <div v-show="state.titleForm.show">
           <el-form-item :label="t('chart.title')" class="form-item">
             <el-input
-              v-model="state.titleForm.title"
+              v-model="chart.title"
               size="small"
               :placeholder="t('chart.title')"
               clearable

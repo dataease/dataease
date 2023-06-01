@@ -13,7 +13,7 @@ public class FilterConfig {
         filter.setName("tokenFilter");
         filter.setFilter(new TokenFilter());
         filter.addUrlPatterns("/*");
-        filter.setOrder(-1);
+        filter.setOrder(0);
         return filter;
     }
 }

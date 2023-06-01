@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 public class TableUtils {
 
     public static String tableName(String name) {
-        return "ds_" + name;
+        return  name;
     }
 
     public static String tmpName(String name) {

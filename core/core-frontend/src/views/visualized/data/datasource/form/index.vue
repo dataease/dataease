@@ -106,6 +106,8 @@ const validateDS = () => {
       return
     }
     request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
+    request.syncSetting.startTime = new Date(request.syncSetting.startTime).getTime()
+    request.syncSetting.endTime = new Date(request.syncSetting.endTime).getTime()
   } else {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }

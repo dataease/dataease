@@ -45,7 +45,7 @@ onMounted(() => {
 </script>
 
 <style lang="less">
-.example-showcase .el-dropdown-link {
+.example-showcase .ed-dropdown-link {
   cursor: pointer;
   color: var(--el-color-primary);
   display: flex;

@@ -8,6 +8,7 @@ import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.DatasetTableTypeConstants;
+import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
@@ -344,7 +345,7 @@ public class DatasetSQLManage {
         }
     }
 
-    private String subPrefixSuffixChar(String str) {
+    public String subPrefixSuffixChar(String str) {
         while (StringUtils.startsWith(str, ",")) {
             str = str.substring(1, str.length());
         }
@@ -379,7 +380,7 @@ public class DatasetSQLManage {
         if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_DB)) {
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();
         } else if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_SQL)) {
-            tableObj = SQLObj.builder().tableSchema("").tableName("(" + new String(Base64.getDecoder().decode(infoDTO.getSql())) + ")").tableAlias(tableAlias).build();
+            tableObj = SQLObj.builder().tableSchema("").tableName("(" + SqlUtils.addSchema(new String(Base64.getDecoder().decode(infoDTO.getSql())), tableSchema) + ")").tableAlias(tableAlias).build();
         } else {
             // todo excel,api
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();

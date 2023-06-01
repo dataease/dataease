@@ -1,13 +1,12 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,\5fae\8f6f\96c5\9ed1,Arial,sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
 
   font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  // text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
@@ -17,10 +16,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-body {
-  background: #fff;
-  color: #1F2329;
 }
 
 .de-search-table {
@@ -33,12 +28,12 @@ body {
       align-items: center;
       justify-content: flex-end;
 
-      .el-input + button,
-      .el-input {
+      .ed-input + button,
+      .ed-input {
         margin-right: 12px;
       }
 
-      .el-input {
+      .ed-input {
         width: 240px;
       }
 
@@ -64,7 +59,7 @@ body {
   display: flex;
   align-items: center;
 
-  .el-icon + .label {
+  .ed-icon + .label {
     margin-left: 5.33px;
   }
 
@@ -114,7 +109,7 @@ body {
 }
 
 .field-icon-text {
-  color: #688fd8;
+  color: #3370FF;
 }
 
 .field-icon-time {
@@ -122,11 +117,11 @@ body {
 }
 
 .field-icon-value {
-  color: #37b4aa;
+  color: #04B49C;
 }
 
 .field-icon-location {
-  color: #F56C6C;
+  color: #F54A45;
 }
 
 .field-icon-sort {
@@ -153,8 +148,10 @@ body {
   }
 }
 
+
 .custom-popover {
   background: @side-content-background !important;
   padding: 8px 4px 0 4px !important;
   border: 1px solid #434343 !important;
 }
+

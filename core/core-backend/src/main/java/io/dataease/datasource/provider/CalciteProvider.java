@@ -143,10 +143,11 @@ public class CalciteProvider {
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
         } finally {
-           try {
-               if (resultSet != null) resultSet.close();
-               if (statement != null) statement.close();
-           }catch ( Exception e) {}
+            try {
+                if (resultSet != null) resultSet.close();
+                if (statement != null) statement.close();
+            } catch (Exception e) {
+            }
         }
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("fields", datasetTableFields);
@@ -160,7 +161,10 @@ public class CalciteProvider {
             key = id + split;
         }
         if (connectionMap.get(key) != null) {
-            return connectionMap.get(key);
+            Connection connection = connectionMap.get(key);
+            buildSchema(datasourceRequest, connection.unwrap(CalciteConnection.class));
+            connectionMap.put(key, connection);
+            return connection;
         } else {
             Connection connection = getCalciteConnection(datasourceRequest);
             buildSchema(datasourceRequest, connection.unwrap(CalciteConnection.class));
@@ -207,7 +211,7 @@ public class CalciteProvider {
             DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
             switch (datasourceType) {
                 case mysql:
-                    configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
+                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Mysql.class);
                     dataSource.setUrl(configuration.getJdbc());
                     dataSource.setUsername(configuration.getUsername());
                     dataSource.setPassword(configuration.getPassword());
@@ -216,7 +220,7 @@ public class CalciteProvider {
                     rootSchema.add(ds.getSchemaAlias(), schema);
                     break;
                 case sqlserver:
-                    configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Sqlserver.class);
+                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Sqlserver.class);
                     dataSource.setUrl(configuration.getJdbc());
                     dataSource.setUsername(configuration.getUsername());
                     dataSource.setPassword(configuration.getPassword());
@@ -225,7 +229,7 @@ public class CalciteProvider {
                     rootSchema.add(ds.getSchemaAlias(), schema);
                     break;
                 default:
-                    configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
+                    configuration = JsonUtil.parseObject(ds.getConfiguration(), Mysql.class);
                     dataSource.setUrl(configuration.getJdbc());
                     dataSource.setUsername(configuration.getUsername());
                     dataSource.setPassword(configuration.getPassword());
@@ -269,12 +273,11 @@ public class CalciteProvider {
     }
 
     private List<String> getTablesSql(DatasourceRequest datasourceRequest) throws DEException {
-        DatasourceConfiguration configuration = (DatasourceConfiguration)CommonBeanFactory.getBean(datasourceRequest.getDatasource().getType());
+        DatasourceConfiguration configuration = (DatasourceConfiguration) CommonBeanFactory.getBean(datasourceRequest.getDatasource().getType());
         return configuration.getShowTableSqls();
     }
 
     public Connection getConnection(CoreDatasource coreDatasource) throws Exception {
-
         DatasourceConfiguration configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
         Properties props = new Properties();
         if (StringUtils.isNotBlank(configuration.getUsername())) {

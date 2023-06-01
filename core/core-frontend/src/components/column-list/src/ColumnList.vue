@@ -89,7 +89,7 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
   width: 238px;
 
   .title,
-  .el-checkbox {
+  .ed-checkbox {
     font-family: PingFang SC;
     font-size: 14px;
     font-weight: 400;
@@ -98,7 +98,7 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
     color: #8f959e;
   }
 
-  .el-checkbox {
+  .ed-checkbox {
     width: 100%;
   }
 }

@@ -197,7 +197,7 @@ watch(
   .cell {
     display: flex;
     align-items: center;
-    .el-icon {
+    .ed-icon {
       font-size: 14px;
       margin-right: 5.25px;
     }
