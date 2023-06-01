@@ -15,8 +15,7 @@ import {
   DEFAULT_THRESHOLD,
   DEFAULT_SCROLL
 } from './util/chart'
-import { reactive, ref, watch } from 'vue'
-import { PropType, reactive, ref, toRefs } from 'vue'
+import { PropType, reactive, ref, watch, toRefs } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
@@ -115,7 +114,6 @@ const state = reactive({
       scrollCfg: DEFAULT_SCROLL
     }
   },
-  datasetTree: [],
   dimension: [],
   quota: [],
   dimensionData: [],
@@ -740,7 +738,7 @@ const collapseChange = type => {
           >
             <el-tree-select
               v-model="view.tableId"
-              :data="state.datasetTree"
+              :data="datasetTree"
               :props="dsSelectProps"
               filterable
               @node-click="dsClick"
