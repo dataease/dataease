@@ -8,7 +8,9 @@ import { DEFAULT_TITLE_STYLE } from '@/views/chart/components/editor/util/chart'
 const g2 = ref<any>()
 
 const state = reactive({
-  view: {},
+  view: {
+    title: '111'
+  },
   title_show: true,
   title_class: {
     margin: '0 0',

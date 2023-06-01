@@ -43,7 +43,7 @@ defineExpose({
 })
 
 onMounted(() => {
-  renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
+  renderChart({ render: ChartRenderType.ANT_V, type: 'column' })
 })
 </script>
 
