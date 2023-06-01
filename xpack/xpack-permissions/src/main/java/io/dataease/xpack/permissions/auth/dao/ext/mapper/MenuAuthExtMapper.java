@@ -76,4 +76,14 @@ public interface MenuAuthExtMapper {
     )
     @Select("select resource_id, weight from per_auth_menu where rid = #{rid}")
     List<PermissionItem> voidQuery(@Param("rid") Long rid);
+
+    @Select("""
+            select distinct resource_id
+            from per_auth_menu
+            where rid in 
+            <foreach item='rid' index='index' collection='rids' open='(' separator=',' close=')'>
+            #{rid}
+            </foreach>
+            """)
+    List<Long> interactiveMenuIds(List<Long> rids);
 }

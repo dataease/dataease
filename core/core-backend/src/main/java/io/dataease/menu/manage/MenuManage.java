@@ -1,8 +1,10 @@
 package io.dataease.menu.manage;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.menu.vo.MenuMeta;
 import io.dataease.api.menu.vo.MenuVO;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.menu.bo.MenuTreeNode;
 import io.dataease.menu.dao.auto.entity.CoreMenu;
 import io.dataease.menu.dao.auto.mapper.CoreMenuMapper;
@@ -28,14 +30,23 @@ public class MenuManage {
     @Resource
     private CoreMenuMapper coreMenuMapper;
 
-    @Cacheable(value = "menu", key = "#root.methodName")
+    @Resource
+    private InteractiveAuthApi interactiveAuthApi;
+
+    // @Cacheable(value = "menu", key = "#root.methodName")
     public List<MenuVO> query() {
         QueryWrapper<CoreMenu> wrapper = new QueryWrapper<>();
         List<CoreMenu> coreMenus = coreMenuMapper.selectList(wrapper);
+        //filterAuth(coreMenus);
         List<MenuTreeNode> menuTreeNodes = coreMenus.stream().map(menu -> BeanUtils.copyBean(new MenuTreeNode(), menu)).toList();
         List<MenuTreeNode> treeNodes = buildPOTree(menuTreeNodes);
         List<MenuVO> menuVOS = convertTree(treeNodes);
         return menuVOS;
+    }
+    private List<CoreMenu> filterAuth(List<CoreMenu> list) {
+        List<Long> menuIds = interactiveAuthApi.menuIds();
+        if (CollectionUtil.isEmpty(menuIds)) return list;
+        return list.stream().filter(menu -> list.contains(menu.getId())).toList();
     }
 
     private List<MenuTreeNode> buildPOTree(List<MenuTreeNode> coreMenus) {

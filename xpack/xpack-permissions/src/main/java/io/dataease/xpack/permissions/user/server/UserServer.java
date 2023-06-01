@@ -11,6 +11,7 @@ import io.dataease.api.permissions.user.vo.CurUserVO;
 import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.user.vo.UserGridVO;
 import io.dataease.api.permissions.user.vo.UserItem;
+import io.dataease.license.config.XpackResource;
 import io.dataease.model.KeywordRequest;
 import io.dataease.request.BaseGridRequest;
 import io.dataease.utils.AuthUtils;
@@ -26,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 @Primary
+@XpackResource(excludes = {"userCount", "info"})
 public class UserServer implements UserApi {
 
 
