@@ -197,11 +197,11 @@ const dimensionItemChange = item => {
 }
 const dimensionItemRemove = item => {
   if (item.removeType === 'dimension') {
-    state.view.xaxis.splice(item.index, 1)
+    view.value.xaxis.splice(item.index, 1)
   } else if (item.removeType === 'dimensionExt') {
-    state.view.xaxisExt.splice(item.index, 1)
+    view.value.xaxisExt.splice(item.index, 1)
   }
-  calcData(state.view)
+  calcData(view.value)
 }
 
 const quotaItemChange = item => {
@@ -212,11 +212,11 @@ const quotaItemChange = item => {
 }
 const quotaItemRemove = item => {
   if (item.removeType === 'quota') {
-    state.view.yaxis.splice(item.index, 1)
+    view.value.yaxis.splice(item.index, 1)
   } else if (item.removeType === 'quotaExt') {
-    state.view.yaxisExt.splice(item.index, 1)
+    view.value.yaxisExt.splice(item.index, 1)
   }
-  calcData(state.view)
+  calcData(view.value)
 }
 
 const onMove = (e, originalEvent) => {
@@ -257,61 +257,61 @@ const dragRemoveChartField = (list, e) => {
 }
 
 const addXaxis = e => {
-  if (state.view.type !== 'table-info') {
-    dragCheckType(state.view.xaxis, 'd')
+  if (view.value.type !== 'table-info') {
+    dragCheckType(view.value.xaxis, 'd')
   }
-  dragMoveDuplicate(state.view.xaxis, e, 'chart')
+  dragMoveDuplicate(view.value.xaxis, e, 'chart')
   if (
-    (state.view.type === 'map' ||
-      state.view.type === 'word-cloud' ||
-      state.view.type === 'label') &&
-    state.view.xaxis.length > 1
+    (view.value.type === 'map' ||
+      view.value.type === 'word-cloud' ||
+      view.value.type === 'label') &&
+    view.value.xaxis.length > 1
   ) {
-    state.view.xaxis = [state.view.xaxis[0]]
+    view.value.xaxis = [view.value.xaxis[0]]
   }
-  calcData(state.view)
+  calcData(view.value)
 }
 
 const addYaxis = e => {
-  dragCheckType(state.view.yaxis, 'q')
-  dragMoveDuplicate(state.view.yaxis, e, '')
+  dragCheckType(view.value.yaxis, 'q')
+  dragMoveDuplicate(view.value.yaxis, e, '')
   if (
-    (state.view.type === 'waterfall' ||
-      state.view.type === 'word-cloud' ||
-      state.view.type.includes('group')) &&
-    state.view.yaxis.length > 1
+    (view.value.type === 'waterfall' ||
+      view.value.type === 'word-cloud' ||
+      view.value.type.includes('group')) &&
+    view.value.yaxis.length > 1
   ) {
-    state.view.yaxis = [state.view.yaxis[0]]
+    view.value.yaxis = [view.value.yaxis[0]]
   }
-  calcData(state.view)
+  calcData(view.value)
 }
 
 const addCustomFilter = e => {
   // 记录数等自动生成字段不做为过滤条件
-  if (state.view.customFilter && state.view.customFilter.length > 0) {
-    for (let i = 0; i < state.view.customFilter.length; i++) {
-      if (state.view.customFilter[i].id === 'count') {
-        state.view.customFilter.splice(i, 1)
+  if (view.value.customFilter && view.value.customFilter.length > 0) {
+    for (let i = 0; i < view.value.customFilter.length; i++) {
+      if (view.value.customFilter[i].id === 'count') {
+        view.value.customFilter.splice(i, 1)
       }
     }
   }
-  state.view.customFilter[e.newDraggableIndex].filter = []
-  dragMoveDuplicate(state.view.customFilter, e, '')
-  dragRemoveChartField(state.view.customFilter, e)
-  calcData(state.view)
+  view.value.customFilter[e.newDraggableIndex].filter = []
+  dragMoveDuplicate(view.value.customFilter, e, '')
+  dragRemoveChartField(view.value.customFilter, e)
+  calcData(view.value)
 }
 const filterItemRemove = item => {
-  state.view.customFilter.splice(item.index, 1)
-  calcData(state.view)
+  view.value.customFilter.splice(item.index, 1)
+  calcData(view.value)
 }
 
 const moveToDimension = e => {
   dragMoveDuplicate(state.dimensionData, e, 'ds')
-  calcData(state.view)
+  calcData(view.value)
 }
 const moveToQuota = e => {
   dragMoveDuplicate(state.quotaData, e, 'ds')
-  calcData(state.view)
+  calcData(view.value)
 }
 
 const calcData = view => {
@@ -442,19 +442,19 @@ const saveQuotaFilter = () => {
     }
   }
   if (state.quotaItem.filterType === 'quota') {
-    state.view.yaxis[state.quotaItem.index].filter = state.quotaItem.filter
-    state.view.yaxis[state.quotaItem.index].logic = state.quotaItem.logic
+    view.value.yaxis[state.quotaItem.index].filter = state.quotaItem.filter
+    view.value.yaxis[state.quotaItem.index].logic = state.quotaItem.logic
   } else if (state.quotaItem.filterType === 'quotaExt') {
-    state.view.yaxisExt[state.quotaItem.index].filter = state.quotaItem.filter
-    state.view.yaxisExt[state.quotaItem.index].logic = state.quotaItem.logic
+    view.value.yaxisExt[state.quotaItem.index].filter = state.quotaItem.filter
+    view.value.yaxisExt[state.quotaItem.index].logic = state.quotaItem.logic
   }
-  calcData(state.view)
+  calcData(view.value)
   closeQuotaFilter()
 }
 
 const showEditFilter = item => {
   state.filterItem = JSON.parse(JSON.stringify(item))
-  state.chartForFilter = JSON.parse(JSON.stringify(state.view))
+  state.chartForFilter = JSON.parse(JSON.stringify(view.value))
   if (!state.filterItem.logic) {
     state.filterItem.logic = 'and'
   }
@@ -491,11 +491,11 @@ const saveResultFilter = () => {
       }
     }
   }
-  state.view.customFilter[state.filterItem.index].filter = state.filterItem.filter
-  state.view.customFilter[state.filterItem.index].logic = state.filterItem.logic
-  state.view.customFilter[state.filterItem.index].filterType = state.filterItem.filterType
-  state.view.customFilter[state.filterItem.index].enumCheckField = state.filterItem.enumCheckField
-  calcData(state.view)
+  view.value.customFilter[state.filterItem.index].filter = state.filterItem.filter
+  view.value.customFilter[state.filterItem.index].logic = state.filterItem.logic
+  view.value.customFilter[state.filterItem.index].filterType = state.filterItem.filterType
+  view.value.customFilter[state.filterItem.index].enumCheckField = state.filterItem.enumCheckField
+  calcData(view.value)
   closeResultFilter()
 }
 
@@ -518,11 +518,11 @@ const collapseChange = type => {
           <Expand v-else />
         </el-icon>
         <div class="collapse-title" v-show="state.chartAreaCollapse">
-          <span style="font-size: 14px">{{ state.view.title }}</span>
+          <span style="font-size: 14px">{{ view.title }}</span>
         </div>
         <div v-show="!state.chartAreaCollapse" style="width: 240px" class="view-panel-row">
           <el-row class="editor-title">
-            <span style="font-size: 14px">{{ state.view.title }}</span>
+            <span style="font-size: 14px">{{ view.title }}</span>
           </el-row>
           <el-row class="chart_type_area padding-lr">
             <span class="switch-chart">
@@ -558,22 +558,22 @@ const collapseChange = type => {
                       <!--xAxis-->
                       <el-row class="padding-lr drag-data">
                         <span class="data-area-label">
-                          <dimension-label :view="state.view" />
+                          <dimension-label :view="view" />
                         </span>
                         <draggable
-                          :list="state.view.xaxis"
+                          :list="view.xaxis"
                           :move="onMove"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
                           @add="addXaxis"
-                          @update="calcData(state.view)"
+                          @update="calcData(view)"
                         >
                           <template #item="{ element, index }">
                             <dimension-item
                               :dimension-data="state.dimensionData"
                               :quota-data="state.quotaData"
-                              :chart="state.view"
+                              :chart="view"
                               :item="element"
                               :index="index"
                               @onDimensionItemChange="dimensionItemChange"
@@ -582,28 +582,28 @@ const collapseChange = type => {
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="state.view.xaxis" />
+                        <drag-placeholder :drag-list="view.xaxis" />
                       </el-row>
 
                       <!--yAxis-->
                       <el-row class="padding-lr drag-data">
                         <span class="data-area-label">
-                          <quota-label :view="state.view" />
+                          <quota-label :view="view" />
                         </span>
                         <draggable
-                          :list="state.view.yaxis"
+                          :list="view.yaxis"
                           :move="onMove"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
                           @add="addYaxis"
-                          @update="calcData(state.view)"
+                          @update="calcData(view)"
                         >
                           <template #item="{ element, index }">
                             <quota-item
                               :dimension-data="state.dimensionData"
                               :quota-data="state.quotaData"
-                              :chart="state.view"
+                              :chart="view"
                               :item="element"
                               :index="index"
                               @onQuotaItemChange="quotaItemChange"
@@ -613,20 +613,20 @@ const collapseChange = type => {
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="state.view.yaxis" />
+                        <drag-placeholder :drag-list="view.yaxis" />
                       </el-row>
 
                       <!--filter-->
                       <el-row class="padding-lr drag-data">
                         <span>{{ t('chart.result_filter') }}</span>
                         <draggable
-                          :list="state.view.customFilter"
+                          :list="view.customFilter"
                           :move="onMove"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
                           @add="addCustomFilter"
-                          @update="calcData(state.view)"
+                          @update="calcData(view)"
                         >
                           <template #item="{ element, index }">
                             <filter-item
@@ -639,17 +639,17 @@ const collapseChange = type => {
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="state.view.customFilter" />
+                        <drag-placeholder :drag-list="view.customFilter" />
                       </el-row>
 
                       <el-row class="result-style">
                         <div class="result-style-input">
-                          <span v-show="state.view.type !== 'richTextView'">
+                          <span v-show="view.type !== 'richTextView'">
                             {{ t('chart.result_count') }}
                           </span>
-                          <span v-show="state.view.type !== 'richTextView'">
+                          <span v-show="view.type !== 'richTextView'">
                             <el-radio-group
-                              v-model="state.view.resultMode"
+                              v-model="view.resultMode"
                               class="radio-span"
                               size="small"
                             >
@@ -658,7 +658,7 @@ const collapseChange = type => {
                               >
                               <el-radio label="custom">
                                 <el-input
-                                  v-model="state.view.resultCount"
+                                  v-model="view.resultCount"
                                   class="result-count"
                                   size="small"
                                 />
@@ -684,7 +684,7 @@ const collapseChange = type => {
                 style="width: 100%"
               >
                 <chart-style
-                  :chart="state.view"
+                  :chart="view"
                   @onColorChange="onColorChange"
                   @onSizeChange="onSizeChange"
                   @onLabelChange="onLabelChange"
@@ -703,8 +703,8 @@ const collapseChange = type => {
                 style="width: 100%"
               >
                 <senior
-                  :chart="state.view"
-                  :quota-data="state.view.yaxis"
+                  :chart="view"
+                  :quota-data="view.yaxis"
                   @onFunctionCfgChange="onFunctionCfgChange"
                   @onAssistLineChange="onAssistLineChange"
                 />
@@ -739,7 +739,7 @@ const collapseChange = type => {
             }"
           >
             <el-tree-select
-              v-model="state.view.tableId"
+              v-model="view.tableId"
               :data="state.datasetTree"
               :props="dsSelectProps"
               filterable
