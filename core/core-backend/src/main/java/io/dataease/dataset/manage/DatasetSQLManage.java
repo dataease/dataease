@@ -405,7 +405,7 @@ public class DatasetSQLManage {
             CoreDatasource coreDatasource = engineServer.getDeEngine();
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+            datasourceSchemaDTO.setSchemaAlias(schemaAlias);
             dsMap.put(-1L, datasourceSchemaDTO);
         }
     }
