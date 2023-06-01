@@ -1,11 +1,16 @@
 package io.dataease.utils;
 
 import io.dataease.constant.AuthConstant;
+import io.dataease.result.ResultMessage;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class ServletUtils {
 
@@ -37,5 +42,27 @@ public class ServletUtils {
 //        if (StringUtils.isBlank(head)) return false;
 //        long time = Long.parseLong(head);
 //        return System.currentTimeMillis() - time < 10000;
+    }
+
+    public static void writeResult(ResultMessage resultMessage) {
+        HttpServletResponse response = response();
+
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json; charset=utf-8");
+        ServletOutputStream outputStream = null;
+        try  {
+            outputStream = response.getOutputStream();
+            outputStream.print(JsonUtil.toJSONString(resultMessage).toString());
+        } catch (IOException ex) {
+            LogUtil.error(ex.getMessage());
+        } finally {
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
     }
 }
