@@ -2,7 +2,7 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '../util/formatter'
-import { getItemType, getOriginFieldName } from '@/views/chart/components/editor/drag-item/utils'
+import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
 
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]

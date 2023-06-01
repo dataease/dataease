@@ -34,6 +34,7 @@ import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
 import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilterEditor.vue'
 import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
 import { ElIcon, ElRow } from 'element-plus-secondary'
+import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -217,6 +218,14 @@ const quotaItemRemove = item => {
   calcData(view.value)
 }
 
+const drillItemChange = item => {
+  calcData(view.value)
+}
+const drillItemRemove = item => {
+  view.value.drillFields.splice(item.index, 1)
+  calcData(view.value)
+}
+
 const onMove = (e, originalEvent) => {
   state.moveId = e.draggedContext.element.id
   return true
@@ -281,6 +290,13 @@ const addYaxis = e => {
   ) {
     view.value.yaxis = [view.value.yaxis[0]]
   }
+  calcData(view.value)
+}
+
+const addDrill = e => {
+  dragCheckType(view.value.drillFields, 'd')
+  dragMoveDuplicate(view.value.drillFields, e, '')
+  dragRemoveChartField(view.value.drillFields, e)
   calcData(view.value)
 }
 
@@ -569,8 +585,8 @@ const collapseChange = type => {
                         >
                           <template #item="{ element, index }">
                             <dimension-item
-                              :dimension-data="state.dimensionData"
-                              :quota-data="state.quotaData"
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
                               :chart="view"
                               :item="element"
                               :index="index"
@@ -599,8 +615,8 @@ const collapseChange = type => {
                         >
                           <template #item="{ element, index }">
                             <quota-item
-                              :dimension-data="state.dimensionData"
-                              :quota-data="state.quotaData"
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
                               :chart="view"
                               :item="element"
                               :index="index"
@@ -612,6 +628,48 @@ const collapseChange = type => {
                           </template>
                         </draggable>
                         <drag-placeholder :drag-list="view.yaxis" />
+                      </el-row>
+
+                      <!--drill-->
+                      <el-row class="padding-lr drag-data">
+                        <span class="data-area-label">
+                          <span>{{ t('chart.drill') }}</span>
+                          /
+                          <span>{{ t('chart.dimension') }}</span>
+                          <el-tooltip class="item" effect="dark" placement="bottom">
+                            <template #content>
+                              <div>
+                                {{ t('chart.drill_dimension_tip') }}
+                              </div>
+                            </template>
+                            <i
+                              class="el-icon-info"
+                              :style="{ cursor: 'pointer', color: '#606266' }"
+                            />
+                          </el-tooltip>
+                        </span>
+                        <draggable
+                          :list="view.drillFields"
+                          group="drag"
+                          animation="300"
+                          :move="onMove"
+                          class="drag-block-style"
+                          @add="addDrill"
+                          @update="calcData(view)"
+                        >
+                          <template #item="{ element, index }">
+                            <drill-item
+                              :key="element.id"
+                              :index="index"
+                              :item="element"
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              @onDimensionItemChange="drillItemChange"
+                              @onDimensionItemRemove="drillItemRemove"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="view.drillFields" />
                       </el-row>
 
                       <!--filter-->
@@ -648,8 +706,9 @@ const collapseChange = type => {
                           <span v-show="view.type !== 'richTextView'">
                             <el-radio-group
                               v-model="view.resultMode"
-                              class="radio-span"
+                              class="radio-span dark"
                               size="small"
+                              @change="calcData(view)"
                             >
                               <el-radio label="all"
                                 ><span>{{ t('chart.result_mode_all') }}</span></el-radio
@@ -659,12 +718,13 @@ const collapseChange = type => {
                                   v-model="view.resultCount"
                                   class="result-count"
                                   size="small"
+                                  @change="calcData(view)"
                                 />
                               </el-radio>
                             </el-radio-group>
                           </span>
                         </div>
-                        <el-button class="result-style-button">
+                        <el-button class="result-style-button" @click="calcData(view)">
                           <span style="font-size: 12px">
                             {{ t('chart.update_chart_data') }}
                           </span>
@@ -735,6 +795,7 @@ const collapseChange = type => {
               alignItems: 'center',
               justifyContent: 'space-between'
             }"
+            class="dark"
           >
             <el-tree-select
               v-model="view.tableId"
@@ -1191,6 +1252,7 @@ span {
     :deep(.ed-input__inner) {
       height: 20px;
       background-color: @side-area-background;
+      color: #ffffff;
     }
     :deep(.ed-input__wrapper) {
       box-shadow: none !important;
@@ -1264,26 +1326,28 @@ span {
 }
 
 // editor form 全局样式
-:deep(.ed-radio__label) {
-  color: var(--ed-color-white);
-}
-:deep(.ed-input__inner),
-:deep(.ed-input__wrapper),
-:deep(.ed-input.is-disabled .ed-input__wrapper) {
-  color: var(--ed-color-white);
-  background-color: @side-content-background;
-  border: none;
-}
-:deep(.ed-input__inner) {
-  border: none;
-}
-:deep(.ed-input__wrapper) {
-  box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
-}
-:deep(.ed-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
-}
-:deep(input) {
-  font-size: 12px !important;
+.dark {
+  :deep(.ed-radio__label) {
+    color: var(--ed-color-white);
+  }
+  :deep(.ed-input__inner),
+  :deep(.ed-input__wrapper),
+  :deep(.ed-input.is-disabled .ed-input__wrapper) {
+    color: var(--ed-color-white);
+    background-color: @side-content-background;
+    border: none;
+  }
+  :deep(.ed-input__inner) {
+    border: none;
+  }
+  :deep(.ed-input__wrapper) {
+    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
+  }
+  :deep(.ed-input__wrapper:hover) {
+    box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
+  }
+  :deep(input) {
+    font-size: 12px !important;
+  }
 }
 </style>
