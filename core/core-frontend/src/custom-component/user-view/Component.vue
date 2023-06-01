@@ -16,7 +16,7 @@ const props = defineProps({
       }
     }
   },
-  viewInfo: {
+  view: {
     type: Object,
     default() {
       return {
@@ -26,12 +26,12 @@ const props = defineProps({
   }
 })
 
-const { propValue, element } = toRefs(props)
+const { propValue, element, view } = toRefs(props)
 </script>
 
 <template>
   <div class="bash-shape">
-    <chart></chart>
+    <chart :view="view"></chart>
   </div>
 </template>
 

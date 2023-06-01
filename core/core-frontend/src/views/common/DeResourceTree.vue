@@ -6,6 +6,9 @@ import { ElIcon, ElMessage } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt, { ResourceTree } from '@/views/common/DeResourceGroupOpt.vue'
+import { guid } from '@/views/visualized/data/dataset/form/util.js'
+import { DEFAULT_CANVAS_STYLE_DATA } from '@/store/modules/data-visualization/dvMain'
+import { save } from '@/api/dataVisualization'
 const searchMap = {
   all: '全部',
   folder: '文件夹'
@@ -125,8 +128,27 @@ const dvEdit = dvId => {
 }
 
 const dvCreate = pid => {
-  const url = '#/dvCanvas/?pid=' + pid
-  window.open(url, '_blank')
+  // 新建基础信息
+  const newDvId = guid()
+  const bashDvInfo = {
+    id: newDvId,
+    name: '新建仪表板',
+    pid: pid,
+    type: 'dataV',
+    status: 1,
+    selfWatermarkStatus: 0
+  }
+  const canvasInfo = {
+    canvasStyleData: JSON.stringify(DEFAULT_CANVAS_STYLE_DATA),
+    componentData: JSON.stringify([]),
+    canvasViewInfo: {},
+    ...bashDvInfo
+  }
+  save(canvasInfo).then(res => {
+    const url = '#/dvCanvas/?dvId=' + newDvId
+    window.open(url, '_blank')
+    getTree()
+  })
 }
 
 const handleDvTree = (cmd, data) => {

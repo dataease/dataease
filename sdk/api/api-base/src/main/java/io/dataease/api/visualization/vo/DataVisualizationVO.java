@@ -111,5 +111,5 @@ public class DataVisualizationVO  implements Serializable {
     /**
      * 视图基本信息
      */
-    private Map<Long,ChartViewDTO> chartViewInfo = new HashMap<>();
+    private Map<Long,ChartViewDTO> canvasViewInfo = new HashMap<>();
 }

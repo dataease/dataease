@@ -22,6 +22,10 @@ const props = defineProps({
         animations: null
       }
     }
+  },
+  viewInfo: {
+    type: Object,
+    required: false
   }
 })
 const component = ref(null)
@@ -50,10 +54,11 @@ const onMouseEnter = () => {
   <div @click="onClick" @mouseenter="onMouseEnter">
     <component
       :is="findComponent(config['component'])"
-      v-if="config?.component.startsWith('SVG')"
+      v-if="config?.component === 'UserView'"
       ref="component"
       class="component"
       :style="getSVGStyle(config?.style)"
+      :view="viewInfo"
       :prop-value="config?.propValue"
       :element="config"
       :request="config?.request"

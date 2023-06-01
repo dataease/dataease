@@ -1,25 +1,43 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, toRefs } from 'vue'
 import { getData } from '@/api/chart'
-import { useEmitt } from '@/hooks/web/useEmitt'
-import { ChartRenderType, G2PlotChartView } from '@/views/chart/components/js/panel/types'
+import { G2PlotChartView } from '@/views/chart/components/js/panel/types'
 import chartViewManager from '@/views/chart/components/js/panel'
+
+const props = defineProps({
+  view: {
+    type: Object,
+    default() {
+      return {
+        propValue: null
+      }
+    }
+  }
+})
+
+const { view } = toRefs(props)
 
 const state = reactive({
   myChart: null,
   loading: false,
   data: null // 图表数据
 })
+
+const containerId = 'container-' + view.value.id
+
 const calcData = view => {
   state.loading = true
   const v = JSON.parse(JSON.stringify(view))
   // console.log(v)
-  getData(v).then(res => {
-    // console.log(res)
-    state.data = res?.data
-    renderChart(res)
-    state.loading = false
-  })
+  getData(v)
+    .then(res => {
+      // console.log(res)
+      state.data = res?.data
+      renderChart(res)
+    })
+    .finally(() => {
+      state.loading = false
+    })
 }
 const action = param => {
   console.log(param)
@@ -30,7 +48,7 @@ const renderChart = view => {
     chartViewManager.getChartView(view.render, view.type) as G2PlotChartView<any, any>
   ).drawChart({
     chartObj: state.myChart,
-    container: 'container',
+    container: containerId,
     chart: view,
     action
   })
@@ -43,14 +61,24 @@ defineExpose({
 })
 
 onMounted(() => {
-  renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
+  calcData(view.value)
+  // renderChart({ render: ChartRenderType.ANT_V, type: 'bar' })
 })
 </script>
 
 <template>
-  <div v-loading="state.loading">
-    <div id="container"></div>
+  <div class="canvas-area" v-loading="state.loading">
+    <div class="canvas-content" :id="containerId"></div>
   </div>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.canvas-area {
+  width: 100%;
+  height: 100%;
+  .canvas-content {
+    width: 100%;
+    height: 100%;
+  }
+}
+</style>

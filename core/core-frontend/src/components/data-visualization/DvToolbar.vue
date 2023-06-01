@@ -29,7 +29,7 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const lockStore = lockStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { curComponent, canvasStyleData, curComponentIndex, componentData, dvInfo } =
+const { curComponent, canvasStyleData, curComponentIndex, componentData, dvInfo, canvasViewInfo } =
   storeToRefs(dvMainStore)
 const { areaData } = storeToRefs(composeStore)
 let scale = ref(canvasStyleData.value.scale)
@@ -131,10 +131,10 @@ const saveCanvas = () => {
   const canvasInfo = {
     canvasStyleData: JSON.stringify(canvasStyleData.value),
     componentData: JSON.stringify(componentData.value),
+    canvasViewInfo: canvasViewInfo.value,
     ...dvInfo.value
   }
-  const method = dvInfo.value.id ? update : save
-  method(canvasInfo).then(res => {
+  save(canvasInfo).then(res => {
     ElMessage.success('保存成功')
   })
 }
@@ -177,10 +177,10 @@ eventBus.on('clearCanvas', clearCanvas)
         </div>
       </div>
       <div class="middle-area">
-        <component-group base-width="410" icon-name="dv-view" title="图表">
+        <component-group :base-width="410" icon-name="dv-view" title="图表">
           <user-view-group></user-view-group>
         </component-group>
-        <component-group base-width="148" icon-name="dv-text" title="文本">
+        <component-group :base-width="148" icon-name="dv-text" title="文本">
           <text-group></text-group>
         </component-group>
         <component-group icon-name="dv-media" title="媒体">

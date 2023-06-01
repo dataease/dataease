@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed, toRefs } from 'vue'
 import { ElAside, ElIcon, ElRow } from 'element-plus-secondary'
-import { string } from 'vue-types'
 
 const props = defineProps({
   width: {
@@ -11,10 +10,10 @@ const props = defineProps({
   },
   asidePosition: {
     required: false,
-    type: string,
+    type: String,
     default: 'left'
   },
-  title: string
+  title: String
 })
 
 const { width, asidePosition } = toRefs(props)

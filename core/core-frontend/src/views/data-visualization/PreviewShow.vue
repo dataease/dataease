@@ -11,8 +11,9 @@ import { storeToRefs } from 'pinia'
 import { toPng } from 'html-to-image'
 
 const dvMainStore = dvMainStoreWithOut()
-const canvasDataPreview = ref(null)
-const canvasStylePreview = ref(null)
+const canvasDataPreview = ref([])
+const canvasStylePreview = ref({})
+const canvasViewInfoPreview = ref({})
 
 const { dvInfo } = storeToRefs(dvMainStore)
 const previewCanvasContainer = ref(null)
@@ -29,6 +30,7 @@ const loadCanvasData = dvId => {
     }
     canvasDataPreview.value = JSON.parse(canvasInfo.componentData)
     canvasStylePreview.value = JSON.parse(canvasInfo.canvasStyleData)
+    canvasViewInfoPreview.value = canvasInfo.canvasViewInfo
     dvMainStore.updateCurDvInfo(bashInfo)
   })
 }
@@ -60,6 +62,7 @@ const htmlToImage = () => {
             v-if="canvasStylePreview"
             :component-data="canvasDataPreview"
             :canvas-style-data="canvasStylePreview"
+            :canvas-view-info="canvasViewInfoPreview"
           ></de-preview>
         </div>
       </template>

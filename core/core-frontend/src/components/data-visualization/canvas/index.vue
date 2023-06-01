@@ -25,7 +25,7 @@ const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { componentData, curComponent, canvasStyleData } = storeToRefs(dvMainStore)
+const { componentData, curComponent, canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
 const { editor } = storeToRefs(composeStore)
 const props = defineProps({
   isEdit: {
@@ -47,7 +47,6 @@ const isShowArea = ref(false)
 const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 
 const handleMouseDown = e => {
-  console.log('handleMouseDown')
   // 右键返回
   if (e.buttons === 2) {
     return
@@ -293,6 +292,7 @@ onMounted(() => {
         class="component"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
+        :view="canvasViewInfo[item.id]"
         :element="item"
         :request="item.request"
         @input="handleInput"
