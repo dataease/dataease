@@ -4,6 +4,7 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.*;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
@@ -12,6 +13,7 @@ import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.server.EngineServer;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
@@ -38,9 +40,11 @@ public class DatasetSQLManage {
     private DatasetTableFieldManage datasetTableFieldManage;
     @Resource
     private CoreDatasourceMapper coreDatasourceMapper;
+    @Resource
+    private EngineServer engineServer;
 
     // 编辑模式下使用
-    public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO) {
+    public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO) throws Exception {
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         List<UnionDTO> union = dataTableInfoDTO.getUnion();
         // 所有选中的字段，即select后的查询字段
@@ -60,7 +64,7 @@ public class DatasetSQLManage {
         DatasetTableInfoDTO infoDTO = JsonUtil.parseObject(currentDs.getInfo(), DatasetTableInfoDTO.class);
         SQLObj tableName = getUnionTable(currentDs, infoDTO, tableSchema, 0);
         // get datasource and schema,put map
-        putObj2Map(dsMap, currentDs.getDatasourceId(), tableSchema);
+        putObj2Map(dsMap, currentDs, tableSchema);
 
         for (int i = 0; i < union.size(); i++) {
             UnionDTO unionDTO = union.get(i);
@@ -72,7 +76,7 @@ public class DatasetSQLManage {
                 schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
             } else {
                 schema = String.format(SQLConstants.SCHEMA, i);
-                putObj2Map(dsMap, datasetTable.getDatasourceId(), schema);
+                putObj2Map(dsMap, datasetTable, schema);
             }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, i);
 
@@ -164,7 +168,7 @@ public class DatasetSQLManage {
     private void getUnionForEdit(DatasetTableDTO parentTable, SQLObj parentSQLObj,
                                  List<UnionDTO> childrenDs, Map<String, String[]> checkedInfo,
                                  List<UnionParamDTO> unionList, List<DatasetTableFieldDTO> checkedFields, int indexPre,
-                                 Map<Long, DatasourceSchemaDTO> dsMap) {
+                                 Map<Long, DatasourceSchemaDTO> dsMap) throws Exception {
         for (int i = 0; i < childrenDs.size(); i++) {
             int index = i + indexPre;
 
@@ -177,7 +181,7 @@ public class DatasetSQLManage {
                 schema = dsMap.get(datasetTable.getDatasourceId()).getSchemaAlias();
             } else {
                 schema = String.format(SQLConstants.SCHEMA, index);
-                putObj2Map(dsMap, datasetTable.getDatasourceId(), schema);
+                putObj2Map(dsMap, datasetTable, schema);
             }
             SQLObj table = getUnionTable(datasetTable, tableInfo, schema, index);
 
@@ -388,13 +392,21 @@ public class DatasetSQLManage {
         return tableObj;
     }
 
-    private void putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, Long datasourceId, String schemaAlias) {
-        if (!dsMap.containsKey(datasourceId)) {
-            CoreDatasource coreDatasource = coreDatasourceMapper.selectById(datasourceId);
+    private void putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds, String schemaAlias) throws Exception {
+        if (StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.DB) || StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.SQL)) {
+            if (!dsMap.containsKey(ds.getDatasourceId())) {
+                CoreDatasource coreDatasource = coreDatasourceMapper.selectById(ds.getDatasourceId());
+                DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+                BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
+                datasourceSchemaDTO.setSchemaAlias(schemaAlias);
+                dsMap.put(ds.getDatasourceId(), datasourceSchemaDTO);
+            }
+        } else {
+            CoreDatasource coreDatasource = engineServer.getDeEngine();
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
-            datasourceSchemaDTO.setSchemaAlias(schemaAlias);
-            dsMap.put(datasourceId, datasourceSchemaDTO);
+            datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, 0));
+            dsMap.put(-1L, datasourceSchemaDTO);
         }
     }
 }
