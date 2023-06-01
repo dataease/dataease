@@ -20,7 +20,7 @@ const { view } = toRefs(props)
 const state = reactive({
   myChart: null,
   loading: false,
-  data: null // 图表数据
+  data: [] // 图表数据
 })
 
 const containerId = 'container-' + view.value.id

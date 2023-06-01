@@ -29,7 +29,7 @@ export interface G2PlotDrawOptions<O> {
   /**
    * 数据库中的视图配置对象
    */
-  chart: object
+  chart: Chart
   /**
    * 事件回调函数
    * @param args 事件参数

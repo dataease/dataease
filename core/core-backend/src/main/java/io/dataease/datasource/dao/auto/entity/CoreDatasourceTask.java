@@ -11,7 +11,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-05-25
+ * @since 2023-05-31
  */
 @TableName("core_datasource_task")
 public class CoreDatasourceTask implements Serializable {
@@ -55,9 +55,19 @@ public class CoreDatasourceTask implements Serializable {
     private String cron;
 
     /**
+     * 简单重复间隔
+     */
+    private Long simpleCronValue;
+
+    /**
+     * 简单重复类型：分、时、天
+     */
+    private String simpleCronType;
+
+    /**
      * 结束限制 0 无限制 1 设定结束时间
      */
-    private Long endLimit;
+    private String endLimit;
 
     /**
      * 结束时间
@@ -142,11 +152,27 @@ public class CoreDatasourceTask implements Serializable {
         this.cron = cron;
     }
 
-    public Long getEndLimit() {
+    public Long getSimpleCronValue() {
+        return simpleCronValue;
+    }
+
+    public void setSimpleCronValue(Long simpleCronValue) {
+        this.simpleCronValue = simpleCronValue;
+    }
+
+    public String getSimpleCronType() {
+        return simpleCronType;
+    }
+
+    public void setSimpleCronType(String simpleCronType) {
+        this.simpleCronType = simpleCronType;
+    }
+
+    public String getEndLimit() {
         return endLimit;
     }
 
-    public void setEndLimit(Long endLimit) {
+    public void setEndLimit(String endLimit) {
         this.endLimit = endLimit;
     }
 
@@ -208,6 +234,8 @@ public class CoreDatasourceTask implements Serializable {
         ", startTime = " + startTime +
         ", syncRate = " + syncRate +
         ", cron = " + cron +
+        ", simpleCronValue = " + simpleCronValue +
+        ", simpleCronType = " + simpleCronType +
         ", endLimit = " + endLimit +
         ", endTime = " + endTime +
         ", createTime = " + createTime +

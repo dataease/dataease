@@ -5,7 +5,8 @@ import { Decoration, EditorView, ViewPlugin, WidgetType, MatchDecorator } from '
 import { propTypes } from '@/utils/propTypes'
 
 const props = defineProps({
-  domId: propTypes.string.def('editor')
+  domId: propTypes.string.def('editor'),
+  height: propTypes.string.def('250px')
 })
 
 const codeComInit = (doc: string) => {
@@ -104,12 +105,17 @@ defineExpose({
 </script>
 
 <template>
-  <div class="editor-placeholder" :id="domId"></div>
+  <div :style="{ height: height }" class="editor-placeholder" :id="domId"></div>
 </template>
 
-<style scoped>
+<style lang="less" scoped>
 .editor-placeholder {
   width: 100%;
-  height: 250px;
+}
+</style>
+<style lang="less">
+.cm-editor,
+.cm-scroller {
+  height: 100% !important;
 }
 </style>

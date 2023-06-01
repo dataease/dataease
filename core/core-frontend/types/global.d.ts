@@ -37,4 +37,8 @@ declare global {
     code: string
     data: T extends any ? T : T & any
   }
+
+  type DeepPartial<T> = {
+    [P in keyof T]?: T[P] extends Object ? DeepPartial<T[P]> : T[P]
+  }
 }

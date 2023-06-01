@@ -69,23 +69,25 @@ export interface ApiConfiguration {
 }
 
 export interface SyncSetting {
+  id: number
   updateType: string
   syncRate: string
-  simple_cron_value: number
-  simple_cron_type: string
+  simpleCronValue: number
+  simpleCronType: string
   startTime: number
   endTime: number
-  endLimit: number
+  endLimit: string
   cron: string
 }
 
-const activeStep = ref(1)
+const activeStep = ref(0)
 const detail = ref()
 const currentType = ref<DsType>('OLTP')
 const nickName = ref('')
 const currentDsType = ref('')
 const selectDsType = (type: string) => {
   currentDsType.value = type
+  activeStep.value = activeStep.value + 1
   detail.value.initForm(type)
 }
 const handleNodeClick = (data: Node) => {
@@ -93,6 +95,10 @@ const handleNodeClick = (data: Node) => {
 }
 
 const next = () => {
+  if (currentDsType.value === '') {
+    ElMessage.warning(t('datasource.select_type'))
+    return
+  }
   activeStep.value = activeStep.value + 1
 }
 const prev = () => {
@@ -179,7 +185,7 @@ const form = reactive<{
         <el-steps :active="activeStep" align-center>
           <el-step :title="t('datasource.select_ds_type')" />
           <el-step :title="t('datasource.ds_info')" />
-          <el-step v-show="currentDsType === 'API'" :title="t('datasource.sync_info')" />
+          <el-step v-if="currentDsType === 'API'" :title="t('datasource.sync_info')" />
         </el-steps>
       </div>
       <div class="editor-content">
@@ -200,10 +206,32 @@ const form = reactive<{
       </div>
       <div class="editor-footer">
         <el-button secondary> {{ t('common.cancel') }}</el-button>
-        <el-button type="primary" @click="next"> {{ t('common.next') }}</el-button>
-        <el-button type="primary" @click="prev"> {{ t('common.prev') }}</el-button>
-        <el-button type="primary" @click="validateDS"> {{ t('datasource.validate') }}</el-button>
-        <el-button type="primary" @click="saveDS"> {{ t('common.sure') }}</el-button>
+        <el-button
+          v-show="
+            (activeStep === 0 && currentDsType !== 'API') ||
+            (activeStep !== 2 && currentDsType === 'API')
+          "
+          type="primary"
+          @click="next"
+        >
+          {{ t('common.next') }}</el-button
+        >
+        <el-button v-show="activeStep !== 0" type="primary" @click="prev">
+          {{ t('common.prev') }}</el-button
+        >
+        <el-button v-show="activeStep === 1" type="primary" @click="validateDS">
+          {{ t('datasource.validate') }}</el-button
+        >
+        <el-button
+          v-show="
+            (activeStep === 1 && currentDsType !== 'API') ||
+            (activeStep === 2 && currentDsType === 'API')
+          "
+          type="primary"
+          @click="saveDS"
+        >
+          {{ t('common.sure') }}</el-button
+        >
       </div>
     </div>
   </div>

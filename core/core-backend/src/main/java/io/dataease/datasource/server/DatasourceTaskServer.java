@@ -15,6 +15,7 @@ import io.dataease.request.BaseGridRequest;
 import io.dataease.request.ConditionEntity;
 import io.dataease.request.GridExample;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -53,8 +54,12 @@ public class DatasourceTaskServer {
         datasourceTaskMapper.insert(coreDatasourceTask);
     }
 
+    public void update(CoreDatasourceTask coreDatasourceTask) {
+        datasourceTaskMapper.updateById(coreDatasourceTask);
+    }
+
     public void checkTaskIsStopped(CoreDatasourceTask coreDatasourceTask) {
-        if (coreDatasourceTask.getEndLimit() != null && coreDatasourceTask.getEndLimit().compareTo(1L) == 0) {  // 结束限制 0 无限制 1 设定结束时间'
+        if (coreDatasourceTask.getEndLimit() != null && StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1")) {  // 结束限制 0 无限制 1 设定结束时间'
             BaseGridRequest request = new BaseGridRequest();
             ConditionEntity conditionEntity = new ConditionEntity();
             conditionEntity.setField("dataset_table_task.id");
@@ -126,7 +131,7 @@ public class DatasourceTaskServer {
         if (coreDatasourceTask.getSyncRate().equalsIgnoreCase(ScheduleType.RIGHTNOW.name())) {
             record.setStatus(TaskStatus.Stopped.name());
         } else {
-            if (coreDatasourceTask.getEndLimit() != null && coreDatasourceTask.getEndLimit().compareTo(1L) == 0) {
+            if (coreDatasourceTask.getEndLimit() != null && StringUtils.equalsIgnoreCase(coreDatasourceTask.getEndLimit(), "1")) {
                 BaseGridRequest request = new BaseGridRequest();
                 ConditionEntity conditionEntity = new ConditionEntity();
                 conditionEntity.setField("core_datasource_task.id");

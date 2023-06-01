@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import CodeMirror from './CodeMirror.vue'
 export interface CalcFieldType {
@@ -56,7 +56,7 @@ const fieldForm = reactive<CalcFieldType>({
 })
 
 const setFieldForm = () => {
-  const str = mirror.value.viewState.state.doc.text.join('\n')
+  const str = mirror.value.state.doc.toString()
   const name2Auto = []
   fieldForm.originName = setNameIdTrans('name', 'id', str, name2Auto)
 }
@@ -109,7 +109,14 @@ onMounted(() => {
   mirror.value = myCm.value.codeComInit()
 })
 
+onBeforeUnmount(() => {
+  codeCom.value.destroy?.()
+})
+
 const insertParamToCodeMirror = (value: string) => {
+  mirror.value.dispatch({
+    changes: { from: 0, to: mirror.value.state.doc.toString().length, insert: '' }
+  })
   mirror.value.dispatch({
     changes: { from: mirror.value.viewState.state.selection.ranges[0].from, insert: value },
     selection: { anchor: mirror.value.viewState.state.selection.ranges[0].from }

@@ -328,7 +328,8 @@ export default {
     start_time: '开始时间',
     end_time: '结束时间',
     parse_filed: '解析字段',
-    field_rename: '重命名'
+    field_rename: '重命名',
+    select_type: '选择数据源类型'
   },
   chart: {
     reset: '重置',

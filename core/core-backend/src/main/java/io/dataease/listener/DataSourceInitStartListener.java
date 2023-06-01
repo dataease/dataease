@@ -1,6 +1,7 @@
 package io.dataease.listener;
 
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
+import io.dataease.datasource.manage.DatasourceSyncManage;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.server.DatasourceTaskServer;
 import io.dataease.datasource.server.EngineServer;
@@ -18,6 +19,8 @@ import java.util.List;
 @Order(value = 2)
 public class DataSourceInitStartListener implements ApplicationListener<ApplicationReadyEvent> {
     @Resource
+    private DatasourceSyncManage datasourceSyncManage;
+    @Resource
     private DatasourceServer datasourceServer;
     @Resource
     private DatasourceTaskServer datasourceTaskServer;
@@ -34,16 +37,16 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
         for (CoreDatasourceTask task : list) {
             try {
                 if (!StringUtils.equalsIgnoreCase(task.getUpdateType(), DatasourceTaskServer.ScheduleType.RIGHTNOW.toString())) {
-                    if (StringUtils.equalsIgnoreCase(task.getEndLimit().toString(), "1")) {
+                    if (StringUtils.equalsIgnoreCase(task.getEndLimit(), "1")) {
                         if (task.getEndTime() != null && task.getEndTime() > 0) {
                             if (task.getEndTime() > System.currentTimeMillis()) {
-                                datasourceServer.addSchedule(task);
+                                datasourceSyncManage.addSchedule(task);
                             }
                         } else {
-                            datasourceServer.addSchedule(task);
+                            datasourceSyncManage.addSchedule(task);
                         }
                     } else {
-                        datasourceServer.addSchedule(task);
+                        datasourceSyncManage.addSchedule(task);
                     }
                 }
             } catch (Exception e) {

@@ -7,6 +7,7 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.ds.vo.TableField;
+import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
@@ -188,6 +189,8 @@ public class DatasetDataManage {
         BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
         datasourceSchemaDTO.setSchemaAlias(alias);
         String sql = SqlUtils.addSchema(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), alias);
+        // parser sql params and repalce default value
+        sql = SqlparserUtils.handleVariableDefaultValue(sql, dto.getSqlVariableDetails(), true);
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();

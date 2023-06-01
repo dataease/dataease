@@ -20,7 +20,11 @@ public class AuthUtils {
     }
 
     public static boolean isSysAdmin() {
-        Long userId = getUser().getUserId();
+        TokenUserBO user = null;
+        if (ObjectUtils.isEmpty(user = getUser())) {
+            return false;
+        }
+        Long userId = user.getUserId();
         return isSysAdmin(userId);
     }
 

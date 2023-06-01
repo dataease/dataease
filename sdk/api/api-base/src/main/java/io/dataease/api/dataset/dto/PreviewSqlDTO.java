@@ -9,4 +9,5 @@ import lombok.Data;
 public class PreviewSqlDTO {
     private String sql;
     private Long datasourceId;
+    private String sqlVariableDetails;
 }
