@@ -157,7 +157,7 @@ public class DatasetGroupManage {
         }
     }
 
-    public void saveField(DatasetGroupInfoDTO datasetGroupInfoDTO, List<Long> fieldIds) {
+    public void saveField(DatasetGroupInfoDTO datasetGroupInfoDTO, List<Long> fieldIds) throws Exception {
         // table和field均由前端生成id（如果没有id）
         Long datasetGroupId = datasetGroupInfoDTO.getId();
         List<DatasetTableFieldDTO> allFields = datasetGroupInfoDTO.getAllFields();

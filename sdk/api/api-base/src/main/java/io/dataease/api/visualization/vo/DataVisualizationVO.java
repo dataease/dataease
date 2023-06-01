@@ -6,7 +6,9 @@ import io.dataease.api.chart.dto.ChartViewDTO;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class DataVisualizationVO  implements Serializable {
@@ -109,5 +111,5 @@ public class DataVisualizationVO  implements Serializable {
     /**
      * 视图基本信息
      */
-    private List<ChartViewDTO> chartViewInfo;
+    private Map<Long,ChartViewDTO> chartViewInfo = new HashMap<>();
 }

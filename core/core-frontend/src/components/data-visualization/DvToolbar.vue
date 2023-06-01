@@ -177,7 +177,7 @@ eventBus.on('clearCanvas', clearCanvas)
         </div>
       </div>
       <div class="middle-area">
-        <component-group base-width="300" icon-name="dv-view" title="图表">
+        <component-group base-width="410" icon-name="dv-view" title="图表">
           <user-view-group></user-view-group>
         </component-group>
         <component-group base-width="148" icon-name="dv-text" title="文本">

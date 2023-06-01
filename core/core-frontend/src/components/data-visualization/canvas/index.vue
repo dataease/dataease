@@ -285,15 +285,17 @@ onMounted(() => {
       :index="index"
       :class="{ lock: item.isLock }"
     >
+      <!--如果是视图 则动态获取预存的chart-view数据-->
       <component
         :is="findComponent(item.component)"
-        v-if="item.component.startsWith('SVG')"
+        v-if="item.component === 'UserView'"
         :id="'component' + item.id"
-        :style="getSVGStyleInner(item.style)"
         class="component"
+        :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :element="item"
         :request="item.request"
+        @input="handleInput"
       />
 
       <component

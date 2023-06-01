@@ -8,7 +8,7 @@ import chartViewManager from '@/views/chart/components/js/panel'
 const state = reactive({
   myChart: null,
   loading: false,
-  data: null // 图表数据
+  data: [] // 图表数据
 })
 const calcData = view => {
   state.loading = true

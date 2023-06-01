@@ -1,23 +1,27 @@
 import { defineStore } from 'pinia'
 import { store } from '../../index'
+import { deepCopy } from '@/utils/utils'
+import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
+
+export const DEFAULT_CANVAS_STYLE_DATA = {
+  // 页面全局数据
+  width: 1920,
+  height: 1080,
+  backgroundType: 'backgroundColor',
+  background: '',
+  scale: 60,
+  color: '#fff',
+  opacity: 1,
+  backgroundColor: '#000',
+  fontSize: 14
+}
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
     return {
       staticResourcePath: '/static-resource/',
       editMode: 'edit', // 编辑器模式 edit preview
-      canvasStyleData: {
-        // 页面全局数据
-        width: 1920,
-        height: 1080,
-        backgroundType: 'backgroundColor',
-        background: '',
-        scale: 60,
-        color: '#fff',
-        opacity: 1,
-        backgroundColor: '#000',
-        fontSize: 14
-      },
+      canvasStyleData: deepCopy(DEFAULT_CANVAS_STYLE_DATA),
       isInEditor: false, // 是否在编辑器中，用于判断复制、粘贴组件时是否生效，如果在编辑器外，则无视这些操作
       componentData: [], // 画布组件数据
       curComponent: null,
@@ -32,7 +36,9 @@ export const dvMainStore = defineStore('dataVisualization', {
         pid: null,
         status: null,
         selfWatermarkStatus: null
-      }
+      },
+      // 视图信息
+      canvasViewInfo: {}
     }
   },
   actions: {
@@ -65,6 +71,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     setCanvasStyle(style) {
       this.canvasStyleData = style
     },
+    setCanvasViewInfo(canvasViewInfo) {
+      this.canvasViewInfo = canvasViewInfo
+    },
 
     setCurComponent({ component, index }) {
       this.curComponent = component
@@ -92,6 +101,15 @@ export const dvMainStore = defineStore('dataVisualization', {
         this.componentData.splice(index, 0, component)
       } else {
         this.componentData.push(component)
+      }
+      //如果当前的组件是UserView 视图，则想canvasView中增加一项 UserView ID 和componentID保持一致
+      if (component.component === 'UserView') {
+        const newView = {
+          ...deepCopy(BASE_VIEW_CONFIG),
+          id: component.id,
+          type: component.innerType
+        }
+        this.canvasViewInfo[component.id] = newView
       }
     },
 

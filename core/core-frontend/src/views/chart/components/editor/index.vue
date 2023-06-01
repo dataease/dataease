@@ -15,10 +15,9 @@ import {
   DEFAULT_THRESHOLD,
   DEFAULT_SCROLL
 } from './util/chart'
-import { reactive, ref, watch } from 'vue'
+import { PropType, reactive, ref, watch, toRefs } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { getDatasetTree } from '@/api/dataset'
 import { Field, getFieldByDQ, saveChart } from '@/api/chart'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -35,6 +34,7 @@ import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
 import QuotaFilterEditor from '@/views/chart/components/editor/filter/QuotaFilterEditor.vue'
 import ResultFilterEditor from '@/views/chart/components/editor/filter/ResultFilterEditor.vue'
 import { ElIcon, ElRow } from 'element-plus-secondary'
+import DrillItem from '@/views/chart/components/editor/drag-item/DrillItem.vue'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -42,11 +42,18 @@ const tabActive = ref('data')
 
 const renameForm = ref<FormInstance>()
 
-const props = {
-  label: 'name',
-  children: 'children',
-  isLeaf: node => !node.children?.length
-}
+const props = defineProps({
+  view: {
+    type: Object,
+    required: true
+  },
+  datasetTree: {
+    type: Array as PropType<Tree[]>,
+    default: () => []
+  }
+})
+
+const { view, datasetTree } = toRefs(props)
 
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
@@ -108,7 +115,6 @@ const state = reactive({
       scrollCfg: DEFAULT_SCROLL
     }
   },
-  datasetTree: [],
   dimension: [],
   quota: [],
   dimensionData: [],
@@ -133,12 +139,6 @@ watch(
   },
   { deep: true }
 )
-
-const initDataset = () => {
-  getDatasetTree({}).then(res => {
-    state.datasetTree = (res as unknown as Tree[]) || []
-  })
-}
 
 const getFields = id => {
   getFieldByDQ(id).then(res => {
@@ -191,31 +191,39 @@ const reset = () => {
 const dimensionItemChange = item => {
   // this.calcData(true)
   // console.log(item)
-  // console.log(state.view.xaxis)
-  calcData(state.view)
+  // console.log(view.value.xaxis)
+  calcData(view.value)
 }
 const dimensionItemRemove = item => {
   if (item.removeType === 'dimension') {
-    state.view.xaxis.splice(item.index, 1)
+    view.value.xaxis.splice(item.index, 1)
   } else if (item.removeType === 'dimensionExt') {
-    state.view.xaxisExt.splice(item.index, 1)
+    view.value.xaxisExt.splice(item.index, 1)
   }
-  calcData(state.view)
+  calcData(view.value)
 }
 
 const quotaItemChange = item => {
   // this.calcData(true)
   // console.log(item)
-  // console.log(state.view.xaxis)
-  calcData(state.view)
+  // console.log(view.value.xaxis)
+  calcData(view.value)
 }
 const quotaItemRemove = item => {
   if (item.removeType === 'quota') {
-    state.view.yaxis.splice(item.index, 1)
+    view.value.yaxis.splice(item.index, 1)
   } else if (item.removeType === 'quotaExt') {
-    state.view.yaxisExt.splice(item.index, 1)
+    view.value.yaxisExt.splice(item.index, 1)
   }
-  calcData(state.view)
+  calcData(view.value)
+}
+
+const drillItemChange = item => {
+  calcData(view.value)
+}
+const drillItemRemove = item => {
+  view.value.drillFields.splice(item.index, 1)
+  calcData(view.value)
 }
 
 const onMove = (e, originalEvent) => {
@@ -256,61 +264,68 @@ const dragRemoveChartField = (list, e) => {
 }
 
 const addXaxis = e => {
-  if (state.view.type !== 'table-info') {
-    dragCheckType(state.view.xaxis, 'd')
+  if (view.value.type !== 'table-info') {
+    dragCheckType(view.value.xaxis, 'd')
   }
-  dragMoveDuplicate(state.view.xaxis, e, 'chart')
+  dragMoveDuplicate(view.value.xaxis, e, 'chart')
   if (
-    (state.view.type === 'map' ||
-      state.view.type === 'word-cloud' ||
-      state.view.type === 'label') &&
-    state.view.xaxis.length > 1
+    (view.value.type === 'map' ||
+      view.value.type === 'word-cloud' ||
+      view.value.type === 'label') &&
+    view.value.xaxis.length > 1
   ) {
-    state.view.xaxis = [state.view.xaxis[0]]
+    view.value.xaxis = [view.value.xaxis[0]]
   }
-  calcData(state.view)
+  calcData(view.value)
 }
 
 const addYaxis = e => {
-  dragCheckType(state.view.yaxis, 'q')
-  dragMoveDuplicate(state.view.yaxis, e, '')
+  dragCheckType(view.value.yaxis, 'q')
+  dragMoveDuplicate(view.value.yaxis, e, '')
   if (
-    (state.view.type === 'waterfall' ||
-      state.view.type === 'word-cloud' ||
-      state.view.type.includes('group')) &&
-    state.view.yaxis.length > 1
+    (view.value.type === 'waterfall' ||
+      view.value.type === 'word-cloud' ||
+      view.value.type.includes('group')) &&
+    view.value.yaxis.length > 1
   ) {
-    state.view.yaxis = [state.view.yaxis[0]]
+    view.value.yaxis = [view.value.yaxis[0]]
   }
-  calcData(state.view)
+  calcData(view.value)
+}
+
+const addDrill = e => {
+  dragCheckType(view.value.drillFields, 'd')
+  dragMoveDuplicate(view.value.drillFields, e, '')
+  dragRemoveChartField(view.value.drillFields, e)
+  calcData(view.value)
 }
 
 const addCustomFilter = e => {
   // 记录数等自动生成字段不做为过滤条件
-  if (state.view.customFilter && state.view.customFilter.length > 0) {
-    for (let i = 0; i < state.view.customFilter.length; i++) {
-      if (state.view.customFilter[i].id === 'count') {
-        state.view.customFilter.splice(i, 1)
+  if (view.value.customFilter && view.value.customFilter.length > 0) {
+    for (let i = 0; i < view.value.customFilter.length; i++) {
+      if (view.value.customFilter[i].id === 'count') {
+        view.value.customFilter.splice(i, 1)
       }
     }
   }
-  state.view.customFilter[e.newDraggableIndex].filter = []
-  dragMoveDuplicate(state.view.customFilter, e, '')
-  dragRemoveChartField(state.view.customFilter, e)
-  calcData(state.view)
+  view.value.customFilter[e.newDraggableIndex].filter = []
+  dragMoveDuplicate(view.value.customFilter, e, '')
+  dragRemoveChartField(view.value.customFilter, e)
+  calcData(view.value)
 }
 const filterItemRemove = item => {
-  state.view.customFilter.splice(item.index, 1)
-  calcData(state.view)
+  view.value.customFilter.splice(item.index, 1)
+  calcData(view.value)
 }
 
 const moveToDimension = e => {
   dragMoveDuplicate(state.dimensionData, e, 'ds')
-  calcData(state.view)
+  calcData(view.value)
 }
 const moveToQuota = e => {
   dragMoveDuplicate(state.quotaData, e, 'ds')
-  calcData(state.view)
+  calcData(view.value)
 }
 
 const calcData = view => {
@@ -322,63 +337,63 @@ const renderChart = view => {
 }
 
 const onColorChange = val => {
-  state.view.customAttr.color = val
-  renderChart(state.view)
+  view.value.customAttr.color = val
+  renderChart(view.value)
 }
 
 const onSizeChange = val => {
-  state.view.customAttr.size = val
-  renderChart(state.view)
+  view.value.customAttr.size = val
+  renderChart(view.value)
 }
 
 const onLabelChange = val => {
-  state.view.customAttr.label = val
-  renderChart(state.view)
+  view.value.customAttr.label = val
+  renderChart(view.value)
 }
 
 const onTooltipChange = val => {
-  state.view.customAttr.tooltip = val
-  renderChart(state.view)
+  view.value.customAttr.tooltip = val
+  renderChart(view.value)
 }
 
 const onChangeXAxisForm = val => {
-  state.view.customStyle.xAxis = val
-  renderChart(state.view)
+  view.value.customStyle.xAxis = val
+  renderChart(view.value)
 }
 
 const onChangeYAxisForm = val => {
-  state.view.customStyle.yAxis = val
-  renderChart(state.view)
+  view.value.customStyle.yAxis = val
+  renderChart(view.value)
 }
 
 const onTextChange = val => {
-  state.view.customStyle.text = val
-  renderChart(state.view)
+  view.value.customStyle.text = val
+  renderChart(view.value)
 }
 
 const onLegendChange = val => {
-  state.view.customStyle.legend = val
-  renderChart(state.view)
+  view.value.customStyle.legend = val
+  renderChart(view.value)
 }
 
 const onFunctionCfgChange = val => {
-  state.view.senior.functionCfg = val
-  renderChart(state.view)
+  view.value.senior.functionCfg = val
+  renderChart(view.value)
 }
 
 const onAssistLineChange = val => {
-  state.view.senior.assistLine = val
-  renderChart(state.view)
+  view.value.senior.assistLine = val
+  renderChart(view.value)
 }
 
 const onThresholdChange = val => {
-  state.view.senior.threshold = val
-  renderChart(state.view)
+  view.value.senior.threshold = val
+  renderChart(view.value)
 }
 
 const onScrollChange = val => {
-  state.view.senior.scrollCfg = val
-  renderChart(state.view)
+  view.value.senior.scrollCfg = val
+  renderChart(view.value)
 }
 
 const showRename = val => {
@@ -398,13 +413,13 @@ const saveRename = ref => {
   ref.validate(valid => {
     if (valid) {
       if (state.itemForm.renameType === 'quota') {
-        state.view.yaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.yaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'dimension') {
-        state.view.xaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.xaxis[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'quotaExt') {
-        state.view.yaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.yaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       } else if (state.itemForm.renameType === 'dimensionExt') {
-        state.view.xaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
+        view.value.xaxisExt[state.itemForm.index].chartShowName = state.itemForm.chartShowName
       }
       // this.calcData(true)
       closeRename()
@@ -412,6 +427,10 @@ const saveRename = ref => {
       return false
     }
   })
+}
+
+const save = () => {
+  saveChart(view.value)
 }
 
 const showQuotaEditFilter = item => {
@@ -437,19 +456,19 @@ const saveQuotaFilter = () => {
     }
   }
   if (state.quotaItem.filterType === 'quota') {
-    state.view.yaxis[state.quotaItem.index].filter = state.quotaItem.filter
-    state.view.yaxis[state.quotaItem.index].logic = state.quotaItem.logic
+    view.value.yaxis[state.quotaItem.index].filter = state.quotaItem.filter
+    view.value.yaxis[state.quotaItem.index].logic = state.quotaItem.logic
   } else if (state.quotaItem.filterType === 'quotaExt') {
-    state.view.yaxisExt[state.quotaItem.index].filter = state.quotaItem.filter
-    state.view.yaxisExt[state.quotaItem.index].logic = state.quotaItem.logic
+    view.value.yaxisExt[state.quotaItem.index].filter = state.quotaItem.filter
+    view.value.yaxisExt[state.quotaItem.index].logic = state.quotaItem.logic
   }
-  calcData(state.view)
+  calcData(view.value)
   closeQuotaFilter()
 }
 
 const showEditFilter = item => {
   state.filterItem = JSON.parse(JSON.stringify(item))
-  state.chartForFilter = JSON.parse(JSON.stringify(state.view))
+  state.chartForFilter = JSON.parse(JSON.stringify(view.value))
   if (!state.filterItem.logic) {
     state.filterItem.logic = 'and'
   }
@@ -486,19 +505,17 @@ const saveResultFilter = () => {
       }
     }
   }
-  state.view.customFilter[state.filterItem.index].filter = state.filterItem.filter
-  state.view.customFilter[state.filterItem.index].logic = state.filterItem.logic
-  state.view.customFilter[state.filterItem.index].filterType = state.filterItem.filterType
-  state.view.customFilter[state.filterItem.index].enumCheckField = state.filterItem.enumCheckField
-  calcData(state.view)
+  view.value.customFilter[state.filterItem.index].filter = state.filterItem.filter
+  view.value.customFilter[state.filterItem.index].logic = state.filterItem.logic
+  view.value.customFilter[state.filterItem.index].filterType = state.filterItem.filterType
+  view.value.customFilter[state.filterItem.index].enumCheckField = state.filterItem.enumCheckField
+  calcData(view.value)
   closeResultFilter()
 }
 
 const collapseChange = type => {
   state[type] = !state[type]
 }
-
-initDataset()
 </script>
 
 <template>
@@ -506,7 +523,7 @@ initDataset()
     <el-row v-loading="loading" class="de-chart-editor">
       <div style="position: relative">
         <el-icon
-          :title="state.view.title"
+          :title="view.title"
           class="custom-icon"
           size="20px"
           @click="collapseChange('chartAreaCollapse')"
@@ -515,11 +532,11 @@ initDataset()
           <Expand v-else />
         </el-icon>
         <div class="collapse-title" v-show="state.chartAreaCollapse">
-          <span style="font-size: 14px">{{ state.view.title }}</span>
+          <span style="font-size: 14px">{{ view.title }}</span>
         </div>
         <div v-show="!state.chartAreaCollapse" style="width: 240px" class="view-panel-row">
           <el-row class="editor-title">
-            <span style="font-size: 14px">{{ state.view.title }}</span>
+            <span style="font-size: 14px">{{ view.title }}</span>
           </el-row>
           <el-row class="chart_type_area padding-lr">
             <span class="switch-chart">
@@ -555,22 +572,22 @@ initDataset()
                       <!--xAxis-->
                       <el-row class="padding-lr drag-data">
                         <span class="data-area-label">
-                          <dimension-label :view="state.view" />
+                          <dimension-label :view="view" />
                         </span>
                         <draggable
-                          :list="state.view.xaxis"
+                          :list="view.xaxis"
                           :move="onMove"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
                           @add="addXaxis"
-                          @update="calcData(state.view)"
+                          @update="calcData(view)"
                         >
                           <template #item="{ element, index }">
                             <dimension-item
-                              :dimension-data="state.dimensionData"
-                              :quota-data="state.quotaData"
-                              :chart="state.view"
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              :chart="view"
                               :item="element"
                               :index="index"
                               @onDimensionItemChange="dimensionItemChange"
@@ -579,28 +596,28 @@ initDataset()
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="state.view.xaxis" />
+                        <drag-placeholder :drag-list="view.xaxis" />
                       </el-row>
 
                       <!--yAxis-->
                       <el-row class="padding-lr drag-data">
                         <span class="data-area-label">
-                          <quota-label :view="state.view" />
+                          <quota-label :view="view" />
                         </span>
                         <draggable
-                          :list="state.view.yaxis"
+                          :list="view.yaxis"
                           :move="onMove"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
                           @add="addYaxis"
-                          @update="calcData(state.view)"
+                          @update="calcData(view)"
                         >
                           <template #item="{ element, index }">
                             <quota-item
-                              :dimension-data="state.dimensionData"
-                              :quota-data="state.quotaData"
-                              :chart="state.view"
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              :chart="view"
                               :item="element"
                               :index="index"
                               @onQuotaItemChange="quotaItemChange"
@@ -610,20 +627,62 @@ initDataset()
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="state.view.yaxis" />
+                        <drag-placeholder :drag-list="view.yaxis" />
+                      </el-row>
+
+                      <!--drill-->
+                      <el-row class="padding-lr drag-data">
+                        <span class="data-area-label">
+                          <span>{{ t('chart.drill') }}</span>
+                          /
+                          <span>{{ t('chart.dimension') }}</span>
+                          <el-tooltip class="item" effect="dark" placement="bottom">
+                            <template #content>
+                              <div>
+                                {{ t('chart.drill_dimension_tip') }}
+                              </div>
+                            </template>
+                            <i
+                              class="el-icon-info"
+                              :style="{ cursor: 'pointer', color: '#606266' }"
+                            />
+                          </el-tooltip>
+                        </span>
+                        <draggable
+                          :list="view.drillFields"
+                          group="drag"
+                          animation="300"
+                          :move="onMove"
+                          class="drag-block-style"
+                          @add="addDrill"
+                          @update="calcData(view)"
+                        >
+                          <template #item="{ element, index }">
+                            <drill-item
+                              :key="element.id"
+                              :index="index"
+                              :item="element"
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              @onDimensionItemChange="drillItemChange"
+                              @onDimensionItemRemove="drillItemRemove"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="view.drillFields" />
                       </el-row>
 
                       <!--filter-->
                       <el-row class="padding-lr drag-data">
                         <span>{{ t('chart.result_filter') }}</span>
                         <draggable
-                          :list="state.view.customFilter"
+                          :list="view.customFilter"
                           :move="onMove"
                           group="drag"
                           animation="300"
                           class="drag-block-style"
                           @add="addCustomFilter"
-                          @update="calcData(state.view)"
+                          @update="calcData(view)"
                         >
                           <template #item="{ element, index }">
                             <filter-item
@@ -636,34 +695,36 @@ initDataset()
                             />
                           </template>
                         </draggable>
-                        <drag-placeholder :drag-list="state.view.customFilter" />
+                        <drag-placeholder :drag-list="view.customFilter" />
                       </el-row>
 
                       <el-row class="result-style">
                         <div class="result-style-input">
-                          <span v-show="state.view.type !== 'richTextView'">
+                          <span v-show="view.type !== 'richTextView'">
                             {{ t('chart.result_count') }}
                           </span>
-                          <span v-show="state.view.type !== 'richTextView'">
+                          <span v-show="view.type !== 'richTextView'">
                             <el-radio-group
-                              v-model="state.view.resultMode"
-                              class="radio-span"
+                              v-model="view.resultMode"
+                              class="radio-span dark"
                               size="small"
+                              @change="calcData(view)"
                             >
                               <el-radio label="all"
                                 ><span>{{ t('chart.result_mode_all') }}</span></el-radio
                               >
                               <el-radio label="custom">
                                 <el-input
-                                  v-model="state.view.resultCount"
+                                  v-model="view.resultCount"
                                   class="result-count"
                                   size="small"
+                                  @change="calcData(view)"
                                 />
                               </el-radio>
                             </el-radio-group>
                           </span>
                         </div>
-                        <el-button class="result-style-button">
+                        <el-button class="result-style-button" @click="calcData(view)">
                           <span style="font-size: 12px">
                             {{ t('chart.update_chart_data') }}
                           </span>
@@ -681,7 +742,7 @@ initDataset()
                 style="width: 100%"
               >
                 <chart-style
-                  :chart="state.view"
+                  :chart="view"
                   @onColorChange="onColorChange"
                   @onSizeChange="onSizeChange"
                   @onLabelChange="onLabelChange"
@@ -700,8 +761,8 @@ initDataset()
                 style="width: 100%"
               >
                 <senior
-                  :chart="state.view"
-                  :quota-data="state.view.yaxis"
+                  :chart="view"
+                  :quota-data="view.yaxis"
                   @onFunctionCfgChange="onFunctionCfgChange"
                   @onAssistLineChange="onAssistLineChange"
                 />
@@ -734,10 +795,11 @@ initDataset()
               alignItems: 'center',
               justifyContent: 'space-between'
             }"
+            class="dark"
           >
             <el-tree-select
-              v-model="state.view.tableId"
-              :data="state.datasetTree"
+              v-model="view.tableId"
+              :data="datasetTree"
               :props="dsSelectProps"
               filterable
               @node-click="dsClick"
@@ -1190,6 +1252,7 @@ span {
     :deep(.ed-input__inner) {
       height: 20px;
       background-color: @side-area-background;
+      color: #ffffff;
     }
     :deep(.ed-input__wrapper) {
       box-shadow: none !important;
@@ -1263,26 +1326,28 @@ span {
 }
 
 // editor form 全局样式
-:deep(.ed-radio__label) {
-  color: var(--ed-color-white);
-}
-:deep(.ed-input__inner),
-:deep(.ed-input__wrapper),
-:deep(.ed-input.is-disabled .ed-input__wrapper) {
-  color: var(--ed-color-white);
-  background-color: @side-content-background;
-  border: none;
-}
-:deep(.ed-input__inner) {
-  border: none;
-}
-:deep(.ed-input__wrapper) {
-  box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
-}
-:deep(.ed-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
-}
-:deep(input) {
-  font-size: 12px !important;
+.dark {
+  :deep(.ed-radio__label) {
+    color: var(--ed-color-white);
+  }
+  :deep(.ed-input__inner),
+  :deep(.ed-input__wrapper),
+  :deep(.ed-input.is-disabled .ed-input__wrapper) {
+    color: var(--ed-color-white);
+    background-color: @side-content-background;
+    border: none;
+  }
+  :deep(.ed-input__inner) {
+    border: none;
+  }
+  :deep(.ed-input__wrapper) {
+    box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
+  }
+  :deep(.ed-input__wrapper:hover) {
+    box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
+  }
+  :deep(input) {
+    font-size: 12px !important;
+  }
 }
 </style>

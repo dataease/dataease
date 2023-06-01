@@ -161,7 +161,10 @@ public class CalciteProvider {
             key = id + split;
         }
         if (connectionMap.get(key) != null) {
-            return connectionMap.get(key);
+            Connection connection = connectionMap.get(key);
+            buildSchema(datasourceRequest, connection.unwrap(CalciteConnection.class));
+            connectionMap.put(key, connection);
+            return connection;
         } else {
             Connection connection = getCalciteConnection(datasourceRequest);
             buildSchema(datasourceRequest, connection.unwrap(CalciteConnection.class));

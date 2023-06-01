@@ -1293,5 +1293,21 @@ export default {
     item: '项',
     logic_filter: '条件筛选',
     enum_filter: '枚举筛选'
+  },
+  about: {
+    auth_to: '授权给',
+    invalid_license: 'License 无效',
+    update_license: '更新 License',
+    expiration_time: '过期时间',
+    expirationed: '(已过期)',
+    auth_num: '授权数量',
+    version: '版本',
+    version_num: '版本号',
+    standard: '标准版',
+    enterprise: '企业版',
+    support: '获取技术支持',
+    update_success: '更新成功',
+    serial_no: '序列号',
+    remark: '备注'
   }
 }

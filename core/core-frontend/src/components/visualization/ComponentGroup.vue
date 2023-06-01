@@ -22,8 +22,8 @@ const { title, iconName, baseWidth } = toRefs(props)
     placement="bottom-start"
     :width="baseWidth"
     trigger="click"
-    effect="dark"
     :show-arrow="false"
+    popper-class="custom-popover"
   >
     <template #reference>
       <el-row class="group_icon">

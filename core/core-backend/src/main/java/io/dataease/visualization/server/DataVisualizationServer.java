@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -48,7 +50,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
             DataVisualizationVO result = new DataVisualizationVO();
             BeanUtils.copyBean(result, visualizationInfo);
             //获取视图信息
-            result.setChartViewInfo(chartViewManege.listBySceneId(dvId));
+            List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
+            if(!CollectionUtils.isEmpty(chartViewDTOS)){
+               Map<Long,ChartViewDTO> viewInfo =  chartViewDTOS.stream().collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
+                result.setChartViewInfo(viewInfo);
+            }
             return result;
         } else {
             DataEaseException.throwException("Can not find any data visualization info...");
@@ -68,9 +74,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         visualizationInfo.setCreateTime(System.currentTimeMillis());
         visualizationInfoMapper.insert(visualizationInfo);
         //保存视图信
-        List<ChartViewDTO> chartViewsInfo = request.getChartViewInfo();
+        Map<Long,ChartViewDTO> chartViewsInfo = request.getChartViewInfo();
         if(!CollectionUtils.isEmpty(chartViewsInfo)){
-            chartViewsInfo.stream().forEach(chartViewDTO -> {
+            chartViewsInfo.forEach((key,chartViewDTO) -> {
                 try {
                     chartViewManege.save(chartViewDTO);
                 } catch (Exception e) {

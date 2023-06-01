@@ -22,7 +22,7 @@ import java.util.List;
 public class F2CLicManage {
     private static final Long LICID = 1L;
 
-    private static final String validatorUtil = "/usr/bin/validator";
+    private static final String validatorUtil = "/usr/local/bin/validator";
 
     private static final String product = "DataEase";
     @Resource
@@ -74,7 +74,11 @@ public class F2CLicManage {
         try {
             execCommand(result, command);
             LogUtil.info("read lic content is : " + result.toString());
-            F2CLicResult f2CLicResult = JsonUtil.parse(result.toString(), F2CLicResult.class);
+            F2CLicResult f2CLicResult = JsonUtil.parseObject(result.toString(), F2CLicResult.class);
+            /*f2CLicResult.setStatus( F2CLicResult.Status.valid);
+            f2CLicResult.getLicense().setExpired("2023-12-31");
+            f2CLicResult.getLicense().setSerialNo("----");
+            f2CLicResult.getLicense().setRemark("备注");*/
             if (f2CLicResult.getStatus() != F2CLicResult.Status.valid) {
                 return f2CLicResult;
             }
