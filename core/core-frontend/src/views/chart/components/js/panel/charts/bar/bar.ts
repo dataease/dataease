@@ -22,7 +22,7 @@ export class Bar extends G2PlotChartView<BarOptions, G2Bar> {
     let customAttr: DeepPartial<ChartAttr> = {}
     let barGap = undefined
     if (chart.customAttr) {
-      customAttr = JSON.parse(chart.customAttr)
+      customAttr = JSON.parse(JSON.stringify(chart.customAttr))
       if (customAttr.size) {
         const s = JSON.parse(JSON.stringify(customAttr.size)) as DeepPartial<ChartSizeAttr>
         if (!s.barDefault) {
@@ -125,7 +125,8 @@ export class Bar extends G2PlotChartView<BarOptions, G2Bar> {
 
     // 处理空值
     if (chart.senior) {
-      let emptyDataStrategy = JSON.parse(chart.senior)?.functionCfg?.emptyDataStrategy
+      let emptyDataStrategy = JSON.parse(JSON.stringify(chart.senior))?.functionCfg
+        ?.emptyDataStrategy
       if (!emptyDataStrategy) {
         emptyDataStrategy = 'breakLine'
       }
