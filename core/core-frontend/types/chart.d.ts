@@ -327,6 +327,10 @@ declare interface ChartStyle {
   yAxis: ChartAxisStyle
   yAxisExt: ChartAxisStyle
   split: ChartSplitStyle
+  background: {
+    color: string
+    alpha: string
+  }
 }
 
 declare interface ChartAttr {
@@ -344,9 +348,9 @@ declare interface ChartSenior {
   threshold: ChartThreshold
 }
 
-declare type CustomAttr = DeepPartial<ChartAttr> | string
-declare type CustomStyle = DeepPartial<ChartStyle> | string
-declare type CustomSenior = DeepPartial<ChartSenior> | string
+declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
+declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>
+declare type CustomSenior = DeepPartial<ChartSenior> | JSONString<DeepPartial<ChartSenior>>
 declare interface Chart {
   render: string
   name: string
@@ -357,6 +361,7 @@ declare interface Chart {
   refreshUnit: string
   data: {
     data: any[]
+    series?: any[]
   }
   senior: CustomSenior
   customAttr: CustomAttr

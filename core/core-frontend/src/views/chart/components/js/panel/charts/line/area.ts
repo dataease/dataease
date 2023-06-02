@@ -1,53 +1,65 @@
 import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
-import { Line as G2Line, LineOptions } from '@antv/g2plot'
-import { getPadding } from '../../common/common_antv'
+import { Area as G2Area, AreaOptions } from '@antv/g2plot'
+import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import _ from 'lodash'
 import {
   antVCustomColor,
   flow,
   handleEmptyDataStrategy,
   parseJson
 } from '@/views/chart/components/js/util'
-import _ from 'lodash'
-
 const DEFAULT_DATA = []
-/**
- * 折线图
- */
-export class Line extends G2PlotChartView<LineOptions, G2Line> {
-  drawChart(drawOptions: G2PlotDrawOptions<G2Line>) {
+export class Area extends G2PlotChartView<AreaOptions, G2Area> {
+  drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
     const chart = drawOptions.chart
+
     // data
     const data = _.cloneDeep(chart.data.data)
     // size
-    let customAttr: DeepPartial<ChartAttr> = {}
-    let smooth, point, lineStyle
+    let customAttr: DeepPartial<ChartAttr>
+    let smooth, point, line
     if (chart.customAttr) {
       customAttr = parseJson(chart.customAttr)
       if (customAttr.size) {
-        const s = JSON.parse(JSON.stringify(customAttr.size)) as ChartSizeAttr
+        const s: DeepPartial<ChartSizeAttr> = JSON.parse(JSON.stringify(customAttr.size))
         smooth = s.lineSmooth
         point = {
           size: s.lineSymbolSize,
           shape: s.lineSymbol
         }
-        lineStyle = {
-          lineWidth: s.lineWidth
+        line = {
+          style: {
+            lineWidth: s.lineWidth
+          }
         }
       }
     }
     // custom color
     const color = antVCustomColor(chart)
-    // options
-    const initOptions: LineOptions = {
+    const areaColors = [...color, ...color]
+    let areaStyle
+    if (customAttr.color.gradient) {
+      areaStyle = () => {
+        const ele = areaColors.shift()
+        if (ele) {
+          return {
+            fill: setGradientColor(ele, customAttr.color.gradient, 270)
+          }
+        }
+      }
+    }
+    const initOptions: AreaOptions = {
+      point,
+      smooth,
+      line,
+      areaStyle,
+      color,
       data: data,
       xField: 'field',
       yField: 'value',
       seriesField: 'category',
       appendPadding: getPadding(chart),
-      color,
-      point,
-      lineStyle,
-      smooth,
+      // isStack: isStack,
       interactions: [
         {
           type: 'legend-active',
@@ -88,6 +100,8 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
         }
       ]
     }
+
+    // options
     const options = this.setupOptions(chart, initOptions)
     // 处理空值
     if (chart.senior) {
@@ -97,11 +111,12 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       }
       handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
     }
+
     // 开始渲染
     if (drawOptions.chartObj) {
       drawOptions.chartObj.destroy()
     }
-    drawOptions.chartObj = new G2Line(drawOptions.container, options)
+    drawOptions.chartObj = new G2Area(drawOptions.container, options)
 
     drawOptions.chartObj.off('point:click')
     drawOptions.chartObj.on('point:click', drawOptions.action)
@@ -109,7 +124,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     return drawOptions.chartObj
   }
 
-  protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
+  protected setupOptions(chart: Chart, options: AreaOptions): AreaOptions {
     return flow(
       this.configTheme,
       this.configLabel,
@@ -121,8 +136,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       this.configAnalyse
     )(chart, options)
   }
-
   constructor() {
-    super('line', DEFAULT_DATA)
+    super('area', DEFAULT_DATA)
   }
 }
