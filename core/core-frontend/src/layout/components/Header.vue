@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { usePermissionStore } from '@/store/modules/permission'
 import { isExternal } from '@/utils/validate'
 import { formatRoute } from '@/router/establish'
@@ -25,8 +25,8 @@ const activeIndex = computed(() => {
 })
 const permissionStore = usePermissionStore()
 
-const routers = formatRoute(permissionStore.getRoutersNotHidden as AppCustomRouteRecordRaw[])
-
+const routers: any[] = formatRoute(permissionStore.getRoutersNotHidden as AppCustomRouteRecordRaw[])
+const showSystem = ref(false)
 const handleSelect = (index: string) => {
   // 自定义事件
   if (isExternal(index)) {
@@ -35,6 +35,12 @@ const handleSelect = (index: string) => {
     push(index)
   }
 }
+const initShowSystem = () => {
+  showSystem.value = permissionStore.getRouters.some(route => route.path === '/system')
+}
+onMounted(() => {
+  initShowSystem()
+})
 </script>
 
 <template>
@@ -53,7 +59,7 @@ const handleSelect = (index: string) => {
       <OrgSwicther />
       <LangSelector />
       <TopDoc />
-      <SystemCfg />
+      <SystemCfg v-if="showSystem" />
       <AccountOperator />
     </div>
   </el-header>

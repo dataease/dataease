@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-28
+ * @since 2023-06-02
  */
 public interface CoreMenuMapper extends BaseMapper<CoreMenu> {
 
