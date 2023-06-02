@@ -345,6 +345,9 @@ export default {
 .component {
   position: absolute;
 }
+.component-outer {
+  transform: translate(0);
+}
 .component-outer:hover {
   box-shadow: 0px 0px 3px #0a7be0;
 }
