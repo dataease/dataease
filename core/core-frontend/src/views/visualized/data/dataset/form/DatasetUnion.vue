@@ -12,7 +12,7 @@ import type { Node } from './UnionEdit.vue'
 import { getTableField } from '@/api/dataset'
 import type { Field } from './UnionFieldList.vue'
 import type { SqlNode } from './AddSql.vue'
-import { clone } from 'lodash'
+import _ from 'lodash'
 
 const state = reactive({
   nodeList: [],
@@ -93,9 +93,48 @@ const delNode = (id, arr) => {
 }
 
 const saveSqlNode = (val: SqlNode) => {
-  const { tableName, id, sql } = val
+  const { tableName, id, sql, datasourceId } = val
+  if (state.visualNode) {
+    state.visualNode.info = JSON.stringify({ table: tableName, sql })
+    Object.assign(state.visualNode, {
+      unionType: 'left',
+      type: 'sql',
+      id,
+      datasourceId,
+      unionFields: [],
+      currentDsFields: [],
+      sqlVariableDetails: null
+    })
+    state.visualNode.confirm = true
+    if (!state.nodeList.length) {
+      state.visualNode.tableName = tableName
+      state.nodeList.push(state.visualNode)
+      confirm()
+    }
+    return
+  }
   const obj = { info: JSON.stringify({ table: tableName, sql }), id, tableName }
   dfsNodeBack([obj], [id], state.nodeList)
+}
+
+const closeSqlNode = () => {
+  if (state.visualNode?.confirm) {
+    nextTick(() => {
+      emits('joinEditor', [
+        { ...state.visualNode, tableName: JSON.parse(state.visualNode.info).table },
+        state.visualNodeParent
+      ])
+    })
+    editSqlField.value = false
+    return
+  }
+  editSqlField.value = false
+  if (!state.visualNodeParent) {
+    state.visualNode = null
+    return
+  }
+  state.visualNodeParent.children = state.visualNodeParent.children.filter(ele => !ele.isShadow)
+  confirm()
 }
 
 const changeNodeFields = val => {
@@ -140,8 +179,12 @@ const confirmEditUnion = () => {
 }
 
 const handleCommand = (ele, command) => {
-  if (command === 'editer') {
-    currentNode.value = clone(ele)
+  if (command === 'editerField') {
+    currentNode.value = _.cloneDeep(ele)
+    getNodeField(ele)
+  }
+
+  if (command === 'editerSql') {
     const { tableName, datasourceId, info, id } = ele
     if (ele.type === 'sql') {
       sqlNode.value = {
@@ -153,7 +196,6 @@ const handleCommand = (ele, command) => {
       editSqlField.value = true
       return
     }
-    getNodeField(ele)
   }
 
   if (command === 'del') {
@@ -200,13 +242,21 @@ const dfsNodeBack = (arr, idArr, list) => {
 const menuList = [
   {
     svgName: 'icon_edit_outlined',
-    label: '编辑',
-    command: 'editer'
+    label: '字段编辑',
+    command: 'editerField'
   },
   {
     svgName: 'icon_delete-trash_outlined',
     label: '删除',
     command: 'del'
+  }
+]
+
+const sqlMenu = [
+  {
+    svgName: 'icon_edit_outlined',
+    label: 'SQL编辑',
+    command: 'editerSql'
   }
 ]
 
@@ -311,6 +361,7 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
         maxY,
         isShadow: !!ele.isShadow
       })
+      console.log('ele, ele', ele.tableName, idxChild)
     } else {
       const children = []
       const pre = nodeListLocation[index - 1]
@@ -329,11 +380,12 @@ const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
       nodeListLocation.push({
         ...ele,
         x,
-        y: idx ? Math.min(idx, maxY) : idx,
+        y: children[0].y,
         maxY,
         isShadow: !!ele.isShadow,
         children
       })
+      console.log('ele, ele', ele.tableName, idx ? Math.min(idx, maxY) : idx)
     }
   })
 }
@@ -498,7 +550,25 @@ const drop_handler = ev => {
     currentDsFields: [],
     sqlVariableDetails: null
   }
+
   if (!state.nodeList.length) {
+    if (type === 'sql') {
+      state.visualNode = {
+        tableName,
+        type,
+        datasourceId,
+        id: guid(),
+        ...extraData
+      }
+      sqlNode.value = {
+        sql: '',
+        tableName,
+        id: state.visualNode.id,
+        datasourceId
+      }
+      editSqlField.value = true
+      return
+    }
     state.nodeList.push({
       tableName,
       type,
@@ -517,6 +587,16 @@ const drop_handler = ev => {
   })
 
   if (!state.visualNode) return
+  if (type === 'sql') {
+    sqlNode.value = {
+      sql: '',
+      tableName,
+      id: guid(),
+      datasourceId
+    }
+    editSqlField.value = true
+    return
+  }
   nextTick(() => {
     Object.assign(state.visualNode, {
       tableName,
@@ -623,7 +703,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
           <handle-more
             style="margin-left: auto"
             v-if="activeNode === ele.tableName"
-            :menuList="menuList"
+            :menuList="ele.type === 'sql' ? [...sqlMenu, ...menuList] : menuList"
             @handle-command="command => handleCommand(ele, command)"
           ></handle-more>
         </div>
@@ -665,18 +745,6 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
         <span class="name">{{ currentNode.tableName }}</span>
         <span class="ds">{{ getDsName(currentNode.datasourceId) }}</span>
       </div>
-      <div class="operate">
-        <el-button text>
-          <template #icon>
-            <Icon name="icon_edit_outlined"></Icon>
-          </template>
-          编辑SQL</el-button
-        >
-        <el-button text
-          ><template #icon> <Icon name="icon_delete-trash_outlined"></Icon> </template
-          >删除</el-button
-        >
-      </div>
     </template>
     <union-field-list
       :field-list="nodeField"
@@ -691,12 +759,13 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   </el-drawer>
   <el-drawer
     direction="btt"
+    :close-on-click-modal="false"
     size="calc(100% - 100px)"
     :with-header="false"
     modal-class="sql-drawer-fullscreen"
     v-model="editSqlField"
   >
-    <add-sql @save="saveSqlNode" @close="editSqlField = false" :sqlNode="sqlNode"></add-sql>
+    <add-sql @save="saveSqlNode" @close="closeSqlNode" :sqlNode="sqlNode"></add-sql>
   </el-drawer>
 </template>
 
@@ -732,15 +801,6 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
         font-weight: 400;
         font-size: 14px;
         color: #646a73;
-      }
-    }
-
-    .operate {
-      margin-left: auto;
-      margin-right: 30px;
-
-      .is-text {
-        color: #1f2329;
       }
     }
   }

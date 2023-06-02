@@ -98,11 +98,13 @@ const editeSave = () => {
   const union = []
   loading.value = true
   dfsNodeList(union, datasetDrag.value.nodeList)
-  saveDatasetTree({ ...nodeInfo, union, allFields: allfields.value, nodeType: 'dataset' }).finally(
-    () => {
+  saveDatasetTree({ ...nodeInfo, union, allFields: allfields.value, nodeType: 'dataset' })
+    .then(() => {
+      ElMessage.success('保存成功')
+    })
+    .finally(() => {
       loading.value = false
-    }
-  )
+    })
 }
 
 const handleFieldMore = (ele, type) => {
