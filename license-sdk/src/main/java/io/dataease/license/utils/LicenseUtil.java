@@ -4,6 +4,7 @@ import cn.hutool.core.collection.ListUtil;
 import io.dataease.license.bo.F2CLicResult;
 import io.dataease.license.config.LicenseValidator;
 import io.dataease.utils.CommonBeanFactory;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -51,5 +52,11 @@ public class LicenseUtil {
 
     public static F2CLicResult get() {
         return LIC_RESULT.get();
+    }
+
+    public static boolean licenseValid() {
+        F2CLicResult licResult = null;
+        if (ObjectUtils.isEmpty(licResult = get())) return false;
+        return licResult.getStatus() == F2CLicResult.Status.valid;
     }
 }

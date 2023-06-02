@@ -7,11 +7,11 @@ import java.io.Serializable;
 
 /**
  * <p>
- *
+ * 
  * </p>
  *
  * @author fit2cloud
- * @since 2023-03-28
+ * @since 2023-06-02
  */
 @TableName("core_menu")
 public class CoreMenu implements Serializable {
@@ -68,6 +68,11 @@ public class CoreMenu implements Serializable {
      * 是否内部
      */
     private Boolean inLayout;
+
+    /**
+     * 参与授权
+     */
+    private Boolean auth;
 
     public Long getId() {
         return id;
@@ -149,19 +154,28 @@ public class CoreMenu implements Serializable {
         this.inLayout = inLayout;
     }
 
+    public Boolean getAuth() {
+        return auth;
+    }
+
+    public void setAuth(Boolean auth) {
+        this.auth = auth;
+    }
+
     @Override
     public String toString() {
         return "CoreMenu{" +
-                "id = " + id +
-                ", pid = " + pid +
-                ", type = " + type +
-                ", name = " + name +
-                ", component = " + component +
-                ", menuSort = " + menuSort +
-                ", icon = " + icon +
-                ", path = " + path +
-                ", hidden = " + hidden +
-                ", inLayout = " + inLayout +
-                "}";
+        "id = " + id +
+        ", pid = " + pid +
+        ", type = " + type +
+        ", name = " + name +
+        ", component = " + component +
+        ", menuSort = " + menuSort +
+        ", icon = " + icon +
+        ", path = " + path +
+        ", hidden = " + hidden +
+        ", inLayout = " + inLayout +
+        ", auth = " + auth +
+        "}";
     }
 }

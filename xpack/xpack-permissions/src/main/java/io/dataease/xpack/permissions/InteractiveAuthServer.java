@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/interactive/auth/")
+@RequestMapping("/interactive/")
 @Primary
 public class InteractiveAuthServer implements InteractiveAuthApi {
 
