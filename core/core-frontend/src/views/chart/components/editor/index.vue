@@ -504,7 +504,7 @@ const collapseChange = type => {
               </span>
             </span>
           </el-row>
-          <el-row style="height: calc(100% - 121px)">
+          <el-row style="height: calc(100vh - 140px)">
             <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-col>
@@ -989,7 +989,7 @@ span {
   }
 
   .tab-header :deep(.ed-tabs__content) {
-    height: 100%;
+    height: calc(100% - 46px);
     overflow-y: auto;
     overflow-x: hidden;
   }
