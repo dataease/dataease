@@ -1,53 +1,50 @@
 import { G2PlotChartView, G2PlotDrawOptions } from '@/views/chart/components/js/panel/types'
-import { Line as G2Line, LineOptions } from '@antv/g2plot'
-import { getPadding } from '../../common/common_antv'
+import { Bar, BarOptions } from '@antv/g2plot'
+import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
+import _ from 'lodash'
 import {
   antVCustomColor,
   flow,
   handleEmptyDataStrategy,
   parseJson
 } from '@/views/chart/components/js/util'
-import _ from 'lodash'
 
 const DEFAULT_DATA = []
-/**
- * 折线图
- */
-export class Line extends G2PlotChartView<LineOptions, G2Line> {
-  drawChart(drawOptions: G2PlotDrawOptions<G2Line>) {
+
+export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
+  drawChart(drawOptions: G2PlotDrawOptions<Bar>): Bar {
     const chart = drawOptions.chart
-    // data
-    const data = _.cloneDeep(chart.data.data)
     // size
-    let customAttr: DeepPartial<ChartAttr> = {}
-    let smooth, point, lineStyle
+    let customAttr: DeepPartial<ChartAttr>
+    let barGap = undefined
     if (chart.customAttr) {
       customAttr = parseJson(chart.customAttr)
       if (customAttr.size) {
-        const s = JSON.parse(JSON.stringify(customAttr.size)) as ChartSizeAttr
-        smooth = s.lineSmooth
-        point = {
-          size: s.lineSymbolSize,
-          shape: s.lineSymbol
-        }
-        lineStyle = {
-          lineWidth: s.lineWidth
+        const s = parseJson(customAttr).size
+        if (!s.barDefault) {
+          barGap = s.barGap
         }
       }
     }
+    // data
+    const data = _.cloneDeep(chart.data.data)
     // custom color
-    const color = antVCustomColor(chart)
+    let color = antVCustomColor(chart)
+    if (customAttr.color.gradient) {
+      color = color.map(ele => {
+        return setGradientColor(ele, customAttr.color.gradient)
+      })
+    }
+
     // options
-    const initOptions: LineOptions = {
+    const initOptions: BarOptions = {
       data: data,
-      xField: 'field',
-      yField: 'value',
+      xField: 'value',
+      yField: 'field',
       seriesField: 'category',
       appendPadding: getPadding(chart),
-      color,
-      point,
-      lineStyle,
-      smooth,
+      color: color,
+      marginRatio: barGap,
       interactions: [
         {
           type: 'legend-active',
@@ -75,20 +72,35 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
         {
           type: 'tooltip',
           cfg: {
-            start: [{ trigger: 'point:mousemove', action: 'tooltip:show' }],
-            end: [{ trigger: 'point:mouseleave', action: 'tooltip:hide' }]
+            start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
+            end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
           }
         },
         {
           type: 'active-region',
           cfg: {
-            start: [{ trigger: 'element:mousemove', action: 'active-region:show' }],
-            end: [{ trigger: 'element:mouseleave', action: 'active-region:hide' }]
+            start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
+            end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
           }
         }
       ]
     }
+
     const options = this.setupOptions(chart, initOptions)
+    // group
+    // if (isGroup) {
+    //   options.isGroup = true
+    // } else {
+    //   delete options.isGroup
+    // }
+    // // stack
+    // if (isStack) {
+    //   options.isStack = true
+    // } else {
+    //   delete options.isStack
+    // }
+    // options.isPercent = chart.type.includes('percentage')
+
     // 处理空值
     if (chart.senior) {
       let emptyDataStrategy = parseJson(chart.senior)?.functionCfg?.emptyDataStrategy
@@ -97,19 +109,24 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       }
       handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
     }
+
     // 开始渲染
     if (drawOptions.chartObj) {
       drawOptions.chartObj.destroy()
     }
-    drawOptions.chartObj = new G2Line(drawOptions.container, options)
+    drawOptions.chartObj = new Bar(drawOptions.container, options)
 
-    drawOptions.chartObj.off('point:click')
-    drawOptions.chartObj.on('point:click', drawOptions.action)
+    drawOptions.chartObj.off('interval:click')
+    drawOptions.chartObj.on('interval:click', drawOptions.action)
 
     return drawOptions.chartObj
   }
 
-  protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
+  constructor() {
+    super('horizontal-bar', DEFAULT_DATA)
+  }
+
+  protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
     return flow(
       this.configTheme,
       this.configLabel,
@@ -120,9 +137,5 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       this.configSlider,
       this.configAnalyse
     )(chart, options)
-  }
-
-  constructor() {
-    super('line', DEFAULT_DATA)
   }
 }
