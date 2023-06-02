@@ -11,6 +11,7 @@ import store from '@/store'
 import { AIDED_DESIGN, MOBILE_SETTING, PAGE_LINE_DESIGN, PANEL_CHART_INFO, TAB_COMMON_STYLE } from '@/views/panel/panel'
 import html2canvas from 'html2canvasde'
 import xssCheck from 'xss'
+import Vue from 'vue'
 
 export function deepCopy(target) {
   if (typeof target === 'object' && target !== null) {
@@ -70,6 +71,10 @@ export function mobile2MainCanvas(mainSource, mobileSource) {
 }
 
 export function panelInit(componentData, componentStyle) {
+  // 取消视图请求
+  Vue.prototype.$cancelRequest('/chart/view/getData/**')
+  Vue.prototype.$cancelRequest('/api/link/viewDetail/**')
+  Vue.prototype.$cancelRequest('/static-resource/**')
   panelDataPrepare(componentData, componentStyle, function() {
     // 将data 和 style 数据设置到全局store中
     store.commit('setComponentData', resetID(componentData))
