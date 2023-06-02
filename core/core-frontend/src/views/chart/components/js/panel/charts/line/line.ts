@@ -113,7 +113,8 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
     }
     // 处理空值
     if (chart.senior) {
-      let emptyDataStrategy = JSON.parse(JSON.stringify(chart.senior))?.functionCfg?.emptyDataStrategy
+      let emptyDataStrategy = JSON.parse(JSON.stringify(chart.senior))?.functionCfg
+        ?.emptyDataStrategy
       if (!emptyDataStrategy) {
         emptyDataStrategy = 'breakLine'
       }
