@@ -98,7 +98,7 @@ const handleDrop = e => {
     component.style.left = e.clientX - rectInfo.x
     component.id = guid()
     changeComponentSizeWithScale(component)
-    dvMainStore.addComponent({ component: component, index: undefined })
+    dvMainStore.addComponent({ component: component, index: 0 })
     snapshotStore.recordSnapshot()
   }
 }
@@ -177,7 +177,7 @@ eventBus.on('handleNew', handleNew)
     <DvToolbar />
     <el-container class="dv-layout-container">
       <!-- 左侧组件列表 -->
-      <dv-sidebar title="图层" width="180" aside-position="left" class="left-sidebar">
+      <dv-sidebar title="图层" :width="180" aside-position="left" class="left-sidebar">
         <RealTimeComponentList />
       </dv-sidebar>
       <!-- 中间画布 -->
@@ -199,7 +199,7 @@ eventBus.on('handleNew', handleNew)
       <dv-sidebar
         v-if="curComponent && curComponent.component !== 'UserView'"
         title="属性"
-        width="240"
+        :width="240"
         aside-position="right"
         class="left-sidebar"
       >
@@ -208,7 +208,7 @@ eventBus.on('handleNew', handleNew)
       <dv-sidebar
         v-if="!curComponent"
         title="大屏配置"
-        width="240"
+        :width="240"
         aside-position="right"
         class="left-sidebar"
       >

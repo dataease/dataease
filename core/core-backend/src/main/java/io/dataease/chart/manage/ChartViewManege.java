@@ -60,9 +60,10 @@ public class ChartViewManege {
         coreChartViewMapper.deleteById(id);
     }
 
-    public void deleteByPanel(Long panelId, List<Long> chartIds) {
+    @Transactional
+    public void deleteBySceneId(Long sceneId, List<Long> chartIds) {
         QueryWrapper<CoreChartView> wrapper = new QueryWrapper<>();
-        wrapper.eq("scene_id", panelId);
+        wrapper.eq("scene_id", sceneId);
         wrapper.notIn("id", chartIds);
         coreChartViewMapper.delete(wrapper);
     }

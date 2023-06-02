@@ -1008,9 +1008,9 @@ function getLineDash(type) {
       return [0, 0]
   }
 }
-//
-// export function setGradientColor(rawColor, show = false, angle = 0) {
-//   const item = rawColor.split(',')
-//   item.splice(3, 1, '0.3)')
-//   return show ? `l(${angle}) 0:${item.join(',')} 1:${rawColor}` : rawColor
-// }
+
+export function setGradientColor(rawColor, show = false, angle = 0) {
+  const item = rawColor.split(',')
+  item.splice(3, 1, '0.3)')
+  return show ? `l(${angle}) 0:${item.join(',')} 1:${rawColor}` : rawColor
+}

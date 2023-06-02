@@ -20,10 +20,10 @@ const handleScaleChange = () => {
 </script>
 <template>
   <el-row class="custom-main">
-    <component-group base-width="300" icon-name="chart_pie" title="图表">
+    <component-group :base-width="300" icon-name="chart_pie" title="图表">
       <user-view-group></user-view-group>
     </component-group>
-    <component-group base-width="148" icon-name="other_text" title="文本">
+    <component-group :base-width="148" icon-name="other_text" title="文本">
       <text-group></text-group>
     </component-group>
     <component-group icon-name="other_media" title="媒体">

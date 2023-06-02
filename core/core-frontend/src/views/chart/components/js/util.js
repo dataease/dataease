@@ -2416,7 +2416,7 @@ export function getColors(chart, colors, reset) {
 export function antVCustomColor(chart) {
   const colors = []
   if (chart.customAttr) {
-    const customAttr = JSON.parse(chart.customAttr)
+    const customAttr = JSON.parse(JSON.stringify(chart.customAttr))
     // color
     if (customAttr.color) {
       const c = JSON.parse(JSON.stringify(customAttr.color))
@@ -2433,7 +2433,7 @@ export function antVCustomColor(chart) {
 export function getRemark(chart) {
   const remark = {}
   if (chart.customStyle) {
-    const customStyle = JSON.parse(chart.customStyle)
+    const customStyle = JSON.parse(JSON.stringify(chart.customStyle))
     if (customStyle.text) {
       const title = JSON.parse(JSON.stringify(customStyle.text))
       remark.show = title.remarkShow ? title.remarkShow : DEFAULT_TITLE_STYLE.remarkShow
@@ -2456,8 +2456,8 @@ export function handleEmptyDataStrategy(strategy, chart, data, options) {
     handleIgnoreData(chart, data)
     return
   }
-  const yaxis = JSON.parse(chart.yaxis)
-  const extAxis = JSON.parse(chart.xaxisExt)
+  const yaxis = JSON.parse(JSON.stringify(chart.yaxis))
+  const extAxis = JSON.parse(JSON.stringify(chart.xaxisExt))
   const multiDimension = yaxis?.length >= 2 || extAxis?.length > 0
   switch (strategy) {
     case 'breakLine': {

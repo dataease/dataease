@@ -1,14 +1,17 @@
 package io.dataease.menu.manage;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.menu.vo.MenuMeta;
 import io.dataease.api.menu.vo.MenuVO;
+import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.menu.bo.MenuTreeNode;
 import io.dataease.menu.dao.auto.entity.CoreMenu;
 import io.dataease.menu.dao.auto.mapper.CoreMenuMapper;
 import io.dataease.utils.BeanUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -28,14 +31,23 @@ public class MenuManage {
     @Resource
     private CoreMenuMapper coreMenuMapper;
 
-    @Cacheable(value = "menu", key = "#root.methodName")
+    @Autowired
+    private InteractiveAuthApi interactiveAuthApi;
+
+    // @Cacheable(value = "menu", key = "#root.methodName")
     public List<MenuVO> query() {
         QueryWrapper<CoreMenu> wrapper = new QueryWrapper<>();
         List<CoreMenu> coreMenus = coreMenuMapper.selectList(wrapper);
+        coreMenus = filterAuth(coreMenus);
         List<MenuTreeNode> menuTreeNodes = coreMenus.stream().map(menu -> BeanUtils.copyBean(new MenuTreeNode(), menu)).toList();
         List<MenuTreeNode> treeNodes = buildPOTree(menuTreeNodes);
         List<MenuVO> menuVOS = convertTree(treeNodes);
         return menuVOS;
+    }
+    private List<CoreMenu> filterAuth(List<CoreMenu> list) {
+        List<Long> menuIds = interactiveAuthApi.menuIds();
+        if (CollectionUtil.isEmpty(menuIds)) return list;
+        return list.stream().filter(menu -> !menu.getAuth() || menuIds.contains(menu.getId())).toList();
     }
 
     private List<MenuTreeNode> buildPOTree(List<MenuTreeNode> coreMenus) {
@@ -55,10 +67,12 @@ public class MenuManage {
         for (int i = 0; i < roots.size(); i++) {
             MenuTreeNode menuTreeNode = roots.get(i);
             MenuVO vo = convert(menuTreeNode);
-            result.add(vo);
             List<MenuTreeNode> children = null;
-            if (!CollectionUtils.isEmpty(children = menuTreeNode.getChildren())) {
+            if (CollectionUtil.isNotEmpty(children = menuTreeNode.getChildren())) {
                 vo.setChildren(convertTree(children));
+            }
+            if (CollectionUtil.isNotEmpty(children) || menuTreeNode.getType() != 1) {
+                result.add(vo);
             }
         }
         return result;

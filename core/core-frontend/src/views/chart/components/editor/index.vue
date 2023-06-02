@@ -1,20 +1,4 @@
 <script lang="tsx" setup>
-import {
-  DEFAULT_COLOR_CASE,
-  DEFAULT_SIZE,
-  DEFAULT_LABEL,
-  DEFAULT_TOOLTIP,
-  DEFAULT_TOTAL,
-  DEFAULT_TITLE_STYLE,
-  DEFAULT_LEGEND_STYLE,
-  DEFAULT_XAXIS_STYLE,
-  DEFAULT_YAXIS_STYLE,
-  DEFAULT_YAXIS_EXT_STYLE,
-  DEFAULT_SPLIT,
-  DEFAULT_FUNCTION_CFG,
-  DEFAULT_THRESHOLD,
-  DEFAULT_SCROLL
-} from './util/chart'
 import { PropType, reactive, ref, watch, toRefs } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -72,49 +56,6 @@ const state = reactive({
   chartAreaCollapse: false,
   datasetAreaCollapse: false,
   moveId: -1,
-  view: {
-    id: '1683789298247', // 视图id
-    title: '图表',
-    sceneId: 0, // 仪表板id
-    tableId: '', // 数据集id
-    type: 'bar',
-    render: 'antv',
-    resultCount: 100,
-    resultMode: 'all',
-    refreshViewEnable: false,
-    refreshTime: 5,
-    refreshUnit: 'minute',
-    xaxis: [],
-    xaxisExt: [],
-    yaxis: [],
-    yaxisExt: [],
-    extStack: [],
-    drillFields: [],
-    viewFields: [],
-    extBubble: [],
-    customFilter: [],
-    customAttr: {
-      color: DEFAULT_COLOR_CASE,
-      size: DEFAULT_SIZE,
-      label: DEFAULT_LABEL,
-      tooltip: DEFAULT_TOOLTIP,
-      totalCfg: DEFAULT_TOTAL
-    },
-    customStyle: {
-      text: DEFAULT_TITLE_STYLE,
-      legend: DEFAULT_LEGEND_STYLE,
-      xAxis: DEFAULT_XAXIS_STYLE,
-      yAxis: DEFAULT_YAXIS_STYLE,
-      yAxisExt: DEFAULT_YAXIS_EXT_STYLE,
-      split: DEFAULT_SPLIT
-    },
-    senior: {
-      functionCfg: DEFAULT_FUNCTION_CFG,
-      assistLine: [],
-      threshold: DEFAULT_THRESHOLD,
-      scrollCfg: DEFAULT_SCROLL
-    }
-  },
   dimension: [],
   quota: [],
   dimensionData: [],
@@ -329,11 +270,11 @@ const moveToQuota = e => {
 }
 
 const calcData = view => {
-  useEmitt().emitter.emit('calcData', view)
+  useEmitt().emitter.emit('calcData-' + view.id, view)
 }
 
 const renderChart = view => {
-  useEmitt().emitter.emit('renderChart', view)
+  useEmitt().emitter.emit('renderChart-' + view.id, view)
 }
 
 const onColorChange = val => {
@@ -563,7 +504,7 @@ const collapseChange = type => {
               </span>
             </span>
           </el-row>
-          <el-row style="height: calc(100% - 121px)">
+          <el-row style="height: calc(100vh - 140px)">
             <el-tabs v-model="tabActive" :stretch="true" class="tab-header">
               <el-tab-pane name="data" :label="t('chart.chart_data')" class="padding-tab">
                 <el-col>
@@ -1048,7 +989,7 @@ span {
   }
 
   .tab-header :deep(.ed-tabs__content) {
-    height: 100%;
+    height: calc(100% - 46px);
     overflow-y: auto;
     overflow-x: hidden;
   }

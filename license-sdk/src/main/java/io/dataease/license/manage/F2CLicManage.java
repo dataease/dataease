@@ -12,6 +12,7 @@ import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -42,9 +43,11 @@ public class F2CLicManage {
         return po;
     }
 
+    @Transactional
     public void write(String key, F2CLicResult licResult) {
         CacheUtils.remove(CacheConstant.cacheName, CacheConstant.cacheKey, t -> {
             LicensePO licensePO = new LicensePO(LICID, System.currentTimeMillis(), key, JsonUtil.toJSONString(licResult).toString());
+            licenseMapper.deleteById(LICID);
             licenseMapper.insert(licensePO);
         });
     }

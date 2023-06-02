@@ -126,7 +126,13 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
   <div class="real-time-component-list">
     <el-row class="list-wrap">
       <div class="list-container">
-        <draggable @end="dragOnEnd" :list="componentData" animation="100" class="drag-list">
+        <draggable
+          @end="dragOnEnd"
+          :list="componentData"
+          animation="100"
+          class="drag-list"
+          item-key="id"
+        >
           <template #item="{ index }">
             <div
               :title="getComponent(index).name"

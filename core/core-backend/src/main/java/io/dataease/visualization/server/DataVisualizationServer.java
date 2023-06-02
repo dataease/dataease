@@ -9,6 +9,7 @@ import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.exception.DataEaseException;
+import io.dataease.exception.DEException;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.TreeUtils;
@@ -53,7 +54,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
             if(!CollectionUtils.isEmpty(chartViewDTOS)){
                Map<Long,ChartViewDTO> viewInfo =  chartViewDTOS.stream().collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
-                result.setChartViewInfo(viewInfo);
+                result.setCanvasViewInfo(viewInfo);
             }
             return result;
         } else {
@@ -65,26 +66,47 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public void save(DataVisualizationBaseRequest request) {
-        DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
-        BeanUtils.copyBean(visualizationInfo, request);
-        visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
-        visualizationInfo.setId(IDUtils.snowID());
-        visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.DV);
-        visualizationInfo.setCreateBy("");
-        visualizationInfo.setCreateTime(System.currentTimeMillis());
-        visualizationInfoMapper.insert(visualizationInfo);
+        Long id = request.getId();
+        if (id == null) {
+            DEException.throwException("no id");
+        }
+        QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
+        wrapper.eq("id",id);
+        Boolean dvCheck = visualizationInfoMapper.exists(wrapper);
+        if(visualizationInfoMapper.exists(wrapper)){
+            request.setUpdateBy("");
+            request.setUpdateTime(System.currentTimeMillis());
+            DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
+            BeanUtils.copyBean(visualizationInfo, request);
+            visualizationInfoMapper.updateById(visualizationInfo);
+        }else{
+            DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
+            BeanUtils.copyBean(visualizationInfo, request);
+            visualizationInfo.setDeleteFlag(DataVisualizationConstants.DELETE_FLAG.AVAILABLE);
+            visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.DV);
+            visualizationInfo.setCreateBy("");
+            visualizationInfo.setCreateTime(System.currentTimeMillis());
+            visualizationInfoMapper.insert(visualizationInfo);
+        }
+
+        List<Long> viewIds = new ArrayList<>();
         //保存视图信
-        Map<Long,ChartViewDTO> chartViewsInfo = request.getChartViewInfo();
+        Map<Long,ChartViewDTO> chartViewsInfo = request.getCanvasViewInfo();
         if(!CollectionUtils.isEmpty(chartViewsInfo)){
             chartViewsInfo.forEach((key,chartViewDTO) -> {
                 try {
+                    chartViewDTO.setSceneId(request.getId());
                     chartViewManege.save(chartViewDTO);
+                    viewIds.add(chartViewDTO.getId());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });
         }
         // TODO 清理无用的视图
+        if(!CollectionUtils.isEmpty(viewIds)){
+            chartViewManege.deleteBySceneId(request.getId(),viewIds);
+        }
     }
 
     @Override

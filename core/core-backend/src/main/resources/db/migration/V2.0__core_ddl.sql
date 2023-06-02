@@ -61,6 +61,7 @@ CREATE TABLE `core_menu`
     `path`      varchar(45) DEFAULT NULL COMMENT '路径',
     `hidden`    tinyint(1) NOT NULL DEFAULT '0' COMMENT '隐藏',
     `in_layout` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否内部',
+    `auth`      tinyint(1) NOT NULL DEFAULT '0' COMMENT '参与授权',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4;
 
@@ -71,19 +72,19 @@ CREATE TABLE `core_menu`
 LOCK
 TABLES `core_menu` WRITE;
 INSERT INTO `core_menu`
-VALUES (1, 0, 2, 'workbranch', 'workbranch', 1, NULL, '/workbranch', 0, 1),
-       (2, 0, 1, 'panel', 'visualized/view/panel', 2, NULL, '/panel', 0, 1),
-       (3, 0, 2, 'screen', 'visualized/view/screen', 3, NULL, '/screen', 0, 1),
-       (4, 0, 1, 'data', NULL, 4, NULL, '/data', 0, 1),
-       (5, 4, 2, 'dataset', 'visualized/data/dataset', 1, NULL, '/dataset', 0, 1),
-       (6, 4, 2, 'datasource', 'visualized/data/datasource', 2, NULL, '/datasource', 0, 1),
-       (7, 0, 1, 'system', NULL, 6, NULL, '/system', 1, 1),
-       (8, 7, 2, 'user', 'system/user', 1, 'peoples', '/user', 0, 1),
-       (9, 7, 2, 'org', 'system/org', 2, 'org', '/org', 0, 1),
-       (10, 7, 2, 'auth', 'system/auth', 3, 'auth', '/auth', 0, 1),
-       (11, 0, 2, 'dataset-form', 'visualized/data/dataset/form', 7, NULL, '/dataset-form', 1, 0),
-       (12, 0, 2, 'datasource-form', 'visualized/data/datasource/form', 7, NULL, '/ds-form', 1, 0),
-       (13, 0, 2, 'about', 'about', 7, NULL, '/about', 1, 1);
+VALUES (1, 0, 2, 'workbranch', 'workbranch', 1, NULL, '/workbranch', 0, 1, 1),
+       (2, 0, 1, 'panel', 'visualized/view/panel', 2, NULL, '/panel', 0, 1, 1),
+       (3, 0, 2, 'screen', 'visualized/view/screen', 3, NULL, '/screen', 0, 1, 1),
+       (4, 0, 1, 'data', NULL, 4, NULL, '/data', 0, 1, 1),
+       (5, 4, 2, 'dataset', 'visualized/data/dataset', 1, NULL, '/dataset', 0, 1, 1),
+       (6, 4, 2, 'datasource', 'visualized/data/datasource', 2, NULL, '/datasource', 0, 1, 1),
+       (7, 0, 1, 'system', NULL, 6, NULL, '/system', 1, 1, 1),
+       (8, 7, 2, 'user', 'system/user', 1, 'peoples', '/user', 0, 1, 1),
+       (9, 7, 2, 'org', 'system/org', 2, 'org', '/org', 0, 1, 1),
+       (10, 7, 2, 'auth', 'system/auth', 3, 'auth', '/auth', 0, 1, 1),
+       (11, 0, 2, 'dataset-form', 'visualized/data/dataset/form', 7, NULL, '/dataset-form', 1, 0, 0),
+       (12, 0, 2, 'datasource-form', 'visualized/data/datasource/form', 7, NULL, '/ds-form', 1, 0, 0),
+       (13, 0, 2, 'about', 'about', 7, NULL, '/about', 1, 1, 0);
 UNLOCK
 TABLES;
 
@@ -194,20 +195,22 @@ CREATE TABLE `data_visualization_info`
 DROP TABLE IF EXISTS `core_datasource_task`;
 CREATE TABLE `core_datasource_task`
 (
-    `id`               bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `ds_id`            bigint       NOT NULL COMMENT '数据源ID',
-    `name`             varchar(255) NOT NULL COMMENT '任务名称',
-    `update_type`      varchar(50)  NOT NULL COMMENT '更新方式',
-    `start_time`       bigint(13) DEFAULT NULL COMMENT '开始时间',
-    `sync_rate`        varchar(50)  NOT NULL COMMENT '执行频率：0 一次性 1 cron',
-    `cron`             varchar(255) DEFAULT NULL COMMENT 'cron表达式',
-    `end_limit`        bigint(13) NOT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
-    `end_time`         bigint(13) DEFAULT NULL COMMENT '结束时间',
-    `create_time`      bigint(13) DEFAULT NULL COMMENT '创建时间',
-    `last_exec_time`   bigint(13) DEFAULT NULL COMMENT '上次执行时间',
-    `last_exec_status` varchar(50)  DEFAULT NULL COMMENT '上次执行结果',
-    `extra_data`       longtext,
-    `status`           varchar(50)  DEFAULT NULL COMMENT '任务状态',
+    `id`                bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `ds_id`             bigint       NOT NULL COMMENT '数据源ID',
+    `name`              varchar(255) NOT NULL COMMENT '任务名称',
+    `update_type`       varchar(50)  NOT NULL COMMENT '更新方式',
+    `start_time`        bigint(13) DEFAULT NULL COMMENT '开始时间',
+    `sync_rate`         varchar(50)  NOT NULL COMMENT '执行频率：0 一次性 1 cron',
+    `cron`              varchar(255) DEFAULT NULL COMMENT 'cron表达式',
+    `simple_cron_value` bigint(13) NOT NULL COMMENT '简单重复间隔',
+    `simple_cron_type`  varchar(50)  NOT NULL COMMENT '简单重复类型：分、时、天',
+    `end_limit`         varchar(50)  NOT NULL COMMENT '结束限制 0 无限制 1 设定结束时间',
+    `end_time`          bigint(13) DEFAULT NULL COMMENT '结束时间',
+    `create_time`       bigint(13) DEFAULT NULL COMMENT '创建时间',
+    `last_exec_time`    bigint(13) DEFAULT NULL COMMENT '上次执行时间',
+    `last_exec_status`  varchar(50)  DEFAULT NULL COMMENT '上次执行结果',
+    `extra_data`        longtext,
+    `status`            varchar(50)  DEFAULT NULL COMMENT '任务状态',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

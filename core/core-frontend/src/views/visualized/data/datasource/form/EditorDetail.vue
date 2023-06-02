@@ -117,8 +117,8 @@ const initForm = type => {
     form.value.syncSetting = {
       updateType: 'all_scope',
       syncRate: 'CRON',
-      simple_cron_value: '',
-      simple_cron_type: '',
+      simpleCronValue: '',
+      simpleCronType: '',
       startTime: '',
       endTime: '',
       endLimit: '',
@@ -311,37 +311,28 @@ const onRateChange = () => {
 }
 
 const onSimpleCronChange = () => {
-  if (form.value.syncSetting.simple_cron_type === 'minute') {
-    if (
-      form.value.syncSetting.simple_cron_value < 1 ||
-      form.value.syncSetting.simple_cron_value > 59
-    ) {
+  if (form.value.syncSetting.simpleCronType === 'minute') {
+    if (form.value.syncSetting.simpleCronValue < 1 || form.value.syncSetting.simpleCronValue > 59) {
       ElMessage.warning(t('cron.minute_limit'))
-      form.value.syncSetting.simple_cron_value = 59
+      form.value.syncSetting.simpleCronValue = 59
     }
-    form.value.syncSetting.cron = '0 0/' + form.value.syncSetting.simple_cron_value + ' * * * ? *'
+    form.value.syncSetting.cron = '0 0/' + form.value.syncSetting.simpleCronValue + ' * * * ? *'
     return
   }
-  if (form.value.syncSetting.simple_cron_type === 'hour') {
-    if (
-      form.value.syncSetting.simple_cron_value < 1 ||
-      form.value.syncSetting.simple_cron_value > 23
-    ) {
+  if (form.value.syncSetting.simpleCronType === 'hour') {
+    if (form.value.syncSetting.simpleCronValue < 1 || form.value.syncSetting.simpleCronValue > 23) {
       ElMessage.warning(t('cron.hour_limit'))
-      form.value.syncSetting.simple_cron_value = 23
+      form.value.syncSetting.simpleCronValue = 23
     }
-    form.value.syncSetting.cron = '0 0 0/' + form.value.syncSetting.simple_cron_value + ' * * ? *'
+    form.value.syncSetting.cron = '0 0 0/' + form.value.syncSetting.simpleCronValue + ' * * ? *'
     return
   }
-  if (form.value.syncSetting.simple_cron_type === 'day') {
-    if (
-      form.value.syncSetting.simple_cron_value < 1 ||
-      form.value.syncSetting.simple_cron_value > 31
-    ) {
+  if (form.value.syncSetting.simpleCronType === 'day') {
+    if (form.value.syncSetting.simpleCronValue < 1 || form.value.syncSetting.simpleCronValue > 31) {
       ElMessage.warning(t('cron.day_limit'))
-      form.value.syncSetting.simple_cron_value = 31
+      form.value.syncSetting.simpleCronValue = 31
     }
-    form.value.syncSetting.cron = '0 0 0 1/' + form.value.syncSetting.simple_cron_value + ' * ? *'
+    form.value.syncSetting.cron = '0 0 0 1/' + form.value.syncSetting.simpleCronValue + ' * ? *'
     return
   }
 }
@@ -417,7 +408,7 @@ defineExpose({
           t('common.sure')
         }}</el-button>
       </div>
-      <div class="title-form_primary">
+      <div class="title-form_primary" v-show="activeStep !== 2">
         {{ t('datasource.basic_info') }}
       </div>
       <el-form
@@ -429,14 +420,14 @@ defineExpose({
         label-position="top"
         require-asterisk-position="right"
       >
-        <el-form-item :label="t('datasource.display_name')" prop="name">
+        <el-form-item :label="t('datasource.display_name')" prop="name" v-show="activeStep !== 2">
           <el-input
             v-model="form.name"
             autocomplete="off"
             :placeholder="t('datasource.input_name')"
           />
         </el-form-item>
-        <el-form-item :label="t('common.description')" prop="description">
+        <el-form-item :label="t('common.description')" prop="description" v-show="activeStep !== 2">
           <el-input
             type="textarea"
             v-model="form.description"
@@ -445,8 +436,8 @@ defineExpose({
             show-word-limit
           />
         </el-form-item>
-        <template v-if="form.type == 'API'">
-          <div class="title-form_primary flex-space">
+        <template v-if="form.type === 'API'">
+          <div class="title-form_primary flex-space" v-show="activeStep !== 2">
             <span>{{ t('datasource.data_table') }}</span>
             <el-button type="primary" style="margin-left: auto" @click="() => addApiItem()">
               <template #icon>
@@ -456,11 +447,12 @@ defineExpose({
             </el-button>
           </div>
           <empty-background
+            v-show="activeStep !== 2"
             v-if="!form.apiConfiguration.length"
             :description="t('datasource.no_data_table')"
             img-type="table"
           />
-          <template v-else>
+          <template v-if="form.type === 'API' && activeStep !== 2">
             <div
               v-for="api in form.apiConfiguration"
               :key="api.id"
@@ -543,7 +535,6 @@ defineExpose({
               autocomplete="off"
             />
           </el-form-item>
-
           <el-form-item :label="t('datasource.data_base')" prop="configuration.dataBase">
             <el-input
               v-model="form.configuration.dataBase"
@@ -551,7 +542,6 @@ defineExpose({
               autocomplete="off"
             />
           </el-form-item>
-
           <el-form-item
             :label="t('datasource.auth_method')"
             prop="configuration.authMethod"
@@ -570,7 +560,6 @@ defineExpose({
               />
             </el-select>
           </el-form-item>
-
           <el-form-item
             :label="t('datasource.client_principal')"
             prop="configuration.username"
@@ -578,7 +567,6 @@ defineExpose({
           >
             <el-input v-model="form.configuration.username" autocomplete="off" />
           </el-form-item>
-
           <el-form-item
             :label="t('datasource.keytab_Key_path')"
             prop="configuration.password"
@@ -589,7 +577,6 @@ defineExpose({
               {{ t('datasource.kerbers_info') }}
             </p>
           </el-form-item>
-
           <el-form-item
             :label="t('datasource.user_name')"
             prop="configuration.username"
@@ -597,7 +584,6 @@ defineExpose({
           >
             <el-input v-model="form.configuration.username" autocomplete="off" />
           </el-form-item>
-
           <el-form-item
             :label="t('datasource.password')"
             prop="configuration.password"
@@ -612,6 +598,7 @@ defineExpose({
             <el-input v-model="form.configuration.port" autocomplete="off" type="number" min="0" />
           </el-form-item>
         </template>
+        <!--        API update setting -->
         <el-form-item
           :label="$t('datasource.update_type')"
           prop="type"
@@ -648,14 +635,14 @@ defineExpose({
             <div class="simple-cron">
               {{ $t('common.every') }}
               <el-input-number
-                v-model="form.syncSetting.simple_cron_value"
+                v-model="form.syncSetting.simpleCronValue"
                 controls-position="right"
                 :min="1"
                 size="small"
                 @change="onSimpleCronChange()"
               />
               <el-select
-                v-model="form.syncSetting.simple_cron_type"
+                v-model="form.syncSetting.simpleCronType"
                 filterable
                 size="small"
                 @change="onSimpleCronChange()"

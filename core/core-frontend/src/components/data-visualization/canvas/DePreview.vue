@@ -14,6 +14,10 @@ const props = defineProps({
     type: Object,
     required: true
   },
+  canvasViewInfo: {
+    type: Object,
+    required: true
+  },
   canvasId: {
     type: String,
     required: false,
@@ -58,7 +62,12 @@ onMounted(() => {
 
 <template>
   <div class="canvas-container" :style="canvasStyle" ref="previewCanvas">
-    <ComponentWrapper v-for="(item, index) in componentData" :key="index" :config="item" />
+    <ComponentWrapper
+      :view-info="canvasViewInfo[item.id]"
+      v-for="(item, index) in componentData"
+      :key="index"
+      :config="item"
+    />
   </div>
 </template>
 

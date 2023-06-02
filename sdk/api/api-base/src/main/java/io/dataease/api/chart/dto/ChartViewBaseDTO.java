@@ -33,11 +33,13 @@ public class ChartViewBaseDTO implements Serializable {
     /**
      * 场景ID chart_type为private的时候 是仪表板id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long sceneId;
 
     /**
      * 数据集表ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long tableId;
 
     /**

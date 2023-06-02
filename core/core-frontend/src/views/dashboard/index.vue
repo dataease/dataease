@@ -254,7 +254,7 @@ eventBus.on('handleNew', handleNew)
       <dv-sidebar
         v-if="curComponent"
         title="属性"
-        width="300"
+        :width="300"
         aside-position="right"
         class="left-sidebar"
       >
@@ -263,7 +263,7 @@ eventBus.on('handleNew', handleNew)
       <dv-sidebar
         v-if="!curComponent"
         title="大屏配置"
-        width="300"
+        :width="300"
         aside-position="right"
         class="left-sidebar"
       >
@@ -272,7 +272,7 @@ eventBus.on('handleNew', handleNew)
       <dv-sidebar
         v-if="curComponent && curComponent.component === 'UserView'"
         title="数据集"
-        width="150"
+        :width="150"
         aside-position="right"
         class="left-sidebar"
       >
