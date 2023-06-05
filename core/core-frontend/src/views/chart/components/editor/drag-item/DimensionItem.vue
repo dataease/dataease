@@ -3,6 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '../util/formatter'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
+import { Delete, Edit } from '@element-plus/icons-vue'
 
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
@@ -155,7 +156,7 @@ getItemTagType()
 
 <template>
   <span class="item-style">
-    <el-dropdown trigger="click" size="small" @command="clickItem">
+    <el-dropdown trigger="click" @command="clickItem">
       <el-tag class="item-axis">
         <span style="display: flex">
           <el-icon>
@@ -191,19 +192,23 @@ getItemTagType()
         </el-icon>
       </el-tag>
       <template #dropdown>
-        <el-dropdown-menu>
+        <el-dropdown-menu class="drop-style">
           <el-dropdown-item>
             <el-dropdown placement="right-start" style="width: 100%" @command="sort">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
-                  <i class="el-icon-sort" />
+                  <el-icon>
+                    <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                  </el-icon>
                   <span>{{ t('chart.sort') }}</span>
                   <span class="summary-span-item">({{ t('chart.' + props.item.sort) }})</span>
                 </span>
-                <i class="el-icon-arrow-right el-icon--right" />
+                <el-icon>
+                  <Icon name="icon_right_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu>
+                <el-dropdown-menu class="drop-style">
                   <el-dropdown-item :command="beforeSort('none')">{{
                     t('chart.none')
                   }}</el-dropdown-item>
@@ -223,22 +228,21 @@ getItemTagType()
             </el-dropdown>
           </el-dropdown-item>
           <el-dropdown-item v-if="item.deType === 1" divided>
-            <el-dropdown
-              placement="right-start"
-              size="small"
-              style="width: 100%"
-              @command="dateStyle"
-            >
+            <el-dropdown placement="right-start" style="width: 100%" @command="dateStyle">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
-                  <i class="el-icon-c-scale-to-original" />
+                  <el-icon>
+                    <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                  </el-icon>
                   <span>{{ t('chart.dateStyle') }}</span>
                   <span class="summary-span-item">({{ t('chart.' + item.dateStyle) }})</span>
                 </span>
-                <i class="el-icon-arrow-right el-icon--right" />
+                <el-icon>
+                  <Icon name="icon_right_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                </el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu>
+                <el-dropdown-menu class="drop-style">
                   <el-dropdown-item :command="beforeDateStyle('y')">{{
                     t('chart.y')
                   }}</el-dropdown-item>
@@ -268,19 +272,18 @@ getItemTagType()
             </el-dropdown>
           </el-dropdown-item>
           <el-dropdown-item v-if="item.deType === 1">
-            <el-dropdown
-              placement="right-start"
-              size="small"
-              style="width: 100%"
-              @command="datePattern"
-            >
+            <el-dropdown placement="right-start" style="width: 100%" @command="datePattern">
               <span class="el-dropdown-link inner-dropdown-menu">
                 <span>
-                  <i class="el-icon-timer" />
+                  <el-icon>
+                    <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                  </el-icon>
                   <span>{{ t('chart.datePattern') }}</span>
                   <span class="summary-span-item">({{ t('chart.' + item.datePattern) }})</span>
                 </span>
-                <i class="el-icon-arrow-right el-icon--right" />
+                <el-icon>
+                  <Icon name="icon_right_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
+                </el-icon>
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -303,14 +306,10 @@ getItemTagType()
           <!--          >-->
           <!--            <span>{{ t('chart.value_formatter') }}...</span>-->
           <!--          </el-dropdown-item>-->
-          <el-dropdown-item
-            icon="el-icon-edit-outline"
-            divided
-            :command="beforeClickItem('rename')"
-          >
+          <el-dropdown-item :icon="Edit" divided :command="beforeClickItem('rename')">
             <span>{{ t('chart.show_name_set') }}</span>
           </el-dropdown-item>
-          <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
+          <el-dropdown-item :icon="Delete" divided :command="beforeClickItem('remove')">
             <span>{{ t('chart.delete') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -386,5 +385,11 @@ span {
 .summary-span-item {
   margin-left: 4px;
   color: #878d9f;
+}
+
+.drop-style {
+  :deep(.ed-dropdown-menu__item) {
+    height: 32px;
+  }
 }
 </style>

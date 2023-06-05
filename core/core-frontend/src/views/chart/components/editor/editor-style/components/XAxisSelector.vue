@@ -104,16 +104,16 @@ initFontSize()
           </el-form-item>
           <span>
             <el-divider />
-            <el-form-item class="form-item">
-              <span>
-                <span class="span-box">
-                  <span>{{ t('chart.axis_value') }}</span>
-                  <el-tooltip class="item" effect="dark" placement="bottom">
-                    <template #content>{{ t('chart.axis_tip') }}</template>
-                    <i class="el-icon-info" style="cursor: pointer" />
-                  </el-tooltip>
-                </span>
-              </span>
+            <el-form-item :label="t('chart.axis_value')" class="form-item">
+              <!--              <span>-->
+              <!--                <span class="span-box">-->
+              <!--                  <span>{{ t('chart.axis_value') }}</span>-->
+              <!--                  <el-tooltip class="item" effect="dark" placement="bottom">-->
+              <!--                    <template #content>{{ t('chart.axis_tip') }}</template>-->
+              <!--                    <i class="el-icon-info" style="cursor: pointer" />-->
+              <!--                  </el-tooltip>-->
+              <!--                </span>-->
+              <!--              </span>-->
               <el-checkbox
                 v-model="state.axisForm.axisValue.auto"
                 @change="changeAxisStyle('axisValue')"
