@@ -43,13 +43,14 @@ const action = param => {
   console.log(param)
 }
 const renderChart = view => {
-  view.data = state.data
+  // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
+  const chart = { ...view, data: state.data }
   state.myChart = (
     chartViewManager.getChartView(view.render, view.type) as G2PlotChartView<any, any>
   ).drawChart({
     chartObj: state.myChart,
     container: containerId,
-    chart: view,
+    chart: chart,
     action
   })
   state.myChart?.render()
