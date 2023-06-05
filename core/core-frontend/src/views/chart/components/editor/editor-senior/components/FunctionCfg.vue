@@ -27,7 +27,7 @@ const changeFunctionCfg = () => {
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="functionForm" :model="state.functionForm" label-width="80px" size="mini">
+      <el-form ref="functionForm" :model="state.functionForm" label-width="80px" size="small">
         <div>
           <el-form-item :label="t('chart.slider')" class="form-item">
             <el-checkbox v-model="state.functionForm.sliderShow" @change="changeFunctionCfg">{{
@@ -44,7 +44,7 @@ const changeFunctionCfg = () => {
               style="width: 90%"
               :min="0"
               :max="100"
-              input-size="mini"
+              input-size="small"
               range
               @change="changeFunctionCfg"
             />

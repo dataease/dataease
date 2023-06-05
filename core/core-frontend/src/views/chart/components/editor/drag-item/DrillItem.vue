@@ -2,6 +2,7 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref, toRefs, watch } from 'vue'
 import { getItemType } from '@/views/chart/components/editor/drag-item/utils'
+import { Delete, Edit, Filter } from '@element-plus/icons-vue'
 
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
@@ -89,8 +90,8 @@ const getItemTagType = () => {
         </el-icon>
       </el-tag>
       <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item icon="el-icon-delete" :command="beforeClickItem('remove')">
+        <el-dropdown-menu class="drop-style">
+          <el-dropdown-item :icon="Delete" :command="beforeClickItem('remove')">
             <span>{{ t('chart.delete') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -160,5 +161,11 @@ span {
   overflow: hidden;
   color: #ffffff;
   margin-left: 4px;
+}
+
+.drop-style {
+  :deep(.ed-dropdown-menu__item) {
+    height: 32px;
+  }
 }
 </style>

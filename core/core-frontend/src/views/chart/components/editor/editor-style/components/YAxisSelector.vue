@@ -67,13 +67,13 @@ initFontSize()
               size="small"
               @change="changeAxisStyle('position')"
             >
-              <div v-if="props.chart.type !== 'bidirectional-bar'">
+              <div v-if="props.chart.type.includes('horizontal')">
                 <el-radio-button label="top">{{ t('chart.text_pos_top') }}</el-radio-button>
                 <el-radio-button label="bottom">{{ t('chart.text_pos_bottom') }}</el-radio-button>
               </div>
-              <div v-else-if="props.chart.type === 'bidirectional-bar'">
-                <el-radio-button label="top">{{ t('chart.text_pos_left') }}</el-radio-button>
-                <el-radio-button label="bottom">{{ t('chart.text_pos_center') }}</el-radio-button>
+              <div v-else>
+                <el-radio-button label="left">{{ t('chart.text_pos_left') }}</el-radio-button>
+                <el-radio-button label="right">{{ t('chart.text_pos_center') }}</el-radio-button>
               </div>
             </el-radio-group>
           </el-form-item>
@@ -104,16 +104,16 @@ initFontSize()
           </el-form-item>
           <span>
             <el-divider />
-            <el-form-item class="form-item">
-              <span>
-                <span class="span-box">
-                  <span>{{ t('chart.axis_value') }}</span>
-                  <el-tooltip class="item" effect="dark" placement="bottom">
-                    <template #content>{{ t('chart.axis_tip') }}</template>
-                    <i class="el-icon-info" style="cursor: pointer" />
-                  </el-tooltip>
-                </span>
-              </span>
+            <el-form-item :label="t('chart.axis_value')" class="form-item">
+              <!--              <span>-->
+              <!--                <span class="span-box">-->
+              <!--                  <span>{{ t('chart.axis_value') }}</span>-->
+              <!--                  <el-tooltip class="item" effect="dark" placement="bottom">-->
+              <!--                    <template #content>{{ t('chart.axis_tip') }}</template>-->
+              <!--                    <i class="el-icon-info" style="cursor: pointer" />-->
+              <!--                  </el-tooltip>-->
+              <!--                </span>-->
+              <!--              </span>-->
               <el-checkbox
                 v-model="state.axisForm.axisValue.auto"
                 @change="changeAxisStyle('axisValue')"

@@ -34,9 +34,6 @@ const onAssistLineChange = val => {
   <el-row class="view-panel">
     <div class="attr-style">
       <el-row class="de-collapse-style">
-        <el-row class="prop prop-top">
-          <span class="padding-lr">{{ $t('chart.senior_cfg') }}</span>
-        </el-row>
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
           <el-collapse-item name="function" :title="$t('chart.function_cfg')">
             <function-cfg :chart="props.chart" @onFunctionCfgChange="onFunctionCfgChange" />
@@ -49,9 +46,6 @@ const onAssistLineChange = val => {
       </el-row>
 
       <el-row class="de-collapse-style">
-        <el-row class="prop">
-          <span class="padding-lr">{{ $t('chart.analyse_cfg') }}</span>
-        </el-row>
         <el-collapse v-model="styleActiveNames" class="style-collapse">
           <el-collapse-item name="analyse" :title="$t('chart.assist_line')">
             <assist-line
@@ -83,6 +77,7 @@ span {
   display: flex;
   height: 100%;
   width: 100%;
+  border-top: 1px solid @side-outline-border-color;
 }
 
 .de-collapse-style {
@@ -92,6 +87,20 @@ span {
     padding: 0 0 0 6px !important;
     font-size: 12px !important;
     font-weight: 400 !important;
+  }
+  :deep(.ed-collapse-item__content) {
+    padding: 16px 8px !important;
+  }
+  :deep(.ed-form-item) {
+    display: block;
+    margin-bottom: 16px;
+  }
+  :deep(.ed-form-item__label) {
+    justify-content: flex-start;
+  }
+  :deep(.ed-checkbox__inner) {
+    width: 14px;
+    height: 14px;
   }
 }
 .prop {
