@@ -19,7 +19,7 @@ import {
 } from '@/api/dataset'
 import type { Table } from '@/api/dataset'
 import DatasetUnion from './DatasetUnion.vue'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 interface DragEvent extends MouseEvent {
   dataTransfer: DataTransfer
 }
@@ -260,11 +260,11 @@ const columns = shallowRef([])
 const tableData = shallowRef([])
 const showTable = ref(false)
 const quota = computed(() => {
-  return clone(allfields.value.filter(ele => ele.groupType === 'q'))
+  return cloneDeep(allfields.value.filter(ele => ele.groupType === 'q'))
 })
 
 const dimensions = computed(() => {
-  return clone(allfields.value.filter(ele => ele.groupType === 'd'))
+  return cloneDeep(allfields.value.filter(ele => ele.groupType === 'd'))
 })
 
 const addComplete = () => {
@@ -306,7 +306,7 @@ const dfsFields = (arr, list) => {
       dfsFields(arr, ele.children)
     }
     const { currentDsFields } = ele
-    arr.push(...clone(currentDsFields))
+    arr.push(...cloneDeep(currentDsFields))
   })
 }
 
@@ -328,7 +328,7 @@ const confirmEditUnion = () => {
   const { node, parent } = fieldUnion.value
   setGuid(node.currentDsFields, node.id, node.datasourceId)
   setGuid(parent.currentDsFields, parent.id, parent.datasourceId)
-  datasetDrag.value.setStateBack(node, parent)
+  datasetDrag.value.setStateBack(cloneDeep(node), cloneDeep(parent))
   const arr = []
   dfsFields(arr, datasetDrag.value.nodeList)
   allfields.value = diffArr(arr, allfields.value)

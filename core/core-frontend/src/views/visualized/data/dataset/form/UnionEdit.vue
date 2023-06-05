@@ -4,7 +4,7 @@ import UnionFieldList from './UnionFieldList.vue'
 import UnionItemEdit from './UnionItemEdit.vue'
 import type { Field } from './UnionFieldList.vue'
 import { getTableField } from '@/api/dataset'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 interface UnionField {
   currentField: Field
   parentField: Field
@@ -55,8 +55,8 @@ const defaultNode = {
 }
 const parentField = ref<Field[]>([])
 const nodeField = ref<Field[]>([])
-const node = reactive<Node>(clone(defaultNode))
-const parent = reactive<Node>(clone(defaultNode))
+const node = reactive<Node>(cloneDeep(defaultNode))
+const parent = reactive<Node>(cloneDeep(defaultNode))
 
 const props = defineProps({
   editArr: {
@@ -66,15 +66,15 @@ const props = defineProps({
 })
 
 const clearState = () => {
-  Object.assign(node, clone(defaultNode))
-  Object.assign(parent, clone(defaultNode))
+  Object.assign(node, cloneDeep(defaultNode))
+  Object.assign(parent, cloneDeep(defaultNode))
   parentField.value = []
   nodeField.value = []
 }
 
 const initState = () => {
-  Object.assign(node, clone(props.editArr[0]))
-  Object.assign(parent, clone(props.editArr[1]))
+  Object.assign(node, cloneDeep(props.editArr[0]))
+  Object.assign(parent, cloneDeep(props.editArr[1]))
   getFields()
 }
 

@@ -579,6 +579,15 @@ defineExpose({
 
 <style lang="less">
 .api-datasource-drawer {
+  .flex-center {
+    .ed-steps {
+      width: 400px;
+    }
+  }
+
+  .title-form_primary {
+    margin: 16px 0;
+  }
   .input-with-select {
     .ed-input-group__prepend {
       background-color: #fff;

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, nextTick, shallowRef, computed, onBeforeMount, watch } from 'vue'
 import { GridTable } from '@/components/grid-table'
-import { clone } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { fieldEnums } from './options.js'
@@ -105,7 +105,7 @@ const defaultCol: CurCol = {
     builtInRule: 'custom'
   }
 }
-const columnPermissionForm = reactive<ColumnForm>(clone(defaultForm))
+const columnPermissionForm = reactive<ColumnForm>(cloneDeep(defaultForm))
 
 const state = reactive<{
   columnList: Column[]
@@ -126,7 +126,7 @@ const numberM = ref()
 const authTarge = ref(false)
 const isIndeterminate = ref(false)
 const selectedId = shallowRef([])
-const curCol = reactive<CurCol>(clone(defaultCol))
+const curCol = reactive<CurCol>(cloneDeep(defaultCol))
 const targetObjs = shallowRef<{ name: string; id: string }[]>([])
 const emptyTips = computed(() => {
   return t('auth.select') + t(`auth.${columnPermissionForm.authTargetType}`)
@@ -429,10 +429,10 @@ search()
 
 const create = permissionObj => {
   selectedId.value = []
-  Object.assign(curCol, clone(defaultCol))
+  Object.assign(curCol, cloneDeep(defaultCol))
   if (!permissionObj) {
     targetObjs.value = []
-    Object.assign(columnPermissionForm, clone(defaultForm))
+    Object.assign(columnPermissionForm, cloneDeep(defaultForm))
     filedList.value.forEach(filed => {
       columnPermissionForm.permissions.columns.push({
         id: filed.id,
@@ -450,7 +450,7 @@ const create = permissionObj => {
     update_column_permission_dialog_title.value = t('dataset.column_permission.add')
   } else {
     update_column_permission_dialog_title.value = t('dataset.column_permission.edit')
-    Object.assign(columnPermissionForm, clone(permissionObj))
+    Object.assign(columnPermissionForm, cloneDeep(permissionObj))
 
     let columnsPermissions = columnPermissionForm.permissions.columns
     columnPermissionForm.permissions.columns = []
@@ -514,8 +514,8 @@ const closeDialog = () => {
 }
 
 const resetTaskForm = () => {
-  Object.assign(columnPermissionForm, clone(defaultForm))
-  Object.assign(curCol, clone(defaultCol))
+  Object.assign(columnPermissionForm, cloneDeep(defaultForm))
+  Object.assign(curCol, cloneDeep(defaultCol))
   selectedId.value = []
   isIndeterminate.value = false
 }
@@ -549,7 +549,7 @@ const save = () => {
     permissions?: string
     whiteListUser?: string
   } = {
-    ...clone(columnPermissionForm),
+    ...cloneDeep(columnPermissionForm),
     whiteListUser: JSON.stringify(columnPermissionForm.whiteListUser),
     permissions: JSON.stringify(columnPermissionForm.permissions)
   }
