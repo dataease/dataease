@@ -190,7 +190,7 @@ public class DatasetDataManage {
         datasourceSchemaDTO.setSchemaAlias(alias);
         String sql = SqlUtils.addSchema(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), alias);
         // parser sql params and repalce default value
-        sql = SqlparserUtils.handleVariableDefaultValue(sql, dto.getSqlVariableDetails(), true);
+        sql = SqlparserUtils.handleVariableDefaultValue(sql, dto.getSqlVariableDetail(), true);
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
