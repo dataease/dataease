@@ -51,6 +51,9 @@ public class SyncAuthManage {
         perBusiResource.setName(creator.getName());
         perBusiResource.setOrgId(oid);
         perBusiResource.setPid(creator.getPid());
+        if (ObjectUtils.isNotEmpty(creator.getLeaf()) && creator.getLeaf()) {
+            perBusiResource.setLeaf(creator.getLeaf());
+        }
         BusiResourceEnum resourceEnum = BusiResourceEnum.valueOf(creator.getFlag().toUpperCase());
         perBusiResource.setRtId(resourceEnum.getFlag());
         PerBusiResource parent = null;
@@ -96,6 +99,7 @@ public class SyncAuthManage {
 
     @Transactional
     public void delResource(Long id) {
+        // 暂未做级联处理，待需求明确再做不迟
         busiAuthExtMapper.delUserPerByResource(id);
         busiAuthExtMapper.delRolePerByResource(id);
         perBusiResourceMapper.deleteById(id);

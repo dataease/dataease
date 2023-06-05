@@ -156,7 +156,10 @@ public interface BusiAuthExtMapper {
     List<BusiResourcePO> resourceByRid(@Param("ew") QueryWrapper queryWrapper);
 
     @Select("select rt_id type, id from per_busi_resource")
-    List<ResourcePO> resourceIds();
+    List<ResourcePO> resourcePOs();
+
+    @Select("select id from per_busi_resource where rt_id = #{rtid} and org_id = #{oid}")
+    List<Long> resourceIdsByRt(@Param("rtid") Integer rtid, @Param("oid") Long oid);
 
 
     @Delete("delete from per_auth_busi_user where resource_id = #{resourceId} ")
