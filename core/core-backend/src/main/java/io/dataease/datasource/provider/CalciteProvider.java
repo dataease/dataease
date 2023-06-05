@@ -122,8 +122,9 @@ public class CalciteProvider {
         List<String[]> list = new LinkedList<>();
         Statement statement = null;
         ResultSet resultSet = null;
+        Connection connection = null;
         try {
-            Connection connection = getConnection(datasourceRequest);
+            connection = getConnection(datasourceRequest);
             statement = connection.createStatement();
             resultSet = statement.executeQuery(datasourceRequest.getQuery());
             ResultSetMetaData metaData = resultSet.getMetaData();
@@ -143,6 +144,7 @@ public class CalciteProvider {
             try {
                 if (resultSet != null) resultSet.close();
                 if (statement != null) statement.close();
+                if (connection != null) connection.close();
             } catch (Exception e) {
             }
         }
