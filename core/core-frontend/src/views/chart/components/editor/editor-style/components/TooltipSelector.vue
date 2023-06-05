@@ -42,7 +42,7 @@ initFontSize()
 <template>
   <div style="width: 100%">
     <el-col>
-      <el-form ref="tooltipForm" :model="state.tooltipForm" label-width="80px" size="mini">
+      <el-form ref="tooltipForm" :model="state.tooltipForm" label-width="80px" size="small">
         <el-form-item :label="t('chart.show')" class="form-item">
           <el-checkbox v-model="state.tooltipForm.show" @change="changeTooltipAttr('show')">{{
             t('chart.show')
@@ -53,7 +53,7 @@ initFontSize()
             <el-select
               v-model="state.tooltipForm.textStyle.fontSize"
               :placeholder="t('chart.text_fontsize')"
-              size="mini"
+              size="small"
               @change="changeTooltipAttr('textStyle')"
             >
               <el-option

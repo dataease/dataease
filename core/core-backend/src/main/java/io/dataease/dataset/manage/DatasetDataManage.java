@@ -72,7 +72,10 @@ public class DatasetDataManage {
                 datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()));
             } else {
                 // add sql table schema
-                datasourceRequest.setQuery(SqlUtils.addSchema(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasourceSchemaDTO.getSchemaAlias()));
+                String sql = SqlUtils.addSchema(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasourceSchemaDTO.getSchemaAlias());
+                // parser sql params and repalce default value
+                sql = SqlparserUtils.handleVariableDefaultValue(sql, datasetTableDTO.getSqlVariableDetails(), true);
+                datasourceRequest.setQuery(sql);
             }
             // 获取数据源表的原始字段
             tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");

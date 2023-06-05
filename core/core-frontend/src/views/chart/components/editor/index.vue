@@ -767,9 +767,9 @@ const collapseChange = type => {
                     class="el-icon-arrow-down el-icon-delete"
                   ></Icon>
                 </el-icon>
-                <el-icon :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }">
-                  <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>
-                </el-icon>
+                <!--                <el-icon :style="{ color: '#a6a6a6', cursor: 'pointer', marginRight: '6px' }">-->
+                <!--                  <Icon name="icon_add_outlined" class="el-icon-arrow-down el-icon-delete"></Icon>-->
+                <!--                </el-icon>-->
               </span>
             </div>
             <el-input

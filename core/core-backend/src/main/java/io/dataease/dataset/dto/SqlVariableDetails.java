@@ -13,6 +13,7 @@ public class SqlVariableDetails {
     private String defaultValue;
     private DefaultValueScope defaultValueScope;
     private String id;
+    private boolean required;
 
     public enum DefaultValueScope {
         EDIT("EDIT"),

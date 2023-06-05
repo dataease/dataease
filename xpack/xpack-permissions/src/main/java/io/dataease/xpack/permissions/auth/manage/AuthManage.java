@@ -10,11 +10,7 @@ import io.dataease.api.permissions.auth.vo.ResourceVO;
 import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
-import io.dataease.utils.AuthUtils;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.CacheUtils;
-import io.dataease.utils.IDUtils;
-import io.dataease.xpack.permissions.auth.bo.ResourceTreeNode;
+import io.dataease.utils.*;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiRole;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthBusiUser;
 import io.dataease.xpack.permissions.auth.dao.auto.entity.PerAuthMenu;
@@ -27,26 +23,20 @@ import io.dataease.xpack.permissions.auth.dao.ext.mapper.MenuAuthExtMapper;
 import io.dataease.xpack.permissions.user.entity.RoleInfo;
 import io.dataease.xpack.permissions.user.entity.UserRole;
 import io.dataease.xpack.permissions.user.manage.RoleManage;
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Component
 @Transactional
 public class AuthManage {
-    private final static int ROOTID = 0;
 
-    private final static String I18N_PREFIX = "i18n_auth_menu.";
 
     @Resource
     private BusiAuthExtMapper busiAuthExtMapper;
@@ -75,11 +65,11 @@ public class AuthManage {
     @Resource
     private MenuAuthManage menuAuthManage;
 
-
-    private AuthManageUtil authManageUtil;
-
     @Resource
     private AuthWeightService authWeightService;
+
+    @Resource
+    private BusiAuthManage busiAuthManage;
 
     public List<ResourceVO> resourceTree(String flag) {
         BusiResourceEnum busiResourceEnum = BusiResourceEnum.valueOf(flag.toUpperCase());
@@ -100,10 +90,7 @@ public class AuthManage {
             }).toList();
         List<BusiResourcePO> pos = null;
         if (rootAdmin.get()) {
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.eq("org_id", user.getDefaultOid());
-            queryWrapper.eq("rt_id", busiResourceEnum.getFlag());
-            pos = busiAuthExtMapper.query(queryWrapper);
+            pos = busiAuthManage.resourceWithOid(busiResourceEnum);
         } else {
             QueryWrapper queryWrapper = new QueryWrapper();
             queryWrapper.eq("pbr.org_id", user.getDefaultOid());
@@ -132,7 +119,7 @@ public class AuthManage {
                 return null;
             }
         }
-        return authManageUtil.convertPos(pos, false);
+        return TreeUtils.mergeTree(pos, 0L, ResourceVO.class, false);
     }
 
     public List<ResourceVO> menuTree() {
@@ -169,7 +156,7 @@ public class AuthManage {
         } else {
             return null;
         }
-        return authManageUtil.convertPos(pos, true);
+        return TreeUtils.mergeTree(pos, 0L, ResourceVO.class, true);
     }
 
     public PermissionVO menuPermission(MenuPermissionRequest request) {
@@ -499,49 +486,6 @@ public class AuthManage {
             result.put(bo.getResourceId(), innerMap);
         }
         return result;
-    }
-
-
-    private class AuthManageUtil {
-        public List<ResourceVO> convertPos(List<BusiResourcePO> pos, boolean appendI18nPrefix) {
-            List<ResourceTreeNode> nodes = pos.stream().map(po -> BeanUtils.copyBean(new ResourceTreeNode(), po)).collect(Collectors.toList());
-            List<ResourceTreeNode> treeNodes = poTree(nodes);
-            return convertTree(treeNodes, appendI18nPrefix);
-        }
-
-        private List<ResourceTreeNode> poTree(List<ResourceTreeNode> nodeList) {
-            List<ResourceTreeNode> result = new ArrayList<>();
-            Map<Long, List<ResourceTreeNode>> childMap = nodeList.stream().collect(Collectors.groupingBy(ResourceTreeNode::getPid));
-            nodeList.forEach(po -> {
-                po.setChildren(childMap.get(po.getId()));
-                if (po.getPid() == ROOTID) {
-                    result.add(po);
-                }
-            });
-            return result;
-        }
-
-        private List<ResourceVO> convertTree(List<ResourceTreeNode> roots, boolean appendI18nPrefix) {
-            List<ResourceVO> result = new ArrayList<>();
-            for (int i = 0; i < roots.size(); i++) {
-                ResourceTreeNode node = roots.get(i);
-                ResourceVO vo = BeanUtils.copyBean(new ResourceVO(), node, "children");
-                if (appendI18nPrefix) {
-                    vo.setName(I18N_PREFIX + vo.getName());
-                }
-                result.add(vo);
-                List<ResourceTreeNode> children = null;
-                if (!CollectionUtils.isEmpty(children = node.getChildren())) {
-                    vo.setChildren(convertTree(children, appendI18nPrefix));
-                }
-            }
-            return result;
-        }
-    }
-
-    @PostConstruct
-    public void init() {
-        authManageUtil = new AuthManageUtil();
     }
 
 

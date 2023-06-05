@@ -168,7 +168,7 @@ const getSQLPreview = () => {
   getPreviewSql({
     sql: Base64.encodeURI(codeCom.value.state.doc.toString()),
     datasourceId: sqlNode.value.datasourceId,
-    sqlVariableDetail: JSON.stringify(state.variables)
+    sqlVariableDetails: JSON.stringify(state.variables)
   }).then(res => {
     state.plxTableData = res.data.data
     state.fields = res.data.fields

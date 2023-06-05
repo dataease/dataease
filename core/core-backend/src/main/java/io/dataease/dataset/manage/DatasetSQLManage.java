@@ -4,6 +4,7 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.*;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
@@ -22,6 +23,8 @@ import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -42,6 +45,8 @@ public class DatasetSQLManage {
     private CoreDatasourceMapper coreDatasourceMapper;
     @Resource
     private EngineServer engineServer;
+
+    private static Logger logger = LoggerFactory.getLogger(DatasetSQLManage.class);
 
     // 编辑模式下使用
     public Map<String, Object> getUnionSQLForEdit(DatasetGroupInfoDTO dataTableInfoDTO) throws Exception {
@@ -97,7 +102,7 @@ public class DatasetSQLManage {
             checkedFields.addAll(fields);
             // 获取child的fields和union
             if (!CollectionUtils.isEmpty(unionDTO.getChildrenDs())) {
-                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, union.size(), dsMap);
+                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, dsMap);
             }
         }
         // build sql
@@ -156,6 +161,7 @@ public class DatasetSQLManage {
             }
             sql = MessageFormat.format("SELECT {0} FROM {1}", f, TableUtils.getTableAndAlias(tableName));
         }
+        logger.info("calcite sql: " + sql);
         Map<String, Object> map = new HashMap<>();
         map.put("sql", sql);
         map.put("field", checkedFields);
@@ -167,10 +173,10 @@ public class DatasetSQLManage {
     // 递归计算出所有子级的checkedFields和unionParam
     private void getUnionForEdit(DatasetTableDTO parentTable, SQLObj parentSQLObj,
                                  List<UnionDTO> childrenDs, Map<String, String[]> checkedInfo,
-                                 List<UnionParamDTO> unionList, List<DatasetTableFieldDTO> checkedFields, int indexPre,
+                                 List<UnionParamDTO> unionList, List<DatasetTableFieldDTO> checkedFields,
                                  Map<Long, DatasourceSchemaDTO> dsMap) throws Exception {
         for (int i = 0; i < childrenDs.size(); i++) {
-            int index = i + indexPre;
+            int index = unionList.size() + 1;
 
             UnionDTO unionDTO = childrenDs.get(i);
             DatasetTableDTO datasetTable = unionDTO.getCurrentDs();
@@ -208,7 +214,7 @@ public class DatasetSQLManage {
             unionToParent.setCurrentSQLObj(table);
             unionList.add(unionToParent);
             if (!CollectionUtils.isEmpty(unionDTO.getChildrenDs())) {
-                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, indexPre + childrenDs.size(), dsMap);
+                getUnionForEdit(datasetTable, table, unionDTO.getChildrenDs(), checkedInfo, unionList, checkedFields, dsMap);
             }
         }
     }
@@ -384,7 +390,11 @@ public class DatasetSQLManage {
         if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_DB)) {
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();
         } else if (StringUtils.equalsIgnoreCase(currentDs.getType(), DatasetTableTypeConstants.DATASET_TABLE_SQL)) {
-            tableObj = SQLObj.builder().tableSchema("").tableName("(" + SqlUtils.addSchema(new String(Base64.getDecoder().decode(infoDTO.getSql())), tableSchema) + ")").tableAlias(tableAlias).build();
+            // add table schema
+            String sql = SqlUtils.addSchema(new String(Base64.getDecoder().decode(infoDTO.getSql())), tableSchema);
+            // parser sql params and repalce default value
+            sql = SqlparserUtils.handleVariableDefaultValue(sql, currentDs.getSqlVariableDetails(), true);
+            tableObj = SQLObj.builder().tableSchema("").tableName("(" + sql + ")").tableAlias(tableAlias).build();
         } else {
             // todo excel,api
             tableObj = SQLObj.builder().tableSchema(tableSchema).tableName(infoDTO.getTable()).tableAlias(tableAlias).build();

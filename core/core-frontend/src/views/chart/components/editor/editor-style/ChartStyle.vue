@@ -71,9 +71,6 @@ const onLegendChange = val => {
   <el-row class="view-panel">
     <div class="attr-style">
       <el-row class="de-collapse-style">
-        <el-row class="prop prop-top">
-          <span class="padding-lr">{{ t('chart.shape_attr') }}</span>
-        </el-row>
         <el-collapse v-model="state.attrActiveNames" class="style-collapse">
           <el-collapse-item name="color" :title="t('chart.color')">
             <color-selector
@@ -117,9 +114,6 @@ const onLegendChange = val => {
       </el-row>
 
       <el-row class="de-collapse-style">
-        <el-row class="prop">
-          <span class="padding-lr">{{ t('chart.module_style') }}</span>
-        </el-row>
         <el-collapse v-model="state.styleActiveNames" class="style-collapse">
           <el-collapse-item name="xAxis" :title="t('chart.xAxis')">
             <x-axis-selector
@@ -178,6 +172,7 @@ span {
   display: flex;
   height: 100%;
   width: 100%;
+  border-top: 1px solid @side-outline-border-color;
 }
 
 .attr-style {
@@ -193,6 +188,20 @@ span {
     padding: 0 0 0 6px !important;
     font-size: 12px !important;
     font-weight: 400 !important;
+  }
+  :deep(.ed-collapse-item__content) {
+    padding: 16px 8px !important;
+  }
+  :deep(.ed-form-item) {
+    display: block;
+    margin-bottom: 16px;
+  }
+  :deep(.ed-form-item__label) {
+    justify-content: flex-start;
+  }
+  :deep(.ed-checkbox__inner) {
+    width: 14px;
+    height: 14px;
   }
 }
 </style>

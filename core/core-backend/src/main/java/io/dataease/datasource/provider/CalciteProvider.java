@@ -1,10 +1,8 @@
 package io.dataease.datasource.provider;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.api.ds.vo.Configuration;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.api.ds.vo.DatasourceConfiguration.DatasourceType;
 import io.dataease.api.ds.vo.TableField;
@@ -17,7 +15,6 @@ import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.datasource.type.Sqlserver;
 import io.dataease.exception.DEException;
-import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.PostConstruct;
@@ -125,8 +122,9 @@ public class CalciteProvider {
         List<String[]> list = new LinkedList<>();
         Statement statement = null;
         ResultSet resultSet = null;
+        Connection connection = null;
         try {
-            Connection connection = getConnection(datasourceRequest);
+            connection = getConnection(datasourceRequest);
             statement = connection.createStatement();
             resultSet = statement.executeQuery(datasourceRequest.getQuery());
             ResultSetMetaData metaData = resultSet.getMetaData();
@@ -146,6 +144,7 @@ public class CalciteProvider {
             try {
                 if (resultSet != null) resultSet.close();
                 if (statement != null) statement.close();
+                if (connection != null) connection.close();
             } catch (Exception e) {
             }
         }
@@ -156,21 +155,9 @@ public class CalciteProvider {
     }
 
     private Connection getConnection(DatasourceRequest datasourceRequest) throws Exception {
-        String key = "";
-        for (Long id : datasourceRequest.getDsList().keySet()) {
-            key = id + split;
-        }
-        if (connectionMap.get(key) != null) {
-            Connection connection = connectionMap.get(key);
-            buildSchema(datasourceRequest, connection.unwrap(CalciteConnection.class));
-            connectionMap.put(key, connection);
-            return connection;
-        } else {
-            Connection connection = getCalciteConnection(datasourceRequest);
-            buildSchema(datasourceRequest, connection.unwrap(CalciteConnection.class));
-            connectionMap.put(key, connection);
-            return connection;
-        }
+        Connection connection = getCalciteConnection(datasourceRequest);
+        buildSchema(datasourceRequest, connection.unwrap(CalciteConnection.class));
+        return connection;
     }
 
     private void registerDriver(DatasourceRequest datasourceRequest) throws Exception {

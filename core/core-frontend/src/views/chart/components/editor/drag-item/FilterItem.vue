@@ -3,6 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { reactive, ref, toRefs, watch } from 'vue'
 import { formatterItem } from '../util/formatter'
 import { getItemType } from './utils'
+import { Delete, Edit, Filter } from '@element-plus/icons-vue'
 
 const fieldType = (deType: number) => {
   return ['text', 'time', 'value', 'value', 'location'][deType]
@@ -93,7 +94,7 @@ getItemTagColor()
 
 <template>
   <span class="item-style">
-    <el-dropdown trigger="click" size="small" @command="clickItem">
+    <el-dropdown trigger="click" @command="clickItem">
       <el-tag
         class="item-axis"
         :style="{ backgroundColor: state.tagColor + '0a', border: '1px solid ' + state.tagColor }"
@@ -119,11 +120,11 @@ getItemTagColor()
         </el-icon>
       </el-tag>
       <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
+        <el-dropdown-menu class="drop-style">
+          <el-dropdown-item :icon="Filter" :command="beforeClickItem('filter')">
             <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>
-          <el-dropdown-item icon="el-icon-delete" divided :command="beforeClickItem('remove')">
+          <el-dropdown-item :icon="Delete" divided :command="beforeClickItem('remove')">
             <span>{{ $t('chart.delete') }}</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -190,5 +191,11 @@ span {
   overflow: hidden;
   color: #ffffff;
   margin-left: 4px;
+}
+
+.drop-style {
+  :deep(.ed-dropdown-menu__item) {
+    height: 32px;
+  }
 }
 </style>
