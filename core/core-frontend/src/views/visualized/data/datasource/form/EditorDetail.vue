@@ -9,7 +9,7 @@ import { Configuration, ApiConfiguration, SyncSetting } from './index.vue'
 import { validateById, save, validate } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import { ElForm, ElMessage } from 'element-plus-secondary'
-import Cron from '@/components/cron/src/cron.vue'
+import Cron from '@/components/cron/src/Cron.vue'
 
 const { t } = useI18n()
 
